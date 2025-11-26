@@ -15,6 +15,7 @@ package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
 
@@ -60,13 +61,13 @@ public class SearchHintResult {
      * @return searchHints
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_SEARCH_HINTS)
+    @JsonProperty(value = JSON_PROPERTY_SEARCH_HINTS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<SearchHint> getSearchHints() {
         return searchHints;
     }
 
-    @JsonProperty(JSON_PROPERTY_SEARCH_HINTS)
+    @JsonProperty(value = JSON_PROPERTY_SEARCH_HINTS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setSearchHints(@org.eclipse.jdt.annotation.NonNull List<SearchHint> searchHints) {
         this.searchHints = searchHints;
@@ -83,13 +84,13 @@ public class SearchHintResult {
      * @return totalRecordCount
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_TOTAL_RECORD_COUNT)
+    @JsonProperty(value = JSON_PROPERTY_TOTAL_RECORD_COUNT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getTotalRecordCount() {
         return totalRecordCount;
     }
 
-    @JsonProperty(JSON_PROPERTY_TOTAL_RECORD_COUNT)
+    @JsonProperty(value = JSON_PROPERTY_TOTAL_RECORD_COUNT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setTotalRecordCount(@org.eclipse.jdt.annotation.NonNull Integer totalRecordCount) {
         this.totalRecordCount = totalRecordCount;
@@ -173,16 +174,16 @@ public class SearchHintResult {
         if (getSearchHints() != null) {
             for (int i = 0; i < getSearchHints().size(); i++) {
                 if (getSearchHints().get(i) != null) {
-                    joiner.add(getSearchHints().get(i).toUrlQueryString(String.format("%sSearchHints%s%s", prefix,
-                            suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
+                    joiner.add(getSearchHints().get(i).toUrlQueryString(
+                            String.format(Locale.ROOT, "%sSearchHints%s%s", prefix, suffix, "".equals(suffix) ? ""
+                                    : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
                 }
             }
         }
 
         // add `TotalRecordCount` to the URL query string
         if (getTotalRecordCount() != null) {
-            joiner.add(String.format("%sTotalRecordCount%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sTotalRecordCount%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getTotalRecordCount()))));
         }
 

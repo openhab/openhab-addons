@@ -13,6 +13,7 @@
 
 package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
+import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
 
@@ -25,11 +26,15 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 /**
  * The startup configuration DTO.
  */
-@JsonPropertyOrder({ StartupConfigurationDto.JSON_PROPERTY_UI_CULTURE,
-        StartupConfigurationDto.JSON_PROPERTY_METADATA_COUNTRY_CODE,
+@JsonPropertyOrder({ StartupConfigurationDto.JSON_PROPERTY_SERVER_NAME,
+        StartupConfigurationDto.JSON_PROPERTY_UI_CULTURE, StartupConfigurationDto.JSON_PROPERTY_METADATA_COUNTRY_CODE,
         StartupConfigurationDto.JSON_PROPERTY_PREFERRED_METADATA_LANGUAGE })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class StartupConfigurationDto {
+    public static final String JSON_PROPERTY_SERVER_NAME = "ServerName";
+    @org.eclipse.jdt.annotation.NonNull
+    private String serverName;
+
     public static final String JSON_PROPERTY_UI_CULTURE = "UICulture";
     @org.eclipse.jdt.annotation.NonNull
     private String uiCulture;
@@ -45,6 +50,29 @@ public class StartupConfigurationDto {
     public StartupConfigurationDto() {
     }
 
+    public StartupConfigurationDto serverName(@org.eclipse.jdt.annotation.NonNull String serverName) {
+        this.serverName = serverName;
+        return this;
+    }
+
+    /**
+     * Gets or sets the server name.
+     * 
+     * @return serverName
+     */
+    @org.eclipse.jdt.annotation.NonNull
+    @JsonProperty(value = JSON_PROPERTY_SERVER_NAME, required = false)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public String getServerName() {
+        return serverName;
+    }
+
+    @JsonProperty(value = JSON_PROPERTY_SERVER_NAME, required = false)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setServerName(@org.eclipse.jdt.annotation.NonNull String serverName) {
+        this.serverName = serverName;
+    }
+
     public StartupConfigurationDto uiCulture(@org.eclipse.jdt.annotation.NonNull String uiCulture) {
         this.uiCulture = uiCulture;
         return this;
@@ -56,13 +84,13 @@ public class StartupConfigurationDto {
      * @return uiCulture
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_UI_CULTURE)
+    @JsonProperty(value = JSON_PROPERTY_UI_CULTURE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getUiCulture() {
         return uiCulture;
     }
 
-    @JsonProperty(JSON_PROPERTY_UI_CULTURE)
+    @JsonProperty(value = JSON_PROPERTY_UI_CULTURE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setUiCulture(@org.eclipse.jdt.annotation.NonNull String uiCulture) {
         this.uiCulture = uiCulture;
@@ -79,13 +107,13 @@ public class StartupConfigurationDto {
      * @return metadataCountryCode
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_METADATA_COUNTRY_CODE)
+    @JsonProperty(value = JSON_PROPERTY_METADATA_COUNTRY_CODE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getMetadataCountryCode() {
         return metadataCountryCode;
     }
 
-    @JsonProperty(JSON_PROPERTY_METADATA_COUNTRY_CODE)
+    @JsonProperty(value = JSON_PROPERTY_METADATA_COUNTRY_CODE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setMetadataCountryCode(@org.eclipse.jdt.annotation.NonNull String metadataCountryCode) {
         this.metadataCountryCode = metadataCountryCode;
@@ -103,13 +131,13 @@ public class StartupConfigurationDto {
      * @return preferredMetadataLanguage
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_PREFERRED_METADATA_LANGUAGE)
+    @JsonProperty(value = JSON_PROPERTY_PREFERRED_METADATA_LANGUAGE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getPreferredMetadataLanguage() {
         return preferredMetadataLanguage;
     }
 
-    @JsonProperty(JSON_PROPERTY_PREFERRED_METADATA_LANGUAGE)
+    @JsonProperty(value = JSON_PROPERTY_PREFERRED_METADATA_LANGUAGE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setPreferredMetadataLanguage(@org.eclipse.jdt.annotation.NonNull String preferredMetadataLanguage) {
         this.preferredMetadataLanguage = preferredMetadataLanguage;
@@ -127,20 +155,22 @@ public class StartupConfigurationDto {
             return false;
         }
         StartupConfigurationDto startupConfigurationDto = (StartupConfigurationDto) o;
-        return Objects.equals(this.uiCulture, startupConfigurationDto.uiCulture)
+        return Objects.equals(this.serverName, startupConfigurationDto.serverName)
+                && Objects.equals(this.uiCulture, startupConfigurationDto.uiCulture)
                 && Objects.equals(this.metadataCountryCode, startupConfigurationDto.metadataCountryCode)
                 && Objects.equals(this.preferredMetadataLanguage, startupConfigurationDto.preferredMetadataLanguage);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(uiCulture, metadataCountryCode, preferredMetadataLanguage);
+        return Objects.hash(serverName, uiCulture, metadataCountryCode, preferredMetadataLanguage);
     }
 
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("class StartupConfigurationDto {\n");
+        sb.append("    serverName: ").append(toIndentedString(serverName)).append("\n");
         sb.append("    uiCulture: ").append(toIndentedString(uiCulture)).append("\n");
         sb.append("    metadataCountryCode: ").append(toIndentedString(metadataCountryCode)).append("\n");
         sb.append("    preferredMetadataLanguage: ").append(toIndentedString(preferredMetadataLanguage)).append("\n");
@@ -191,21 +221,27 @@ public class StartupConfigurationDto {
 
         StringJoiner joiner = new StringJoiner("&");
 
+        // add `ServerName` to the URL query string
+        if (getServerName() != null) {
+            joiner.add(String.format(Locale.ROOT, "%sServerName%s=%s", prefix, suffix,
+                    ApiClient.urlEncode(ApiClient.valueToString(getServerName()))));
+        }
+
         // add `UICulture` to the URL query string
         if (getUiCulture() != null) {
-            joiner.add(String.format("%sUICulture%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sUICulture%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getUiCulture()))));
         }
 
         // add `MetadataCountryCode` to the URL query string
         if (getMetadataCountryCode() != null) {
-            joiner.add(String.format("%sMetadataCountryCode%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sMetadataCountryCode%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getMetadataCountryCode()))));
         }
 
         // add `PreferredMetadataLanguage` to the URL query string
         if (getPreferredMetadataLanguage() != null) {
-            joiner.add(String.format("%sPreferredMetadataLanguage%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sPreferredMetadataLanguage%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getPreferredMetadataLanguage()))));
         }
 
@@ -222,6 +258,11 @@ public class StartupConfigurationDto {
 
         protected Builder(StartupConfigurationDto instance) {
             this.instance = instance;
+        }
+
+        public StartupConfigurationDto.Builder serverName(String serverName) {
+            this.instance.serverName = serverName;
+            return this;
         }
 
         public StartupConfigurationDto.Builder uiCulture(String uiCulture) {
@@ -270,7 +311,7 @@ public class StartupConfigurationDto {
      * Create a builder with a shallow copy of this instance.
      */
     public StartupConfigurationDto.Builder toBuilder() {
-        return new StartupConfigurationDto.Builder().uiCulture(getUiCulture())
+        return new StartupConfigurationDto.Builder().serverName(getServerName()).uiCulture(getUiCulture())
                 .metadataCountryCode(getMetadataCountryCode())
                 .preferredMetadataLanguage(getPreferredMetadataLanguage());
     }

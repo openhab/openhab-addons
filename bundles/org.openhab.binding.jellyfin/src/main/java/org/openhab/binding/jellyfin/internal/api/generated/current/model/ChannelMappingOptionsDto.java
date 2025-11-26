@@ -15,6 +15,7 @@ package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
 
@@ -71,13 +72,13 @@ public class ChannelMappingOptionsDto {
      * @return tunerChannels
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_TUNER_CHANNELS)
+    @JsonProperty(value = JSON_PROPERTY_TUNER_CHANNELS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<TunerChannelMapping> getTunerChannels() {
         return tunerChannels;
     }
 
-    @JsonProperty(JSON_PROPERTY_TUNER_CHANNELS)
+    @JsonProperty(value = JSON_PROPERTY_TUNER_CHANNELS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setTunerChannels(@org.eclipse.jdt.annotation.NonNull List<TunerChannelMapping> tunerChannels) {
         this.tunerChannels = tunerChannels;
@@ -103,13 +104,13 @@ public class ChannelMappingOptionsDto {
      * @return providerChannels
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_PROVIDER_CHANNELS)
+    @JsonProperty(value = JSON_PROPERTY_PROVIDER_CHANNELS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<NameIdPair> getProviderChannels() {
         return providerChannels;
     }
 
-    @JsonProperty(JSON_PROPERTY_PROVIDER_CHANNELS)
+    @JsonProperty(value = JSON_PROPERTY_PROVIDER_CHANNELS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setProviderChannels(@org.eclipse.jdt.annotation.NonNull List<NameIdPair> providerChannels) {
         this.providerChannels = providerChannels;
@@ -134,13 +135,13 @@ public class ChannelMappingOptionsDto {
      * @return mappings
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_MAPPINGS)
+    @JsonProperty(value = JSON_PROPERTY_MAPPINGS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<NameValuePair> getMappings() {
         return mappings;
     }
 
-    @JsonProperty(JSON_PROPERTY_MAPPINGS)
+    @JsonProperty(value = JSON_PROPERTY_MAPPINGS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setMappings(@org.eclipse.jdt.annotation.NonNull List<NameValuePair> mappings) {
         this.mappings = mappings;
@@ -157,13 +158,13 @@ public class ChannelMappingOptionsDto {
      * @return providerName
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_PROVIDER_NAME)
+    @JsonProperty(value = JSON_PROPERTY_PROVIDER_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getProviderName() {
         return providerName;
     }
 
-    @JsonProperty(JSON_PROPERTY_PROVIDER_NAME)
+    @JsonProperty(value = JSON_PROPERTY_PROVIDER_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setProviderName(@org.eclipse.jdt.annotation.NonNull String providerName) {
         this.providerName = providerName;
@@ -251,9 +252,9 @@ public class ChannelMappingOptionsDto {
         if (getTunerChannels() != null) {
             for (int i = 0; i < getTunerChannels().size(); i++) {
                 if (getTunerChannels().get(i) != null) {
-                    joiner.add(getTunerChannels().get(i).toUrlQueryString(String.format("%sTunerChannels%s%s", prefix,
-                            suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
+                    joiner.add(getTunerChannels().get(i).toUrlQueryString(
+                            String.format(Locale.ROOT, "%sTunerChannels%s%s", prefix, suffix, "".equals(suffix) ? ""
+                                    : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
                 }
             }
         }
@@ -262,9 +263,9 @@ public class ChannelMappingOptionsDto {
         if (getProviderChannels() != null) {
             for (int i = 0; i < getProviderChannels().size(); i++) {
                 if (getProviderChannels().get(i) != null) {
-                    joiner.add(getProviderChannels().get(i).toUrlQueryString(String.format("%sProviderChannels%s%s",
-                            prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
+                    joiner.add(getProviderChannels().get(i).toUrlQueryString(
+                            String.format(Locale.ROOT, "%sProviderChannels%s%s", prefix, suffix, "".equals(suffix) ? ""
+                                    : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
                 }
             }
         }
@@ -273,15 +274,16 @@ public class ChannelMappingOptionsDto {
         if (getMappings() != null) {
             for (int i = 0; i < getMappings().size(); i++) {
                 if (getMappings().get(i) != null) {
-                    joiner.add(getMappings().get(i).toUrlQueryString(String.format("%sMappings%s%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
+                    joiner.add(getMappings().get(i).toUrlQueryString(
+                            String.format(Locale.ROOT, "%sMappings%s%s", prefix, suffix, "".equals(suffix) ? ""
+                                    : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
                 }
             }
         }
 
         // add `ProviderName` to the URL query string
         if (getProviderName() != null) {
-            joiner.add(String.format("%sProviderName%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sProviderName%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getProviderName()))));
         }
 

@@ -16,6 +16,7 @@ package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
 
@@ -80,13 +81,13 @@ public class PlayQueueUpdate {
      * @return reason
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_REASON)
+    @JsonProperty(value = JSON_PROPERTY_REASON, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public PlayQueueUpdateReason getReason() {
         return reason;
     }
 
-    @JsonProperty(JSON_PROPERTY_REASON)
+    @JsonProperty(value = JSON_PROPERTY_REASON, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setReason(@org.eclipse.jdt.annotation.NonNull PlayQueueUpdateReason reason) {
         this.reason = reason;
@@ -103,13 +104,13 @@ public class PlayQueueUpdate {
      * @return lastUpdate
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_LAST_UPDATE)
+    @JsonProperty(value = JSON_PROPERTY_LAST_UPDATE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public OffsetDateTime getLastUpdate() {
         return lastUpdate;
     }
 
-    @JsonProperty(JSON_PROPERTY_LAST_UPDATE)
+    @JsonProperty(value = JSON_PROPERTY_LAST_UPDATE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setLastUpdate(@org.eclipse.jdt.annotation.NonNull OffsetDateTime lastUpdate) {
         this.lastUpdate = lastUpdate;
@@ -134,13 +135,13 @@ public class PlayQueueUpdate {
      * @return playlist
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_PLAYLIST)
+    @JsonProperty(value = JSON_PROPERTY_PLAYLIST, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<SyncPlayQueueItem> getPlaylist() {
         return playlist;
     }
 
-    @JsonProperty(JSON_PROPERTY_PLAYLIST)
+    @JsonProperty(value = JSON_PROPERTY_PLAYLIST, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setPlaylist(@org.eclipse.jdt.annotation.NonNull List<SyncPlayQueueItem> playlist) {
         this.playlist = playlist;
@@ -157,13 +158,13 @@ public class PlayQueueUpdate {
      * @return playingItemIndex
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_PLAYING_ITEM_INDEX)
+    @JsonProperty(value = JSON_PROPERTY_PLAYING_ITEM_INDEX, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getPlayingItemIndex() {
         return playingItemIndex;
     }
 
-    @JsonProperty(JSON_PROPERTY_PLAYING_ITEM_INDEX)
+    @JsonProperty(value = JSON_PROPERTY_PLAYING_ITEM_INDEX, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setPlayingItemIndex(@org.eclipse.jdt.annotation.NonNull Integer playingItemIndex) {
         this.playingItemIndex = playingItemIndex;
@@ -180,13 +181,13 @@ public class PlayQueueUpdate {
      * @return startPositionTicks
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_START_POSITION_TICKS)
+    @JsonProperty(value = JSON_PROPERTY_START_POSITION_TICKS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Long getStartPositionTicks() {
         return startPositionTicks;
     }
 
-    @JsonProperty(JSON_PROPERTY_START_POSITION_TICKS)
+    @JsonProperty(value = JSON_PROPERTY_START_POSITION_TICKS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setStartPositionTicks(@org.eclipse.jdt.annotation.NonNull Long startPositionTicks) {
         this.startPositionTicks = startPositionTicks;
@@ -203,13 +204,13 @@ public class PlayQueueUpdate {
      * @return isPlaying
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_IS_PLAYING)
+    @JsonProperty(value = JSON_PROPERTY_IS_PLAYING, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getIsPlaying() {
         return isPlaying;
     }
 
-    @JsonProperty(JSON_PROPERTY_IS_PLAYING)
+    @JsonProperty(value = JSON_PROPERTY_IS_PLAYING, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setIsPlaying(@org.eclipse.jdt.annotation.NonNull Boolean isPlaying) {
         this.isPlaying = isPlaying;
@@ -226,13 +227,13 @@ public class PlayQueueUpdate {
      * @return shuffleMode
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_SHUFFLE_MODE)
+    @JsonProperty(value = JSON_PROPERTY_SHUFFLE_MODE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public GroupShuffleMode getShuffleMode() {
         return shuffleMode;
     }
 
-    @JsonProperty(JSON_PROPERTY_SHUFFLE_MODE)
+    @JsonProperty(value = JSON_PROPERTY_SHUFFLE_MODE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setShuffleMode(@org.eclipse.jdt.annotation.NonNull GroupShuffleMode shuffleMode) {
         this.shuffleMode = shuffleMode;
@@ -249,13 +250,13 @@ public class PlayQueueUpdate {
      * @return repeatMode
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_REPEAT_MODE)
+    @JsonProperty(value = JSON_PROPERTY_REPEAT_MODE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public GroupRepeatMode getRepeatMode() {
         return repeatMode;
     }
 
-    @JsonProperty(JSON_PROPERTY_REPEAT_MODE)
+    @JsonProperty(value = JSON_PROPERTY_REPEAT_MODE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setRepeatMode(@org.eclipse.jdt.annotation.NonNull GroupRepeatMode repeatMode) {
         this.repeatMode = repeatMode;
@@ -350,13 +351,13 @@ public class PlayQueueUpdate {
 
         // add `Reason` to the URL query string
         if (getReason() != null) {
-            joiner.add(String.format("%sReason%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sReason%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getReason()))));
         }
 
         // add `LastUpdate` to the URL query string
         if (getLastUpdate() != null) {
-            joiner.add(String.format("%sLastUpdate%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sLastUpdate%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getLastUpdate()))));
         }
 
@@ -364,39 +365,40 @@ public class PlayQueueUpdate {
         if (getPlaylist() != null) {
             for (int i = 0; i < getPlaylist().size(); i++) {
                 if (getPlaylist().get(i) != null) {
-                    joiner.add(getPlaylist().get(i).toUrlQueryString(String.format("%sPlaylist%s%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
+                    joiner.add(getPlaylist().get(i).toUrlQueryString(
+                            String.format(Locale.ROOT, "%sPlaylist%s%s", prefix, suffix, "".equals(suffix) ? ""
+                                    : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
                 }
             }
         }
 
         // add `PlayingItemIndex` to the URL query string
         if (getPlayingItemIndex() != null) {
-            joiner.add(String.format("%sPlayingItemIndex%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sPlayingItemIndex%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getPlayingItemIndex()))));
         }
 
         // add `StartPositionTicks` to the URL query string
         if (getStartPositionTicks() != null) {
-            joiner.add(String.format("%sStartPositionTicks%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sStartPositionTicks%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getStartPositionTicks()))));
         }
 
         // add `IsPlaying` to the URL query string
         if (getIsPlaying() != null) {
-            joiner.add(String.format("%sIsPlaying%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sIsPlaying%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getIsPlaying()))));
         }
 
         // add `ShuffleMode` to the URL query string
         if (getShuffleMode() != null) {
-            joiner.add(String.format("%sShuffleMode%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sShuffleMode%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getShuffleMode()))));
         }
 
         // add `RepeatMode` to the URL query string
         if (getRepeatMode() != null) {
-            joiner.add(String.format("%sRepeatMode%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sRepeatMode%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getRepeatMode()))));
         }
 

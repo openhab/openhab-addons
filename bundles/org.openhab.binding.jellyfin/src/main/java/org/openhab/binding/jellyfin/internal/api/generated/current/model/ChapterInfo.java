@@ -14,6 +14,7 @@
 package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
 import java.time.OffsetDateTime;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
 
@@ -65,13 +66,13 @@ public class ChapterInfo {
      * @return startPositionTicks
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_START_POSITION_TICKS)
+    @JsonProperty(value = JSON_PROPERTY_START_POSITION_TICKS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Long getStartPositionTicks() {
         return startPositionTicks;
     }
 
-    @JsonProperty(JSON_PROPERTY_START_POSITION_TICKS)
+    @JsonProperty(value = JSON_PROPERTY_START_POSITION_TICKS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setStartPositionTicks(@org.eclipse.jdt.annotation.NonNull Long startPositionTicks) {
         this.startPositionTicks = startPositionTicks;
@@ -88,13 +89,13 @@ public class ChapterInfo {
      * @return name
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_NAME)
+    @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getName() {
         return name;
     }
 
-    @JsonProperty(JSON_PROPERTY_NAME)
+    @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setName(@org.eclipse.jdt.annotation.NonNull String name) {
         this.name = name;
@@ -111,13 +112,13 @@ public class ChapterInfo {
      * @return imagePath
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_IMAGE_PATH)
+    @JsonProperty(value = JSON_PROPERTY_IMAGE_PATH, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getImagePath() {
         return imagePath;
     }
 
-    @JsonProperty(JSON_PROPERTY_IMAGE_PATH)
+    @JsonProperty(value = JSON_PROPERTY_IMAGE_PATH, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setImagePath(@org.eclipse.jdt.annotation.NonNull String imagePath) {
         this.imagePath = imagePath;
@@ -134,13 +135,13 @@ public class ChapterInfo {
      * @return imageDateModified
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_IMAGE_DATE_MODIFIED)
+    @JsonProperty(value = JSON_PROPERTY_IMAGE_DATE_MODIFIED, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public OffsetDateTime getImageDateModified() {
         return imageDateModified;
     }
 
-    @JsonProperty(JSON_PROPERTY_IMAGE_DATE_MODIFIED)
+    @JsonProperty(value = JSON_PROPERTY_IMAGE_DATE_MODIFIED, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setImageDateModified(@org.eclipse.jdt.annotation.NonNull OffsetDateTime imageDateModified) {
         this.imageDateModified = imageDateModified;
@@ -157,13 +158,13 @@ public class ChapterInfo {
      * @return imageTag
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_IMAGE_TAG)
+    @JsonProperty(value = JSON_PROPERTY_IMAGE_TAG, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getImageTag() {
         return imageTag;
     }
 
-    @JsonProperty(JSON_PROPERTY_IMAGE_TAG)
+    @JsonProperty(value = JSON_PROPERTY_IMAGE_TAG, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setImageTag(@org.eclipse.jdt.annotation.NonNull String imageTag) {
         this.imageTag = imageTag;
@@ -250,31 +251,31 @@ public class ChapterInfo {
 
         // add `StartPositionTicks` to the URL query string
         if (getStartPositionTicks() != null) {
-            joiner.add(String.format("%sStartPositionTicks%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sStartPositionTicks%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getStartPositionTicks()))));
         }
 
         // add `Name` to the URL query string
         if (getName() != null) {
-            joiner.add(String.format("%sName%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sName%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getName()))));
         }
 
         // add `ImagePath` to the URL query string
         if (getImagePath() != null) {
-            joiner.add(String.format("%sImagePath%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sImagePath%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getImagePath()))));
         }
 
         // add `ImageDateModified` to the URL query string
         if (getImageDateModified() != null) {
-            joiner.add(String.format("%sImageDateModified%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sImageDateModified%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getImageDateModified()))));
         }
 
         // add `ImageTag` to the URL query string
         if (getImageTag() != null) {
-            joiner.add(String.format("%sImageTag%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sImageTag%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getImageTag()))));
         }
 

@@ -13,6 +13,7 @@
 
 package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
+import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
 
@@ -50,13 +51,13 @@ public class StartupUserDto {
      * @return name
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_NAME)
+    @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getName() {
         return name;
     }
 
-    @JsonProperty(JSON_PROPERTY_NAME)
+    @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setName(@org.eclipse.jdt.annotation.NonNull String name) {
         this.name = name;
@@ -73,13 +74,13 @@ public class StartupUserDto {
      * @return password
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_PASSWORD)
+    @JsonProperty(value = JSON_PROPERTY_PASSWORD, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getPassword() {
         return password;
     }
 
-    @JsonProperty(JSON_PROPERTY_PASSWORD)
+    @JsonProperty(value = JSON_PROPERTY_PASSWORD, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setPassword(@org.eclipse.jdt.annotation.NonNull String password) {
         this.password = password;
@@ -160,13 +161,13 @@ public class StartupUserDto {
 
         // add `Name` to the URL query string
         if (getName() != null) {
-            joiner.add(String.format("%sName%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sName%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getName()))));
         }
 
         // add `Password` to the URL query string
         if (getPassword() != null) {
-            joiner.add(String.format("%sPassword%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sPassword%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getPassword()))));
         }
 

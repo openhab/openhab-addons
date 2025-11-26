@@ -15,6 +15,7 @@ package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
 
@@ -65,13 +66,13 @@ public class RemoteImageResult {
      * @return images
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_IMAGES)
+    @JsonProperty(value = JSON_PROPERTY_IMAGES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<RemoteImageInfo> getImages() {
         return images;
     }
 
-    @JsonProperty(JSON_PROPERTY_IMAGES)
+    @JsonProperty(value = JSON_PROPERTY_IMAGES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setImages(@org.eclipse.jdt.annotation.NonNull List<RemoteImageInfo> images) {
         this.images = images;
@@ -88,13 +89,13 @@ public class RemoteImageResult {
      * @return totalRecordCount
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_TOTAL_RECORD_COUNT)
+    @JsonProperty(value = JSON_PROPERTY_TOTAL_RECORD_COUNT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getTotalRecordCount() {
         return totalRecordCount;
     }
 
-    @JsonProperty(JSON_PROPERTY_TOTAL_RECORD_COUNT)
+    @JsonProperty(value = JSON_PROPERTY_TOTAL_RECORD_COUNT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setTotalRecordCount(@org.eclipse.jdt.annotation.NonNull Integer totalRecordCount) {
         this.totalRecordCount = totalRecordCount;
@@ -119,13 +120,13 @@ public class RemoteImageResult {
      * @return providers
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_PROVIDERS)
+    @JsonProperty(value = JSON_PROPERTY_PROVIDERS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<String> getProviders() {
         return providers;
     }
 
-    @JsonProperty(JSON_PROPERTY_PROVIDERS)
+    @JsonProperty(value = JSON_PROPERTY_PROVIDERS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setProviders(@org.eclipse.jdt.annotation.NonNull List<String> providers) {
         this.providers = providers;
@@ -211,23 +212,25 @@ public class RemoteImageResult {
         if (getImages() != null) {
             for (int i = 0; i < getImages().size(); i++) {
                 if (getImages().get(i) != null) {
-                    joiner.add(getImages().get(i).toUrlQueryString(String.format("%sImages%s%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
+                    joiner.add(getImages().get(i).toUrlQueryString(
+                            String.format(Locale.ROOT, "%sImages%s%s", prefix, suffix, "".equals(suffix) ? ""
+                                    : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
                 }
             }
         }
 
         // add `TotalRecordCount` to the URL query string
         if (getTotalRecordCount() != null) {
-            joiner.add(String.format("%sTotalRecordCount%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sTotalRecordCount%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getTotalRecordCount()))));
         }
 
         // add `Providers` to the URL query string
         if (getProviders() != null) {
             for (int i = 0; i < getProviders().size(); i++) {
-                joiner.add(String.format("%sProviders%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+                joiner.add(String.format(Locale.ROOT, "%sProviders%s%s=%s", prefix, suffix,
+                        "".equals(suffix) ? ""
+                                : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
                         ApiClient.urlEncode(ApiClient.valueToString(getProviders().get(i)))));
             }
         }

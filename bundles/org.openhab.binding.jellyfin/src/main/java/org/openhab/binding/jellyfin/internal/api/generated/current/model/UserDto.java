@@ -14,6 +14,7 @@
 package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
 import java.time.OffsetDateTime;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
 import java.util.UUID;
@@ -105,13 +106,13 @@ public class UserDto {
      * @return name
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_NAME)
+    @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getName() {
         return name;
     }
 
-    @JsonProperty(JSON_PROPERTY_NAME)
+    @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setName(@org.eclipse.jdt.annotation.NonNull String name) {
         this.name = name;
@@ -128,13 +129,13 @@ public class UserDto {
      * @return serverId
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_SERVER_ID)
+    @JsonProperty(value = JSON_PROPERTY_SERVER_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getServerId() {
         return serverId;
     }
 
-    @JsonProperty(JSON_PROPERTY_SERVER_ID)
+    @JsonProperty(value = JSON_PROPERTY_SERVER_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setServerId(@org.eclipse.jdt.annotation.NonNull String serverId) {
         this.serverId = serverId;
@@ -151,13 +152,13 @@ public class UserDto {
      * @return serverName
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_SERVER_NAME)
+    @JsonProperty(value = JSON_PROPERTY_SERVER_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getServerName() {
         return serverName;
     }
 
-    @JsonProperty(JSON_PROPERTY_SERVER_NAME)
+    @JsonProperty(value = JSON_PROPERTY_SERVER_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setServerName(@org.eclipse.jdt.annotation.NonNull String serverName) {
         this.serverName = serverName;
@@ -174,13 +175,13 @@ public class UserDto {
      * @return id
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ID)
+    @JsonProperty(value = JSON_PROPERTY_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public UUID getId() {
         return id;
     }
 
-    @JsonProperty(JSON_PROPERTY_ID)
+    @JsonProperty(value = JSON_PROPERTY_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setId(@org.eclipse.jdt.annotation.NonNull UUID id) {
         this.id = id;
@@ -197,13 +198,13 @@ public class UserDto {
      * @return primaryImageTag
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_PRIMARY_IMAGE_TAG)
+    @JsonProperty(value = JSON_PROPERTY_PRIMARY_IMAGE_TAG, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getPrimaryImageTag() {
         return primaryImageTag;
     }
 
-    @JsonProperty(JSON_PROPERTY_PRIMARY_IMAGE_TAG)
+    @JsonProperty(value = JSON_PROPERTY_PRIMARY_IMAGE_TAG, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setPrimaryImageTag(@org.eclipse.jdt.annotation.NonNull String primaryImageTag) {
         this.primaryImageTag = primaryImageTag;
@@ -220,13 +221,13 @@ public class UserDto {
      * @return hasPassword
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_HAS_PASSWORD)
+    @JsonProperty(value = JSON_PROPERTY_HAS_PASSWORD, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getHasPassword() {
         return hasPassword;
     }
 
-    @JsonProperty(JSON_PROPERTY_HAS_PASSWORD)
+    @JsonProperty(value = JSON_PROPERTY_HAS_PASSWORD, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setHasPassword(@org.eclipse.jdt.annotation.NonNull Boolean hasPassword) {
         this.hasPassword = hasPassword;
@@ -243,13 +244,13 @@ public class UserDto {
      * @return hasConfiguredPassword
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_HAS_CONFIGURED_PASSWORD)
+    @JsonProperty(value = JSON_PROPERTY_HAS_CONFIGURED_PASSWORD, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getHasConfiguredPassword() {
         return hasConfiguredPassword;
     }
 
-    @JsonProperty(JSON_PROPERTY_HAS_CONFIGURED_PASSWORD)
+    @JsonProperty(value = JSON_PROPERTY_HAS_CONFIGURED_PASSWORD, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setHasConfiguredPassword(@org.eclipse.jdt.annotation.NonNull Boolean hasConfiguredPassword) {
         this.hasConfiguredPassword = hasConfiguredPassword;
@@ -268,13 +269,13 @@ public class UserDto {
      */
     @Deprecated
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_HAS_CONFIGURED_EASY_PASSWORD)
+    @JsonProperty(value = JSON_PROPERTY_HAS_CONFIGURED_EASY_PASSWORD, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getHasConfiguredEasyPassword() {
         return hasConfiguredEasyPassword;
     }
 
-    @JsonProperty(JSON_PROPERTY_HAS_CONFIGURED_EASY_PASSWORD)
+    @JsonProperty(value = JSON_PROPERTY_HAS_CONFIGURED_EASY_PASSWORD, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setHasConfiguredEasyPassword(@org.eclipse.jdt.annotation.NonNull Boolean hasConfiguredEasyPassword) {
         this.hasConfiguredEasyPassword = hasConfiguredEasyPassword;
@@ -291,13 +292,13 @@ public class UserDto {
      * @return enableAutoLogin
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ENABLE_AUTO_LOGIN)
+    @JsonProperty(value = JSON_PROPERTY_ENABLE_AUTO_LOGIN, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getEnableAutoLogin() {
         return enableAutoLogin;
     }
 
-    @JsonProperty(JSON_PROPERTY_ENABLE_AUTO_LOGIN)
+    @JsonProperty(value = JSON_PROPERTY_ENABLE_AUTO_LOGIN, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setEnableAutoLogin(@org.eclipse.jdt.annotation.NonNull Boolean enableAutoLogin) {
         this.enableAutoLogin = enableAutoLogin;
@@ -314,13 +315,13 @@ public class UserDto {
      * @return lastLoginDate
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_LAST_LOGIN_DATE)
+    @JsonProperty(value = JSON_PROPERTY_LAST_LOGIN_DATE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public OffsetDateTime getLastLoginDate() {
         return lastLoginDate;
     }
 
-    @JsonProperty(JSON_PROPERTY_LAST_LOGIN_DATE)
+    @JsonProperty(value = JSON_PROPERTY_LAST_LOGIN_DATE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setLastLoginDate(@org.eclipse.jdt.annotation.NonNull OffsetDateTime lastLoginDate) {
         this.lastLoginDate = lastLoginDate;
@@ -337,13 +338,13 @@ public class UserDto {
      * @return lastActivityDate
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_LAST_ACTIVITY_DATE)
+    @JsonProperty(value = JSON_PROPERTY_LAST_ACTIVITY_DATE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public OffsetDateTime getLastActivityDate() {
         return lastActivityDate;
     }
 
-    @JsonProperty(JSON_PROPERTY_LAST_ACTIVITY_DATE)
+    @JsonProperty(value = JSON_PROPERTY_LAST_ACTIVITY_DATE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setLastActivityDate(@org.eclipse.jdt.annotation.NonNull OffsetDateTime lastActivityDate) {
         this.lastActivityDate = lastActivityDate;
@@ -360,13 +361,13 @@ public class UserDto {
      * @return _configuration
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_CONFIGURATION)
+    @JsonProperty(value = JSON_PROPERTY_CONFIGURATION, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public UserConfiguration getConfiguration() {
         return _configuration;
     }
 
-    @JsonProperty(JSON_PROPERTY_CONFIGURATION)
+    @JsonProperty(value = JSON_PROPERTY_CONFIGURATION, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setConfiguration(@org.eclipse.jdt.annotation.NonNull UserConfiguration _configuration) {
         this._configuration = _configuration;
@@ -383,13 +384,13 @@ public class UserDto {
      * @return policy
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_POLICY)
+    @JsonProperty(value = JSON_PROPERTY_POLICY, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public UserPolicy getPolicy() {
         return policy;
     }
 
-    @JsonProperty(JSON_PROPERTY_POLICY)
+    @JsonProperty(value = JSON_PROPERTY_POLICY, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setPolicy(@org.eclipse.jdt.annotation.NonNull UserPolicy policy) {
         this.policy = policy;
@@ -406,13 +407,13 @@ public class UserDto {
      * @return primaryImageAspectRatio
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_PRIMARY_IMAGE_ASPECT_RATIO)
+    @JsonProperty(value = JSON_PROPERTY_PRIMARY_IMAGE_ASPECT_RATIO, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Double getPrimaryImageAspectRatio() {
         return primaryImageAspectRatio;
     }
 
-    @JsonProperty(JSON_PROPERTY_PRIMARY_IMAGE_ASPECT_RATIO)
+    @JsonProperty(value = JSON_PROPERTY_PRIMARY_IMAGE_ASPECT_RATIO, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setPrimaryImageAspectRatio(@org.eclipse.jdt.annotation.NonNull Double primaryImageAspectRatio) {
         this.primaryImageAspectRatio = primaryImageAspectRatio;
@@ -518,67 +519,67 @@ public class UserDto {
 
         // add `Name` to the URL query string
         if (getName() != null) {
-            joiner.add(String.format("%sName%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sName%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getName()))));
         }
 
         // add `ServerId` to the URL query string
         if (getServerId() != null) {
-            joiner.add(String.format("%sServerId%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sServerId%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getServerId()))));
         }
 
         // add `ServerName` to the URL query string
         if (getServerName() != null) {
-            joiner.add(String.format("%sServerName%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sServerName%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getServerName()))));
         }
 
         // add `Id` to the URL query string
         if (getId() != null) {
-            joiner.add(
-                    String.format("%sId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
+            joiner.add(String.format(Locale.ROOT, "%sId%s=%s", prefix, suffix,
+                    ApiClient.urlEncode(ApiClient.valueToString(getId()))));
         }
 
         // add `PrimaryImageTag` to the URL query string
         if (getPrimaryImageTag() != null) {
-            joiner.add(String.format("%sPrimaryImageTag%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sPrimaryImageTag%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getPrimaryImageTag()))));
         }
 
         // add `HasPassword` to the URL query string
         if (getHasPassword() != null) {
-            joiner.add(String.format("%sHasPassword%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sHasPassword%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getHasPassword()))));
         }
 
         // add `HasConfiguredPassword` to the URL query string
         if (getHasConfiguredPassword() != null) {
-            joiner.add(String.format("%sHasConfiguredPassword%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sHasConfiguredPassword%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getHasConfiguredPassword()))));
         }
 
         // add `HasConfiguredEasyPassword` to the URL query string
         if (getHasConfiguredEasyPassword() != null) {
-            joiner.add(String.format("%sHasConfiguredEasyPassword%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sHasConfiguredEasyPassword%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getHasConfiguredEasyPassword()))));
         }
 
         // add `EnableAutoLogin` to the URL query string
         if (getEnableAutoLogin() != null) {
-            joiner.add(String.format("%sEnableAutoLogin%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sEnableAutoLogin%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getEnableAutoLogin()))));
         }
 
         // add `LastLoginDate` to the URL query string
         if (getLastLoginDate() != null) {
-            joiner.add(String.format("%sLastLoginDate%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sLastLoginDate%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getLastLoginDate()))));
         }
 
         // add `LastActivityDate` to the URL query string
         if (getLastActivityDate() != null) {
-            joiner.add(String.format("%sLastActivityDate%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sLastActivityDate%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getLastActivityDate()))));
         }
 
@@ -594,7 +595,7 @@ public class UserDto {
 
         // add `PrimaryImageAspectRatio` to the URL query string
         if (getPrimaryImageAspectRatio() != null) {
-            joiner.add(String.format("%sPrimaryImageAspectRatio%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sPrimaryImageAspectRatio%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getPrimaryImageAspectRatio()))));
         }
 

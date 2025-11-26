@@ -13,6 +13,7 @@
 
 package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
+import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
 
@@ -50,13 +51,13 @@ public class LocalizationOption {
      * @return name
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_NAME)
+    @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getName() {
         return name;
     }
 
-    @JsonProperty(JSON_PROPERTY_NAME)
+    @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setName(@org.eclipse.jdt.annotation.NonNull String name) {
         this.name = name;
@@ -73,13 +74,13 @@ public class LocalizationOption {
      * @return value
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_VALUE)
+    @JsonProperty(value = JSON_PROPERTY_VALUE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getValue() {
         return value;
     }
 
-    @JsonProperty(JSON_PROPERTY_VALUE)
+    @JsonProperty(value = JSON_PROPERTY_VALUE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setValue(@org.eclipse.jdt.annotation.NonNull String value) {
         this.value = value;
@@ -161,13 +162,13 @@ public class LocalizationOption {
 
         // add `Name` to the URL query string
         if (getName() != null) {
-            joiner.add(String.format("%sName%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sName%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getName()))));
         }
 
         // add `Value` to the URL query string
         if (getValue() != null) {
-            joiner.add(String.format("%sValue%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sValue%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getValue()))));
         }
 

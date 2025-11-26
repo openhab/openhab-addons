@@ -250,7 +250,7 @@ public class HlsSegmentApi {
 
         localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
 
-        localVarRequestBuilder.header("Accept", "audio/*");
+        localVarRequestBuilder.header("Accept", "audio/*, text/html");
 
         localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {
@@ -371,7 +371,7 @@ public class HlsSegmentApi {
 
         localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
 
-        localVarRequestBuilder.header("Accept", "audio/*");
+        localVarRequestBuilder.header("Accept", "audio/*, text/html");
 
         localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {
@@ -489,7 +489,7 @@ public class HlsSegmentApi {
 
         localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
 
-        localVarRequestBuilder.header("Accept", "application/x-mpegURL");
+        localVarRequestBuilder.header("Accept", "application/x-mpegURL, text/html");
 
         localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {
@@ -644,7 +644,7 @@ public class HlsSegmentApi {
         localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
 
         localVarRequestBuilder.header("Accept",
-                "video/*, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+                "video/*, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase, text/html");
 
         localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {
@@ -773,7 +773,7 @@ public class HlsSegmentApi {
             localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
         }
 
-        localVarRequestBuilder.header("Accept", "application/json");
+        localVarRequestBuilder.header("Accept", "text/html");
 
         localVarRequestBuilder.method("DELETE", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {

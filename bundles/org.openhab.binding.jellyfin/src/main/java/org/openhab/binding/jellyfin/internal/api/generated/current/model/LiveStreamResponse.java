@@ -44,13 +44,13 @@ public class LiveStreamResponse {
      * @return mediaSource
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_MEDIA_SOURCE)
+    @JsonProperty(value = JSON_PROPERTY_MEDIA_SOURCE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public MediaSourceInfo getMediaSource() {
         return mediaSource;
     }
 
-    @JsonProperty(JSON_PROPERTY_MEDIA_SOURCE)
+    @JsonProperty(value = JSON_PROPERTY_MEDIA_SOURCE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setMediaSource(@org.eclipse.jdt.annotation.NonNull MediaSourceInfo mediaSource) {
         this.mediaSource = mediaSource;

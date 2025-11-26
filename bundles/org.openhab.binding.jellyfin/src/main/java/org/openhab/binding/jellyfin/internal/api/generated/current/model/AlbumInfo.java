@@ -17,6 +17,7 @@ import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.StringJoiner;
@@ -108,13 +109,13 @@ public class AlbumInfo {
      * @return name
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_NAME)
+    @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getName() {
         return name;
     }
 
-    @JsonProperty(JSON_PROPERTY_NAME)
+    @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setName(@org.eclipse.jdt.annotation.NonNull String name) {
         this.name = name;
@@ -131,13 +132,13 @@ public class AlbumInfo {
      * @return originalTitle
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ORIGINAL_TITLE)
+    @JsonProperty(value = JSON_PROPERTY_ORIGINAL_TITLE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getOriginalTitle() {
         return originalTitle;
     }
 
-    @JsonProperty(JSON_PROPERTY_ORIGINAL_TITLE)
+    @JsonProperty(value = JSON_PROPERTY_ORIGINAL_TITLE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setOriginalTitle(@org.eclipse.jdt.annotation.NonNull String originalTitle) {
         this.originalTitle = originalTitle;
@@ -154,13 +155,13 @@ public class AlbumInfo {
      * @return path
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_PATH)
+    @JsonProperty(value = JSON_PROPERTY_PATH, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getPath() {
         return path;
     }
 
-    @JsonProperty(JSON_PROPERTY_PATH)
+    @JsonProperty(value = JSON_PROPERTY_PATH, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setPath(@org.eclipse.jdt.annotation.NonNull String path) {
         this.path = path;
@@ -177,13 +178,13 @@ public class AlbumInfo {
      * @return metadataLanguage
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_METADATA_LANGUAGE)
+    @JsonProperty(value = JSON_PROPERTY_METADATA_LANGUAGE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getMetadataLanguage() {
         return metadataLanguage;
     }
 
-    @JsonProperty(JSON_PROPERTY_METADATA_LANGUAGE)
+    @JsonProperty(value = JSON_PROPERTY_METADATA_LANGUAGE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setMetadataLanguage(@org.eclipse.jdt.annotation.NonNull String metadataLanguage) {
         this.metadataLanguage = metadataLanguage;
@@ -200,13 +201,13 @@ public class AlbumInfo {
      * @return metadataCountryCode
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_METADATA_COUNTRY_CODE)
+    @JsonProperty(value = JSON_PROPERTY_METADATA_COUNTRY_CODE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getMetadataCountryCode() {
         return metadataCountryCode;
     }
 
-    @JsonProperty(JSON_PROPERTY_METADATA_COUNTRY_CODE)
+    @JsonProperty(value = JSON_PROPERTY_METADATA_COUNTRY_CODE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setMetadataCountryCode(@org.eclipse.jdt.annotation.NonNull String metadataCountryCode) {
         this.metadataCountryCode = metadataCountryCode;
@@ -231,13 +232,13 @@ public class AlbumInfo {
      * @return providerIds
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_PROVIDER_IDS)
+    @JsonProperty(value = JSON_PROPERTY_PROVIDER_IDS, required = false)
     @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
     public Map<String, String> getProviderIds() {
         return providerIds;
     }
 
-    @JsonProperty(JSON_PROPERTY_PROVIDER_IDS)
+    @JsonProperty(value = JSON_PROPERTY_PROVIDER_IDS, required = false)
     @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
     public void setProviderIds(@org.eclipse.jdt.annotation.NonNull Map<String, String> providerIds) {
         this.providerIds = providerIds;
@@ -254,13 +255,13 @@ public class AlbumInfo {
      * @return year
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_YEAR)
+    @JsonProperty(value = JSON_PROPERTY_YEAR, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getYear() {
         return year;
     }
 
-    @JsonProperty(JSON_PROPERTY_YEAR)
+    @JsonProperty(value = JSON_PROPERTY_YEAR, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setYear(@org.eclipse.jdt.annotation.NonNull Integer year) {
         this.year = year;
@@ -277,13 +278,13 @@ public class AlbumInfo {
      * @return indexNumber
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_INDEX_NUMBER)
+    @JsonProperty(value = JSON_PROPERTY_INDEX_NUMBER, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getIndexNumber() {
         return indexNumber;
     }
 
-    @JsonProperty(JSON_PROPERTY_INDEX_NUMBER)
+    @JsonProperty(value = JSON_PROPERTY_INDEX_NUMBER, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setIndexNumber(@org.eclipse.jdt.annotation.NonNull Integer indexNumber) {
         this.indexNumber = indexNumber;
@@ -300,13 +301,13 @@ public class AlbumInfo {
      * @return parentIndexNumber
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_PARENT_INDEX_NUMBER)
+    @JsonProperty(value = JSON_PROPERTY_PARENT_INDEX_NUMBER, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getParentIndexNumber() {
         return parentIndexNumber;
     }
 
-    @JsonProperty(JSON_PROPERTY_PARENT_INDEX_NUMBER)
+    @JsonProperty(value = JSON_PROPERTY_PARENT_INDEX_NUMBER, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setParentIndexNumber(@org.eclipse.jdt.annotation.NonNull Integer parentIndexNumber) {
         this.parentIndexNumber = parentIndexNumber;
@@ -323,13 +324,13 @@ public class AlbumInfo {
      * @return premiereDate
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_PREMIERE_DATE)
+    @JsonProperty(value = JSON_PROPERTY_PREMIERE_DATE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public OffsetDateTime getPremiereDate() {
         return premiereDate;
     }
 
-    @JsonProperty(JSON_PROPERTY_PREMIERE_DATE)
+    @JsonProperty(value = JSON_PROPERTY_PREMIERE_DATE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setPremiereDate(@org.eclipse.jdt.annotation.NonNull OffsetDateTime premiereDate) {
         this.premiereDate = premiereDate;
@@ -346,13 +347,13 @@ public class AlbumInfo {
      * @return isAutomated
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_IS_AUTOMATED)
+    @JsonProperty(value = JSON_PROPERTY_IS_AUTOMATED, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getIsAutomated() {
         return isAutomated;
     }
 
-    @JsonProperty(JSON_PROPERTY_IS_AUTOMATED)
+    @JsonProperty(value = JSON_PROPERTY_IS_AUTOMATED, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setIsAutomated(@org.eclipse.jdt.annotation.NonNull Boolean isAutomated) {
         this.isAutomated = isAutomated;
@@ -377,13 +378,13 @@ public class AlbumInfo {
      * @return albumArtists
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ALBUM_ARTISTS)
+    @JsonProperty(value = JSON_PROPERTY_ALBUM_ARTISTS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<String> getAlbumArtists() {
         return albumArtists;
     }
 
-    @JsonProperty(JSON_PROPERTY_ALBUM_ARTISTS)
+    @JsonProperty(value = JSON_PROPERTY_ALBUM_ARTISTS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setAlbumArtists(@org.eclipse.jdt.annotation.NonNull List<String> albumArtists) {
         this.albumArtists = albumArtists;
@@ -408,13 +409,13 @@ public class AlbumInfo {
      * @return artistProviderIds
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ARTIST_PROVIDER_IDS)
+    @JsonProperty(value = JSON_PROPERTY_ARTIST_PROVIDER_IDS, required = false)
     @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
     public Map<String, String> getArtistProviderIds() {
         return artistProviderIds;
     }
 
-    @JsonProperty(JSON_PROPERTY_ARTIST_PROVIDER_IDS)
+    @JsonProperty(value = JSON_PROPERTY_ARTIST_PROVIDER_IDS, required = false)
     @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
     public void setArtistProviderIds(@org.eclipse.jdt.annotation.NonNull Map<String, String> artistProviderIds) {
         this.artistProviderIds = artistProviderIds;
@@ -439,13 +440,13 @@ public class AlbumInfo {
      * @return songInfos
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_SONG_INFOS)
+    @JsonProperty(value = JSON_PROPERTY_SONG_INFOS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<SongInfo> getSongInfos() {
         return songInfos;
     }
 
-    @JsonProperty(JSON_PROPERTY_SONG_INFOS)
+    @JsonProperty(value = JSON_PROPERTY_SONG_INFOS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setSongInfos(@org.eclipse.jdt.annotation.NonNull List<SongInfo> songInfos) {
         this.songInfos = songInfos;
@@ -550,39 +551,40 @@ public class AlbumInfo {
 
         // add `Name` to the URL query string
         if (getName() != null) {
-            joiner.add(String.format("%sName%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sName%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getName()))));
         }
 
         // add `OriginalTitle` to the URL query string
         if (getOriginalTitle() != null) {
-            joiner.add(String.format("%sOriginalTitle%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sOriginalTitle%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getOriginalTitle()))));
         }
 
         // add `Path` to the URL query string
         if (getPath() != null) {
-            joiner.add(String.format("%sPath%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sPath%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getPath()))));
         }
 
         // add `MetadataLanguage` to the URL query string
         if (getMetadataLanguage() != null) {
-            joiner.add(String.format("%sMetadataLanguage%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sMetadataLanguage%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getMetadataLanguage()))));
         }
 
         // add `MetadataCountryCode` to the URL query string
         if (getMetadataCountryCode() != null) {
-            joiner.add(String.format("%sMetadataCountryCode%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sMetadataCountryCode%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getMetadataCountryCode()))));
         }
 
         // add `ProviderIds` to the URL query string
         if (getProviderIds() != null) {
             for (String _key : getProviderIds().keySet()) {
-                joiner.add(String.format("%sProviderIds%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, _key, containerSuffix),
+                joiner.add(String.format(Locale.ROOT, "%sProviderIds%s%s=%s", prefix, suffix,
+                        "".equals(suffix) ? ""
+                                : String.format(Locale.ROOT, "%s%d%s", containerPrefix, _key, containerSuffix),
                         getProviderIds().get(_key),
                         ApiClient.urlEncode(ApiClient.valueToString(getProviderIds().get(_key)))));
             }
@@ -590,39 +592,40 @@ public class AlbumInfo {
 
         // add `Year` to the URL query string
         if (getYear() != null) {
-            joiner.add(String.format("%sYear%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sYear%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getYear()))));
         }
 
         // add `IndexNumber` to the URL query string
         if (getIndexNumber() != null) {
-            joiner.add(String.format("%sIndexNumber%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sIndexNumber%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getIndexNumber()))));
         }
 
         // add `ParentIndexNumber` to the URL query string
         if (getParentIndexNumber() != null) {
-            joiner.add(String.format("%sParentIndexNumber%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sParentIndexNumber%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getParentIndexNumber()))));
         }
 
         // add `PremiereDate` to the URL query string
         if (getPremiereDate() != null) {
-            joiner.add(String.format("%sPremiereDate%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sPremiereDate%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getPremiereDate()))));
         }
 
         // add `IsAutomated` to the URL query string
         if (getIsAutomated() != null) {
-            joiner.add(String.format("%sIsAutomated%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sIsAutomated%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getIsAutomated()))));
         }
 
         // add `AlbumArtists` to the URL query string
         if (getAlbumArtists() != null) {
             for (int i = 0; i < getAlbumArtists().size(); i++) {
-                joiner.add(String.format("%sAlbumArtists%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+                joiner.add(String.format(Locale.ROOT, "%sAlbumArtists%s%s=%s", prefix, suffix,
+                        "".equals(suffix) ? ""
+                                : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
                         ApiClient.urlEncode(ApiClient.valueToString(getAlbumArtists().get(i)))));
             }
         }
@@ -630,8 +633,9 @@ public class AlbumInfo {
         // add `ArtistProviderIds` to the URL query string
         if (getArtistProviderIds() != null) {
             for (String _key : getArtistProviderIds().keySet()) {
-                joiner.add(String.format("%sArtistProviderIds%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, _key, containerSuffix),
+                joiner.add(String.format(Locale.ROOT, "%sArtistProviderIds%s%s=%s", prefix, suffix,
+                        "".equals(suffix) ? ""
+                                : String.format(Locale.ROOT, "%s%d%s", containerPrefix, _key, containerSuffix),
                         getArtistProviderIds().get(_key),
                         ApiClient.urlEncode(ApiClient.valueToString(getArtistProviderIds().get(_key)))));
             }
@@ -641,8 +645,9 @@ public class AlbumInfo {
         if (getSongInfos() != null) {
             for (int i = 0; i < getSongInfos().size(); i++) {
                 if (getSongInfos().get(i) != null) {
-                    joiner.add(getSongInfos().get(i).toUrlQueryString(String.format("%sSongInfos%s%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
+                    joiner.add(getSongInfos().get(i).toUrlQueryString(
+                            String.format(Locale.ROOT, "%sSongInfos%s%s", prefix, suffix, "".equals(suffix) ? ""
+                                    : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
                 }
             }
         }

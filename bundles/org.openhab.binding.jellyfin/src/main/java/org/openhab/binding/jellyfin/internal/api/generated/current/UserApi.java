@@ -269,7 +269,7 @@ public class UserApi {
 
         localVarRequestBuilder.header("Content-Type", "application/json");
         localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase, text/html");
 
         try {
             byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(authenticateUserByName);
@@ -392,7 +392,7 @@ public class UserApi {
 
         localVarRequestBuilder.header("Content-Type", "application/json");
         localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase, text/html");
 
         try {
             byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(quickConnectDto);
@@ -512,7 +512,7 @@ public class UserApi {
 
         localVarRequestBuilder.header("Content-Type", "application/json");
         localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase, text/html");
 
         try {
             byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(createUserByName);
@@ -616,7 +616,7 @@ public class UserApi {
         localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
 
         localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase, text/html");
 
         localVarRequestBuilder.method("DELETE", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {
@@ -731,7 +731,7 @@ public class UserApi {
 
         localVarRequestBuilder.header("Content-Type", "application/json");
         localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase, text/html");
 
         try {
             byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(forgotPasswordDto);
@@ -852,7 +852,7 @@ public class UserApi {
 
         localVarRequestBuilder.header("Content-Type", "application/json");
         localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase, text/html");
 
         try {
             byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(forgotPasswordPinDto);
@@ -955,7 +955,7 @@ public class UserApi {
         localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
 
         localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase, text/html");
 
         localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {
@@ -1053,7 +1053,7 @@ public class UserApi {
         localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
 
         localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase, text/html");
 
         localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {
@@ -1163,7 +1163,7 @@ public class UserApi {
         localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
 
         localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase, text/html");
 
         localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {
@@ -1291,7 +1291,7 @@ public class UserApi {
         }
 
         localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase, text/html");
 
         localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {
@@ -1411,7 +1411,7 @@ public class UserApi {
 
         localVarRequestBuilder.header("Content-Type", "application/json");
         localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase, text/html");
 
         try {
             byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(userDto);
@@ -1541,7 +1541,7 @@ public class UserApi {
 
         localVarRequestBuilder.header("Content-Type", "application/json");
         localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase, text/html");
 
         try {
             byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(userConfiguration);
@@ -1679,7 +1679,7 @@ public class UserApi {
 
         localVarRequestBuilder.header("Content-Type", "application/json");
         localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase, text/html");
 
         try {
             byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(updateUserPassword);
@@ -1796,7 +1796,7 @@ public class UserApi {
 
         localVarRequestBuilder.header("Content-Type", "application/json");
         localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase, text/html");
 
         try {
             byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(userPolicy);

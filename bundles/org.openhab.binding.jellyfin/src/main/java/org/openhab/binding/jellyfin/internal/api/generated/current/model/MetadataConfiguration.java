@@ -13,6 +13,7 @@
 
 package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
+import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
 
@@ -47,13 +48,13 @@ public class MetadataConfiguration {
      * @return useFileCreationTimeForDateAdded
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_USE_FILE_CREATION_TIME_FOR_DATE_ADDED)
+    @JsonProperty(value = JSON_PROPERTY_USE_FILE_CREATION_TIME_FOR_DATE_ADDED, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getUseFileCreationTimeForDateAdded() {
         return useFileCreationTimeForDateAdded;
     }
 
-    @JsonProperty(JSON_PROPERTY_USE_FILE_CREATION_TIME_FOR_DATE_ADDED)
+    @JsonProperty(value = JSON_PROPERTY_USE_FILE_CREATION_TIME_FOR_DATE_ADDED, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setUseFileCreationTimeForDateAdded(
             @org.eclipse.jdt.annotation.NonNull Boolean useFileCreationTimeForDateAdded) {
@@ -136,7 +137,7 @@ public class MetadataConfiguration {
 
         // add `UseFileCreationTimeForDateAdded` to the URL query string
         if (getUseFileCreationTimeForDateAdded() != null) {
-            joiner.add(String.format("%sUseFileCreationTimeForDateAdded%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sUseFileCreationTimeForDateAdded%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getUseFileCreationTimeForDateAdded()))));
         }
 

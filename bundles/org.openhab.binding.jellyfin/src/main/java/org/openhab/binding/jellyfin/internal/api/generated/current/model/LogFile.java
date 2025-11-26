@@ -14,6 +14,7 @@
 package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
 import java.time.OffsetDateTime;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
 
@@ -60,13 +61,13 @@ public class LogFile {
      * @return dateCreated
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_DATE_CREATED)
+    @JsonProperty(value = JSON_PROPERTY_DATE_CREATED, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public OffsetDateTime getDateCreated() {
         return dateCreated;
     }
 
-    @JsonProperty(JSON_PROPERTY_DATE_CREATED)
+    @JsonProperty(value = JSON_PROPERTY_DATE_CREATED, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setDateCreated(@org.eclipse.jdt.annotation.NonNull OffsetDateTime dateCreated) {
         this.dateCreated = dateCreated;
@@ -83,13 +84,13 @@ public class LogFile {
      * @return dateModified
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_DATE_MODIFIED)
+    @JsonProperty(value = JSON_PROPERTY_DATE_MODIFIED, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public OffsetDateTime getDateModified() {
         return dateModified;
     }
 
-    @JsonProperty(JSON_PROPERTY_DATE_MODIFIED)
+    @JsonProperty(value = JSON_PROPERTY_DATE_MODIFIED, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setDateModified(@org.eclipse.jdt.annotation.NonNull OffsetDateTime dateModified) {
         this.dateModified = dateModified;
@@ -106,13 +107,13 @@ public class LogFile {
      * @return size
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_SIZE)
+    @JsonProperty(value = JSON_PROPERTY_SIZE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Long getSize() {
         return size;
     }
 
-    @JsonProperty(JSON_PROPERTY_SIZE)
+    @JsonProperty(value = JSON_PROPERTY_SIZE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setSize(@org.eclipse.jdt.annotation.NonNull Long size) {
         this.size = size;
@@ -129,13 +130,13 @@ public class LogFile {
      * @return name
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_NAME)
+    @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getName() {
         return name;
     }
 
-    @JsonProperty(JSON_PROPERTY_NAME)
+    @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setName(@org.eclipse.jdt.annotation.NonNull String name) {
         this.name = name;
@@ -220,25 +221,25 @@ public class LogFile {
 
         // add `DateCreated` to the URL query string
         if (getDateCreated() != null) {
-            joiner.add(String.format("%sDateCreated%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sDateCreated%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getDateCreated()))));
         }
 
         // add `DateModified` to the URL query string
         if (getDateModified() != null) {
-            joiner.add(String.format("%sDateModified%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sDateModified%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getDateModified()))));
         }
 
         // add `Size` to the URL query string
         if (getSize() != null) {
-            joiner.add(String.format("%sSize%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sSize%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getSize()))));
         }
 
         // add `Name` to the URL query string
         if (getName() != null) {
-            joiner.add(String.format("%sName%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sName%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getName()))));
         }
 

@@ -15,6 +15,7 @@ package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
 import java.util.UUID;
@@ -58,13 +59,13 @@ public class PlaylistDto {
      * @return openAccess
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_OPEN_ACCESS)
+    @JsonProperty(value = JSON_PROPERTY_OPEN_ACCESS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getOpenAccess() {
         return openAccess;
     }
 
-    @JsonProperty(JSON_PROPERTY_OPEN_ACCESS)
+    @JsonProperty(value = JSON_PROPERTY_OPEN_ACCESS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setOpenAccess(@org.eclipse.jdt.annotation.NonNull Boolean openAccess) {
         this.openAccess = openAccess;
@@ -89,13 +90,13 @@ public class PlaylistDto {
      * @return shares
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_SHARES)
+    @JsonProperty(value = JSON_PROPERTY_SHARES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<PlaylistUserPermissions> getShares() {
         return shares;
     }
 
-    @JsonProperty(JSON_PROPERTY_SHARES)
+    @JsonProperty(value = JSON_PROPERTY_SHARES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setShares(@org.eclipse.jdt.annotation.NonNull List<PlaylistUserPermissions> shares) {
         this.shares = shares;
@@ -120,13 +121,13 @@ public class PlaylistDto {
      * @return itemIds
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ITEM_IDS)
+    @JsonProperty(value = JSON_PROPERTY_ITEM_IDS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<UUID> getItemIds() {
         return itemIds;
     }
 
-    @JsonProperty(JSON_PROPERTY_ITEM_IDS)
+    @JsonProperty(value = JSON_PROPERTY_ITEM_IDS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setItemIds(@org.eclipse.jdt.annotation.NonNull List<UUID> itemIds) {
         this.itemIds = itemIds;
@@ -209,7 +210,7 @@ public class PlaylistDto {
 
         // add `OpenAccess` to the URL query string
         if (getOpenAccess() != null) {
-            joiner.add(String.format("%sOpenAccess%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sOpenAccess%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getOpenAccess()))));
         }
 
@@ -217,8 +218,9 @@ public class PlaylistDto {
         if (getShares() != null) {
             for (int i = 0; i < getShares().size(); i++) {
                 if (getShares().get(i) != null) {
-                    joiner.add(getShares().get(i).toUrlQueryString(String.format("%sShares%s%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
+                    joiner.add(getShares().get(i).toUrlQueryString(
+                            String.format(Locale.ROOT, "%sShares%s%s", prefix, suffix, "".equals(suffix) ? ""
+                                    : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
                 }
             }
         }
@@ -227,8 +229,9 @@ public class PlaylistDto {
         if (getItemIds() != null) {
             for (int i = 0; i < getItemIds().size(); i++) {
                 if (getItemIds().get(i) != null) {
-                    joiner.add(String.format("%sItemIds%s%s=%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+                    joiner.add(String.format(Locale.ROOT, "%sItemIds%s%s=%s", prefix, suffix,
+                            "".equals(suffix) ? ""
+                                    : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
                             ApiClient.urlEncode(ApiClient.valueToString(getItemIds().get(i)))));
                 }
             }

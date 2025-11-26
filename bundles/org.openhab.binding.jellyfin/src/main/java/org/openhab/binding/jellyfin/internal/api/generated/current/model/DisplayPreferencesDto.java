@@ -14,6 +14,7 @@
 package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.StringJoiner;
@@ -106,13 +107,13 @@ public class DisplayPreferencesDto {
      * @return id
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ID)
+    @JsonProperty(value = JSON_PROPERTY_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getId() {
         return id;
     }
 
-    @JsonProperty(JSON_PROPERTY_ID)
+    @JsonProperty(value = JSON_PROPERTY_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setId(@org.eclipse.jdt.annotation.NonNull String id) {
         this.id = id;
@@ -129,13 +130,13 @@ public class DisplayPreferencesDto {
      * @return viewType
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_VIEW_TYPE)
+    @JsonProperty(value = JSON_PROPERTY_VIEW_TYPE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getViewType() {
         return viewType;
     }
 
-    @JsonProperty(JSON_PROPERTY_VIEW_TYPE)
+    @JsonProperty(value = JSON_PROPERTY_VIEW_TYPE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setViewType(@org.eclipse.jdt.annotation.NonNull String viewType) {
         this.viewType = viewType;
@@ -152,13 +153,13 @@ public class DisplayPreferencesDto {
      * @return sortBy
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_SORT_BY)
+    @JsonProperty(value = JSON_PROPERTY_SORT_BY, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getSortBy() {
         return sortBy;
     }
 
-    @JsonProperty(JSON_PROPERTY_SORT_BY)
+    @JsonProperty(value = JSON_PROPERTY_SORT_BY, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setSortBy(@org.eclipse.jdt.annotation.NonNull String sortBy) {
         this.sortBy = sortBy;
@@ -175,13 +176,13 @@ public class DisplayPreferencesDto {
      * @return indexBy
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_INDEX_BY)
+    @JsonProperty(value = JSON_PROPERTY_INDEX_BY, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getIndexBy() {
         return indexBy;
     }
 
-    @JsonProperty(JSON_PROPERTY_INDEX_BY)
+    @JsonProperty(value = JSON_PROPERTY_INDEX_BY, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setIndexBy(@org.eclipse.jdt.annotation.NonNull String indexBy) {
         this.indexBy = indexBy;
@@ -198,13 +199,13 @@ public class DisplayPreferencesDto {
      * @return rememberIndexing
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_REMEMBER_INDEXING)
+    @JsonProperty(value = JSON_PROPERTY_REMEMBER_INDEXING, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getRememberIndexing() {
         return rememberIndexing;
     }
 
-    @JsonProperty(JSON_PROPERTY_REMEMBER_INDEXING)
+    @JsonProperty(value = JSON_PROPERTY_REMEMBER_INDEXING, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setRememberIndexing(@org.eclipse.jdt.annotation.NonNull Boolean rememberIndexing) {
         this.rememberIndexing = rememberIndexing;
@@ -221,13 +222,13 @@ public class DisplayPreferencesDto {
      * @return primaryImageHeight
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_PRIMARY_IMAGE_HEIGHT)
+    @JsonProperty(value = JSON_PROPERTY_PRIMARY_IMAGE_HEIGHT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getPrimaryImageHeight() {
         return primaryImageHeight;
     }
 
-    @JsonProperty(JSON_PROPERTY_PRIMARY_IMAGE_HEIGHT)
+    @JsonProperty(value = JSON_PROPERTY_PRIMARY_IMAGE_HEIGHT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setPrimaryImageHeight(@org.eclipse.jdt.annotation.NonNull Integer primaryImageHeight) {
         this.primaryImageHeight = primaryImageHeight;
@@ -244,13 +245,13 @@ public class DisplayPreferencesDto {
      * @return primaryImageWidth
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_PRIMARY_IMAGE_WIDTH)
+    @JsonProperty(value = JSON_PROPERTY_PRIMARY_IMAGE_WIDTH, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getPrimaryImageWidth() {
         return primaryImageWidth;
     }
 
-    @JsonProperty(JSON_PROPERTY_PRIMARY_IMAGE_WIDTH)
+    @JsonProperty(value = JSON_PROPERTY_PRIMARY_IMAGE_WIDTH, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setPrimaryImageWidth(@org.eclipse.jdt.annotation.NonNull Integer primaryImageWidth) {
         this.primaryImageWidth = primaryImageWidth;
@@ -275,13 +276,13 @@ public class DisplayPreferencesDto {
      * @return customPrefs
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_CUSTOM_PREFS)
+    @JsonProperty(value = JSON_PROPERTY_CUSTOM_PREFS, required = false)
     @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
     public Map<String, String> getCustomPrefs() {
         return customPrefs;
     }
 
-    @JsonProperty(JSON_PROPERTY_CUSTOM_PREFS)
+    @JsonProperty(value = JSON_PROPERTY_CUSTOM_PREFS, required = false)
     @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
     public void setCustomPrefs(@org.eclipse.jdt.annotation.NonNull Map<String, String> customPrefs) {
         this.customPrefs = customPrefs;
@@ -298,13 +299,13 @@ public class DisplayPreferencesDto {
      * @return scrollDirection
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_SCROLL_DIRECTION)
+    @JsonProperty(value = JSON_PROPERTY_SCROLL_DIRECTION, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public ScrollDirection getScrollDirection() {
         return scrollDirection;
     }
 
-    @JsonProperty(JSON_PROPERTY_SCROLL_DIRECTION)
+    @JsonProperty(value = JSON_PROPERTY_SCROLL_DIRECTION, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setScrollDirection(@org.eclipse.jdt.annotation.NonNull ScrollDirection scrollDirection) {
         this.scrollDirection = scrollDirection;
@@ -321,13 +322,13 @@ public class DisplayPreferencesDto {
      * @return showBackdrop
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_SHOW_BACKDROP)
+    @JsonProperty(value = JSON_PROPERTY_SHOW_BACKDROP, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getShowBackdrop() {
         return showBackdrop;
     }
 
-    @JsonProperty(JSON_PROPERTY_SHOW_BACKDROP)
+    @JsonProperty(value = JSON_PROPERTY_SHOW_BACKDROP, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setShowBackdrop(@org.eclipse.jdt.annotation.NonNull Boolean showBackdrop) {
         this.showBackdrop = showBackdrop;
@@ -344,13 +345,13 @@ public class DisplayPreferencesDto {
      * @return rememberSorting
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_REMEMBER_SORTING)
+    @JsonProperty(value = JSON_PROPERTY_REMEMBER_SORTING, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getRememberSorting() {
         return rememberSorting;
     }
 
-    @JsonProperty(JSON_PROPERTY_REMEMBER_SORTING)
+    @JsonProperty(value = JSON_PROPERTY_REMEMBER_SORTING, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setRememberSorting(@org.eclipse.jdt.annotation.NonNull Boolean rememberSorting) {
         this.rememberSorting = rememberSorting;
@@ -367,13 +368,13 @@ public class DisplayPreferencesDto {
      * @return sortOrder
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_SORT_ORDER)
+    @JsonProperty(value = JSON_PROPERTY_SORT_ORDER, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public SortOrder getSortOrder() {
         return sortOrder;
     }
 
-    @JsonProperty(JSON_PROPERTY_SORT_ORDER)
+    @JsonProperty(value = JSON_PROPERTY_SORT_ORDER, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setSortOrder(@org.eclipse.jdt.annotation.NonNull SortOrder sortOrder) {
         this.sortOrder = sortOrder;
@@ -390,13 +391,13 @@ public class DisplayPreferencesDto {
      * @return showSidebar
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_SHOW_SIDEBAR)
+    @JsonProperty(value = JSON_PROPERTY_SHOW_SIDEBAR, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getShowSidebar() {
         return showSidebar;
     }
 
-    @JsonProperty(JSON_PROPERTY_SHOW_SIDEBAR)
+    @JsonProperty(value = JSON_PROPERTY_SHOW_SIDEBAR, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setShowSidebar(@org.eclipse.jdt.annotation.NonNull Boolean showSidebar) {
         this.showSidebar = showSidebar;
@@ -413,13 +414,13 @@ public class DisplayPreferencesDto {
      * @return client
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_CLIENT)
+    @JsonProperty(value = JSON_PROPERTY_CLIENT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getClient() {
         return client;
     }
 
-    @JsonProperty(JSON_PROPERTY_CLIENT)
+    @JsonProperty(value = JSON_PROPERTY_CLIENT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setClient(@org.eclipse.jdt.annotation.NonNull String client) {
         this.client = client;
@@ -526,51 +527,52 @@ public class DisplayPreferencesDto {
 
         // add `Id` to the URL query string
         if (getId() != null) {
-            joiner.add(
-                    String.format("%sId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
+            joiner.add(String.format(Locale.ROOT, "%sId%s=%s", prefix, suffix,
+                    ApiClient.urlEncode(ApiClient.valueToString(getId()))));
         }
 
         // add `ViewType` to the URL query string
         if (getViewType() != null) {
-            joiner.add(String.format("%sViewType%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sViewType%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getViewType()))));
         }
 
         // add `SortBy` to the URL query string
         if (getSortBy() != null) {
-            joiner.add(String.format("%sSortBy%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sSortBy%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getSortBy()))));
         }
 
         // add `IndexBy` to the URL query string
         if (getIndexBy() != null) {
-            joiner.add(String.format("%sIndexBy%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sIndexBy%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getIndexBy()))));
         }
 
         // add `RememberIndexing` to the URL query string
         if (getRememberIndexing() != null) {
-            joiner.add(String.format("%sRememberIndexing%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sRememberIndexing%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getRememberIndexing()))));
         }
 
         // add `PrimaryImageHeight` to the URL query string
         if (getPrimaryImageHeight() != null) {
-            joiner.add(String.format("%sPrimaryImageHeight%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sPrimaryImageHeight%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getPrimaryImageHeight()))));
         }
 
         // add `PrimaryImageWidth` to the URL query string
         if (getPrimaryImageWidth() != null) {
-            joiner.add(String.format("%sPrimaryImageWidth%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sPrimaryImageWidth%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getPrimaryImageWidth()))));
         }
 
         // add `CustomPrefs` to the URL query string
         if (getCustomPrefs() != null) {
             for (String _key : getCustomPrefs().keySet()) {
-                joiner.add(String.format("%sCustomPrefs%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, _key, containerSuffix),
+                joiner.add(String.format(Locale.ROOT, "%sCustomPrefs%s%s=%s", prefix, suffix,
+                        "".equals(suffix) ? ""
+                                : String.format(Locale.ROOT, "%s%d%s", containerPrefix, _key, containerSuffix),
                         getCustomPrefs().get(_key),
                         ApiClient.urlEncode(ApiClient.valueToString(getCustomPrefs().get(_key)))));
             }
@@ -578,37 +580,37 @@ public class DisplayPreferencesDto {
 
         // add `ScrollDirection` to the URL query string
         if (getScrollDirection() != null) {
-            joiner.add(String.format("%sScrollDirection%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sScrollDirection%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getScrollDirection()))));
         }
 
         // add `ShowBackdrop` to the URL query string
         if (getShowBackdrop() != null) {
-            joiner.add(String.format("%sShowBackdrop%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sShowBackdrop%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getShowBackdrop()))));
         }
 
         // add `RememberSorting` to the URL query string
         if (getRememberSorting() != null) {
-            joiner.add(String.format("%sRememberSorting%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sRememberSorting%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getRememberSorting()))));
         }
 
         // add `SortOrder` to the URL query string
         if (getSortOrder() != null) {
-            joiner.add(String.format("%sSortOrder%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sSortOrder%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getSortOrder()))));
         }
 
         // add `ShowSidebar` to the URL query string
         if (getShowSidebar() != null) {
-            joiner.add(String.format("%sShowSidebar%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sShowSidebar%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getShowSidebar()))));
         }
 
         // add `Client` to the URL query string
         if (getClient() != null) {
-            joiner.add(String.format("%sClient%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sClient%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getClient()))));
         }
 

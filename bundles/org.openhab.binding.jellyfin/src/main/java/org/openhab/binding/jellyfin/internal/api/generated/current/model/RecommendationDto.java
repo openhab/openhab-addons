@@ -15,6 +15,7 @@ package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
 import java.util.UUID;
@@ -70,13 +71,13 @@ public class RecommendationDto {
      * @return items
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ITEMS)
+    @JsonProperty(value = JSON_PROPERTY_ITEMS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<BaseItemDto> getItems() {
         return items;
     }
 
-    @JsonProperty(JSON_PROPERTY_ITEMS)
+    @JsonProperty(value = JSON_PROPERTY_ITEMS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setItems(@org.eclipse.jdt.annotation.NonNull List<BaseItemDto> items) {
         this.items = items;
@@ -94,13 +95,13 @@ public class RecommendationDto {
      * @return recommendationType
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_RECOMMENDATION_TYPE)
+    @JsonProperty(value = JSON_PROPERTY_RECOMMENDATION_TYPE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public RecommendationType getRecommendationType() {
         return recommendationType;
     }
 
-    @JsonProperty(JSON_PROPERTY_RECOMMENDATION_TYPE)
+    @JsonProperty(value = JSON_PROPERTY_RECOMMENDATION_TYPE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setRecommendationType(@org.eclipse.jdt.annotation.NonNull RecommendationType recommendationType) {
         this.recommendationType = recommendationType;
@@ -117,13 +118,13 @@ public class RecommendationDto {
      * @return baselineItemName
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_BASELINE_ITEM_NAME)
+    @JsonProperty(value = JSON_PROPERTY_BASELINE_ITEM_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getBaselineItemName() {
         return baselineItemName;
     }
 
-    @JsonProperty(JSON_PROPERTY_BASELINE_ITEM_NAME)
+    @JsonProperty(value = JSON_PROPERTY_BASELINE_ITEM_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setBaselineItemName(@org.eclipse.jdt.annotation.NonNull String baselineItemName) {
         this.baselineItemName = baselineItemName;
@@ -140,13 +141,13 @@ public class RecommendationDto {
      * @return categoryId
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_CATEGORY_ID)
+    @JsonProperty(value = JSON_PROPERTY_CATEGORY_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public UUID getCategoryId() {
         return categoryId;
     }
 
-    @JsonProperty(JSON_PROPERTY_CATEGORY_ID)
+    @JsonProperty(value = JSON_PROPERTY_CATEGORY_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setCategoryId(@org.eclipse.jdt.annotation.NonNull UUID categoryId) {
         this.categoryId = categoryId;
@@ -234,27 +235,28 @@ public class RecommendationDto {
         if (getItems() != null) {
             for (int i = 0; i < getItems().size(); i++) {
                 if (getItems().get(i) != null) {
-                    joiner.add(getItems().get(i).toUrlQueryString(String.format("%sItems%s%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
+                    joiner.add(getItems().get(i).toUrlQueryString(
+                            String.format(Locale.ROOT, "%sItems%s%s", prefix, suffix, "".equals(suffix) ? ""
+                                    : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
                 }
             }
         }
 
         // add `RecommendationType` to the URL query string
         if (getRecommendationType() != null) {
-            joiner.add(String.format("%sRecommendationType%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sRecommendationType%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getRecommendationType()))));
         }
 
         // add `BaselineItemName` to the URL query string
         if (getBaselineItemName() != null) {
-            joiner.add(String.format("%sBaselineItemName%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sBaselineItemName%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getBaselineItemName()))));
         }
 
         // add `CategoryId` to the URL query string
         if (getCategoryId() != null) {
-            joiner.add(String.format("%sCategoryId%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sCategoryId%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getCategoryId()))));
         }
 

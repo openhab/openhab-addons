@@ -272,7 +272,7 @@ public class PlaylistsApi {
         }
 
         localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase, text/html");
 
         localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {
@@ -440,7 +440,7 @@ public class PlaylistsApi {
 
         localVarRequestBuilder.header("Content-Type", "application/json");
         localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase, text/html");
 
         try {
             byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(createPlaylistDto);
@@ -556,7 +556,7 @@ public class PlaylistsApi {
         localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
 
         localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase, text/html");
 
         localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {
@@ -770,7 +770,7 @@ public class PlaylistsApi {
         }
 
         localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase, text/html");
 
         localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {
@@ -894,7 +894,7 @@ public class PlaylistsApi {
         localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
 
         localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase, text/html");
 
         localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {
@@ -1007,7 +1007,7 @@ public class PlaylistsApi {
         localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
 
         localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase, text/html");
 
         localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {
@@ -1131,7 +1131,7 @@ public class PlaylistsApi {
         localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
 
         localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase, text/html");
 
         localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {
@@ -1257,7 +1257,7 @@ public class PlaylistsApi {
         }
 
         localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase, text/html");
 
         localVarRequestBuilder.method("DELETE", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {
@@ -1369,7 +1369,7 @@ public class PlaylistsApi {
         localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
 
         localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase, text/html");
 
         localVarRequestBuilder.method("DELETE", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {
@@ -1484,7 +1484,7 @@ public class PlaylistsApi {
 
         localVarRequestBuilder.header("Content-Type", "application/json");
         localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase, text/html");
 
         try {
             byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(updatePlaylistDto);
@@ -1618,7 +1618,7 @@ public class PlaylistsApi {
 
         localVarRequestBuilder.header("Content-Type", "application/json");
         localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase, text/html");
 
         try {
             byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(updatePlaylistUserDto);

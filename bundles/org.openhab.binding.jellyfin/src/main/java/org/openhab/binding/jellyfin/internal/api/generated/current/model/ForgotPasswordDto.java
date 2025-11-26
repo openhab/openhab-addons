@@ -13,6 +13,7 @@
 
 package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
+import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
 
@@ -46,13 +47,13 @@ public class ForgotPasswordDto {
      * @return enteredUsername
      */
     @org.eclipse.jdt.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_ENTERED_USERNAME)
+    @JsonProperty(value = JSON_PROPERTY_ENTERED_USERNAME, required = true)
     @JsonInclude(value = JsonInclude.Include.ALWAYS)
     public String getEnteredUsername() {
         return enteredUsername;
     }
 
-    @JsonProperty(JSON_PROPERTY_ENTERED_USERNAME)
+    @JsonProperty(value = JSON_PROPERTY_ENTERED_USERNAME, required = true)
     @JsonInclude(value = JsonInclude.Include.ALWAYS)
     public void setEnteredUsername(@org.eclipse.jdt.annotation.Nullable String enteredUsername) {
         this.enteredUsername = enteredUsername;
@@ -132,7 +133,7 @@ public class ForgotPasswordDto {
 
         // add `EnteredUsername` to the URL query string
         if (getEnteredUsername() != null) {
-            joiner.add(String.format("%sEnteredUsername%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sEnteredUsername%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getEnteredUsername()))));
         }
 

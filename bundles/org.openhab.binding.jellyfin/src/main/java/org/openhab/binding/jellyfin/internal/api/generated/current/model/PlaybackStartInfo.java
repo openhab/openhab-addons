@@ -15,6 +15,7 @@ package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
 import java.util.UUID;
@@ -139,13 +140,13 @@ public class PlaybackStartInfo {
      * @return canSeek
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_CAN_SEEK)
+    @JsonProperty(value = JSON_PROPERTY_CAN_SEEK, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getCanSeek() {
         return canSeek;
     }
 
-    @JsonProperty(JSON_PROPERTY_CAN_SEEK)
+    @JsonProperty(value = JSON_PROPERTY_CAN_SEEK, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setCanSeek(@org.eclipse.jdt.annotation.NonNull Boolean canSeek) {
         this.canSeek = canSeek;
@@ -162,13 +163,13 @@ public class PlaybackStartInfo {
      * @return item
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ITEM)
+    @JsonProperty(value = JSON_PROPERTY_ITEM, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public BaseItemDto getItem() {
         return item;
     }
 
-    @JsonProperty(JSON_PROPERTY_ITEM)
+    @JsonProperty(value = JSON_PROPERTY_ITEM, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setItem(@org.eclipse.jdt.annotation.NonNull BaseItemDto item) {
         this.item = item;
@@ -185,13 +186,13 @@ public class PlaybackStartInfo {
      * @return itemId
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ITEM_ID)
+    @JsonProperty(value = JSON_PROPERTY_ITEM_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public UUID getItemId() {
         return itemId;
     }
 
-    @JsonProperty(JSON_PROPERTY_ITEM_ID)
+    @JsonProperty(value = JSON_PROPERTY_ITEM_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setItemId(@org.eclipse.jdt.annotation.NonNull UUID itemId) {
         this.itemId = itemId;
@@ -208,13 +209,13 @@ public class PlaybackStartInfo {
      * @return sessionId
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_SESSION_ID)
+    @JsonProperty(value = JSON_PROPERTY_SESSION_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getSessionId() {
         return sessionId;
     }
 
-    @JsonProperty(JSON_PROPERTY_SESSION_ID)
+    @JsonProperty(value = JSON_PROPERTY_SESSION_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setSessionId(@org.eclipse.jdt.annotation.NonNull String sessionId) {
         this.sessionId = sessionId;
@@ -231,13 +232,13 @@ public class PlaybackStartInfo {
      * @return mediaSourceId
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_MEDIA_SOURCE_ID)
+    @JsonProperty(value = JSON_PROPERTY_MEDIA_SOURCE_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getMediaSourceId() {
         return mediaSourceId;
     }
 
-    @JsonProperty(JSON_PROPERTY_MEDIA_SOURCE_ID)
+    @JsonProperty(value = JSON_PROPERTY_MEDIA_SOURCE_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setMediaSourceId(@org.eclipse.jdt.annotation.NonNull String mediaSourceId) {
         this.mediaSourceId = mediaSourceId;
@@ -254,13 +255,13 @@ public class PlaybackStartInfo {
      * @return audioStreamIndex
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_AUDIO_STREAM_INDEX)
+    @JsonProperty(value = JSON_PROPERTY_AUDIO_STREAM_INDEX, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getAudioStreamIndex() {
         return audioStreamIndex;
     }
 
-    @JsonProperty(JSON_PROPERTY_AUDIO_STREAM_INDEX)
+    @JsonProperty(value = JSON_PROPERTY_AUDIO_STREAM_INDEX, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setAudioStreamIndex(@org.eclipse.jdt.annotation.NonNull Integer audioStreamIndex) {
         this.audioStreamIndex = audioStreamIndex;
@@ -277,13 +278,13 @@ public class PlaybackStartInfo {
      * @return subtitleStreamIndex
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_SUBTITLE_STREAM_INDEX)
+    @JsonProperty(value = JSON_PROPERTY_SUBTITLE_STREAM_INDEX, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getSubtitleStreamIndex() {
         return subtitleStreamIndex;
     }
 
-    @JsonProperty(JSON_PROPERTY_SUBTITLE_STREAM_INDEX)
+    @JsonProperty(value = JSON_PROPERTY_SUBTITLE_STREAM_INDEX, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setSubtitleStreamIndex(@org.eclipse.jdt.annotation.NonNull Integer subtitleStreamIndex) {
         this.subtitleStreamIndex = subtitleStreamIndex;
@@ -300,13 +301,13 @@ public class PlaybackStartInfo {
      * @return isPaused
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_IS_PAUSED)
+    @JsonProperty(value = JSON_PROPERTY_IS_PAUSED, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getIsPaused() {
         return isPaused;
     }
 
-    @JsonProperty(JSON_PROPERTY_IS_PAUSED)
+    @JsonProperty(value = JSON_PROPERTY_IS_PAUSED, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setIsPaused(@org.eclipse.jdt.annotation.NonNull Boolean isPaused) {
         this.isPaused = isPaused;
@@ -323,13 +324,13 @@ public class PlaybackStartInfo {
      * @return isMuted
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_IS_MUTED)
+    @JsonProperty(value = JSON_PROPERTY_IS_MUTED, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getIsMuted() {
         return isMuted;
     }
 
-    @JsonProperty(JSON_PROPERTY_IS_MUTED)
+    @JsonProperty(value = JSON_PROPERTY_IS_MUTED, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setIsMuted(@org.eclipse.jdt.annotation.NonNull Boolean isMuted) {
         this.isMuted = isMuted;
@@ -346,13 +347,13 @@ public class PlaybackStartInfo {
      * @return positionTicks
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_POSITION_TICKS)
+    @JsonProperty(value = JSON_PROPERTY_POSITION_TICKS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Long getPositionTicks() {
         return positionTicks;
     }
 
-    @JsonProperty(JSON_PROPERTY_POSITION_TICKS)
+    @JsonProperty(value = JSON_PROPERTY_POSITION_TICKS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setPositionTicks(@org.eclipse.jdt.annotation.NonNull Long positionTicks) {
         this.positionTicks = positionTicks;
@@ -369,13 +370,13 @@ public class PlaybackStartInfo {
      * @return playbackStartTimeTicks
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_PLAYBACK_START_TIME_TICKS)
+    @JsonProperty(value = JSON_PROPERTY_PLAYBACK_START_TIME_TICKS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Long getPlaybackStartTimeTicks() {
         return playbackStartTimeTicks;
     }
 
-    @JsonProperty(JSON_PROPERTY_PLAYBACK_START_TIME_TICKS)
+    @JsonProperty(value = JSON_PROPERTY_PLAYBACK_START_TIME_TICKS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setPlaybackStartTimeTicks(@org.eclipse.jdt.annotation.NonNull Long playbackStartTimeTicks) {
         this.playbackStartTimeTicks = playbackStartTimeTicks;
@@ -392,13 +393,13 @@ public class PlaybackStartInfo {
      * @return volumeLevel
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_VOLUME_LEVEL)
+    @JsonProperty(value = JSON_PROPERTY_VOLUME_LEVEL, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getVolumeLevel() {
         return volumeLevel;
     }
 
-    @JsonProperty(JSON_PROPERTY_VOLUME_LEVEL)
+    @JsonProperty(value = JSON_PROPERTY_VOLUME_LEVEL, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setVolumeLevel(@org.eclipse.jdt.annotation.NonNull Integer volumeLevel) {
         this.volumeLevel = volumeLevel;
@@ -415,13 +416,13 @@ public class PlaybackStartInfo {
      * @return brightness
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_BRIGHTNESS)
+    @JsonProperty(value = JSON_PROPERTY_BRIGHTNESS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getBrightness() {
         return brightness;
     }
 
-    @JsonProperty(JSON_PROPERTY_BRIGHTNESS)
+    @JsonProperty(value = JSON_PROPERTY_BRIGHTNESS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setBrightness(@org.eclipse.jdt.annotation.NonNull Integer brightness) {
         this.brightness = brightness;
@@ -438,13 +439,13 @@ public class PlaybackStartInfo {
      * @return aspectRatio
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ASPECT_RATIO)
+    @JsonProperty(value = JSON_PROPERTY_ASPECT_RATIO, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getAspectRatio() {
         return aspectRatio;
     }
 
-    @JsonProperty(JSON_PROPERTY_ASPECT_RATIO)
+    @JsonProperty(value = JSON_PROPERTY_ASPECT_RATIO, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setAspectRatio(@org.eclipse.jdt.annotation.NonNull String aspectRatio) {
         this.aspectRatio = aspectRatio;
@@ -461,13 +462,13 @@ public class PlaybackStartInfo {
      * @return playMethod
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_PLAY_METHOD)
+    @JsonProperty(value = JSON_PROPERTY_PLAY_METHOD, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public PlayMethod getPlayMethod() {
         return playMethod;
     }
 
-    @JsonProperty(JSON_PROPERTY_PLAY_METHOD)
+    @JsonProperty(value = JSON_PROPERTY_PLAY_METHOD, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setPlayMethod(@org.eclipse.jdt.annotation.NonNull PlayMethod playMethod) {
         this.playMethod = playMethod;
@@ -484,13 +485,13 @@ public class PlaybackStartInfo {
      * @return liveStreamId
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_LIVE_STREAM_ID)
+    @JsonProperty(value = JSON_PROPERTY_LIVE_STREAM_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getLiveStreamId() {
         return liveStreamId;
     }
 
-    @JsonProperty(JSON_PROPERTY_LIVE_STREAM_ID)
+    @JsonProperty(value = JSON_PROPERTY_LIVE_STREAM_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setLiveStreamId(@org.eclipse.jdt.annotation.NonNull String liveStreamId) {
         this.liveStreamId = liveStreamId;
@@ -507,13 +508,13 @@ public class PlaybackStartInfo {
      * @return playSessionId
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_PLAY_SESSION_ID)
+    @JsonProperty(value = JSON_PROPERTY_PLAY_SESSION_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getPlaySessionId() {
         return playSessionId;
     }
 
-    @JsonProperty(JSON_PROPERTY_PLAY_SESSION_ID)
+    @JsonProperty(value = JSON_PROPERTY_PLAY_SESSION_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setPlaySessionId(@org.eclipse.jdt.annotation.NonNull String playSessionId) {
         this.playSessionId = playSessionId;
@@ -530,13 +531,13 @@ public class PlaybackStartInfo {
      * @return repeatMode
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_REPEAT_MODE)
+    @JsonProperty(value = JSON_PROPERTY_REPEAT_MODE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public RepeatMode getRepeatMode() {
         return repeatMode;
     }
 
-    @JsonProperty(JSON_PROPERTY_REPEAT_MODE)
+    @JsonProperty(value = JSON_PROPERTY_REPEAT_MODE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setRepeatMode(@org.eclipse.jdt.annotation.NonNull RepeatMode repeatMode) {
         this.repeatMode = repeatMode;
@@ -553,13 +554,13 @@ public class PlaybackStartInfo {
      * @return playbackOrder
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_PLAYBACK_ORDER)
+    @JsonProperty(value = JSON_PROPERTY_PLAYBACK_ORDER, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public PlaybackOrder getPlaybackOrder() {
         return playbackOrder;
     }
 
-    @JsonProperty(JSON_PROPERTY_PLAYBACK_ORDER)
+    @JsonProperty(value = JSON_PROPERTY_PLAYBACK_ORDER, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setPlaybackOrder(@org.eclipse.jdt.annotation.NonNull PlaybackOrder playbackOrder) {
         this.playbackOrder = playbackOrder;
@@ -584,13 +585,13 @@ public class PlaybackStartInfo {
      * @return nowPlayingQueue
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_NOW_PLAYING_QUEUE)
+    @JsonProperty(value = JSON_PROPERTY_NOW_PLAYING_QUEUE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<QueueItem> getNowPlayingQueue() {
         return nowPlayingQueue;
     }
 
-    @JsonProperty(JSON_PROPERTY_NOW_PLAYING_QUEUE)
+    @JsonProperty(value = JSON_PROPERTY_NOW_PLAYING_QUEUE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setNowPlayingQueue(@org.eclipse.jdt.annotation.NonNull List<QueueItem> nowPlayingQueue) {
         this.nowPlayingQueue = nowPlayingQueue;
@@ -607,13 +608,13 @@ public class PlaybackStartInfo {
      * @return playlistItemId
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_PLAYLIST_ITEM_ID)
+    @JsonProperty(value = JSON_PROPERTY_PLAYLIST_ITEM_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getPlaylistItemId() {
         return playlistItemId;
     }
 
-    @JsonProperty(JSON_PROPERTY_PLAYLIST_ITEM_ID)
+    @JsonProperty(value = JSON_PROPERTY_PLAYLIST_ITEM_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setPlaylistItemId(@org.eclipse.jdt.annotation.NonNull String playlistItemId) {
         this.playlistItemId = playlistItemId;
@@ -735,7 +736,7 @@ public class PlaybackStartInfo {
 
         // add `CanSeek` to the URL query string
         if (getCanSeek() != null) {
-            joiner.add(String.format("%sCanSeek%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sCanSeek%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getCanSeek()))));
         }
 
@@ -746,103 +747,103 @@ public class PlaybackStartInfo {
 
         // add `ItemId` to the URL query string
         if (getItemId() != null) {
-            joiner.add(String.format("%sItemId%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sItemId%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getItemId()))));
         }
 
         // add `SessionId` to the URL query string
         if (getSessionId() != null) {
-            joiner.add(String.format("%sSessionId%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sSessionId%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getSessionId()))));
         }
 
         // add `MediaSourceId` to the URL query string
         if (getMediaSourceId() != null) {
-            joiner.add(String.format("%sMediaSourceId%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sMediaSourceId%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getMediaSourceId()))));
         }
 
         // add `AudioStreamIndex` to the URL query string
         if (getAudioStreamIndex() != null) {
-            joiner.add(String.format("%sAudioStreamIndex%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sAudioStreamIndex%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getAudioStreamIndex()))));
         }
 
         // add `SubtitleStreamIndex` to the URL query string
         if (getSubtitleStreamIndex() != null) {
-            joiner.add(String.format("%sSubtitleStreamIndex%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sSubtitleStreamIndex%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getSubtitleStreamIndex()))));
         }
 
         // add `IsPaused` to the URL query string
         if (getIsPaused() != null) {
-            joiner.add(String.format("%sIsPaused%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sIsPaused%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getIsPaused()))));
         }
 
         // add `IsMuted` to the URL query string
         if (getIsMuted() != null) {
-            joiner.add(String.format("%sIsMuted%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sIsMuted%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getIsMuted()))));
         }
 
         // add `PositionTicks` to the URL query string
         if (getPositionTicks() != null) {
-            joiner.add(String.format("%sPositionTicks%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sPositionTicks%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getPositionTicks()))));
         }
 
         // add `PlaybackStartTimeTicks` to the URL query string
         if (getPlaybackStartTimeTicks() != null) {
-            joiner.add(String.format("%sPlaybackStartTimeTicks%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sPlaybackStartTimeTicks%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getPlaybackStartTimeTicks()))));
         }
 
         // add `VolumeLevel` to the URL query string
         if (getVolumeLevel() != null) {
-            joiner.add(String.format("%sVolumeLevel%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sVolumeLevel%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getVolumeLevel()))));
         }
 
         // add `Brightness` to the URL query string
         if (getBrightness() != null) {
-            joiner.add(String.format("%sBrightness%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sBrightness%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getBrightness()))));
         }
 
         // add `AspectRatio` to the URL query string
         if (getAspectRatio() != null) {
-            joiner.add(String.format("%sAspectRatio%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sAspectRatio%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getAspectRatio()))));
         }
 
         // add `PlayMethod` to the URL query string
         if (getPlayMethod() != null) {
-            joiner.add(String.format("%sPlayMethod%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sPlayMethod%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getPlayMethod()))));
         }
 
         // add `LiveStreamId` to the URL query string
         if (getLiveStreamId() != null) {
-            joiner.add(String.format("%sLiveStreamId%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sLiveStreamId%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getLiveStreamId()))));
         }
 
         // add `PlaySessionId` to the URL query string
         if (getPlaySessionId() != null) {
-            joiner.add(String.format("%sPlaySessionId%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sPlaySessionId%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getPlaySessionId()))));
         }
 
         // add `RepeatMode` to the URL query string
         if (getRepeatMode() != null) {
-            joiner.add(String.format("%sRepeatMode%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sRepeatMode%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getRepeatMode()))));
         }
 
         // add `PlaybackOrder` to the URL query string
         if (getPlaybackOrder() != null) {
-            joiner.add(String.format("%sPlaybackOrder%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sPlaybackOrder%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getPlaybackOrder()))));
         }
 
@@ -850,16 +851,16 @@ public class PlaybackStartInfo {
         if (getNowPlayingQueue() != null) {
             for (int i = 0; i < getNowPlayingQueue().size(); i++) {
                 if (getNowPlayingQueue().get(i) != null) {
-                    joiner.add(getNowPlayingQueue().get(i).toUrlQueryString(String.format("%sNowPlayingQueue%s%s",
-                            prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
+                    joiner.add(getNowPlayingQueue().get(i).toUrlQueryString(
+                            String.format(Locale.ROOT, "%sNowPlayingQueue%s%s", prefix, suffix, "".equals(suffix) ? ""
+                                    : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
                 }
             }
         }
 
         // add `PlaylistItemId` to the URL query string
         if (getPlaylistItemId() != null) {
-            joiner.add(String.format("%sPlaylistItemId%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sPlaylistItemId%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getPlaylistItemId()))));
         }
 

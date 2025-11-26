@@ -13,6 +13,7 @@
 
 package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
+import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
 
@@ -31,7 +32,8 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
         TunerHostInfo.JSON_PROPERTY_ALLOW_FMP4_TRANSCODING_CONTAINER, TunerHostInfo.JSON_PROPERTY_ALLOW_STREAM_SHARING,
         TunerHostInfo.JSON_PROPERTY_FALLBACK_MAX_STREAMING_BITRATE, TunerHostInfo.JSON_PROPERTY_ENABLE_STREAM_LOOPING,
         TunerHostInfo.JSON_PROPERTY_SOURCE, TunerHostInfo.JSON_PROPERTY_TUNER_COUNT,
-        TunerHostInfo.JSON_PROPERTY_USER_AGENT, TunerHostInfo.JSON_PROPERTY_IGNORE_DTS })
+        TunerHostInfo.JSON_PROPERTY_USER_AGENT, TunerHostInfo.JSON_PROPERTY_IGNORE_DTS,
+        TunerHostInfo.JSON_PROPERTY_READ_AT_NATIVE_FRAMERATE })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class TunerHostInfo {
     public static final String JSON_PROPERTY_ID = "Id";
@@ -94,6 +96,10 @@ public class TunerHostInfo {
     @org.eclipse.jdt.annotation.NonNull
     private Boolean ignoreDts;
 
+    public static final String JSON_PROPERTY_READ_AT_NATIVE_FRAMERATE = "ReadAtNativeFramerate";
+    @org.eclipse.jdt.annotation.NonNull
+    private Boolean readAtNativeFramerate;
+
     public TunerHostInfo() {
     }
 
@@ -108,13 +114,13 @@ public class TunerHostInfo {
      * @return id
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ID)
+    @JsonProperty(value = JSON_PROPERTY_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getId() {
         return id;
     }
 
-    @JsonProperty(JSON_PROPERTY_ID)
+    @JsonProperty(value = JSON_PROPERTY_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setId(@org.eclipse.jdt.annotation.NonNull String id) {
         this.id = id;
@@ -131,13 +137,13 @@ public class TunerHostInfo {
      * @return url
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_URL)
+    @JsonProperty(value = JSON_PROPERTY_URL, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getUrl() {
         return url;
     }
 
-    @JsonProperty(JSON_PROPERTY_URL)
+    @JsonProperty(value = JSON_PROPERTY_URL, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setUrl(@org.eclipse.jdt.annotation.NonNull String url) {
         this.url = url;
@@ -154,13 +160,13 @@ public class TunerHostInfo {
      * @return type
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_TYPE)
+    @JsonProperty(value = JSON_PROPERTY_TYPE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getType() {
         return type;
     }
 
-    @JsonProperty(JSON_PROPERTY_TYPE)
+    @JsonProperty(value = JSON_PROPERTY_TYPE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setType(@org.eclipse.jdt.annotation.NonNull String type) {
         this.type = type;
@@ -177,13 +183,13 @@ public class TunerHostInfo {
      * @return deviceId
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_DEVICE_ID)
+    @JsonProperty(value = JSON_PROPERTY_DEVICE_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getDeviceId() {
         return deviceId;
     }
 
-    @JsonProperty(JSON_PROPERTY_DEVICE_ID)
+    @JsonProperty(value = JSON_PROPERTY_DEVICE_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setDeviceId(@org.eclipse.jdt.annotation.NonNull String deviceId) {
         this.deviceId = deviceId;
@@ -200,13 +206,13 @@ public class TunerHostInfo {
      * @return friendlyName
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_FRIENDLY_NAME)
+    @JsonProperty(value = JSON_PROPERTY_FRIENDLY_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getFriendlyName() {
         return friendlyName;
     }
 
-    @JsonProperty(JSON_PROPERTY_FRIENDLY_NAME)
+    @JsonProperty(value = JSON_PROPERTY_FRIENDLY_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setFriendlyName(@org.eclipse.jdt.annotation.NonNull String friendlyName) {
         this.friendlyName = friendlyName;
@@ -223,13 +229,13 @@ public class TunerHostInfo {
      * @return importFavoritesOnly
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_IMPORT_FAVORITES_ONLY)
+    @JsonProperty(value = JSON_PROPERTY_IMPORT_FAVORITES_ONLY, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getImportFavoritesOnly() {
         return importFavoritesOnly;
     }
 
-    @JsonProperty(JSON_PROPERTY_IMPORT_FAVORITES_ONLY)
+    @JsonProperty(value = JSON_PROPERTY_IMPORT_FAVORITES_ONLY, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setImportFavoritesOnly(@org.eclipse.jdt.annotation.NonNull Boolean importFavoritesOnly) {
         this.importFavoritesOnly = importFavoritesOnly;
@@ -246,13 +252,13 @@ public class TunerHostInfo {
      * @return allowHWTranscoding
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ALLOW_H_W_TRANSCODING)
+    @JsonProperty(value = JSON_PROPERTY_ALLOW_H_W_TRANSCODING, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getAllowHWTranscoding() {
         return allowHWTranscoding;
     }
 
-    @JsonProperty(JSON_PROPERTY_ALLOW_H_W_TRANSCODING)
+    @JsonProperty(value = JSON_PROPERTY_ALLOW_H_W_TRANSCODING, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setAllowHWTranscoding(@org.eclipse.jdt.annotation.NonNull Boolean allowHWTranscoding) {
         this.allowHWTranscoding = allowHWTranscoding;
@@ -270,13 +276,13 @@ public class TunerHostInfo {
      * @return allowFmp4TranscodingContainer
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ALLOW_FMP4_TRANSCODING_CONTAINER)
+    @JsonProperty(value = JSON_PROPERTY_ALLOW_FMP4_TRANSCODING_CONTAINER, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getAllowFmp4TranscodingContainer() {
         return allowFmp4TranscodingContainer;
     }
 
-    @JsonProperty(JSON_PROPERTY_ALLOW_FMP4_TRANSCODING_CONTAINER)
+    @JsonProperty(value = JSON_PROPERTY_ALLOW_FMP4_TRANSCODING_CONTAINER, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setAllowFmp4TranscodingContainer(
             @org.eclipse.jdt.annotation.NonNull Boolean allowFmp4TranscodingContainer) {
@@ -294,13 +300,13 @@ public class TunerHostInfo {
      * @return allowStreamSharing
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ALLOW_STREAM_SHARING)
+    @JsonProperty(value = JSON_PROPERTY_ALLOW_STREAM_SHARING, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getAllowStreamSharing() {
         return allowStreamSharing;
     }
 
-    @JsonProperty(JSON_PROPERTY_ALLOW_STREAM_SHARING)
+    @JsonProperty(value = JSON_PROPERTY_ALLOW_STREAM_SHARING, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setAllowStreamSharing(@org.eclipse.jdt.annotation.NonNull Boolean allowStreamSharing) {
         this.allowStreamSharing = allowStreamSharing;
@@ -318,13 +324,13 @@ public class TunerHostInfo {
      * @return fallbackMaxStreamingBitrate
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_FALLBACK_MAX_STREAMING_BITRATE)
+    @JsonProperty(value = JSON_PROPERTY_FALLBACK_MAX_STREAMING_BITRATE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getFallbackMaxStreamingBitrate() {
         return fallbackMaxStreamingBitrate;
     }
 
-    @JsonProperty(JSON_PROPERTY_FALLBACK_MAX_STREAMING_BITRATE)
+    @JsonProperty(value = JSON_PROPERTY_FALLBACK_MAX_STREAMING_BITRATE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setFallbackMaxStreamingBitrate(
             @org.eclipse.jdt.annotation.NonNull Integer fallbackMaxStreamingBitrate) {
@@ -342,13 +348,13 @@ public class TunerHostInfo {
      * @return enableStreamLooping
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ENABLE_STREAM_LOOPING)
+    @JsonProperty(value = JSON_PROPERTY_ENABLE_STREAM_LOOPING, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getEnableStreamLooping() {
         return enableStreamLooping;
     }
 
-    @JsonProperty(JSON_PROPERTY_ENABLE_STREAM_LOOPING)
+    @JsonProperty(value = JSON_PROPERTY_ENABLE_STREAM_LOOPING, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setEnableStreamLooping(@org.eclipse.jdt.annotation.NonNull Boolean enableStreamLooping) {
         this.enableStreamLooping = enableStreamLooping;
@@ -365,13 +371,13 @@ public class TunerHostInfo {
      * @return source
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_SOURCE)
+    @JsonProperty(value = JSON_PROPERTY_SOURCE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getSource() {
         return source;
     }
 
-    @JsonProperty(JSON_PROPERTY_SOURCE)
+    @JsonProperty(value = JSON_PROPERTY_SOURCE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setSource(@org.eclipse.jdt.annotation.NonNull String source) {
         this.source = source;
@@ -388,13 +394,13 @@ public class TunerHostInfo {
      * @return tunerCount
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_TUNER_COUNT)
+    @JsonProperty(value = JSON_PROPERTY_TUNER_COUNT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getTunerCount() {
         return tunerCount;
     }
 
-    @JsonProperty(JSON_PROPERTY_TUNER_COUNT)
+    @JsonProperty(value = JSON_PROPERTY_TUNER_COUNT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setTunerCount(@org.eclipse.jdt.annotation.NonNull Integer tunerCount) {
         this.tunerCount = tunerCount;
@@ -411,13 +417,13 @@ public class TunerHostInfo {
      * @return userAgent
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_USER_AGENT)
+    @JsonProperty(value = JSON_PROPERTY_USER_AGENT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getUserAgent() {
         return userAgent;
     }
 
-    @JsonProperty(JSON_PROPERTY_USER_AGENT)
+    @JsonProperty(value = JSON_PROPERTY_USER_AGENT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setUserAgent(@org.eclipse.jdt.annotation.NonNull String userAgent) {
         this.userAgent = userAgent;
@@ -434,16 +440,39 @@ public class TunerHostInfo {
      * @return ignoreDts
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_IGNORE_DTS)
+    @JsonProperty(value = JSON_PROPERTY_IGNORE_DTS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getIgnoreDts() {
         return ignoreDts;
     }
 
-    @JsonProperty(JSON_PROPERTY_IGNORE_DTS)
+    @JsonProperty(value = JSON_PROPERTY_IGNORE_DTS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setIgnoreDts(@org.eclipse.jdt.annotation.NonNull Boolean ignoreDts) {
         this.ignoreDts = ignoreDts;
+    }
+
+    public TunerHostInfo readAtNativeFramerate(@org.eclipse.jdt.annotation.NonNull Boolean readAtNativeFramerate) {
+        this.readAtNativeFramerate = readAtNativeFramerate;
+        return this;
+    }
+
+    /**
+     * Get readAtNativeFramerate
+     * 
+     * @return readAtNativeFramerate
+     */
+    @org.eclipse.jdt.annotation.NonNull
+    @JsonProperty(value = JSON_PROPERTY_READ_AT_NATIVE_FRAMERATE, required = false)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public Boolean getReadAtNativeFramerate() {
+        return readAtNativeFramerate;
+    }
+
+    @JsonProperty(value = JSON_PROPERTY_READ_AT_NATIVE_FRAMERATE, required = false)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setReadAtNativeFramerate(@org.eclipse.jdt.annotation.NonNull Boolean readAtNativeFramerate) {
+        this.readAtNativeFramerate = readAtNativeFramerate;
     }
 
     /**
@@ -471,14 +500,15 @@ public class TunerHostInfo {
                 && Objects.equals(this.source, tunerHostInfo.source)
                 && Objects.equals(this.tunerCount, tunerHostInfo.tunerCount)
                 && Objects.equals(this.userAgent, tunerHostInfo.userAgent)
-                && Objects.equals(this.ignoreDts, tunerHostInfo.ignoreDts);
+                && Objects.equals(this.ignoreDts, tunerHostInfo.ignoreDts)
+                && Objects.equals(this.readAtNativeFramerate, tunerHostInfo.readAtNativeFramerate);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(id, url, type, deviceId, friendlyName, importFavoritesOnly, allowHWTranscoding,
                 allowFmp4TranscodingContainer, allowStreamSharing, fallbackMaxStreamingBitrate, enableStreamLooping,
-                source, tunerCount, userAgent, ignoreDts);
+                source, tunerCount, userAgent, ignoreDts, readAtNativeFramerate);
     }
 
     @Override
@@ -502,6 +532,7 @@ public class TunerHostInfo {
         sb.append("    tunerCount: ").append(toIndentedString(tunerCount)).append("\n");
         sb.append("    userAgent: ").append(toIndentedString(userAgent)).append("\n");
         sb.append("    ignoreDts: ").append(toIndentedString(ignoreDts)).append("\n");
+        sb.append("    readAtNativeFramerate: ").append(toIndentedString(readAtNativeFramerate)).append("\n");
         sb.append("}");
         return sb.toString();
     }
@@ -551,92 +582,98 @@ public class TunerHostInfo {
 
         // add `Id` to the URL query string
         if (getId() != null) {
-            joiner.add(
-                    String.format("%sId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
+            joiner.add(String.format(Locale.ROOT, "%sId%s=%s", prefix, suffix,
+                    ApiClient.urlEncode(ApiClient.valueToString(getId()))));
         }
 
         // add `Url` to the URL query string
         if (getUrl() != null) {
-            joiner.add(String.format("%sUrl%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sUrl%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getUrl()))));
         }
 
         // add `Type` to the URL query string
         if (getType() != null) {
-            joiner.add(String.format("%sType%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sType%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getType()))));
         }
 
         // add `DeviceId` to the URL query string
         if (getDeviceId() != null) {
-            joiner.add(String.format("%sDeviceId%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sDeviceId%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getDeviceId()))));
         }
 
         // add `FriendlyName` to the URL query string
         if (getFriendlyName() != null) {
-            joiner.add(String.format("%sFriendlyName%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sFriendlyName%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getFriendlyName()))));
         }
 
         // add `ImportFavoritesOnly` to the URL query string
         if (getImportFavoritesOnly() != null) {
-            joiner.add(String.format("%sImportFavoritesOnly%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sImportFavoritesOnly%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getImportFavoritesOnly()))));
         }
 
         // add `AllowHWTranscoding` to the URL query string
         if (getAllowHWTranscoding() != null) {
-            joiner.add(String.format("%sAllowHWTranscoding%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sAllowHWTranscoding%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getAllowHWTranscoding()))));
         }
 
         // add `AllowFmp4TranscodingContainer` to the URL query string
         if (getAllowFmp4TranscodingContainer() != null) {
-            joiner.add(String.format("%sAllowFmp4TranscodingContainer%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sAllowFmp4TranscodingContainer%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getAllowFmp4TranscodingContainer()))));
         }
 
         // add `AllowStreamSharing` to the URL query string
         if (getAllowStreamSharing() != null) {
-            joiner.add(String.format("%sAllowStreamSharing%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sAllowStreamSharing%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getAllowStreamSharing()))));
         }
 
         // add `FallbackMaxStreamingBitrate` to the URL query string
         if (getFallbackMaxStreamingBitrate() != null) {
-            joiner.add(String.format("%sFallbackMaxStreamingBitrate%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sFallbackMaxStreamingBitrate%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getFallbackMaxStreamingBitrate()))));
         }
 
         // add `EnableStreamLooping` to the URL query string
         if (getEnableStreamLooping() != null) {
-            joiner.add(String.format("%sEnableStreamLooping%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sEnableStreamLooping%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getEnableStreamLooping()))));
         }
 
         // add `Source` to the URL query string
         if (getSource() != null) {
-            joiner.add(String.format("%sSource%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sSource%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getSource()))));
         }
 
         // add `TunerCount` to the URL query string
         if (getTunerCount() != null) {
-            joiner.add(String.format("%sTunerCount%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sTunerCount%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getTunerCount()))));
         }
 
         // add `UserAgent` to the URL query string
         if (getUserAgent() != null) {
-            joiner.add(String.format("%sUserAgent%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sUserAgent%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getUserAgent()))));
         }
 
         // add `IgnoreDts` to the URL query string
         if (getIgnoreDts() != null) {
-            joiner.add(String.format("%sIgnoreDts%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sIgnoreDts%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getIgnoreDts()))));
+        }
+
+        // add `ReadAtNativeFramerate` to the URL query string
+        if (getReadAtNativeFramerate() != null) {
+            joiner.add(String.format(Locale.ROOT, "%sReadAtNativeFramerate%s=%s", prefix, suffix,
+                    ApiClient.urlEncode(ApiClient.valueToString(getReadAtNativeFramerate()))));
         }
 
         return joiner.toString();
@@ -729,6 +766,11 @@ public class TunerHostInfo {
             return this;
         }
 
+        public TunerHostInfo.Builder readAtNativeFramerate(Boolean readAtNativeFramerate) {
+            this.instance.readAtNativeFramerate = readAtNativeFramerate;
+            return this;
+        }
+
         /**
          * returns a built TunerHostInfo instance.
          *
@@ -767,6 +809,6 @@ public class TunerHostInfo {
                 .allowStreamSharing(getAllowStreamSharing())
                 .fallbackMaxStreamingBitrate(getFallbackMaxStreamingBitrate())
                 .enableStreamLooping(getEnableStreamLooping()).source(getSource()).tunerCount(getTunerCount())
-                .userAgent(getUserAgent()).ignoreDts(getIgnoreDts());
+                .userAgent(getUserAgent()).ignoreDts(getIgnoreDts()).readAtNativeFramerate(getReadAtNativeFramerate());
     }
 }

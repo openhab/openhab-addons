@@ -35,7 +35,7 @@ import org.openhab.binding.jellyfin.internal.api.generated.current.model.EndPoin
 import org.openhab.binding.jellyfin.internal.api.generated.current.model.LogFile;
 import org.openhab.binding.jellyfin.internal.api.generated.current.model.PublicSystemInfo;
 import org.openhab.binding.jellyfin.internal.api.generated.current.model.SystemInfo;
-import org.openhab.binding.jellyfin.internal.api.generated.current.model.WakeOnLanInfo;
+import org.openhab.binding.jellyfin.internal.api.generated.current.model.SystemStorageDto;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -233,7 +233,7 @@ public class SystemApi {
         localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
 
         localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase, text/html");
 
         localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {
@@ -355,7 +355,7 @@ public class SystemApi {
         }
 
         localVarRequestBuilder.header("Accept",
-                "text/plain, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+                "text/plain, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase, text/html");
 
         localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {
@@ -453,7 +453,7 @@ public class SystemApi {
         localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
 
         localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase, text/html");
 
         localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {
@@ -552,7 +552,7 @@ public class SystemApi {
         localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
 
         localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase, text/html");
 
         localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {
@@ -650,7 +650,7 @@ public class SystemApi {
         localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
 
         localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase, text/html");
 
         localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {
@@ -748,7 +748,7 @@ public class SystemApi {
         localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
 
         localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase, text/html");
 
         localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {
@@ -763,55 +763,46 @@ public class SystemApi {
     }
 
     /**
-     * Gets wake on lan information.
+     * Gets information about the server.
      * 
-     * @return List&lt;WakeOnLanInfo&gt;
+     * @return SystemStorageDto
      * @throws ApiException if fails to make API call
-     * @deprecated
      */
-    @Deprecated
-    public List<WakeOnLanInfo> getWakeOnLanInfo() throws ApiException {
-        return getWakeOnLanInfo(null);
+    public SystemStorageDto getSystemStorage() throws ApiException {
+        return getSystemStorage(null);
     }
 
     /**
-     * Gets wake on lan information.
+     * Gets information about the server.
      * 
      * @param headers Optional headers to include in the request
-     * @return List&lt;WakeOnLanInfo&gt;
+     * @return SystemStorageDto
      * @throws ApiException if fails to make API call
-     * @deprecated
      */
-    @Deprecated
-    public List<WakeOnLanInfo> getWakeOnLanInfo(Map<String, String> headers) throws ApiException {
-        ApiResponse<List<WakeOnLanInfo>> localVarResponse = getWakeOnLanInfoWithHttpInfo(headers);
+    public SystemStorageDto getSystemStorage(Map<String, String> headers) throws ApiException {
+        ApiResponse<SystemStorageDto> localVarResponse = getSystemStorageWithHttpInfo(headers);
         return localVarResponse.getData();
     }
 
     /**
-     * Gets wake on lan information.
+     * Gets information about the server.
      * 
-     * @return ApiResponse&lt;List&lt;WakeOnLanInfo&gt;&gt;
+     * @return ApiResponse&lt;SystemStorageDto&gt;
      * @throws ApiException if fails to make API call
-     * @deprecated
      */
-    @Deprecated
-    public ApiResponse<List<WakeOnLanInfo>> getWakeOnLanInfoWithHttpInfo() throws ApiException {
-        return getWakeOnLanInfoWithHttpInfo(null);
+    public ApiResponse<SystemStorageDto> getSystemStorageWithHttpInfo() throws ApiException {
+        return getSystemStorageWithHttpInfo(null);
     }
 
     /**
-     * Gets wake on lan information.
+     * Gets information about the server.
      * 
      * @param headers Optional headers to include in the request
-     * @return ApiResponse&lt;List&lt;WakeOnLanInfo&gt;&gt;
+     * @return ApiResponse&lt;SystemStorageDto&gt;
      * @throws ApiException if fails to make API call
-     * @deprecated
      */
-    @Deprecated
-    public ApiResponse<List<WakeOnLanInfo>> getWakeOnLanInfoWithHttpInfo(Map<String, String> headers)
-            throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = getWakeOnLanInfoRequestBuilder(headers);
+    public ApiResponse<SystemStorageDto> getSystemStorageWithHttpInfo(Map<String, String> headers) throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = getSystemStorageRequestBuilder(headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -820,21 +811,21 @@ public class SystemApi {
             }
             try {
                 if (localVarResponse.statusCode() / 100 != 2) {
-                    throw getApiException("getWakeOnLanInfo", localVarResponse);
+                    throw getApiException("getSystemStorage", localVarResponse);
                 }
                 if (localVarResponse.body() == null) {
-                    return new ApiResponse<List<WakeOnLanInfo>>(localVarResponse.statusCode(),
+                    return new ApiResponse<SystemStorageDto>(localVarResponse.statusCode(),
                             localVarResponse.headers().map(), null);
                 }
 
                 String responseBody = new String(localVarResponse.body().readAllBytes());
-                List<WakeOnLanInfo> responseValue = responseBody.isBlank() ? null
-                        : memberVarObjectMapper.readValue(responseBody, new TypeReference<List<WakeOnLanInfo>>() {
+                SystemStorageDto responseValue = responseBody.isBlank() ? null
+                        : memberVarObjectMapper.readValue(responseBody, new TypeReference<SystemStorageDto>() {
                         });
 
                 localVarResponse.body().close();
 
-                return new ApiResponse<List<WakeOnLanInfo>>(localVarResponse.statusCode(),
+                return new ApiResponse<SystemStorageDto>(localVarResponse.statusCode(),
                         localVarResponse.headers().map(), responseValue);
             } finally {
             }
@@ -846,16 +837,16 @@ public class SystemApi {
         }
     }
 
-    private HttpRequest.Builder getWakeOnLanInfoRequestBuilder(Map<String, String> headers) throws ApiException {
+    private HttpRequest.Builder getSystemStorageRequestBuilder(Map<String, String> headers) throws ApiException {
 
         HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
 
-        String localVarPath = "/System/WakeOnLanInfo";
+        String localVarPath = "/System/Info/Storage";
 
         localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
 
         localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase, text/html");
 
         localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {
@@ -953,7 +944,7 @@ public class SystemApi {
         localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
 
         localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase, text/html");
 
         localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {
@@ -1040,7 +1031,7 @@ public class SystemApi {
         localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
 
         localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase, text/html");
 
         localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {
@@ -1127,7 +1118,7 @@ public class SystemApi {
         localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
 
         localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase, text/html");
 
         localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {

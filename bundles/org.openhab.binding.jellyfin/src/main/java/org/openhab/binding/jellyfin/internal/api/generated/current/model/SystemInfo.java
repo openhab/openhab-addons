@@ -15,6 +15,7 @@ package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
 
@@ -165,13 +166,13 @@ public class SystemInfo {
      * @return localAddress
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_LOCAL_ADDRESS)
+    @JsonProperty(value = JSON_PROPERTY_LOCAL_ADDRESS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getLocalAddress() {
         return localAddress;
     }
 
-    @JsonProperty(JSON_PROPERTY_LOCAL_ADDRESS)
+    @JsonProperty(value = JSON_PROPERTY_LOCAL_ADDRESS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setLocalAddress(@org.eclipse.jdt.annotation.NonNull String localAddress) {
         this.localAddress = localAddress;
@@ -188,13 +189,13 @@ public class SystemInfo {
      * @return serverName
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_SERVER_NAME)
+    @JsonProperty(value = JSON_PROPERTY_SERVER_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getServerName() {
         return serverName;
     }
 
-    @JsonProperty(JSON_PROPERTY_SERVER_NAME)
+    @JsonProperty(value = JSON_PROPERTY_SERVER_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setServerName(@org.eclipse.jdt.annotation.NonNull String serverName) {
         this.serverName = serverName;
@@ -211,13 +212,13 @@ public class SystemInfo {
      * @return version
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_VERSION)
+    @JsonProperty(value = JSON_PROPERTY_VERSION, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getVersion() {
         return version;
     }
 
-    @JsonProperty(JSON_PROPERTY_VERSION)
+    @JsonProperty(value = JSON_PROPERTY_VERSION, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setVersion(@org.eclipse.jdt.annotation.NonNull String version) {
         this.version = version;
@@ -234,13 +235,13 @@ public class SystemInfo {
      * @return productName
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_PRODUCT_NAME)
+    @JsonProperty(value = JSON_PROPERTY_PRODUCT_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getProductName() {
         return productName;
     }
 
-    @JsonProperty(JSON_PROPERTY_PRODUCT_NAME)
+    @JsonProperty(value = JSON_PROPERTY_PRODUCT_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setProductName(@org.eclipse.jdt.annotation.NonNull String productName) {
         this.productName = productName;
@@ -259,13 +260,13 @@ public class SystemInfo {
      */
     @Deprecated
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_OPERATING_SYSTEM)
+    @JsonProperty(value = JSON_PROPERTY_OPERATING_SYSTEM, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getOperatingSystem() {
         return operatingSystem;
     }
 
-    @JsonProperty(JSON_PROPERTY_OPERATING_SYSTEM)
+    @JsonProperty(value = JSON_PROPERTY_OPERATING_SYSTEM, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setOperatingSystem(@org.eclipse.jdt.annotation.NonNull String operatingSystem) {
         this.operatingSystem = operatingSystem;
@@ -282,13 +283,13 @@ public class SystemInfo {
      * @return id
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ID)
+    @JsonProperty(value = JSON_PROPERTY_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getId() {
         return id;
     }
 
-    @JsonProperty(JSON_PROPERTY_ID)
+    @JsonProperty(value = JSON_PROPERTY_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setId(@org.eclipse.jdt.annotation.NonNull String id) {
         this.id = id;
@@ -305,13 +306,13 @@ public class SystemInfo {
      * @return startupWizardCompleted
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_STARTUP_WIZARD_COMPLETED)
+    @JsonProperty(value = JSON_PROPERTY_STARTUP_WIZARD_COMPLETED, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getStartupWizardCompleted() {
         return startupWizardCompleted;
     }
 
-    @JsonProperty(JSON_PROPERTY_STARTUP_WIZARD_COMPLETED)
+    @JsonProperty(value = JSON_PROPERTY_STARTUP_WIZARD_COMPLETED, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setStartupWizardCompleted(@org.eclipse.jdt.annotation.NonNull Boolean startupWizardCompleted) {
         this.startupWizardCompleted = startupWizardCompleted;
@@ -331,13 +332,13 @@ public class SystemInfo {
      */
     @Deprecated
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_OPERATING_SYSTEM_DISPLAY_NAME)
+    @JsonProperty(value = JSON_PROPERTY_OPERATING_SYSTEM_DISPLAY_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getOperatingSystemDisplayName() {
         return operatingSystemDisplayName;
     }
 
-    @JsonProperty(JSON_PROPERTY_OPERATING_SYSTEM_DISPLAY_NAME)
+    @JsonProperty(value = JSON_PROPERTY_OPERATING_SYSTEM_DISPLAY_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setOperatingSystemDisplayName(@org.eclipse.jdt.annotation.NonNull String operatingSystemDisplayName) {
         this.operatingSystemDisplayName = operatingSystemDisplayName;
@@ -354,13 +355,13 @@ public class SystemInfo {
      * @return packageName
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_PACKAGE_NAME)
+    @JsonProperty(value = JSON_PROPERTY_PACKAGE_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getPackageName() {
         return packageName;
     }
 
-    @JsonProperty(JSON_PROPERTY_PACKAGE_NAME)
+    @JsonProperty(value = JSON_PROPERTY_PACKAGE_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setPackageName(@org.eclipse.jdt.annotation.NonNull String packageName) {
         this.packageName = packageName;
@@ -377,13 +378,13 @@ public class SystemInfo {
      * @return hasPendingRestart
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_HAS_PENDING_RESTART)
+    @JsonProperty(value = JSON_PROPERTY_HAS_PENDING_RESTART, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getHasPendingRestart() {
         return hasPendingRestart;
     }
 
-    @JsonProperty(JSON_PROPERTY_HAS_PENDING_RESTART)
+    @JsonProperty(value = JSON_PROPERTY_HAS_PENDING_RESTART, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setHasPendingRestart(@org.eclipse.jdt.annotation.NonNull Boolean hasPendingRestart) {
         this.hasPendingRestart = hasPendingRestart;
@@ -400,13 +401,13 @@ public class SystemInfo {
      * @return isShuttingDown
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_IS_SHUTTING_DOWN)
+    @JsonProperty(value = JSON_PROPERTY_IS_SHUTTING_DOWN, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getIsShuttingDown() {
         return isShuttingDown;
     }
 
-    @JsonProperty(JSON_PROPERTY_IS_SHUTTING_DOWN)
+    @JsonProperty(value = JSON_PROPERTY_IS_SHUTTING_DOWN, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setIsShuttingDown(@org.eclipse.jdt.annotation.NonNull Boolean isShuttingDown) {
         this.isShuttingDown = isShuttingDown;
@@ -423,13 +424,13 @@ public class SystemInfo {
      * @return supportsLibraryMonitor
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_SUPPORTS_LIBRARY_MONITOR)
+    @JsonProperty(value = JSON_PROPERTY_SUPPORTS_LIBRARY_MONITOR, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getSupportsLibraryMonitor() {
         return supportsLibraryMonitor;
     }
 
-    @JsonProperty(JSON_PROPERTY_SUPPORTS_LIBRARY_MONITOR)
+    @JsonProperty(value = JSON_PROPERTY_SUPPORTS_LIBRARY_MONITOR, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setSupportsLibraryMonitor(@org.eclipse.jdt.annotation.NonNull Boolean supportsLibraryMonitor) {
         this.supportsLibraryMonitor = supportsLibraryMonitor;
@@ -446,13 +447,13 @@ public class SystemInfo {
      * @return webSocketPortNumber
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_WEB_SOCKET_PORT_NUMBER)
+    @JsonProperty(value = JSON_PROPERTY_WEB_SOCKET_PORT_NUMBER, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getWebSocketPortNumber() {
         return webSocketPortNumber;
     }
 
-    @JsonProperty(JSON_PROPERTY_WEB_SOCKET_PORT_NUMBER)
+    @JsonProperty(value = JSON_PROPERTY_WEB_SOCKET_PORT_NUMBER, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setWebSocketPortNumber(@org.eclipse.jdt.annotation.NonNull Integer webSocketPortNumber) {
         this.webSocketPortNumber = webSocketPortNumber;
@@ -478,13 +479,13 @@ public class SystemInfo {
      * @return completedInstallations
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_COMPLETED_INSTALLATIONS)
+    @JsonProperty(value = JSON_PROPERTY_COMPLETED_INSTALLATIONS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<InstallationInfo> getCompletedInstallations() {
         return completedInstallations;
     }
 
-    @JsonProperty(JSON_PROPERTY_COMPLETED_INSTALLATIONS)
+    @JsonProperty(value = JSON_PROPERTY_COMPLETED_INSTALLATIONS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setCompletedInstallations(
             @org.eclipse.jdt.annotation.NonNull List<InstallationInfo> completedInstallations) {
@@ -504,13 +505,13 @@ public class SystemInfo {
      */
     @Deprecated
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_CAN_SELF_RESTART)
+    @JsonProperty(value = JSON_PROPERTY_CAN_SELF_RESTART, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getCanSelfRestart() {
         return canSelfRestart;
     }
 
-    @JsonProperty(JSON_PROPERTY_CAN_SELF_RESTART)
+    @JsonProperty(value = JSON_PROPERTY_CAN_SELF_RESTART, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setCanSelfRestart(@org.eclipse.jdt.annotation.NonNull Boolean canSelfRestart) {
         this.canSelfRestart = canSelfRestart;
@@ -529,13 +530,13 @@ public class SystemInfo {
      */
     @Deprecated
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_CAN_LAUNCH_WEB_BROWSER)
+    @JsonProperty(value = JSON_PROPERTY_CAN_LAUNCH_WEB_BROWSER, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getCanLaunchWebBrowser() {
         return canLaunchWebBrowser;
     }
 
-    @JsonProperty(JSON_PROPERTY_CAN_LAUNCH_WEB_BROWSER)
+    @JsonProperty(value = JSON_PROPERTY_CAN_LAUNCH_WEB_BROWSER, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setCanLaunchWebBrowser(@org.eclipse.jdt.annotation.NonNull Boolean canLaunchWebBrowser) {
         this.canLaunchWebBrowser = canLaunchWebBrowser;
@@ -550,15 +551,17 @@ public class SystemInfo {
      * Gets or sets the program data path.
      * 
      * @return programDataPath
+     * @deprecated
      */
+    @Deprecated
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_PROGRAM_DATA_PATH)
+    @JsonProperty(value = JSON_PROPERTY_PROGRAM_DATA_PATH, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getProgramDataPath() {
         return programDataPath;
     }
 
-    @JsonProperty(JSON_PROPERTY_PROGRAM_DATA_PATH)
+    @JsonProperty(value = JSON_PROPERTY_PROGRAM_DATA_PATH, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setProgramDataPath(@org.eclipse.jdt.annotation.NonNull String programDataPath) {
         this.programDataPath = programDataPath;
@@ -573,15 +576,17 @@ public class SystemInfo {
      * Gets or sets the web UI resources path.
      * 
      * @return webPath
+     * @deprecated
      */
+    @Deprecated
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_WEB_PATH)
+    @JsonProperty(value = JSON_PROPERTY_WEB_PATH, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getWebPath() {
         return webPath;
     }
 
-    @JsonProperty(JSON_PROPERTY_WEB_PATH)
+    @JsonProperty(value = JSON_PROPERTY_WEB_PATH, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setWebPath(@org.eclipse.jdt.annotation.NonNull String webPath) {
         this.webPath = webPath;
@@ -596,15 +601,17 @@ public class SystemInfo {
      * Gets or sets the items by name path.
      * 
      * @return itemsByNamePath
+     * @deprecated
      */
+    @Deprecated
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ITEMS_BY_NAME_PATH)
+    @JsonProperty(value = JSON_PROPERTY_ITEMS_BY_NAME_PATH, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getItemsByNamePath() {
         return itemsByNamePath;
     }
 
-    @JsonProperty(JSON_PROPERTY_ITEMS_BY_NAME_PATH)
+    @JsonProperty(value = JSON_PROPERTY_ITEMS_BY_NAME_PATH, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setItemsByNamePath(@org.eclipse.jdt.annotation.NonNull String itemsByNamePath) {
         this.itemsByNamePath = itemsByNamePath;
@@ -619,15 +626,17 @@ public class SystemInfo {
      * Gets or sets the cache path.
      * 
      * @return cachePath
+     * @deprecated
      */
+    @Deprecated
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_CACHE_PATH)
+    @JsonProperty(value = JSON_PROPERTY_CACHE_PATH, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getCachePath() {
         return cachePath;
     }
 
-    @JsonProperty(JSON_PROPERTY_CACHE_PATH)
+    @JsonProperty(value = JSON_PROPERTY_CACHE_PATH, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setCachePath(@org.eclipse.jdt.annotation.NonNull String cachePath) {
         this.cachePath = cachePath;
@@ -642,15 +651,17 @@ public class SystemInfo {
      * Gets or sets the log path.
      * 
      * @return logPath
+     * @deprecated
      */
+    @Deprecated
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_LOG_PATH)
+    @JsonProperty(value = JSON_PROPERTY_LOG_PATH, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getLogPath() {
         return logPath;
     }
 
-    @JsonProperty(JSON_PROPERTY_LOG_PATH)
+    @JsonProperty(value = JSON_PROPERTY_LOG_PATH, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setLogPath(@org.eclipse.jdt.annotation.NonNull String logPath) {
         this.logPath = logPath;
@@ -665,15 +676,17 @@ public class SystemInfo {
      * Gets or sets the internal metadata path.
      * 
      * @return internalMetadataPath
+     * @deprecated
      */
+    @Deprecated
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_INTERNAL_METADATA_PATH)
+    @JsonProperty(value = JSON_PROPERTY_INTERNAL_METADATA_PATH, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getInternalMetadataPath() {
         return internalMetadataPath;
     }
 
-    @JsonProperty(JSON_PROPERTY_INTERNAL_METADATA_PATH)
+    @JsonProperty(value = JSON_PROPERTY_INTERNAL_METADATA_PATH, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setInternalMetadataPath(@org.eclipse.jdt.annotation.NonNull String internalMetadataPath) {
         this.internalMetadataPath = internalMetadataPath;
@@ -688,15 +701,17 @@ public class SystemInfo {
      * Gets or sets the transcode path.
      * 
      * @return transcodingTempPath
+     * @deprecated
      */
+    @Deprecated
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_TRANSCODING_TEMP_PATH)
+    @JsonProperty(value = JSON_PROPERTY_TRANSCODING_TEMP_PATH, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getTranscodingTempPath() {
         return transcodingTempPath;
     }
 
-    @JsonProperty(JSON_PROPERTY_TRANSCODING_TEMP_PATH)
+    @JsonProperty(value = JSON_PROPERTY_TRANSCODING_TEMP_PATH, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setTranscodingTempPath(@org.eclipse.jdt.annotation.NonNull String transcodingTempPath) {
         this.transcodingTempPath = transcodingTempPath;
@@ -722,13 +737,13 @@ public class SystemInfo {
      * @return castReceiverApplications
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_CAST_RECEIVER_APPLICATIONS)
+    @JsonProperty(value = JSON_PROPERTY_CAST_RECEIVER_APPLICATIONS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<CastReceiverApplication> getCastReceiverApplications() {
         return castReceiverApplications;
     }
 
-    @JsonProperty(JSON_PROPERTY_CAST_RECEIVER_APPLICATIONS)
+    @JsonProperty(value = JSON_PROPERTY_CAST_RECEIVER_APPLICATIONS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setCastReceiverApplications(
             @org.eclipse.jdt.annotation.NonNull List<CastReceiverApplication> castReceiverApplications) {
@@ -748,13 +763,13 @@ public class SystemInfo {
      */
     @Deprecated
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_HAS_UPDATE_AVAILABLE)
+    @JsonProperty(value = JSON_PROPERTY_HAS_UPDATE_AVAILABLE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getHasUpdateAvailable() {
         return hasUpdateAvailable;
     }
 
-    @JsonProperty(JSON_PROPERTY_HAS_UPDATE_AVAILABLE)
+    @JsonProperty(value = JSON_PROPERTY_HAS_UPDATE_AVAILABLE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setHasUpdateAvailable(@org.eclipse.jdt.annotation.NonNull Boolean hasUpdateAvailable) {
         this.hasUpdateAvailable = hasUpdateAvailable;
@@ -773,13 +788,13 @@ public class SystemInfo {
      */
     @Deprecated
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ENCODER_LOCATION)
+    @JsonProperty(value = JSON_PROPERTY_ENCODER_LOCATION, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getEncoderLocation() {
         return encoderLocation;
     }
 
-    @JsonProperty(JSON_PROPERTY_ENCODER_LOCATION)
+    @JsonProperty(value = JSON_PROPERTY_ENCODER_LOCATION, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setEncoderLocation(@org.eclipse.jdt.annotation.NonNull String encoderLocation) {
         this.encoderLocation = encoderLocation;
@@ -798,13 +813,13 @@ public class SystemInfo {
      */
     @Deprecated
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_SYSTEM_ARCHITECTURE)
+    @JsonProperty(value = JSON_PROPERTY_SYSTEM_ARCHITECTURE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getSystemArchitecture() {
         return systemArchitecture;
     }
 
-    @JsonProperty(JSON_PROPERTY_SYSTEM_ARCHITECTURE)
+    @JsonProperty(value = JSON_PROPERTY_SYSTEM_ARCHITECTURE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setSystemArchitecture(@org.eclipse.jdt.annotation.NonNull String systemArchitecture) {
         this.systemArchitecture = systemArchitecture;
@@ -940,79 +955,79 @@ public class SystemInfo {
 
         // add `LocalAddress` to the URL query string
         if (getLocalAddress() != null) {
-            joiner.add(String.format("%sLocalAddress%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sLocalAddress%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getLocalAddress()))));
         }
 
         // add `ServerName` to the URL query string
         if (getServerName() != null) {
-            joiner.add(String.format("%sServerName%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sServerName%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getServerName()))));
         }
 
         // add `Version` to the URL query string
         if (getVersion() != null) {
-            joiner.add(String.format("%sVersion%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sVersion%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getVersion()))));
         }
 
         // add `ProductName` to the URL query string
         if (getProductName() != null) {
-            joiner.add(String.format("%sProductName%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sProductName%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getProductName()))));
         }
 
         // add `OperatingSystem` to the URL query string
         if (getOperatingSystem() != null) {
-            joiner.add(String.format("%sOperatingSystem%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sOperatingSystem%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getOperatingSystem()))));
         }
 
         // add `Id` to the URL query string
         if (getId() != null) {
-            joiner.add(
-                    String.format("%sId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
+            joiner.add(String.format(Locale.ROOT, "%sId%s=%s", prefix, suffix,
+                    ApiClient.urlEncode(ApiClient.valueToString(getId()))));
         }
 
         // add `StartupWizardCompleted` to the URL query string
         if (getStartupWizardCompleted() != null) {
-            joiner.add(String.format("%sStartupWizardCompleted%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sStartupWizardCompleted%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getStartupWizardCompleted()))));
         }
 
         // add `OperatingSystemDisplayName` to the URL query string
         if (getOperatingSystemDisplayName() != null) {
-            joiner.add(String.format("%sOperatingSystemDisplayName%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sOperatingSystemDisplayName%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getOperatingSystemDisplayName()))));
         }
 
         // add `PackageName` to the URL query string
         if (getPackageName() != null) {
-            joiner.add(String.format("%sPackageName%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sPackageName%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getPackageName()))));
         }
 
         // add `HasPendingRestart` to the URL query string
         if (getHasPendingRestart() != null) {
-            joiner.add(String.format("%sHasPendingRestart%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sHasPendingRestart%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getHasPendingRestart()))));
         }
 
         // add `IsShuttingDown` to the URL query string
         if (getIsShuttingDown() != null) {
-            joiner.add(String.format("%sIsShuttingDown%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sIsShuttingDown%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getIsShuttingDown()))));
         }
 
         // add `SupportsLibraryMonitor` to the URL query string
         if (getSupportsLibraryMonitor() != null) {
-            joiner.add(String.format("%sSupportsLibraryMonitor%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sSupportsLibraryMonitor%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getSupportsLibraryMonitor()))));
         }
 
         // add `WebSocketPortNumber` to the URL query string
         if (getWebSocketPortNumber() != null) {
-            joiner.add(String.format("%sWebSocketPortNumber%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sWebSocketPortNumber%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getWebSocketPortNumber()))));
         }
 
@@ -1020,64 +1035,64 @@ public class SystemInfo {
         if (getCompletedInstallations() != null) {
             for (int i = 0; i < getCompletedInstallations().size(); i++) {
                 if (getCompletedInstallations().get(i) != null) {
-                    joiner.add(getCompletedInstallations().get(i).toUrlQueryString(String.format(
-                            "%sCompletedInstallations%s%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
+                    joiner.add(getCompletedInstallations().get(i).toUrlQueryString(String.format(Locale.ROOT,
+                            "%sCompletedInstallations%s%s", prefix, suffix, "".equals(suffix) ? ""
+                                    : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
                 }
             }
         }
 
         // add `CanSelfRestart` to the URL query string
         if (getCanSelfRestart() != null) {
-            joiner.add(String.format("%sCanSelfRestart%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sCanSelfRestart%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getCanSelfRestart()))));
         }
 
         // add `CanLaunchWebBrowser` to the URL query string
         if (getCanLaunchWebBrowser() != null) {
-            joiner.add(String.format("%sCanLaunchWebBrowser%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sCanLaunchWebBrowser%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getCanLaunchWebBrowser()))));
         }
 
         // add `ProgramDataPath` to the URL query string
         if (getProgramDataPath() != null) {
-            joiner.add(String.format("%sProgramDataPath%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sProgramDataPath%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getProgramDataPath()))));
         }
 
         // add `WebPath` to the URL query string
         if (getWebPath() != null) {
-            joiner.add(String.format("%sWebPath%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sWebPath%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getWebPath()))));
         }
 
         // add `ItemsByNamePath` to the URL query string
         if (getItemsByNamePath() != null) {
-            joiner.add(String.format("%sItemsByNamePath%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sItemsByNamePath%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getItemsByNamePath()))));
         }
 
         // add `CachePath` to the URL query string
         if (getCachePath() != null) {
-            joiner.add(String.format("%sCachePath%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sCachePath%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getCachePath()))));
         }
 
         // add `LogPath` to the URL query string
         if (getLogPath() != null) {
-            joiner.add(String.format("%sLogPath%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sLogPath%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getLogPath()))));
         }
 
         // add `InternalMetadataPath` to the URL query string
         if (getInternalMetadataPath() != null) {
-            joiner.add(String.format("%sInternalMetadataPath%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sInternalMetadataPath%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getInternalMetadataPath()))));
         }
 
         // add `TranscodingTempPath` to the URL query string
         if (getTranscodingTempPath() != null) {
-            joiner.add(String.format("%sTranscodingTempPath%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sTranscodingTempPath%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getTranscodingTempPath()))));
         }
 
@@ -1085,28 +1100,28 @@ public class SystemInfo {
         if (getCastReceiverApplications() != null) {
             for (int i = 0; i < getCastReceiverApplications().size(); i++) {
                 if (getCastReceiverApplications().get(i) != null) {
-                    joiner.add(getCastReceiverApplications().get(i).toUrlQueryString(String.format(
-                            "%sCastReceiverApplications%s%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
+                    joiner.add(getCastReceiverApplications().get(i).toUrlQueryString(String.format(Locale.ROOT,
+                            "%sCastReceiverApplications%s%s", prefix, suffix, "".equals(suffix) ? ""
+                                    : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
                 }
             }
         }
 
         // add `HasUpdateAvailable` to the URL query string
         if (getHasUpdateAvailable() != null) {
-            joiner.add(String.format("%sHasUpdateAvailable%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sHasUpdateAvailable%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getHasUpdateAvailable()))));
         }
 
         // add `EncoderLocation` to the URL query string
         if (getEncoderLocation() != null) {
-            joiner.add(String.format("%sEncoderLocation%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sEncoderLocation%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getEncoderLocation()))));
         }
 
         // add `SystemArchitecture` to the URL query string
         if (getSystemArchitecture() != null) {
-            joiner.add(String.format("%sSystemArchitecture%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sSystemArchitecture%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getSystemArchitecture()))));
         }
 

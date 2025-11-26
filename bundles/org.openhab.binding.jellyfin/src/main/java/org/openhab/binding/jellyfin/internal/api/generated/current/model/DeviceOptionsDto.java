@@ -13,6 +13,7 @@
 
 package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
+import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
 
@@ -55,13 +56,13 @@ public class DeviceOptionsDto {
      * @return id
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ID)
+    @JsonProperty(value = JSON_PROPERTY_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getId() {
         return id;
     }
 
-    @JsonProperty(JSON_PROPERTY_ID)
+    @JsonProperty(value = JSON_PROPERTY_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setId(@org.eclipse.jdt.annotation.NonNull Integer id) {
         this.id = id;
@@ -78,13 +79,13 @@ public class DeviceOptionsDto {
      * @return deviceId
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_DEVICE_ID)
+    @JsonProperty(value = JSON_PROPERTY_DEVICE_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getDeviceId() {
         return deviceId;
     }
 
-    @JsonProperty(JSON_PROPERTY_DEVICE_ID)
+    @JsonProperty(value = JSON_PROPERTY_DEVICE_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setDeviceId(@org.eclipse.jdt.annotation.NonNull String deviceId) {
         this.deviceId = deviceId;
@@ -101,13 +102,13 @@ public class DeviceOptionsDto {
      * @return customName
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_CUSTOM_NAME)
+    @JsonProperty(value = JSON_PROPERTY_CUSTOM_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getCustomName() {
         return customName;
     }
 
-    @JsonProperty(JSON_PROPERTY_CUSTOM_NAME)
+    @JsonProperty(value = JSON_PROPERTY_CUSTOM_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setCustomName(@org.eclipse.jdt.annotation.NonNull String customName) {
         this.customName = customName;
@@ -190,19 +191,19 @@ public class DeviceOptionsDto {
 
         // add `Id` to the URL query string
         if (getId() != null) {
-            joiner.add(
-                    String.format("%sId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
+            joiner.add(String.format(Locale.ROOT, "%sId%s=%s", prefix, suffix,
+                    ApiClient.urlEncode(ApiClient.valueToString(getId()))));
         }
 
         // add `DeviceId` to the URL query string
         if (getDeviceId() != null) {
-            joiner.add(String.format("%sDeviceId%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sDeviceId%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getDeviceId()))));
         }
 
         // add `CustomName` to the URL query string
         if (getCustomName() != null) {
-            joiner.add(String.format("%sCustomName%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sCustomName%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getCustomName()))));
         }
 

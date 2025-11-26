@@ -15,6 +15,7 @@ package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
 
@@ -83,13 +84,13 @@ public class ConfigImageTypes {
      * @return backdropSizes
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_BACKDROP_SIZES)
+    @JsonProperty(value = JSON_PROPERTY_BACKDROP_SIZES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<String> getBackdropSizes() {
         return backdropSizes;
     }
 
-    @JsonProperty(JSON_PROPERTY_BACKDROP_SIZES)
+    @JsonProperty(value = JSON_PROPERTY_BACKDROP_SIZES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setBackdropSizes(@org.eclipse.jdt.annotation.NonNull List<String> backdropSizes) {
         this.backdropSizes = backdropSizes;
@@ -106,13 +107,13 @@ public class ConfigImageTypes {
      * @return baseUrl
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_BASE_URL)
+    @JsonProperty(value = JSON_PROPERTY_BASE_URL, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getBaseUrl() {
         return baseUrl;
     }
 
-    @JsonProperty(JSON_PROPERTY_BASE_URL)
+    @JsonProperty(value = JSON_PROPERTY_BASE_URL, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setBaseUrl(@org.eclipse.jdt.annotation.NonNull String baseUrl) {
         this.baseUrl = baseUrl;
@@ -137,13 +138,13 @@ public class ConfigImageTypes {
      * @return logoSizes
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_LOGO_SIZES)
+    @JsonProperty(value = JSON_PROPERTY_LOGO_SIZES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<String> getLogoSizes() {
         return logoSizes;
     }
 
-    @JsonProperty(JSON_PROPERTY_LOGO_SIZES)
+    @JsonProperty(value = JSON_PROPERTY_LOGO_SIZES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setLogoSizes(@org.eclipse.jdt.annotation.NonNull List<String> logoSizes) {
         this.logoSizes = logoSizes;
@@ -168,13 +169,13 @@ public class ConfigImageTypes {
      * @return posterSizes
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_POSTER_SIZES)
+    @JsonProperty(value = JSON_PROPERTY_POSTER_SIZES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<String> getPosterSizes() {
         return posterSizes;
     }
 
-    @JsonProperty(JSON_PROPERTY_POSTER_SIZES)
+    @JsonProperty(value = JSON_PROPERTY_POSTER_SIZES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setPosterSizes(@org.eclipse.jdt.annotation.NonNull List<String> posterSizes) {
         this.posterSizes = posterSizes;
@@ -199,13 +200,13 @@ public class ConfigImageTypes {
      * @return profileSizes
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_PROFILE_SIZES)
+    @JsonProperty(value = JSON_PROPERTY_PROFILE_SIZES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<String> getProfileSizes() {
         return profileSizes;
     }
 
-    @JsonProperty(JSON_PROPERTY_PROFILE_SIZES)
+    @JsonProperty(value = JSON_PROPERTY_PROFILE_SIZES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setProfileSizes(@org.eclipse.jdt.annotation.NonNull List<String> profileSizes) {
         this.profileSizes = profileSizes;
@@ -222,13 +223,13 @@ public class ConfigImageTypes {
      * @return secureBaseUrl
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_SECURE_BASE_URL)
+    @JsonProperty(value = JSON_PROPERTY_SECURE_BASE_URL, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getSecureBaseUrl() {
         return secureBaseUrl;
     }
 
-    @JsonProperty(JSON_PROPERTY_SECURE_BASE_URL)
+    @JsonProperty(value = JSON_PROPERTY_SECURE_BASE_URL, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setSecureBaseUrl(@org.eclipse.jdt.annotation.NonNull String secureBaseUrl) {
         this.secureBaseUrl = secureBaseUrl;
@@ -253,13 +254,13 @@ public class ConfigImageTypes {
      * @return stillSizes
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_STILL_SIZES)
+    @JsonProperty(value = JSON_PROPERTY_STILL_SIZES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<String> getStillSizes() {
         return stillSizes;
     }
 
-    @JsonProperty(JSON_PROPERTY_STILL_SIZES)
+    @JsonProperty(value = JSON_PROPERTY_STILL_SIZES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setStillSizes(@org.eclipse.jdt.annotation.NonNull List<String> stillSizes) {
         this.stillSizes = stillSizes;
@@ -352,23 +353,25 @@ public class ConfigImageTypes {
         // add `BackdropSizes` to the URL query string
         if (getBackdropSizes() != null) {
             for (int i = 0; i < getBackdropSizes().size(); i++) {
-                joiner.add(String.format("%sBackdropSizes%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+                joiner.add(String.format(Locale.ROOT, "%sBackdropSizes%s%s=%s", prefix, suffix,
+                        "".equals(suffix) ? ""
+                                : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
                         ApiClient.urlEncode(ApiClient.valueToString(getBackdropSizes().get(i)))));
             }
         }
 
         // add `BaseUrl` to the URL query string
         if (getBaseUrl() != null) {
-            joiner.add(String.format("%sBaseUrl%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sBaseUrl%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getBaseUrl()))));
         }
 
         // add `LogoSizes` to the URL query string
         if (getLogoSizes() != null) {
             for (int i = 0; i < getLogoSizes().size(); i++) {
-                joiner.add(String.format("%sLogoSizes%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+                joiner.add(String.format(Locale.ROOT, "%sLogoSizes%s%s=%s", prefix, suffix,
+                        "".equals(suffix) ? ""
+                                : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
                         ApiClient.urlEncode(ApiClient.valueToString(getLogoSizes().get(i)))));
             }
         }
@@ -376,8 +379,9 @@ public class ConfigImageTypes {
         // add `PosterSizes` to the URL query string
         if (getPosterSizes() != null) {
             for (int i = 0; i < getPosterSizes().size(); i++) {
-                joiner.add(String.format("%sPosterSizes%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+                joiner.add(String.format(Locale.ROOT, "%sPosterSizes%s%s=%s", prefix, suffix,
+                        "".equals(suffix) ? ""
+                                : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
                         ApiClient.urlEncode(ApiClient.valueToString(getPosterSizes().get(i)))));
             }
         }
@@ -385,23 +389,25 @@ public class ConfigImageTypes {
         // add `ProfileSizes` to the URL query string
         if (getProfileSizes() != null) {
             for (int i = 0; i < getProfileSizes().size(); i++) {
-                joiner.add(String.format("%sProfileSizes%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+                joiner.add(String.format(Locale.ROOT, "%sProfileSizes%s%s=%s", prefix, suffix,
+                        "".equals(suffix) ? ""
+                                : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
                         ApiClient.urlEncode(ApiClient.valueToString(getProfileSizes().get(i)))));
             }
         }
 
         // add `SecureBaseUrl` to the URL query string
         if (getSecureBaseUrl() != null) {
-            joiner.add(String.format("%sSecureBaseUrl%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sSecureBaseUrl%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getSecureBaseUrl()))));
         }
 
         // add `StillSizes` to the URL query string
         if (getStillSizes() != null) {
             for (int i = 0; i < getStillSizes().size(); i++) {
-                joiner.add(String.format("%sStillSizes%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+                joiner.add(String.format(Locale.ROOT, "%sStillSizes%s%s=%s", prefix, suffix,
+                        "".equals(suffix) ? ""
+                                : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
                         ApiClient.urlEncode(ApiClient.valueToString(getStillSizes().get(i)))));
             }
         }

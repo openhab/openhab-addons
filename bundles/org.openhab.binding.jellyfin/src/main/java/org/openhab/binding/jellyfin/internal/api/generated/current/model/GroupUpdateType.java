@@ -13,6 +13,8 @@
 
 package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
+import java.util.Locale;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
@@ -36,10 +38,6 @@ public enum GroupUpdateType {
     NOT_IN_GROUP("NotInGroup"),
 
     GROUP_DOES_NOT_EXIST("GroupDoesNotExist"),
-
-    CREATE_GROUP_DENIED("CreateGroupDenied"),
-
-    JOIN_GROUP_DENIED("JoinGroupDenied"),
 
     LIBRARY_ACCESS_DENIED("LibraryAccessDenied");
 
@@ -80,6 +78,6 @@ public enum GroupUpdateType {
             prefix = "";
         }
 
-        return String.format("%s=%s", prefix, this.toString());
+        return String.format(Locale.ROOT, "%s=%s", prefix, this.toString());
     }
 }

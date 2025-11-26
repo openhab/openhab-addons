@@ -15,6 +15,7 @@ package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
 
@@ -79,13 +80,13 @@ public class LiveTvServiceInfo {
      * @return name
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_NAME)
+    @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getName() {
         return name;
     }
 
-    @JsonProperty(JSON_PROPERTY_NAME)
+    @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setName(@org.eclipse.jdt.annotation.NonNull String name) {
         this.name = name;
@@ -102,13 +103,13 @@ public class LiveTvServiceInfo {
      * @return homePageUrl
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_HOME_PAGE_URL)
+    @JsonProperty(value = JSON_PROPERTY_HOME_PAGE_URL, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getHomePageUrl() {
         return homePageUrl;
     }
 
-    @JsonProperty(JSON_PROPERTY_HOME_PAGE_URL)
+    @JsonProperty(value = JSON_PROPERTY_HOME_PAGE_URL, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setHomePageUrl(@org.eclipse.jdt.annotation.NonNull String homePageUrl) {
         this.homePageUrl = homePageUrl;
@@ -125,13 +126,13 @@ public class LiveTvServiceInfo {
      * @return status
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_STATUS)
+    @JsonProperty(value = JSON_PROPERTY_STATUS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public LiveTvServiceStatus getStatus() {
         return status;
     }
 
-    @JsonProperty(JSON_PROPERTY_STATUS)
+    @JsonProperty(value = JSON_PROPERTY_STATUS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setStatus(@org.eclipse.jdt.annotation.NonNull LiveTvServiceStatus status) {
         this.status = status;
@@ -148,13 +149,13 @@ public class LiveTvServiceInfo {
      * @return statusMessage
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_STATUS_MESSAGE)
+    @JsonProperty(value = JSON_PROPERTY_STATUS_MESSAGE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getStatusMessage() {
         return statusMessage;
     }
 
-    @JsonProperty(JSON_PROPERTY_STATUS_MESSAGE)
+    @JsonProperty(value = JSON_PROPERTY_STATUS_MESSAGE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setStatusMessage(@org.eclipse.jdt.annotation.NonNull String statusMessage) {
         this.statusMessage = statusMessage;
@@ -171,13 +172,13 @@ public class LiveTvServiceInfo {
      * @return version
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_VERSION)
+    @JsonProperty(value = JSON_PROPERTY_VERSION, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getVersion() {
         return version;
     }
 
-    @JsonProperty(JSON_PROPERTY_VERSION)
+    @JsonProperty(value = JSON_PROPERTY_VERSION, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setVersion(@org.eclipse.jdt.annotation.NonNull String version) {
         this.version = version;
@@ -194,13 +195,13 @@ public class LiveTvServiceInfo {
      * @return hasUpdateAvailable
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_HAS_UPDATE_AVAILABLE)
+    @JsonProperty(value = JSON_PROPERTY_HAS_UPDATE_AVAILABLE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getHasUpdateAvailable() {
         return hasUpdateAvailable;
     }
 
-    @JsonProperty(JSON_PROPERTY_HAS_UPDATE_AVAILABLE)
+    @JsonProperty(value = JSON_PROPERTY_HAS_UPDATE_AVAILABLE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setHasUpdateAvailable(@org.eclipse.jdt.annotation.NonNull Boolean hasUpdateAvailable) {
         this.hasUpdateAvailable = hasUpdateAvailable;
@@ -217,13 +218,13 @@ public class LiveTvServiceInfo {
      * @return isVisible
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_IS_VISIBLE)
+    @JsonProperty(value = JSON_PROPERTY_IS_VISIBLE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getIsVisible() {
         return isVisible;
     }
 
-    @JsonProperty(JSON_PROPERTY_IS_VISIBLE)
+    @JsonProperty(value = JSON_PROPERTY_IS_VISIBLE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setIsVisible(@org.eclipse.jdt.annotation.NonNull Boolean isVisible) {
         this.isVisible = isVisible;
@@ -248,13 +249,13 @@ public class LiveTvServiceInfo {
      * @return tuners
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_TUNERS)
+    @JsonProperty(value = JSON_PROPERTY_TUNERS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<String> getTuners() {
         return tuners;
     }
 
-    @JsonProperty(JSON_PROPERTY_TUNERS)
+    @JsonProperty(value = JSON_PROPERTY_TUNERS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setTuners(@org.eclipse.jdt.annotation.NonNull List<String> tuners) {
         this.tuners = tuners;
@@ -348,51 +349,52 @@ public class LiveTvServiceInfo {
 
         // add `Name` to the URL query string
         if (getName() != null) {
-            joiner.add(String.format("%sName%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sName%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getName()))));
         }
 
         // add `HomePageUrl` to the URL query string
         if (getHomePageUrl() != null) {
-            joiner.add(String.format("%sHomePageUrl%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sHomePageUrl%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getHomePageUrl()))));
         }
 
         // add `Status` to the URL query string
         if (getStatus() != null) {
-            joiner.add(String.format("%sStatus%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sStatus%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getStatus()))));
         }
 
         // add `StatusMessage` to the URL query string
         if (getStatusMessage() != null) {
-            joiner.add(String.format("%sStatusMessage%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sStatusMessage%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getStatusMessage()))));
         }
 
         // add `Version` to the URL query string
         if (getVersion() != null) {
-            joiner.add(String.format("%sVersion%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sVersion%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getVersion()))));
         }
 
         // add `HasUpdateAvailable` to the URL query string
         if (getHasUpdateAvailable() != null) {
-            joiner.add(String.format("%sHasUpdateAvailable%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sHasUpdateAvailable%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getHasUpdateAvailable()))));
         }
 
         // add `IsVisible` to the URL query string
         if (getIsVisible() != null) {
-            joiner.add(String.format("%sIsVisible%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sIsVisible%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getIsVisible()))));
         }
 
         // add `Tuners` to the URL query string
         if (getTuners() != null) {
             for (int i = 0; i < getTuners().size(); i++) {
-                joiner.add(String.format("%sTuners%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+                joiner.add(String.format(Locale.ROOT, "%sTuners%s%s=%s", prefix, suffix,
+                        "".equals(suffix) ? ""
+                                : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
                         ApiClient.urlEncode(ApiClient.valueToString(getTuners().get(i)))));
             }
         }

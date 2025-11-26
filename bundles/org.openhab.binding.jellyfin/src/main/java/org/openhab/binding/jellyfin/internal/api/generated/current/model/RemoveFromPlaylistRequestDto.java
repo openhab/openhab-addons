@@ -15,6 +15,7 @@ package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
 import java.util.UUID;
@@ -68,13 +69,13 @@ public class RemoveFromPlaylistRequestDto {
      * @return playlistItemIds
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_PLAYLIST_ITEM_IDS)
+    @JsonProperty(value = JSON_PROPERTY_PLAYLIST_ITEM_IDS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<UUID> getPlaylistItemIds() {
         return playlistItemIds;
     }
 
-    @JsonProperty(JSON_PROPERTY_PLAYLIST_ITEM_IDS)
+    @JsonProperty(value = JSON_PROPERTY_PLAYLIST_ITEM_IDS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setPlaylistItemIds(@org.eclipse.jdt.annotation.NonNull List<UUID> playlistItemIds) {
         this.playlistItemIds = playlistItemIds;
@@ -91,13 +92,13 @@ public class RemoveFromPlaylistRequestDto {
      * @return clearPlaylist
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_CLEAR_PLAYLIST)
+    @JsonProperty(value = JSON_PROPERTY_CLEAR_PLAYLIST, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getClearPlaylist() {
         return clearPlaylist;
     }
 
-    @JsonProperty(JSON_PROPERTY_CLEAR_PLAYLIST)
+    @JsonProperty(value = JSON_PROPERTY_CLEAR_PLAYLIST, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setClearPlaylist(@org.eclipse.jdt.annotation.NonNull Boolean clearPlaylist) {
         this.clearPlaylist = clearPlaylist;
@@ -115,13 +116,13 @@ public class RemoveFromPlaylistRequestDto {
      * @return clearPlayingItem
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_CLEAR_PLAYING_ITEM)
+    @JsonProperty(value = JSON_PROPERTY_CLEAR_PLAYING_ITEM, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getClearPlayingItem() {
         return clearPlayingItem;
     }
 
-    @JsonProperty(JSON_PROPERTY_CLEAR_PLAYING_ITEM)
+    @JsonProperty(value = JSON_PROPERTY_CLEAR_PLAYING_ITEM, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setClearPlayingItem(@org.eclipse.jdt.annotation.NonNull Boolean clearPlayingItem) {
         this.clearPlayingItem = clearPlayingItem;
@@ -207,8 +208,9 @@ public class RemoveFromPlaylistRequestDto {
         if (getPlaylistItemIds() != null) {
             for (int i = 0; i < getPlaylistItemIds().size(); i++) {
                 if (getPlaylistItemIds().get(i) != null) {
-                    joiner.add(String.format("%sPlaylistItemIds%s%s=%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+                    joiner.add(String.format(Locale.ROOT, "%sPlaylistItemIds%s%s=%s", prefix, suffix,
+                            "".equals(suffix) ? ""
+                                    : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
                             ApiClient.urlEncode(ApiClient.valueToString(getPlaylistItemIds().get(i)))));
                 }
             }
@@ -216,13 +218,13 @@ public class RemoveFromPlaylistRequestDto {
 
         // add `ClearPlaylist` to the URL query string
         if (getClearPlaylist() != null) {
-            joiner.add(String.format("%sClearPlaylist%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sClearPlaylist%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getClearPlaylist()))));
         }
 
         // add `ClearPlayingItem` to the URL query string
         if (getClearPlayingItem() != null) {
-            joiner.add(String.format("%sClearPlayingItem%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sClearPlayingItem%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getClearPlayingItem()))));
         }
 

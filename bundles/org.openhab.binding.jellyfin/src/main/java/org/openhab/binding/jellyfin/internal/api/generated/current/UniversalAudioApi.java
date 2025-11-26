@@ -461,7 +461,7 @@ public class UniversalAudioApi {
         }
 
         localVarRequestBuilder.header("Accept",
-                "audio/*, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+                "audio/*, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase, text/html");
 
         localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {
@@ -792,7 +792,7 @@ public class UniversalAudioApi {
         }
 
         localVarRequestBuilder.header("Accept",
-                "audio/*, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+                "audio/*, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase, text/html");
 
         localVarRequestBuilder.method("HEAD", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {

@@ -15,6 +15,7 @@ package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
 
@@ -66,13 +67,13 @@ public class LibraryTypeOptionsDto {
      * @return type
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_TYPE)
+    @JsonProperty(value = JSON_PROPERTY_TYPE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getType() {
         return type;
     }
 
-    @JsonProperty(JSON_PROPERTY_TYPE)
+    @JsonProperty(value = JSON_PROPERTY_TYPE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setType(@org.eclipse.jdt.annotation.NonNull String type) {
         this.type = type;
@@ -98,13 +99,13 @@ public class LibraryTypeOptionsDto {
      * @return metadataFetchers
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_METADATA_FETCHERS)
+    @JsonProperty(value = JSON_PROPERTY_METADATA_FETCHERS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<LibraryOptionInfoDto> getMetadataFetchers() {
         return metadataFetchers;
     }
 
-    @JsonProperty(JSON_PROPERTY_METADATA_FETCHERS)
+    @JsonProperty(value = JSON_PROPERTY_METADATA_FETCHERS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setMetadataFetchers(@org.eclipse.jdt.annotation.NonNull List<LibraryOptionInfoDto> metadataFetchers) {
         this.metadataFetchers = metadataFetchers;
@@ -130,13 +131,13 @@ public class LibraryTypeOptionsDto {
      * @return imageFetchers
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_IMAGE_FETCHERS)
+    @JsonProperty(value = JSON_PROPERTY_IMAGE_FETCHERS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<LibraryOptionInfoDto> getImageFetchers() {
         return imageFetchers;
     }
 
-    @JsonProperty(JSON_PROPERTY_IMAGE_FETCHERS)
+    @JsonProperty(value = JSON_PROPERTY_IMAGE_FETCHERS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setImageFetchers(@org.eclipse.jdt.annotation.NonNull List<LibraryOptionInfoDto> imageFetchers) {
         this.imageFetchers = imageFetchers;
@@ -162,13 +163,13 @@ public class LibraryTypeOptionsDto {
      * @return supportedImageTypes
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_SUPPORTED_IMAGE_TYPES)
+    @JsonProperty(value = JSON_PROPERTY_SUPPORTED_IMAGE_TYPES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<ImageType> getSupportedImageTypes() {
         return supportedImageTypes;
     }
 
-    @JsonProperty(JSON_PROPERTY_SUPPORTED_IMAGE_TYPES)
+    @JsonProperty(value = JSON_PROPERTY_SUPPORTED_IMAGE_TYPES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setSupportedImageTypes(@org.eclipse.jdt.annotation.NonNull List<ImageType> supportedImageTypes) {
         this.supportedImageTypes = supportedImageTypes;
@@ -194,13 +195,13 @@ public class LibraryTypeOptionsDto {
      * @return defaultImageOptions
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_DEFAULT_IMAGE_OPTIONS)
+    @JsonProperty(value = JSON_PROPERTY_DEFAULT_IMAGE_OPTIONS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<ImageOption> getDefaultImageOptions() {
         return defaultImageOptions;
     }
 
-    @JsonProperty(JSON_PROPERTY_DEFAULT_IMAGE_OPTIONS)
+    @JsonProperty(value = JSON_PROPERTY_DEFAULT_IMAGE_OPTIONS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setDefaultImageOptions(@org.eclipse.jdt.annotation.NonNull List<ImageOption> defaultImageOptions) {
         this.defaultImageOptions = defaultImageOptions;
@@ -288,7 +289,7 @@ public class LibraryTypeOptionsDto {
 
         // add `Type` to the URL query string
         if (getType() != null) {
-            joiner.add(String.format("%sType%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sType%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getType()))));
         }
 
@@ -296,9 +297,9 @@ public class LibraryTypeOptionsDto {
         if (getMetadataFetchers() != null) {
             for (int i = 0; i < getMetadataFetchers().size(); i++) {
                 if (getMetadataFetchers().get(i) != null) {
-                    joiner.add(getMetadataFetchers().get(i).toUrlQueryString(String.format("%sMetadataFetchers%s%s",
-                            prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
+                    joiner.add(getMetadataFetchers().get(i).toUrlQueryString(
+                            String.format(Locale.ROOT, "%sMetadataFetchers%s%s", prefix, suffix, "".equals(suffix) ? ""
+                                    : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
                 }
             }
         }
@@ -307,9 +308,9 @@ public class LibraryTypeOptionsDto {
         if (getImageFetchers() != null) {
             for (int i = 0; i < getImageFetchers().size(); i++) {
                 if (getImageFetchers().get(i) != null) {
-                    joiner.add(getImageFetchers().get(i).toUrlQueryString(String.format("%sImageFetchers%s%s", prefix,
-                            suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
+                    joiner.add(getImageFetchers().get(i).toUrlQueryString(
+                            String.format(Locale.ROOT, "%sImageFetchers%s%s", prefix, suffix, "".equals(suffix) ? ""
+                                    : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
                 }
             }
         }
@@ -318,8 +319,9 @@ public class LibraryTypeOptionsDto {
         if (getSupportedImageTypes() != null) {
             for (int i = 0; i < getSupportedImageTypes().size(); i++) {
                 if (getSupportedImageTypes().get(i) != null) {
-                    joiner.add(String.format("%sSupportedImageTypes%s%s=%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+                    joiner.add(String.format(Locale.ROOT, "%sSupportedImageTypes%s%s=%s", prefix, suffix,
+                            "".equals(suffix) ? ""
+                                    : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
                             ApiClient.urlEncode(ApiClient.valueToString(getSupportedImageTypes().get(i)))));
                 }
             }
@@ -329,9 +331,9 @@ public class LibraryTypeOptionsDto {
         if (getDefaultImageOptions() != null) {
             for (int i = 0; i < getDefaultImageOptions().size(); i++) {
                 if (getDefaultImageOptions().get(i) != null) {
-                    joiner.add(getDefaultImageOptions().get(i).toUrlQueryString(String.format(
-                            "%sDefaultImageOptions%s%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
+                    joiner.add(getDefaultImageOptions().get(i).toUrlQueryString(String.format(Locale.ROOT,
+                            "%sDefaultImageOptions%s%s", prefix, suffix, "".equals(suffix) ? ""
+                                    : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
                 }
             }
         }

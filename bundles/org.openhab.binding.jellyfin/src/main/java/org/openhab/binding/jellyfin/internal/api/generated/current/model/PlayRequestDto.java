@@ -15,6 +15,7 @@ package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
 import java.util.UUID;
@@ -66,13 +67,13 @@ public class PlayRequestDto {
      * @return playingQueue
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_PLAYING_QUEUE)
+    @JsonProperty(value = JSON_PROPERTY_PLAYING_QUEUE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<UUID> getPlayingQueue() {
         return playingQueue;
     }
 
-    @JsonProperty(JSON_PROPERTY_PLAYING_QUEUE)
+    @JsonProperty(value = JSON_PROPERTY_PLAYING_QUEUE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setPlayingQueue(@org.eclipse.jdt.annotation.NonNull List<UUID> playingQueue) {
         this.playingQueue = playingQueue;
@@ -89,13 +90,13 @@ public class PlayRequestDto {
      * @return playingItemPosition
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_PLAYING_ITEM_POSITION)
+    @JsonProperty(value = JSON_PROPERTY_PLAYING_ITEM_POSITION, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getPlayingItemPosition() {
         return playingItemPosition;
     }
 
-    @JsonProperty(JSON_PROPERTY_PLAYING_ITEM_POSITION)
+    @JsonProperty(value = JSON_PROPERTY_PLAYING_ITEM_POSITION, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setPlayingItemPosition(@org.eclipse.jdt.annotation.NonNull Integer playingItemPosition) {
         this.playingItemPosition = playingItemPosition;
@@ -112,13 +113,13 @@ public class PlayRequestDto {
      * @return startPositionTicks
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_START_POSITION_TICKS)
+    @JsonProperty(value = JSON_PROPERTY_START_POSITION_TICKS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Long getStartPositionTicks() {
         return startPositionTicks;
     }
 
-    @JsonProperty(JSON_PROPERTY_START_POSITION_TICKS)
+    @JsonProperty(value = JSON_PROPERTY_START_POSITION_TICKS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setStartPositionTicks(@org.eclipse.jdt.annotation.NonNull Long startPositionTicks) {
         this.startPositionTicks = startPositionTicks;
@@ -204,8 +205,9 @@ public class PlayRequestDto {
         if (getPlayingQueue() != null) {
             for (int i = 0; i < getPlayingQueue().size(); i++) {
                 if (getPlayingQueue().get(i) != null) {
-                    joiner.add(String.format("%sPlayingQueue%s%s=%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+                    joiner.add(String.format(Locale.ROOT, "%sPlayingQueue%s%s=%s", prefix, suffix,
+                            "".equals(suffix) ? ""
+                                    : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
                             ApiClient.urlEncode(ApiClient.valueToString(getPlayingQueue().get(i)))));
                 }
             }
@@ -213,13 +215,13 @@ public class PlayRequestDto {
 
         // add `PlayingItemPosition` to the URL query string
         if (getPlayingItemPosition() != null) {
-            joiner.add(String.format("%sPlayingItemPosition%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sPlayingItemPosition%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getPlayingItemPosition()))));
         }
 
         // add `StartPositionTicks` to the URL query string
         if (getStartPositionTicks() != null) {
-            joiner.add(String.format("%sStartPositionTicks%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sStartPositionTicks%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getStartPositionTicks()))));
         }
 

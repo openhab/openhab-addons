@@ -13,6 +13,7 @@
 
 package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
+import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
 
@@ -64,13 +65,13 @@ public class SubtitleProfile {
      * @return format
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_FORMAT)
+    @JsonProperty(value = JSON_PROPERTY_FORMAT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getFormat() {
         return format;
     }
 
-    @JsonProperty(JSON_PROPERTY_FORMAT)
+    @JsonProperty(value = JSON_PROPERTY_FORMAT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setFormat(@org.eclipse.jdt.annotation.NonNull String format) {
         this.format = format;
@@ -87,13 +88,13 @@ public class SubtitleProfile {
      * @return method
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_METHOD)
+    @JsonProperty(value = JSON_PROPERTY_METHOD, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public SubtitleDeliveryMethod getMethod() {
         return method;
     }
 
-    @JsonProperty(JSON_PROPERTY_METHOD)
+    @JsonProperty(value = JSON_PROPERTY_METHOD, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setMethod(@org.eclipse.jdt.annotation.NonNull SubtitleDeliveryMethod method) {
         this.method = method;
@@ -110,13 +111,13 @@ public class SubtitleProfile {
      * @return didlMode
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_DIDL_MODE)
+    @JsonProperty(value = JSON_PROPERTY_DIDL_MODE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getDidlMode() {
         return didlMode;
     }
 
-    @JsonProperty(JSON_PROPERTY_DIDL_MODE)
+    @JsonProperty(value = JSON_PROPERTY_DIDL_MODE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setDidlMode(@org.eclipse.jdt.annotation.NonNull String didlMode) {
         this.didlMode = didlMode;
@@ -133,13 +134,13 @@ public class SubtitleProfile {
      * @return language
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_LANGUAGE)
+    @JsonProperty(value = JSON_PROPERTY_LANGUAGE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getLanguage() {
         return language;
     }
 
-    @JsonProperty(JSON_PROPERTY_LANGUAGE)
+    @JsonProperty(value = JSON_PROPERTY_LANGUAGE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setLanguage(@org.eclipse.jdt.annotation.NonNull String language) {
         this.language = language;
@@ -156,13 +157,13 @@ public class SubtitleProfile {
      * @return container
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_CONTAINER)
+    @JsonProperty(value = JSON_PROPERTY_CONTAINER, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getContainer() {
         return container;
     }
 
-    @JsonProperty(JSON_PROPERTY_CONTAINER)
+    @JsonProperty(value = JSON_PROPERTY_CONTAINER, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setContainer(@org.eclipse.jdt.annotation.NonNull String container) {
         this.container = container;
@@ -250,31 +251,31 @@ public class SubtitleProfile {
 
         // add `Format` to the URL query string
         if (getFormat() != null) {
-            joiner.add(String.format("%sFormat%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sFormat%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getFormat()))));
         }
 
         // add `Method` to the URL query string
         if (getMethod() != null) {
-            joiner.add(String.format("%sMethod%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sMethod%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getMethod()))));
         }
 
         // add `DidlMode` to the URL query string
         if (getDidlMode() != null) {
-            joiner.add(String.format("%sDidlMode%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sDidlMode%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getDidlMode()))));
         }
 
         // add `Language` to the URL query string
         if (getLanguage() != null) {
-            joiner.add(String.format("%sLanguage%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sLanguage%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getLanguage()))));
         }
 
         // add `Container` to the URL query string
         if (getContainer() != null) {
-            joiner.add(String.format("%sContainer%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sContainer%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getContainer()))));
         }
 

@@ -14,6 +14,7 @@
 package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
 import java.time.OffsetDateTime;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
 
@@ -53,13 +54,13 @@ public class UtcTimeResponse {
      * @return requestReceptionTime
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_REQUEST_RECEPTION_TIME)
+    @JsonProperty(value = JSON_PROPERTY_REQUEST_RECEPTION_TIME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public OffsetDateTime getRequestReceptionTime() {
         return requestReceptionTime;
     }
 
-    @JsonProperty(JSON_PROPERTY_REQUEST_RECEPTION_TIME)
+    @JsonProperty(value = JSON_PROPERTY_REQUEST_RECEPTION_TIME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setRequestReceptionTime(@org.eclipse.jdt.annotation.NonNull OffsetDateTime requestReceptionTime) {
         this.requestReceptionTime = requestReceptionTime;
@@ -77,13 +78,13 @@ public class UtcTimeResponse {
      * @return responseTransmissionTime
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_RESPONSE_TRANSMISSION_TIME)
+    @JsonProperty(value = JSON_PROPERTY_RESPONSE_TRANSMISSION_TIME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public OffsetDateTime getResponseTransmissionTime() {
         return responseTransmissionTime;
     }
 
-    @JsonProperty(JSON_PROPERTY_RESPONSE_TRANSMISSION_TIME)
+    @JsonProperty(value = JSON_PROPERTY_RESPONSE_TRANSMISSION_TIME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setResponseTransmissionTime(
             @org.eclipse.jdt.annotation.NonNull OffsetDateTime responseTransmissionTime) {
@@ -166,13 +167,13 @@ public class UtcTimeResponse {
 
         // add `RequestReceptionTime` to the URL query string
         if (getRequestReceptionTime() != null) {
-            joiner.add(String.format("%sRequestReceptionTime%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sRequestReceptionTime%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getRequestReceptionTime()))));
         }
 
         // add `ResponseTransmissionTime` to the URL query string
         if (getResponseTransmissionTime() != null) {
-            joiner.add(String.format("%sResponseTransmissionTime%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sResponseTransmissionTime%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getResponseTransmissionTime()))));
         }
 

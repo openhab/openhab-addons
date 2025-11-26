@@ -55,13 +55,13 @@ public class AllThemeMediaResult {
      * @return themeVideosResult
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_THEME_VIDEOS_RESULT)
+    @JsonProperty(value = JSON_PROPERTY_THEME_VIDEOS_RESULT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public ThemeMediaResult getThemeVideosResult() {
         return themeVideosResult;
     }
 
-    @JsonProperty(JSON_PROPERTY_THEME_VIDEOS_RESULT)
+    @JsonProperty(value = JSON_PROPERTY_THEME_VIDEOS_RESULT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setThemeVideosResult(@org.eclipse.jdt.annotation.NonNull ThemeMediaResult themeVideosResult) {
         this.themeVideosResult = themeVideosResult;
@@ -78,13 +78,13 @@ public class AllThemeMediaResult {
      * @return themeSongsResult
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_THEME_SONGS_RESULT)
+    @JsonProperty(value = JSON_PROPERTY_THEME_SONGS_RESULT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public ThemeMediaResult getThemeSongsResult() {
         return themeSongsResult;
     }
 
-    @JsonProperty(JSON_PROPERTY_THEME_SONGS_RESULT)
+    @JsonProperty(value = JSON_PROPERTY_THEME_SONGS_RESULT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setThemeSongsResult(@org.eclipse.jdt.annotation.NonNull ThemeMediaResult themeSongsResult) {
         this.themeSongsResult = themeSongsResult;
@@ -102,13 +102,13 @@ public class AllThemeMediaResult {
      * @return soundtrackSongsResult
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_SOUNDTRACK_SONGS_RESULT)
+    @JsonProperty(value = JSON_PROPERTY_SOUNDTRACK_SONGS_RESULT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public ThemeMediaResult getSoundtrackSongsResult() {
         return soundtrackSongsResult;
     }
 
-    @JsonProperty(JSON_PROPERTY_SOUNDTRACK_SONGS_RESULT)
+    @JsonProperty(value = JSON_PROPERTY_SOUNDTRACK_SONGS_RESULT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setSoundtrackSongsResult(@org.eclipse.jdt.annotation.NonNull ThemeMediaResult soundtrackSongsResult) {
         this.soundtrackSongsResult = soundtrackSongsResult;

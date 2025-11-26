@@ -17,6 +17,7 @@ import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.StringJoiner;
@@ -100,13 +101,13 @@ public class RemoteSearchResult {
      * @return name
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_NAME)
+    @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getName() {
         return name;
     }
 
-    @JsonProperty(JSON_PROPERTY_NAME)
+    @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setName(@org.eclipse.jdt.annotation.NonNull String name) {
         this.name = name;
@@ -131,13 +132,13 @@ public class RemoteSearchResult {
      * @return providerIds
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_PROVIDER_IDS)
+    @JsonProperty(value = JSON_PROPERTY_PROVIDER_IDS, required = false)
     @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
     public Map<String, String> getProviderIds() {
         return providerIds;
     }
 
-    @JsonProperty(JSON_PROPERTY_PROVIDER_IDS)
+    @JsonProperty(value = JSON_PROPERTY_PROVIDER_IDS, required = false)
     @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
     public void setProviderIds(@org.eclipse.jdt.annotation.NonNull Map<String, String> providerIds) {
         this.providerIds = providerIds;
@@ -154,13 +155,13 @@ public class RemoteSearchResult {
      * @return productionYear
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_PRODUCTION_YEAR)
+    @JsonProperty(value = JSON_PROPERTY_PRODUCTION_YEAR, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getProductionYear() {
         return productionYear;
     }
 
-    @JsonProperty(JSON_PROPERTY_PRODUCTION_YEAR)
+    @JsonProperty(value = JSON_PROPERTY_PRODUCTION_YEAR, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setProductionYear(@org.eclipse.jdt.annotation.NonNull Integer productionYear) {
         this.productionYear = productionYear;
@@ -177,13 +178,13 @@ public class RemoteSearchResult {
      * @return indexNumber
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_INDEX_NUMBER)
+    @JsonProperty(value = JSON_PROPERTY_INDEX_NUMBER, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getIndexNumber() {
         return indexNumber;
     }
 
-    @JsonProperty(JSON_PROPERTY_INDEX_NUMBER)
+    @JsonProperty(value = JSON_PROPERTY_INDEX_NUMBER, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setIndexNumber(@org.eclipse.jdt.annotation.NonNull Integer indexNumber) {
         this.indexNumber = indexNumber;
@@ -200,13 +201,13 @@ public class RemoteSearchResult {
      * @return indexNumberEnd
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_INDEX_NUMBER_END)
+    @JsonProperty(value = JSON_PROPERTY_INDEX_NUMBER_END, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getIndexNumberEnd() {
         return indexNumberEnd;
     }
 
-    @JsonProperty(JSON_PROPERTY_INDEX_NUMBER_END)
+    @JsonProperty(value = JSON_PROPERTY_INDEX_NUMBER_END, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setIndexNumberEnd(@org.eclipse.jdt.annotation.NonNull Integer indexNumberEnd) {
         this.indexNumberEnd = indexNumberEnd;
@@ -223,13 +224,13 @@ public class RemoteSearchResult {
      * @return parentIndexNumber
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_PARENT_INDEX_NUMBER)
+    @JsonProperty(value = JSON_PROPERTY_PARENT_INDEX_NUMBER, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getParentIndexNumber() {
         return parentIndexNumber;
     }
 
-    @JsonProperty(JSON_PROPERTY_PARENT_INDEX_NUMBER)
+    @JsonProperty(value = JSON_PROPERTY_PARENT_INDEX_NUMBER, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setParentIndexNumber(@org.eclipse.jdt.annotation.NonNull Integer parentIndexNumber) {
         this.parentIndexNumber = parentIndexNumber;
@@ -246,13 +247,13 @@ public class RemoteSearchResult {
      * @return premiereDate
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_PREMIERE_DATE)
+    @JsonProperty(value = JSON_PROPERTY_PREMIERE_DATE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public OffsetDateTime getPremiereDate() {
         return premiereDate;
     }
 
-    @JsonProperty(JSON_PROPERTY_PREMIERE_DATE)
+    @JsonProperty(value = JSON_PROPERTY_PREMIERE_DATE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setPremiereDate(@org.eclipse.jdt.annotation.NonNull OffsetDateTime premiereDate) {
         this.premiereDate = premiereDate;
@@ -269,13 +270,13 @@ public class RemoteSearchResult {
      * @return imageUrl
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_IMAGE_URL)
+    @JsonProperty(value = JSON_PROPERTY_IMAGE_URL, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getImageUrl() {
         return imageUrl;
     }
 
-    @JsonProperty(JSON_PROPERTY_IMAGE_URL)
+    @JsonProperty(value = JSON_PROPERTY_IMAGE_URL, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setImageUrl(@org.eclipse.jdt.annotation.NonNull String imageUrl) {
         this.imageUrl = imageUrl;
@@ -292,13 +293,13 @@ public class RemoteSearchResult {
      * @return searchProviderName
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_SEARCH_PROVIDER_NAME)
+    @JsonProperty(value = JSON_PROPERTY_SEARCH_PROVIDER_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getSearchProviderName() {
         return searchProviderName;
     }
 
-    @JsonProperty(JSON_PROPERTY_SEARCH_PROVIDER_NAME)
+    @JsonProperty(value = JSON_PROPERTY_SEARCH_PROVIDER_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setSearchProviderName(@org.eclipse.jdt.annotation.NonNull String searchProviderName) {
         this.searchProviderName = searchProviderName;
@@ -315,13 +316,13 @@ public class RemoteSearchResult {
      * @return overview
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_OVERVIEW)
+    @JsonProperty(value = JSON_PROPERTY_OVERVIEW, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getOverview() {
         return overview;
     }
 
-    @JsonProperty(JSON_PROPERTY_OVERVIEW)
+    @JsonProperty(value = JSON_PROPERTY_OVERVIEW, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setOverview(@org.eclipse.jdt.annotation.NonNull String overview) {
         this.overview = overview;
@@ -338,13 +339,13 @@ public class RemoteSearchResult {
      * @return albumArtist
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ALBUM_ARTIST)
+    @JsonProperty(value = JSON_PROPERTY_ALBUM_ARTIST, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public RemoteSearchResult getAlbumArtist() {
         return albumArtist;
     }
 
-    @JsonProperty(JSON_PROPERTY_ALBUM_ARTIST)
+    @JsonProperty(value = JSON_PROPERTY_ALBUM_ARTIST, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setAlbumArtist(@org.eclipse.jdt.annotation.NonNull RemoteSearchResult albumArtist) {
         this.albumArtist = albumArtist;
@@ -369,13 +370,13 @@ public class RemoteSearchResult {
      * @return artists
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ARTISTS)
+    @JsonProperty(value = JSON_PROPERTY_ARTISTS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<RemoteSearchResult> getArtists() {
         return artists;
     }
 
-    @JsonProperty(JSON_PROPERTY_ARTISTS)
+    @JsonProperty(value = JSON_PROPERTY_ARTISTS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setArtists(@org.eclipse.jdt.annotation.NonNull List<RemoteSearchResult> artists) {
         this.artists = artists;
@@ -478,15 +479,16 @@ public class RemoteSearchResult {
 
         // add `Name` to the URL query string
         if (getName() != null) {
-            joiner.add(String.format("%sName%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sName%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getName()))));
         }
 
         // add `ProviderIds` to the URL query string
         if (getProviderIds() != null) {
             for (String _key : getProviderIds().keySet()) {
-                joiner.add(String.format("%sProviderIds%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, _key, containerSuffix),
+                joiner.add(String.format(Locale.ROOT, "%sProviderIds%s%s=%s", prefix, suffix,
+                        "".equals(suffix) ? ""
+                                : String.format(Locale.ROOT, "%s%d%s", containerPrefix, _key, containerSuffix),
                         getProviderIds().get(_key),
                         ApiClient.urlEncode(ApiClient.valueToString(getProviderIds().get(_key)))));
             }
@@ -494,49 +496,49 @@ public class RemoteSearchResult {
 
         // add `ProductionYear` to the URL query string
         if (getProductionYear() != null) {
-            joiner.add(String.format("%sProductionYear%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sProductionYear%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getProductionYear()))));
         }
 
         // add `IndexNumber` to the URL query string
         if (getIndexNumber() != null) {
-            joiner.add(String.format("%sIndexNumber%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sIndexNumber%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getIndexNumber()))));
         }
 
         // add `IndexNumberEnd` to the URL query string
         if (getIndexNumberEnd() != null) {
-            joiner.add(String.format("%sIndexNumberEnd%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sIndexNumberEnd%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getIndexNumberEnd()))));
         }
 
         // add `ParentIndexNumber` to the URL query string
         if (getParentIndexNumber() != null) {
-            joiner.add(String.format("%sParentIndexNumber%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sParentIndexNumber%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getParentIndexNumber()))));
         }
 
         // add `PremiereDate` to the URL query string
         if (getPremiereDate() != null) {
-            joiner.add(String.format("%sPremiereDate%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sPremiereDate%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getPremiereDate()))));
         }
 
         // add `ImageUrl` to the URL query string
         if (getImageUrl() != null) {
-            joiner.add(String.format("%sImageUrl%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sImageUrl%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getImageUrl()))));
         }
 
         // add `SearchProviderName` to the URL query string
         if (getSearchProviderName() != null) {
-            joiner.add(String.format("%sSearchProviderName%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sSearchProviderName%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getSearchProviderName()))));
         }
 
         // add `Overview` to the URL query string
         if (getOverview() != null) {
-            joiner.add(String.format("%sOverview%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sOverview%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getOverview()))));
         }
 
@@ -549,8 +551,9 @@ public class RemoteSearchResult {
         if (getArtists() != null) {
             for (int i = 0; i < getArtists().size(); i++) {
                 if (getArtists().get(i) != null) {
-                    joiner.add(getArtists().get(i).toUrlQueryString(String.format("%sArtists%s%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
+                    joiner.add(getArtists().get(i).toUrlQueryString(
+                            String.format(Locale.ROOT, "%sArtists%s%s", prefix, suffix, "".equals(suffix) ? ""
+                                    : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
                 }
             }
         }

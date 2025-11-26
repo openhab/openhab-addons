@@ -16,6 +16,7 @@ package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
 import java.util.UUID;
@@ -176,13 +177,13 @@ public class SessionInfoDto {
      * @return playState
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_PLAY_STATE)
+    @JsonProperty(value = JSON_PROPERTY_PLAY_STATE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public PlayerStateInfo getPlayState() {
         return playState;
     }
 
-    @JsonProperty(JSON_PROPERTY_PLAY_STATE)
+    @JsonProperty(value = JSON_PROPERTY_PLAY_STATE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setPlayState(@org.eclipse.jdt.annotation.NonNull PlayerStateInfo playState) {
         this.playState = playState;
@@ -207,13 +208,13 @@ public class SessionInfoDto {
      * @return additionalUsers
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ADDITIONAL_USERS)
+    @JsonProperty(value = JSON_PROPERTY_ADDITIONAL_USERS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<SessionUserInfo> getAdditionalUsers() {
         return additionalUsers;
     }
 
-    @JsonProperty(JSON_PROPERTY_ADDITIONAL_USERS)
+    @JsonProperty(value = JSON_PROPERTY_ADDITIONAL_USERS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setAdditionalUsers(@org.eclipse.jdt.annotation.NonNull List<SessionUserInfo> additionalUsers) {
         this.additionalUsers = additionalUsers;
@@ -230,13 +231,13 @@ public class SessionInfoDto {
      * @return capabilities
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_CAPABILITIES)
+    @JsonProperty(value = JSON_PROPERTY_CAPABILITIES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public ClientCapabilitiesDto getCapabilities() {
         return capabilities;
     }
 
-    @JsonProperty(JSON_PROPERTY_CAPABILITIES)
+    @JsonProperty(value = JSON_PROPERTY_CAPABILITIES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setCapabilities(@org.eclipse.jdt.annotation.NonNull ClientCapabilitiesDto capabilities) {
         this.capabilities = capabilities;
@@ -253,13 +254,13 @@ public class SessionInfoDto {
      * @return remoteEndPoint
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_REMOTE_END_POINT)
+    @JsonProperty(value = JSON_PROPERTY_REMOTE_END_POINT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getRemoteEndPoint() {
         return remoteEndPoint;
     }
 
-    @JsonProperty(JSON_PROPERTY_REMOTE_END_POINT)
+    @JsonProperty(value = JSON_PROPERTY_REMOTE_END_POINT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setRemoteEndPoint(@org.eclipse.jdt.annotation.NonNull String remoteEndPoint) {
         this.remoteEndPoint = remoteEndPoint;
@@ -284,13 +285,13 @@ public class SessionInfoDto {
      * @return playableMediaTypes
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_PLAYABLE_MEDIA_TYPES)
+    @JsonProperty(value = JSON_PROPERTY_PLAYABLE_MEDIA_TYPES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<MediaType> getPlayableMediaTypes() {
         return playableMediaTypes;
     }
 
-    @JsonProperty(JSON_PROPERTY_PLAYABLE_MEDIA_TYPES)
+    @JsonProperty(value = JSON_PROPERTY_PLAYABLE_MEDIA_TYPES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setPlayableMediaTypes(@org.eclipse.jdt.annotation.NonNull List<MediaType> playableMediaTypes) {
         this.playableMediaTypes = playableMediaTypes;
@@ -307,13 +308,13 @@ public class SessionInfoDto {
      * @return id
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ID)
+    @JsonProperty(value = JSON_PROPERTY_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getId() {
         return id;
     }
 
-    @JsonProperty(JSON_PROPERTY_ID)
+    @JsonProperty(value = JSON_PROPERTY_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setId(@org.eclipse.jdt.annotation.NonNull String id) {
         this.id = id;
@@ -330,13 +331,13 @@ public class SessionInfoDto {
      * @return userId
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_USER_ID)
+    @JsonProperty(value = JSON_PROPERTY_USER_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public UUID getUserId() {
         return userId;
     }
 
-    @JsonProperty(JSON_PROPERTY_USER_ID)
+    @JsonProperty(value = JSON_PROPERTY_USER_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setUserId(@org.eclipse.jdt.annotation.NonNull UUID userId) {
         this.userId = userId;
@@ -353,13 +354,13 @@ public class SessionInfoDto {
      * @return userName
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_USER_NAME)
+    @JsonProperty(value = JSON_PROPERTY_USER_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getUserName() {
         return userName;
     }
 
-    @JsonProperty(JSON_PROPERTY_USER_NAME)
+    @JsonProperty(value = JSON_PROPERTY_USER_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setUserName(@org.eclipse.jdt.annotation.NonNull String userName) {
         this.userName = userName;
@@ -376,13 +377,13 @@ public class SessionInfoDto {
      * @return client
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_CLIENT)
+    @JsonProperty(value = JSON_PROPERTY_CLIENT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getClient() {
         return client;
     }
 
-    @JsonProperty(JSON_PROPERTY_CLIENT)
+    @JsonProperty(value = JSON_PROPERTY_CLIENT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setClient(@org.eclipse.jdt.annotation.NonNull String client) {
         this.client = client;
@@ -399,13 +400,13 @@ public class SessionInfoDto {
      * @return lastActivityDate
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_LAST_ACTIVITY_DATE)
+    @JsonProperty(value = JSON_PROPERTY_LAST_ACTIVITY_DATE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public OffsetDateTime getLastActivityDate() {
         return lastActivityDate;
     }
 
-    @JsonProperty(JSON_PROPERTY_LAST_ACTIVITY_DATE)
+    @JsonProperty(value = JSON_PROPERTY_LAST_ACTIVITY_DATE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setLastActivityDate(@org.eclipse.jdt.annotation.NonNull OffsetDateTime lastActivityDate) {
         this.lastActivityDate = lastActivityDate;
@@ -422,13 +423,13 @@ public class SessionInfoDto {
      * @return lastPlaybackCheckIn
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_LAST_PLAYBACK_CHECK_IN)
+    @JsonProperty(value = JSON_PROPERTY_LAST_PLAYBACK_CHECK_IN, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public OffsetDateTime getLastPlaybackCheckIn() {
         return lastPlaybackCheckIn;
     }
 
-    @JsonProperty(JSON_PROPERTY_LAST_PLAYBACK_CHECK_IN)
+    @JsonProperty(value = JSON_PROPERTY_LAST_PLAYBACK_CHECK_IN, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setLastPlaybackCheckIn(@org.eclipse.jdt.annotation.NonNull OffsetDateTime lastPlaybackCheckIn) {
         this.lastPlaybackCheckIn = lastPlaybackCheckIn;
@@ -445,13 +446,13 @@ public class SessionInfoDto {
      * @return lastPausedDate
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_LAST_PAUSED_DATE)
+    @JsonProperty(value = JSON_PROPERTY_LAST_PAUSED_DATE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public OffsetDateTime getLastPausedDate() {
         return lastPausedDate;
     }
 
-    @JsonProperty(JSON_PROPERTY_LAST_PAUSED_DATE)
+    @JsonProperty(value = JSON_PROPERTY_LAST_PAUSED_DATE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setLastPausedDate(@org.eclipse.jdt.annotation.NonNull OffsetDateTime lastPausedDate) {
         this.lastPausedDate = lastPausedDate;
@@ -468,13 +469,13 @@ public class SessionInfoDto {
      * @return deviceName
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_DEVICE_NAME)
+    @JsonProperty(value = JSON_PROPERTY_DEVICE_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getDeviceName() {
         return deviceName;
     }
 
-    @JsonProperty(JSON_PROPERTY_DEVICE_NAME)
+    @JsonProperty(value = JSON_PROPERTY_DEVICE_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setDeviceName(@org.eclipse.jdt.annotation.NonNull String deviceName) {
         this.deviceName = deviceName;
@@ -491,13 +492,13 @@ public class SessionInfoDto {
      * @return deviceType
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_DEVICE_TYPE)
+    @JsonProperty(value = JSON_PROPERTY_DEVICE_TYPE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getDeviceType() {
         return deviceType;
     }
 
-    @JsonProperty(JSON_PROPERTY_DEVICE_TYPE)
+    @JsonProperty(value = JSON_PROPERTY_DEVICE_TYPE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setDeviceType(@org.eclipse.jdt.annotation.NonNull String deviceType) {
         this.deviceType = deviceType;
@@ -514,13 +515,13 @@ public class SessionInfoDto {
      * @return nowPlayingItem
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_NOW_PLAYING_ITEM)
+    @JsonProperty(value = JSON_PROPERTY_NOW_PLAYING_ITEM, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public BaseItemDto getNowPlayingItem() {
         return nowPlayingItem;
     }
 
-    @JsonProperty(JSON_PROPERTY_NOW_PLAYING_ITEM)
+    @JsonProperty(value = JSON_PROPERTY_NOW_PLAYING_ITEM, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setNowPlayingItem(@org.eclipse.jdt.annotation.NonNull BaseItemDto nowPlayingItem) {
         this.nowPlayingItem = nowPlayingItem;
@@ -537,13 +538,13 @@ public class SessionInfoDto {
      * @return nowViewingItem
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_NOW_VIEWING_ITEM)
+    @JsonProperty(value = JSON_PROPERTY_NOW_VIEWING_ITEM, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public BaseItemDto getNowViewingItem() {
         return nowViewingItem;
     }
 
-    @JsonProperty(JSON_PROPERTY_NOW_VIEWING_ITEM)
+    @JsonProperty(value = JSON_PROPERTY_NOW_VIEWING_ITEM, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setNowViewingItem(@org.eclipse.jdt.annotation.NonNull BaseItemDto nowViewingItem) {
         this.nowViewingItem = nowViewingItem;
@@ -560,13 +561,13 @@ public class SessionInfoDto {
      * @return deviceId
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_DEVICE_ID)
+    @JsonProperty(value = JSON_PROPERTY_DEVICE_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getDeviceId() {
         return deviceId;
     }
 
-    @JsonProperty(JSON_PROPERTY_DEVICE_ID)
+    @JsonProperty(value = JSON_PROPERTY_DEVICE_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setDeviceId(@org.eclipse.jdt.annotation.NonNull String deviceId) {
         this.deviceId = deviceId;
@@ -583,13 +584,13 @@ public class SessionInfoDto {
      * @return applicationVersion
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_APPLICATION_VERSION)
+    @JsonProperty(value = JSON_PROPERTY_APPLICATION_VERSION, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getApplicationVersion() {
         return applicationVersion;
     }
 
-    @JsonProperty(JSON_PROPERTY_APPLICATION_VERSION)
+    @JsonProperty(value = JSON_PROPERTY_APPLICATION_VERSION, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setApplicationVersion(@org.eclipse.jdt.annotation.NonNull String applicationVersion) {
         this.applicationVersion = applicationVersion;
@@ -606,13 +607,13 @@ public class SessionInfoDto {
      * @return transcodingInfo
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_TRANSCODING_INFO)
+    @JsonProperty(value = JSON_PROPERTY_TRANSCODING_INFO, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public TranscodingInfo getTranscodingInfo() {
         return transcodingInfo;
     }
 
-    @JsonProperty(JSON_PROPERTY_TRANSCODING_INFO)
+    @JsonProperty(value = JSON_PROPERTY_TRANSCODING_INFO, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setTranscodingInfo(@org.eclipse.jdt.annotation.NonNull TranscodingInfo transcodingInfo) {
         this.transcodingInfo = transcodingInfo;
@@ -629,13 +630,13 @@ public class SessionInfoDto {
      * @return isActive
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_IS_ACTIVE)
+    @JsonProperty(value = JSON_PROPERTY_IS_ACTIVE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getIsActive() {
         return isActive;
     }
 
-    @JsonProperty(JSON_PROPERTY_IS_ACTIVE)
+    @JsonProperty(value = JSON_PROPERTY_IS_ACTIVE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setIsActive(@org.eclipse.jdt.annotation.NonNull Boolean isActive) {
         this.isActive = isActive;
@@ -652,13 +653,13 @@ public class SessionInfoDto {
      * @return supportsMediaControl
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_SUPPORTS_MEDIA_CONTROL)
+    @JsonProperty(value = JSON_PROPERTY_SUPPORTS_MEDIA_CONTROL, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getSupportsMediaControl() {
         return supportsMediaControl;
     }
 
-    @JsonProperty(JSON_PROPERTY_SUPPORTS_MEDIA_CONTROL)
+    @JsonProperty(value = JSON_PROPERTY_SUPPORTS_MEDIA_CONTROL, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setSupportsMediaControl(@org.eclipse.jdt.annotation.NonNull Boolean supportsMediaControl) {
         this.supportsMediaControl = supportsMediaControl;
@@ -675,13 +676,13 @@ public class SessionInfoDto {
      * @return supportsRemoteControl
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_SUPPORTS_REMOTE_CONTROL)
+    @JsonProperty(value = JSON_PROPERTY_SUPPORTS_REMOTE_CONTROL, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getSupportsRemoteControl() {
         return supportsRemoteControl;
     }
 
-    @JsonProperty(JSON_PROPERTY_SUPPORTS_REMOTE_CONTROL)
+    @JsonProperty(value = JSON_PROPERTY_SUPPORTS_REMOTE_CONTROL, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setSupportsRemoteControl(@org.eclipse.jdt.annotation.NonNull Boolean supportsRemoteControl) {
         this.supportsRemoteControl = supportsRemoteControl;
@@ -706,13 +707,13 @@ public class SessionInfoDto {
      * @return nowPlayingQueue
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_NOW_PLAYING_QUEUE)
+    @JsonProperty(value = JSON_PROPERTY_NOW_PLAYING_QUEUE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<QueueItem> getNowPlayingQueue() {
         return nowPlayingQueue;
     }
 
-    @JsonProperty(JSON_PROPERTY_NOW_PLAYING_QUEUE)
+    @JsonProperty(value = JSON_PROPERTY_NOW_PLAYING_QUEUE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setNowPlayingQueue(@org.eclipse.jdt.annotation.NonNull List<QueueItem> nowPlayingQueue) {
         this.nowPlayingQueue = nowPlayingQueue;
@@ -738,13 +739,13 @@ public class SessionInfoDto {
      * @return nowPlayingQueueFullItems
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_NOW_PLAYING_QUEUE_FULL_ITEMS)
+    @JsonProperty(value = JSON_PROPERTY_NOW_PLAYING_QUEUE_FULL_ITEMS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<BaseItemDto> getNowPlayingQueueFullItems() {
         return nowPlayingQueueFullItems;
     }
 
-    @JsonProperty(JSON_PROPERTY_NOW_PLAYING_QUEUE_FULL_ITEMS)
+    @JsonProperty(value = JSON_PROPERTY_NOW_PLAYING_QUEUE_FULL_ITEMS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setNowPlayingQueueFullItems(
             @org.eclipse.jdt.annotation.NonNull List<BaseItemDto> nowPlayingQueueFullItems) {
@@ -762,13 +763,13 @@ public class SessionInfoDto {
      * @return hasCustomDeviceName
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_HAS_CUSTOM_DEVICE_NAME)
+    @JsonProperty(value = JSON_PROPERTY_HAS_CUSTOM_DEVICE_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getHasCustomDeviceName() {
         return hasCustomDeviceName;
     }
 
-    @JsonProperty(JSON_PROPERTY_HAS_CUSTOM_DEVICE_NAME)
+    @JsonProperty(value = JSON_PROPERTY_HAS_CUSTOM_DEVICE_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setHasCustomDeviceName(@org.eclipse.jdt.annotation.NonNull Boolean hasCustomDeviceName) {
         this.hasCustomDeviceName = hasCustomDeviceName;
@@ -785,13 +786,13 @@ public class SessionInfoDto {
      * @return playlistItemId
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_PLAYLIST_ITEM_ID)
+    @JsonProperty(value = JSON_PROPERTY_PLAYLIST_ITEM_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getPlaylistItemId() {
         return playlistItemId;
     }
 
-    @JsonProperty(JSON_PROPERTY_PLAYLIST_ITEM_ID)
+    @JsonProperty(value = JSON_PROPERTY_PLAYLIST_ITEM_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setPlaylistItemId(@org.eclipse.jdt.annotation.NonNull String playlistItemId) {
         this.playlistItemId = playlistItemId;
@@ -808,13 +809,13 @@ public class SessionInfoDto {
      * @return serverId
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_SERVER_ID)
+    @JsonProperty(value = JSON_PROPERTY_SERVER_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getServerId() {
         return serverId;
     }
 
-    @JsonProperty(JSON_PROPERTY_SERVER_ID)
+    @JsonProperty(value = JSON_PROPERTY_SERVER_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setServerId(@org.eclipse.jdt.annotation.NonNull String serverId) {
         this.serverId = serverId;
@@ -831,13 +832,13 @@ public class SessionInfoDto {
      * @return userPrimaryImageTag
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_USER_PRIMARY_IMAGE_TAG)
+    @JsonProperty(value = JSON_PROPERTY_USER_PRIMARY_IMAGE_TAG, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getUserPrimaryImageTag() {
         return userPrimaryImageTag;
     }
 
-    @JsonProperty(JSON_PROPERTY_USER_PRIMARY_IMAGE_TAG)
+    @JsonProperty(value = JSON_PROPERTY_USER_PRIMARY_IMAGE_TAG, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setUserPrimaryImageTag(@org.eclipse.jdt.annotation.NonNull String userPrimaryImageTag) {
         this.userPrimaryImageTag = userPrimaryImageTag;
@@ -863,13 +864,13 @@ public class SessionInfoDto {
      * @return supportedCommands
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_SUPPORTED_COMMANDS)
+    @JsonProperty(value = JSON_PROPERTY_SUPPORTED_COMMANDS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<GeneralCommandType> getSupportedCommands() {
         return supportedCommands;
     }
 
-    @JsonProperty(JSON_PROPERTY_SUPPORTED_COMMANDS)
+    @JsonProperty(value = JSON_PROPERTY_SUPPORTED_COMMANDS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setSupportedCommands(@org.eclipse.jdt.annotation.NonNull List<GeneralCommandType> supportedCommands) {
         this.supportedCommands = supportedCommands;
@@ -1015,9 +1016,9 @@ public class SessionInfoDto {
         if (getAdditionalUsers() != null) {
             for (int i = 0; i < getAdditionalUsers().size(); i++) {
                 if (getAdditionalUsers().get(i) != null) {
-                    joiner.add(getAdditionalUsers().get(i).toUrlQueryString(String.format("%sAdditionalUsers%s%s",
-                            prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
+                    joiner.add(getAdditionalUsers().get(i).toUrlQueryString(
+                            String.format(Locale.ROOT, "%sAdditionalUsers%s%s", prefix, suffix, "".equals(suffix) ? ""
+                                    : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
                 }
             }
         }
@@ -1029,7 +1030,7 @@ public class SessionInfoDto {
 
         // add `RemoteEndPoint` to the URL query string
         if (getRemoteEndPoint() != null) {
-            joiner.add(String.format("%sRemoteEndPoint%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sRemoteEndPoint%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getRemoteEndPoint()))));
         }
 
@@ -1037,8 +1038,9 @@ public class SessionInfoDto {
         if (getPlayableMediaTypes() != null) {
             for (int i = 0; i < getPlayableMediaTypes().size(); i++) {
                 if (getPlayableMediaTypes().get(i) != null) {
-                    joiner.add(String.format("%sPlayableMediaTypes%s%s=%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+                    joiner.add(String.format(Locale.ROOT, "%sPlayableMediaTypes%s%s=%s", prefix, suffix,
+                            "".equals(suffix) ? ""
+                                    : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
                             ApiClient.urlEncode(ApiClient.valueToString(getPlayableMediaTypes().get(i)))));
                 }
             }
@@ -1046,55 +1048,55 @@ public class SessionInfoDto {
 
         // add `Id` to the URL query string
         if (getId() != null) {
-            joiner.add(
-                    String.format("%sId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
+            joiner.add(String.format(Locale.ROOT, "%sId%s=%s", prefix, suffix,
+                    ApiClient.urlEncode(ApiClient.valueToString(getId()))));
         }
 
         // add `UserId` to the URL query string
         if (getUserId() != null) {
-            joiner.add(String.format("%sUserId%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sUserId%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getUserId()))));
         }
 
         // add `UserName` to the URL query string
         if (getUserName() != null) {
-            joiner.add(String.format("%sUserName%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sUserName%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getUserName()))));
         }
 
         // add `Client` to the URL query string
         if (getClient() != null) {
-            joiner.add(String.format("%sClient%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sClient%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getClient()))));
         }
 
         // add `LastActivityDate` to the URL query string
         if (getLastActivityDate() != null) {
-            joiner.add(String.format("%sLastActivityDate%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sLastActivityDate%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getLastActivityDate()))));
         }
 
         // add `LastPlaybackCheckIn` to the URL query string
         if (getLastPlaybackCheckIn() != null) {
-            joiner.add(String.format("%sLastPlaybackCheckIn%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sLastPlaybackCheckIn%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getLastPlaybackCheckIn()))));
         }
 
         // add `LastPausedDate` to the URL query string
         if (getLastPausedDate() != null) {
-            joiner.add(String.format("%sLastPausedDate%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sLastPausedDate%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getLastPausedDate()))));
         }
 
         // add `DeviceName` to the URL query string
         if (getDeviceName() != null) {
-            joiner.add(String.format("%sDeviceName%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sDeviceName%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getDeviceName()))));
         }
 
         // add `DeviceType` to the URL query string
         if (getDeviceType() != null) {
-            joiner.add(String.format("%sDeviceType%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sDeviceType%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getDeviceType()))));
         }
 
@@ -1110,13 +1112,13 @@ public class SessionInfoDto {
 
         // add `DeviceId` to the URL query string
         if (getDeviceId() != null) {
-            joiner.add(String.format("%sDeviceId%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sDeviceId%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getDeviceId()))));
         }
 
         // add `ApplicationVersion` to the URL query string
         if (getApplicationVersion() != null) {
-            joiner.add(String.format("%sApplicationVersion%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sApplicationVersion%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getApplicationVersion()))));
         }
 
@@ -1127,19 +1129,19 @@ public class SessionInfoDto {
 
         // add `IsActive` to the URL query string
         if (getIsActive() != null) {
-            joiner.add(String.format("%sIsActive%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sIsActive%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getIsActive()))));
         }
 
         // add `SupportsMediaControl` to the URL query string
         if (getSupportsMediaControl() != null) {
-            joiner.add(String.format("%sSupportsMediaControl%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sSupportsMediaControl%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getSupportsMediaControl()))));
         }
 
         // add `SupportsRemoteControl` to the URL query string
         if (getSupportsRemoteControl() != null) {
-            joiner.add(String.format("%sSupportsRemoteControl%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sSupportsRemoteControl%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getSupportsRemoteControl()))));
         }
 
@@ -1147,9 +1149,9 @@ public class SessionInfoDto {
         if (getNowPlayingQueue() != null) {
             for (int i = 0; i < getNowPlayingQueue().size(); i++) {
                 if (getNowPlayingQueue().get(i) != null) {
-                    joiner.add(getNowPlayingQueue().get(i).toUrlQueryString(String.format("%sNowPlayingQueue%s%s",
-                            prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
+                    joiner.add(getNowPlayingQueue().get(i).toUrlQueryString(
+                            String.format(Locale.ROOT, "%sNowPlayingQueue%s%s", prefix, suffix, "".equals(suffix) ? ""
+                                    : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
                 }
             }
         }
@@ -1158,34 +1160,34 @@ public class SessionInfoDto {
         if (getNowPlayingQueueFullItems() != null) {
             for (int i = 0; i < getNowPlayingQueueFullItems().size(); i++) {
                 if (getNowPlayingQueueFullItems().get(i) != null) {
-                    joiner.add(getNowPlayingQueueFullItems().get(i).toUrlQueryString(String.format(
-                            "%sNowPlayingQueueFullItems%s%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
+                    joiner.add(getNowPlayingQueueFullItems().get(i).toUrlQueryString(String.format(Locale.ROOT,
+                            "%sNowPlayingQueueFullItems%s%s", prefix, suffix, "".equals(suffix) ? ""
+                                    : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
                 }
             }
         }
 
         // add `HasCustomDeviceName` to the URL query string
         if (getHasCustomDeviceName() != null) {
-            joiner.add(String.format("%sHasCustomDeviceName%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sHasCustomDeviceName%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getHasCustomDeviceName()))));
         }
 
         // add `PlaylistItemId` to the URL query string
         if (getPlaylistItemId() != null) {
-            joiner.add(String.format("%sPlaylistItemId%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sPlaylistItemId%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getPlaylistItemId()))));
         }
 
         // add `ServerId` to the URL query string
         if (getServerId() != null) {
-            joiner.add(String.format("%sServerId%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sServerId%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getServerId()))));
         }
 
         // add `UserPrimaryImageTag` to the URL query string
         if (getUserPrimaryImageTag() != null) {
-            joiner.add(String.format("%sUserPrimaryImageTag%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sUserPrimaryImageTag%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getUserPrimaryImageTag()))));
         }
 
@@ -1193,8 +1195,9 @@ public class SessionInfoDto {
         if (getSupportedCommands() != null) {
             for (int i = 0; i < getSupportedCommands().size(); i++) {
                 if (getSupportedCommands().get(i) != null) {
-                    joiner.add(String.format("%sSupportedCommands%s%s=%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+                    joiner.add(String.format(Locale.ROOT, "%sSupportedCommands%s%s=%s", prefix, suffix,
+                            "".equals(suffix) ? ""
+                                    : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
                             ApiClient.urlEncode(ApiClient.valueToString(getSupportedCommands().get(i)))));
                 }
             }

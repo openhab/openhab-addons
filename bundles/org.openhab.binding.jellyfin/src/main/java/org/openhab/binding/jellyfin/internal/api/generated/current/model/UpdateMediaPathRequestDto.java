@@ -13,6 +13,7 @@
 
 package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
+import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
 
@@ -50,13 +51,13 @@ public class UpdateMediaPathRequestDto {
      * @return name
      */
     @org.eclipse.jdt.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_NAME)
+    @JsonProperty(value = JSON_PROPERTY_NAME, required = true)
     @JsonInclude(value = JsonInclude.Include.ALWAYS)
     public String getName() {
         return name;
     }
 
-    @JsonProperty(JSON_PROPERTY_NAME)
+    @JsonProperty(value = JSON_PROPERTY_NAME, required = true)
     @JsonInclude(value = JsonInclude.Include.ALWAYS)
     public void setName(@org.eclipse.jdt.annotation.Nullable String name) {
         this.name = name;
@@ -73,13 +74,13 @@ public class UpdateMediaPathRequestDto {
      * @return pathInfo
      */
     @org.eclipse.jdt.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_PATH_INFO)
+    @JsonProperty(value = JSON_PROPERTY_PATH_INFO, required = true)
     @JsonInclude(value = JsonInclude.Include.ALWAYS)
     public MediaPathInfo getPathInfo() {
         return pathInfo;
     }
 
-    @JsonProperty(JSON_PROPERTY_PATH_INFO)
+    @JsonProperty(value = JSON_PROPERTY_PATH_INFO, required = true)
     @JsonInclude(value = JsonInclude.Include.ALWAYS)
     public void setPathInfo(@org.eclipse.jdt.annotation.Nullable MediaPathInfo pathInfo) {
         this.pathInfo = pathInfo;
@@ -161,7 +162,7 @@ public class UpdateMediaPathRequestDto {
 
         // add `Name` to the URL query string
         if (getName() != null) {
-            joiner.add(String.format("%sName%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sName%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getName()))));
         }
 

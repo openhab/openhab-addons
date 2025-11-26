@@ -842,7 +842,7 @@ public class AudioApi {
             localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
         }
 
-        localVarRequestBuilder.header("Accept", "audio/*");
+        localVarRequestBuilder.header("Accept", "audio/*, text/html");
 
         localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {
@@ -906,7 +906,7 @@ public class AudioApi {
      * @param maxVideoBitDepth Optional. The maximum video bit depth. (optional)
      * @param requireAvc Optional. Whether to require avc. (optional)
      * @param deInterlace Optional. Whether to deinterlace the video. (optional)
-     * @param requireNonAnamorphic Optional. Whether to require a non anamporphic stream. (optional)
+     * @param requireNonAnamorphic Optional. Whether to require a non anamorphic stream. (optional)
      * @param transcodingMaxAudioChannels Optional. The maximum number of audio channels to transcode. (optional)
      * @param cpuCoreLimit Optional. The limit of how many cpu cores to use. (optional)
      * @param liveStreamId The live stream id. (optional)
@@ -1029,7 +1029,7 @@ public class AudioApi {
      * @param maxVideoBitDepth Optional. The maximum video bit depth. (optional)
      * @param requireAvc Optional. Whether to require avc. (optional)
      * @param deInterlace Optional. Whether to deinterlace the video. (optional)
-     * @param requireNonAnamorphic Optional. Whether to require a non anamporphic stream. (optional)
+     * @param requireNonAnamorphic Optional. Whether to require a non anamorphic stream. (optional)
      * @param transcodingMaxAudioChannels Optional. The maximum number of audio channels to transcode. (optional)
      * @param cpuCoreLimit Optional. The limit of how many cpu cores to use. (optional)
      * @param liveStreamId The live stream id. (optional)
@@ -1156,7 +1156,7 @@ public class AudioApi {
      * @param maxVideoBitDepth Optional. The maximum video bit depth. (optional)
      * @param requireAvc Optional. Whether to require avc. (optional)
      * @param deInterlace Optional. Whether to deinterlace the video. (optional)
-     * @param requireNonAnamorphic Optional. Whether to require a non anamporphic stream. (optional)
+     * @param requireNonAnamorphic Optional. Whether to require a non anamorphic stream. (optional)
      * @param transcodingMaxAudioChannels Optional. The maximum number of audio channels to transcode. (optional)
      * @param cpuCoreLimit Optional. The limit of how many cpu cores to use. (optional)
      * @param liveStreamId The live stream id. (optional)
@@ -1280,7 +1280,7 @@ public class AudioApi {
      * @param maxVideoBitDepth Optional. The maximum video bit depth. (optional)
      * @param requireAvc Optional. Whether to require avc. (optional)
      * @param deInterlace Optional. Whether to deinterlace the video. (optional)
-     * @param requireNonAnamorphic Optional. Whether to require a non anamporphic stream. (optional)
+     * @param requireNonAnamorphic Optional. Whether to require a non anamorphic stream. (optional)
      * @param transcodingMaxAudioChannels Optional. The maximum number of audio channels to transcode. (optional)
      * @param cpuCoreLimit Optional. The limit of how many cpu cores to use. (optional)
      * @param liveStreamId The live stream id. (optional)
@@ -1559,7 +1559,7 @@ public class AudioApi {
             localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
         }
 
-        localVarRequestBuilder.header("Accept", "audio/*");
+        localVarRequestBuilder.header("Accept", "audio/*, text/html");
 
         localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {
@@ -2269,7 +2269,7 @@ public class AudioApi {
             localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
         }
 
-        localVarRequestBuilder.header("Accept", "audio/*");
+        localVarRequestBuilder.header("Accept", "audio/*, text/html");
 
         localVarRequestBuilder.method("HEAD", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {
@@ -2333,7 +2333,7 @@ public class AudioApi {
      * @param maxVideoBitDepth Optional. The maximum video bit depth. (optional)
      * @param requireAvc Optional. Whether to require avc. (optional)
      * @param deInterlace Optional. Whether to deinterlace the video. (optional)
-     * @param requireNonAnamorphic Optional. Whether to require a non anamporphic stream. (optional)
+     * @param requireNonAnamorphic Optional. Whether to require a non anamorphic stream. (optional)
      * @param transcodingMaxAudioChannels Optional. The maximum number of audio channels to transcode. (optional)
      * @param cpuCoreLimit Optional. The limit of how many cpu cores to use. (optional)
      * @param liveStreamId The live stream id. (optional)
@@ -2456,7 +2456,7 @@ public class AudioApi {
      * @param maxVideoBitDepth Optional. The maximum video bit depth. (optional)
      * @param requireAvc Optional. Whether to require avc. (optional)
      * @param deInterlace Optional. Whether to deinterlace the video. (optional)
-     * @param requireNonAnamorphic Optional. Whether to require a non anamporphic stream. (optional)
+     * @param requireNonAnamorphic Optional. Whether to require a non anamorphic stream. (optional)
      * @param transcodingMaxAudioChannels Optional. The maximum number of audio channels to transcode. (optional)
      * @param cpuCoreLimit Optional. The limit of how many cpu cores to use. (optional)
      * @param liveStreamId The live stream id. (optional)
@@ -2583,7 +2583,7 @@ public class AudioApi {
      * @param maxVideoBitDepth Optional. The maximum video bit depth. (optional)
      * @param requireAvc Optional. Whether to require avc. (optional)
      * @param deInterlace Optional. Whether to deinterlace the video. (optional)
-     * @param requireNonAnamorphic Optional. Whether to require a non anamporphic stream. (optional)
+     * @param requireNonAnamorphic Optional. Whether to require a non anamorphic stream. (optional)
      * @param transcodingMaxAudioChannels Optional. The maximum number of audio channels to transcode. (optional)
      * @param cpuCoreLimit Optional. The limit of how many cpu cores to use. (optional)
      * @param liveStreamId The live stream id. (optional)
@@ -2707,7 +2707,7 @@ public class AudioApi {
      * @param maxVideoBitDepth Optional. The maximum video bit depth. (optional)
      * @param requireAvc Optional. Whether to require avc. (optional)
      * @param deInterlace Optional. Whether to deinterlace the video. (optional)
-     * @param requireNonAnamorphic Optional. Whether to require a non anamporphic stream. (optional)
+     * @param requireNonAnamorphic Optional. Whether to require a non anamorphic stream. (optional)
      * @param transcodingMaxAudioChannels Optional. The maximum number of audio channels to transcode. (optional)
      * @param cpuCoreLimit Optional. The limit of how many cpu cores to use. (optional)
      * @param liveStreamId The live stream id. (optional)
@@ -2986,7 +2986,7 @@ public class AudioApi {
             localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
         }
 
-        localVarRequestBuilder.header("Accept", "audio/*");
+        localVarRequestBuilder.header("Accept", "audio/*, text/html");
 
         localVarRequestBuilder.method("HEAD", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {

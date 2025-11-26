@@ -15,6 +15,7 @@ package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
 import java.util.UUID;
@@ -79,13 +80,13 @@ public class PackageInfo {
      * @return name
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_NAME)
+    @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getName() {
         return name;
     }
 
-    @JsonProperty(JSON_PROPERTY_NAME)
+    @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setName(@org.eclipse.jdt.annotation.NonNull String name) {
         this.name = name;
@@ -102,13 +103,13 @@ public class PackageInfo {
      * @return description
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_DESCRIPTION)
+    @JsonProperty(value = JSON_PROPERTY_DESCRIPTION, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getDescription() {
         return description;
     }
 
-    @JsonProperty(JSON_PROPERTY_DESCRIPTION)
+    @JsonProperty(value = JSON_PROPERTY_DESCRIPTION, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setDescription(@org.eclipse.jdt.annotation.NonNull String description) {
         this.description = description;
@@ -125,13 +126,13 @@ public class PackageInfo {
      * @return overview
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_OVERVIEW)
+    @JsonProperty(value = JSON_PROPERTY_OVERVIEW, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getOverview() {
         return overview;
     }
 
-    @JsonProperty(JSON_PROPERTY_OVERVIEW)
+    @JsonProperty(value = JSON_PROPERTY_OVERVIEW, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setOverview(@org.eclipse.jdt.annotation.NonNull String overview) {
         this.overview = overview;
@@ -148,13 +149,13 @@ public class PackageInfo {
      * @return owner
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_OWNER)
+    @JsonProperty(value = JSON_PROPERTY_OWNER, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getOwner() {
         return owner;
     }
 
-    @JsonProperty(JSON_PROPERTY_OWNER)
+    @JsonProperty(value = JSON_PROPERTY_OWNER, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setOwner(@org.eclipse.jdt.annotation.NonNull String owner) {
         this.owner = owner;
@@ -171,13 +172,13 @@ public class PackageInfo {
      * @return category
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_CATEGORY)
+    @JsonProperty(value = JSON_PROPERTY_CATEGORY, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getCategory() {
         return category;
     }
 
-    @JsonProperty(JSON_PROPERTY_CATEGORY)
+    @JsonProperty(value = JSON_PROPERTY_CATEGORY, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setCategory(@org.eclipse.jdt.annotation.NonNull String category) {
         this.category = category;
@@ -195,13 +196,13 @@ public class PackageInfo {
      * @return guid
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_GUID)
+    @JsonProperty(value = JSON_PROPERTY_GUID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public UUID getGuid() {
         return guid;
     }
 
-    @JsonProperty(JSON_PROPERTY_GUID)
+    @JsonProperty(value = JSON_PROPERTY_GUID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setGuid(@org.eclipse.jdt.annotation.NonNull UUID guid) {
         this.guid = guid;
@@ -226,13 +227,13 @@ public class PackageInfo {
      * @return versions
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_VERSIONS)
+    @JsonProperty(value = JSON_PROPERTY_VERSIONS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<VersionInfo> getVersions() {
         return versions;
     }
 
-    @JsonProperty(JSON_PROPERTY_VERSIONS)
+    @JsonProperty(value = JSON_PROPERTY_VERSIONS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setVersions(@org.eclipse.jdt.annotation.NonNull List<VersionInfo> versions) {
         this.versions = versions;
@@ -249,13 +250,13 @@ public class PackageInfo {
      * @return imageUrl
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_IMAGE_URL)
+    @JsonProperty(value = JSON_PROPERTY_IMAGE_URL, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getImageUrl() {
         return imageUrl;
     }
 
-    @JsonProperty(JSON_PROPERTY_IMAGE_URL)
+    @JsonProperty(value = JSON_PROPERTY_IMAGE_URL, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setImageUrl(@org.eclipse.jdt.annotation.NonNull String imageUrl) {
         this.imageUrl = imageUrl;
@@ -346,37 +347,37 @@ public class PackageInfo {
 
         // add `name` to the URL query string
         if (getName() != null) {
-            joiner.add(String.format("%sname%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sname%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getName()))));
         }
 
         // add `description` to the URL query string
         if (getDescription() != null) {
-            joiner.add(String.format("%sdescription%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sdescription%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getDescription()))));
         }
 
         // add `overview` to the URL query string
         if (getOverview() != null) {
-            joiner.add(String.format("%soverview%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%soverview%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getOverview()))));
         }
 
         // add `owner` to the URL query string
         if (getOwner() != null) {
-            joiner.add(String.format("%sowner%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sowner%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getOwner()))));
         }
 
         // add `category` to the URL query string
         if (getCategory() != null) {
-            joiner.add(String.format("%scategory%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%scategory%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getCategory()))));
         }
 
         // add `guid` to the URL query string
         if (getGuid() != null) {
-            joiner.add(String.format("%sguid%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sguid%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getGuid()))));
         }
 
@@ -384,15 +385,16 @@ public class PackageInfo {
         if (getVersions() != null) {
             for (int i = 0; i < getVersions().size(); i++) {
                 if (getVersions().get(i) != null) {
-                    joiner.add(getVersions().get(i).toUrlQueryString(String.format("%sversions%s%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
+                    joiner.add(getVersions().get(i).toUrlQueryString(
+                            String.format(Locale.ROOT, "%sversions%s%s", prefix, suffix, "".equals(suffix) ? ""
+                                    : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
                 }
             }
         }
 
         // add `imageUrl` to the URL query string
         if (getImageUrl() != null) {
-            joiner.add(String.format("%simageUrl%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%simageUrl%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getImageUrl()))));
         }
 

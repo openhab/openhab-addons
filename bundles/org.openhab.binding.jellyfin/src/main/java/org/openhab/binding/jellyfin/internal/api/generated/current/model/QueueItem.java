@@ -13,6 +13,7 @@
 
 package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
+import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
 import java.util.UUID;
@@ -51,13 +52,13 @@ public class QueueItem {
      * @return id
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ID)
+    @JsonProperty(value = JSON_PROPERTY_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public UUID getId() {
         return id;
     }
 
-    @JsonProperty(JSON_PROPERTY_ID)
+    @JsonProperty(value = JSON_PROPERTY_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setId(@org.eclipse.jdt.annotation.NonNull UUID id) {
         this.id = id;
@@ -74,13 +75,13 @@ public class QueueItem {
      * @return playlistItemId
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_PLAYLIST_ITEM_ID)
+    @JsonProperty(value = JSON_PROPERTY_PLAYLIST_ITEM_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getPlaylistItemId() {
         return playlistItemId;
     }
 
-    @JsonProperty(JSON_PROPERTY_PLAYLIST_ITEM_ID)
+    @JsonProperty(value = JSON_PROPERTY_PLAYLIST_ITEM_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setPlaylistItemId(@org.eclipse.jdt.annotation.NonNull String playlistItemId) {
         this.playlistItemId = playlistItemId;
@@ -161,13 +162,13 @@ public class QueueItem {
 
         // add `Id` to the URL query string
         if (getId() != null) {
-            joiner.add(
-                    String.format("%sId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
+            joiner.add(String.format(Locale.ROOT, "%sId%s=%s", prefix, suffix,
+                    ApiClient.urlEncode(ApiClient.valueToString(getId()))));
         }
 
         // add `PlaylistItemId` to the URL query string
         if (getPlaylistItemId() != null) {
-            joiner.add(String.format("%sPlaylistItemId%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sPlaylistItemId%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getPlaylistItemId()))));
         }
 

@@ -15,6 +15,7 @@ package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
 import java.util.UUID;
@@ -61,13 +62,13 @@ public class QueueRequestDto {
      * @return itemIds
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ITEM_IDS)
+    @JsonProperty(value = JSON_PROPERTY_ITEM_IDS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<UUID> getItemIds() {
         return itemIds;
     }
 
-    @JsonProperty(JSON_PROPERTY_ITEM_IDS)
+    @JsonProperty(value = JSON_PROPERTY_ITEM_IDS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setItemIds(@org.eclipse.jdt.annotation.NonNull List<UUID> itemIds) {
         this.itemIds = itemIds;
@@ -84,13 +85,13 @@ public class QueueRequestDto {
      * @return mode
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_MODE)
+    @JsonProperty(value = JSON_PROPERTY_MODE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public GroupQueueMode getMode() {
         return mode;
     }
 
-    @JsonProperty(JSON_PROPERTY_MODE)
+    @JsonProperty(value = JSON_PROPERTY_MODE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setMode(@org.eclipse.jdt.annotation.NonNull GroupQueueMode mode) {
         this.mode = mode;
@@ -173,8 +174,9 @@ public class QueueRequestDto {
         if (getItemIds() != null) {
             for (int i = 0; i < getItemIds().size(); i++) {
                 if (getItemIds().get(i) != null) {
-                    joiner.add(String.format("%sItemIds%s%s=%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+                    joiner.add(String.format(Locale.ROOT, "%sItemIds%s%s=%s", prefix, suffix,
+                            "".equals(suffix) ? ""
+                                    : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
                             ApiClient.urlEncode(ApiClient.valueToString(getItemIds().get(i)))));
                 }
             }
@@ -182,7 +184,7 @@ public class QueueRequestDto {
 
         // add `Mode` to the URL query string
         if (getMode() != null) {
-            joiner.add(String.format("%sMode%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sMode%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getMode()))));
         }
 

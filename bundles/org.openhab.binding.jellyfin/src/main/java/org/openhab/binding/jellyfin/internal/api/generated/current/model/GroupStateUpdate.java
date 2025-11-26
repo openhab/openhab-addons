@@ -13,6 +13,7 @@
 
 package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
+import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
 
@@ -50,13 +51,13 @@ public class GroupStateUpdate {
      * @return state
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_STATE)
+    @JsonProperty(value = JSON_PROPERTY_STATE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public GroupStateType getState() {
         return state;
     }
 
-    @JsonProperty(JSON_PROPERTY_STATE)
+    @JsonProperty(value = JSON_PROPERTY_STATE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setState(@org.eclipse.jdt.annotation.NonNull GroupStateType state) {
         this.state = state;
@@ -73,13 +74,13 @@ public class GroupStateUpdate {
      * @return reason
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_REASON)
+    @JsonProperty(value = JSON_PROPERTY_REASON, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public PlaybackRequestType getReason() {
         return reason;
     }
 
-    @JsonProperty(JSON_PROPERTY_REASON)
+    @JsonProperty(value = JSON_PROPERTY_REASON, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setReason(@org.eclipse.jdt.annotation.NonNull PlaybackRequestType reason) {
         this.reason = reason;
@@ -161,13 +162,13 @@ public class GroupStateUpdate {
 
         // add `State` to the URL query string
         if (getState() != null) {
-            joiner.add(String.format("%sState%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sState%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getState()))));
         }
 
         // add `Reason` to the URL query string
         if (getReason() != null) {
-            joiner.add(String.format("%sReason%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sReason%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getReason()))));
         }
 

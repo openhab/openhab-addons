@@ -14,6 +14,7 @@
 package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
 import java.time.OffsetDateTime;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
 
@@ -92,13 +93,13 @@ public class UpdateUserItemDataDto {
      * @return rating
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_RATING)
+    @JsonProperty(value = JSON_PROPERTY_RATING, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Double getRating() {
         return rating;
     }
 
-    @JsonProperty(JSON_PROPERTY_RATING)
+    @JsonProperty(value = JSON_PROPERTY_RATING, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setRating(@org.eclipse.jdt.annotation.NonNull Double rating) {
         this.rating = rating;
@@ -115,13 +116,13 @@ public class UpdateUserItemDataDto {
      * @return playedPercentage
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_PLAYED_PERCENTAGE)
+    @JsonProperty(value = JSON_PROPERTY_PLAYED_PERCENTAGE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Double getPlayedPercentage() {
         return playedPercentage;
     }
 
-    @JsonProperty(JSON_PROPERTY_PLAYED_PERCENTAGE)
+    @JsonProperty(value = JSON_PROPERTY_PLAYED_PERCENTAGE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setPlayedPercentage(@org.eclipse.jdt.annotation.NonNull Double playedPercentage) {
         this.playedPercentage = playedPercentage;
@@ -138,13 +139,13 @@ public class UpdateUserItemDataDto {
      * @return unplayedItemCount
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_UNPLAYED_ITEM_COUNT)
+    @JsonProperty(value = JSON_PROPERTY_UNPLAYED_ITEM_COUNT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getUnplayedItemCount() {
         return unplayedItemCount;
     }
 
-    @JsonProperty(JSON_PROPERTY_UNPLAYED_ITEM_COUNT)
+    @JsonProperty(value = JSON_PROPERTY_UNPLAYED_ITEM_COUNT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setUnplayedItemCount(@org.eclipse.jdt.annotation.NonNull Integer unplayedItemCount) {
         this.unplayedItemCount = unplayedItemCount;
@@ -161,13 +162,13 @@ public class UpdateUserItemDataDto {
      * @return playbackPositionTicks
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_PLAYBACK_POSITION_TICKS)
+    @JsonProperty(value = JSON_PROPERTY_PLAYBACK_POSITION_TICKS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Long getPlaybackPositionTicks() {
         return playbackPositionTicks;
     }
 
-    @JsonProperty(JSON_PROPERTY_PLAYBACK_POSITION_TICKS)
+    @JsonProperty(value = JSON_PROPERTY_PLAYBACK_POSITION_TICKS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setPlaybackPositionTicks(@org.eclipse.jdt.annotation.NonNull Long playbackPositionTicks) {
         this.playbackPositionTicks = playbackPositionTicks;
@@ -184,13 +185,13 @@ public class UpdateUserItemDataDto {
      * @return playCount
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_PLAY_COUNT)
+    @JsonProperty(value = JSON_PROPERTY_PLAY_COUNT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getPlayCount() {
         return playCount;
     }
 
-    @JsonProperty(JSON_PROPERTY_PLAY_COUNT)
+    @JsonProperty(value = JSON_PROPERTY_PLAY_COUNT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setPlayCount(@org.eclipse.jdt.annotation.NonNull Integer playCount) {
         this.playCount = playCount;
@@ -207,13 +208,13 @@ public class UpdateUserItemDataDto {
      * @return isFavorite
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_IS_FAVORITE)
+    @JsonProperty(value = JSON_PROPERTY_IS_FAVORITE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getIsFavorite() {
         return isFavorite;
     }
 
-    @JsonProperty(JSON_PROPERTY_IS_FAVORITE)
+    @JsonProperty(value = JSON_PROPERTY_IS_FAVORITE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setIsFavorite(@org.eclipse.jdt.annotation.NonNull Boolean isFavorite) {
         this.isFavorite = isFavorite;
@@ -230,13 +231,13 @@ public class UpdateUserItemDataDto {
      * @return likes
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_LIKES)
+    @JsonProperty(value = JSON_PROPERTY_LIKES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getLikes() {
         return likes;
     }
 
-    @JsonProperty(JSON_PROPERTY_LIKES)
+    @JsonProperty(value = JSON_PROPERTY_LIKES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setLikes(@org.eclipse.jdt.annotation.NonNull Boolean likes) {
         this.likes = likes;
@@ -253,13 +254,13 @@ public class UpdateUserItemDataDto {
      * @return lastPlayedDate
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_LAST_PLAYED_DATE)
+    @JsonProperty(value = JSON_PROPERTY_LAST_PLAYED_DATE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public OffsetDateTime getLastPlayedDate() {
         return lastPlayedDate;
     }
 
-    @JsonProperty(JSON_PROPERTY_LAST_PLAYED_DATE)
+    @JsonProperty(value = JSON_PROPERTY_LAST_PLAYED_DATE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setLastPlayedDate(@org.eclipse.jdt.annotation.NonNull OffsetDateTime lastPlayedDate) {
         this.lastPlayedDate = lastPlayedDate;
@@ -276,13 +277,13 @@ public class UpdateUserItemDataDto {
      * @return played
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_PLAYED)
+    @JsonProperty(value = JSON_PROPERTY_PLAYED, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getPlayed() {
         return played;
     }
 
-    @JsonProperty(JSON_PROPERTY_PLAYED)
+    @JsonProperty(value = JSON_PROPERTY_PLAYED, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setPlayed(@org.eclipse.jdt.annotation.NonNull Boolean played) {
         this.played = played;
@@ -299,13 +300,13 @@ public class UpdateUserItemDataDto {
      * @return key
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_KEY)
+    @JsonProperty(value = JSON_PROPERTY_KEY, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getKey() {
         return key;
     }
 
-    @JsonProperty(JSON_PROPERTY_KEY)
+    @JsonProperty(value = JSON_PROPERTY_KEY, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setKey(@org.eclipse.jdt.annotation.NonNull String key) {
         this.key = key;
@@ -322,13 +323,13 @@ public class UpdateUserItemDataDto {
      * @return itemId
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ITEM_ID)
+    @JsonProperty(value = JSON_PROPERTY_ITEM_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getItemId() {
         return itemId;
     }
 
-    @JsonProperty(JSON_PROPERTY_ITEM_ID)
+    @JsonProperty(value = JSON_PROPERTY_ITEM_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setItemId(@org.eclipse.jdt.annotation.NonNull String itemId) {
         this.itemId = itemId;
@@ -429,67 +430,67 @@ public class UpdateUserItemDataDto {
 
         // add `Rating` to the URL query string
         if (getRating() != null) {
-            joiner.add(String.format("%sRating%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sRating%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getRating()))));
         }
 
         // add `PlayedPercentage` to the URL query string
         if (getPlayedPercentage() != null) {
-            joiner.add(String.format("%sPlayedPercentage%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sPlayedPercentage%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getPlayedPercentage()))));
         }
 
         // add `UnplayedItemCount` to the URL query string
         if (getUnplayedItemCount() != null) {
-            joiner.add(String.format("%sUnplayedItemCount%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sUnplayedItemCount%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getUnplayedItemCount()))));
         }
 
         // add `PlaybackPositionTicks` to the URL query string
         if (getPlaybackPositionTicks() != null) {
-            joiner.add(String.format("%sPlaybackPositionTicks%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sPlaybackPositionTicks%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getPlaybackPositionTicks()))));
         }
 
         // add `PlayCount` to the URL query string
         if (getPlayCount() != null) {
-            joiner.add(String.format("%sPlayCount%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sPlayCount%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getPlayCount()))));
         }
 
         // add `IsFavorite` to the URL query string
         if (getIsFavorite() != null) {
-            joiner.add(String.format("%sIsFavorite%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sIsFavorite%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getIsFavorite()))));
         }
 
         // add `Likes` to the URL query string
         if (getLikes() != null) {
-            joiner.add(String.format("%sLikes%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sLikes%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getLikes()))));
         }
 
         // add `LastPlayedDate` to the URL query string
         if (getLastPlayedDate() != null) {
-            joiner.add(String.format("%sLastPlayedDate%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sLastPlayedDate%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getLastPlayedDate()))));
         }
 
         // add `Played` to the URL query string
         if (getPlayed() != null) {
-            joiner.add(String.format("%sPlayed%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sPlayed%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getPlayed()))));
         }
 
         // add `Key` to the URL query string
         if (getKey() != null) {
-            joiner.add(String.format("%sKey%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sKey%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getKey()))));
         }
 
         // add `ItemId` to the URL query string
         if (getItemId() != null) {
-            joiner.add(String.format("%sItemId%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sItemId%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getItemId()))));
         }
 

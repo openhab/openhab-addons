@@ -13,6 +13,7 @@
 
 package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
+import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
 
@@ -46,13 +47,13 @@ public class ClientLogDocumentResponseDto {
      * @return fileName
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_FILE_NAME)
+    @JsonProperty(value = JSON_PROPERTY_FILE_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getFileName() {
         return fileName;
     }
 
-    @JsonProperty(JSON_PROPERTY_FILE_NAME)
+    @JsonProperty(value = JSON_PROPERTY_FILE_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setFileName(@org.eclipse.jdt.annotation.NonNull String fileName) {
         this.fileName = fileName;
@@ -132,7 +133,7 @@ public class ClientLogDocumentResponseDto {
 
         // add `FileName` to the URL query string
         if (getFileName() != null) {
-            joiner.add(String.format("%sFileName%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sFileName%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getFileName()))));
         }
 

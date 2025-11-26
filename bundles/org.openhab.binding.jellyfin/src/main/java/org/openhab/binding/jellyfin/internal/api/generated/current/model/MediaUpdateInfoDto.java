@@ -15,6 +15,7 @@ package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
 
@@ -54,13 +55,13 @@ public class MediaUpdateInfoDto {
      * @return updates
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_UPDATES)
+    @JsonProperty(value = JSON_PROPERTY_UPDATES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<MediaUpdateInfoPathDto> getUpdates() {
         return updates;
     }
 
-    @JsonProperty(JSON_PROPERTY_UPDATES)
+    @JsonProperty(value = JSON_PROPERTY_UPDATES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setUpdates(@org.eclipse.jdt.annotation.NonNull List<MediaUpdateInfoPathDto> updates) {
         this.updates = updates;
@@ -142,8 +143,9 @@ public class MediaUpdateInfoDto {
         if (getUpdates() != null) {
             for (int i = 0; i < getUpdates().size(); i++) {
                 if (getUpdates().get(i) != null) {
-                    joiner.add(getUpdates().get(i).toUrlQueryString(String.format("%sUpdates%s%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
+                    joiner.add(getUpdates().get(i).toUrlQueryString(
+                            String.format(Locale.ROOT, "%sUpdates%s%s", prefix, suffix, "".equals(suffix) ? ""
+                                    : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
                 }
             }
         }

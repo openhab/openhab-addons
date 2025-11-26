@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Map;
 import java.util.StringJoiner;
 import java.util.logging.Level;
@@ -156,8 +157,8 @@ public class WebSocketMessage extends AbstractOpenApiSchema {
                 ret.setActualInstance(deserialized);
                 return ret;
             }
-            throw new IOException(String
-                    .format("Failed deserialization for WebSocketMessage: %d classes match result, expected 1", match));
+            throw new IOException(String.format(Locale.ROOT,
+                    "Failed deserialization for WebSocketMessage: %d classes match result, expected 1", match));
         }
 
         /**
@@ -214,7 +215,7 @@ public class WebSocketMessage extends AbstractOpenApiSchema {
         mappings.put("ServerShuttingDown", ServerShuttingDownMessage.class);
         mappings.put("Sessions", SessionsMessage.class);
         mappings.put("SyncPlayCommand", SyncPlayCommandMessage.class);
-        mappings.put("SyncPlayGroupUpdate", SyncPlayGroupUpdateCommandMessage.class);
+        mappings.put("SyncPlayGroupUpdate", SyncPlayGroupUpdateMessage.class);
         mappings.put("TimerCancelled", TimerCancelledMessage.class);
         mappings.put("TimerCreated", TimerCreatedMessage.class);
         mappings.put("UserDataChanged", UserDataChangedMessage.class);

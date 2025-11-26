@@ -15,6 +15,7 @@ package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
 
@@ -52,13 +53,13 @@ public class ImageProviderInfo {
      * @return name
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_NAME)
+    @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getName() {
         return name;
     }
 
-    @JsonProperty(JSON_PROPERTY_NAME)
+    @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setName(@org.eclipse.jdt.annotation.NonNull String name) {
         this.name = name;
@@ -83,13 +84,13 @@ public class ImageProviderInfo {
      * @return supportedImages
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_SUPPORTED_IMAGES)
+    @JsonProperty(value = JSON_PROPERTY_SUPPORTED_IMAGES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<ImageType> getSupportedImages() {
         return supportedImages;
     }
 
-    @JsonProperty(JSON_PROPERTY_SUPPORTED_IMAGES)
+    @JsonProperty(value = JSON_PROPERTY_SUPPORTED_IMAGES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setSupportedImages(@org.eclipse.jdt.annotation.NonNull List<ImageType> supportedImages) {
         this.supportedImages = supportedImages;
@@ -171,7 +172,7 @@ public class ImageProviderInfo {
 
         // add `Name` to the URL query string
         if (getName() != null) {
-            joiner.add(String.format("%sName%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sName%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getName()))));
         }
 
@@ -179,8 +180,9 @@ public class ImageProviderInfo {
         if (getSupportedImages() != null) {
             for (int i = 0; i < getSupportedImages().size(); i++) {
                 if (getSupportedImages().get(i) != null) {
-                    joiner.add(String.format("%sSupportedImages%s%s=%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+                    joiner.add(String.format(Locale.ROOT, "%sSupportedImages%s%s=%s", prefix, suffix,
+                            "".equals(suffix) ? ""
+                                    : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
                             ApiClient.urlEncode(ApiClient.valueToString(getSupportedImages().get(i)))));
                 }
             }

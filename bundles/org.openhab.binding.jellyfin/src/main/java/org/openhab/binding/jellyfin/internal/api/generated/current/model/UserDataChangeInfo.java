@@ -15,6 +15,7 @@ package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
 import java.util.UUID;
@@ -53,13 +54,13 @@ public class UserDataChangeInfo {
      * @return userId
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_USER_ID)
+    @JsonProperty(value = JSON_PROPERTY_USER_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public UUID getUserId() {
         return userId;
     }
 
-    @JsonProperty(JSON_PROPERTY_USER_ID)
+    @JsonProperty(value = JSON_PROPERTY_USER_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setUserId(@org.eclipse.jdt.annotation.NonNull UUID userId) {
         this.userId = userId;
@@ -84,13 +85,13 @@ public class UserDataChangeInfo {
      * @return userDataList
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_USER_DATA_LIST)
+    @JsonProperty(value = JSON_PROPERTY_USER_DATA_LIST, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<UserItemDataDto> getUserDataList() {
         return userDataList;
     }
 
-    @JsonProperty(JSON_PROPERTY_USER_DATA_LIST)
+    @JsonProperty(value = JSON_PROPERTY_USER_DATA_LIST, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setUserDataList(@org.eclipse.jdt.annotation.NonNull List<UserItemDataDto> userDataList) {
         this.userDataList = userDataList;
@@ -172,7 +173,7 @@ public class UserDataChangeInfo {
 
         // add `UserId` to the URL query string
         if (getUserId() != null) {
-            joiner.add(String.format("%sUserId%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sUserId%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getUserId()))));
         }
 
@@ -180,9 +181,9 @@ public class UserDataChangeInfo {
         if (getUserDataList() != null) {
             for (int i = 0; i < getUserDataList().size(); i++) {
                 if (getUserDataList().get(i) != null) {
-                    joiner.add(getUserDataList().get(i).toUrlQueryString(String.format("%sUserDataList%s%s", prefix,
-                            suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
+                    joiner.add(getUserDataList().get(i).toUrlQueryString(
+                            String.format(Locale.ROOT, "%sUserDataList%s%s", prefix, suffix, "".equals(suffix) ? ""
+                                    : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
                 }
             }
         }

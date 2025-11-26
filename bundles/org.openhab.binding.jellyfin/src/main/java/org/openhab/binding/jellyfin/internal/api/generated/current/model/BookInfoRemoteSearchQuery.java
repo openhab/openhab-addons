@@ -13,6 +13,7 @@
 
 package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
+import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
 import java.util.UUID;
@@ -61,13 +62,13 @@ public class BookInfoRemoteSearchQuery {
      * @return searchInfo
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_SEARCH_INFO)
+    @JsonProperty(value = JSON_PROPERTY_SEARCH_INFO, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public BookInfo getSearchInfo() {
         return searchInfo;
     }
 
-    @JsonProperty(JSON_PROPERTY_SEARCH_INFO)
+    @JsonProperty(value = JSON_PROPERTY_SEARCH_INFO, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setSearchInfo(@org.eclipse.jdt.annotation.NonNull BookInfo searchInfo) {
         this.searchInfo = searchInfo;
@@ -84,13 +85,13 @@ public class BookInfoRemoteSearchQuery {
      * @return itemId
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ITEM_ID)
+    @JsonProperty(value = JSON_PROPERTY_ITEM_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public UUID getItemId() {
         return itemId;
     }
 
-    @JsonProperty(JSON_PROPERTY_ITEM_ID)
+    @JsonProperty(value = JSON_PROPERTY_ITEM_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setItemId(@org.eclipse.jdt.annotation.NonNull UUID itemId) {
         this.itemId = itemId;
@@ -107,13 +108,13 @@ public class BookInfoRemoteSearchQuery {
      * @return searchProviderName
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_SEARCH_PROVIDER_NAME)
+    @JsonProperty(value = JSON_PROPERTY_SEARCH_PROVIDER_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getSearchProviderName() {
         return searchProviderName;
     }
 
-    @JsonProperty(JSON_PROPERTY_SEARCH_PROVIDER_NAME)
+    @JsonProperty(value = JSON_PROPERTY_SEARCH_PROVIDER_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setSearchProviderName(@org.eclipse.jdt.annotation.NonNull String searchProviderName) {
         this.searchProviderName = searchProviderName;
@@ -131,13 +132,13 @@ public class BookInfoRemoteSearchQuery {
      * @return includeDisabledProviders
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_INCLUDE_DISABLED_PROVIDERS)
+    @JsonProperty(value = JSON_PROPERTY_INCLUDE_DISABLED_PROVIDERS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getIncludeDisabledProviders() {
         return includeDisabledProviders;
     }
 
-    @JsonProperty(JSON_PROPERTY_INCLUDE_DISABLED_PROVIDERS)
+    @JsonProperty(value = JSON_PROPERTY_INCLUDE_DISABLED_PROVIDERS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setIncludeDisabledProviders(@org.eclipse.jdt.annotation.NonNull Boolean includeDisabledProviders) {
         this.includeDisabledProviders = includeDisabledProviders;
@@ -228,19 +229,19 @@ public class BookInfoRemoteSearchQuery {
 
         // add `ItemId` to the URL query string
         if (getItemId() != null) {
-            joiner.add(String.format("%sItemId%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sItemId%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getItemId()))));
         }
 
         // add `SearchProviderName` to the URL query string
         if (getSearchProviderName() != null) {
-            joiner.add(String.format("%sSearchProviderName%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sSearchProviderName%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getSearchProviderName()))));
         }
 
         // add `IncludeDisabledProviders` to the URL query string
         if (getIncludeDisabledProviders() != null) {
-            joiner.add(String.format("%sIncludeDisabledProviders%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sIncludeDisabledProviders%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getIncludeDisabledProviders()))));
         }
 

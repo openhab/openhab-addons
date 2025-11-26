@@ -13,6 +13,7 @@
 
 package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
+import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
 
@@ -86,13 +87,13 @@ public class RemoteImageInfo {
      * @return providerName
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_PROVIDER_NAME)
+    @JsonProperty(value = JSON_PROPERTY_PROVIDER_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getProviderName() {
         return providerName;
     }
 
-    @JsonProperty(JSON_PROPERTY_PROVIDER_NAME)
+    @JsonProperty(value = JSON_PROPERTY_PROVIDER_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setProviderName(@org.eclipse.jdt.annotation.NonNull String providerName) {
         this.providerName = providerName;
@@ -109,13 +110,13 @@ public class RemoteImageInfo {
      * @return url
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_URL)
+    @JsonProperty(value = JSON_PROPERTY_URL, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getUrl() {
         return url;
     }
 
-    @JsonProperty(JSON_PROPERTY_URL)
+    @JsonProperty(value = JSON_PROPERTY_URL, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setUrl(@org.eclipse.jdt.annotation.NonNull String url) {
         this.url = url;
@@ -132,13 +133,13 @@ public class RemoteImageInfo {
      * @return thumbnailUrl
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_THUMBNAIL_URL)
+    @JsonProperty(value = JSON_PROPERTY_THUMBNAIL_URL, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getThumbnailUrl() {
         return thumbnailUrl;
     }
 
-    @JsonProperty(JSON_PROPERTY_THUMBNAIL_URL)
+    @JsonProperty(value = JSON_PROPERTY_THUMBNAIL_URL, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setThumbnailUrl(@org.eclipse.jdt.annotation.NonNull String thumbnailUrl) {
         this.thumbnailUrl = thumbnailUrl;
@@ -155,13 +156,13 @@ public class RemoteImageInfo {
      * @return height
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_HEIGHT)
+    @JsonProperty(value = JSON_PROPERTY_HEIGHT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getHeight() {
         return height;
     }
 
-    @JsonProperty(JSON_PROPERTY_HEIGHT)
+    @JsonProperty(value = JSON_PROPERTY_HEIGHT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setHeight(@org.eclipse.jdt.annotation.NonNull Integer height) {
         this.height = height;
@@ -178,13 +179,13 @@ public class RemoteImageInfo {
      * @return width
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_WIDTH)
+    @JsonProperty(value = JSON_PROPERTY_WIDTH, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getWidth() {
         return width;
     }
 
-    @JsonProperty(JSON_PROPERTY_WIDTH)
+    @JsonProperty(value = JSON_PROPERTY_WIDTH, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setWidth(@org.eclipse.jdt.annotation.NonNull Integer width) {
         this.width = width;
@@ -201,13 +202,13 @@ public class RemoteImageInfo {
      * @return communityRating
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_COMMUNITY_RATING)
+    @JsonProperty(value = JSON_PROPERTY_COMMUNITY_RATING, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Double getCommunityRating() {
         return communityRating;
     }
 
-    @JsonProperty(JSON_PROPERTY_COMMUNITY_RATING)
+    @JsonProperty(value = JSON_PROPERTY_COMMUNITY_RATING, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setCommunityRating(@org.eclipse.jdt.annotation.NonNull Double communityRating) {
         this.communityRating = communityRating;
@@ -224,13 +225,13 @@ public class RemoteImageInfo {
      * @return voteCount
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_VOTE_COUNT)
+    @JsonProperty(value = JSON_PROPERTY_VOTE_COUNT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getVoteCount() {
         return voteCount;
     }
 
-    @JsonProperty(JSON_PROPERTY_VOTE_COUNT)
+    @JsonProperty(value = JSON_PROPERTY_VOTE_COUNT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setVoteCount(@org.eclipse.jdt.annotation.NonNull Integer voteCount) {
         this.voteCount = voteCount;
@@ -247,13 +248,13 @@ public class RemoteImageInfo {
      * @return language
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_LANGUAGE)
+    @JsonProperty(value = JSON_PROPERTY_LANGUAGE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getLanguage() {
         return language;
     }
 
-    @JsonProperty(JSON_PROPERTY_LANGUAGE)
+    @JsonProperty(value = JSON_PROPERTY_LANGUAGE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setLanguage(@org.eclipse.jdt.annotation.NonNull String language) {
         this.language = language;
@@ -270,13 +271,13 @@ public class RemoteImageInfo {
      * @return type
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_TYPE)
+    @JsonProperty(value = JSON_PROPERTY_TYPE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public ImageType getType() {
         return type;
     }
 
-    @JsonProperty(JSON_PROPERTY_TYPE)
+    @JsonProperty(value = JSON_PROPERTY_TYPE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setType(@org.eclipse.jdt.annotation.NonNull ImageType type) {
         this.type = type;
@@ -293,13 +294,13 @@ public class RemoteImageInfo {
      * @return ratingType
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_RATING_TYPE)
+    @JsonProperty(value = JSON_PROPERTY_RATING_TYPE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public RatingType getRatingType() {
         return ratingType;
     }
 
-    @JsonProperty(JSON_PROPERTY_RATING_TYPE)
+    @JsonProperty(value = JSON_PROPERTY_RATING_TYPE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setRatingType(@org.eclipse.jdt.annotation.NonNull RatingType ratingType) {
         this.ratingType = ratingType;
@@ -398,61 +399,61 @@ public class RemoteImageInfo {
 
         // add `ProviderName` to the URL query string
         if (getProviderName() != null) {
-            joiner.add(String.format("%sProviderName%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sProviderName%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getProviderName()))));
         }
 
         // add `Url` to the URL query string
         if (getUrl() != null) {
-            joiner.add(String.format("%sUrl%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sUrl%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getUrl()))));
         }
 
         // add `ThumbnailUrl` to the URL query string
         if (getThumbnailUrl() != null) {
-            joiner.add(String.format("%sThumbnailUrl%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sThumbnailUrl%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getThumbnailUrl()))));
         }
 
         // add `Height` to the URL query string
         if (getHeight() != null) {
-            joiner.add(String.format("%sHeight%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sHeight%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getHeight()))));
         }
 
         // add `Width` to the URL query string
         if (getWidth() != null) {
-            joiner.add(String.format("%sWidth%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sWidth%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getWidth()))));
         }
 
         // add `CommunityRating` to the URL query string
         if (getCommunityRating() != null) {
-            joiner.add(String.format("%sCommunityRating%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sCommunityRating%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getCommunityRating()))));
         }
 
         // add `VoteCount` to the URL query string
         if (getVoteCount() != null) {
-            joiner.add(String.format("%sVoteCount%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sVoteCount%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getVoteCount()))));
         }
 
         // add `Language` to the URL query string
         if (getLanguage() != null) {
-            joiner.add(String.format("%sLanguage%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sLanguage%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getLanguage()))));
         }
 
         // add `Type` to the URL query string
         if (getType() != null) {
-            joiner.add(String.format("%sType%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sType%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getType()))));
         }
 
         // add `RatingType` to the URL query string
         if (getRatingType() != null) {
-            joiner.add(String.format("%sRatingType%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sRatingType%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getRatingType()))));
         }
 

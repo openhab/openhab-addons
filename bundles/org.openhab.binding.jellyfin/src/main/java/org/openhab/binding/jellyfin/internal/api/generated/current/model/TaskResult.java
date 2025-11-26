@@ -14,6 +14,7 @@
 package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
 import java.time.OffsetDateTime;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
 
@@ -78,13 +79,13 @@ public class TaskResult {
      * @return startTimeUtc
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_START_TIME_UTC)
+    @JsonProperty(value = JSON_PROPERTY_START_TIME_UTC, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public OffsetDateTime getStartTimeUtc() {
         return startTimeUtc;
     }
 
-    @JsonProperty(JSON_PROPERTY_START_TIME_UTC)
+    @JsonProperty(value = JSON_PROPERTY_START_TIME_UTC, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setStartTimeUtc(@org.eclipse.jdt.annotation.NonNull OffsetDateTime startTimeUtc) {
         this.startTimeUtc = startTimeUtc;
@@ -101,13 +102,13 @@ public class TaskResult {
      * @return endTimeUtc
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_END_TIME_UTC)
+    @JsonProperty(value = JSON_PROPERTY_END_TIME_UTC, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public OffsetDateTime getEndTimeUtc() {
         return endTimeUtc;
     }
 
-    @JsonProperty(JSON_PROPERTY_END_TIME_UTC)
+    @JsonProperty(value = JSON_PROPERTY_END_TIME_UTC, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setEndTimeUtc(@org.eclipse.jdt.annotation.NonNull OffsetDateTime endTimeUtc) {
         this.endTimeUtc = endTimeUtc;
@@ -124,13 +125,13 @@ public class TaskResult {
      * @return status
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_STATUS)
+    @JsonProperty(value = JSON_PROPERTY_STATUS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public TaskCompletionStatus getStatus() {
         return status;
     }
 
-    @JsonProperty(JSON_PROPERTY_STATUS)
+    @JsonProperty(value = JSON_PROPERTY_STATUS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setStatus(@org.eclipse.jdt.annotation.NonNull TaskCompletionStatus status) {
         this.status = status;
@@ -147,13 +148,13 @@ public class TaskResult {
      * @return name
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_NAME)
+    @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getName() {
         return name;
     }
 
-    @JsonProperty(JSON_PROPERTY_NAME)
+    @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setName(@org.eclipse.jdt.annotation.NonNull String name) {
         this.name = name;
@@ -170,13 +171,13 @@ public class TaskResult {
      * @return key
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_KEY)
+    @JsonProperty(value = JSON_PROPERTY_KEY, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getKey() {
         return key;
     }
 
-    @JsonProperty(JSON_PROPERTY_KEY)
+    @JsonProperty(value = JSON_PROPERTY_KEY, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setKey(@org.eclipse.jdt.annotation.NonNull String key) {
         this.key = key;
@@ -193,13 +194,13 @@ public class TaskResult {
      * @return id
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ID)
+    @JsonProperty(value = JSON_PROPERTY_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getId() {
         return id;
     }
 
-    @JsonProperty(JSON_PROPERTY_ID)
+    @JsonProperty(value = JSON_PROPERTY_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setId(@org.eclipse.jdt.annotation.NonNull String id) {
         this.id = id;
@@ -216,13 +217,13 @@ public class TaskResult {
      * @return errorMessage
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ERROR_MESSAGE)
+    @JsonProperty(value = JSON_PROPERTY_ERROR_MESSAGE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getErrorMessage() {
         return errorMessage;
     }
 
-    @JsonProperty(JSON_PROPERTY_ERROR_MESSAGE)
+    @JsonProperty(value = JSON_PROPERTY_ERROR_MESSAGE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setErrorMessage(@org.eclipse.jdt.annotation.NonNull String errorMessage) {
         this.errorMessage = errorMessage;
@@ -239,13 +240,13 @@ public class TaskResult {
      * @return longErrorMessage
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_LONG_ERROR_MESSAGE)
+    @JsonProperty(value = JSON_PROPERTY_LONG_ERROR_MESSAGE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getLongErrorMessage() {
         return longErrorMessage;
     }
 
-    @JsonProperty(JSON_PROPERTY_LONG_ERROR_MESSAGE)
+    @JsonProperty(value = JSON_PROPERTY_LONG_ERROR_MESSAGE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setLongErrorMessage(@org.eclipse.jdt.annotation.NonNull String longErrorMessage) {
         this.longErrorMessage = longErrorMessage;
@@ -337,49 +338,49 @@ public class TaskResult {
 
         // add `StartTimeUtc` to the URL query string
         if (getStartTimeUtc() != null) {
-            joiner.add(String.format("%sStartTimeUtc%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sStartTimeUtc%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getStartTimeUtc()))));
         }
 
         // add `EndTimeUtc` to the URL query string
         if (getEndTimeUtc() != null) {
-            joiner.add(String.format("%sEndTimeUtc%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sEndTimeUtc%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getEndTimeUtc()))));
         }
 
         // add `Status` to the URL query string
         if (getStatus() != null) {
-            joiner.add(String.format("%sStatus%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sStatus%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getStatus()))));
         }
 
         // add `Name` to the URL query string
         if (getName() != null) {
-            joiner.add(String.format("%sName%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sName%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getName()))));
         }
 
         // add `Key` to the URL query string
         if (getKey() != null) {
-            joiner.add(String.format("%sKey%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sKey%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getKey()))));
         }
 
         // add `Id` to the URL query string
         if (getId() != null) {
-            joiner.add(
-                    String.format("%sId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
+            joiner.add(String.format(Locale.ROOT, "%sId%s=%s", prefix, suffix,
+                    ApiClient.urlEncode(ApiClient.valueToString(getId()))));
         }
 
         // add `ErrorMessage` to the URL query string
         if (getErrorMessage() != null) {
-            joiner.add(String.format("%sErrorMessage%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sErrorMessage%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getErrorMessage()))));
         }
 
         // add `LongErrorMessage` to the URL query string
         if (getLongErrorMessage() != null) {
-            joiner.add(String.format("%sLongErrorMessage%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sLongErrorMessage%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getLongErrorMessage()))));
         }
 

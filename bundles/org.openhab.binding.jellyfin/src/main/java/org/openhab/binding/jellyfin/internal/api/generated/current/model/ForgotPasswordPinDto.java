@@ -13,6 +13,7 @@
 
 package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
+import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
 
@@ -46,13 +47,13 @@ public class ForgotPasswordPinDto {
      * @return pin
      */
     @org.eclipse.jdt.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_PIN)
+    @JsonProperty(value = JSON_PROPERTY_PIN, required = true)
     @JsonInclude(value = JsonInclude.Include.ALWAYS)
     public String getPin() {
         return pin;
     }
 
-    @JsonProperty(JSON_PROPERTY_PIN)
+    @JsonProperty(value = JSON_PROPERTY_PIN, required = true)
     @JsonInclude(value = JsonInclude.Include.ALWAYS)
     public void setPin(@org.eclipse.jdt.annotation.Nullable String pin) {
         this.pin = pin;
@@ -132,7 +133,7 @@ public class ForgotPasswordPinDto {
 
         // add `Pin` to the URL query string
         if (getPin() != null) {
-            joiner.add(String.format("%sPin%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sPin%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getPin()))));
         }
 

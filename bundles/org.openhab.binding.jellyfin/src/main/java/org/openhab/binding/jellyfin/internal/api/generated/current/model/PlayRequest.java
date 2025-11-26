@@ -15,6 +15,7 @@ package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
 import java.util.UUID;
@@ -88,13 +89,13 @@ public class PlayRequest {
      * @return itemIds
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ITEM_IDS)
+    @JsonProperty(value = JSON_PROPERTY_ITEM_IDS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<UUID> getItemIds() {
         return itemIds;
     }
 
-    @JsonProperty(JSON_PROPERTY_ITEM_IDS)
+    @JsonProperty(value = JSON_PROPERTY_ITEM_IDS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setItemIds(@org.eclipse.jdt.annotation.NonNull List<UUID> itemIds) {
         this.itemIds = itemIds;
@@ -111,13 +112,13 @@ public class PlayRequest {
      * @return startPositionTicks
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_START_POSITION_TICKS)
+    @JsonProperty(value = JSON_PROPERTY_START_POSITION_TICKS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Long getStartPositionTicks() {
         return startPositionTicks;
     }
 
-    @JsonProperty(JSON_PROPERTY_START_POSITION_TICKS)
+    @JsonProperty(value = JSON_PROPERTY_START_POSITION_TICKS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setStartPositionTicks(@org.eclipse.jdt.annotation.NonNull Long startPositionTicks) {
         this.startPositionTicks = startPositionTicks;
@@ -134,13 +135,13 @@ public class PlayRequest {
      * @return playCommand
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_PLAY_COMMAND)
+    @JsonProperty(value = JSON_PROPERTY_PLAY_COMMAND, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public PlayCommand getPlayCommand() {
         return playCommand;
     }
 
-    @JsonProperty(JSON_PROPERTY_PLAY_COMMAND)
+    @JsonProperty(value = JSON_PROPERTY_PLAY_COMMAND, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setPlayCommand(@org.eclipse.jdt.annotation.NonNull PlayCommand playCommand) {
         this.playCommand = playCommand;
@@ -157,13 +158,13 @@ public class PlayRequest {
      * @return controllingUserId
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_CONTROLLING_USER_ID)
+    @JsonProperty(value = JSON_PROPERTY_CONTROLLING_USER_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public UUID getControllingUserId() {
         return controllingUserId;
     }
 
-    @JsonProperty(JSON_PROPERTY_CONTROLLING_USER_ID)
+    @JsonProperty(value = JSON_PROPERTY_CONTROLLING_USER_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setControllingUserId(@org.eclipse.jdt.annotation.NonNull UUID controllingUserId) {
         this.controllingUserId = controllingUserId;
@@ -180,13 +181,13 @@ public class PlayRequest {
      * @return subtitleStreamIndex
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_SUBTITLE_STREAM_INDEX)
+    @JsonProperty(value = JSON_PROPERTY_SUBTITLE_STREAM_INDEX, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getSubtitleStreamIndex() {
         return subtitleStreamIndex;
     }
 
-    @JsonProperty(JSON_PROPERTY_SUBTITLE_STREAM_INDEX)
+    @JsonProperty(value = JSON_PROPERTY_SUBTITLE_STREAM_INDEX, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setSubtitleStreamIndex(@org.eclipse.jdt.annotation.NonNull Integer subtitleStreamIndex) {
         this.subtitleStreamIndex = subtitleStreamIndex;
@@ -203,13 +204,13 @@ public class PlayRequest {
      * @return audioStreamIndex
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_AUDIO_STREAM_INDEX)
+    @JsonProperty(value = JSON_PROPERTY_AUDIO_STREAM_INDEX, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getAudioStreamIndex() {
         return audioStreamIndex;
     }
 
-    @JsonProperty(JSON_PROPERTY_AUDIO_STREAM_INDEX)
+    @JsonProperty(value = JSON_PROPERTY_AUDIO_STREAM_INDEX, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setAudioStreamIndex(@org.eclipse.jdt.annotation.NonNull Integer audioStreamIndex) {
         this.audioStreamIndex = audioStreamIndex;
@@ -226,13 +227,13 @@ public class PlayRequest {
      * @return mediaSourceId
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_MEDIA_SOURCE_ID)
+    @JsonProperty(value = JSON_PROPERTY_MEDIA_SOURCE_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getMediaSourceId() {
         return mediaSourceId;
     }
 
-    @JsonProperty(JSON_PROPERTY_MEDIA_SOURCE_ID)
+    @JsonProperty(value = JSON_PROPERTY_MEDIA_SOURCE_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setMediaSourceId(@org.eclipse.jdt.annotation.NonNull String mediaSourceId) {
         this.mediaSourceId = mediaSourceId;
@@ -249,13 +250,13 @@ public class PlayRequest {
      * @return startIndex
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_START_INDEX)
+    @JsonProperty(value = JSON_PROPERTY_START_INDEX, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getStartIndex() {
         return startIndex;
     }
 
-    @JsonProperty(JSON_PROPERTY_START_INDEX)
+    @JsonProperty(value = JSON_PROPERTY_START_INDEX, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setStartIndex(@org.eclipse.jdt.annotation.NonNull Integer startIndex) {
         this.startIndex = startIndex;
@@ -352,8 +353,9 @@ public class PlayRequest {
         if (getItemIds() != null) {
             for (int i = 0; i < getItemIds().size(); i++) {
                 if (getItemIds().get(i) != null) {
-                    joiner.add(String.format("%sItemIds%s%s=%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+                    joiner.add(String.format(Locale.ROOT, "%sItemIds%s%s=%s", prefix, suffix,
+                            "".equals(suffix) ? ""
+                                    : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
                             ApiClient.urlEncode(ApiClient.valueToString(getItemIds().get(i)))));
                 }
             }
@@ -361,43 +363,43 @@ public class PlayRequest {
 
         // add `StartPositionTicks` to the URL query string
         if (getStartPositionTicks() != null) {
-            joiner.add(String.format("%sStartPositionTicks%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sStartPositionTicks%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getStartPositionTicks()))));
         }
 
         // add `PlayCommand` to the URL query string
         if (getPlayCommand() != null) {
-            joiner.add(String.format("%sPlayCommand%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sPlayCommand%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getPlayCommand()))));
         }
 
         // add `ControllingUserId` to the URL query string
         if (getControllingUserId() != null) {
-            joiner.add(String.format("%sControllingUserId%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sControllingUserId%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getControllingUserId()))));
         }
 
         // add `SubtitleStreamIndex` to the URL query string
         if (getSubtitleStreamIndex() != null) {
-            joiner.add(String.format("%sSubtitleStreamIndex%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sSubtitleStreamIndex%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getSubtitleStreamIndex()))));
         }
 
         // add `AudioStreamIndex` to the URL query string
         if (getAudioStreamIndex() != null) {
-            joiner.add(String.format("%sAudioStreamIndex%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sAudioStreamIndex%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getAudioStreamIndex()))));
         }
 
         // add `MediaSourceId` to the URL query string
         if (getMediaSourceId() != null) {
-            joiner.add(String.format("%sMediaSourceId%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sMediaSourceId%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getMediaSourceId()))));
         }
 
         // add `StartIndex` to the URL query string
         if (getStartIndex() != null) {
-            joiner.add(String.format("%sStartIndex%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sStartIndex%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getStartIndex()))));
         }
 

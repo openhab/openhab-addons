@@ -13,6 +13,9 @@
 
 package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
 
@@ -25,7 +28,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 /**
  * Lyric model.
  */
-@JsonPropertyOrder({ LyricLine.JSON_PROPERTY_TEXT, LyricLine.JSON_PROPERTY_START })
+@JsonPropertyOrder({ LyricLine.JSON_PROPERTY_TEXT, LyricLine.JSON_PROPERTY_START, LyricLine.JSON_PROPERTY_CUES })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class LyricLine {
     public static final String JSON_PROPERTY_TEXT = "Text";
@@ -35,6 +38,10 @@ public class LyricLine {
     public static final String JSON_PROPERTY_START = "Start";
     @org.eclipse.jdt.annotation.NonNull
     private Long start;
+
+    public static final String JSON_PROPERTY_CUES = "Cues";
+    @org.eclipse.jdt.annotation.NonNull
+    private List<LyricLineCue> cues;
 
     public LyricLine() {
     }
@@ -50,13 +57,13 @@ public class LyricLine {
      * @return text
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_TEXT)
+    @JsonProperty(value = JSON_PROPERTY_TEXT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getText() {
         return text;
     }
 
-    @JsonProperty(JSON_PROPERTY_TEXT)
+    @JsonProperty(value = JSON_PROPERTY_TEXT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setText(@org.eclipse.jdt.annotation.NonNull String text) {
         this.text = text;
@@ -73,16 +80,47 @@ public class LyricLine {
      * @return start
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_START)
+    @JsonProperty(value = JSON_PROPERTY_START, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Long getStart() {
         return start;
     }
 
-    @JsonProperty(JSON_PROPERTY_START)
+    @JsonProperty(value = JSON_PROPERTY_START, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setStart(@org.eclipse.jdt.annotation.NonNull Long start) {
         this.start = start;
+    }
+
+    public LyricLine cues(@org.eclipse.jdt.annotation.NonNull List<LyricLineCue> cues) {
+        this.cues = cues;
+        return this;
+    }
+
+    public LyricLine addCuesItem(LyricLineCue cuesItem) {
+        if (this.cues == null) {
+            this.cues = new ArrayList<>();
+        }
+        this.cues.add(cuesItem);
+        return this;
+    }
+
+    /**
+     * Gets the time-aligned cues for the song&#39;s lyrics.
+     * 
+     * @return cues
+     */
+    @org.eclipse.jdt.annotation.NonNull
+    @JsonProperty(value = JSON_PROPERTY_CUES, required = false)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public List<LyricLineCue> getCues() {
+        return cues;
+    }
+
+    @JsonProperty(value = JSON_PROPERTY_CUES, required = false)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setCues(@org.eclipse.jdt.annotation.NonNull List<LyricLineCue> cues) {
+        this.cues = cues;
     }
 
     /**
@@ -97,12 +135,13 @@ public class LyricLine {
             return false;
         }
         LyricLine lyricLine = (LyricLine) o;
-        return Objects.equals(this.text, lyricLine.text) && Objects.equals(this.start, lyricLine.start);
+        return Objects.equals(this.text, lyricLine.text) && Objects.equals(this.start, lyricLine.start)
+                && Objects.equals(this.cues, lyricLine.cues);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(text, start);
+        return Objects.hash(text, start, cues);
     }
 
     @Override
@@ -111,6 +150,7 @@ public class LyricLine {
         sb.append("class LyricLine {\n");
         sb.append("    text: ").append(toIndentedString(text)).append("\n");
         sb.append("    start: ").append(toIndentedString(start)).append("\n");
+        sb.append("    cues: ").append(toIndentedString(cues)).append("\n");
         sb.append("}");
         return sb.toString();
     }
@@ -160,14 +200,26 @@ public class LyricLine {
 
         // add `Text` to the URL query string
         if (getText() != null) {
-            joiner.add(String.format("%sText%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sText%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getText()))));
         }
 
         // add `Start` to the URL query string
         if (getStart() != null) {
-            joiner.add(String.format("%sStart%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sStart%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getStart()))));
+        }
+
+        // add `Cues` to the URL query string
+        if (getCues() != null) {
+            for (int i = 0; i < getCues().size(); i++) {
+                if (getCues().get(i) != null) {
+                    joiner.add(getCues().get(i)
+                            .toUrlQueryString(String.format(Locale.ROOT, "%sCues%s%s", prefix, suffix, "".equals(suffix)
+                                    ? ""
+                                    : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+                }
+            }
         }
 
         return joiner.toString();
@@ -192,6 +244,11 @@ public class LyricLine {
 
         public LyricLine.Builder start(Long start) {
             this.instance.start = start;
+            return this;
+        }
+
+        public LyricLine.Builder cues(List<LyricLineCue> cues) {
+            this.instance.cues = cues;
             return this;
         }
 
@@ -226,6 +283,6 @@ public class LyricLine {
      * Create a builder with a shallow copy of this instance.
      */
     public LyricLine.Builder toBuilder() {
-        return new LyricLine.Builder().text(getText()).start(getStart());
+        return new LyricLine.Builder().text(getText()).start(getStart()).cues(getCues());
     }
 }

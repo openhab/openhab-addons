@@ -44,13 +44,13 @@ public class AddVirtualFolderDto {
      * @return libraryOptions
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_LIBRARY_OPTIONS)
+    @JsonProperty(value = JSON_PROPERTY_LIBRARY_OPTIONS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public LibraryOptions getLibraryOptions() {
         return libraryOptions;
     }
 
-    @JsonProperty(JSON_PROPERTY_LIBRARY_OPTIONS)
+    @JsonProperty(value = JSON_PROPERTY_LIBRARY_OPTIONS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setLibraryOptions(@org.eclipse.jdt.annotation.NonNull LibraryOptions libraryOptions) {
         this.libraryOptions = libraryOptions;

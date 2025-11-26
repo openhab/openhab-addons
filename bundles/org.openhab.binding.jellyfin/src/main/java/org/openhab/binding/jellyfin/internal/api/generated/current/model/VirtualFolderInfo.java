@@ -15,6 +15,7 @@ package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
 
@@ -79,13 +80,13 @@ public class VirtualFolderInfo {
      * @return name
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_NAME)
+    @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getName() {
         return name;
     }
 
-    @JsonProperty(JSON_PROPERTY_NAME)
+    @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setName(@org.eclipse.jdt.annotation.NonNull String name) {
         this.name = name;
@@ -110,13 +111,13 @@ public class VirtualFolderInfo {
      * @return locations
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_LOCATIONS)
+    @JsonProperty(value = JSON_PROPERTY_LOCATIONS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<String> getLocations() {
         return locations;
     }
 
-    @JsonProperty(JSON_PROPERTY_LOCATIONS)
+    @JsonProperty(value = JSON_PROPERTY_LOCATIONS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setLocations(@org.eclipse.jdt.annotation.NonNull List<String> locations) {
         this.locations = locations;
@@ -133,13 +134,13 @@ public class VirtualFolderInfo {
      * @return collectionType
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_COLLECTION_TYPE)
+    @JsonProperty(value = JSON_PROPERTY_COLLECTION_TYPE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public CollectionTypeOptions getCollectionType() {
         return collectionType;
     }
 
-    @JsonProperty(JSON_PROPERTY_COLLECTION_TYPE)
+    @JsonProperty(value = JSON_PROPERTY_COLLECTION_TYPE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setCollectionType(@org.eclipse.jdt.annotation.NonNull CollectionTypeOptions collectionType) {
         this.collectionType = collectionType;
@@ -156,13 +157,13 @@ public class VirtualFolderInfo {
      * @return libraryOptions
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_LIBRARY_OPTIONS)
+    @JsonProperty(value = JSON_PROPERTY_LIBRARY_OPTIONS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public LibraryOptions getLibraryOptions() {
         return libraryOptions;
     }
 
-    @JsonProperty(JSON_PROPERTY_LIBRARY_OPTIONS)
+    @JsonProperty(value = JSON_PROPERTY_LIBRARY_OPTIONS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setLibraryOptions(@org.eclipse.jdt.annotation.NonNull LibraryOptions libraryOptions) {
         this.libraryOptions = libraryOptions;
@@ -179,13 +180,13 @@ public class VirtualFolderInfo {
      * @return itemId
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ITEM_ID)
+    @JsonProperty(value = JSON_PROPERTY_ITEM_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getItemId() {
         return itemId;
     }
 
-    @JsonProperty(JSON_PROPERTY_ITEM_ID)
+    @JsonProperty(value = JSON_PROPERTY_ITEM_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setItemId(@org.eclipse.jdt.annotation.NonNull String itemId) {
         this.itemId = itemId;
@@ -202,13 +203,13 @@ public class VirtualFolderInfo {
      * @return primaryImageItemId
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_PRIMARY_IMAGE_ITEM_ID)
+    @JsonProperty(value = JSON_PROPERTY_PRIMARY_IMAGE_ITEM_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getPrimaryImageItemId() {
         return primaryImageItemId;
     }
 
-    @JsonProperty(JSON_PROPERTY_PRIMARY_IMAGE_ITEM_ID)
+    @JsonProperty(value = JSON_PROPERTY_PRIMARY_IMAGE_ITEM_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setPrimaryImageItemId(@org.eclipse.jdt.annotation.NonNull String primaryImageItemId) {
         this.primaryImageItemId = primaryImageItemId;
@@ -225,13 +226,13 @@ public class VirtualFolderInfo {
      * @return refreshProgress
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_REFRESH_PROGRESS)
+    @JsonProperty(value = JSON_PROPERTY_REFRESH_PROGRESS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Double getRefreshProgress() {
         return refreshProgress;
     }
 
-    @JsonProperty(JSON_PROPERTY_REFRESH_PROGRESS)
+    @JsonProperty(value = JSON_PROPERTY_REFRESH_PROGRESS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setRefreshProgress(@org.eclipse.jdt.annotation.NonNull Double refreshProgress) {
         this.refreshProgress = refreshProgress;
@@ -248,13 +249,13 @@ public class VirtualFolderInfo {
      * @return refreshStatus
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_REFRESH_STATUS)
+    @JsonProperty(value = JSON_PROPERTY_REFRESH_STATUS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getRefreshStatus() {
         return refreshStatus;
     }
 
-    @JsonProperty(JSON_PROPERTY_REFRESH_STATUS)
+    @JsonProperty(value = JSON_PROPERTY_REFRESH_STATUS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setRefreshStatus(@org.eclipse.jdt.annotation.NonNull String refreshStatus) {
         this.refreshStatus = refreshStatus;
@@ -349,22 +350,23 @@ public class VirtualFolderInfo {
 
         // add `Name` to the URL query string
         if (getName() != null) {
-            joiner.add(String.format("%sName%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sName%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getName()))));
         }
 
         // add `Locations` to the URL query string
         if (getLocations() != null) {
             for (int i = 0; i < getLocations().size(); i++) {
-                joiner.add(String.format("%sLocations%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+                joiner.add(String.format(Locale.ROOT, "%sLocations%s%s=%s", prefix, suffix,
+                        "".equals(suffix) ? ""
+                                : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
                         ApiClient.urlEncode(ApiClient.valueToString(getLocations().get(i)))));
             }
         }
 
         // add `CollectionType` to the URL query string
         if (getCollectionType() != null) {
-            joiner.add(String.format("%sCollectionType%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sCollectionType%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getCollectionType()))));
         }
 
@@ -375,25 +377,25 @@ public class VirtualFolderInfo {
 
         // add `ItemId` to the URL query string
         if (getItemId() != null) {
-            joiner.add(String.format("%sItemId%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sItemId%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getItemId()))));
         }
 
         // add `PrimaryImageItemId` to the URL query string
         if (getPrimaryImageItemId() != null) {
-            joiner.add(String.format("%sPrimaryImageItemId%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sPrimaryImageItemId%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getPrimaryImageItemId()))));
         }
 
         // add `RefreshProgress` to the URL query string
         if (getRefreshProgress() != null) {
-            joiner.add(String.format("%sRefreshProgress%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sRefreshProgress%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getRefreshProgress()))));
         }
 
         // add `RefreshStatus` to the URL query string
         if (getRefreshStatus() != null) {
-            joiner.add(String.format("%sRefreshStatus%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sRefreshStatus%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getRefreshStatus()))));
         }
 

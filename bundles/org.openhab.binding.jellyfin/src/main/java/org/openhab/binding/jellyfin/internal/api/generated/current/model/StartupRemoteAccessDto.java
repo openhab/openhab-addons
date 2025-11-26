@@ -13,6 +13,7 @@
 
 package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
+import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
 
@@ -51,13 +52,13 @@ public class StartupRemoteAccessDto {
      * @return enableRemoteAccess
      */
     @org.eclipse.jdt.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_ENABLE_REMOTE_ACCESS)
+    @JsonProperty(value = JSON_PROPERTY_ENABLE_REMOTE_ACCESS, required = true)
     @JsonInclude(value = JsonInclude.Include.ALWAYS)
     public Boolean getEnableRemoteAccess() {
         return enableRemoteAccess;
     }
 
-    @JsonProperty(JSON_PROPERTY_ENABLE_REMOTE_ACCESS)
+    @JsonProperty(value = JSON_PROPERTY_ENABLE_REMOTE_ACCESS, required = true)
     @JsonInclude(value = JsonInclude.Include.ALWAYS)
     public void setEnableRemoteAccess(@org.eclipse.jdt.annotation.Nullable Boolean enableRemoteAccess) {
         this.enableRemoteAccess = enableRemoteAccess;
@@ -73,15 +74,17 @@ public class StartupRemoteAccessDto {
      * Gets or sets a value indicating whether enable automatic port mapping.
      * 
      * @return enableAutomaticPortMapping
+     * @deprecated
      */
+    @Deprecated
     @org.eclipse.jdt.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_ENABLE_AUTOMATIC_PORT_MAPPING)
+    @JsonProperty(value = JSON_PROPERTY_ENABLE_AUTOMATIC_PORT_MAPPING, required = true)
     @JsonInclude(value = JsonInclude.Include.ALWAYS)
     public Boolean getEnableAutomaticPortMapping() {
         return enableAutomaticPortMapping;
     }
 
-    @JsonProperty(JSON_PROPERTY_ENABLE_AUTOMATIC_PORT_MAPPING)
+    @JsonProperty(value = JSON_PROPERTY_ENABLE_AUTOMATIC_PORT_MAPPING, required = true)
     @JsonInclude(value = JsonInclude.Include.ALWAYS)
     public void setEnableAutomaticPortMapping(@org.eclipse.jdt.annotation.Nullable Boolean enableAutomaticPortMapping) {
         this.enableAutomaticPortMapping = enableAutomaticPortMapping;
@@ -163,13 +166,13 @@ public class StartupRemoteAccessDto {
 
         // add `EnableRemoteAccess` to the URL query string
         if (getEnableRemoteAccess() != null) {
-            joiner.add(String.format("%sEnableRemoteAccess%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sEnableRemoteAccess%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getEnableRemoteAccess()))));
         }
 
         // add `EnableAutomaticPortMapping` to the URL query string
         if (getEnableAutomaticPortMapping() != null) {
-            joiner.add(String.format("%sEnableAutomaticPortMapping%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sEnableAutomaticPortMapping%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getEnableAutomaticPortMapping()))));
         }
 

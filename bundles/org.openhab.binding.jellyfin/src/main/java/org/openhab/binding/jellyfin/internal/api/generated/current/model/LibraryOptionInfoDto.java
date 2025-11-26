@@ -13,6 +13,7 @@
 
 package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
+import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
 
@@ -50,13 +51,13 @@ public class LibraryOptionInfoDto {
      * @return name
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_NAME)
+    @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getName() {
         return name;
     }
 
-    @JsonProperty(JSON_PROPERTY_NAME)
+    @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setName(@org.eclipse.jdt.annotation.NonNull String name) {
         this.name = name;
@@ -73,13 +74,13 @@ public class LibraryOptionInfoDto {
      * @return defaultEnabled
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_DEFAULT_ENABLED)
+    @JsonProperty(value = JSON_PROPERTY_DEFAULT_ENABLED, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getDefaultEnabled() {
         return defaultEnabled;
     }
 
-    @JsonProperty(JSON_PROPERTY_DEFAULT_ENABLED)
+    @JsonProperty(value = JSON_PROPERTY_DEFAULT_ENABLED, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setDefaultEnabled(@org.eclipse.jdt.annotation.NonNull Boolean defaultEnabled) {
         this.defaultEnabled = defaultEnabled;
@@ -161,13 +162,13 @@ public class LibraryOptionInfoDto {
 
         // add `Name` to the URL query string
         if (getName() != null) {
-            joiner.add(String.format("%sName%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sName%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getName()))));
         }
 
         // add `DefaultEnabled` to the URL query string
         if (getDefaultEnabled() != null) {
-            joiner.add(String.format("%sDefaultEnabled%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sDefaultEnabled%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getDefaultEnabled()))));
         }
 

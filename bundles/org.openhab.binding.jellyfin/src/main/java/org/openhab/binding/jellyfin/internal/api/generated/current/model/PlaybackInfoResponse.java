@@ -15,6 +15,7 @@ package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
 
@@ -65,13 +66,13 @@ public class PlaybackInfoResponse {
      * @return mediaSources
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_MEDIA_SOURCES)
+    @JsonProperty(value = JSON_PROPERTY_MEDIA_SOURCES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<MediaSourceInfo> getMediaSources() {
         return mediaSources;
     }
 
-    @JsonProperty(JSON_PROPERTY_MEDIA_SOURCES)
+    @JsonProperty(value = JSON_PROPERTY_MEDIA_SOURCES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setMediaSources(@org.eclipse.jdt.annotation.NonNull List<MediaSourceInfo> mediaSources) {
         this.mediaSources = mediaSources;
@@ -88,13 +89,13 @@ public class PlaybackInfoResponse {
      * @return playSessionId
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_PLAY_SESSION_ID)
+    @JsonProperty(value = JSON_PROPERTY_PLAY_SESSION_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getPlaySessionId() {
         return playSessionId;
     }
 
-    @JsonProperty(JSON_PROPERTY_PLAY_SESSION_ID)
+    @JsonProperty(value = JSON_PROPERTY_PLAY_SESSION_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setPlaySessionId(@org.eclipse.jdt.annotation.NonNull String playSessionId) {
         this.playSessionId = playSessionId;
@@ -111,13 +112,13 @@ public class PlaybackInfoResponse {
      * @return errorCode
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ERROR_CODE)
+    @JsonProperty(value = JSON_PROPERTY_ERROR_CODE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public PlaybackErrorCode getErrorCode() {
         return errorCode;
     }
 
-    @JsonProperty(JSON_PROPERTY_ERROR_CODE)
+    @JsonProperty(value = JSON_PROPERTY_ERROR_CODE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setErrorCode(@org.eclipse.jdt.annotation.NonNull PlaybackErrorCode errorCode) {
         this.errorCode = errorCode;
@@ -203,22 +204,22 @@ public class PlaybackInfoResponse {
         if (getMediaSources() != null) {
             for (int i = 0; i < getMediaSources().size(); i++) {
                 if (getMediaSources().get(i) != null) {
-                    joiner.add(getMediaSources().get(i).toUrlQueryString(String.format("%sMediaSources%s%s", prefix,
-                            suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
+                    joiner.add(getMediaSources().get(i).toUrlQueryString(
+                            String.format(Locale.ROOT, "%sMediaSources%s%s", prefix, suffix, "".equals(suffix) ? ""
+                                    : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
                 }
             }
         }
 
         // add `PlaySessionId` to the URL query string
         if (getPlaySessionId() != null) {
-            joiner.add(String.format("%sPlaySessionId%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sPlaySessionId%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getPlaySessionId()))));
         }
 
         // add `ErrorCode` to the URL query string
         if (getErrorCode() != null) {
-            joiner.add(String.format("%sErrorCode%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sErrorCode%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getErrorCode()))));
         }
 

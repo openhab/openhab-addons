@@ -13,6 +13,7 @@
 
 package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
+import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
 import java.util.UUID;
@@ -63,13 +64,13 @@ public class PlaystateMessage {
      * @return data
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_DATA)
+    @JsonProperty(value = JSON_PROPERTY_DATA, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public PlaystateRequest getData() {
         return data;
     }
 
-    @JsonProperty(JSON_PROPERTY_DATA)
+    @JsonProperty(value = JSON_PROPERTY_DATA, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setData(@org.eclipse.jdt.annotation.NonNull PlaystateRequest data) {
         this.data = data;
@@ -86,13 +87,13 @@ public class PlaystateMessage {
      * @return messageId
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_MESSAGE_ID)
+    @JsonProperty(value = JSON_PROPERTY_MESSAGE_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public UUID getMessageId() {
         return messageId;
     }
 
-    @JsonProperty(JSON_PROPERTY_MESSAGE_ID)
+    @JsonProperty(value = JSON_PROPERTY_MESSAGE_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setMessageId(@org.eclipse.jdt.annotation.NonNull UUID messageId) {
         this.messageId = messageId;
@@ -104,7 +105,7 @@ public class PlaystateMessage {
      * @return messageType
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_MESSAGE_TYPE)
+    @JsonProperty(value = JSON_PROPERTY_MESSAGE_TYPE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public SessionMessageType getMessageType() {
         return messageType;
@@ -193,13 +194,13 @@ public class PlaystateMessage {
 
         // add `MessageId` to the URL query string
         if (getMessageId() != null) {
-            joiner.add(String.format("%sMessageId%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sMessageId%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getMessageId()))));
         }
 
         // add `MessageType` to the URL query string
         if (getMessageType() != null) {
-            joiner.add(String.format("%sMessageType%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sMessageType%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getMessageType()))));
         }
 

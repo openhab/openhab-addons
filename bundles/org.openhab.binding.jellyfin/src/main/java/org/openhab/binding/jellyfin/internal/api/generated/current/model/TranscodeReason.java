@@ -13,6 +13,8 @@
 
 package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
+import java.util.Locale;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
@@ -71,7 +73,9 @@ public enum TranscodeReason {
 
     VIDEO_RANGE_TYPE_NOT_SUPPORTED("VideoRangeTypeNotSupported"),
 
-    VIDEO_CODEC_TAG_NOT_SUPPORTED("VideoCodecTagNotSupported");
+    VIDEO_CODEC_TAG_NOT_SUPPORTED("VideoCodecTagNotSupported"),
+
+    STREAM_COUNT_EXCEEDS_LIMIT("StreamCountExceedsLimit");
 
     private String value;
 
@@ -110,6 +114,6 @@ public enum TranscodeReason {
             prefix = "";
         }
 
-        return String.format("%s=%s", prefix, this.toString());
+        return String.format(Locale.ROOT, "%s=%s", prefix, this.toString());
     }
 }

@@ -14,6 +14,7 @@
 package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
 import java.time.OffsetDateTime;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
 import java.util.UUID;
@@ -70,13 +71,13 @@ public class SendCommand {
      * @return groupId
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_GROUP_ID)
+    @JsonProperty(value = JSON_PROPERTY_GROUP_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public UUID getGroupId() {
         return groupId;
     }
 
-    @JsonProperty(JSON_PROPERTY_GROUP_ID)
+    @JsonProperty(value = JSON_PROPERTY_GROUP_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setGroupId(@org.eclipse.jdt.annotation.NonNull UUID groupId) {
         this.groupId = groupId;
@@ -93,13 +94,13 @@ public class SendCommand {
      * @return playlistItemId
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_PLAYLIST_ITEM_ID)
+    @JsonProperty(value = JSON_PROPERTY_PLAYLIST_ITEM_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public UUID getPlaylistItemId() {
         return playlistItemId;
     }
 
-    @JsonProperty(JSON_PROPERTY_PLAYLIST_ITEM_ID)
+    @JsonProperty(value = JSON_PROPERTY_PLAYLIST_ITEM_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setPlaylistItemId(@org.eclipse.jdt.annotation.NonNull UUID playlistItemId) {
         this.playlistItemId = playlistItemId;
@@ -116,13 +117,13 @@ public class SendCommand {
      * @return when
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_WHEN)
+    @JsonProperty(value = JSON_PROPERTY_WHEN, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public OffsetDateTime getWhen() {
         return when;
     }
 
-    @JsonProperty(JSON_PROPERTY_WHEN)
+    @JsonProperty(value = JSON_PROPERTY_WHEN, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setWhen(@org.eclipse.jdt.annotation.NonNull OffsetDateTime when) {
         this.when = when;
@@ -139,13 +140,13 @@ public class SendCommand {
      * @return positionTicks
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_POSITION_TICKS)
+    @JsonProperty(value = JSON_PROPERTY_POSITION_TICKS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Long getPositionTicks() {
         return positionTicks;
     }
 
-    @JsonProperty(JSON_PROPERTY_POSITION_TICKS)
+    @JsonProperty(value = JSON_PROPERTY_POSITION_TICKS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setPositionTicks(@org.eclipse.jdt.annotation.NonNull Long positionTicks) {
         this.positionTicks = positionTicks;
@@ -162,13 +163,13 @@ public class SendCommand {
      * @return command
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_COMMAND)
+    @JsonProperty(value = JSON_PROPERTY_COMMAND, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public SendCommandType getCommand() {
         return command;
     }
 
-    @JsonProperty(JSON_PROPERTY_COMMAND)
+    @JsonProperty(value = JSON_PROPERTY_COMMAND, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setCommand(@org.eclipse.jdt.annotation.NonNull SendCommandType command) {
         this.command = command;
@@ -185,13 +186,13 @@ public class SendCommand {
      * @return emittedAt
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_EMITTED_AT)
+    @JsonProperty(value = JSON_PROPERTY_EMITTED_AT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public OffsetDateTime getEmittedAt() {
         return emittedAt;
     }
 
-    @JsonProperty(JSON_PROPERTY_EMITTED_AT)
+    @JsonProperty(value = JSON_PROPERTY_EMITTED_AT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setEmittedAt(@org.eclipse.jdt.annotation.NonNull OffsetDateTime emittedAt) {
         this.emittedAt = emittedAt;
@@ -281,37 +282,37 @@ public class SendCommand {
 
         // add `GroupId` to the URL query string
         if (getGroupId() != null) {
-            joiner.add(String.format("%sGroupId%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sGroupId%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getGroupId()))));
         }
 
         // add `PlaylistItemId` to the URL query string
         if (getPlaylistItemId() != null) {
-            joiner.add(String.format("%sPlaylistItemId%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sPlaylistItemId%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getPlaylistItemId()))));
         }
 
         // add `When` to the URL query string
         if (getWhen() != null) {
-            joiner.add(String.format("%sWhen%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sWhen%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getWhen()))));
         }
 
         // add `PositionTicks` to the URL query string
         if (getPositionTicks() != null) {
-            joiner.add(String.format("%sPositionTicks%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sPositionTicks%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getPositionTicks()))));
         }
 
         // add `Command` to the URL query string
         if (getCommand() != null) {
-            joiner.add(String.format("%sCommand%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sCommand%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getCommand()))));
         }
 
         // add `EmittedAt` to the URL query string
         if (getEmittedAt() != null) {
-            joiner.add(String.format("%sEmittedAt%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sEmittedAt%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getEmittedAt()))));
         }
 

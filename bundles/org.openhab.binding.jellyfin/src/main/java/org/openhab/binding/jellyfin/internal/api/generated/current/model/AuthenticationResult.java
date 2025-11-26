@@ -13,6 +13,7 @@
 
 package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
+import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
 
@@ -54,18 +55,18 @@ public class AuthenticationResult {
     }
 
     /**
-     * Gets or sets the user.
+     * Class UserDto.
      * 
      * @return user
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_USER)
+    @JsonProperty(value = JSON_PROPERTY_USER, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public UserDto getUser() {
         return user;
     }
 
-    @JsonProperty(JSON_PROPERTY_USER)
+    @JsonProperty(value = JSON_PROPERTY_USER, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setUser(@org.eclipse.jdt.annotation.NonNull UserDto user) {
         this.user = user;
@@ -77,18 +78,18 @@ public class AuthenticationResult {
     }
 
     /**
-     * Gets or sets the session info.
+     * Session info DTO.
      * 
      * @return sessionInfo
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_SESSION_INFO)
+    @JsonProperty(value = JSON_PROPERTY_SESSION_INFO, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public SessionInfoDto getSessionInfo() {
         return sessionInfo;
     }
 
-    @JsonProperty(JSON_PROPERTY_SESSION_INFO)
+    @JsonProperty(value = JSON_PROPERTY_SESSION_INFO, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setSessionInfo(@org.eclipse.jdt.annotation.NonNull SessionInfoDto sessionInfo) {
         this.sessionInfo = sessionInfo;
@@ -105,13 +106,13 @@ public class AuthenticationResult {
      * @return accessToken
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ACCESS_TOKEN)
+    @JsonProperty(value = JSON_PROPERTY_ACCESS_TOKEN, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getAccessToken() {
         return accessToken;
     }
 
-    @JsonProperty(JSON_PROPERTY_ACCESS_TOKEN)
+    @JsonProperty(value = JSON_PROPERTY_ACCESS_TOKEN, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setAccessToken(@org.eclipse.jdt.annotation.NonNull String accessToken) {
         this.accessToken = accessToken;
@@ -128,13 +129,13 @@ public class AuthenticationResult {
      * @return serverId
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_SERVER_ID)
+    @JsonProperty(value = JSON_PROPERTY_SERVER_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getServerId() {
         return serverId;
     }
 
-    @JsonProperty(JSON_PROPERTY_SERVER_ID)
+    @JsonProperty(value = JSON_PROPERTY_SERVER_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setServerId(@org.eclipse.jdt.annotation.NonNull String serverId) {
         this.serverId = serverId;
@@ -230,13 +231,13 @@ public class AuthenticationResult {
 
         // add `AccessToken` to the URL query string
         if (getAccessToken() != null) {
-            joiner.add(String.format("%sAccessToken%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sAccessToken%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getAccessToken()))));
         }
 
         // add `ServerId` to the URL query string
         if (getServerId() != null) {
-            joiner.add(String.format("%sServerId%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sServerId%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getServerId()))));
         }
 

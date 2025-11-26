@@ -273,7 +273,7 @@ public class TrickplayApi {
         }
 
         localVarRequestBuilder.header("Accept",
-                "application/x-mpegURL, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+                "application/x-mpegURL, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase, text/html");
 
         localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {
@@ -426,7 +426,7 @@ public class TrickplayApi {
         }
 
         localVarRequestBuilder.header("Accept",
-                "image/*, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+                "image/*, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase, text/html");
 
         localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {

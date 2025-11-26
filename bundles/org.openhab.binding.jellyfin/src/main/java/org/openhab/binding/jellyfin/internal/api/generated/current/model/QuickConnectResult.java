@@ -14,6 +14,7 @@
 package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
 import java.time.OffsetDateTime;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
 
@@ -78,13 +79,13 @@ public class QuickConnectResult {
      * @return authenticated
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_AUTHENTICATED)
+    @JsonProperty(value = JSON_PROPERTY_AUTHENTICATED, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getAuthenticated() {
         return authenticated;
     }
 
-    @JsonProperty(JSON_PROPERTY_AUTHENTICATED)
+    @JsonProperty(value = JSON_PROPERTY_AUTHENTICATED, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setAuthenticated(@org.eclipse.jdt.annotation.NonNull Boolean authenticated) {
         this.authenticated = authenticated;
@@ -101,13 +102,13 @@ public class QuickConnectResult {
      * @return secret
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_SECRET)
+    @JsonProperty(value = JSON_PROPERTY_SECRET, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getSecret() {
         return secret;
     }
 
-    @JsonProperty(JSON_PROPERTY_SECRET)
+    @JsonProperty(value = JSON_PROPERTY_SECRET, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setSecret(@org.eclipse.jdt.annotation.NonNull String secret) {
         this.secret = secret;
@@ -124,13 +125,13 @@ public class QuickConnectResult {
      * @return code
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_CODE)
+    @JsonProperty(value = JSON_PROPERTY_CODE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getCode() {
         return code;
     }
 
-    @JsonProperty(JSON_PROPERTY_CODE)
+    @JsonProperty(value = JSON_PROPERTY_CODE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setCode(@org.eclipse.jdt.annotation.NonNull String code) {
         this.code = code;
@@ -147,13 +148,13 @@ public class QuickConnectResult {
      * @return deviceId
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_DEVICE_ID)
+    @JsonProperty(value = JSON_PROPERTY_DEVICE_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getDeviceId() {
         return deviceId;
     }
 
-    @JsonProperty(JSON_PROPERTY_DEVICE_ID)
+    @JsonProperty(value = JSON_PROPERTY_DEVICE_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setDeviceId(@org.eclipse.jdt.annotation.NonNull String deviceId) {
         this.deviceId = deviceId;
@@ -170,13 +171,13 @@ public class QuickConnectResult {
      * @return deviceName
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_DEVICE_NAME)
+    @JsonProperty(value = JSON_PROPERTY_DEVICE_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getDeviceName() {
         return deviceName;
     }
 
-    @JsonProperty(JSON_PROPERTY_DEVICE_NAME)
+    @JsonProperty(value = JSON_PROPERTY_DEVICE_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setDeviceName(@org.eclipse.jdt.annotation.NonNull String deviceName) {
         this.deviceName = deviceName;
@@ -193,13 +194,13 @@ public class QuickConnectResult {
      * @return appName
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_APP_NAME)
+    @JsonProperty(value = JSON_PROPERTY_APP_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getAppName() {
         return appName;
     }
 
-    @JsonProperty(JSON_PROPERTY_APP_NAME)
+    @JsonProperty(value = JSON_PROPERTY_APP_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setAppName(@org.eclipse.jdt.annotation.NonNull String appName) {
         this.appName = appName;
@@ -216,13 +217,13 @@ public class QuickConnectResult {
      * @return appVersion
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_APP_VERSION)
+    @JsonProperty(value = JSON_PROPERTY_APP_VERSION, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getAppVersion() {
         return appVersion;
     }
 
-    @JsonProperty(JSON_PROPERTY_APP_VERSION)
+    @JsonProperty(value = JSON_PROPERTY_APP_VERSION, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setAppVersion(@org.eclipse.jdt.annotation.NonNull String appVersion) {
         this.appVersion = appVersion;
@@ -239,13 +240,13 @@ public class QuickConnectResult {
      * @return dateAdded
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_DATE_ADDED)
+    @JsonProperty(value = JSON_PROPERTY_DATE_ADDED, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public OffsetDateTime getDateAdded() {
         return dateAdded;
     }
 
-    @JsonProperty(JSON_PROPERTY_DATE_ADDED)
+    @JsonProperty(value = JSON_PROPERTY_DATE_ADDED, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setDateAdded(@org.eclipse.jdt.annotation.NonNull OffsetDateTime dateAdded) {
         this.dateAdded = dateAdded;
@@ -339,49 +340,49 @@ public class QuickConnectResult {
 
         // add `Authenticated` to the URL query string
         if (getAuthenticated() != null) {
-            joiner.add(String.format("%sAuthenticated%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sAuthenticated%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getAuthenticated()))));
         }
 
         // add `Secret` to the URL query string
         if (getSecret() != null) {
-            joiner.add(String.format("%sSecret%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sSecret%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getSecret()))));
         }
 
         // add `Code` to the URL query string
         if (getCode() != null) {
-            joiner.add(String.format("%sCode%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sCode%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getCode()))));
         }
 
         // add `DeviceId` to the URL query string
         if (getDeviceId() != null) {
-            joiner.add(String.format("%sDeviceId%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sDeviceId%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getDeviceId()))));
         }
 
         // add `DeviceName` to the URL query string
         if (getDeviceName() != null) {
-            joiner.add(String.format("%sDeviceName%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sDeviceName%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getDeviceName()))));
         }
 
         // add `AppName` to the URL query string
         if (getAppName() != null) {
-            joiner.add(String.format("%sAppName%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sAppName%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getAppName()))));
         }
 
         // add `AppVersion` to the URL query string
         if (getAppVersion() != null) {
-            joiner.add(String.format("%sAppVersion%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sAppVersion%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getAppVersion()))));
         }
 
         // add `DateAdded` to the URL query string
         if (getDateAdded() != null) {
-            joiner.add(String.format("%sDateAdded%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sDateAdded%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getDateAdded()))));
         }
 

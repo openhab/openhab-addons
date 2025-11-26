@@ -13,6 +13,7 @@
 
 package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
+import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
 
@@ -59,13 +60,13 @@ public class UpdateUserPassword {
      * @return currentPassword
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_CURRENT_PASSWORD)
+    @JsonProperty(value = JSON_PROPERTY_CURRENT_PASSWORD, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getCurrentPassword() {
         return currentPassword;
     }
 
-    @JsonProperty(JSON_PROPERTY_CURRENT_PASSWORD)
+    @JsonProperty(value = JSON_PROPERTY_CURRENT_PASSWORD, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setCurrentPassword(@org.eclipse.jdt.annotation.NonNull String currentPassword) {
         this.currentPassword = currentPassword;
@@ -82,13 +83,13 @@ public class UpdateUserPassword {
      * @return currentPw
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_CURRENT_PW)
+    @JsonProperty(value = JSON_PROPERTY_CURRENT_PW, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getCurrentPw() {
         return currentPw;
     }
 
-    @JsonProperty(JSON_PROPERTY_CURRENT_PW)
+    @JsonProperty(value = JSON_PROPERTY_CURRENT_PW, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setCurrentPw(@org.eclipse.jdt.annotation.NonNull String currentPw) {
         this.currentPw = currentPw;
@@ -105,13 +106,13 @@ public class UpdateUserPassword {
      * @return newPw
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_NEW_PW)
+    @JsonProperty(value = JSON_PROPERTY_NEW_PW, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getNewPw() {
         return newPw;
     }
 
-    @JsonProperty(JSON_PROPERTY_NEW_PW)
+    @JsonProperty(value = JSON_PROPERTY_NEW_PW, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setNewPw(@org.eclipse.jdt.annotation.NonNull String newPw) {
         this.newPw = newPw;
@@ -128,13 +129,13 @@ public class UpdateUserPassword {
      * @return resetPassword
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_RESET_PASSWORD)
+    @JsonProperty(value = JSON_PROPERTY_RESET_PASSWORD, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getResetPassword() {
         return resetPassword;
     }
 
-    @JsonProperty(JSON_PROPERTY_RESET_PASSWORD)
+    @JsonProperty(value = JSON_PROPERTY_RESET_PASSWORD, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setResetPassword(@org.eclipse.jdt.annotation.NonNull Boolean resetPassword) {
         this.resetPassword = resetPassword;
@@ -220,25 +221,25 @@ public class UpdateUserPassword {
 
         // add `CurrentPassword` to the URL query string
         if (getCurrentPassword() != null) {
-            joiner.add(String.format("%sCurrentPassword%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sCurrentPassword%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getCurrentPassword()))));
         }
 
         // add `CurrentPw` to the URL query string
         if (getCurrentPw() != null) {
-            joiner.add(String.format("%sCurrentPw%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sCurrentPw%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getCurrentPw()))));
         }
 
         // add `NewPw` to the URL query string
         if (getNewPw() != null) {
-            joiner.add(String.format("%sNewPw%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sNewPw%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getNewPw()))));
         }
 
         // add `ResetPassword` to the URL query string
         if (getResetPassword() != null) {
-            joiner.add(String.format("%sResetPassword%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sResetPassword%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getResetPassword()))));
         }
 

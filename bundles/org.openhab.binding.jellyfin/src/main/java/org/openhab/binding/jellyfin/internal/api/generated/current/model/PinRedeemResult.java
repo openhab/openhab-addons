@@ -15,6 +15,7 @@ package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
 
@@ -52,13 +53,13 @@ public class PinRedeemResult {
      * @return success
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_SUCCESS)
+    @JsonProperty(value = JSON_PROPERTY_SUCCESS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getSuccess() {
         return success;
     }
 
-    @JsonProperty(JSON_PROPERTY_SUCCESS)
+    @JsonProperty(value = JSON_PROPERTY_SUCCESS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setSuccess(@org.eclipse.jdt.annotation.NonNull Boolean success) {
         this.success = success;
@@ -83,13 +84,13 @@ public class PinRedeemResult {
      * @return usersReset
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_USERS_RESET)
+    @JsonProperty(value = JSON_PROPERTY_USERS_RESET, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<String> getUsersReset() {
         return usersReset;
     }
 
-    @JsonProperty(JSON_PROPERTY_USERS_RESET)
+    @JsonProperty(value = JSON_PROPERTY_USERS_RESET, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setUsersReset(@org.eclipse.jdt.annotation.NonNull List<String> usersReset) {
         this.usersReset = usersReset;
@@ -171,15 +172,16 @@ public class PinRedeemResult {
 
         // add `Success` to the URL query string
         if (getSuccess() != null) {
-            joiner.add(String.format("%sSuccess%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sSuccess%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getSuccess()))));
         }
 
         // add `UsersReset` to the URL query string
         if (getUsersReset() != null) {
             for (int i = 0; i < getUsersReset().size(); i++) {
-                joiner.add(String.format("%sUsersReset%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+                joiner.add(String.format(Locale.ROOT, "%sUsersReset%s%s=%s", prefix, suffix,
+                        "".equals(suffix) ? ""
+                                : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
                         ApiClient.urlEncode(ApiClient.valueToString(getUsersReset().get(i)))));
             }
         }

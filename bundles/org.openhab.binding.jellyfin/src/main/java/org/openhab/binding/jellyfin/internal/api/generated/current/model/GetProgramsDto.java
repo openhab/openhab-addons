@@ -16,6 +16,7 @@ package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
 import java.util.UUID;
@@ -175,13 +176,13 @@ public class GetProgramsDto {
      * @return channelIds
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_CHANNEL_IDS)
+    @JsonProperty(value = JSON_PROPERTY_CHANNEL_IDS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<UUID> getChannelIds() {
         return channelIds;
     }
 
-    @JsonProperty(JSON_PROPERTY_CHANNEL_IDS)
+    @JsonProperty(value = JSON_PROPERTY_CHANNEL_IDS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setChannelIds(@org.eclipse.jdt.annotation.NonNull List<UUID> channelIds) {
         this.channelIds = channelIds;
@@ -198,13 +199,13 @@ public class GetProgramsDto {
      * @return userId
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_USER_ID)
+    @JsonProperty(value = JSON_PROPERTY_USER_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public UUID getUserId() {
         return userId;
     }
 
-    @JsonProperty(JSON_PROPERTY_USER_ID)
+    @JsonProperty(value = JSON_PROPERTY_USER_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setUserId(@org.eclipse.jdt.annotation.NonNull UUID userId) {
         this.userId = userId;
@@ -221,13 +222,13 @@ public class GetProgramsDto {
      * @return minStartDate
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_MIN_START_DATE)
+    @JsonProperty(value = JSON_PROPERTY_MIN_START_DATE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public OffsetDateTime getMinStartDate() {
         return minStartDate;
     }
 
-    @JsonProperty(JSON_PROPERTY_MIN_START_DATE)
+    @JsonProperty(value = JSON_PROPERTY_MIN_START_DATE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setMinStartDate(@org.eclipse.jdt.annotation.NonNull OffsetDateTime minStartDate) {
         this.minStartDate = minStartDate;
@@ -244,13 +245,13 @@ public class GetProgramsDto {
      * @return hasAired
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_HAS_AIRED)
+    @JsonProperty(value = JSON_PROPERTY_HAS_AIRED, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getHasAired() {
         return hasAired;
     }
 
-    @JsonProperty(JSON_PROPERTY_HAS_AIRED)
+    @JsonProperty(value = JSON_PROPERTY_HAS_AIRED, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setHasAired(@org.eclipse.jdt.annotation.NonNull Boolean hasAired) {
         this.hasAired = hasAired;
@@ -267,13 +268,13 @@ public class GetProgramsDto {
      * @return isAiring
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_IS_AIRING)
+    @JsonProperty(value = JSON_PROPERTY_IS_AIRING, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getIsAiring() {
         return isAiring;
     }
 
-    @JsonProperty(JSON_PROPERTY_IS_AIRING)
+    @JsonProperty(value = JSON_PROPERTY_IS_AIRING, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setIsAiring(@org.eclipse.jdt.annotation.NonNull Boolean isAiring) {
         this.isAiring = isAiring;
@@ -290,13 +291,13 @@ public class GetProgramsDto {
      * @return maxStartDate
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_MAX_START_DATE)
+    @JsonProperty(value = JSON_PROPERTY_MAX_START_DATE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public OffsetDateTime getMaxStartDate() {
         return maxStartDate;
     }
 
-    @JsonProperty(JSON_PROPERTY_MAX_START_DATE)
+    @JsonProperty(value = JSON_PROPERTY_MAX_START_DATE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setMaxStartDate(@org.eclipse.jdt.annotation.NonNull OffsetDateTime maxStartDate) {
         this.maxStartDate = maxStartDate;
@@ -313,13 +314,13 @@ public class GetProgramsDto {
      * @return minEndDate
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_MIN_END_DATE)
+    @JsonProperty(value = JSON_PROPERTY_MIN_END_DATE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public OffsetDateTime getMinEndDate() {
         return minEndDate;
     }
 
-    @JsonProperty(JSON_PROPERTY_MIN_END_DATE)
+    @JsonProperty(value = JSON_PROPERTY_MIN_END_DATE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setMinEndDate(@org.eclipse.jdt.annotation.NonNull OffsetDateTime minEndDate) {
         this.minEndDate = minEndDate;
@@ -336,13 +337,13 @@ public class GetProgramsDto {
      * @return maxEndDate
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_MAX_END_DATE)
+    @JsonProperty(value = JSON_PROPERTY_MAX_END_DATE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public OffsetDateTime getMaxEndDate() {
         return maxEndDate;
     }
 
-    @JsonProperty(JSON_PROPERTY_MAX_END_DATE)
+    @JsonProperty(value = JSON_PROPERTY_MAX_END_DATE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setMaxEndDate(@org.eclipse.jdt.annotation.NonNull OffsetDateTime maxEndDate) {
         this.maxEndDate = maxEndDate;
@@ -359,13 +360,13 @@ public class GetProgramsDto {
      * @return isMovie
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_IS_MOVIE)
+    @JsonProperty(value = JSON_PROPERTY_IS_MOVIE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getIsMovie() {
         return isMovie;
     }
 
-    @JsonProperty(JSON_PROPERTY_IS_MOVIE)
+    @JsonProperty(value = JSON_PROPERTY_IS_MOVIE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setIsMovie(@org.eclipse.jdt.annotation.NonNull Boolean isMovie) {
         this.isMovie = isMovie;
@@ -382,13 +383,13 @@ public class GetProgramsDto {
      * @return isSeries
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_IS_SERIES)
+    @JsonProperty(value = JSON_PROPERTY_IS_SERIES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getIsSeries() {
         return isSeries;
     }
 
-    @JsonProperty(JSON_PROPERTY_IS_SERIES)
+    @JsonProperty(value = JSON_PROPERTY_IS_SERIES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setIsSeries(@org.eclipse.jdt.annotation.NonNull Boolean isSeries) {
         this.isSeries = isSeries;
@@ -405,13 +406,13 @@ public class GetProgramsDto {
      * @return isNews
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_IS_NEWS)
+    @JsonProperty(value = JSON_PROPERTY_IS_NEWS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getIsNews() {
         return isNews;
     }
 
-    @JsonProperty(JSON_PROPERTY_IS_NEWS)
+    @JsonProperty(value = JSON_PROPERTY_IS_NEWS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setIsNews(@org.eclipse.jdt.annotation.NonNull Boolean isNews) {
         this.isNews = isNews;
@@ -428,13 +429,13 @@ public class GetProgramsDto {
      * @return isKids
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_IS_KIDS)
+    @JsonProperty(value = JSON_PROPERTY_IS_KIDS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getIsKids() {
         return isKids;
     }
 
-    @JsonProperty(JSON_PROPERTY_IS_KIDS)
+    @JsonProperty(value = JSON_PROPERTY_IS_KIDS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setIsKids(@org.eclipse.jdt.annotation.NonNull Boolean isKids) {
         this.isKids = isKids;
@@ -451,13 +452,13 @@ public class GetProgramsDto {
      * @return isSports
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_IS_SPORTS)
+    @JsonProperty(value = JSON_PROPERTY_IS_SPORTS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getIsSports() {
         return isSports;
     }
 
-    @JsonProperty(JSON_PROPERTY_IS_SPORTS)
+    @JsonProperty(value = JSON_PROPERTY_IS_SPORTS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setIsSports(@org.eclipse.jdt.annotation.NonNull Boolean isSports) {
         this.isSports = isSports;
@@ -474,13 +475,13 @@ public class GetProgramsDto {
      * @return startIndex
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_START_INDEX)
+    @JsonProperty(value = JSON_PROPERTY_START_INDEX, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getStartIndex() {
         return startIndex;
     }
 
-    @JsonProperty(JSON_PROPERTY_START_INDEX)
+    @JsonProperty(value = JSON_PROPERTY_START_INDEX, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setStartIndex(@org.eclipse.jdt.annotation.NonNull Integer startIndex) {
         this.startIndex = startIndex;
@@ -497,13 +498,13 @@ public class GetProgramsDto {
      * @return limit
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_LIMIT)
+    @JsonProperty(value = JSON_PROPERTY_LIMIT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getLimit() {
         return limit;
     }
 
-    @JsonProperty(JSON_PROPERTY_LIMIT)
+    @JsonProperty(value = JSON_PROPERTY_LIMIT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setLimit(@org.eclipse.jdt.annotation.NonNull Integer limit) {
         this.limit = limit;
@@ -528,13 +529,13 @@ public class GetProgramsDto {
      * @return sortBy
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_SORT_BY)
+    @JsonProperty(value = JSON_PROPERTY_SORT_BY, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<ItemSortBy> getSortBy() {
         return sortBy;
     }
 
-    @JsonProperty(JSON_PROPERTY_SORT_BY)
+    @JsonProperty(value = JSON_PROPERTY_SORT_BY, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setSortBy(@org.eclipse.jdt.annotation.NonNull List<ItemSortBy> sortBy) {
         this.sortBy = sortBy;
@@ -559,13 +560,13 @@ public class GetProgramsDto {
      * @return sortOrder
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_SORT_ORDER)
+    @JsonProperty(value = JSON_PROPERTY_SORT_ORDER, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<SortOrder> getSortOrder() {
         return sortOrder;
     }
 
-    @JsonProperty(JSON_PROPERTY_SORT_ORDER)
+    @JsonProperty(value = JSON_PROPERTY_SORT_ORDER, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setSortOrder(@org.eclipse.jdt.annotation.NonNull List<SortOrder> sortOrder) {
         this.sortOrder = sortOrder;
@@ -590,13 +591,13 @@ public class GetProgramsDto {
      * @return genres
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_GENRES)
+    @JsonProperty(value = JSON_PROPERTY_GENRES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<String> getGenres() {
         return genres;
     }
 
-    @JsonProperty(JSON_PROPERTY_GENRES)
+    @JsonProperty(value = JSON_PROPERTY_GENRES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setGenres(@org.eclipse.jdt.annotation.NonNull List<String> genres) {
         this.genres = genres;
@@ -621,13 +622,13 @@ public class GetProgramsDto {
      * @return genreIds
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_GENRE_IDS)
+    @JsonProperty(value = JSON_PROPERTY_GENRE_IDS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<UUID> getGenreIds() {
         return genreIds;
     }
 
-    @JsonProperty(JSON_PROPERTY_GENRE_IDS)
+    @JsonProperty(value = JSON_PROPERTY_GENRE_IDS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setGenreIds(@org.eclipse.jdt.annotation.NonNull List<UUID> genreIds) {
         this.genreIds = genreIds;
@@ -644,13 +645,13 @@ public class GetProgramsDto {
      * @return enableImages
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ENABLE_IMAGES)
+    @JsonProperty(value = JSON_PROPERTY_ENABLE_IMAGES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getEnableImages() {
         return enableImages;
     }
 
-    @JsonProperty(JSON_PROPERTY_ENABLE_IMAGES)
+    @JsonProperty(value = JSON_PROPERTY_ENABLE_IMAGES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setEnableImages(@org.eclipse.jdt.annotation.NonNull Boolean enableImages) {
         this.enableImages = enableImages;
@@ -667,13 +668,13 @@ public class GetProgramsDto {
      * @return enableTotalRecordCount
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ENABLE_TOTAL_RECORD_COUNT)
+    @JsonProperty(value = JSON_PROPERTY_ENABLE_TOTAL_RECORD_COUNT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getEnableTotalRecordCount() {
         return enableTotalRecordCount;
     }
 
-    @JsonProperty(JSON_PROPERTY_ENABLE_TOTAL_RECORD_COUNT)
+    @JsonProperty(value = JSON_PROPERTY_ENABLE_TOTAL_RECORD_COUNT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setEnableTotalRecordCount(@org.eclipse.jdt.annotation.NonNull Boolean enableTotalRecordCount) {
         this.enableTotalRecordCount = enableTotalRecordCount;
@@ -690,13 +691,13 @@ public class GetProgramsDto {
      * @return imageTypeLimit
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_IMAGE_TYPE_LIMIT)
+    @JsonProperty(value = JSON_PROPERTY_IMAGE_TYPE_LIMIT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getImageTypeLimit() {
         return imageTypeLimit;
     }
 
-    @JsonProperty(JSON_PROPERTY_IMAGE_TYPE_LIMIT)
+    @JsonProperty(value = JSON_PROPERTY_IMAGE_TYPE_LIMIT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setImageTypeLimit(@org.eclipse.jdt.annotation.NonNull Integer imageTypeLimit) {
         this.imageTypeLimit = imageTypeLimit;
@@ -721,13 +722,13 @@ public class GetProgramsDto {
      * @return enableImageTypes
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ENABLE_IMAGE_TYPES)
+    @JsonProperty(value = JSON_PROPERTY_ENABLE_IMAGE_TYPES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<ImageType> getEnableImageTypes() {
         return enableImageTypes;
     }
 
-    @JsonProperty(JSON_PROPERTY_ENABLE_IMAGE_TYPES)
+    @JsonProperty(value = JSON_PROPERTY_ENABLE_IMAGE_TYPES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setEnableImageTypes(@org.eclipse.jdt.annotation.NonNull List<ImageType> enableImageTypes) {
         this.enableImageTypes = enableImageTypes;
@@ -744,13 +745,13 @@ public class GetProgramsDto {
      * @return enableUserData
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ENABLE_USER_DATA)
+    @JsonProperty(value = JSON_PROPERTY_ENABLE_USER_DATA, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getEnableUserData() {
         return enableUserData;
     }
 
-    @JsonProperty(JSON_PROPERTY_ENABLE_USER_DATA)
+    @JsonProperty(value = JSON_PROPERTY_ENABLE_USER_DATA, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setEnableUserData(@org.eclipse.jdt.annotation.NonNull Boolean enableUserData) {
         this.enableUserData = enableUserData;
@@ -767,13 +768,13 @@ public class GetProgramsDto {
      * @return seriesTimerId
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_SERIES_TIMER_ID)
+    @JsonProperty(value = JSON_PROPERTY_SERIES_TIMER_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getSeriesTimerId() {
         return seriesTimerId;
     }
 
-    @JsonProperty(JSON_PROPERTY_SERIES_TIMER_ID)
+    @JsonProperty(value = JSON_PROPERTY_SERIES_TIMER_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setSeriesTimerId(@org.eclipse.jdt.annotation.NonNull String seriesTimerId) {
         this.seriesTimerId = seriesTimerId;
@@ -790,13 +791,13 @@ public class GetProgramsDto {
      * @return librarySeriesId
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_LIBRARY_SERIES_ID)
+    @JsonProperty(value = JSON_PROPERTY_LIBRARY_SERIES_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public UUID getLibrarySeriesId() {
         return librarySeriesId;
     }
 
-    @JsonProperty(JSON_PROPERTY_LIBRARY_SERIES_ID)
+    @JsonProperty(value = JSON_PROPERTY_LIBRARY_SERIES_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setLibrarySeriesId(@org.eclipse.jdt.annotation.NonNull UUID librarySeriesId) {
         this.librarySeriesId = librarySeriesId;
@@ -821,13 +822,13 @@ public class GetProgramsDto {
      * @return fields
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_FIELDS)
+    @JsonProperty(value = JSON_PROPERTY_FIELDS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<ItemFields> getFields() {
         return fields;
     }
 
-    @JsonProperty(JSON_PROPERTY_FIELDS)
+    @JsonProperty(value = JSON_PROPERTY_FIELDS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setFields(@org.eclipse.jdt.annotation.NonNull List<ItemFields> fields) {
         this.fields = fields;
@@ -964,8 +965,9 @@ public class GetProgramsDto {
         if (getChannelIds() != null) {
             for (int i = 0; i < getChannelIds().size(); i++) {
                 if (getChannelIds().get(i) != null) {
-                    joiner.add(String.format("%sChannelIds%s%s=%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+                    joiner.add(String.format(Locale.ROOT, "%sChannelIds%s%s=%s", prefix, suffix,
+                            "".equals(suffix) ? ""
+                                    : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
                             ApiClient.urlEncode(ApiClient.valueToString(getChannelIds().get(i)))));
                 }
             }
@@ -973,85 +975,85 @@ public class GetProgramsDto {
 
         // add `UserId` to the URL query string
         if (getUserId() != null) {
-            joiner.add(String.format("%sUserId%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sUserId%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getUserId()))));
         }
 
         // add `MinStartDate` to the URL query string
         if (getMinStartDate() != null) {
-            joiner.add(String.format("%sMinStartDate%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sMinStartDate%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getMinStartDate()))));
         }
 
         // add `HasAired` to the URL query string
         if (getHasAired() != null) {
-            joiner.add(String.format("%sHasAired%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sHasAired%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getHasAired()))));
         }
 
         // add `IsAiring` to the URL query string
         if (getIsAiring() != null) {
-            joiner.add(String.format("%sIsAiring%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sIsAiring%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getIsAiring()))));
         }
 
         // add `MaxStartDate` to the URL query string
         if (getMaxStartDate() != null) {
-            joiner.add(String.format("%sMaxStartDate%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sMaxStartDate%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getMaxStartDate()))));
         }
 
         // add `MinEndDate` to the URL query string
         if (getMinEndDate() != null) {
-            joiner.add(String.format("%sMinEndDate%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sMinEndDate%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getMinEndDate()))));
         }
 
         // add `MaxEndDate` to the URL query string
         if (getMaxEndDate() != null) {
-            joiner.add(String.format("%sMaxEndDate%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sMaxEndDate%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getMaxEndDate()))));
         }
 
         // add `IsMovie` to the URL query string
         if (getIsMovie() != null) {
-            joiner.add(String.format("%sIsMovie%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sIsMovie%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getIsMovie()))));
         }
 
         // add `IsSeries` to the URL query string
         if (getIsSeries() != null) {
-            joiner.add(String.format("%sIsSeries%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sIsSeries%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getIsSeries()))));
         }
 
         // add `IsNews` to the URL query string
         if (getIsNews() != null) {
-            joiner.add(String.format("%sIsNews%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sIsNews%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getIsNews()))));
         }
 
         // add `IsKids` to the URL query string
         if (getIsKids() != null) {
-            joiner.add(String.format("%sIsKids%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sIsKids%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getIsKids()))));
         }
 
         // add `IsSports` to the URL query string
         if (getIsSports() != null) {
-            joiner.add(String.format("%sIsSports%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sIsSports%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getIsSports()))));
         }
 
         // add `StartIndex` to the URL query string
         if (getStartIndex() != null) {
-            joiner.add(String.format("%sStartIndex%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sStartIndex%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getStartIndex()))));
         }
 
         // add `Limit` to the URL query string
         if (getLimit() != null) {
-            joiner.add(String.format("%sLimit%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sLimit%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getLimit()))));
         }
 
@@ -1059,8 +1061,9 @@ public class GetProgramsDto {
         if (getSortBy() != null) {
             for (int i = 0; i < getSortBy().size(); i++) {
                 if (getSortBy().get(i) != null) {
-                    joiner.add(String.format("%sSortBy%s%s=%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+                    joiner.add(String.format(Locale.ROOT, "%sSortBy%s%s=%s", prefix, suffix,
+                            "".equals(suffix) ? ""
+                                    : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
                             ApiClient.urlEncode(ApiClient.valueToString(getSortBy().get(i)))));
                 }
             }
@@ -1070,8 +1073,9 @@ public class GetProgramsDto {
         if (getSortOrder() != null) {
             for (int i = 0; i < getSortOrder().size(); i++) {
                 if (getSortOrder().get(i) != null) {
-                    joiner.add(String.format("%sSortOrder%s%s=%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+                    joiner.add(String.format(Locale.ROOT, "%sSortOrder%s%s=%s", prefix, suffix,
+                            "".equals(suffix) ? ""
+                                    : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
                             ApiClient.urlEncode(ApiClient.valueToString(getSortOrder().get(i)))));
                 }
             }
@@ -1080,8 +1084,9 @@ public class GetProgramsDto {
         // add `Genres` to the URL query string
         if (getGenres() != null) {
             for (int i = 0; i < getGenres().size(); i++) {
-                joiner.add(String.format("%sGenres%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+                joiner.add(String.format(Locale.ROOT, "%sGenres%s%s=%s", prefix, suffix,
+                        "".equals(suffix) ? ""
+                                : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
                         ApiClient.urlEncode(ApiClient.valueToString(getGenres().get(i)))));
             }
         }
@@ -1090,8 +1095,9 @@ public class GetProgramsDto {
         if (getGenreIds() != null) {
             for (int i = 0; i < getGenreIds().size(); i++) {
                 if (getGenreIds().get(i) != null) {
-                    joiner.add(String.format("%sGenreIds%s%s=%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+                    joiner.add(String.format(Locale.ROOT, "%sGenreIds%s%s=%s", prefix, suffix,
+                            "".equals(suffix) ? ""
+                                    : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
                             ApiClient.urlEncode(ApiClient.valueToString(getGenreIds().get(i)))));
                 }
             }
@@ -1099,19 +1105,19 @@ public class GetProgramsDto {
 
         // add `EnableImages` to the URL query string
         if (getEnableImages() != null) {
-            joiner.add(String.format("%sEnableImages%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sEnableImages%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getEnableImages()))));
         }
 
         // add `EnableTotalRecordCount` to the URL query string
         if (getEnableTotalRecordCount() != null) {
-            joiner.add(String.format("%sEnableTotalRecordCount%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sEnableTotalRecordCount%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getEnableTotalRecordCount()))));
         }
 
         // add `ImageTypeLimit` to the URL query string
         if (getImageTypeLimit() != null) {
-            joiner.add(String.format("%sImageTypeLimit%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sImageTypeLimit%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getImageTypeLimit()))));
         }
 
@@ -1119,8 +1125,9 @@ public class GetProgramsDto {
         if (getEnableImageTypes() != null) {
             for (int i = 0; i < getEnableImageTypes().size(); i++) {
                 if (getEnableImageTypes().get(i) != null) {
-                    joiner.add(String.format("%sEnableImageTypes%s%s=%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+                    joiner.add(String.format(Locale.ROOT, "%sEnableImageTypes%s%s=%s", prefix, suffix,
+                            "".equals(suffix) ? ""
+                                    : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
                             ApiClient.urlEncode(ApiClient.valueToString(getEnableImageTypes().get(i)))));
                 }
             }
@@ -1128,19 +1135,19 @@ public class GetProgramsDto {
 
         // add `EnableUserData` to the URL query string
         if (getEnableUserData() != null) {
-            joiner.add(String.format("%sEnableUserData%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sEnableUserData%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getEnableUserData()))));
         }
 
         // add `SeriesTimerId` to the URL query string
         if (getSeriesTimerId() != null) {
-            joiner.add(String.format("%sSeriesTimerId%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sSeriesTimerId%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getSeriesTimerId()))));
         }
 
         // add `LibrarySeriesId` to the URL query string
         if (getLibrarySeriesId() != null) {
-            joiner.add(String.format("%sLibrarySeriesId%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sLibrarySeriesId%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getLibrarySeriesId()))));
         }
 
@@ -1148,8 +1155,9 @@ public class GetProgramsDto {
         if (getFields() != null) {
             for (int i = 0; i < getFields().size(); i++) {
                 if (getFields().get(i) != null) {
-                    joiner.add(String.format("%sFields%s%s=%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+                    joiner.add(String.format(Locale.ROOT, "%sFields%s%s=%s", prefix, suffix,
+                            "".equals(suffix) ? ""
+                                    : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
                             ApiClient.urlEncode(ApiClient.valueToString(getFields().get(i)))));
                 }
             }

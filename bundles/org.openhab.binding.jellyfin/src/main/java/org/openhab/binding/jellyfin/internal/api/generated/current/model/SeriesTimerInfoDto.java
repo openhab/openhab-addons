@@ -17,6 +17,7 @@ import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.StringJoiner;
@@ -187,7 +188,7 @@ public class SeriesTimerInfoDto {
 
     public static final String JSON_PROPERTY_PARENT_PRIMARY_IMAGE_ITEM_ID = "ParentPrimaryImageItemId";
     @org.eclipse.jdt.annotation.NonNull
-    private String parentPrimaryImageItemId;
+    private UUID parentPrimaryImageItemId;
 
     public static final String JSON_PROPERTY_PARENT_PRIMARY_IMAGE_TAG = "ParentPrimaryImageTag";
     @org.eclipse.jdt.annotation.NonNull
@@ -207,13 +208,13 @@ public class SeriesTimerInfoDto {
      * @return id
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ID)
+    @JsonProperty(value = JSON_PROPERTY_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getId() {
         return id;
     }
 
-    @JsonProperty(JSON_PROPERTY_ID)
+    @JsonProperty(value = JSON_PROPERTY_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setId(@org.eclipse.jdt.annotation.NonNull String id) {
         this.id = id;
@@ -230,13 +231,13 @@ public class SeriesTimerInfoDto {
      * @return type
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_TYPE)
+    @JsonProperty(value = JSON_PROPERTY_TYPE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getType() {
         return type;
     }
 
-    @JsonProperty(JSON_PROPERTY_TYPE)
+    @JsonProperty(value = JSON_PROPERTY_TYPE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setType(@org.eclipse.jdt.annotation.NonNull String type) {
         this.type = type;
@@ -253,13 +254,13 @@ public class SeriesTimerInfoDto {
      * @return serverId
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_SERVER_ID)
+    @JsonProperty(value = JSON_PROPERTY_SERVER_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getServerId() {
         return serverId;
     }
 
-    @JsonProperty(JSON_PROPERTY_SERVER_ID)
+    @JsonProperty(value = JSON_PROPERTY_SERVER_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setServerId(@org.eclipse.jdt.annotation.NonNull String serverId) {
         this.serverId = serverId;
@@ -276,13 +277,13 @@ public class SeriesTimerInfoDto {
      * @return externalId
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_EXTERNAL_ID)
+    @JsonProperty(value = JSON_PROPERTY_EXTERNAL_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getExternalId() {
         return externalId;
     }
 
-    @JsonProperty(JSON_PROPERTY_EXTERNAL_ID)
+    @JsonProperty(value = JSON_PROPERTY_EXTERNAL_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setExternalId(@org.eclipse.jdt.annotation.NonNull String externalId) {
         this.externalId = externalId;
@@ -299,13 +300,13 @@ public class SeriesTimerInfoDto {
      * @return channelId
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_CHANNEL_ID)
+    @JsonProperty(value = JSON_PROPERTY_CHANNEL_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public UUID getChannelId() {
         return channelId;
     }
 
-    @JsonProperty(JSON_PROPERTY_CHANNEL_ID)
+    @JsonProperty(value = JSON_PROPERTY_CHANNEL_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setChannelId(@org.eclipse.jdt.annotation.NonNull UUID channelId) {
         this.channelId = channelId;
@@ -322,13 +323,13 @@ public class SeriesTimerInfoDto {
      * @return externalChannelId
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_EXTERNAL_CHANNEL_ID)
+    @JsonProperty(value = JSON_PROPERTY_EXTERNAL_CHANNEL_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getExternalChannelId() {
         return externalChannelId;
     }
 
-    @JsonProperty(JSON_PROPERTY_EXTERNAL_CHANNEL_ID)
+    @JsonProperty(value = JSON_PROPERTY_EXTERNAL_CHANNEL_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setExternalChannelId(@org.eclipse.jdt.annotation.NonNull String externalChannelId) {
         this.externalChannelId = externalChannelId;
@@ -345,13 +346,13 @@ public class SeriesTimerInfoDto {
      * @return channelName
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_CHANNEL_NAME)
+    @JsonProperty(value = JSON_PROPERTY_CHANNEL_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getChannelName() {
         return channelName;
     }
 
-    @JsonProperty(JSON_PROPERTY_CHANNEL_NAME)
+    @JsonProperty(value = JSON_PROPERTY_CHANNEL_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setChannelName(@org.eclipse.jdt.annotation.NonNull String channelName) {
         this.channelName = channelName;
@@ -369,13 +370,13 @@ public class SeriesTimerInfoDto {
      * @return channelPrimaryImageTag
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_CHANNEL_PRIMARY_IMAGE_TAG)
+    @JsonProperty(value = JSON_PROPERTY_CHANNEL_PRIMARY_IMAGE_TAG, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getChannelPrimaryImageTag() {
         return channelPrimaryImageTag;
     }
 
-    @JsonProperty(JSON_PROPERTY_CHANNEL_PRIMARY_IMAGE_TAG)
+    @JsonProperty(value = JSON_PROPERTY_CHANNEL_PRIMARY_IMAGE_TAG, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setChannelPrimaryImageTag(@org.eclipse.jdt.annotation.NonNull String channelPrimaryImageTag) {
         this.channelPrimaryImageTag = channelPrimaryImageTag;
@@ -392,13 +393,13 @@ public class SeriesTimerInfoDto {
      * @return programId
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_PROGRAM_ID)
+    @JsonProperty(value = JSON_PROPERTY_PROGRAM_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getProgramId() {
         return programId;
     }
 
-    @JsonProperty(JSON_PROPERTY_PROGRAM_ID)
+    @JsonProperty(value = JSON_PROPERTY_PROGRAM_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setProgramId(@org.eclipse.jdt.annotation.NonNull String programId) {
         this.programId = programId;
@@ -415,13 +416,13 @@ public class SeriesTimerInfoDto {
      * @return externalProgramId
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_EXTERNAL_PROGRAM_ID)
+    @JsonProperty(value = JSON_PROPERTY_EXTERNAL_PROGRAM_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getExternalProgramId() {
         return externalProgramId;
     }
 
-    @JsonProperty(JSON_PROPERTY_EXTERNAL_PROGRAM_ID)
+    @JsonProperty(value = JSON_PROPERTY_EXTERNAL_PROGRAM_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setExternalProgramId(@org.eclipse.jdt.annotation.NonNull String externalProgramId) {
         this.externalProgramId = externalProgramId;
@@ -438,13 +439,13 @@ public class SeriesTimerInfoDto {
      * @return name
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_NAME)
+    @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getName() {
         return name;
     }
 
-    @JsonProperty(JSON_PROPERTY_NAME)
+    @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setName(@org.eclipse.jdt.annotation.NonNull String name) {
         this.name = name;
@@ -461,13 +462,13 @@ public class SeriesTimerInfoDto {
      * @return overview
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_OVERVIEW)
+    @JsonProperty(value = JSON_PROPERTY_OVERVIEW, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getOverview() {
         return overview;
     }
 
-    @JsonProperty(JSON_PROPERTY_OVERVIEW)
+    @JsonProperty(value = JSON_PROPERTY_OVERVIEW, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setOverview(@org.eclipse.jdt.annotation.NonNull String overview) {
         this.overview = overview;
@@ -484,13 +485,13 @@ public class SeriesTimerInfoDto {
      * @return startDate
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_START_DATE)
+    @JsonProperty(value = JSON_PROPERTY_START_DATE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public OffsetDateTime getStartDate() {
         return startDate;
     }
 
-    @JsonProperty(JSON_PROPERTY_START_DATE)
+    @JsonProperty(value = JSON_PROPERTY_START_DATE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setStartDate(@org.eclipse.jdt.annotation.NonNull OffsetDateTime startDate) {
         this.startDate = startDate;
@@ -507,13 +508,13 @@ public class SeriesTimerInfoDto {
      * @return endDate
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_END_DATE)
+    @JsonProperty(value = JSON_PROPERTY_END_DATE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public OffsetDateTime getEndDate() {
         return endDate;
     }
 
-    @JsonProperty(JSON_PROPERTY_END_DATE)
+    @JsonProperty(value = JSON_PROPERTY_END_DATE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setEndDate(@org.eclipse.jdt.annotation.NonNull OffsetDateTime endDate) {
         this.endDate = endDate;
@@ -530,13 +531,13 @@ public class SeriesTimerInfoDto {
      * @return serviceName
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_SERVICE_NAME)
+    @JsonProperty(value = JSON_PROPERTY_SERVICE_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getServiceName() {
         return serviceName;
     }
 
-    @JsonProperty(JSON_PROPERTY_SERVICE_NAME)
+    @JsonProperty(value = JSON_PROPERTY_SERVICE_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setServiceName(@org.eclipse.jdt.annotation.NonNull String serviceName) {
         this.serviceName = serviceName;
@@ -553,13 +554,13 @@ public class SeriesTimerInfoDto {
      * @return priority
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_PRIORITY)
+    @JsonProperty(value = JSON_PROPERTY_PRIORITY, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getPriority() {
         return priority;
     }
 
-    @JsonProperty(JSON_PROPERTY_PRIORITY)
+    @JsonProperty(value = JSON_PROPERTY_PRIORITY, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setPriority(@org.eclipse.jdt.annotation.NonNull Integer priority) {
         this.priority = priority;
@@ -576,13 +577,13 @@ public class SeriesTimerInfoDto {
      * @return prePaddingSeconds
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_PRE_PADDING_SECONDS)
+    @JsonProperty(value = JSON_PROPERTY_PRE_PADDING_SECONDS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getPrePaddingSeconds() {
         return prePaddingSeconds;
     }
 
-    @JsonProperty(JSON_PROPERTY_PRE_PADDING_SECONDS)
+    @JsonProperty(value = JSON_PROPERTY_PRE_PADDING_SECONDS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setPrePaddingSeconds(@org.eclipse.jdt.annotation.NonNull Integer prePaddingSeconds) {
         this.prePaddingSeconds = prePaddingSeconds;
@@ -599,13 +600,13 @@ public class SeriesTimerInfoDto {
      * @return postPaddingSeconds
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_POST_PADDING_SECONDS)
+    @JsonProperty(value = JSON_PROPERTY_POST_PADDING_SECONDS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getPostPaddingSeconds() {
         return postPaddingSeconds;
     }
 
-    @JsonProperty(JSON_PROPERTY_POST_PADDING_SECONDS)
+    @JsonProperty(value = JSON_PROPERTY_POST_PADDING_SECONDS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setPostPaddingSeconds(@org.eclipse.jdt.annotation.NonNull Integer postPaddingSeconds) {
         this.postPaddingSeconds = postPaddingSeconds;
@@ -622,13 +623,13 @@ public class SeriesTimerInfoDto {
      * @return isPrePaddingRequired
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_IS_PRE_PADDING_REQUIRED)
+    @JsonProperty(value = JSON_PROPERTY_IS_PRE_PADDING_REQUIRED, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getIsPrePaddingRequired() {
         return isPrePaddingRequired;
     }
 
-    @JsonProperty(JSON_PROPERTY_IS_PRE_PADDING_REQUIRED)
+    @JsonProperty(value = JSON_PROPERTY_IS_PRE_PADDING_REQUIRED, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setIsPrePaddingRequired(@org.eclipse.jdt.annotation.NonNull Boolean isPrePaddingRequired) {
         this.isPrePaddingRequired = isPrePaddingRequired;
@@ -645,13 +646,13 @@ public class SeriesTimerInfoDto {
      * @return parentBackdropItemId
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_PARENT_BACKDROP_ITEM_ID)
+    @JsonProperty(value = JSON_PROPERTY_PARENT_BACKDROP_ITEM_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getParentBackdropItemId() {
         return parentBackdropItemId;
     }
 
-    @JsonProperty(JSON_PROPERTY_PARENT_BACKDROP_ITEM_ID)
+    @JsonProperty(value = JSON_PROPERTY_PARENT_BACKDROP_ITEM_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setParentBackdropItemId(@org.eclipse.jdt.annotation.NonNull String parentBackdropItemId) {
         this.parentBackdropItemId = parentBackdropItemId;
@@ -677,13 +678,13 @@ public class SeriesTimerInfoDto {
      * @return parentBackdropImageTags
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_PARENT_BACKDROP_IMAGE_TAGS)
+    @JsonProperty(value = JSON_PROPERTY_PARENT_BACKDROP_IMAGE_TAGS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<String> getParentBackdropImageTags() {
         return parentBackdropImageTags;
     }
 
-    @JsonProperty(JSON_PROPERTY_PARENT_BACKDROP_IMAGE_TAGS)
+    @JsonProperty(value = JSON_PROPERTY_PARENT_BACKDROP_IMAGE_TAGS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setParentBackdropImageTags(@org.eclipse.jdt.annotation.NonNull List<String> parentBackdropImageTags) {
         this.parentBackdropImageTags = parentBackdropImageTags;
@@ -700,13 +701,13 @@ public class SeriesTimerInfoDto {
      * @return isPostPaddingRequired
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_IS_POST_PADDING_REQUIRED)
+    @JsonProperty(value = JSON_PROPERTY_IS_POST_PADDING_REQUIRED, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getIsPostPaddingRequired() {
         return isPostPaddingRequired;
     }
 
-    @JsonProperty(JSON_PROPERTY_IS_POST_PADDING_REQUIRED)
+    @JsonProperty(value = JSON_PROPERTY_IS_POST_PADDING_REQUIRED, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setIsPostPaddingRequired(@org.eclipse.jdt.annotation.NonNull Boolean isPostPaddingRequired) {
         this.isPostPaddingRequired = isPostPaddingRequired;
@@ -723,13 +724,13 @@ public class SeriesTimerInfoDto {
      * @return keepUntil
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_KEEP_UNTIL)
+    @JsonProperty(value = JSON_PROPERTY_KEEP_UNTIL, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public KeepUntil getKeepUntil() {
         return keepUntil;
     }
 
-    @JsonProperty(JSON_PROPERTY_KEEP_UNTIL)
+    @JsonProperty(value = JSON_PROPERTY_KEEP_UNTIL, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setKeepUntil(@org.eclipse.jdt.annotation.NonNull KeepUntil keepUntil) {
         this.keepUntil = keepUntil;
@@ -746,13 +747,13 @@ public class SeriesTimerInfoDto {
      * @return recordAnyTime
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_RECORD_ANY_TIME)
+    @JsonProperty(value = JSON_PROPERTY_RECORD_ANY_TIME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getRecordAnyTime() {
         return recordAnyTime;
     }
 
-    @JsonProperty(JSON_PROPERTY_RECORD_ANY_TIME)
+    @JsonProperty(value = JSON_PROPERTY_RECORD_ANY_TIME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setRecordAnyTime(@org.eclipse.jdt.annotation.NonNull Boolean recordAnyTime) {
         this.recordAnyTime = recordAnyTime;
@@ -769,13 +770,13 @@ public class SeriesTimerInfoDto {
      * @return skipEpisodesInLibrary
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_SKIP_EPISODES_IN_LIBRARY)
+    @JsonProperty(value = JSON_PROPERTY_SKIP_EPISODES_IN_LIBRARY, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getSkipEpisodesInLibrary() {
         return skipEpisodesInLibrary;
     }
 
-    @JsonProperty(JSON_PROPERTY_SKIP_EPISODES_IN_LIBRARY)
+    @JsonProperty(value = JSON_PROPERTY_SKIP_EPISODES_IN_LIBRARY, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setSkipEpisodesInLibrary(@org.eclipse.jdt.annotation.NonNull Boolean skipEpisodesInLibrary) {
         this.skipEpisodesInLibrary = skipEpisodesInLibrary;
@@ -792,13 +793,13 @@ public class SeriesTimerInfoDto {
      * @return recordAnyChannel
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_RECORD_ANY_CHANNEL)
+    @JsonProperty(value = JSON_PROPERTY_RECORD_ANY_CHANNEL, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getRecordAnyChannel() {
         return recordAnyChannel;
     }
 
-    @JsonProperty(JSON_PROPERTY_RECORD_ANY_CHANNEL)
+    @JsonProperty(value = JSON_PROPERTY_RECORD_ANY_CHANNEL, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setRecordAnyChannel(@org.eclipse.jdt.annotation.NonNull Boolean recordAnyChannel) {
         this.recordAnyChannel = recordAnyChannel;
@@ -815,13 +816,13 @@ public class SeriesTimerInfoDto {
      * @return keepUpTo
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_KEEP_UP_TO)
+    @JsonProperty(value = JSON_PROPERTY_KEEP_UP_TO, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getKeepUpTo() {
         return keepUpTo;
     }
 
-    @JsonProperty(JSON_PROPERTY_KEEP_UP_TO)
+    @JsonProperty(value = JSON_PROPERTY_KEEP_UP_TO, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setKeepUpTo(@org.eclipse.jdt.annotation.NonNull Integer keepUpTo) {
         this.keepUpTo = keepUpTo;
@@ -838,13 +839,13 @@ public class SeriesTimerInfoDto {
      * @return recordNewOnly
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_RECORD_NEW_ONLY)
+    @JsonProperty(value = JSON_PROPERTY_RECORD_NEW_ONLY, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getRecordNewOnly() {
         return recordNewOnly;
     }
 
-    @JsonProperty(JSON_PROPERTY_RECORD_NEW_ONLY)
+    @JsonProperty(value = JSON_PROPERTY_RECORD_NEW_ONLY, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setRecordNewOnly(@org.eclipse.jdt.annotation.NonNull Boolean recordNewOnly) {
         this.recordNewOnly = recordNewOnly;
@@ -869,13 +870,13 @@ public class SeriesTimerInfoDto {
      * @return days
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_DAYS)
+    @JsonProperty(value = JSON_PROPERTY_DAYS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<DayOfWeek> getDays() {
         return days;
     }
 
-    @JsonProperty(JSON_PROPERTY_DAYS)
+    @JsonProperty(value = JSON_PROPERTY_DAYS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setDays(@org.eclipse.jdt.annotation.NonNull List<DayOfWeek> days) {
         this.days = days;
@@ -892,13 +893,13 @@ public class SeriesTimerInfoDto {
      * @return dayPattern
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_DAY_PATTERN)
+    @JsonProperty(value = JSON_PROPERTY_DAY_PATTERN, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public DayPattern getDayPattern() {
         return dayPattern;
     }
 
-    @JsonProperty(JSON_PROPERTY_DAY_PATTERN)
+    @JsonProperty(value = JSON_PROPERTY_DAY_PATTERN, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setDayPattern(@org.eclipse.jdt.annotation.NonNull DayPattern dayPattern) {
         this.dayPattern = dayPattern;
@@ -923,13 +924,13 @@ public class SeriesTimerInfoDto {
      * @return imageTags
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_IMAGE_TAGS)
+    @JsonProperty(value = JSON_PROPERTY_IMAGE_TAGS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Map<String, String> getImageTags() {
         return imageTags;
     }
 
-    @JsonProperty(JSON_PROPERTY_IMAGE_TAGS)
+    @JsonProperty(value = JSON_PROPERTY_IMAGE_TAGS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setImageTags(@org.eclipse.jdt.annotation.NonNull Map<String, String> imageTags) {
         this.imageTags = imageTags;
@@ -946,13 +947,13 @@ public class SeriesTimerInfoDto {
      * @return parentThumbItemId
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_PARENT_THUMB_ITEM_ID)
+    @JsonProperty(value = JSON_PROPERTY_PARENT_THUMB_ITEM_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getParentThumbItemId() {
         return parentThumbItemId;
     }
 
-    @JsonProperty(JSON_PROPERTY_PARENT_THUMB_ITEM_ID)
+    @JsonProperty(value = JSON_PROPERTY_PARENT_THUMB_ITEM_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setParentThumbItemId(@org.eclipse.jdt.annotation.NonNull String parentThumbItemId) {
         this.parentThumbItemId = parentThumbItemId;
@@ -969,20 +970,20 @@ public class SeriesTimerInfoDto {
      * @return parentThumbImageTag
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_PARENT_THUMB_IMAGE_TAG)
+    @JsonProperty(value = JSON_PROPERTY_PARENT_THUMB_IMAGE_TAG, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getParentThumbImageTag() {
         return parentThumbImageTag;
     }
 
-    @JsonProperty(JSON_PROPERTY_PARENT_THUMB_IMAGE_TAG)
+    @JsonProperty(value = JSON_PROPERTY_PARENT_THUMB_IMAGE_TAG, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setParentThumbImageTag(@org.eclipse.jdt.annotation.NonNull String parentThumbImageTag) {
         this.parentThumbImageTag = parentThumbImageTag;
     }
 
     public SeriesTimerInfoDto parentPrimaryImageItemId(
-            @org.eclipse.jdt.annotation.NonNull String parentPrimaryImageItemId) {
+            @org.eclipse.jdt.annotation.NonNull UUID parentPrimaryImageItemId) {
         this.parentPrimaryImageItemId = parentPrimaryImageItemId;
         return this;
     }
@@ -993,15 +994,15 @@ public class SeriesTimerInfoDto {
      * @return parentPrimaryImageItemId
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_PARENT_PRIMARY_IMAGE_ITEM_ID)
+    @JsonProperty(value = JSON_PROPERTY_PARENT_PRIMARY_IMAGE_ITEM_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public String getParentPrimaryImageItemId() {
+    public UUID getParentPrimaryImageItemId() {
         return parentPrimaryImageItemId;
     }
 
-    @JsonProperty(JSON_PROPERTY_PARENT_PRIMARY_IMAGE_ITEM_ID)
+    @JsonProperty(value = JSON_PROPERTY_PARENT_PRIMARY_IMAGE_ITEM_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setParentPrimaryImageItemId(@org.eclipse.jdt.annotation.NonNull String parentPrimaryImageItemId) {
+    public void setParentPrimaryImageItemId(@org.eclipse.jdt.annotation.NonNull UUID parentPrimaryImageItemId) {
         this.parentPrimaryImageItemId = parentPrimaryImageItemId;
     }
 
@@ -1016,13 +1017,13 @@ public class SeriesTimerInfoDto {
      * @return parentPrimaryImageTag
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_PARENT_PRIMARY_IMAGE_TAG)
+    @JsonProperty(value = JSON_PROPERTY_PARENT_PRIMARY_IMAGE_TAG, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getParentPrimaryImageTag() {
         return parentPrimaryImageTag;
     }
 
-    @JsonProperty(JSON_PROPERTY_PARENT_PRIMARY_IMAGE_TAG)
+    @JsonProperty(value = JSON_PROPERTY_PARENT_PRIMARY_IMAGE_TAG, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setParentPrimaryImageTag(@org.eclipse.jdt.annotation.NonNull String parentPrimaryImageTag) {
         this.parentPrimaryImageTag = parentPrimaryImageTag;
@@ -1174,172 +1175,173 @@ public class SeriesTimerInfoDto {
 
         // add `Id` to the URL query string
         if (getId() != null) {
-            joiner.add(
-                    String.format("%sId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
+            joiner.add(String.format(Locale.ROOT, "%sId%s=%s", prefix, suffix,
+                    ApiClient.urlEncode(ApiClient.valueToString(getId()))));
         }
 
         // add `Type` to the URL query string
         if (getType() != null) {
-            joiner.add(String.format("%sType%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sType%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getType()))));
         }
 
         // add `ServerId` to the URL query string
         if (getServerId() != null) {
-            joiner.add(String.format("%sServerId%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sServerId%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getServerId()))));
         }
 
         // add `ExternalId` to the URL query string
         if (getExternalId() != null) {
-            joiner.add(String.format("%sExternalId%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sExternalId%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getExternalId()))));
         }
 
         // add `ChannelId` to the URL query string
         if (getChannelId() != null) {
-            joiner.add(String.format("%sChannelId%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sChannelId%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getChannelId()))));
         }
 
         // add `ExternalChannelId` to the URL query string
         if (getExternalChannelId() != null) {
-            joiner.add(String.format("%sExternalChannelId%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sExternalChannelId%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getExternalChannelId()))));
         }
 
         // add `ChannelName` to the URL query string
         if (getChannelName() != null) {
-            joiner.add(String.format("%sChannelName%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sChannelName%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getChannelName()))));
         }
 
         // add `ChannelPrimaryImageTag` to the URL query string
         if (getChannelPrimaryImageTag() != null) {
-            joiner.add(String.format("%sChannelPrimaryImageTag%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sChannelPrimaryImageTag%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getChannelPrimaryImageTag()))));
         }
 
         // add `ProgramId` to the URL query string
         if (getProgramId() != null) {
-            joiner.add(String.format("%sProgramId%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sProgramId%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getProgramId()))));
         }
 
         // add `ExternalProgramId` to the URL query string
         if (getExternalProgramId() != null) {
-            joiner.add(String.format("%sExternalProgramId%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sExternalProgramId%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getExternalProgramId()))));
         }
 
         // add `Name` to the URL query string
         if (getName() != null) {
-            joiner.add(String.format("%sName%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sName%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getName()))));
         }
 
         // add `Overview` to the URL query string
         if (getOverview() != null) {
-            joiner.add(String.format("%sOverview%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sOverview%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getOverview()))));
         }
 
         // add `StartDate` to the URL query string
         if (getStartDate() != null) {
-            joiner.add(String.format("%sStartDate%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sStartDate%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getStartDate()))));
         }
 
         // add `EndDate` to the URL query string
         if (getEndDate() != null) {
-            joiner.add(String.format("%sEndDate%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sEndDate%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getEndDate()))));
         }
 
         // add `ServiceName` to the URL query string
         if (getServiceName() != null) {
-            joiner.add(String.format("%sServiceName%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sServiceName%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getServiceName()))));
         }
 
         // add `Priority` to the URL query string
         if (getPriority() != null) {
-            joiner.add(String.format("%sPriority%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sPriority%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getPriority()))));
         }
 
         // add `PrePaddingSeconds` to the URL query string
         if (getPrePaddingSeconds() != null) {
-            joiner.add(String.format("%sPrePaddingSeconds%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sPrePaddingSeconds%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getPrePaddingSeconds()))));
         }
 
         // add `PostPaddingSeconds` to the URL query string
         if (getPostPaddingSeconds() != null) {
-            joiner.add(String.format("%sPostPaddingSeconds%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sPostPaddingSeconds%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getPostPaddingSeconds()))));
         }
 
         // add `IsPrePaddingRequired` to the URL query string
         if (getIsPrePaddingRequired() != null) {
-            joiner.add(String.format("%sIsPrePaddingRequired%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sIsPrePaddingRequired%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getIsPrePaddingRequired()))));
         }
 
         // add `ParentBackdropItemId` to the URL query string
         if (getParentBackdropItemId() != null) {
-            joiner.add(String.format("%sParentBackdropItemId%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sParentBackdropItemId%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getParentBackdropItemId()))));
         }
 
         // add `ParentBackdropImageTags` to the URL query string
         if (getParentBackdropImageTags() != null) {
             for (int i = 0; i < getParentBackdropImageTags().size(); i++) {
-                joiner.add(String.format("%sParentBackdropImageTags%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+                joiner.add(String.format(Locale.ROOT, "%sParentBackdropImageTags%s%s=%s", prefix, suffix,
+                        "".equals(suffix) ? ""
+                                : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
                         ApiClient.urlEncode(ApiClient.valueToString(getParentBackdropImageTags().get(i)))));
             }
         }
 
         // add `IsPostPaddingRequired` to the URL query string
         if (getIsPostPaddingRequired() != null) {
-            joiner.add(String.format("%sIsPostPaddingRequired%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sIsPostPaddingRequired%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getIsPostPaddingRequired()))));
         }
 
         // add `KeepUntil` to the URL query string
         if (getKeepUntil() != null) {
-            joiner.add(String.format("%sKeepUntil%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sKeepUntil%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getKeepUntil()))));
         }
 
         // add `RecordAnyTime` to the URL query string
         if (getRecordAnyTime() != null) {
-            joiner.add(String.format("%sRecordAnyTime%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sRecordAnyTime%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getRecordAnyTime()))));
         }
 
         // add `SkipEpisodesInLibrary` to the URL query string
         if (getSkipEpisodesInLibrary() != null) {
-            joiner.add(String.format("%sSkipEpisodesInLibrary%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sSkipEpisodesInLibrary%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getSkipEpisodesInLibrary()))));
         }
 
         // add `RecordAnyChannel` to the URL query string
         if (getRecordAnyChannel() != null) {
-            joiner.add(String.format("%sRecordAnyChannel%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sRecordAnyChannel%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getRecordAnyChannel()))));
         }
 
         // add `KeepUpTo` to the URL query string
         if (getKeepUpTo() != null) {
-            joiner.add(String.format("%sKeepUpTo%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sKeepUpTo%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getKeepUpTo()))));
         }
 
         // add `RecordNewOnly` to the URL query string
         if (getRecordNewOnly() != null) {
-            joiner.add(String.format("%sRecordNewOnly%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sRecordNewOnly%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getRecordNewOnly()))));
         }
 
@@ -1347,8 +1349,9 @@ public class SeriesTimerInfoDto {
         if (getDays() != null) {
             for (int i = 0; i < getDays().size(); i++) {
                 if (getDays().get(i) != null) {
-                    joiner.add(String.format("%sDays%s%s=%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+                    joiner.add(String.format(Locale.ROOT, "%sDays%s%s=%s", prefix, suffix,
+                            "".equals(suffix) ? ""
+                                    : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
                             ApiClient.urlEncode(ApiClient.valueToString(getDays().get(i)))));
                 }
             }
@@ -1356,15 +1359,16 @@ public class SeriesTimerInfoDto {
 
         // add `DayPattern` to the URL query string
         if (getDayPattern() != null) {
-            joiner.add(String.format("%sDayPattern%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sDayPattern%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getDayPattern()))));
         }
 
         // add `ImageTags` to the URL query string
         if (getImageTags() != null) {
             for (String _key : getImageTags().keySet()) {
-                joiner.add(String.format("%sImageTags%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, _key, containerSuffix),
+                joiner.add(String.format(Locale.ROOT, "%sImageTags%s%s=%s", prefix, suffix,
+                        "".equals(suffix) ? ""
+                                : String.format(Locale.ROOT, "%s%d%s", containerPrefix, _key, containerSuffix),
                         getImageTags().get(_key),
                         ApiClient.urlEncode(ApiClient.valueToString(getImageTags().get(_key)))));
             }
@@ -1372,25 +1376,25 @@ public class SeriesTimerInfoDto {
 
         // add `ParentThumbItemId` to the URL query string
         if (getParentThumbItemId() != null) {
-            joiner.add(String.format("%sParentThumbItemId%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sParentThumbItemId%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getParentThumbItemId()))));
         }
 
         // add `ParentThumbImageTag` to the URL query string
         if (getParentThumbImageTag() != null) {
-            joiner.add(String.format("%sParentThumbImageTag%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sParentThumbImageTag%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getParentThumbImageTag()))));
         }
 
         // add `ParentPrimaryImageItemId` to the URL query string
         if (getParentPrimaryImageItemId() != null) {
-            joiner.add(String.format("%sParentPrimaryImageItemId%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sParentPrimaryImageItemId%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getParentPrimaryImageItemId()))));
         }
 
         // add `ParentPrimaryImageTag` to the URL query string
         if (getParentPrimaryImageTag() != null) {
-            joiner.add(String.format("%sParentPrimaryImageTag%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sParentPrimaryImageTag%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getParentPrimaryImageTag()))));
         }
 
@@ -1574,7 +1578,7 @@ public class SeriesTimerInfoDto {
             return this;
         }
 
-        public SeriesTimerInfoDto.Builder parentPrimaryImageItemId(String parentPrimaryImageItemId) {
+        public SeriesTimerInfoDto.Builder parentPrimaryImageItemId(UUID parentPrimaryImageItemId) {
             this.instance.parentPrimaryImageItemId = parentPrimaryImageItemId;
             return this;
         }

@@ -13,6 +13,7 @@
 
 package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
+import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
 import java.util.UUID;
@@ -69,13 +70,13 @@ public class ConfigurationPageInfo {
      * @return name
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_NAME)
+    @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getName() {
         return name;
     }
 
-    @JsonProperty(JSON_PROPERTY_NAME)
+    @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setName(@org.eclipse.jdt.annotation.NonNull String name) {
         this.name = name;
@@ -92,13 +93,13 @@ public class ConfigurationPageInfo {
      * @return enableInMainMenu
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ENABLE_IN_MAIN_MENU)
+    @JsonProperty(value = JSON_PROPERTY_ENABLE_IN_MAIN_MENU, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getEnableInMainMenu() {
         return enableInMainMenu;
     }
 
-    @JsonProperty(JSON_PROPERTY_ENABLE_IN_MAIN_MENU)
+    @JsonProperty(value = JSON_PROPERTY_ENABLE_IN_MAIN_MENU, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setEnableInMainMenu(@org.eclipse.jdt.annotation.NonNull Boolean enableInMainMenu) {
         this.enableInMainMenu = enableInMainMenu;
@@ -115,13 +116,13 @@ public class ConfigurationPageInfo {
      * @return menuSection
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_MENU_SECTION)
+    @JsonProperty(value = JSON_PROPERTY_MENU_SECTION, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getMenuSection() {
         return menuSection;
     }
 
-    @JsonProperty(JSON_PROPERTY_MENU_SECTION)
+    @JsonProperty(value = JSON_PROPERTY_MENU_SECTION, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setMenuSection(@org.eclipse.jdt.annotation.NonNull String menuSection) {
         this.menuSection = menuSection;
@@ -138,13 +139,13 @@ public class ConfigurationPageInfo {
      * @return menuIcon
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_MENU_ICON)
+    @JsonProperty(value = JSON_PROPERTY_MENU_ICON, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getMenuIcon() {
         return menuIcon;
     }
 
-    @JsonProperty(JSON_PROPERTY_MENU_ICON)
+    @JsonProperty(value = JSON_PROPERTY_MENU_ICON, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setMenuIcon(@org.eclipse.jdt.annotation.NonNull String menuIcon) {
         this.menuIcon = menuIcon;
@@ -161,13 +162,13 @@ public class ConfigurationPageInfo {
      * @return displayName
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_DISPLAY_NAME)
+    @JsonProperty(value = JSON_PROPERTY_DISPLAY_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getDisplayName() {
         return displayName;
     }
 
-    @JsonProperty(JSON_PROPERTY_DISPLAY_NAME)
+    @JsonProperty(value = JSON_PROPERTY_DISPLAY_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setDisplayName(@org.eclipse.jdt.annotation.NonNull String displayName) {
         this.displayName = displayName;
@@ -184,13 +185,13 @@ public class ConfigurationPageInfo {
      * @return pluginId
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_PLUGIN_ID)
+    @JsonProperty(value = JSON_PROPERTY_PLUGIN_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public UUID getPluginId() {
         return pluginId;
     }
 
-    @JsonProperty(JSON_PROPERTY_PLUGIN_ID)
+    @JsonProperty(value = JSON_PROPERTY_PLUGIN_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setPluginId(@org.eclipse.jdt.annotation.NonNull UUID pluginId) {
         this.pluginId = pluginId;
@@ -280,37 +281,37 @@ public class ConfigurationPageInfo {
 
         // add `Name` to the URL query string
         if (getName() != null) {
-            joiner.add(String.format("%sName%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sName%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getName()))));
         }
 
         // add `EnableInMainMenu` to the URL query string
         if (getEnableInMainMenu() != null) {
-            joiner.add(String.format("%sEnableInMainMenu%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sEnableInMainMenu%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getEnableInMainMenu()))));
         }
 
         // add `MenuSection` to the URL query string
         if (getMenuSection() != null) {
-            joiner.add(String.format("%sMenuSection%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sMenuSection%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getMenuSection()))));
         }
 
         // add `MenuIcon` to the URL query string
         if (getMenuIcon() != null) {
-            joiner.add(String.format("%sMenuIcon%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sMenuIcon%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getMenuIcon()))));
         }
 
         // add `DisplayName` to the URL query string
         if (getDisplayName() != null) {
-            joiner.add(String.format("%sDisplayName%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sDisplayName%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getDisplayName()))));
         }
 
         // add `PluginId` to the URL query string
         if (getPluginId() != null) {
-            joiner.add(String.format("%sPluginId%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sPluginId%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getPluginId()))));
         }
 

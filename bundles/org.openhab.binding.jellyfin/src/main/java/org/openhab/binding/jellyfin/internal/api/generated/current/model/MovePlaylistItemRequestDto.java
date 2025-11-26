@@ -13,6 +13,7 @@
 
 package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
+import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
 import java.util.UUID;
@@ -52,13 +53,13 @@ public class MovePlaylistItemRequestDto {
      * @return playlistItemId
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_PLAYLIST_ITEM_ID)
+    @JsonProperty(value = JSON_PROPERTY_PLAYLIST_ITEM_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public UUID getPlaylistItemId() {
         return playlistItemId;
     }
 
-    @JsonProperty(JSON_PROPERTY_PLAYLIST_ITEM_ID)
+    @JsonProperty(value = JSON_PROPERTY_PLAYLIST_ITEM_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setPlaylistItemId(@org.eclipse.jdt.annotation.NonNull UUID playlistItemId) {
         this.playlistItemId = playlistItemId;
@@ -75,13 +76,13 @@ public class MovePlaylistItemRequestDto {
      * @return newIndex
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_NEW_INDEX)
+    @JsonProperty(value = JSON_PROPERTY_NEW_INDEX, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getNewIndex() {
         return newIndex;
     }
 
-    @JsonProperty(JSON_PROPERTY_NEW_INDEX)
+    @JsonProperty(value = JSON_PROPERTY_NEW_INDEX, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setNewIndex(@org.eclipse.jdt.annotation.NonNull Integer newIndex) {
         this.newIndex = newIndex;
@@ -163,13 +164,13 @@ public class MovePlaylistItemRequestDto {
 
         // add `PlaylistItemId` to the URL query string
         if (getPlaylistItemId() != null) {
-            joiner.add(String.format("%sPlaylistItemId%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sPlaylistItemId%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getPlaylistItemId()))));
         }
 
         // add `NewIndex` to the URL query string
         if (getNewIndex() != null) {
-            joiner.add(String.format("%sNewIndex%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sNewIndex%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getNewIndex()))));
         }
 

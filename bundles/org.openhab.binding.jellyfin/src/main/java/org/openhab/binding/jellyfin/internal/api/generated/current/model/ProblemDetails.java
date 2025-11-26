@@ -14,6 +14,7 @@
 package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.StringJoiner;
@@ -68,13 +69,13 @@ public class ProblemDetails {
      * @return type
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_TYPE)
+    @JsonProperty(value = JSON_PROPERTY_TYPE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getType() {
         return type;
     }
 
-    @JsonProperty(JSON_PROPERTY_TYPE)
+    @JsonProperty(value = JSON_PROPERTY_TYPE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setType(@org.eclipse.jdt.annotation.NonNull String type) {
         this.type = type;
@@ -91,13 +92,13 @@ public class ProblemDetails {
      * @return title
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_TITLE)
+    @JsonProperty(value = JSON_PROPERTY_TITLE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getTitle() {
         return title;
     }
 
-    @JsonProperty(JSON_PROPERTY_TITLE)
+    @JsonProperty(value = JSON_PROPERTY_TITLE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setTitle(@org.eclipse.jdt.annotation.NonNull String title) {
         this.title = title;
@@ -114,13 +115,13 @@ public class ProblemDetails {
      * @return status
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_STATUS)
+    @JsonProperty(value = JSON_PROPERTY_STATUS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getStatus() {
         return status;
     }
 
-    @JsonProperty(JSON_PROPERTY_STATUS)
+    @JsonProperty(value = JSON_PROPERTY_STATUS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setStatus(@org.eclipse.jdt.annotation.NonNull Integer status) {
         this.status = status;
@@ -137,13 +138,13 @@ public class ProblemDetails {
      * @return detail
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_DETAIL)
+    @JsonProperty(value = JSON_PROPERTY_DETAIL, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getDetail() {
         return detail;
     }
 
-    @JsonProperty(JSON_PROPERTY_DETAIL)
+    @JsonProperty(value = JSON_PROPERTY_DETAIL, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setDetail(@org.eclipse.jdt.annotation.NonNull String detail) {
         this.detail = detail;
@@ -160,13 +161,13 @@ public class ProblemDetails {
      * @return instance
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_INSTANCE)
+    @JsonProperty(value = JSON_PROPERTY_INSTANCE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getInstance() {
         return instance;
     }
 
-    @JsonProperty(JSON_PROPERTY_INSTANCE)
+    @JsonProperty(value = JSON_PROPERTY_INSTANCE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setInstance(@org.eclipse.jdt.annotation.NonNull String instance) {
         this.instance = instance;
@@ -302,31 +303,31 @@ public class ProblemDetails {
 
         // add `type` to the URL query string
         if (getType() != null) {
-            joiner.add(String.format("%stype%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%stype%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getType()))));
         }
 
         // add `title` to the URL query string
         if (getTitle() != null) {
-            joiner.add(String.format("%stitle%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%stitle%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getTitle()))));
         }
 
         // add `status` to the URL query string
         if (getStatus() != null) {
-            joiner.add(String.format("%sstatus%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sstatus%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getStatus()))));
         }
 
         // add `detail` to the URL query string
         if (getDetail() != null) {
-            joiner.add(String.format("%sdetail%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sdetail%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getDetail()))));
         }
 
         // add `instance` to the URL query string
         if (getInstance() != null) {
-            joiner.add(String.format("%sinstance%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sinstance%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getInstance()))));
         }
 

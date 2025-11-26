@@ -13,6 +13,8 @@
 
 package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
+import java.util.Locale;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
@@ -79,11 +81,7 @@ public enum ItemSortBy {
 
     PARENT_INDEX_NUMBER("ParentIndexNumber"),
 
-    INDEX_NUMBER("IndexNumber"),
-
-    SIMILARITY_SCORE("SimilarityScore"),
-
-    SEARCH_SCORE("SearchScore");
+    INDEX_NUMBER("IndexNumber");
 
     private String value;
 
@@ -122,6 +120,6 @@ public enum ItemSortBy {
             prefix = "";
         }
 
-        return String.format("%s=%s", prefix, this.toString());
+        return String.format(Locale.ROOT, "%s=%s", prefix, this.toString());
     }
 }

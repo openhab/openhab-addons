@@ -255,7 +255,7 @@ public class CollectionApi {
             localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
         }
 
-        localVarRequestBuilder.header("Accept", "application/json");
+        localVarRequestBuilder.header("Accept", "text/html");
 
         localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {
@@ -404,7 +404,7 @@ public class CollectionApi {
         }
 
         localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase, text/html");
 
         localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {
@@ -529,7 +529,7 @@ public class CollectionApi {
             localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
         }
 
-        localVarRequestBuilder.header("Accept", "application/json");
+        localVarRequestBuilder.header("Accept", "text/html");
 
         localVarRequestBuilder.method("DELETE", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {

@@ -313,7 +313,7 @@ public class ItemRefreshApi {
         }
 
         localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase, text/html");
 
         localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {

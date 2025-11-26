@@ -15,6 +15,7 @@ package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
 
@@ -90,13 +91,13 @@ public class LibraryUpdateInfo {
      * @return foldersAddedTo
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_FOLDERS_ADDED_TO)
+    @JsonProperty(value = JSON_PROPERTY_FOLDERS_ADDED_TO, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<String> getFoldersAddedTo() {
         return foldersAddedTo;
     }
 
-    @JsonProperty(JSON_PROPERTY_FOLDERS_ADDED_TO)
+    @JsonProperty(value = JSON_PROPERTY_FOLDERS_ADDED_TO, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setFoldersAddedTo(@org.eclipse.jdt.annotation.NonNull List<String> foldersAddedTo) {
         this.foldersAddedTo = foldersAddedTo;
@@ -121,13 +122,13 @@ public class LibraryUpdateInfo {
      * @return foldersRemovedFrom
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_FOLDERS_REMOVED_FROM)
+    @JsonProperty(value = JSON_PROPERTY_FOLDERS_REMOVED_FROM, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<String> getFoldersRemovedFrom() {
         return foldersRemovedFrom;
     }
 
-    @JsonProperty(JSON_PROPERTY_FOLDERS_REMOVED_FROM)
+    @JsonProperty(value = JSON_PROPERTY_FOLDERS_REMOVED_FROM, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setFoldersRemovedFrom(@org.eclipse.jdt.annotation.NonNull List<String> foldersRemovedFrom) {
         this.foldersRemovedFrom = foldersRemovedFrom;
@@ -152,13 +153,13 @@ public class LibraryUpdateInfo {
      * @return itemsAdded
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ITEMS_ADDED)
+    @JsonProperty(value = JSON_PROPERTY_ITEMS_ADDED, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<String> getItemsAdded() {
         return itemsAdded;
     }
 
-    @JsonProperty(JSON_PROPERTY_ITEMS_ADDED)
+    @JsonProperty(value = JSON_PROPERTY_ITEMS_ADDED, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setItemsAdded(@org.eclipse.jdt.annotation.NonNull List<String> itemsAdded) {
         this.itemsAdded = itemsAdded;
@@ -183,13 +184,13 @@ public class LibraryUpdateInfo {
      * @return itemsRemoved
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ITEMS_REMOVED)
+    @JsonProperty(value = JSON_PROPERTY_ITEMS_REMOVED, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<String> getItemsRemoved() {
         return itemsRemoved;
     }
 
-    @JsonProperty(JSON_PROPERTY_ITEMS_REMOVED)
+    @JsonProperty(value = JSON_PROPERTY_ITEMS_REMOVED, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setItemsRemoved(@org.eclipse.jdt.annotation.NonNull List<String> itemsRemoved) {
         this.itemsRemoved = itemsRemoved;
@@ -214,13 +215,13 @@ public class LibraryUpdateInfo {
      * @return itemsUpdated
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ITEMS_UPDATED)
+    @JsonProperty(value = JSON_PROPERTY_ITEMS_UPDATED, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<String> getItemsUpdated() {
         return itemsUpdated;
     }
 
-    @JsonProperty(JSON_PROPERTY_ITEMS_UPDATED)
+    @JsonProperty(value = JSON_PROPERTY_ITEMS_UPDATED, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setItemsUpdated(@org.eclipse.jdt.annotation.NonNull List<String> itemsUpdated) {
         this.itemsUpdated = itemsUpdated;
@@ -245,13 +246,13 @@ public class LibraryUpdateInfo {
      * @return collectionFolders
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_COLLECTION_FOLDERS)
+    @JsonProperty(value = JSON_PROPERTY_COLLECTION_FOLDERS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<String> getCollectionFolders() {
         return collectionFolders;
     }
 
-    @JsonProperty(JSON_PROPERTY_COLLECTION_FOLDERS)
+    @JsonProperty(value = JSON_PROPERTY_COLLECTION_FOLDERS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setCollectionFolders(@org.eclipse.jdt.annotation.NonNull List<String> collectionFolders) {
         this.collectionFolders = collectionFolders;
@@ -263,7 +264,7 @@ public class LibraryUpdateInfo {
      * @return isEmpty
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_IS_EMPTY)
+    @JsonProperty(value = JSON_PROPERTY_IS_EMPTY, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getIsEmpty() {
         return isEmpty;
@@ -357,8 +358,9 @@ public class LibraryUpdateInfo {
         // add `FoldersAddedTo` to the URL query string
         if (getFoldersAddedTo() != null) {
             for (int i = 0; i < getFoldersAddedTo().size(); i++) {
-                joiner.add(String.format("%sFoldersAddedTo%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+                joiner.add(String.format(Locale.ROOT, "%sFoldersAddedTo%s%s=%s", prefix, suffix,
+                        "".equals(suffix) ? ""
+                                : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
                         ApiClient.urlEncode(ApiClient.valueToString(getFoldersAddedTo().get(i)))));
             }
         }
@@ -366,8 +368,9 @@ public class LibraryUpdateInfo {
         // add `FoldersRemovedFrom` to the URL query string
         if (getFoldersRemovedFrom() != null) {
             for (int i = 0; i < getFoldersRemovedFrom().size(); i++) {
-                joiner.add(String.format("%sFoldersRemovedFrom%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+                joiner.add(String.format(Locale.ROOT, "%sFoldersRemovedFrom%s%s=%s", prefix, suffix,
+                        "".equals(suffix) ? ""
+                                : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
                         ApiClient.urlEncode(ApiClient.valueToString(getFoldersRemovedFrom().get(i)))));
             }
         }
@@ -375,8 +378,9 @@ public class LibraryUpdateInfo {
         // add `ItemsAdded` to the URL query string
         if (getItemsAdded() != null) {
             for (int i = 0; i < getItemsAdded().size(); i++) {
-                joiner.add(String.format("%sItemsAdded%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+                joiner.add(String.format(Locale.ROOT, "%sItemsAdded%s%s=%s", prefix, suffix,
+                        "".equals(suffix) ? ""
+                                : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
                         ApiClient.urlEncode(ApiClient.valueToString(getItemsAdded().get(i)))));
             }
         }
@@ -384,8 +388,9 @@ public class LibraryUpdateInfo {
         // add `ItemsRemoved` to the URL query string
         if (getItemsRemoved() != null) {
             for (int i = 0; i < getItemsRemoved().size(); i++) {
-                joiner.add(String.format("%sItemsRemoved%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+                joiner.add(String.format(Locale.ROOT, "%sItemsRemoved%s%s=%s", prefix, suffix,
+                        "".equals(suffix) ? ""
+                                : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
                         ApiClient.urlEncode(ApiClient.valueToString(getItemsRemoved().get(i)))));
             }
         }
@@ -393,8 +398,9 @@ public class LibraryUpdateInfo {
         // add `ItemsUpdated` to the URL query string
         if (getItemsUpdated() != null) {
             for (int i = 0; i < getItemsUpdated().size(); i++) {
-                joiner.add(String.format("%sItemsUpdated%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+                joiner.add(String.format(Locale.ROOT, "%sItemsUpdated%s%s=%s", prefix, suffix,
+                        "".equals(suffix) ? ""
+                                : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
                         ApiClient.urlEncode(ApiClient.valueToString(getItemsUpdated().get(i)))));
             }
         }
@@ -402,15 +408,16 @@ public class LibraryUpdateInfo {
         // add `CollectionFolders` to the URL query string
         if (getCollectionFolders() != null) {
             for (int i = 0; i < getCollectionFolders().size(); i++) {
-                joiner.add(String.format("%sCollectionFolders%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+                joiner.add(String.format(Locale.ROOT, "%sCollectionFolders%s%s=%s", prefix, suffix,
+                        "".equals(suffix) ? ""
+                                : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
                         ApiClient.urlEncode(ApiClient.valueToString(getCollectionFolders().get(i)))));
             }
         }
 
         // add `IsEmpty` to the URL query string
         if (getIsEmpty() != null) {
-            joiner.add(String.format("%sIsEmpty%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sIsEmpty%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getIsEmpty()))));
         }
 

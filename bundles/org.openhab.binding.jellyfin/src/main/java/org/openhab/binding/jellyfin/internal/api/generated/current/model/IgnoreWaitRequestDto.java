@@ -13,6 +13,7 @@
 
 package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
+import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
 
@@ -46,13 +47,13 @@ public class IgnoreWaitRequestDto {
      * @return ignoreWait
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_IGNORE_WAIT)
+    @JsonProperty(value = JSON_PROPERTY_IGNORE_WAIT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getIgnoreWait() {
         return ignoreWait;
     }
 
-    @JsonProperty(JSON_PROPERTY_IGNORE_WAIT)
+    @JsonProperty(value = JSON_PROPERTY_IGNORE_WAIT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setIgnoreWait(@org.eclipse.jdt.annotation.NonNull Boolean ignoreWait) {
         this.ignoreWait = ignoreWait;
@@ -132,7 +133,7 @@ public class IgnoreWaitRequestDto {
 
         // add `IgnoreWait` to the URL query string
         if (getIgnoreWait() != null) {
-            joiner.add(String.format("%sIgnoreWait%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sIgnoreWait%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getIgnoreWait()))));
         }
 

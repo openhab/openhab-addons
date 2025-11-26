@@ -13,6 +13,7 @@
 
 package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
+import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
 
@@ -46,13 +47,13 @@ public class MediaPathInfo {
      * @return path
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_PATH)
+    @JsonProperty(value = JSON_PROPERTY_PATH, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getPath() {
         return path;
     }
 
-    @JsonProperty(JSON_PROPERTY_PATH)
+    @JsonProperty(value = JSON_PROPERTY_PATH, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setPath(@org.eclipse.jdt.annotation.NonNull String path) {
         this.path = path;
@@ -132,7 +133,7 @@ public class MediaPathInfo {
 
         // add `Path` to the URL query string
         if (getPath() != null) {
-            joiner.add(String.format("%sPath%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sPath%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getPath()))));
         }
 

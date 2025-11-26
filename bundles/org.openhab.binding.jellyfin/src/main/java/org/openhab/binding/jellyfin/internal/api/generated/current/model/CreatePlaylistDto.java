@@ -15,6 +15,7 @@ package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
 import java.util.UUID;
@@ -71,13 +72,13 @@ public class CreatePlaylistDto {
      * @return name
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_NAME)
+    @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getName() {
         return name;
     }
 
-    @JsonProperty(JSON_PROPERTY_NAME)
+    @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setName(@org.eclipse.jdt.annotation.NonNull String name) {
         this.name = name;
@@ -102,13 +103,13 @@ public class CreatePlaylistDto {
      * @return ids
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_IDS)
+    @JsonProperty(value = JSON_PROPERTY_IDS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<UUID> getIds() {
         return ids;
     }
 
-    @JsonProperty(JSON_PROPERTY_IDS)
+    @JsonProperty(value = JSON_PROPERTY_IDS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setIds(@org.eclipse.jdt.annotation.NonNull List<UUID> ids) {
         this.ids = ids;
@@ -125,13 +126,13 @@ public class CreatePlaylistDto {
      * @return userId
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_USER_ID)
+    @JsonProperty(value = JSON_PROPERTY_USER_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public UUID getUserId() {
         return userId;
     }
 
-    @JsonProperty(JSON_PROPERTY_USER_ID)
+    @JsonProperty(value = JSON_PROPERTY_USER_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setUserId(@org.eclipse.jdt.annotation.NonNull UUID userId) {
         this.userId = userId;
@@ -148,13 +149,13 @@ public class CreatePlaylistDto {
      * @return mediaType
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_MEDIA_TYPE)
+    @JsonProperty(value = JSON_PROPERTY_MEDIA_TYPE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public MediaType getMediaType() {
         return mediaType;
     }
 
-    @JsonProperty(JSON_PROPERTY_MEDIA_TYPE)
+    @JsonProperty(value = JSON_PROPERTY_MEDIA_TYPE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setMediaType(@org.eclipse.jdt.annotation.NonNull MediaType mediaType) {
         this.mediaType = mediaType;
@@ -179,13 +180,13 @@ public class CreatePlaylistDto {
      * @return users
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_USERS)
+    @JsonProperty(value = JSON_PROPERTY_USERS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<PlaylistUserPermissions> getUsers() {
         return users;
     }
 
-    @JsonProperty(JSON_PROPERTY_USERS)
+    @JsonProperty(value = JSON_PROPERTY_USERS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setUsers(@org.eclipse.jdt.annotation.NonNull List<PlaylistUserPermissions> users) {
         this.users = users;
@@ -202,13 +203,13 @@ public class CreatePlaylistDto {
      * @return isPublic
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_IS_PUBLIC)
+    @JsonProperty(value = JSON_PROPERTY_IS_PUBLIC, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getIsPublic() {
         return isPublic;
     }
 
-    @JsonProperty(JSON_PROPERTY_IS_PUBLIC)
+    @JsonProperty(value = JSON_PROPERTY_IS_PUBLIC, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setIsPublic(@org.eclipse.jdt.annotation.NonNull Boolean isPublic) {
         this.isPublic = isPublic;
@@ -297,7 +298,7 @@ public class CreatePlaylistDto {
 
         // add `Name` to the URL query string
         if (getName() != null) {
-            joiner.add(String.format("%sName%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sName%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getName()))));
         }
 
@@ -305,8 +306,9 @@ public class CreatePlaylistDto {
         if (getIds() != null) {
             for (int i = 0; i < getIds().size(); i++) {
                 if (getIds().get(i) != null) {
-                    joiner.add(String.format("%sIds%s%s=%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+                    joiner.add(String.format(Locale.ROOT, "%sIds%s%s=%s", prefix, suffix,
+                            "".equals(suffix) ? ""
+                                    : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
                             ApiClient.urlEncode(ApiClient.valueToString(getIds().get(i)))));
                 }
             }
@@ -314,13 +316,13 @@ public class CreatePlaylistDto {
 
         // add `UserId` to the URL query string
         if (getUserId() != null) {
-            joiner.add(String.format("%sUserId%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sUserId%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getUserId()))));
         }
 
         // add `MediaType` to the URL query string
         if (getMediaType() != null) {
-            joiner.add(String.format("%sMediaType%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sMediaType%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getMediaType()))));
         }
 
@@ -328,15 +330,16 @@ public class CreatePlaylistDto {
         if (getUsers() != null) {
             for (int i = 0; i < getUsers().size(); i++) {
                 if (getUsers().get(i) != null) {
-                    joiner.add(getUsers().get(i).toUrlQueryString(String.format("%sUsers%s%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
+                    joiner.add(getUsers().get(i).toUrlQueryString(
+                            String.format(Locale.ROOT, "%sUsers%s%s", prefix, suffix, "".equals(suffix) ? ""
+                                    : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
                 }
             }
         }
 
         // add `IsPublic` to the URL query string
         if (getIsPublic() != null) {
-            joiner.add(String.format("%sIsPublic%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sIsPublic%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getIsPublic()))));
         }
 

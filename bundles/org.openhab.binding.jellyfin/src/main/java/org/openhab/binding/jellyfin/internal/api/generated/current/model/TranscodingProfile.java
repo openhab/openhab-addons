@@ -15,6 +15,7 @@ package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
 
@@ -121,13 +122,13 @@ public class TranscodingProfile {
      * @return container
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_CONTAINER)
+    @JsonProperty(value = JSON_PROPERTY_CONTAINER, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getContainer() {
         return container;
     }
 
-    @JsonProperty(JSON_PROPERTY_CONTAINER)
+    @JsonProperty(value = JSON_PROPERTY_CONTAINER, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setContainer(@org.eclipse.jdt.annotation.NonNull String container) {
         this.container = container;
@@ -144,13 +145,13 @@ public class TranscodingProfile {
      * @return type
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_TYPE)
+    @JsonProperty(value = JSON_PROPERTY_TYPE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public DlnaProfileType getType() {
         return type;
     }
 
-    @JsonProperty(JSON_PROPERTY_TYPE)
+    @JsonProperty(value = JSON_PROPERTY_TYPE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setType(@org.eclipse.jdt.annotation.NonNull DlnaProfileType type) {
         this.type = type;
@@ -167,13 +168,13 @@ public class TranscodingProfile {
      * @return videoCodec
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_VIDEO_CODEC)
+    @JsonProperty(value = JSON_PROPERTY_VIDEO_CODEC, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getVideoCodec() {
         return videoCodec;
     }
 
-    @JsonProperty(JSON_PROPERTY_VIDEO_CODEC)
+    @JsonProperty(value = JSON_PROPERTY_VIDEO_CODEC, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setVideoCodec(@org.eclipse.jdt.annotation.NonNull String videoCodec) {
         this.videoCodec = videoCodec;
@@ -190,13 +191,13 @@ public class TranscodingProfile {
      * @return audioCodec
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_AUDIO_CODEC)
+    @JsonProperty(value = JSON_PROPERTY_AUDIO_CODEC, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getAudioCodec() {
         return audioCodec;
     }
 
-    @JsonProperty(JSON_PROPERTY_AUDIO_CODEC)
+    @JsonProperty(value = JSON_PROPERTY_AUDIO_CODEC, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setAudioCodec(@org.eclipse.jdt.annotation.NonNull String audioCodec) {
         this.audioCodec = audioCodec;
@@ -213,13 +214,13 @@ public class TranscodingProfile {
      * @return protocol
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_PROTOCOL)
+    @JsonProperty(value = JSON_PROPERTY_PROTOCOL, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public MediaStreamProtocol getProtocol() {
         return protocol;
     }
 
-    @JsonProperty(JSON_PROPERTY_PROTOCOL)
+    @JsonProperty(value = JSON_PROPERTY_PROTOCOL, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setProtocol(@org.eclipse.jdt.annotation.NonNull MediaStreamProtocol protocol) {
         this.protocol = protocol;
@@ -236,13 +237,13 @@ public class TranscodingProfile {
      * @return estimateContentLength
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ESTIMATE_CONTENT_LENGTH)
+    @JsonProperty(value = JSON_PROPERTY_ESTIMATE_CONTENT_LENGTH, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getEstimateContentLength() {
         return estimateContentLength;
     }
 
-    @JsonProperty(JSON_PROPERTY_ESTIMATE_CONTENT_LENGTH)
+    @JsonProperty(value = JSON_PROPERTY_ESTIMATE_CONTENT_LENGTH, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setEstimateContentLength(@org.eclipse.jdt.annotation.NonNull Boolean estimateContentLength) {
         this.estimateContentLength = estimateContentLength;
@@ -259,13 +260,13 @@ public class TranscodingProfile {
      * @return enableMpegtsM2TsMode
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ENABLE_MPEGTS_M2_TS_MODE)
+    @JsonProperty(value = JSON_PROPERTY_ENABLE_MPEGTS_M2_TS_MODE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getEnableMpegtsM2TsMode() {
         return enableMpegtsM2TsMode;
     }
 
-    @JsonProperty(JSON_PROPERTY_ENABLE_MPEGTS_M2_TS_MODE)
+    @JsonProperty(value = JSON_PROPERTY_ENABLE_MPEGTS_M2_TS_MODE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setEnableMpegtsM2TsMode(@org.eclipse.jdt.annotation.NonNull Boolean enableMpegtsM2TsMode) {
         this.enableMpegtsM2TsMode = enableMpegtsM2TsMode;
@@ -283,13 +284,13 @@ public class TranscodingProfile {
      * @return transcodeSeekInfo
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_TRANSCODE_SEEK_INFO)
+    @JsonProperty(value = JSON_PROPERTY_TRANSCODE_SEEK_INFO, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public TranscodeSeekInfo getTranscodeSeekInfo() {
         return transcodeSeekInfo;
     }
 
-    @JsonProperty(JSON_PROPERTY_TRANSCODE_SEEK_INFO)
+    @JsonProperty(value = JSON_PROPERTY_TRANSCODE_SEEK_INFO, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setTranscodeSeekInfo(@org.eclipse.jdt.annotation.NonNull TranscodeSeekInfo transcodeSeekInfo) {
         this.transcodeSeekInfo = transcodeSeekInfo;
@@ -306,13 +307,13 @@ public class TranscodingProfile {
      * @return copyTimestamps
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_COPY_TIMESTAMPS)
+    @JsonProperty(value = JSON_PROPERTY_COPY_TIMESTAMPS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getCopyTimestamps() {
         return copyTimestamps;
     }
 
-    @JsonProperty(JSON_PROPERTY_COPY_TIMESTAMPS)
+    @JsonProperty(value = JSON_PROPERTY_COPY_TIMESTAMPS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setCopyTimestamps(@org.eclipse.jdt.annotation.NonNull Boolean copyTimestamps) {
         this.copyTimestamps = copyTimestamps;
@@ -329,13 +330,13 @@ public class TranscodingProfile {
      * @return context
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_CONTEXT)
+    @JsonProperty(value = JSON_PROPERTY_CONTEXT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public EncodingContext getContext() {
         return context;
     }
 
-    @JsonProperty(JSON_PROPERTY_CONTEXT)
+    @JsonProperty(value = JSON_PROPERTY_CONTEXT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setContext(@org.eclipse.jdt.annotation.NonNull EncodingContext context) {
         this.context = context;
@@ -353,13 +354,13 @@ public class TranscodingProfile {
      * @return enableSubtitlesInManifest
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ENABLE_SUBTITLES_IN_MANIFEST)
+    @JsonProperty(value = JSON_PROPERTY_ENABLE_SUBTITLES_IN_MANIFEST, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getEnableSubtitlesInManifest() {
         return enableSubtitlesInManifest;
     }
 
-    @JsonProperty(JSON_PROPERTY_ENABLE_SUBTITLES_IN_MANIFEST)
+    @JsonProperty(value = JSON_PROPERTY_ENABLE_SUBTITLES_IN_MANIFEST, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setEnableSubtitlesInManifest(@org.eclipse.jdt.annotation.NonNull Boolean enableSubtitlesInManifest) {
         this.enableSubtitlesInManifest = enableSubtitlesInManifest;
@@ -376,13 +377,13 @@ public class TranscodingProfile {
      * @return maxAudioChannels
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_MAX_AUDIO_CHANNELS)
+    @JsonProperty(value = JSON_PROPERTY_MAX_AUDIO_CHANNELS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getMaxAudioChannels() {
         return maxAudioChannels;
     }
 
-    @JsonProperty(JSON_PROPERTY_MAX_AUDIO_CHANNELS)
+    @JsonProperty(value = JSON_PROPERTY_MAX_AUDIO_CHANNELS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setMaxAudioChannels(@org.eclipse.jdt.annotation.NonNull String maxAudioChannels) {
         this.maxAudioChannels = maxAudioChannels;
@@ -399,13 +400,13 @@ public class TranscodingProfile {
      * @return minSegments
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_MIN_SEGMENTS)
+    @JsonProperty(value = JSON_PROPERTY_MIN_SEGMENTS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getMinSegments() {
         return minSegments;
     }
 
-    @JsonProperty(JSON_PROPERTY_MIN_SEGMENTS)
+    @JsonProperty(value = JSON_PROPERTY_MIN_SEGMENTS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setMinSegments(@org.eclipse.jdt.annotation.NonNull Integer minSegments) {
         this.minSegments = minSegments;
@@ -422,13 +423,13 @@ public class TranscodingProfile {
      * @return segmentLength
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_SEGMENT_LENGTH)
+    @JsonProperty(value = JSON_PROPERTY_SEGMENT_LENGTH, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getSegmentLength() {
         return segmentLength;
     }
 
-    @JsonProperty(JSON_PROPERTY_SEGMENT_LENGTH)
+    @JsonProperty(value = JSON_PROPERTY_SEGMENT_LENGTH, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setSegmentLength(@org.eclipse.jdt.annotation.NonNull Integer segmentLength) {
         this.segmentLength = segmentLength;
@@ -445,13 +446,13 @@ public class TranscodingProfile {
      * @return breakOnNonKeyFrames
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_BREAK_ON_NON_KEY_FRAMES)
+    @JsonProperty(value = JSON_PROPERTY_BREAK_ON_NON_KEY_FRAMES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getBreakOnNonKeyFrames() {
         return breakOnNonKeyFrames;
     }
 
-    @JsonProperty(JSON_PROPERTY_BREAK_ON_NON_KEY_FRAMES)
+    @JsonProperty(value = JSON_PROPERTY_BREAK_ON_NON_KEY_FRAMES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setBreakOnNonKeyFrames(@org.eclipse.jdt.annotation.NonNull Boolean breakOnNonKeyFrames) {
         this.breakOnNonKeyFrames = breakOnNonKeyFrames;
@@ -476,13 +477,13 @@ public class TranscodingProfile {
      * @return conditions
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_CONDITIONS)
+    @JsonProperty(value = JSON_PROPERTY_CONDITIONS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<ProfileCondition> getConditions() {
         return conditions;
     }
 
-    @JsonProperty(JSON_PROPERTY_CONDITIONS)
+    @JsonProperty(value = JSON_PROPERTY_CONDITIONS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setConditions(@org.eclipse.jdt.annotation.NonNull List<ProfileCondition> conditions) {
         this.conditions = conditions;
@@ -500,13 +501,13 @@ public class TranscodingProfile {
      * @return enableAudioVbrEncoding
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ENABLE_AUDIO_VBR_ENCODING)
+    @JsonProperty(value = JSON_PROPERTY_ENABLE_AUDIO_VBR_ENCODING, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getEnableAudioVbrEncoding() {
         return enableAudioVbrEncoding;
     }
 
-    @JsonProperty(JSON_PROPERTY_ENABLE_AUDIO_VBR_ENCODING)
+    @JsonProperty(value = JSON_PROPERTY_ENABLE_AUDIO_VBR_ENCODING, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setEnableAudioVbrEncoding(@org.eclipse.jdt.annotation.NonNull Boolean enableAudioVbrEncoding) {
         this.enableAudioVbrEncoding = enableAudioVbrEncoding;
@@ -620,91 +621,91 @@ public class TranscodingProfile {
 
         // add `Container` to the URL query string
         if (getContainer() != null) {
-            joiner.add(String.format("%sContainer%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sContainer%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getContainer()))));
         }
 
         // add `Type` to the URL query string
         if (getType() != null) {
-            joiner.add(String.format("%sType%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sType%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getType()))));
         }
 
         // add `VideoCodec` to the URL query string
         if (getVideoCodec() != null) {
-            joiner.add(String.format("%sVideoCodec%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sVideoCodec%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getVideoCodec()))));
         }
 
         // add `AudioCodec` to the URL query string
         if (getAudioCodec() != null) {
-            joiner.add(String.format("%sAudioCodec%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sAudioCodec%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getAudioCodec()))));
         }
 
         // add `Protocol` to the URL query string
         if (getProtocol() != null) {
-            joiner.add(String.format("%sProtocol%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sProtocol%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getProtocol()))));
         }
 
         // add `EstimateContentLength` to the URL query string
         if (getEstimateContentLength() != null) {
-            joiner.add(String.format("%sEstimateContentLength%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sEstimateContentLength%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getEstimateContentLength()))));
         }
 
         // add `EnableMpegtsM2TsMode` to the URL query string
         if (getEnableMpegtsM2TsMode() != null) {
-            joiner.add(String.format("%sEnableMpegtsM2TsMode%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sEnableMpegtsM2TsMode%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getEnableMpegtsM2TsMode()))));
         }
 
         // add `TranscodeSeekInfo` to the URL query string
         if (getTranscodeSeekInfo() != null) {
-            joiner.add(String.format("%sTranscodeSeekInfo%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sTranscodeSeekInfo%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getTranscodeSeekInfo()))));
         }
 
         // add `CopyTimestamps` to the URL query string
         if (getCopyTimestamps() != null) {
-            joiner.add(String.format("%sCopyTimestamps%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sCopyTimestamps%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getCopyTimestamps()))));
         }
 
         // add `Context` to the URL query string
         if (getContext() != null) {
-            joiner.add(String.format("%sContext%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sContext%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getContext()))));
         }
 
         // add `EnableSubtitlesInManifest` to the URL query string
         if (getEnableSubtitlesInManifest() != null) {
-            joiner.add(String.format("%sEnableSubtitlesInManifest%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sEnableSubtitlesInManifest%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getEnableSubtitlesInManifest()))));
         }
 
         // add `MaxAudioChannels` to the URL query string
         if (getMaxAudioChannels() != null) {
-            joiner.add(String.format("%sMaxAudioChannels%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sMaxAudioChannels%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getMaxAudioChannels()))));
         }
 
         // add `MinSegments` to the URL query string
         if (getMinSegments() != null) {
-            joiner.add(String.format("%sMinSegments%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sMinSegments%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getMinSegments()))));
         }
 
         // add `SegmentLength` to the URL query string
         if (getSegmentLength() != null) {
-            joiner.add(String.format("%sSegmentLength%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sSegmentLength%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getSegmentLength()))));
         }
 
         // add `BreakOnNonKeyFrames` to the URL query string
         if (getBreakOnNonKeyFrames() != null) {
-            joiner.add(String.format("%sBreakOnNonKeyFrames%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sBreakOnNonKeyFrames%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getBreakOnNonKeyFrames()))));
         }
 
@@ -712,15 +713,16 @@ public class TranscodingProfile {
         if (getConditions() != null) {
             for (int i = 0; i < getConditions().size(); i++) {
                 if (getConditions().get(i) != null) {
-                    joiner.add(getConditions().get(i).toUrlQueryString(String.format("%sConditions%s%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
+                    joiner.add(getConditions().get(i).toUrlQueryString(
+                            String.format(Locale.ROOT, "%sConditions%s%s", prefix, suffix, "".equals(suffix) ? ""
+                                    : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
                 }
             }
         }
 
         // add `EnableAudioVbrEncoding` to the URL query string
         if (getEnableAudioVbrEncoding() != null) {
-            joiner.add(String.format("%sEnableAudioVbrEncoding%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sEnableAudioVbrEncoding%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getEnableAudioVbrEncoding()))));
         }
 

@@ -13,6 +13,7 @@
 
 package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
+import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
 
@@ -95,13 +96,13 @@ public class ItemCounts {
      * @return movieCount
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_MOVIE_COUNT)
+    @JsonProperty(value = JSON_PROPERTY_MOVIE_COUNT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getMovieCount() {
         return movieCount;
     }
 
-    @JsonProperty(JSON_PROPERTY_MOVIE_COUNT)
+    @JsonProperty(value = JSON_PROPERTY_MOVIE_COUNT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setMovieCount(@org.eclipse.jdt.annotation.NonNull Integer movieCount) {
         this.movieCount = movieCount;
@@ -118,13 +119,13 @@ public class ItemCounts {
      * @return seriesCount
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_SERIES_COUNT)
+    @JsonProperty(value = JSON_PROPERTY_SERIES_COUNT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getSeriesCount() {
         return seriesCount;
     }
 
-    @JsonProperty(JSON_PROPERTY_SERIES_COUNT)
+    @JsonProperty(value = JSON_PROPERTY_SERIES_COUNT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setSeriesCount(@org.eclipse.jdt.annotation.NonNull Integer seriesCount) {
         this.seriesCount = seriesCount;
@@ -141,13 +142,13 @@ public class ItemCounts {
      * @return episodeCount
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_EPISODE_COUNT)
+    @JsonProperty(value = JSON_PROPERTY_EPISODE_COUNT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getEpisodeCount() {
         return episodeCount;
     }
 
-    @JsonProperty(JSON_PROPERTY_EPISODE_COUNT)
+    @JsonProperty(value = JSON_PROPERTY_EPISODE_COUNT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setEpisodeCount(@org.eclipse.jdt.annotation.NonNull Integer episodeCount) {
         this.episodeCount = episodeCount;
@@ -164,13 +165,13 @@ public class ItemCounts {
      * @return artistCount
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ARTIST_COUNT)
+    @JsonProperty(value = JSON_PROPERTY_ARTIST_COUNT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getArtistCount() {
         return artistCount;
     }
 
-    @JsonProperty(JSON_PROPERTY_ARTIST_COUNT)
+    @JsonProperty(value = JSON_PROPERTY_ARTIST_COUNT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setArtistCount(@org.eclipse.jdt.annotation.NonNull Integer artistCount) {
         this.artistCount = artistCount;
@@ -187,13 +188,13 @@ public class ItemCounts {
      * @return programCount
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_PROGRAM_COUNT)
+    @JsonProperty(value = JSON_PROPERTY_PROGRAM_COUNT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getProgramCount() {
         return programCount;
     }
 
-    @JsonProperty(JSON_PROPERTY_PROGRAM_COUNT)
+    @JsonProperty(value = JSON_PROPERTY_PROGRAM_COUNT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setProgramCount(@org.eclipse.jdt.annotation.NonNull Integer programCount) {
         this.programCount = programCount;
@@ -210,13 +211,13 @@ public class ItemCounts {
      * @return trailerCount
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_TRAILER_COUNT)
+    @JsonProperty(value = JSON_PROPERTY_TRAILER_COUNT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getTrailerCount() {
         return trailerCount;
     }
 
-    @JsonProperty(JSON_PROPERTY_TRAILER_COUNT)
+    @JsonProperty(value = JSON_PROPERTY_TRAILER_COUNT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setTrailerCount(@org.eclipse.jdt.annotation.NonNull Integer trailerCount) {
         this.trailerCount = trailerCount;
@@ -233,13 +234,13 @@ public class ItemCounts {
      * @return songCount
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_SONG_COUNT)
+    @JsonProperty(value = JSON_PROPERTY_SONG_COUNT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getSongCount() {
         return songCount;
     }
 
-    @JsonProperty(JSON_PROPERTY_SONG_COUNT)
+    @JsonProperty(value = JSON_PROPERTY_SONG_COUNT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setSongCount(@org.eclipse.jdt.annotation.NonNull Integer songCount) {
         this.songCount = songCount;
@@ -256,13 +257,13 @@ public class ItemCounts {
      * @return albumCount
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ALBUM_COUNT)
+    @JsonProperty(value = JSON_PROPERTY_ALBUM_COUNT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getAlbumCount() {
         return albumCount;
     }
 
-    @JsonProperty(JSON_PROPERTY_ALBUM_COUNT)
+    @JsonProperty(value = JSON_PROPERTY_ALBUM_COUNT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setAlbumCount(@org.eclipse.jdt.annotation.NonNull Integer albumCount) {
         this.albumCount = albumCount;
@@ -279,13 +280,13 @@ public class ItemCounts {
      * @return musicVideoCount
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_MUSIC_VIDEO_COUNT)
+    @JsonProperty(value = JSON_PROPERTY_MUSIC_VIDEO_COUNT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getMusicVideoCount() {
         return musicVideoCount;
     }
 
-    @JsonProperty(JSON_PROPERTY_MUSIC_VIDEO_COUNT)
+    @JsonProperty(value = JSON_PROPERTY_MUSIC_VIDEO_COUNT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setMusicVideoCount(@org.eclipse.jdt.annotation.NonNull Integer musicVideoCount) {
         this.musicVideoCount = musicVideoCount;
@@ -302,13 +303,13 @@ public class ItemCounts {
      * @return boxSetCount
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_BOX_SET_COUNT)
+    @JsonProperty(value = JSON_PROPERTY_BOX_SET_COUNT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getBoxSetCount() {
         return boxSetCount;
     }
 
-    @JsonProperty(JSON_PROPERTY_BOX_SET_COUNT)
+    @JsonProperty(value = JSON_PROPERTY_BOX_SET_COUNT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setBoxSetCount(@org.eclipse.jdt.annotation.NonNull Integer boxSetCount) {
         this.boxSetCount = boxSetCount;
@@ -325,13 +326,13 @@ public class ItemCounts {
      * @return bookCount
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_BOOK_COUNT)
+    @JsonProperty(value = JSON_PROPERTY_BOOK_COUNT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getBookCount() {
         return bookCount;
     }
 
-    @JsonProperty(JSON_PROPERTY_BOOK_COUNT)
+    @JsonProperty(value = JSON_PROPERTY_BOOK_COUNT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setBookCount(@org.eclipse.jdt.annotation.NonNull Integer bookCount) {
         this.bookCount = bookCount;
@@ -348,13 +349,13 @@ public class ItemCounts {
      * @return itemCount
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ITEM_COUNT)
+    @JsonProperty(value = JSON_PROPERTY_ITEM_COUNT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getItemCount() {
         return itemCount;
     }
 
-    @JsonProperty(JSON_PROPERTY_ITEM_COUNT)
+    @JsonProperty(value = JSON_PROPERTY_ITEM_COUNT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setItemCount(@org.eclipse.jdt.annotation.NonNull Integer itemCount) {
         this.itemCount = itemCount;
@@ -457,73 +458,73 @@ public class ItemCounts {
 
         // add `MovieCount` to the URL query string
         if (getMovieCount() != null) {
-            joiner.add(String.format("%sMovieCount%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sMovieCount%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getMovieCount()))));
         }
 
         // add `SeriesCount` to the URL query string
         if (getSeriesCount() != null) {
-            joiner.add(String.format("%sSeriesCount%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sSeriesCount%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getSeriesCount()))));
         }
 
         // add `EpisodeCount` to the URL query string
         if (getEpisodeCount() != null) {
-            joiner.add(String.format("%sEpisodeCount%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sEpisodeCount%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getEpisodeCount()))));
         }
 
         // add `ArtistCount` to the URL query string
         if (getArtistCount() != null) {
-            joiner.add(String.format("%sArtistCount%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sArtistCount%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getArtistCount()))));
         }
 
         // add `ProgramCount` to the URL query string
         if (getProgramCount() != null) {
-            joiner.add(String.format("%sProgramCount%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sProgramCount%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getProgramCount()))));
         }
 
         // add `TrailerCount` to the URL query string
         if (getTrailerCount() != null) {
-            joiner.add(String.format("%sTrailerCount%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sTrailerCount%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getTrailerCount()))));
         }
 
         // add `SongCount` to the URL query string
         if (getSongCount() != null) {
-            joiner.add(String.format("%sSongCount%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sSongCount%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getSongCount()))));
         }
 
         // add `AlbumCount` to the URL query string
         if (getAlbumCount() != null) {
-            joiner.add(String.format("%sAlbumCount%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sAlbumCount%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getAlbumCount()))));
         }
 
         // add `MusicVideoCount` to the URL query string
         if (getMusicVideoCount() != null) {
-            joiner.add(String.format("%sMusicVideoCount%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sMusicVideoCount%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getMusicVideoCount()))));
         }
 
         // add `BoxSetCount` to the URL query string
         if (getBoxSetCount() != null) {
-            joiner.add(String.format("%sBoxSetCount%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sBoxSetCount%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getBoxSetCount()))));
         }
 
         // add `BookCount` to the URL query string
         if (getBookCount() != null) {
-            joiner.add(String.format("%sBookCount%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sBookCount%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getBookCount()))));
         }
 
         // add `ItemCount` to the URL query string
         if (getItemCount() != null) {
-            joiner.add(String.format("%sItemCount%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sItemCount%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getItemCount()))));
         }
 

@@ -15,6 +15,7 @@ package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
 
@@ -27,7 +28,9 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
  */
 @JsonPropertyOrder({ LibraryOptionsResultDto.JSON_PROPERTY_METADATA_SAVERS,
         LibraryOptionsResultDto.JSON_PROPERTY_METADATA_READERS, LibraryOptionsResultDto.JSON_PROPERTY_SUBTITLE_FETCHERS,
-        LibraryOptionsResultDto.JSON_PROPERTY_LYRIC_FETCHERS, LibraryOptionsResultDto.JSON_PROPERTY_TYPE_OPTIONS })
+        LibraryOptionsResultDto.JSON_PROPERTY_LYRIC_FETCHERS,
+        LibraryOptionsResultDto.JSON_PROPERTY_MEDIA_SEGMENT_PROVIDERS,
+        LibraryOptionsResultDto.JSON_PROPERTY_TYPE_OPTIONS })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class LibraryOptionsResultDto {
     public static final String JSON_PROPERTY_METADATA_SAVERS = "MetadataSavers";
@@ -45,6 +48,10 @@ public class LibraryOptionsResultDto {
     public static final String JSON_PROPERTY_LYRIC_FETCHERS = "LyricFetchers";
     @org.eclipse.jdt.annotation.NonNull
     private List<LibraryOptionInfoDto> lyricFetchers = new ArrayList<>();
+
+    public static final String JSON_PROPERTY_MEDIA_SEGMENT_PROVIDERS = "MediaSegmentProviders";
+    @org.eclipse.jdt.annotation.NonNull
+    private List<LibraryOptionInfoDto> mediaSegmentProviders = new ArrayList<>();
 
     public static final String JSON_PROPERTY_TYPE_OPTIONS = "TypeOptions";
     @org.eclipse.jdt.annotation.NonNull
@@ -73,13 +80,13 @@ public class LibraryOptionsResultDto {
      * @return metadataSavers
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_METADATA_SAVERS)
+    @JsonProperty(value = JSON_PROPERTY_METADATA_SAVERS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<LibraryOptionInfoDto> getMetadataSavers() {
         return metadataSavers;
     }
 
-    @JsonProperty(JSON_PROPERTY_METADATA_SAVERS)
+    @JsonProperty(value = JSON_PROPERTY_METADATA_SAVERS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setMetadataSavers(@org.eclipse.jdt.annotation.NonNull List<LibraryOptionInfoDto> metadataSavers) {
         this.metadataSavers = metadataSavers;
@@ -105,13 +112,13 @@ public class LibraryOptionsResultDto {
      * @return metadataReaders
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_METADATA_READERS)
+    @JsonProperty(value = JSON_PROPERTY_METADATA_READERS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<LibraryOptionInfoDto> getMetadataReaders() {
         return metadataReaders;
     }
 
-    @JsonProperty(JSON_PROPERTY_METADATA_READERS)
+    @JsonProperty(value = JSON_PROPERTY_METADATA_READERS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setMetadataReaders(@org.eclipse.jdt.annotation.NonNull List<LibraryOptionInfoDto> metadataReaders) {
         this.metadataReaders = metadataReaders;
@@ -137,13 +144,13 @@ public class LibraryOptionsResultDto {
      * @return subtitleFetchers
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_SUBTITLE_FETCHERS)
+    @JsonProperty(value = JSON_PROPERTY_SUBTITLE_FETCHERS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<LibraryOptionInfoDto> getSubtitleFetchers() {
         return subtitleFetchers;
     }
 
-    @JsonProperty(JSON_PROPERTY_SUBTITLE_FETCHERS)
+    @JsonProperty(value = JSON_PROPERTY_SUBTITLE_FETCHERS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setSubtitleFetchers(@org.eclipse.jdt.annotation.NonNull List<LibraryOptionInfoDto> subtitleFetchers) {
         this.subtitleFetchers = subtitleFetchers;
@@ -169,16 +176,49 @@ public class LibraryOptionsResultDto {
      * @return lyricFetchers
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_LYRIC_FETCHERS)
+    @JsonProperty(value = JSON_PROPERTY_LYRIC_FETCHERS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<LibraryOptionInfoDto> getLyricFetchers() {
         return lyricFetchers;
     }
 
-    @JsonProperty(JSON_PROPERTY_LYRIC_FETCHERS)
+    @JsonProperty(value = JSON_PROPERTY_LYRIC_FETCHERS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setLyricFetchers(@org.eclipse.jdt.annotation.NonNull List<LibraryOptionInfoDto> lyricFetchers) {
         this.lyricFetchers = lyricFetchers;
+    }
+
+    public LibraryOptionsResultDto mediaSegmentProviders(
+            @org.eclipse.jdt.annotation.NonNull List<LibraryOptionInfoDto> mediaSegmentProviders) {
+        this.mediaSegmentProviders = mediaSegmentProviders;
+        return this;
+    }
+
+    public LibraryOptionsResultDto addMediaSegmentProvidersItem(LibraryOptionInfoDto mediaSegmentProvidersItem) {
+        if (this.mediaSegmentProviders == null) {
+            this.mediaSegmentProviders = new ArrayList<>();
+        }
+        this.mediaSegmentProviders.add(mediaSegmentProvidersItem);
+        return this;
+    }
+
+    /**
+     * Gets or sets the list of MediaSegment Providers.
+     * 
+     * @return mediaSegmentProviders
+     */
+    @org.eclipse.jdt.annotation.NonNull
+    @JsonProperty(value = JSON_PROPERTY_MEDIA_SEGMENT_PROVIDERS, required = false)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public List<LibraryOptionInfoDto> getMediaSegmentProviders() {
+        return mediaSegmentProviders;
+    }
+
+    @JsonProperty(value = JSON_PROPERTY_MEDIA_SEGMENT_PROVIDERS, required = false)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setMediaSegmentProviders(
+            @org.eclipse.jdt.annotation.NonNull List<LibraryOptionInfoDto> mediaSegmentProviders) {
+        this.mediaSegmentProviders = mediaSegmentProviders;
     }
 
     public LibraryOptionsResultDto typeOptions(
@@ -201,13 +241,13 @@ public class LibraryOptionsResultDto {
      * @return typeOptions
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_TYPE_OPTIONS)
+    @JsonProperty(value = JSON_PROPERTY_TYPE_OPTIONS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<LibraryTypeOptionsDto> getTypeOptions() {
         return typeOptions;
     }
 
-    @JsonProperty(JSON_PROPERTY_TYPE_OPTIONS)
+    @JsonProperty(value = JSON_PROPERTY_TYPE_OPTIONS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setTypeOptions(@org.eclipse.jdt.annotation.NonNull List<LibraryTypeOptionsDto> typeOptions) {
         this.typeOptions = typeOptions;
@@ -229,12 +269,14 @@ public class LibraryOptionsResultDto {
                 && Objects.equals(this.metadataReaders, libraryOptionsResultDto.metadataReaders)
                 && Objects.equals(this.subtitleFetchers, libraryOptionsResultDto.subtitleFetchers)
                 && Objects.equals(this.lyricFetchers, libraryOptionsResultDto.lyricFetchers)
+                && Objects.equals(this.mediaSegmentProviders, libraryOptionsResultDto.mediaSegmentProviders)
                 && Objects.equals(this.typeOptions, libraryOptionsResultDto.typeOptions);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(metadataSavers, metadataReaders, subtitleFetchers, lyricFetchers, typeOptions);
+        return Objects.hash(metadataSavers, metadataReaders, subtitleFetchers, lyricFetchers, mediaSegmentProviders,
+                typeOptions);
     }
 
     @Override
@@ -245,6 +287,7 @@ public class LibraryOptionsResultDto {
         sb.append("    metadataReaders: ").append(toIndentedString(metadataReaders)).append("\n");
         sb.append("    subtitleFetchers: ").append(toIndentedString(subtitleFetchers)).append("\n");
         sb.append("    lyricFetchers: ").append(toIndentedString(lyricFetchers)).append("\n");
+        sb.append("    mediaSegmentProviders: ").append(toIndentedString(mediaSegmentProviders)).append("\n");
         sb.append("    typeOptions: ").append(toIndentedString(typeOptions)).append("\n");
         sb.append("}");
         return sb.toString();
@@ -297,9 +340,9 @@ public class LibraryOptionsResultDto {
         if (getMetadataSavers() != null) {
             for (int i = 0; i < getMetadataSavers().size(); i++) {
                 if (getMetadataSavers().get(i) != null) {
-                    joiner.add(getMetadataSavers().get(i).toUrlQueryString(String.format("%sMetadataSavers%s%s", prefix,
-                            suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
+                    joiner.add(getMetadataSavers().get(i).toUrlQueryString(
+                            String.format(Locale.ROOT, "%sMetadataSavers%s%s", prefix, suffix, "".equals(suffix) ? ""
+                                    : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
                 }
             }
         }
@@ -308,9 +351,9 @@ public class LibraryOptionsResultDto {
         if (getMetadataReaders() != null) {
             for (int i = 0; i < getMetadataReaders().size(); i++) {
                 if (getMetadataReaders().get(i) != null) {
-                    joiner.add(getMetadataReaders().get(i).toUrlQueryString(String.format("%sMetadataReaders%s%s",
-                            prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
+                    joiner.add(getMetadataReaders().get(i).toUrlQueryString(
+                            String.format(Locale.ROOT, "%sMetadataReaders%s%s", prefix, suffix, "".equals(suffix) ? ""
+                                    : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
                 }
             }
         }
@@ -319,9 +362,9 @@ public class LibraryOptionsResultDto {
         if (getSubtitleFetchers() != null) {
             for (int i = 0; i < getSubtitleFetchers().size(); i++) {
                 if (getSubtitleFetchers().get(i) != null) {
-                    joiner.add(getSubtitleFetchers().get(i).toUrlQueryString(String.format("%sSubtitleFetchers%s%s",
-                            prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
+                    joiner.add(getSubtitleFetchers().get(i).toUrlQueryString(
+                            String.format(Locale.ROOT, "%sSubtitleFetchers%s%s", prefix, suffix, "".equals(suffix) ? ""
+                                    : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
                 }
             }
         }
@@ -330,9 +373,20 @@ public class LibraryOptionsResultDto {
         if (getLyricFetchers() != null) {
             for (int i = 0; i < getLyricFetchers().size(); i++) {
                 if (getLyricFetchers().get(i) != null) {
-                    joiner.add(getLyricFetchers().get(i).toUrlQueryString(String.format("%sLyricFetchers%s%s", prefix,
-                            suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
+                    joiner.add(getLyricFetchers().get(i).toUrlQueryString(
+                            String.format(Locale.ROOT, "%sLyricFetchers%s%s", prefix, suffix, "".equals(suffix) ? ""
+                                    : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+                }
+            }
+        }
+
+        // add `MediaSegmentProviders` to the URL query string
+        if (getMediaSegmentProviders() != null) {
+            for (int i = 0; i < getMediaSegmentProviders().size(); i++) {
+                if (getMediaSegmentProviders().get(i) != null) {
+                    joiner.add(getMediaSegmentProviders().get(i).toUrlQueryString(String.format(Locale.ROOT,
+                            "%sMediaSegmentProviders%s%s", prefix, suffix, "".equals(suffix) ? ""
+                                    : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
                 }
             }
         }
@@ -341,9 +395,9 @@ public class LibraryOptionsResultDto {
         if (getTypeOptions() != null) {
             for (int i = 0; i < getTypeOptions().size(); i++) {
                 if (getTypeOptions().get(i) != null) {
-                    joiner.add(getTypeOptions().get(i).toUrlQueryString(String.format("%sTypeOptions%s%s", prefix,
-                            suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
+                    joiner.add(getTypeOptions().get(i).toUrlQueryString(
+                            String.format(Locale.ROOT, "%sTypeOptions%s%s", prefix, suffix, "".equals(suffix) ? ""
+                                    : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
                 }
             }
         }
@@ -380,6 +434,11 @@ public class LibraryOptionsResultDto {
 
         public LibraryOptionsResultDto.Builder lyricFetchers(List<LibraryOptionInfoDto> lyricFetchers) {
             this.instance.lyricFetchers = lyricFetchers;
+            return this;
+        }
+
+        public LibraryOptionsResultDto.Builder mediaSegmentProviders(List<LibraryOptionInfoDto> mediaSegmentProviders) {
+            this.instance.mediaSegmentProviders = mediaSegmentProviders;
             return this;
         }
 
@@ -421,6 +480,7 @@ public class LibraryOptionsResultDto {
     public LibraryOptionsResultDto.Builder toBuilder() {
         return new LibraryOptionsResultDto.Builder().metadataSavers(getMetadataSavers())
                 .metadataReaders(getMetadataReaders()).subtitleFetchers(getSubtitleFetchers())
-                .lyricFetchers(getLyricFetchers()).typeOptions(getTypeOptions());
+                .lyricFetchers(getLyricFetchers()).mediaSegmentProviders(getMediaSegmentProviders())
+                .typeOptions(getTypeOptions());
     }
 }

@@ -13,6 +13,7 @@
 
 package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
+import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
 
@@ -55,13 +56,13 @@ public class ValidatePathDto {
      * @return validateWritable
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_VALIDATE_WRITABLE)
+    @JsonProperty(value = JSON_PROPERTY_VALIDATE_WRITABLE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getValidateWritable() {
         return validateWritable;
     }
 
-    @JsonProperty(JSON_PROPERTY_VALIDATE_WRITABLE)
+    @JsonProperty(value = JSON_PROPERTY_VALIDATE_WRITABLE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setValidateWritable(@org.eclipse.jdt.annotation.NonNull Boolean validateWritable) {
         this.validateWritable = validateWritable;
@@ -78,13 +79,13 @@ public class ValidatePathDto {
      * @return path
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_PATH)
+    @JsonProperty(value = JSON_PROPERTY_PATH, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getPath() {
         return path;
     }
 
-    @JsonProperty(JSON_PROPERTY_PATH)
+    @JsonProperty(value = JSON_PROPERTY_PATH, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setPath(@org.eclipse.jdt.annotation.NonNull String path) {
         this.path = path;
@@ -101,13 +102,13 @@ public class ValidatePathDto {
      * @return isFile
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_IS_FILE)
+    @JsonProperty(value = JSON_PROPERTY_IS_FILE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getIsFile() {
         return isFile;
     }
 
-    @JsonProperty(JSON_PROPERTY_IS_FILE)
+    @JsonProperty(value = JSON_PROPERTY_IS_FILE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setIsFile(@org.eclipse.jdt.annotation.NonNull Boolean isFile) {
         this.isFile = isFile;
@@ -191,19 +192,19 @@ public class ValidatePathDto {
 
         // add `ValidateWritable` to the URL query string
         if (getValidateWritable() != null) {
-            joiner.add(String.format("%sValidateWritable%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sValidateWritable%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getValidateWritable()))));
         }
 
         // add `Path` to the URL query string
         if (getPath() != null) {
-            joiner.add(String.format("%sPath%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sPath%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getPath()))));
         }
 
         // add `IsFile` to the URL query string
         if (getIsFile() != null) {
-            joiner.add(String.format("%sIsFile%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sIsFile%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getIsFile()))));
         }
 

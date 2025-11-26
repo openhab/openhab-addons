@@ -13,6 +13,7 @@
 
 package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
+import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
 
@@ -58,13 +59,13 @@ public class ScheduledTasksInfoStartMessage {
      * @return data
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_DATA)
+    @JsonProperty(value = JSON_PROPERTY_DATA, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getData() {
         return data;
     }
 
-    @JsonProperty(JSON_PROPERTY_DATA)
+    @JsonProperty(value = JSON_PROPERTY_DATA, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setData(@org.eclipse.jdt.annotation.NonNull String data) {
         this.data = data;
@@ -76,7 +77,7 @@ public class ScheduledTasksInfoStartMessage {
      * @return messageType
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_MESSAGE_TYPE)
+    @JsonProperty(value = JSON_PROPERTY_MESSAGE_TYPE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public SessionMessageType getMessageType() {
         return messageType;
@@ -158,13 +159,13 @@ public class ScheduledTasksInfoStartMessage {
 
         // add `Data` to the URL query string
         if (getData() != null) {
-            joiner.add(String.format("%sData%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sData%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getData()))));
         }
 
         // add `MessageType` to the URL query string
         if (getMessageType() != null) {
-            joiner.add(String.format("%sMessageType%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sMessageType%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getMessageType()))));
         }
 

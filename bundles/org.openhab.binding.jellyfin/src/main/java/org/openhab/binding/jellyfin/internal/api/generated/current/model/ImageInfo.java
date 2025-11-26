@@ -13,6 +13,7 @@
 
 package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
+import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
 
@@ -76,13 +77,13 @@ public class ImageInfo {
      * @return imageType
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_IMAGE_TYPE)
+    @JsonProperty(value = JSON_PROPERTY_IMAGE_TYPE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public ImageType getImageType() {
         return imageType;
     }
 
-    @JsonProperty(JSON_PROPERTY_IMAGE_TYPE)
+    @JsonProperty(value = JSON_PROPERTY_IMAGE_TYPE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setImageType(@org.eclipse.jdt.annotation.NonNull ImageType imageType) {
         this.imageType = imageType;
@@ -99,13 +100,13 @@ public class ImageInfo {
      * @return imageIndex
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_IMAGE_INDEX)
+    @JsonProperty(value = JSON_PROPERTY_IMAGE_INDEX, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getImageIndex() {
         return imageIndex;
     }
 
-    @JsonProperty(JSON_PROPERTY_IMAGE_INDEX)
+    @JsonProperty(value = JSON_PROPERTY_IMAGE_INDEX, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setImageIndex(@org.eclipse.jdt.annotation.NonNull Integer imageIndex) {
         this.imageIndex = imageIndex;
@@ -122,13 +123,13 @@ public class ImageInfo {
      * @return imageTag
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_IMAGE_TAG)
+    @JsonProperty(value = JSON_PROPERTY_IMAGE_TAG, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getImageTag() {
         return imageTag;
     }
 
-    @JsonProperty(JSON_PROPERTY_IMAGE_TAG)
+    @JsonProperty(value = JSON_PROPERTY_IMAGE_TAG, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setImageTag(@org.eclipse.jdt.annotation.NonNull String imageTag) {
         this.imageTag = imageTag;
@@ -145,13 +146,13 @@ public class ImageInfo {
      * @return path
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_PATH)
+    @JsonProperty(value = JSON_PROPERTY_PATH, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getPath() {
         return path;
     }
 
-    @JsonProperty(JSON_PROPERTY_PATH)
+    @JsonProperty(value = JSON_PROPERTY_PATH, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setPath(@org.eclipse.jdt.annotation.NonNull String path) {
         this.path = path;
@@ -168,13 +169,13 @@ public class ImageInfo {
      * @return blurHash
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_BLUR_HASH)
+    @JsonProperty(value = JSON_PROPERTY_BLUR_HASH, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getBlurHash() {
         return blurHash;
     }
 
-    @JsonProperty(JSON_PROPERTY_BLUR_HASH)
+    @JsonProperty(value = JSON_PROPERTY_BLUR_HASH, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setBlurHash(@org.eclipse.jdt.annotation.NonNull String blurHash) {
         this.blurHash = blurHash;
@@ -191,13 +192,13 @@ public class ImageInfo {
      * @return height
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_HEIGHT)
+    @JsonProperty(value = JSON_PROPERTY_HEIGHT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getHeight() {
         return height;
     }
 
-    @JsonProperty(JSON_PROPERTY_HEIGHT)
+    @JsonProperty(value = JSON_PROPERTY_HEIGHT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setHeight(@org.eclipse.jdt.annotation.NonNull Integer height) {
         this.height = height;
@@ -214,13 +215,13 @@ public class ImageInfo {
      * @return width
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_WIDTH)
+    @JsonProperty(value = JSON_PROPERTY_WIDTH, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getWidth() {
         return width;
     }
 
-    @JsonProperty(JSON_PROPERTY_WIDTH)
+    @JsonProperty(value = JSON_PROPERTY_WIDTH, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setWidth(@org.eclipse.jdt.annotation.NonNull Integer width) {
         this.width = width;
@@ -237,13 +238,13 @@ public class ImageInfo {
      * @return size
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_SIZE)
+    @JsonProperty(value = JSON_PROPERTY_SIZE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Long getSize() {
         return size;
     }
 
-    @JsonProperty(JSON_PROPERTY_SIZE)
+    @JsonProperty(value = JSON_PROPERTY_SIZE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setSize(@org.eclipse.jdt.annotation.NonNull Long size) {
         this.size = size;
@@ -334,49 +335,49 @@ public class ImageInfo {
 
         // add `ImageType` to the URL query string
         if (getImageType() != null) {
-            joiner.add(String.format("%sImageType%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sImageType%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getImageType()))));
         }
 
         // add `ImageIndex` to the URL query string
         if (getImageIndex() != null) {
-            joiner.add(String.format("%sImageIndex%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sImageIndex%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getImageIndex()))));
         }
 
         // add `ImageTag` to the URL query string
         if (getImageTag() != null) {
-            joiner.add(String.format("%sImageTag%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sImageTag%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getImageTag()))));
         }
 
         // add `Path` to the URL query string
         if (getPath() != null) {
-            joiner.add(String.format("%sPath%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sPath%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getPath()))));
         }
 
         // add `BlurHash` to the URL query string
         if (getBlurHash() != null) {
-            joiner.add(String.format("%sBlurHash%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sBlurHash%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getBlurHash()))));
         }
 
         // add `Height` to the URL query string
         if (getHeight() != null) {
-            joiner.add(String.format("%sHeight%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sHeight%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getHeight()))));
         }
 
         // add `Width` to the URL query string
         if (getWidth() != null) {
-            joiner.add(String.format("%sWidth%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sWidth%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getWidth()))));
         }
 
         // add `Size` to the URL query string
         if (getSize() != null) {
-            joiner.add(String.format("%sSize%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sSize%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getSize()))));
         }
 

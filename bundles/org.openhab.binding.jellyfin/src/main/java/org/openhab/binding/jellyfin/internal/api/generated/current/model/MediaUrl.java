@@ -13,6 +13,7 @@
 
 package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
+import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
 
@@ -50,13 +51,13 @@ public class MediaUrl {
      * @return url
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_URL)
+    @JsonProperty(value = JSON_PROPERTY_URL, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getUrl() {
         return url;
     }
 
-    @JsonProperty(JSON_PROPERTY_URL)
+    @JsonProperty(value = JSON_PROPERTY_URL, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setUrl(@org.eclipse.jdt.annotation.NonNull String url) {
         this.url = url;
@@ -73,13 +74,13 @@ public class MediaUrl {
      * @return name
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_NAME)
+    @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getName() {
         return name;
     }
 
-    @JsonProperty(JSON_PROPERTY_NAME)
+    @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setName(@org.eclipse.jdt.annotation.NonNull String name) {
         this.name = name;
@@ -160,13 +161,13 @@ public class MediaUrl {
 
         // add `Url` to the URL query string
         if (getUrl() != null) {
-            joiner.add(String.format("%sUrl%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sUrl%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getUrl()))));
         }
 
         // add `Name` to the URL query string
         if (getName() != null) {
-            joiner.add(String.format("%sName%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sName%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getName()))));
         }
 

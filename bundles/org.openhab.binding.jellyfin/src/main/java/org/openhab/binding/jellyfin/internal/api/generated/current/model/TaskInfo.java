@@ -15,6 +15,7 @@ package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
 
@@ -88,13 +89,13 @@ public class TaskInfo {
      * @return name
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_NAME)
+    @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getName() {
         return name;
     }
 
-    @JsonProperty(JSON_PROPERTY_NAME)
+    @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setName(@org.eclipse.jdt.annotation.NonNull String name) {
         this.name = name;
@@ -111,13 +112,13 @@ public class TaskInfo {
      * @return state
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_STATE)
+    @JsonProperty(value = JSON_PROPERTY_STATE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public TaskState getState() {
         return state;
     }
 
-    @JsonProperty(JSON_PROPERTY_STATE)
+    @JsonProperty(value = JSON_PROPERTY_STATE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setState(@org.eclipse.jdt.annotation.NonNull TaskState state) {
         this.state = state;
@@ -134,13 +135,13 @@ public class TaskInfo {
      * @return currentProgressPercentage
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_CURRENT_PROGRESS_PERCENTAGE)
+    @JsonProperty(value = JSON_PROPERTY_CURRENT_PROGRESS_PERCENTAGE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Double getCurrentProgressPercentage() {
         return currentProgressPercentage;
     }
 
-    @JsonProperty(JSON_PROPERTY_CURRENT_PROGRESS_PERCENTAGE)
+    @JsonProperty(value = JSON_PROPERTY_CURRENT_PROGRESS_PERCENTAGE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setCurrentProgressPercentage(@org.eclipse.jdt.annotation.NonNull Double currentProgressPercentage) {
         this.currentProgressPercentage = currentProgressPercentage;
@@ -157,13 +158,13 @@ public class TaskInfo {
      * @return id
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ID)
+    @JsonProperty(value = JSON_PROPERTY_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getId() {
         return id;
     }
 
-    @JsonProperty(JSON_PROPERTY_ID)
+    @JsonProperty(value = JSON_PROPERTY_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setId(@org.eclipse.jdt.annotation.NonNull String id) {
         this.id = id;
@@ -180,13 +181,13 @@ public class TaskInfo {
      * @return lastExecutionResult
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_LAST_EXECUTION_RESULT)
+    @JsonProperty(value = JSON_PROPERTY_LAST_EXECUTION_RESULT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public TaskResult getLastExecutionResult() {
         return lastExecutionResult;
     }
 
-    @JsonProperty(JSON_PROPERTY_LAST_EXECUTION_RESULT)
+    @JsonProperty(value = JSON_PROPERTY_LAST_EXECUTION_RESULT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setLastExecutionResult(@org.eclipse.jdt.annotation.NonNull TaskResult lastExecutionResult) {
         this.lastExecutionResult = lastExecutionResult;
@@ -211,13 +212,13 @@ public class TaskInfo {
      * @return triggers
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_TRIGGERS)
+    @JsonProperty(value = JSON_PROPERTY_TRIGGERS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<TaskTriggerInfo> getTriggers() {
         return triggers;
     }
 
-    @JsonProperty(JSON_PROPERTY_TRIGGERS)
+    @JsonProperty(value = JSON_PROPERTY_TRIGGERS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setTriggers(@org.eclipse.jdt.annotation.NonNull List<TaskTriggerInfo> triggers) {
         this.triggers = triggers;
@@ -234,13 +235,13 @@ public class TaskInfo {
      * @return description
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_DESCRIPTION)
+    @JsonProperty(value = JSON_PROPERTY_DESCRIPTION, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getDescription() {
         return description;
     }
 
-    @JsonProperty(JSON_PROPERTY_DESCRIPTION)
+    @JsonProperty(value = JSON_PROPERTY_DESCRIPTION, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setDescription(@org.eclipse.jdt.annotation.NonNull String description) {
         this.description = description;
@@ -257,13 +258,13 @@ public class TaskInfo {
      * @return category
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_CATEGORY)
+    @JsonProperty(value = JSON_PROPERTY_CATEGORY, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getCategory() {
         return category;
     }
 
-    @JsonProperty(JSON_PROPERTY_CATEGORY)
+    @JsonProperty(value = JSON_PROPERTY_CATEGORY, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setCategory(@org.eclipse.jdt.annotation.NonNull String category) {
         this.category = category;
@@ -280,13 +281,13 @@ public class TaskInfo {
      * @return isHidden
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_IS_HIDDEN)
+    @JsonProperty(value = JSON_PROPERTY_IS_HIDDEN, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getIsHidden() {
         return isHidden;
     }
 
-    @JsonProperty(JSON_PROPERTY_IS_HIDDEN)
+    @JsonProperty(value = JSON_PROPERTY_IS_HIDDEN, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setIsHidden(@org.eclipse.jdt.annotation.NonNull Boolean isHidden) {
         this.isHidden = isHidden;
@@ -303,13 +304,13 @@ public class TaskInfo {
      * @return key
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_KEY)
+    @JsonProperty(value = JSON_PROPERTY_KEY, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getKey() {
         return key;
     }
 
-    @JsonProperty(JSON_PROPERTY_KEY)
+    @JsonProperty(value = JSON_PROPERTY_KEY, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setKey(@org.eclipse.jdt.annotation.NonNull String key) {
         this.key = key;
@@ -406,26 +407,26 @@ public class TaskInfo {
 
         // add `Name` to the URL query string
         if (getName() != null) {
-            joiner.add(String.format("%sName%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sName%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getName()))));
         }
 
         // add `State` to the URL query string
         if (getState() != null) {
-            joiner.add(String.format("%sState%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sState%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getState()))));
         }
 
         // add `CurrentProgressPercentage` to the URL query string
         if (getCurrentProgressPercentage() != null) {
-            joiner.add(String.format("%sCurrentProgressPercentage%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sCurrentProgressPercentage%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getCurrentProgressPercentage()))));
         }
 
         // add `Id` to the URL query string
         if (getId() != null) {
-            joiner.add(
-                    String.format("%sId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
+            joiner.add(String.format(Locale.ROOT, "%sId%s=%s", prefix, suffix,
+                    ApiClient.urlEncode(ApiClient.valueToString(getId()))));
         }
 
         // add `LastExecutionResult` to the URL query string
@@ -437,33 +438,34 @@ public class TaskInfo {
         if (getTriggers() != null) {
             for (int i = 0; i < getTriggers().size(); i++) {
                 if (getTriggers().get(i) != null) {
-                    joiner.add(getTriggers().get(i).toUrlQueryString(String.format("%sTriggers%s%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
+                    joiner.add(getTriggers().get(i).toUrlQueryString(
+                            String.format(Locale.ROOT, "%sTriggers%s%s", prefix, suffix, "".equals(suffix) ? ""
+                                    : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
                 }
             }
         }
 
         // add `Description` to the URL query string
         if (getDescription() != null) {
-            joiner.add(String.format("%sDescription%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sDescription%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getDescription()))));
         }
 
         // add `Category` to the URL query string
         if (getCategory() != null) {
-            joiner.add(String.format("%sCategory%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sCategory%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getCategory()))));
         }
 
         // add `IsHidden` to the URL query string
         if (getIsHidden() != null) {
-            joiner.add(String.format("%sIsHidden%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sIsHidden%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getIsHidden()))));
         }
 
         // add `Key` to the URL query string
         if (getKey() != null) {
-            joiner.add(String.format("%sKey%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sKey%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getKey()))));
         }
 

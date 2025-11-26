@@ -13,6 +13,7 @@
 
 package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
+import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
 
@@ -60,13 +61,13 @@ public class CountryInfo {
      * @return name
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_NAME)
+    @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getName() {
         return name;
     }
 
-    @JsonProperty(JSON_PROPERTY_NAME)
+    @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setName(@org.eclipse.jdt.annotation.NonNull String name) {
         this.name = name;
@@ -83,13 +84,13 @@ public class CountryInfo {
      * @return displayName
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_DISPLAY_NAME)
+    @JsonProperty(value = JSON_PROPERTY_DISPLAY_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getDisplayName() {
         return displayName;
     }
 
-    @JsonProperty(JSON_PROPERTY_DISPLAY_NAME)
+    @JsonProperty(value = JSON_PROPERTY_DISPLAY_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setDisplayName(@org.eclipse.jdt.annotation.NonNull String displayName) {
         this.displayName = displayName;
@@ -106,13 +107,13 @@ public class CountryInfo {
      * @return twoLetterISORegionName
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_TWO_LETTER_I_S_O_REGION_NAME)
+    @JsonProperty(value = JSON_PROPERTY_TWO_LETTER_I_S_O_REGION_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getTwoLetterISORegionName() {
         return twoLetterISORegionName;
     }
 
-    @JsonProperty(JSON_PROPERTY_TWO_LETTER_I_S_O_REGION_NAME)
+    @JsonProperty(value = JSON_PROPERTY_TWO_LETTER_I_S_O_REGION_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setTwoLetterISORegionName(@org.eclipse.jdt.annotation.NonNull String twoLetterISORegionName) {
         this.twoLetterISORegionName = twoLetterISORegionName;
@@ -129,13 +130,13 @@ public class CountryInfo {
      * @return threeLetterISORegionName
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_THREE_LETTER_I_S_O_REGION_NAME)
+    @JsonProperty(value = JSON_PROPERTY_THREE_LETTER_I_S_O_REGION_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getThreeLetterISORegionName() {
         return threeLetterISORegionName;
     }
 
-    @JsonProperty(JSON_PROPERTY_THREE_LETTER_I_S_O_REGION_NAME)
+    @JsonProperty(value = JSON_PROPERTY_THREE_LETTER_I_S_O_REGION_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setThreeLetterISORegionName(@org.eclipse.jdt.annotation.NonNull String threeLetterISORegionName) {
         this.threeLetterISORegionName = threeLetterISORegionName;
@@ -220,25 +221,25 @@ public class CountryInfo {
 
         // add `Name` to the URL query string
         if (getName() != null) {
-            joiner.add(String.format("%sName%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sName%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getName()))));
         }
 
         // add `DisplayName` to the URL query string
         if (getDisplayName() != null) {
-            joiner.add(String.format("%sDisplayName%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sDisplayName%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getDisplayName()))));
         }
 
         // add `TwoLetterISORegionName` to the URL query string
         if (getTwoLetterISORegionName() != null) {
-            joiner.add(String.format("%sTwoLetterISORegionName%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sTwoLetterISORegionName%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getTwoLetterISORegionName()))));
         }
 
         // add `ThreeLetterISORegionName` to the URL query string
         if (getThreeLetterISORegionName() != null) {
-            joiner.add(String.format("%sThreeLetterISORegionName%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sThreeLetterISORegionName%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getThreeLetterISORegionName()))));
         }
 

@@ -13,6 +13,7 @@
 
 package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
+import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
 
@@ -46,13 +47,13 @@ public class SetRepeatModeRequestDto {
      * @return mode
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_MODE)
+    @JsonProperty(value = JSON_PROPERTY_MODE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public GroupRepeatMode getMode() {
         return mode;
     }
 
-    @JsonProperty(JSON_PROPERTY_MODE)
+    @JsonProperty(value = JSON_PROPERTY_MODE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setMode(@org.eclipse.jdt.annotation.NonNull GroupRepeatMode mode) {
         this.mode = mode;
@@ -132,7 +133,7 @@ public class SetRepeatModeRequestDto {
 
         // add `Mode` to the URL query string
         if (getMode() != null) {
-            joiner.add(String.format("%sMode%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sMode%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getMode()))));
         }
 

@@ -13,6 +13,7 @@
 
 package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
+import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
 
@@ -46,13 +47,13 @@ public class NewGroupRequestDto {
      * @return groupName
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_GROUP_NAME)
+    @JsonProperty(value = JSON_PROPERTY_GROUP_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getGroupName() {
         return groupName;
     }
 
-    @JsonProperty(JSON_PROPERTY_GROUP_NAME)
+    @JsonProperty(value = JSON_PROPERTY_GROUP_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setGroupName(@org.eclipse.jdt.annotation.NonNull String groupName) {
         this.groupName = groupName;
@@ -132,7 +133,7 @@ public class NewGroupRequestDto {
 
         // add `GroupName` to the URL query string
         if (getGroupName() != null) {
-            joiner.add(String.format("%sGroupName%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sGroupName%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getGroupName()))));
         }
 

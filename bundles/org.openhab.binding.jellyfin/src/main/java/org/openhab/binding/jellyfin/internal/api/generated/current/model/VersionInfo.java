@@ -13,6 +13,7 @@
 
 package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
+import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
 
@@ -88,13 +89,13 @@ public class VersionInfo {
      * @return version
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_VERSION)
+    @JsonProperty(value = JSON_PROPERTY_VERSION, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getVersion() {
         return version;
     }
 
-    @JsonProperty(JSON_PROPERTY_VERSION)
+    @JsonProperty(value = JSON_PROPERTY_VERSION, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setVersion(@org.eclipse.jdt.annotation.NonNull String version) {
         this.version = version;
@@ -106,7 +107,7 @@ public class VersionInfo {
      * @return versionNumber
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_VERSION_NUMBER)
+    @JsonProperty(value = JSON_PROPERTY_VERSION_NUMBER, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getVersionNumber() {
         return versionNumber;
@@ -123,13 +124,13 @@ public class VersionInfo {
      * @return changelog
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_CHANGELOG)
+    @JsonProperty(value = JSON_PROPERTY_CHANGELOG, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getChangelog() {
         return changelog;
     }
 
-    @JsonProperty(JSON_PROPERTY_CHANGELOG)
+    @JsonProperty(value = JSON_PROPERTY_CHANGELOG, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setChangelog(@org.eclipse.jdt.annotation.NonNull String changelog) {
         this.changelog = changelog;
@@ -146,13 +147,13 @@ public class VersionInfo {
      * @return targetAbi
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_TARGET_ABI)
+    @JsonProperty(value = JSON_PROPERTY_TARGET_ABI, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getTargetAbi() {
         return targetAbi;
     }
 
-    @JsonProperty(JSON_PROPERTY_TARGET_ABI)
+    @JsonProperty(value = JSON_PROPERTY_TARGET_ABI, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setTargetAbi(@org.eclipse.jdt.annotation.NonNull String targetAbi) {
         this.targetAbi = targetAbi;
@@ -169,13 +170,13 @@ public class VersionInfo {
      * @return sourceUrl
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_SOURCE_URL)
+    @JsonProperty(value = JSON_PROPERTY_SOURCE_URL, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getSourceUrl() {
         return sourceUrl;
     }
 
-    @JsonProperty(JSON_PROPERTY_SOURCE_URL)
+    @JsonProperty(value = JSON_PROPERTY_SOURCE_URL, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setSourceUrl(@org.eclipse.jdt.annotation.NonNull String sourceUrl) {
         this.sourceUrl = sourceUrl;
@@ -192,13 +193,13 @@ public class VersionInfo {
      * @return checksum
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_CHECKSUM)
+    @JsonProperty(value = JSON_PROPERTY_CHECKSUM, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getChecksum() {
         return checksum;
     }
 
-    @JsonProperty(JSON_PROPERTY_CHECKSUM)
+    @JsonProperty(value = JSON_PROPERTY_CHECKSUM, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setChecksum(@org.eclipse.jdt.annotation.NonNull String checksum) {
         this.checksum = checksum;
@@ -215,13 +216,13 @@ public class VersionInfo {
      * @return timestamp
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_TIMESTAMP)
+    @JsonProperty(value = JSON_PROPERTY_TIMESTAMP, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getTimestamp() {
         return timestamp;
     }
 
-    @JsonProperty(JSON_PROPERTY_TIMESTAMP)
+    @JsonProperty(value = JSON_PROPERTY_TIMESTAMP, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setTimestamp(@org.eclipse.jdt.annotation.NonNull String timestamp) {
         this.timestamp = timestamp;
@@ -238,13 +239,13 @@ public class VersionInfo {
      * @return repositoryName
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_REPOSITORY_NAME)
+    @JsonProperty(value = JSON_PROPERTY_REPOSITORY_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getRepositoryName() {
         return repositoryName;
     }
 
-    @JsonProperty(JSON_PROPERTY_REPOSITORY_NAME)
+    @JsonProperty(value = JSON_PROPERTY_REPOSITORY_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setRepositoryName(@org.eclipse.jdt.annotation.NonNull String repositoryName) {
         this.repositoryName = repositoryName;
@@ -261,13 +262,13 @@ public class VersionInfo {
      * @return repositoryUrl
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_REPOSITORY_URL)
+    @JsonProperty(value = JSON_PROPERTY_REPOSITORY_URL, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getRepositoryUrl() {
         return repositoryUrl;
     }
 
-    @JsonProperty(JSON_PROPERTY_REPOSITORY_URL)
+    @JsonProperty(value = JSON_PROPERTY_REPOSITORY_URL, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setRepositoryUrl(@org.eclipse.jdt.annotation.NonNull String repositoryUrl) {
         this.repositoryUrl = repositoryUrl;
@@ -364,55 +365,55 @@ public class VersionInfo {
 
         // add `version` to the URL query string
         if (getVersion() != null) {
-            joiner.add(String.format("%sversion%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sversion%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getVersion()))));
         }
 
         // add `VersionNumber` to the URL query string
         if (getVersionNumber() != null) {
-            joiner.add(String.format("%sVersionNumber%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sVersionNumber%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getVersionNumber()))));
         }
 
         // add `changelog` to the URL query string
         if (getChangelog() != null) {
-            joiner.add(String.format("%schangelog%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%schangelog%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getChangelog()))));
         }
 
         // add `targetAbi` to the URL query string
         if (getTargetAbi() != null) {
-            joiner.add(String.format("%stargetAbi%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%stargetAbi%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getTargetAbi()))));
         }
 
         // add `sourceUrl` to the URL query string
         if (getSourceUrl() != null) {
-            joiner.add(String.format("%ssourceUrl%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%ssourceUrl%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getSourceUrl()))));
         }
 
         // add `checksum` to the URL query string
         if (getChecksum() != null) {
-            joiner.add(String.format("%schecksum%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%schecksum%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getChecksum()))));
         }
 
         // add `timestamp` to the URL query string
         if (getTimestamp() != null) {
-            joiner.add(String.format("%stimestamp%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%stimestamp%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getTimestamp()))));
         }
 
         // add `repositoryName` to the URL query string
         if (getRepositoryName() != null) {
-            joiner.add(String.format("%srepositoryName%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%srepositoryName%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getRepositoryName()))));
         }
 
         // add `repositoryUrl` to the URL query string
         if (getRepositoryUrl() != null) {
-            joiner.add(String.format("%srepositoryUrl%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%srepositoryUrl%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getRepositoryUrl()))));
         }
 

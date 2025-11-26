@@ -22,6 +22,7 @@ import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.function.Consumer;
 
 import org.openhab.binding.jellyfin.internal.api.generated.ApiClient;
@@ -247,7 +248,7 @@ public class SyncPlayApi {
         localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
 
         localVarRequestBuilder.header("Content-Type", "application/json");
-        localVarRequestBuilder.header("Accept", "application/json");
+        localVarRequestBuilder.header("Accept", "text/html");
 
         try {
             byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(bufferRequestDto);
@@ -270,11 +271,12 @@ public class SyncPlayApi {
      * Create a new SyncPlay group.
      * 
      * @param newGroupRequestDto The settings of the new group. (required)
+     * @return GroupInfoDto
      * @throws ApiException if fails to make API call
      */
-    public void syncPlayCreateGroup(@org.eclipse.jdt.annotation.Nullable NewGroupRequestDto newGroupRequestDto)
+    public GroupInfoDto syncPlayCreateGroup(@org.eclipse.jdt.annotation.Nullable NewGroupRequestDto newGroupRequestDto)
             throws ApiException {
-        syncPlayCreateGroup(newGroupRequestDto, null);
+        return syncPlayCreateGroup(newGroupRequestDto, null);
     }
 
     /**
@@ -282,21 +284,23 @@ public class SyncPlayApi {
      * 
      * @param newGroupRequestDto The settings of the new group. (required)
      * @param headers Optional headers to include in the request
+     * @return GroupInfoDto
      * @throws ApiException if fails to make API call
      */
-    public void syncPlayCreateGroup(@org.eclipse.jdt.annotation.Nullable NewGroupRequestDto newGroupRequestDto,
+    public GroupInfoDto syncPlayCreateGroup(@org.eclipse.jdt.annotation.Nullable NewGroupRequestDto newGroupRequestDto,
             Map<String, String> headers) throws ApiException {
-        syncPlayCreateGroupWithHttpInfo(newGroupRequestDto, headers);
+        ApiResponse<GroupInfoDto> localVarResponse = syncPlayCreateGroupWithHttpInfo(newGroupRequestDto, headers);
+        return localVarResponse.getData();
     }
 
     /**
      * Create a new SyncPlay group.
      * 
      * @param newGroupRequestDto The settings of the new group. (required)
-     * @return ApiResponse&lt;Void&gt;
+     * @return ApiResponse&lt;GroupInfoDto&gt;
      * @throws ApiException if fails to make API call
      */
-    public ApiResponse<Void> syncPlayCreateGroupWithHttpInfo(
+    public ApiResponse<GroupInfoDto> syncPlayCreateGroupWithHttpInfo(
             @org.eclipse.jdt.annotation.Nullable NewGroupRequestDto newGroupRequestDto) throws ApiException {
         return syncPlayCreateGroupWithHttpInfo(newGroupRequestDto, null);
     }
@@ -306,10 +310,10 @@ public class SyncPlayApi {
      * 
      * @param newGroupRequestDto The settings of the new group. (required)
      * @param headers Optional headers to include in the request
-     * @return ApiResponse&lt;Void&gt;
+     * @return ApiResponse&lt;GroupInfoDto&gt;
      * @throws ApiException if fails to make API call
      */
-    public ApiResponse<Void> syncPlayCreateGroupWithHttpInfo(
+    public ApiResponse<GroupInfoDto> syncPlayCreateGroupWithHttpInfo(
             @org.eclipse.jdt.annotation.Nullable NewGroupRequestDto newGroupRequestDto, Map<String, String> headers)
             throws ApiException {
         HttpRequest.Builder localVarRequestBuilder = syncPlayCreateGroupRequestBuilder(newGroupRequestDto, headers);
@@ -323,13 +327,21 @@ public class SyncPlayApi {
                 if (localVarResponse.statusCode() / 100 != 2) {
                     throw getApiException("syncPlayCreateGroup", localVarResponse);
                 }
-                return new ApiResponse<>(localVarResponse.statusCode(), localVarResponse.headers().map(), null);
-            } finally {
-                // Drain the InputStream
-                while (localVarResponse.body().read() != -1) {
-                    // Ignore
+                if (localVarResponse.body() == null) {
+                    return new ApiResponse<GroupInfoDto>(localVarResponse.statusCode(),
+                            localVarResponse.headers().map(), null);
                 }
+
+                String responseBody = new String(localVarResponse.body().readAllBytes());
+                GroupInfoDto responseValue = responseBody.isBlank() ? null
+                        : memberVarObjectMapper.readValue(responseBody, new TypeReference<GroupInfoDto>() {
+                        });
+
                 localVarResponse.body().close();
+
+                return new ApiResponse<GroupInfoDto>(localVarResponse.statusCode(), localVarResponse.headers().map(),
+                        responseValue);
+            } finally {
             }
         } catch (IOException e) {
             throw new ApiException(e);
@@ -355,7 +367,8 @@ public class SyncPlayApi {
         localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
 
         localVarRequestBuilder.header("Content-Type", "application/json");
-        localVarRequestBuilder.header("Accept", "application/json");
+        localVarRequestBuilder.header("Accept",
+                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase, text/html");
 
         try {
             byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(newGroupRequestDto);
@@ -363,6 +376,116 @@ public class SyncPlayApi {
         } catch (IOException e) {
             throw new ApiException(e);
         }
+        if (memberVarReadTimeout != null) {
+            localVarRequestBuilder.timeout(memberVarReadTimeout);
+        }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
+        if (memberVarInterceptor != null) {
+            memberVarInterceptor.accept(localVarRequestBuilder);
+        }
+        return localVarRequestBuilder;
+    }
+
+    /**
+     * Gets a SyncPlay group by id.
+     * 
+     * @param id The id of the group. (required)
+     * @return GroupInfoDto
+     * @throws ApiException if fails to make API call
+     */
+    public GroupInfoDto syncPlayGetGroup(@org.eclipse.jdt.annotation.Nullable UUID id) throws ApiException {
+        return syncPlayGetGroup(id, null);
+    }
+
+    /**
+     * Gets a SyncPlay group by id.
+     * 
+     * @param id The id of the group. (required)
+     * @param headers Optional headers to include in the request
+     * @return GroupInfoDto
+     * @throws ApiException if fails to make API call
+     */
+    public GroupInfoDto syncPlayGetGroup(@org.eclipse.jdt.annotation.Nullable UUID id, Map<String, String> headers)
+            throws ApiException {
+        ApiResponse<GroupInfoDto> localVarResponse = syncPlayGetGroupWithHttpInfo(id, headers);
+        return localVarResponse.getData();
+    }
+
+    /**
+     * Gets a SyncPlay group by id.
+     * 
+     * @param id The id of the group. (required)
+     * @return ApiResponse&lt;GroupInfoDto&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<GroupInfoDto> syncPlayGetGroupWithHttpInfo(@org.eclipse.jdt.annotation.Nullable UUID id)
+            throws ApiException {
+        return syncPlayGetGroupWithHttpInfo(id, null);
+    }
+
+    /**
+     * Gets a SyncPlay group by id.
+     * 
+     * @param id The id of the group. (required)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;GroupInfoDto&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<GroupInfoDto> syncPlayGetGroupWithHttpInfo(@org.eclipse.jdt.annotation.Nullable UUID id,
+            Map<String, String> headers) throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = syncPlayGetGroupRequestBuilder(id, headers);
+        try {
+            HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
+                    HttpResponse.BodyHandlers.ofInputStream());
+            if (memberVarResponseInterceptor != null) {
+                memberVarResponseInterceptor.accept(localVarResponse);
+            }
+            try {
+                if (localVarResponse.statusCode() / 100 != 2) {
+                    throw getApiException("syncPlayGetGroup", localVarResponse);
+                }
+                if (localVarResponse.body() == null) {
+                    return new ApiResponse<GroupInfoDto>(localVarResponse.statusCode(),
+                            localVarResponse.headers().map(), null);
+                }
+
+                String responseBody = new String(localVarResponse.body().readAllBytes());
+                GroupInfoDto responseValue = responseBody.isBlank() ? null
+                        : memberVarObjectMapper.readValue(responseBody, new TypeReference<GroupInfoDto>() {
+                        });
+
+                localVarResponse.body().close();
+
+                return new ApiResponse<GroupInfoDto>(localVarResponse.statusCode(), localVarResponse.headers().map(),
+                        responseValue);
+            } finally {
+            }
+        } catch (IOException e) {
+            throw new ApiException(e);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new ApiException(e);
+        }
+    }
+
+    private HttpRequest.Builder syncPlayGetGroupRequestBuilder(@org.eclipse.jdt.annotation.Nullable UUID id,
+            Map<String, String> headers) throws ApiException {
+        // verify the required parameter 'id' is set
+        if (id == null) {
+            throw new ApiException(400, "Missing the required parameter 'id' when calling syncPlayGetGroup");
+        }
+
+        HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+        String localVarPath = "/SyncPlay/{id}".replace("{id}", ApiClient.urlEncode(id.toString()));
+
+        localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+
+        localVarRequestBuilder.header("Accept",
+                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase, text/html");
+
+        localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
@@ -459,7 +582,7 @@ public class SyncPlayApi {
         localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
 
         localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase, text/html");
 
         localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {
@@ -562,7 +685,7 @@ public class SyncPlayApi {
         localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
 
         localVarRequestBuilder.header("Content-Type", "application/json");
-        localVarRequestBuilder.header("Accept", "application/json");
+        localVarRequestBuilder.header("Accept", "text/html");
 
         try {
             byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(joinGroupRequestDto);
@@ -653,7 +776,7 @@ public class SyncPlayApi {
 
         localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
 
-        localVarRequestBuilder.header("Accept", "application/json");
+        localVarRequestBuilder.header("Accept", "text/html");
 
         localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {
@@ -760,7 +883,7 @@ public class SyncPlayApi {
         localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
 
         localVarRequestBuilder.header("Content-Type", "application/json");
-        localVarRequestBuilder.header("Accept", "application/json");
+        localVarRequestBuilder.header("Accept", "text/html");
 
         try {
             byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(movePlaylistItemRequestDto);
@@ -868,7 +991,7 @@ public class SyncPlayApi {
         localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
 
         localVarRequestBuilder.header("Content-Type", "application/json");
-        localVarRequestBuilder.header("Accept", "application/json");
+        localVarRequestBuilder.header("Accept", "text/html");
 
         try {
             byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(nextItemRequestDto);
@@ -959,7 +1082,7 @@ public class SyncPlayApi {
 
         localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
 
-        localVarRequestBuilder.header("Accept", "application/json");
+        localVarRequestBuilder.header("Accept", "text/html");
 
         localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {
@@ -1060,7 +1183,7 @@ public class SyncPlayApi {
         localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
 
         localVarRequestBuilder.header("Content-Type", "application/json");
-        localVarRequestBuilder.header("Accept", "application/json");
+        localVarRequestBuilder.header("Accept", "text/html");
 
         try {
             byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(pingRequestDto);
@@ -1169,7 +1292,7 @@ public class SyncPlayApi {
         localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
 
         localVarRequestBuilder.header("Content-Type", "application/json");
-        localVarRequestBuilder.header("Accept", "application/json");
+        localVarRequestBuilder.header("Accept", "text/html");
 
         try {
             byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(previousItemRequestDto);
@@ -1276,7 +1399,7 @@ public class SyncPlayApi {
         localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
 
         localVarRequestBuilder.header("Content-Type", "application/json");
-        localVarRequestBuilder.header("Accept", "application/json");
+        localVarRequestBuilder.header("Accept", "text/html");
 
         try {
             byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(queueRequestDto);
@@ -1383,7 +1506,7 @@ public class SyncPlayApi {
         localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
 
         localVarRequestBuilder.header("Content-Type", "application/json");
-        localVarRequestBuilder.header("Accept", "application/json");
+        localVarRequestBuilder.header("Accept", "text/html");
 
         try {
             byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(readyRequestDto);
@@ -1495,7 +1618,7 @@ public class SyncPlayApi {
         localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
 
         localVarRequestBuilder.header("Content-Type", "application/json");
-        localVarRequestBuilder.header("Accept", "application/json");
+        localVarRequestBuilder.header("Accept", "text/html");
 
         try {
             byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(removeFromPlaylistRequestDto);
@@ -1601,7 +1724,7 @@ public class SyncPlayApi {
         localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
 
         localVarRequestBuilder.header("Content-Type", "application/json");
-        localVarRequestBuilder.header("Accept", "application/json");
+        localVarRequestBuilder.header("Accept", "text/html");
 
         try {
             byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(seekRequestDto);
@@ -1709,7 +1832,7 @@ public class SyncPlayApi {
         localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
 
         localVarRequestBuilder.header("Content-Type", "application/json");
-        localVarRequestBuilder.header("Accept", "application/json");
+        localVarRequestBuilder.header("Accept", "text/html");
 
         try {
             byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(ignoreWaitRequestDto);
@@ -1817,7 +1940,7 @@ public class SyncPlayApi {
         localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
 
         localVarRequestBuilder.header("Content-Type", "application/json");
-        localVarRequestBuilder.header("Accept", "application/json");
+        localVarRequestBuilder.header("Accept", "text/html");
 
         try {
             byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(playRequestDto);
@@ -1929,7 +2052,7 @@ public class SyncPlayApi {
         localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
 
         localVarRequestBuilder.header("Content-Type", "application/json");
-        localVarRequestBuilder.header("Accept", "application/json");
+        localVarRequestBuilder.header("Accept", "text/html");
 
         try {
             byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(setPlaylistItemRequestDto);
@@ -2039,7 +2162,7 @@ public class SyncPlayApi {
         localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
 
         localVarRequestBuilder.header("Content-Type", "application/json");
-        localVarRequestBuilder.header("Accept", "application/json");
+        localVarRequestBuilder.header("Accept", "text/html");
 
         try {
             byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(setRepeatModeRequestDto);
@@ -2151,7 +2274,7 @@ public class SyncPlayApi {
         localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
 
         localVarRequestBuilder.header("Content-Type", "application/json");
-        localVarRequestBuilder.header("Accept", "application/json");
+        localVarRequestBuilder.header("Accept", "text/html");
 
         try {
             byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(setShuffleModeRequestDto);
@@ -2242,7 +2365,7 @@ public class SyncPlayApi {
 
         localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
 
-        localVarRequestBuilder.header("Accept", "application/json");
+        localVarRequestBuilder.header("Accept", "text/html");
 
         localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {
@@ -2328,7 +2451,7 @@ public class SyncPlayApi {
 
         localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
 
-        localVarRequestBuilder.header("Accept", "application/json");
+        localVarRequestBuilder.header("Accept", "text/html");
 
         localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {

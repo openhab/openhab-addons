@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Map;
 import java.util.StringJoiner;
 import java.util.logging.Level;
@@ -875,41 +876,41 @@ public class OutboundWebSocketMessage extends AbstractOpenApiSchema {
                 log.log(Level.FINER, "Input data does not match schema 'SyncPlayCommandMessage'", e);
             }
 
-            // deserialize SyncPlayGroupUpdateCommandMessage
+            // deserialize SyncPlayGroupUpdateMessage
             try {
                 boolean attemptParsing = true;
                 // ensure that we respect type coercion as set on the client ObjectMapper
-                if (SyncPlayGroupUpdateCommandMessage.class.equals(Integer.class)
-                        || SyncPlayGroupUpdateCommandMessage.class.equals(Long.class)
-                        || SyncPlayGroupUpdateCommandMessage.class.equals(Float.class)
-                        || SyncPlayGroupUpdateCommandMessage.class.equals(Double.class)
-                        || SyncPlayGroupUpdateCommandMessage.class.equals(Boolean.class)
-                        || SyncPlayGroupUpdateCommandMessage.class.equals(String.class)) {
+                if (SyncPlayGroupUpdateMessage.class.equals(Integer.class)
+                        || SyncPlayGroupUpdateMessage.class.equals(Long.class)
+                        || SyncPlayGroupUpdateMessage.class.equals(Float.class)
+                        || SyncPlayGroupUpdateMessage.class.equals(Double.class)
+                        || SyncPlayGroupUpdateMessage.class.equals(Boolean.class)
+                        || SyncPlayGroupUpdateMessage.class.equals(String.class)) {
                     attemptParsing = typeCoercion;
                     if (!attemptParsing) {
-                        attemptParsing |= ((SyncPlayGroupUpdateCommandMessage.class.equals(Integer.class)
-                                || SyncPlayGroupUpdateCommandMessage.class.equals(Long.class))
+                        attemptParsing |= ((SyncPlayGroupUpdateMessage.class.equals(Integer.class)
+                                || SyncPlayGroupUpdateMessage.class.equals(Long.class))
                                 && token == JsonToken.VALUE_NUMBER_INT);
-                        attemptParsing |= ((SyncPlayGroupUpdateCommandMessage.class.equals(Float.class)
-                                || SyncPlayGroupUpdateCommandMessage.class.equals(Double.class))
+                        attemptParsing |= ((SyncPlayGroupUpdateMessage.class.equals(Float.class)
+                                || SyncPlayGroupUpdateMessage.class.equals(Double.class))
                                 && token == JsonToken.VALUE_NUMBER_FLOAT);
-                        attemptParsing |= (SyncPlayGroupUpdateCommandMessage.class.equals(Boolean.class)
+                        attemptParsing |= (SyncPlayGroupUpdateMessage.class.equals(Boolean.class)
                                 && (token == JsonToken.VALUE_FALSE || token == JsonToken.VALUE_TRUE));
-                        attemptParsing |= (SyncPlayGroupUpdateCommandMessage.class.equals(String.class)
+                        attemptParsing |= (SyncPlayGroupUpdateMessage.class.equals(String.class)
                                 && token == JsonToken.VALUE_STRING);
                     }
                 }
                 if (attemptParsing) {
-                    deserialized = tree.traverse(jp.getCodec()).readValueAs(SyncPlayGroupUpdateCommandMessage.class);
+                    deserialized = tree.traverse(jp.getCodec()).readValueAs(SyncPlayGroupUpdateMessage.class);
                     // TODO: there is no validation against JSON schema constraints
                     // (min, max, enum, pattern...), this does not perform a strict JSON
                     // validation, which means the 'match' count may be higher than it should be.
                     match++;
-                    log.log(Level.FINER, "Input data matches schema 'SyncPlayGroupUpdateCommandMessage'");
+                    log.log(Level.FINER, "Input data matches schema 'SyncPlayGroupUpdateMessage'");
                 }
             } catch (Exception e) {
                 // deserialization failed, continue
-                log.log(Level.FINER, "Input data does not match schema 'SyncPlayGroupUpdateCommandMessage'", e);
+                log.log(Level.FINER, "Input data does not match schema 'SyncPlayGroupUpdateMessage'", e);
             }
 
             // deserialize TimerCancelledMessage
@@ -1094,7 +1095,7 @@ public class OutboundWebSocketMessage extends AbstractOpenApiSchema {
                 ret.setActualInstance(deserialized);
                 return ret;
             }
-            throw new IOException(String.format(
+            throw new IOException(String.format(Locale.ROOT,
                     "Failed deserialization for OutboundWebSocketMessage: %d classes match result, expected 1", match));
         }
 
@@ -1224,7 +1225,7 @@ public class OutboundWebSocketMessage extends AbstractOpenApiSchema {
         setActualInstance(o);
     }
 
-    public OutboundWebSocketMessage(SyncPlayGroupUpdateCommandMessage o) {
+    public OutboundWebSocketMessage(SyncPlayGroupUpdateMessage o) {
         super("oneOf", Boolean.FALSE);
         setActualInstance(o);
     }
@@ -1277,7 +1278,7 @@ public class OutboundWebSocketMessage extends AbstractOpenApiSchema {
         schemas.put("ServerShuttingDownMessage", ServerShuttingDownMessage.class);
         schemas.put("SessionsMessage", SessionsMessage.class);
         schemas.put("SyncPlayCommandMessage", SyncPlayCommandMessage.class);
-        schemas.put("SyncPlayGroupUpdateCommandMessage", SyncPlayGroupUpdateCommandMessage.class);
+        schemas.put("SyncPlayGroupUpdateMessage", SyncPlayGroupUpdateMessage.class);
         schemas.put("TimerCancelledMessage", TimerCancelledMessage.class);
         schemas.put("TimerCreatedMessage", TimerCreatedMessage.class);
         schemas.put("UserDataChangedMessage", UserDataChangedMessage.class);
@@ -1308,7 +1309,7 @@ public class OutboundWebSocketMessage extends AbstractOpenApiSchema {
         mappings.put("ServerShuttingDown", ServerShuttingDownMessage.class);
         mappings.put("Sessions", SessionsMessage.class);
         mappings.put("SyncPlayCommand", SyncPlayCommandMessage.class);
-        mappings.put("SyncPlayGroupUpdate", SyncPlayGroupUpdateCommandMessage.class);
+        mappings.put("SyncPlayGroupUpdate", SyncPlayGroupUpdateMessage.class);
         mappings.put("TimerCancelled", TimerCancelledMessage.class);
         mappings.put("TimerCreated", TimerCreatedMessage.class);
         mappings.put("UserDataChanged", UserDataChangedMessage.class);
@@ -1331,7 +1332,7 @@ public class OutboundWebSocketMessage extends AbstractOpenApiSchema {
      * PluginInstallationCompletedMessage, PluginInstallationFailedMessage, PluginInstallingMessage,
      * PluginUninstalledMessage, RefreshProgressMessage, RestartRequiredMessage, ScheduledTaskEndedMessage,
      * ScheduledTasksInfoMessage, SeriesTimerCancelledMessage, SeriesTimerCreatedMessage, ServerRestartingMessage,
-     * ServerShuttingDownMessage, SessionsMessage, SyncPlayCommandMessage, SyncPlayGroupUpdateCommandMessage,
+     * ServerShuttingDownMessage, SessionsMessage, SyncPlayCommandMessage, SyncPlayGroupUpdateMessage,
      * TimerCancelledMessage, TimerCreatedMessage, UserDataChangedMessage, UserDeletedMessage, UserUpdatedMessage
      *
      * It could be an instance of the 'oneOf' schemas.
@@ -1449,7 +1450,7 @@ public class OutboundWebSocketMessage extends AbstractOpenApiSchema {
             return;
         }
 
-        if (JSON.isInstanceOf(SyncPlayGroupUpdateCommandMessage.class, instance, new HashSet<Class<?>>())) {
+        if (JSON.isInstanceOf(SyncPlayGroupUpdateMessage.class, instance, new HashSet<Class<?>>())) {
             super.setActualInstance(instance);
             return;
         }
@@ -1480,7 +1481,7 @@ public class OutboundWebSocketMessage extends AbstractOpenApiSchema {
         }
 
         throw new RuntimeException(
-                "Invalid instance type. Must be ActivityLogEntryMessage, ForceKeepAliveMessage, GeneralCommandMessage, LibraryChangedMessage, OutboundKeepAliveMessage, PlayMessage, PlaystateMessage, PluginInstallationCancelledMessage, PluginInstallationCompletedMessage, PluginInstallationFailedMessage, PluginInstallingMessage, PluginUninstalledMessage, RefreshProgressMessage, RestartRequiredMessage, ScheduledTaskEndedMessage, ScheduledTasksInfoMessage, SeriesTimerCancelledMessage, SeriesTimerCreatedMessage, ServerRestartingMessage, ServerShuttingDownMessage, SessionsMessage, SyncPlayCommandMessage, SyncPlayGroupUpdateCommandMessage, TimerCancelledMessage, TimerCreatedMessage, UserDataChangedMessage, UserDeletedMessage, UserUpdatedMessage");
+                "Invalid instance type. Must be ActivityLogEntryMessage, ForceKeepAliveMessage, GeneralCommandMessage, LibraryChangedMessage, OutboundKeepAliveMessage, PlayMessage, PlaystateMessage, PluginInstallationCancelledMessage, PluginInstallationCompletedMessage, PluginInstallationFailedMessage, PluginInstallingMessage, PluginUninstalledMessage, RefreshProgressMessage, RestartRequiredMessage, ScheduledTaskEndedMessage, ScheduledTasksInfoMessage, SeriesTimerCancelledMessage, SeriesTimerCreatedMessage, ServerRestartingMessage, ServerShuttingDownMessage, SessionsMessage, SyncPlayCommandMessage, SyncPlayGroupUpdateMessage, TimerCancelledMessage, TimerCreatedMessage, UserDataChangedMessage, UserDeletedMessage, UserUpdatedMessage");
     }
 
     /**
@@ -1490,7 +1491,7 @@ public class OutboundWebSocketMessage extends AbstractOpenApiSchema {
      * PluginInstallationCompletedMessage, PluginInstallationFailedMessage, PluginInstallingMessage,
      * PluginUninstalledMessage, RefreshProgressMessage, RestartRequiredMessage, ScheduledTaskEndedMessage,
      * ScheduledTasksInfoMessage, SeriesTimerCancelledMessage, SeriesTimerCreatedMessage, ServerRestartingMessage,
-     * ServerShuttingDownMessage, SessionsMessage, SyncPlayCommandMessage, SyncPlayGroupUpdateCommandMessage,
+     * ServerShuttingDownMessage, SessionsMessage, SyncPlayCommandMessage, SyncPlayGroupUpdateMessage,
      * TimerCancelledMessage, TimerCreatedMessage, UserDataChangedMessage, UserDeletedMessage, UserUpdatedMessage
      *
      * @return The actual instance (ActivityLogEntryMessage, ForceKeepAliveMessage, GeneralCommandMessage,
@@ -1499,7 +1500,7 @@ public class OutboundWebSocketMessage extends AbstractOpenApiSchema {
      *         PluginInstallingMessage, PluginUninstalledMessage, RefreshProgressMessage, RestartRequiredMessage,
      *         ScheduledTaskEndedMessage, ScheduledTasksInfoMessage, SeriesTimerCancelledMessage,
      *         SeriesTimerCreatedMessage, ServerRestartingMessage, ServerShuttingDownMessage, SessionsMessage,
-     *         SyncPlayCommandMessage, SyncPlayGroupUpdateCommandMessage, TimerCancelledMessage, TimerCreatedMessage,
+     *         SyncPlayCommandMessage, SyncPlayGroupUpdateMessage, TimerCancelledMessage, TimerCreatedMessage,
      *         UserDataChangedMessage, UserDeletedMessage, UserUpdatedMessage)
      */
     @Override
@@ -1758,15 +1759,15 @@ public class OutboundWebSocketMessage extends AbstractOpenApiSchema {
     }
 
     /**
-     * Get the actual instance of `SyncPlayGroupUpdateCommandMessage`. If the actual instance is not
-     * `SyncPlayGroupUpdateCommandMessage`,
+     * Get the actual instance of `SyncPlayGroupUpdateMessage`. If the actual instance is not
+     * `SyncPlayGroupUpdateMessage`,
      * the ClassCastException will be thrown.
      *
-     * @return The actual instance of `SyncPlayGroupUpdateCommandMessage`
-     * @throws ClassCastException if the instance is not `SyncPlayGroupUpdateCommandMessage`
+     * @return The actual instance of `SyncPlayGroupUpdateMessage`
+     * @throws ClassCastException if the instance is not `SyncPlayGroupUpdateMessage`
      */
-    public SyncPlayGroupUpdateCommandMessage getSyncPlayGroupUpdateCommandMessage() throws ClassCastException {
-        return (SyncPlayGroupUpdateCommandMessage) super.getActualInstance();
+    public SyncPlayGroupUpdateMessage getSyncPlayGroupUpdateMessage() throws ClassCastException {
+        return (SyncPlayGroupUpdateMessage) super.getActualInstance();
     }
 
     /**
@@ -2007,42 +2008,42 @@ public class OutboundWebSocketMessage extends AbstractOpenApiSchema {
             }
             return joiner.toString();
         }
-        if (getActualInstance() instanceof SyncPlayGroupUpdateCommandMessage) {
-            if (getActualInstance() != null) {
-                joiner.add(((SyncPlayGroupUpdateCommandMessage) getActualInstance())
-                        .toUrlQueryString(prefix + "one_of_22" + suffix));
-            }
-            return joiner.toString();
-        }
         if (getActualInstance() instanceof TimerCancelledMessage) {
             if (getActualInstance() != null) {
                 joiner.add(
-                        ((TimerCancelledMessage) getActualInstance()).toUrlQueryString(prefix + "one_of_23" + suffix));
+                        ((TimerCancelledMessage) getActualInstance()).toUrlQueryString(prefix + "one_of_22" + suffix));
             }
             return joiner.toString();
         }
         if (getActualInstance() instanceof TimerCreatedMessage) {
             if (getActualInstance() != null) {
-                joiner.add(((TimerCreatedMessage) getActualInstance()).toUrlQueryString(prefix + "one_of_24" + suffix));
+                joiner.add(((TimerCreatedMessage) getActualInstance()).toUrlQueryString(prefix + "one_of_23" + suffix));
             }
             return joiner.toString();
         }
         if (getActualInstance() instanceof UserDataChangedMessage) {
             if (getActualInstance() != null) {
                 joiner.add(
-                        ((UserDataChangedMessage) getActualInstance()).toUrlQueryString(prefix + "one_of_25" + suffix));
+                        ((UserDataChangedMessage) getActualInstance()).toUrlQueryString(prefix + "one_of_24" + suffix));
             }
             return joiner.toString();
         }
         if (getActualInstance() instanceof UserDeletedMessage) {
             if (getActualInstance() != null) {
-                joiner.add(((UserDeletedMessage) getActualInstance()).toUrlQueryString(prefix + "one_of_26" + suffix));
+                joiner.add(((UserDeletedMessage) getActualInstance()).toUrlQueryString(prefix + "one_of_25" + suffix));
             }
             return joiner.toString();
         }
         if (getActualInstance() instanceof UserUpdatedMessage) {
             if (getActualInstance() != null) {
-                joiner.add(((UserUpdatedMessage) getActualInstance()).toUrlQueryString(prefix + "one_of_27" + suffix));
+                joiner.add(((UserUpdatedMessage) getActualInstance()).toUrlQueryString(prefix + "one_of_26" + suffix));
+            }
+            return joiner.toString();
+        }
+        if (getActualInstance() instanceof SyncPlayGroupUpdateMessage) {
+            if (getActualInstance() != null) {
+                joiner.add(((SyncPlayGroupUpdateMessage) getActualInstance())
+                        .toUrlQueryString(prefix + "one_of_27" + suffix));
             }
             return joiner.toString();
         }

@@ -13,6 +13,7 @@
 
 package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
+import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
 
@@ -46,13 +47,13 @@ public class QuickConnectDto {
      * @return secret
      */
     @org.eclipse.jdt.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_SECRET)
+    @JsonProperty(value = JSON_PROPERTY_SECRET, required = true)
     @JsonInclude(value = JsonInclude.Include.ALWAYS)
     public String getSecret() {
         return secret;
     }
 
-    @JsonProperty(JSON_PROPERTY_SECRET)
+    @JsonProperty(value = JSON_PROPERTY_SECRET, required = true)
     @JsonInclude(value = JsonInclude.Include.ALWAYS)
     public void setSecret(@org.eclipse.jdt.annotation.Nullable String secret) {
         this.secret = secret;
@@ -132,7 +133,7 @@ public class QuickConnectDto {
 
         // add `Secret` to the URL query string
         if (getSecret() != null) {
-            joiner.add(String.format("%sSecret%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sSecret%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getSecret()))));
         }
 

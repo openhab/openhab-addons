@@ -53,10 +53,10 @@ fi
 LATEST=$(curl -sL https://repo.jellyfin.org/releases/openapi/jellyfin-openapi-stable.json | jq -r .info.version)
 echo -e "ℹ️  - Latest stable Jellyfin API - Version: \033[1m${LATEST}\033[0m"
 
-VERSIONS=("10.8.13" "10.10.7")
-VERSION_ALIAS=("legacy" "current")
-# VERSIONS=("10.10.7")
-# VERSION_ALIAS=("current")
+# VERSIONS=("10.8.13" "10.10.7")
+# VERSION_ALIAS=("legacy" "current")
+VERSIONS=("10.11.3")
+VERSION_ALIAS=("current")
 
 DOCKER_VOLUME_WORK="/work"
 
@@ -105,6 +105,24 @@ for i in "${VERSIONS[@]}"; do
         yq -oy ${FILENAME_JSON} >${FILENAME_YAML}
     fi
 
+    # Check if the OpenAPI spec has the malformed TranscodeReasons schema
+    # Some Jellyfin API versions (e.g., 10.11.3) incorrectly define TranscodeReasons with
+    # both an inline enum AND type:array with $ref, which confuses the OpenAPI generator
+    # causing it to generate broken code referencing a non-existent TranscodeReasonsEnum type.
+    # Older versions (10.8.13, 10.10.7) don't have this problem and will skip this fix.
+    FILENAME_YAML_INPUT="${FILENAME_YAML}"
+    FILENAME_YAML_FIXED="${FILENAME_YAML}.fixed"
+    
+    HAS_ENUM=$(yq '.components.schemas.TranscodingInfo.properties.TranscodeReasons | has("enum")' ${FILENAME_YAML})
+    HAS_ARRAY_TYPE=$(yq '.components.schemas.TranscodingInfo.properties.TranscodeReasons.type == "array"' ${FILENAME_YAML})
+    
+    if [ "$HAS_ENUM" = "true" ] && [ "$HAS_ARRAY_TYPE" = "true" ]; then
+        echo "⚙️: Fixing malformed TranscodeReasons schema (has both enum and type:array)"
+        # Remove the inline enum definition, keeping only the array type with $ref
+        yq 'del(.components.schemas.TranscodingInfo.properties.TranscodeReasons.enum)' ${FILENAME_YAML} > ${FILENAME_YAML_FIXED}
+        FILENAME_YAML_INPUT="${FILENAME_YAML_FIXED}"
+    fi
+    
     docker run --rm --interactive \
         --user $(id -u):$(id -g) \
         --volume ${ROOT}:${DOCKER_VOLUME_WORK} \
@@ -116,8 +134,13 @@ for i in "${VERSIONS[@]}"; do
         --api-package ${PACKAGE_API} \
         --model-package ${PACKAGE_MODEL} \
         --config ${OPENAPI_JAVA_CONFIG} \
-        --input-spec ${OPENAPI_SPECIFICATION_DIR}/yaml/jellyfin-openapi-${i}.yaml -o ${OUTPUT} \
+        --input-spec ${OPENAPI_SPECIFICATION_DIR}/yaml/$(basename ${FILENAME_YAML_INPUT}) -o ${OUTPUT} \
         >/dev/null
+    
+    # Clean up the temporary fixed file if it was created
+    if [ -f "${FILENAME_YAML_FIXED}" ]; then
+        rm ${FILENAME_YAML_FIXED}
+    fi
 done
 
 cd ${ROOT}

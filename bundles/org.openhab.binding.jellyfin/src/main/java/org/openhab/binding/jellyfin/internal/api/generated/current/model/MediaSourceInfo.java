@@ -16,6 +16,7 @@ package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.StringJoiner;
@@ -248,13 +249,13 @@ public class MediaSourceInfo {
      * @return protocol
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_PROTOCOL)
+    @JsonProperty(value = JSON_PROPERTY_PROTOCOL, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public MediaProtocol getProtocol() {
         return protocol;
     }
 
-    @JsonProperty(JSON_PROPERTY_PROTOCOL)
+    @JsonProperty(value = JSON_PROPERTY_PROTOCOL, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setProtocol(@org.eclipse.jdt.annotation.NonNull MediaProtocol protocol) {
         this.protocol = protocol;
@@ -271,13 +272,13 @@ public class MediaSourceInfo {
      * @return id
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ID)
+    @JsonProperty(value = JSON_PROPERTY_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getId() {
         return id;
     }
 
-    @JsonProperty(JSON_PROPERTY_ID)
+    @JsonProperty(value = JSON_PROPERTY_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setId(@org.eclipse.jdt.annotation.NonNull String id) {
         this.id = id;
@@ -294,13 +295,13 @@ public class MediaSourceInfo {
      * @return path
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_PATH)
+    @JsonProperty(value = JSON_PROPERTY_PATH, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getPath() {
         return path;
     }
 
-    @JsonProperty(JSON_PROPERTY_PATH)
+    @JsonProperty(value = JSON_PROPERTY_PATH, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setPath(@org.eclipse.jdt.annotation.NonNull String path) {
         this.path = path;
@@ -317,13 +318,13 @@ public class MediaSourceInfo {
      * @return encoderPath
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ENCODER_PATH)
+    @JsonProperty(value = JSON_PROPERTY_ENCODER_PATH, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getEncoderPath() {
         return encoderPath;
     }
 
-    @JsonProperty(JSON_PROPERTY_ENCODER_PATH)
+    @JsonProperty(value = JSON_PROPERTY_ENCODER_PATH, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setEncoderPath(@org.eclipse.jdt.annotation.NonNull String encoderPath) {
         this.encoderPath = encoderPath;
@@ -340,13 +341,13 @@ public class MediaSourceInfo {
      * @return encoderProtocol
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ENCODER_PROTOCOL)
+    @JsonProperty(value = JSON_PROPERTY_ENCODER_PROTOCOL, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public MediaProtocol getEncoderProtocol() {
         return encoderProtocol;
     }
 
-    @JsonProperty(JSON_PROPERTY_ENCODER_PROTOCOL)
+    @JsonProperty(value = JSON_PROPERTY_ENCODER_PROTOCOL, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setEncoderProtocol(@org.eclipse.jdt.annotation.NonNull MediaProtocol encoderProtocol) {
         this.encoderProtocol = encoderProtocol;
@@ -363,13 +364,13 @@ public class MediaSourceInfo {
      * @return type
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_TYPE)
+    @JsonProperty(value = JSON_PROPERTY_TYPE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public MediaSourceType getType() {
         return type;
     }
 
-    @JsonProperty(JSON_PROPERTY_TYPE)
+    @JsonProperty(value = JSON_PROPERTY_TYPE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setType(@org.eclipse.jdt.annotation.NonNull MediaSourceType type) {
         this.type = type;
@@ -386,13 +387,13 @@ public class MediaSourceInfo {
      * @return container
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_CONTAINER)
+    @JsonProperty(value = JSON_PROPERTY_CONTAINER, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getContainer() {
         return container;
     }
 
-    @JsonProperty(JSON_PROPERTY_CONTAINER)
+    @JsonProperty(value = JSON_PROPERTY_CONTAINER, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setContainer(@org.eclipse.jdt.annotation.NonNull String container) {
         this.container = container;
@@ -409,13 +410,13 @@ public class MediaSourceInfo {
      * @return size
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_SIZE)
+    @JsonProperty(value = JSON_PROPERTY_SIZE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Long getSize() {
         return size;
     }
 
-    @JsonProperty(JSON_PROPERTY_SIZE)
+    @JsonProperty(value = JSON_PROPERTY_SIZE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setSize(@org.eclipse.jdt.annotation.NonNull Long size) {
         this.size = size;
@@ -432,13 +433,13 @@ public class MediaSourceInfo {
      * @return name
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_NAME)
+    @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getName() {
         return name;
     }
 
-    @JsonProperty(JSON_PROPERTY_NAME)
+    @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setName(@org.eclipse.jdt.annotation.NonNull String name) {
         this.name = name;
@@ -455,13 +456,13 @@ public class MediaSourceInfo {
      * @return isRemote
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_IS_REMOTE)
+    @JsonProperty(value = JSON_PROPERTY_IS_REMOTE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getIsRemote() {
         return isRemote;
     }
 
-    @JsonProperty(JSON_PROPERTY_IS_REMOTE)
+    @JsonProperty(value = JSON_PROPERTY_IS_REMOTE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setIsRemote(@org.eclipse.jdt.annotation.NonNull Boolean isRemote) {
         this.isRemote = isRemote;
@@ -478,13 +479,13 @@ public class MediaSourceInfo {
      * @return etag
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ETAG)
+    @JsonProperty(value = JSON_PROPERTY_ETAG, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getEtag() {
         return etag;
     }
 
-    @JsonProperty(JSON_PROPERTY_ETAG)
+    @JsonProperty(value = JSON_PROPERTY_ETAG, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setEtag(@org.eclipse.jdt.annotation.NonNull String etag) {
         this.etag = etag;
@@ -501,13 +502,13 @@ public class MediaSourceInfo {
      * @return runTimeTicks
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_RUN_TIME_TICKS)
+    @JsonProperty(value = JSON_PROPERTY_RUN_TIME_TICKS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Long getRunTimeTicks() {
         return runTimeTicks;
     }
 
-    @JsonProperty(JSON_PROPERTY_RUN_TIME_TICKS)
+    @JsonProperty(value = JSON_PROPERTY_RUN_TIME_TICKS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setRunTimeTicks(@org.eclipse.jdt.annotation.NonNull Long runTimeTicks) {
         this.runTimeTicks = runTimeTicks;
@@ -524,13 +525,13 @@ public class MediaSourceInfo {
      * @return readAtNativeFramerate
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_READ_AT_NATIVE_FRAMERATE)
+    @JsonProperty(value = JSON_PROPERTY_READ_AT_NATIVE_FRAMERATE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getReadAtNativeFramerate() {
         return readAtNativeFramerate;
     }
 
-    @JsonProperty(JSON_PROPERTY_READ_AT_NATIVE_FRAMERATE)
+    @JsonProperty(value = JSON_PROPERTY_READ_AT_NATIVE_FRAMERATE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setReadAtNativeFramerate(@org.eclipse.jdt.annotation.NonNull Boolean readAtNativeFramerate) {
         this.readAtNativeFramerate = readAtNativeFramerate;
@@ -547,13 +548,13 @@ public class MediaSourceInfo {
      * @return ignoreDts
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_IGNORE_DTS)
+    @JsonProperty(value = JSON_PROPERTY_IGNORE_DTS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getIgnoreDts() {
         return ignoreDts;
     }
 
-    @JsonProperty(JSON_PROPERTY_IGNORE_DTS)
+    @JsonProperty(value = JSON_PROPERTY_IGNORE_DTS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setIgnoreDts(@org.eclipse.jdt.annotation.NonNull Boolean ignoreDts) {
         this.ignoreDts = ignoreDts;
@@ -570,13 +571,13 @@ public class MediaSourceInfo {
      * @return ignoreIndex
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_IGNORE_INDEX)
+    @JsonProperty(value = JSON_PROPERTY_IGNORE_INDEX, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getIgnoreIndex() {
         return ignoreIndex;
     }
 
-    @JsonProperty(JSON_PROPERTY_IGNORE_INDEX)
+    @JsonProperty(value = JSON_PROPERTY_IGNORE_INDEX, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setIgnoreIndex(@org.eclipse.jdt.annotation.NonNull Boolean ignoreIndex) {
         this.ignoreIndex = ignoreIndex;
@@ -593,13 +594,13 @@ public class MediaSourceInfo {
      * @return genPtsInput
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_GEN_PTS_INPUT)
+    @JsonProperty(value = JSON_PROPERTY_GEN_PTS_INPUT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getGenPtsInput() {
         return genPtsInput;
     }
 
-    @JsonProperty(JSON_PROPERTY_GEN_PTS_INPUT)
+    @JsonProperty(value = JSON_PROPERTY_GEN_PTS_INPUT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setGenPtsInput(@org.eclipse.jdt.annotation.NonNull Boolean genPtsInput) {
         this.genPtsInput = genPtsInput;
@@ -616,13 +617,13 @@ public class MediaSourceInfo {
      * @return supportsTranscoding
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_SUPPORTS_TRANSCODING)
+    @JsonProperty(value = JSON_PROPERTY_SUPPORTS_TRANSCODING, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getSupportsTranscoding() {
         return supportsTranscoding;
     }
 
-    @JsonProperty(JSON_PROPERTY_SUPPORTS_TRANSCODING)
+    @JsonProperty(value = JSON_PROPERTY_SUPPORTS_TRANSCODING, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setSupportsTranscoding(@org.eclipse.jdt.annotation.NonNull Boolean supportsTranscoding) {
         this.supportsTranscoding = supportsTranscoding;
@@ -639,13 +640,13 @@ public class MediaSourceInfo {
      * @return supportsDirectStream
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_SUPPORTS_DIRECT_STREAM)
+    @JsonProperty(value = JSON_PROPERTY_SUPPORTS_DIRECT_STREAM, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getSupportsDirectStream() {
         return supportsDirectStream;
     }
 
-    @JsonProperty(JSON_PROPERTY_SUPPORTS_DIRECT_STREAM)
+    @JsonProperty(value = JSON_PROPERTY_SUPPORTS_DIRECT_STREAM, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setSupportsDirectStream(@org.eclipse.jdt.annotation.NonNull Boolean supportsDirectStream) {
         this.supportsDirectStream = supportsDirectStream;
@@ -662,13 +663,13 @@ public class MediaSourceInfo {
      * @return supportsDirectPlay
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_SUPPORTS_DIRECT_PLAY)
+    @JsonProperty(value = JSON_PROPERTY_SUPPORTS_DIRECT_PLAY, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getSupportsDirectPlay() {
         return supportsDirectPlay;
     }
 
-    @JsonProperty(JSON_PROPERTY_SUPPORTS_DIRECT_PLAY)
+    @JsonProperty(value = JSON_PROPERTY_SUPPORTS_DIRECT_PLAY, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setSupportsDirectPlay(@org.eclipse.jdt.annotation.NonNull Boolean supportsDirectPlay) {
         this.supportsDirectPlay = supportsDirectPlay;
@@ -685,13 +686,13 @@ public class MediaSourceInfo {
      * @return isInfiniteStream
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_IS_INFINITE_STREAM)
+    @JsonProperty(value = JSON_PROPERTY_IS_INFINITE_STREAM, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getIsInfiniteStream() {
         return isInfiniteStream;
     }
 
-    @JsonProperty(JSON_PROPERTY_IS_INFINITE_STREAM)
+    @JsonProperty(value = JSON_PROPERTY_IS_INFINITE_STREAM, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setIsInfiniteStream(@org.eclipse.jdt.annotation.NonNull Boolean isInfiniteStream) {
         this.isInfiniteStream = isInfiniteStream;
@@ -709,13 +710,13 @@ public class MediaSourceInfo {
      * @return useMostCompatibleTranscodingProfile
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_USE_MOST_COMPATIBLE_TRANSCODING_PROFILE)
+    @JsonProperty(value = JSON_PROPERTY_USE_MOST_COMPATIBLE_TRANSCODING_PROFILE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getUseMostCompatibleTranscodingProfile() {
         return useMostCompatibleTranscodingProfile;
     }
 
-    @JsonProperty(JSON_PROPERTY_USE_MOST_COMPATIBLE_TRANSCODING_PROFILE)
+    @JsonProperty(value = JSON_PROPERTY_USE_MOST_COMPATIBLE_TRANSCODING_PROFILE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setUseMostCompatibleTranscodingProfile(
             @org.eclipse.jdt.annotation.NonNull Boolean useMostCompatibleTranscodingProfile) {
@@ -733,13 +734,13 @@ public class MediaSourceInfo {
      * @return requiresOpening
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_REQUIRES_OPENING)
+    @JsonProperty(value = JSON_PROPERTY_REQUIRES_OPENING, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getRequiresOpening() {
         return requiresOpening;
     }
 
-    @JsonProperty(JSON_PROPERTY_REQUIRES_OPENING)
+    @JsonProperty(value = JSON_PROPERTY_REQUIRES_OPENING, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setRequiresOpening(@org.eclipse.jdt.annotation.NonNull Boolean requiresOpening) {
         this.requiresOpening = requiresOpening;
@@ -756,13 +757,13 @@ public class MediaSourceInfo {
      * @return openToken
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_OPEN_TOKEN)
+    @JsonProperty(value = JSON_PROPERTY_OPEN_TOKEN, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getOpenToken() {
         return openToken;
     }
 
-    @JsonProperty(JSON_PROPERTY_OPEN_TOKEN)
+    @JsonProperty(value = JSON_PROPERTY_OPEN_TOKEN, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setOpenToken(@org.eclipse.jdt.annotation.NonNull String openToken) {
         this.openToken = openToken;
@@ -779,13 +780,13 @@ public class MediaSourceInfo {
      * @return requiresClosing
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_REQUIRES_CLOSING)
+    @JsonProperty(value = JSON_PROPERTY_REQUIRES_CLOSING, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getRequiresClosing() {
         return requiresClosing;
     }
 
-    @JsonProperty(JSON_PROPERTY_REQUIRES_CLOSING)
+    @JsonProperty(value = JSON_PROPERTY_REQUIRES_CLOSING, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setRequiresClosing(@org.eclipse.jdt.annotation.NonNull Boolean requiresClosing) {
         this.requiresClosing = requiresClosing;
@@ -802,13 +803,13 @@ public class MediaSourceInfo {
      * @return liveStreamId
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_LIVE_STREAM_ID)
+    @JsonProperty(value = JSON_PROPERTY_LIVE_STREAM_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getLiveStreamId() {
         return liveStreamId;
     }
 
-    @JsonProperty(JSON_PROPERTY_LIVE_STREAM_ID)
+    @JsonProperty(value = JSON_PROPERTY_LIVE_STREAM_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setLiveStreamId(@org.eclipse.jdt.annotation.NonNull String liveStreamId) {
         this.liveStreamId = liveStreamId;
@@ -825,13 +826,13 @@ public class MediaSourceInfo {
      * @return bufferMs
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_BUFFER_MS)
+    @JsonProperty(value = JSON_PROPERTY_BUFFER_MS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getBufferMs() {
         return bufferMs;
     }
 
-    @JsonProperty(JSON_PROPERTY_BUFFER_MS)
+    @JsonProperty(value = JSON_PROPERTY_BUFFER_MS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setBufferMs(@org.eclipse.jdt.annotation.NonNull Integer bufferMs) {
         this.bufferMs = bufferMs;
@@ -848,13 +849,13 @@ public class MediaSourceInfo {
      * @return requiresLooping
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_REQUIRES_LOOPING)
+    @JsonProperty(value = JSON_PROPERTY_REQUIRES_LOOPING, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getRequiresLooping() {
         return requiresLooping;
     }
 
-    @JsonProperty(JSON_PROPERTY_REQUIRES_LOOPING)
+    @JsonProperty(value = JSON_PROPERTY_REQUIRES_LOOPING, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setRequiresLooping(@org.eclipse.jdt.annotation.NonNull Boolean requiresLooping) {
         this.requiresLooping = requiresLooping;
@@ -871,13 +872,13 @@ public class MediaSourceInfo {
      * @return supportsProbing
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_SUPPORTS_PROBING)
+    @JsonProperty(value = JSON_PROPERTY_SUPPORTS_PROBING, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getSupportsProbing() {
         return supportsProbing;
     }
 
-    @JsonProperty(JSON_PROPERTY_SUPPORTS_PROBING)
+    @JsonProperty(value = JSON_PROPERTY_SUPPORTS_PROBING, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setSupportsProbing(@org.eclipse.jdt.annotation.NonNull Boolean supportsProbing) {
         this.supportsProbing = supportsProbing;
@@ -894,13 +895,13 @@ public class MediaSourceInfo {
      * @return videoType
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_VIDEO_TYPE)
+    @JsonProperty(value = JSON_PROPERTY_VIDEO_TYPE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public VideoType getVideoType() {
         return videoType;
     }
 
-    @JsonProperty(JSON_PROPERTY_VIDEO_TYPE)
+    @JsonProperty(value = JSON_PROPERTY_VIDEO_TYPE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setVideoType(@org.eclipse.jdt.annotation.NonNull VideoType videoType) {
         this.videoType = videoType;
@@ -917,13 +918,13 @@ public class MediaSourceInfo {
      * @return isoType
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ISO_TYPE)
+    @JsonProperty(value = JSON_PROPERTY_ISO_TYPE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public IsoType getIsoType() {
         return isoType;
     }
 
-    @JsonProperty(JSON_PROPERTY_ISO_TYPE)
+    @JsonProperty(value = JSON_PROPERTY_ISO_TYPE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setIsoType(@org.eclipse.jdt.annotation.NonNull IsoType isoType) {
         this.isoType = isoType;
@@ -940,13 +941,13 @@ public class MediaSourceInfo {
      * @return video3DFormat
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_VIDEO3_D_FORMAT)
+    @JsonProperty(value = JSON_PROPERTY_VIDEO3_D_FORMAT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Video3DFormat getVideo3DFormat() {
         return video3DFormat;
     }
 
-    @JsonProperty(JSON_PROPERTY_VIDEO3_D_FORMAT)
+    @JsonProperty(value = JSON_PROPERTY_VIDEO3_D_FORMAT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setVideo3DFormat(@org.eclipse.jdt.annotation.NonNull Video3DFormat video3DFormat) {
         this.video3DFormat = video3DFormat;
@@ -971,13 +972,13 @@ public class MediaSourceInfo {
      * @return mediaStreams
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_MEDIA_STREAMS)
+    @JsonProperty(value = JSON_PROPERTY_MEDIA_STREAMS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<MediaStream> getMediaStreams() {
         return mediaStreams;
     }
 
-    @JsonProperty(JSON_PROPERTY_MEDIA_STREAMS)
+    @JsonProperty(value = JSON_PROPERTY_MEDIA_STREAMS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setMediaStreams(@org.eclipse.jdt.annotation.NonNull List<MediaStream> mediaStreams) {
         this.mediaStreams = mediaStreams;
@@ -1003,13 +1004,13 @@ public class MediaSourceInfo {
      * @return mediaAttachments
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_MEDIA_ATTACHMENTS)
+    @JsonProperty(value = JSON_PROPERTY_MEDIA_ATTACHMENTS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<MediaAttachment> getMediaAttachments() {
         return mediaAttachments;
     }
 
-    @JsonProperty(JSON_PROPERTY_MEDIA_ATTACHMENTS)
+    @JsonProperty(value = JSON_PROPERTY_MEDIA_ATTACHMENTS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setMediaAttachments(@org.eclipse.jdt.annotation.NonNull List<MediaAttachment> mediaAttachments) {
         this.mediaAttachments = mediaAttachments;
@@ -1034,13 +1035,13 @@ public class MediaSourceInfo {
      * @return formats
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_FORMATS)
+    @JsonProperty(value = JSON_PROPERTY_FORMATS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<String> getFormats() {
         return formats;
     }
 
-    @JsonProperty(JSON_PROPERTY_FORMATS)
+    @JsonProperty(value = JSON_PROPERTY_FORMATS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setFormats(@org.eclipse.jdt.annotation.NonNull List<String> formats) {
         this.formats = formats;
@@ -1057,13 +1058,13 @@ public class MediaSourceInfo {
      * @return bitrate
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_BITRATE)
+    @JsonProperty(value = JSON_PROPERTY_BITRATE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getBitrate() {
         return bitrate;
     }
 
-    @JsonProperty(JSON_PROPERTY_BITRATE)
+    @JsonProperty(value = JSON_PROPERTY_BITRATE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setBitrate(@org.eclipse.jdt.annotation.NonNull Integer bitrate) {
         this.bitrate = bitrate;
@@ -1081,13 +1082,13 @@ public class MediaSourceInfo {
      * @return fallbackMaxStreamingBitrate
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_FALLBACK_MAX_STREAMING_BITRATE)
+    @JsonProperty(value = JSON_PROPERTY_FALLBACK_MAX_STREAMING_BITRATE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getFallbackMaxStreamingBitrate() {
         return fallbackMaxStreamingBitrate;
     }
 
-    @JsonProperty(JSON_PROPERTY_FALLBACK_MAX_STREAMING_BITRATE)
+    @JsonProperty(value = JSON_PROPERTY_FALLBACK_MAX_STREAMING_BITRATE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setFallbackMaxStreamingBitrate(
             @org.eclipse.jdt.annotation.NonNull Integer fallbackMaxStreamingBitrate) {
@@ -1105,13 +1106,13 @@ public class MediaSourceInfo {
      * @return timestamp
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_TIMESTAMP)
+    @JsonProperty(value = JSON_PROPERTY_TIMESTAMP, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public TransportStreamTimestamp getTimestamp() {
         return timestamp;
     }
 
-    @JsonProperty(JSON_PROPERTY_TIMESTAMP)
+    @JsonProperty(value = JSON_PROPERTY_TIMESTAMP, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setTimestamp(@org.eclipse.jdt.annotation.NonNull TransportStreamTimestamp timestamp) {
         this.timestamp = timestamp;
@@ -1137,13 +1138,13 @@ public class MediaSourceInfo {
      * @return requiredHttpHeaders
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_REQUIRED_HTTP_HEADERS)
+    @JsonProperty(value = JSON_PROPERTY_REQUIRED_HTTP_HEADERS, required = false)
     @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
     public Map<String, String> getRequiredHttpHeaders() {
         return requiredHttpHeaders;
     }
 
-    @JsonProperty(JSON_PROPERTY_REQUIRED_HTTP_HEADERS)
+    @JsonProperty(value = JSON_PROPERTY_REQUIRED_HTTP_HEADERS, required = false)
     @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
     public void setRequiredHttpHeaders(@org.eclipse.jdt.annotation.NonNull Map<String, String> requiredHttpHeaders) {
         this.requiredHttpHeaders = requiredHttpHeaders;
@@ -1160,13 +1161,13 @@ public class MediaSourceInfo {
      * @return transcodingUrl
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_TRANSCODING_URL)
+    @JsonProperty(value = JSON_PROPERTY_TRANSCODING_URL, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getTranscodingUrl() {
         return transcodingUrl;
     }
 
-    @JsonProperty(JSON_PROPERTY_TRANSCODING_URL)
+    @JsonProperty(value = JSON_PROPERTY_TRANSCODING_URL, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setTranscodingUrl(@org.eclipse.jdt.annotation.NonNull String transcodingUrl) {
         this.transcodingUrl = transcodingUrl;
@@ -1184,13 +1185,13 @@ public class MediaSourceInfo {
      * @return transcodingSubProtocol
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_TRANSCODING_SUB_PROTOCOL)
+    @JsonProperty(value = JSON_PROPERTY_TRANSCODING_SUB_PROTOCOL, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public MediaStreamProtocol getTranscodingSubProtocol() {
         return transcodingSubProtocol;
     }
 
-    @JsonProperty(JSON_PROPERTY_TRANSCODING_SUB_PROTOCOL)
+    @JsonProperty(value = JSON_PROPERTY_TRANSCODING_SUB_PROTOCOL, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setTranscodingSubProtocol(
             @org.eclipse.jdt.annotation.NonNull MediaStreamProtocol transcodingSubProtocol) {
@@ -1208,13 +1209,13 @@ public class MediaSourceInfo {
      * @return transcodingContainer
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_TRANSCODING_CONTAINER)
+    @JsonProperty(value = JSON_PROPERTY_TRANSCODING_CONTAINER, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getTranscodingContainer() {
         return transcodingContainer;
     }
 
-    @JsonProperty(JSON_PROPERTY_TRANSCODING_CONTAINER)
+    @JsonProperty(value = JSON_PROPERTY_TRANSCODING_CONTAINER, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setTranscodingContainer(@org.eclipse.jdt.annotation.NonNull String transcodingContainer) {
         this.transcodingContainer = transcodingContainer;
@@ -1231,13 +1232,13 @@ public class MediaSourceInfo {
      * @return analyzeDurationMs
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ANALYZE_DURATION_MS)
+    @JsonProperty(value = JSON_PROPERTY_ANALYZE_DURATION_MS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getAnalyzeDurationMs() {
         return analyzeDurationMs;
     }
 
-    @JsonProperty(JSON_PROPERTY_ANALYZE_DURATION_MS)
+    @JsonProperty(value = JSON_PROPERTY_ANALYZE_DURATION_MS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setAnalyzeDurationMs(@org.eclipse.jdt.annotation.NonNull Integer analyzeDurationMs) {
         this.analyzeDurationMs = analyzeDurationMs;
@@ -1255,13 +1256,13 @@ public class MediaSourceInfo {
      * @return defaultAudioStreamIndex
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_DEFAULT_AUDIO_STREAM_INDEX)
+    @JsonProperty(value = JSON_PROPERTY_DEFAULT_AUDIO_STREAM_INDEX, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getDefaultAudioStreamIndex() {
         return defaultAudioStreamIndex;
     }
 
-    @JsonProperty(JSON_PROPERTY_DEFAULT_AUDIO_STREAM_INDEX)
+    @JsonProperty(value = JSON_PROPERTY_DEFAULT_AUDIO_STREAM_INDEX, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setDefaultAudioStreamIndex(@org.eclipse.jdt.annotation.NonNull Integer defaultAudioStreamIndex) {
         this.defaultAudioStreamIndex = defaultAudioStreamIndex;
@@ -1279,13 +1280,13 @@ public class MediaSourceInfo {
      * @return defaultSubtitleStreamIndex
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_DEFAULT_SUBTITLE_STREAM_INDEX)
+    @JsonProperty(value = JSON_PROPERTY_DEFAULT_SUBTITLE_STREAM_INDEX, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getDefaultSubtitleStreamIndex() {
         return defaultSubtitleStreamIndex;
     }
 
-    @JsonProperty(JSON_PROPERTY_DEFAULT_SUBTITLE_STREAM_INDEX)
+    @JsonProperty(value = JSON_PROPERTY_DEFAULT_SUBTITLE_STREAM_INDEX, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setDefaultSubtitleStreamIndex(@org.eclipse.jdt.annotation.NonNull Integer defaultSubtitleStreamIndex) {
         this.defaultSubtitleStreamIndex = defaultSubtitleStreamIndex;
@@ -1302,13 +1303,13 @@ public class MediaSourceInfo {
      * @return hasSegments
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_HAS_SEGMENTS)
+    @JsonProperty(value = JSON_PROPERTY_HAS_SEGMENTS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getHasSegments() {
         return hasSegments;
     }
 
-    @JsonProperty(JSON_PROPERTY_HAS_SEGMENTS)
+    @JsonProperty(value = JSON_PROPERTY_HAS_SEGMENTS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setHasSegments(@org.eclipse.jdt.annotation.NonNull Boolean hasSegments) {
         this.hasSegments = hasSegments;
@@ -1484,187 +1485,187 @@ public class MediaSourceInfo {
 
         // add `Protocol` to the URL query string
         if (getProtocol() != null) {
-            joiner.add(String.format("%sProtocol%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sProtocol%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getProtocol()))));
         }
 
         // add `Id` to the URL query string
         if (getId() != null) {
-            joiner.add(
-                    String.format("%sId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
+            joiner.add(String.format(Locale.ROOT, "%sId%s=%s", prefix, suffix,
+                    ApiClient.urlEncode(ApiClient.valueToString(getId()))));
         }
 
         // add `Path` to the URL query string
         if (getPath() != null) {
-            joiner.add(String.format("%sPath%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sPath%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getPath()))));
         }
 
         // add `EncoderPath` to the URL query string
         if (getEncoderPath() != null) {
-            joiner.add(String.format("%sEncoderPath%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sEncoderPath%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getEncoderPath()))));
         }
 
         // add `EncoderProtocol` to the URL query string
         if (getEncoderProtocol() != null) {
-            joiner.add(String.format("%sEncoderProtocol%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sEncoderProtocol%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getEncoderProtocol()))));
         }
 
         // add `Type` to the URL query string
         if (getType() != null) {
-            joiner.add(String.format("%sType%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sType%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getType()))));
         }
 
         // add `Container` to the URL query string
         if (getContainer() != null) {
-            joiner.add(String.format("%sContainer%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sContainer%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getContainer()))));
         }
 
         // add `Size` to the URL query string
         if (getSize() != null) {
-            joiner.add(String.format("%sSize%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sSize%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getSize()))));
         }
 
         // add `Name` to the URL query string
         if (getName() != null) {
-            joiner.add(String.format("%sName%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sName%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getName()))));
         }
 
         // add `IsRemote` to the URL query string
         if (getIsRemote() != null) {
-            joiner.add(String.format("%sIsRemote%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sIsRemote%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getIsRemote()))));
         }
 
         // add `ETag` to the URL query string
         if (getEtag() != null) {
-            joiner.add(String.format("%sETag%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sETag%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getEtag()))));
         }
 
         // add `RunTimeTicks` to the URL query string
         if (getRunTimeTicks() != null) {
-            joiner.add(String.format("%sRunTimeTicks%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sRunTimeTicks%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getRunTimeTicks()))));
         }
 
         // add `ReadAtNativeFramerate` to the URL query string
         if (getReadAtNativeFramerate() != null) {
-            joiner.add(String.format("%sReadAtNativeFramerate%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sReadAtNativeFramerate%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getReadAtNativeFramerate()))));
         }
 
         // add `IgnoreDts` to the URL query string
         if (getIgnoreDts() != null) {
-            joiner.add(String.format("%sIgnoreDts%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sIgnoreDts%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getIgnoreDts()))));
         }
 
         // add `IgnoreIndex` to the URL query string
         if (getIgnoreIndex() != null) {
-            joiner.add(String.format("%sIgnoreIndex%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sIgnoreIndex%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getIgnoreIndex()))));
         }
 
         // add `GenPtsInput` to the URL query string
         if (getGenPtsInput() != null) {
-            joiner.add(String.format("%sGenPtsInput%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sGenPtsInput%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getGenPtsInput()))));
         }
 
         // add `SupportsTranscoding` to the URL query string
         if (getSupportsTranscoding() != null) {
-            joiner.add(String.format("%sSupportsTranscoding%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sSupportsTranscoding%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getSupportsTranscoding()))));
         }
 
         // add `SupportsDirectStream` to the URL query string
         if (getSupportsDirectStream() != null) {
-            joiner.add(String.format("%sSupportsDirectStream%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sSupportsDirectStream%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getSupportsDirectStream()))));
         }
 
         // add `SupportsDirectPlay` to the URL query string
         if (getSupportsDirectPlay() != null) {
-            joiner.add(String.format("%sSupportsDirectPlay%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sSupportsDirectPlay%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getSupportsDirectPlay()))));
         }
 
         // add `IsInfiniteStream` to the URL query string
         if (getIsInfiniteStream() != null) {
-            joiner.add(String.format("%sIsInfiniteStream%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sIsInfiniteStream%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getIsInfiniteStream()))));
         }
 
         // add `UseMostCompatibleTranscodingProfile` to the URL query string
         if (getUseMostCompatibleTranscodingProfile() != null) {
-            joiner.add(String.format("%sUseMostCompatibleTranscodingProfile%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sUseMostCompatibleTranscodingProfile%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getUseMostCompatibleTranscodingProfile()))));
         }
 
         // add `RequiresOpening` to the URL query string
         if (getRequiresOpening() != null) {
-            joiner.add(String.format("%sRequiresOpening%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sRequiresOpening%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getRequiresOpening()))));
         }
 
         // add `OpenToken` to the URL query string
         if (getOpenToken() != null) {
-            joiner.add(String.format("%sOpenToken%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sOpenToken%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getOpenToken()))));
         }
 
         // add `RequiresClosing` to the URL query string
         if (getRequiresClosing() != null) {
-            joiner.add(String.format("%sRequiresClosing%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sRequiresClosing%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getRequiresClosing()))));
         }
 
         // add `LiveStreamId` to the URL query string
         if (getLiveStreamId() != null) {
-            joiner.add(String.format("%sLiveStreamId%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sLiveStreamId%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getLiveStreamId()))));
         }
 
         // add `BufferMs` to the URL query string
         if (getBufferMs() != null) {
-            joiner.add(String.format("%sBufferMs%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sBufferMs%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getBufferMs()))));
         }
 
         // add `RequiresLooping` to the URL query string
         if (getRequiresLooping() != null) {
-            joiner.add(String.format("%sRequiresLooping%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sRequiresLooping%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getRequiresLooping()))));
         }
 
         // add `SupportsProbing` to the URL query string
         if (getSupportsProbing() != null) {
-            joiner.add(String.format("%sSupportsProbing%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sSupportsProbing%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getSupportsProbing()))));
         }
 
         // add `VideoType` to the URL query string
         if (getVideoType() != null) {
-            joiner.add(String.format("%sVideoType%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sVideoType%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getVideoType()))));
         }
 
         // add `IsoType` to the URL query string
         if (getIsoType() != null) {
-            joiner.add(String.format("%sIsoType%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sIsoType%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getIsoType()))));
         }
 
         // add `Video3DFormat` to the URL query string
         if (getVideo3DFormat() != null) {
-            joiner.add(String.format("%sVideo3DFormat%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sVideo3DFormat%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getVideo3DFormat()))));
         }
 
@@ -1672,9 +1673,9 @@ public class MediaSourceInfo {
         if (getMediaStreams() != null) {
             for (int i = 0; i < getMediaStreams().size(); i++) {
                 if (getMediaStreams().get(i) != null) {
-                    joiner.add(getMediaStreams().get(i).toUrlQueryString(String.format("%sMediaStreams%s%s", prefix,
-                            suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
+                    joiner.add(getMediaStreams().get(i).toUrlQueryString(
+                            String.format(Locale.ROOT, "%sMediaStreams%s%s", prefix, suffix, "".equals(suffix) ? ""
+                                    : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
                 }
             }
         }
@@ -1683,9 +1684,9 @@ public class MediaSourceInfo {
         if (getMediaAttachments() != null) {
             for (int i = 0; i < getMediaAttachments().size(); i++) {
                 if (getMediaAttachments().get(i) != null) {
-                    joiner.add(getMediaAttachments().get(i).toUrlQueryString(String.format("%sMediaAttachments%s%s",
-                            prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
+                    joiner.add(getMediaAttachments().get(i).toUrlQueryString(
+                            String.format(Locale.ROOT, "%sMediaAttachments%s%s", prefix, suffix, "".equals(suffix) ? ""
+                                    : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
                 }
             }
         }
@@ -1693,35 +1694,37 @@ public class MediaSourceInfo {
         // add `Formats` to the URL query string
         if (getFormats() != null) {
             for (int i = 0; i < getFormats().size(); i++) {
-                joiner.add(String.format("%sFormats%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+                joiner.add(String.format(Locale.ROOT, "%sFormats%s%s=%s", prefix, suffix,
+                        "".equals(suffix) ? ""
+                                : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
                         ApiClient.urlEncode(ApiClient.valueToString(getFormats().get(i)))));
             }
         }
 
         // add `Bitrate` to the URL query string
         if (getBitrate() != null) {
-            joiner.add(String.format("%sBitrate%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sBitrate%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getBitrate()))));
         }
 
         // add `FallbackMaxStreamingBitrate` to the URL query string
         if (getFallbackMaxStreamingBitrate() != null) {
-            joiner.add(String.format("%sFallbackMaxStreamingBitrate%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sFallbackMaxStreamingBitrate%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getFallbackMaxStreamingBitrate()))));
         }
 
         // add `Timestamp` to the URL query string
         if (getTimestamp() != null) {
-            joiner.add(String.format("%sTimestamp%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sTimestamp%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getTimestamp()))));
         }
 
         // add `RequiredHttpHeaders` to the URL query string
         if (getRequiredHttpHeaders() != null) {
             for (String _key : getRequiredHttpHeaders().keySet()) {
-                joiner.add(String.format("%sRequiredHttpHeaders%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, _key, containerSuffix),
+                joiner.add(String.format(Locale.ROOT, "%sRequiredHttpHeaders%s%s=%s", prefix, suffix,
+                        "".equals(suffix) ? ""
+                                : String.format(Locale.ROOT, "%s%d%s", containerPrefix, _key, containerSuffix),
                         getRequiredHttpHeaders().get(_key),
                         ApiClient.urlEncode(ApiClient.valueToString(getRequiredHttpHeaders().get(_key)))));
             }
@@ -1729,43 +1732,43 @@ public class MediaSourceInfo {
 
         // add `TranscodingUrl` to the URL query string
         if (getTranscodingUrl() != null) {
-            joiner.add(String.format("%sTranscodingUrl%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sTranscodingUrl%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getTranscodingUrl()))));
         }
 
         // add `TranscodingSubProtocol` to the URL query string
         if (getTranscodingSubProtocol() != null) {
-            joiner.add(String.format("%sTranscodingSubProtocol%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sTranscodingSubProtocol%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getTranscodingSubProtocol()))));
         }
 
         // add `TranscodingContainer` to the URL query string
         if (getTranscodingContainer() != null) {
-            joiner.add(String.format("%sTranscodingContainer%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sTranscodingContainer%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getTranscodingContainer()))));
         }
 
         // add `AnalyzeDurationMs` to the URL query string
         if (getAnalyzeDurationMs() != null) {
-            joiner.add(String.format("%sAnalyzeDurationMs%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sAnalyzeDurationMs%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getAnalyzeDurationMs()))));
         }
 
         // add `DefaultAudioStreamIndex` to the URL query string
         if (getDefaultAudioStreamIndex() != null) {
-            joiner.add(String.format("%sDefaultAudioStreamIndex%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sDefaultAudioStreamIndex%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getDefaultAudioStreamIndex()))));
         }
 
         // add `DefaultSubtitleStreamIndex` to the URL query string
         if (getDefaultSubtitleStreamIndex() != null) {
-            joiner.add(String.format("%sDefaultSubtitleStreamIndex%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sDefaultSubtitleStreamIndex%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getDefaultSubtitleStreamIndex()))));
         }
 
         // add `HasSegments` to the URL query string
         if (getHasSegments() != null) {
-            joiner.add(String.format("%sHasSegments%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sHasSegments%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getHasSegments()))));
         }
 

@@ -15,6 +15,7 @@ package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
 
@@ -45,7 +46,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
         LibraryOptions.JSON_PROPERTY_LOCAL_METADATA_READER_ORDER,
         LibraryOptions.JSON_PROPERTY_DISABLED_SUBTITLE_FETCHERS, LibraryOptions.JSON_PROPERTY_SUBTITLE_FETCHER_ORDER,
         LibraryOptions.JSON_PROPERTY_DISABLED_MEDIA_SEGMENT_PROVIDERS,
-        LibraryOptions.JSON_PROPERTY_MEDIA_SEGMENT_PROVIDE_ORDER,
+        LibraryOptions.JSON_PROPERTY_MEDIA_SEGMENT_PROVIDER_ORDER,
         LibraryOptions.JSON_PROPERTY_SKIP_SUBTITLES_IF_EMBEDDED_SUBTITLES_PRESENT,
         LibraryOptions.JSON_PROPERTY_SKIP_SUBTITLES_IF_AUDIO_TRACK_MATCHES,
         LibraryOptions.JSON_PROPERTY_SUBTITLE_DOWNLOAD_LANGUAGES,
@@ -158,9 +159,9 @@ public class LibraryOptions {
     @org.eclipse.jdt.annotation.NonNull
     private List<String> disabledMediaSegmentProviders = new ArrayList<>();
 
-    public static final String JSON_PROPERTY_MEDIA_SEGMENT_PROVIDE_ORDER = "MediaSegmentProvideOrder";
+    public static final String JSON_PROPERTY_MEDIA_SEGMENT_PROVIDER_ORDER = "MediaSegmentProviderOrder";
     @org.eclipse.jdt.annotation.NonNull
-    private List<String> mediaSegmentProvideOrder = new ArrayList<>();
+    private List<String> mediaSegmentProviderOrder = new ArrayList<>();
 
     public static final String JSON_PROPERTY_SKIP_SUBTITLES_IF_EMBEDDED_SUBTITLES_PRESENT = "SkipSubtitlesIfEmbeddedSubtitlesPresent";
     @org.eclipse.jdt.annotation.NonNull
@@ -240,13 +241,13 @@ public class LibraryOptions {
      * @return enabled
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ENABLED)
+    @JsonProperty(value = JSON_PROPERTY_ENABLED, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getEnabled() {
         return enabled;
     }
 
-    @JsonProperty(JSON_PROPERTY_ENABLED)
+    @JsonProperty(value = JSON_PROPERTY_ENABLED, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setEnabled(@org.eclipse.jdt.annotation.NonNull Boolean enabled) {
         this.enabled = enabled;
@@ -263,13 +264,13 @@ public class LibraryOptions {
      * @return enablePhotos
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ENABLE_PHOTOS)
+    @JsonProperty(value = JSON_PROPERTY_ENABLE_PHOTOS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getEnablePhotos() {
         return enablePhotos;
     }
 
-    @JsonProperty(JSON_PROPERTY_ENABLE_PHOTOS)
+    @JsonProperty(value = JSON_PROPERTY_ENABLE_PHOTOS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setEnablePhotos(@org.eclipse.jdt.annotation.NonNull Boolean enablePhotos) {
         this.enablePhotos = enablePhotos;
@@ -286,13 +287,13 @@ public class LibraryOptions {
      * @return enableRealtimeMonitor
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ENABLE_REALTIME_MONITOR)
+    @JsonProperty(value = JSON_PROPERTY_ENABLE_REALTIME_MONITOR, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getEnableRealtimeMonitor() {
         return enableRealtimeMonitor;
     }
 
-    @JsonProperty(JSON_PROPERTY_ENABLE_REALTIME_MONITOR)
+    @JsonProperty(value = JSON_PROPERTY_ENABLE_REALTIME_MONITOR, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setEnableRealtimeMonitor(@org.eclipse.jdt.annotation.NonNull Boolean enableRealtimeMonitor) {
         this.enableRealtimeMonitor = enableRealtimeMonitor;
@@ -309,13 +310,13 @@ public class LibraryOptions {
      * @return enableLUFSScan
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ENABLE_L_U_F_S_SCAN)
+    @JsonProperty(value = JSON_PROPERTY_ENABLE_L_U_F_S_SCAN, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getEnableLUFSScan() {
         return enableLUFSScan;
     }
 
-    @JsonProperty(JSON_PROPERTY_ENABLE_L_U_F_S_SCAN)
+    @JsonProperty(value = JSON_PROPERTY_ENABLE_L_U_F_S_SCAN, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setEnableLUFSScan(@org.eclipse.jdt.annotation.NonNull Boolean enableLUFSScan) {
         this.enableLUFSScan = enableLUFSScan;
@@ -333,13 +334,13 @@ public class LibraryOptions {
      * @return enableChapterImageExtraction
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ENABLE_CHAPTER_IMAGE_EXTRACTION)
+    @JsonProperty(value = JSON_PROPERTY_ENABLE_CHAPTER_IMAGE_EXTRACTION, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getEnableChapterImageExtraction() {
         return enableChapterImageExtraction;
     }
 
-    @JsonProperty(JSON_PROPERTY_ENABLE_CHAPTER_IMAGE_EXTRACTION)
+    @JsonProperty(value = JSON_PROPERTY_ENABLE_CHAPTER_IMAGE_EXTRACTION, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setEnableChapterImageExtraction(
             @org.eclipse.jdt.annotation.NonNull Boolean enableChapterImageExtraction) {
@@ -358,13 +359,13 @@ public class LibraryOptions {
      * @return extractChapterImagesDuringLibraryScan
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_EXTRACT_CHAPTER_IMAGES_DURING_LIBRARY_SCAN)
+    @JsonProperty(value = JSON_PROPERTY_EXTRACT_CHAPTER_IMAGES_DURING_LIBRARY_SCAN, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getExtractChapterImagesDuringLibraryScan() {
         return extractChapterImagesDuringLibraryScan;
     }
 
-    @JsonProperty(JSON_PROPERTY_EXTRACT_CHAPTER_IMAGES_DURING_LIBRARY_SCAN)
+    @JsonProperty(value = JSON_PROPERTY_EXTRACT_CHAPTER_IMAGES_DURING_LIBRARY_SCAN, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setExtractChapterImagesDuringLibraryScan(
             @org.eclipse.jdt.annotation.NonNull Boolean extractChapterImagesDuringLibraryScan) {
@@ -383,13 +384,13 @@ public class LibraryOptions {
      * @return enableTrickplayImageExtraction
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ENABLE_TRICKPLAY_IMAGE_EXTRACTION)
+    @JsonProperty(value = JSON_PROPERTY_ENABLE_TRICKPLAY_IMAGE_EXTRACTION, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getEnableTrickplayImageExtraction() {
         return enableTrickplayImageExtraction;
     }
 
-    @JsonProperty(JSON_PROPERTY_ENABLE_TRICKPLAY_IMAGE_EXTRACTION)
+    @JsonProperty(value = JSON_PROPERTY_ENABLE_TRICKPLAY_IMAGE_EXTRACTION, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setEnableTrickplayImageExtraction(
             @org.eclipse.jdt.annotation.NonNull Boolean enableTrickplayImageExtraction) {
@@ -408,13 +409,13 @@ public class LibraryOptions {
      * @return extractTrickplayImagesDuringLibraryScan
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_EXTRACT_TRICKPLAY_IMAGES_DURING_LIBRARY_SCAN)
+    @JsonProperty(value = JSON_PROPERTY_EXTRACT_TRICKPLAY_IMAGES_DURING_LIBRARY_SCAN, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getExtractTrickplayImagesDuringLibraryScan() {
         return extractTrickplayImagesDuringLibraryScan;
     }
 
-    @JsonProperty(JSON_PROPERTY_EXTRACT_TRICKPLAY_IMAGES_DURING_LIBRARY_SCAN)
+    @JsonProperty(value = JSON_PROPERTY_EXTRACT_TRICKPLAY_IMAGES_DURING_LIBRARY_SCAN, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setExtractTrickplayImagesDuringLibraryScan(
             @org.eclipse.jdt.annotation.NonNull Boolean extractTrickplayImagesDuringLibraryScan) {
@@ -440,13 +441,13 @@ public class LibraryOptions {
      * @return pathInfos
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_PATH_INFOS)
+    @JsonProperty(value = JSON_PROPERTY_PATH_INFOS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<MediaPathInfo> getPathInfos() {
         return pathInfos;
     }
 
-    @JsonProperty(JSON_PROPERTY_PATH_INFOS)
+    @JsonProperty(value = JSON_PROPERTY_PATH_INFOS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setPathInfos(@org.eclipse.jdt.annotation.NonNull List<MediaPathInfo> pathInfos) {
         this.pathInfos = pathInfos;
@@ -463,13 +464,13 @@ public class LibraryOptions {
      * @return saveLocalMetadata
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_SAVE_LOCAL_METADATA)
+    @JsonProperty(value = JSON_PROPERTY_SAVE_LOCAL_METADATA, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getSaveLocalMetadata() {
         return saveLocalMetadata;
     }
 
-    @JsonProperty(JSON_PROPERTY_SAVE_LOCAL_METADATA)
+    @JsonProperty(value = JSON_PROPERTY_SAVE_LOCAL_METADATA, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setSaveLocalMetadata(@org.eclipse.jdt.annotation.NonNull Boolean saveLocalMetadata) {
         this.saveLocalMetadata = saveLocalMetadata;
@@ -488,13 +489,13 @@ public class LibraryOptions {
      */
     @Deprecated
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ENABLE_INTERNET_PROVIDERS)
+    @JsonProperty(value = JSON_PROPERTY_ENABLE_INTERNET_PROVIDERS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getEnableInternetProviders() {
         return enableInternetProviders;
     }
 
-    @JsonProperty(JSON_PROPERTY_ENABLE_INTERNET_PROVIDERS)
+    @JsonProperty(value = JSON_PROPERTY_ENABLE_INTERNET_PROVIDERS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setEnableInternetProviders(@org.eclipse.jdt.annotation.NonNull Boolean enableInternetProviders) {
         this.enableInternetProviders = enableInternetProviders;
@@ -512,13 +513,13 @@ public class LibraryOptions {
      * @return enableAutomaticSeriesGrouping
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ENABLE_AUTOMATIC_SERIES_GROUPING)
+    @JsonProperty(value = JSON_PROPERTY_ENABLE_AUTOMATIC_SERIES_GROUPING, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getEnableAutomaticSeriesGrouping() {
         return enableAutomaticSeriesGrouping;
     }
 
-    @JsonProperty(JSON_PROPERTY_ENABLE_AUTOMATIC_SERIES_GROUPING)
+    @JsonProperty(value = JSON_PROPERTY_ENABLE_AUTOMATIC_SERIES_GROUPING, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setEnableAutomaticSeriesGrouping(
             @org.eclipse.jdt.annotation.NonNull Boolean enableAutomaticSeriesGrouping) {
@@ -536,13 +537,13 @@ public class LibraryOptions {
      * @return enableEmbeddedTitles
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ENABLE_EMBEDDED_TITLES)
+    @JsonProperty(value = JSON_PROPERTY_ENABLE_EMBEDDED_TITLES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getEnableEmbeddedTitles() {
         return enableEmbeddedTitles;
     }
 
-    @JsonProperty(JSON_PROPERTY_ENABLE_EMBEDDED_TITLES)
+    @JsonProperty(value = JSON_PROPERTY_ENABLE_EMBEDDED_TITLES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setEnableEmbeddedTitles(@org.eclipse.jdt.annotation.NonNull Boolean enableEmbeddedTitles) {
         this.enableEmbeddedTitles = enableEmbeddedTitles;
@@ -560,13 +561,13 @@ public class LibraryOptions {
      * @return enableEmbeddedExtrasTitles
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ENABLE_EMBEDDED_EXTRAS_TITLES)
+    @JsonProperty(value = JSON_PROPERTY_ENABLE_EMBEDDED_EXTRAS_TITLES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getEnableEmbeddedExtrasTitles() {
         return enableEmbeddedExtrasTitles;
     }
 
-    @JsonProperty(JSON_PROPERTY_ENABLE_EMBEDDED_EXTRAS_TITLES)
+    @JsonProperty(value = JSON_PROPERTY_ENABLE_EMBEDDED_EXTRAS_TITLES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setEnableEmbeddedExtrasTitles(@org.eclipse.jdt.annotation.NonNull Boolean enableEmbeddedExtrasTitles) {
         this.enableEmbeddedExtrasTitles = enableEmbeddedExtrasTitles;
@@ -584,13 +585,13 @@ public class LibraryOptions {
      * @return enableEmbeddedEpisodeInfos
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ENABLE_EMBEDDED_EPISODE_INFOS)
+    @JsonProperty(value = JSON_PROPERTY_ENABLE_EMBEDDED_EPISODE_INFOS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getEnableEmbeddedEpisodeInfos() {
         return enableEmbeddedEpisodeInfos;
     }
 
-    @JsonProperty(JSON_PROPERTY_ENABLE_EMBEDDED_EPISODE_INFOS)
+    @JsonProperty(value = JSON_PROPERTY_ENABLE_EMBEDDED_EPISODE_INFOS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setEnableEmbeddedEpisodeInfos(@org.eclipse.jdt.annotation.NonNull Boolean enableEmbeddedEpisodeInfos) {
         this.enableEmbeddedEpisodeInfos = enableEmbeddedEpisodeInfos;
@@ -608,13 +609,13 @@ public class LibraryOptions {
      * @return automaticRefreshIntervalDays
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_AUTOMATIC_REFRESH_INTERVAL_DAYS)
+    @JsonProperty(value = JSON_PROPERTY_AUTOMATIC_REFRESH_INTERVAL_DAYS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getAutomaticRefreshIntervalDays() {
         return automaticRefreshIntervalDays;
     }
 
-    @JsonProperty(JSON_PROPERTY_AUTOMATIC_REFRESH_INTERVAL_DAYS)
+    @JsonProperty(value = JSON_PROPERTY_AUTOMATIC_REFRESH_INTERVAL_DAYS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setAutomaticRefreshIntervalDays(
             @org.eclipse.jdt.annotation.NonNull Integer automaticRefreshIntervalDays) {
@@ -633,13 +634,13 @@ public class LibraryOptions {
      * @return preferredMetadataLanguage
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_PREFERRED_METADATA_LANGUAGE)
+    @JsonProperty(value = JSON_PROPERTY_PREFERRED_METADATA_LANGUAGE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getPreferredMetadataLanguage() {
         return preferredMetadataLanguage;
     }
 
-    @JsonProperty(JSON_PROPERTY_PREFERRED_METADATA_LANGUAGE)
+    @JsonProperty(value = JSON_PROPERTY_PREFERRED_METADATA_LANGUAGE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setPreferredMetadataLanguage(@org.eclipse.jdt.annotation.NonNull String preferredMetadataLanguage) {
         this.preferredMetadataLanguage = preferredMetadataLanguage;
@@ -656,13 +657,13 @@ public class LibraryOptions {
      * @return metadataCountryCode
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_METADATA_COUNTRY_CODE)
+    @JsonProperty(value = JSON_PROPERTY_METADATA_COUNTRY_CODE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getMetadataCountryCode() {
         return metadataCountryCode;
     }
 
-    @JsonProperty(JSON_PROPERTY_METADATA_COUNTRY_CODE)
+    @JsonProperty(value = JSON_PROPERTY_METADATA_COUNTRY_CODE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setMetadataCountryCode(@org.eclipse.jdt.annotation.NonNull String metadataCountryCode) {
         this.metadataCountryCode = metadataCountryCode;
@@ -679,13 +680,13 @@ public class LibraryOptions {
      * @return seasonZeroDisplayName
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_SEASON_ZERO_DISPLAY_NAME)
+    @JsonProperty(value = JSON_PROPERTY_SEASON_ZERO_DISPLAY_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getSeasonZeroDisplayName() {
         return seasonZeroDisplayName;
     }
 
-    @JsonProperty(JSON_PROPERTY_SEASON_ZERO_DISPLAY_NAME)
+    @JsonProperty(value = JSON_PROPERTY_SEASON_ZERO_DISPLAY_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setSeasonZeroDisplayName(@org.eclipse.jdt.annotation.NonNull String seasonZeroDisplayName) {
         this.seasonZeroDisplayName = seasonZeroDisplayName;
@@ -710,13 +711,13 @@ public class LibraryOptions {
      * @return metadataSavers
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_METADATA_SAVERS)
+    @JsonProperty(value = JSON_PROPERTY_METADATA_SAVERS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<String> getMetadataSavers() {
         return metadataSavers;
     }
 
-    @JsonProperty(JSON_PROPERTY_METADATA_SAVERS)
+    @JsonProperty(value = JSON_PROPERTY_METADATA_SAVERS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setMetadataSavers(@org.eclipse.jdt.annotation.NonNull List<String> metadataSavers) {
         this.metadataSavers = metadataSavers;
@@ -742,13 +743,13 @@ public class LibraryOptions {
      * @return disabledLocalMetadataReaders
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_DISABLED_LOCAL_METADATA_READERS)
+    @JsonProperty(value = JSON_PROPERTY_DISABLED_LOCAL_METADATA_READERS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<String> getDisabledLocalMetadataReaders() {
         return disabledLocalMetadataReaders;
     }
 
-    @JsonProperty(JSON_PROPERTY_DISABLED_LOCAL_METADATA_READERS)
+    @JsonProperty(value = JSON_PROPERTY_DISABLED_LOCAL_METADATA_READERS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setDisabledLocalMetadataReaders(
             @org.eclipse.jdt.annotation.NonNull List<String> disabledLocalMetadataReaders) {
@@ -775,13 +776,13 @@ public class LibraryOptions {
      * @return localMetadataReaderOrder
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_LOCAL_METADATA_READER_ORDER)
+    @JsonProperty(value = JSON_PROPERTY_LOCAL_METADATA_READER_ORDER, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<String> getLocalMetadataReaderOrder() {
         return localMetadataReaderOrder;
     }
 
-    @JsonProperty(JSON_PROPERTY_LOCAL_METADATA_READER_ORDER)
+    @JsonProperty(value = JSON_PROPERTY_LOCAL_METADATA_READER_ORDER, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setLocalMetadataReaderOrder(@org.eclipse.jdt.annotation.NonNull List<String> localMetadataReaderOrder) {
         this.localMetadataReaderOrder = localMetadataReaderOrder;
@@ -807,13 +808,13 @@ public class LibraryOptions {
      * @return disabledSubtitleFetchers
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_DISABLED_SUBTITLE_FETCHERS)
+    @JsonProperty(value = JSON_PROPERTY_DISABLED_SUBTITLE_FETCHERS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<String> getDisabledSubtitleFetchers() {
         return disabledSubtitleFetchers;
     }
 
-    @JsonProperty(JSON_PROPERTY_DISABLED_SUBTITLE_FETCHERS)
+    @JsonProperty(value = JSON_PROPERTY_DISABLED_SUBTITLE_FETCHERS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setDisabledSubtitleFetchers(@org.eclipse.jdt.annotation.NonNull List<String> disabledSubtitleFetchers) {
         this.disabledSubtitleFetchers = disabledSubtitleFetchers;
@@ -838,13 +839,13 @@ public class LibraryOptions {
      * @return subtitleFetcherOrder
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_SUBTITLE_FETCHER_ORDER)
+    @JsonProperty(value = JSON_PROPERTY_SUBTITLE_FETCHER_ORDER, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<String> getSubtitleFetcherOrder() {
         return subtitleFetcherOrder;
     }
 
-    @JsonProperty(JSON_PROPERTY_SUBTITLE_FETCHER_ORDER)
+    @JsonProperty(value = JSON_PROPERTY_SUBTITLE_FETCHER_ORDER, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setSubtitleFetcherOrder(@org.eclipse.jdt.annotation.NonNull List<String> subtitleFetcherOrder) {
         this.subtitleFetcherOrder = subtitleFetcherOrder;
@@ -870,49 +871,50 @@ public class LibraryOptions {
      * @return disabledMediaSegmentProviders
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_DISABLED_MEDIA_SEGMENT_PROVIDERS)
+    @JsonProperty(value = JSON_PROPERTY_DISABLED_MEDIA_SEGMENT_PROVIDERS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<String> getDisabledMediaSegmentProviders() {
         return disabledMediaSegmentProviders;
     }
 
-    @JsonProperty(JSON_PROPERTY_DISABLED_MEDIA_SEGMENT_PROVIDERS)
+    @JsonProperty(value = JSON_PROPERTY_DISABLED_MEDIA_SEGMENT_PROVIDERS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setDisabledMediaSegmentProviders(
             @org.eclipse.jdt.annotation.NonNull List<String> disabledMediaSegmentProviders) {
         this.disabledMediaSegmentProviders = disabledMediaSegmentProviders;
     }
 
-    public LibraryOptions mediaSegmentProvideOrder(
-            @org.eclipse.jdt.annotation.NonNull List<String> mediaSegmentProvideOrder) {
-        this.mediaSegmentProvideOrder = mediaSegmentProvideOrder;
+    public LibraryOptions mediaSegmentProviderOrder(
+            @org.eclipse.jdt.annotation.NonNull List<String> mediaSegmentProviderOrder) {
+        this.mediaSegmentProviderOrder = mediaSegmentProviderOrder;
         return this;
     }
 
-    public LibraryOptions addMediaSegmentProvideOrderItem(String mediaSegmentProvideOrderItem) {
-        if (this.mediaSegmentProvideOrder == null) {
-            this.mediaSegmentProvideOrder = new ArrayList<>();
+    public LibraryOptions addMediaSegmentProviderOrderItem(String mediaSegmentProviderOrderItem) {
+        if (this.mediaSegmentProviderOrder == null) {
+            this.mediaSegmentProviderOrder = new ArrayList<>();
         }
-        this.mediaSegmentProvideOrder.add(mediaSegmentProvideOrderItem);
+        this.mediaSegmentProviderOrder.add(mediaSegmentProviderOrderItem);
         return this;
     }
 
     /**
-     * Get mediaSegmentProvideOrder
+     * Get mediaSegmentProviderOrder
      * 
-     * @return mediaSegmentProvideOrder
+     * @return mediaSegmentProviderOrder
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_MEDIA_SEGMENT_PROVIDE_ORDER)
+    @JsonProperty(value = JSON_PROPERTY_MEDIA_SEGMENT_PROVIDER_ORDER, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public List<String> getMediaSegmentProvideOrder() {
-        return mediaSegmentProvideOrder;
+    public List<String> getMediaSegmentProviderOrder() {
+        return mediaSegmentProviderOrder;
     }
 
-    @JsonProperty(JSON_PROPERTY_MEDIA_SEGMENT_PROVIDE_ORDER)
+    @JsonProperty(value = JSON_PROPERTY_MEDIA_SEGMENT_PROVIDER_ORDER, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setMediaSegmentProvideOrder(@org.eclipse.jdt.annotation.NonNull List<String> mediaSegmentProvideOrder) {
-        this.mediaSegmentProvideOrder = mediaSegmentProvideOrder;
+    public void setMediaSegmentProviderOrder(
+            @org.eclipse.jdt.annotation.NonNull List<String> mediaSegmentProviderOrder) {
+        this.mediaSegmentProviderOrder = mediaSegmentProviderOrder;
     }
 
     public LibraryOptions skipSubtitlesIfEmbeddedSubtitlesPresent(
@@ -927,13 +929,13 @@ public class LibraryOptions {
      * @return skipSubtitlesIfEmbeddedSubtitlesPresent
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_SKIP_SUBTITLES_IF_EMBEDDED_SUBTITLES_PRESENT)
+    @JsonProperty(value = JSON_PROPERTY_SKIP_SUBTITLES_IF_EMBEDDED_SUBTITLES_PRESENT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getSkipSubtitlesIfEmbeddedSubtitlesPresent() {
         return skipSubtitlesIfEmbeddedSubtitlesPresent;
     }
 
-    @JsonProperty(JSON_PROPERTY_SKIP_SUBTITLES_IF_EMBEDDED_SUBTITLES_PRESENT)
+    @JsonProperty(value = JSON_PROPERTY_SKIP_SUBTITLES_IF_EMBEDDED_SUBTITLES_PRESENT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setSkipSubtitlesIfEmbeddedSubtitlesPresent(
             @org.eclipse.jdt.annotation.NonNull Boolean skipSubtitlesIfEmbeddedSubtitlesPresent) {
@@ -952,13 +954,13 @@ public class LibraryOptions {
      * @return skipSubtitlesIfAudioTrackMatches
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_SKIP_SUBTITLES_IF_AUDIO_TRACK_MATCHES)
+    @JsonProperty(value = JSON_PROPERTY_SKIP_SUBTITLES_IF_AUDIO_TRACK_MATCHES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getSkipSubtitlesIfAudioTrackMatches() {
         return skipSubtitlesIfAudioTrackMatches;
     }
 
-    @JsonProperty(JSON_PROPERTY_SKIP_SUBTITLES_IF_AUDIO_TRACK_MATCHES)
+    @JsonProperty(value = JSON_PROPERTY_SKIP_SUBTITLES_IF_AUDIO_TRACK_MATCHES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setSkipSubtitlesIfAudioTrackMatches(
             @org.eclipse.jdt.annotation.NonNull Boolean skipSubtitlesIfAudioTrackMatches) {
@@ -985,13 +987,13 @@ public class LibraryOptions {
      * @return subtitleDownloadLanguages
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_SUBTITLE_DOWNLOAD_LANGUAGES)
+    @JsonProperty(value = JSON_PROPERTY_SUBTITLE_DOWNLOAD_LANGUAGES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<String> getSubtitleDownloadLanguages() {
         return subtitleDownloadLanguages;
     }
 
-    @JsonProperty(JSON_PROPERTY_SUBTITLE_DOWNLOAD_LANGUAGES)
+    @JsonProperty(value = JSON_PROPERTY_SUBTITLE_DOWNLOAD_LANGUAGES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setSubtitleDownloadLanguages(
             @org.eclipse.jdt.annotation.NonNull List<String> subtitleDownloadLanguages) {
@@ -1010,13 +1012,13 @@ public class LibraryOptions {
      * @return requirePerfectSubtitleMatch
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_REQUIRE_PERFECT_SUBTITLE_MATCH)
+    @JsonProperty(value = JSON_PROPERTY_REQUIRE_PERFECT_SUBTITLE_MATCH, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getRequirePerfectSubtitleMatch() {
         return requirePerfectSubtitleMatch;
     }
 
-    @JsonProperty(JSON_PROPERTY_REQUIRE_PERFECT_SUBTITLE_MATCH)
+    @JsonProperty(value = JSON_PROPERTY_REQUIRE_PERFECT_SUBTITLE_MATCH, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setRequirePerfectSubtitleMatch(
             @org.eclipse.jdt.annotation.NonNull Boolean requirePerfectSubtitleMatch) {
@@ -1034,13 +1036,13 @@ public class LibraryOptions {
      * @return saveSubtitlesWithMedia
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_SAVE_SUBTITLES_WITH_MEDIA)
+    @JsonProperty(value = JSON_PROPERTY_SAVE_SUBTITLES_WITH_MEDIA, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getSaveSubtitlesWithMedia() {
         return saveSubtitlesWithMedia;
     }
 
-    @JsonProperty(JSON_PROPERTY_SAVE_SUBTITLES_WITH_MEDIA)
+    @JsonProperty(value = JSON_PROPERTY_SAVE_SUBTITLES_WITH_MEDIA, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setSaveSubtitlesWithMedia(@org.eclipse.jdt.annotation.NonNull Boolean saveSubtitlesWithMedia) {
         this.saveSubtitlesWithMedia = saveSubtitlesWithMedia;
@@ -1057,13 +1059,13 @@ public class LibraryOptions {
      * @return saveLyricsWithMedia
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_SAVE_LYRICS_WITH_MEDIA)
+    @JsonProperty(value = JSON_PROPERTY_SAVE_LYRICS_WITH_MEDIA, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getSaveLyricsWithMedia() {
         return saveLyricsWithMedia;
     }
 
-    @JsonProperty(JSON_PROPERTY_SAVE_LYRICS_WITH_MEDIA)
+    @JsonProperty(value = JSON_PROPERTY_SAVE_LYRICS_WITH_MEDIA, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setSaveLyricsWithMedia(@org.eclipse.jdt.annotation.NonNull Boolean saveLyricsWithMedia) {
         this.saveLyricsWithMedia = saveLyricsWithMedia;
@@ -1080,13 +1082,13 @@ public class LibraryOptions {
      * @return saveTrickplayWithMedia
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_SAVE_TRICKPLAY_WITH_MEDIA)
+    @JsonProperty(value = JSON_PROPERTY_SAVE_TRICKPLAY_WITH_MEDIA, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getSaveTrickplayWithMedia() {
         return saveTrickplayWithMedia;
     }
 
-    @JsonProperty(JSON_PROPERTY_SAVE_TRICKPLAY_WITH_MEDIA)
+    @JsonProperty(value = JSON_PROPERTY_SAVE_TRICKPLAY_WITH_MEDIA, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setSaveTrickplayWithMedia(@org.eclipse.jdt.annotation.NonNull Boolean saveTrickplayWithMedia) {
         this.saveTrickplayWithMedia = saveTrickplayWithMedia;
@@ -1112,13 +1114,13 @@ public class LibraryOptions {
      * @return disabledLyricFetchers
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_DISABLED_LYRIC_FETCHERS)
+    @JsonProperty(value = JSON_PROPERTY_DISABLED_LYRIC_FETCHERS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<String> getDisabledLyricFetchers() {
         return disabledLyricFetchers;
     }
 
-    @JsonProperty(JSON_PROPERTY_DISABLED_LYRIC_FETCHERS)
+    @JsonProperty(value = JSON_PROPERTY_DISABLED_LYRIC_FETCHERS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setDisabledLyricFetchers(@org.eclipse.jdt.annotation.NonNull List<String> disabledLyricFetchers) {
         this.disabledLyricFetchers = disabledLyricFetchers;
@@ -1143,13 +1145,13 @@ public class LibraryOptions {
      * @return lyricFetcherOrder
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_LYRIC_FETCHER_ORDER)
+    @JsonProperty(value = JSON_PROPERTY_LYRIC_FETCHER_ORDER, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<String> getLyricFetcherOrder() {
         return lyricFetcherOrder;
     }
 
-    @JsonProperty(JSON_PROPERTY_LYRIC_FETCHER_ORDER)
+    @JsonProperty(value = JSON_PROPERTY_LYRIC_FETCHER_ORDER, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setLyricFetcherOrder(@org.eclipse.jdt.annotation.NonNull List<String> lyricFetcherOrder) {
         this.lyricFetcherOrder = lyricFetcherOrder;
@@ -1167,13 +1169,13 @@ public class LibraryOptions {
      * @return preferNonstandardArtistsTag
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_PREFER_NONSTANDARD_ARTISTS_TAG)
+    @JsonProperty(value = JSON_PROPERTY_PREFER_NONSTANDARD_ARTISTS_TAG, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getPreferNonstandardArtistsTag() {
         return preferNonstandardArtistsTag;
     }
 
-    @JsonProperty(JSON_PROPERTY_PREFER_NONSTANDARD_ARTISTS_TAG)
+    @JsonProperty(value = JSON_PROPERTY_PREFER_NONSTANDARD_ARTISTS_TAG, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setPreferNonstandardArtistsTag(
             @org.eclipse.jdt.annotation.NonNull Boolean preferNonstandardArtistsTag) {
@@ -1191,13 +1193,13 @@ public class LibraryOptions {
      * @return useCustomTagDelimiters
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_USE_CUSTOM_TAG_DELIMITERS)
+    @JsonProperty(value = JSON_PROPERTY_USE_CUSTOM_TAG_DELIMITERS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getUseCustomTagDelimiters() {
         return useCustomTagDelimiters;
     }
 
-    @JsonProperty(JSON_PROPERTY_USE_CUSTOM_TAG_DELIMITERS)
+    @JsonProperty(value = JSON_PROPERTY_USE_CUSTOM_TAG_DELIMITERS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setUseCustomTagDelimiters(@org.eclipse.jdt.annotation.NonNull Boolean useCustomTagDelimiters) {
         this.useCustomTagDelimiters = useCustomTagDelimiters;
@@ -1222,13 +1224,13 @@ public class LibraryOptions {
      * @return customTagDelimiters
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_CUSTOM_TAG_DELIMITERS)
+    @JsonProperty(value = JSON_PROPERTY_CUSTOM_TAG_DELIMITERS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<String> getCustomTagDelimiters() {
         return customTagDelimiters;
     }
 
-    @JsonProperty(JSON_PROPERTY_CUSTOM_TAG_DELIMITERS)
+    @JsonProperty(value = JSON_PROPERTY_CUSTOM_TAG_DELIMITERS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setCustomTagDelimiters(@org.eclipse.jdt.annotation.NonNull List<String> customTagDelimiters) {
         this.customTagDelimiters = customTagDelimiters;
@@ -1253,13 +1255,13 @@ public class LibraryOptions {
      * @return delimiterWhitelist
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_DELIMITER_WHITELIST)
+    @JsonProperty(value = JSON_PROPERTY_DELIMITER_WHITELIST, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<String> getDelimiterWhitelist() {
         return delimiterWhitelist;
     }
 
-    @JsonProperty(JSON_PROPERTY_DELIMITER_WHITELIST)
+    @JsonProperty(value = JSON_PROPERTY_DELIMITER_WHITELIST, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setDelimiterWhitelist(@org.eclipse.jdt.annotation.NonNull List<String> delimiterWhitelist) {
         this.delimiterWhitelist = delimiterWhitelist;
@@ -1277,13 +1279,13 @@ public class LibraryOptions {
      * @return automaticallyAddToCollection
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_AUTOMATICALLY_ADD_TO_COLLECTION)
+    @JsonProperty(value = JSON_PROPERTY_AUTOMATICALLY_ADD_TO_COLLECTION, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getAutomaticallyAddToCollection() {
         return automaticallyAddToCollection;
     }
 
-    @JsonProperty(JSON_PROPERTY_AUTOMATICALLY_ADD_TO_COLLECTION)
+    @JsonProperty(value = JSON_PROPERTY_AUTOMATICALLY_ADD_TO_COLLECTION, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setAutomaticallyAddToCollection(
             @org.eclipse.jdt.annotation.NonNull Boolean automaticallyAddToCollection) {
@@ -1302,13 +1304,13 @@ public class LibraryOptions {
      * @return allowEmbeddedSubtitles
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ALLOW_EMBEDDED_SUBTITLES)
+    @JsonProperty(value = JSON_PROPERTY_ALLOW_EMBEDDED_SUBTITLES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public EmbeddedSubtitleOptions getAllowEmbeddedSubtitles() {
         return allowEmbeddedSubtitles;
     }
 
-    @JsonProperty(JSON_PROPERTY_ALLOW_EMBEDDED_SUBTITLES)
+    @JsonProperty(value = JSON_PROPERTY_ALLOW_EMBEDDED_SUBTITLES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setAllowEmbeddedSubtitles(
             @org.eclipse.jdt.annotation.NonNull EmbeddedSubtitleOptions allowEmbeddedSubtitles) {
@@ -1334,13 +1336,13 @@ public class LibraryOptions {
      * @return typeOptions
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_TYPE_OPTIONS)
+    @JsonProperty(value = JSON_PROPERTY_TYPE_OPTIONS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<TypeOptions> getTypeOptions() {
         return typeOptions;
     }
 
-    @JsonProperty(JSON_PROPERTY_TYPE_OPTIONS)
+    @JsonProperty(value = JSON_PROPERTY_TYPE_OPTIONS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setTypeOptions(@org.eclipse.jdt.annotation.NonNull List<TypeOptions> typeOptions) {
         this.typeOptions = typeOptions;
@@ -1385,7 +1387,7 @@ public class LibraryOptions {
                 && Objects.equals(this.disabledSubtitleFetchers, libraryOptions.disabledSubtitleFetchers)
                 && Objects.equals(this.subtitleFetcherOrder, libraryOptions.subtitleFetcherOrder)
                 && Objects.equals(this.disabledMediaSegmentProviders, libraryOptions.disabledMediaSegmentProviders)
-                && Objects.equals(this.mediaSegmentProvideOrder, libraryOptions.mediaSegmentProvideOrder)
+                && Objects.equals(this.mediaSegmentProviderOrder, libraryOptions.mediaSegmentProviderOrder)
                 && Objects.equals(this.skipSubtitlesIfEmbeddedSubtitlesPresent,
                         libraryOptions.skipSubtitlesIfEmbeddedSubtitlesPresent)
                 && Objects.equals(this.skipSubtitlesIfAudioTrackMatches,
@@ -1415,7 +1417,7 @@ public class LibraryOptions {
                 enableEmbeddedEpisodeInfos, automaticRefreshIntervalDays, preferredMetadataLanguage,
                 metadataCountryCode, seasonZeroDisplayName, metadataSavers, disabledLocalMetadataReaders,
                 localMetadataReaderOrder, disabledSubtitleFetchers, subtitleFetcherOrder, disabledMediaSegmentProviders,
-                mediaSegmentProvideOrder, skipSubtitlesIfEmbeddedSubtitlesPresent, skipSubtitlesIfAudioTrackMatches,
+                mediaSegmentProviderOrder, skipSubtitlesIfEmbeddedSubtitlesPresent, skipSubtitlesIfAudioTrackMatches,
                 subtitleDownloadLanguages, requirePerfectSubtitleMatch, saveSubtitlesWithMedia, saveLyricsWithMedia,
                 saveTrickplayWithMedia, disabledLyricFetchers, lyricFetcherOrder, preferNonstandardArtistsTag,
                 useCustomTagDelimiters, customTagDelimiters, delimiterWhitelist, automaticallyAddToCollection,
@@ -1459,7 +1461,7 @@ public class LibraryOptions {
         sb.append("    subtitleFetcherOrder: ").append(toIndentedString(subtitleFetcherOrder)).append("\n");
         sb.append("    disabledMediaSegmentProviders: ").append(toIndentedString(disabledMediaSegmentProviders))
                 .append("\n");
-        sb.append("    mediaSegmentProvideOrder: ").append(toIndentedString(mediaSegmentProvideOrder)).append("\n");
+        sb.append("    mediaSegmentProviderOrder: ").append(toIndentedString(mediaSegmentProviderOrder)).append("\n");
         sb.append("    skipSubtitlesIfEmbeddedSubtitlesPresent: ")
                 .append(toIndentedString(skipSubtitlesIfEmbeddedSubtitlesPresent)).append("\n");
         sb.append("    skipSubtitlesIfAudioTrackMatches: ").append(toIndentedString(skipSubtitlesIfAudioTrackMatches))
@@ -1530,49 +1532,49 @@ public class LibraryOptions {
 
         // add `Enabled` to the URL query string
         if (getEnabled() != null) {
-            joiner.add(String.format("%sEnabled%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sEnabled%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getEnabled()))));
         }
 
         // add `EnablePhotos` to the URL query string
         if (getEnablePhotos() != null) {
-            joiner.add(String.format("%sEnablePhotos%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sEnablePhotos%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getEnablePhotos()))));
         }
 
         // add `EnableRealtimeMonitor` to the URL query string
         if (getEnableRealtimeMonitor() != null) {
-            joiner.add(String.format("%sEnableRealtimeMonitor%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sEnableRealtimeMonitor%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getEnableRealtimeMonitor()))));
         }
 
         // add `EnableLUFSScan` to the URL query string
         if (getEnableLUFSScan() != null) {
-            joiner.add(String.format("%sEnableLUFSScan%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sEnableLUFSScan%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getEnableLUFSScan()))));
         }
 
         // add `EnableChapterImageExtraction` to the URL query string
         if (getEnableChapterImageExtraction() != null) {
-            joiner.add(String.format("%sEnableChapterImageExtraction%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sEnableChapterImageExtraction%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getEnableChapterImageExtraction()))));
         }
 
         // add `ExtractChapterImagesDuringLibraryScan` to the URL query string
         if (getExtractChapterImagesDuringLibraryScan() != null) {
-            joiner.add(String.format("%sExtractChapterImagesDuringLibraryScan%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sExtractChapterImagesDuringLibraryScan%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getExtractChapterImagesDuringLibraryScan()))));
         }
 
         // add `EnableTrickplayImageExtraction` to the URL query string
         if (getEnableTrickplayImageExtraction() != null) {
-            joiner.add(String.format("%sEnableTrickplayImageExtraction%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sEnableTrickplayImageExtraction%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getEnableTrickplayImageExtraction()))));
         }
 
         // add `ExtractTrickplayImagesDuringLibraryScan` to the URL query string
         if (getExtractTrickplayImagesDuringLibraryScan() != null) {
-            joiner.add(String.format("%sExtractTrickplayImagesDuringLibraryScan%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sExtractTrickplayImagesDuringLibraryScan%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getExtractTrickplayImagesDuringLibraryScan()))));
         }
 
@@ -1580,77 +1582,79 @@ public class LibraryOptions {
         if (getPathInfos() != null) {
             for (int i = 0; i < getPathInfos().size(); i++) {
                 if (getPathInfos().get(i) != null) {
-                    joiner.add(getPathInfos().get(i).toUrlQueryString(String.format("%sPathInfos%s%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
+                    joiner.add(getPathInfos().get(i).toUrlQueryString(
+                            String.format(Locale.ROOT, "%sPathInfos%s%s", prefix, suffix, "".equals(suffix) ? ""
+                                    : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
                 }
             }
         }
 
         // add `SaveLocalMetadata` to the URL query string
         if (getSaveLocalMetadata() != null) {
-            joiner.add(String.format("%sSaveLocalMetadata%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sSaveLocalMetadata%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getSaveLocalMetadata()))));
         }
 
         // add `EnableInternetProviders` to the URL query string
         if (getEnableInternetProviders() != null) {
-            joiner.add(String.format("%sEnableInternetProviders%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sEnableInternetProviders%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getEnableInternetProviders()))));
         }
 
         // add `EnableAutomaticSeriesGrouping` to the URL query string
         if (getEnableAutomaticSeriesGrouping() != null) {
-            joiner.add(String.format("%sEnableAutomaticSeriesGrouping%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sEnableAutomaticSeriesGrouping%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getEnableAutomaticSeriesGrouping()))));
         }
 
         // add `EnableEmbeddedTitles` to the URL query string
         if (getEnableEmbeddedTitles() != null) {
-            joiner.add(String.format("%sEnableEmbeddedTitles%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sEnableEmbeddedTitles%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getEnableEmbeddedTitles()))));
         }
 
         // add `EnableEmbeddedExtrasTitles` to the URL query string
         if (getEnableEmbeddedExtrasTitles() != null) {
-            joiner.add(String.format("%sEnableEmbeddedExtrasTitles%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sEnableEmbeddedExtrasTitles%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getEnableEmbeddedExtrasTitles()))));
         }
 
         // add `EnableEmbeddedEpisodeInfos` to the URL query string
         if (getEnableEmbeddedEpisodeInfos() != null) {
-            joiner.add(String.format("%sEnableEmbeddedEpisodeInfos%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sEnableEmbeddedEpisodeInfos%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getEnableEmbeddedEpisodeInfos()))));
         }
 
         // add `AutomaticRefreshIntervalDays` to the URL query string
         if (getAutomaticRefreshIntervalDays() != null) {
-            joiner.add(String.format("%sAutomaticRefreshIntervalDays%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sAutomaticRefreshIntervalDays%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getAutomaticRefreshIntervalDays()))));
         }
 
         // add `PreferredMetadataLanguage` to the URL query string
         if (getPreferredMetadataLanguage() != null) {
-            joiner.add(String.format("%sPreferredMetadataLanguage%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sPreferredMetadataLanguage%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getPreferredMetadataLanguage()))));
         }
 
         // add `MetadataCountryCode` to the URL query string
         if (getMetadataCountryCode() != null) {
-            joiner.add(String.format("%sMetadataCountryCode%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sMetadataCountryCode%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getMetadataCountryCode()))));
         }
 
         // add `SeasonZeroDisplayName` to the URL query string
         if (getSeasonZeroDisplayName() != null) {
-            joiner.add(String.format("%sSeasonZeroDisplayName%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sSeasonZeroDisplayName%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getSeasonZeroDisplayName()))));
         }
 
         // add `MetadataSavers` to the URL query string
         if (getMetadataSavers() != null) {
             for (int i = 0; i < getMetadataSavers().size(); i++) {
-                joiner.add(String.format("%sMetadataSavers%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+                joiner.add(String.format(Locale.ROOT, "%sMetadataSavers%s%s=%s", prefix, suffix,
+                        "".equals(suffix) ? ""
+                                : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
                         ApiClient.urlEncode(ApiClient.valueToString(getMetadataSavers().get(i)))));
             }
         }
@@ -1658,8 +1662,9 @@ public class LibraryOptions {
         // add `DisabledLocalMetadataReaders` to the URL query string
         if (getDisabledLocalMetadataReaders() != null) {
             for (int i = 0; i < getDisabledLocalMetadataReaders().size(); i++) {
-                joiner.add(String.format("%sDisabledLocalMetadataReaders%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+                joiner.add(String.format(Locale.ROOT, "%sDisabledLocalMetadataReaders%s%s=%s", prefix, suffix,
+                        "".equals(suffix) ? ""
+                                : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
                         ApiClient.urlEncode(ApiClient.valueToString(getDisabledLocalMetadataReaders().get(i)))));
             }
         }
@@ -1667,8 +1672,9 @@ public class LibraryOptions {
         // add `LocalMetadataReaderOrder` to the URL query string
         if (getLocalMetadataReaderOrder() != null) {
             for (int i = 0; i < getLocalMetadataReaderOrder().size(); i++) {
-                joiner.add(String.format("%sLocalMetadataReaderOrder%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+                joiner.add(String.format(Locale.ROOT, "%sLocalMetadataReaderOrder%s%s=%s", prefix, suffix,
+                        "".equals(suffix) ? ""
+                                : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
                         ApiClient.urlEncode(ApiClient.valueToString(getLocalMetadataReaderOrder().get(i)))));
             }
         }
@@ -1676,8 +1682,9 @@ public class LibraryOptions {
         // add `DisabledSubtitleFetchers` to the URL query string
         if (getDisabledSubtitleFetchers() != null) {
             for (int i = 0; i < getDisabledSubtitleFetchers().size(); i++) {
-                joiner.add(String.format("%sDisabledSubtitleFetchers%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+                joiner.add(String.format(Locale.ROOT, "%sDisabledSubtitleFetchers%s%s=%s", prefix, suffix,
+                        "".equals(suffix) ? ""
+                                : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
                         ApiClient.urlEncode(ApiClient.valueToString(getDisabledSubtitleFetchers().get(i)))));
             }
         }
@@ -1685,8 +1692,9 @@ public class LibraryOptions {
         // add `SubtitleFetcherOrder` to the URL query string
         if (getSubtitleFetcherOrder() != null) {
             for (int i = 0; i < getSubtitleFetcherOrder().size(); i++) {
-                joiner.add(String.format("%sSubtitleFetcherOrder%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+                joiner.add(String.format(Locale.ROOT, "%sSubtitleFetcherOrder%s%s=%s", prefix, suffix,
+                        "".equals(suffix) ? ""
+                                : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
                         ApiClient.urlEncode(ApiClient.valueToString(getSubtitleFetcherOrder().get(i)))));
             }
         }
@@ -1694,71 +1702,75 @@ public class LibraryOptions {
         // add `DisabledMediaSegmentProviders` to the URL query string
         if (getDisabledMediaSegmentProviders() != null) {
             for (int i = 0; i < getDisabledMediaSegmentProviders().size(); i++) {
-                joiner.add(String.format("%sDisabledMediaSegmentProviders%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+                joiner.add(String.format(Locale.ROOT, "%sDisabledMediaSegmentProviders%s%s=%s", prefix, suffix,
+                        "".equals(suffix) ? ""
+                                : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
                         ApiClient.urlEncode(ApiClient.valueToString(getDisabledMediaSegmentProviders().get(i)))));
             }
         }
 
-        // add `MediaSegmentProvideOrder` to the URL query string
-        if (getMediaSegmentProvideOrder() != null) {
-            for (int i = 0; i < getMediaSegmentProvideOrder().size(); i++) {
-                joiner.add(String.format("%sMediaSegmentProvideOrder%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getMediaSegmentProvideOrder().get(i)))));
+        // add `MediaSegmentProviderOrder` to the URL query string
+        if (getMediaSegmentProviderOrder() != null) {
+            for (int i = 0; i < getMediaSegmentProviderOrder().size(); i++) {
+                joiner.add(String.format(Locale.ROOT, "%sMediaSegmentProviderOrder%s%s=%s", prefix, suffix,
+                        "".equals(suffix) ? ""
+                                : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
+                        ApiClient.urlEncode(ApiClient.valueToString(getMediaSegmentProviderOrder().get(i)))));
             }
         }
 
         // add `SkipSubtitlesIfEmbeddedSubtitlesPresent` to the URL query string
         if (getSkipSubtitlesIfEmbeddedSubtitlesPresent() != null) {
-            joiner.add(String.format("%sSkipSubtitlesIfEmbeddedSubtitlesPresent%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sSkipSubtitlesIfEmbeddedSubtitlesPresent%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getSkipSubtitlesIfEmbeddedSubtitlesPresent()))));
         }
 
         // add `SkipSubtitlesIfAudioTrackMatches` to the URL query string
         if (getSkipSubtitlesIfAudioTrackMatches() != null) {
-            joiner.add(String.format("%sSkipSubtitlesIfAudioTrackMatches%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sSkipSubtitlesIfAudioTrackMatches%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getSkipSubtitlesIfAudioTrackMatches()))));
         }
 
         // add `SubtitleDownloadLanguages` to the URL query string
         if (getSubtitleDownloadLanguages() != null) {
             for (int i = 0; i < getSubtitleDownloadLanguages().size(); i++) {
-                joiner.add(String.format("%sSubtitleDownloadLanguages%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+                joiner.add(String.format(Locale.ROOT, "%sSubtitleDownloadLanguages%s%s=%s", prefix, suffix,
+                        "".equals(suffix) ? ""
+                                : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
                         ApiClient.urlEncode(ApiClient.valueToString(getSubtitleDownloadLanguages().get(i)))));
             }
         }
 
         // add `RequirePerfectSubtitleMatch` to the URL query string
         if (getRequirePerfectSubtitleMatch() != null) {
-            joiner.add(String.format("%sRequirePerfectSubtitleMatch%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sRequirePerfectSubtitleMatch%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getRequirePerfectSubtitleMatch()))));
         }
 
         // add `SaveSubtitlesWithMedia` to the URL query string
         if (getSaveSubtitlesWithMedia() != null) {
-            joiner.add(String.format("%sSaveSubtitlesWithMedia%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sSaveSubtitlesWithMedia%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getSaveSubtitlesWithMedia()))));
         }
 
         // add `SaveLyricsWithMedia` to the URL query string
         if (getSaveLyricsWithMedia() != null) {
-            joiner.add(String.format("%sSaveLyricsWithMedia%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sSaveLyricsWithMedia%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getSaveLyricsWithMedia()))));
         }
 
         // add `SaveTrickplayWithMedia` to the URL query string
         if (getSaveTrickplayWithMedia() != null) {
-            joiner.add(String.format("%sSaveTrickplayWithMedia%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sSaveTrickplayWithMedia%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getSaveTrickplayWithMedia()))));
         }
 
         // add `DisabledLyricFetchers` to the URL query string
         if (getDisabledLyricFetchers() != null) {
             for (int i = 0; i < getDisabledLyricFetchers().size(); i++) {
-                joiner.add(String.format("%sDisabledLyricFetchers%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+                joiner.add(String.format(Locale.ROOT, "%sDisabledLyricFetchers%s%s=%s", prefix, suffix,
+                        "".equals(suffix) ? ""
+                                : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
                         ApiClient.urlEncode(ApiClient.valueToString(getDisabledLyricFetchers().get(i)))));
             }
         }
@@ -1766,29 +1778,31 @@ public class LibraryOptions {
         // add `LyricFetcherOrder` to the URL query string
         if (getLyricFetcherOrder() != null) {
             for (int i = 0; i < getLyricFetcherOrder().size(); i++) {
-                joiner.add(String.format("%sLyricFetcherOrder%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+                joiner.add(String.format(Locale.ROOT, "%sLyricFetcherOrder%s%s=%s", prefix, suffix,
+                        "".equals(suffix) ? ""
+                                : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
                         ApiClient.urlEncode(ApiClient.valueToString(getLyricFetcherOrder().get(i)))));
             }
         }
 
         // add `PreferNonstandardArtistsTag` to the URL query string
         if (getPreferNonstandardArtistsTag() != null) {
-            joiner.add(String.format("%sPreferNonstandardArtistsTag%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sPreferNonstandardArtistsTag%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getPreferNonstandardArtistsTag()))));
         }
 
         // add `UseCustomTagDelimiters` to the URL query string
         if (getUseCustomTagDelimiters() != null) {
-            joiner.add(String.format("%sUseCustomTagDelimiters%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sUseCustomTagDelimiters%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getUseCustomTagDelimiters()))));
         }
 
         // add `CustomTagDelimiters` to the URL query string
         if (getCustomTagDelimiters() != null) {
             for (int i = 0; i < getCustomTagDelimiters().size(); i++) {
-                joiner.add(String.format("%sCustomTagDelimiters%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+                joiner.add(String.format(Locale.ROOT, "%sCustomTagDelimiters%s%s=%s", prefix, suffix,
+                        "".equals(suffix) ? ""
+                                : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
                         ApiClient.urlEncode(ApiClient.valueToString(getCustomTagDelimiters().get(i)))));
             }
         }
@@ -1796,21 +1810,22 @@ public class LibraryOptions {
         // add `DelimiterWhitelist` to the URL query string
         if (getDelimiterWhitelist() != null) {
             for (int i = 0; i < getDelimiterWhitelist().size(); i++) {
-                joiner.add(String.format("%sDelimiterWhitelist%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+                joiner.add(String.format(Locale.ROOT, "%sDelimiterWhitelist%s%s=%s", prefix, suffix,
+                        "".equals(suffix) ? ""
+                                : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
                         ApiClient.urlEncode(ApiClient.valueToString(getDelimiterWhitelist().get(i)))));
             }
         }
 
         // add `AutomaticallyAddToCollection` to the URL query string
         if (getAutomaticallyAddToCollection() != null) {
-            joiner.add(String.format("%sAutomaticallyAddToCollection%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sAutomaticallyAddToCollection%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getAutomaticallyAddToCollection()))));
         }
 
         // add `AllowEmbeddedSubtitles` to the URL query string
         if (getAllowEmbeddedSubtitles() != null) {
-            joiner.add(String.format("%sAllowEmbeddedSubtitles%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sAllowEmbeddedSubtitles%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getAllowEmbeddedSubtitles()))));
         }
 
@@ -1818,9 +1833,9 @@ public class LibraryOptions {
         if (getTypeOptions() != null) {
             for (int i = 0; i < getTypeOptions().size(); i++) {
                 if (getTypeOptions().get(i) != null) {
-                    joiner.add(getTypeOptions().get(i).toUrlQueryString(String.format("%sTypeOptions%s%s", prefix,
-                            suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
+                    joiner.add(getTypeOptions().get(i).toUrlQueryString(
+                            String.format(Locale.ROOT, "%sTypeOptions%s%s", prefix, suffix, "".equals(suffix) ? ""
+                                    : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
                 }
             }
         }
@@ -1967,8 +1982,8 @@ public class LibraryOptions {
             return this;
         }
 
-        public LibraryOptions.Builder mediaSegmentProvideOrder(List<String> mediaSegmentProvideOrder) {
-            this.instance.mediaSegmentProvideOrder = mediaSegmentProvideOrder;
+        public LibraryOptions.Builder mediaSegmentProviderOrder(List<String> mediaSegmentProviderOrder) {
+            this.instance.mediaSegmentProviderOrder = mediaSegmentProviderOrder;
             return this;
         }
 
@@ -2103,7 +2118,7 @@ public class LibraryOptions {
                 .localMetadataReaderOrder(getLocalMetadataReaderOrder())
                 .disabledSubtitleFetchers(getDisabledSubtitleFetchers()).subtitleFetcherOrder(getSubtitleFetcherOrder())
                 .disabledMediaSegmentProviders(getDisabledMediaSegmentProviders())
-                .mediaSegmentProvideOrder(getMediaSegmentProvideOrder())
+                .mediaSegmentProviderOrder(getMediaSegmentProviderOrder())
                 .skipSubtitlesIfEmbeddedSubtitlesPresent(getSkipSubtitlesIfEmbeddedSubtitlesPresent())
                 .skipSubtitlesIfAudioTrackMatches(getSkipSubtitlesIfAudioTrackMatches())
                 .subtitleDownloadLanguages(getSubtitleDownloadLanguages())

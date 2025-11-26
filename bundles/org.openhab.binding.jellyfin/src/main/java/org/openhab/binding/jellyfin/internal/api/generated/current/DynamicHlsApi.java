@@ -918,7 +918,7 @@ public class DynamicHlsApi {
             localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
         }
 
-        localVarRequestBuilder.header("Accept", "audio/*");
+        localVarRequestBuilder.header("Accept", "audio/*, text/html");
 
         localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {
@@ -1726,7 +1726,7 @@ public class DynamicHlsApi {
             localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
         }
 
-        localVarRequestBuilder.header("Accept", "video/*");
+        localVarRequestBuilder.header("Accept", "video/*, text/html");
 
         localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {
@@ -2476,7 +2476,7 @@ public class DynamicHlsApi {
             localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
         }
 
-        localVarRequestBuilder.header("Accept", "application/x-mpegURL");
+        localVarRequestBuilder.header("Accept", "application/x-mpegURL, text/html");
 
         localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {
@@ -2553,7 +2553,7 @@ public class DynamicHlsApi {
      *            used. (optional)
      * @param context Optional. The MediaBrowser.Model.Dlna.EncodingContext. (optional)
      * @param streamOptions Optional. The streaming options. (optional)
-     * @param enableAdaptiveBitrateStreaming Enable adaptive bitrate streaming. (optional, default to true)
+     * @param enableAdaptiveBitrateStreaming Enable adaptive bitrate streaming. (optional, default to false)
      * @param enableAudioVbrEncoding Optional. Whether to enable Audio Encoding. (optional, default to true)
      * @return File
      * @throws ApiException if fails to make API call
@@ -2677,7 +2677,7 @@ public class DynamicHlsApi {
      *            used. (optional)
      * @param context Optional. The MediaBrowser.Model.Dlna.EncodingContext. (optional)
      * @param streamOptions Optional. The streaming options. (optional)
-     * @param enableAdaptiveBitrateStreaming Enable adaptive bitrate streaming. (optional, default to true)
+     * @param enableAdaptiveBitrateStreaming Enable adaptive bitrate streaming. (optional, default to false)
      * @param enableAudioVbrEncoding Optional. Whether to enable Audio Encoding. (optional, default to true)
      * @param headers Optional headers to include in the request
      * @return File
@@ -2804,7 +2804,7 @@ public class DynamicHlsApi {
      *            used. (optional)
      * @param context Optional. The MediaBrowser.Model.Dlna.EncodingContext. (optional)
      * @param streamOptions Optional. The streaming options. (optional)
-     * @param enableAdaptiveBitrateStreaming Enable adaptive bitrate streaming. (optional, default to true)
+     * @param enableAdaptiveBitrateStreaming Enable adaptive bitrate streaming. (optional, default to false)
      * @param enableAudioVbrEncoding Optional. Whether to enable Audio Encoding. (optional, default to true)
      * @return ApiResponse&lt;File&gt;
      * @throws ApiException if fails to make API call
@@ -2928,7 +2928,7 @@ public class DynamicHlsApi {
      *            used. (optional)
      * @param context Optional. The MediaBrowser.Model.Dlna.EncodingContext. (optional)
      * @param streamOptions Optional. The streaming options. (optional)
-     * @param enableAdaptiveBitrateStreaming Enable adaptive bitrate streaming. (optional, default to true)
+     * @param enableAdaptiveBitrateStreaming Enable adaptive bitrate streaming. (optional, default to false)
      * @param enableAudioVbrEncoding Optional. Whether to enable Audio Encoding. (optional, default to true)
      * @param headers Optional headers to include in the request
      * @return ApiResponse&lt;File&gt;
@@ -3199,7 +3199,7 @@ public class DynamicHlsApi {
             localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
         }
 
-        localVarRequestBuilder.header("Accept", "application/x-mpegURL");
+        localVarRequestBuilder.header("Accept", "application/x-mpegURL, text/html");
 
         localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {
@@ -3277,7 +3277,7 @@ public class DynamicHlsApi {
      *            used. (optional)
      * @param context Optional. The MediaBrowser.Model.Dlna.EncodingContext. (optional)
      * @param streamOptions Optional. The streaming options. (optional)
-     * @param enableAdaptiveBitrateStreaming Enable adaptive bitrate streaming. (optional, default to true)
+     * @param enableAdaptiveBitrateStreaming Enable adaptive bitrate streaming. (optional, default to false)
      * @param enableTrickplay Enable trickplay image playlists being added to master playlist. (optional, default to
      *            true)
      * @param enableAudioVbrEncoding Whether to enable Audio Encoding. (optional, default to true)
@@ -3409,7 +3409,7 @@ public class DynamicHlsApi {
      *            used. (optional)
      * @param context Optional. The MediaBrowser.Model.Dlna.EncodingContext. (optional)
      * @param streamOptions Optional. The streaming options. (optional)
-     * @param enableAdaptiveBitrateStreaming Enable adaptive bitrate streaming. (optional, default to true)
+     * @param enableAdaptiveBitrateStreaming Enable adaptive bitrate streaming. (optional, default to false)
      * @param enableTrickplay Enable trickplay image playlists being added to master playlist. (optional, default to
      *            true)
      * @param enableAudioVbrEncoding Whether to enable Audio Encoding. (optional, default to true)
@@ -3544,7 +3544,7 @@ public class DynamicHlsApi {
      *            used. (optional)
      * @param context Optional. The MediaBrowser.Model.Dlna.EncodingContext. (optional)
      * @param streamOptions Optional. The streaming options. (optional)
-     * @param enableAdaptiveBitrateStreaming Enable adaptive bitrate streaming. (optional, default to true)
+     * @param enableAdaptiveBitrateStreaming Enable adaptive bitrate streaming. (optional, default to false)
      * @param enableTrickplay Enable trickplay image playlists being added to master playlist. (optional, default to
      *            true)
      * @param enableAudioVbrEncoding Whether to enable Audio Encoding. (optional, default to true)
@@ -3676,7 +3676,7 @@ public class DynamicHlsApi {
      *            used. (optional)
      * @param context Optional. The MediaBrowser.Model.Dlna.EncodingContext. (optional)
      * @param streamOptions Optional. The streaming options. (optional)
-     * @param enableAdaptiveBitrateStreaming Enable adaptive bitrate streaming. (optional, default to true)
+     * @param enableAdaptiveBitrateStreaming Enable adaptive bitrate streaming. (optional, default to false)
      * @param enableTrickplay Enable trickplay image playlists being added to master playlist. (optional, default to
      *            true)
      * @param enableAudioVbrEncoding Whether to enable Audio Encoding. (optional, default to true)
@@ -3963,7 +3963,7 @@ public class DynamicHlsApi {
             localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
         }
 
-        localVarRequestBuilder.header("Accept", "application/x-mpegURL");
+        localVarRequestBuilder.header("Accept", "application/x-mpegURL, text/html");
 
         localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {
@@ -4669,7 +4669,7 @@ public class DynamicHlsApi {
             localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
         }
 
-        localVarRequestBuilder.header("Accept", "application/x-mpegURL");
+        localVarRequestBuilder.header("Accept", "application/x-mpegURL, text/html");
 
         localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {
@@ -5397,7 +5397,7 @@ public class DynamicHlsApi {
             localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
         }
 
-        localVarRequestBuilder.header("Accept", "application/x-mpegURL");
+        localVarRequestBuilder.header("Accept", "application/x-mpegURL, text/html");
 
         localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {
@@ -5474,7 +5474,7 @@ public class DynamicHlsApi {
      *            used. (optional)
      * @param context Optional. The MediaBrowser.Model.Dlna.EncodingContext. (optional)
      * @param streamOptions Optional. The streaming options. (optional)
-     * @param enableAdaptiveBitrateStreaming Enable adaptive bitrate streaming. (optional, default to true)
+     * @param enableAdaptiveBitrateStreaming Enable adaptive bitrate streaming. (optional, default to false)
      * @param enableAudioVbrEncoding Optional. Whether to enable Audio Encoding. (optional, default to true)
      * @return File
      * @throws ApiException if fails to make API call
@@ -5598,7 +5598,7 @@ public class DynamicHlsApi {
      *            used. (optional)
      * @param context Optional. The MediaBrowser.Model.Dlna.EncodingContext. (optional)
      * @param streamOptions Optional. The streaming options. (optional)
-     * @param enableAdaptiveBitrateStreaming Enable adaptive bitrate streaming. (optional, default to true)
+     * @param enableAdaptiveBitrateStreaming Enable adaptive bitrate streaming. (optional, default to false)
      * @param enableAudioVbrEncoding Optional. Whether to enable Audio Encoding. (optional, default to true)
      * @param headers Optional headers to include in the request
      * @return File
@@ -5725,7 +5725,7 @@ public class DynamicHlsApi {
      *            used. (optional)
      * @param context Optional. The MediaBrowser.Model.Dlna.EncodingContext. (optional)
      * @param streamOptions Optional. The streaming options. (optional)
-     * @param enableAdaptiveBitrateStreaming Enable adaptive bitrate streaming. (optional, default to true)
+     * @param enableAdaptiveBitrateStreaming Enable adaptive bitrate streaming. (optional, default to false)
      * @param enableAudioVbrEncoding Optional. Whether to enable Audio Encoding. (optional, default to true)
      * @return ApiResponse&lt;File&gt;
      * @throws ApiException if fails to make API call
@@ -5849,7 +5849,7 @@ public class DynamicHlsApi {
      *            used. (optional)
      * @param context Optional. The MediaBrowser.Model.Dlna.EncodingContext. (optional)
      * @param streamOptions Optional. The streaming options. (optional)
-     * @param enableAdaptiveBitrateStreaming Enable adaptive bitrate streaming. (optional, default to true)
+     * @param enableAdaptiveBitrateStreaming Enable adaptive bitrate streaming. (optional, default to false)
      * @param enableAudioVbrEncoding Optional. Whether to enable Audio Encoding. (optional, default to true)
      * @param headers Optional headers to include in the request
      * @return ApiResponse&lt;File&gt;
@@ -6120,7 +6120,7 @@ public class DynamicHlsApi {
             localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
         }
 
-        localVarRequestBuilder.header("Accept", "application/x-mpegURL");
+        localVarRequestBuilder.header("Accept", "application/x-mpegURL, text/html");
 
         localVarRequestBuilder.method("HEAD", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {
@@ -6198,7 +6198,7 @@ public class DynamicHlsApi {
      *            used. (optional)
      * @param context Optional. The MediaBrowser.Model.Dlna.EncodingContext. (optional)
      * @param streamOptions Optional. The streaming options. (optional)
-     * @param enableAdaptiveBitrateStreaming Enable adaptive bitrate streaming. (optional, default to true)
+     * @param enableAdaptiveBitrateStreaming Enable adaptive bitrate streaming. (optional, default to false)
      * @param enableTrickplay Enable trickplay image playlists being added to master playlist. (optional, default to
      *            true)
      * @param enableAudioVbrEncoding Whether to enable Audio Encoding. (optional, default to true)
@@ -6330,7 +6330,7 @@ public class DynamicHlsApi {
      *            used. (optional)
      * @param context Optional. The MediaBrowser.Model.Dlna.EncodingContext. (optional)
      * @param streamOptions Optional. The streaming options. (optional)
-     * @param enableAdaptiveBitrateStreaming Enable adaptive bitrate streaming. (optional, default to true)
+     * @param enableAdaptiveBitrateStreaming Enable adaptive bitrate streaming. (optional, default to false)
      * @param enableTrickplay Enable trickplay image playlists being added to master playlist. (optional, default to
      *            true)
      * @param enableAudioVbrEncoding Whether to enable Audio Encoding. (optional, default to true)
@@ -6465,7 +6465,7 @@ public class DynamicHlsApi {
      *            used. (optional)
      * @param context Optional. The MediaBrowser.Model.Dlna.EncodingContext. (optional)
      * @param streamOptions Optional. The streaming options. (optional)
-     * @param enableAdaptiveBitrateStreaming Enable adaptive bitrate streaming. (optional, default to true)
+     * @param enableAdaptiveBitrateStreaming Enable adaptive bitrate streaming. (optional, default to false)
      * @param enableTrickplay Enable trickplay image playlists being added to master playlist. (optional, default to
      *            true)
      * @param enableAudioVbrEncoding Whether to enable Audio Encoding. (optional, default to true)
@@ -6597,7 +6597,7 @@ public class DynamicHlsApi {
      *            used. (optional)
      * @param context Optional. The MediaBrowser.Model.Dlna.EncodingContext. (optional)
      * @param streamOptions Optional. The streaming options. (optional)
-     * @param enableAdaptiveBitrateStreaming Enable adaptive bitrate streaming. (optional, default to true)
+     * @param enableAdaptiveBitrateStreaming Enable adaptive bitrate streaming. (optional, default to false)
      * @param enableTrickplay Enable trickplay image playlists being added to master playlist. (optional, default to
      *            true)
      * @param enableAudioVbrEncoding Whether to enable Audio Encoding. (optional, default to true)
@@ -6884,7 +6884,7 @@ public class DynamicHlsApi {
             localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
         }
 
-        localVarRequestBuilder.header("Accept", "application/x-mpegURL");
+        localVarRequestBuilder.header("Accept", "application/x-mpegURL, text/html");
 
         localVarRequestBuilder.method("HEAD", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {

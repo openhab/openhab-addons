@@ -27,7 +27,7 @@ import org.openhab.binding.jellyfin.internal.api.generated.ApiClient;
 import org.openhab.binding.jellyfin.internal.api.generated.ApiException;
 import org.openhab.binding.jellyfin.internal.api.generated.ApiResponse;
 import org.openhab.binding.jellyfin.internal.api.generated.Configuration;
-import org.openhab.binding.jellyfin.internal.api.generated.current.model.BrandingOptions;
+import org.openhab.binding.jellyfin.internal.api.generated.current.model.BrandingOptionsDto;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -225,7 +225,7 @@ public class BrandingApi {
         localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
 
         localVarRequestBuilder.header("Accept",
-                "text/css, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+                "text/css, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase, text/html");
 
         localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {
@@ -323,7 +323,7 @@ public class BrandingApi {
         localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
 
         localVarRequestBuilder.header("Accept",
-                "text/css, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+                "text/css, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase, text/html");
 
         localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {
@@ -340,10 +340,10 @@ public class BrandingApi {
     /**
      * Gets branding configuration.
      * 
-     * @return BrandingOptions
+     * @return BrandingOptionsDto
      * @throws ApiException if fails to make API call
      */
-    public BrandingOptions getBrandingOptions() throws ApiException {
+    public BrandingOptionsDto getBrandingOptions() throws ApiException {
         return getBrandingOptions(null);
     }
 
@@ -351,21 +351,21 @@ public class BrandingApi {
      * Gets branding configuration.
      * 
      * @param headers Optional headers to include in the request
-     * @return BrandingOptions
+     * @return BrandingOptionsDto
      * @throws ApiException if fails to make API call
      */
-    public BrandingOptions getBrandingOptions(Map<String, String> headers) throws ApiException {
-        ApiResponse<BrandingOptions> localVarResponse = getBrandingOptionsWithHttpInfo(headers);
+    public BrandingOptionsDto getBrandingOptions(Map<String, String> headers) throws ApiException {
+        ApiResponse<BrandingOptionsDto> localVarResponse = getBrandingOptionsWithHttpInfo(headers);
         return localVarResponse.getData();
     }
 
     /**
      * Gets branding configuration.
      * 
-     * @return ApiResponse&lt;BrandingOptions&gt;
+     * @return ApiResponse&lt;BrandingOptionsDto&gt;
      * @throws ApiException if fails to make API call
      */
-    public ApiResponse<BrandingOptions> getBrandingOptionsWithHttpInfo() throws ApiException {
+    public ApiResponse<BrandingOptionsDto> getBrandingOptionsWithHttpInfo() throws ApiException {
         return getBrandingOptionsWithHttpInfo(null);
     }
 
@@ -373,10 +373,10 @@ public class BrandingApi {
      * Gets branding configuration.
      * 
      * @param headers Optional headers to include in the request
-     * @return ApiResponse&lt;BrandingOptions&gt;
+     * @return ApiResponse&lt;BrandingOptionsDto&gt;
      * @throws ApiException if fails to make API call
      */
-    public ApiResponse<BrandingOptions> getBrandingOptionsWithHttpInfo(Map<String, String> headers)
+    public ApiResponse<BrandingOptionsDto> getBrandingOptionsWithHttpInfo(Map<String, String> headers)
             throws ApiException {
         HttpRequest.Builder localVarRequestBuilder = getBrandingOptionsRequestBuilder(headers);
         try {
@@ -390,19 +390,19 @@ public class BrandingApi {
                     throw getApiException("getBrandingOptions", localVarResponse);
                 }
                 if (localVarResponse.body() == null) {
-                    return new ApiResponse<BrandingOptions>(localVarResponse.statusCode(),
+                    return new ApiResponse<BrandingOptionsDto>(localVarResponse.statusCode(),
                             localVarResponse.headers().map(), null);
                 }
 
                 String responseBody = new String(localVarResponse.body().readAllBytes());
-                BrandingOptions responseValue = responseBody.isBlank() ? null
-                        : memberVarObjectMapper.readValue(responseBody, new TypeReference<BrandingOptions>() {
+                BrandingOptionsDto responseValue = responseBody.isBlank() ? null
+                        : memberVarObjectMapper.readValue(responseBody, new TypeReference<BrandingOptionsDto>() {
                         });
 
                 localVarResponse.body().close();
 
-                return new ApiResponse<BrandingOptions>(localVarResponse.statusCode(), localVarResponse.headers().map(),
-                        responseValue);
+                return new ApiResponse<BrandingOptionsDto>(localVarResponse.statusCode(),
+                        localVarResponse.headers().map(), responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -422,7 +422,7 @@ public class BrandingApi {
         localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
 
         localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase, text/html");
 
         localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {

@@ -14,6 +14,7 @@
 package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
 import java.time.OffsetDateTime;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
 import java.util.UUID;
@@ -61,13 +62,13 @@ public class ReadyRequestDto {
      * @return when
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_WHEN)
+    @JsonProperty(value = JSON_PROPERTY_WHEN, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public OffsetDateTime getWhen() {
         return when;
     }
 
-    @JsonProperty(JSON_PROPERTY_WHEN)
+    @JsonProperty(value = JSON_PROPERTY_WHEN, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setWhen(@org.eclipse.jdt.annotation.NonNull OffsetDateTime when) {
         this.when = when;
@@ -84,13 +85,13 @@ public class ReadyRequestDto {
      * @return positionTicks
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_POSITION_TICKS)
+    @JsonProperty(value = JSON_PROPERTY_POSITION_TICKS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Long getPositionTicks() {
         return positionTicks;
     }
 
-    @JsonProperty(JSON_PROPERTY_POSITION_TICKS)
+    @JsonProperty(value = JSON_PROPERTY_POSITION_TICKS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setPositionTicks(@org.eclipse.jdt.annotation.NonNull Long positionTicks) {
         this.positionTicks = positionTicks;
@@ -107,13 +108,13 @@ public class ReadyRequestDto {
      * @return isPlaying
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_IS_PLAYING)
+    @JsonProperty(value = JSON_PROPERTY_IS_PLAYING, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getIsPlaying() {
         return isPlaying;
     }
 
-    @JsonProperty(JSON_PROPERTY_IS_PLAYING)
+    @JsonProperty(value = JSON_PROPERTY_IS_PLAYING, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setIsPlaying(@org.eclipse.jdt.annotation.NonNull Boolean isPlaying) {
         this.isPlaying = isPlaying;
@@ -130,13 +131,13 @@ public class ReadyRequestDto {
      * @return playlistItemId
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_PLAYLIST_ITEM_ID)
+    @JsonProperty(value = JSON_PROPERTY_PLAYLIST_ITEM_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public UUID getPlaylistItemId() {
         return playlistItemId;
     }
 
-    @JsonProperty(JSON_PROPERTY_PLAYLIST_ITEM_ID)
+    @JsonProperty(value = JSON_PROPERTY_PLAYLIST_ITEM_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setPlaylistItemId(@org.eclipse.jdt.annotation.NonNull UUID playlistItemId) {
         this.playlistItemId = playlistItemId;
@@ -222,25 +223,25 @@ public class ReadyRequestDto {
 
         // add `When` to the URL query string
         if (getWhen() != null) {
-            joiner.add(String.format("%sWhen%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sWhen%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getWhen()))));
         }
 
         // add `PositionTicks` to the URL query string
         if (getPositionTicks() != null) {
-            joiner.add(String.format("%sPositionTicks%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sPositionTicks%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getPositionTicks()))));
         }
 
         // add `IsPlaying` to the URL query string
         if (getIsPlaying() != null) {
-            joiner.add(String.format("%sIsPlaying%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sIsPlaying%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getIsPlaying()))));
         }
 
         // add `PlaylistItemId` to the URL query string
         if (getPlaylistItemId() != null) {
-            joiner.add(String.format("%sPlaylistItemId%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sPlaylistItemId%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getPlaylistItemId()))));
         }
 

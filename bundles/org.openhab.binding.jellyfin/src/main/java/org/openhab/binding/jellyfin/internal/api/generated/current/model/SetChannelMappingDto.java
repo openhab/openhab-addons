@@ -13,6 +13,7 @@
 
 package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
+import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
 
@@ -55,13 +56,13 @@ public class SetChannelMappingDto {
      * @return providerId
      */
     @org.eclipse.jdt.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_PROVIDER_ID)
+    @JsonProperty(value = JSON_PROPERTY_PROVIDER_ID, required = true)
     @JsonInclude(value = JsonInclude.Include.ALWAYS)
     public String getProviderId() {
         return providerId;
     }
 
-    @JsonProperty(JSON_PROPERTY_PROVIDER_ID)
+    @JsonProperty(value = JSON_PROPERTY_PROVIDER_ID, required = true)
     @JsonInclude(value = JsonInclude.Include.ALWAYS)
     public void setProviderId(@org.eclipse.jdt.annotation.Nullable String providerId) {
         this.providerId = providerId;
@@ -78,13 +79,13 @@ public class SetChannelMappingDto {
      * @return tunerChannelId
      */
     @org.eclipse.jdt.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_TUNER_CHANNEL_ID)
+    @JsonProperty(value = JSON_PROPERTY_TUNER_CHANNEL_ID, required = true)
     @JsonInclude(value = JsonInclude.Include.ALWAYS)
     public String getTunerChannelId() {
         return tunerChannelId;
     }
 
-    @JsonProperty(JSON_PROPERTY_TUNER_CHANNEL_ID)
+    @JsonProperty(value = JSON_PROPERTY_TUNER_CHANNEL_ID, required = true)
     @JsonInclude(value = JsonInclude.Include.ALWAYS)
     public void setTunerChannelId(@org.eclipse.jdt.annotation.Nullable String tunerChannelId) {
         this.tunerChannelId = tunerChannelId;
@@ -101,13 +102,13 @@ public class SetChannelMappingDto {
      * @return providerChannelId
      */
     @org.eclipse.jdt.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_PROVIDER_CHANNEL_ID)
+    @JsonProperty(value = JSON_PROPERTY_PROVIDER_CHANNEL_ID, required = true)
     @JsonInclude(value = JsonInclude.Include.ALWAYS)
     public String getProviderChannelId() {
         return providerChannelId;
     }
 
-    @JsonProperty(JSON_PROPERTY_PROVIDER_CHANNEL_ID)
+    @JsonProperty(value = JSON_PROPERTY_PROVIDER_CHANNEL_ID, required = true)
     @JsonInclude(value = JsonInclude.Include.ALWAYS)
     public void setProviderChannelId(@org.eclipse.jdt.annotation.Nullable String providerChannelId) {
         this.providerChannelId = providerChannelId;
@@ -191,19 +192,19 @@ public class SetChannelMappingDto {
 
         // add `ProviderId` to the URL query string
         if (getProviderId() != null) {
-            joiner.add(String.format("%sProviderId%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sProviderId%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getProviderId()))));
         }
 
         // add `TunerChannelId` to the URL query string
         if (getTunerChannelId() != null) {
-            joiner.add(String.format("%sTunerChannelId%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sTunerChannelId%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getTunerChannelId()))));
         }
 
         // add `ProviderChannelId` to the URL query string
         if (getProviderChannelId() != null) {
-            joiner.add(String.format("%sProviderChannelId%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sProviderChannelId%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getProviderChannelId()))));
         }
 

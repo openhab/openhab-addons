@@ -13,6 +13,7 @@
 
 package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
+import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
 
@@ -65,13 +66,13 @@ public class XbmcMetadataOptions {
      * @return userId
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_USER_ID)
+    @JsonProperty(value = JSON_PROPERTY_USER_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getUserId() {
         return userId;
     }
 
-    @JsonProperty(JSON_PROPERTY_USER_ID)
+    @JsonProperty(value = JSON_PROPERTY_USER_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setUserId(@org.eclipse.jdt.annotation.NonNull String userId) {
         this.userId = userId;
@@ -88,13 +89,13 @@ public class XbmcMetadataOptions {
      * @return releaseDateFormat
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_RELEASE_DATE_FORMAT)
+    @JsonProperty(value = JSON_PROPERTY_RELEASE_DATE_FORMAT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getReleaseDateFormat() {
         return releaseDateFormat;
     }
 
-    @JsonProperty(JSON_PROPERTY_RELEASE_DATE_FORMAT)
+    @JsonProperty(value = JSON_PROPERTY_RELEASE_DATE_FORMAT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setReleaseDateFormat(@org.eclipse.jdt.annotation.NonNull String releaseDateFormat) {
         this.releaseDateFormat = releaseDateFormat;
@@ -111,13 +112,13 @@ public class XbmcMetadataOptions {
      * @return saveImagePathsInNfo
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_SAVE_IMAGE_PATHS_IN_NFO)
+    @JsonProperty(value = JSON_PROPERTY_SAVE_IMAGE_PATHS_IN_NFO, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getSaveImagePathsInNfo() {
         return saveImagePathsInNfo;
     }
 
-    @JsonProperty(JSON_PROPERTY_SAVE_IMAGE_PATHS_IN_NFO)
+    @JsonProperty(value = JSON_PROPERTY_SAVE_IMAGE_PATHS_IN_NFO, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setSaveImagePathsInNfo(@org.eclipse.jdt.annotation.NonNull Boolean saveImagePathsInNfo) {
         this.saveImagePathsInNfo = saveImagePathsInNfo;
@@ -135,13 +136,13 @@ public class XbmcMetadataOptions {
      * @return enablePathSubstitution
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ENABLE_PATH_SUBSTITUTION)
+    @JsonProperty(value = JSON_PROPERTY_ENABLE_PATH_SUBSTITUTION, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getEnablePathSubstitution() {
         return enablePathSubstitution;
     }
 
-    @JsonProperty(JSON_PROPERTY_ENABLE_PATH_SUBSTITUTION)
+    @JsonProperty(value = JSON_PROPERTY_ENABLE_PATH_SUBSTITUTION, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setEnablePathSubstitution(@org.eclipse.jdt.annotation.NonNull Boolean enablePathSubstitution) {
         this.enablePathSubstitution = enablePathSubstitution;
@@ -159,13 +160,13 @@ public class XbmcMetadataOptions {
      * @return enableExtraThumbsDuplication
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ENABLE_EXTRA_THUMBS_DUPLICATION)
+    @JsonProperty(value = JSON_PROPERTY_ENABLE_EXTRA_THUMBS_DUPLICATION, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getEnableExtraThumbsDuplication() {
         return enableExtraThumbsDuplication;
     }
 
-    @JsonProperty(JSON_PROPERTY_ENABLE_EXTRA_THUMBS_DUPLICATION)
+    @JsonProperty(value = JSON_PROPERTY_ENABLE_EXTRA_THUMBS_DUPLICATION, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setEnableExtraThumbsDuplication(
             @org.eclipse.jdt.annotation.NonNull Boolean enableExtraThumbsDuplication) {
@@ -256,31 +257,31 @@ public class XbmcMetadataOptions {
 
         // add `UserId` to the URL query string
         if (getUserId() != null) {
-            joiner.add(String.format("%sUserId%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sUserId%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getUserId()))));
         }
 
         // add `ReleaseDateFormat` to the URL query string
         if (getReleaseDateFormat() != null) {
-            joiner.add(String.format("%sReleaseDateFormat%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sReleaseDateFormat%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getReleaseDateFormat()))));
         }
 
         // add `SaveImagePathsInNfo` to the URL query string
         if (getSaveImagePathsInNfo() != null) {
-            joiner.add(String.format("%sSaveImagePathsInNfo%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sSaveImagePathsInNfo%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getSaveImagePathsInNfo()))));
         }
 
         // add `EnablePathSubstitution` to the URL query string
         if (getEnablePathSubstitution() != null) {
-            joiner.add(String.format("%sEnablePathSubstitution%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sEnablePathSubstitution%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getEnablePathSubstitution()))));
         }
 
         // add `EnableExtraThumbsDuplication` to the URL query string
         if (getEnableExtraThumbsDuplication() != null) {
-            joiner.add(String.format("%sEnableExtraThumbsDuplication%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sEnableExtraThumbsDuplication%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getEnableExtraThumbsDuplication()))));
         }
 

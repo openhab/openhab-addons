@@ -233,7 +233,7 @@ public class PackageApi {
 
         localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
 
-        localVarRequestBuilder.header("Accept", "application/json");
+        localVarRequestBuilder.header("Accept", "text/html");
 
         localVarRequestBuilder.method("DELETE", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {
@@ -363,7 +363,7 @@ public class PackageApi {
         }
 
         localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase, text/html");
 
         localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {
@@ -461,7 +461,7 @@ public class PackageApi {
         localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
 
         localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase, text/html");
 
         localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {
@@ -560,7 +560,7 @@ public class PackageApi {
         localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
 
         localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase, text/html");
 
         localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {
@@ -697,7 +697,7 @@ public class PackageApi {
         }
 
         localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase, text/html");
 
         localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {
@@ -799,7 +799,7 @@ public class PackageApi {
         localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
 
         localVarRequestBuilder.header("Content-Type", "application/json");
-        localVarRequestBuilder.header("Accept", "application/json");
+        localVarRequestBuilder.header("Accept", "text/html");
 
         try {
             byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(repositoryInfo);

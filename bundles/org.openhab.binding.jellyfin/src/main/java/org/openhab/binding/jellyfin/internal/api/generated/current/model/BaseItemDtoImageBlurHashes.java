@@ -14,6 +14,7 @@
 package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.StringJoiner;
@@ -110,13 +111,13 @@ public class BaseItemDtoImageBlurHashes {
      * @return primary
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_PRIMARY)
+    @JsonProperty(value = JSON_PROPERTY_PRIMARY, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Map<String, String> getPrimary() {
         return primary;
     }
 
-    @JsonProperty(JSON_PROPERTY_PRIMARY)
+    @JsonProperty(value = JSON_PROPERTY_PRIMARY, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setPrimary(@org.eclipse.jdt.annotation.NonNull Map<String, String> primary) {
         this.primary = primary;
@@ -141,13 +142,13 @@ public class BaseItemDtoImageBlurHashes {
      * @return art
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ART)
+    @JsonProperty(value = JSON_PROPERTY_ART, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Map<String, String> getArt() {
         return art;
     }
 
-    @JsonProperty(JSON_PROPERTY_ART)
+    @JsonProperty(value = JSON_PROPERTY_ART, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setArt(@org.eclipse.jdt.annotation.NonNull Map<String, String> art) {
         this.art = art;
@@ -172,13 +173,13 @@ public class BaseItemDtoImageBlurHashes {
      * @return backdrop
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_BACKDROP)
+    @JsonProperty(value = JSON_PROPERTY_BACKDROP, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Map<String, String> getBackdrop() {
         return backdrop;
     }
 
-    @JsonProperty(JSON_PROPERTY_BACKDROP)
+    @JsonProperty(value = JSON_PROPERTY_BACKDROP, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setBackdrop(@org.eclipse.jdt.annotation.NonNull Map<String, String> backdrop) {
         this.backdrop = backdrop;
@@ -203,13 +204,13 @@ public class BaseItemDtoImageBlurHashes {
      * @return banner
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_BANNER)
+    @JsonProperty(value = JSON_PROPERTY_BANNER, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Map<String, String> getBanner() {
         return banner;
     }
 
-    @JsonProperty(JSON_PROPERTY_BANNER)
+    @JsonProperty(value = JSON_PROPERTY_BANNER, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setBanner(@org.eclipse.jdt.annotation.NonNull Map<String, String> banner) {
         this.banner = banner;
@@ -234,13 +235,13 @@ public class BaseItemDtoImageBlurHashes {
      * @return logo
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_LOGO)
+    @JsonProperty(value = JSON_PROPERTY_LOGO, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Map<String, String> getLogo() {
         return logo;
     }
 
-    @JsonProperty(JSON_PROPERTY_LOGO)
+    @JsonProperty(value = JSON_PROPERTY_LOGO, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setLogo(@org.eclipse.jdt.annotation.NonNull Map<String, String> logo) {
         this.logo = logo;
@@ -265,13 +266,13 @@ public class BaseItemDtoImageBlurHashes {
      * @return thumb
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_THUMB)
+    @JsonProperty(value = JSON_PROPERTY_THUMB, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Map<String, String> getThumb() {
         return thumb;
     }
 
-    @JsonProperty(JSON_PROPERTY_THUMB)
+    @JsonProperty(value = JSON_PROPERTY_THUMB, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setThumb(@org.eclipse.jdt.annotation.NonNull Map<String, String> thumb) {
         this.thumb = thumb;
@@ -296,13 +297,13 @@ public class BaseItemDtoImageBlurHashes {
      * @return disc
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_DISC)
+    @JsonProperty(value = JSON_PROPERTY_DISC, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Map<String, String> getDisc() {
         return disc;
     }
 
-    @JsonProperty(JSON_PROPERTY_DISC)
+    @JsonProperty(value = JSON_PROPERTY_DISC, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setDisc(@org.eclipse.jdt.annotation.NonNull Map<String, String> disc) {
         this.disc = disc;
@@ -327,13 +328,13 @@ public class BaseItemDtoImageBlurHashes {
      * @return box
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_BOX)
+    @JsonProperty(value = JSON_PROPERTY_BOX, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Map<String, String> getBox() {
         return box;
     }
 
-    @JsonProperty(JSON_PROPERTY_BOX)
+    @JsonProperty(value = JSON_PROPERTY_BOX, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setBox(@org.eclipse.jdt.annotation.NonNull Map<String, String> box) {
         this.box = box;
@@ -358,13 +359,13 @@ public class BaseItemDtoImageBlurHashes {
      * @return screenshot
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_SCREENSHOT)
+    @JsonProperty(value = JSON_PROPERTY_SCREENSHOT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Map<String, String> getScreenshot() {
         return screenshot;
     }
 
-    @JsonProperty(JSON_PROPERTY_SCREENSHOT)
+    @JsonProperty(value = JSON_PROPERTY_SCREENSHOT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setScreenshot(@org.eclipse.jdt.annotation.NonNull Map<String, String> screenshot) {
         this.screenshot = screenshot;
@@ -389,13 +390,13 @@ public class BaseItemDtoImageBlurHashes {
      * @return menu
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_MENU)
+    @JsonProperty(value = JSON_PROPERTY_MENU, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Map<String, String> getMenu() {
         return menu;
     }
 
-    @JsonProperty(JSON_PROPERTY_MENU)
+    @JsonProperty(value = JSON_PROPERTY_MENU, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setMenu(@org.eclipse.jdt.annotation.NonNull Map<String, String> menu) {
         this.menu = menu;
@@ -420,13 +421,13 @@ public class BaseItemDtoImageBlurHashes {
      * @return chapter
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_CHAPTER)
+    @JsonProperty(value = JSON_PROPERTY_CHAPTER, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Map<String, String> getChapter() {
         return chapter;
     }
 
-    @JsonProperty(JSON_PROPERTY_CHAPTER)
+    @JsonProperty(value = JSON_PROPERTY_CHAPTER, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setChapter(@org.eclipse.jdt.annotation.NonNull Map<String, String> chapter) {
         this.chapter = chapter;
@@ -451,13 +452,13 @@ public class BaseItemDtoImageBlurHashes {
      * @return boxRear
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_BOX_REAR)
+    @JsonProperty(value = JSON_PROPERTY_BOX_REAR, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Map<String, String> getBoxRear() {
         return boxRear;
     }
 
-    @JsonProperty(JSON_PROPERTY_BOX_REAR)
+    @JsonProperty(value = JSON_PROPERTY_BOX_REAR, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setBoxRear(@org.eclipse.jdt.annotation.NonNull Map<String, String> boxRear) {
         this.boxRear = boxRear;
@@ -482,13 +483,13 @@ public class BaseItemDtoImageBlurHashes {
      * @return profile
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_PROFILE)
+    @JsonProperty(value = JSON_PROPERTY_PROFILE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Map<String, String> getProfile() {
         return profile;
     }
 
-    @JsonProperty(JSON_PROPERTY_PROFILE)
+    @JsonProperty(value = JSON_PROPERTY_PROFILE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setProfile(@org.eclipse.jdt.annotation.NonNull Map<String, String> profile) {
         this.profile = profile;
@@ -594,8 +595,9 @@ public class BaseItemDtoImageBlurHashes {
         // add `Primary` to the URL query string
         if (getPrimary() != null) {
             for (String _key : getPrimary().keySet()) {
-                joiner.add(String.format("%sPrimary%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, _key, containerSuffix),
+                joiner.add(String.format(Locale.ROOT, "%sPrimary%s%s=%s", prefix, suffix,
+                        "".equals(suffix) ? ""
+                                : String.format(Locale.ROOT, "%s%d%s", containerPrefix, _key, containerSuffix),
                         getPrimary().get(_key), ApiClient.urlEncode(ApiClient.valueToString(getPrimary().get(_key)))));
             }
         }
@@ -603,8 +605,9 @@ public class BaseItemDtoImageBlurHashes {
         // add `Art` to the URL query string
         if (getArt() != null) {
             for (String _key : getArt().keySet()) {
-                joiner.add(String.format("%sArt%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, _key, containerSuffix),
+                joiner.add(String.format(Locale.ROOT, "%sArt%s%s=%s", prefix, suffix,
+                        "".equals(suffix) ? ""
+                                : String.format(Locale.ROOT, "%s%d%s", containerPrefix, _key, containerSuffix),
                         getArt().get(_key), ApiClient.urlEncode(ApiClient.valueToString(getArt().get(_key)))));
             }
         }
@@ -612,8 +615,9 @@ public class BaseItemDtoImageBlurHashes {
         // add `Backdrop` to the URL query string
         if (getBackdrop() != null) {
             for (String _key : getBackdrop().keySet()) {
-                joiner.add(String.format("%sBackdrop%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, _key, containerSuffix),
+                joiner.add(String.format(Locale.ROOT, "%sBackdrop%s%s=%s", prefix, suffix,
+                        "".equals(suffix) ? ""
+                                : String.format(Locale.ROOT, "%s%d%s", containerPrefix, _key, containerSuffix),
                         getBackdrop().get(_key),
                         ApiClient.urlEncode(ApiClient.valueToString(getBackdrop().get(_key)))));
             }
@@ -622,8 +626,9 @@ public class BaseItemDtoImageBlurHashes {
         // add `Banner` to the URL query string
         if (getBanner() != null) {
             for (String _key : getBanner().keySet()) {
-                joiner.add(String.format("%sBanner%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, _key, containerSuffix),
+                joiner.add(String.format(Locale.ROOT, "%sBanner%s%s=%s", prefix, suffix,
+                        "".equals(suffix) ? ""
+                                : String.format(Locale.ROOT, "%s%d%s", containerPrefix, _key, containerSuffix),
                         getBanner().get(_key), ApiClient.urlEncode(ApiClient.valueToString(getBanner().get(_key)))));
             }
         }
@@ -631,8 +636,9 @@ public class BaseItemDtoImageBlurHashes {
         // add `Logo` to the URL query string
         if (getLogo() != null) {
             for (String _key : getLogo().keySet()) {
-                joiner.add(String.format("%sLogo%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, _key, containerSuffix),
+                joiner.add(String.format(Locale.ROOT, "%sLogo%s%s=%s", prefix, suffix,
+                        "".equals(suffix) ? ""
+                                : String.format(Locale.ROOT, "%s%d%s", containerPrefix, _key, containerSuffix),
                         getLogo().get(_key), ApiClient.urlEncode(ApiClient.valueToString(getLogo().get(_key)))));
             }
         }
@@ -640,8 +646,9 @@ public class BaseItemDtoImageBlurHashes {
         // add `Thumb` to the URL query string
         if (getThumb() != null) {
             for (String _key : getThumb().keySet()) {
-                joiner.add(String.format("%sThumb%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, _key, containerSuffix),
+                joiner.add(String.format(Locale.ROOT, "%sThumb%s%s=%s", prefix, suffix,
+                        "".equals(suffix) ? ""
+                                : String.format(Locale.ROOT, "%s%d%s", containerPrefix, _key, containerSuffix),
                         getThumb().get(_key), ApiClient.urlEncode(ApiClient.valueToString(getThumb().get(_key)))));
             }
         }
@@ -649,8 +656,9 @@ public class BaseItemDtoImageBlurHashes {
         // add `Disc` to the URL query string
         if (getDisc() != null) {
             for (String _key : getDisc().keySet()) {
-                joiner.add(String.format("%sDisc%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, _key, containerSuffix),
+                joiner.add(String.format(Locale.ROOT, "%sDisc%s%s=%s", prefix, suffix,
+                        "".equals(suffix) ? ""
+                                : String.format(Locale.ROOT, "%s%d%s", containerPrefix, _key, containerSuffix),
                         getDisc().get(_key), ApiClient.urlEncode(ApiClient.valueToString(getDisc().get(_key)))));
             }
         }
@@ -658,8 +666,9 @@ public class BaseItemDtoImageBlurHashes {
         // add `Box` to the URL query string
         if (getBox() != null) {
             for (String _key : getBox().keySet()) {
-                joiner.add(String.format("%sBox%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, _key, containerSuffix),
+                joiner.add(String.format(Locale.ROOT, "%sBox%s%s=%s", prefix, suffix,
+                        "".equals(suffix) ? ""
+                                : String.format(Locale.ROOT, "%s%d%s", containerPrefix, _key, containerSuffix),
                         getBox().get(_key), ApiClient.urlEncode(ApiClient.valueToString(getBox().get(_key)))));
             }
         }
@@ -667,8 +676,9 @@ public class BaseItemDtoImageBlurHashes {
         // add `Screenshot` to the URL query string
         if (getScreenshot() != null) {
             for (String _key : getScreenshot().keySet()) {
-                joiner.add(String.format("%sScreenshot%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, _key, containerSuffix),
+                joiner.add(String.format(Locale.ROOT, "%sScreenshot%s%s=%s", prefix, suffix,
+                        "".equals(suffix) ? ""
+                                : String.format(Locale.ROOT, "%s%d%s", containerPrefix, _key, containerSuffix),
                         getScreenshot().get(_key),
                         ApiClient.urlEncode(ApiClient.valueToString(getScreenshot().get(_key)))));
             }
@@ -677,8 +687,9 @@ public class BaseItemDtoImageBlurHashes {
         // add `Menu` to the URL query string
         if (getMenu() != null) {
             for (String _key : getMenu().keySet()) {
-                joiner.add(String.format("%sMenu%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, _key, containerSuffix),
+                joiner.add(String.format(Locale.ROOT, "%sMenu%s%s=%s", prefix, suffix,
+                        "".equals(suffix) ? ""
+                                : String.format(Locale.ROOT, "%s%d%s", containerPrefix, _key, containerSuffix),
                         getMenu().get(_key), ApiClient.urlEncode(ApiClient.valueToString(getMenu().get(_key)))));
             }
         }
@@ -686,8 +697,9 @@ public class BaseItemDtoImageBlurHashes {
         // add `Chapter` to the URL query string
         if (getChapter() != null) {
             for (String _key : getChapter().keySet()) {
-                joiner.add(String.format("%sChapter%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, _key, containerSuffix),
+                joiner.add(String.format(Locale.ROOT, "%sChapter%s%s=%s", prefix, suffix,
+                        "".equals(suffix) ? ""
+                                : String.format(Locale.ROOT, "%s%d%s", containerPrefix, _key, containerSuffix),
                         getChapter().get(_key), ApiClient.urlEncode(ApiClient.valueToString(getChapter().get(_key)))));
             }
         }
@@ -695,8 +707,9 @@ public class BaseItemDtoImageBlurHashes {
         // add `BoxRear` to the URL query string
         if (getBoxRear() != null) {
             for (String _key : getBoxRear().keySet()) {
-                joiner.add(String.format("%sBoxRear%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, _key, containerSuffix),
+                joiner.add(String.format(Locale.ROOT, "%sBoxRear%s%s=%s", prefix, suffix,
+                        "".equals(suffix) ? ""
+                                : String.format(Locale.ROOT, "%s%d%s", containerPrefix, _key, containerSuffix),
                         getBoxRear().get(_key), ApiClient.urlEncode(ApiClient.valueToString(getBoxRear().get(_key)))));
             }
         }
@@ -704,8 +717,9 @@ public class BaseItemDtoImageBlurHashes {
         // add `Profile` to the URL query string
         if (getProfile() != null) {
             for (String _key : getProfile().keySet()) {
-                joiner.add(String.format("%sProfile%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, _key, containerSuffix),
+                joiner.add(String.format(Locale.ROOT, "%sProfile%s%s=%s", prefix, suffix,
+                        "".equals(suffix) ? ""
+                                : String.format(Locale.ROOT, "%s%d%s", containerPrefix, _key, containerSuffix),
                         getProfile().get(_key), ApiClient.urlEncode(ApiClient.valueToString(getProfile().get(_key)))));
             }
         }

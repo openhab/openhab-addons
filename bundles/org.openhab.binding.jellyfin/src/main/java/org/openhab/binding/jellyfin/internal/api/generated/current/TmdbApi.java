@@ -225,7 +225,7 @@ public class TmdbApi {
 
         localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
 
-        localVarRequestBuilder.header("Accept", "application/json");
+        localVarRequestBuilder.header("Accept", "application/json, text/html");
 
         localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {

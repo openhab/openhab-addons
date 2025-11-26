@@ -13,6 +13,7 @@
 
 package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
+import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
 import java.util.UUID;
@@ -67,7 +68,7 @@ public class AccessSchedule {
      * @return id
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ID)
+    @JsonProperty(value = JSON_PROPERTY_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getId() {
         return id;
@@ -84,13 +85,13 @@ public class AccessSchedule {
      * @return userId
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_USER_ID)
+    @JsonProperty(value = JSON_PROPERTY_USER_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public UUID getUserId() {
         return userId;
     }
 
-    @JsonProperty(JSON_PROPERTY_USER_ID)
+    @JsonProperty(value = JSON_PROPERTY_USER_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setUserId(@org.eclipse.jdt.annotation.NonNull UUID userId) {
         this.userId = userId;
@@ -107,13 +108,13 @@ public class AccessSchedule {
      * @return dayOfWeek
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_DAY_OF_WEEK)
+    @JsonProperty(value = JSON_PROPERTY_DAY_OF_WEEK, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public DynamicDayOfWeek getDayOfWeek() {
         return dayOfWeek;
     }
 
-    @JsonProperty(JSON_PROPERTY_DAY_OF_WEEK)
+    @JsonProperty(value = JSON_PROPERTY_DAY_OF_WEEK, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setDayOfWeek(@org.eclipse.jdt.annotation.NonNull DynamicDayOfWeek dayOfWeek) {
         this.dayOfWeek = dayOfWeek;
@@ -130,13 +131,13 @@ public class AccessSchedule {
      * @return startHour
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_START_HOUR)
+    @JsonProperty(value = JSON_PROPERTY_START_HOUR, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Double getStartHour() {
         return startHour;
     }
 
-    @JsonProperty(JSON_PROPERTY_START_HOUR)
+    @JsonProperty(value = JSON_PROPERTY_START_HOUR, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setStartHour(@org.eclipse.jdt.annotation.NonNull Double startHour) {
         this.startHour = startHour;
@@ -153,13 +154,13 @@ public class AccessSchedule {
      * @return endHour
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_END_HOUR)
+    @JsonProperty(value = JSON_PROPERTY_END_HOUR, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Double getEndHour() {
         return endHour;
     }
 
-    @JsonProperty(JSON_PROPERTY_END_HOUR)
+    @JsonProperty(value = JSON_PROPERTY_END_HOUR, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setEndHour(@org.eclipse.jdt.annotation.NonNull Double endHour) {
         this.endHour = endHour;
@@ -246,31 +247,31 @@ public class AccessSchedule {
 
         // add `Id` to the URL query string
         if (getId() != null) {
-            joiner.add(
-                    String.format("%sId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
+            joiner.add(String.format(Locale.ROOT, "%sId%s=%s", prefix, suffix,
+                    ApiClient.urlEncode(ApiClient.valueToString(getId()))));
         }
 
         // add `UserId` to the URL query string
         if (getUserId() != null) {
-            joiner.add(String.format("%sUserId%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sUserId%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getUserId()))));
         }
 
         // add `DayOfWeek` to the URL query string
         if (getDayOfWeek() != null) {
-            joiner.add(String.format("%sDayOfWeek%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sDayOfWeek%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getDayOfWeek()))));
         }
 
         // add `StartHour` to the URL query string
         if (getStartHour() != null) {
-            joiner.add(String.format("%sStartHour%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sStartHour%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getStartHour()))));
         }
 
         // add `EndHour` to the URL query string
         if (getEndHour() != null) {
-            joiner.add(String.format("%sEndHour%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sEndHour%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getEndHour()))));
         }
 

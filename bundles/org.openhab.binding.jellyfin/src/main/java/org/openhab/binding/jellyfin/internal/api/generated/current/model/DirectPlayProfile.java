@@ -13,6 +13,7 @@
 
 package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
+import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
 
@@ -59,13 +60,13 @@ public class DirectPlayProfile {
      * @return container
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_CONTAINER)
+    @JsonProperty(value = JSON_PROPERTY_CONTAINER, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getContainer() {
         return container;
     }
 
-    @JsonProperty(JSON_PROPERTY_CONTAINER)
+    @JsonProperty(value = JSON_PROPERTY_CONTAINER, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setContainer(@org.eclipse.jdt.annotation.NonNull String container) {
         this.container = container;
@@ -82,13 +83,13 @@ public class DirectPlayProfile {
      * @return audioCodec
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_AUDIO_CODEC)
+    @JsonProperty(value = JSON_PROPERTY_AUDIO_CODEC, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getAudioCodec() {
         return audioCodec;
     }
 
-    @JsonProperty(JSON_PROPERTY_AUDIO_CODEC)
+    @JsonProperty(value = JSON_PROPERTY_AUDIO_CODEC, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setAudioCodec(@org.eclipse.jdt.annotation.NonNull String audioCodec) {
         this.audioCodec = audioCodec;
@@ -105,13 +106,13 @@ public class DirectPlayProfile {
      * @return videoCodec
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_VIDEO_CODEC)
+    @JsonProperty(value = JSON_PROPERTY_VIDEO_CODEC, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getVideoCodec() {
         return videoCodec;
     }
 
-    @JsonProperty(JSON_PROPERTY_VIDEO_CODEC)
+    @JsonProperty(value = JSON_PROPERTY_VIDEO_CODEC, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setVideoCodec(@org.eclipse.jdt.annotation.NonNull String videoCodec) {
         this.videoCodec = videoCodec;
@@ -128,13 +129,13 @@ public class DirectPlayProfile {
      * @return type
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_TYPE)
+    @JsonProperty(value = JSON_PROPERTY_TYPE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public DlnaProfileType getType() {
         return type;
     }
 
-    @JsonProperty(JSON_PROPERTY_TYPE)
+    @JsonProperty(value = JSON_PROPERTY_TYPE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setType(@org.eclipse.jdt.annotation.NonNull DlnaProfileType type) {
         this.type = type;
@@ -220,25 +221,25 @@ public class DirectPlayProfile {
 
         // add `Container` to the URL query string
         if (getContainer() != null) {
-            joiner.add(String.format("%sContainer%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sContainer%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getContainer()))));
         }
 
         // add `AudioCodec` to the URL query string
         if (getAudioCodec() != null) {
-            joiner.add(String.format("%sAudioCodec%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sAudioCodec%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getAudioCodec()))));
         }
 
         // add `VideoCodec` to the URL query string
         if (getVideoCodec() != null) {
-            joiner.add(String.format("%sVideoCodec%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sVideoCodec%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getVideoCodec()))));
         }
 
         // add `Type` to the URL query string
         if (getType() != null) {
-            joiner.add(String.format("%sType%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sType%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getType()))));
         }
 

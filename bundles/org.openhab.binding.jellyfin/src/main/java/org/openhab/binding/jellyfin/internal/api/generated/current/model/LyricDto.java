@@ -15,6 +15,7 @@ package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
 
@@ -50,13 +51,13 @@ public class LyricDto {
      * @return metadata
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_METADATA)
+    @JsonProperty(value = JSON_PROPERTY_METADATA, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public LyricMetadata getMetadata() {
         return metadata;
     }
 
-    @JsonProperty(JSON_PROPERTY_METADATA)
+    @JsonProperty(value = JSON_PROPERTY_METADATA, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setMetadata(@org.eclipse.jdt.annotation.NonNull LyricMetadata metadata) {
         this.metadata = metadata;
@@ -81,13 +82,13 @@ public class LyricDto {
      * @return lyrics
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_LYRICS)
+    @JsonProperty(value = JSON_PROPERTY_LYRICS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<LyricLine> getLyrics() {
         return lyrics;
     }
 
-    @JsonProperty(JSON_PROPERTY_LYRICS)
+    @JsonProperty(value = JSON_PROPERTY_LYRICS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setLyrics(@org.eclipse.jdt.annotation.NonNull List<LyricLine> lyrics) {
         this.lyrics = lyrics;
@@ -175,8 +176,9 @@ public class LyricDto {
         if (getLyrics() != null) {
             for (int i = 0; i < getLyrics().size(); i++) {
                 if (getLyrics().get(i) != null) {
-                    joiner.add(getLyrics().get(i).toUrlQueryString(String.format("%sLyrics%s%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
+                    joiner.add(getLyrics().get(i).toUrlQueryString(
+                            String.format(Locale.ROOT, "%sLyrics%s%s", prefix, suffix, "".equals(suffix) ? ""
+                                    : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
                 }
             }
         }

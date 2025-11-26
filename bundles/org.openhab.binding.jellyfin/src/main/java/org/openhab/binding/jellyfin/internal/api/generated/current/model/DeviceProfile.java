@@ -15,6 +15,7 @@ package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
 import java.util.UUID;
@@ -101,13 +102,13 @@ public class DeviceProfile {
      * @return name
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_NAME)
+    @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getName() {
         return name;
     }
 
-    @JsonProperty(JSON_PROPERTY_NAME)
+    @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setName(@org.eclipse.jdt.annotation.NonNull String name) {
         this.name = name;
@@ -124,13 +125,13 @@ public class DeviceProfile {
      * @return id
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ID)
+    @JsonProperty(value = JSON_PROPERTY_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public UUID getId() {
         return id;
     }
 
-    @JsonProperty(JSON_PROPERTY_ID)
+    @JsonProperty(value = JSON_PROPERTY_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setId(@org.eclipse.jdt.annotation.NonNull UUID id) {
         this.id = id;
@@ -147,13 +148,13 @@ public class DeviceProfile {
      * @return maxStreamingBitrate
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_MAX_STREAMING_BITRATE)
+    @JsonProperty(value = JSON_PROPERTY_MAX_STREAMING_BITRATE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getMaxStreamingBitrate() {
         return maxStreamingBitrate;
     }
 
-    @JsonProperty(JSON_PROPERTY_MAX_STREAMING_BITRATE)
+    @JsonProperty(value = JSON_PROPERTY_MAX_STREAMING_BITRATE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setMaxStreamingBitrate(@org.eclipse.jdt.annotation.NonNull Integer maxStreamingBitrate) {
         this.maxStreamingBitrate = maxStreamingBitrate;
@@ -170,13 +171,13 @@ public class DeviceProfile {
      * @return maxStaticBitrate
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_MAX_STATIC_BITRATE)
+    @JsonProperty(value = JSON_PROPERTY_MAX_STATIC_BITRATE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getMaxStaticBitrate() {
         return maxStaticBitrate;
     }
 
-    @JsonProperty(JSON_PROPERTY_MAX_STATIC_BITRATE)
+    @JsonProperty(value = JSON_PROPERTY_MAX_STATIC_BITRATE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setMaxStaticBitrate(@org.eclipse.jdt.annotation.NonNull Integer maxStaticBitrate) {
         this.maxStaticBitrate = maxStaticBitrate;
@@ -194,13 +195,13 @@ public class DeviceProfile {
      * @return musicStreamingTranscodingBitrate
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_MUSIC_STREAMING_TRANSCODING_BITRATE)
+    @JsonProperty(value = JSON_PROPERTY_MUSIC_STREAMING_TRANSCODING_BITRATE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getMusicStreamingTranscodingBitrate() {
         return musicStreamingTranscodingBitrate;
     }
 
-    @JsonProperty(JSON_PROPERTY_MUSIC_STREAMING_TRANSCODING_BITRATE)
+    @JsonProperty(value = JSON_PROPERTY_MUSIC_STREAMING_TRANSCODING_BITRATE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setMusicStreamingTranscodingBitrate(
             @org.eclipse.jdt.annotation.NonNull Integer musicStreamingTranscodingBitrate) {
@@ -218,13 +219,13 @@ public class DeviceProfile {
      * @return maxStaticMusicBitrate
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_MAX_STATIC_MUSIC_BITRATE)
+    @JsonProperty(value = JSON_PROPERTY_MAX_STATIC_MUSIC_BITRATE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getMaxStaticMusicBitrate() {
         return maxStaticMusicBitrate;
     }
 
-    @JsonProperty(JSON_PROPERTY_MAX_STATIC_MUSIC_BITRATE)
+    @JsonProperty(value = JSON_PROPERTY_MAX_STATIC_MUSIC_BITRATE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setMaxStaticMusicBitrate(@org.eclipse.jdt.annotation.NonNull Integer maxStaticMusicBitrate) {
         this.maxStaticMusicBitrate = maxStaticMusicBitrate;
@@ -250,13 +251,13 @@ public class DeviceProfile {
      * @return directPlayProfiles
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_DIRECT_PLAY_PROFILES)
+    @JsonProperty(value = JSON_PROPERTY_DIRECT_PLAY_PROFILES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<DirectPlayProfile> getDirectPlayProfiles() {
         return directPlayProfiles;
     }
 
-    @JsonProperty(JSON_PROPERTY_DIRECT_PLAY_PROFILES)
+    @JsonProperty(value = JSON_PROPERTY_DIRECT_PLAY_PROFILES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setDirectPlayProfiles(@org.eclipse.jdt.annotation.NonNull List<DirectPlayProfile> directPlayProfiles) {
         this.directPlayProfiles = directPlayProfiles;
@@ -282,13 +283,13 @@ public class DeviceProfile {
      * @return transcodingProfiles
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_TRANSCODING_PROFILES)
+    @JsonProperty(value = JSON_PROPERTY_TRANSCODING_PROFILES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<TranscodingProfile> getTranscodingProfiles() {
         return transcodingProfiles;
     }
 
-    @JsonProperty(JSON_PROPERTY_TRANSCODING_PROFILES)
+    @JsonProperty(value = JSON_PROPERTY_TRANSCODING_PROFILES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setTranscodingProfiles(
             @org.eclipse.jdt.annotation.NonNull List<TranscodingProfile> transcodingProfiles) {
@@ -315,13 +316,13 @@ public class DeviceProfile {
      * @return containerProfiles
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_CONTAINER_PROFILES)
+    @JsonProperty(value = JSON_PROPERTY_CONTAINER_PROFILES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<ContainerProfile> getContainerProfiles() {
         return containerProfiles;
     }
 
-    @JsonProperty(JSON_PROPERTY_CONTAINER_PROFILES)
+    @JsonProperty(value = JSON_PROPERTY_CONTAINER_PROFILES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setContainerProfiles(@org.eclipse.jdt.annotation.NonNull List<ContainerProfile> containerProfiles) {
         this.containerProfiles = containerProfiles;
@@ -346,13 +347,13 @@ public class DeviceProfile {
      * @return codecProfiles
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_CODEC_PROFILES)
+    @JsonProperty(value = JSON_PROPERTY_CODEC_PROFILES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<CodecProfile> getCodecProfiles() {
         return codecProfiles;
     }
 
-    @JsonProperty(JSON_PROPERTY_CODEC_PROFILES)
+    @JsonProperty(value = JSON_PROPERTY_CODEC_PROFILES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setCodecProfiles(@org.eclipse.jdt.annotation.NonNull List<CodecProfile> codecProfiles) {
         this.codecProfiles = codecProfiles;
@@ -377,13 +378,13 @@ public class DeviceProfile {
      * @return subtitleProfiles
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_SUBTITLE_PROFILES)
+    @JsonProperty(value = JSON_PROPERTY_SUBTITLE_PROFILES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<SubtitleProfile> getSubtitleProfiles() {
         return subtitleProfiles;
     }
 
-    @JsonProperty(JSON_PROPERTY_SUBTITLE_PROFILES)
+    @JsonProperty(value = JSON_PROPERTY_SUBTITLE_PROFILES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setSubtitleProfiles(@org.eclipse.jdt.annotation.NonNull List<SubtitleProfile> subtitleProfiles) {
         this.subtitleProfiles = subtitleProfiles;
@@ -485,37 +486,37 @@ public class DeviceProfile {
 
         // add `Name` to the URL query string
         if (getName() != null) {
-            joiner.add(String.format("%sName%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sName%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getName()))));
         }
 
         // add `Id` to the URL query string
         if (getId() != null) {
-            joiner.add(
-                    String.format("%sId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
+            joiner.add(String.format(Locale.ROOT, "%sId%s=%s", prefix, suffix,
+                    ApiClient.urlEncode(ApiClient.valueToString(getId()))));
         }
 
         // add `MaxStreamingBitrate` to the URL query string
         if (getMaxStreamingBitrate() != null) {
-            joiner.add(String.format("%sMaxStreamingBitrate%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sMaxStreamingBitrate%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getMaxStreamingBitrate()))));
         }
 
         // add `MaxStaticBitrate` to the URL query string
         if (getMaxStaticBitrate() != null) {
-            joiner.add(String.format("%sMaxStaticBitrate%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sMaxStaticBitrate%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getMaxStaticBitrate()))));
         }
 
         // add `MusicStreamingTranscodingBitrate` to the URL query string
         if (getMusicStreamingTranscodingBitrate() != null) {
-            joiner.add(String.format("%sMusicStreamingTranscodingBitrate%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sMusicStreamingTranscodingBitrate%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getMusicStreamingTranscodingBitrate()))));
         }
 
         // add `MaxStaticMusicBitrate` to the URL query string
         if (getMaxStaticMusicBitrate() != null) {
-            joiner.add(String.format("%sMaxStaticMusicBitrate%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sMaxStaticMusicBitrate%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getMaxStaticMusicBitrate()))));
         }
 
@@ -523,9 +524,9 @@ public class DeviceProfile {
         if (getDirectPlayProfiles() != null) {
             for (int i = 0; i < getDirectPlayProfiles().size(); i++) {
                 if (getDirectPlayProfiles().get(i) != null) {
-                    joiner.add(getDirectPlayProfiles().get(i).toUrlQueryString(String.format("%sDirectPlayProfiles%s%s",
-                            prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
+                    joiner.add(getDirectPlayProfiles().get(i).toUrlQueryString(String.format(Locale.ROOT,
+                            "%sDirectPlayProfiles%s%s", prefix, suffix, "".equals(suffix) ? ""
+                                    : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
                 }
             }
         }
@@ -534,9 +535,9 @@ public class DeviceProfile {
         if (getTranscodingProfiles() != null) {
             for (int i = 0; i < getTranscodingProfiles().size(); i++) {
                 if (getTranscodingProfiles().get(i) != null) {
-                    joiner.add(getTranscodingProfiles().get(i).toUrlQueryString(String.format(
-                            "%sTranscodingProfiles%s%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
+                    joiner.add(getTranscodingProfiles().get(i).toUrlQueryString(String.format(Locale.ROOT,
+                            "%sTranscodingProfiles%s%s", prefix, suffix, "".equals(suffix) ? ""
+                                    : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
                 }
             }
         }
@@ -545,9 +546,9 @@ public class DeviceProfile {
         if (getContainerProfiles() != null) {
             for (int i = 0; i < getContainerProfiles().size(); i++) {
                 if (getContainerProfiles().get(i) != null) {
-                    joiner.add(getContainerProfiles().get(i).toUrlQueryString(String.format("%sContainerProfiles%s%s",
-                            prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
+                    joiner.add(getContainerProfiles().get(i).toUrlQueryString(
+                            String.format(Locale.ROOT, "%sContainerProfiles%s%s", prefix, suffix, "".equals(suffix) ? ""
+                                    : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
                 }
             }
         }
@@ -556,9 +557,9 @@ public class DeviceProfile {
         if (getCodecProfiles() != null) {
             for (int i = 0; i < getCodecProfiles().size(); i++) {
                 if (getCodecProfiles().get(i) != null) {
-                    joiner.add(getCodecProfiles().get(i).toUrlQueryString(String.format("%sCodecProfiles%s%s", prefix,
-                            suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
+                    joiner.add(getCodecProfiles().get(i).toUrlQueryString(
+                            String.format(Locale.ROOT, "%sCodecProfiles%s%s", prefix, suffix, "".equals(suffix) ? ""
+                                    : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
                 }
             }
         }
@@ -567,9 +568,9 @@ public class DeviceProfile {
         if (getSubtitleProfiles() != null) {
             for (int i = 0; i < getSubtitleProfiles().size(); i++) {
                 if (getSubtitleProfiles().get(i) != null) {
-                    joiner.add(getSubtitleProfiles().get(i).toUrlQueryString(String.format("%sSubtitleProfiles%s%s",
-                            prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
+                    joiner.add(getSubtitleProfiles().get(i).toUrlQueryString(
+                            String.format(Locale.ROOT, "%sSubtitleProfiles%s%s", prefix, suffix, "".equals(suffix) ? ""
+                                    : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
                 }
             }
         }

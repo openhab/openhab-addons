@@ -13,6 +13,7 @@
 
 package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
+import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
 import java.util.UUID;
@@ -51,13 +52,13 @@ public class PlaylistUserPermissions {
      * @return userId
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_USER_ID)
+    @JsonProperty(value = JSON_PROPERTY_USER_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public UUID getUserId() {
         return userId;
     }
 
-    @JsonProperty(JSON_PROPERTY_USER_ID)
+    @JsonProperty(value = JSON_PROPERTY_USER_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setUserId(@org.eclipse.jdt.annotation.NonNull UUID userId) {
         this.userId = userId;
@@ -74,13 +75,13 @@ public class PlaylistUserPermissions {
      * @return canEdit
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_CAN_EDIT)
+    @JsonProperty(value = JSON_PROPERTY_CAN_EDIT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getCanEdit() {
         return canEdit;
     }
 
-    @JsonProperty(JSON_PROPERTY_CAN_EDIT)
+    @JsonProperty(value = JSON_PROPERTY_CAN_EDIT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setCanEdit(@org.eclipse.jdt.annotation.NonNull Boolean canEdit) {
         this.canEdit = canEdit;
@@ -162,13 +163,13 @@ public class PlaylistUserPermissions {
 
         // add `UserId` to the URL query string
         if (getUserId() != null) {
-            joiner.add(String.format("%sUserId%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sUserId%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getUserId()))));
         }
 
         // add `CanEdit` to the URL query string
         if (getCanEdit() != null) {
-            joiner.add(String.format("%sCanEdit%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sCanEdit%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getCanEdit()))));
         }
 

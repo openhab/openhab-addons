@@ -13,6 +13,7 @@
 
 package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
+import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
 
@@ -55,13 +56,13 @@ public class MessageCommand {
      * @return header
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_HEADER)
+    @JsonProperty(value = JSON_PROPERTY_HEADER, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getHeader() {
         return header;
     }
 
-    @JsonProperty(JSON_PROPERTY_HEADER)
+    @JsonProperty(value = JSON_PROPERTY_HEADER, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setHeader(@org.eclipse.jdt.annotation.NonNull String header) {
         this.header = header;
@@ -78,13 +79,13 @@ public class MessageCommand {
      * @return text
      */
     @org.eclipse.jdt.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_TEXT)
+    @JsonProperty(value = JSON_PROPERTY_TEXT, required = true)
     @JsonInclude(value = JsonInclude.Include.ALWAYS)
     public String getText() {
         return text;
     }
 
-    @JsonProperty(JSON_PROPERTY_TEXT)
+    @JsonProperty(value = JSON_PROPERTY_TEXT, required = true)
     @JsonInclude(value = JsonInclude.Include.ALWAYS)
     public void setText(@org.eclipse.jdt.annotation.Nullable String text) {
         this.text = text;
@@ -101,13 +102,13 @@ public class MessageCommand {
      * @return timeoutMs
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_TIMEOUT_MS)
+    @JsonProperty(value = JSON_PROPERTY_TIMEOUT_MS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Long getTimeoutMs() {
         return timeoutMs;
     }
 
-    @JsonProperty(JSON_PROPERTY_TIMEOUT_MS)
+    @JsonProperty(value = JSON_PROPERTY_TIMEOUT_MS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setTimeoutMs(@org.eclipse.jdt.annotation.NonNull Long timeoutMs) {
         this.timeoutMs = timeoutMs;
@@ -190,19 +191,19 @@ public class MessageCommand {
 
         // add `Header` to the URL query string
         if (getHeader() != null) {
-            joiner.add(String.format("%sHeader%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sHeader%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getHeader()))));
         }
 
         // add `Text` to the URL query string
         if (getText() != null) {
-            joiner.add(String.format("%sText%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sText%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getText()))));
         }
 
         // add `TimeoutMs` to the URL query string
         if (getTimeoutMs() != null) {
-            joiner.add(String.format("%sTimeoutMs%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sTimeoutMs%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getTimeoutMs()))));
         }
 

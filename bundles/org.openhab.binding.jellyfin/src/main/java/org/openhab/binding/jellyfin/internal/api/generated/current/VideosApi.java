@@ -234,7 +234,7 @@ public class VideosApi {
         localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
 
         localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase, text/html");
 
         localVarRequestBuilder.method("DELETE", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {
@@ -367,7 +367,7 @@ public class VideosApi {
         }
 
         localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase, text/html");
 
         localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {
@@ -1100,7 +1100,7 @@ public class VideosApi {
             localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
         }
 
-        localVarRequestBuilder.header("Accept", "video/*");
+        localVarRequestBuilder.header("Accept", "video/*, text/html");
 
         localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {
@@ -1839,7 +1839,7 @@ public class VideosApi {
             localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
         }
 
-        localVarRequestBuilder.header("Accept", "video/*");
+        localVarRequestBuilder.header("Accept", "video/*, text/html");
 
         localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {
@@ -2572,7 +2572,7 @@ public class VideosApi {
             localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
         }
 
-        localVarRequestBuilder.header("Accept", "video/*");
+        localVarRequestBuilder.header("Accept", "video/*, text/html");
 
         localVarRequestBuilder.method("HEAD", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {
@@ -3311,7 +3311,7 @@ public class VideosApi {
             localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
         }
 
-        localVarRequestBuilder.header("Accept", "video/*");
+        localVarRequestBuilder.header("Accept", "video/*, text/html");
 
         localVarRequestBuilder.method("HEAD", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {
@@ -3425,7 +3425,7 @@ public class VideosApi {
         }
 
         localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase, text/html");
 
         localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {

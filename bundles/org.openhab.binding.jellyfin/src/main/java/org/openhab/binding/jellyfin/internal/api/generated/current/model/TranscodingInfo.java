@@ -15,6 +15,7 @@ package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
 
@@ -25,7 +26,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
- * Class holding information on a runnning transcode.
+ * Class holding information on a running transcode.
  */
 @JsonPropertyOrder({ TranscodingInfo.JSON_PROPERTY_AUDIO_CODEC, TranscodingInfo.JSON_PROPERTY_VIDEO_CODEC,
         TranscodingInfo.JSON_PROPERTY_CONTAINER, TranscodingInfo.JSON_PROPERTY_IS_VIDEO_DIRECT,
@@ -102,13 +103,13 @@ public class TranscodingInfo {
      * @return audioCodec
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_AUDIO_CODEC)
+    @JsonProperty(value = JSON_PROPERTY_AUDIO_CODEC, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getAudioCodec() {
         return audioCodec;
     }
 
-    @JsonProperty(JSON_PROPERTY_AUDIO_CODEC)
+    @JsonProperty(value = JSON_PROPERTY_AUDIO_CODEC, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setAudioCodec(@org.eclipse.jdt.annotation.NonNull String audioCodec) {
         this.audioCodec = audioCodec;
@@ -125,13 +126,13 @@ public class TranscodingInfo {
      * @return videoCodec
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_VIDEO_CODEC)
+    @JsonProperty(value = JSON_PROPERTY_VIDEO_CODEC, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getVideoCodec() {
         return videoCodec;
     }
 
-    @JsonProperty(JSON_PROPERTY_VIDEO_CODEC)
+    @JsonProperty(value = JSON_PROPERTY_VIDEO_CODEC, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setVideoCodec(@org.eclipse.jdt.annotation.NonNull String videoCodec) {
         this.videoCodec = videoCodec;
@@ -148,13 +149,13 @@ public class TranscodingInfo {
      * @return container
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_CONTAINER)
+    @JsonProperty(value = JSON_PROPERTY_CONTAINER, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getContainer() {
         return container;
     }
 
-    @JsonProperty(JSON_PROPERTY_CONTAINER)
+    @JsonProperty(value = JSON_PROPERTY_CONTAINER, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setContainer(@org.eclipse.jdt.annotation.NonNull String container) {
         this.container = container;
@@ -171,13 +172,13 @@ public class TranscodingInfo {
      * @return isVideoDirect
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_IS_VIDEO_DIRECT)
+    @JsonProperty(value = JSON_PROPERTY_IS_VIDEO_DIRECT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getIsVideoDirect() {
         return isVideoDirect;
     }
 
-    @JsonProperty(JSON_PROPERTY_IS_VIDEO_DIRECT)
+    @JsonProperty(value = JSON_PROPERTY_IS_VIDEO_DIRECT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setIsVideoDirect(@org.eclipse.jdt.annotation.NonNull Boolean isVideoDirect) {
         this.isVideoDirect = isVideoDirect;
@@ -194,13 +195,13 @@ public class TranscodingInfo {
      * @return isAudioDirect
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_IS_AUDIO_DIRECT)
+    @JsonProperty(value = JSON_PROPERTY_IS_AUDIO_DIRECT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getIsAudioDirect() {
         return isAudioDirect;
     }
 
-    @JsonProperty(JSON_PROPERTY_IS_AUDIO_DIRECT)
+    @JsonProperty(value = JSON_PROPERTY_IS_AUDIO_DIRECT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setIsAudioDirect(@org.eclipse.jdt.annotation.NonNull Boolean isAudioDirect) {
         this.isAudioDirect = isAudioDirect;
@@ -217,13 +218,13 @@ public class TranscodingInfo {
      * @return bitrate
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_BITRATE)
+    @JsonProperty(value = JSON_PROPERTY_BITRATE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getBitrate() {
         return bitrate;
     }
 
-    @JsonProperty(JSON_PROPERTY_BITRATE)
+    @JsonProperty(value = JSON_PROPERTY_BITRATE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setBitrate(@org.eclipse.jdt.annotation.NonNull Integer bitrate) {
         this.bitrate = bitrate;
@@ -240,13 +241,13 @@ public class TranscodingInfo {
      * @return framerate
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_FRAMERATE)
+    @JsonProperty(value = JSON_PROPERTY_FRAMERATE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Float getFramerate() {
         return framerate;
     }
 
-    @JsonProperty(JSON_PROPERTY_FRAMERATE)
+    @JsonProperty(value = JSON_PROPERTY_FRAMERATE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setFramerate(@org.eclipse.jdt.annotation.NonNull Float framerate) {
         this.framerate = framerate;
@@ -263,13 +264,13 @@ public class TranscodingInfo {
      * @return completionPercentage
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_COMPLETION_PERCENTAGE)
+    @JsonProperty(value = JSON_PROPERTY_COMPLETION_PERCENTAGE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Double getCompletionPercentage() {
         return completionPercentage;
     }
 
-    @JsonProperty(JSON_PROPERTY_COMPLETION_PERCENTAGE)
+    @JsonProperty(value = JSON_PROPERTY_COMPLETION_PERCENTAGE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setCompletionPercentage(@org.eclipse.jdt.annotation.NonNull Double completionPercentage) {
         this.completionPercentage = completionPercentage;
@@ -286,13 +287,13 @@ public class TranscodingInfo {
      * @return width
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_WIDTH)
+    @JsonProperty(value = JSON_PROPERTY_WIDTH, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getWidth() {
         return width;
     }
 
-    @JsonProperty(JSON_PROPERTY_WIDTH)
+    @JsonProperty(value = JSON_PROPERTY_WIDTH, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setWidth(@org.eclipse.jdt.annotation.NonNull Integer width) {
         this.width = width;
@@ -309,13 +310,13 @@ public class TranscodingInfo {
      * @return height
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_HEIGHT)
+    @JsonProperty(value = JSON_PROPERTY_HEIGHT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getHeight() {
         return height;
     }
 
-    @JsonProperty(JSON_PROPERTY_HEIGHT)
+    @JsonProperty(value = JSON_PROPERTY_HEIGHT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setHeight(@org.eclipse.jdt.annotation.NonNull Integer height) {
         this.height = height;
@@ -332,13 +333,13 @@ public class TranscodingInfo {
      * @return audioChannels
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_AUDIO_CHANNELS)
+    @JsonProperty(value = JSON_PROPERTY_AUDIO_CHANNELS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getAudioChannels() {
         return audioChannels;
     }
 
-    @JsonProperty(JSON_PROPERTY_AUDIO_CHANNELS)
+    @JsonProperty(value = JSON_PROPERTY_AUDIO_CHANNELS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setAudioChannels(@org.eclipse.jdt.annotation.NonNull Integer audioChannels) {
         this.audioChannels = audioChannels;
@@ -356,13 +357,13 @@ public class TranscodingInfo {
      * @return hardwareAccelerationType
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_HARDWARE_ACCELERATION_TYPE)
+    @JsonProperty(value = JSON_PROPERTY_HARDWARE_ACCELERATION_TYPE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public HardwareAccelerationType getHardwareAccelerationType() {
         return hardwareAccelerationType;
     }
 
-    @JsonProperty(JSON_PROPERTY_HARDWARE_ACCELERATION_TYPE)
+    @JsonProperty(value = JSON_PROPERTY_HARDWARE_ACCELERATION_TYPE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setHardwareAccelerationType(
             @org.eclipse.jdt.annotation.NonNull HardwareAccelerationType hardwareAccelerationType) {
@@ -389,13 +390,13 @@ public class TranscodingInfo {
      * @return transcodeReasons
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_TRANSCODE_REASONS)
+    @JsonProperty(value = JSON_PROPERTY_TRANSCODE_REASONS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<TranscodeReason> getTranscodeReasons() {
         return transcodeReasons;
     }
 
-    @JsonProperty(JSON_PROPERTY_TRANSCODE_REASONS)
+    @JsonProperty(value = JSON_PROPERTY_TRANSCODE_REASONS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setTranscodeReasons(@org.eclipse.jdt.annotation.NonNull List<TranscodeReason> transcodeReasons) {
         this.transcodeReasons = transcodeReasons;
@@ -500,73 +501,73 @@ public class TranscodingInfo {
 
         // add `AudioCodec` to the URL query string
         if (getAudioCodec() != null) {
-            joiner.add(String.format("%sAudioCodec%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sAudioCodec%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getAudioCodec()))));
         }
 
         // add `VideoCodec` to the URL query string
         if (getVideoCodec() != null) {
-            joiner.add(String.format("%sVideoCodec%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sVideoCodec%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getVideoCodec()))));
         }
 
         // add `Container` to the URL query string
         if (getContainer() != null) {
-            joiner.add(String.format("%sContainer%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sContainer%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getContainer()))));
         }
 
         // add `IsVideoDirect` to the URL query string
         if (getIsVideoDirect() != null) {
-            joiner.add(String.format("%sIsVideoDirect%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sIsVideoDirect%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getIsVideoDirect()))));
         }
 
         // add `IsAudioDirect` to the URL query string
         if (getIsAudioDirect() != null) {
-            joiner.add(String.format("%sIsAudioDirect%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sIsAudioDirect%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getIsAudioDirect()))));
         }
 
         // add `Bitrate` to the URL query string
         if (getBitrate() != null) {
-            joiner.add(String.format("%sBitrate%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sBitrate%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getBitrate()))));
         }
 
         // add `Framerate` to the URL query string
         if (getFramerate() != null) {
-            joiner.add(String.format("%sFramerate%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sFramerate%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getFramerate()))));
         }
 
         // add `CompletionPercentage` to the URL query string
         if (getCompletionPercentage() != null) {
-            joiner.add(String.format("%sCompletionPercentage%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sCompletionPercentage%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getCompletionPercentage()))));
         }
 
         // add `Width` to the URL query string
         if (getWidth() != null) {
-            joiner.add(String.format("%sWidth%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sWidth%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getWidth()))));
         }
 
         // add `Height` to the URL query string
         if (getHeight() != null) {
-            joiner.add(String.format("%sHeight%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sHeight%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getHeight()))));
         }
 
         // add `AudioChannels` to the URL query string
         if (getAudioChannels() != null) {
-            joiner.add(String.format("%sAudioChannels%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sAudioChannels%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getAudioChannels()))));
         }
 
         // add `HardwareAccelerationType` to the URL query string
         if (getHardwareAccelerationType() != null) {
-            joiner.add(String.format("%sHardwareAccelerationType%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sHardwareAccelerationType%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getHardwareAccelerationType()))));
         }
 
@@ -574,8 +575,9 @@ public class TranscodingInfo {
         if (getTranscodeReasons() != null) {
             for (int i = 0; i < getTranscodeReasons().size(); i++) {
                 if (getTranscodeReasons().get(i) != null) {
-                    joiner.add(String.format("%sTranscodeReasons%s%s=%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+                    joiner.add(String.format(Locale.ROOT, "%sTranscodeReasons%s%s=%s", prefix, suffix,
+                            "".equals(suffix) ? ""
+                                    : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
                             ApiClient.urlEncode(ApiClient.valueToString(getTranscodeReasons().get(i)))));
                 }
             }

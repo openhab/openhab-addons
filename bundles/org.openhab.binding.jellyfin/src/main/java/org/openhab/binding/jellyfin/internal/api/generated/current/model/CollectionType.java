@@ -13,6 +13,8 @@
 
 package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
+import java.util.Locale;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
@@ -84,6 +86,6 @@ public enum CollectionType {
             prefix = "";
         }
 
-        return String.format("%s=%s", prefix, this.toString());
+        return String.format(Locale.ROOT, "%s=%s", prefix, this.toString());
     }
 }

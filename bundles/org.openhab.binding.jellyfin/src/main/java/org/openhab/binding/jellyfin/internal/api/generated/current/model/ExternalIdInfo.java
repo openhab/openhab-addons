@@ -13,6 +13,7 @@
 
 package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
+import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
 
@@ -26,7 +27,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
  * Represents the external id information for serialization to the client.
  */
 @JsonPropertyOrder({ ExternalIdInfo.JSON_PROPERTY_NAME, ExternalIdInfo.JSON_PROPERTY_KEY,
-        ExternalIdInfo.JSON_PROPERTY_TYPE, ExternalIdInfo.JSON_PROPERTY_URL_FORMAT_STRING })
+        ExternalIdInfo.JSON_PROPERTY_TYPE })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class ExternalIdInfo {
     public static final String JSON_PROPERTY_NAME = "Name";
@@ -40,10 +41,6 @@ public class ExternalIdInfo {
     public static final String JSON_PROPERTY_TYPE = "Type";
     @org.eclipse.jdt.annotation.NonNull
     private ExternalIdMediaType type;
-
-    public static final String JSON_PROPERTY_URL_FORMAT_STRING = "UrlFormatString";
-    @org.eclipse.jdt.annotation.NonNull
-    private String urlFormatString;
 
     public ExternalIdInfo() {
     }
@@ -59,13 +56,13 @@ public class ExternalIdInfo {
      * @return name
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_NAME)
+    @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getName() {
         return name;
     }
 
-    @JsonProperty(JSON_PROPERTY_NAME)
+    @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setName(@org.eclipse.jdt.annotation.NonNull String name) {
         this.name = name;
@@ -82,13 +79,13 @@ public class ExternalIdInfo {
      * @return key
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_KEY)
+    @JsonProperty(value = JSON_PROPERTY_KEY, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getKey() {
         return key;
     }
 
-    @JsonProperty(JSON_PROPERTY_KEY)
+    @JsonProperty(value = JSON_PROPERTY_KEY, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setKey(@org.eclipse.jdt.annotation.NonNull String key) {
         this.key = key;
@@ -107,41 +104,16 @@ public class ExternalIdInfo {
      * @return type
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_TYPE)
+    @JsonProperty(value = JSON_PROPERTY_TYPE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public ExternalIdMediaType getType() {
         return type;
     }
 
-    @JsonProperty(JSON_PROPERTY_TYPE)
+    @JsonProperty(value = JSON_PROPERTY_TYPE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setType(@org.eclipse.jdt.annotation.NonNull ExternalIdMediaType type) {
         this.type = type;
-    }
-
-    public ExternalIdInfo urlFormatString(@org.eclipse.jdt.annotation.NonNull String urlFormatString) {
-        this.urlFormatString = urlFormatString;
-        return this;
-    }
-
-    /**
-     * Gets or sets the URL format string.
-     * 
-     * @return urlFormatString
-     * @deprecated
-     */
-    @Deprecated
-    @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_URL_FORMAT_STRING)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public String getUrlFormatString() {
-        return urlFormatString;
-    }
-
-    @JsonProperty(JSON_PROPERTY_URL_FORMAT_STRING)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setUrlFormatString(@org.eclipse.jdt.annotation.NonNull String urlFormatString) {
-        this.urlFormatString = urlFormatString;
     }
 
     /**
@@ -157,13 +129,12 @@ public class ExternalIdInfo {
         }
         ExternalIdInfo externalIdInfo = (ExternalIdInfo) o;
         return Objects.equals(this.name, externalIdInfo.name) && Objects.equals(this.key, externalIdInfo.key)
-                && Objects.equals(this.type, externalIdInfo.type)
-                && Objects.equals(this.urlFormatString, externalIdInfo.urlFormatString);
+                && Objects.equals(this.type, externalIdInfo.type);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, key, type, urlFormatString);
+        return Objects.hash(name, key, type);
     }
 
     @Override
@@ -173,7 +144,6 @@ public class ExternalIdInfo {
         sb.append("    name: ").append(toIndentedString(name)).append("\n");
         sb.append("    key: ").append(toIndentedString(key)).append("\n");
         sb.append("    type: ").append(toIndentedString(type)).append("\n");
-        sb.append("    urlFormatString: ").append(toIndentedString(urlFormatString)).append("\n");
         sb.append("}");
         return sb.toString();
     }
@@ -223,26 +193,20 @@ public class ExternalIdInfo {
 
         // add `Name` to the URL query string
         if (getName() != null) {
-            joiner.add(String.format("%sName%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sName%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getName()))));
         }
 
         // add `Key` to the URL query string
         if (getKey() != null) {
-            joiner.add(String.format("%sKey%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sKey%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getKey()))));
         }
 
         // add `Type` to the URL query string
         if (getType() != null) {
-            joiner.add(String.format("%sType%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sType%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getType()))));
-        }
-
-        // add `UrlFormatString` to the URL query string
-        if (getUrlFormatString() != null) {
-            joiner.add(String.format("%sUrlFormatString%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getUrlFormatString()))));
         }
 
         return joiner.toString();
@@ -272,11 +236,6 @@ public class ExternalIdInfo {
 
         public ExternalIdInfo.Builder type(ExternalIdMediaType type) {
             this.instance.type = type;
-            return this;
-        }
-
-        public ExternalIdInfo.Builder urlFormatString(String urlFormatString) {
-            this.instance.urlFormatString = urlFormatString;
             return this;
         }
 
@@ -311,7 +270,6 @@ public class ExternalIdInfo {
      * Create a builder with a shallow copy of this instance.
      */
     public ExternalIdInfo.Builder toBuilder() {
-        return new ExternalIdInfo.Builder().name(getName()).key(getKey()).type(getType())
-                .urlFormatString(getUrlFormatString());
+        return new ExternalIdInfo.Builder().name(getName()).key(getKey()).type(getType());
     }
 }

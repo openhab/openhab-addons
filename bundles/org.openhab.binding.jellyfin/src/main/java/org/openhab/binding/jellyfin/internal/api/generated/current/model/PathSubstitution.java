@@ -13,6 +13,7 @@
 
 package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
+import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
 
@@ -50,13 +51,13 @@ public class PathSubstitution {
      * @return from
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_FROM)
+    @JsonProperty(value = JSON_PROPERTY_FROM, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getFrom() {
         return from;
     }
 
-    @JsonProperty(JSON_PROPERTY_FROM)
+    @JsonProperty(value = JSON_PROPERTY_FROM, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setFrom(@org.eclipse.jdt.annotation.NonNull String from) {
         this.from = from;
@@ -73,13 +74,13 @@ public class PathSubstitution {
      * @return to
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_TO)
+    @JsonProperty(value = JSON_PROPERTY_TO, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getTo() {
         return to;
     }
 
-    @JsonProperty(JSON_PROPERTY_TO)
+    @JsonProperty(value = JSON_PROPERTY_TO, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setTo(@org.eclipse.jdt.annotation.NonNull String to) {
         this.to = to;
@@ -160,14 +161,14 @@ public class PathSubstitution {
 
         // add `From` to the URL query string
         if (getFrom() != null) {
-            joiner.add(String.format("%sFrom%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sFrom%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getFrom()))));
         }
 
         // add `To` to the URL query string
         if (getTo() != null) {
-            joiner.add(
-                    String.format("%sTo%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getTo()))));
+            joiner.add(String.format(Locale.ROOT, "%sTo%s=%s", prefix, suffix,
+                    ApiClient.urlEncode(ApiClient.valueToString(getTo()))));
         }
 
         return joiner.toString();

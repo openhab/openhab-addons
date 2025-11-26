@@ -27,6 +27,7 @@ import org.openhab.binding.jellyfin.internal.api.generated.ApiClient;
 import org.openhab.binding.jellyfin.internal.api.generated.ApiException;
 import org.openhab.binding.jellyfin.internal.api.generated.ApiResponse;
 import org.openhab.binding.jellyfin.internal.api.generated.Configuration;
+import org.openhab.binding.jellyfin.internal.api.generated.current.model.BrandingOptionsDto;
 import org.openhab.binding.jellyfin.internal.api.generated.current.model.MetadataOptions;
 import org.openhab.binding.jellyfin.internal.api.generated.current.model.ServerConfiguration;
 
@@ -227,7 +228,7 @@ public class ConfigurationApi {
         localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
 
         localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase, text/html");
 
         localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {
@@ -327,7 +328,7 @@ public class ConfigurationApi {
         localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
 
         localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase, text/html");
 
         localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {
@@ -433,9 +434,118 @@ public class ConfigurationApi {
 
         localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
 
-        localVarRequestBuilder.header("Accept", "application/json");
+        localVarRequestBuilder.header("Accept", "application/json, text/html");
 
         localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
+        if (memberVarReadTimeout != null) {
+            localVarRequestBuilder.timeout(memberVarReadTimeout);
+        }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
+        if (memberVarInterceptor != null) {
+            memberVarInterceptor.accept(localVarRequestBuilder);
+        }
+        return localVarRequestBuilder;
+    }
+
+    /**
+     * Updates branding configuration.
+     * 
+     * @param brandingOptionsDto Branding configuration. (required)
+     * @throws ApiException if fails to make API call
+     */
+    public void updateBrandingConfiguration(@org.eclipse.jdt.annotation.Nullable BrandingOptionsDto brandingOptionsDto)
+            throws ApiException {
+        updateBrandingConfiguration(brandingOptionsDto, null);
+    }
+
+    /**
+     * Updates branding configuration.
+     * 
+     * @param brandingOptionsDto Branding configuration. (required)
+     * @param headers Optional headers to include in the request
+     * @throws ApiException if fails to make API call
+     */
+    public void updateBrandingConfiguration(@org.eclipse.jdt.annotation.Nullable BrandingOptionsDto brandingOptionsDto,
+            Map<String, String> headers) throws ApiException {
+        updateBrandingConfigurationWithHttpInfo(brandingOptionsDto, headers);
+    }
+
+    /**
+     * Updates branding configuration.
+     * 
+     * @param brandingOptionsDto Branding configuration. (required)
+     * @return ApiResponse&lt;Void&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<Void> updateBrandingConfigurationWithHttpInfo(
+            @org.eclipse.jdt.annotation.Nullable BrandingOptionsDto brandingOptionsDto) throws ApiException {
+        return updateBrandingConfigurationWithHttpInfo(brandingOptionsDto, null);
+    }
+
+    /**
+     * Updates branding configuration.
+     * 
+     * @param brandingOptionsDto Branding configuration. (required)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;Void&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<Void> updateBrandingConfigurationWithHttpInfo(
+            @org.eclipse.jdt.annotation.Nullable BrandingOptionsDto brandingOptionsDto, Map<String, String> headers)
+            throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = updateBrandingConfigurationRequestBuilder(brandingOptionsDto,
+                headers);
+        try {
+            HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
+                    HttpResponse.BodyHandlers.ofInputStream());
+            if (memberVarResponseInterceptor != null) {
+                memberVarResponseInterceptor.accept(localVarResponse);
+            }
+            try {
+                if (localVarResponse.statusCode() / 100 != 2) {
+                    throw getApiException("updateBrandingConfiguration", localVarResponse);
+                }
+                return new ApiResponse<>(localVarResponse.statusCode(), localVarResponse.headers().map(), null);
+            } finally {
+                // Drain the InputStream
+                while (localVarResponse.body().read() != -1) {
+                    // Ignore
+                }
+                localVarResponse.body().close();
+            }
+        } catch (IOException e) {
+            throw new ApiException(e);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new ApiException(e);
+        }
+    }
+
+    private HttpRequest.Builder updateBrandingConfigurationRequestBuilder(
+            @org.eclipse.jdt.annotation.Nullable BrandingOptionsDto brandingOptionsDto, Map<String, String> headers)
+            throws ApiException {
+        // verify the required parameter 'brandingOptionsDto' is set
+        if (brandingOptionsDto == null) {
+            throw new ApiException(400,
+                    "Missing the required parameter 'brandingOptionsDto' when calling updateBrandingConfiguration");
+        }
+
+        HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+        String localVarPath = "/System/Configuration/Branding";
+
+        localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+
+        localVarRequestBuilder.header("Content-Type", "application/json");
+        localVarRequestBuilder.header("Accept", "text/html");
+
+        try {
+            byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(brandingOptionsDto);
+            localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
+        } catch (IOException e) {
+            throw new ApiException(e);
+        }
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
@@ -536,7 +646,7 @@ public class ConfigurationApi {
         localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
 
         localVarRequestBuilder.header("Content-Type", "application/json");
-        localVarRequestBuilder.header("Accept", "application/json");
+        localVarRequestBuilder.header("Accept", "text/html");
 
         try {
             byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(serverConfiguration);
@@ -649,7 +759,7 @@ public class ConfigurationApi {
         localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
 
         localVarRequestBuilder.header("Content-Type", "application/json");
-        localVarRequestBuilder.header("Accept", "application/json");
+        localVarRequestBuilder.header("Accept", "text/html");
 
         try {
             byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(body);

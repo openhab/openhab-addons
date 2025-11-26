@@ -15,6 +15,7 @@ package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
 import java.util.UUID;
@@ -73,13 +74,13 @@ public class ActivityLogEntryMessage {
      * @return data
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_DATA)
+    @JsonProperty(value = JSON_PROPERTY_DATA, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<ActivityLogEntry> getData() {
         return data;
     }
 
-    @JsonProperty(JSON_PROPERTY_DATA)
+    @JsonProperty(value = JSON_PROPERTY_DATA, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setData(@org.eclipse.jdt.annotation.NonNull List<ActivityLogEntry> data) {
         this.data = data;
@@ -96,13 +97,13 @@ public class ActivityLogEntryMessage {
      * @return messageId
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_MESSAGE_ID)
+    @JsonProperty(value = JSON_PROPERTY_MESSAGE_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public UUID getMessageId() {
         return messageId;
     }
 
-    @JsonProperty(JSON_PROPERTY_MESSAGE_ID)
+    @JsonProperty(value = JSON_PROPERTY_MESSAGE_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setMessageId(@org.eclipse.jdt.annotation.NonNull UUID messageId) {
         this.messageId = messageId;
@@ -114,7 +115,7 @@ public class ActivityLogEntryMessage {
      * @return messageType
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_MESSAGE_TYPE)
+    @JsonProperty(value = JSON_PROPERTY_MESSAGE_TYPE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public SessionMessageType getMessageType() {
         return messageType;
@@ -200,21 +201,23 @@ public class ActivityLogEntryMessage {
         if (getData() != null) {
             for (int i = 0; i < getData().size(); i++) {
                 if (getData().get(i) != null) {
-                    joiner.add(getData().get(i).toUrlQueryString(String.format("%sData%s%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
+                    joiner.add(getData().get(i)
+                            .toUrlQueryString(String.format(Locale.ROOT, "%sData%s%s", prefix, suffix, "".equals(suffix)
+                                    ? ""
+                                    : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
                 }
             }
         }
 
         // add `MessageId` to the URL query string
         if (getMessageId() != null) {
-            joiner.add(String.format("%sMessageId%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sMessageId%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getMessageId()))));
         }
 
         // add `MessageType` to the URL query string
         if (getMessageType() != null) {
-            joiner.add(String.format("%sMessageType%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sMessageType%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getMessageType()))));
         }
 

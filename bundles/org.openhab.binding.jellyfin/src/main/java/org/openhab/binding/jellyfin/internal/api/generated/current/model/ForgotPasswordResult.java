@@ -14,6 +14,7 @@
 package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
 import java.time.OffsetDateTime;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
 
@@ -56,13 +57,13 @@ public class ForgotPasswordResult {
      * @return action
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ACTION)
+    @JsonProperty(value = JSON_PROPERTY_ACTION, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public ForgotPasswordAction getAction() {
         return action;
     }
 
-    @JsonProperty(JSON_PROPERTY_ACTION)
+    @JsonProperty(value = JSON_PROPERTY_ACTION, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setAction(@org.eclipse.jdt.annotation.NonNull ForgotPasswordAction action) {
         this.action = action;
@@ -79,13 +80,13 @@ public class ForgotPasswordResult {
      * @return pinFile
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_PIN_FILE)
+    @JsonProperty(value = JSON_PROPERTY_PIN_FILE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getPinFile() {
         return pinFile;
     }
 
-    @JsonProperty(JSON_PROPERTY_PIN_FILE)
+    @JsonProperty(value = JSON_PROPERTY_PIN_FILE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setPinFile(@org.eclipse.jdt.annotation.NonNull String pinFile) {
         this.pinFile = pinFile;
@@ -103,13 +104,13 @@ public class ForgotPasswordResult {
      * @return pinExpirationDate
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_PIN_EXPIRATION_DATE)
+    @JsonProperty(value = JSON_PROPERTY_PIN_EXPIRATION_DATE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public OffsetDateTime getPinExpirationDate() {
         return pinExpirationDate;
     }
 
-    @JsonProperty(JSON_PROPERTY_PIN_EXPIRATION_DATE)
+    @JsonProperty(value = JSON_PROPERTY_PIN_EXPIRATION_DATE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setPinExpirationDate(@org.eclipse.jdt.annotation.NonNull OffsetDateTime pinExpirationDate) {
         this.pinExpirationDate = pinExpirationDate;
@@ -193,19 +194,19 @@ public class ForgotPasswordResult {
 
         // add `Action` to the URL query string
         if (getAction() != null) {
-            joiner.add(String.format("%sAction%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sAction%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getAction()))));
         }
 
         // add `PinFile` to the URL query string
         if (getPinFile() != null) {
-            joiner.add(String.format("%sPinFile%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sPinFile%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getPinFile()))));
         }
 
         // add `PinExpirationDate` to the URL query string
         if (getPinExpirationDate() != null) {
-            joiner.add(String.format("%sPinExpirationDate%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sPinExpirationDate%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getPinExpirationDate()))));
         }
 

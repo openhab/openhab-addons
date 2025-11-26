@@ -13,6 +13,7 @@
 
 package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
+import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
 
@@ -46,13 +47,13 @@ public class SeekRequestDto {
      * @return positionTicks
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_POSITION_TICKS)
+    @JsonProperty(value = JSON_PROPERTY_POSITION_TICKS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Long getPositionTicks() {
         return positionTicks;
     }
 
-    @JsonProperty(JSON_PROPERTY_POSITION_TICKS)
+    @JsonProperty(value = JSON_PROPERTY_POSITION_TICKS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setPositionTicks(@org.eclipse.jdt.annotation.NonNull Long positionTicks) {
         this.positionTicks = positionTicks;
@@ -132,7 +133,7 @@ public class SeekRequestDto {
 
         // add `PositionTicks` to the URL query string
         if (getPositionTicks() != null) {
-            joiner.add(String.format("%sPositionTicks%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sPositionTicks%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getPositionTicks()))));
         }
 

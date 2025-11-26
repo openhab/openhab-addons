@@ -13,6 +13,7 @@
 
 package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
+import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
 
@@ -55,13 +56,13 @@ public class MediaPathDto {
      * @return name
      */
     @org.eclipse.jdt.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_NAME)
+    @JsonProperty(value = JSON_PROPERTY_NAME, required = true)
     @JsonInclude(value = JsonInclude.Include.ALWAYS)
     public String getName() {
         return name;
     }
 
-    @JsonProperty(JSON_PROPERTY_NAME)
+    @JsonProperty(value = JSON_PROPERTY_NAME, required = true)
     @JsonInclude(value = JsonInclude.Include.ALWAYS)
     public void setName(@org.eclipse.jdt.annotation.Nullable String name) {
         this.name = name;
@@ -78,13 +79,13 @@ public class MediaPathDto {
      * @return path
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_PATH)
+    @JsonProperty(value = JSON_PROPERTY_PATH, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getPath() {
         return path;
     }
 
-    @JsonProperty(JSON_PROPERTY_PATH)
+    @JsonProperty(value = JSON_PROPERTY_PATH, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setPath(@org.eclipse.jdt.annotation.NonNull String path) {
         this.path = path;
@@ -101,13 +102,13 @@ public class MediaPathDto {
      * @return pathInfo
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_PATH_INFO)
+    @JsonProperty(value = JSON_PROPERTY_PATH_INFO, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public MediaPathInfo getPathInfo() {
         return pathInfo;
     }
 
-    @JsonProperty(JSON_PROPERTY_PATH_INFO)
+    @JsonProperty(value = JSON_PROPERTY_PATH_INFO, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setPathInfo(@org.eclipse.jdt.annotation.NonNull MediaPathInfo pathInfo) {
         this.pathInfo = pathInfo;
@@ -190,13 +191,13 @@ public class MediaPathDto {
 
         // add `Name` to the URL query string
         if (getName() != null) {
-            joiner.add(String.format("%sName%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sName%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getName()))));
         }
 
         // add `Path` to the URL query string
         if (getPath() != null) {
-            joiner.add(String.format("%sPath%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sPath%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getPath()))));
         }
 

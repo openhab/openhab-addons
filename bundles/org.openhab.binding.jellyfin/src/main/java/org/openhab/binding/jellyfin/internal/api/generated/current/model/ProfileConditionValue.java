@@ -13,6 +13,8 @@
 
 package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
+import java.util.Locale;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
@@ -67,7 +69,9 @@ public enum ProfileConditionValue {
 
     AUDIO_BIT_DEPTH("AudioBitDepth"),
 
-    VIDEO_RANGE_TYPE("VideoRangeType");
+    VIDEO_RANGE_TYPE("VideoRangeType"),
+
+    NUM_STREAMS("NumStreams");
 
     private String value;
 
@@ -106,6 +110,6 @@ public enum ProfileConditionValue {
             prefix = "";
         }
 
-        return String.format("%s=%s", prefix, this.toString());
+        return String.format(Locale.ROOT, "%s=%s", prefix, this.toString());
     }
 }

@@ -307,7 +307,7 @@ public class LiveTvApi {
 
         localVarRequestBuilder.header("Content-Type", "application/json");
         localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase, text/html");
 
         try {
             byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(listingsProviderInfo);
@@ -422,7 +422,7 @@ public class LiveTvApi {
 
         localVarRequestBuilder.header("Content-Type", "application/json");
         localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase, text/html");
 
         try {
             byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(tunerHostInfo);
@@ -526,7 +526,7 @@ public class LiveTvApi {
 
         localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
 
-        localVarRequestBuilder.header("Accept", "application/json");
+        localVarRequestBuilder.header("Accept", "text/html");
 
         localVarRequestBuilder.method("DELETE", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {
@@ -624,7 +624,7 @@ public class LiveTvApi {
 
         localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
 
-        localVarRequestBuilder.header("Accept", "application/json");
+        localVarRequestBuilder.header("Accept", "text/html");
 
         localVarRequestBuilder.method("DELETE", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {
@@ -722,7 +722,7 @@ public class LiveTvApi {
         localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
 
         localVarRequestBuilder.header("Content-Type", "application/json");
-        localVarRequestBuilder.header("Accept", "application/json");
+        localVarRequestBuilder.header("Accept", "text/html");
 
         try {
             byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(seriesTimerInfoDto);
@@ -822,7 +822,7 @@ public class LiveTvApi {
         localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
 
         localVarRequestBuilder.header("Content-Type", "application/json");
-        localVarRequestBuilder.header("Accept", "application/json");
+        localVarRequestBuilder.header("Accept", "text/html");
 
         try {
             byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(timerInfoDto);
@@ -936,7 +936,7 @@ public class LiveTvApi {
             localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
         }
 
-        localVarRequestBuilder.header("Accept", "application/json");
+        localVarRequestBuilder.header("Accept", "text/html");
 
         localVarRequestBuilder.method("DELETE", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {
@@ -1036,7 +1036,7 @@ public class LiveTvApi {
         localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
 
         localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase, text/html");
 
         localVarRequestBuilder.method("DELETE", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {
@@ -1145,7 +1145,7 @@ public class LiveTvApi {
             localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
         }
 
-        localVarRequestBuilder.header("Accept", "application/json");
+        localVarRequestBuilder.header("Accept", "text/html");
 
         localVarRequestBuilder.method("DELETE", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {
@@ -1268,7 +1268,7 @@ public class LiveTvApi {
         }
 
         localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase, text/html");
 
         localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {
@@ -1392,7 +1392,7 @@ public class LiveTvApi {
         }
 
         localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase, text/html");
 
         localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {
@@ -1523,7 +1523,7 @@ public class LiveTvApi {
         }
 
         localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase, text/html");
 
         localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {
@@ -1646,7 +1646,7 @@ public class LiveTvApi {
         }
 
         localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase, text/html");
 
         localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {
@@ -1746,7 +1746,7 @@ public class LiveTvApi {
         localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
 
         localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase, text/html");
 
         localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {
@@ -1868,7 +1868,7 @@ public class LiveTvApi {
         }
 
         localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase, text/html");
 
         localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {
@@ -1883,7 +1883,7 @@ public class LiveTvApi {
     }
 
     /**
-     * Get guid info.
+     * Get guide info.
      * 
      * @return GuideInfo
      * @throws ApiException if fails to make API call
@@ -1893,7 +1893,7 @@ public class LiveTvApi {
     }
 
     /**
-     * Get guid info.
+     * Get guide info.
      * 
      * @param headers Optional headers to include in the request
      * @return GuideInfo
@@ -1905,7 +1905,7 @@ public class LiveTvApi {
     }
 
     /**
-     * Get guid info.
+     * Get guide info.
      * 
      * @return ApiResponse&lt;GuideInfo&gt;
      * @throws ApiException if fails to make API call
@@ -1915,7 +1915,7 @@ public class LiveTvApi {
     }
 
     /**
-     * Get guid info.
+     * Get guide info.
      * 
      * @param headers Optional headers to include in the request
      * @return ApiResponse&lt;GuideInfo&gt;
@@ -1966,7 +1966,7 @@ public class LiveTvApi {
         localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
 
         localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase, text/html");
 
         localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {
@@ -2111,7 +2111,7 @@ public class LiveTvApi {
         }
 
         localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase, text/html");
 
         localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {
@@ -2220,7 +2220,7 @@ public class LiveTvApi {
         localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
 
         localVarRequestBuilder.header("Accept",
-                "video/*, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+                "video/*, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase, text/html");
 
         localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {
@@ -2338,7 +2338,7 @@ public class LiveTvApi {
         localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
 
         localVarRequestBuilder.header("Accept",
-                "video/*, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+                "video/*, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase, text/html");
 
         localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {
@@ -2671,7 +2671,7 @@ public class LiveTvApi {
         }
 
         localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase, text/html");
 
         localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {
@@ -2769,7 +2769,7 @@ public class LiveTvApi {
         localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
 
         localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase, text/html");
 
         localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {
@@ -3172,7 +3172,7 @@ public class LiveTvApi {
         }
 
         localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase, text/html");
 
         localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {
@@ -3303,7 +3303,7 @@ public class LiveTvApi {
         }
 
         localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase, text/html");
 
         localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {
@@ -3413,7 +3413,7 @@ public class LiveTvApi {
 
         localVarRequestBuilder.header("Content-Type", "application/json");
         localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase, text/html");
 
         try {
             byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(getProgramsDto);
@@ -3436,6 +3436,8 @@ public class LiveTvApi {
      * Gets recommended live tv epgs.
      * 
      * @param userId Optional. filter by user id. (optional)
+     * @param startIndex Optional. The record index to start at. All items with a lower index will be dropped from the
+     *            results. (optional)
      * @param limit Optional. The maximum number of records to return. (optional)
      * @param isAiring Optional. Filter by programs that are currently airing, or not. (optional)
      * @param hasAired Optional. Filter by programs that have completed airing, or not. (optional)
@@ -3455,88 +3457,7 @@ public class LiveTvApi {
      * @throws ApiException if fails to make API call
      */
     public BaseItemDtoQueryResult getRecommendedPrograms(@org.eclipse.jdt.annotation.NonNull UUID userId,
-            @org.eclipse.jdt.annotation.NonNull Integer limit, @org.eclipse.jdt.annotation.NonNull Boolean isAiring,
-            @org.eclipse.jdt.annotation.NonNull Boolean hasAired, @org.eclipse.jdt.annotation.NonNull Boolean isSeries,
-            @org.eclipse.jdt.annotation.NonNull Boolean isMovie, @org.eclipse.jdt.annotation.NonNull Boolean isNews,
-            @org.eclipse.jdt.annotation.NonNull Boolean isKids, @org.eclipse.jdt.annotation.NonNull Boolean isSports,
-            @org.eclipse.jdt.annotation.NonNull Boolean enableImages,
-            @org.eclipse.jdt.annotation.NonNull Integer imageTypeLimit,
-            @org.eclipse.jdt.annotation.NonNull List<ImageType> enableImageTypes,
-            @org.eclipse.jdt.annotation.NonNull List<UUID> genreIds,
-            @org.eclipse.jdt.annotation.NonNull List<ItemFields> fields,
-            @org.eclipse.jdt.annotation.NonNull Boolean enableUserData,
-            @org.eclipse.jdt.annotation.NonNull Boolean enableTotalRecordCount) throws ApiException {
-        return getRecommendedPrograms(userId, limit, isAiring, hasAired, isSeries, isMovie, isNews, isKids, isSports,
-                enableImages, imageTypeLimit, enableImageTypes, genreIds, fields, enableUserData,
-                enableTotalRecordCount, null);
-    }
-
-    /**
-     * Gets recommended live tv epgs.
-     * 
-     * @param userId Optional. filter by user id. (optional)
-     * @param limit Optional. The maximum number of records to return. (optional)
-     * @param isAiring Optional. Filter by programs that are currently airing, or not. (optional)
-     * @param hasAired Optional. Filter by programs that have completed airing, or not. (optional)
-     * @param isSeries Optional. Filter for series. (optional)
-     * @param isMovie Optional. Filter for movies. (optional)
-     * @param isNews Optional. Filter for news. (optional)
-     * @param isKids Optional. Filter for kids. (optional)
-     * @param isSports Optional. Filter for sports. (optional)
-     * @param enableImages Optional. Include image information in output. (optional)
-     * @param imageTypeLimit Optional. The max number of images to return, per image type. (optional)
-     * @param enableImageTypes Optional. The image types to include in the output. (optional)
-     * @param genreIds The genres to return guide information for. (optional)
-     * @param fields Optional. Specify additional fields of information to return in the output. (optional)
-     * @param enableUserData Optional. include user data. (optional)
-     * @param enableTotalRecordCount Retrieve total record count. (optional, default to true)
-     * @param headers Optional headers to include in the request
-     * @return BaseItemDtoQueryResult
-     * @throws ApiException if fails to make API call
-     */
-    public BaseItemDtoQueryResult getRecommendedPrograms(@org.eclipse.jdt.annotation.NonNull UUID userId,
-            @org.eclipse.jdt.annotation.NonNull Integer limit, @org.eclipse.jdt.annotation.NonNull Boolean isAiring,
-            @org.eclipse.jdt.annotation.NonNull Boolean hasAired, @org.eclipse.jdt.annotation.NonNull Boolean isSeries,
-            @org.eclipse.jdt.annotation.NonNull Boolean isMovie, @org.eclipse.jdt.annotation.NonNull Boolean isNews,
-            @org.eclipse.jdt.annotation.NonNull Boolean isKids, @org.eclipse.jdt.annotation.NonNull Boolean isSports,
-            @org.eclipse.jdt.annotation.NonNull Boolean enableImages,
-            @org.eclipse.jdt.annotation.NonNull Integer imageTypeLimit,
-            @org.eclipse.jdt.annotation.NonNull List<ImageType> enableImageTypes,
-            @org.eclipse.jdt.annotation.NonNull List<UUID> genreIds,
-            @org.eclipse.jdt.annotation.NonNull List<ItemFields> fields,
-            @org.eclipse.jdt.annotation.NonNull Boolean enableUserData,
-            @org.eclipse.jdt.annotation.NonNull Boolean enableTotalRecordCount, Map<String, String> headers)
-            throws ApiException {
-        ApiResponse<BaseItemDtoQueryResult> localVarResponse = getRecommendedProgramsWithHttpInfo(userId, limit,
-                isAiring, hasAired, isSeries, isMovie, isNews, isKids, isSports, enableImages, imageTypeLimit,
-                enableImageTypes, genreIds, fields, enableUserData, enableTotalRecordCount, headers);
-        return localVarResponse.getData();
-    }
-
-    /**
-     * Gets recommended live tv epgs.
-     * 
-     * @param userId Optional. filter by user id. (optional)
-     * @param limit Optional. The maximum number of records to return. (optional)
-     * @param isAiring Optional. Filter by programs that are currently airing, or not. (optional)
-     * @param hasAired Optional. Filter by programs that have completed airing, or not. (optional)
-     * @param isSeries Optional. Filter for series. (optional)
-     * @param isMovie Optional. Filter for movies. (optional)
-     * @param isNews Optional. Filter for news. (optional)
-     * @param isKids Optional. Filter for kids. (optional)
-     * @param isSports Optional. Filter for sports. (optional)
-     * @param enableImages Optional. Include image information in output. (optional)
-     * @param imageTypeLimit Optional. The max number of images to return, per image type. (optional)
-     * @param enableImageTypes Optional. The image types to include in the output. (optional)
-     * @param genreIds The genres to return guide information for. (optional)
-     * @param fields Optional. Specify additional fields of information to return in the output. (optional)
-     * @param enableUserData Optional. include user data. (optional)
-     * @param enableTotalRecordCount Retrieve total record count. (optional, default to true)
-     * @return ApiResponse&lt;BaseItemDtoQueryResult&gt;
-     * @throws ApiException if fails to make API call
-     */
-    public ApiResponse<BaseItemDtoQueryResult> getRecommendedProgramsWithHttpInfo(
-            @org.eclipse.jdt.annotation.NonNull UUID userId, @org.eclipse.jdt.annotation.NonNull Integer limit,
+            @org.eclipse.jdt.annotation.NonNull Integer startIndex, @org.eclipse.jdt.annotation.NonNull Integer limit,
             @org.eclipse.jdt.annotation.NonNull Boolean isAiring, @org.eclipse.jdt.annotation.NonNull Boolean hasAired,
             @org.eclipse.jdt.annotation.NonNull Boolean isSeries, @org.eclipse.jdt.annotation.NonNull Boolean isMovie,
             @org.eclipse.jdt.annotation.NonNull Boolean isNews, @org.eclipse.jdt.annotation.NonNull Boolean isKids,
@@ -3548,7 +3469,7 @@ public class LiveTvApi {
             @org.eclipse.jdt.annotation.NonNull List<ItemFields> fields,
             @org.eclipse.jdt.annotation.NonNull Boolean enableUserData,
             @org.eclipse.jdt.annotation.NonNull Boolean enableTotalRecordCount) throws ApiException {
-        return getRecommendedProgramsWithHttpInfo(userId, limit, isAiring, hasAired, isSeries, isMovie, isNews, isKids,
+        return getRecommendedPrograms(userId, startIndex, limit, isAiring, hasAired, isSeries, isMovie, isNews, isKids,
                 isSports, enableImages, imageTypeLimit, enableImageTypes, genreIds, fields, enableUserData,
                 enableTotalRecordCount, null);
     }
@@ -3557,6 +3478,95 @@ public class LiveTvApi {
      * Gets recommended live tv epgs.
      * 
      * @param userId Optional. filter by user id. (optional)
+     * @param startIndex Optional. The record index to start at. All items with a lower index will be dropped from the
+     *            results. (optional)
+     * @param limit Optional. The maximum number of records to return. (optional)
+     * @param isAiring Optional. Filter by programs that are currently airing, or not. (optional)
+     * @param hasAired Optional. Filter by programs that have completed airing, or not. (optional)
+     * @param isSeries Optional. Filter for series. (optional)
+     * @param isMovie Optional. Filter for movies. (optional)
+     * @param isNews Optional. Filter for news. (optional)
+     * @param isKids Optional. Filter for kids. (optional)
+     * @param isSports Optional. Filter for sports. (optional)
+     * @param enableImages Optional. Include image information in output. (optional)
+     * @param imageTypeLimit Optional. The max number of images to return, per image type. (optional)
+     * @param enableImageTypes Optional. The image types to include in the output. (optional)
+     * @param genreIds The genres to return guide information for. (optional)
+     * @param fields Optional. Specify additional fields of information to return in the output. (optional)
+     * @param enableUserData Optional. include user data. (optional)
+     * @param enableTotalRecordCount Retrieve total record count. (optional, default to true)
+     * @param headers Optional headers to include in the request
+     * @return BaseItemDtoQueryResult
+     * @throws ApiException if fails to make API call
+     */
+    public BaseItemDtoQueryResult getRecommendedPrograms(@org.eclipse.jdt.annotation.NonNull UUID userId,
+            @org.eclipse.jdt.annotation.NonNull Integer startIndex, @org.eclipse.jdt.annotation.NonNull Integer limit,
+            @org.eclipse.jdt.annotation.NonNull Boolean isAiring, @org.eclipse.jdt.annotation.NonNull Boolean hasAired,
+            @org.eclipse.jdt.annotation.NonNull Boolean isSeries, @org.eclipse.jdt.annotation.NonNull Boolean isMovie,
+            @org.eclipse.jdt.annotation.NonNull Boolean isNews, @org.eclipse.jdt.annotation.NonNull Boolean isKids,
+            @org.eclipse.jdt.annotation.NonNull Boolean isSports,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableImages,
+            @org.eclipse.jdt.annotation.NonNull Integer imageTypeLimit,
+            @org.eclipse.jdt.annotation.NonNull List<ImageType> enableImageTypes,
+            @org.eclipse.jdt.annotation.NonNull List<UUID> genreIds,
+            @org.eclipse.jdt.annotation.NonNull List<ItemFields> fields,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableUserData,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableTotalRecordCount, Map<String, String> headers)
+            throws ApiException {
+        ApiResponse<BaseItemDtoQueryResult> localVarResponse = getRecommendedProgramsWithHttpInfo(userId, startIndex,
+                limit, isAiring, hasAired, isSeries, isMovie, isNews, isKids, isSports, enableImages, imageTypeLimit,
+                enableImageTypes, genreIds, fields, enableUserData, enableTotalRecordCount, headers);
+        return localVarResponse.getData();
+    }
+
+    /**
+     * Gets recommended live tv epgs.
+     * 
+     * @param userId Optional. filter by user id. (optional)
+     * @param startIndex Optional. The record index to start at. All items with a lower index will be dropped from the
+     *            results. (optional)
+     * @param limit Optional. The maximum number of records to return. (optional)
+     * @param isAiring Optional. Filter by programs that are currently airing, or not. (optional)
+     * @param hasAired Optional. Filter by programs that have completed airing, or not. (optional)
+     * @param isSeries Optional. Filter for series. (optional)
+     * @param isMovie Optional. Filter for movies. (optional)
+     * @param isNews Optional. Filter for news. (optional)
+     * @param isKids Optional. Filter for kids. (optional)
+     * @param isSports Optional. Filter for sports. (optional)
+     * @param enableImages Optional. Include image information in output. (optional)
+     * @param imageTypeLimit Optional. The max number of images to return, per image type. (optional)
+     * @param enableImageTypes Optional. The image types to include in the output. (optional)
+     * @param genreIds The genres to return guide information for. (optional)
+     * @param fields Optional. Specify additional fields of information to return in the output. (optional)
+     * @param enableUserData Optional. include user data. (optional)
+     * @param enableTotalRecordCount Retrieve total record count. (optional, default to true)
+     * @return ApiResponse&lt;BaseItemDtoQueryResult&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<BaseItemDtoQueryResult> getRecommendedProgramsWithHttpInfo(
+            @org.eclipse.jdt.annotation.NonNull UUID userId, @org.eclipse.jdt.annotation.NonNull Integer startIndex,
+            @org.eclipse.jdt.annotation.NonNull Integer limit, @org.eclipse.jdt.annotation.NonNull Boolean isAiring,
+            @org.eclipse.jdt.annotation.NonNull Boolean hasAired, @org.eclipse.jdt.annotation.NonNull Boolean isSeries,
+            @org.eclipse.jdt.annotation.NonNull Boolean isMovie, @org.eclipse.jdt.annotation.NonNull Boolean isNews,
+            @org.eclipse.jdt.annotation.NonNull Boolean isKids, @org.eclipse.jdt.annotation.NonNull Boolean isSports,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableImages,
+            @org.eclipse.jdt.annotation.NonNull Integer imageTypeLimit,
+            @org.eclipse.jdt.annotation.NonNull List<ImageType> enableImageTypes,
+            @org.eclipse.jdt.annotation.NonNull List<UUID> genreIds,
+            @org.eclipse.jdt.annotation.NonNull List<ItemFields> fields,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableUserData,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableTotalRecordCount) throws ApiException {
+        return getRecommendedProgramsWithHttpInfo(userId, startIndex, limit, isAiring, hasAired, isSeries, isMovie,
+                isNews, isKids, isSports, enableImages, imageTypeLimit, enableImageTypes, genreIds, fields,
+                enableUserData, enableTotalRecordCount, null);
+    }
+
+    /**
+     * Gets recommended live tv epgs.
+     * 
+     * @param userId Optional. filter by user id. (optional)
+     * @param startIndex Optional. The record index to start at. All items with a lower index will be dropped from the
+     *            results. (optional)
      * @param limit Optional. The maximum number of records to return. (optional)
      * @param isAiring Optional. Filter by programs that are currently airing, or not. (optional)
      * @param hasAired Optional. Filter by programs that have completed airing, or not. (optional)
@@ -3577,11 +3587,11 @@ public class LiveTvApi {
      * @throws ApiException if fails to make API call
      */
     public ApiResponse<BaseItemDtoQueryResult> getRecommendedProgramsWithHttpInfo(
-            @org.eclipse.jdt.annotation.NonNull UUID userId, @org.eclipse.jdt.annotation.NonNull Integer limit,
-            @org.eclipse.jdt.annotation.NonNull Boolean isAiring, @org.eclipse.jdt.annotation.NonNull Boolean hasAired,
-            @org.eclipse.jdt.annotation.NonNull Boolean isSeries, @org.eclipse.jdt.annotation.NonNull Boolean isMovie,
-            @org.eclipse.jdt.annotation.NonNull Boolean isNews, @org.eclipse.jdt.annotation.NonNull Boolean isKids,
-            @org.eclipse.jdt.annotation.NonNull Boolean isSports,
+            @org.eclipse.jdt.annotation.NonNull UUID userId, @org.eclipse.jdt.annotation.NonNull Integer startIndex,
+            @org.eclipse.jdt.annotation.NonNull Integer limit, @org.eclipse.jdt.annotation.NonNull Boolean isAiring,
+            @org.eclipse.jdt.annotation.NonNull Boolean hasAired, @org.eclipse.jdt.annotation.NonNull Boolean isSeries,
+            @org.eclipse.jdt.annotation.NonNull Boolean isMovie, @org.eclipse.jdt.annotation.NonNull Boolean isNews,
+            @org.eclipse.jdt.annotation.NonNull Boolean isKids, @org.eclipse.jdt.annotation.NonNull Boolean isSports,
             @org.eclipse.jdt.annotation.NonNull Boolean enableImages,
             @org.eclipse.jdt.annotation.NonNull Integer imageTypeLimit,
             @org.eclipse.jdt.annotation.NonNull List<ImageType> enableImageTypes,
@@ -3590,9 +3600,9 @@ public class LiveTvApi {
             @org.eclipse.jdt.annotation.NonNull Boolean enableUserData,
             @org.eclipse.jdt.annotation.NonNull Boolean enableTotalRecordCount, Map<String, String> headers)
             throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = getRecommendedProgramsRequestBuilder(userId, limit, isAiring,
-                hasAired, isSeries, isMovie, isNews, isKids, isSports, enableImages, imageTypeLimit, enableImageTypes,
-                genreIds, fields, enableUserData, enableTotalRecordCount, headers);
+        HttpRequest.Builder localVarRequestBuilder = getRecommendedProgramsRequestBuilder(userId, startIndex, limit,
+                isAiring, hasAired, isSeries, isMovie, isNews, isKids, isSports, enableImages, imageTypeLimit,
+                enableImageTypes, genreIds, fields, enableUserData, enableTotalRecordCount, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -3628,10 +3638,11 @@ public class LiveTvApi {
     }
 
     private HttpRequest.Builder getRecommendedProgramsRequestBuilder(@org.eclipse.jdt.annotation.NonNull UUID userId,
-            @org.eclipse.jdt.annotation.NonNull Integer limit, @org.eclipse.jdt.annotation.NonNull Boolean isAiring,
-            @org.eclipse.jdt.annotation.NonNull Boolean hasAired, @org.eclipse.jdt.annotation.NonNull Boolean isSeries,
-            @org.eclipse.jdt.annotation.NonNull Boolean isMovie, @org.eclipse.jdt.annotation.NonNull Boolean isNews,
-            @org.eclipse.jdt.annotation.NonNull Boolean isKids, @org.eclipse.jdt.annotation.NonNull Boolean isSports,
+            @org.eclipse.jdt.annotation.NonNull Integer startIndex, @org.eclipse.jdt.annotation.NonNull Integer limit,
+            @org.eclipse.jdt.annotation.NonNull Boolean isAiring, @org.eclipse.jdt.annotation.NonNull Boolean hasAired,
+            @org.eclipse.jdt.annotation.NonNull Boolean isSeries, @org.eclipse.jdt.annotation.NonNull Boolean isMovie,
+            @org.eclipse.jdt.annotation.NonNull Boolean isNews, @org.eclipse.jdt.annotation.NonNull Boolean isKids,
+            @org.eclipse.jdt.annotation.NonNull Boolean isSports,
             @org.eclipse.jdt.annotation.NonNull Boolean enableImages,
             @org.eclipse.jdt.annotation.NonNull Integer imageTypeLimit,
             @org.eclipse.jdt.annotation.NonNull List<ImageType> enableImageTypes,
@@ -3650,6 +3661,8 @@ public class LiveTvApi {
         String localVarQueryParameterBaseName;
         localVarQueryParameterBaseName = "userId";
         localVarQueryParams.addAll(ApiClient.parameterToPairs("userId", userId));
+        localVarQueryParameterBaseName = "startIndex";
+        localVarQueryParams.addAll(ApiClient.parameterToPairs("startIndex", startIndex));
         localVarQueryParameterBaseName = "limit";
         localVarQueryParams.addAll(ApiClient.parameterToPairs("limit", limit));
         localVarQueryParameterBaseName = "isAiring";
@@ -3693,7 +3706,7 @@ public class LiveTvApi {
         }
 
         localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase, text/html");
 
         localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {
@@ -3824,7 +3837,7 @@ public class LiveTvApi {
         }
 
         localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase, text/html");
 
         localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {
@@ -3946,7 +3959,7 @@ public class LiveTvApi {
         }
 
         localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase, text/html");
 
         localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {
@@ -4054,7 +4067,7 @@ public class LiveTvApi {
         localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
 
         localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase, text/html");
 
         localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {
@@ -4184,7 +4197,7 @@ public class LiveTvApi {
         }
 
         localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase, text/html");
 
         localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {
@@ -4501,7 +4514,7 @@ public class LiveTvApi {
         }
 
         localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase, text/html");
 
         localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {
@@ -4775,7 +4788,7 @@ public class LiveTvApi {
         }
 
         localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase, text/html");
 
         localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {
@@ -4870,7 +4883,7 @@ public class LiveTvApi {
 
         localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
 
-        localVarRequestBuilder.header("Accept", "application/json");
+        localVarRequestBuilder.header("Accept", "application/json, text/html");
 
         localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {
@@ -4981,7 +4994,7 @@ public class LiveTvApi {
         localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
 
         localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase, text/html");
 
         localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {
@@ -5113,7 +5126,7 @@ public class LiveTvApi {
         }
 
         localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase, text/html");
 
         localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {
@@ -5223,7 +5236,7 @@ public class LiveTvApi {
         localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
 
         localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase, text/html");
 
         localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {
@@ -5377,7 +5390,7 @@ public class LiveTvApi {
         }
 
         localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase, text/html");
 
         localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {
@@ -5476,7 +5489,7 @@ public class LiveTvApi {
         localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
 
         localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase, text/html");
 
         localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {
@@ -5575,7 +5588,7 @@ public class LiveTvApi {
 
         localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
 
-        localVarRequestBuilder.header("Accept", "application/json");
+        localVarRequestBuilder.header("Accept", "text/html");
 
         localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {
@@ -5692,7 +5705,7 @@ public class LiveTvApi {
 
         localVarRequestBuilder.header("Content-Type", "application/json");
         localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase, text/html");
 
         try {
             byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(setChannelMappingDto);
@@ -5806,7 +5819,7 @@ public class LiveTvApi {
         localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
 
         localVarRequestBuilder.header("Content-Type", "application/json");
-        localVarRequestBuilder.header("Accept", "application/json");
+        localVarRequestBuilder.header("Accept", "text/html");
 
         try {
             byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(seriesTimerInfoDto);
@@ -5918,7 +5931,7 @@ public class LiveTvApi {
         localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
 
         localVarRequestBuilder.header("Content-Type", "application/json");
-        localVarRequestBuilder.header("Accept", "application/json");
+        localVarRequestBuilder.header("Accept", "text/html");
 
         try {
             byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(timerInfoDto);

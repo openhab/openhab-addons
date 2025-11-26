@@ -282,7 +282,7 @@ public class PlaystateApi {
         }
 
         localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase, text/html");
 
         localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {
@@ -412,7 +412,7 @@ public class PlaystateApi {
         }
 
         localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase, text/html");
 
         localVarRequestBuilder.method("DELETE", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {
@@ -442,7 +442,9 @@ public class PlaystateApi {
      * @param isPaused Indicates if the player is paused. (optional, default to false)
      * @param isMuted Indicates if the player is muted. (optional, default to false)
      * @throws ApiException if fails to make API call
+     * @deprecated
      */
+    @Deprecated
     public void onPlaybackProgress(@org.eclipse.jdt.annotation.Nullable UUID itemId,
             @org.eclipse.jdt.annotation.NonNull String mediaSourceId,
             @org.eclipse.jdt.annotation.NonNull Long positionTicks,
@@ -476,7 +478,9 @@ public class PlaystateApi {
      * @param isMuted Indicates if the player is muted. (optional, default to false)
      * @param headers Optional headers to include in the request
      * @throws ApiException if fails to make API call
+     * @deprecated
      */
+    @Deprecated
     public void onPlaybackProgress(@org.eclipse.jdt.annotation.Nullable UUID itemId,
             @org.eclipse.jdt.annotation.NonNull String mediaSourceId,
             @org.eclipse.jdt.annotation.NonNull Long positionTicks,
@@ -510,7 +514,9 @@ public class PlaystateApi {
      * @param isMuted Indicates if the player is muted. (optional, default to false)
      * @return ApiResponse&lt;Void&gt;
      * @throws ApiException if fails to make API call
+     * @deprecated
      */
+    @Deprecated
     public ApiResponse<Void> onPlaybackProgressWithHttpInfo(@org.eclipse.jdt.annotation.Nullable UUID itemId,
             @org.eclipse.jdt.annotation.NonNull String mediaSourceId,
             @org.eclipse.jdt.annotation.NonNull Long positionTicks,
@@ -546,7 +552,9 @@ public class PlaystateApi {
      * @param headers Optional headers to include in the request
      * @return ApiResponse&lt;Void&gt;
      * @throws ApiException if fails to make API call
+     * @deprecated
      */
+    @Deprecated
     public ApiResponse<Void> onPlaybackProgressWithHttpInfo(@org.eclipse.jdt.annotation.Nullable UUID itemId,
             @org.eclipse.jdt.annotation.NonNull String mediaSourceId,
             @org.eclipse.jdt.annotation.NonNull Long positionTicks,
@@ -647,7 +655,7 @@ public class PlaystateApi {
             localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
         }
 
-        localVarRequestBuilder.header("Accept", "application/json");
+        localVarRequestBuilder.header("Accept", "text/html");
 
         localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {
@@ -673,7 +681,9 @@ public class PlaystateApi {
      * @param playSessionId The play session id. (optional)
      * @param canSeek Indicates if the client can seek. (optional, default to false)
      * @throws ApiException if fails to make API call
+     * @deprecated
      */
+    @Deprecated
     public void onPlaybackStart(@org.eclipse.jdt.annotation.Nullable UUID itemId,
             @org.eclipse.jdt.annotation.NonNull String mediaSourceId,
             @org.eclipse.jdt.annotation.NonNull Integer audioStreamIndex,
@@ -699,7 +709,9 @@ public class PlaystateApi {
      * @param canSeek Indicates if the client can seek. (optional, default to false)
      * @param headers Optional headers to include in the request
      * @throws ApiException if fails to make API call
+     * @deprecated
      */
+    @Deprecated
     public void onPlaybackStart(@org.eclipse.jdt.annotation.Nullable UUID itemId,
             @org.eclipse.jdt.annotation.NonNull String mediaSourceId,
             @org.eclipse.jdt.annotation.NonNull Integer audioStreamIndex,
@@ -725,7 +737,9 @@ public class PlaystateApi {
      * @param canSeek Indicates if the client can seek. (optional, default to false)
      * @return ApiResponse&lt;Void&gt;
      * @throws ApiException if fails to make API call
+     * @deprecated
      */
+    @Deprecated
     public ApiResponse<Void> onPlaybackStartWithHttpInfo(@org.eclipse.jdt.annotation.Nullable UUID itemId,
             @org.eclipse.jdt.annotation.NonNull String mediaSourceId,
             @org.eclipse.jdt.annotation.NonNull Integer audioStreamIndex,
@@ -752,7 +766,9 @@ public class PlaystateApi {
      * @param headers Optional headers to include in the request
      * @return ApiResponse&lt;Void&gt;
      * @throws ApiException if fails to make API call
+     * @deprecated
      */
+    @Deprecated
     public ApiResponse<Void> onPlaybackStartWithHttpInfo(@org.eclipse.jdt.annotation.Nullable UUID itemId,
             @org.eclipse.jdt.annotation.NonNull String mediaSourceId,
             @org.eclipse.jdt.annotation.NonNull Integer audioStreamIndex,
@@ -835,7 +851,7 @@ public class PlaystateApi {
             localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
         }
 
-        localVarRequestBuilder.header("Accept", "application/json");
+        localVarRequestBuilder.header("Accept", "text/html");
 
         localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {
@@ -859,7 +875,9 @@ public class PlaystateApi {
      * @param liveStreamId The live stream id. (optional)
      * @param playSessionId The play session id. (optional)
      * @throws ApiException if fails to make API call
+     * @deprecated
      */
+    @Deprecated
     public void onPlaybackStopped(@org.eclipse.jdt.annotation.Nullable UUID itemId,
             @org.eclipse.jdt.annotation.NonNull String mediaSourceId,
             @org.eclipse.jdt.annotation.NonNull String nextMediaType,
@@ -880,7 +898,9 @@ public class PlaystateApi {
      * @param playSessionId The play session id. (optional)
      * @param headers Optional headers to include in the request
      * @throws ApiException if fails to make API call
+     * @deprecated
      */
+    @Deprecated
     public void onPlaybackStopped(@org.eclipse.jdt.annotation.Nullable UUID itemId,
             @org.eclipse.jdt.annotation.NonNull String mediaSourceId,
             @org.eclipse.jdt.annotation.NonNull String nextMediaType,
@@ -902,7 +922,9 @@ public class PlaystateApi {
      * @param playSessionId The play session id. (optional)
      * @return ApiResponse&lt;Void&gt;
      * @throws ApiException if fails to make API call
+     * @deprecated
      */
+    @Deprecated
     public ApiResponse<Void> onPlaybackStoppedWithHttpInfo(@org.eclipse.jdt.annotation.Nullable UUID itemId,
             @org.eclipse.jdt.annotation.NonNull String mediaSourceId,
             @org.eclipse.jdt.annotation.NonNull String nextMediaType,
@@ -925,7 +947,9 @@ public class PlaystateApi {
      * @param headers Optional headers to include in the request
      * @return ApiResponse&lt;Void&gt;
      * @throws ApiException if fails to make API call
+     * @deprecated
      */
+    @Deprecated
     public ApiResponse<Void> onPlaybackStoppedWithHttpInfo(@org.eclipse.jdt.annotation.Nullable UUID itemId,
             @org.eclipse.jdt.annotation.NonNull String mediaSourceId,
             @org.eclipse.jdt.annotation.NonNull String nextMediaType,
@@ -1000,7 +1024,7 @@ public class PlaystateApi {
             localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
         }
 
-        localVarRequestBuilder.header("Accept", "application/json");
+        localVarRequestBuilder.header("Accept", "text/html");
 
         localVarRequestBuilder.method("DELETE", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {
@@ -1115,7 +1139,7 @@ public class PlaystateApi {
             localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
         }
 
-        localVarRequestBuilder.header("Accept", "application/json");
+        localVarRequestBuilder.header("Accept", "text/html");
 
         localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {
@@ -1214,7 +1238,7 @@ public class PlaystateApi {
         localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
 
         localVarRequestBuilder.header("Content-Type", "application/json");
-        localVarRequestBuilder.header("Accept", "application/json");
+        localVarRequestBuilder.header("Accept", "text/html");
 
         try {
             byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(playbackProgressInfo);
@@ -1317,7 +1341,7 @@ public class PlaystateApi {
         localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
 
         localVarRequestBuilder.header("Content-Type", "application/json");
-        localVarRequestBuilder.header("Accept", "application/json");
+        localVarRequestBuilder.header("Accept", "text/html");
 
         try {
             byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(playbackStartInfo);
@@ -1420,7 +1444,7 @@ public class PlaystateApi {
         localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
 
         localVarRequestBuilder.header("Content-Type", "application/json");
-        localVarRequestBuilder.header("Accept", "application/json");
+        localVarRequestBuilder.header("Accept", "text/html");
 
         try {
             byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(playbackStopInfo);

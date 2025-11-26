@@ -15,6 +15,7 @@ package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
 
@@ -70,13 +71,13 @@ public class CodecProfile {
      * @return type
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_TYPE)
+    @JsonProperty(value = JSON_PROPERTY_TYPE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public CodecType getType() {
         return type;
     }
 
-    @JsonProperty(JSON_PROPERTY_TYPE)
+    @JsonProperty(value = JSON_PROPERTY_TYPE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setType(@org.eclipse.jdt.annotation.NonNull CodecType type) {
         this.type = type;
@@ -101,13 +102,13 @@ public class CodecProfile {
      * @return conditions
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_CONDITIONS)
+    @JsonProperty(value = JSON_PROPERTY_CONDITIONS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<ProfileCondition> getConditions() {
         return conditions;
     }
 
-    @JsonProperty(JSON_PROPERTY_CONDITIONS)
+    @JsonProperty(value = JSON_PROPERTY_CONDITIONS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setConditions(@org.eclipse.jdt.annotation.NonNull List<ProfileCondition> conditions) {
         this.conditions = conditions;
@@ -132,13 +133,13 @@ public class CodecProfile {
      * @return applyConditions
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_APPLY_CONDITIONS)
+    @JsonProperty(value = JSON_PROPERTY_APPLY_CONDITIONS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<ProfileCondition> getApplyConditions() {
         return applyConditions;
     }
 
-    @JsonProperty(JSON_PROPERTY_APPLY_CONDITIONS)
+    @JsonProperty(value = JSON_PROPERTY_APPLY_CONDITIONS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setApplyConditions(@org.eclipse.jdt.annotation.NonNull List<ProfileCondition> applyConditions) {
         this.applyConditions = applyConditions;
@@ -155,13 +156,13 @@ public class CodecProfile {
      * @return codec
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_CODEC)
+    @JsonProperty(value = JSON_PROPERTY_CODEC, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getCodec() {
         return codec;
     }
 
-    @JsonProperty(JSON_PROPERTY_CODEC)
+    @JsonProperty(value = JSON_PROPERTY_CODEC, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setCodec(@org.eclipse.jdt.annotation.NonNull String codec) {
         this.codec = codec;
@@ -178,13 +179,13 @@ public class CodecProfile {
      * @return container
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_CONTAINER)
+    @JsonProperty(value = JSON_PROPERTY_CONTAINER, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getContainer() {
         return container;
     }
 
-    @JsonProperty(JSON_PROPERTY_CONTAINER)
+    @JsonProperty(value = JSON_PROPERTY_CONTAINER, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setContainer(@org.eclipse.jdt.annotation.NonNull String container) {
         this.container = container;
@@ -201,13 +202,13 @@ public class CodecProfile {
      * @return subContainer
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_SUB_CONTAINER)
+    @JsonProperty(value = JSON_PROPERTY_SUB_CONTAINER, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getSubContainer() {
         return subContainer;
     }
 
-    @JsonProperty(JSON_PROPERTY_SUB_CONTAINER)
+    @JsonProperty(value = JSON_PROPERTY_SUB_CONTAINER, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setSubContainer(@org.eclipse.jdt.annotation.NonNull String subContainer) {
         this.subContainer = subContainer;
@@ -296,7 +297,7 @@ public class CodecProfile {
 
         // add `Type` to the URL query string
         if (getType() != null) {
-            joiner.add(String.format("%sType%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sType%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getType()))));
         }
 
@@ -304,8 +305,9 @@ public class CodecProfile {
         if (getConditions() != null) {
             for (int i = 0; i < getConditions().size(); i++) {
                 if (getConditions().get(i) != null) {
-                    joiner.add(getConditions().get(i).toUrlQueryString(String.format("%sConditions%s%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
+                    joiner.add(getConditions().get(i).toUrlQueryString(
+                            String.format(Locale.ROOT, "%sConditions%s%s", prefix, suffix, "".equals(suffix) ? ""
+                                    : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
                 }
             }
         }
@@ -314,28 +316,28 @@ public class CodecProfile {
         if (getApplyConditions() != null) {
             for (int i = 0; i < getApplyConditions().size(); i++) {
                 if (getApplyConditions().get(i) != null) {
-                    joiner.add(getApplyConditions().get(i).toUrlQueryString(String.format("%sApplyConditions%s%s",
-                            prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
+                    joiner.add(getApplyConditions().get(i).toUrlQueryString(
+                            String.format(Locale.ROOT, "%sApplyConditions%s%s", prefix, suffix, "".equals(suffix) ? ""
+                                    : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
                 }
             }
         }
 
         // add `Codec` to the URL query string
         if (getCodec() != null) {
-            joiner.add(String.format("%sCodec%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sCodec%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getCodec()))));
         }
 
         // add `Container` to the URL query string
         if (getContainer() != null) {
-            joiner.add(String.format("%sContainer%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sContainer%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getContainer()))));
         }
 
         // add `SubContainer` to the URL query string
         if (getSubContainer() != null) {
-            joiner.add(String.format("%sSubContainer%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sSubContainer%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getSubContainer()))));
         }
 

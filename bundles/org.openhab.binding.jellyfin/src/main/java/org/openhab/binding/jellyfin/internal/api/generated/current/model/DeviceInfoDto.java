@@ -14,6 +14,7 @@
 package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
 import java.time.OffsetDateTime;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
 import java.util.UUID;
@@ -93,13 +94,13 @@ public class DeviceInfoDto {
      * @return name
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_NAME)
+    @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getName() {
         return name;
     }
 
-    @JsonProperty(JSON_PROPERTY_NAME)
+    @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setName(@org.eclipse.jdt.annotation.NonNull String name) {
         this.name = name;
@@ -116,13 +117,13 @@ public class DeviceInfoDto {
      * @return customName
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_CUSTOM_NAME)
+    @JsonProperty(value = JSON_PROPERTY_CUSTOM_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getCustomName() {
         return customName;
     }
 
-    @JsonProperty(JSON_PROPERTY_CUSTOM_NAME)
+    @JsonProperty(value = JSON_PROPERTY_CUSTOM_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setCustomName(@org.eclipse.jdt.annotation.NonNull String customName) {
         this.customName = customName;
@@ -139,13 +140,13 @@ public class DeviceInfoDto {
      * @return accessToken
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ACCESS_TOKEN)
+    @JsonProperty(value = JSON_PROPERTY_ACCESS_TOKEN, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getAccessToken() {
         return accessToken;
     }
 
-    @JsonProperty(JSON_PROPERTY_ACCESS_TOKEN)
+    @JsonProperty(value = JSON_PROPERTY_ACCESS_TOKEN, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setAccessToken(@org.eclipse.jdt.annotation.NonNull String accessToken) {
         this.accessToken = accessToken;
@@ -162,13 +163,13 @@ public class DeviceInfoDto {
      * @return id
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ID)
+    @JsonProperty(value = JSON_PROPERTY_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getId() {
         return id;
     }
 
-    @JsonProperty(JSON_PROPERTY_ID)
+    @JsonProperty(value = JSON_PROPERTY_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setId(@org.eclipse.jdt.annotation.NonNull String id) {
         this.id = id;
@@ -185,13 +186,13 @@ public class DeviceInfoDto {
      * @return lastUserName
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_LAST_USER_NAME)
+    @JsonProperty(value = JSON_PROPERTY_LAST_USER_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getLastUserName() {
         return lastUserName;
     }
 
-    @JsonProperty(JSON_PROPERTY_LAST_USER_NAME)
+    @JsonProperty(value = JSON_PROPERTY_LAST_USER_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setLastUserName(@org.eclipse.jdt.annotation.NonNull String lastUserName) {
         this.lastUserName = lastUserName;
@@ -208,13 +209,13 @@ public class DeviceInfoDto {
      * @return appName
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_APP_NAME)
+    @JsonProperty(value = JSON_PROPERTY_APP_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getAppName() {
         return appName;
     }
 
-    @JsonProperty(JSON_PROPERTY_APP_NAME)
+    @JsonProperty(value = JSON_PROPERTY_APP_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setAppName(@org.eclipse.jdt.annotation.NonNull String appName) {
         this.appName = appName;
@@ -231,13 +232,13 @@ public class DeviceInfoDto {
      * @return appVersion
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_APP_VERSION)
+    @JsonProperty(value = JSON_PROPERTY_APP_VERSION, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getAppVersion() {
         return appVersion;
     }
 
-    @JsonProperty(JSON_PROPERTY_APP_VERSION)
+    @JsonProperty(value = JSON_PROPERTY_APP_VERSION, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setAppVersion(@org.eclipse.jdt.annotation.NonNull String appVersion) {
         this.appVersion = appVersion;
@@ -254,13 +255,13 @@ public class DeviceInfoDto {
      * @return lastUserId
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_LAST_USER_ID)
+    @JsonProperty(value = JSON_PROPERTY_LAST_USER_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public UUID getLastUserId() {
         return lastUserId;
     }
 
-    @JsonProperty(JSON_PROPERTY_LAST_USER_ID)
+    @JsonProperty(value = JSON_PROPERTY_LAST_USER_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setLastUserId(@org.eclipse.jdt.annotation.NonNull UUID lastUserId) {
         this.lastUserId = lastUserId;
@@ -277,13 +278,13 @@ public class DeviceInfoDto {
      * @return dateLastActivity
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_DATE_LAST_ACTIVITY)
+    @JsonProperty(value = JSON_PROPERTY_DATE_LAST_ACTIVITY, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public OffsetDateTime getDateLastActivity() {
         return dateLastActivity;
     }
 
-    @JsonProperty(JSON_PROPERTY_DATE_LAST_ACTIVITY)
+    @JsonProperty(value = JSON_PROPERTY_DATE_LAST_ACTIVITY, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setDateLastActivity(@org.eclipse.jdt.annotation.NonNull OffsetDateTime dateLastActivity) {
         this.dateLastActivity = dateLastActivity;
@@ -300,13 +301,13 @@ public class DeviceInfoDto {
      * @return capabilities
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_CAPABILITIES)
+    @JsonProperty(value = JSON_PROPERTY_CAPABILITIES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public ClientCapabilitiesDto getCapabilities() {
         return capabilities;
     }
 
-    @JsonProperty(JSON_PROPERTY_CAPABILITIES)
+    @JsonProperty(value = JSON_PROPERTY_CAPABILITIES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setCapabilities(@org.eclipse.jdt.annotation.NonNull ClientCapabilitiesDto capabilities) {
         this.capabilities = capabilities;
@@ -323,13 +324,13 @@ public class DeviceInfoDto {
      * @return iconUrl
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ICON_URL)
+    @JsonProperty(value = JSON_PROPERTY_ICON_URL, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getIconUrl() {
         return iconUrl;
     }
 
-    @JsonProperty(JSON_PROPERTY_ICON_URL)
+    @JsonProperty(value = JSON_PROPERTY_ICON_URL, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setIconUrl(@org.eclipse.jdt.annotation.NonNull String iconUrl) {
         this.iconUrl = iconUrl;
@@ -430,55 +431,55 @@ public class DeviceInfoDto {
 
         // add `Name` to the URL query string
         if (getName() != null) {
-            joiner.add(String.format("%sName%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sName%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getName()))));
         }
 
         // add `CustomName` to the URL query string
         if (getCustomName() != null) {
-            joiner.add(String.format("%sCustomName%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sCustomName%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getCustomName()))));
         }
 
         // add `AccessToken` to the URL query string
         if (getAccessToken() != null) {
-            joiner.add(String.format("%sAccessToken%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sAccessToken%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getAccessToken()))));
         }
 
         // add `Id` to the URL query string
         if (getId() != null) {
-            joiner.add(
-                    String.format("%sId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
+            joiner.add(String.format(Locale.ROOT, "%sId%s=%s", prefix, suffix,
+                    ApiClient.urlEncode(ApiClient.valueToString(getId()))));
         }
 
         // add `LastUserName` to the URL query string
         if (getLastUserName() != null) {
-            joiner.add(String.format("%sLastUserName%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sLastUserName%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getLastUserName()))));
         }
 
         // add `AppName` to the URL query string
         if (getAppName() != null) {
-            joiner.add(String.format("%sAppName%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sAppName%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getAppName()))));
         }
 
         // add `AppVersion` to the URL query string
         if (getAppVersion() != null) {
-            joiner.add(String.format("%sAppVersion%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sAppVersion%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getAppVersion()))));
         }
 
         // add `LastUserId` to the URL query string
         if (getLastUserId() != null) {
-            joiner.add(String.format("%sLastUserId%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sLastUserId%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getLastUserId()))));
         }
 
         // add `DateLastActivity` to the URL query string
         if (getDateLastActivity() != null) {
-            joiner.add(String.format("%sDateLastActivity%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sDateLastActivity%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getDateLastActivity()))));
         }
 
@@ -489,7 +490,7 @@ public class DeviceInfoDto {
 
         // add `IconUrl` to the URL query string
         if (getIconUrl() != null) {
-            joiner.add(String.format("%sIconUrl%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sIconUrl%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getIconUrl()))));
         }
 

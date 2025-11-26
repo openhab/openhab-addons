@@ -13,6 +13,7 @@
 
 package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
+import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
 
@@ -48,7 +49,7 @@ public class SessionsStopMessage {
      * @return messageType
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_MESSAGE_TYPE)
+    @JsonProperty(value = JSON_PROPERTY_MESSAGE_TYPE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public SessionMessageType getMessageType() {
         return messageType;
@@ -128,7 +129,7 @@ public class SessionsStopMessage {
 
         // add `MessageType` to the URL query string
         if (getMessageType() != null) {
-            joiner.add(String.format("%sMessageType%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sMessageType%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getMessageType()))));
         }
 

@@ -13,6 +13,7 @@
 
 package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
+import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
 
@@ -36,14 +37,15 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
         MediaStream.JSON_PROPERTY_DV_BL_SIGNAL_COMPATIBILITY_ID, MediaStream.JSON_PROPERTY_ROTATION,
         MediaStream.JSON_PROPERTY_COMMENT, MediaStream.JSON_PROPERTY_TIME_BASE,
         MediaStream.JSON_PROPERTY_CODEC_TIME_BASE, MediaStream.JSON_PROPERTY_TITLE,
-        MediaStream.JSON_PROPERTY_VIDEO_RANGE, MediaStream.JSON_PROPERTY_VIDEO_RANGE_TYPE,
-        MediaStream.JSON_PROPERTY_VIDEO_DO_VI_TITLE, MediaStream.JSON_PROPERTY_AUDIO_SPATIAL_FORMAT,
-        MediaStream.JSON_PROPERTY_LOCALIZED_UNDEFINED, MediaStream.JSON_PROPERTY_LOCALIZED_DEFAULT,
-        MediaStream.JSON_PROPERTY_LOCALIZED_FORCED, MediaStream.JSON_PROPERTY_LOCALIZED_EXTERNAL,
-        MediaStream.JSON_PROPERTY_LOCALIZED_HEARING_IMPAIRED, MediaStream.JSON_PROPERTY_DISPLAY_TITLE,
-        MediaStream.JSON_PROPERTY_NAL_LENGTH_SIZE, MediaStream.JSON_PROPERTY_IS_INTERLACED,
-        MediaStream.JSON_PROPERTY_IS_A_V_C, MediaStream.JSON_PROPERTY_CHANNEL_LAYOUT,
-        MediaStream.JSON_PROPERTY_BIT_RATE, MediaStream.JSON_PROPERTY_BIT_DEPTH, MediaStream.JSON_PROPERTY_REF_FRAMES,
+        MediaStream.JSON_PROPERTY_HDR10_PLUS_PRESENT_FLAG, MediaStream.JSON_PROPERTY_VIDEO_RANGE,
+        MediaStream.JSON_PROPERTY_VIDEO_RANGE_TYPE, MediaStream.JSON_PROPERTY_VIDEO_DO_VI_TITLE,
+        MediaStream.JSON_PROPERTY_AUDIO_SPATIAL_FORMAT, MediaStream.JSON_PROPERTY_LOCALIZED_UNDEFINED,
+        MediaStream.JSON_PROPERTY_LOCALIZED_DEFAULT, MediaStream.JSON_PROPERTY_LOCALIZED_FORCED,
+        MediaStream.JSON_PROPERTY_LOCALIZED_EXTERNAL, MediaStream.JSON_PROPERTY_LOCALIZED_HEARING_IMPAIRED,
+        MediaStream.JSON_PROPERTY_DISPLAY_TITLE, MediaStream.JSON_PROPERTY_NAL_LENGTH_SIZE,
+        MediaStream.JSON_PROPERTY_IS_INTERLACED, MediaStream.JSON_PROPERTY_IS_A_V_C,
+        MediaStream.JSON_PROPERTY_CHANNEL_LAYOUT, MediaStream.JSON_PROPERTY_BIT_RATE,
+        MediaStream.JSON_PROPERTY_BIT_DEPTH, MediaStream.JSON_PROPERTY_REF_FRAMES,
         MediaStream.JSON_PROPERTY_PACKET_LENGTH, MediaStream.JSON_PROPERTY_CHANNELS,
         MediaStream.JSON_PROPERTY_SAMPLE_RATE, MediaStream.JSON_PROPERTY_IS_DEFAULT,
         MediaStream.JSON_PROPERTY_IS_FORCED, MediaStream.JSON_PROPERTY_IS_HEARING_IMPAIRED,
@@ -137,6 +139,10 @@ public class MediaStream {
     public static final String JSON_PROPERTY_TITLE = "Title";
     @org.eclipse.jdt.annotation.NonNull
     private String title;
+
+    public static final String JSON_PROPERTY_HDR10_PLUS_PRESENT_FLAG = "Hdr10PlusPresentFlag";
+    @org.eclipse.jdt.annotation.NonNull
+    private Boolean hdr10PlusPresentFlag;
 
     public static final String JSON_PROPERTY_VIDEO_RANGE = "VideoRange";
     @org.eclipse.jdt.annotation.NonNull
@@ -342,13 +348,13 @@ public class MediaStream {
      * @return codec
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_CODEC)
+    @JsonProperty(value = JSON_PROPERTY_CODEC, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getCodec() {
         return codec;
     }
 
-    @JsonProperty(JSON_PROPERTY_CODEC)
+    @JsonProperty(value = JSON_PROPERTY_CODEC, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setCodec(@org.eclipse.jdt.annotation.NonNull String codec) {
         this.codec = codec;
@@ -365,13 +371,13 @@ public class MediaStream {
      * @return codecTag
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_CODEC_TAG)
+    @JsonProperty(value = JSON_PROPERTY_CODEC_TAG, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getCodecTag() {
         return codecTag;
     }
 
-    @JsonProperty(JSON_PROPERTY_CODEC_TAG)
+    @JsonProperty(value = JSON_PROPERTY_CODEC_TAG, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setCodecTag(@org.eclipse.jdt.annotation.NonNull String codecTag) {
         this.codecTag = codecTag;
@@ -388,13 +394,13 @@ public class MediaStream {
      * @return language
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_LANGUAGE)
+    @JsonProperty(value = JSON_PROPERTY_LANGUAGE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getLanguage() {
         return language;
     }
 
-    @JsonProperty(JSON_PROPERTY_LANGUAGE)
+    @JsonProperty(value = JSON_PROPERTY_LANGUAGE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setLanguage(@org.eclipse.jdt.annotation.NonNull String language) {
         this.language = language;
@@ -411,13 +417,13 @@ public class MediaStream {
      * @return colorRange
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_COLOR_RANGE)
+    @JsonProperty(value = JSON_PROPERTY_COLOR_RANGE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getColorRange() {
         return colorRange;
     }
 
-    @JsonProperty(JSON_PROPERTY_COLOR_RANGE)
+    @JsonProperty(value = JSON_PROPERTY_COLOR_RANGE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setColorRange(@org.eclipse.jdt.annotation.NonNull String colorRange) {
         this.colorRange = colorRange;
@@ -434,13 +440,13 @@ public class MediaStream {
      * @return colorSpace
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_COLOR_SPACE)
+    @JsonProperty(value = JSON_PROPERTY_COLOR_SPACE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getColorSpace() {
         return colorSpace;
     }
 
-    @JsonProperty(JSON_PROPERTY_COLOR_SPACE)
+    @JsonProperty(value = JSON_PROPERTY_COLOR_SPACE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setColorSpace(@org.eclipse.jdt.annotation.NonNull String colorSpace) {
         this.colorSpace = colorSpace;
@@ -457,13 +463,13 @@ public class MediaStream {
      * @return colorTransfer
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_COLOR_TRANSFER)
+    @JsonProperty(value = JSON_PROPERTY_COLOR_TRANSFER, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getColorTransfer() {
         return colorTransfer;
     }
 
-    @JsonProperty(JSON_PROPERTY_COLOR_TRANSFER)
+    @JsonProperty(value = JSON_PROPERTY_COLOR_TRANSFER, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setColorTransfer(@org.eclipse.jdt.annotation.NonNull String colorTransfer) {
         this.colorTransfer = colorTransfer;
@@ -480,13 +486,13 @@ public class MediaStream {
      * @return colorPrimaries
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_COLOR_PRIMARIES)
+    @JsonProperty(value = JSON_PROPERTY_COLOR_PRIMARIES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getColorPrimaries() {
         return colorPrimaries;
     }
 
-    @JsonProperty(JSON_PROPERTY_COLOR_PRIMARIES)
+    @JsonProperty(value = JSON_PROPERTY_COLOR_PRIMARIES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setColorPrimaries(@org.eclipse.jdt.annotation.NonNull String colorPrimaries) {
         this.colorPrimaries = colorPrimaries;
@@ -503,13 +509,13 @@ public class MediaStream {
      * @return dvVersionMajor
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_DV_VERSION_MAJOR)
+    @JsonProperty(value = JSON_PROPERTY_DV_VERSION_MAJOR, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getDvVersionMajor() {
         return dvVersionMajor;
     }
 
-    @JsonProperty(JSON_PROPERTY_DV_VERSION_MAJOR)
+    @JsonProperty(value = JSON_PROPERTY_DV_VERSION_MAJOR, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setDvVersionMajor(@org.eclipse.jdt.annotation.NonNull Integer dvVersionMajor) {
         this.dvVersionMajor = dvVersionMajor;
@@ -526,13 +532,13 @@ public class MediaStream {
      * @return dvVersionMinor
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_DV_VERSION_MINOR)
+    @JsonProperty(value = JSON_PROPERTY_DV_VERSION_MINOR, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getDvVersionMinor() {
         return dvVersionMinor;
     }
 
-    @JsonProperty(JSON_PROPERTY_DV_VERSION_MINOR)
+    @JsonProperty(value = JSON_PROPERTY_DV_VERSION_MINOR, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setDvVersionMinor(@org.eclipse.jdt.annotation.NonNull Integer dvVersionMinor) {
         this.dvVersionMinor = dvVersionMinor;
@@ -549,13 +555,13 @@ public class MediaStream {
      * @return dvProfile
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_DV_PROFILE)
+    @JsonProperty(value = JSON_PROPERTY_DV_PROFILE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getDvProfile() {
         return dvProfile;
     }
 
-    @JsonProperty(JSON_PROPERTY_DV_PROFILE)
+    @JsonProperty(value = JSON_PROPERTY_DV_PROFILE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setDvProfile(@org.eclipse.jdt.annotation.NonNull Integer dvProfile) {
         this.dvProfile = dvProfile;
@@ -572,13 +578,13 @@ public class MediaStream {
      * @return dvLevel
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_DV_LEVEL)
+    @JsonProperty(value = JSON_PROPERTY_DV_LEVEL, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getDvLevel() {
         return dvLevel;
     }
 
-    @JsonProperty(JSON_PROPERTY_DV_LEVEL)
+    @JsonProperty(value = JSON_PROPERTY_DV_LEVEL, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setDvLevel(@org.eclipse.jdt.annotation.NonNull Integer dvLevel) {
         this.dvLevel = dvLevel;
@@ -595,13 +601,13 @@ public class MediaStream {
      * @return rpuPresentFlag
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_RPU_PRESENT_FLAG)
+    @JsonProperty(value = JSON_PROPERTY_RPU_PRESENT_FLAG, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getRpuPresentFlag() {
         return rpuPresentFlag;
     }
 
-    @JsonProperty(JSON_PROPERTY_RPU_PRESENT_FLAG)
+    @JsonProperty(value = JSON_PROPERTY_RPU_PRESENT_FLAG, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setRpuPresentFlag(@org.eclipse.jdt.annotation.NonNull Integer rpuPresentFlag) {
         this.rpuPresentFlag = rpuPresentFlag;
@@ -618,13 +624,13 @@ public class MediaStream {
      * @return elPresentFlag
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_EL_PRESENT_FLAG)
+    @JsonProperty(value = JSON_PROPERTY_EL_PRESENT_FLAG, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getElPresentFlag() {
         return elPresentFlag;
     }
 
-    @JsonProperty(JSON_PROPERTY_EL_PRESENT_FLAG)
+    @JsonProperty(value = JSON_PROPERTY_EL_PRESENT_FLAG, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setElPresentFlag(@org.eclipse.jdt.annotation.NonNull Integer elPresentFlag) {
         this.elPresentFlag = elPresentFlag;
@@ -641,13 +647,13 @@ public class MediaStream {
      * @return blPresentFlag
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_BL_PRESENT_FLAG)
+    @JsonProperty(value = JSON_PROPERTY_BL_PRESENT_FLAG, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getBlPresentFlag() {
         return blPresentFlag;
     }
 
-    @JsonProperty(JSON_PROPERTY_BL_PRESENT_FLAG)
+    @JsonProperty(value = JSON_PROPERTY_BL_PRESENT_FLAG, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setBlPresentFlag(@org.eclipse.jdt.annotation.NonNull Integer blPresentFlag) {
         this.blPresentFlag = blPresentFlag;
@@ -665,13 +671,13 @@ public class MediaStream {
      * @return dvBlSignalCompatibilityId
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_DV_BL_SIGNAL_COMPATIBILITY_ID)
+    @JsonProperty(value = JSON_PROPERTY_DV_BL_SIGNAL_COMPATIBILITY_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getDvBlSignalCompatibilityId() {
         return dvBlSignalCompatibilityId;
     }
 
-    @JsonProperty(JSON_PROPERTY_DV_BL_SIGNAL_COMPATIBILITY_ID)
+    @JsonProperty(value = JSON_PROPERTY_DV_BL_SIGNAL_COMPATIBILITY_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setDvBlSignalCompatibilityId(@org.eclipse.jdt.annotation.NonNull Integer dvBlSignalCompatibilityId) {
         this.dvBlSignalCompatibilityId = dvBlSignalCompatibilityId;
@@ -688,13 +694,13 @@ public class MediaStream {
      * @return rotation
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ROTATION)
+    @JsonProperty(value = JSON_PROPERTY_ROTATION, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getRotation() {
         return rotation;
     }
 
-    @JsonProperty(JSON_PROPERTY_ROTATION)
+    @JsonProperty(value = JSON_PROPERTY_ROTATION, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setRotation(@org.eclipse.jdt.annotation.NonNull Integer rotation) {
         this.rotation = rotation;
@@ -711,13 +717,13 @@ public class MediaStream {
      * @return comment
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_COMMENT)
+    @JsonProperty(value = JSON_PROPERTY_COMMENT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getComment() {
         return comment;
     }
 
-    @JsonProperty(JSON_PROPERTY_COMMENT)
+    @JsonProperty(value = JSON_PROPERTY_COMMENT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setComment(@org.eclipse.jdt.annotation.NonNull String comment) {
         this.comment = comment;
@@ -734,13 +740,13 @@ public class MediaStream {
      * @return timeBase
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_TIME_BASE)
+    @JsonProperty(value = JSON_PROPERTY_TIME_BASE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getTimeBase() {
         return timeBase;
     }
 
-    @JsonProperty(JSON_PROPERTY_TIME_BASE)
+    @JsonProperty(value = JSON_PROPERTY_TIME_BASE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setTimeBase(@org.eclipse.jdt.annotation.NonNull String timeBase) {
         this.timeBase = timeBase;
@@ -757,13 +763,13 @@ public class MediaStream {
      * @return codecTimeBase
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_CODEC_TIME_BASE)
+    @JsonProperty(value = JSON_PROPERTY_CODEC_TIME_BASE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getCodecTimeBase() {
         return codecTimeBase;
     }
 
-    @JsonProperty(JSON_PROPERTY_CODEC_TIME_BASE)
+    @JsonProperty(value = JSON_PROPERTY_CODEC_TIME_BASE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setCodecTimeBase(@org.eclipse.jdt.annotation.NonNull String codecTimeBase) {
         this.codecTimeBase = codecTimeBase;
@@ -780,16 +786,39 @@ public class MediaStream {
      * @return title
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_TITLE)
+    @JsonProperty(value = JSON_PROPERTY_TITLE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getTitle() {
         return title;
     }
 
-    @JsonProperty(JSON_PROPERTY_TITLE)
+    @JsonProperty(value = JSON_PROPERTY_TITLE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setTitle(@org.eclipse.jdt.annotation.NonNull String title) {
         this.title = title;
+    }
+
+    public MediaStream hdr10PlusPresentFlag(@org.eclipse.jdt.annotation.NonNull Boolean hdr10PlusPresentFlag) {
+        this.hdr10PlusPresentFlag = hdr10PlusPresentFlag;
+        return this;
+    }
+
+    /**
+     * Get hdr10PlusPresentFlag
+     * 
+     * @return hdr10PlusPresentFlag
+     */
+    @org.eclipse.jdt.annotation.NonNull
+    @JsonProperty(value = JSON_PROPERTY_HDR10_PLUS_PRESENT_FLAG, required = false)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public Boolean getHdr10PlusPresentFlag() {
+        return hdr10PlusPresentFlag;
+    }
+
+    @JsonProperty(value = JSON_PROPERTY_HDR10_PLUS_PRESENT_FLAG, required = false)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setHdr10PlusPresentFlag(@org.eclipse.jdt.annotation.NonNull Boolean hdr10PlusPresentFlag) {
+        this.hdr10PlusPresentFlag = hdr10PlusPresentFlag;
     }
 
     /**
@@ -798,7 +827,7 @@ public class MediaStream {
      * @return videoRange
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_VIDEO_RANGE)
+    @JsonProperty(value = JSON_PROPERTY_VIDEO_RANGE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public VideoRange getVideoRange() {
         return videoRange;
@@ -810,7 +839,7 @@ public class MediaStream {
      * @return videoRangeType
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_VIDEO_RANGE_TYPE)
+    @JsonProperty(value = JSON_PROPERTY_VIDEO_RANGE_TYPE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public VideoRangeType getVideoRangeType() {
         return videoRangeType;
@@ -822,7 +851,7 @@ public class MediaStream {
      * @return videoDoViTitle
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_VIDEO_DO_VI_TITLE)
+    @JsonProperty(value = JSON_PROPERTY_VIDEO_DO_VI_TITLE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getVideoDoViTitle() {
         return videoDoViTitle;
@@ -834,7 +863,7 @@ public class MediaStream {
      * @return audioSpatialFormat
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_AUDIO_SPATIAL_FORMAT)
+    @JsonProperty(value = JSON_PROPERTY_AUDIO_SPATIAL_FORMAT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public AudioSpatialFormat getAudioSpatialFormat() {
         return audioSpatialFormat;
@@ -851,13 +880,13 @@ public class MediaStream {
      * @return localizedUndefined
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_LOCALIZED_UNDEFINED)
+    @JsonProperty(value = JSON_PROPERTY_LOCALIZED_UNDEFINED, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getLocalizedUndefined() {
         return localizedUndefined;
     }
 
-    @JsonProperty(JSON_PROPERTY_LOCALIZED_UNDEFINED)
+    @JsonProperty(value = JSON_PROPERTY_LOCALIZED_UNDEFINED, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setLocalizedUndefined(@org.eclipse.jdt.annotation.NonNull String localizedUndefined) {
         this.localizedUndefined = localizedUndefined;
@@ -874,13 +903,13 @@ public class MediaStream {
      * @return localizedDefault
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_LOCALIZED_DEFAULT)
+    @JsonProperty(value = JSON_PROPERTY_LOCALIZED_DEFAULT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getLocalizedDefault() {
         return localizedDefault;
     }
 
-    @JsonProperty(JSON_PROPERTY_LOCALIZED_DEFAULT)
+    @JsonProperty(value = JSON_PROPERTY_LOCALIZED_DEFAULT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setLocalizedDefault(@org.eclipse.jdt.annotation.NonNull String localizedDefault) {
         this.localizedDefault = localizedDefault;
@@ -897,13 +926,13 @@ public class MediaStream {
      * @return localizedForced
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_LOCALIZED_FORCED)
+    @JsonProperty(value = JSON_PROPERTY_LOCALIZED_FORCED, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getLocalizedForced() {
         return localizedForced;
     }
 
-    @JsonProperty(JSON_PROPERTY_LOCALIZED_FORCED)
+    @JsonProperty(value = JSON_PROPERTY_LOCALIZED_FORCED, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setLocalizedForced(@org.eclipse.jdt.annotation.NonNull String localizedForced) {
         this.localizedForced = localizedForced;
@@ -920,13 +949,13 @@ public class MediaStream {
      * @return localizedExternal
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_LOCALIZED_EXTERNAL)
+    @JsonProperty(value = JSON_PROPERTY_LOCALIZED_EXTERNAL, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getLocalizedExternal() {
         return localizedExternal;
     }
 
-    @JsonProperty(JSON_PROPERTY_LOCALIZED_EXTERNAL)
+    @JsonProperty(value = JSON_PROPERTY_LOCALIZED_EXTERNAL, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setLocalizedExternal(@org.eclipse.jdt.annotation.NonNull String localizedExternal) {
         this.localizedExternal = localizedExternal;
@@ -943,13 +972,13 @@ public class MediaStream {
      * @return localizedHearingImpaired
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_LOCALIZED_HEARING_IMPAIRED)
+    @JsonProperty(value = JSON_PROPERTY_LOCALIZED_HEARING_IMPAIRED, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getLocalizedHearingImpaired() {
         return localizedHearingImpaired;
     }
 
-    @JsonProperty(JSON_PROPERTY_LOCALIZED_HEARING_IMPAIRED)
+    @JsonProperty(value = JSON_PROPERTY_LOCALIZED_HEARING_IMPAIRED, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setLocalizedHearingImpaired(@org.eclipse.jdt.annotation.NonNull String localizedHearingImpaired) {
         this.localizedHearingImpaired = localizedHearingImpaired;
@@ -961,7 +990,7 @@ public class MediaStream {
      * @return displayTitle
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_DISPLAY_TITLE)
+    @JsonProperty(value = JSON_PROPERTY_DISPLAY_TITLE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getDisplayTitle() {
         return displayTitle;
@@ -978,13 +1007,13 @@ public class MediaStream {
      * @return nalLengthSize
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_NAL_LENGTH_SIZE)
+    @JsonProperty(value = JSON_PROPERTY_NAL_LENGTH_SIZE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getNalLengthSize() {
         return nalLengthSize;
     }
 
-    @JsonProperty(JSON_PROPERTY_NAL_LENGTH_SIZE)
+    @JsonProperty(value = JSON_PROPERTY_NAL_LENGTH_SIZE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setNalLengthSize(@org.eclipse.jdt.annotation.NonNull String nalLengthSize) {
         this.nalLengthSize = nalLengthSize;
@@ -1001,13 +1030,13 @@ public class MediaStream {
      * @return isInterlaced
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_IS_INTERLACED)
+    @JsonProperty(value = JSON_PROPERTY_IS_INTERLACED, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getIsInterlaced() {
         return isInterlaced;
     }
 
-    @JsonProperty(JSON_PROPERTY_IS_INTERLACED)
+    @JsonProperty(value = JSON_PROPERTY_IS_INTERLACED, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setIsInterlaced(@org.eclipse.jdt.annotation.NonNull Boolean isInterlaced) {
         this.isInterlaced = isInterlaced;
@@ -1024,13 +1053,13 @@ public class MediaStream {
      * @return isAVC
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_IS_A_V_C)
+    @JsonProperty(value = JSON_PROPERTY_IS_A_V_C, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getIsAVC() {
         return isAVC;
     }
 
-    @JsonProperty(JSON_PROPERTY_IS_A_V_C)
+    @JsonProperty(value = JSON_PROPERTY_IS_A_V_C, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setIsAVC(@org.eclipse.jdt.annotation.NonNull Boolean isAVC) {
         this.isAVC = isAVC;
@@ -1047,13 +1076,13 @@ public class MediaStream {
      * @return channelLayout
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_CHANNEL_LAYOUT)
+    @JsonProperty(value = JSON_PROPERTY_CHANNEL_LAYOUT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getChannelLayout() {
         return channelLayout;
     }
 
-    @JsonProperty(JSON_PROPERTY_CHANNEL_LAYOUT)
+    @JsonProperty(value = JSON_PROPERTY_CHANNEL_LAYOUT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setChannelLayout(@org.eclipse.jdt.annotation.NonNull String channelLayout) {
         this.channelLayout = channelLayout;
@@ -1070,13 +1099,13 @@ public class MediaStream {
      * @return bitRate
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_BIT_RATE)
+    @JsonProperty(value = JSON_PROPERTY_BIT_RATE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getBitRate() {
         return bitRate;
     }
 
-    @JsonProperty(JSON_PROPERTY_BIT_RATE)
+    @JsonProperty(value = JSON_PROPERTY_BIT_RATE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setBitRate(@org.eclipse.jdt.annotation.NonNull Integer bitRate) {
         this.bitRate = bitRate;
@@ -1093,13 +1122,13 @@ public class MediaStream {
      * @return bitDepth
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_BIT_DEPTH)
+    @JsonProperty(value = JSON_PROPERTY_BIT_DEPTH, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getBitDepth() {
         return bitDepth;
     }
 
-    @JsonProperty(JSON_PROPERTY_BIT_DEPTH)
+    @JsonProperty(value = JSON_PROPERTY_BIT_DEPTH, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setBitDepth(@org.eclipse.jdt.annotation.NonNull Integer bitDepth) {
         this.bitDepth = bitDepth;
@@ -1116,13 +1145,13 @@ public class MediaStream {
      * @return refFrames
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_REF_FRAMES)
+    @JsonProperty(value = JSON_PROPERTY_REF_FRAMES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getRefFrames() {
         return refFrames;
     }
 
-    @JsonProperty(JSON_PROPERTY_REF_FRAMES)
+    @JsonProperty(value = JSON_PROPERTY_REF_FRAMES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setRefFrames(@org.eclipse.jdt.annotation.NonNull Integer refFrames) {
         this.refFrames = refFrames;
@@ -1139,13 +1168,13 @@ public class MediaStream {
      * @return packetLength
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_PACKET_LENGTH)
+    @JsonProperty(value = JSON_PROPERTY_PACKET_LENGTH, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getPacketLength() {
         return packetLength;
     }
 
-    @JsonProperty(JSON_PROPERTY_PACKET_LENGTH)
+    @JsonProperty(value = JSON_PROPERTY_PACKET_LENGTH, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setPacketLength(@org.eclipse.jdt.annotation.NonNull Integer packetLength) {
         this.packetLength = packetLength;
@@ -1162,13 +1191,13 @@ public class MediaStream {
      * @return channels
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_CHANNELS)
+    @JsonProperty(value = JSON_PROPERTY_CHANNELS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getChannels() {
         return channels;
     }
 
-    @JsonProperty(JSON_PROPERTY_CHANNELS)
+    @JsonProperty(value = JSON_PROPERTY_CHANNELS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setChannels(@org.eclipse.jdt.annotation.NonNull Integer channels) {
         this.channels = channels;
@@ -1185,13 +1214,13 @@ public class MediaStream {
      * @return sampleRate
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_SAMPLE_RATE)
+    @JsonProperty(value = JSON_PROPERTY_SAMPLE_RATE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getSampleRate() {
         return sampleRate;
     }
 
-    @JsonProperty(JSON_PROPERTY_SAMPLE_RATE)
+    @JsonProperty(value = JSON_PROPERTY_SAMPLE_RATE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setSampleRate(@org.eclipse.jdt.annotation.NonNull Integer sampleRate) {
         this.sampleRate = sampleRate;
@@ -1208,13 +1237,13 @@ public class MediaStream {
      * @return isDefault
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_IS_DEFAULT)
+    @JsonProperty(value = JSON_PROPERTY_IS_DEFAULT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getIsDefault() {
         return isDefault;
     }
 
-    @JsonProperty(JSON_PROPERTY_IS_DEFAULT)
+    @JsonProperty(value = JSON_PROPERTY_IS_DEFAULT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setIsDefault(@org.eclipse.jdt.annotation.NonNull Boolean isDefault) {
         this.isDefault = isDefault;
@@ -1231,13 +1260,13 @@ public class MediaStream {
      * @return isForced
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_IS_FORCED)
+    @JsonProperty(value = JSON_PROPERTY_IS_FORCED, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getIsForced() {
         return isForced;
     }
 
-    @JsonProperty(JSON_PROPERTY_IS_FORCED)
+    @JsonProperty(value = JSON_PROPERTY_IS_FORCED, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setIsForced(@org.eclipse.jdt.annotation.NonNull Boolean isForced) {
         this.isForced = isForced;
@@ -1254,13 +1283,13 @@ public class MediaStream {
      * @return isHearingImpaired
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_IS_HEARING_IMPAIRED)
+    @JsonProperty(value = JSON_PROPERTY_IS_HEARING_IMPAIRED, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getIsHearingImpaired() {
         return isHearingImpaired;
     }
 
-    @JsonProperty(JSON_PROPERTY_IS_HEARING_IMPAIRED)
+    @JsonProperty(value = JSON_PROPERTY_IS_HEARING_IMPAIRED, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setIsHearingImpaired(@org.eclipse.jdt.annotation.NonNull Boolean isHearingImpaired) {
         this.isHearingImpaired = isHearingImpaired;
@@ -1277,13 +1306,13 @@ public class MediaStream {
      * @return height
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_HEIGHT)
+    @JsonProperty(value = JSON_PROPERTY_HEIGHT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getHeight() {
         return height;
     }
 
-    @JsonProperty(JSON_PROPERTY_HEIGHT)
+    @JsonProperty(value = JSON_PROPERTY_HEIGHT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setHeight(@org.eclipse.jdt.annotation.NonNull Integer height) {
         this.height = height;
@@ -1300,13 +1329,13 @@ public class MediaStream {
      * @return width
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_WIDTH)
+    @JsonProperty(value = JSON_PROPERTY_WIDTH, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getWidth() {
         return width;
     }
 
-    @JsonProperty(JSON_PROPERTY_WIDTH)
+    @JsonProperty(value = JSON_PROPERTY_WIDTH, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setWidth(@org.eclipse.jdt.annotation.NonNull Integer width) {
         this.width = width;
@@ -1323,13 +1352,13 @@ public class MediaStream {
      * @return averageFrameRate
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_AVERAGE_FRAME_RATE)
+    @JsonProperty(value = JSON_PROPERTY_AVERAGE_FRAME_RATE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Float getAverageFrameRate() {
         return averageFrameRate;
     }
 
-    @JsonProperty(JSON_PROPERTY_AVERAGE_FRAME_RATE)
+    @JsonProperty(value = JSON_PROPERTY_AVERAGE_FRAME_RATE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setAverageFrameRate(@org.eclipse.jdt.annotation.NonNull Float averageFrameRate) {
         this.averageFrameRate = averageFrameRate;
@@ -1346,13 +1375,13 @@ public class MediaStream {
      * @return realFrameRate
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_REAL_FRAME_RATE)
+    @JsonProperty(value = JSON_PROPERTY_REAL_FRAME_RATE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Float getRealFrameRate() {
         return realFrameRate;
     }
 
-    @JsonProperty(JSON_PROPERTY_REAL_FRAME_RATE)
+    @JsonProperty(value = JSON_PROPERTY_REAL_FRAME_RATE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setRealFrameRate(@org.eclipse.jdt.annotation.NonNull Float realFrameRate) {
         this.realFrameRate = realFrameRate;
@@ -1365,7 +1394,7 @@ public class MediaStream {
      * @return referenceFrameRate
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_REFERENCE_FRAME_RATE)
+    @JsonProperty(value = JSON_PROPERTY_REFERENCE_FRAME_RATE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Float getReferenceFrameRate() {
         return referenceFrameRate;
@@ -1382,13 +1411,13 @@ public class MediaStream {
      * @return profile
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_PROFILE)
+    @JsonProperty(value = JSON_PROPERTY_PROFILE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getProfile() {
         return profile;
     }
 
-    @JsonProperty(JSON_PROPERTY_PROFILE)
+    @JsonProperty(value = JSON_PROPERTY_PROFILE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setProfile(@org.eclipse.jdt.annotation.NonNull String profile) {
         this.profile = profile;
@@ -1405,13 +1434,13 @@ public class MediaStream {
      * @return type
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_TYPE)
+    @JsonProperty(value = JSON_PROPERTY_TYPE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public MediaStreamType getType() {
         return type;
     }
 
-    @JsonProperty(JSON_PROPERTY_TYPE)
+    @JsonProperty(value = JSON_PROPERTY_TYPE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setType(@org.eclipse.jdt.annotation.NonNull MediaStreamType type) {
         this.type = type;
@@ -1428,13 +1457,13 @@ public class MediaStream {
      * @return aspectRatio
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ASPECT_RATIO)
+    @JsonProperty(value = JSON_PROPERTY_ASPECT_RATIO, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getAspectRatio() {
         return aspectRatio;
     }
 
-    @JsonProperty(JSON_PROPERTY_ASPECT_RATIO)
+    @JsonProperty(value = JSON_PROPERTY_ASPECT_RATIO, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setAspectRatio(@org.eclipse.jdt.annotation.NonNull String aspectRatio) {
         this.aspectRatio = aspectRatio;
@@ -1451,13 +1480,13 @@ public class MediaStream {
      * @return index
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_INDEX)
+    @JsonProperty(value = JSON_PROPERTY_INDEX, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getIndex() {
         return index;
     }
 
-    @JsonProperty(JSON_PROPERTY_INDEX)
+    @JsonProperty(value = JSON_PROPERTY_INDEX, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setIndex(@org.eclipse.jdt.annotation.NonNull Integer index) {
         this.index = index;
@@ -1474,13 +1503,13 @@ public class MediaStream {
      * @return score
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_SCORE)
+    @JsonProperty(value = JSON_PROPERTY_SCORE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getScore() {
         return score;
     }
 
-    @JsonProperty(JSON_PROPERTY_SCORE)
+    @JsonProperty(value = JSON_PROPERTY_SCORE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setScore(@org.eclipse.jdt.annotation.NonNull Integer score) {
         this.score = score;
@@ -1497,13 +1526,13 @@ public class MediaStream {
      * @return isExternal
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_IS_EXTERNAL)
+    @JsonProperty(value = JSON_PROPERTY_IS_EXTERNAL, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getIsExternal() {
         return isExternal;
     }
 
-    @JsonProperty(JSON_PROPERTY_IS_EXTERNAL)
+    @JsonProperty(value = JSON_PROPERTY_IS_EXTERNAL, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setIsExternal(@org.eclipse.jdt.annotation.NonNull Boolean isExternal) {
         this.isExternal = isExternal;
@@ -1520,13 +1549,13 @@ public class MediaStream {
      * @return deliveryMethod
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_DELIVERY_METHOD)
+    @JsonProperty(value = JSON_PROPERTY_DELIVERY_METHOD, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public SubtitleDeliveryMethod getDeliveryMethod() {
         return deliveryMethod;
     }
 
-    @JsonProperty(JSON_PROPERTY_DELIVERY_METHOD)
+    @JsonProperty(value = JSON_PROPERTY_DELIVERY_METHOD, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setDeliveryMethod(@org.eclipse.jdt.annotation.NonNull SubtitleDeliveryMethod deliveryMethod) {
         this.deliveryMethod = deliveryMethod;
@@ -1543,13 +1572,13 @@ public class MediaStream {
      * @return deliveryUrl
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_DELIVERY_URL)
+    @JsonProperty(value = JSON_PROPERTY_DELIVERY_URL, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getDeliveryUrl() {
         return deliveryUrl;
     }
 
-    @JsonProperty(JSON_PROPERTY_DELIVERY_URL)
+    @JsonProperty(value = JSON_PROPERTY_DELIVERY_URL, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setDeliveryUrl(@org.eclipse.jdt.annotation.NonNull String deliveryUrl) {
         this.deliveryUrl = deliveryUrl;
@@ -1566,13 +1595,13 @@ public class MediaStream {
      * @return isExternalUrl
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_IS_EXTERNAL_URL)
+    @JsonProperty(value = JSON_PROPERTY_IS_EXTERNAL_URL, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getIsExternalUrl() {
         return isExternalUrl;
     }
 
-    @JsonProperty(JSON_PROPERTY_IS_EXTERNAL_URL)
+    @JsonProperty(value = JSON_PROPERTY_IS_EXTERNAL_URL, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setIsExternalUrl(@org.eclipse.jdt.annotation.NonNull Boolean isExternalUrl) {
         this.isExternalUrl = isExternalUrl;
@@ -1584,7 +1613,7 @@ public class MediaStream {
      * @return isTextSubtitleStream
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_IS_TEXT_SUBTITLE_STREAM)
+    @JsonProperty(value = JSON_PROPERTY_IS_TEXT_SUBTITLE_STREAM, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getIsTextSubtitleStream() {
         return isTextSubtitleStream;
@@ -1601,13 +1630,13 @@ public class MediaStream {
      * @return supportsExternalStream
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_SUPPORTS_EXTERNAL_STREAM)
+    @JsonProperty(value = JSON_PROPERTY_SUPPORTS_EXTERNAL_STREAM, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getSupportsExternalStream() {
         return supportsExternalStream;
     }
 
-    @JsonProperty(JSON_PROPERTY_SUPPORTS_EXTERNAL_STREAM)
+    @JsonProperty(value = JSON_PROPERTY_SUPPORTS_EXTERNAL_STREAM, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setSupportsExternalStream(@org.eclipse.jdt.annotation.NonNull Boolean supportsExternalStream) {
         this.supportsExternalStream = supportsExternalStream;
@@ -1624,13 +1653,13 @@ public class MediaStream {
      * @return path
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_PATH)
+    @JsonProperty(value = JSON_PROPERTY_PATH, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getPath() {
         return path;
     }
 
-    @JsonProperty(JSON_PROPERTY_PATH)
+    @JsonProperty(value = JSON_PROPERTY_PATH, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setPath(@org.eclipse.jdt.annotation.NonNull String path) {
         this.path = path;
@@ -1647,13 +1676,13 @@ public class MediaStream {
      * @return pixelFormat
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_PIXEL_FORMAT)
+    @JsonProperty(value = JSON_PROPERTY_PIXEL_FORMAT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getPixelFormat() {
         return pixelFormat;
     }
 
-    @JsonProperty(JSON_PROPERTY_PIXEL_FORMAT)
+    @JsonProperty(value = JSON_PROPERTY_PIXEL_FORMAT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setPixelFormat(@org.eclipse.jdt.annotation.NonNull String pixelFormat) {
         this.pixelFormat = pixelFormat;
@@ -1670,13 +1699,13 @@ public class MediaStream {
      * @return level
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_LEVEL)
+    @JsonProperty(value = JSON_PROPERTY_LEVEL, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Double getLevel() {
         return level;
     }
 
-    @JsonProperty(JSON_PROPERTY_LEVEL)
+    @JsonProperty(value = JSON_PROPERTY_LEVEL, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setLevel(@org.eclipse.jdt.annotation.NonNull Double level) {
         this.level = level;
@@ -1693,13 +1722,13 @@ public class MediaStream {
      * @return isAnamorphic
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_IS_ANAMORPHIC)
+    @JsonProperty(value = JSON_PROPERTY_IS_ANAMORPHIC, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getIsAnamorphic() {
         return isAnamorphic;
     }
 
-    @JsonProperty(JSON_PROPERTY_IS_ANAMORPHIC)
+    @JsonProperty(value = JSON_PROPERTY_IS_ANAMORPHIC, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setIsAnamorphic(@org.eclipse.jdt.annotation.NonNull Boolean isAnamorphic) {
         this.isAnamorphic = isAnamorphic;
@@ -1736,6 +1765,7 @@ public class MediaStream {
                 && Objects.equals(this.timeBase, mediaStream.timeBase)
                 && Objects.equals(this.codecTimeBase, mediaStream.codecTimeBase)
                 && Objects.equals(this.title, mediaStream.title)
+                && Objects.equals(this.hdr10PlusPresentFlag, mediaStream.hdr10PlusPresentFlag)
                 && Objects.equals(this.videoRange, mediaStream.videoRange)
                 && Objects.equals(this.videoRangeType, mediaStream.videoRangeType)
                 && Objects.equals(this.videoDoViTitle, mediaStream.videoDoViTitle)
@@ -1782,8 +1812,8 @@ public class MediaStream {
     public int hashCode() {
         return Objects.hash(codec, codecTag, language, colorRange, colorSpace, colorTransfer, colorPrimaries,
                 dvVersionMajor, dvVersionMinor, dvProfile, dvLevel, rpuPresentFlag, elPresentFlag, blPresentFlag,
-                dvBlSignalCompatibilityId, rotation, comment, timeBase, codecTimeBase, title, videoRange,
-                videoRangeType, videoDoViTitle, audioSpatialFormat, localizedUndefined, localizedDefault,
+                dvBlSignalCompatibilityId, rotation, comment, timeBase, codecTimeBase, title, hdr10PlusPresentFlag,
+                videoRange, videoRangeType, videoDoViTitle, audioSpatialFormat, localizedUndefined, localizedDefault,
                 localizedForced, localizedExternal, localizedHearingImpaired, displayTitle, nalLengthSize, isInterlaced,
                 isAVC, channelLayout, bitRate, bitDepth, refFrames, packetLength, channels, sampleRate, isDefault,
                 isForced, isHearingImpaired, height, width, averageFrameRate, realFrameRate, referenceFrameRate,
@@ -1815,6 +1845,7 @@ public class MediaStream {
         sb.append("    timeBase: ").append(toIndentedString(timeBase)).append("\n");
         sb.append("    codecTimeBase: ").append(toIndentedString(codecTimeBase)).append("\n");
         sb.append("    title: ").append(toIndentedString(title)).append("\n");
+        sb.append("    hdr10PlusPresentFlag: ").append(toIndentedString(hdr10PlusPresentFlag)).append("\n");
         sb.append("    videoRange: ").append(toIndentedString(videoRange)).append("\n");
         sb.append("    videoRangeType: ").append(toIndentedString(videoRangeType)).append("\n");
         sb.append("    videoDoViTitle: ").append(toIndentedString(videoDoViTitle)).append("\n");
@@ -1907,379 +1938,385 @@ public class MediaStream {
 
         // add `Codec` to the URL query string
         if (getCodec() != null) {
-            joiner.add(String.format("%sCodec%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sCodec%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getCodec()))));
         }
 
         // add `CodecTag` to the URL query string
         if (getCodecTag() != null) {
-            joiner.add(String.format("%sCodecTag%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sCodecTag%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getCodecTag()))));
         }
 
         // add `Language` to the URL query string
         if (getLanguage() != null) {
-            joiner.add(String.format("%sLanguage%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sLanguage%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getLanguage()))));
         }
 
         // add `ColorRange` to the URL query string
         if (getColorRange() != null) {
-            joiner.add(String.format("%sColorRange%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sColorRange%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getColorRange()))));
         }
 
         // add `ColorSpace` to the URL query string
         if (getColorSpace() != null) {
-            joiner.add(String.format("%sColorSpace%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sColorSpace%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getColorSpace()))));
         }
 
         // add `ColorTransfer` to the URL query string
         if (getColorTransfer() != null) {
-            joiner.add(String.format("%sColorTransfer%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sColorTransfer%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getColorTransfer()))));
         }
 
         // add `ColorPrimaries` to the URL query string
         if (getColorPrimaries() != null) {
-            joiner.add(String.format("%sColorPrimaries%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sColorPrimaries%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getColorPrimaries()))));
         }
 
         // add `DvVersionMajor` to the URL query string
         if (getDvVersionMajor() != null) {
-            joiner.add(String.format("%sDvVersionMajor%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sDvVersionMajor%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getDvVersionMajor()))));
         }
 
         // add `DvVersionMinor` to the URL query string
         if (getDvVersionMinor() != null) {
-            joiner.add(String.format("%sDvVersionMinor%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sDvVersionMinor%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getDvVersionMinor()))));
         }
 
         // add `DvProfile` to the URL query string
         if (getDvProfile() != null) {
-            joiner.add(String.format("%sDvProfile%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sDvProfile%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getDvProfile()))));
         }
 
         // add `DvLevel` to the URL query string
         if (getDvLevel() != null) {
-            joiner.add(String.format("%sDvLevel%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sDvLevel%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getDvLevel()))));
         }
 
         // add `RpuPresentFlag` to the URL query string
         if (getRpuPresentFlag() != null) {
-            joiner.add(String.format("%sRpuPresentFlag%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sRpuPresentFlag%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getRpuPresentFlag()))));
         }
 
         // add `ElPresentFlag` to the URL query string
         if (getElPresentFlag() != null) {
-            joiner.add(String.format("%sElPresentFlag%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sElPresentFlag%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getElPresentFlag()))));
         }
 
         // add `BlPresentFlag` to the URL query string
         if (getBlPresentFlag() != null) {
-            joiner.add(String.format("%sBlPresentFlag%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sBlPresentFlag%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getBlPresentFlag()))));
         }
 
         // add `DvBlSignalCompatibilityId` to the URL query string
         if (getDvBlSignalCompatibilityId() != null) {
-            joiner.add(String.format("%sDvBlSignalCompatibilityId%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sDvBlSignalCompatibilityId%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getDvBlSignalCompatibilityId()))));
         }
 
         // add `Rotation` to the URL query string
         if (getRotation() != null) {
-            joiner.add(String.format("%sRotation%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sRotation%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getRotation()))));
         }
 
         // add `Comment` to the URL query string
         if (getComment() != null) {
-            joiner.add(String.format("%sComment%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sComment%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getComment()))));
         }
 
         // add `TimeBase` to the URL query string
         if (getTimeBase() != null) {
-            joiner.add(String.format("%sTimeBase%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sTimeBase%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getTimeBase()))));
         }
 
         // add `CodecTimeBase` to the URL query string
         if (getCodecTimeBase() != null) {
-            joiner.add(String.format("%sCodecTimeBase%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sCodecTimeBase%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getCodecTimeBase()))));
         }
 
         // add `Title` to the URL query string
         if (getTitle() != null) {
-            joiner.add(String.format("%sTitle%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sTitle%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getTitle()))));
+        }
+
+        // add `Hdr10PlusPresentFlag` to the URL query string
+        if (getHdr10PlusPresentFlag() != null) {
+            joiner.add(String.format(Locale.ROOT, "%sHdr10PlusPresentFlag%s=%s", prefix, suffix,
+                    ApiClient.urlEncode(ApiClient.valueToString(getHdr10PlusPresentFlag()))));
         }
 
         // add `VideoRange` to the URL query string
         if (getVideoRange() != null) {
-            joiner.add(String.format("%sVideoRange%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sVideoRange%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getVideoRange()))));
         }
 
         // add `VideoRangeType` to the URL query string
         if (getVideoRangeType() != null) {
-            joiner.add(String.format("%sVideoRangeType%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sVideoRangeType%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getVideoRangeType()))));
         }
 
         // add `VideoDoViTitle` to the URL query string
         if (getVideoDoViTitle() != null) {
-            joiner.add(String.format("%sVideoDoViTitle%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sVideoDoViTitle%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getVideoDoViTitle()))));
         }
 
         // add `AudioSpatialFormat` to the URL query string
         if (getAudioSpatialFormat() != null) {
-            joiner.add(String.format("%sAudioSpatialFormat%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sAudioSpatialFormat%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getAudioSpatialFormat()))));
         }
 
         // add `LocalizedUndefined` to the URL query string
         if (getLocalizedUndefined() != null) {
-            joiner.add(String.format("%sLocalizedUndefined%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sLocalizedUndefined%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getLocalizedUndefined()))));
         }
 
         // add `LocalizedDefault` to the URL query string
         if (getLocalizedDefault() != null) {
-            joiner.add(String.format("%sLocalizedDefault%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sLocalizedDefault%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getLocalizedDefault()))));
         }
 
         // add `LocalizedForced` to the URL query string
         if (getLocalizedForced() != null) {
-            joiner.add(String.format("%sLocalizedForced%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sLocalizedForced%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getLocalizedForced()))));
         }
 
         // add `LocalizedExternal` to the URL query string
         if (getLocalizedExternal() != null) {
-            joiner.add(String.format("%sLocalizedExternal%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sLocalizedExternal%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getLocalizedExternal()))));
         }
 
         // add `LocalizedHearingImpaired` to the URL query string
         if (getLocalizedHearingImpaired() != null) {
-            joiner.add(String.format("%sLocalizedHearingImpaired%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sLocalizedHearingImpaired%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getLocalizedHearingImpaired()))));
         }
 
         // add `DisplayTitle` to the URL query string
         if (getDisplayTitle() != null) {
-            joiner.add(String.format("%sDisplayTitle%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sDisplayTitle%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getDisplayTitle()))));
         }
 
         // add `NalLengthSize` to the URL query string
         if (getNalLengthSize() != null) {
-            joiner.add(String.format("%sNalLengthSize%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sNalLengthSize%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getNalLengthSize()))));
         }
 
         // add `IsInterlaced` to the URL query string
         if (getIsInterlaced() != null) {
-            joiner.add(String.format("%sIsInterlaced%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sIsInterlaced%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getIsInterlaced()))));
         }
 
         // add `IsAVC` to the URL query string
         if (getIsAVC() != null) {
-            joiner.add(String.format("%sIsAVC%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sIsAVC%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getIsAVC()))));
         }
 
         // add `ChannelLayout` to the URL query string
         if (getChannelLayout() != null) {
-            joiner.add(String.format("%sChannelLayout%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sChannelLayout%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getChannelLayout()))));
         }
 
         // add `BitRate` to the URL query string
         if (getBitRate() != null) {
-            joiner.add(String.format("%sBitRate%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sBitRate%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getBitRate()))));
         }
 
         // add `BitDepth` to the URL query string
         if (getBitDepth() != null) {
-            joiner.add(String.format("%sBitDepth%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sBitDepth%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getBitDepth()))));
         }
 
         // add `RefFrames` to the URL query string
         if (getRefFrames() != null) {
-            joiner.add(String.format("%sRefFrames%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sRefFrames%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getRefFrames()))));
         }
 
         // add `PacketLength` to the URL query string
         if (getPacketLength() != null) {
-            joiner.add(String.format("%sPacketLength%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sPacketLength%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getPacketLength()))));
         }
 
         // add `Channels` to the URL query string
         if (getChannels() != null) {
-            joiner.add(String.format("%sChannels%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sChannels%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getChannels()))));
         }
 
         // add `SampleRate` to the URL query string
         if (getSampleRate() != null) {
-            joiner.add(String.format("%sSampleRate%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sSampleRate%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getSampleRate()))));
         }
 
         // add `IsDefault` to the URL query string
         if (getIsDefault() != null) {
-            joiner.add(String.format("%sIsDefault%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sIsDefault%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getIsDefault()))));
         }
 
         // add `IsForced` to the URL query string
         if (getIsForced() != null) {
-            joiner.add(String.format("%sIsForced%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sIsForced%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getIsForced()))));
         }
 
         // add `IsHearingImpaired` to the URL query string
         if (getIsHearingImpaired() != null) {
-            joiner.add(String.format("%sIsHearingImpaired%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sIsHearingImpaired%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getIsHearingImpaired()))));
         }
 
         // add `Height` to the URL query string
         if (getHeight() != null) {
-            joiner.add(String.format("%sHeight%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sHeight%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getHeight()))));
         }
 
         // add `Width` to the URL query string
         if (getWidth() != null) {
-            joiner.add(String.format("%sWidth%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sWidth%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getWidth()))));
         }
 
         // add `AverageFrameRate` to the URL query string
         if (getAverageFrameRate() != null) {
-            joiner.add(String.format("%sAverageFrameRate%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sAverageFrameRate%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getAverageFrameRate()))));
         }
 
         // add `RealFrameRate` to the URL query string
         if (getRealFrameRate() != null) {
-            joiner.add(String.format("%sRealFrameRate%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sRealFrameRate%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getRealFrameRate()))));
         }
 
         // add `ReferenceFrameRate` to the URL query string
         if (getReferenceFrameRate() != null) {
-            joiner.add(String.format("%sReferenceFrameRate%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sReferenceFrameRate%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getReferenceFrameRate()))));
         }
 
         // add `Profile` to the URL query string
         if (getProfile() != null) {
-            joiner.add(String.format("%sProfile%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sProfile%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getProfile()))));
         }
 
         // add `Type` to the URL query string
         if (getType() != null) {
-            joiner.add(String.format("%sType%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sType%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getType()))));
         }
 
         // add `AspectRatio` to the URL query string
         if (getAspectRatio() != null) {
-            joiner.add(String.format("%sAspectRatio%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sAspectRatio%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getAspectRatio()))));
         }
 
         // add `Index` to the URL query string
         if (getIndex() != null) {
-            joiner.add(String.format("%sIndex%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sIndex%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getIndex()))));
         }
 
         // add `Score` to the URL query string
         if (getScore() != null) {
-            joiner.add(String.format("%sScore%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sScore%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getScore()))));
         }
 
         // add `IsExternal` to the URL query string
         if (getIsExternal() != null) {
-            joiner.add(String.format("%sIsExternal%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sIsExternal%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getIsExternal()))));
         }
 
         // add `DeliveryMethod` to the URL query string
         if (getDeliveryMethod() != null) {
-            joiner.add(String.format("%sDeliveryMethod%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sDeliveryMethod%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getDeliveryMethod()))));
         }
 
         // add `DeliveryUrl` to the URL query string
         if (getDeliveryUrl() != null) {
-            joiner.add(String.format("%sDeliveryUrl%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sDeliveryUrl%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getDeliveryUrl()))));
         }
 
         // add `IsExternalUrl` to the URL query string
         if (getIsExternalUrl() != null) {
-            joiner.add(String.format("%sIsExternalUrl%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sIsExternalUrl%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getIsExternalUrl()))));
         }
 
         // add `IsTextSubtitleStream` to the URL query string
         if (getIsTextSubtitleStream() != null) {
-            joiner.add(String.format("%sIsTextSubtitleStream%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sIsTextSubtitleStream%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getIsTextSubtitleStream()))));
         }
 
         // add `SupportsExternalStream` to the URL query string
         if (getSupportsExternalStream() != null) {
-            joiner.add(String.format("%sSupportsExternalStream%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sSupportsExternalStream%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getSupportsExternalStream()))));
         }
 
         // add `Path` to the URL query string
         if (getPath() != null) {
-            joiner.add(String.format("%sPath%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sPath%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getPath()))));
         }
 
         // add `PixelFormat` to the URL query string
         if (getPixelFormat() != null) {
-            joiner.add(String.format("%sPixelFormat%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sPixelFormat%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getPixelFormat()))));
         }
 
         // add `Level` to the URL query string
         if (getLevel() != null) {
-            joiner.add(String.format("%sLevel%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sLevel%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getLevel()))));
         }
 
         // add `IsAnamorphic` to the URL query string
         if (getIsAnamorphic() != null) {
-            joiner.add(String.format("%sIsAnamorphic%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sIsAnamorphic%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getIsAnamorphic()))));
         }
 
@@ -2395,6 +2432,11 @@ public class MediaStream {
 
         public MediaStream.Builder title(String title) {
             this.instance.title = title;
+            return this;
+        }
+
+        public MediaStream.Builder hdr10PlusPresentFlag(Boolean hdr10PlusPresentFlag) {
+            this.instance.hdr10PlusPresentFlag = hdr10PlusPresentFlag;
             return this;
         }
 
@@ -2650,7 +2692,8 @@ public class MediaStream {
                 .dvVersionMinor(getDvVersionMinor()).dvProfile(getDvProfile()).dvLevel(getDvLevel())
                 .rpuPresentFlag(getRpuPresentFlag()).elPresentFlag(getElPresentFlag()).blPresentFlag(getBlPresentFlag())
                 .dvBlSignalCompatibilityId(getDvBlSignalCompatibilityId()).rotation(getRotation()).comment(getComment())
-                .timeBase(getTimeBase()).codecTimeBase(getCodecTimeBase()).title(getTitle()).videoRange(getVideoRange())
+                .timeBase(getTimeBase()).codecTimeBase(getCodecTimeBase()).title(getTitle())
+                .hdr10PlusPresentFlag(getHdr10PlusPresentFlag()).videoRange(getVideoRange())
                 .videoRangeType(getVideoRangeType()).videoDoViTitle(getVideoDoViTitle())
                 .audioSpatialFormat(getAudioSpatialFormat()).localizedUndefined(getLocalizedUndefined())
                 .localizedDefault(getLocalizedDefault()).localizedForced(getLocalizedForced())

@@ -13,6 +13,7 @@
 
 package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
+import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
 
@@ -50,13 +51,13 @@ public class AuthenticateUserByName {
      * @return username
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_USERNAME)
+    @JsonProperty(value = JSON_PROPERTY_USERNAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getUsername() {
         return username;
     }
 
-    @JsonProperty(JSON_PROPERTY_USERNAME)
+    @JsonProperty(value = JSON_PROPERTY_USERNAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setUsername(@org.eclipse.jdt.annotation.NonNull String username) {
         this.username = username;
@@ -73,13 +74,13 @@ public class AuthenticateUserByName {
      * @return pw
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_PW)
+    @JsonProperty(value = JSON_PROPERTY_PW, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getPw() {
         return pw;
     }
 
-    @JsonProperty(JSON_PROPERTY_PW)
+    @JsonProperty(value = JSON_PROPERTY_PW, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setPw(@org.eclipse.jdt.annotation.NonNull String pw) {
         this.pw = pw;
@@ -161,14 +162,14 @@ public class AuthenticateUserByName {
 
         // add `Username` to the URL query string
         if (getUsername() != null) {
-            joiner.add(String.format("%sUsername%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sUsername%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getUsername()))));
         }
 
         // add `Pw` to the URL query string
         if (getPw() != null) {
-            joiner.add(
-                    String.format("%sPw%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getPw()))));
+            joiner.add(String.format(Locale.ROOT, "%sPw%s=%s", prefix, suffix,
+                    ApiClient.urlEncode(ApiClient.valueToString(getPw()))));
         }
 
         return joiner.toString();

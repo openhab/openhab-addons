@@ -16,6 +16,7 @@ package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
 import java.util.UUID;
@@ -68,13 +69,13 @@ public class GroupInfoDto {
      * @return groupId
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_GROUP_ID)
+    @JsonProperty(value = JSON_PROPERTY_GROUP_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public UUID getGroupId() {
         return groupId;
     }
 
-    @JsonProperty(JSON_PROPERTY_GROUP_ID)
+    @JsonProperty(value = JSON_PROPERTY_GROUP_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setGroupId(@org.eclipse.jdt.annotation.NonNull UUID groupId) {
         this.groupId = groupId;
@@ -91,13 +92,13 @@ public class GroupInfoDto {
      * @return groupName
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_GROUP_NAME)
+    @JsonProperty(value = JSON_PROPERTY_GROUP_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getGroupName() {
         return groupName;
     }
 
-    @JsonProperty(JSON_PROPERTY_GROUP_NAME)
+    @JsonProperty(value = JSON_PROPERTY_GROUP_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setGroupName(@org.eclipse.jdt.annotation.NonNull String groupName) {
         this.groupName = groupName;
@@ -114,13 +115,13 @@ public class GroupInfoDto {
      * @return state
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_STATE)
+    @JsonProperty(value = JSON_PROPERTY_STATE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public GroupStateType getState() {
         return state;
     }
 
-    @JsonProperty(JSON_PROPERTY_STATE)
+    @JsonProperty(value = JSON_PROPERTY_STATE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setState(@org.eclipse.jdt.annotation.NonNull GroupStateType state) {
         this.state = state;
@@ -145,13 +146,13 @@ public class GroupInfoDto {
      * @return participants
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_PARTICIPANTS)
+    @JsonProperty(value = JSON_PROPERTY_PARTICIPANTS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<String> getParticipants() {
         return participants;
     }
 
-    @JsonProperty(JSON_PROPERTY_PARTICIPANTS)
+    @JsonProperty(value = JSON_PROPERTY_PARTICIPANTS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setParticipants(@org.eclipse.jdt.annotation.NonNull List<String> participants) {
         this.participants = participants;
@@ -168,13 +169,13 @@ public class GroupInfoDto {
      * @return lastUpdatedAt
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_LAST_UPDATED_AT)
+    @JsonProperty(value = JSON_PROPERTY_LAST_UPDATED_AT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public OffsetDateTime getLastUpdatedAt() {
         return lastUpdatedAt;
     }
 
-    @JsonProperty(JSON_PROPERTY_LAST_UPDATED_AT)
+    @JsonProperty(value = JSON_PROPERTY_LAST_UPDATED_AT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setLastUpdatedAt(@org.eclipse.jdt.annotation.NonNull OffsetDateTime lastUpdatedAt) {
         this.lastUpdatedAt = lastUpdatedAt;
@@ -262,34 +263,35 @@ public class GroupInfoDto {
 
         // add `GroupId` to the URL query string
         if (getGroupId() != null) {
-            joiner.add(String.format("%sGroupId%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sGroupId%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getGroupId()))));
         }
 
         // add `GroupName` to the URL query string
         if (getGroupName() != null) {
-            joiner.add(String.format("%sGroupName%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sGroupName%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getGroupName()))));
         }
 
         // add `State` to the URL query string
         if (getState() != null) {
-            joiner.add(String.format("%sState%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sState%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getState()))));
         }
 
         // add `Participants` to the URL query string
         if (getParticipants() != null) {
             for (int i = 0; i < getParticipants().size(); i++) {
-                joiner.add(String.format("%sParticipants%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+                joiner.add(String.format(Locale.ROOT, "%sParticipants%s%s=%s", prefix, suffix,
+                        "".equals(suffix) ? ""
+                                : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
                         ApiClient.urlEncode(ApiClient.valueToString(getParticipants().get(i)))));
             }
         }
 
         // add `LastUpdatedAt` to the URL query string
         if (getLastUpdatedAt() != null) {
-            joiner.add(String.format("%sLastUpdatedAt%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sLastUpdatedAt%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getLastUpdatedAt()))));
         }
 

@@ -15,6 +15,7 @@ package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
 
@@ -124,13 +125,13 @@ public class ListingsProviderInfo {
      * @return id
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ID)
+    @JsonProperty(value = JSON_PROPERTY_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getId() {
         return id;
     }
 
-    @JsonProperty(JSON_PROPERTY_ID)
+    @JsonProperty(value = JSON_PROPERTY_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setId(@org.eclipse.jdt.annotation.NonNull String id) {
         this.id = id;
@@ -147,13 +148,13 @@ public class ListingsProviderInfo {
      * @return type
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_TYPE)
+    @JsonProperty(value = JSON_PROPERTY_TYPE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getType() {
         return type;
     }
 
-    @JsonProperty(JSON_PROPERTY_TYPE)
+    @JsonProperty(value = JSON_PROPERTY_TYPE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setType(@org.eclipse.jdt.annotation.NonNull String type) {
         this.type = type;
@@ -170,13 +171,13 @@ public class ListingsProviderInfo {
      * @return username
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_USERNAME)
+    @JsonProperty(value = JSON_PROPERTY_USERNAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getUsername() {
         return username;
     }
 
-    @JsonProperty(JSON_PROPERTY_USERNAME)
+    @JsonProperty(value = JSON_PROPERTY_USERNAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setUsername(@org.eclipse.jdt.annotation.NonNull String username) {
         this.username = username;
@@ -193,13 +194,13 @@ public class ListingsProviderInfo {
      * @return password
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_PASSWORD)
+    @JsonProperty(value = JSON_PROPERTY_PASSWORD, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getPassword() {
         return password;
     }
 
-    @JsonProperty(JSON_PROPERTY_PASSWORD)
+    @JsonProperty(value = JSON_PROPERTY_PASSWORD, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setPassword(@org.eclipse.jdt.annotation.NonNull String password) {
         this.password = password;
@@ -216,13 +217,13 @@ public class ListingsProviderInfo {
      * @return listingsId
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_LISTINGS_ID)
+    @JsonProperty(value = JSON_PROPERTY_LISTINGS_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getListingsId() {
         return listingsId;
     }
 
-    @JsonProperty(JSON_PROPERTY_LISTINGS_ID)
+    @JsonProperty(value = JSON_PROPERTY_LISTINGS_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setListingsId(@org.eclipse.jdt.annotation.NonNull String listingsId) {
         this.listingsId = listingsId;
@@ -239,13 +240,13 @@ public class ListingsProviderInfo {
      * @return zipCode
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ZIP_CODE)
+    @JsonProperty(value = JSON_PROPERTY_ZIP_CODE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getZipCode() {
         return zipCode;
     }
 
-    @JsonProperty(JSON_PROPERTY_ZIP_CODE)
+    @JsonProperty(value = JSON_PROPERTY_ZIP_CODE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setZipCode(@org.eclipse.jdt.annotation.NonNull String zipCode) {
         this.zipCode = zipCode;
@@ -262,13 +263,13 @@ public class ListingsProviderInfo {
      * @return country
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_COUNTRY)
+    @JsonProperty(value = JSON_PROPERTY_COUNTRY, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getCountry() {
         return country;
     }
 
-    @JsonProperty(JSON_PROPERTY_COUNTRY)
+    @JsonProperty(value = JSON_PROPERTY_COUNTRY, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setCountry(@org.eclipse.jdt.annotation.NonNull String country) {
         this.country = country;
@@ -285,13 +286,13 @@ public class ListingsProviderInfo {
      * @return path
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_PATH)
+    @JsonProperty(value = JSON_PROPERTY_PATH, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getPath() {
         return path;
     }
 
-    @JsonProperty(JSON_PROPERTY_PATH)
+    @JsonProperty(value = JSON_PROPERTY_PATH, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setPath(@org.eclipse.jdt.annotation.NonNull String path) {
         this.path = path;
@@ -316,13 +317,13 @@ public class ListingsProviderInfo {
      * @return enabledTuners
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ENABLED_TUNERS)
+    @JsonProperty(value = JSON_PROPERTY_ENABLED_TUNERS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<String> getEnabledTuners() {
         return enabledTuners;
     }
 
-    @JsonProperty(JSON_PROPERTY_ENABLED_TUNERS)
+    @JsonProperty(value = JSON_PROPERTY_ENABLED_TUNERS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setEnabledTuners(@org.eclipse.jdt.annotation.NonNull List<String> enabledTuners) {
         this.enabledTuners = enabledTuners;
@@ -339,13 +340,13 @@ public class ListingsProviderInfo {
      * @return enableAllTuners
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ENABLE_ALL_TUNERS)
+    @JsonProperty(value = JSON_PROPERTY_ENABLE_ALL_TUNERS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getEnableAllTuners() {
         return enableAllTuners;
     }
 
-    @JsonProperty(JSON_PROPERTY_ENABLE_ALL_TUNERS)
+    @JsonProperty(value = JSON_PROPERTY_ENABLE_ALL_TUNERS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setEnableAllTuners(@org.eclipse.jdt.annotation.NonNull Boolean enableAllTuners) {
         this.enableAllTuners = enableAllTuners;
@@ -370,13 +371,13 @@ public class ListingsProviderInfo {
      * @return newsCategories
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_NEWS_CATEGORIES)
+    @JsonProperty(value = JSON_PROPERTY_NEWS_CATEGORIES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<String> getNewsCategories() {
         return newsCategories;
     }
 
-    @JsonProperty(JSON_PROPERTY_NEWS_CATEGORIES)
+    @JsonProperty(value = JSON_PROPERTY_NEWS_CATEGORIES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setNewsCategories(@org.eclipse.jdt.annotation.NonNull List<String> newsCategories) {
         this.newsCategories = newsCategories;
@@ -401,13 +402,13 @@ public class ListingsProviderInfo {
      * @return sportsCategories
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_SPORTS_CATEGORIES)
+    @JsonProperty(value = JSON_PROPERTY_SPORTS_CATEGORIES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<String> getSportsCategories() {
         return sportsCategories;
     }
 
-    @JsonProperty(JSON_PROPERTY_SPORTS_CATEGORIES)
+    @JsonProperty(value = JSON_PROPERTY_SPORTS_CATEGORIES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setSportsCategories(@org.eclipse.jdt.annotation.NonNull List<String> sportsCategories) {
         this.sportsCategories = sportsCategories;
@@ -432,13 +433,13 @@ public class ListingsProviderInfo {
      * @return kidsCategories
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_KIDS_CATEGORIES)
+    @JsonProperty(value = JSON_PROPERTY_KIDS_CATEGORIES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<String> getKidsCategories() {
         return kidsCategories;
     }
 
-    @JsonProperty(JSON_PROPERTY_KIDS_CATEGORIES)
+    @JsonProperty(value = JSON_PROPERTY_KIDS_CATEGORIES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setKidsCategories(@org.eclipse.jdt.annotation.NonNull List<String> kidsCategories) {
         this.kidsCategories = kidsCategories;
@@ -463,13 +464,13 @@ public class ListingsProviderInfo {
      * @return movieCategories
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_MOVIE_CATEGORIES)
+    @JsonProperty(value = JSON_PROPERTY_MOVIE_CATEGORIES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<String> getMovieCategories() {
         return movieCategories;
     }
 
-    @JsonProperty(JSON_PROPERTY_MOVIE_CATEGORIES)
+    @JsonProperty(value = JSON_PROPERTY_MOVIE_CATEGORIES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setMovieCategories(@org.eclipse.jdt.annotation.NonNull List<String> movieCategories) {
         this.movieCategories = movieCategories;
@@ -495,13 +496,13 @@ public class ListingsProviderInfo {
      * @return channelMappings
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_CHANNEL_MAPPINGS)
+    @JsonProperty(value = JSON_PROPERTY_CHANNEL_MAPPINGS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<NameValuePair> getChannelMappings() {
         return channelMappings;
     }
 
-    @JsonProperty(JSON_PROPERTY_CHANNEL_MAPPINGS)
+    @JsonProperty(value = JSON_PROPERTY_CHANNEL_MAPPINGS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setChannelMappings(@org.eclipse.jdt.annotation.NonNull List<NameValuePair> channelMappings) {
         this.channelMappings = channelMappings;
@@ -518,13 +519,13 @@ public class ListingsProviderInfo {
      * @return moviePrefix
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_MOVIE_PREFIX)
+    @JsonProperty(value = JSON_PROPERTY_MOVIE_PREFIX, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getMoviePrefix() {
         return moviePrefix;
     }
 
-    @JsonProperty(JSON_PROPERTY_MOVIE_PREFIX)
+    @JsonProperty(value = JSON_PROPERTY_MOVIE_PREFIX, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setMoviePrefix(@org.eclipse.jdt.annotation.NonNull String moviePrefix) {
         this.moviePrefix = moviePrefix;
@@ -541,13 +542,13 @@ public class ListingsProviderInfo {
      * @return preferredLanguage
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_PREFERRED_LANGUAGE)
+    @JsonProperty(value = JSON_PROPERTY_PREFERRED_LANGUAGE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getPreferredLanguage() {
         return preferredLanguage;
     }
 
-    @JsonProperty(JSON_PROPERTY_PREFERRED_LANGUAGE)
+    @JsonProperty(value = JSON_PROPERTY_PREFERRED_LANGUAGE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setPreferredLanguage(@org.eclipse.jdt.annotation.NonNull String preferredLanguage) {
         this.preferredLanguage = preferredLanguage;
@@ -564,13 +565,13 @@ public class ListingsProviderInfo {
      * @return userAgent
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_USER_AGENT)
+    @JsonProperty(value = JSON_PROPERTY_USER_AGENT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getUserAgent() {
         return userAgent;
     }
 
-    @JsonProperty(JSON_PROPERTY_USER_AGENT)
+    @JsonProperty(value = JSON_PROPERTY_USER_AGENT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setUserAgent(@org.eclipse.jdt.annotation.NonNull String userAgent) {
         this.userAgent = userAgent;
@@ -685,72 +686,74 @@ public class ListingsProviderInfo {
 
         // add `Id` to the URL query string
         if (getId() != null) {
-            joiner.add(
-                    String.format("%sId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
+            joiner.add(String.format(Locale.ROOT, "%sId%s=%s", prefix, suffix,
+                    ApiClient.urlEncode(ApiClient.valueToString(getId()))));
         }
 
         // add `Type` to the URL query string
         if (getType() != null) {
-            joiner.add(String.format("%sType%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sType%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getType()))));
         }
 
         // add `Username` to the URL query string
         if (getUsername() != null) {
-            joiner.add(String.format("%sUsername%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sUsername%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getUsername()))));
         }
 
         // add `Password` to the URL query string
         if (getPassword() != null) {
-            joiner.add(String.format("%sPassword%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sPassword%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getPassword()))));
         }
 
         // add `ListingsId` to the URL query string
         if (getListingsId() != null) {
-            joiner.add(String.format("%sListingsId%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sListingsId%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getListingsId()))));
         }
 
         // add `ZipCode` to the URL query string
         if (getZipCode() != null) {
-            joiner.add(String.format("%sZipCode%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sZipCode%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getZipCode()))));
         }
 
         // add `Country` to the URL query string
         if (getCountry() != null) {
-            joiner.add(String.format("%sCountry%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sCountry%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getCountry()))));
         }
 
         // add `Path` to the URL query string
         if (getPath() != null) {
-            joiner.add(String.format("%sPath%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sPath%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getPath()))));
         }
 
         // add `EnabledTuners` to the URL query string
         if (getEnabledTuners() != null) {
             for (int i = 0; i < getEnabledTuners().size(); i++) {
-                joiner.add(String.format("%sEnabledTuners%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+                joiner.add(String.format(Locale.ROOT, "%sEnabledTuners%s%s=%s", prefix, suffix,
+                        "".equals(suffix) ? ""
+                                : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
                         ApiClient.urlEncode(ApiClient.valueToString(getEnabledTuners().get(i)))));
             }
         }
 
         // add `EnableAllTuners` to the URL query string
         if (getEnableAllTuners() != null) {
-            joiner.add(String.format("%sEnableAllTuners%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sEnableAllTuners%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getEnableAllTuners()))));
         }
 
         // add `NewsCategories` to the URL query string
         if (getNewsCategories() != null) {
             for (int i = 0; i < getNewsCategories().size(); i++) {
-                joiner.add(String.format("%sNewsCategories%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+                joiner.add(String.format(Locale.ROOT, "%sNewsCategories%s%s=%s", prefix, suffix,
+                        "".equals(suffix) ? ""
+                                : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
                         ApiClient.urlEncode(ApiClient.valueToString(getNewsCategories().get(i)))));
             }
         }
@@ -758,8 +761,9 @@ public class ListingsProviderInfo {
         // add `SportsCategories` to the URL query string
         if (getSportsCategories() != null) {
             for (int i = 0; i < getSportsCategories().size(); i++) {
-                joiner.add(String.format("%sSportsCategories%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+                joiner.add(String.format(Locale.ROOT, "%sSportsCategories%s%s=%s", prefix, suffix,
+                        "".equals(suffix) ? ""
+                                : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
                         ApiClient.urlEncode(ApiClient.valueToString(getSportsCategories().get(i)))));
             }
         }
@@ -767,8 +771,9 @@ public class ListingsProviderInfo {
         // add `KidsCategories` to the URL query string
         if (getKidsCategories() != null) {
             for (int i = 0; i < getKidsCategories().size(); i++) {
-                joiner.add(String.format("%sKidsCategories%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+                joiner.add(String.format(Locale.ROOT, "%sKidsCategories%s%s=%s", prefix, suffix,
+                        "".equals(suffix) ? ""
+                                : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
                         ApiClient.urlEncode(ApiClient.valueToString(getKidsCategories().get(i)))));
             }
         }
@@ -776,8 +781,9 @@ public class ListingsProviderInfo {
         // add `MovieCategories` to the URL query string
         if (getMovieCategories() != null) {
             for (int i = 0; i < getMovieCategories().size(); i++) {
-                joiner.add(String.format("%sMovieCategories%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+                joiner.add(String.format(Locale.ROOT, "%sMovieCategories%s%s=%s", prefix, suffix,
+                        "".equals(suffix) ? ""
+                                : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
                         ApiClient.urlEncode(ApiClient.valueToString(getMovieCategories().get(i)))));
             }
         }
@@ -786,28 +792,28 @@ public class ListingsProviderInfo {
         if (getChannelMappings() != null) {
             for (int i = 0; i < getChannelMappings().size(); i++) {
                 if (getChannelMappings().get(i) != null) {
-                    joiner.add(getChannelMappings().get(i).toUrlQueryString(String.format("%sChannelMappings%s%s",
-                            prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
+                    joiner.add(getChannelMappings().get(i).toUrlQueryString(
+                            String.format(Locale.ROOT, "%sChannelMappings%s%s", prefix, suffix, "".equals(suffix) ? ""
+                                    : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
                 }
             }
         }
 
         // add `MoviePrefix` to the URL query string
         if (getMoviePrefix() != null) {
-            joiner.add(String.format("%sMoviePrefix%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sMoviePrefix%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getMoviePrefix()))));
         }
 
         // add `PreferredLanguage` to the URL query string
         if (getPreferredLanguage() != null) {
-            joiner.add(String.format("%sPreferredLanguage%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sPreferredLanguage%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getPreferredLanguage()))));
         }
 
         // add `UserAgent` to the URL query string
         if (getUserAgent() != null) {
-            joiner.add(String.format("%sUserAgent%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sUserAgent%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getUserAgent()))));
         }
 

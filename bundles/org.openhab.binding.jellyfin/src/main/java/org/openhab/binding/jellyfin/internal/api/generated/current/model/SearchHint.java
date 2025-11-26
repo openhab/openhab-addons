@@ -16,6 +16,7 @@ package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
 import java.util.UUID;
@@ -176,13 +177,13 @@ public class SearchHint {
      */
     @Deprecated
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ITEM_ID)
+    @JsonProperty(value = JSON_PROPERTY_ITEM_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public UUID getItemId() {
         return itemId;
     }
 
-    @JsonProperty(JSON_PROPERTY_ITEM_ID)
+    @JsonProperty(value = JSON_PROPERTY_ITEM_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setItemId(@org.eclipse.jdt.annotation.NonNull UUID itemId) {
         this.itemId = itemId;
@@ -199,13 +200,13 @@ public class SearchHint {
      * @return id
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ID)
+    @JsonProperty(value = JSON_PROPERTY_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public UUID getId() {
         return id;
     }
 
-    @JsonProperty(JSON_PROPERTY_ID)
+    @JsonProperty(value = JSON_PROPERTY_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setId(@org.eclipse.jdt.annotation.NonNull UUID id) {
         this.id = id;
@@ -222,13 +223,13 @@ public class SearchHint {
      * @return name
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_NAME)
+    @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getName() {
         return name;
     }
 
-    @JsonProperty(JSON_PROPERTY_NAME)
+    @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setName(@org.eclipse.jdt.annotation.NonNull String name) {
         this.name = name;
@@ -245,13 +246,13 @@ public class SearchHint {
      * @return matchedTerm
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_MATCHED_TERM)
+    @JsonProperty(value = JSON_PROPERTY_MATCHED_TERM, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getMatchedTerm() {
         return matchedTerm;
     }
 
-    @JsonProperty(JSON_PROPERTY_MATCHED_TERM)
+    @JsonProperty(value = JSON_PROPERTY_MATCHED_TERM, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setMatchedTerm(@org.eclipse.jdt.annotation.NonNull String matchedTerm) {
         this.matchedTerm = matchedTerm;
@@ -268,13 +269,13 @@ public class SearchHint {
      * @return indexNumber
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_INDEX_NUMBER)
+    @JsonProperty(value = JSON_PROPERTY_INDEX_NUMBER, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getIndexNumber() {
         return indexNumber;
     }
 
-    @JsonProperty(JSON_PROPERTY_INDEX_NUMBER)
+    @JsonProperty(value = JSON_PROPERTY_INDEX_NUMBER, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setIndexNumber(@org.eclipse.jdt.annotation.NonNull Integer indexNumber) {
         this.indexNumber = indexNumber;
@@ -291,13 +292,13 @@ public class SearchHint {
      * @return productionYear
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_PRODUCTION_YEAR)
+    @JsonProperty(value = JSON_PROPERTY_PRODUCTION_YEAR, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getProductionYear() {
         return productionYear;
     }
 
-    @JsonProperty(JSON_PROPERTY_PRODUCTION_YEAR)
+    @JsonProperty(value = JSON_PROPERTY_PRODUCTION_YEAR, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setProductionYear(@org.eclipse.jdt.annotation.NonNull Integer productionYear) {
         this.productionYear = productionYear;
@@ -314,13 +315,13 @@ public class SearchHint {
      * @return parentIndexNumber
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_PARENT_INDEX_NUMBER)
+    @JsonProperty(value = JSON_PROPERTY_PARENT_INDEX_NUMBER, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getParentIndexNumber() {
         return parentIndexNumber;
     }
 
-    @JsonProperty(JSON_PROPERTY_PARENT_INDEX_NUMBER)
+    @JsonProperty(value = JSON_PROPERTY_PARENT_INDEX_NUMBER, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setParentIndexNumber(@org.eclipse.jdt.annotation.NonNull Integer parentIndexNumber) {
         this.parentIndexNumber = parentIndexNumber;
@@ -337,13 +338,13 @@ public class SearchHint {
      * @return primaryImageTag
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_PRIMARY_IMAGE_TAG)
+    @JsonProperty(value = JSON_PROPERTY_PRIMARY_IMAGE_TAG, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getPrimaryImageTag() {
         return primaryImageTag;
     }
 
-    @JsonProperty(JSON_PROPERTY_PRIMARY_IMAGE_TAG)
+    @JsonProperty(value = JSON_PROPERTY_PRIMARY_IMAGE_TAG, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setPrimaryImageTag(@org.eclipse.jdt.annotation.NonNull String primaryImageTag) {
         this.primaryImageTag = primaryImageTag;
@@ -360,13 +361,13 @@ public class SearchHint {
      * @return thumbImageTag
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_THUMB_IMAGE_TAG)
+    @JsonProperty(value = JSON_PROPERTY_THUMB_IMAGE_TAG, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getThumbImageTag() {
         return thumbImageTag;
     }
 
-    @JsonProperty(JSON_PROPERTY_THUMB_IMAGE_TAG)
+    @JsonProperty(value = JSON_PROPERTY_THUMB_IMAGE_TAG, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setThumbImageTag(@org.eclipse.jdt.annotation.NonNull String thumbImageTag) {
         this.thumbImageTag = thumbImageTag;
@@ -383,13 +384,13 @@ public class SearchHint {
      * @return thumbImageItemId
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_THUMB_IMAGE_ITEM_ID)
+    @JsonProperty(value = JSON_PROPERTY_THUMB_IMAGE_ITEM_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getThumbImageItemId() {
         return thumbImageItemId;
     }
 
-    @JsonProperty(JSON_PROPERTY_THUMB_IMAGE_ITEM_ID)
+    @JsonProperty(value = JSON_PROPERTY_THUMB_IMAGE_ITEM_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setThumbImageItemId(@org.eclipse.jdt.annotation.NonNull String thumbImageItemId) {
         this.thumbImageItemId = thumbImageItemId;
@@ -406,13 +407,13 @@ public class SearchHint {
      * @return backdropImageTag
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_BACKDROP_IMAGE_TAG)
+    @JsonProperty(value = JSON_PROPERTY_BACKDROP_IMAGE_TAG, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getBackdropImageTag() {
         return backdropImageTag;
     }
 
-    @JsonProperty(JSON_PROPERTY_BACKDROP_IMAGE_TAG)
+    @JsonProperty(value = JSON_PROPERTY_BACKDROP_IMAGE_TAG, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setBackdropImageTag(@org.eclipse.jdt.annotation.NonNull String backdropImageTag) {
         this.backdropImageTag = backdropImageTag;
@@ -429,13 +430,13 @@ public class SearchHint {
      * @return backdropImageItemId
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_BACKDROP_IMAGE_ITEM_ID)
+    @JsonProperty(value = JSON_PROPERTY_BACKDROP_IMAGE_ITEM_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getBackdropImageItemId() {
         return backdropImageItemId;
     }
 
-    @JsonProperty(JSON_PROPERTY_BACKDROP_IMAGE_ITEM_ID)
+    @JsonProperty(value = JSON_PROPERTY_BACKDROP_IMAGE_ITEM_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setBackdropImageItemId(@org.eclipse.jdt.annotation.NonNull String backdropImageItemId) {
         this.backdropImageItemId = backdropImageItemId;
@@ -452,13 +453,13 @@ public class SearchHint {
      * @return type
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_TYPE)
+    @JsonProperty(value = JSON_PROPERTY_TYPE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public BaseItemKind getType() {
         return type;
     }
 
-    @JsonProperty(JSON_PROPERTY_TYPE)
+    @JsonProperty(value = JSON_PROPERTY_TYPE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setType(@org.eclipse.jdt.annotation.NonNull BaseItemKind type) {
         this.type = type;
@@ -475,13 +476,13 @@ public class SearchHint {
      * @return isFolder
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_IS_FOLDER)
+    @JsonProperty(value = JSON_PROPERTY_IS_FOLDER, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getIsFolder() {
         return isFolder;
     }
 
-    @JsonProperty(JSON_PROPERTY_IS_FOLDER)
+    @JsonProperty(value = JSON_PROPERTY_IS_FOLDER, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setIsFolder(@org.eclipse.jdt.annotation.NonNull Boolean isFolder) {
         this.isFolder = isFolder;
@@ -498,13 +499,13 @@ public class SearchHint {
      * @return runTimeTicks
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_RUN_TIME_TICKS)
+    @JsonProperty(value = JSON_PROPERTY_RUN_TIME_TICKS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Long getRunTimeTicks() {
         return runTimeTicks;
     }
 
-    @JsonProperty(JSON_PROPERTY_RUN_TIME_TICKS)
+    @JsonProperty(value = JSON_PROPERTY_RUN_TIME_TICKS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setRunTimeTicks(@org.eclipse.jdt.annotation.NonNull Long runTimeTicks) {
         this.runTimeTicks = runTimeTicks;
@@ -521,13 +522,13 @@ public class SearchHint {
      * @return mediaType
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_MEDIA_TYPE)
+    @JsonProperty(value = JSON_PROPERTY_MEDIA_TYPE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public MediaType getMediaType() {
         return mediaType;
     }
 
-    @JsonProperty(JSON_PROPERTY_MEDIA_TYPE)
+    @JsonProperty(value = JSON_PROPERTY_MEDIA_TYPE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setMediaType(@org.eclipse.jdt.annotation.NonNull MediaType mediaType) {
         this.mediaType = mediaType;
@@ -544,13 +545,13 @@ public class SearchHint {
      * @return startDate
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_START_DATE)
+    @JsonProperty(value = JSON_PROPERTY_START_DATE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public OffsetDateTime getStartDate() {
         return startDate;
     }
 
-    @JsonProperty(JSON_PROPERTY_START_DATE)
+    @JsonProperty(value = JSON_PROPERTY_START_DATE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setStartDate(@org.eclipse.jdt.annotation.NonNull OffsetDateTime startDate) {
         this.startDate = startDate;
@@ -567,13 +568,13 @@ public class SearchHint {
      * @return endDate
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_END_DATE)
+    @JsonProperty(value = JSON_PROPERTY_END_DATE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public OffsetDateTime getEndDate() {
         return endDate;
     }
 
-    @JsonProperty(JSON_PROPERTY_END_DATE)
+    @JsonProperty(value = JSON_PROPERTY_END_DATE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setEndDate(@org.eclipse.jdt.annotation.NonNull OffsetDateTime endDate) {
         this.endDate = endDate;
@@ -590,13 +591,13 @@ public class SearchHint {
      * @return series
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_SERIES)
+    @JsonProperty(value = JSON_PROPERTY_SERIES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getSeries() {
         return series;
     }
 
-    @JsonProperty(JSON_PROPERTY_SERIES)
+    @JsonProperty(value = JSON_PROPERTY_SERIES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setSeries(@org.eclipse.jdt.annotation.NonNull String series) {
         this.series = series;
@@ -613,13 +614,13 @@ public class SearchHint {
      * @return status
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_STATUS)
+    @JsonProperty(value = JSON_PROPERTY_STATUS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getStatus() {
         return status;
     }
 
-    @JsonProperty(JSON_PROPERTY_STATUS)
+    @JsonProperty(value = JSON_PROPERTY_STATUS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setStatus(@org.eclipse.jdt.annotation.NonNull String status) {
         this.status = status;
@@ -636,13 +637,13 @@ public class SearchHint {
      * @return album
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ALBUM)
+    @JsonProperty(value = JSON_PROPERTY_ALBUM, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getAlbum() {
         return album;
     }
 
-    @JsonProperty(JSON_PROPERTY_ALBUM)
+    @JsonProperty(value = JSON_PROPERTY_ALBUM, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setAlbum(@org.eclipse.jdt.annotation.NonNull String album) {
         this.album = album;
@@ -659,13 +660,13 @@ public class SearchHint {
      * @return albumId
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ALBUM_ID)
+    @JsonProperty(value = JSON_PROPERTY_ALBUM_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public UUID getAlbumId() {
         return albumId;
     }
 
-    @JsonProperty(JSON_PROPERTY_ALBUM_ID)
+    @JsonProperty(value = JSON_PROPERTY_ALBUM_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setAlbumId(@org.eclipse.jdt.annotation.NonNull UUID albumId) {
         this.albumId = albumId;
@@ -682,13 +683,13 @@ public class SearchHint {
      * @return albumArtist
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ALBUM_ARTIST)
+    @JsonProperty(value = JSON_PROPERTY_ALBUM_ARTIST, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getAlbumArtist() {
         return albumArtist;
     }
 
-    @JsonProperty(JSON_PROPERTY_ALBUM_ARTIST)
+    @JsonProperty(value = JSON_PROPERTY_ALBUM_ARTIST, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setAlbumArtist(@org.eclipse.jdt.annotation.NonNull String albumArtist) {
         this.albumArtist = albumArtist;
@@ -713,13 +714,13 @@ public class SearchHint {
      * @return artists
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ARTISTS)
+    @JsonProperty(value = JSON_PROPERTY_ARTISTS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<String> getArtists() {
         return artists;
     }
 
-    @JsonProperty(JSON_PROPERTY_ARTISTS)
+    @JsonProperty(value = JSON_PROPERTY_ARTISTS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setArtists(@org.eclipse.jdt.annotation.NonNull List<String> artists) {
         this.artists = artists;
@@ -736,13 +737,13 @@ public class SearchHint {
      * @return songCount
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_SONG_COUNT)
+    @JsonProperty(value = JSON_PROPERTY_SONG_COUNT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getSongCount() {
         return songCount;
     }
 
-    @JsonProperty(JSON_PROPERTY_SONG_COUNT)
+    @JsonProperty(value = JSON_PROPERTY_SONG_COUNT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setSongCount(@org.eclipse.jdt.annotation.NonNull Integer songCount) {
         this.songCount = songCount;
@@ -759,13 +760,13 @@ public class SearchHint {
      * @return episodeCount
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_EPISODE_COUNT)
+    @JsonProperty(value = JSON_PROPERTY_EPISODE_COUNT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getEpisodeCount() {
         return episodeCount;
     }
 
-    @JsonProperty(JSON_PROPERTY_EPISODE_COUNT)
+    @JsonProperty(value = JSON_PROPERTY_EPISODE_COUNT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setEpisodeCount(@org.eclipse.jdt.annotation.NonNull Integer episodeCount) {
         this.episodeCount = episodeCount;
@@ -782,13 +783,13 @@ public class SearchHint {
      * @return channelId
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_CHANNEL_ID)
+    @JsonProperty(value = JSON_PROPERTY_CHANNEL_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public UUID getChannelId() {
         return channelId;
     }
 
-    @JsonProperty(JSON_PROPERTY_CHANNEL_ID)
+    @JsonProperty(value = JSON_PROPERTY_CHANNEL_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setChannelId(@org.eclipse.jdt.annotation.NonNull UUID channelId) {
         this.channelId = channelId;
@@ -805,13 +806,13 @@ public class SearchHint {
      * @return channelName
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_CHANNEL_NAME)
+    @JsonProperty(value = JSON_PROPERTY_CHANNEL_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getChannelName() {
         return channelName;
     }
 
-    @JsonProperty(JSON_PROPERTY_CHANNEL_NAME)
+    @JsonProperty(value = JSON_PROPERTY_CHANNEL_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setChannelName(@org.eclipse.jdt.annotation.NonNull String channelName) {
         this.channelName = channelName;
@@ -828,13 +829,13 @@ public class SearchHint {
      * @return primaryImageAspectRatio
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_PRIMARY_IMAGE_ASPECT_RATIO)
+    @JsonProperty(value = JSON_PROPERTY_PRIMARY_IMAGE_ASPECT_RATIO, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Double getPrimaryImageAspectRatio() {
         return primaryImageAspectRatio;
     }
 
-    @JsonProperty(JSON_PROPERTY_PRIMARY_IMAGE_ASPECT_RATIO)
+    @JsonProperty(value = JSON_PROPERTY_PRIMARY_IMAGE_ASPECT_RATIO, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setPrimaryImageAspectRatio(@org.eclipse.jdt.annotation.NonNull Double primaryImageAspectRatio) {
         this.primaryImageAspectRatio = primaryImageAspectRatio;
@@ -969,178 +970,179 @@ public class SearchHint {
 
         // add `ItemId` to the URL query string
         if (getItemId() != null) {
-            joiner.add(String.format("%sItemId%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sItemId%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getItemId()))));
         }
 
         // add `Id` to the URL query string
         if (getId() != null) {
-            joiner.add(
-                    String.format("%sId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
+            joiner.add(String.format(Locale.ROOT, "%sId%s=%s", prefix, suffix,
+                    ApiClient.urlEncode(ApiClient.valueToString(getId()))));
         }
 
         // add `Name` to the URL query string
         if (getName() != null) {
-            joiner.add(String.format("%sName%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sName%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getName()))));
         }
 
         // add `MatchedTerm` to the URL query string
         if (getMatchedTerm() != null) {
-            joiner.add(String.format("%sMatchedTerm%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sMatchedTerm%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getMatchedTerm()))));
         }
 
         // add `IndexNumber` to the URL query string
         if (getIndexNumber() != null) {
-            joiner.add(String.format("%sIndexNumber%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sIndexNumber%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getIndexNumber()))));
         }
 
         // add `ProductionYear` to the URL query string
         if (getProductionYear() != null) {
-            joiner.add(String.format("%sProductionYear%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sProductionYear%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getProductionYear()))));
         }
 
         // add `ParentIndexNumber` to the URL query string
         if (getParentIndexNumber() != null) {
-            joiner.add(String.format("%sParentIndexNumber%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sParentIndexNumber%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getParentIndexNumber()))));
         }
 
         // add `PrimaryImageTag` to the URL query string
         if (getPrimaryImageTag() != null) {
-            joiner.add(String.format("%sPrimaryImageTag%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sPrimaryImageTag%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getPrimaryImageTag()))));
         }
 
         // add `ThumbImageTag` to the URL query string
         if (getThumbImageTag() != null) {
-            joiner.add(String.format("%sThumbImageTag%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sThumbImageTag%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getThumbImageTag()))));
         }
 
         // add `ThumbImageItemId` to the URL query string
         if (getThumbImageItemId() != null) {
-            joiner.add(String.format("%sThumbImageItemId%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sThumbImageItemId%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getThumbImageItemId()))));
         }
 
         // add `BackdropImageTag` to the URL query string
         if (getBackdropImageTag() != null) {
-            joiner.add(String.format("%sBackdropImageTag%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sBackdropImageTag%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getBackdropImageTag()))));
         }
 
         // add `BackdropImageItemId` to the URL query string
         if (getBackdropImageItemId() != null) {
-            joiner.add(String.format("%sBackdropImageItemId%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sBackdropImageItemId%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getBackdropImageItemId()))));
         }
 
         // add `Type` to the URL query string
         if (getType() != null) {
-            joiner.add(String.format("%sType%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sType%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getType()))));
         }
 
         // add `IsFolder` to the URL query string
         if (getIsFolder() != null) {
-            joiner.add(String.format("%sIsFolder%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sIsFolder%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getIsFolder()))));
         }
 
         // add `RunTimeTicks` to the URL query string
         if (getRunTimeTicks() != null) {
-            joiner.add(String.format("%sRunTimeTicks%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sRunTimeTicks%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getRunTimeTicks()))));
         }
 
         // add `MediaType` to the URL query string
         if (getMediaType() != null) {
-            joiner.add(String.format("%sMediaType%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sMediaType%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getMediaType()))));
         }
 
         // add `StartDate` to the URL query string
         if (getStartDate() != null) {
-            joiner.add(String.format("%sStartDate%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sStartDate%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getStartDate()))));
         }
 
         // add `EndDate` to the URL query string
         if (getEndDate() != null) {
-            joiner.add(String.format("%sEndDate%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sEndDate%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getEndDate()))));
         }
 
         // add `Series` to the URL query string
         if (getSeries() != null) {
-            joiner.add(String.format("%sSeries%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sSeries%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getSeries()))));
         }
 
         // add `Status` to the URL query string
         if (getStatus() != null) {
-            joiner.add(String.format("%sStatus%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sStatus%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getStatus()))));
         }
 
         // add `Album` to the URL query string
         if (getAlbum() != null) {
-            joiner.add(String.format("%sAlbum%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sAlbum%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getAlbum()))));
         }
 
         // add `AlbumId` to the URL query string
         if (getAlbumId() != null) {
-            joiner.add(String.format("%sAlbumId%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sAlbumId%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getAlbumId()))));
         }
 
         // add `AlbumArtist` to the URL query string
         if (getAlbumArtist() != null) {
-            joiner.add(String.format("%sAlbumArtist%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sAlbumArtist%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getAlbumArtist()))));
         }
 
         // add `Artists` to the URL query string
         if (getArtists() != null) {
             for (int i = 0; i < getArtists().size(); i++) {
-                joiner.add(String.format("%sArtists%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+                joiner.add(String.format(Locale.ROOT, "%sArtists%s%s=%s", prefix, suffix,
+                        "".equals(suffix) ? ""
+                                : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
                         ApiClient.urlEncode(ApiClient.valueToString(getArtists().get(i)))));
             }
         }
 
         // add `SongCount` to the URL query string
         if (getSongCount() != null) {
-            joiner.add(String.format("%sSongCount%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sSongCount%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getSongCount()))));
         }
 
         // add `EpisodeCount` to the URL query string
         if (getEpisodeCount() != null) {
-            joiner.add(String.format("%sEpisodeCount%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sEpisodeCount%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getEpisodeCount()))));
         }
 
         // add `ChannelId` to the URL query string
         if (getChannelId() != null) {
-            joiner.add(String.format("%sChannelId%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sChannelId%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getChannelId()))));
         }
 
         // add `ChannelName` to the URL query string
         if (getChannelName() != null) {
-            joiner.add(String.format("%sChannelName%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sChannelName%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getChannelName()))));
         }
 
         // add `PrimaryImageAspectRatio` to the URL query string
         if (getPrimaryImageAspectRatio() != null) {
-            joiner.add(String.format("%sPrimaryImageAspectRatio%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sPrimaryImageAspectRatio%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getPrimaryImageAspectRatio()))));
         }
 

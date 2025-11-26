@@ -285,7 +285,7 @@ public class ItemLookupApi {
 
         localVarRequestBuilder.header("Content-Type", "application/json");
         localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase, text/html");
 
         try {
             byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(remoteSearchResult);
@@ -410,7 +410,7 @@ public class ItemLookupApi {
 
         localVarRequestBuilder.header("Content-Type", "application/json");
         localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase, text/html");
 
         try {
             byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(bookInfoRemoteSearchQuery);
@@ -535,7 +535,7 @@ public class ItemLookupApi {
 
         localVarRequestBuilder.header("Content-Type", "application/json");
         localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase, text/html");
 
         try {
             byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(boxSetInfoRemoteSearchQuery);
@@ -652,7 +652,7 @@ public class ItemLookupApi {
         localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
 
         localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase, text/html");
 
         localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {
@@ -772,7 +772,7 @@ public class ItemLookupApi {
 
         localVarRequestBuilder.header("Content-Type", "application/json");
         localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase, text/html");
 
         try {
             byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(movieInfoRemoteSearchQuery);
@@ -897,7 +897,7 @@ public class ItemLookupApi {
 
         localVarRequestBuilder.header("Content-Type", "application/json");
         localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase, text/html");
 
         try {
             byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(albumInfoRemoteSearchQuery);
@@ -1022,7 +1022,7 @@ public class ItemLookupApi {
 
         localVarRequestBuilder.header("Content-Type", "application/json");
         localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase, text/html");
 
         try {
             byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(artistInfoRemoteSearchQuery);
@@ -1147,7 +1147,7 @@ public class ItemLookupApi {
 
         localVarRequestBuilder.header("Content-Type", "application/json");
         localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase, text/html");
 
         try {
             byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(musicVideoInfoRemoteSearchQuery);
@@ -1272,7 +1272,7 @@ public class ItemLookupApi {
 
         localVarRequestBuilder.header("Content-Type", "application/json");
         localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase, text/html");
 
         try {
             byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(personLookupInfoRemoteSearchQuery);
@@ -1397,7 +1397,7 @@ public class ItemLookupApi {
 
         localVarRequestBuilder.header("Content-Type", "application/json");
         localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase, text/html");
 
         try {
             byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(seriesInfoRemoteSearchQuery);
@@ -1522,7 +1522,7 @@ public class ItemLookupApi {
 
         localVarRequestBuilder.header("Content-Type", "application/json");
         localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase, text/html");
 
         try {
             byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(trailerInfoRemoteSearchQuery);

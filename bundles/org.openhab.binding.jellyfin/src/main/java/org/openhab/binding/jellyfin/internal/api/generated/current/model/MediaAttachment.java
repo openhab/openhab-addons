@@ -13,6 +13,7 @@
 
 package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
+import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
 
@@ -73,13 +74,13 @@ public class MediaAttachment {
      * @return codec
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_CODEC)
+    @JsonProperty(value = JSON_PROPERTY_CODEC, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getCodec() {
         return codec;
     }
 
-    @JsonProperty(JSON_PROPERTY_CODEC)
+    @JsonProperty(value = JSON_PROPERTY_CODEC, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setCodec(@org.eclipse.jdt.annotation.NonNull String codec) {
         this.codec = codec;
@@ -96,13 +97,13 @@ public class MediaAttachment {
      * @return codecTag
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_CODEC_TAG)
+    @JsonProperty(value = JSON_PROPERTY_CODEC_TAG, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getCodecTag() {
         return codecTag;
     }
 
-    @JsonProperty(JSON_PROPERTY_CODEC_TAG)
+    @JsonProperty(value = JSON_PROPERTY_CODEC_TAG, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setCodecTag(@org.eclipse.jdt.annotation.NonNull String codecTag) {
         this.codecTag = codecTag;
@@ -119,13 +120,13 @@ public class MediaAttachment {
      * @return comment
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_COMMENT)
+    @JsonProperty(value = JSON_PROPERTY_COMMENT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getComment() {
         return comment;
     }
 
-    @JsonProperty(JSON_PROPERTY_COMMENT)
+    @JsonProperty(value = JSON_PROPERTY_COMMENT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setComment(@org.eclipse.jdt.annotation.NonNull String comment) {
         this.comment = comment;
@@ -142,13 +143,13 @@ public class MediaAttachment {
      * @return index
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_INDEX)
+    @JsonProperty(value = JSON_PROPERTY_INDEX, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getIndex() {
         return index;
     }
 
-    @JsonProperty(JSON_PROPERTY_INDEX)
+    @JsonProperty(value = JSON_PROPERTY_INDEX, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setIndex(@org.eclipse.jdt.annotation.NonNull Integer index) {
         this.index = index;
@@ -165,13 +166,13 @@ public class MediaAttachment {
      * @return fileName
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_FILE_NAME)
+    @JsonProperty(value = JSON_PROPERTY_FILE_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getFileName() {
         return fileName;
     }
 
-    @JsonProperty(JSON_PROPERTY_FILE_NAME)
+    @JsonProperty(value = JSON_PROPERTY_FILE_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setFileName(@org.eclipse.jdt.annotation.NonNull String fileName) {
         this.fileName = fileName;
@@ -188,13 +189,13 @@ public class MediaAttachment {
      * @return mimeType
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_MIME_TYPE)
+    @JsonProperty(value = JSON_PROPERTY_MIME_TYPE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getMimeType() {
         return mimeType;
     }
 
-    @JsonProperty(JSON_PROPERTY_MIME_TYPE)
+    @JsonProperty(value = JSON_PROPERTY_MIME_TYPE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setMimeType(@org.eclipse.jdt.annotation.NonNull String mimeType) {
         this.mimeType = mimeType;
@@ -211,13 +212,13 @@ public class MediaAttachment {
      * @return deliveryUrl
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_DELIVERY_URL)
+    @JsonProperty(value = JSON_PROPERTY_DELIVERY_URL, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getDeliveryUrl() {
         return deliveryUrl;
     }
 
-    @JsonProperty(JSON_PROPERTY_DELIVERY_URL)
+    @JsonProperty(value = JSON_PROPERTY_DELIVERY_URL, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setDeliveryUrl(@org.eclipse.jdt.annotation.NonNull String deliveryUrl) {
         this.deliveryUrl = deliveryUrl;
@@ -309,43 +310,43 @@ public class MediaAttachment {
 
         // add `Codec` to the URL query string
         if (getCodec() != null) {
-            joiner.add(String.format("%sCodec%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sCodec%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getCodec()))));
         }
 
         // add `CodecTag` to the URL query string
         if (getCodecTag() != null) {
-            joiner.add(String.format("%sCodecTag%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sCodecTag%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getCodecTag()))));
         }
 
         // add `Comment` to the URL query string
         if (getComment() != null) {
-            joiner.add(String.format("%sComment%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sComment%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getComment()))));
         }
 
         // add `Index` to the URL query string
         if (getIndex() != null) {
-            joiner.add(String.format("%sIndex%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sIndex%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getIndex()))));
         }
 
         // add `FileName` to the URL query string
         if (getFileName() != null) {
-            joiner.add(String.format("%sFileName%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sFileName%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getFileName()))));
         }
 
         // add `MimeType` to the URL query string
         if (getMimeType() != null) {
-            joiner.add(String.format("%sMimeType%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sMimeType%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getMimeType()))));
         }
 
         // add `DeliveryUrl` to the URL query string
         if (getDeliveryUrl() != null) {
-            joiner.add(String.format("%sDeliveryUrl%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sDeliveryUrl%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getDeliveryUrl()))));
         }
 

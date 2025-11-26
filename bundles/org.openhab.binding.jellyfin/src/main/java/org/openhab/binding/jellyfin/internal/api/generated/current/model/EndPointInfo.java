@@ -13,6 +13,7 @@
 
 package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
+import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
 
@@ -50,13 +51,13 @@ public class EndPointInfo {
      * @return isLocal
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_IS_LOCAL)
+    @JsonProperty(value = JSON_PROPERTY_IS_LOCAL, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getIsLocal() {
         return isLocal;
     }
 
-    @JsonProperty(JSON_PROPERTY_IS_LOCAL)
+    @JsonProperty(value = JSON_PROPERTY_IS_LOCAL, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setIsLocal(@org.eclipse.jdt.annotation.NonNull Boolean isLocal) {
         this.isLocal = isLocal;
@@ -73,13 +74,13 @@ public class EndPointInfo {
      * @return isInNetwork
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_IS_IN_NETWORK)
+    @JsonProperty(value = JSON_PROPERTY_IS_IN_NETWORK, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getIsInNetwork() {
         return isInNetwork;
     }
 
-    @JsonProperty(JSON_PROPERTY_IS_IN_NETWORK)
+    @JsonProperty(value = JSON_PROPERTY_IS_IN_NETWORK, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setIsInNetwork(@org.eclipse.jdt.annotation.NonNull Boolean isInNetwork) {
         this.isInNetwork = isInNetwork;
@@ -161,13 +162,13 @@ public class EndPointInfo {
 
         // add `IsLocal` to the URL query string
         if (getIsLocal() != null) {
-            joiner.add(String.format("%sIsLocal%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sIsLocal%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getIsLocal()))));
         }
 
         // add `IsInNetwork` to the URL query string
         if (getIsInNetwork() != null) {
-            joiner.add(String.format("%sIsInNetwork%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sIsInNetwork%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getIsInNetwork()))));
         }
 

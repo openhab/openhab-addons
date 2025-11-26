@@ -13,6 +13,7 @@
 
 package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
+import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
 
@@ -46,13 +47,13 @@ public class PingRequestDto {
      * @return ping
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_PING)
+    @JsonProperty(value = JSON_PROPERTY_PING, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Long getPing() {
         return ping;
     }
 
-    @JsonProperty(JSON_PROPERTY_PING)
+    @JsonProperty(value = JSON_PROPERTY_PING, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setPing(@org.eclipse.jdt.annotation.NonNull Long ping) {
         this.ping = ping;
@@ -132,7 +133,7 @@ public class PingRequestDto {
 
         // add `Ping` to the URL query string
         if (getPing() != null) {
-            joiner.add(String.format("%sPing%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sPing%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getPing()))));
         }
 

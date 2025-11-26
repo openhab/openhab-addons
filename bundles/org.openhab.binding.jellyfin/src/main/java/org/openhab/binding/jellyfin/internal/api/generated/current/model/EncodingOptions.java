@@ -15,6 +15,7 @@ package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
 
@@ -261,13 +262,13 @@ public class EncodingOptions {
      * @return encodingThreadCount
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ENCODING_THREAD_COUNT)
+    @JsonProperty(value = JSON_PROPERTY_ENCODING_THREAD_COUNT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getEncodingThreadCount() {
         return encodingThreadCount;
     }
 
-    @JsonProperty(JSON_PROPERTY_ENCODING_THREAD_COUNT)
+    @JsonProperty(value = JSON_PROPERTY_ENCODING_THREAD_COUNT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setEncodingThreadCount(@org.eclipse.jdt.annotation.NonNull Integer encodingThreadCount) {
         this.encodingThreadCount = encodingThreadCount;
@@ -284,13 +285,13 @@ public class EncodingOptions {
      * @return transcodingTempPath
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_TRANSCODING_TEMP_PATH)
+    @JsonProperty(value = JSON_PROPERTY_TRANSCODING_TEMP_PATH, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getTranscodingTempPath() {
         return transcodingTempPath;
     }
 
-    @JsonProperty(JSON_PROPERTY_TRANSCODING_TEMP_PATH)
+    @JsonProperty(value = JSON_PROPERTY_TRANSCODING_TEMP_PATH, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setTranscodingTempPath(@org.eclipse.jdt.annotation.NonNull String transcodingTempPath) {
         this.transcodingTempPath = transcodingTempPath;
@@ -307,13 +308,13 @@ public class EncodingOptions {
      * @return fallbackFontPath
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_FALLBACK_FONT_PATH)
+    @JsonProperty(value = JSON_PROPERTY_FALLBACK_FONT_PATH, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getFallbackFontPath() {
         return fallbackFontPath;
     }
 
-    @JsonProperty(JSON_PROPERTY_FALLBACK_FONT_PATH)
+    @JsonProperty(value = JSON_PROPERTY_FALLBACK_FONT_PATH, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setFallbackFontPath(@org.eclipse.jdt.annotation.NonNull String fallbackFontPath) {
         this.fallbackFontPath = fallbackFontPath;
@@ -330,13 +331,13 @@ public class EncodingOptions {
      * @return enableFallbackFont
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ENABLE_FALLBACK_FONT)
+    @JsonProperty(value = JSON_PROPERTY_ENABLE_FALLBACK_FONT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getEnableFallbackFont() {
         return enableFallbackFont;
     }
 
-    @JsonProperty(JSON_PROPERTY_ENABLE_FALLBACK_FONT)
+    @JsonProperty(value = JSON_PROPERTY_ENABLE_FALLBACK_FONT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setEnableFallbackFont(@org.eclipse.jdt.annotation.NonNull Boolean enableFallbackFont) {
         this.enableFallbackFont = enableFallbackFont;
@@ -353,13 +354,13 @@ public class EncodingOptions {
      * @return enableAudioVbr
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ENABLE_AUDIO_VBR)
+    @JsonProperty(value = JSON_PROPERTY_ENABLE_AUDIO_VBR, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getEnableAudioVbr() {
         return enableAudioVbr;
     }
 
-    @JsonProperty(JSON_PROPERTY_ENABLE_AUDIO_VBR)
+    @JsonProperty(value = JSON_PROPERTY_ENABLE_AUDIO_VBR, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setEnableAudioVbr(@org.eclipse.jdt.annotation.NonNull Boolean enableAudioVbr) {
         this.enableAudioVbr = enableAudioVbr;
@@ -376,13 +377,13 @@ public class EncodingOptions {
      * @return downMixAudioBoost
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_DOWN_MIX_AUDIO_BOOST)
+    @JsonProperty(value = JSON_PROPERTY_DOWN_MIX_AUDIO_BOOST, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Double getDownMixAudioBoost() {
         return downMixAudioBoost;
     }
 
-    @JsonProperty(JSON_PROPERTY_DOWN_MIX_AUDIO_BOOST)
+    @JsonProperty(value = JSON_PROPERTY_DOWN_MIX_AUDIO_BOOST, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setDownMixAudioBoost(@org.eclipse.jdt.annotation.NonNull Double downMixAudioBoost) {
         this.downMixAudioBoost = downMixAudioBoost;
@@ -400,13 +401,13 @@ public class EncodingOptions {
      * @return downMixStereoAlgorithm
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_DOWN_MIX_STEREO_ALGORITHM)
+    @JsonProperty(value = JSON_PROPERTY_DOWN_MIX_STEREO_ALGORITHM, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public DownMixStereoAlgorithms getDownMixStereoAlgorithm() {
         return downMixStereoAlgorithm;
     }
 
-    @JsonProperty(JSON_PROPERTY_DOWN_MIX_STEREO_ALGORITHM)
+    @JsonProperty(value = JSON_PROPERTY_DOWN_MIX_STEREO_ALGORITHM, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setDownMixStereoAlgorithm(
             @org.eclipse.jdt.annotation.NonNull DownMixStereoAlgorithms downMixStereoAlgorithm) {
@@ -424,13 +425,13 @@ public class EncodingOptions {
      * @return maxMuxingQueueSize
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_MAX_MUXING_QUEUE_SIZE)
+    @JsonProperty(value = JSON_PROPERTY_MAX_MUXING_QUEUE_SIZE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getMaxMuxingQueueSize() {
         return maxMuxingQueueSize;
     }
 
-    @JsonProperty(JSON_PROPERTY_MAX_MUXING_QUEUE_SIZE)
+    @JsonProperty(value = JSON_PROPERTY_MAX_MUXING_QUEUE_SIZE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setMaxMuxingQueueSize(@org.eclipse.jdt.annotation.NonNull Integer maxMuxingQueueSize) {
         this.maxMuxingQueueSize = maxMuxingQueueSize;
@@ -447,13 +448,13 @@ public class EncodingOptions {
      * @return enableThrottling
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ENABLE_THROTTLING)
+    @JsonProperty(value = JSON_PROPERTY_ENABLE_THROTTLING, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getEnableThrottling() {
         return enableThrottling;
     }
 
-    @JsonProperty(JSON_PROPERTY_ENABLE_THROTTLING)
+    @JsonProperty(value = JSON_PROPERTY_ENABLE_THROTTLING, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setEnableThrottling(@org.eclipse.jdt.annotation.NonNull Boolean enableThrottling) {
         this.enableThrottling = enableThrottling;
@@ -470,13 +471,13 @@ public class EncodingOptions {
      * @return throttleDelaySeconds
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_THROTTLE_DELAY_SECONDS)
+    @JsonProperty(value = JSON_PROPERTY_THROTTLE_DELAY_SECONDS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getThrottleDelaySeconds() {
         return throttleDelaySeconds;
     }
 
-    @JsonProperty(JSON_PROPERTY_THROTTLE_DELAY_SECONDS)
+    @JsonProperty(value = JSON_PROPERTY_THROTTLE_DELAY_SECONDS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setThrottleDelaySeconds(@org.eclipse.jdt.annotation.NonNull Integer throttleDelaySeconds) {
         this.throttleDelaySeconds = throttleDelaySeconds;
@@ -493,13 +494,13 @@ public class EncodingOptions {
      * @return enableSegmentDeletion
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ENABLE_SEGMENT_DELETION)
+    @JsonProperty(value = JSON_PROPERTY_ENABLE_SEGMENT_DELETION, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getEnableSegmentDeletion() {
         return enableSegmentDeletion;
     }
 
-    @JsonProperty(JSON_PROPERTY_ENABLE_SEGMENT_DELETION)
+    @JsonProperty(value = JSON_PROPERTY_ENABLE_SEGMENT_DELETION, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setEnableSegmentDeletion(@org.eclipse.jdt.annotation.NonNull Boolean enableSegmentDeletion) {
         this.enableSegmentDeletion = enableSegmentDeletion;
@@ -516,13 +517,13 @@ public class EncodingOptions {
      * @return segmentKeepSeconds
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_SEGMENT_KEEP_SECONDS)
+    @JsonProperty(value = JSON_PROPERTY_SEGMENT_KEEP_SECONDS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getSegmentKeepSeconds() {
         return segmentKeepSeconds;
     }
 
-    @JsonProperty(JSON_PROPERTY_SEGMENT_KEEP_SECONDS)
+    @JsonProperty(value = JSON_PROPERTY_SEGMENT_KEEP_SECONDS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setSegmentKeepSeconds(@org.eclipse.jdt.annotation.NonNull Integer segmentKeepSeconds) {
         this.segmentKeepSeconds = segmentKeepSeconds;
@@ -540,13 +541,13 @@ public class EncodingOptions {
      * @return hardwareAccelerationType
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_HARDWARE_ACCELERATION_TYPE)
+    @JsonProperty(value = JSON_PROPERTY_HARDWARE_ACCELERATION_TYPE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public HardwareAccelerationType getHardwareAccelerationType() {
         return hardwareAccelerationType;
     }
 
-    @JsonProperty(JSON_PROPERTY_HARDWARE_ACCELERATION_TYPE)
+    @JsonProperty(value = JSON_PROPERTY_HARDWARE_ACCELERATION_TYPE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setHardwareAccelerationType(
             @org.eclipse.jdt.annotation.NonNull HardwareAccelerationType hardwareAccelerationType) {
@@ -564,13 +565,13 @@ public class EncodingOptions {
      * @return encoderAppPath
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ENCODER_APP_PATH)
+    @JsonProperty(value = JSON_PROPERTY_ENCODER_APP_PATH, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getEncoderAppPath() {
         return encoderAppPath;
     }
 
-    @JsonProperty(JSON_PROPERTY_ENCODER_APP_PATH)
+    @JsonProperty(value = JSON_PROPERTY_ENCODER_APP_PATH, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setEncoderAppPath(@org.eclipse.jdt.annotation.NonNull String encoderAppPath) {
         this.encoderAppPath = encoderAppPath;
@@ -587,13 +588,13 @@ public class EncodingOptions {
      * @return encoderAppPathDisplay
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ENCODER_APP_PATH_DISPLAY)
+    @JsonProperty(value = JSON_PROPERTY_ENCODER_APP_PATH_DISPLAY, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getEncoderAppPathDisplay() {
         return encoderAppPathDisplay;
     }
 
-    @JsonProperty(JSON_PROPERTY_ENCODER_APP_PATH_DISPLAY)
+    @JsonProperty(value = JSON_PROPERTY_ENCODER_APP_PATH_DISPLAY, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setEncoderAppPathDisplay(@org.eclipse.jdt.annotation.NonNull String encoderAppPathDisplay) {
         this.encoderAppPathDisplay = encoderAppPathDisplay;
@@ -610,13 +611,13 @@ public class EncodingOptions {
      * @return vaapiDevice
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_VAAPI_DEVICE)
+    @JsonProperty(value = JSON_PROPERTY_VAAPI_DEVICE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getVaapiDevice() {
         return vaapiDevice;
     }
 
-    @JsonProperty(JSON_PROPERTY_VAAPI_DEVICE)
+    @JsonProperty(value = JSON_PROPERTY_VAAPI_DEVICE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setVaapiDevice(@org.eclipse.jdt.annotation.NonNull String vaapiDevice) {
         this.vaapiDevice = vaapiDevice;
@@ -633,13 +634,13 @@ public class EncodingOptions {
      * @return qsvDevice
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_QSV_DEVICE)
+    @JsonProperty(value = JSON_PROPERTY_QSV_DEVICE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getQsvDevice() {
         return qsvDevice;
     }
 
-    @JsonProperty(JSON_PROPERTY_QSV_DEVICE)
+    @JsonProperty(value = JSON_PROPERTY_QSV_DEVICE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setQsvDevice(@org.eclipse.jdt.annotation.NonNull String qsvDevice) {
         this.qsvDevice = qsvDevice;
@@ -656,13 +657,13 @@ public class EncodingOptions {
      * @return enableTonemapping
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ENABLE_TONEMAPPING)
+    @JsonProperty(value = JSON_PROPERTY_ENABLE_TONEMAPPING, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getEnableTonemapping() {
         return enableTonemapping;
     }
 
-    @JsonProperty(JSON_PROPERTY_ENABLE_TONEMAPPING)
+    @JsonProperty(value = JSON_PROPERTY_ENABLE_TONEMAPPING, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setEnableTonemapping(@org.eclipse.jdt.annotation.NonNull Boolean enableTonemapping) {
         this.enableTonemapping = enableTonemapping;
@@ -679,13 +680,13 @@ public class EncodingOptions {
      * @return enableVppTonemapping
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ENABLE_VPP_TONEMAPPING)
+    @JsonProperty(value = JSON_PROPERTY_ENABLE_VPP_TONEMAPPING, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getEnableVppTonemapping() {
         return enableVppTonemapping;
     }
 
-    @JsonProperty(JSON_PROPERTY_ENABLE_VPP_TONEMAPPING)
+    @JsonProperty(value = JSON_PROPERTY_ENABLE_VPP_TONEMAPPING, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setEnableVppTonemapping(@org.eclipse.jdt.annotation.NonNull Boolean enableVppTonemapping) {
         this.enableVppTonemapping = enableVppTonemapping;
@@ -703,13 +704,13 @@ public class EncodingOptions {
      * @return enableVideoToolboxTonemapping
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ENABLE_VIDEO_TOOLBOX_TONEMAPPING)
+    @JsonProperty(value = JSON_PROPERTY_ENABLE_VIDEO_TOOLBOX_TONEMAPPING, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getEnableVideoToolboxTonemapping() {
         return enableVideoToolboxTonemapping;
     }
 
-    @JsonProperty(JSON_PROPERTY_ENABLE_VIDEO_TOOLBOX_TONEMAPPING)
+    @JsonProperty(value = JSON_PROPERTY_ENABLE_VIDEO_TOOLBOX_TONEMAPPING, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setEnableVideoToolboxTonemapping(
             @org.eclipse.jdt.annotation.NonNull Boolean enableVideoToolboxTonemapping) {
@@ -728,13 +729,13 @@ public class EncodingOptions {
      * @return tonemappingAlgorithm
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_TONEMAPPING_ALGORITHM)
+    @JsonProperty(value = JSON_PROPERTY_TONEMAPPING_ALGORITHM, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public TonemappingAlgorithm getTonemappingAlgorithm() {
         return tonemappingAlgorithm;
     }
 
-    @JsonProperty(JSON_PROPERTY_TONEMAPPING_ALGORITHM)
+    @JsonProperty(value = JSON_PROPERTY_TONEMAPPING_ALGORITHM, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setTonemappingAlgorithm(@org.eclipse.jdt.annotation.NonNull TonemappingAlgorithm tonemappingAlgorithm) {
         this.tonemappingAlgorithm = tonemappingAlgorithm;
@@ -751,13 +752,13 @@ public class EncodingOptions {
      * @return tonemappingMode
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_TONEMAPPING_MODE)
+    @JsonProperty(value = JSON_PROPERTY_TONEMAPPING_MODE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public TonemappingMode getTonemappingMode() {
         return tonemappingMode;
     }
 
-    @JsonProperty(JSON_PROPERTY_TONEMAPPING_MODE)
+    @JsonProperty(value = JSON_PROPERTY_TONEMAPPING_MODE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setTonemappingMode(@org.eclipse.jdt.annotation.NonNull TonemappingMode tonemappingMode) {
         this.tonemappingMode = tonemappingMode;
@@ -774,13 +775,13 @@ public class EncodingOptions {
      * @return tonemappingRange
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_TONEMAPPING_RANGE)
+    @JsonProperty(value = JSON_PROPERTY_TONEMAPPING_RANGE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public TonemappingRange getTonemappingRange() {
         return tonemappingRange;
     }
 
-    @JsonProperty(JSON_PROPERTY_TONEMAPPING_RANGE)
+    @JsonProperty(value = JSON_PROPERTY_TONEMAPPING_RANGE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setTonemappingRange(@org.eclipse.jdt.annotation.NonNull TonemappingRange tonemappingRange) {
         this.tonemappingRange = tonemappingRange;
@@ -797,13 +798,13 @@ public class EncodingOptions {
      * @return tonemappingDesat
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_TONEMAPPING_DESAT)
+    @JsonProperty(value = JSON_PROPERTY_TONEMAPPING_DESAT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Double getTonemappingDesat() {
         return tonemappingDesat;
     }
 
-    @JsonProperty(JSON_PROPERTY_TONEMAPPING_DESAT)
+    @JsonProperty(value = JSON_PROPERTY_TONEMAPPING_DESAT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setTonemappingDesat(@org.eclipse.jdt.annotation.NonNull Double tonemappingDesat) {
         this.tonemappingDesat = tonemappingDesat;
@@ -820,13 +821,13 @@ public class EncodingOptions {
      * @return tonemappingPeak
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_TONEMAPPING_PEAK)
+    @JsonProperty(value = JSON_PROPERTY_TONEMAPPING_PEAK, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Double getTonemappingPeak() {
         return tonemappingPeak;
     }
 
-    @JsonProperty(JSON_PROPERTY_TONEMAPPING_PEAK)
+    @JsonProperty(value = JSON_PROPERTY_TONEMAPPING_PEAK, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setTonemappingPeak(@org.eclipse.jdt.annotation.NonNull Double tonemappingPeak) {
         this.tonemappingPeak = tonemappingPeak;
@@ -843,13 +844,13 @@ public class EncodingOptions {
      * @return tonemappingParam
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_TONEMAPPING_PARAM)
+    @JsonProperty(value = JSON_PROPERTY_TONEMAPPING_PARAM, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Double getTonemappingParam() {
         return tonemappingParam;
     }
 
-    @JsonProperty(JSON_PROPERTY_TONEMAPPING_PARAM)
+    @JsonProperty(value = JSON_PROPERTY_TONEMAPPING_PARAM, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setTonemappingParam(@org.eclipse.jdt.annotation.NonNull Double tonemappingParam) {
         this.tonemappingParam = tonemappingParam;
@@ -867,13 +868,13 @@ public class EncodingOptions {
      * @return vppTonemappingBrightness
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_VPP_TONEMAPPING_BRIGHTNESS)
+    @JsonProperty(value = JSON_PROPERTY_VPP_TONEMAPPING_BRIGHTNESS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Double getVppTonemappingBrightness() {
         return vppTonemappingBrightness;
     }
 
-    @JsonProperty(JSON_PROPERTY_VPP_TONEMAPPING_BRIGHTNESS)
+    @JsonProperty(value = JSON_PROPERTY_VPP_TONEMAPPING_BRIGHTNESS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setVppTonemappingBrightness(@org.eclipse.jdt.annotation.NonNull Double vppTonemappingBrightness) {
         this.vppTonemappingBrightness = vppTonemappingBrightness;
@@ -890,13 +891,13 @@ public class EncodingOptions {
      * @return vppTonemappingContrast
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_VPP_TONEMAPPING_CONTRAST)
+    @JsonProperty(value = JSON_PROPERTY_VPP_TONEMAPPING_CONTRAST, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Double getVppTonemappingContrast() {
         return vppTonemappingContrast;
     }
 
-    @JsonProperty(JSON_PROPERTY_VPP_TONEMAPPING_CONTRAST)
+    @JsonProperty(value = JSON_PROPERTY_VPP_TONEMAPPING_CONTRAST, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setVppTonemappingContrast(@org.eclipse.jdt.annotation.NonNull Double vppTonemappingContrast) {
         this.vppTonemappingContrast = vppTonemappingContrast;
@@ -913,13 +914,13 @@ public class EncodingOptions {
      * @return h264Crf
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_H264_CRF)
+    @JsonProperty(value = JSON_PROPERTY_H264_CRF, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getH264Crf() {
         return h264Crf;
     }
 
-    @JsonProperty(JSON_PROPERTY_H264_CRF)
+    @JsonProperty(value = JSON_PROPERTY_H264_CRF, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setH264Crf(@org.eclipse.jdt.annotation.NonNull Integer h264Crf) {
         this.h264Crf = h264Crf;
@@ -936,13 +937,13 @@ public class EncodingOptions {
      * @return h265Crf
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_H265_CRF)
+    @JsonProperty(value = JSON_PROPERTY_H265_CRF, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getH265Crf() {
         return h265Crf;
     }
 
-    @JsonProperty(JSON_PROPERTY_H265_CRF)
+    @JsonProperty(value = JSON_PROPERTY_H265_CRF, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setH265Crf(@org.eclipse.jdt.annotation.NonNull Integer h265Crf) {
         this.h265Crf = h265Crf;
@@ -959,13 +960,13 @@ public class EncodingOptions {
      * @return encoderPreset
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ENCODER_PRESET)
+    @JsonProperty(value = JSON_PROPERTY_ENCODER_PRESET, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public EncoderPreset getEncoderPreset() {
         return encoderPreset;
     }
 
-    @JsonProperty(JSON_PROPERTY_ENCODER_PRESET)
+    @JsonProperty(value = JSON_PROPERTY_ENCODER_PRESET, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setEncoderPreset(@org.eclipse.jdt.annotation.NonNull EncoderPreset encoderPreset) {
         this.encoderPreset = encoderPreset;
@@ -982,13 +983,13 @@ public class EncodingOptions {
      * @return deinterlaceDoubleRate
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_DEINTERLACE_DOUBLE_RATE)
+    @JsonProperty(value = JSON_PROPERTY_DEINTERLACE_DOUBLE_RATE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getDeinterlaceDoubleRate() {
         return deinterlaceDoubleRate;
     }
 
-    @JsonProperty(JSON_PROPERTY_DEINTERLACE_DOUBLE_RATE)
+    @JsonProperty(value = JSON_PROPERTY_DEINTERLACE_DOUBLE_RATE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setDeinterlaceDoubleRate(@org.eclipse.jdt.annotation.NonNull Boolean deinterlaceDoubleRate) {
         this.deinterlaceDoubleRate = deinterlaceDoubleRate;
@@ -1005,13 +1006,13 @@ public class EncodingOptions {
      * @return deinterlaceMethod
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_DEINTERLACE_METHOD)
+    @JsonProperty(value = JSON_PROPERTY_DEINTERLACE_METHOD, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public DeinterlaceMethod getDeinterlaceMethod() {
         return deinterlaceMethod;
     }
 
-    @JsonProperty(JSON_PROPERTY_DEINTERLACE_METHOD)
+    @JsonProperty(value = JSON_PROPERTY_DEINTERLACE_METHOD, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setDeinterlaceMethod(@org.eclipse.jdt.annotation.NonNull DeinterlaceMethod deinterlaceMethod) {
         this.deinterlaceMethod = deinterlaceMethod;
@@ -1029,13 +1030,13 @@ public class EncodingOptions {
      * @return enableDecodingColorDepth10Hevc
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ENABLE_DECODING_COLOR_DEPTH10_HEVC)
+    @JsonProperty(value = JSON_PROPERTY_ENABLE_DECODING_COLOR_DEPTH10_HEVC, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getEnableDecodingColorDepth10Hevc() {
         return enableDecodingColorDepth10Hevc;
     }
 
-    @JsonProperty(JSON_PROPERTY_ENABLE_DECODING_COLOR_DEPTH10_HEVC)
+    @JsonProperty(value = JSON_PROPERTY_ENABLE_DECODING_COLOR_DEPTH10_HEVC, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setEnableDecodingColorDepth10Hevc(
             @org.eclipse.jdt.annotation.NonNull Boolean enableDecodingColorDepth10Hevc) {
@@ -1054,13 +1055,13 @@ public class EncodingOptions {
      * @return enableDecodingColorDepth10Vp9
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ENABLE_DECODING_COLOR_DEPTH10_VP9)
+    @JsonProperty(value = JSON_PROPERTY_ENABLE_DECODING_COLOR_DEPTH10_VP9, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getEnableDecodingColorDepth10Vp9() {
         return enableDecodingColorDepth10Vp9;
     }
 
-    @JsonProperty(JSON_PROPERTY_ENABLE_DECODING_COLOR_DEPTH10_VP9)
+    @JsonProperty(value = JSON_PROPERTY_ENABLE_DECODING_COLOR_DEPTH10_VP9, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setEnableDecodingColorDepth10Vp9(
             @org.eclipse.jdt.annotation.NonNull Boolean enableDecodingColorDepth10Vp9) {
@@ -1079,13 +1080,13 @@ public class EncodingOptions {
      * @return enableDecodingColorDepth10HevcRext
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ENABLE_DECODING_COLOR_DEPTH10_HEVC_REXT)
+    @JsonProperty(value = JSON_PROPERTY_ENABLE_DECODING_COLOR_DEPTH10_HEVC_REXT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getEnableDecodingColorDepth10HevcRext() {
         return enableDecodingColorDepth10HevcRext;
     }
 
-    @JsonProperty(JSON_PROPERTY_ENABLE_DECODING_COLOR_DEPTH10_HEVC_REXT)
+    @JsonProperty(value = JSON_PROPERTY_ENABLE_DECODING_COLOR_DEPTH10_HEVC_REXT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setEnableDecodingColorDepth10HevcRext(
             @org.eclipse.jdt.annotation.NonNull Boolean enableDecodingColorDepth10HevcRext) {
@@ -1104,13 +1105,13 @@ public class EncodingOptions {
      * @return enableDecodingColorDepth12HevcRext
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ENABLE_DECODING_COLOR_DEPTH12_HEVC_REXT)
+    @JsonProperty(value = JSON_PROPERTY_ENABLE_DECODING_COLOR_DEPTH12_HEVC_REXT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getEnableDecodingColorDepth12HevcRext() {
         return enableDecodingColorDepth12HevcRext;
     }
 
-    @JsonProperty(JSON_PROPERTY_ENABLE_DECODING_COLOR_DEPTH12_HEVC_REXT)
+    @JsonProperty(value = JSON_PROPERTY_ENABLE_DECODING_COLOR_DEPTH12_HEVC_REXT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setEnableDecodingColorDepth12HevcRext(
             @org.eclipse.jdt.annotation.NonNull Boolean enableDecodingColorDepth12HevcRext) {
@@ -1129,13 +1130,13 @@ public class EncodingOptions {
      * @return enableEnhancedNvdecDecoder
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ENABLE_ENHANCED_NVDEC_DECODER)
+    @JsonProperty(value = JSON_PROPERTY_ENABLE_ENHANCED_NVDEC_DECODER, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getEnableEnhancedNvdecDecoder() {
         return enableEnhancedNvdecDecoder;
     }
 
-    @JsonProperty(JSON_PROPERTY_ENABLE_ENHANCED_NVDEC_DECODER)
+    @JsonProperty(value = JSON_PROPERTY_ENABLE_ENHANCED_NVDEC_DECODER, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setEnableEnhancedNvdecDecoder(@org.eclipse.jdt.annotation.NonNull Boolean enableEnhancedNvdecDecoder) {
         this.enableEnhancedNvdecDecoder = enableEnhancedNvdecDecoder;
@@ -1153,13 +1154,13 @@ public class EncodingOptions {
      * @return preferSystemNativeHwDecoder
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_PREFER_SYSTEM_NATIVE_HW_DECODER)
+    @JsonProperty(value = JSON_PROPERTY_PREFER_SYSTEM_NATIVE_HW_DECODER, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getPreferSystemNativeHwDecoder() {
         return preferSystemNativeHwDecoder;
     }
 
-    @JsonProperty(JSON_PROPERTY_PREFER_SYSTEM_NATIVE_HW_DECODER)
+    @JsonProperty(value = JSON_PROPERTY_PREFER_SYSTEM_NATIVE_HW_DECODER, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setPreferSystemNativeHwDecoder(
             @org.eclipse.jdt.annotation.NonNull Boolean preferSystemNativeHwDecoder) {
@@ -1178,13 +1179,13 @@ public class EncodingOptions {
      * @return enableIntelLowPowerH264HwEncoder
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ENABLE_INTEL_LOW_POWER_H264_HW_ENCODER)
+    @JsonProperty(value = JSON_PROPERTY_ENABLE_INTEL_LOW_POWER_H264_HW_ENCODER, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getEnableIntelLowPowerH264HwEncoder() {
         return enableIntelLowPowerH264HwEncoder;
     }
 
-    @JsonProperty(JSON_PROPERTY_ENABLE_INTEL_LOW_POWER_H264_HW_ENCODER)
+    @JsonProperty(value = JSON_PROPERTY_ENABLE_INTEL_LOW_POWER_H264_HW_ENCODER, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setEnableIntelLowPowerH264HwEncoder(
             @org.eclipse.jdt.annotation.NonNull Boolean enableIntelLowPowerH264HwEncoder) {
@@ -1203,13 +1204,13 @@ public class EncodingOptions {
      * @return enableIntelLowPowerHevcHwEncoder
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ENABLE_INTEL_LOW_POWER_HEVC_HW_ENCODER)
+    @JsonProperty(value = JSON_PROPERTY_ENABLE_INTEL_LOW_POWER_HEVC_HW_ENCODER, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getEnableIntelLowPowerHevcHwEncoder() {
         return enableIntelLowPowerHevcHwEncoder;
     }
 
-    @JsonProperty(JSON_PROPERTY_ENABLE_INTEL_LOW_POWER_HEVC_HW_ENCODER)
+    @JsonProperty(value = JSON_PROPERTY_ENABLE_INTEL_LOW_POWER_HEVC_HW_ENCODER, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setEnableIntelLowPowerHevcHwEncoder(
             @org.eclipse.jdt.annotation.NonNull Boolean enableIntelLowPowerHevcHwEncoder) {
@@ -1227,13 +1228,13 @@ public class EncodingOptions {
      * @return enableHardwareEncoding
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ENABLE_HARDWARE_ENCODING)
+    @JsonProperty(value = JSON_PROPERTY_ENABLE_HARDWARE_ENCODING, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getEnableHardwareEncoding() {
         return enableHardwareEncoding;
     }
 
-    @JsonProperty(JSON_PROPERTY_ENABLE_HARDWARE_ENCODING)
+    @JsonProperty(value = JSON_PROPERTY_ENABLE_HARDWARE_ENCODING, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setEnableHardwareEncoding(@org.eclipse.jdt.annotation.NonNull Boolean enableHardwareEncoding) {
         this.enableHardwareEncoding = enableHardwareEncoding;
@@ -1250,13 +1251,13 @@ public class EncodingOptions {
      * @return allowHevcEncoding
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ALLOW_HEVC_ENCODING)
+    @JsonProperty(value = JSON_PROPERTY_ALLOW_HEVC_ENCODING, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getAllowHevcEncoding() {
         return allowHevcEncoding;
     }
 
-    @JsonProperty(JSON_PROPERTY_ALLOW_HEVC_ENCODING)
+    @JsonProperty(value = JSON_PROPERTY_ALLOW_HEVC_ENCODING, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setAllowHevcEncoding(@org.eclipse.jdt.annotation.NonNull Boolean allowHevcEncoding) {
         this.allowHevcEncoding = allowHevcEncoding;
@@ -1273,13 +1274,13 @@ public class EncodingOptions {
      * @return allowAv1Encoding
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ALLOW_AV1_ENCODING)
+    @JsonProperty(value = JSON_PROPERTY_ALLOW_AV1_ENCODING, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getAllowAv1Encoding() {
         return allowAv1Encoding;
     }
 
-    @JsonProperty(JSON_PROPERTY_ALLOW_AV1_ENCODING)
+    @JsonProperty(value = JSON_PROPERTY_ALLOW_AV1_ENCODING, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setAllowAv1Encoding(@org.eclipse.jdt.annotation.NonNull Boolean allowAv1Encoding) {
         this.allowAv1Encoding = allowAv1Encoding;
@@ -1297,13 +1298,13 @@ public class EncodingOptions {
      * @return enableSubtitleExtraction
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ENABLE_SUBTITLE_EXTRACTION)
+    @JsonProperty(value = JSON_PROPERTY_ENABLE_SUBTITLE_EXTRACTION, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getEnableSubtitleExtraction() {
         return enableSubtitleExtraction;
     }
 
-    @JsonProperty(JSON_PROPERTY_ENABLE_SUBTITLE_EXTRACTION)
+    @JsonProperty(value = JSON_PROPERTY_ENABLE_SUBTITLE_EXTRACTION, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setEnableSubtitleExtraction(@org.eclipse.jdt.annotation.NonNull Boolean enableSubtitleExtraction) {
         this.enableSubtitleExtraction = enableSubtitleExtraction;
@@ -1329,13 +1330,13 @@ public class EncodingOptions {
      * @return hardwareDecodingCodecs
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_HARDWARE_DECODING_CODECS)
+    @JsonProperty(value = JSON_PROPERTY_HARDWARE_DECODING_CODECS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<String> getHardwareDecodingCodecs() {
         return hardwareDecodingCodecs;
     }
 
-    @JsonProperty(JSON_PROPERTY_HARDWARE_DECODING_CODECS)
+    @JsonProperty(value = JSON_PROPERTY_HARDWARE_DECODING_CODECS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setHardwareDecodingCodecs(@org.eclipse.jdt.annotation.NonNull List<String> hardwareDecodingCodecs) {
         this.hardwareDecodingCodecs = hardwareDecodingCodecs;
@@ -1363,13 +1364,13 @@ public class EncodingOptions {
      * @return allowOnDemandMetadataBasedKeyframeExtractionForExtensions
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ALLOW_ON_DEMAND_METADATA_BASED_KEYFRAME_EXTRACTION_FOR_EXTENSIONS)
+    @JsonProperty(value = JSON_PROPERTY_ALLOW_ON_DEMAND_METADATA_BASED_KEYFRAME_EXTRACTION_FOR_EXTENSIONS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<String> getAllowOnDemandMetadataBasedKeyframeExtractionForExtensions() {
         return allowOnDemandMetadataBasedKeyframeExtractionForExtensions;
     }
 
-    @JsonProperty(JSON_PROPERTY_ALLOW_ON_DEMAND_METADATA_BASED_KEYFRAME_EXTRACTION_FOR_EXTENSIONS)
+    @JsonProperty(value = JSON_PROPERTY_ALLOW_ON_DEMAND_METADATA_BASED_KEYFRAME_EXTRACTION_FOR_EXTENSIONS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setAllowOnDemandMetadataBasedKeyframeExtractionForExtensions(
             @org.eclipse.jdt.annotation.NonNull List<String> allowOnDemandMetadataBasedKeyframeExtractionForExtensions) {
@@ -1567,279 +1568,280 @@ public class EncodingOptions {
 
         // add `EncodingThreadCount` to the URL query string
         if (getEncodingThreadCount() != null) {
-            joiner.add(String.format("%sEncodingThreadCount%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sEncodingThreadCount%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getEncodingThreadCount()))));
         }
 
         // add `TranscodingTempPath` to the URL query string
         if (getTranscodingTempPath() != null) {
-            joiner.add(String.format("%sTranscodingTempPath%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sTranscodingTempPath%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getTranscodingTempPath()))));
         }
 
         // add `FallbackFontPath` to the URL query string
         if (getFallbackFontPath() != null) {
-            joiner.add(String.format("%sFallbackFontPath%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sFallbackFontPath%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getFallbackFontPath()))));
         }
 
         // add `EnableFallbackFont` to the URL query string
         if (getEnableFallbackFont() != null) {
-            joiner.add(String.format("%sEnableFallbackFont%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sEnableFallbackFont%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getEnableFallbackFont()))));
         }
 
         // add `EnableAudioVbr` to the URL query string
         if (getEnableAudioVbr() != null) {
-            joiner.add(String.format("%sEnableAudioVbr%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sEnableAudioVbr%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getEnableAudioVbr()))));
         }
 
         // add `DownMixAudioBoost` to the URL query string
         if (getDownMixAudioBoost() != null) {
-            joiner.add(String.format("%sDownMixAudioBoost%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sDownMixAudioBoost%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getDownMixAudioBoost()))));
         }
 
         // add `DownMixStereoAlgorithm` to the URL query string
         if (getDownMixStereoAlgorithm() != null) {
-            joiner.add(String.format("%sDownMixStereoAlgorithm%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sDownMixStereoAlgorithm%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getDownMixStereoAlgorithm()))));
         }
 
         // add `MaxMuxingQueueSize` to the URL query string
         if (getMaxMuxingQueueSize() != null) {
-            joiner.add(String.format("%sMaxMuxingQueueSize%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sMaxMuxingQueueSize%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getMaxMuxingQueueSize()))));
         }
 
         // add `EnableThrottling` to the URL query string
         if (getEnableThrottling() != null) {
-            joiner.add(String.format("%sEnableThrottling%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sEnableThrottling%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getEnableThrottling()))));
         }
 
         // add `ThrottleDelaySeconds` to the URL query string
         if (getThrottleDelaySeconds() != null) {
-            joiner.add(String.format("%sThrottleDelaySeconds%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sThrottleDelaySeconds%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getThrottleDelaySeconds()))));
         }
 
         // add `EnableSegmentDeletion` to the URL query string
         if (getEnableSegmentDeletion() != null) {
-            joiner.add(String.format("%sEnableSegmentDeletion%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sEnableSegmentDeletion%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getEnableSegmentDeletion()))));
         }
 
         // add `SegmentKeepSeconds` to the URL query string
         if (getSegmentKeepSeconds() != null) {
-            joiner.add(String.format("%sSegmentKeepSeconds%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sSegmentKeepSeconds%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getSegmentKeepSeconds()))));
         }
 
         // add `HardwareAccelerationType` to the URL query string
         if (getHardwareAccelerationType() != null) {
-            joiner.add(String.format("%sHardwareAccelerationType%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sHardwareAccelerationType%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getHardwareAccelerationType()))));
         }
 
         // add `EncoderAppPath` to the URL query string
         if (getEncoderAppPath() != null) {
-            joiner.add(String.format("%sEncoderAppPath%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sEncoderAppPath%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getEncoderAppPath()))));
         }
 
         // add `EncoderAppPathDisplay` to the URL query string
         if (getEncoderAppPathDisplay() != null) {
-            joiner.add(String.format("%sEncoderAppPathDisplay%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sEncoderAppPathDisplay%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getEncoderAppPathDisplay()))));
         }
 
         // add `VaapiDevice` to the URL query string
         if (getVaapiDevice() != null) {
-            joiner.add(String.format("%sVaapiDevice%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sVaapiDevice%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getVaapiDevice()))));
         }
 
         // add `QsvDevice` to the URL query string
         if (getQsvDevice() != null) {
-            joiner.add(String.format("%sQsvDevice%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sQsvDevice%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getQsvDevice()))));
         }
 
         // add `EnableTonemapping` to the URL query string
         if (getEnableTonemapping() != null) {
-            joiner.add(String.format("%sEnableTonemapping%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sEnableTonemapping%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getEnableTonemapping()))));
         }
 
         // add `EnableVppTonemapping` to the URL query string
         if (getEnableVppTonemapping() != null) {
-            joiner.add(String.format("%sEnableVppTonemapping%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sEnableVppTonemapping%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getEnableVppTonemapping()))));
         }
 
         // add `EnableVideoToolboxTonemapping` to the URL query string
         if (getEnableVideoToolboxTonemapping() != null) {
-            joiner.add(String.format("%sEnableVideoToolboxTonemapping%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sEnableVideoToolboxTonemapping%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getEnableVideoToolboxTonemapping()))));
         }
 
         // add `TonemappingAlgorithm` to the URL query string
         if (getTonemappingAlgorithm() != null) {
-            joiner.add(String.format("%sTonemappingAlgorithm%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sTonemappingAlgorithm%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getTonemappingAlgorithm()))));
         }
 
         // add `TonemappingMode` to the URL query string
         if (getTonemappingMode() != null) {
-            joiner.add(String.format("%sTonemappingMode%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sTonemappingMode%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getTonemappingMode()))));
         }
 
         // add `TonemappingRange` to the URL query string
         if (getTonemappingRange() != null) {
-            joiner.add(String.format("%sTonemappingRange%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sTonemappingRange%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getTonemappingRange()))));
         }
 
         // add `TonemappingDesat` to the URL query string
         if (getTonemappingDesat() != null) {
-            joiner.add(String.format("%sTonemappingDesat%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sTonemappingDesat%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getTonemappingDesat()))));
         }
 
         // add `TonemappingPeak` to the URL query string
         if (getTonemappingPeak() != null) {
-            joiner.add(String.format("%sTonemappingPeak%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sTonemappingPeak%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getTonemappingPeak()))));
         }
 
         // add `TonemappingParam` to the URL query string
         if (getTonemappingParam() != null) {
-            joiner.add(String.format("%sTonemappingParam%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sTonemappingParam%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getTonemappingParam()))));
         }
 
         // add `VppTonemappingBrightness` to the URL query string
         if (getVppTonemappingBrightness() != null) {
-            joiner.add(String.format("%sVppTonemappingBrightness%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sVppTonemappingBrightness%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getVppTonemappingBrightness()))));
         }
 
         // add `VppTonemappingContrast` to the URL query string
         if (getVppTonemappingContrast() != null) {
-            joiner.add(String.format("%sVppTonemappingContrast%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sVppTonemappingContrast%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getVppTonemappingContrast()))));
         }
 
         // add `H264Crf` to the URL query string
         if (getH264Crf() != null) {
-            joiner.add(String.format("%sH264Crf%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sH264Crf%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getH264Crf()))));
         }
 
         // add `H265Crf` to the URL query string
         if (getH265Crf() != null) {
-            joiner.add(String.format("%sH265Crf%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sH265Crf%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getH265Crf()))));
         }
 
         // add `EncoderPreset` to the URL query string
         if (getEncoderPreset() != null) {
-            joiner.add(String.format("%sEncoderPreset%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sEncoderPreset%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getEncoderPreset()))));
         }
 
         // add `DeinterlaceDoubleRate` to the URL query string
         if (getDeinterlaceDoubleRate() != null) {
-            joiner.add(String.format("%sDeinterlaceDoubleRate%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sDeinterlaceDoubleRate%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getDeinterlaceDoubleRate()))));
         }
 
         // add `DeinterlaceMethod` to the URL query string
         if (getDeinterlaceMethod() != null) {
-            joiner.add(String.format("%sDeinterlaceMethod%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sDeinterlaceMethod%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getDeinterlaceMethod()))));
         }
 
         // add `EnableDecodingColorDepth10Hevc` to the URL query string
         if (getEnableDecodingColorDepth10Hevc() != null) {
-            joiner.add(String.format("%sEnableDecodingColorDepth10Hevc%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sEnableDecodingColorDepth10Hevc%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getEnableDecodingColorDepth10Hevc()))));
         }
 
         // add `EnableDecodingColorDepth10Vp9` to the URL query string
         if (getEnableDecodingColorDepth10Vp9() != null) {
-            joiner.add(String.format("%sEnableDecodingColorDepth10Vp9%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sEnableDecodingColorDepth10Vp9%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getEnableDecodingColorDepth10Vp9()))));
         }
 
         // add `EnableDecodingColorDepth10HevcRext` to the URL query string
         if (getEnableDecodingColorDepth10HevcRext() != null) {
-            joiner.add(String.format("%sEnableDecodingColorDepth10HevcRext%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sEnableDecodingColorDepth10HevcRext%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getEnableDecodingColorDepth10HevcRext()))));
         }
 
         // add `EnableDecodingColorDepth12HevcRext` to the URL query string
         if (getEnableDecodingColorDepth12HevcRext() != null) {
-            joiner.add(String.format("%sEnableDecodingColorDepth12HevcRext%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sEnableDecodingColorDepth12HevcRext%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getEnableDecodingColorDepth12HevcRext()))));
         }
 
         // add `EnableEnhancedNvdecDecoder` to the URL query string
         if (getEnableEnhancedNvdecDecoder() != null) {
-            joiner.add(String.format("%sEnableEnhancedNvdecDecoder%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sEnableEnhancedNvdecDecoder%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getEnableEnhancedNvdecDecoder()))));
         }
 
         // add `PreferSystemNativeHwDecoder` to the URL query string
         if (getPreferSystemNativeHwDecoder() != null) {
-            joiner.add(String.format("%sPreferSystemNativeHwDecoder%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sPreferSystemNativeHwDecoder%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getPreferSystemNativeHwDecoder()))));
         }
 
         // add `EnableIntelLowPowerH264HwEncoder` to the URL query string
         if (getEnableIntelLowPowerH264HwEncoder() != null) {
-            joiner.add(String.format("%sEnableIntelLowPowerH264HwEncoder%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sEnableIntelLowPowerH264HwEncoder%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getEnableIntelLowPowerH264HwEncoder()))));
         }
 
         // add `EnableIntelLowPowerHevcHwEncoder` to the URL query string
         if (getEnableIntelLowPowerHevcHwEncoder() != null) {
-            joiner.add(String.format("%sEnableIntelLowPowerHevcHwEncoder%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sEnableIntelLowPowerHevcHwEncoder%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getEnableIntelLowPowerHevcHwEncoder()))));
         }
 
         // add `EnableHardwareEncoding` to the URL query string
         if (getEnableHardwareEncoding() != null) {
-            joiner.add(String.format("%sEnableHardwareEncoding%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sEnableHardwareEncoding%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getEnableHardwareEncoding()))));
         }
 
         // add `AllowHevcEncoding` to the URL query string
         if (getAllowHevcEncoding() != null) {
-            joiner.add(String.format("%sAllowHevcEncoding%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sAllowHevcEncoding%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getAllowHevcEncoding()))));
         }
 
         // add `AllowAv1Encoding` to the URL query string
         if (getAllowAv1Encoding() != null) {
-            joiner.add(String.format("%sAllowAv1Encoding%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sAllowAv1Encoding%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getAllowAv1Encoding()))));
         }
 
         // add `EnableSubtitleExtraction` to the URL query string
         if (getEnableSubtitleExtraction() != null) {
-            joiner.add(String.format("%sEnableSubtitleExtraction%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sEnableSubtitleExtraction%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getEnableSubtitleExtraction()))));
         }
 
         // add `HardwareDecodingCodecs` to the URL query string
         if (getHardwareDecodingCodecs() != null) {
             for (int i = 0; i < getHardwareDecodingCodecs().size(); i++) {
-                joiner.add(String.format("%sHardwareDecodingCodecs%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+                joiner.add(String.format(Locale.ROOT, "%sHardwareDecodingCodecs%s%s=%s", prefix, suffix,
+                        "".equals(suffix) ? ""
+                                : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
                         ApiClient.urlEncode(ApiClient.valueToString(getHardwareDecodingCodecs().get(i)))));
             }
         }
@@ -1847,8 +1849,10 @@ public class EncodingOptions {
         // add `AllowOnDemandMetadataBasedKeyframeExtractionForExtensions` to the URL query string
         if (getAllowOnDemandMetadataBasedKeyframeExtractionForExtensions() != null) {
             for (int i = 0; i < getAllowOnDemandMetadataBasedKeyframeExtractionForExtensions().size(); i++) {
-                joiner.add(String.format("%sAllowOnDemandMetadataBasedKeyframeExtractionForExtensions%s%s=%s", prefix,
-                        suffix, "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+                joiner.add(String.format(Locale.ROOT,
+                        "%sAllowOnDemandMetadataBasedKeyframeExtractionForExtensions%s%s=%s", prefix, suffix,
+                        "".equals(suffix) ? ""
+                                : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
                         ApiClient.urlEncode(ApiClient.valueToString(
                                 getAllowOnDemandMetadataBasedKeyframeExtractionForExtensions().get(i)))));
             }

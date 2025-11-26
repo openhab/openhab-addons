@@ -16,6 +16,7 @@ package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
 import java.util.UUID;
@@ -171,13 +172,13 @@ public class TimerInfoDto {
      * @return id
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ID)
+    @JsonProperty(value = JSON_PROPERTY_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getId() {
         return id;
     }
 
-    @JsonProperty(JSON_PROPERTY_ID)
+    @JsonProperty(value = JSON_PROPERTY_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setId(@org.eclipse.jdt.annotation.NonNull String id) {
         this.id = id;
@@ -194,13 +195,13 @@ public class TimerInfoDto {
      * @return type
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_TYPE)
+    @JsonProperty(value = JSON_PROPERTY_TYPE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getType() {
         return type;
     }
 
-    @JsonProperty(JSON_PROPERTY_TYPE)
+    @JsonProperty(value = JSON_PROPERTY_TYPE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setType(@org.eclipse.jdt.annotation.NonNull String type) {
         this.type = type;
@@ -217,13 +218,13 @@ public class TimerInfoDto {
      * @return serverId
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_SERVER_ID)
+    @JsonProperty(value = JSON_PROPERTY_SERVER_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getServerId() {
         return serverId;
     }
 
-    @JsonProperty(JSON_PROPERTY_SERVER_ID)
+    @JsonProperty(value = JSON_PROPERTY_SERVER_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setServerId(@org.eclipse.jdt.annotation.NonNull String serverId) {
         this.serverId = serverId;
@@ -240,13 +241,13 @@ public class TimerInfoDto {
      * @return externalId
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_EXTERNAL_ID)
+    @JsonProperty(value = JSON_PROPERTY_EXTERNAL_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getExternalId() {
         return externalId;
     }
 
-    @JsonProperty(JSON_PROPERTY_EXTERNAL_ID)
+    @JsonProperty(value = JSON_PROPERTY_EXTERNAL_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setExternalId(@org.eclipse.jdt.annotation.NonNull String externalId) {
         this.externalId = externalId;
@@ -263,13 +264,13 @@ public class TimerInfoDto {
      * @return channelId
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_CHANNEL_ID)
+    @JsonProperty(value = JSON_PROPERTY_CHANNEL_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public UUID getChannelId() {
         return channelId;
     }
 
-    @JsonProperty(JSON_PROPERTY_CHANNEL_ID)
+    @JsonProperty(value = JSON_PROPERTY_CHANNEL_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setChannelId(@org.eclipse.jdt.annotation.NonNull UUID channelId) {
         this.channelId = channelId;
@@ -286,13 +287,13 @@ public class TimerInfoDto {
      * @return externalChannelId
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_EXTERNAL_CHANNEL_ID)
+    @JsonProperty(value = JSON_PROPERTY_EXTERNAL_CHANNEL_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getExternalChannelId() {
         return externalChannelId;
     }
 
-    @JsonProperty(JSON_PROPERTY_EXTERNAL_CHANNEL_ID)
+    @JsonProperty(value = JSON_PROPERTY_EXTERNAL_CHANNEL_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setExternalChannelId(@org.eclipse.jdt.annotation.NonNull String externalChannelId) {
         this.externalChannelId = externalChannelId;
@@ -309,13 +310,13 @@ public class TimerInfoDto {
      * @return channelName
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_CHANNEL_NAME)
+    @JsonProperty(value = JSON_PROPERTY_CHANNEL_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getChannelName() {
         return channelName;
     }
 
-    @JsonProperty(JSON_PROPERTY_CHANNEL_NAME)
+    @JsonProperty(value = JSON_PROPERTY_CHANNEL_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setChannelName(@org.eclipse.jdt.annotation.NonNull String channelName) {
         this.channelName = channelName;
@@ -332,13 +333,13 @@ public class TimerInfoDto {
      * @return channelPrimaryImageTag
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_CHANNEL_PRIMARY_IMAGE_TAG)
+    @JsonProperty(value = JSON_PROPERTY_CHANNEL_PRIMARY_IMAGE_TAG, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getChannelPrimaryImageTag() {
         return channelPrimaryImageTag;
     }
 
-    @JsonProperty(JSON_PROPERTY_CHANNEL_PRIMARY_IMAGE_TAG)
+    @JsonProperty(value = JSON_PROPERTY_CHANNEL_PRIMARY_IMAGE_TAG, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setChannelPrimaryImageTag(@org.eclipse.jdt.annotation.NonNull String channelPrimaryImageTag) {
         this.channelPrimaryImageTag = channelPrimaryImageTag;
@@ -355,13 +356,13 @@ public class TimerInfoDto {
      * @return programId
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_PROGRAM_ID)
+    @JsonProperty(value = JSON_PROPERTY_PROGRAM_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getProgramId() {
         return programId;
     }
 
-    @JsonProperty(JSON_PROPERTY_PROGRAM_ID)
+    @JsonProperty(value = JSON_PROPERTY_PROGRAM_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setProgramId(@org.eclipse.jdt.annotation.NonNull String programId) {
         this.programId = programId;
@@ -378,13 +379,13 @@ public class TimerInfoDto {
      * @return externalProgramId
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_EXTERNAL_PROGRAM_ID)
+    @JsonProperty(value = JSON_PROPERTY_EXTERNAL_PROGRAM_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getExternalProgramId() {
         return externalProgramId;
     }
 
-    @JsonProperty(JSON_PROPERTY_EXTERNAL_PROGRAM_ID)
+    @JsonProperty(value = JSON_PROPERTY_EXTERNAL_PROGRAM_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setExternalProgramId(@org.eclipse.jdt.annotation.NonNull String externalProgramId) {
         this.externalProgramId = externalProgramId;
@@ -401,13 +402,13 @@ public class TimerInfoDto {
      * @return name
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_NAME)
+    @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getName() {
         return name;
     }
 
-    @JsonProperty(JSON_PROPERTY_NAME)
+    @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setName(@org.eclipse.jdt.annotation.NonNull String name) {
         this.name = name;
@@ -424,13 +425,13 @@ public class TimerInfoDto {
      * @return overview
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_OVERVIEW)
+    @JsonProperty(value = JSON_PROPERTY_OVERVIEW, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getOverview() {
         return overview;
     }
 
-    @JsonProperty(JSON_PROPERTY_OVERVIEW)
+    @JsonProperty(value = JSON_PROPERTY_OVERVIEW, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setOverview(@org.eclipse.jdt.annotation.NonNull String overview) {
         this.overview = overview;
@@ -447,13 +448,13 @@ public class TimerInfoDto {
      * @return startDate
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_START_DATE)
+    @JsonProperty(value = JSON_PROPERTY_START_DATE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public OffsetDateTime getStartDate() {
         return startDate;
     }
 
-    @JsonProperty(JSON_PROPERTY_START_DATE)
+    @JsonProperty(value = JSON_PROPERTY_START_DATE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setStartDate(@org.eclipse.jdt.annotation.NonNull OffsetDateTime startDate) {
         this.startDate = startDate;
@@ -470,13 +471,13 @@ public class TimerInfoDto {
      * @return endDate
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_END_DATE)
+    @JsonProperty(value = JSON_PROPERTY_END_DATE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public OffsetDateTime getEndDate() {
         return endDate;
     }
 
-    @JsonProperty(JSON_PROPERTY_END_DATE)
+    @JsonProperty(value = JSON_PROPERTY_END_DATE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setEndDate(@org.eclipse.jdt.annotation.NonNull OffsetDateTime endDate) {
         this.endDate = endDate;
@@ -493,13 +494,13 @@ public class TimerInfoDto {
      * @return serviceName
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_SERVICE_NAME)
+    @JsonProperty(value = JSON_PROPERTY_SERVICE_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getServiceName() {
         return serviceName;
     }
 
-    @JsonProperty(JSON_PROPERTY_SERVICE_NAME)
+    @JsonProperty(value = JSON_PROPERTY_SERVICE_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setServiceName(@org.eclipse.jdt.annotation.NonNull String serviceName) {
         this.serviceName = serviceName;
@@ -516,13 +517,13 @@ public class TimerInfoDto {
      * @return priority
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_PRIORITY)
+    @JsonProperty(value = JSON_PROPERTY_PRIORITY, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getPriority() {
         return priority;
     }
 
-    @JsonProperty(JSON_PROPERTY_PRIORITY)
+    @JsonProperty(value = JSON_PROPERTY_PRIORITY, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setPriority(@org.eclipse.jdt.annotation.NonNull Integer priority) {
         this.priority = priority;
@@ -539,13 +540,13 @@ public class TimerInfoDto {
      * @return prePaddingSeconds
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_PRE_PADDING_SECONDS)
+    @JsonProperty(value = JSON_PROPERTY_PRE_PADDING_SECONDS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getPrePaddingSeconds() {
         return prePaddingSeconds;
     }
 
-    @JsonProperty(JSON_PROPERTY_PRE_PADDING_SECONDS)
+    @JsonProperty(value = JSON_PROPERTY_PRE_PADDING_SECONDS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setPrePaddingSeconds(@org.eclipse.jdt.annotation.NonNull Integer prePaddingSeconds) {
         this.prePaddingSeconds = prePaddingSeconds;
@@ -562,13 +563,13 @@ public class TimerInfoDto {
      * @return postPaddingSeconds
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_POST_PADDING_SECONDS)
+    @JsonProperty(value = JSON_PROPERTY_POST_PADDING_SECONDS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getPostPaddingSeconds() {
         return postPaddingSeconds;
     }
 
-    @JsonProperty(JSON_PROPERTY_POST_PADDING_SECONDS)
+    @JsonProperty(value = JSON_PROPERTY_POST_PADDING_SECONDS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setPostPaddingSeconds(@org.eclipse.jdt.annotation.NonNull Integer postPaddingSeconds) {
         this.postPaddingSeconds = postPaddingSeconds;
@@ -585,13 +586,13 @@ public class TimerInfoDto {
      * @return isPrePaddingRequired
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_IS_PRE_PADDING_REQUIRED)
+    @JsonProperty(value = JSON_PROPERTY_IS_PRE_PADDING_REQUIRED, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getIsPrePaddingRequired() {
         return isPrePaddingRequired;
     }
 
-    @JsonProperty(JSON_PROPERTY_IS_PRE_PADDING_REQUIRED)
+    @JsonProperty(value = JSON_PROPERTY_IS_PRE_PADDING_REQUIRED, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setIsPrePaddingRequired(@org.eclipse.jdt.annotation.NonNull Boolean isPrePaddingRequired) {
         this.isPrePaddingRequired = isPrePaddingRequired;
@@ -608,13 +609,13 @@ public class TimerInfoDto {
      * @return parentBackdropItemId
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_PARENT_BACKDROP_ITEM_ID)
+    @JsonProperty(value = JSON_PROPERTY_PARENT_BACKDROP_ITEM_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getParentBackdropItemId() {
         return parentBackdropItemId;
     }
 
-    @JsonProperty(JSON_PROPERTY_PARENT_BACKDROP_ITEM_ID)
+    @JsonProperty(value = JSON_PROPERTY_PARENT_BACKDROP_ITEM_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setParentBackdropItemId(@org.eclipse.jdt.annotation.NonNull String parentBackdropItemId) {
         this.parentBackdropItemId = parentBackdropItemId;
@@ -640,13 +641,13 @@ public class TimerInfoDto {
      * @return parentBackdropImageTags
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_PARENT_BACKDROP_IMAGE_TAGS)
+    @JsonProperty(value = JSON_PROPERTY_PARENT_BACKDROP_IMAGE_TAGS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<String> getParentBackdropImageTags() {
         return parentBackdropImageTags;
     }
 
-    @JsonProperty(JSON_PROPERTY_PARENT_BACKDROP_IMAGE_TAGS)
+    @JsonProperty(value = JSON_PROPERTY_PARENT_BACKDROP_IMAGE_TAGS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setParentBackdropImageTags(@org.eclipse.jdt.annotation.NonNull List<String> parentBackdropImageTags) {
         this.parentBackdropImageTags = parentBackdropImageTags;
@@ -663,13 +664,13 @@ public class TimerInfoDto {
      * @return isPostPaddingRequired
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_IS_POST_PADDING_REQUIRED)
+    @JsonProperty(value = JSON_PROPERTY_IS_POST_PADDING_REQUIRED, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getIsPostPaddingRequired() {
         return isPostPaddingRequired;
     }
 
-    @JsonProperty(JSON_PROPERTY_IS_POST_PADDING_REQUIRED)
+    @JsonProperty(value = JSON_PROPERTY_IS_POST_PADDING_REQUIRED, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setIsPostPaddingRequired(@org.eclipse.jdt.annotation.NonNull Boolean isPostPaddingRequired) {
         this.isPostPaddingRequired = isPostPaddingRequired;
@@ -686,13 +687,13 @@ public class TimerInfoDto {
      * @return keepUntil
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_KEEP_UNTIL)
+    @JsonProperty(value = JSON_PROPERTY_KEEP_UNTIL, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public KeepUntil getKeepUntil() {
         return keepUntil;
     }
 
-    @JsonProperty(JSON_PROPERTY_KEEP_UNTIL)
+    @JsonProperty(value = JSON_PROPERTY_KEEP_UNTIL, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setKeepUntil(@org.eclipse.jdt.annotation.NonNull KeepUntil keepUntil) {
         this.keepUntil = keepUntil;
@@ -709,13 +710,13 @@ public class TimerInfoDto {
      * @return status
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_STATUS)
+    @JsonProperty(value = JSON_PROPERTY_STATUS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public RecordingStatus getStatus() {
         return status;
     }
 
-    @JsonProperty(JSON_PROPERTY_STATUS)
+    @JsonProperty(value = JSON_PROPERTY_STATUS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setStatus(@org.eclipse.jdt.annotation.NonNull RecordingStatus status) {
         this.status = status;
@@ -732,13 +733,13 @@ public class TimerInfoDto {
      * @return seriesTimerId
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_SERIES_TIMER_ID)
+    @JsonProperty(value = JSON_PROPERTY_SERIES_TIMER_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getSeriesTimerId() {
         return seriesTimerId;
     }
 
-    @JsonProperty(JSON_PROPERTY_SERIES_TIMER_ID)
+    @JsonProperty(value = JSON_PROPERTY_SERIES_TIMER_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setSeriesTimerId(@org.eclipse.jdt.annotation.NonNull String seriesTimerId) {
         this.seriesTimerId = seriesTimerId;
@@ -755,13 +756,13 @@ public class TimerInfoDto {
      * @return externalSeriesTimerId
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_EXTERNAL_SERIES_TIMER_ID)
+    @JsonProperty(value = JSON_PROPERTY_EXTERNAL_SERIES_TIMER_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getExternalSeriesTimerId() {
         return externalSeriesTimerId;
     }
 
-    @JsonProperty(JSON_PROPERTY_EXTERNAL_SERIES_TIMER_ID)
+    @JsonProperty(value = JSON_PROPERTY_EXTERNAL_SERIES_TIMER_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setExternalSeriesTimerId(@org.eclipse.jdt.annotation.NonNull String externalSeriesTimerId) {
         this.externalSeriesTimerId = externalSeriesTimerId;
@@ -778,13 +779,13 @@ public class TimerInfoDto {
      * @return runTimeTicks
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_RUN_TIME_TICKS)
+    @JsonProperty(value = JSON_PROPERTY_RUN_TIME_TICKS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Long getRunTimeTicks() {
         return runTimeTicks;
     }
 
-    @JsonProperty(JSON_PROPERTY_RUN_TIME_TICKS)
+    @JsonProperty(value = JSON_PROPERTY_RUN_TIME_TICKS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setRunTimeTicks(@org.eclipse.jdt.annotation.NonNull Long runTimeTicks) {
         this.runTimeTicks = runTimeTicks;
@@ -801,13 +802,13 @@ public class TimerInfoDto {
      * @return programInfo
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_PROGRAM_INFO)
+    @JsonProperty(value = JSON_PROPERTY_PROGRAM_INFO, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public BaseItemDto getProgramInfo() {
         return programInfo;
     }
 
-    @JsonProperty(JSON_PROPERTY_PROGRAM_INFO)
+    @JsonProperty(value = JSON_PROPERTY_PROGRAM_INFO, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setProgramInfo(@org.eclipse.jdt.annotation.NonNull BaseItemDto programInfo) {
         this.programInfo = programInfo;
@@ -943,166 +944,167 @@ public class TimerInfoDto {
 
         // add `Id` to the URL query string
         if (getId() != null) {
-            joiner.add(
-                    String.format("%sId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
+            joiner.add(String.format(Locale.ROOT, "%sId%s=%s", prefix, suffix,
+                    ApiClient.urlEncode(ApiClient.valueToString(getId()))));
         }
 
         // add `Type` to the URL query string
         if (getType() != null) {
-            joiner.add(String.format("%sType%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sType%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getType()))));
         }
 
         // add `ServerId` to the URL query string
         if (getServerId() != null) {
-            joiner.add(String.format("%sServerId%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sServerId%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getServerId()))));
         }
 
         // add `ExternalId` to the URL query string
         if (getExternalId() != null) {
-            joiner.add(String.format("%sExternalId%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sExternalId%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getExternalId()))));
         }
 
         // add `ChannelId` to the URL query string
         if (getChannelId() != null) {
-            joiner.add(String.format("%sChannelId%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sChannelId%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getChannelId()))));
         }
 
         // add `ExternalChannelId` to the URL query string
         if (getExternalChannelId() != null) {
-            joiner.add(String.format("%sExternalChannelId%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sExternalChannelId%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getExternalChannelId()))));
         }
 
         // add `ChannelName` to the URL query string
         if (getChannelName() != null) {
-            joiner.add(String.format("%sChannelName%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sChannelName%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getChannelName()))));
         }
 
         // add `ChannelPrimaryImageTag` to the URL query string
         if (getChannelPrimaryImageTag() != null) {
-            joiner.add(String.format("%sChannelPrimaryImageTag%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sChannelPrimaryImageTag%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getChannelPrimaryImageTag()))));
         }
 
         // add `ProgramId` to the URL query string
         if (getProgramId() != null) {
-            joiner.add(String.format("%sProgramId%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sProgramId%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getProgramId()))));
         }
 
         // add `ExternalProgramId` to the URL query string
         if (getExternalProgramId() != null) {
-            joiner.add(String.format("%sExternalProgramId%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sExternalProgramId%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getExternalProgramId()))));
         }
 
         // add `Name` to the URL query string
         if (getName() != null) {
-            joiner.add(String.format("%sName%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sName%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getName()))));
         }
 
         // add `Overview` to the URL query string
         if (getOverview() != null) {
-            joiner.add(String.format("%sOverview%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sOverview%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getOverview()))));
         }
 
         // add `StartDate` to the URL query string
         if (getStartDate() != null) {
-            joiner.add(String.format("%sStartDate%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sStartDate%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getStartDate()))));
         }
 
         // add `EndDate` to the URL query string
         if (getEndDate() != null) {
-            joiner.add(String.format("%sEndDate%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sEndDate%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getEndDate()))));
         }
 
         // add `ServiceName` to the URL query string
         if (getServiceName() != null) {
-            joiner.add(String.format("%sServiceName%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sServiceName%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getServiceName()))));
         }
 
         // add `Priority` to the URL query string
         if (getPriority() != null) {
-            joiner.add(String.format("%sPriority%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sPriority%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getPriority()))));
         }
 
         // add `PrePaddingSeconds` to the URL query string
         if (getPrePaddingSeconds() != null) {
-            joiner.add(String.format("%sPrePaddingSeconds%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sPrePaddingSeconds%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getPrePaddingSeconds()))));
         }
 
         // add `PostPaddingSeconds` to the URL query string
         if (getPostPaddingSeconds() != null) {
-            joiner.add(String.format("%sPostPaddingSeconds%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sPostPaddingSeconds%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getPostPaddingSeconds()))));
         }
 
         // add `IsPrePaddingRequired` to the URL query string
         if (getIsPrePaddingRequired() != null) {
-            joiner.add(String.format("%sIsPrePaddingRequired%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sIsPrePaddingRequired%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getIsPrePaddingRequired()))));
         }
 
         // add `ParentBackdropItemId` to the URL query string
         if (getParentBackdropItemId() != null) {
-            joiner.add(String.format("%sParentBackdropItemId%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sParentBackdropItemId%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getParentBackdropItemId()))));
         }
 
         // add `ParentBackdropImageTags` to the URL query string
         if (getParentBackdropImageTags() != null) {
             for (int i = 0; i < getParentBackdropImageTags().size(); i++) {
-                joiner.add(String.format("%sParentBackdropImageTags%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+                joiner.add(String.format(Locale.ROOT, "%sParentBackdropImageTags%s%s=%s", prefix, suffix,
+                        "".equals(suffix) ? ""
+                                : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
                         ApiClient.urlEncode(ApiClient.valueToString(getParentBackdropImageTags().get(i)))));
             }
         }
 
         // add `IsPostPaddingRequired` to the URL query string
         if (getIsPostPaddingRequired() != null) {
-            joiner.add(String.format("%sIsPostPaddingRequired%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sIsPostPaddingRequired%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getIsPostPaddingRequired()))));
         }
 
         // add `KeepUntil` to the URL query string
         if (getKeepUntil() != null) {
-            joiner.add(String.format("%sKeepUntil%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sKeepUntil%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getKeepUntil()))));
         }
 
         // add `Status` to the URL query string
         if (getStatus() != null) {
-            joiner.add(String.format("%sStatus%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sStatus%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getStatus()))));
         }
 
         // add `SeriesTimerId` to the URL query string
         if (getSeriesTimerId() != null) {
-            joiner.add(String.format("%sSeriesTimerId%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sSeriesTimerId%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getSeriesTimerId()))));
         }
 
         // add `ExternalSeriesTimerId` to the URL query string
         if (getExternalSeriesTimerId() != null) {
-            joiner.add(String.format("%sExternalSeriesTimerId%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sExternalSeriesTimerId%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getExternalSeriesTimerId()))));
         }
 
         // add `RunTimeTicks` to the URL query string
         if (getRunTimeTicks() != null) {
-            joiner.add(String.format("%sRunTimeTicks%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sRunTimeTicks%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getRunTimeTicks()))));
         }
 

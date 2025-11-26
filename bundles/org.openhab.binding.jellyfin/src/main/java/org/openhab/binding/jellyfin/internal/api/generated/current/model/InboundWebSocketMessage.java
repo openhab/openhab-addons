@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Map;
 import java.util.StringJoiner;
 import java.util.logging.Level;
@@ -339,7 +340,7 @@ public class InboundWebSocketMessage extends AbstractOpenApiSchema {
                 ret.setActualInstance(deserialized);
                 return ret;
             }
-            throw new IOException(String.format(
+            throw new IOException(String.format(Locale.ROOT,
                     "Failed deserialization for InboundWebSocketMessage: %d classes match result, expected 1", match));
         }
 

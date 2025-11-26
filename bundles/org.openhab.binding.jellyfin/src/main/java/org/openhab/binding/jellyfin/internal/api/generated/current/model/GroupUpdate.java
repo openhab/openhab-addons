@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Map;
 import java.util.StringJoiner;
 import java.util.logging.Level;
@@ -77,149 +78,336 @@ public class GroupUpdate extends AbstractOpenApiSchema {
             boolean typeCoercion = ctxt.isEnabled(MapperFeature.ALLOW_COERCION_OF_SCALARS);
             int match = 0;
             JsonToken token = tree.traverse(jp.getCodec()).nextToken();
-            // deserialize GroupInfoDtoGroupUpdate
+            // deserialize SyncPlayGroupDoesNotExistUpdate
             try {
                 boolean attemptParsing = true;
                 // ensure that we respect type coercion as set on the client ObjectMapper
-                if (GroupInfoDtoGroupUpdate.class.equals(Integer.class)
-                        || GroupInfoDtoGroupUpdate.class.equals(Long.class)
-                        || GroupInfoDtoGroupUpdate.class.equals(Float.class)
-                        || GroupInfoDtoGroupUpdate.class.equals(Double.class)
-                        || GroupInfoDtoGroupUpdate.class.equals(Boolean.class)
-                        || GroupInfoDtoGroupUpdate.class.equals(String.class)) {
+                if (SyncPlayGroupDoesNotExistUpdate.class.equals(Integer.class)
+                        || SyncPlayGroupDoesNotExistUpdate.class.equals(Long.class)
+                        || SyncPlayGroupDoesNotExistUpdate.class.equals(Float.class)
+                        || SyncPlayGroupDoesNotExistUpdate.class.equals(Double.class)
+                        || SyncPlayGroupDoesNotExistUpdate.class.equals(Boolean.class)
+                        || SyncPlayGroupDoesNotExistUpdate.class.equals(String.class)) {
                     attemptParsing = typeCoercion;
                     if (!attemptParsing) {
-                        attemptParsing |= ((GroupInfoDtoGroupUpdate.class.equals(Integer.class)
-                                || GroupInfoDtoGroupUpdate.class.equals(Long.class))
+                        attemptParsing |= ((SyncPlayGroupDoesNotExistUpdate.class.equals(Integer.class)
+                                || SyncPlayGroupDoesNotExistUpdate.class.equals(Long.class))
                                 && token == JsonToken.VALUE_NUMBER_INT);
-                        attemptParsing |= ((GroupInfoDtoGroupUpdate.class.equals(Float.class)
-                                || GroupInfoDtoGroupUpdate.class.equals(Double.class))
+                        attemptParsing |= ((SyncPlayGroupDoesNotExistUpdate.class.equals(Float.class)
+                                || SyncPlayGroupDoesNotExistUpdate.class.equals(Double.class))
                                 && token == JsonToken.VALUE_NUMBER_FLOAT);
-                        attemptParsing |= (GroupInfoDtoGroupUpdate.class.equals(Boolean.class)
+                        attemptParsing |= (SyncPlayGroupDoesNotExistUpdate.class.equals(Boolean.class)
                                 && (token == JsonToken.VALUE_FALSE || token == JsonToken.VALUE_TRUE));
-                        attemptParsing |= (GroupInfoDtoGroupUpdate.class.equals(String.class)
+                        attemptParsing |= (SyncPlayGroupDoesNotExistUpdate.class.equals(String.class)
                                 && token == JsonToken.VALUE_STRING);
                     }
                 }
                 if (attemptParsing) {
-                    deserialized = tree.traverse(jp.getCodec()).readValueAs(GroupInfoDtoGroupUpdate.class);
+                    deserialized = tree.traverse(jp.getCodec()).readValueAs(SyncPlayGroupDoesNotExistUpdate.class);
                     // TODO: there is no validation against JSON schema constraints
                     // (min, max, enum, pattern...), this does not perform a strict JSON
                     // validation, which means the 'match' count may be higher than it should be.
                     match++;
-                    log.log(Level.FINER, "Input data matches schema 'GroupInfoDtoGroupUpdate'");
+                    log.log(Level.FINER, "Input data matches schema 'SyncPlayGroupDoesNotExistUpdate'");
                 }
             } catch (Exception e) {
                 // deserialization failed, continue
-                log.log(Level.FINER, "Input data does not match schema 'GroupInfoDtoGroupUpdate'", e);
+                log.log(Level.FINER, "Input data does not match schema 'SyncPlayGroupDoesNotExistUpdate'", e);
             }
 
-            // deserialize GroupStateUpdateGroupUpdate
+            // deserialize SyncPlayGroupJoinedUpdate
             try {
                 boolean attemptParsing = true;
                 // ensure that we respect type coercion as set on the client ObjectMapper
-                if (GroupStateUpdateGroupUpdate.class.equals(Integer.class)
-                        || GroupStateUpdateGroupUpdate.class.equals(Long.class)
-                        || GroupStateUpdateGroupUpdate.class.equals(Float.class)
-                        || GroupStateUpdateGroupUpdate.class.equals(Double.class)
-                        || GroupStateUpdateGroupUpdate.class.equals(Boolean.class)
-                        || GroupStateUpdateGroupUpdate.class.equals(String.class)) {
+                if (SyncPlayGroupJoinedUpdate.class.equals(Integer.class)
+                        || SyncPlayGroupJoinedUpdate.class.equals(Long.class)
+                        || SyncPlayGroupJoinedUpdate.class.equals(Float.class)
+                        || SyncPlayGroupJoinedUpdate.class.equals(Double.class)
+                        || SyncPlayGroupJoinedUpdate.class.equals(Boolean.class)
+                        || SyncPlayGroupJoinedUpdate.class.equals(String.class)) {
                     attemptParsing = typeCoercion;
                     if (!attemptParsing) {
-                        attemptParsing |= ((GroupStateUpdateGroupUpdate.class.equals(Integer.class)
-                                || GroupStateUpdateGroupUpdate.class.equals(Long.class))
+                        attemptParsing |= ((SyncPlayGroupJoinedUpdate.class.equals(Integer.class)
+                                || SyncPlayGroupJoinedUpdate.class.equals(Long.class))
                                 && token == JsonToken.VALUE_NUMBER_INT);
-                        attemptParsing |= ((GroupStateUpdateGroupUpdate.class.equals(Float.class)
-                                || GroupStateUpdateGroupUpdate.class.equals(Double.class))
+                        attemptParsing |= ((SyncPlayGroupJoinedUpdate.class.equals(Float.class)
+                                || SyncPlayGroupJoinedUpdate.class.equals(Double.class))
                                 && token == JsonToken.VALUE_NUMBER_FLOAT);
-                        attemptParsing |= (GroupStateUpdateGroupUpdate.class.equals(Boolean.class)
+                        attemptParsing |= (SyncPlayGroupJoinedUpdate.class.equals(Boolean.class)
                                 && (token == JsonToken.VALUE_FALSE || token == JsonToken.VALUE_TRUE));
-                        attemptParsing |= (GroupStateUpdateGroupUpdate.class.equals(String.class)
+                        attemptParsing |= (SyncPlayGroupJoinedUpdate.class.equals(String.class)
                                 && token == JsonToken.VALUE_STRING);
                     }
                 }
                 if (attemptParsing) {
-                    deserialized = tree.traverse(jp.getCodec()).readValueAs(GroupStateUpdateGroupUpdate.class);
+                    deserialized = tree.traverse(jp.getCodec()).readValueAs(SyncPlayGroupJoinedUpdate.class);
                     // TODO: there is no validation against JSON schema constraints
                     // (min, max, enum, pattern...), this does not perform a strict JSON
                     // validation, which means the 'match' count may be higher than it should be.
                     match++;
-                    log.log(Level.FINER, "Input data matches schema 'GroupStateUpdateGroupUpdate'");
+                    log.log(Level.FINER, "Input data matches schema 'SyncPlayGroupJoinedUpdate'");
                 }
             } catch (Exception e) {
                 // deserialization failed, continue
-                log.log(Level.FINER, "Input data does not match schema 'GroupStateUpdateGroupUpdate'", e);
+                log.log(Level.FINER, "Input data does not match schema 'SyncPlayGroupJoinedUpdate'", e);
             }
 
-            // deserialize PlayQueueUpdateGroupUpdate
+            // deserialize SyncPlayGroupLeftUpdate
             try {
                 boolean attemptParsing = true;
                 // ensure that we respect type coercion as set on the client ObjectMapper
-                if (PlayQueueUpdateGroupUpdate.class.equals(Integer.class)
-                        || PlayQueueUpdateGroupUpdate.class.equals(Long.class)
-                        || PlayQueueUpdateGroupUpdate.class.equals(Float.class)
-                        || PlayQueueUpdateGroupUpdate.class.equals(Double.class)
-                        || PlayQueueUpdateGroupUpdate.class.equals(Boolean.class)
-                        || PlayQueueUpdateGroupUpdate.class.equals(String.class)) {
+                if (SyncPlayGroupLeftUpdate.class.equals(Integer.class)
+                        || SyncPlayGroupLeftUpdate.class.equals(Long.class)
+                        || SyncPlayGroupLeftUpdate.class.equals(Float.class)
+                        || SyncPlayGroupLeftUpdate.class.equals(Double.class)
+                        || SyncPlayGroupLeftUpdate.class.equals(Boolean.class)
+                        || SyncPlayGroupLeftUpdate.class.equals(String.class)) {
                     attemptParsing = typeCoercion;
                     if (!attemptParsing) {
-                        attemptParsing |= ((PlayQueueUpdateGroupUpdate.class.equals(Integer.class)
-                                || PlayQueueUpdateGroupUpdate.class.equals(Long.class))
+                        attemptParsing |= ((SyncPlayGroupLeftUpdate.class.equals(Integer.class)
+                                || SyncPlayGroupLeftUpdate.class.equals(Long.class))
                                 && token == JsonToken.VALUE_NUMBER_INT);
-                        attemptParsing |= ((PlayQueueUpdateGroupUpdate.class.equals(Float.class)
-                                || PlayQueueUpdateGroupUpdate.class.equals(Double.class))
+                        attemptParsing |= ((SyncPlayGroupLeftUpdate.class.equals(Float.class)
+                                || SyncPlayGroupLeftUpdate.class.equals(Double.class))
                                 && token == JsonToken.VALUE_NUMBER_FLOAT);
-                        attemptParsing |= (PlayQueueUpdateGroupUpdate.class.equals(Boolean.class)
+                        attemptParsing |= (SyncPlayGroupLeftUpdate.class.equals(Boolean.class)
                                 && (token == JsonToken.VALUE_FALSE || token == JsonToken.VALUE_TRUE));
-                        attemptParsing |= (PlayQueueUpdateGroupUpdate.class.equals(String.class)
+                        attemptParsing |= (SyncPlayGroupLeftUpdate.class.equals(String.class)
                                 && token == JsonToken.VALUE_STRING);
                     }
                 }
                 if (attemptParsing) {
-                    deserialized = tree.traverse(jp.getCodec()).readValueAs(PlayQueueUpdateGroupUpdate.class);
+                    deserialized = tree.traverse(jp.getCodec()).readValueAs(SyncPlayGroupLeftUpdate.class);
                     // TODO: there is no validation against JSON schema constraints
                     // (min, max, enum, pattern...), this does not perform a strict JSON
                     // validation, which means the 'match' count may be higher than it should be.
                     match++;
-                    log.log(Level.FINER, "Input data matches schema 'PlayQueueUpdateGroupUpdate'");
+                    log.log(Level.FINER, "Input data matches schema 'SyncPlayGroupLeftUpdate'");
                 }
             } catch (Exception e) {
                 // deserialization failed, continue
-                log.log(Level.FINER, "Input data does not match schema 'PlayQueueUpdateGroupUpdate'", e);
+                log.log(Level.FINER, "Input data does not match schema 'SyncPlayGroupLeftUpdate'", e);
             }
 
-            // deserialize StringGroupUpdate
+            // deserialize SyncPlayLibraryAccessDeniedUpdate
             try {
                 boolean attemptParsing = true;
                 // ensure that we respect type coercion as set on the client ObjectMapper
-                if (StringGroupUpdate.class.equals(Integer.class) || StringGroupUpdate.class.equals(Long.class)
-                        || StringGroupUpdate.class.equals(Float.class) || StringGroupUpdate.class.equals(Double.class)
-                        || StringGroupUpdate.class.equals(Boolean.class)
-                        || StringGroupUpdate.class.equals(String.class)) {
+                if (SyncPlayLibraryAccessDeniedUpdate.class.equals(Integer.class)
+                        || SyncPlayLibraryAccessDeniedUpdate.class.equals(Long.class)
+                        || SyncPlayLibraryAccessDeniedUpdate.class.equals(Float.class)
+                        || SyncPlayLibraryAccessDeniedUpdate.class.equals(Double.class)
+                        || SyncPlayLibraryAccessDeniedUpdate.class.equals(Boolean.class)
+                        || SyncPlayLibraryAccessDeniedUpdate.class.equals(String.class)) {
                     attemptParsing = typeCoercion;
                     if (!attemptParsing) {
-                        attemptParsing |= ((StringGroupUpdate.class.equals(Integer.class)
-                                || StringGroupUpdate.class.equals(Long.class)) && token == JsonToken.VALUE_NUMBER_INT);
-                        attemptParsing |= ((StringGroupUpdate.class.equals(Float.class)
-                                || StringGroupUpdate.class.equals(Double.class))
+                        attemptParsing |= ((SyncPlayLibraryAccessDeniedUpdate.class.equals(Integer.class)
+                                || SyncPlayLibraryAccessDeniedUpdate.class.equals(Long.class))
+                                && token == JsonToken.VALUE_NUMBER_INT);
+                        attemptParsing |= ((SyncPlayLibraryAccessDeniedUpdate.class.equals(Float.class)
+                                || SyncPlayLibraryAccessDeniedUpdate.class.equals(Double.class))
                                 && token == JsonToken.VALUE_NUMBER_FLOAT);
-                        attemptParsing |= (StringGroupUpdate.class.equals(Boolean.class)
+                        attemptParsing |= (SyncPlayLibraryAccessDeniedUpdate.class.equals(Boolean.class)
                                 && (token == JsonToken.VALUE_FALSE || token == JsonToken.VALUE_TRUE));
-                        attemptParsing |= (StringGroupUpdate.class.equals(String.class)
+                        attemptParsing |= (SyncPlayLibraryAccessDeniedUpdate.class.equals(String.class)
                                 && token == JsonToken.VALUE_STRING);
                     }
                 }
                 if (attemptParsing) {
-                    deserialized = tree.traverse(jp.getCodec()).readValueAs(StringGroupUpdate.class);
+                    deserialized = tree.traverse(jp.getCodec()).readValueAs(SyncPlayLibraryAccessDeniedUpdate.class);
                     // TODO: there is no validation against JSON schema constraints
                     // (min, max, enum, pattern...), this does not perform a strict JSON
                     // validation, which means the 'match' count may be higher than it should be.
                     match++;
-                    log.log(Level.FINER, "Input data matches schema 'StringGroupUpdate'");
+                    log.log(Level.FINER, "Input data matches schema 'SyncPlayLibraryAccessDeniedUpdate'");
                 }
             } catch (Exception e) {
                 // deserialization failed, continue
-                log.log(Level.FINER, "Input data does not match schema 'StringGroupUpdate'", e);
+                log.log(Level.FINER, "Input data does not match schema 'SyncPlayLibraryAccessDeniedUpdate'", e);
+            }
+
+            // deserialize SyncPlayNotInGroupUpdate
+            try {
+                boolean attemptParsing = true;
+                // ensure that we respect type coercion as set on the client ObjectMapper
+                if (SyncPlayNotInGroupUpdate.class.equals(Integer.class)
+                        || SyncPlayNotInGroupUpdate.class.equals(Long.class)
+                        || SyncPlayNotInGroupUpdate.class.equals(Float.class)
+                        || SyncPlayNotInGroupUpdate.class.equals(Double.class)
+                        || SyncPlayNotInGroupUpdate.class.equals(Boolean.class)
+                        || SyncPlayNotInGroupUpdate.class.equals(String.class)) {
+                    attemptParsing = typeCoercion;
+                    if (!attemptParsing) {
+                        attemptParsing |= ((SyncPlayNotInGroupUpdate.class.equals(Integer.class)
+                                || SyncPlayNotInGroupUpdate.class.equals(Long.class))
+                                && token == JsonToken.VALUE_NUMBER_INT);
+                        attemptParsing |= ((SyncPlayNotInGroupUpdate.class.equals(Float.class)
+                                || SyncPlayNotInGroupUpdate.class.equals(Double.class))
+                                && token == JsonToken.VALUE_NUMBER_FLOAT);
+                        attemptParsing |= (SyncPlayNotInGroupUpdate.class.equals(Boolean.class)
+                                && (token == JsonToken.VALUE_FALSE || token == JsonToken.VALUE_TRUE));
+                        attemptParsing |= (SyncPlayNotInGroupUpdate.class.equals(String.class)
+                                && token == JsonToken.VALUE_STRING);
+                    }
+                }
+                if (attemptParsing) {
+                    deserialized = tree.traverse(jp.getCodec()).readValueAs(SyncPlayNotInGroupUpdate.class);
+                    // TODO: there is no validation against JSON schema constraints
+                    // (min, max, enum, pattern...), this does not perform a strict JSON
+                    // validation, which means the 'match' count may be higher than it should be.
+                    match++;
+                    log.log(Level.FINER, "Input data matches schema 'SyncPlayNotInGroupUpdate'");
+                }
+            } catch (Exception e) {
+                // deserialization failed, continue
+                log.log(Level.FINER, "Input data does not match schema 'SyncPlayNotInGroupUpdate'", e);
+            }
+
+            // deserialize SyncPlayPlayQueueUpdate
+            try {
+                boolean attemptParsing = true;
+                // ensure that we respect type coercion as set on the client ObjectMapper
+                if (SyncPlayPlayQueueUpdate.class.equals(Integer.class)
+                        || SyncPlayPlayQueueUpdate.class.equals(Long.class)
+                        || SyncPlayPlayQueueUpdate.class.equals(Float.class)
+                        || SyncPlayPlayQueueUpdate.class.equals(Double.class)
+                        || SyncPlayPlayQueueUpdate.class.equals(Boolean.class)
+                        || SyncPlayPlayQueueUpdate.class.equals(String.class)) {
+                    attemptParsing = typeCoercion;
+                    if (!attemptParsing) {
+                        attemptParsing |= ((SyncPlayPlayQueueUpdate.class.equals(Integer.class)
+                                || SyncPlayPlayQueueUpdate.class.equals(Long.class))
+                                && token == JsonToken.VALUE_NUMBER_INT);
+                        attemptParsing |= ((SyncPlayPlayQueueUpdate.class.equals(Float.class)
+                                || SyncPlayPlayQueueUpdate.class.equals(Double.class))
+                                && token == JsonToken.VALUE_NUMBER_FLOAT);
+                        attemptParsing |= (SyncPlayPlayQueueUpdate.class.equals(Boolean.class)
+                                && (token == JsonToken.VALUE_FALSE || token == JsonToken.VALUE_TRUE));
+                        attemptParsing |= (SyncPlayPlayQueueUpdate.class.equals(String.class)
+                                && token == JsonToken.VALUE_STRING);
+                    }
+                }
+                if (attemptParsing) {
+                    deserialized = tree.traverse(jp.getCodec()).readValueAs(SyncPlayPlayQueueUpdate.class);
+                    // TODO: there is no validation against JSON schema constraints
+                    // (min, max, enum, pattern...), this does not perform a strict JSON
+                    // validation, which means the 'match' count may be higher than it should be.
+                    match++;
+                    log.log(Level.FINER, "Input data matches schema 'SyncPlayPlayQueueUpdate'");
+                }
+            } catch (Exception e) {
+                // deserialization failed, continue
+                log.log(Level.FINER, "Input data does not match schema 'SyncPlayPlayQueueUpdate'", e);
+            }
+
+            // deserialize SyncPlayStateUpdate
+            try {
+                boolean attemptParsing = true;
+                // ensure that we respect type coercion as set on the client ObjectMapper
+                if (SyncPlayStateUpdate.class.equals(Integer.class) || SyncPlayStateUpdate.class.equals(Long.class)
+                        || SyncPlayStateUpdate.class.equals(Float.class)
+                        || SyncPlayStateUpdate.class.equals(Double.class)
+                        || SyncPlayStateUpdate.class.equals(Boolean.class)
+                        || SyncPlayStateUpdate.class.equals(String.class)) {
+                    attemptParsing = typeCoercion;
+                    if (!attemptParsing) {
+                        attemptParsing |= ((SyncPlayStateUpdate.class.equals(Integer.class)
+                                || SyncPlayStateUpdate.class.equals(Long.class))
+                                && token == JsonToken.VALUE_NUMBER_INT);
+                        attemptParsing |= ((SyncPlayStateUpdate.class.equals(Float.class)
+                                || SyncPlayStateUpdate.class.equals(Double.class))
+                                && token == JsonToken.VALUE_NUMBER_FLOAT);
+                        attemptParsing |= (SyncPlayStateUpdate.class.equals(Boolean.class)
+                                && (token == JsonToken.VALUE_FALSE || token == JsonToken.VALUE_TRUE));
+                        attemptParsing |= (SyncPlayStateUpdate.class.equals(String.class)
+                                && token == JsonToken.VALUE_STRING);
+                    }
+                }
+                if (attemptParsing) {
+                    deserialized = tree.traverse(jp.getCodec()).readValueAs(SyncPlayStateUpdate.class);
+                    // TODO: there is no validation against JSON schema constraints
+                    // (min, max, enum, pattern...), this does not perform a strict JSON
+                    // validation, which means the 'match' count may be higher than it should be.
+                    match++;
+                    log.log(Level.FINER, "Input data matches schema 'SyncPlayStateUpdate'");
+                }
+            } catch (Exception e) {
+                // deserialization failed, continue
+                log.log(Level.FINER, "Input data does not match schema 'SyncPlayStateUpdate'", e);
+            }
+
+            // deserialize SyncPlayUserJoinedUpdate
+            try {
+                boolean attemptParsing = true;
+                // ensure that we respect type coercion as set on the client ObjectMapper
+                if (SyncPlayUserJoinedUpdate.class.equals(Integer.class)
+                        || SyncPlayUserJoinedUpdate.class.equals(Long.class)
+                        || SyncPlayUserJoinedUpdate.class.equals(Float.class)
+                        || SyncPlayUserJoinedUpdate.class.equals(Double.class)
+                        || SyncPlayUserJoinedUpdate.class.equals(Boolean.class)
+                        || SyncPlayUserJoinedUpdate.class.equals(String.class)) {
+                    attemptParsing = typeCoercion;
+                    if (!attemptParsing) {
+                        attemptParsing |= ((SyncPlayUserJoinedUpdate.class.equals(Integer.class)
+                                || SyncPlayUserJoinedUpdate.class.equals(Long.class))
+                                && token == JsonToken.VALUE_NUMBER_INT);
+                        attemptParsing |= ((SyncPlayUserJoinedUpdate.class.equals(Float.class)
+                                || SyncPlayUserJoinedUpdate.class.equals(Double.class))
+                                && token == JsonToken.VALUE_NUMBER_FLOAT);
+                        attemptParsing |= (SyncPlayUserJoinedUpdate.class.equals(Boolean.class)
+                                && (token == JsonToken.VALUE_FALSE || token == JsonToken.VALUE_TRUE));
+                        attemptParsing |= (SyncPlayUserJoinedUpdate.class.equals(String.class)
+                                && token == JsonToken.VALUE_STRING);
+                    }
+                }
+                if (attemptParsing) {
+                    deserialized = tree.traverse(jp.getCodec()).readValueAs(SyncPlayUserJoinedUpdate.class);
+                    // TODO: there is no validation against JSON schema constraints
+                    // (min, max, enum, pattern...), this does not perform a strict JSON
+                    // validation, which means the 'match' count may be higher than it should be.
+                    match++;
+                    log.log(Level.FINER, "Input data matches schema 'SyncPlayUserJoinedUpdate'");
+                }
+            } catch (Exception e) {
+                // deserialization failed, continue
+                log.log(Level.FINER, "Input data does not match schema 'SyncPlayUserJoinedUpdate'", e);
+            }
+
+            // deserialize SyncPlayUserLeftUpdate
+            try {
+                boolean attemptParsing = true;
+                // ensure that we respect type coercion as set on the client ObjectMapper
+                if (SyncPlayUserLeftUpdate.class.equals(Integer.class)
+                        || SyncPlayUserLeftUpdate.class.equals(Long.class)
+                        || SyncPlayUserLeftUpdate.class.equals(Float.class)
+                        || SyncPlayUserLeftUpdate.class.equals(Double.class)
+                        || SyncPlayUserLeftUpdate.class.equals(Boolean.class)
+                        || SyncPlayUserLeftUpdate.class.equals(String.class)) {
+                    attemptParsing = typeCoercion;
+                    if (!attemptParsing) {
+                        attemptParsing |= ((SyncPlayUserLeftUpdate.class.equals(Integer.class)
+                                || SyncPlayUserLeftUpdate.class.equals(Long.class))
+                                && token == JsonToken.VALUE_NUMBER_INT);
+                        attemptParsing |= ((SyncPlayUserLeftUpdate.class.equals(Float.class)
+                                || SyncPlayUserLeftUpdate.class.equals(Double.class))
+                                && token == JsonToken.VALUE_NUMBER_FLOAT);
+                        attemptParsing |= (SyncPlayUserLeftUpdate.class.equals(Boolean.class)
+                                && (token == JsonToken.VALUE_FALSE || token == JsonToken.VALUE_TRUE));
+                        attemptParsing |= (SyncPlayUserLeftUpdate.class.equals(String.class)
+                                && token == JsonToken.VALUE_STRING);
+                    }
+                }
+                if (attemptParsing) {
+                    deserialized = tree.traverse(jp.getCodec()).readValueAs(SyncPlayUserLeftUpdate.class);
+                    // TODO: there is no validation against JSON schema constraints
+                    // (min, max, enum, pattern...), this does not perform a strict JSON
+                    // validation, which means the 'match' count may be higher than it should be.
+                    match++;
+                    log.log(Level.FINER, "Input data matches schema 'SyncPlayUserLeftUpdate'");
+                }
+            } catch (Exception e) {
+                // deserialization failed, continue
+                log.log(Level.FINER, "Input data does not match schema 'SyncPlayUserLeftUpdate'", e);
             }
 
             if (match == 1) {
@@ -227,8 +415,8 @@ public class GroupUpdate extends AbstractOpenApiSchema {
                 ret.setActualInstance(deserialized);
                 return ret;
             }
-            throw new IOException(String
-                    .format("Failed deserialization for GroupUpdate: %d classes match result, expected 1", match));
+            throw new IOException(String.format(Locale.ROOT,
+                    "Failed deserialization for GroupUpdate: %d classes match result, expected 1", match));
         }
 
         /**
@@ -247,43 +435,73 @@ public class GroupUpdate extends AbstractOpenApiSchema {
         super("oneOf", Boolean.FALSE);
     }
 
-    public GroupUpdate(GroupInfoDtoGroupUpdate o) {
+    public GroupUpdate(SyncPlayGroupDoesNotExistUpdate o) {
         super("oneOf", Boolean.FALSE);
         setActualInstance(o);
     }
 
-    public GroupUpdate(GroupStateUpdateGroupUpdate o) {
+    public GroupUpdate(SyncPlayGroupJoinedUpdate o) {
         super("oneOf", Boolean.FALSE);
         setActualInstance(o);
     }
 
-    public GroupUpdate(PlayQueueUpdateGroupUpdate o) {
+    public GroupUpdate(SyncPlayGroupLeftUpdate o) {
         super("oneOf", Boolean.FALSE);
         setActualInstance(o);
     }
 
-    public GroupUpdate(StringGroupUpdate o) {
+    public GroupUpdate(SyncPlayLibraryAccessDeniedUpdate o) {
+        super("oneOf", Boolean.FALSE);
+        setActualInstance(o);
+    }
+
+    public GroupUpdate(SyncPlayNotInGroupUpdate o) {
+        super("oneOf", Boolean.FALSE);
+        setActualInstance(o);
+    }
+
+    public GroupUpdate(SyncPlayPlayQueueUpdate o) {
+        super("oneOf", Boolean.FALSE);
+        setActualInstance(o);
+    }
+
+    public GroupUpdate(SyncPlayStateUpdate o) {
+        super("oneOf", Boolean.FALSE);
+        setActualInstance(o);
+    }
+
+    public GroupUpdate(SyncPlayUserJoinedUpdate o) {
+        super("oneOf", Boolean.FALSE);
+        setActualInstance(o);
+    }
+
+    public GroupUpdate(SyncPlayUserLeftUpdate o) {
         super("oneOf", Boolean.FALSE);
         setActualInstance(o);
     }
 
     static {
-        schemas.put("GroupInfoDtoGroupUpdate", GroupInfoDtoGroupUpdate.class);
-        schemas.put("GroupStateUpdateGroupUpdate", GroupStateUpdateGroupUpdate.class);
-        schemas.put("PlayQueueUpdateGroupUpdate", PlayQueueUpdateGroupUpdate.class);
-        schemas.put("StringGroupUpdate", StringGroupUpdate.class);
+        schemas.put("SyncPlayGroupDoesNotExistUpdate", SyncPlayGroupDoesNotExistUpdate.class);
+        schemas.put("SyncPlayGroupJoinedUpdate", SyncPlayGroupJoinedUpdate.class);
+        schemas.put("SyncPlayGroupLeftUpdate", SyncPlayGroupLeftUpdate.class);
+        schemas.put("SyncPlayLibraryAccessDeniedUpdate", SyncPlayLibraryAccessDeniedUpdate.class);
+        schemas.put("SyncPlayNotInGroupUpdate", SyncPlayNotInGroupUpdate.class);
+        schemas.put("SyncPlayPlayQueueUpdate", SyncPlayPlayQueueUpdate.class);
+        schemas.put("SyncPlayStateUpdate", SyncPlayStateUpdate.class);
+        schemas.put("SyncPlayUserJoinedUpdate", SyncPlayUserJoinedUpdate.class);
+        schemas.put("SyncPlayUserLeftUpdate", SyncPlayUserLeftUpdate.class);
         JSON.registerDescendants(GroupUpdate.class, Collections.unmodifiableMap(schemas));
         // Initialize and register the discriminator mappings.
         Map<String, Class<?>> mappings = new HashMap<String, Class<?>>();
-        mappings.put("GroupDoesNotExist", StringGroupUpdate.class);
-        mappings.put("GroupJoined", GroupInfoDtoGroupUpdate.class);
-        mappings.put("GroupLeft", StringGroupUpdate.class);
-        mappings.put("LibraryAccessDenied", StringGroupUpdate.class);
-        mappings.put("NotInGroup", StringGroupUpdate.class);
-        mappings.put("PlayQueue", PlayQueueUpdateGroupUpdate.class);
-        mappings.put("StateUpdate", GroupStateUpdateGroupUpdate.class);
-        mappings.put("UserJoined", StringGroupUpdate.class);
-        mappings.put("UserLeft", StringGroupUpdate.class);
+        mappings.put("GroupDoesNotExist", SyncPlayGroupDoesNotExistUpdate.class);
+        mappings.put("GroupJoined", SyncPlayGroupJoinedUpdate.class);
+        mappings.put("GroupLeft", SyncPlayGroupLeftUpdate.class);
+        mappings.put("LibraryAccessDenied", SyncPlayLibraryAccessDeniedUpdate.class);
+        mappings.put("NotInGroup", SyncPlayNotInGroupUpdate.class);
+        mappings.put("PlayQueue", SyncPlayPlayQueueUpdate.class);
+        mappings.put("StateUpdate", SyncPlayStateUpdate.class);
+        mappings.put("UserJoined", SyncPlayUserJoinedUpdate.class);
+        mappings.put("UserLeft", SyncPlayUserLeftUpdate.class);
         mappings.put("GroupUpdate", GroupUpdate.class);
         JSON.registerDiscriminator(GroupUpdate.class, "Type", mappings);
     }
@@ -296,43 +514,73 @@ public class GroupUpdate extends AbstractOpenApiSchema {
     /**
      * Set the instance that matches the oneOf child schema, check
      * the instance parameter is valid against the oneOf child schemas:
-     * GroupInfoDtoGroupUpdate, GroupStateUpdateGroupUpdate, PlayQueueUpdateGroupUpdate, StringGroupUpdate
+     * SyncPlayGroupDoesNotExistUpdate, SyncPlayGroupJoinedUpdate, SyncPlayGroupLeftUpdate,
+     * SyncPlayLibraryAccessDeniedUpdate, SyncPlayNotInGroupUpdate, SyncPlayPlayQueueUpdate, SyncPlayStateUpdate,
+     * SyncPlayUserJoinedUpdate, SyncPlayUserLeftUpdate
      *
      * It could be an instance of the 'oneOf' schemas.
      * The oneOf child schemas may themselves be a composed schema (allOf, anyOf, oneOf).
      */
     @Override
     public void setActualInstance(Object instance) {
-        if (JSON.isInstanceOf(GroupInfoDtoGroupUpdate.class, instance, new HashSet<Class<?>>())) {
+        if (JSON.isInstanceOf(SyncPlayGroupDoesNotExistUpdate.class, instance, new HashSet<Class<?>>())) {
             super.setActualInstance(instance);
             return;
         }
 
-        if (JSON.isInstanceOf(GroupStateUpdateGroupUpdate.class, instance, new HashSet<Class<?>>())) {
+        if (JSON.isInstanceOf(SyncPlayGroupJoinedUpdate.class, instance, new HashSet<Class<?>>())) {
             super.setActualInstance(instance);
             return;
         }
 
-        if (JSON.isInstanceOf(PlayQueueUpdateGroupUpdate.class, instance, new HashSet<Class<?>>())) {
+        if (JSON.isInstanceOf(SyncPlayGroupLeftUpdate.class, instance, new HashSet<Class<?>>())) {
             super.setActualInstance(instance);
             return;
         }
 
-        if (JSON.isInstanceOf(StringGroupUpdate.class, instance, new HashSet<Class<?>>())) {
+        if (JSON.isInstanceOf(SyncPlayLibraryAccessDeniedUpdate.class, instance, new HashSet<Class<?>>())) {
+            super.setActualInstance(instance);
+            return;
+        }
+
+        if (JSON.isInstanceOf(SyncPlayNotInGroupUpdate.class, instance, new HashSet<Class<?>>())) {
+            super.setActualInstance(instance);
+            return;
+        }
+
+        if (JSON.isInstanceOf(SyncPlayPlayQueueUpdate.class, instance, new HashSet<Class<?>>())) {
+            super.setActualInstance(instance);
+            return;
+        }
+
+        if (JSON.isInstanceOf(SyncPlayStateUpdate.class, instance, new HashSet<Class<?>>())) {
+            super.setActualInstance(instance);
+            return;
+        }
+
+        if (JSON.isInstanceOf(SyncPlayUserJoinedUpdate.class, instance, new HashSet<Class<?>>())) {
+            super.setActualInstance(instance);
+            return;
+        }
+
+        if (JSON.isInstanceOf(SyncPlayUserLeftUpdate.class, instance, new HashSet<Class<?>>())) {
             super.setActualInstance(instance);
             return;
         }
 
         throw new RuntimeException(
-                "Invalid instance type. Must be GroupInfoDtoGroupUpdate, GroupStateUpdateGroupUpdate, PlayQueueUpdateGroupUpdate, StringGroupUpdate");
+                "Invalid instance type. Must be SyncPlayGroupDoesNotExistUpdate, SyncPlayGroupJoinedUpdate, SyncPlayGroupLeftUpdate, SyncPlayLibraryAccessDeniedUpdate, SyncPlayNotInGroupUpdate, SyncPlayPlayQueueUpdate, SyncPlayStateUpdate, SyncPlayUserJoinedUpdate, SyncPlayUserLeftUpdate");
     }
 
     /**
      * Get the actual instance, which can be the following:
-     * GroupInfoDtoGroupUpdate, GroupStateUpdateGroupUpdate, PlayQueueUpdateGroupUpdate, StringGroupUpdate
+     * SyncPlayGroupDoesNotExistUpdate, SyncPlayGroupJoinedUpdate, SyncPlayGroupLeftUpdate,
+     * SyncPlayLibraryAccessDeniedUpdate, SyncPlayNotInGroupUpdate, SyncPlayPlayQueueUpdate, SyncPlayStateUpdate,
+     * SyncPlayUserJoinedUpdate, SyncPlayUserLeftUpdate
      *
-     * @return The actual instance (GroupInfoDtoGroupUpdate, GroupStateUpdateGroupUpdate, PlayQueueUpdateGroupUpdate,
-     *         StringGroupUpdate)
+     * @return The actual instance (SyncPlayGroupDoesNotExistUpdate, SyncPlayGroupJoinedUpdate, SyncPlayGroupLeftUpdate,
+     *         SyncPlayLibraryAccessDeniedUpdate, SyncPlayNotInGroupUpdate, SyncPlayPlayQueueUpdate,
+     *         SyncPlayStateUpdate, SyncPlayUserJoinedUpdate, SyncPlayUserLeftUpdate)
      */
     @Override
     public Object getActualInstance() {
@@ -340,49 +588,105 @@ public class GroupUpdate extends AbstractOpenApiSchema {
     }
 
     /**
-     * Get the actual instance of `GroupInfoDtoGroupUpdate`. If the actual instance is not `GroupInfoDtoGroupUpdate`,
+     * Get the actual instance of `SyncPlayGroupDoesNotExistUpdate`. If the actual instance is not
+     * `SyncPlayGroupDoesNotExistUpdate`,
      * the ClassCastException will be thrown.
      *
-     * @return The actual instance of `GroupInfoDtoGroupUpdate`
-     * @throws ClassCastException if the instance is not `GroupInfoDtoGroupUpdate`
+     * @return The actual instance of `SyncPlayGroupDoesNotExistUpdate`
+     * @throws ClassCastException if the instance is not `SyncPlayGroupDoesNotExistUpdate`
      */
-    public GroupInfoDtoGroupUpdate getGroupInfoDtoGroupUpdate() throws ClassCastException {
-        return (GroupInfoDtoGroupUpdate) super.getActualInstance();
+    public SyncPlayGroupDoesNotExistUpdate getSyncPlayGroupDoesNotExistUpdate() throws ClassCastException {
+        return (SyncPlayGroupDoesNotExistUpdate) super.getActualInstance();
     }
 
     /**
-     * Get the actual instance of `GroupStateUpdateGroupUpdate`. If the actual instance is not
-     * `GroupStateUpdateGroupUpdate`,
+     * Get the actual instance of `SyncPlayGroupJoinedUpdate`. If the actual instance is not
+     * `SyncPlayGroupJoinedUpdate`,
      * the ClassCastException will be thrown.
      *
-     * @return The actual instance of `GroupStateUpdateGroupUpdate`
-     * @throws ClassCastException if the instance is not `GroupStateUpdateGroupUpdate`
+     * @return The actual instance of `SyncPlayGroupJoinedUpdate`
+     * @throws ClassCastException if the instance is not `SyncPlayGroupJoinedUpdate`
      */
-    public GroupStateUpdateGroupUpdate getGroupStateUpdateGroupUpdate() throws ClassCastException {
-        return (GroupStateUpdateGroupUpdate) super.getActualInstance();
+    public SyncPlayGroupJoinedUpdate getSyncPlayGroupJoinedUpdate() throws ClassCastException {
+        return (SyncPlayGroupJoinedUpdate) super.getActualInstance();
     }
 
     /**
-     * Get the actual instance of `PlayQueueUpdateGroupUpdate`. If the actual instance is not
-     * `PlayQueueUpdateGroupUpdate`,
+     * Get the actual instance of `SyncPlayGroupLeftUpdate`. If the actual instance is not `SyncPlayGroupLeftUpdate`,
      * the ClassCastException will be thrown.
      *
-     * @return The actual instance of `PlayQueueUpdateGroupUpdate`
-     * @throws ClassCastException if the instance is not `PlayQueueUpdateGroupUpdate`
+     * @return The actual instance of `SyncPlayGroupLeftUpdate`
+     * @throws ClassCastException if the instance is not `SyncPlayGroupLeftUpdate`
      */
-    public PlayQueueUpdateGroupUpdate getPlayQueueUpdateGroupUpdate() throws ClassCastException {
-        return (PlayQueueUpdateGroupUpdate) super.getActualInstance();
+    public SyncPlayGroupLeftUpdate getSyncPlayGroupLeftUpdate() throws ClassCastException {
+        return (SyncPlayGroupLeftUpdate) super.getActualInstance();
     }
 
     /**
-     * Get the actual instance of `StringGroupUpdate`. If the actual instance is not `StringGroupUpdate`,
+     * Get the actual instance of `SyncPlayLibraryAccessDeniedUpdate`. If the actual instance is not
+     * `SyncPlayLibraryAccessDeniedUpdate`,
      * the ClassCastException will be thrown.
      *
-     * @return The actual instance of `StringGroupUpdate`
-     * @throws ClassCastException if the instance is not `StringGroupUpdate`
+     * @return The actual instance of `SyncPlayLibraryAccessDeniedUpdate`
+     * @throws ClassCastException if the instance is not `SyncPlayLibraryAccessDeniedUpdate`
      */
-    public StringGroupUpdate getStringGroupUpdate() throws ClassCastException {
-        return (StringGroupUpdate) super.getActualInstance();
+    public SyncPlayLibraryAccessDeniedUpdate getSyncPlayLibraryAccessDeniedUpdate() throws ClassCastException {
+        return (SyncPlayLibraryAccessDeniedUpdate) super.getActualInstance();
+    }
+
+    /**
+     * Get the actual instance of `SyncPlayNotInGroupUpdate`. If the actual instance is not `SyncPlayNotInGroupUpdate`,
+     * the ClassCastException will be thrown.
+     *
+     * @return The actual instance of `SyncPlayNotInGroupUpdate`
+     * @throws ClassCastException if the instance is not `SyncPlayNotInGroupUpdate`
+     */
+    public SyncPlayNotInGroupUpdate getSyncPlayNotInGroupUpdate() throws ClassCastException {
+        return (SyncPlayNotInGroupUpdate) super.getActualInstance();
+    }
+
+    /**
+     * Get the actual instance of `SyncPlayPlayQueueUpdate`. If the actual instance is not `SyncPlayPlayQueueUpdate`,
+     * the ClassCastException will be thrown.
+     *
+     * @return The actual instance of `SyncPlayPlayQueueUpdate`
+     * @throws ClassCastException if the instance is not `SyncPlayPlayQueueUpdate`
+     */
+    public SyncPlayPlayQueueUpdate getSyncPlayPlayQueueUpdate() throws ClassCastException {
+        return (SyncPlayPlayQueueUpdate) super.getActualInstance();
+    }
+
+    /**
+     * Get the actual instance of `SyncPlayStateUpdate`. If the actual instance is not `SyncPlayStateUpdate`,
+     * the ClassCastException will be thrown.
+     *
+     * @return The actual instance of `SyncPlayStateUpdate`
+     * @throws ClassCastException if the instance is not `SyncPlayStateUpdate`
+     */
+    public SyncPlayStateUpdate getSyncPlayStateUpdate() throws ClassCastException {
+        return (SyncPlayStateUpdate) super.getActualInstance();
+    }
+
+    /**
+     * Get the actual instance of `SyncPlayUserJoinedUpdate`. If the actual instance is not `SyncPlayUserJoinedUpdate`,
+     * the ClassCastException will be thrown.
+     *
+     * @return The actual instance of `SyncPlayUserJoinedUpdate`
+     * @throws ClassCastException if the instance is not `SyncPlayUserJoinedUpdate`
+     */
+    public SyncPlayUserJoinedUpdate getSyncPlayUserJoinedUpdate() throws ClassCastException {
+        return (SyncPlayUserJoinedUpdate) super.getActualInstance();
+    }
+
+    /**
+     * Get the actual instance of `SyncPlayUserLeftUpdate`. If the actual instance is not `SyncPlayUserLeftUpdate`,
+     * the ClassCastException will be thrown.
+     *
+     * @return The actual instance of `SyncPlayUserLeftUpdate`
+     * @throws ClassCastException if the instance is not `SyncPlayUserLeftUpdate`
+     */
+    public SyncPlayUserLeftUpdate getSyncPlayUserLeftUpdate() throws ClassCastException {
+        return (SyncPlayUserLeftUpdate) super.getActualInstance();
     }
 
     /**
@@ -417,30 +721,65 @@ public class GroupUpdate extends AbstractOpenApiSchema {
 
         StringJoiner joiner = new StringJoiner("&");
 
-        if (getActualInstance() instanceof GroupInfoDtoGroupUpdate) {
+        if (getActualInstance() instanceof SyncPlayGroupDoesNotExistUpdate) {
             if (getActualInstance() != null) {
-                joiner.add(
-                        ((GroupInfoDtoGroupUpdate) getActualInstance()).toUrlQueryString(prefix + "one_of_0" + suffix));
+                joiner.add(((SyncPlayGroupDoesNotExistUpdate) getActualInstance())
+                        .toUrlQueryString(prefix + "one_of_0" + suffix));
             }
             return joiner.toString();
         }
-        if (getActualInstance() instanceof GroupStateUpdateGroupUpdate) {
+        if (getActualInstance() instanceof SyncPlayGroupJoinedUpdate) {
             if (getActualInstance() != null) {
-                joiner.add(((GroupStateUpdateGroupUpdate) getActualInstance())
+                joiner.add(((SyncPlayGroupJoinedUpdate) getActualInstance())
                         .toUrlQueryString(prefix + "one_of_1" + suffix));
             }
             return joiner.toString();
         }
-        if (getActualInstance() instanceof StringGroupUpdate) {
+        if (getActualInstance() instanceof SyncPlayGroupLeftUpdate) {
             if (getActualInstance() != null) {
-                joiner.add(((StringGroupUpdate) getActualInstance()).toUrlQueryString(prefix + "one_of_2" + suffix));
+                joiner.add(
+                        ((SyncPlayGroupLeftUpdate) getActualInstance()).toUrlQueryString(prefix + "one_of_2" + suffix));
             }
             return joiner.toString();
         }
-        if (getActualInstance() instanceof PlayQueueUpdateGroupUpdate) {
+        if (getActualInstance() instanceof SyncPlayLibraryAccessDeniedUpdate) {
             if (getActualInstance() != null) {
-                joiner.add(((PlayQueueUpdateGroupUpdate) getActualInstance())
+                joiner.add(((SyncPlayLibraryAccessDeniedUpdate) getActualInstance())
                         .toUrlQueryString(prefix + "one_of_3" + suffix));
+            }
+            return joiner.toString();
+        }
+        if (getActualInstance() instanceof SyncPlayNotInGroupUpdate) {
+            if (getActualInstance() != null) {
+                joiner.add(((SyncPlayNotInGroupUpdate) getActualInstance())
+                        .toUrlQueryString(prefix + "one_of_4" + suffix));
+            }
+            return joiner.toString();
+        }
+        if (getActualInstance() instanceof SyncPlayPlayQueueUpdate) {
+            if (getActualInstance() != null) {
+                joiner.add(
+                        ((SyncPlayPlayQueueUpdate) getActualInstance()).toUrlQueryString(prefix + "one_of_5" + suffix));
+            }
+            return joiner.toString();
+        }
+        if (getActualInstance() instanceof SyncPlayStateUpdate) {
+            if (getActualInstance() != null) {
+                joiner.add(((SyncPlayStateUpdate) getActualInstance()).toUrlQueryString(prefix + "one_of_6" + suffix));
+            }
+            return joiner.toString();
+        }
+        if (getActualInstance() instanceof SyncPlayUserJoinedUpdate) {
+            if (getActualInstance() != null) {
+                joiner.add(((SyncPlayUserJoinedUpdate) getActualInstance())
+                        .toUrlQueryString(prefix + "one_of_7" + suffix));
+            }
+            return joiner.toString();
+        }
+        if (getActualInstance() instanceof SyncPlayUserLeftUpdate) {
+            if (getActualInstance() != null) {
+                joiner.add(
+                        ((SyncPlayUserLeftUpdate) getActualInstance()).toUrlQueryString(prefix + "one_of_8" + suffix));
             }
             return joiner.toString();
         }

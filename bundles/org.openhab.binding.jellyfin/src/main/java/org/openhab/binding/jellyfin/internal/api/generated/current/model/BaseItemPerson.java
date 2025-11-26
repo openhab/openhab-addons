@@ -13,6 +13,7 @@
 
 package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
+import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
 import java.util.UUID;
@@ -69,13 +70,13 @@ public class BaseItemPerson {
      * @return name
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_NAME)
+    @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getName() {
         return name;
     }
 
-    @JsonProperty(JSON_PROPERTY_NAME)
+    @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setName(@org.eclipse.jdt.annotation.NonNull String name) {
         this.name = name;
@@ -92,13 +93,13 @@ public class BaseItemPerson {
      * @return id
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ID)
+    @JsonProperty(value = JSON_PROPERTY_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public UUID getId() {
         return id;
     }
 
-    @JsonProperty(JSON_PROPERTY_ID)
+    @JsonProperty(value = JSON_PROPERTY_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setId(@org.eclipse.jdt.annotation.NonNull UUID id) {
         this.id = id;
@@ -115,13 +116,13 @@ public class BaseItemPerson {
      * @return role
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ROLE)
+    @JsonProperty(value = JSON_PROPERTY_ROLE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getRole() {
         return role;
     }
 
-    @JsonProperty(JSON_PROPERTY_ROLE)
+    @JsonProperty(value = JSON_PROPERTY_ROLE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setRole(@org.eclipse.jdt.annotation.NonNull String role) {
         this.role = role;
@@ -138,13 +139,13 @@ public class BaseItemPerson {
      * @return type
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_TYPE)
+    @JsonProperty(value = JSON_PROPERTY_TYPE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public PersonKind getType() {
         return type;
     }
 
-    @JsonProperty(JSON_PROPERTY_TYPE)
+    @JsonProperty(value = JSON_PROPERTY_TYPE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setType(@org.eclipse.jdt.annotation.NonNull PersonKind type) {
         this.type = type;
@@ -161,13 +162,13 @@ public class BaseItemPerson {
      * @return primaryImageTag
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_PRIMARY_IMAGE_TAG)
+    @JsonProperty(value = JSON_PROPERTY_PRIMARY_IMAGE_TAG, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getPrimaryImageTag() {
         return primaryImageTag;
     }
 
-    @JsonProperty(JSON_PROPERTY_PRIMARY_IMAGE_TAG)
+    @JsonProperty(value = JSON_PROPERTY_PRIMARY_IMAGE_TAG, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setPrimaryImageTag(@org.eclipse.jdt.annotation.NonNull String primaryImageTag) {
         this.primaryImageTag = primaryImageTag;
@@ -185,13 +186,13 @@ public class BaseItemPerson {
      * @return imageBlurHashes
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_IMAGE_BLUR_HASHES)
+    @JsonProperty(value = JSON_PROPERTY_IMAGE_BLUR_HASHES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public BaseItemPersonImageBlurHashes getImageBlurHashes() {
         return imageBlurHashes;
     }
 
-    @JsonProperty(JSON_PROPERTY_IMAGE_BLUR_HASHES)
+    @JsonProperty(value = JSON_PROPERTY_IMAGE_BLUR_HASHES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setImageBlurHashes(@org.eclipse.jdt.annotation.NonNull BaseItemPersonImageBlurHashes imageBlurHashes) {
         this.imageBlurHashes = imageBlurHashes;
@@ -279,31 +280,31 @@ public class BaseItemPerson {
 
         // add `Name` to the URL query string
         if (getName() != null) {
-            joiner.add(String.format("%sName%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sName%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getName()))));
         }
 
         // add `Id` to the URL query string
         if (getId() != null) {
-            joiner.add(
-                    String.format("%sId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
+            joiner.add(String.format(Locale.ROOT, "%sId%s=%s", prefix, suffix,
+                    ApiClient.urlEncode(ApiClient.valueToString(getId()))));
         }
 
         // add `Role` to the URL query string
         if (getRole() != null) {
-            joiner.add(String.format("%sRole%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sRole%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getRole()))));
         }
 
         // add `Type` to the URL query string
         if (getType() != null) {
-            joiner.add(String.format("%sType%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sType%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getType()))));
         }
 
         // add `PrimaryImageTag` to the URL query string
         if (getPrimaryImageTag() != null) {
-            joiner.add(String.format("%sPrimaryImageTag%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sPrimaryImageTag%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getPrimaryImageTag()))));
         }
 

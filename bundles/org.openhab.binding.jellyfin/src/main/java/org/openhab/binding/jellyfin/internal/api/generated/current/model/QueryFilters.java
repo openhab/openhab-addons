@@ -15,6 +15,7 @@ package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
 
@@ -60,13 +61,13 @@ public class QueryFilters {
      * @return genres
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_GENRES)
+    @JsonProperty(value = JSON_PROPERTY_GENRES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<NameGuidPair> getGenres() {
         return genres;
     }
 
-    @JsonProperty(JSON_PROPERTY_GENRES)
+    @JsonProperty(value = JSON_PROPERTY_GENRES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setGenres(@org.eclipse.jdt.annotation.NonNull List<NameGuidPair> genres) {
         this.genres = genres;
@@ -91,13 +92,13 @@ public class QueryFilters {
      * @return tags
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_TAGS)
+    @JsonProperty(value = JSON_PROPERTY_TAGS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<String> getTags() {
         return tags;
     }
 
-    @JsonProperty(JSON_PROPERTY_TAGS)
+    @JsonProperty(value = JSON_PROPERTY_TAGS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setTags(@org.eclipse.jdt.annotation.NonNull List<String> tags) {
         this.tags = tags;
@@ -180,8 +181,9 @@ public class QueryFilters {
         if (getGenres() != null) {
             for (int i = 0; i < getGenres().size(); i++) {
                 if (getGenres().get(i) != null) {
-                    joiner.add(getGenres().get(i).toUrlQueryString(String.format("%sGenres%s%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
+                    joiner.add(getGenres().get(i).toUrlQueryString(
+                            String.format(Locale.ROOT, "%sGenres%s%s", prefix, suffix, "".equals(suffix) ? ""
+                                    : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
                 }
             }
         }
@@ -189,8 +191,9 @@ public class QueryFilters {
         // add `Tags` to the URL query string
         if (getTags() != null) {
             for (int i = 0; i < getTags().size(); i++) {
-                joiner.add(String.format("%sTags%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+                joiner.add(String.format(Locale.ROOT, "%sTags%s%s=%s", prefix, suffix,
+                        "".equals(suffix) ? ""
+                                : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
                         ApiClient.urlEncode(ApiClient.valueToString(getTags().get(i)))));
             }
         }

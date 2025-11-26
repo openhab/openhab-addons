@@ -13,6 +13,7 @@
 
 package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
+import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
 import java.util.UUID;
@@ -86,7 +87,7 @@ public class IPlugin {
      * @return name
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_NAME)
+    @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getName() {
         return name;
@@ -98,7 +99,7 @@ public class IPlugin {
      * @return description
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_DESCRIPTION)
+    @JsonProperty(value = JSON_PROPERTY_DESCRIPTION, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getDescription() {
         return description;
@@ -110,7 +111,7 @@ public class IPlugin {
      * @return id
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ID)
+    @JsonProperty(value = JSON_PROPERTY_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public UUID getId() {
         return id;
@@ -122,7 +123,7 @@ public class IPlugin {
      * @return version
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_VERSION)
+    @JsonProperty(value = JSON_PROPERTY_VERSION, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getVersion() {
         return version;
@@ -134,7 +135,7 @@ public class IPlugin {
      * @return assemblyFilePath
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ASSEMBLY_FILE_PATH)
+    @JsonProperty(value = JSON_PROPERTY_ASSEMBLY_FILE_PATH, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getAssemblyFilePath() {
         return assemblyFilePath;
@@ -146,7 +147,7 @@ public class IPlugin {
      * @return canUninstall
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_CAN_UNINSTALL)
+    @JsonProperty(value = JSON_PROPERTY_CAN_UNINSTALL, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getCanUninstall() {
         return canUninstall;
@@ -158,7 +159,7 @@ public class IPlugin {
      * @return dataFolderPath
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_DATA_FOLDER_PATH)
+    @JsonProperty(value = JSON_PROPERTY_DATA_FOLDER_PATH, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getDataFolderPath() {
         return dataFolderPath;
@@ -248,43 +249,43 @@ public class IPlugin {
 
         // add `Name` to the URL query string
         if (getName() != null) {
-            joiner.add(String.format("%sName%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sName%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getName()))));
         }
 
         // add `Description` to the URL query string
         if (getDescription() != null) {
-            joiner.add(String.format("%sDescription%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sDescription%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getDescription()))));
         }
 
         // add `Id` to the URL query string
         if (getId() != null) {
-            joiner.add(
-                    String.format("%sId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
+            joiner.add(String.format(Locale.ROOT, "%sId%s=%s", prefix, suffix,
+                    ApiClient.urlEncode(ApiClient.valueToString(getId()))));
         }
 
         // add `Version` to the URL query string
         if (getVersion() != null) {
-            joiner.add(String.format("%sVersion%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sVersion%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getVersion()))));
         }
 
         // add `AssemblyFilePath` to the URL query string
         if (getAssemblyFilePath() != null) {
-            joiner.add(String.format("%sAssemblyFilePath%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sAssemblyFilePath%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getAssemblyFilePath()))));
         }
 
         // add `CanUninstall` to the URL query string
         if (getCanUninstall() != null) {
-            joiner.add(String.format("%sCanUninstall%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sCanUninstall%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getCanUninstall()))));
         }
 
         // add `DataFolderPath` to the URL query string
         if (getDataFolderPath() != null) {
-            joiner.add(String.format("%sDataFolderPath%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sDataFolderPath%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getDataFolderPath()))));
         }
 

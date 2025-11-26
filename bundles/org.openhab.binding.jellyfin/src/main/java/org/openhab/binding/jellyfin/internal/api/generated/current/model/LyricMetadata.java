@@ -13,6 +13,7 @@
 
 package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
+import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
 
@@ -85,13 +86,13 @@ public class LyricMetadata {
      * @return artist
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ARTIST)
+    @JsonProperty(value = JSON_PROPERTY_ARTIST, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getArtist() {
         return artist;
     }
 
-    @JsonProperty(JSON_PROPERTY_ARTIST)
+    @JsonProperty(value = JSON_PROPERTY_ARTIST, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setArtist(@org.eclipse.jdt.annotation.NonNull String artist) {
         this.artist = artist;
@@ -108,13 +109,13 @@ public class LyricMetadata {
      * @return album
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ALBUM)
+    @JsonProperty(value = JSON_PROPERTY_ALBUM, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getAlbum() {
         return album;
     }
 
-    @JsonProperty(JSON_PROPERTY_ALBUM)
+    @JsonProperty(value = JSON_PROPERTY_ALBUM, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setAlbum(@org.eclipse.jdt.annotation.NonNull String album) {
         this.album = album;
@@ -131,13 +132,13 @@ public class LyricMetadata {
      * @return title
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_TITLE)
+    @JsonProperty(value = JSON_PROPERTY_TITLE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getTitle() {
         return title;
     }
 
-    @JsonProperty(JSON_PROPERTY_TITLE)
+    @JsonProperty(value = JSON_PROPERTY_TITLE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setTitle(@org.eclipse.jdt.annotation.NonNull String title) {
         this.title = title;
@@ -154,13 +155,13 @@ public class LyricMetadata {
      * @return author
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_AUTHOR)
+    @JsonProperty(value = JSON_PROPERTY_AUTHOR, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getAuthor() {
         return author;
     }
 
-    @JsonProperty(JSON_PROPERTY_AUTHOR)
+    @JsonProperty(value = JSON_PROPERTY_AUTHOR, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setAuthor(@org.eclipse.jdt.annotation.NonNull String author) {
         this.author = author;
@@ -177,13 +178,13 @@ public class LyricMetadata {
      * @return length
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_LENGTH)
+    @JsonProperty(value = JSON_PROPERTY_LENGTH, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Long getLength() {
         return length;
     }
 
-    @JsonProperty(JSON_PROPERTY_LENGTH)
+    @JsonProperty(value = JSON_PROPERTY_LENGTH, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setLength(@org.eclipse.jdt.annotation.NonNull Long length) {
         this.length = length;
@@ -200,13 +201,13 @@ public class LyricMetadata {
      * @return by
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_BY)
+    @JsonProperty(value = JSON_PROPERTY_BY, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getBy() {
         return by;
     }
 
-    @JsonProperty(JSON_PROPERTY_BY)
+    @JsonProperty(value = JSON_PROPERTY_BY, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setBy(@org.eclipse.jdt.annotation.NonNull String by) {
         this.by = by;
@@ -223,13 +224,13 @@ public class LyricMetadata {
      * @return offset
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_OFFSET)
+    @JsonProperty(value = JSON_PROPERTY_OFFSET, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Long getOffset() {
         return offset;
     }
 
-    @JsonProperty(JSON_PROPERTY_OFFSET)
+    @JsonProperty(value = JSON_PROPERTY_OFFSET, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setOffset(@org.eclipse.jdt.annotation.NonNull Long offset) {
         this.offset = offset;
@@ -246,13 +247,13 @@ public class LyricMetadata {
      * @return creator
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_CREATOR)
+    @JsonProperty(value = JSON_PROPERTY_CREATOR, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getCreator() {
         return creator;
     }
 
-    @JsonProperty(JSON_PROPERTY_CREATOR)
+    @JsonProperty(value = JSON_PROPERTY_CREATOR, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setCreator(@org.eclipse.jdt.annotation.NonNull String creator) {
         this.creator = creator;
@@ -269,13 +270,13 @@ public class LyricMetadata {
      * @return version
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_VERSION)
+    @JsonProperty(value = JSON_PROPERTY_VERSION, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getVersion() {
         return version;
     }
 
-    @JsonProperty(JSON_PROPERTY_VERSION)
+    @JsonProperty(value = JSON_PROPERTY_VERSION, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setVersion(@org.eclipse.jdt.annotation.NonNull String version) {
         this.version = version;
@@ -292,13 +293,13 @@ public class LyricMetadata {
      * @return isSynced
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_IS_SYNCED)
+    @JsonProperty(value = JSON_PROPERTY_IS_SYNCED, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getIsSynced() {
         return isSynced;
     }
 
-    @JsonProperty(JSON_PROPERTY_IS_SYNCED)
+    @JsonProperty(value = JSON_PROPERTY_IS_SYNCED, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setIsSynced(@org.eclipse.jdt.annotation.NonNull Boolean isSynced) {
         this.isSynced = isSynced;
@@ -393,61 +394,61 @@ public class LyricMetadata {
 
         // add `Artist` to the URL query string
         if (getArtist() != null) {
-            joiner.add(String.format("%sArtist%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sArtist%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getArtist()))));
         }
 
         // add `Album` to the URL query string
         if (getAlbum() != null) {
-            joiner.add(String.format("%sAlbum%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sAlbum%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getAlbum()))));
         }
 
         // add `Title` to the URL query string
         if (getTitle() != null) {
-            joiner.add(String.format("%sTitle%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sTitle%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getTitle()))));
         }
 
         // add `Author` to the URL query string
         if (getAuthor() != null) {
-            joiner.add(String.format("%sAuthor%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sAuthor%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getAuthor()))));
         }
 
         // add `Length` to the URL query string
         if (getLength() != null) {
-            joiner.add(String.format("%sLength%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sLength%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getLength()))));
         }
 
         // add `By` to the URL query string
         if (getBy() != null) {
-            joiner.add(
-                    String.format("%sBy%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getBy()))));
+            joiner.add(String.format(Locale.ROOT, "%sBy%s=%s", prefix, suffix,
+                    ApiClient.urlEncode(ApiClient.valueToString(getBy()))));
         }
 
         // add `Offset` to the URL query string
         if (getOffset() != null) {
-            joiner.add(String.format("%sOffset%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sOffset%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getOffset()))));
         }
 
         // add `Creator` to the URL query string
         if (getCreator() != null) {
-            joiner.add(String.format("%sCreator%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sCreator%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getCreator()))));
         }
 
         // add `Version` to the URL query string
         if (getVersion() != null) {
-            joiner.add(String.format("%sVersion%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sVersion%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getVersion()))));
         }
 
         // add `IsSynced` to the URL query string
         if (getIsSynced() != null) {
-            joiner.add(String.format("%sIsSynced%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sIsSynced%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getIsSynced()))));
         }
 

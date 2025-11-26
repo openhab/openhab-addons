@@ -13,6 +13,7 @@
 
 package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
+import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
 import java.util.UUID;
@@ -51,13 +52,13 @@ public class SessionUserInfo {
      * @return userId
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_USER_ID)
+    @JsonProperty(value = JSON_PROPERTY_USER_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public UUID getUserId() {
         return userId;
     }
 
-    @JsonProperty(JSON_PROPERTY_USER_ID)
+    @JsonProperty(value = JSON_PROPERTY_USER_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setUserId(@org.eclipse.jdt.annotation.NonNull UUID userId) {
         this.userId = userId;
@@ -74,13 +75,13 @@ public class SessionUserInfo {
      * @return userName
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_USER_NAME)
+    @JsonProperty(value = JSON_PROPERTY_USER_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getUserName() {
         return userName;
     }
 
-    @JsonProperty(JSON_PROPERTY_USER_NAME)
+    @JsonProperty(value = JSON_PROPERTY_USER_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setUserName(@org.eclipse.jdt.annotation.NonNull String userName) {
         this.userName = userName;
@@ -162,13 +163,13 @@ public class SessionUserInfo {
 
         // add `UserId` to the URL query string
         if (getUserId() != null) {
-            joiner.add(String.format("%sUserId%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sUserId%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getUserId()))));
         }
 
         // add `UserName` to the URL query string
         if (getUserName() != null) {
-            joiner.add(String.format("%sUserName%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sUserName%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getUserName()))));
         }
 

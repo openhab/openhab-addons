@@ -14,6 +14,7 @@
 package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
 import java.time.OffsetDateTime;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
 import java.util.UUID;
@@ -88,13 +89,13 @@ public class ActivityLogEntry {
      * @return id
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ID)
+    @JsonProperty(value = JSON_PROPERTY_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Long getId() {
         return id;
     }
 
-    @JsonProperty(JSON_PROPERTY_ID)
+    @JsonProperty(value = JSON_PROPERTY_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setId(@org.eclipse.jdt.annotation.NonNull Long id) {
         this.id = id;
@@ -111,13 +112,13 @@ public class ActivityLogEntry {
      * @return name
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_NAME)
+    @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getName() {
         return name;
     }
 
-    @JsonProperty(JSON_PROPERTY_NAME)
+    @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setName(@org.eclipse.jdt.annotation.NonNull String name) {
         this.name = name;
@@ -134,13 +135,13 @@ public class ActivityLogEntry {
      * @return overview
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_OVERVIEW)
+    @JsonProperty(value = JSON_PROPERTY_OVERVIEW, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getOverview() {
         return overview;
     }
 
-    @JsonProperty(JSON_PROPERTY_OVERVIEW)
+    @JsonProperty(value = JSON_PROPERTY_OVERVIEW, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setOverview(@org.eclipse.jdt.annotation.NonNull String overview) {
         this.overview = overview;
@@ -157,13 +158,13 @@ public class ActivityLogEntry {
      * @return shortOverview
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_SHORT_OVERVIEW)
+    @JsonProperty(value = JSON_PROPERTY_SHORT_OVERVIEW, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getShortOverview() {
         return shortOverview;
     }
 
-    @JsonProperty(JSON_PROPERTY_SHORT_OVERVIEW)
+    @JsonProperty(value = JSON_PROPERTY_SHORT_OVERVIEW, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setShortOverview(@org.eclipse.jdt.annotation.NonNull String shortOverview) {
         this.shortOverview = shortOverview;
@@ -180,13 +181,13 @@ public class ActivityLogEntry {
      * @return type
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_TYPE)
+    @JsonProperty(value = JSON_PROPERTY_TYPE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getType() {
         return type;
     }
 
-    @JsonProperty(JSON_PROPERTY_TYPE)
+    @JsonProperty(value = JSON_PROPERTY_TYPE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setType(@org.eclipse.jdt.annotation.NonNull String type) {
         this.type = type;
@@ -203,13 +204,13 @@ public class ActivityLogEntry {
      * @return itemId
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ITEM_ID)
+    @JsonProperty(value = JSON_PROPERTY_ITEM_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getItemId() {
         return itemId;
     }
 
-    @JsonProperty(JSON_PROPERTY_ITEM_ID)
+    @JsonProperty(value = JSON_PROPERTY_ITEM_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setItemId(@org.eclipse.jdt.annotation.NonNull String itemId) {
         this.itemId = itemId;
@@ -226,13 +227,13 @@ public class ActivityLogEntry {
      * @return date
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_DATE)
+    @JsonProperty(value = JSON_PROPERTY_DATE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public OffsetDateTime getDate() {
         return date;
     }
 
-    @JsonProperty(JSON_PROPERTY_DATE)
+    @JsonProperty(value = JSON_PROPERTY_DATE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setDate(@org.eclipse.jdt.annotation.NonNull OffsetDateTime date) {
         this.date = date;
@@ -249,13 +250,13 @@ public class ActivityLogEntry {
      * @return userId
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_USER_ID)
+    @JsonProperty(value = JSON_PROPERTY_USER_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public UUID getUserId() {
         return userId;
     }
 
-    @JsonProperty(JSON_PROPERTY_USER_ID)
+    @JsonProperty(value = JSON_PROPERTY_USER_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setUserId(@org.eclipse.jdt.annotation.NonNull UUID userId) {
         this.userId = userId;
@@ -274,13 +275,13 @@ public class ActivityLogEntry {
      */
     @Deprecated
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_USER_PRIMARY_IMAGE_TAG)
+    @JsonProperty(value = JSON_PROPERTY_USER_PRIMARY_IMAGE_TAG, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getUserPrimaryImageTag() {
         return userPrimaryImageTag;
     }
 
-    @JsonProperty(JSON_PROPERTY_USER_PRIMARY_IMAGE_TAG)
+    @JsonProperty(value = JSON_PROPERTY_USER_PRIMARY_IMAGE_TAG, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setUserPrimaryImageTag(@org.eclipse.jdt.annotation.NonNull String userPrimaryImageTag) {
         this.userPrimaryImageTag = userPrimaryImageTag;
@@ -297,13 +298,13 @@ public class ActivityLogEntry {
      * @return severity
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_SEVERITY)
+    @JsonProperty(value = JSON_PROPERTY_SEVERITY, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public LogLevel getSeverity() {
         return severity;
     }
 
-    @JsonProperty(JSON_PROPERTY_SEVERITY)
+    @JsonProperty(value = JSON_PROPERTY_SEVERITY, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setSeverity(@org.eclipse.jdt.annotation.NonNull LogLevel severity) {
         this.severity = severity;
@@ -401,61 +402,61 @@ public class ActivityLogEntry {
 
         // add `Id` to the URL query string
         if (getId() != null) {
-            joiner.add(
-                    String.format("%sId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
+            joiner.add(String.format(Locale.ROOT, "%sId%s=%s", prefix, suffix,
+                    ApiClient.urlEncode(ApiClient.valueToString(getId()))));
         }
 
         // add `Name` to the URL query string
         if (getName() != null) {
-            joiner.add(String.format("%sName%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sName%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getName()))));
         }
 
         // add `Overview` to the URL query string
         if (getOverview() != null) {
-            joiner.add(String.format("%sOverview%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sOverview%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getOverview()))));
         }
 
         // add `ShortOverview` to the URL query string
         if (getShortOverview() != null) {
-            joiner.add(String.format("%sShortOverview%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sShortOverview%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getShortOverview()))));
         }
 
         // add `Type` to the URL query string
         if (getType() != null) {
-            joiner.add(String.format("%sType%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sType%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getType()))));
         }
 
         // add `ItemId` to the URL query string
         if (getItemId() != null) {
-            joiner.add(String.format("%sItemId%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sItemId%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getItemId()))));
         }
 
         // add `Date` to the URL query string
         if (getDate() != null) {
-            joiner.add(String.format("%sDate%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sDate%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getDate()))));
         }
 
         // add `UserId` to the URL query string
         if (getUserId() != null) {
-            joiner.add(String.format("%sUserId%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sUserId%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getUserId()))));
         }
 
         // add `UserPrimaryImageTag` to the URL query string
         if (getUserPrimaryImageTag() != null) {
-            joiner.add(String.format("%sUserPrimaryImageTag%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sUserPrimaryImageTag%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getUserPrimaryImageTag()))));
         }
 
         // add `Severity` to the URL query string
         if (getSeverity() != null) {
-            joiner.add(String.format("%sSeverity%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sSeverity%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getSeverity()))));
         }
 

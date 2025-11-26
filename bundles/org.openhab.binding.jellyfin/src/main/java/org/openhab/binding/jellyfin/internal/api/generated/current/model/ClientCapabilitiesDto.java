@@ -15,6 +15,7 @@ package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
 
@@ -86,13 +87,13 @@ public class ClientCapabilitiesDto {
      * @return playableMediaTypes
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_PLAYABLE_MEDIA_TYPES)
+    @JsonProperty(value = JSON_PROPERTY_PLAYABLE_MEDIA_TYPES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<MediaType> getPlayableMediaTypes() {
         return playableMediaTypes;
     }
 
-    @JsonProperty(JSON_PROPERTY_PLAYABLE_MEDIA_TYPES)
+    @JsonProperty(value = JSON_PROPERTY_PLAYABLE_MEDIA_TYPES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setPlayableMediaTypes(@org.eclipse.jdt.annotation.NonNull List<MediaType> playableMediaTypes) {
         this.playableMediaTypes = playableMediaTypes;
@@ -118,13 +119,13 @@ public class ClientCapabilitiesDto {
      * @return supportedCommands
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_SUPPORTED_COMMANDS)
+    @JsonProperty(value = JSON_PROPERTY_SUPPORTED_COMMANDS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<GeneralCommandType> getSupportedCommands() {
         return supportedCommands;
     }
 
-    @JsonProperty(JSON_PROPERTY_SUPPORTED_COMMANDS)
+    @JsonProperty(value = JSON_PROPERTY_SUPPORTED_COMMANDS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setSupportedCommands(@org.eclipse.jdt.annotation.NonNull List<GeneralCommandType> supportedCommands) {
         this.supportedCommands = supportedCommands;
@@ -142,13 +143,13 @@ public class ClientCapabilitiesDto {
      * @return supportsMediaControl
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_SUPPORTS_MEDIA_CONTROL)
+    @JsonProperty(value = JSON_PROPERTY_SUPPORTS_MEDIA_CONTROL, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getSupportsMediaControl() {
         return supportsMediaControl;
     }
 
-    @JsonProperty(JSON_PROPERTY_SUPPORTS_MEDIA_CONTROL)
+    @JsonProperty(value = JSON_PROPERTY_SUPPORTS_MEDIA_CONTROL, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setSupportsMediaControl(@org.eclipse.jdt.annotation.NonNull Boolean supportsMediaControl) {
         this.supportsMediaControl = supportsMediaControl;
@@ -166,13 +167,13 @@ public class ClientCapabilitiesDto {
      * @return supportsPersistentIdentifier
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_SUPPORTS_PERSISTENT_IDENTIFIER)
+    @JsonProperty(value = JSON_PROPERTY_SUPPORTS_PERSISTENT_IDENTIFIER, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getSupportsPersistentIdentifier() {
         return supportsPersistentIdentifier;
     }
 
-    @JsonProperty(JSON_PROPERTY_SUPPORTS_PERSISTENT_IDENTIFIER)
+    @JsonProperty(value = JSON_PROPERTY_SUPPORTS_PERSISTENT_IDENTIFIER, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setSupportsPersistentIdentifier(
             @org.eclipse.jdt.annotation.NonNull Boolean supportsPersistentIdentifier) {
@@ -190,13 +191,13 @@ public class ClientCapabilitiesDto {
      * @return deviceProfile
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_DEVICE_PROFILE)
+    @JsonProperty(value = JSON_PROPERTY_DEVICE_PROFILE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public DeviceProfile getDeviceProfile() {
         return deviceProfile;
     }
 
-    @JsonProperty(JSON_PROPERTY_DEVICE_PROFILE)
+    @JsonProperty(value = JSON_PROPERTY_DEVICE_PROFILE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setDeviceProfile(@org.eclipse.jdt.annotation.NonNull DeviceProfile deviceProfile) {
         this.deviceProfile = deviceProfile;
@@ -213,13 +214,13 @@ public class ClientCapabilitiesDto {
      * @return appStoreUrl
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_APP_STORE_URL)
+    @JsonProperty(value = JSON_PROPERTY_APP_STORE_URL, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getAppStoreUrl() {
         return appStoreUrl;
     }
 
-    @JsonProperty(JSON_PROPERTY_APP_STORE_URL)
+    @JsonProperty(value = JSON_PROPERTY_APP_STORE_URL, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setAppStoreUrl(@org.eclipse.jdt.annotation.NonNull String appStoreUrl) {
         this.appStoreUrl = appStoreUrl;
@@ -236,13 +237,13 @@ public class ClientCapabilitiesDto {
      * @return iconUrl
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ICON_URL)
+    @JsonProperty(value = JSON_PROPERTY_ICON_URL, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getIconUrl() {
         return iconUrl;
     }
 
-    @JsonProperty(JSON_PROPERTY_ICON_URL)
+    @JsonProperty(value = JSON_PROPERTY_ICON_URL, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setIconUrl(@org.eclipse.jdt.annotation.NonNull String iconUrl) {
         this.iconUrl = iconUrl;
@@ -338,8 +339,9 @@ public class ClientCapabilitiesDto {
         if (getPlayableMediaTypes() != null) {
             for (int i = 0; i < getPlayableMediaTypes().size(); i++) {
                 if (getPlayableMediaTypes().get(i) != null) {
-                    joiner.add(String.format("%sPlayableMediaTypes%s%s=%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+                    joiner.add(String.format(Locale.ROOT, "%sPlayableMediaTypes%s%s=%s", prefix, suffix,
+                            "".equals(suffix) ? ""
+                                    : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
                             ApiClient.urlEncode(ApiClient.valueToString(getPlayableMediaTypes().get(i)))));
                 }
             }
@@ -349,8 +351,9 @@ public class ClientCapabilitiesDto {
         if (getSupportedCommands() != null) {
             for (int i = 0; i < getSupportedCommands().size(); i++) {
                 if (getSupportedCommands().get(i) != null) {
-                    joiner.add(String.format("%sSupportedCommands%s%s=%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+                    joiner.add(String.format(Locale.ROOT, "%sSupportedCommands%s%s=%s", prefix, suffix,
+                            "".equals(suffix) ? ""
+                                    : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
                             ApiClient.urlEncode(ApiClient.valueToString(getSupportedCommands().get(i)))));
                 }
             }
@@ -358,13 +361,13 @@ public class ClientCapabilitiesDto {
 
         // add `SupportsMediaControl` to the URL query string
         if (getSupportsMediaControl() != null) {
-            joiner.add(String.format("%sSupportsMediaControl%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sSupportsMediaControl%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getSupportsMediaControl()))));
         }
 
         // add `SupportsPersistentIdentifier` to the URL query string
         if (getSupportsPersistentIdentifier() != null) {
-            joiner.add(String.format("%sSupportsPersistentIdentifier%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sSupportsPersistentIdentifier%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getSupportsPersistentIdentifier()))));
         }
 
@@ -375,13 +378,13 @@ public class ClientCapabilitiesDto {
 
         // add `AppStoreUrl` to the URL query string
         if (getAppStoreUrl() != null) {
-            joiner.add(String.format("%sAppStoreUrl%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sAppStoreUrl%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getAppStoreUrl()))));
         }
 
         // add `IconUrl` to the URL query string
         if (getIconUrl() != null) {
-            joiner.add(String.format("%sIconUrl%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sIconUrl%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getIconUrl()))));
         }
 

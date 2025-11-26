@@ -13,6 +13,7 @@
 
 package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
+import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
 
@@ -32,7 +33,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class TaskTriggerInfo {
     public static final String JSON_PROPERTY_TYPE = "Type";
     @org.eclipse.jdt.annotation.NonNull
-    private String type;
+    private TaskTriggerInfoType type;
 
     public static final String JSON_PROPERTY_TIME_OF_DAY_TICKS = "TimeOfDayTicks";
     @org.eclipse.jdt.annotation.NonNull
@@ -53,7 +54,7 @@ public class TaskTriggerInfo {
     public TaskTriggerInfo() {
     }
 
-    public TaskTriggerInfo type(@org.eclipse.jdt.annotation.NonNull String type) {
+    public TaskTriggerInfo type(@org.eclipse.jdt.annotation.NonNull TaskTriggerInfoType type) {
         this.type = type;
         return this;
     }
@@ -64,15 +65,15 @@ public class TaskTriggerInfo {
      * @return type
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_TYPE)
+    @JsonProperty(value = JSON_PROPERTY_TYPE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public String getType() {
+    public TaskTriggerInfoType getType() {
         return type;
     }
 
-    @JsonProperty(JSON_PROPERTY_TYPE)
+    @JsonProperty(value = JSON_PROPERTY_TYPE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setType(@org.eclipse.jdt.annotation.NonNull String type) {
+    public void setType(@org.eclipse.jdt.annotation.NonNull TaskTriggerInfoType type) {
         this.type = type;
     }
 
@@ -87,13 +88,13 @@ public class TaskTriggerInfo {
      * @return timeOfDayTicks
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_TIME_OF_DAY_TICKS)
+    @JsonProperty(value = JSON_PROPERTY_TIME_OF_DAY_TICKS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Long getTimeOfDayTicks() {
         return timeOfDayTicks;
     }
 
-    @JsonProperty(JSON_PROPERTY_TIME_OF_DAY_TICKS)
+    @JsonProperty(value = JSON_PROPERTY_TIME_OF_DAY_TICKS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setTimeOfDayTicks(@org.eclipse.jdt.annotation.NonNull Long timeOfDayTicks) {
         this.timeOfDayTicks = timeOfDayTicks;
@@ -110,13 +111,13 @@ public class TaskTriggerInfo {
      * @return intervalTicks
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_INTERVAL_TICKS)
+    @JsonProperty(value = JSON_PROPERTY_INTERVAL_TICKS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Long getIntervalTicks() {
         return intervalTicks;
     }
 
-    @JsonProperty(JSON_PROPERTY_INTERVAL_TICKS)
+    @JsonProperty(value = JSON_PROPERTY_INTERVAL_TICKS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setIntervalTicks(@org.eclipse.jdt.annotation.NonNull Long intervalTicks) {
         this.intervalTicks = intervalTicks;
@@ -133,13 +134,13 @@ public class TaskTriggerInfo {
      * @return dayOfWeek
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_DAY_OF_WEEK)
+    @JsonProperty(value = JSON_PROPERTY_DAY_OF_WEEK, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public DayOfWeek getDayOfWeek() {
         return dayOfWeek;
     }
 
-    @JsonProperty(JSON_PROPERTY_DAY_OF_WEEK)
+    @JsonProperty(value = JSON_PROPERTY_DAY_OF_WEEK, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setDayOfWeek(@org.eclipse.jdt.annotation.NonNull DayOfWeek dayOfWeek) {
         this.dayOfWeek = dayOfWeek;
@@ -156,13 +157,13 @@ public class TaskTriggerInfo {
      * @return maxRuntimeTicks
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_MAX_RUNTIME_TICKS)
+    @JsonProperty(value = JSON_PROPERTY_MAX_RUNTIME_TICKS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Long getMaxRuntimeTicks() {
         return maxRuntimeTicks;
     }
 
-    @JsonProperty(JSON_PROPERTY_MAX_RUNTIME_TICKS)
+    @JsonProperty(value = JSON_PROPERTY_MAX_RUNTIME_TICKS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setMaxRuntimeTicks(@org.eclipse.jdt.annotation.NonNull Long maxRuntimeTicks) {
         this.maxRuntimeTicks = maxRuntimeTicks;
@@ -250,31 +251,31 @@ public class TaskTriggerInfo {
 
         // add `Type` to the URL query string
         if (getType() != null) {
-            joiner.add(String.format("%sType%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sType%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getType()))));
         }
 
         // add `TimeOfDayTicks` to the URL query string
         if (getTimeOfDayTicks() != null) {
-            joiner.add(String.format("%sTimeOfDayTicks%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sTimeOfDayTicks%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getTimeOfDayTicks()))));
         }
 
         // add `IntervalTicks` to the URL query string
         if (getIntervalTicks() != null) {
-            joiner.add(String.format("%sIntervalTicks%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sIntervalTicks%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getIntervalTicks()))));
         }
 
         // add `DayOfWeek` to the URL query string
         if (getDayOfWeek() != null) {
-            joiner.add(String.format("%sDayOfWeek%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sDayOfWeek%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getDayOfWeek()))));
         }
 
         // add `MaxRuntimeTicks` to the URL query string
         if (getMaxRuntimeTicks() != null) {
-            joiner.add(String.format("%sMaxRuntimeTicks%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sMaxRuntimeTicks%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getMaxRuntimeTicks()))));
         }
 
@@ -293,7 +294,7 @@ public class TaskTriggerInfo {
             this.instance = instance;
         }
 
-        public TaskTriggerInfo.Builder type(String type) {
+        public TaskTriggerInfo.Builder type(TaskTriggerInfoType type) {
             this.instance.type = type;
             return this;
         }

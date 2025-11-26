@@ -13,6 +13,7 @@
 
 package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
+import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
 
@@ -59,13 +60,13 @@ public class TunerChannelMapping {
      * @return name
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_NAME)
+    @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getName() {
         return name;
     }
 
-    @JsonProperty(JSON_PROPERTY_NAME)
+    @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setName(@org.eclipse.jdt.annotation.NonNull String name) {
         this.name = name;
@@ -82,13 +83,13 @@ public class TunerChannelMapping {
      * @return providerChannelName
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_PROVIDER_CHANNEL_NAME)
+    @JsonProperty(value = JSON_PROPERTY_PROVIDER_CHANNEL_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getProviderChannelName() {
         return providerChannelName;
     }
 
-    @JsonProperty(JSON_PROPERTY_PROVIDER_CHANNEL_NAME)
+    @JsonProperty(value = JSON_PROPERTY_PROVIDER_CHANNEL_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setProviderChannelName(@org.eclipse.jdt.annotation.NonNull String providerChannelName) {
         this.providerChannelName = providerChannelName;
@@ -105,13 +106,13 @@ public class TunerChannelMapping {
      * @return providerChannelId
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_PROVIDER_CHANNEL_ID)
+    @JsonProperty(value = JSON_PROPERTY_PROVIDER_CHANNEL_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getProviderChannelId() {
         return providerChannelId;
     }
 
-    @JsonProperty(JSON_PROPERTY_PROVIDER_CHANNEL_ID)
+    @JsonProperty(value = JSON_PROPERTY_PROVIDER_CHANNEL_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setProviderChannelId(@org.eclipse.jdt.annotation.NonNull String providerChannelId) {
         this.providerChannelId = providerChannelId;
@@ -128,13 +129,13 @@ public class TunerChannelMapping {
      * @return id
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ID)
+    @JsonProperty(value = JSON_PROPERTY_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getId() {
         return id;
     }
 
-    @JsonProperty(JSON_PROPERTY_ID)
+    @JsonProperty(value = JSON_PROPERTY_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setId(@org.eclipse.jdt.annotation.NonNull String id) {
         this.id = id;
@@ -220,26 +221,26 @@ public class TunerChannelMapping {
 
         // add `Name` to the URL query string
         if (getName() != null) {
-            joiner.add(String.format("%sName%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sName%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getName()))));
         }
 
         // add `ProviderChannelName` to the URL query string
         if (getProviderChannelName() != null) {
-            joiner.add(String.format("%sProviderChannelName%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sProviderChannelName%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getProviderChannelName()))));
         }
 
         // add `ProviderChannelId` to the URL query string
         if (getProviderChannelId() != null) {
-            joiner.add(String.format("%sProviderChannelId%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sProviderChannelId%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getProviderChannelId()))));
         }
 
         // add `Id` to the URL query string
         if (getId() != null) {
-            joiner.add(
-                    String.format("%sId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
+            joiner.add(String.format(Locale.ROOT, "%sId%s=%s", prefix, suffix,
+                    ApiClient.urlEncode(ApiClient.valueToString(getId()))));
         }
 
         return joiner.toString();

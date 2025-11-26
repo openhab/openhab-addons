@@ -14,6 +14,7 @@
 package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
 import java.time.OffsetDateTime;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
 
@@ -116,13 +117,13 @@ public class RemoteSubtitleInfo {
      * @return threeLetterISOLanguageName
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_THREE_LETTER_I_S_O_LANGUAGE_NAME)
+    @JsonProperty(value = JSON_PROPERTY_THREE_LETTER_I_S_O_LANGUAGE_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getThreeLetterISOLanguageName() {
         return threeLetterISOLanguageName;
     }
 
-    @JsonProperty(JSON_PROPERTY_THREE_LETTER_I_S_O_LANGUAGE_NAME)
+    @JsonProperty(value = JSON_PROPERTY_THREE_LETTER_I_S_O_LANGUAGE_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setThreeLetterISOLanguageName(@org.eclipse.jdt.annotation.NonNull String threeLetterISOLanguageName) {
         this.threeLetterISOLanguageName = threeLetterISOLanguageName;
@@ -139,13 +140,13 @@ public class RemoteSubtitleInfo {
      * @return id
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ID)
+    @JsonProperty(value = JSON_PROPERTY_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getId() {
         return id;
     }
 
-    @JsonProperty(JSON_PROPERTY_ID)
+    @JsonProperty(value = JSON_PROPERTY_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setId(@org.eclipse.jdt.annotation.NonNull String id) {
         this.id = id;
@@ -162,13 +163,13 @@ public class RemoteSubtitleInfo {
      * @return providerName
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_PROVIDER_NAME)
+    @JsonProperty(value = JSON_PROPERTY_PROVIDER_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getProviderName() {
         return providerName;
     }
 
-    @JsonProperty(JSON_PROPERTY_PROVIDER_NAME)
+    @JsonProperty(value = JSON_PROPERTY_PROVIDER_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setProviderName(@org.eclipse.jdt.annotation.NonNull String providerName) {
         this.providerName = providerName;
@@ -185,13 +186,13 @@ public class RemoteSubtitleInfo {
      * @return name
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_NAME)
+    @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getName() {
         return name;
     }
 
-    @JsonProperty(JSON_PROPERTY_NAME)
+    @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setName(@org.eclipse.jdt.annotation.NonNull String name) {
         this.name = name;
@@ -208,13 +209,13 @@ public class RemoteSubtitleInfo {
      * @return format
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_FORMAT)
+    @JsonProperty(value = JSON_PROPERTY_FORMAT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getFormat() {
         return format;
     }
 
-    @JsonProperty(JSON_PROPERTY_FORMAT)
+    @JsonProperty(value = JSON_PROPERTY_FORMAT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setFormat(@org.eclipse.jdt.annotation.NonNull String format) {
         this.format = format;
@@ -231,13 +232,13 @@ public class RemoteSubtitleInfo {
      * @return author
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_AUTHOR)
+    @JsonProperty(value = JSON_PROPERTY_AUTHOR, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getAuthor() {
         return author;
     }
 
-    @JsonProperty(JSON_PROPERTY_AUTHOR)
+    @JsonProperty(value = JSON_PROPERTY_AUTHOR, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setAuthor(@org.eclipse.jdt.annotation.NonNull String author) {
         this.author = author;
@@ -254,13 +255,13 @@ public class RemoteSubtitleInfo {
      * @return comment
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_COMMENT)
+    @JsonProperty(value = JSON_PROPERTY_COMMENT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getComment() {
         return comment;
     }
 
-    @JsonProperty(JSON_PROPERTY_COMMENT)
+    @JsonProperty(value = JSON_PROPERTY_COMMENT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setComment(@org.eclipse.jdt.annotation.NonNull String comment) {
         this.comment = comment;
@@ -277,13 +278,13 @@ public class RemoteSubtitleInfo {
      * @return dateCreated
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_DATE_CREATED)
+    @JsonProperty(value = JSON_PROPERTY_DATE_CREATED, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public OffsetDateTime getDateCreated() {
         return dateCreated;
     }
 
-    @JsonProperty(JSON_PROPERTY_DATE_CREATED)
+    @JsonProperty(value = JSON_PROPERTY_DATE_CREATED, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setDateCreated(@org.eclipse.jdt.annotation.NonNull OffsetDateTime dateCreated) {
         this.dateCreated = dateCreated;
@@ -300,13 +301,13 @@ public class RemoteSubtitleInfo {
      * @return communityRating
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_COMMUNITY_RATING)
+    @JsonProperty(value = JSON_PROPERTY_COMMUNITY_RATING, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Float getCommunityRating() {
         return communityRating;
     }
 
-    @JsonProperty(JSON_PROPERTY_COMMUNITY_RATING)
+    @JsonProperty(value = JSON_PROPERTY_COMMUNITY_RATING, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setCommunityRating(@org.eclipse.jdt.annotation.NonNull Float communityRating) {
         this.communityRating = communityRating;
@@ -323,13 +324,13 @@ public class RemoteSubtitleInfo {
      * @return frameRate
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_FRAME_RATE)
+    @JsonProperty(value = JSON_PROPERTY_FRAME_RATE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Float getFrameRate() {
         return frameRate;
     }
 
-    @JsonProperty(JSON_PROPERTY_FRAME_RATE)
+    @JsonProperty(value = JSON_PROPERTY_FRAME_RATE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setFrameRate(@org.eclipse.jdt.annotation.NonNull Float frameRate) {
         this.frameRate = frameRate;
@@ -346,13 +347,13 @@ public class RemoteSubtitleInfo {
      * @return downloadCount
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_DOWNLOAD_COUNT)
+    @JsonProperty(value = JSON_PROPERTY_DOWNLOAD_COUNT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getDownloadCount() {
         return downloadCount;
     }
 
-    @JsonProperty(JSON_PROPERTY_DOWNLOAD_COUNT)
+    @JsonProperty(value = JSON_PROPERTY_DOWNLOAD_COUNT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setDownloadCount(@org.eclipse.jdt.annotation.NonNull Integer downloadCount) {
         this.downloadCount = downloadCount;
@@ -369,13 +370,13 @@ public class RemoteSubtitleInfo {
      * @return isHashMatch
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_IS_HASH_MATCH)
+    @JsonProperty(value = JSON_PROPERTY_IS_HASH_MATCH, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getIsHashMatch() {
         return isHashMatch;
     }
 
-    @JsonProperty(JSON_PROPERTY_IS_HASH_MATCH)
+    @JsonProperty(value = JSON_PROPERTY_IS_HASH_MATCH, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setIsHashMatch(@org.eclipse.jdt.annotation.NonNull Boolean isHashMatch) {
         this.isHashMatch = isHashMatch;
@@ -392,13 +393,13 @@ public class RemoteSubtitleInfo {
      * @return aiTranslated
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_AI_TRANSLATED)
+    @JsonProperty(value = JSON_PROPERTY_AI_TRANSLATED, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getAiTranslated() {
         return aiTranslated;
     }
 
-    @JsonProperty(JSON_PROPERTY_AI_TRANSLATED)
+    @JsonProperty(value = JSON_PROPERTY_AI_TRANSLATED, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setAiTranslated(@org.eclipse.jdt.annotation.NonNull Boolean aiTranslated) {
         this.aiTranslated = aiTranslated;
@@ -415,13 +416,13 @@ public class RemoteSubtitleInfo {
      * @return machineTranslated
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_MACHINE_TRANSLATED)
+    @JsonProperty(value = JSON_PROPERTY_MACHINE_TRANSLATED, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getMachineTranslated() {
         return machineTranslated;
     }
 
-    @JsonProperty(JSON_PROPERTY_MACHINE_TRANSLATED)
+    @JsonProperty(value = JSON_PROPERTY_MACHINE_TRANSLATED, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setMachineTranslated(@org.eclipse.jdt.annotation.NonNull Boolean machineTranslated) {
         this.machineTranslated = machineTranslated;
@@ -438,13 +439,13 @@ public class RemoteSubtitleInfo {
      * @return forced
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_FORCED)
+    @JsonProperty(value = JSON_PROPERTY_FORCED, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getForced() {
         return forced;
     }
 
-    @JsonProperty(JSON_PROPERTY_FORCED)
+    @JsonProperty(value = JSON_PROPERTY_FORCED, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setForced(@org.eclipse.jdt.annotation.NonNull Boolean forced) {
         this.forced = forced;
@@ -461,13 +462,13 @@ public class RemoteSubtitleInfo {
      * @return hearingImpaired
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_HEARING_IMPAIRED)
+    @JsonProperty(value = JSON_PROPERTY_HEARING_IMPAIRED, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getHearingImpaired() {
         return hearingImpaired;
     }
 
-    @JsonProperty(JSON_PROPERTY_HEARING_IMPAIRED)
+    @JsonProperty(value = JSON_PROPERTY_HEARING_IMPAIRED, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setHearingImpaired(@org.eclipse.jdt.annotation.NonNull Boolean hearingImpaired) {
         this.hearingImpaired = hearingImpaired;
@@ -579,97 +580,97 @@ public class RemoteSubtitleInfo {
 
         // add `ThreeLetterISOLanguageName` to the URL query string
         if (getThreeLetterISOLanguageName() != null) {
-            joiner.add(String.format("%sThreeLetterISOLanguageName%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sThreeLetterISOLanguageName%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getThreeLetterISOLanguageName()))));
         }
 
         // add `Id` to the URL query string
         if (getId() != null) {
-            joiner.add(
-                    String.format("%sId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
+            joiner.add(String.format(Locale.ROOT, "%sId%s=%s", prefix, suffix,
+                    ApiClient.urlEncode(ApiClient.valueToString(getId()))));
         }
 
         // add `ProviderName` to the URL query string
         if (getProviderName() != null) {
-            joiner.add(String.format("%sProviderName%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sProviderName%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getProviderName()))));
         }
 
         // add `Name` to the URL query string
         if (getName() != null) {
-            joiner.add(String.format("%sName%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sName%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getName()))));
         }
 
         // add `Format` to the URL query string
         if (getFormat() != null) {
-            joiner.add(String.format("%sFormat%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sFormat%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getFormat()))));
         }
 
         // add `Author` to the URL query string
         if (getAuthor() != null) {
-            joiner.add(String.format("%sAuthor%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sAuthor%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getAuthor()))));
         }
 
         // add `Comment` to the URL query string
         if (getComment() != null) {
-            joiner.add(String.format("%sComment%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sComment%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getComment()))));
         }
 
         // add `DateCreated` to the URL query string
         if (getDateCreated() != null) {
-            joiner.add(String.format("%sDateCreated%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sDateCreated%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getDateCreated()))));
         }
 
         // add `CommunityRating` to the URL query string
         if (getCommunityRating() != null) {
-            joiner.add(String.format("%sCommunityRating%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sCommunityRating%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getCommunityRating()))));
         }
 
         // add `FrameRate` to the URL query string
         if (getFrameRate() != null) {
-            joiner.add(String.format("%sFrameRate%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sFrameRate%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getFrameRate()))));
         }
 
         // add `DownloadCount` to the URL query string
         if (getDownloadCount() != null) {
-            joiner.add(String.format("%sDownloadCount%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sDownloadCount%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getDownloadCount()))));
         }
 
         // add `IsHashMatch` to the URL query string
         if (getIsHashMatch() != null) {
-            joiner.add(String.format("%sIsHashMatch%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sIsHashMatch%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getIsHashMatch()))));
         }
 
         // add `AiTranslated` to the URL query string
         if (getAiTranslated() != null) {
-            joiner.add(String.format("%sAiTranslated%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sAiTranslated%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getAiTranslated()))));
         }
 
         // add `MachineTranslated` to the URL query string
         if (getMachineTranslated() != null) {
-            joiner.add(String.format("%sMachineTranslated%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sMachineTranslated%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getMachineTranslated()))));
         }
 
         // add `Forced` to the URL query string
         if (getForced() != null) {
-            joiner.add(String.format("%sForced%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sForced%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getForced()))));
         }
 
         // add `HearingImpaired` to the URL query string
         if (getHearingImpaired() != null) {
-            joiner.add(String.format("%sHearingImpaired%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sHearingImpaired%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getHearingImpaired()))));
         }
 

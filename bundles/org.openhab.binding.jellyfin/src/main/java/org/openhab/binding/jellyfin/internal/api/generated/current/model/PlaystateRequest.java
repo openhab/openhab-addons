@@ -13,6 +13,7 @@
 
 package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
+import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
 
@@ -55,13 +56,13 @@ public class PlaystateRequest {
      * @return command
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_COMMAND)
+    @JsonProperty(value = JSON_PROPERTY_COMMAND, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public PlaystateCommand getCommand() {
         return command;
     }
 
-    @JsonProperty(JSON_PROPERTY_COMMAND)
+    @JsonProperty(value = JSON_PROPERTY_COMMAND, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setCommand(@org.eclipse.jdt.annotation.NonNull PlaystateCommand command) {
         this.command = command;
@@ -78,13 +79,13 @@ public class PlaystateRequest {
      * @return seekPositionTicks
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_SEEK_POSITION_TICKS)
+    @JsonProperty(value = JSON_PROPERTY_SEEK_POSITION_TICKS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Long getSeekPositionTicks() {
         return seekPositionTicks;
     }
 
-    @JsonProperty(JSON_PROPERTY_SEEK_POSITION_TICKS)
+    @JsonProperty(value = JSON_PROPERTY_SEEK_POSITION_TICKS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setSeekPositionTicks(@org.eclipse.jdt.annotation.NonNull Long seekPositionTicks) {
         this.seekPositionTicks = seekPositionTicks;
@@ -101,13 +102,13 @@ public class PlaystateRequest {
      * @return controllingUserId
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_CONTROLLING_USER_ID)
+    @JsonProperty(value = JSON_PROPERTY_CONTROLLING_USER_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getControllingUserId() {
         return controllingUserId;
     }
 
-    @JsonProperty(JSON_PROPERTY_CONTROLLING_USER_ID)
+    @JsonProperty(value = JSON_PROPERTY_CONTROLLING_USER_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setControllingUserId(@org.eclipse.jdt.annotation.NonNull String controllingUserId) {
         this.controllingUserId = controllingUserId;
@@ -191,19 +192,19 @@ public class PlaystateRequest {
 
         // add `Command` to the URL query string
         if (getCommand() != null) {
-            joiner.add(String.format("%sCommand%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sCommand%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getCommand()))));
         }
 
         // add `SeekPositionTicks` to the URL query string
         if (getSeekPositionTicks() != null) {
-            joiner.add(String.format("%sSeekPositionTicks%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sSeekPositionTicks%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getSeekPositionTicks()))));
         }
 
         // add `ControllingUserId` to the URL query string
         if (getControllingUserId() != null) {
-            joiner.add(String.format("%sControllingUserId%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sControllingUserId%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getControllingUserId()))));
         }
 

@@ -13,6 +13,7 @@
 
 package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
+import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
 import java.util.UUID;
@@ -24,7 +25,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
- * Plabyback info dto.
+ * Playback info dto.
  */
 @JsonPropertyOrder({ PlaybackInfoDto.JSON_PROPERTY_USER_ID, PlaybackInfoDto.JSON_PROPERTY_MAX_STREAMING_BITRATE,
         PlaybackInfoDto.JSON_PROPERTY_START_TIME_TICKS, PlaybackInfoDto.JSON_PROPERTY_AUDIO_STREAM_INDEX,
@@ -115,13 +116,13 @@ public class PlaybackInfoDto {
      * @return userId
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_USER_ID)
+    @JsonProperty(value = JSON_PROPERTY_USER_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public UUID getUserId() {
         return userId;
     }
 
-    @JsonProperty(JSON_PROPERTY_USER_ID)
+    @JsonProperty(value = JSON_PROPERTY_USER_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setUserId(@org.eclipse.jdt.annotation.NonNull UUID userId) {
         this.userId = userId;
@@ -138,13 +139,13 @@ public class PlaybackInfoDto {
      * @return maxStreamingBitrate
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_MAX_STREAMING_BITRATE)
+    @JsonProperty(value = JSON_PROPERTY_MAX_STREAMING_BITRATE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getMaxStreamingBitrate() {
         return maxStreamingBitrate;
     }
 
-    @JsonProperty(JSON_PROPERTY_MAX_STREAMING_BITRATE)
+    @JsonProperty(value = JSON_PROPERTY_MAX_STREAMING_BITRATE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setMaxStreamingBitrate(@org.eclipse.jdt.annotation.NonNull Integer maxStreamingBitrate) {
         this.maxStreamingBitrate = maxStreamingBitrate;
@@ -161,13 +162,13 @@ public class PlaybackInfoDto {
      * @return startTimeTicks
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_START_TIME_TICKS)
+    @JsonProperty(value = JSON_PROPERTY_START_TIME_TICKS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Long getStartTimeTicks() {
         return startTimeTicks;
     }
 
-    @JsonProperty(JSON_PROPERTY_START_TIME_TICKS)
+    @JsonProperty(value = JSON_PROPERTY_START_TIME_TICKS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setStartTimeTicks(@org.eclipse.jdt.annotation.NonNull Long startTimeTicks) {
         this.startTimeTicks = startTimeTicks;
@@ -184,13 +185,13 @@ public class PlaybackInfoDto {
      * @return audioStreamIndex
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_AUDIO_STREAM_INDEX)
+    @JsonProperty(value = JSON_PROPERTY_AUDIO_STREAM_INDEX, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getAudioStreamIndex() {
         return audioStreamIndex;
     }
 
-    @JsonProperty(JSON_PROPERTY_AUDIO_STREAM_INDEX)
+    @JsonProperty(value = JSON_PROPERTY_AUDIO_STREAM_INDEX, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setAudioStreamIndex(@org.eclipse.jdt.annotation.NonNull Integer audioStreamIndex) {
         this.audioStreamIndex = audioStreamIndex;
@@ -207,13 +208,13 @@ public class PlaybackInfoDto {
      * @return subtitleStreamIndex
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_SUBTITLE_STREAM_INDEX)
+    @JsonProperty(value = JSON_PROPERTY_SUBTITLE_STREAM_INDEX, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getSubtitleStreamIndex() {
         return subtitleStreamIndex;
     }
 
-    @JsonProperty(JSON_PROPERTY_SUBTITLE_STREAM_INDEX)
+    @JsonProperty(value = JSON_PROPERTY_SUBTITLE_STREAM_INDEX, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setSubtitleStreamIndex(@org.eclipse.jdt.annotation.NonNull Integer subtitleStreamIndex) {
         this.subtitleStreamIndex = subtitleStreamIndex;
@@ -230,13 +231,13 @@ public class PlaybackInfoDto {
      * @return maxAudioChannels
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_MAX_AUDIO_CHANNELS)
+    @JsonProperty(value = JSON_PROPERTY_MAX_AUDIO_CHANNELS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getMaxAudioChannels() {
         return maxAudioChannels;
     }
 
-    @JsonProperty(JSON_PROPERTY_MAX_AUDIO_CHANNELS)
+    @JsonProperty(value = JSON_PROPERTY_MAX_AUDIO_CHANNELS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setMaxAudioChannels(@org.eclipse.jdt.annotation.NonNull Integer maxAudioChannels) {
         this.maxAudioChannels = maxAudioChannels;
@@ -253,13 +254,13 @@ public class PlaybackInfoDto {
      * @return mediaSourceId
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_MEDIA_SOURCE_ID)
+    @JsonProperty(value = JSON_PROPERTY_MEDIA_SOURCE_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getMediaSourceId() {
         return mediaSourceId;
     }
 
-    @JsonProperty(JSON_PROPERTY_MEDIA_SOURCE_ID)
+    @JsonProperty(value = JSON_PROPERTY_MEDIA_SOURCE_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setMediaSourceId(@org.eclipse.jdt.annotation.NonNull String mediaSourceId) {
         this.mediaSourceId = mediaSourceId;
@@ -276,13 +277,13 @@ public class PlaybackInfoDto {
      * @return liveStreamId
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_LIVE_STREAM_ID)
+    @JsonProperty(value = JSON_PROPERTY_LIVE_STREAM_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getLiveStreamId() {
         return liveStreamId;
     }
 
-    @JsonProperty(JSON_PROPERTY_LIVE_STREAM_ID)
+    @JsonProperty(value = JSON_PROPERTY_LIVE_STREAM_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setLiveStreamId(@org.eclipse.jdt.annotation.NonNull String liveStreamId) {
         this.liveStreamId = liveStreamId;
@@ -306,13 +307,13 @@ public class PlaybackInfoDto {
      * @return deviceProfile
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_DEVICE_PROFILE)
+    @JsonProperty(value = JSON_PROPERTY_DEVICE_PROFILE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public DeviceProfile getDeviceProfile() {
         return deviceProfile;
     }
 
-    @JsonProperty(JSON_PROPERTY_DEVICE_PROFILE)
+    @JsonProperty(value = JSON_PROPERTY_DEVICE_PROFILE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setDeviceProfile(@org.eclipse.jdt.annotation.NonNull DeviceProfile deviceProfile) {
         this.deviceProfile = deviceProfile;
@@ -329,13 +330,13 @@ public class PlaybackInfoDto {
      * @return enableDirectPlay
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ENABLE_DIRECT_PLAY)
+    @JsonProperty(value = JSON_PROPERTY_ENABLE_DIRECT_PLAY, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getEnableDirectPlay() {
         return enableDirectPlay;
     }
 
-    @JsonProperty(JSON_PROPERTY_ENABLE_DIRECT_PLAY)
+    @JsonProperty(value = JSON_PROPERTY_ENABLE_DIRECT_PLAY, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setEnableDirectPlay(@org.eclipse.jdt.annotation.NonNull Boolean enableDirectPlay) {
         this.enableDirectPlay = enableDirectPlay;
@@ -352,13 +353,13 @@ public class PlaybackInfoDto {
      * @return enableDirectStream
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ENABLE_DIRECT_STREAM)
+    @JsonProperty(value = JSON_PROPERTY_ENABLE_DIRECT_STREAM, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getEnableDirectStream() {
         return enableDirectStream;
     }
 
-    @JsonProperty(JSON_PROPERTY_ENABLE_DIRECT_STREAM)
+    @JsonProperty(value = JSON_PROPERTY_ENABLE_DIRECT_STREAM, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setEnableDirectStream(@org.eclipse.jdt.annotation.NonNull Boolean enableDirectStream) {
         this.enableDirectStream = enableDirectStream;
@@ -375,13 +376,13 @@ public class PlaybackInfoDto {
      * @return enableTranscoding
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ENABLE_TRANSCODING)
+    @JsonProperty(value = JSON_PROPERTY_ENABLE_TRANSCODING, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getEnableTranscoding() {
         return enableTranscoding;
     }
 
-    @JsonProperty(JSON_PROPERTY_ENABLE_TRANSCODING)
+    @JsonProperty(value = JSON_PROPERTY_ENABLE_TRANSCODING, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setEnableTranscoding(@org.eclipse.jdt.annotation.NonNull Boolean enableTranscoding) {
         this.enableTranscoding = enableTranscoding;
@@ -398,13 +399,13 @@ public class PlaybackInfoDto {
      * @return allowVideoStreamCopy
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ALLOW_VIDEO_STREAM_COPY)
+    @JsonProperty(value = JSON_PROPERTY_ALLOW_VIDEO_STREAM_COPY, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getAllowVideoStreamCopy() {
         return allowVideoStreamCopy;
     }
 
-    @JsonProperty(JSON_PROPERTY_ALLOW_VIDEO_STREAM_COPY)
+    @JsonProperty(value = JSON_PROPERTY_ALLOW_VIDEO_STREAM_COPY, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setAllowVideoStreamCopy(@org.eclipse.jdt.annotation.NonNull Boolean allowVideoStreamCopy) {
         this.allowVideoStreamCopy = allowVideoStreamCopy;
@@ -421,13 +422,13 @@ public class PlaybackInfoDto {
      * @return allowAudioStreamCopy
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ALLOW_AUDIO_STREAM_COPY)
+    @JsonProperty(value = JSON_PROPERTY_ALLOW_AUDIO_STREAM_COPY, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getAllowAudioStreamCopy() {
         return allowAudioStreamCopy;
     }
 
-    @JsonProperty(JSON_PROPERTY_ALLOW_AUDIO_STREAM_COPY)
+    @JsonProperty(value = JSON_PROPERTY_ALLOW_AUDIO_STREAM_COPY, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setAllowAudioStreamCopy(@org.eclipse.jdt.annotation.NonNull Boolean allowAudioStreamCopy) {
         this.allowAudioStreamCopy = allowAudioStreamCopy;
@@ -444,13 +445,13 @@ public class PlaybackInfoDto {
      * @return autoOpenLiveStream
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_AUTO_OPEN_LIVE_STREAM)
+    @JsonProperty(value = JSON_PROPERTY_AUTO_OPEN_LIVE_STREAM, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getAutoOpenLiveStream() {
         return autoOpenLiveStream;
     }
 
-    @JsonProperty(JSON_PROPERTY_AUTO_OPEN_LIVE_STREAM)
+    @JsonProperty(value = JSON_PROPERTY_AUTO_OPEN_LIVE_STREAM, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setAutoOpenLiveStream(@org.eclipse.jdt.annotation.NonNull Boolean autoOpenLiveStream) {
         this.autoOpenLiveStream = autoOpenLiveStream;
@@ -468,13 +469,13 @@ public class PlaybackInfoDto {
      * @return alwaysBurnInSubtitleWhenTranscoding
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ALWAYS_BURN_IN_SUBTITLE_WHEN_TRANSCODING)
+    @JsonProperty(value = JSON_PROPERTY_ALWAYS_BURN_IN_SUBTITLE_WHEN_TRANSCODING, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getAlwaysBurnInSubtitleWhenTranscoding() {
         return alwaysBurnInSubtitleWhenTranscoding;
     }
 
-    @JsonProperty(JSON_PROPERTY_ALWAYS_BURN_IN_SUBTITLE_WHEN_TRANSCODING)
+    @JsonProperty(value = JSON_PROPERTY_ALWAYS_BURN_IN_SUBTITLE_WHEN_TRANSCODING, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setAlwaysBurnInSubtitleWhenTranscoding(
             @org.eclipse.jdt.annotation.NonNull Boolean alwaysBurnInSubtitleWhenTranscoding) {
@@ -589,49 +590,49 @@ public class PlaybackInfoDto {
 
         // add `UserId` to the URL query string
         if (getUserId() != null) {
-            joiner.add(String.format("%sUserId%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sUserId%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getUserId()))));
         }
 
         // add `MaxStreamingBitrate` to the URL query string
         if (getMaxStreamingBitrate() != null) {
-            joiner.add(String.format("%sMaxStreamingBitrate%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sMaxStreamingBitrate%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getMaxStreamingBitrate()))));
         }
 
         // add `StartTimeTicks` to the URL query string
         if (getStartTimeTicks() != null) {
-            joiner.add(String.format("%sStartTimeTicks%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sStartTimeTicks%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getStartTimeTicks()))));
         }
 
         // add `AudioStreamIndex` to the URL query string
         if (getAudioStreamIndex() != null) {
-            joiner.add(String.format("%sAudioStreamIndex%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sAudioStreamIndex%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getAudioStreamIndex()))));
         }
 
         // add `SubtitleStreamIndex` to the URL query string
         if (getSubtitleStreamIndex() != null) {
-            joiner.add(String.format("%sSubtitleStreamIndex%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sSubtitleStreamIndex%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getSubtitleStreamIndex()))));
         }
 
         // add `MaxAudioChannels` to the URL query string
         if (getMaxAudioChannels() != null) {
-            joiner.add(String.format("%sMaxAudioChannels%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sMaxAudioChannels%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getMaxAudioChannels()))));
         }
 
         // add `MediaSourceId` to the URL query string
         if (getMediaSourceId() != null) {
-            joiner.add(String.format("%sMediaSourceId%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sMediaSourceId%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getMediaSourceId()))));
         }
 
         // add `LiveStreamId` to the URL query string
         if (getLiveStreamId() != null) {
-            joiner.add(String.format("%sLiveStreamId%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sLiveStreamId%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getLiveStreamId()))));
         }
 
@@ -642,43 +643,43 @@ public class PlaybackInfoDto {
 
         // add `EnableDirectPlay` to the URL query string
         if (getEnableDirectPlay() != null) {
-            joiner.add(String.format("%sEnableDirectPlay%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sEnableDirectPlay%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getEnableDirectPlay()))));
         }
 
         // add `EnableDirectStream` to the URL query string
         if (getEnableDirectStream() != null) {
-            joiner.add(String.format("%sEnableDirectStream%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sEnableDirectStream%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getEnableDirectStream()))));
         }
 
         // add `EnableTranscoding` to the URL query string
         if (getEnableTranscoding() != null) {
-            joiner.add(String.format("%sEnableTranscoding%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sEnableTranscoding%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getEnableTranscoding()))));
         }
 
         // add `AllowVideoStreamCopy` to the URL query string
         if (getAllowVideoStreamCopy() != null) {
-            joiner.add(String.format("%sAllowVideoStreamCopy%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sAllowVideoStreamCopy%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getAllowVideoStreamCopy()))));
         }
 
         // add `AllowAudioStreamCopy` to the URL query string
         if (getAllowAudioStreamCopy() != null) {
-            joiner.add(String.format("%sAllowAudioStreamCopy%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sAllowAudioStreamCopy%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getAllowAudioStreamCopy()))));
         }
 
         // add `AutoOpenLiveStream` to the URL query string
         if (getAutoOpenLiveStream() != null) {
-            joiner.add(String.format("%sAutoOpenLiveStream%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sAutoOpenLiveStream%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getAutoOpenLiveStream()))));
         }
 
         // add `AlwaysBurnInSubtitleWhenTranscoding` to the URL query string
         if (getAlwaysBurnInSubtitleWhenTranscoding() != null) {
-            joiner.add(String.format("%sAlwaysBurnInSubtitleWhenTranscoding%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sAlwaysBurnInSubtitleWhenTranscoding%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getAlwaysBurnInSubtitleWhenTranscoding()))));
         }
 

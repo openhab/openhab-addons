@@ -15,6 +15,7 @@ package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
 import java.util.UUID;
@@ -98,13 +99,13 @@ public class ChannelFeatures {
      * @return name
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_NAME)
+    @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getName() {
         return name;
     }
 
-    @JsonProperty(JSON_PROPERTY_NAME)
+    @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setName(@org.eclipse.jdt.annotation.NonNull String name) {
         this.name = name;
@@ -121,13 +122,13 @@ public class ChannelFeatures {
      * @return id
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ID)
+    @JsonProperty(value = JSON_PROPERTY_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public UUID getId() {
         return id;
     }
 
-    @JsonProperty(JSON_PROPERTY_ID)
+    @JsonProperty(value = JSON_PROPERTY_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setId(@org.eclipse.jdt.annotation.NonNull UUID id) {
         this.id = id;
@@ -144,13 +145,13 @@ public class ChannelFeatures {
      * @return canSearch
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_CAN_SEARCH)
+    @JsonProperty(value = JSON_PROPERTY_CAN_SEARCH, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getCanSearch() {
         return canSearch;
     }
 
-    @JsonProperty(JSON_PROPERTY_CAN_SEARCH)
+    @JsonProperty(value = JSON_PROPERTY_CAN_SEARCH, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setCanSearch(@org.eclipse.jdt.annotation.NonNull Boolean canSearch) {
         this.canSearch = canSearch;
@@ -175,13 +176,13 @@ public class ChannelFeatures {
      * @return mediaTypes
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_MEDIA_TYPES)
+    @JsonProperty(value = JSON_PROPERTY_MEDIA_TYPES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<ChannelMediaType> getMediaTypes() {
         return mediaTypes;
     }
 
-    @JsonProperty(JSON_PROPERTY_MEDIA_TYPES)
+    @JsonProperty(value = JSON_PROPERTY_MEDIA_TYPES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setMediaTypes(@org.eclipse.jdt.annotation.NonNull List<ChannelMediaType> mediaTypes) {
         this.mediaTypes = mediaTypes;
@@ -207,13 +208,13 @@ public class ChannelFeatures {
      * @return contentTypes
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_CONTENT_TYPES)
+    @JsonProperty(value = JSON_PROPERTY_CONTENT_TYPES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<ChannelMediaContentType> getContentTypes() {
         return contentTypes;
     }
 
-    @JsonProperty(JSON_PROPERTY_CONTENT_TYPES)
+    @JsonProperty(value = JSON_PROPERTY_CONTENT_TYPES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setContentTypes(@org.eclipse.jdt.annotation.NonNull List<ChannelMediaContentType> contentTypes) {
         this.contentTypes = contentTypes;
@@ -230,13 +231,13 @@ public class ChannelFeatures {
      * @return maxPageSize
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_MAX_PAGE_SIZE)
+    @JsonProperty(value = JSON_PROPERTY_MAX_PAGE_SIZE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getMaxPageSize() {
         return maxPageSize;
     }
 
-    @JsonProperty(JSON_PROPERTY_MAX_PAGE_SIZE)
+    @JsonProperty(value = JSON_PROPERTY_MAX_PAGE_SIZE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setMaxPageSize(@org.eclipse.jdt.annotation.NonNull Integer maxPageSize) {
         this.maxPageSize = maxPageSize;
@@ -253,13 +254,13 @@ public class ChannelFeatures {
      * @return autoRefreshLevels
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_AUTO_REFRESH_LEVELS)
+    @JsonProperty(value = JSON_PROPERTY_AUTO_REFRESH_LEVELS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getAutoRefreshLevels() {
         return autoRefreshLevels;
     }
 
-    @JsonProperty(JSON_PROPERTY_AUTO_REFRESH_LEVELS)
+    @JsonProperty(value = JSON_PROPERTY_AUTO_REFRESH_LEVELS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setAutoRefreshLevels(@org.eclipse.jdt.annotation.NonNull Integer autoRefreshLevels) {
         this.autoRefreshLevels = autoRefreshLevels;
@@ -285,13 +286,13 @@ public class ChannelFeatures {
      * @return defaultSortFields
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_DEFAULT_SORT_FIELDS)
+    @JsonProperty(value = JSON_PROPERTY_DEFAULT_SORT_FIELDS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<ChannelItemSortField> getDefaultSortFields() {
         return defaultSortFields;
     }
 
-    @JsonProperty(JSON_PROPERTY_DEFAULT_SORT_FIELDS)
+    @JsonProperty(value = JSON_PROPERTY_DEFAULT_SORT_FIELDS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setDefaultSortFields(@org.eclipse.jdt.annotation.NonNull List<ChannelItemSortField> defaultSortFields) {
         this.defaultSortFields = defaultSortFields;
@@ -309,13 +310,13 @@ public class ChannelFeatures {
      * @return supportsSortOrderToggle
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_SUPPORTS_SORT_ORDER_TOGGLE)
+    @JsonProperty(value = JSON_PROPERTY_SUPPORTS_SORT_ORDER_TOGGLE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getSupportsSortOrderToggle() {
         return supportsSortOrderToggle;
     }
 
-    @JsonProperty(JSON_PROPERTY_SUPPORTS_SORT_ORDER_TOGGLE)
+    @JsonProperty(value = JSON_PROPERTY_SUPPORTS_SORT_ORDER_TOGGLE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setSupportsSortOrderToggle(@org.eclipse.jdt.annotation.NonNull Boolean supportsSortOrderToggle) {
         this.supportsSortOrderToggle = supportsSortOrderToggle;
@@ -332,13 +333,13 @@ public class ChannelFeatures {
      * @return supportsLatestMedia
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_SUPPORTS_LATEST_MEDIA)
+    @JsonProperty(value = JSON_PROPERTY_SUPPORTS_LATEST_MEDIA, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getSupportsLatestMedia() {
         return supportsLatestMedia;
     }
 
-    @JsonProperty(JSON_PROPERTY_SUPPORTS_LATEST_MEDIA)
+    @JsonProperty(value = JSON_PROPERTY_SUPPORTS_LATEST_MEDIA, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setSupportsLatestMedia(@org.eclipse.jdt.annotation.NonNull Boolean supportsLatestMedia) {
         this.supportsLatestMedia = supportsLatestMedia;
@@ -355,13 +356,13 @@ public class ChannelFeatures {
      * @return canFilter
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_CAN_FILTER)
+    @JsonProperty(value = JSON_PROPERTY_CAN_FILTER, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getCanFilter() {
         return canFilter;
     }
 
-    @JsonProperty(JSON_PROPERTY_CAN_FILTER)
+    @JsonProperty(value = JSON_PROPERTY_CAN_FILTER, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setCanFilter(@org.eclipse.jdt.annotation.NonNull Boolean canFilter) {
         this.canFilter = canFilter;
@@ -379,13 +380,13 @@ public class ChannelFeatures {
      * @return supportsContentDownloading
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_SUPPORTS_CONTENT_DOWNLOADING)
+    @JsonProperty(value = JSON_PROPERTY_SUPPORTS_CONTENT_DOWNLOADING, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getSupportsContentDownloading() {
         return supportsContentDownloading;
     }
 
-    @JsonProperty(JSON_PROPERTY_SUPPORTS_CONTENT_DOWNLOADING)
+    @JsonProperty(value = JSON_PROPERTY_SUPPORTS_CONTENT_DOWNLOADING, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setSupportsContentDownloading(@org.eclipse.jdt.annotation.NonNull Boolean supportsContentDownloading) {
         this.supportsContentDownloading = supportsContentDownloading;
@@ -487,19 +488,19 @@ public class ChannelFeatures {
 
         // add `Name` to the URL query string
         if (getName() != null) {
-            joiner.add(String.format("%sName%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sName%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getName()))));
         }
 
         // add `Id` to the URL query string
         if (getId() != null) {
-            joiner.add(
-                    String.format("%sId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
+            joiner.add(String.format(Locale.ROOT, "%sId%s=%s", prefix, suffix,
+                    ApiClient.urlEncode(ApiClient.valueToString(getId()))));
         }
 
         // add `CanSearch` to the URL query string
         if (getCanSearch() != null) {
-            joiner.add(String.format("%sCanSearch%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sCanSearch%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getCanSearch()))));
         }
 
@@ -507,8 +508,9 @@ public class ChannelFeatures {
         if (getMediaTypes() != null) {
             for (int i = 0; i < getMediaTypes().size(); i++) {
                 if (getMediaTypes().get(i) != null) {
-                    joiner.add(String.format("%sMediaTypes%s%s=%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+                    joiner.add(String.format(Locale.ROOT, "%sMediaTypes%s%s=%s", prefix, suffix,
+                            "".equals(suffix) ? ""
+                                    : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
                             ApiClient.urlEncode(ApiClient.valueToString(getMediaTypes().get(i)))));
                 }
             }
@@ -518,8 +520,9 @@ public class ChannelFeatures {
         if (getContentTypes() != null) {
             for (int i = 0; i < getContentTypes().size(); i++) {
                 if (getContentTypes().get(i) != null) {
-                    joiner.add(String.format("%sContentTypes%s%s=%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+                    joiner.add(String.format(Locale.ROOT, "%sContentTypes%s%s=%s", prefix, suffix,
+                            "".equals(suffix) ? ""
+                                    : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
                             ApiClient.urlEncode(ApiClient.valueToString(getContentTypes().get(i)))));
                 }
             }
@@ -527,13 +530,13 @@ public class ChannelFeatures {
 
         // add `MaxPageSize` to the URL query string
         if (getMaxPageSize() != null) {
-            joiner.add(String.format("%sMaxPageSize%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sMaxPageSize%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getMaxPageSize()))));
         }
 
         // add `AutoRefreshLevels` to the URL query string
         if (getAutoRefreshLevels() != null) {
-            joiner.add(String.format("%sAutoRefreshLevels%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sAutoRefreshLevels%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getAutoRefreshLevels()))));
         }
 
@@ -541,8 +544,9 @@ public class ChannelFeatures {
         if (getDefaultSortFields() != null) {
             for (int i = 0; i < getDefaultSortFields().size(); i++) {
                 if (getDefaultSortFields().get(i) != null) {
-                    joiner.add(String.format("%sDefaultSortFields%s%s=%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+                    joiner.add(String.format(Locale.ROOT, "%sDefaultSortFields%s%s=%s", prefix, suffix,
+                            "".equals(suffix) ? ""
+                                    : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
                             ApiClient.urlEncode(ApiClient.valueToString(getDefaultSortFields().get(i)))));
                 }
             }
@@ -550,25 +554,25 @@ public class ChannelFeatures {
 
         // add `SupportsSortOrderToggle` to the URL query string
         if (getSupportsSortOrderToggle() != null) {
-            joiner.add(String.format("%sSupportsSortOrderToggle%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sSupportsSortOrderToggle%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getSupportsSortOrderToggle()))));
         }
 
         // add `SupportsLatestMedia` to the URL query string
         if (getSupportsLatestMedia() != null) {
-            joiner.add(String.format("%sSupportsLatestMedia%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sSupportsLatestMedia%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getSupportsLatestMedia()))));
         }
 
         // add `CanFilter` to the URL query string
         if (getCanFilter() != null) {
-            joiner.add(String.format("%sCanFilter%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sCanFilter%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getCanFilter()))));
         }
 
         // add `SupportsContentDownloading` to the URL query string
         if (getSupportsContentDownloading() != null) {
-            joiner.add(String.format("%sSupportsContentDownloading%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sSupportsContentDownloading%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getSupportsContentDownloading()))));
         }
 

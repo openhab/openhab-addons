@@ -14,6 +14,7 @@
 package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
 import java.time.OffsetDateTime;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
 
@@ -51,13 +52,13 @@ public class GuideInfo {
      * @return startDate
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_START_DATE)
+    @JsonProperty(value = JSON_PROPERTY_START_DATE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public OffsetDateTime getStartDate() {
         return startDate;
     }
 
-    @JsonProperty(JSON_PROPERTY_START_DATE)
+    @JsonProperty(value = JSON_PROPERTY_START_DATE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setStartDate(@org.eclipse.jdt.annotation.NonNull OffsetDateTime startDate) {
         this.startDate = startDate;
@@ -74,13 +75,13 @@ public class GuideInfo {
      * @return endDate
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_END_DATE)
+    @JsonProperty(value = JSON_PROPERTY_END_DATE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public OffsetDateTime getEndDate() {
         return endDate;
     }
 
-    @JsonProperty(JSON_PROPERTY_END_DATE)
+    @JsonProperty(value = JSON_PROPERTY_END_DATE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setEndDate(@org.eclipse.jdt.annotation.NonNull OffsetDateTime endDate) {
         this.endDate = endDate;
@@ -161,13 +162,13 @@ public class GuideInfo {
 
         // add `StartDate` to the URL query string
         if (getStartDate() != null) {
-            joiner.add(String.format("%sStartDate%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sStartDate%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getStartDate()))));
         }
 
         // add `EndDate` to the URL query string
         if (getEndDate() != null) {
-            joiner.add(String.format("%sEndDate%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sEndDate%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getEndDate()))));
         }
 

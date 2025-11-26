@@ -15,6 +15,7 @@ package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
 
@@ -112,13 +113,13 @@ public class LiveTvOptions {
      * @return guideDays
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_GUIDE_DAYS)
+    @JsonProperty(value = JSON_PROPERTY_GUIDE_DAYS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getGuideDays() {
         return guideDays;
     }
 
-    @JsonProperty(JSON_PROPERTY_GUIDE_DAYS)
+    @JsonProperty(value = JSON_PROPERTY_GUIDE_DAYS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setGuideDays(@org.eclipse.jdt.annotation.NonNull Integer guideDays) {
         this.guideDays = guideDays;
@@ -135,13 +136,13 @@ public class LiveTvOptions {
      * @return recordingPath
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_RECORDING_PATH)
+    @JsonProperty(value = JSON_PROPERTY_RECORDING_PATH, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getRecordingPath() {
         return recordingPath;
     }
 
-    @JsonProperty(JSON_PROPERTY_RECORDING_PATH)
+    @JsonProperty(value = JSON_PROPERTY_RECORDING_PATH, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setRecordingPath(@org.eclipse.jdt.annotation.NonNull String recordingPath) {
         this.recordingPath = recordingPath;
@@ -158,13 +159,13 @@ public class LiveTvOptions {
      * @return movieRecordingPath
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_MOVIE_RECORDING_PATH)
+    @JsonProperty(value = JSON_PROPERTY_MOVIE_RECORDING_PATH, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getMovieRecordingPath() {
         return movieRecordingPath;
     }
 
-    @JsonProperty(JSON_PROPERTY_MOVIE_RECORDING_PATH)
+    @JsonProperty(value = JSON_PROPERTY_MOVIE_RECORDING_PATH, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setMovieRecordingPath(@org.eclipse.jdt.annotation.NonNull String movieRecordingPath) {
         this.movieRecordingPath = movieRecordingPath;
@@ -181,13 +182,13 @@ public class LiveTvOptions {
      * @return seriesRecordingPath
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_SERIES_RECORDING_PATH)
+    @JsonProperty(value = JSON_PROPERTY_SERIES_RECORDING_PATH, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getSeriesRecordingPath() {
         return seriesRecordingPath;
     }
 
-    @JsonProperty(JSON_PROPERTY_SERIES_RECORDING_PATH)
+    @JsonProperty(value = JSON_PROPERTY_SERIES_RECORDING_PATH, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setSeriesRecordingPath(@org.eclipse.jdt.annotation.NonNull String seriesRecordingPath) {
         this.seriesRecordingPath = seriesRecordingPath;
@@ -205,13 +206,13 @@ public class LiveTvOptions {
      * @return enableRecordingSubfolders
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ENABLE_RECORDING_SUBFOLDERS)
+    @JsonProperty(value = JSON_PROPERTY_ENABLE_RECORDING_SUBFOLDERS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getEnableRecordingSubfolders() {
         return enableRecordingSubfolders;
     }
 
-    @JsonProperty(JSON_PROPERTY_ENABLE_RECORDING_SUBFOLDERS)
+    @JsonProperty(value = JSON_PROPERTY_ENABLE_RECORDING_SUBFOLDERS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setEnableRecordingSubfolders(@org.eclipse.jdt.annotation.NonNull Boolean enableRecordingSubfolders) {
         this.enableRecordingSubfolders = enableRecordingSubfolders;
@@ -229,13 +230,13 @@ public class LiveTvOptions {
      * @return enableOriginalAudioWithEncodedRecordings
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ENABLE_ORIGINAL_AUDIO_WITH_ENCODED_RECORDINGS)
+    @JsonProperty(value = JSON_PROPERTY_ENABLE_ORIGINAL_AUDIO_WITH_ENCODED_RECORDINGS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getEnableOriginalAudioWithEncodedRecordings() {
         return enableOriginalAudioWithEncodedRecordings;
     }
 
-    @JsonProperty(JSON_PROPERTY_ENABLE_ORIGINAL_AUDIO_WITH_ENCODED_RECORDINGS)
+    @JsonProperty(value = JSON_PROPERTY_ENABLE_ORIGINAL_AUDIO_WITH_ENCODED_RECORDINGS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setEnableOriginalAudioWithEncodedRecordings(
             @org.eclipse.jdt.annotation.NonNull Boolean enableOriginalAudioWithEncodedRecordings) {
@@ -261,13 +262,13 @@ public class LiveTvOptions {
      * @return tunerHosts
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_TUNER_HOSTS)
+    @JsonProperty(value = JSON_PROPERTY_TUNER_HOSTS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<TunerHostInfo> getTunerHosts() {
         return tunerHosts;
     }
 
-    @JsonProperty(JSON_PROPERTY_TUNER_HOSTS)
+    @JsonProperty(value = JSON_PROPERTY_TUNER_HOSTS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setTunerHosts(@org.eclipse.jdt.annotation.NonNull List<TunerHostInfo> tunerHosts) {
         this.tunerHosts = tunerHosts;
@@ -293,13 +294,13 @@ public class LiveTvOptions {
      * @return listingProviders
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_LISTING_PROVIDERS)
+    @JsonProperty(value = JSON_PROPERTY_LISTING_PROVIDERS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<ListingsProviderInfo> getListingProviders() {
         return listingProviders;
     }
 
-    @JsonProperty(JSON_PROPERTY_LISTING_PROVIDERS)
+    @JsonProperty(value = JSON_PROPERTY_LISTING_PROVIDERS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setListingProviders(@org.eclipse.jdt.annotation.NonNull List<ListingsProviderInfo> listingProviders) {
         this.listingProviders = listingProviders;
@@ -316,13 +317,13 @@ public class LiveTvOptions {
      * @return prePaddingSeconds
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_PRE_PADDING_SECONDS)
+    @JsonProperty(value = JSON_PROPERTY_PRE_PADDING_SECONDS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getPrePaddingSeconds() {
         return prePaddingSeconds;
     }
 
-    @JsonProperty(JSON_PROPERTY_PRE_PADDING_SECONDS)
+    @JsonProperty(value = JSON_PROPERTY_PRE_PADDING_SECONDS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setPrePaddingSeconds(@org.eclipse.jdt.annotation.NonNull Integer prePaddingSeconds) {
         this.prePaddingSeconds = prePaddingSeconds;
@@ -339,13 +340,13 @@ public class LiveTvOptions {
      * @return postPaddingSeconds
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_POST_PADDING_SECONDS)
+    @JsonProperty(value = JSON_PROPERTY_POST_PADDING_SECONDS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getPostPaddingSeconds() {
         return postPaddingSeconds;
     }
 
-    @JsonProperty(JSON_PROPERTY_POST_PADDING_SECONDS)
+    @JsonProperty(value = JSON_PROPERTY_POST_PADDING_SECONDS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setPostPaddingSeconds(@org.eclipse.jdt.annotation.NonNull Integer postPaddingSeconds) {
         this.postPaddingSeconds = postPaddingSeconds;
@@ -370,13 +371,13 @@ public class LiveTvOptions {
      * @return mediaLocationsCreated
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_MEDIA_LOCATIONS_CREATED)
+    @JsonProperty(value = JSON_PROPERTY_MEDIA_LOCATIONS_CREATED, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<String> getMediaLocationsCreated() {
         return mediaLocationsCreated;
     }
 
-    @JsonProperty(JSON_PROPERTY_MEDIA_LOCATIONS_CREATED)
+    @JsonProperty(value = JSON_PROPERTY_MEDIA_LOCATIONS_CREATED, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setMediaLocationsCreated(@org.eclipse.jdt.annotation.NonNull List<String> mediaLocationsCreated) {
         this.mediaLocationsCreated = mediaLocationsCreated;
@@ -393,13 +394,13 @@ public class LiveTvOptions {
      * @return recordingPostProcessor
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_RECORDING_POST_PROCESSOR)
+    @JsonProperty(value = JSON_PROPERTY_RECORDING_POST_PROCESSOR, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getRecordingPostProcessor() {
         return recordingPostProcessor;
     }
 
-    @JsonProperty(JSON_PROPERTY_RECORDING_POST_PROCESSOR)
+    @JsonProperty(value = JSON_PROPERTY_RECORDING_POST_PROCESSOR, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setRecordingPostProcessor(@org.eclipse.jdt.annotation.NonNull String recordingPostProcessor) {
         this.recordingPostProcessor = recordingPostProcessor;
@@ -417,13 +418,13 @@ public class LiveTvOptions {
      * @return recordingPostProcessorArguments
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_RECORDING_POST_PROCESSOR_ARGUMENTS)
+    @JsonProperty(value = JSON_PROPERTY_RECORDING_POST_PROCESSOR_ARGUMENTS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getRecordingPostProcessorArguments() {
         return recordingPostProcessorArguments;
     }
 
-    @JsonProperty(JSON_PROPERTY_RECORDING_POST_PROCESSOR_ARGUMENTS)
+    @JsonProperty(value = JSON_PROPERTY_RECORDING_POST_PROCESSOR_ARGUMENTS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setRecordingPostProcessorArguments(
             @org.eclipse.jdt.annotation.NonNull String recordingPostProcessorArguments) {
@@ -441,13 +442,13 @@ public class LiveTvOptions {
      * @return saveRecordingNFO
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_SAVE_RECORDING_N_F_O)
+    @JsonProperty(value = JSON_PROPERTY_SAVE_RECORDING_N_F_O, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getSaveRecordingNFO() {
         return saveRecordingNFO;
     }
 
-    @JsonProperty(JSON_PROPERTY_SAVE_RECORDING_N_F_O)
+    @JsonProperty(value = JSON_PROPERTY_SAVE_RECORDING_N_F_O, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setSaveRecordingNFO(@org.eclipse.jdt.annotation.NonNull Boolean saveRecordingNFO) {
         this.saveRecordingNFO = saveRecordingNFO;
@@ -464,13 +465,13 @@ public class LiveTvOptions {
      * @return saveRecordingImages
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_SAVE_RECORDING_IMAGES)
+    @JsonProperty(value = JSON_PROPERTY_SAVE_RECORDING_IMAGES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getSaveRecordingImages() {
         return saveRecordingImages;
     }
 
-    @JsonProperty(JSON_PROPERTY_SAVE_RECORDING_IMAGES)
+    @JsonProperty(value = JSON_PROPERTY_SAVE_RECORDING_IMAGES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setSaveRecordingImages(@org.eclipse.jdt.annotation.NonNull Boolean saveRecordingImages) {
         this.saveRecordingImages = saveRecordingImages;
@@ -584,37 +585,37 @@ public class LiveTvOptions {
 
         // add `GuideDays` to the URL query string
         if (getGuideDays() != null) {
-            joiner.add(String.format("%sGuideDays%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sGuideDays%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getGuideDays()))));
         }
 
         // add `RecordingPath` to the URL query string
         if (getRecordingPath() != null) {
-            joiner.add(String.format("%sRecordingPath%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sRecordingPath%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getRecordingPath()))));
         }
 
         // add `MovieRecordingPath` to the URL query string
         if (getMovieRecordingPath() != null) {
-            joiner.add(String.format("%sMovieRecordingPath%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sMovieRecordingPath%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getMovieRecordingPath()))));
         }
 
         // add `SeriesRecordingPath` to the URL query string
         if (getSeriesRecordingPath() != null) {
-            joiner.add(String.format("%sSeriesRecordingPath%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sSeriesRecordingPath%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getSeriesRecordingPath()))));
         }
 
         // add `EnableRecordingSubfolders` to the URL query string
         if (getEnableRecordingSubfolders() != null) {
-            joiner.add(String.format("%sEnableRecordingSubfolders%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sEnableRecordingSubfolders%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getEnableRecordingSubfolders()))));
         }
 
         // add `EnableOriginalAudioWithEncodedRecordings` to the URL query string
         if (getEnableOriginalAudioWithEncodedRecordings() != null) {
-            joiner.add(String.format("%sEnableOriginalAudioWithEncodedRecordings%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sEnableOriginalAudioWithEncodedRecordings%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getEnableOriginalAudioWithEncodedRecordings()))));
         }
 
@@ -622,8 +623,9 @@ public class LiveTvOptions {
         if (getTunerHosts() != null) {
             for (int i = 0; i < getTunerHosts().size(); i++) {
                 if (getTunerHosts().get(i) != null) {
-                    joiner.add(getTunerHosts().get(i).toUrlQueryString(String.format("%sTunerHosts%s%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
+                    joiner.add(getTunerHosts().get(i).toUrlQueryString(
+                            String.format(Locale.ROOT, "%sTunerHosts%s%s", prefix, suffix, "".equals(suffix) ? ""
+                                    : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
                 }
             }
         }
@@ -632,55 +634,56 @@ public class LiveTvOptions {
         if (getListingProviders() != null) {
             for (int i = 0; i < getListingProviders().size(); i++) {
                 if (getListingProviders().get(i) != null) {
-                    joiner.add(getListingProviders().get(i).toUrlQueryString(String.format("%sListingProviders%s%s",
-                            prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
+                    joiner.add(getListingProviders().get(i).toUrlQueryString(
+                            String.format(Locale.ROOT, "%sListingProviders%s%s", prefix, suffix, "".equals(suffix) ? ""
+                                    : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
                 }
             }
         }
 
         // add `PrePaddingSeconds` to the URL query string
         if (getPrePaddingSeconds() != null) {
-            joiner.add(String.format("%sPrePaddingSeconds%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sPrePaddingSeconds%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getPrePaddingSeconds()))));
         }
 
         // add `PostPaddingSeconds` to the URL query string
         if (getPostPaddingSeconds() != null) {
-            joiner.add(String.format("%sPostPaddingSeconds%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sPostPaddingSeconds%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getPostPaddingSeconds()))));
         }
 
         // add `MediaLocationsCreated` to the URL query string
         if (getMediaLocationsCreated() != null) {
             for (int i = 0; i < getMediaLocationsCreated().size(); i++) {
-                joiner.add(String.format("%sMediaLocationsCreated%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+                joiner.add(String.format(Locale.ROOT, "%sMediaLocationsCreated%s%s=%s", prefix, suffix,
+                        "".equals(suffix) ? ""
+                                : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
                         ApiClient.urlEncode(ApiClient.valueToString(getMediaLocationsCreated().get(i)))));
             }
         }
 
         // add `RecordingPostProcessor` to the URL query string
         if (getRecordingPostProcessor() != null) {
-            joiner.add(String.format("%sRecordingPostProcessor%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sRecordingPostProcessor%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getRecordingPostProcessor()))));
         }
 
         // add `RecordingPostProcessorArguments` to the URL query string
         if (getRecordingPostProcessorArguments() != null) {
-            joiner.add(String.format("%sRecordingPostProcessorArguments%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sRecordingPostProcessorArguments%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getRecordingPostProcessorArguments()))));
         }
 
         // add `SaveRecordingNFO` to the URL query string
         if (getSaveRecordingNFO() != null) {
-            joiner.add(String.format("%sSaveRecordingNFO%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sSaveRecordingNFO%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getSaveRecordingNFO()))));
         }
 
         // add `SaveRecordingImages` to the URL query string
         if (getSaveRecordingImages() != null) {
-            joiner.add(String.format("%sSaveRecordingImages%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sSaveRecordingImages%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getSaveRecordingImages()))));
         }
 

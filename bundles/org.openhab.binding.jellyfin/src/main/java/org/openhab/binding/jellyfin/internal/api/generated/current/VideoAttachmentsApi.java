@@ -259,7 +259,7 @@ public class VideoAttachmentsApi {
         localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
 
         localVarRequestBuilder.header("Accept",
-                "application/octet-stream, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+                "application/octet-stream, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase, text/html");
 
         localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {

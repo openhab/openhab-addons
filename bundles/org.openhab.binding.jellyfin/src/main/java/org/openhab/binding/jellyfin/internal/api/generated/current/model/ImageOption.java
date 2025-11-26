@@ -13,6 +13,7 @@
 
 package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
+import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
 
@@ -55,13 +56,13 @@ public class ImageOption {
      * @return type
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_TYPE)
+    @JsonProperty(value = JSON_PROPERTY_TYPE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public ImageType getType() {
         return type;
     }
 
-    @JsonProperty(JSON_PROPERTY_TYPE)
+    @JsonProperty(value = JSON_PROPERTY_TYPE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setType(@org.eclipse.jdt.annotation.NonNull ImageType type) {
         this.type = type;
@@ -78,13 +79,13 @@ public class ImageOption {
      * @return limit
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_LIMIT)
+    @JsonProperty(value = JSON_PROPERTY_LIMIT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getLimit() {
         return limit;
     }
 
-    @JsonProperty(JSON_PROPERTY_LIMIT)
+    @JsonProperty(value = JSON_PROPERTY_LIMIT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setLimit(@org.eclipse.jdt.annotation.NonNull Integer limit) {
         this.limit = limit;
@@ -101,13 +102,13 @@ public class ImageOption {
      * @return minWidth
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_MIN_WIDTH)
+    @JsonProperty(value = JSON_PROPERTY_MIN_WIDTH, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getMinWidth() {
         return minWidth;
     }
 
-    @JsonProperty(JSON_PROPERTY_MIN_WIDTH)
+    @JsonProperty(value = JSON_PROPERTY_MIN_WIDTH, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setMinWidth(@org.eclipse.jdt.annotation.NonNull Integer minWidth) {
         this.minWidth = minWidth;
@@ -190,19 +191,19 @@ public class ImageOption {
 
         // add `Type` to the URL query string
         if (getType() != null) {
-            joiner.add(String.format("%sType%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sType%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getType()))));
         }
 
         // add `Limit` to the URL query string
         if (getLimit() != null) {
-            joiner.add(String.format("%sLimit%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sLimit%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getLimit()))));
         }
 
         // add `MinWidth` to the URL query string
         if (getMinWidth() != null) {
-            joiner.add(String.format("%sMinWidth%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sMinWidth%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getMinWidth()))));
         }
 

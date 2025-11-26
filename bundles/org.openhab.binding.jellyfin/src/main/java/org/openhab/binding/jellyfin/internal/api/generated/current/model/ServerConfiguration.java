@@ -15,6 +15,7 @@ package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
 
@@ -44,14 +45,15 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
         ServerConfiguration.JSON_PROPERTY_MIN_AUDIOBOOK_RESUME, ServerConfiguration.JSON_PROPERTY_MAX_AUDIOBOOK_RESUME,
         ServerConfiguration.JSON_PROPERTY_INACTIVE_SESSION_THRESHOLD,
         ServerConfiguration.JSON_PROPERTY_LIBRARY_MONITOR_DELAY,
-        ServerConfiguration.JSON_PROPERTY_LIBRARY_UPDATE_DURATION,
+        ServerConfiguration.JSON_PROPERTY_LIBRARY_UPDATE_DURATION, ServerConfiguration.JSON_PROPERTY_CACHE_SIZE,
         ServerConfiguration.JSON_PROPERTY_IMAGE_SAVING_CONVENTION, ServerConfiguration.JSON_PROPERTY_METADATA_OPTIONS,
         ServerConfiguration.JSON_PROPERTY_SKIP_DESERIALIZATION_FOR_BASIC_TYPES,
         ServerConfiguration.JSON_PROPERTY_SERVER_NAME, ServerConfiguration.JSON_PROPERTY_UI_CULTURE,
         ServerConfiguration.JSON_PROPERTY_SAVE_METADATA_HIDDEN, ServerConfiguration.JSON_PROPERTY_CONTENT_TYPES,
         ServerConfiguration.JSON_PROPERTY_REMOTE_CLIENT_BITRATE_LIMIT,
         ServerConfiguration.JSON_PROPERTY_ENABLE_FOLDER_VIEW,
-        ServerConfiguration.JSON_PROPERTY_ENABLE_GROUPING_INTO_COLLECTIONS,
+        ServerConfiguration.JSON_PROPERTY_ENABLE_GROUPING_MOVIES_INTO_COLLECTIONS,
+        ServerConfiguration.JSON_PROPERTY_ENABLE_GROUPING_SHOWS_INTO_COLLECTIONS,
         ServerConfiguration.JSON_PROPERTY_DISPLAY_SPECIALS_WITHIN_SEASONS,
         ServerConfiguration.JSON_PROPERTY_CODECS_USED, ServerConfiguration.JSON_PROPERTY_PLUGIN_REPOSITORIES,
         ServerConfiguration.JSON_PROPERTY_ENABLE_EXTERNAL_CONTENT_IN_SUGGESTIONS,
@@ -62,12 +64,13 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
         ServerConfiguration.JSON_PROPERTY_ACTIVITY_LOG_RETENTION_DAYS,
         ServerConfiguration.JSON_PROPERTY_LIBRARY_SCAN_FANOUT_CONCURRENCY,
         ServerConfiguration.JSON_PROPERTY_LIBRARY_METADATA_REFRESH_CONCURRENCY,
-        ServerConfiguration.JSON_PROPERTY_REMOVE_OLD_PLUGINS, ServerConfiguration.JSON_PROPERTY_ALLOW_CLIENT_LOG_UPLOAD,
+        ServerConfiguration.JSON_PROPERTY_ALLOW_CLIENT_LOG_UPLOAD,
         ServerConfiguration.JSON_PROPERTY_DUMMY_CHAPTER_DURATION,
         ServerConfiguration.JSON_PROPERTY_CHAPTER_IMAGE_RESOLUTION,
         ServerConfiguration.JSON_PROPERTY_PARALLEL_IMAGE_ENCODING_LIMIT,
         ServerConfiguration.JSON_PROPERTY_CAST_RECEIVER_APPLICATIONS,
-        ServerConfiguration.JSON_PROPERTY_TRICKPLAY_OPTIONS })
+        ServerConfiguration.JSON_PROPERTY_TRICKPLAY_OPTIONS,
+        ServerConfiguration.JSON_PROPERTY_ENABLE_LEGACY_AUTHORIZATION })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class ServerConfiguration {
     public static final String JSON_PROPERTY_LOG_FILE_RETENTION_DAYS = "LogFileRetentionDays";
@@ -170,6 +173,10 @@ public class ServerConfiguration {
     @org.eclipse.jdt.annotation.NonNull
     private Integer libraryUpdateDuration;
 
+    public static final String JSON_PROPERTY_CACHE_SIZE = "CacheSize";
+    @org.eclipse.jdt.annotation.NonNull
+    private Integer cacheSize;
+
     public static final String JSON_PROPERTY_IMAGE_SAVING_CONVENTION = "ImageSavingConvention";
     @org.eclipse.jdt.annotation.NonNull
     private ImageSavingConvention imageSavingConvention;
@@ -206,9 +213,13 @@ public class ServerConfiguration {
     @org.eclipse.jdt.annotation.NonNull
     private Boolean enableFolderView;
 
-    public static final String JSON_PROPERTY_ENABLE_GROUPING_INTO_COLLECTIONS = "EnableGroupingIntoCollections";
+    public static final String JSON_PROPERTY_ENABLE_GROUPING_MOVIES_INTO_COLLECTIONS = "EnableGroupingMoviesIntoCollections";
     @org.eclipse.jdt.annotation.NonNull
-    private Boolean enableGroupingIntoCollections;
+    private Boolean enableGroupingMoviesIntoCollections;
+
+    public static final String JSON_PROPERTY_ENABLE_GROUPING_SHOWS_INTO_COLLECTIONS = "EnableGroupingShowsIntoCollections";
+    @org.eclipse.jdt.annotation.NonNull
+    private Boolean enableGroupingShowsIntoCollections;
 
     public static final String JSON_PROPERTY_DISPLAY_SPECIALS_WITHIN_SEASONS = "DisplaySpecialsWithinSeasons";
     @org.eclipse.jdt.annotation.NonNull
@@ -258,10 +269,6 @@ public class ServerConfiguration {
     @org.eclipse.jdt.annotation.NonNull
     private Integer libraryMetadataRefreshConcurrency;
 
-    public static final String JSON_PROPERTY_REMOVE_OLD_PLUGINS = "RemoveOldPlugins";
-    @org.eclipse.jdt.annotation.NonNull
-    private Boolean removeOldPlugins;
-
     public static final String JSON_PROPERTY_ALLOW_CLIENT_LOG_UPLOAD = "AllowClientLogUpload";
     @org.eclipse.jdt.annotation.NonNull
     private Boolean allowClientLogUpload;
@@ -286,6 +293,10 @@ public class ServerConfiguration {
     @org.eclipse.jdt.annotation.NonNull
     private TrickplayOptions trickplayOptions;
 
+    public static final String JSON_PROPERTY_ENABLE_LEGACY_AUTHORIZATION = "EnableLegacyAuthorization";
+    @org.eclipse.jdt.annotation.NonNull
+    private Boolean enableLegacyAuthorization;
+
     public ServerConfiguration() {
     }
 
@@ -300,13 +311,13 @@ public class ServerConfiguration {
      * @return logFileRetentionDays
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_LOG_FILE_RETENTION_DAYS)
+    @JsonProperty(value = JSON_PROPERTY_LOG_FILE_RETENTION_DAYS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getLogFileRetentionDays() {
         return logFileRetentionDays;
     }
 
-    @JsonProperty(JSON_PROPERTY_LOG_FILE_RETENTION_DAYS)
+    @JsonProperty(value = JSON_PROPERTY_LOG_FILE_RETENTION_DAYS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setLogFileRetentionDays(@org.eclipse.jdt.annotation.NonNull Integer logFileRetentionDays) {
         this.logFileRetentionDays = logFileRetentionDays;
@@ -324,13 +335,13 @@ public class ServerConfiguration {
      * @return isStartupWizardCompleted
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_IS_STARTUP_WIZARD_COMPLETED)
+    @JsonProperty(value = JSON_PROPERTY_IS_STARTUP_WIZARD_COMPLETED, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getIsStartupWizardCompleted() {
         return isStartupWizardCompleted;
     }
 
-    @JsonProperty(JSON_PROPERTY_IS_STARTUP_WIZARD_COMPLETED)
+    @JsonProperty(value = JSON_PROPERTY_IS_STARTUP_WIZARD_COMPLETED, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setIsStartupWizardCompleted(@org.eclipse.jdt.annotation.NonNull Boolean isStartupWizardCompleted) {
         this.isStartupWizardCompleted = isStartupWizardCompleted;
@@ -347,13 +358,13 @@ public class ServerConfiguration {
      * @return cachePath
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_CACHE_PATH)
+    @JsonProperty(value = JSON_PROPERTY_CACHE_PATH, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getCachePath() {
         return cachePath;
     }
 
-    @JsonProperty(JSON_PROPERTY_CACHE_PATH)
+    @JsonProperty(value = JSON_PROPERTY_CACHE_PATH, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setCachePath(@org.eclipse.jdt.annotation.NonNull String cachePath) {
         this.cachePath = cachePath;
@@ -370,13 +381,13 @@ public class ServerConfiguration {
      * @return previousVersion
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_PREVIOUS_VERSION)
+    @JsonProperty(value = JSON_PROPERTY_PREVIOUS_VERSION, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getPreviousVersion() {
         return previousVersion;
     }
 
-    @JsonProperty(JSON_PROPERTY_PREVIOUS_VERSION)
+    @JsonProperty(value = JSON_PROPERTY_PREVIOUS_VERSION, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setPreviousVersion(@org.eclipse.jdt.annotation.NonNull String previousVersion) {
         this.previousVersion = previousVersion;
@@ -394,13 +405,13 @@ public class ServerConfiguration {
      * @return previousVersionStr
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_PREVIOUS_VERSION_STR)
+    @JsonProperty(value = JSON_PROPERTY_PREVIOUS_VERSION_STR, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getPreviousVersionStr() {
         return previousVersionStr;
     }
 
-    @JsonProperty(JSON_PROPERTY_PREVIOUS_VERSION_STR)
+    @JsonProperty(value = JSON_PROPERTY_PREVIOUS_VERSION_STR, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setPreviousVersionStr(@org.eclipse.jdt.annotation.NonNull String previousVersionStr) {
         this.previousVersionStr = previousVersionStr;
@@ -417,13 +428,13 @@ public class ServerConfiguration {
      * @return enableMetrics
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ENABLE_METRICS)
+    @JsonProperty(value = JSON_PROPERTY_ENABLE_METRICS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getEnableMetrics() {
         return enableMetrics;
     }
 
-    @JsonProperty(JSON_PROPERTY_ENABLE_METRICS)
+    @JsonProperty(value = JSON_PROPERTY_ENABLE_METRICS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setEnableMetrics(@org.eclipse.jdt.annotation.NonNull Boolean enableMetrics) {
         this.enableMetrics = enableMetrics;
@@ -441,13 +452,13 @@ public class ServerConfiguration {
      * @return enableNormalizedItemByNameIds
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ENABLE_NORMALIZED_ITEM_BY_NAME_IDS)
+    @JsonProperty(value = JSON_PROPERTY_ENABLE_NORMALIZED_ITEM_BY_NAME_IDS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getEnableNormalizedItemByNameIds() {
         return enableNormalizedItemByNameIds;
     }
 
-    @JsonProperty(JSON_PROPERTY_ENABLE_NORMALIZED_ITEM_BY_NAME_IDS)
+    @JsonProperty(value = JSON_PROPERTY_ENABLE_NORMALIZED_ITEM_BY_NAME_IDS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setEnableNormalizedItemByNameIds(
             @org.eclipse.jdt.annotation.NonNull Boolean enableNormalizedItemByNameIds) {
@@ -465,13 +476,13 @@ public class ServerConfiguration {
      * @return isPortAuthorized
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_IS_PORT_AUTHORIZED)
+    @JsonProperty(value = JSON_PROPERTY_IS_PORT_AUTHORIZED, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getIsPortAuthorized() {
         return isPortAuthorized;
     }
 
-    @JsonProperty(JSON_PROPERTY_IS_PORT_AUTHORIZED)
+    @JsonProperty(value = JSON_PROPERTY_IS_PORT_AUTHORIZED, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setIsPortAuthorized(@org.eclipse.jdt.annotation.NonNull Boolean isPortAuthorized) {
         this.isPortAuthorized = isPortAuthorized;
@@ -489,13 +500,13 @@ public class ServerConfiguration {
      * @return quickConnectAvailable
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_QUICK_CONNECT_AVAILABLE)
+    @JsonProperty(value = JSON_PROPERTY_QUICK_CONNECT_AVAILABLE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getQuickConnectAvailable() {
         return quickConnectAvailable;
     }
 
-    @JsonProperty(JSON_PROPERTY_QUICK_CONNECT_AVAILABLE)
+    @JsonProperty(value = JSON_PROPERTY_QUICK_CONNECT_AVAILABLE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setQuickConnectAvailable(@org.eclipse.jdt.annotation.NonNull Boolean quickConnectAvailable) {
         this.quickConnectAvailable = quickConnectAvailable;
@@ -508,18 +519,18 @@ public class ServerConfiguration {
     }
 
     /**
-     * Gets or sets a value indicating whether [enable case sensitive item ids].
+     * Gets or sets a value indicating whether [enable case-sensitive item ids].
      * 
      * @return enableCaseSensitiveItemIds
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ENABLE_CASE_SENSITIVE_ITEM_IDS)
+    @JsonProperty(value = JSON_PROPERTY_ENABLE_CASE_SENSITIVE_ITEM_IDS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getEnableCaseSensitiveItemIds() {
         return enableCaseSensitiveItemIds;
     }
 
-    @JsonProperty(JSON_PROPERTY_ENABLE_CASE_SENSITIVE_ITEM_IDS)
+    @JsonProperty(value = JSON_PROPERTY_ENABLE_CASE_SENSITIVE_ITEM_IDS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setEnableCaseSensitiveItemIds(@org.eclipse.jdt.annotation.NonNull Boolean enableCaseSensitiveItemIds) {
         this.enableCaseSensitiveItemIds = enableCaseSensitiveItemIds;
@@ -537,13 +548,13 @@ public class ServerConfiguration {
      * @return disableLiveTvChannelUserDataName
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_DISABLE_LIVE_TV_CHANNEL_USER_DATA_NAME)
+    @JsonProperty(value = JSON_PROPERTY_DISABLE_LIVE_TV_CHANNEL_USER_DATA_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getDisableLiveTvChannelUserDataName() {
         return disableLiveTvChannelUserDataName;
     }
 
-    @JsonProperty(JSON_PROPERTY_DISABLE_LIVE_TV_CHANNEL_USER_DATA_NAME)
+    @JsonProperty(value = JSON_PROPERTY_DISABLE_LIVE_TV_CHANNEL_USER_DATA_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setDisableLiveTvChannelUserDataName(
             @org.eclipse.jdt.annotation.NonNull Boolean disableLiveTvChannelUserDataName) {
@@ -561,13 +572,13 @@ public class ServerConfiguration {
      * @return metadataPath
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_METADATA_PATH)
+    @JsonProperty(value = JSON_PROPERTY_METADATA_PATH, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getMetadataPath() {
         return metadataPath;
     }
 
-    @JsonProperty(JSON_PROPERTY_METADATA_PATH)
+    @JsonProperty(value = JSON_PROPERTY_METADATA_PATH, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setMetadataPath(@org.eclipse.jdt.annotation.NonNull String metadataPath) {
         this.metadataPath = metadataPath;
@@ -585,13 +596,13 @@ public class ServerConfiguration {
      * @return preferredMetadataLanguage
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_PREFERRED_METADATA_LANGUAGE)
+    @JsonProperty(value = JSON_PROPERTY_PREFERRED_METADATA_LANGUAGE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getPreferredMetadataLanguage() {
         return preferredMetadataLanguage;
     }
 
-    @JsonProperty(JSON_PROPERTY_PREFERRED_METADATA_LANGUAGE)
+    @JsonProperty(value = JSON_PROPERTY_PREFERRED_METADATA_LANGUAGE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setPreferredMetadataLanguage(@org.eclipse.jdt.annotation.NonNull String preferredMetadataLanguage) {
         this.preferredMetadataLanguage = preferredMetadataLanguage;
@@ -608,13 +619,13 @@ public class ServerConfiguration {
      * @return metadataCountryCode
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_METADATA_COUNTRY_CODE)
+    @JsonProperty(value = JSON_PROPERTY_METADATA_COUNTRY_CODE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getMetadataCountryCode() {
         return metadataCountryCode;
     }
 
-    @JsonProperty(JSON_PROPERTY_METADATA_COUNTRY_CODE)
+    @JsonProperty(value = JSON_PROPERTY_METADATA_COUNTRY_CODE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setMetadataCountryCode(@org.eclipse.jdt.annotation.NonNull String metadataCountryCode) {
         this.metadataCountryCode = metadataCountryCode;
@@ -640,13 +651,13 @@ public class ServerConfiguration {
      * @return sortReplaceCharacters
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_SORT_REPLACE_CHARACTERS)
+    @JsonProperty(value = JSON_PROPERTY_SORT_REPLACE_CHARACTERS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<String> getSortReplaceCharacters() {
         return sortReplaceCharacters;
     }
 
-    @JsonProperty(JSON_PROPERTY_SORT_REPLACE_CHARACTERS)
+    @JsonProperty(value = JSON_PROPERTY_SORT_REPLACE_CHARACTERS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setSortReplaceCharacters(@org.eclipse.jdt.annotation.NonNull List<String> sortReplaceCharacters) {
         this.sortReplaceCharacters = sortReplaceCharacters;
@@ -672,13 +683,13 @@ public class ServerConfiguration {
      * @return sortRemoveCharacters
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_SORT_REMOVE_CHARACTERS)
+    @JsonProperty(value = JSON_PROPERTY_SORT_REMOVE_CHARACTERS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<String> getSortRemoveCharacters() {
         return sortRemoveCharacters;
     }
 
-    @JsonProperty(JSON_PROPERTY_SORT_REMOVE_CHARACTERS)
+    @JsonProperty(value = JSON_PROPERTY_SORT_REMOVE_CHARACTERS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setSortRemoveCharacters(@org.eclipse.jdt.annotation.NonNull List<String> sortRemoveCharacters) {
         this.sortRemoveCharacters = sortRemoveCharacters;
@@ -703,13 +714,13 @@ public class ServerConfiguration {
      * @return sortRemoveWords
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_SORT_REMOVE_WORDS)
+    @JsonProperty(value = JSON_PROPERTY_SORT_REMOVE_WORDS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<String> getSortRemoveWords() {
         return sortRemoveWords;
     }
 
-    @JsonProperty(JSON_PROPERTY_SORT_REMOVE_WORDS)
+    @JsonProperty(value = JSON_PROPERTY_SORT_REMOVE_WORDS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setSortRemoveWords(@org.eclipse.jdt.annotation.NonNull List<String> sortRemoveWords) {
         this.sortRemoveWords = sortRemoveWords;
@@ -726,13 +737,13 @@ public class ServerConfiguration {
      * @return minResumePct
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_MIN_RESUME_PCT)
+    @JsonProperty(value = JSON_PROPERTY_MIN_RESUME_PCT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getMinResumePct() {
         return minResumePct;
     }
 
-    @JsonProperty(JSON_PROPERTY_MIN_RESUME_PCT)
+    @JsonProperty(value = JSON_PROPERTY_MIN_RESUME_PCT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setMinResumePct(@org.eclipse.jdt.annotation.NonNull Integer minResumePct) {
         this.minResumePct = minResumePct;
@@ -750,13 +761,13 @@ public class ServerConfiguration {
      * @return maxResumePct
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_MAX_RESUME_PCT)
+    @JsonProperty(value = JSON_PROPERTY_MAX_RESUME_PCT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getMaxResumePct() {
         return maxResumePct;
     }
 
-    @JsonProperty(JSON_PROPERTY_MAX_RESUME_PCT)
+    @JsonProperty(value = JSON_PROPERTY_MAX_RESUME_PCT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setMaxResumePct(@org.eclipse.jdt.annotation.NonNull Integer maxResumePct) {
         this.maxResumePct = maxResumePct;
@@ -774,13 +785,13 @@ public class ServerConfiguration {
      * @return minResumeDurationSeconds
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_MIN_RESUME_DURATION_SECONDS)
+    @JsonProperty(value = JSON_PROPERTY_MIN_RESUME_DURATION_SECONDS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getMinResumeDurationSeconds() {
         return minResumeDurationSeconds;
     }
 
-    @JsonProperty(JSON_PROPERTY_MIN_RESUME_DURATION_SECONDS)
+    @JsonProperty(value = JSON_PROPERTY_MIN_RESUME_DURATION_SECONDS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setMinResumeDurationSeconds(@org.eclipse.jdt.annotation.NonNull Integer minResumeDurationSeconds) {
         this.minResumeDurationSeconds = minResumeDurationSeconds;
@@ -797,13 +808,13 @@ public class ServerConfiguration {
      * @return minAudiobookResume
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_MIN_AUDIOBOOK_RESUME)
+    @JsonProperty(value = JSON_PROPERTY_MIN_AUDIOBOOK_RESUME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getMinAudiobookResume() {
         return minAudiobookResume;
     }
 
-    @JsonProperty(JSON_PROPERTY_MIN_AUDIOBOOK_RESUME)
+    @JsonProperty(value = JSON_PROPERTY_MIN_AUDIOBOOK_RESUME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setMinAudiobookResume(@org.eclipse.jdt.annotation.NonNull Integer minAudiobookResume) {
         this.minAudiobookResume = minAudiobookResume;
@@ -821,13 +832,13 @@ public class ServerConfiguration {
      * @return maxAudiobookResume
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_MAX_AUDIOBOOK_RESUME)
+    @JsonProperty(value = JSON_PROPERTY_MAX_AUDIOBOOK_RESUME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getMaxAudiobookResume() {
         return maxAudiobookResume;
     }
 
-    @JsonProperty(JSON_PROPERTY_MAX_AUDIOBOOK_RESUME)
+    @JsonProperty(value = JSON_PROPERTY_MAX_AUDIOBOOK_RESUME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setMaxAudiobookResume(@org.eclipse.jdt.annotation.NonNull Integer maxAudiobookResume) {
         this.maxAudiobookResume = maxAudiobookResume;
@@ -846,13 +857,13 @@ public class ServerConfiguration {
      * @return inactiveSessionThreshold
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_INACTIVE_SESSION_THRESHOLD)
+    @JsonProperty(value = JSON_PROPERTY_INACTIVE_SESSION_THRESHOLD, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getInactiveSessionThreshold() {
         return inactiveSessionThreshold;
     }
 
-    @JsonProperty(JSON_PROPERTY_INACTIVE_SESSION_THRESHOLD)
+    @JsonProperty(value = JSON_PROPERTY_INACTIVE_SESSION_THRESHOLD, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setInactiveSessionThreshold(@org.eclipse.jdt.annotation.NonNull Integer inactiveSessionThreshold) {
         this.inactiveSessionThreshold = inactiveSessionThreshold;
@@ -871,13 +882,13 @@ public class ServerConfiguration {
      * @return libraryMonitorDelay
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_LIBRARY_MONITOR_DELAY)
+    @JsonProperty(value = JSON_PROPERTY_LIBRARY_MONITOR_DELAY, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getLibraryMonitorDelay() {
         return libraryMonitorDelay;
     }
 
-    @JsonProperty(JSON_PROPERTY_LIBRARY_MONITOR_DELAY)
+    @JsonProperty(value = JSON_PROPERTY_LIBRARY_MONITOR_DELAY, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setLibraryMonitorDelay(@org.eclipse.jdt.annotation.NonNull Integer libraryMonitorDelay) {
         this.libraryMonitorDelay = libraryMonitorDelay;
@@ -896,16 +907,39 @@ public class ServerConfiguration {
      * @return libraryUpdateDuration
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_LIBRARY_UPDATE_DURATION)
+    @JsonProperty(value = JSON_PROPERTY_LIBRARY_UPDATE_DURATION, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getLibraryUpdateDuration() {
         return libraryUpdateDuration;
     }
 
-    @JsonProperty(JSON_PROPERTY_LIBRARY_UPDATE_DURATION)
+    @JsonProperty(value = JSON_PROPERTY_LIBRARY_UPDATE_DURATION, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setLibraryUpdateDuration(@org.eclipse.jdt.annotation.NonNull Integer libraryUpdateDuration) {
         this.libraryUpdateDuration = libraryUpdateDuration;
+    }
+
+    public ServerConfiguration cacheSize(@org.eclipse.jdt.annotation.NonNull Integer cacheSize) {
+        this.cacheSize = cacheSize;
+        return this;
+    }
+
+    /**
+     * Gets or sets the maximum amount of items to cache.
+     * 
+     * @return cacheSize
+     */
+    @org.eclipse.jdt.annotation.NonNull
+    @JsonProperty(value = JSON_PROPERTY_CACHE_SIZE, required = false)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public Integer getCacheSize() {
+        return cacheSize;
+    }
+
+    @JsonProperty(value = JSON_PROPERTY_CACHE_SIZE, required = false)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setCacheSize(@org.eclipse.jdt.annotation.NonNull Integer cacheSize) {
+        this.cacheSize = cacheSize;
     }
 
     public ServerConfiguration imageSavingConvention(
@@ -920,13 +954,13 @@ public class ServerConfiguration {
      * @return imageSavingConvention
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_IMAGE_SAVING_CONVENTION)
+    @JsonProperty(value = JSON_PROPERTY_IMAGE_SAVING_CONVENTION, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public ImageSavingConvention getImageSavingConvention() {
         return imageSavingConvention;
     }
 
-    @JsonProperty(JSON_PROPERTY_IMAGE_SAVING_CONVENTION)
+    @JsonProperty(value = JSON_PROPERTY_IMAGE_SAVING_CONVENTION, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setImageSavingConvention(
             @org.eclipse.jdt.annotation.NonNull ImageSavingConvention imageSavingConvention) {
@@ -953,13 +987,13 @@ public class ServerConfiguration {
      * @return metadataOptions
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_METADATA_OPTIONS)
+    @JsonProperty(value = JSON_PROPERTY_METADATA_OPTIONS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<MetadataOptions> getMetadataOptions() {
         return metadataOptions;
     }
 
-    @JsonProperty(JSON_PROPERTY_METADATA_OPTIONS)
+    @JsonProperty(value = JSON_PROPERTY_METADATA_OPTIONS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setMetadataOptions(@org.eclipse.jdt.annotation.NonNull List<MetadataOptions> metadataOptions) {
         this.metadataOptions = metadataOptions;
@@ -977,13 +1011,13 @@ public class ServerConfiguration {
      * @return skipDeserializationForBasicTypes
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_SKIP_DESERIALIZATION_FOR_BASIC_TYPES)
+    @JsonProperty(value = JSON_PROPERTY_SKIP_DESERIALIZATION_FOR_BASIC_TYPES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getSkipDeserializationForBasicTypes() {
         return skipDeserializationForBasicTypes;
     }
 
-    @JsonProperty(JSON_PROPERTY_SKIP_DESERIALIZATION_FOR_BASIC_TYPES)
+    @JsonProperty(value = JSON_PROPERTY_SKIP_DESERIALIZATION_FOR_BASIC_TYPES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setSkipDeserializationForBasicTypes(
             @org.eclipse.jdt.annotation.NonNull Boolean skipDeserializationForBasicTypes) {
@@ -1001,13 +1035,13 @@ public class ServerConfiguration {
      * @return serverName
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_SERVER_NAME)
+    @JsonProperty(value = JSON_PROPERTY_SERVER_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getServerName() {
         return serverName;
     }
 
-    @JsonProperty(JSON_PROPERTY_SERVER_NAME)
+    @JsonProperty(value = JSON_PROPERTY_SERVER_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setServerName(@org.eclipse.jdt.annotation.NonNull String serverName) {
         this.serverName = serverName;
@@ -1024,13 +1058,13 @@ public class ServerConfiguration {
      * @return uiCulture
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_UI_CULTURE)
+    @JsonProperty(value = JSON_PROPERTY_UI_CULTURE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getUiCulture() {
         return uiCulture;
     }
 
-    @JsonProperty(JSON_PROPERTY_UI_CULTURE)
+    @JsonProperty(value = JSON_PROPERTY_UI_CULTURE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setUiCulture(@org.eclipse.jdt.annotation.NonNull String uiCulture) {
         this.uiCulture = uiCulture;
@@ -1047,13 +1081,13 @@ public class ServerConfiguration {
      * @return saveMetadataHidden
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_SAVE_METADATA_HIDDEN)
+    @JsonProperty(value = JSON_PROPERTY_SAVE_METADATA_HIDDEN, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getSaveMetadataHidden() {
         return saveMetadataHidden;
     }
 
-    @JsonProperty(JSON_PROPERTY_SAVE_METADATA_HIDDEN)
+    @JsonProperty(value = JSON_PROPERTY_SAVE_METADATA_HIDDEN, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setSaveMetadataHidden(@org.eclipse.jdt.annotation.NonNull Boolean saveMetadataHidden) {
         this.saveMetadataHidden = saveMetadataHidden;
@@ -1078,13 +1112,13 @@ public class ServerConfiguration {
      * @return contentTypes
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_CONTENT_TYPES)
+    @JsonProperty(value = JSON_PROPERTY_CONTENT_TYPES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<NameValuePair> getContentTypes() {
         return contentTypes;
     }
 
-    @JsonProperty(JSON_PROPERTY_CONTENT_TYPES)
+    @JsonProperty(value = JSON_PROPERTY_CONTENT_TYPES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setContentTypes(@org.eclipse.jdt.annotation.NonNull List<NameValuePair> contentTypes) {
         this.contentTypes = contentTypes;
@@ -1102,13 +1136,13 @@ public class ServerConfiguration {
      * @return remoteClientBitrateLimit
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_REMOTE_CLIENT_BITRATE_LIMIT)
+    @JsonProperty(value = JSON_PROPERTY_REMOTE_CLIENT_BITRATE_LIMIT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getRemoteClientBitrateLimit() {
         return remoteClientBitrateLimit;
     }
 
-    @JsonProperty(JSON_PROPERTY_REMOTE_CLIENT_BITRATE_LIMIT)
+    @JsonProperty(value = JSON_PROPERTY_REMOTE_CLIENT_BITRATE_LIMIT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setRemoteClientBitrateLimit(@org.eclipse.jdt.annotation.NonNull Integer remoteClientBitrateLimit) {
         this.remoteClientBitrateLimit = remoteClientBitrateLimit;
@@ -1125,41 +1159,66 @@ public class ServerConfiguration {
      * @return enableFolderView
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ENABLE_FOLDER_VIEW)
+    @JsonProperty(value = JSON_PROPERTY_ENABLE_FOLDER_VIEW, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getEnableFolderView() {
         return enableFolderView;
     }
 
-    @JsonProperty(JSON_PROPERTY_ENABLE_FOLDER_VIEW)
+    @JsonProperty(value = JSON_PROPERTY_ENABLE_FOLDER_VIEW, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setEnableFolderView(@org.eclipse.jdt.annotation.NonNull Boolean enableFolderView) {
         this.enableFolderView = enableFolderView;
     }
 
-    public ServerConfiguration enableGroupingIntoCollections(
-            @org.eclipse.jdt.annotation.NonNull Boolean enableGroupingIntoCollections) {
-        this.enableGroupingIntoCollections = enableGroupingIntoCollections;
+    public ServerConfiguration enableGroupingMoviesIntoCollections(
+            @org.eclipse.jdt.annotation.NonNull Boolean enableGroupingMoviesIntoCollections) {
+        this.enableGroupingMoviesIntoCollections = enableGroupingMoviesIntoCollections;
         return this;
     }
 
     /**
-     * Get enableGroupingIntoCollections
+     * Get enableGroupingMoviesIntoCollections
      * 
-     * @return enableGroupingIntoCollections
+     * @return enableGroupingMoviesIntoCollections
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ENABLE_GROUPING_INTO_COLLECTIONS)
+    @JsonProperty(value = JSON_PROPERTY_ENABLE_GROUPING_MOVIES_INTO_COLLECTIONS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public Boolean getEnableGroupingIntoCollections() {
-        return enableGroupingIntoCollections;
+    public Boolean getEnableGroupingMoviesIntoCollections() {
+        return enableGroupingMoviesIntoCollections;
     }
 
-    @JsonProperty(JSON_PROPERTY_ENABLE_GROUPING_INTO_COLLECTIONS)
+    @JsonProperty(value = JSON_PROPERTY_ENABLE_GROUPING_MOVIES_INTO_COLLECTIONS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setEnableGroupingIntoCollections(
-            @org.eclipse.jdt.annotation.NonNull Boolean enableGroupingIntoCollections) {
-        this.enableGroupingIntoCollections = enableGroupingIntoCollections;
+    public void setEnableGroupingMoviesIntoCollections(
+            @org.eclipse.jdt.annotation.NonNull Boolean enableGroupingMoviesIntoCollections) {
+        this.enableGroupingMoviesIntoCollections = enableGroupingMoviesIntoCollections;
+    }
+
+    public ServerConfiguration enableGroupingShowsIntoCollections(
+            @org.eclipse.jdt.annotation.NonNull Boolean enableGroupingShowsIntoCollections) {
+        this.enableGroupingShowsIntoCollections = enableGroupingShowsIntoCollections;
+        return this;
+    }
+
+    /**
+     * Get enableGroupingShowsIntoCollections
+     * 
+     * @return enableGroupingShowsIntoCollections
+     */
+    @org.eclipse.jdt.annotation.NonNull
+    @JsonProperty(value = JSON_PROPERTY_ENABLE_GROUPING_SHOWS_INTO_COLLECTIONS, required = false)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public Boolean getEnableGroupingShowsIntoCollections() {
+        return enableGroupingShowsIntoCollections;
+    }
+
+    @JsonProperty(value = JSON_PROPERTY_ENABLE_GROUPING_SHOWS_INTO_COLLECTIONS, required = false)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setEnableGroupingShowsIntoCollections(
+            @org.eclipse.jdt.annotation.NonNull Boolean enableGroupingShowsIntoCollections) {
+        this.enableGroupingShowsIntoCollections = enableGroupingShowsIntoCollections;
     }
 
     public ServerConfiguration displaySpecialsWithinSeasons(
@@ -1174,13 +1233,13 @@ public class ServerConfiguration {
      * @return displaySpecialsWithinSeasons
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_DISPLAY_SPECIALS_WITHIN_SEASONS)
+    @JsonProperty(value = JSON_PROPERTY_DISPLAY_SPECIALS_WITHIN_SEASONS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getDisplaySpecialsWithinSeasons() {
         return displaySpecialsWithinSeasons;
     }
 
-    @JsonProperty(JSON_PROPERTY_DISPLAY_SPECIALS_WITHIN_SEASONS)
+    @JsonProperty(value = JSON_PROPERTY_DISPLAY_SPECIALS_WITHIN_SEASONS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setDisplaySpecialsWithinSeasons(
             @org.eclipse.jdt.annotation.NonNull Boolean displaySpecialsWithinSeasons) {
@@ -1206,13 +1265,13 @@ public class ServerConfiguration {
      * @return codecsUsed
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_CODECS_USED)
+    @JsonProperty(value = JSON_PROPERTY_CODECS_USED, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<String> getCodecsUsed() {
         return codecsUsed;
     }
 
-    @JsonProperty(JSON_PROPERTY_CODECS_USED)
+    @JsonProperty(value = JSON_PROPERTY_CODECS_USED, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setCodecsUsed(@org.eclipse.jdt.annotation.NonNull List<String> codecsUsed) {
         this.codecsUsed = codecsUsed;
@@ -1238,13 +1297,13 @@ public class ServerConfiguration {
      * @return pluginRepositories
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_PLUGIN_REPOSITORIES)
+    @JsonProperty(value = JSON_PROPERTY_PLUGIN_REPOSITORIES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<RepositoryInfo> getPluginRepositories() {
         return pluginRepositories;
     }
 
-    @JsonProperty(JSON_PROPERTY_PLUGIN_REPOSITORIES)
+    @JsonProperty(value = JSON_PROPERTY_PLUGIN_REPOSITORIES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setPluginRepositories(@org.eclipse.jdt.annotation.NonNull List<RepositoryInfo> pluginRepositories) {
         this.pluginRepositories = pluginRepositories;
@@ -1262,13 +1321,13 @@ public class ServerConfiguration {
      * @return enableExternalContentInSuggestions
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ENABLE_EXTERNAL_CONTENT_IN_SUGGESTIONS)
+    @JsonProperty(value = JSON_PROPERTY_ENABLE_EXTERNAL_CONTENT_IN_SUGGESTIONS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getEnableExternalContentInSuggestions() {
         return enableExternalContentInSuggestions;
     }
 
-    @JsonProperty(JSON_PROPERTY_ENABLE_EXTERNAL_CONTENT_IN_SUGGESTIONS)
+    @JsonProperty(value = JSON_PROPERTY_ENABLE_EXTERNAL_CONTENT_IN_SUGGESTIONS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setEnableExternalContentInSuggestions(
             @org.eclipse.jdt.annotation.NonNull Boolean enableExternalContentInSuggestions) {
@@ -1287,13 +1346,13 @@ public class ServerConfiguration {
      * @return imageExtractionTimeoutMs
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_IMAGE_EXTRACTION_TIMEOUT_MS)
+    @JsonProperty(value = JSON_PROPERTY_IMAGE_EXTRACTION_TIMEOUT_MS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getImageExtractionTimeoutMs() {
         return imageExtractionTimeoutMs;
     }
 
-    @JsonProperty(JSON_PROPERTY_IMAGE_EXTRACTION_TIMEOUT_MS)
+    @JsonProperty(value = JSON_PROPERTY_IMAGE_EXTRACTION_TIMEOUT_MS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setImageExtractionTimeoutMs(@org.eclipse.jdt.annotation.NonNull Integer imageExtractionTimeoutMs) {
         this.imageExtractionTimeoutMs = imageExtractionTimeoutMs;
@@ -1319,13 +1378,13 @@ public class ServerConfiguration {
      * @return pathSubstitutions
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_PATH_SUBSTITUTIONS)
+    @JsonProperty(value = JSON_PROPERTY_PATH_SUBSTITUTIONS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<PathSubstitution> getPathSubstitutions() {
         return pathSubstitutions;
     }
 
-    @JsonProperty(JSON_PROPERTY_PATH_SUBSTITUTIONS)
+    @JsonProperty(value = JSON_PROPERTY_PATH_SUBSTITUTIONS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setPathSubstitutions(@org.eclipse.jdt.annotation.NonNull List<PathSubstitution> pathSubstitutions) {
         this.pathSubstitutions = pathSubstitutions;
@@ -1343,13 +1402,13 @@ public class ServerConfiguration {
      * @return enableSlowResponseWarning
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ENABLE_SLOW_RESPONSE_WARNING)
+    @JsonProperty(value = JSON_PROPERTY_ENABLE_SLOW_RESPONSE_WARNING, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getEnableSlowResponseWarning() {
         return enableSlowResponseWarning;
     }
 
-    @JsonProperty(JSON_PROPERTY_ENABLE_SLOW_RESPONSE_WARNING)
+    @JsonProperty(value = JSON_PROPERTY_ENABLE_SLOW_RESPONSE_WARNING, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setEnableSlowResponseWarning(@org.eclipse.jdt.annotation.NonNull Boolean enableSlowResponseWarning) {
         this.enableSlowResponseWarning = enableSlowResponseWarning;
@@ -1367,13 +1426,13 @@ public class ServerConfiguration {
      * @return slowResponseThresholdMs
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_SLOW_RESPONSE_THRESHOLD_MS)
+    @JsonProperty(value = JSON_PROPERTY_SLOW_RESPONSE_THRESHOLD_MS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Long getSlowResponseThresholdMs() {
         return slowResponseThresholdMs;
     }
 
-    @JsonProperty(JSON_PROPERTY_SLOW_RESPONSE_THRESHOLD_MS)
+    @JsonProperty(value = JSON_PROPERTY_SLOW_RESPONSE_THRESHOLD_MS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setSlowResponseThresholdMs(@org.eclipse.jdt.annotation.NonNull Long slowResponseThresholdMs) {
         this.slowResponseThresholdMs = slowResponseThresholdMs;
@@ -1398,13 +1457,13 @@ public class ServerConfiguration {
      * @return corsHosts
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_CORS_HOSTS)
+    @JsonProperty(value = JSON_PROPERTY_CORS_HOSTS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<String> getCorsHosts() {
         return corsHosts;
     }
 
-    @JsonProperty(JSON_PROPERTY_CORS_HOSTS)
+    @JsonProperty(value = JSON_PROPERTY_CORS_HOSTS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setCorsHosts(@org.eclipse.jdt.annotation.NonNull List<String> corsHosts) {
         this.corsHosts = corsHosts;
@@ -1422,13 +1481,13 @@ public class ServerConfiguration {
      * @return activityLogRetentionDays
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ACTIVITY_LOG_RETENTION_DAYS)
+    @JsonProperty(value = JSON_PROPERTY_ACTIVITY_LOG_RETENTION_DAYS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getActivityLogRetentionDays() {
         return activityLogRetentionDays;
     }
 
-    @JsonProperty(JSON_PROPERTY_ACTIVITY_LOG_RETENTION_DAYS)
+    @JsonProperty(value = JSON_PROPERTY_ACTIVITY_LOG_RETENTION_DAYS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setActivityLogRetentionDays(@org.eclipse.jdt.annotation.NonNull Integer activityLogRetentionDays) {
         this.activityLogRetentionDays = activityLogRetentionDays;
@@ -1446,13 +1505,13 @@ public class ServerConfiguration {
      * @return libraryScanFanoutConcurrency
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_LIBRARY_SCAN_FANOUT_CONCURRENCY)
+    @JsonProperty(value = JSON_PROPERTY_LIBRARY_SCAN_FANOUT_CONCURRENCY, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getLibraryScanFanoutConcurrency() {
         return libraryScanFanoutConcurrency;
     }
 
-    @JsonProperty(JSON_PROPERTY_LIBRARY_SCAN_FANOUT_CONCURRENCY)
+    @JsonProperty(value = JSON_PROPERTY_LIBRARY_SCAN_FANOUT_CONCURRENCY, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setLibraryScanFanoutConcurrency(
             @org.eclipse.jdt.annotation.NonNull Integer libraryScanFanoutConcurrency) {
@@ -1471,40 +1530,17 @@ public class ServerConfiguration {
      * @return libraryMetadataRefreshConcurrency
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_LIBRARY_METADATA_REFRESH_CONCURRENCY)
+    @JsonProperty(value = JSON_PROPERTY_LIBRARY_METADATA_REFRESH_CONCURRENCY, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getLibraryMetadataRefreshConcurrency() {
         return libraryMetadataRefreshConcurrency;
     }
 
-    @JsonProperty(JSON_PROPERTY_LIBRARY_METADATA_REFRESH_CONCURRENCY)
+    @JsonProperty(value = JSON_PROPERTY_LIBRARY_METADATA_REFRESH_CONCURRENCY, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setLibraryMetadataRefreshConcurrency(
             @org.eclipse.jdt.annotation.NonNull Integer libraryMetadataRefreshConcurrency) {
         this.libraryMetadataRefreshConcurrency = libraryMetadataRefreshConcurrency;
-    }
-
-    public ServerConfiguration removeOldPlugins(@org.eclipse.jdt.annotation.NonNull Boolean removeOldPlugins) {
-        this.removeOldPlugins = removeOldPlugins;
-        return this;
-    }
-
-    /**
-     * Gets or sets a value indicating whether older plugins should automatically be deleted from the plugin folder.
-     * 
-     * @return removeOldPlugins
-     */
-    @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_REMOVE_OLD_PLUGINS)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public Boolean getRemoveOldPlugins() {
-        return removeOldPlugins;
-    }
-
-    @JsonProperty(JSON_PROPERTY_REMOVE_OLD_PLUGINS)
-    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-    public void setRemoveOldPlugins(@org.eclipse.jdt.annotation.NonNull Boolean removeOldPlugins) {
-        this.removeOldPlugins = removeOldPlugins;
     }
 
     public ServerConfiguration allowClientLogUpload(@org.eclipse.jdt.annotation.NonNull Boolean allowClientLogUpload) {
@@ -1518,13 +1554,13 @@ public class ServerConfiguration {
      * @return allowClientLogUpload
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ALLOW_CLIENT_LOG_UPLOAD)
+    @JsonProperty(value = JSON_PROPERTY_ALLOW_CLIENT_LOG_UPLOAD, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getAllowClientLogUpload() {
         return allowClientLogUpload;
     }
 
-    @JsonProperty(JSON_PROPERTY_ALLOW_CLIENT_LOG_UPLOAD)
+    @JsonProperty(value = JSON_PROPERTY_ALLOW_CLIENT_LOG_UPLOAD, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setAllowClientLogUpload(@org.eclipse.jdt.annotation.NonNull Boolean allowClientLogUpload) {
         this.allowClientLogUpload = allowClientLogUpload;
@@ -1536,18 +1572,18 @@ public class ServerConfiguration {
     }
 
     /**
-     * Gets or sets the dummy chapter duration in seconds, use 0 (zero) or less to disable generation alltogether.
+     * Gets or sets the dummy chapter duration in seconds, use 0 (zero) or less to disable generation altogether.
      * 
      * @return dummyChapterDuration
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_DUMMY_CHAPTER_DURATION)
+    @JsonProperty(value = JSON_PROPERTY_DUMMY_CHAPTER_DURATION, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getDummyChapterDuration() {
         return dummyChapterDuration;
     }
 
-    @JsonProperty(JSON_PROPERTY_DUMMY_CHAPTER_DURATION)
+    @JsonProperty(value = JSON_PROPERTY_DUMMY_CHAPTER_DURATION, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setDummyChapterDuration(@org.eclipse.jdt.annotation.NonNull Integer dummyChapterDuration) {
         this.dummyChapterDuration = dummyChapterDuration;
@@ -1565,13 +1601,13 @@ public class ServerConfiguration {
      * @return chapterImageResolution
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_CHAPTER_IMAGE_RESOLUTION)
+    @JsonProperty(value = JSON_PROPERTY_CHAPTER_IMAGE_RESOLUTION, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public ImageResolution getChapterImageResolution() {
         return chapterImageResolution;
     }
 
-    @JsonProperty(JSON_PROPERTY_CHAPTER_IMAGE_RESOLUTION)
+    @JsonProperty(value = JSON_PROPERTY_CHAPTER_IMAGE_RESOLUTION, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setChapterImageResolution(@org.eclipse.jdt.annotation.NonNull ImageResolution chapterImageResolution) {
         this.chapterImageResolution = chapterImageResolution;
@@ -1589,13 +1625,13 @@ public class ServerConfiguration {
      * @return parallelImageEncodingLimit
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_PARALLEL_IMAGE_ENCODING_LIMIT)
+    @JsonProperty(value = JSON_PROPERTY_PARALLEL_IMAGE_ENCODING_LIMIT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getParallelImageEncodingLimit() {
         return parallelImageEncodingLimit;
     }
 
-    @JsonProperty(JSON_PROPERTY_PARALLEL_IMAGE_ENCODING_LIMIT)
+    @JsonProperty(value = JSON_PROPERTY_PARALLEL_IMAGE_ENCODING_LIMIT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setParallelImageEncodingLimit(@org.eclipse.jdt.annotation.NonNull Integer parallelImageEncodingLimit) {
         this.parallelImageEncodingLimit = parallelImageEncodingLimit;
@@ -1621,13 +1657,13 @@ public class ServerConfiguration {
      * @return castReceiverApplications
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_CAST_RECEIVER_APPLICATIONS)
+    @JsonProperty(value = JSON_PROPERTY_CAST_RECEIVER_APPLICATIONS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<CastReceiverApplication> getCastReceiverApplications() {
         return castReceiverApplications;
     }
 
-    @JsonProperty(JSON_PROPERTY_CAST_RECEIVER_APPLICATIONS)
+    @JsonProperty(value = JSON_PROPERTY_CAST_RECEIVER_APPLICATIONS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setCastReceiverApplications(
             @org.eclipse.jdt.annotation.NonNull List<CastReceiverApplication> castReceiverApplications) {
@@ -1645,16 +1681,40 @@ public class ServerConfiguration {
      * @return trickplayOptions
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_TRICKPLAY_OPTIONS)
+    @JsonProperty(value = JSON_PROPERTY_TRICKPLAY_OPTIONS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public TrickplayOptions getTrickplayOptions() {
         return trickplayOptions;
     }
 
-    @JsonProperty(JSON_PROPERTY_TRICKPLAY_OPTIONS)
+    @JsonProperty(value = JSON_PROPERTY_TRICKPLAY_OPTIONS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setTrickplayOptions(@org.eclipse.jdt.annotation.NonNull TrickplayOptions trickplayOptions) {
         this.trickplayOptions = trickplayOptions;
+    }
+
+    public ServerConfiguration enableLegacyAuthorization(
+            @org.eclipse.jdt.annotation.NonNull Boolean enableLegacyAuthorization) {
+        this.enableLegacyAuthorization = enableLegacyAuthorization;
+        return this;
+    }
+
+    /**
+     * Gets or sets a value indicating whether old authorization methods are allowed.
+     * 
+     * @return enableLegacyAuthorization
+     */
+    @org.eclipse.jdt.annotation.NonNull
+    @JsonProperty(value = JSON_PROPERTY_ENABLE_LEGACY_AUTHORIZATION, required = false)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public Boolean getEnableLegacyAuthorization() {
+        return enableLegacyAuthorization;
+    }
+
+    @JsonProperty(value = JSON_PROPERTY_ENABLE_LEGACY_AUTHORIZATION, required = false)
+    @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+    public void setEnableLegacyAuthorization(@org.eclipse.jdt.annotation.NonNull Boolean enableLegacyAuthorization) {
+        this.enableLegacyAuthorization = enableLegacyAuthorization;
     }
 
     /**
@@ -1695,6 +1755,7 @@ public class ServerConfiguration {
                 && Objects.equals(this.inactiveSessionThreshold, serverConfiguration.inactiveSessionThreshold)
                 && Objects.equals(this.libraryMonitorDelay, serverConfiguration.libraryMonitorDelay)
                 && Objects.equals(this.libraryUpdateDuration, serverConfiguration.libraryUpdateDuration)
+                && Objects.equals(this.cacheSize, serverConfiguration.cacheSize)
                 && Objects.equals(this.imageSavingConvention, serverConfiguration.imageSavingConvention)
                 && Objects.equals(this.metadataOptions, serverConfiguration.metadataOptions)
                 && Objects.equals(this.skipDeserializationForBasicTypes,
@@ -1705,7 +1766,10 @@ public class ServerConfiguration {
                 && Objects.equals(this.contentTypes, serverConfiguration.contentTypes)
                 && Objects.equals(this.remoteClientBitrateLimit, serverConfiguration.remoteClientBitrateLimit)
                 && Objects.equals(this.enableFolderView, serverConfiguration.enableFolderView)
-                && Objects.equals(this.enableGroupingIntoCollections, serverConfiguration.enableGroupingIntoCollections)
+                && Objects.equals(this.enableGroupingMoviesIntoCollections,
+                        serverConfiguration.enableGroupingMoviesIntoCollections)
+                && Objects.equals(this.enableGroupingShowsIntoCollections,
+                        serverConfiguration.enableGroupingShowsIntoCollections)
                 && Objects.equals(this.displaySpecialsWithinSeasons, serverConfiguration.displaySpecialsWithinSeasons)
                 && Objects.equals(this.codecsUsed, serverConfiguration.codecsUsed)
                 && Objects.equals(this.pluginRepositories, serverConfiguration.pluginRepositories)
@@ -1720,13 +1784,13 @@ public class ServerConfiguration {
                 && Objects.equals(this.libraryScanFanoutConcurrency, serverConfiguration.libraryScanFanoutConcurrency)
                 && Objects.equals(this.libraryMetadataRefreshConcurrency,
                         serverConfiguration.libraryMetadataRefreshConcurrency)
-                && Objects.equals(this.removeOldPlugins, serverConfiguration.removeOldPlugins)
                 && Objects.equals(this.allowClientLogUpload, serverConfiguration.allowClientLogUpload)
                 && Objects.equals(this.dummyChapterDuration, serverConfiguration.dummyChapterDuration)
                 && Objects.equals(this.chapterImageResolution, serverConfiguration.chapterImageResolution)
                 && Objects.equals(this.parallelImageEncodingLimit, serverConfiguration.parallelImageEncodingLimit)
                 && Objects.equals(this.castReceiverApplications, serverConfiguration.castReceiverApplications)
-                && Objects.equals(this.trickplayOptions, serverConfiguration.trickplayOptions);
+                && Objects.equals(this.trickplayOptions, serverConfiguration.trickplayOptions)
+                && Objects.equals(this.enableLegacyAuthorization, serverConfiguration.enableLegacyAuthorization);
     }
 
     @Override
@@ -1736,15 +1800,15 @@ public class ServerConfiguration {
                 quickConnectAvailable, enableCaseSensitiveItemIds, disableLiveTvChannelUserDataName, metadataPath,
                 preferredMetadataLanguage, metadataCountryCode, sortReplaceCharacters, sortRemoveCharacters,
                 sortRemoveWords, minResumePct, maxResumePct, minResumeDurationSeconds, minAudiobookResume,
-                maxAudiobookResume, inactiveSessionThreshold, libraryMonitorDelay, libraryUpdateDuration,
+                maxAudiobookResume, inactiveSessionThreshold, libraryMonitorDelay, libraryUpdateDuration, cacheSize,
                 imageSavingConvention, metadataOptions, skipDeserializationForBasicTypes, serverName, uiCulture,
                 saveMetadataHidden, contentTypes, remoteClientBitrateLimit, enableFolderView,
-                enableGroupingIntoCollections, displaySpecialsWithinSeasons, codecsUsed, pluginRepositories,
-                enableExternalContentInSuggestions, imageExtractionTimeoutMs, pathSubstitutions,
-                enableSlowResponseWarning, slowResponseThresholdMs, corsHosts, activityLogRetentionDays,
-                libraryScanFanoutConcurrency, libraryMetadataRefreshConcurrency, removeOldPlugins, allowClientLogUpload,
-                dummyChapterDuration, chapterImageResolution, parallelImageEncodingLimit, castReceiverApplications,
-                trickplayOptions);
+                enableGroupingMoviesIntoCollections, enableGroupingShowsIntoCollections, displaySpecialsWithinSeasons,
+                codecsUsed, pluginRepositories, enableExternalContentInSuggestions, imageExtractionTimeoutMs,
+                pathSubstitutions, enableSlowResponseWarning, slowResponseThresholdMs, corsHosts,
+                activityLogRetentionDays, libraryScanFanoutConcurrency, libraryMetadataRefreshConcurrency,
+                allowClientLogUpload, dummyChapterDuration, chapterImageResolution, parallelImageEncodingLimit,
+                castReceiverApplications, trickplayOptions, enableLegacyAuthorization);
     }
 
     @Override
@@ -1778,6 +1842,7 @@ public class ServerConfiguration {
         sb.append("    inactiveSessionThreshold: ").append(toIndentedString(inactiveSessionThreshold)).append("\n");
         sb.append("    libraryMonitorDelay: ").append(toIndentedString(libraryMonitorDelay)).append("\n");
         sb.append("    libraryUpdateDuration: ").append(toIndentedString(libraryUpdateDuration)).append("\n");
+        sb.append("    cacheSize: ").append(toIndentedString(cacheSize)).append("\n");
         sb.append("    imageSavingConvention: ").append(toIndentedString(imageSavingConvention)).append("\n");
         sb.append("    metadataOptions: ").append(toIndentedString(metadataOptions)).append("\n");
         sb.append("    skipDeserializationForBasicTypes: ").append(toIndentedString(skipDeserializationForBasicTypes))
@@ -1788,8 +1853,10 @@ public class ServerConfiguration {
         sb.append("    contentTypes: ").append(toIndentedString(contentTypes)).append("\n");
         sb.append("    remoteClientBitrateLimit: ").append(toIndentedString(remoteClientBitrateLimit)).append("\n");
         sb.append("    enableFolderView: ").append(toIndentedString(enableFolderView)).append("\n");
-        sb.append("    enableGroupingIntoCollections: ").append(toIndentedString(enableGroupingIntoCollections))
-                .append("\n");
+        sb.append("    enableGroupingMoviesIntoCollections: ")
+                .append(toIndentedString(enableGroupingMoviesIntoCollections)).append("\n");
+        sb.append("    enableGroupingShowsIntoCollections: ")
+                .append(toIndentedString(enableGroupingShowsIntoCollections)).append("\n");
         sb.append("    displaySpecialsWithinSeasons: ").append(toIndentedString(displaySpecialsWithinSeasons))
                 .append("\n");
         sb.append("    codecsUsed: ").append(toIndentedString(codecsUsed)).append("\n");
@@ -1806,13 +1873,13 @@ public class ServerConfiguration {
                 .append("\n");
         sb.append("    libraryMetadataRefreshConcurrency: ").append(toIndentedString(libraryMetadataRefreshConcurrency))
                 .append("\n");
-        sb.append("    removeOldPlugins: ").append(toIndentedString(removeOldPlugins)).append("\n");
         sb.append("    allowClientLogUpload: ").append(toIndentedString(allowClientLogUpload)).append("\n");
         sb.append("    dummyChapterDuration: ").append(toIndentedString(dummyChapterDuration)).append("\n");
         sb.append("    chapterImageResolution: ").append(toIndentedString(chapterImageResolution)).append("\n");
         sb.append("    parallelImageEncodingLimit: ").append(toIndentedString(parallelImageEncodingLimit)).append("\n");
         sb.append("    castReceiverApplications: ").append(toIndentedString(castReceiverApplications)).append("\n");
         sb.append("    trickplayOptions: ").append(toIndentedString(trickplayOptions)).append("\n");
+        sb.append("    enableLegacyAuthorization: ").append(toIndentedString(enableLegacyAuthorization)).append("\n");
         sb.append("}");
         return sb.toString();
     }
@@ -1862,93 +1929,94 @@ public class ServerConfiguration {
 
         // add `LogFileRetentionDays` to the URL query string
         if (getLogFileRetentionDays() != null) {
-            joiner.add(String.format("%sLogFileRetentionDays%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sLogFileRetentionDays%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getLogFileRetentionDays()))));
         }
 
         // add `IsStartupWizardCompleted` to the URL query string
         if (getIsStartupWizardCompleted() != null) {
-            joiner.add(String.format("%sIsStartupWizardCompleted%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sIsStartupWizardCompleted%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getIsStartupWizardCompleted()))));
         }
 
         // add `CachePath` to the URL query string
         if (getCachePath() != null) {
-            joiner.add(String.format("%sCachePath%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sCachePath%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getCachePath()))));
         }
 
         // add `PreviousVersion` to the URL query string
         if (getPreviousVersion() != null) {
-            joiner.add(String.format("%sPreviousVersion%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sPreviousVersion%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getPreviousVersion()))));
         }
 
         // add `PreviousVersionStr` to the URL query string
         if (getPreviousVersionStr() != null) {
-            joiner.add(String.format("%sPreviousVersionStr%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sPreviousVersionStr%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getPreviousVersionStr()))));
         }
 
         // add `EnableMetrics` to the URL query string
         if (getEnableMetrics() != null) {
-            joiner.add(String.format("%sEnableMetrics%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sEnableMetrics%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getEnableMetrics()))));
         }
 
         // add `EnableNormalizedItemByNameIds` to the URL query string
         if (getEnableNormalizedItemByNameIds() != null) {
-            joiner.add(String.format("%sEnableNormalizedItemByNameIds%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sEnableNormalizedItemByNameIds%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getEnableNormalizedItemByNameIds()))));
         }
 
         // add `IsPortAuthorized` to the URL query string
         if (getIsPortAuthorized() != null) {
-            joiner.add(String.format("%sIsPortAuthorized%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sIsPortAuthorized%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getIsPortAuthorized()))));
         }
 
         // add `QuickConnectAvailable` to the URL query string
         if (getQuickConnectAvailable() != null) {
-            joiner.add(String.format("%sQuickConnectAvailable%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sQuickConnectAvailable%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getQuickConnectAvailable()))));
         }
 
         // add `EnableCaseSensitiveItemIds` to the URL query string
         if (getEnableCaseSensitiveItemIds() != null) {
-            joiner.add(String.format("%sEnableCaseSensitiveItemIds%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sEnableCaseSensitiveItemIds%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getEnableCaseSensitiveItemIds()))));
         }
 
         // add `DisableLiveTvChannelUserDataName` to the URL query string
         if (getDisableLiveTvChannelUserDataName() != null) {
-            joiner.add(String.format("%sDisableLiveTvChannelUserDataName%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sDisableLiveTvChannelUserDataName%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getDisableLiveTvChannelUserDataName()))));
         }
 
         // add `MetadataPath` to the URL query string
         if (getMetadataPath() != null) {
-            joiner.add(String.format("%sMetadataPath%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sMetadataPath%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getMetadataPath()))));
         }
 
         // add `PreferredMetadataLanguage` to the URL query string
         if (getPreferredMetadataLanguage() != null) {
-            joiner.add(String.format("%sPreferredMetadataLanguage%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sPreferredMetadataLanguage%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getPreferredMetadataLanguage()))));
         }
 
         // add `MetadataCountryCode` to the URL query string
         if (getMetadataCountryCode() != null) {
-            joiner.add(String.format("%sMetadataCountryCode%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sMetadataCountryCode%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getMetadataCountryCode()))));
         }
 
         // add `SortReplaceCharacters` to the URL query string
         if (getSortReplaceCharacters() != null) {
             for (int i = 0; i < getSortReplaceCharacters().size(); i++) {
-                joiner.add(String.format("%sSortReplaceCharacters%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+                joiner.add(String.format(Locale.ROOT, "%sSortReplaceCharacters%s%s=%s", prefix, suffix,
+                        "".equals(suffix) ? ""
+                                : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
                         ApiClient.urlEncode(ApiClient.valueToString(getSortReplaceCharacters().get(i)))));
             }
         }
@@ -1956,8 +2024,9 @@ public class ServerConfiguration {
         // add `SortRemoveCharacters` to the URL query string
         if (getSortRemoveCharacters() != null) {
             for (int i = 0; i < getSortRemoveCharacters().size(); i++) {
-                joiner.add(String.format("%sSortRemoveCharacters%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+                joiner.add(String.format(Locale.ROOT, "%sSortRemoveCharacters%s%s=%s", prefix, suffix,
+                        "".equals(suffix) ? ""
+                                : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
                         ApiClient.urlEncode(ApiClient.valueToString(getSortRemoveCharacters().get(i)))));
             }
         }
@@ -1965,63 +2034,70 @@ public class ServerConfiguration {
         // add `SortRemoveWords` to the URL query string
         if (getSortRemoveWords() != null) {
             for (int i = 0; i < getSortRemoveWords().size(); i++) {
-                joiner.add(String.format("%sSortRemoveWords%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+                joiner.add(String.format(Locale.ROOT, "%sSortRemoveWords%s%s=%s", prefix, suffix,
+                        "".equals(suffix) ? ""
+                                : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
                         ApiClient.urlEncode(ApiClient.valueToString(getSortRemoveWords().get(i)))));
             }
         }
 
         // add `MinResumePct` to the URL query string
         if (getMinResumePct() != null) {
-            joiner.add(String.format("%sMinResumePct%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sMinResumePct%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getMinResumePct()))));
         }
 
         // add `MaxResumePct` to the URL query string
         if (getMaxResumePct() != null) {
-            joiner.add(String.format("%sMaxResumePct%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sMaxResumePct%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getMaxResumePct()))));
         }
 
         // add `MinResumeDurationSeconds` to the URL query string
         if (getMinResumeDurationSeconds() != null) {
-            joiner.add(String.format("%sMinResumeDurationSeconds%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sMinResumeDurationSeconds%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getMinResumeDurationSeconds()))));
         }
 
         // add `MinAudiobookResume` to the URL query string
         if (getMinAudiobookResume() != null) {
-            joiner.add(String.format("%sMinAudiobookResume%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sMinAudiobookResume%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getMinAudiobookResume()))));
         }
 
         // add `MaxAudiobookResume` to the URL query string
         if (getMaxAudiobookResume() != null) {
-            joiner.add(String.format("%sMaxAudiobookResume%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sMaxAudiobookResume%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getMaxAudiobookResume()))));
         }
 
         // add `InactiveSessionThreshold` to the URL query string
         if (getInactiveSessionThreshold() != null) {
-            joiner.add(String.format("%sInactiveSessionThreshold%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sInactiveSessionThreshold%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getInactiveSessionThreshold()))));
         }
 
         // add `LibraryMonitorDelay` to the URL query string
         if (getLibraryMonitorDelay() != null) {
-            joiner.add(String.format("%sLibraryMonitorDelay%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sLibraryMonitorDelay%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getLibraryMonitorDelay()))));
         }
 
         // add `LibraryUpdateDuration` to the URL query string
         if (getLibraryUpdateDuration() != null) {
-            joiner.add(String.format("%sLibraryUpdateDuration%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sLibraryUpdateDuration%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getLibraryUpdateDuration()))));
+        }
+
+        // add `CacheSize` to the URL query string
+        if (getCacheSize() != null) {
+            joiner.add(String.format(Locale.ROOT, "%sCacheSize%s=%s", prefix, suffix,
+                    ApiClient.urlEncode(ApiClient.valueToString(getCacheSize()))));
         }
 
         // add `ImageSavingConvention` to the URL query string
         if (getImageSavingConvention() != null) {
-            joiner.add(String.format("%sImageSavingConvention%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sImageSavingConvention%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getImageSavingConvention()))));
         }
 
@@ -2029,34 +2105,34 @@ public class ServerConfiguration {
         if (getMetadataOptions() != null) {
             for (int i = 0; i < getMetadataOptions().size(); i++) {
                 if (getMetadataOptions().get(i) != null) {
-                    joiner.add(getMetadataOptions().get(i).toUrlQueryString(String.format("%sMetadataOptions%s%s",
-                            prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
+                    joiner.add(getMetadataOptions().get(i).toUrlQueryString(
+                            String.format(Locale.ROOT, "%sMetadataOptions%s%s", prefix, suffix, "".equals(suffix) ? ""
+                                    : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
                 }
             }
         }
 
         // add `SkipDeserializationForBasicTypes` to the URL query string
         if (getSkipDeserializationForBasicTypes() != null) {
-            joiner.add(String.format("%sSkipDeserializationForBasicTypes%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sSkipDeserializationForBasicTypes%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getSkipDeserializationForBasicTypes()))));
         }
 
         // add `ServerName` to the URL query string
         if (getServerName() != null) {
-            joiner.add(String.format("%sServerName%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sServerName%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getServerName()))));
         }
 
         // add `UICulture` to the URL query string
         if (getUiCulture() != null) {
-            joiner.add(String.format("%sUICulture%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sUICulture%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getUiCulture()))));
         }
 
         // add `SaveMetadataHidden` to the URL query string
         if (getSaveMetadataHidden() != null) {
-            joiner.add(String.format("%sSaveMetadataHidden%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sSaveMetadataHidden%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getSaveMetadataHidden()))));
         }
 
@@ -2064,42 +2140,49 @@ public class ServerConfiguration {
         if (getContentTypes() != null) {
             for (int i = 0; i < getContentTypes().size(); i++) {
                 if (getContentTypes().get(i) != null) {
-                    joiner.add(getContentTypes().get(i).toUrlQueryString(String.format("%sContentTypes%s%s", prefix,
-                            suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
+                    joiner.add(getContentTypes().get(i).toUrlQueryString(
+                            String.format(Locale.ROOT, "%sContentTypes%s%s", prefix, suffix, "".equals(suffix) ? ""
+                                    : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
                 }
             }
         }
 
         // add `RemoteClientBitrateLimit` to the URL query string
         if (getRemoteClientBitrateLimit() != null) {
-            joiner.add(String.format("%sRemoteClientBitrateLimit%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sRemoteClientBitrateLimit%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getRemoteClientBitrateLimit()))));
         }
 
         // add `EnableFolderView` to the URL query string
         if (getEnableFolderView() != null) {
-            joiner.add(String.format("%sEnableFolderView%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sEnableFolderView%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getEnableFolderView()))));
         }
 
-        // add `EnableGroupingIntoCollections` to the URL query string
-        if (getEnableGroupingIntoCollections() != null) {
-            joiner.add(String.format("%sEnableGroupingIntoCollections%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableGroupingIntoCollections()))));
+        // add `EnableGroupingMoviesIntoCollections` to the URL query string
+        if (getEnableGroupingMoviesIntoCollections() != null) {
+            joiner.add(String.format(Locale.ROOT, "%sEnableGroupingMoviesIntoCollections%s=%s", prefix, suffix,
+                    ApiClient.urlEncode(ApiClient.valueToString(getEnableGroupingMoviesIntoCollections()))));
+        }
+
+        // add `EnableGroupingShowsIntoCollections` to the URL query string
+        if (getEnableGroupingShowsIntoCollections() != null) {
+            joiner.add(String.format(Locale.ROOT, "%sEnableGroupingShowsIntoCollections%s=%s", prefix, suffix,
+                    ApiClient.urlEncode(ApiClient.valueToString(getEnableGroupingShowsIntoCollections()))));
         }
 
         // add `DisplaySpecialsWithinSeasons` to the URL query string
         if (getDisplaySpecialsWithinSeasons() != null) {
-            joiner.add(String.format("%sDisplaySpecialsWithinSeasons%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sDisplaySpecialsWithinSeasons%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getDisplaySpecialsWithinSeasons()))));
         }
 
         // add `CodecsUsed` to the URL query string
         if (getCodecsUsed() != null) {
             for (int i = 0; i < getCodecsUsed().size(); i++) {
-                joiner.add(String.format("%sCodecsUsed%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+                joiner.add(String.format(Locale.ROOT, "%sCodecsUsed%s%s=%s", prefix, suffix,
+                        "".equals(suffix) ? ""
+                                : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
                         ApiClient.urlEncode(ApiClient.valueToString(getCodecsUsed().get(i)))));
             }
         }
@@ -2108,22 +2191,22 @@ public class ServerConfiguration {
         if (getPluginRepositories() != null) {
             for (int i = 0; i < getPluginRepositories().size(); i++) {
                 if (getPluginRepositories().get(i) != null) {
-                    joiner.add(getPluginRepositories().get(i).toUrlQueryString(String.format("%sPluginRepositories%s%s",
-                            prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
+                    joiner.add(getPluginRepositories().get(i).toUrlQueryString(String.format(Locale.ROOT,
+                            "%sPluginRepositories%s%s", prefix, suffix, "".equals(suffix) ? ""
+                                    : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
                 }
             }
         }
 
         // add `EnableExternalContentInSuggestions` to the URL query string
         if (getEnableExternalContentInSuggestions() != null) {
-            joiner.add(String.format("%sEnableExternalContentInSuggestions%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sEnableExternalContentInSuggestions%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getEnableExternalContentInSuggestions()))));
         }
 
         // add `ImageExtractionTimeoutMs` to the URL query string
         if (getImageExtractionTimeoutMs() != null) {
-            joiner.add(String.format("%sImageExtractionTimeoutMs%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sImageExtractionTimeoutMs%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getImageExtractionTimeoutMs()))));
         }
 
@@ -2131,79 +2214,74 @@ public class ServerConfiguration {
         if (getPathSubstitutions() != null) {
             for (int i = 0; i < getPathSubstitutions().size(); i++) {
                 if (getPathSubstitutions().get(i) != null) {
-                    joiner.add(getPathSubstitutions().get(i).toUrlQueryString(String.format("%sPathSubstitutions%s%s",
-                            prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
+                    joiner.add(getPathSubstitutions().get(i).toUrlQueryString(
+                            String.format(Locale.ROOT, "%sPathSubstitutions%s%s", prefix, suffix, "".equals(suffix) ? ""
+                                    : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
                 }
             }
         }
 
         // add `EnableSlowResponseWarning` to the URL query string
         if (getEnableSlowResponseWarning() != null) {
-            joiner.add(String.format("%sEnableSlowResponseWarning%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sEnableSlowResponseWarning%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getEnableSlowResponseWarning()))));
         }
 
         // add `SlowResponseThresholdMs` to the URL query string
         if (getSlowResponseThresholdMs() != null) {
-            joiner.add(String.format("%sSlowResponseThresholdMs%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sSlowResponseThresholdMs%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getSlowResponseThresholdMs()))));
         }
 
         // add `CorsHosts` to the URL query string
         if (getCorsHosts() != null) {
             for (int i = 0; i < getCorsHosts().size(); i++) {
-                joiner.add(String.format("%sCorsHosts%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+                joiner.add(String.format(Locale.ROOT, "%sCorsHosts%s%s=%s", prefix, suffix,
+                        "".equals(suffix) ? ""
+                                : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
                         ApiClient.urlEncode(ApiClient.valueToString(getCorsHosts().get(i)))));
             }
         }
 
         // add `ActivityLogRetentionDays` to the URL query string
         if (getActivityLogRetentionDays() != null) {
-            joiner.add(String.format("%sActivityLogRetentionDays%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sActivityLogRetentionDays%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getActivityLogRetentionDays()))));
         }
 
         // add `LibraryScanFanoutConcurrency` to the URL query string
         if (getLibraryScanFanoutConcurrency() != null) {
-            joiner.add(String.format("%sLibraryScanFanoutConcurrency%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sLibraryScanFanoutConcurrency%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getLibraryScanFanoutConcurrency()))));
         }
 
         // add `LibraryMetadataRefreshConcurrency` to the URL query string
         if (getLibraryMetadataRefreshConcurrency() != null) {
-            joiner.add(String.format("%sLibraryMetadataRefreshConcurrency%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sLibraryMetadataRefreshConcurrency%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getLibraryMetadataRefreshConcurrency()))));
-        }
-
-        // add `RemoveOldPlugins` to the URL query string
-        if (getRemoveOldPlugins() != null) {
-            joiner.add(String.format("%sRemoveOldPlugins%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getRemoveOldPlugins()))));
         }
 
         // add `AllowClientLogUpload` to the URL query string
         if (getAllowClientLogUpload() != null) {
-            joiner.add(String.format("%sAllowClientLogUpload%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sAllowClientLogUpload%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getAllowClientLogUpload()))));
         }
 
         // add `DummyChapterDuration` to the URL query string
         if (getDummyChapterDuration() != null) {
-            joiner.add(String.format("%sDummyChapterDuration%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sDummyChapterDuration%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getDummyChapterDuration()))));
         }
 
         // add `ChapterImageResolution` to the URL query string
         if (getChapterImageResolution() != null) {
-            joiner.add(String.format("%sChapterImageResolution%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sChapterImageResolution%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getChapterImageResolution()))));
         }
 
         // add `ParallelImageEncodingLimit` to the URL query string
         if (getParallelImageEncodingLimit() != null) {
-            joiner.add(String.format("%sParallelImageEncodingLimit%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sParallelImageEncodingLimit%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getParallelImageEncodingLimit()))));
         }
 
@@ -2211,9 +2289,9 @@ public class ServerConfiguration {
         if (getCastReceiverApplications() != null) {
             for (int i = 0; i < getCastReceiverApplications().size(); i++) {
                 if (getCastReceiverApplications().get(i) != null) {
-                    joiner.add(getCastReceiverApplications().get(i).toUrlQueryString(String.format(
-                            "%sCastReceiverApplications%s%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
+                    joiner.add(getCastReceiverApplications().get(i).toUrlQueryString(String.format(Locale.ROOT,
+                            "%sCastReceiverApplications%s%s", prefix, suffix, "".equals(suffix) ? ""
+                                    : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
                 }
             }
         }
@@ -2221,6 +2299,12 @@ public class ServerConfiguration {
         // add `TrickplayOptions` to the URL query string
         if (getTrickplayOptions() != null) {
             joiner.add(getTrickplayOptions().toUrlQueryString(prefix + "TrickplayOptions" + suffix));
+        }
+
+        // add `EnableLegacyAuthorization` to the URL query string
+        if (getEnableLegacyAuthorization() != null) {
+            joiner.add(String.format(Locale.ROOT, "%sEnableLegacyAuthorization%s=%s", prefix, suffix,
+                    ApiClient.urlEncode(ApiClient.valueToString(getEnableLegacyAuthorization()))));
         }
 
         return joiner.toString();
@@ -2363,6 +2447,11 @@ public class ServerConfiguration {
             return this;
         }
 
+        public ServerConfiguration.Builder cacheSize(Integer cacheSize) {
+            this.instance.cacheSize = cacheSize;
+            return this;
+        }
+
         public ServerConfiguration.Builder imageSavingConvention(ImageSavingConvention imageSavingConvention) {
             this.instance.imageSavingConvention = imageSavingConvention;
             return this;
@@ -2408,8 +2497,15 @@ public class ServerConfiguration {
             return this;
         }
 
-        public ServerConfiguration.Builder enableGroupingIntoCollections(Boolean enableGroupingIntoCollections) {
-            this.instance.enableGroupingIntoCollections = enableGroupingIntoCollections;
+        public ServerConfiguration.Builder enableGroupingMoviesIntoCollections(
+                Boolean enableGroupingMoviesIntoCollections) {
+            this.instance.enableGroupingMoviesIntoCollections = enableGroupingMoviesIntoCollections;
+            return this;
+        }
+
+        public ServerConfiguration.Builder enableGroupingShowsIntoCollections(
+                Boolean enableGroupingShowsIntoCollections) {
+            this.instance.enableGroupingShowsIntoCollections = enableGroupingShowsIntoCollections;
             return this;
         }
 
@@ -2475,11 +2571,6 @@ public class ServerConfiguration {
             return this;
         }
 
-        public ServerConfiguration.Builder removeOldPlugins(Boolean removeOldPlugins) {
-            this.instance.removeOldPlugins = removeOldPlugins;
-            return this;
-        }
-
         public ServerConfiguration.Builder allowClientLogUpload(Boolean allowClientLogUpload) {
             this.instance.allowClientLogUpload = allowClientLogUpload;
             return this;
@@ -2508,6 +2599,11 @@ public class ServerConfiguration {
 
         public ServerConfiguration.Builder trickplayOptions(TrickplayOptions trickplayOptions) {
             this.instance.trickplayOptions = trickplayOptions;
+            return this;
+        }
+
+        public ServerConfiguration.Builder enableLegacyAuthorization(Boolean enableLegacyAuthorization) {
+            this.instance.enableLegacyAuthorization = enableLegacyAuthorization;
             return this;
         }
 
@@ -2555,11 +2651,13 @@ public class ServerConfiguration {
                 .minResumeDurationSeconds(getMinResumeDurationSeconds()).minAudiobookResume(getMinAudiobookResume())
                 .maxAudiobookResume(getMaxAudiobookResume()).inactiveSessionThreshold(getInactiveSessionThreshold())
                 .libraryMonitorDelay(getLibraryMonitorDelay()).libraryUpdateDuration(getLibraryUpdateDuration())
-                .imageSavingConvention(getImageSavingConvention()).metadataOptions(getMetadataOptions())
+                .cacheSize(getCacheSize()).imageSavingConvention(getImageSavingConvention())
+                .metadataOptions(getMetadataOptions())
                 .skipDeserializationForBasicTypes(getSkipDeserializationForBasicTypes()).serverName(getServerName())
                 .uiCulture(getUiCulture()).saveMetadataHidden(getSaveMetadataHidden()).contentTypes(getContentTypes())
                 .remoteClientBitrateLimit(getRemoteClientBitrateLimit()).enableFolderView(getEnableFolderView())
-                .enableGroupingIntoCollections(getEnableGroupingIntoCollections())
+                .enableGroupingMoviesIntoCollections(getEnableGroupingMoviesIntoCollections())
+                .enableGroupingShowsIntoCollections(getEnableGroupingShowsIntoCollections())
                 .displaySpecialsWithinSeasons(getDisplaySpecialsWithinSeasons()).codecsUsed(getCodecsUsed())
                 .pluginRepositories(getPluginRepositories())
                 .enableExternalContentInSuggestions(getEnableExternalContentInSuggestions())
@@ -2569,9 +2667,10 @@ public class ServerConfiguration {
                 .activityLogRetentionDays(getActivityLogRetentionDays())
                 .libraryScanFanoutConcurrency(getLibraryScanFanoutConcurrency())
                 .libraryMetadataRefreshConcurrency(getLibraryMetadataRefreshConcurrency())
-                .removeOldPlugins(getRemoveOldPlugins()).allowClientLogUpload(getAllowClientLogUpload())
-                .dummyChapterDuration(getDummyChapterDuration()).chapterImageResolution(getChapterImageResolution())
+                .allowClientLogUpload(getAllowClientLogUpload()).dummyChapterDuration(getDummyChapterDuration())
+                .chapterImageResolution(getChapterImageResolution())
                 .parallelImageEncodingLimit(getParallelImageEncodingLimit())
-                .castReceiverApplications(getCastReceiverApplications()).trickplayOptions(getTrickplayOptions());
+                .castReceiverApplications(getCastReceiverApplications()).trickplayOptions(getTrickplayOptions())
+                .enableLegacyAuthorization(getEnableLegacyAuthorization());
     }
 }

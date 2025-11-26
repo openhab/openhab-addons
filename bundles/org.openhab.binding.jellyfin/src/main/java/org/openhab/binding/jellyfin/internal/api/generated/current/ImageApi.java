@@ -221,7 +221,7 @@ public class ImageApi {
 
         localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
 
-        localVarRequestBuilder.header("Accept", "application/json");
+        localVarRequestBuilder.header("Accept", "text/html");
 
         localVarRequestBuilder.method("DELETE", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {
@@ -356,7 +356,7 @@ public class ImageApi {
         }
 
         localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase, text/html");
 
         localVarRequestBuilder.method("DELETE", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {
@@ -483,7 +483,7 @@ public class ImageApi {
         localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
 
         localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase, text/html");
 
         localVarRequestBuilder.method("DELETE", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {
@@ -593,7 +593,7 @@ public class ImageApi {
         }
 
         localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase, text/html");
 
         localVarRequestBuilder.method("DELETE", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {
@@ -878,7 +878,7 @@ public class ImageApi {
         }
 
         localVarRequestBuilder.header("Accept",
-                "image/*, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+                "image/*, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase, text/html");
 
         localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {
@@ -1156,7 +1156,7 @@ public class ImageApi {
         }
 
         localVarRequestBuilder.header("Accept",
-                "image/*, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+                "image/*, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase, text/html");
 
         localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {
@@ -1442,7 +1442,7 @@ public class ImageApi {
         }
 
         localVarRequestBuilder.header("Accept",
-                "image/*, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+                "image/*, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase, text/html");
 
         localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {
@@ -1720,7 +1720,7 @@ public class ImageApi {
         }
 
         localVarRequestBuilder.header("Accept",
-                "image/*, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+                "image/*, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase, text/html");
 
         localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {
@@ -2028,7 +2028,7 @@ public class ImageApi {
         }
 
         localVarRequestBuilder.header("Accept",
-                "image/*, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+                "image/*, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase, text/html");
 
         localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {
@@ -2313,7 +2313,7 @@ public class ImageApi {
         }
 
         localVarRequestBuilder.header("Accept",
-                "image/*, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+                "image/*, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase, text/html");
 
         localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {
@@ -2423,7 +2423,7 @@ public class ImageApi {
         localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
 
         localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase, text/html");
 
         localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {
@@ -2702,7 +2702,7 @@ public class ImageApi {
         }
 
         localVarRequestBuilder.header("Accept",
-                "image/*, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+                "image/*, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase, text/html");
 
         localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {
@@ -2989,7 +2989,7 @@ public class ImageApi {
         }
 
         localVarRequestBuilder.header("Accept",
-                "image/*, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+                "image/*, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase, text/html");
 
         localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {
@@ -3267,7 +3267,7 @@ public class ImageApi {
         }
 
         localVarRequestBuilder.header("Accept",
-                "image/*, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+                "image/*, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase, text/html");
 
         localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {
@@ -3554,7 +3554,7 @@ public class ImageApi {
         }
 
         localVarRequestBuilder.header("Accept",
-                "image/*, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+                "image/*, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase, text/html");
 
         localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {
@@ -3573,30 +3573,12 @@ public class ImageApi {
      * 
      * @param tag Supply the cache tag from the item object to receive strong caching headers. (optional)
      * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
-     * @param maxWidth The maximum image width to return. (optional)
-     * @param maxHeight The maximum image height to return. (optional)
-     * @param width The fixed image width to return. (optional)
-     * @param height The fixed image height to return. (optional)
-     * @param fillWidth Width of box to fill. (optional)
-     * @param fillHeight Height of box to fill. (optional)
-     * @param blur Blur image. (optional)
-     * @param backgroundColor Apply a background color for transparent images. (optional)
-     * @param foregroundLayer Apply a foreground layer on top of the image. (optional)
-     * @param quality Quality setting, from 0-100. (optional, default to 90)
      * @return File
      * @throws ApiException if fails to make API call
      */
     public File getSplashscreen(@org.eclipse.jdt.annotation.NonNull String tag,
-            @org.eclipse.jdt.annotation.NonNull ImageFormat format,
-            @org.eclipse.jdt.annotation.NonNull Integer maxWidth, @org.eclipse.jdt.annotation.NonNull Integer maxHeight,
-            @org.eclipse.jdt.annotation.NonNull Integer width, @org.eclipse.jdt.annotation.NonNull Integer height,
-            @org.eclipse.jdt.annotation.NonNull Integer fillWidth,
-            @org.eclipse.jdt.annotation.NonNull Integer fillHeight, @org.eclipse.jdt.annotation.NonNull Integer blur,
-            @org.eclipse.jdt.annotation.NonNull String backgroundColor,
-            @org.eclipse.jdt.annotation.NonNull String foregroundLayer,
-            @org.eclipse.jdt.annotation.NonNull Integer quality) throws ApiException {
-        return getSplashscreen(tag, format, maxWidth, maxHeight, width, height, fillWidth, fillHeight, blur,
-                backgroundColor, foregroundLayer, quality, null);
+            @org.eclipse.jdt.annotation.NonNull ImageFormat format) throws ApiException {
+        return getSplashscreen(tag, format, null);
     }
 
     /**
@@ -3604,31 +3586,13 @@ public class ImageApi {
      * 
      * @param tag Supply the cache tag from the item object to receive strong caching headers. (optional)
      * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
-     * @param maxWidth The maximum image width to return. (optional)
-     * @param maxHeight The maximum image height to return. (optional)
-     * @param width The fixed image width to return. (optional)
-     * @param height The fixed image height to return. (optional)
-     * @param fillWidth Width of box to fill. (optional)
-     * @param fillHeight Height of box to fill. (optional)
-     * @param blur Blur image. (optional)
-     * @param backgroundColor Apply a background color for transparent images. (optional)
-     * @param foregroundLayer Apply a foreground layer on top of the image. (optional)
-     * @param quality Quality setting, from 0-100. (optional, default to 90)
      * @param headers Optional headers to include in the request
      * @return File
      * @throws ApiException if fails to make API call
      */
     public File getSplashscreen(@org.eclipse.jdt.annotation.NonNull String tag,
-            @org.eclipse.jdt.annotation.NonNull ImageFormat format,
-            @org.eclipse.jdt.annotation.NonNull Integer maxWidth, @org.eclipse.jdt.annotation.NonNull Integer maxHeight,
-            @org.eclipse.jdt.annotation.NonNull Integer width, @org.eclipse.jdt.annotation.NonNull Integer height,
-            @org.eclipse.jdt.annotation.NonNull Integer fillWidth,
-            @org.eclipse.jdt.annotation.NonNull Integer fillHeight, @org.eclipse.jdt.annotation.NonNull Integer blur,
-            @org.eclipse.jdt.annotation.NonNull String backgroundColor,
-            @org.eclipse.jdt.annotation.NonNull String foregroundLayer,
-            @org.eclipse.jdt.annotation.NonNull Integer quality, Map<String, String> headers) throws ApiException {
-        ApiResponse<File> localVarResponse = getSplashscreenWithHttpInfo(tag, format, maxWidth, maxHeight, width,
-                height, fillWidth, fillHeight, blur, backgroundColor, foregroundLayer, quality, headers);
+            @org.eclipse.jdt.annotation.NonNull ImageFormat format, Map<String, String> headers) throws ApiException {
+        ApiResponse<File> localVarResponse = getSplashscreenWithHttpInfo(tag, format, headers);
         return localVarResponse.getData();
     }
 
@@ -3637,30 +3601,12 @@ public class ImageApi {
      * 
      * @param tag Supply the cache tag from the item object to receive strong caching headers. (optional)
      * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
-     * @param maxWidth The maximum image width to return. (optional)
-     * @param maxHeight The maximum image height to return. (optional)
-     * @param width The fixed image width to return. (optional)
-     * @param height The fixed image height to return. (optional)
-     * @param fillWidth Width of box to fill. (optional)
-     * @param fillHeight Height of box to fill. (optional)
-     * @param blur Blur image. (optional)
-     * @param backgroundColor Apply a background color for transparent images. (optional)
-     * @param foregroundLayer Apply a foreground layer on top of the image. (optional)
-     * @param quality Quality setting, from 0-100. (optional, default to 90)
      * @return ApiResponse&lt;File&gt;
      * @throws ApiException if fails to make API call
      */
     public ApiResponse<File> getSplashscreenWithHttpInfo(@org.eclipse.jdt.annotation.NonNull String tag,
-            @org.eclipse.jdt.annotation.NonNull ImageFormat format,
-            @org.eclipse.jdt.annotation.NonNull Integer maxWidth, @org.eclipse.jdt.annotation.NonNull Integer maxHeight,
-            @org.eclipse.jdt.annotation.NonNull Integer width, @org.eclipse.jdt.annotation.NonNull Integer height,
-            @org.eclipse.jdt.annotation.NonNull Integer fillWidth,
-            @org.eclipse.jdt.annotation.NonNull Integer fillHeight, @org.eclipse.jdt.annotation.NonNull Integer blur,
-            @org.eclipse.jdt.annotation.NonNull String backgroundColor,
-            @org.eclipse.jdt.annotation.NonNull String foregroundLayer,
-            @org.eclipse.jdt.annotation.NonNull Integer quality) throws ApiException {
-        return getSplashscreenWithHttpInfo(tag, format, maxWidth, maxHeight, width, height, fillWidth, fillHeight, blur,
-                backgroundColor, foregroundLayer, quality, null);
+            @org.eclipse.jdt.annotation.NonNull ImageFormat format) throws ApiException {
+        return getSplashscreenWithHttpInfo(tag, format, null);
     }
 
     /**
@@ -3668,31 +3614,13 @@ public class ImageApi {
      * 
      * @param tag Supply the cache tag from the item object to receive strong caching headers. (optional)
      * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
-     * @param maxWidth The maximum image width to return. (optional)
-     * @param maxHeight The maximum image height to return. (optional)
-     * @param width The fixed image width to return. (optional)
-     * @param height The fixed image height to return. (optional)
-     * @param fillWidth Width of box to fill. (optional)
-     * @param fillHeight Height of box to fill. (optional)
-     * @param blur Blur image. (optional)
-     * @param backgroundColor Apply a background color for transparent images. (optional)
-     * @param foregroundLayer Apply a foreground layer on top of the image. (optional)
-     * @param quality Quality setting, from 0-100. (optional, default to 90)
      * @param headers Optional headers to include in the request
      * @return ApiResponse&lt;File&gt;
      * @throws ApiException if fails to make API call
      */
     public ApiResponse<File> getSplashscreenWithHttpInfo(@org.eclipse.jdt.annotation.NonNull String tag,
-            @org.eclipse.jdt.annotation.NonNull ImageFormat format,
-            @org.eclipse.jdt.annotation.NonNull Integer maxWidth, @org.eclipse.jdt.annotation.NonNull Integer maxHeight,
-            @org.eclipse.jdt.annotation.NonNull Integer width, @org.eclipse.jdt.annotation.NonNull Integer height,
-            @org.eclipse.jdt.annotation.NonNull Integer fillWidth,
-            @org.eclipse.jdt.annotation.NonNull Integer fillHeight, @org.eclipse.jdt.annotation.NonNull Integer blur,
-            @org.eclipse.jdt.annotation.NonNull String backgroundColor,
-            @org.eclipse.jdt.annotation.NonNull String foregroundLayer,
-            @org.eclipse.jdt.annotation.NonNull Integer quality, Map<String, String> headers) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = getSplashscreenRequestBuilder(tag, format, maxWidth, maxHeight,
-                width, height, fillWidth, fillHeight, blur, backgroundColor, foregroundLayer, quality, headers);
+            @org.eclipse.jdt.annotation.NonNull ImageFormat format, Map<String, String> headers) throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = getSplashscreenRequestBuilder(tag, format, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -3725,14 +3653,7 @@ public class ImageApi {
     }
 
     private HttpRequest.Builder getSplashscreenRequestBuilder(@org.eclipse.jdt.annotation.NonNull String tag,
-            @org.eclipse.jdt.annotation.NonNull ImageFormat format,
-            @org.eclipse.jdt.annotation.NonNull Integer maxWidth, @org.eclipse.jdt.annotation.NonNull Integer maxHeight,
-            @org.eclipse.jdt.annotation.NonNull Integer width, @org.eclipse.jdt.annotation.NonNull Integer height,
-            @org.eclipse.jdt.annotation.NonNull Integer fillWidth,
-            @org.eclipse.jdt.annotation.NonNull Integer fillHeight, @org.eclipse.jdt.annotation.NonNull Integer blur,
-            @org.eclipse.jdt.annotation.NonNull String backgroundColor,
-            @org.eclipse.jdt.annotation.NonNull String foregroundLayer,
-            @org.eclipse.jdt.annotation.NonNull Integer quality, Map<String, String> headers) throws ApiException {
+            @org.eclipse.jdt.annotation.NonNull ImageFormat format, Map<String, String> headers) throws ApiException {
 
         HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
 
@@ -3745,26 +3666,6 @@ public class ImageApi {
         localVarQueryParams.addAll(ApiClient.parameterToPairs("tag", tag));
         localVarQueryParameterBaseName = "format";
         localVarQueryParams.addAll(ApiClient.parameterToPairs("format", format));
-        localVarQueryParameterBaseName = "maxWidth";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("maxWidth", maxWidth));
-        localVarQueryParameterBaseName = "maxHeight";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("maxHeight", maxHeight));
-        localVarQueryParameterBaseName = "width";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("width", width));
-        localVarQueryParameterBaseName = "height";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("height", height));
-        localVarQueryParameterBaseName = "fillWidth";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("fillWidth", fillWidth));
-        localVarQueryParameterBaseName = "fillHeight";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("fillHeight", fillHeight));
-        localVarQueryParameterBaseName = "blur";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("blur", blur));
-        localVarQueryParameterBaseName = "backgroundColor";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("backgroundColor", backgroundColor));
-        localVarQueryParameterBaseName = "foregroundLayer";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("foregroundLayer", foregroundLayer));
-        localVarQueryParameterBaseName = "quality";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("quality", quality));
 
         if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
             StringJoiner queryJoiner = new StringJoiner("&");
@@ -3777,7 +3678,7 @@ public class ImageApi {
             localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
         }
 
-        localVarRequestBuilder.header("Accept", "image/*");
+        localVarRequestBuilder.header("Accept", "image/*, text/html");
 
         localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {
@@ -4055,7 +3956,7 @@ public class ImageApi {
         }
 
         localVarRequestBuilder.header("Accept",
-                "image/*, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+                "image/*, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase, text/html");
 
         localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {
@@ -4342,7 +4243,7 @@ public class ImageApi {
         }
 
         localVarRequestBuilder.header("Accept",
-                "image/*, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+                "image/*, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase, text/html");
 
         localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {
@@ -4362,35 +4263,13 @@ public class ImageApi {
      * @param userId User id. (optional)
      * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
      * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
-     * @param maxWidth The maximum image width to return. (optional)
-     * @param maxHeight The maximum image height to return. (optional)
-     * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
-     * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
-     * @param width The fixed image width to return. (optional)
-     * @param height The fixed image height to return. (optional)
-     * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
-     * @param fillWidth Width of box to fill. (optional)
-     * @param fillHeight Height of box to fill. (optional)
-     * @param blur Optional. Blur image. (optional)
-     * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
-     * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
-     * @param imageIndex Image index. (optional)
      * @return File
      * @throws ApiException if fails to make API call
      */
     public File getUserImage(@org.eclipse.jdt.annotation.NonNull UUID userId,
-            @org.eclipse.jdt.annotation.NonNull String tag, @org.eclipse.jdt.annotation.NonNull ImageFormat format,
-            @org.eclipse.jdt.annotation.NonNull Integer maxWidth, @org.eclipse.jdt.annotation.NonNull Integer maxHeight,
-            @org.eclipse.jdt.annotation.NonNull Double percentPlayed,
-            @org.eclipse.jdt.annotation.NonNull Integer unplayedCount,
-            @org.eclipse.jdt.annotation.NonNull Integer width, @org.eclipse.jdt.annotation.NonNull Integer height,
-            @org.eclipse.jdt.annotation.NonNull Integer quality, @org.eclipse.jdt.annotation.NonNull Integer fillWidth,
-            @org.eclipse.jdt.annotation.NonNull Integer fillHeight, @org.eclipse.jdt.annotation.NonNull Integer blur,
-            @org.eclipse.jdt.annotation.NonNull String backgroundColor,
-            @org.eclipse.jdt.annotation.NonNull String foregroundLayer,
-            @org.eclipse.jdt.annotation.NonNull Integer imageIndex) throws ApiException {
-        return getUserImage(userId, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height,
-                quality, fillWidth, fillHeight, blur, backgroundColor, foregroundLayer, imageIndex, null);
+            @org.eclipse.jdt.annotation.NonNull String tag, @org.eclipse.jdt.annotation.NonNull ImageFormat format)
+            throws ApiException {
+        return getUserImage(userId, tag, format, null);
     }
 
     /**
@@ -4399,37 +4278,14 @@ public class ImageApi {
      * @param userId User id. (optional)
      * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
      * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
-     * @param maxWidth The maximum image width to return. (optional)
-     * @param maxHeight The maximum image height to return. (optional)
-     * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
-     * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
-     * @param width The fixed image width to return. (optional)
-     * @param height The fixed image height to return. (optional)
-     * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
-     * @param fillWidth Width of box to fill. (optional)
-     * @param fillHeight Height of box to fill. (optional)
-     * @param blur Optional. Blur image. (optional)
-     * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
-     * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
-     * @param imageIndex Image index. (optional)
      * @param headers Optional headers to include in the request
      * @return File
      * @throws ApiException if fails to make API call
      */
     public File getUserImage(@org.eclipse.jdt.annotation.NonNull UUID userId,
             @org.eclipse.jdt.annotation.NonNull String tag, @org.eclipse.jdt.annotation.NonNull ImageFormat format,
-            @org.eclipse.jdt.annotation.NonNull Integer maxWidth, @org.eclipse.jdt.annotation.NonNull Integer maxHeight,
-            @org.eclipse.jdt.annotation.NonNull Double percentPlayed,
-            @org.eclipse.jdt.annotation.NonNull Integer unplayedCount,
-            @org.eclipse.jdt.annotation.NonNull Integer width, @org.eclipse.jdt.annotation.NonNull Integer height,
-            @org.eclipse.jdt.annotation.NonNull Integer quality, @org.eclipse.jdt.annotation.NonNull Integer fillWidth,
-            @org.eclipse.jdt.annotation.NonNull Integer fillHeight, @org.eclipse.jdt.annotation.NonNull Integer blur,
-            @org.eclipse.jdt.annotation.NonNull String backgroundColor,
-            @org.eclipse.jdt.annotation.NonNull String foregroundLayer,
-            @org.eclipse.jdt.annotation.NonNull Integer imageIndex, Map<String, String> headers) throws ApiException {
-        ApiResponse<File> localVarResponse = getUserImageWithHttpInfo(userId, tag, format, maxWidth, maxHeight,
-                percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, blur, backgroundColor,
-                foregroundLayer, imageIndex, headers);
+            Map<String, String> headers) throws ApiException {
+        ApiResponse<File> localVarResponse = getUserImageWithHttpInfo(userId, tag, format, headers);
         return localVarResponse.getData();
     }
 
@@ -4439,35 +4295,13 @@ public class ImageApi {
      * @param userId User id. (optional)
      * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
      * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
-     * @param maxWidth The maximum image width to return. (optional)
-     * @param maxHeight The maximum image height to return. (optional)
-     * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
-     * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
-     * @param width The fixed image width to return. (optional)
-     * @param height The fixed image height to return. (optional)
-     * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
-     * @param fillWidth Width of box to fill. (optional)
-     * @param fillHeight Height of box to fill. (optional)
-     * @param blur Optional. Blur image. (optional)
-     * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
-     * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
-     * @param imageIndex Image index. (optional)
      * @return ApiResponse&lt;File&gt;
      * @throws ApiException if fails to make API call
      */
     public ApiResponse<File> getUserImageWithHttpInfo(@org.eclipse.jdt.annotation.NonNull UUID userId,
-            @org.eclipse.jdt.annotation.NonNull String tag, @org.eclipse.jdt.annotation.NonNull ImageFormat format,
-            @org.eclipse.jdt.annotation.NonNull Integer maxWidth, @org.eclipse.jdt.annotation.NonNull Integer maxHeight,
-            @org.eclipse.jdt.annotation.NonNull Double percentPlayed,
-            @org.eclipse.jdt.annotation.NonNull Integer unplayedCount,
-            @org.eclipse.jdt.annotation.NonNull Integer width, @org.eclipse.jdt.annotation.NonNull Integer height,
-            @org.eclipse.jdt.annotation.NonNull Integer quality, @org.eclipse.jdt.annotation.NonNull Integer fillWidth,
-            @org.eclipse.jdt.annotation.NonNull Integer fillHeight, @org.eclipse.jdt.annotation.NonNull Integer blur,
-            @org.eclipse.jdt.annotation.NonNull String backgroundColor,
-            @org.eclipse.jdt.annotation.NonNull String foregroundLayer,
-            @org.eclipse.jdt.annotation.NonNull Integer imageIndex) throws ApiException {
-        return getUserImageWithHttpInfo(userId, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width,
-                height, quality, fillWidth, fillHeight, blur, backgroundColor, foregroundLayer, imageIndex, null);
+            @org.eclipse.jdt.annotation.NonNull String tag, @org.eclipse.jdt.annotation.NonNull ImageFormat format)
+            throws ApiException {
+        return getUserImageWithHttpInfo(userId, tag, format, null);
     }
 
     /**
@@ -4476,37 +4310,14 @@ public class ImageApi {
      * @param userId User id. (optional)
      * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
      * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
-     * @param maxWidth The maximum image width to return. (optional)
-     * @param maxHeight The maximum image height to return. (optional)
-     * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
-     * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
-     * @param width The fixed image width to return. (optional)
-     * @param height The fixed image height to return. (optional)
-     * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
-     * @param fillWidth Width of box to fill. (optional)
-     * @param fillHeight Height of box to fill. (optional)
-     * @param blur Optional. Blur image. (optional)
-     * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
-     * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
-     * @param imageIndex Image index. (optional)
      * @param headers Optional headers to include in the request
      * @return ApiResponse&lt;File&gt;
      * @throws ApiException if fails to make API call
      */
     public ApiResponse<File> getUserImageWithHttpInfo(@org.eclipse.jdt.annotation.NonNull UUID userId,
             @org.eclipse.jdt.annotation.NonNull String tag, @org.eclipse.jdt.annotation.NonNull ImageFormat format,
-            @org.eclipse.jdt.annotation.NonNull Integer maxWidth, @org.eclipse.jdt.annotation.NonNull Integer maxHeight,
-            @org.eclipse.jdt.annotation.NonNull Double percentPlayed,
-            @org.eclipse.jdt.annotation.NonNull Integer unplayedCount,
-            @org.eclipse.jdt.annotation.NonNull Integer width, @org.eclipse.jdt.annotation.NonNull Integer height,
-            @org.eclipse.jdt.annotation.NonNull Integer quality, @org.eclipse.jdt.annotation.NonNull Integer fillWidth,
-            @org.eclipse.jdt.annotation.NonNull Integer fillHeight, @org.eclipse.jdt.annotation.NonNull Integer blur,
-            @org.eclipse.jdt.annotation.NonNull String backgroundColor,
-            @org.eclipse.jdt.annotation.NonNull String foregroundLayer,
-            @org.eclipse.jdt.annotation.NonNull Integer imageIndex, Map<String, String> headers) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = getUserImageRequestBuilder(userId, tag, format, maxWidth,
-                maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, blur,
-                backgroundColor, foregroundLayer, imageIndex, headers);
+            Map<String, String> headers) throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = getUserImageRequestBuilder(userId, tag, format, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -4540,15 +4351,7 @@ public class ImageApi {
 
     private HttpRequest.Builder getUserImageRequestBuilder(@org.eclipse.jdt.annotation.NonNull UUID userId,
             @org.eclipse.jdt.annotation.NonNull String tag, @org.eclipse.jdt.annotation.NonNull ImageFormat format,
-            @org.eclipse.jdt.annotation.NonNull Integer maxWidth, @org.eclipse.jdt.annotation.NonNull Integer maxHeight,
-            @org.eclipse.jdt.annotation.NonNull Double percentPlayed,
-            @org.eclipse.jdt.annotation.NonNull Integer unplayedCount,
-            @org.eclipse.jdt.annotation.NonNull Integer width, @org.eclipse.jdt.annotation.NonNull Integer height,
-            @org.eclipse.jdt.annotation.NonNull Integer quality, @org.eclipse.jdt.annotation.NonNull Integer fillWidth,
-            @org.eclipse.jdt.annotation.NonNull Integer fillHeight, @org.eclipse.jdt.annotation.NonNull Integer blur,
-            @org.eclipse.jdt.annotation.NonNull String backgroundColor,
-            @org.eclipse.jdt.annotation.NonNull String foregroundLayer,
-            @org.eclipse.jdt.annotation.NonNull Integer imageIndex, Map<String, String> headers) throws ApiException {
+            Map<String, String> headers) throws ApiException {
 
         HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
 
@@ -4563,32 +4366,6 @@ public class ImageApi {
         localVarQueryParams.addAll(ApiClient.parameterToPairs("tag", tag));
         localVarQueryParameterBaseName = "format";
         localVarQueryParams.addAll(ApiClient.parameterToPairs("format", format));
-        localVarQueryParameterBaseName = "maxWidth";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("maxWidth", maxWidth));
-        localVarQueryParameterBaseName = "maxHeight";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("maxHeight", maxHeight));
-        localVarQueryParameterBaseName = "percentPlayed";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("percentPlayed", percentPlayed));
-        localVarQueryParameterBaseName = "unplayedCount";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("unplayedCount", unplayedCount));
-        localVarQueryParameterBaseName = "width";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("width", width));
-        localVarQueryParameterBaseName = "height";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("height", height));
-        localVarQueryParameterBaseName = "quality";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("quality", quality));
-        localVarQueryParameterBaseName = "fillWidth";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("fillWidth", fillWidth));
-        localVarQueryParameterBaseName = "fillHeight";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("fillHeight", fillHeight));
-        localVarQueryParameterBaseName = "blur";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("blur", blur));
-        localVarQueryParameterBaseName = "backgroundColor";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("backgroundColor", backgroundColor));
-        localVarQueryParameterBaseName = "foregroundLayer";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("foregroundLayer", foregroundLayer));
-        localVarQueryParameterBaseName = "imageIndex";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("imageIndex", imageIndex));
 
         if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
             StringJoiner queryJoiner = new StringJoiner("&");
@@ -4602,7 +4379,7 @@ public class ImageApi {
         }
 
         localVarRequestBuilder.header("Accept",
-                "image/*, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+                "image/*, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase, text/html");
 
         localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {
@@ -4887,7 +4664,7 @@ public class ImageApi {
         }
 
         localVarRequestBuilder.header("Accept",
-                "image/*, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+                "image/*, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase, text/html");
 
         localVarRequestBuilder.method("HEAD", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {
@@ -5165,7 +4942,7 @@ public class ImageApi {
         }
 
         localVarRequestBuilder.header("Accept",
-                "image/*, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+                "image/*, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase, text/html");
 
         localVarRequestBuilder.method("HEAD", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {
@@ -5452,7 +5229,7 @@ public class ImageApi {
         }
 
         localVarRequestBuilder.header("Accept",
-                "image/*, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+                "image/*, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase, text/html");
 
         localVarRequestBuilder.method("HEAD", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {
@@ -5730,7 +5507,7 @@ public class ImageApi {
         }
 
         localVarRequestBuilder.header("Accept",
-                "image/*, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+                "image/*, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase, text/html");
 
         localVarRequestBuilder.method("HEAD", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {
@@ -6038,7 +5815,7 @@ public class ImageApi {
         }
 
         localVarRequestBuilder.header("Accept",
-                "image/*, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+                "image/*, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase, text/html");
 
         localVarRequestBuilder.method("HEAD", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {
@@ -6324,7 +6101,7 @@ public class ImageApi {
         }
 
         localVarRequestBuilder.header("Accept",
-                "image/*, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+                "image/*, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase, text/html");
 
         localVarRequestBuilder.method("HEAD", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {
@@ -6603,7 +6380,7 @@ public class ImageApi {
         }
 
         localVarRequestBuilder.header("Accept",
-                "image/*, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+                "image/*, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase, text/html");
 
         localVarRequestBuilder.method("HEAD", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {
@@ -6891,7 +6668,7 @@ public class ImageApi {
         }
 
         localVarRequestBuilder.header("Accept",
-                "image/*, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+                "image/*, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase, text/html");
 
         localVarRequestBuilder.method("HEAD", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {
@@ -7169,7 +6946,7 @@ public class ImageApi {
         }
 
         localVarRequestBuilder.header("Accept",
-                "image/*, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+                "image/*, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase, text/html");
 
         localVarRequestBuilder.method("HEAD", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {
@@ -7456,7 +7233,7 @@ public class ImageApi {
         }
 
         localVarRequestBuilder.header("Accept",
-                "image/*, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+                "image/*, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase, text/html");
 
         localVarRequestBuilder.method("HEAD", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {
@@ -7734,7 +7511,7 @@ public class ImageApi {
         }
 
         localVarRequestBuilder.header("Accept",
-                "image/*, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+                "image/*, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase, text/html");
 
         localVarRequestBuilder.method("HEAD", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {
@@ -8021,7 +7798,7 @@ public class ImageApi {
         }
 
         localVarRequestBuilder.header("Accept",
-                "image/*, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+                "image/*, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase, text/html");
 
         localVarRequestBuilder.method("HEAD", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {
@@ -8041,35 +7818,13 @@ public class ImageApi {
      * @param userId User id. (optional)
      * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
      * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
-     * @param maxWidth The maximum image width to return. (optional)
-     * @param maxHeight The maximum image height to return. (optional)
-     * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
-     * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
-     * @param width The fixed image width to return. (optional)
-     * @param height The fixed image height to return. (optional)
-     * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
-     * @param fillWidth Width of box to fill. (optional)
-     * @param fillHeight Height of box to fill. (optional)
-     * @param blur Optional. Blur image. (optional)
-     * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
-     * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
-     * @param imageIndex Image index. (optional)
      * @return File
      * @throws ApiException if fails to make API call
      */
     public File headUserImage(@org.eclipse.jdt.annotation.NonNull UUID userId,
-            @org.eclipse.jdt.annotation.NonNull String tag, @org.eclipse.jdt.annotation.NonNull ImageFormat format,
-            @org.eclipse.jdt.annotation.NonNull Integer maxWidth, @org.eclipse.jdt.annotation.NonNull Integer maxHeight,
-            @org.eclipse.jdt.annotation.NonNull Double percentPlayed,
-            @org.eclipse.jdt.annotation.NonNull Integer unplayedCount,
-            @org.eclipse.jdt.annotation.NonNull Integer width, @org.eclipse.jdt.annotation.NonNull Integer height,
-            @org.eclipse.jdt.annotation.NonNull Integer quality, @org.eclipse.jdt.annotation.NonNull Integer fillWidth,
-            @org.eclipse.jdt.annotation.NonNull Integer fillHeight, @org.eclipse.jdt.annotation.NonNull Integer blur,
-            @org.eclipse.jdt.annotation.NonNull String backgroundColor,
-            @org.eclipse.jdt.annotation.NonNull String foregroundLayer,
-            @org.eclipse.jdt.annotation.NonNull Integer imageIndex) throws ApiException {
-        return headUserImage(userId, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width, height,
-                quality, fillWidth, fillHeight, blur, backgroundColor, foregroundLayer, imageIndex, null);
+            @org.eclipse.jdt.annotation.NonNull String tag, @org.eclipse.jdt.annotation.NonNull ImageFormat format)
+            throws ApiException {
+        return headUserImage(userId, tag, format, null);
     }
 
     /**
@@ -8078,37 +7833,14 @@ public class ImageApi {
      * @param userId User id. (optional)
      * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
      * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
-     * @param maxWidth The maximum image width to return. (optional)
-     * @param maxHeight The maximum image height to return. (optional)
-     * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
-     * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
-     * @param width The fixed image width to return. (optional)
-     * @param height The fixed image height to return. (optional)
-     * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
-     * @param fillWidth Width of box to fill. (optional)
-     * @param fillHeight Height of box to fill. (optional)
-     * @param blur Optional. Blur image. (optional)
-     * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
-     * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
-     * @param imageIndex Image index. (optional)
      * @param headers Optional headers to include in the request
      * @return File
      * @throws ApiException if fails to make API call
      */
     public File headUserImage(@org.eclipse.jdt.annotation.NonNull UUID userId,
             @org.eclipse.jdt.annotation.NonNull String tag, @org.eclipse.jdt.annotation.NonNull ImageFormat format,
-            @org.eclipse.jdt.annotation.NonNull Integer maxWidth, @org.eclipse.jdt.annotation.NonNull Integer maxHeight,
-            @org.eclipse.jdt.annotation.NonNull Double percentPlayed,
-            @org.eclipse.jdt.annotation.NonNull Integer unplayedCount,
-            @org.eclipse.jdt.annotation.NonNull Integer width, @org.eclipse.jdt.annotation.NonNull Integer height,
-            @org.eclipse.jdt.annotation.NonNull Integer quality, @org.eclipse.jdt.annotation.NonNull Integer fillWidth,
-            @org.eclipse.jdt.annotation.NonNull Integer fillHeight, @org.eclipse.jdt.annotation.NonNull Integer blur,
-            @org.eclipse.jdt.annotation.NonNull String backgroundColor,
-            @org.eclipse.jdt.annotation.NonNull String foregroundLayer,
-            @org.eclipse.jdt.annotation.NonNull Integer imageIndex, Map<String, String> headers) throws ApiException {
-        ApiResponse<File> localVarResponse = headUserImageWithHttpInfo(userId, tag, format, maxWidth, maxHeight,
-                percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, blur, backgroundColor,
-                foregroundLayer, imageIndex, headers);
+            Map<String, String> headers) throws ApiException {
+        ApiResponse<File> localVarResponse = headUserImageWithHttpInfo(userId, tag, format, headers);
         return localVarResponse.getData();
     }
 
@@ -8118,35 +7850,13 @@ public class ImageApi {
      * @param userId User id. (optional)
      * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
      * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
-     * @param maxWidth The maximum image width to return. (optional)
-     * @param maxHeight The maximum image height to return. (optional)
-     * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
-     * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
-     * @param width The fixed image width to return. (optional)
-     * @param height The fixed image height to return. (optional)
-     * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
-     * @param fillWidth Width of box to fill. (optional)
-     * @param fillHeight Height of box to fill. (optional)
-     * @param blur Optional. Blur image. (optional)
-     * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
-     * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
-     * @param imageIndex Image index. (optional)
      * @return ApiResponse&lt;File&gt;
      * @throws ApiException if fails to make API call
      */
     public ApiResponse<File> headUserImageWithHttpInfo(@org.eclipse.jdt.annotation.NonNull UUID userId,
-            @org.eclipse.jdt.annotation.NonNull String tag, @org.eclipse.jdt.annotation.NonNull ImageFormat format,
-            @org.eclipse.jdt.annotation.NonNull Integer maxWidth, @org.eclipse.jdt.annotation.NonNull Integer maxHeight,
-            @org.eclipse.jdt.annotation.NonNull Double percentPlayed,
-            @org.eclipse.jdt.annotation.NonNull Integer unplayedCount,
-            @org.eclipse.jdt.annotation.NonNull Integer width, @org.eclipse.jdt.annotation.NonNull Integer height,
-            @org.eclipse.jdt.annotation.NonNull Integer quality, @org.eclipse.jdt.annotation.NonNull Integer fillWidth,
-            @org.eclipse.jdt.annotation.NonNull Integer fillHeight, @org.eclipse.jdt.annotation.NonNull Integer blur,
-            @org.eclipse.jdt.annotation.NonNull String backgroundColor,
-            @org.eclipse.jdt.annotation.NonNull String foregroundLayer,
-            @org.eclipse.jdt.annotation.NonNull Integer imageIndex) throws ApiException {
-        return headUserImageWithHttpInfo(userId, tag, format, maxWidth, maxHeight, percentPlayed, unplayedCount, width,
-                height, quality, fillWidth, fillHeight, blur, backgroundColor, foregroundLayer, imageIndex, null);
+            @org.eclipse.jdt.annotation.NonNull String tag, @org.eclipse.jdt.annotation.NonNull ImageFormat format)
+            throws ApiException {
+        return headUserImageWithHttpInfo(userId, tag, format, null);
     }
 
     /**
@@ -8155,37 +7865,14 @@ public class ImageApi {
      * @param userId User id. (optional)
      * @param tag Optional. Supply the cache tag from the item object to receive strong caching headers. (optional)
      * @param format Determines the output format of the image - original,gif,jpg,png. (optional)
-     * @param maxWidth The maximum image width to return. (optional)
-     * @param maxHeight The maximum image height to return. (optional)
-     * @param percentPlayed Optional. Percent to render for the percent played overlay. (optional)
-     * @param unplayedCount Optional. Unplayed count overlay to render. (optional)
-     * @param width The fixed image width to return. (optional)
-     * @param height The fixed image height to return. (optional)
-     * @param quality Optional. Quality setting, from 0-100. Defaults to 90 and should suffice in most cases. (optional)
-     * @param fillWidth Width of box to fill. (optional)
-     * @param fillHeight Height of box to fill. (optional)
-     * @param blur Optional. Blur image. (optional)
-     * @param backgroundColor Optional. Apply a background color for transparent images. (optional)
-     * @param foregroundLayer Optional. Apply a foreground layer on top of the image. (optional)
-     * @param imageIndex Image index. (optional)
      * @param headers Optional headers to include in the request
      * @return ApiResponse&lt;File&gt;
      * @throws ApiException if fails to make API call
      */
     public ApiResponse<File> headUserImageWithHttpInfo(@org.eclipse.jdt.annotation.NonNull UUID userId,
             @org.eclipse.jdt.annotation.NonNull String tag, @org.eclipse.jdt.annotation.NonNull ImageFormat format,
-            @org.eclipse.jdt.annotation.NonNull Integer maxWidth, @org.eclipse.jdt.annotation.NonNull Integer maxHeight,
-            @org.eclipse.jdt.annotation.NonNull Double percentPlayed,
-            @org.eclipse.jdt.annotation.NonNull Integer unplayedCount,
-            @org.eclipse.jdt.annotation.NonNull Integer width, @org.eclipse.jdt.annotation.NonNull Integer height,
-            @org.eclipse.jdt.annotation.NonNull Integer quality, @org.eclipse.jdt.annotation.NonNull Integer fillWidth,
-            @org.eclipse.jdt.annotation.NonNull Integer fillHeight, @org.eclipse.jdt.annotation.NonNull Integer blur,
-            @org.eclipse.jdt.annotation.NonNull String backgroundColor,
-            @org.eclipse.jdt.annotation.NonNull String foregroundLayer,
-            @org.eclipse.jdt.annotation.NonNull Integer imageIndex, Map<String, String> headers) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = headUserImageRequestBuilder(userId, tag, format, maxWidth,
-                maxHeight, percentPlayed, unplayedCount, width, height, quality, fillWidth, fillHeight, blur,
-                backgroundColor, foregroundLayer, imageIndex, headers);
+            Map<String, String> headers) throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = headUserImageRequestBuilder(userId, tag, format, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -8219,15 +7906,7 @@ public class ImageApi {
 
     private HttpRequest.Builder headUserImageRequestBuilder(@org.eclipse.jdt.annotation.NonNull UUID userId,
             @org.eclipse.jdt.annotation.NonNull String tag, @org.eclipse.jdt.annotation.NonNull ImageFormat format,
-            @org.eclipse.jdt.annotation.NonNull Integer maxWidth, @org.eclipse.jdt.annotation.NonNull Integer maxHeight,
-            @org.eclipse.jdt.annotation.NonNull Double percentPlayed,
-            @org.eclipse.jdt.annotation.NonNull Integer unplayedCount,
-            @org.eclipse.jdt.annotation.NonNull Integer width, @org.eclipse.jdt.annotation.NonNull Integer height,
-            @org.eclipse.jdt.annotation.NonNull Integer quality, @org.eclipse.jdt.annotation.NonNull Integer fillWidth,
-            @org.eclipse.jdt.annotation.NonNull Integer fillHeight, @org.eclipse.jdt.annotation.NonNull Integer blur,
-            @org.eclipse.jdt.annotation.NonNull String backgroundColor,
-            @org.eclipse.jdt.annotation.NonNull String foregroundLayer,
-            @org.eclipse.jdt.annotation.NonNull Integer imageIndex, Map<String, String> headers) throws ApiException {
+            Map<String, String> headers) throws ApiException {
 
         HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
 
@@ -8242,32 +7921,6 @@ public class ImageApi {
         localVarQueryParams.addAll(ApiClient.parameterToPairs("tag", tag));
         localVarQueryParameterBaseName = "format";
         localVarQueryParams.addAll(ApiClient.parameterToPairs("format", format));
-        localVarQueryParameterBaseName = "maxWidth";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("maxWidth", maxWidth));
-        localVarQueryParameterBaseName = "maxHeight";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("maxHeight", maxHeight));
-        localVarQueryParameterBaseName = "percentPlayed";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("percentPlayed", percentPlayed));
-        localVarQueryParameterBaseName = "unplayedCount";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("unplayedCount", unplayedCount));
-        localVarQueryParameterBaseName = "width";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("width", width));
-        localVarQueryParameterBaseName = "height";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("height", height));
-        localVarQueryParameterBaseName = "quality";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("quality", quality));
-        localVarQueryParameterBaseName = "fillWidth";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("fillWidth", fillWidth));
-        localVarQueryParameterBaseName = "fillHeight";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("fillHeight", fillHeight));
-        localVarQueryParameterBaseName = "blur";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("blur", blur));
-        localVarQueryParameterBaseName = "backgroundColor";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("backgroundColor", backgroundColor));
-        localVarQueryParameterBaseName = "foregroundLayer";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("foregroundLayer", foregroundLayer));
-        localVarQueryParameterBaseName = "imageIndex";
-        localVarQueryParams.addAll(ApiClient.parameterToPairs("imageIndex", imageIndex));
 
         if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
             StringJoiner queryJoiner = new StringJoiner("&");
@@ -8281,7 +7934,7 @@ public class ImageApi {
         }
 
         localVarRequestBuilder.header("Accept",
-                "image/*, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+                "image/*, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase, text/html");
 
         localVarRequestBuilder.method("HEAD", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {
@@ -8397,7 +8050,7 @@ public class ImageApi {
 
         localVarRequestBuilder.header("Content-Type", "image/*");
         localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase, text/html");
 
         try {
             byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(body);
@@ -8522,7 +8175,7 @@ public class ImageApi {
 
         localVarRequestBuilder.header("Content-Type", "image/*");
         localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase, text/html");
 
         try {
             byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(body);
@@ -8662,7 +8315,7 @@ public class ImageApi {
 
         localVarRequestBuilder.header("Content-Type", "image/*");
         localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase, text/html");
 
         try {
             byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(body);
@@ -8821,7 +8474,7 @@ public class ImageApi {
         }
 
         localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase, text/html");
 
         localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.noBody());
         if (memberVarReadTimeout != null) {
@@ -8917,7 +8570,7 @@ public class ImageApi {
 
         localVarRequestBuilder.header("Content-Type", "image/*");
         localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase, text/html");
 
         try {
             byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(body);

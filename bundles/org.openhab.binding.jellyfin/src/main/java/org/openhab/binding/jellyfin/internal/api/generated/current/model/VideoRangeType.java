@@ -13,6 +13,8 @@
 
 package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
+import java.util.Locale;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
@@ -36,6 +38,14 @@ public enum VideoRangeType {
     DOVI_WITH_HLG("DOVIWithHLG"),
 
     DOVI_WITH_SDR("DOVIWithSDR"),
+
+    DOVI_WITH_EL("DOVIWithEL"),
+
+    DOVI_WITH_HDR10_PLUS("DOVIWithHDR10Plus"),
+
+    DOVI_WITH_ELHDR10_PLUS("DOVIWithELHDR10Plus"),
+
+    DOVI_INVALID("DOVIInvalid"),
 
     HDR10_PLUS("HDR10Plus");
 
@@ -76,6 +86,6 @@ public enum VideoRangeType {
             prefix = "";
         }
 
-        return String.format("%s=%s", prefix, this.toString());
+        return String.format(Locale.ROOT, "%s=%s", prefix, this.toString());
     }
 }

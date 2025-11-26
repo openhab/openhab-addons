@@ -235,7 +235,7 @@ public class ClientLogApi {
 
         localVarRequestBuilder.header("Content-Type", "text/plain");
         localVarRequestBuilder.header("Accept",
-                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase, text/html");
 
         try {
             byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(body);

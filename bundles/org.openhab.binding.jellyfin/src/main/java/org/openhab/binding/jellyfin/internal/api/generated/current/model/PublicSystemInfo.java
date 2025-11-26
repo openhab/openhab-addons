@@ -13,6 +13,7 @@
 
 package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
+import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
 
@@ -73,13 +74,13 @@ public class PublicSystemInfo {
      * @return localAddress
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_LOCAL_ADDRESS)
+    @JsonProperty(value = JSON_PROPERTY_LOCAL_ADDRESS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getLocalAddress() {
         return localAddress;
     }
 
-    @JsonProperty(JSON_PROPERTY_LOCAL_ADDRESS)
+    @JsonProperty(value = JSON_PROPERTY_LOCAL_ADDRESS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setLocalAddress(@org.eclipse.jdt.annotation.NonNull String localAddress) {
         this.localAddress = localAddress;
@@ -96,13 +97,13 @@ public class PublicSystemInfo {
      * @return serverName
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_SERVER_NAME)
+    @JsonProperty(value = JSON_PROPERTY_SERVER_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getServerName() {
         return serverName;
     }
 
-    @JsonProperty(JSON_PROPERTY_SERVER_NAME)
+    @JsonProperty(value = JSON_PROPERTY_SERVER_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setServerName(@org.eclipse.jdt.annotation.NonNull String serverName) {
         this.serverName = serverName;
@@ -119,13 +120,13 @@ public class PublicSystemInfo {
      * @return version
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_VERSION)
+    @JsonProperty(value = JSON_PROPERTY_VERSION, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getVersion() {
         return version;
     }
 
-    @JsonProperty(JSON_PROPERTY_VERSION)
+    @JsonProperty(value = JSON_PROPERTY_VERSION, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setVersion(@org.eclipse.jdt.annotation.NonNull String version) {
         this.version = version;
@@ -142,13 +143,13 @@ public class PublicSystemInfo {
      * @return productName
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_PRODUCT_NAME)
+    @JsonProperty(value = JSON_PROPERTY_PRODUCT_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getProductName() {
         return productName;
     }
 
-    @JsonProperty(JSON_PROPERTY_PRODUCT_NAME)
+    @JsonProperty(value = JSON_PROPERTY_PRODUCT_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setProductName(@org.eclipse.jdt.annotation.NonNull String productName) {
         this.productName = productName;
@@ -167,13 +168,13 @@ public class PublicSystemInfo {
      */
     @Deprecated
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_OPERATING_SYSTEM)
+    @JsonProperty(value = JSON_PROPERTY_OPERATING_SYSTEM, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getOperatingSystem() {
         return operatingSystem;
     }
 
-    @JsonProperty(JSON_PROPERTY_OPERATING_SYSTEM)
+    @JsonProperty(value = JSON_PROPERTY_OPERATING_SYSTEM, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setOperatingSystem(@org.eclipse.jdt.annotation.NonNull String operatingSystem) {
         this.operatingSystem = operatingSystem;
@@ -190,13 +191,13 @@ public class PublicSystemInfo {
      * @return id
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ID)
+    @JsonProperty(value = JSON_PROPERTY_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getId() {
         return id;
     }
 
-    @JsonProperty(JSON_PROPERTY_ID)
+    @JsonProperty(value = JSON_PROPERTY_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setId(@org.eclipse.jdt.annotation.NonNull String id) {
         this.id = id;
@@ -213,13 +214,13 @@ public class PublicSystemInfo {
      * @return startupWizardCompleted
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_STARTUP_WIZARD_COMPLETED)
+    @JsonProperty(value = JSON_PROPERTY_STARTUP_WIZARD_COMPLETED, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getStartupWizardCompleted() {
         return startupWizardCompleted;
     }
 
-    @JsonProperty(JSON_PROPERTY_STARTUP_WIZARD_COMPLETED)
+    @JsonProperty(value = JSON_PROPERTY_STARTUP_WIZARD_COMPLETED, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setStartupWizardCompleted(@org.eclipse.jdt.annotation.NonNull Boolean startupWizardCompleted) {
         this.startupWizardCompleted = startupWizardCompleted;
@@ -312,43 +313,43 @@ public class PublicSystemInfo {
 
         // add `LocalAddress` to the URL query string
         if (getLocalAddress() != null) {
-            joiner.add(String.format("%sLocalAddress%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sLocalAddress%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getLocalAddress()))));
         }
 
         // add `ServerName` to the URL query string
         if (getServerName() != null) {
-            joiner.add(String.format("%sServerName%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sServerName%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getServerName()))));
         }
 
         // add `Version` to the URL query string
         if (getVersion() != null) {
-            joiner.add(String.format("%sVersion%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sVersion%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getVersion()))));
         }
 
         // add `ProductName` to the URL query string
         if (getProductName() != null) {
-            joiner.add(String.format("%sProductName%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sProductName%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getProductName()))));
         }
 
         // add `OperatingSystem` to the URL query string
         if (getOperatingSystem() != null) {
-            joiner.add(String.format("%sOperatingSystem%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sOperatingSystem%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getOperatingSystem()))));
         }
 
         // add `Id` to the URL query string
         if (getId() != null) {
-            joiner.add(
-                    String.format("%sId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
+            joiner.add(String.format(Locale.ROOT, "%sId%s=%s", prefix, suffix,
+                    ApiClient.urlEncode(ApiClient.valueToString(getId()))));
         }
 
         // add `StartupWizardCompleted` to the URL query string
         if (getStartupWizardCompleted() != null) {
-            joiner.add(String.format("%sStartupWizardCompleted%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sStartupWizardCompleted%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getStartupWizardCompleted()))));
         }
 

@@ -15,6 +15,7 @@ package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
 
@@ -150,13 +151,13 @@ public class NetworkConfiguration {
      * @return baseUrl
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_BASE_URL)
+    @JsonProperty(value = JSON_PROPERTY_BASE_URL, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getBaseUrl() {
         return baseUrl;
     }
 
-    @JsonProperty(JSON_PROPERTY_BASE_URL)
+    @JsonProperty(value = JSON_PROPERTY_BASE_URL, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setBaseUrl(@org.eclipse.jdt.annotation.NonNull String baseUrl) {
         this.baseUrl = baseUrl;
@@ -173,13 +174,13 @@ public class NetworkConfiguration {
      * @return enableHttps
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ENABLE_HTTPS)
+    @JsonProperty(value = JSON_PROPERTY_ENABLE_HTTPS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getEnableHttps() {
         return enableHttps;
     }
 
-    @JsonProperty(JSON_PROPERTY_ENABLE_HTTPS)
+    @JsonProperty(value = JSON_PROPERTY_ENABLE_HTTPS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setEnableHttps(@org.eclipse.jdt.annotation.NonNull Boolean enableHttps) {
         this.enableHttps = enableHttps;
@@ -196,13 +197,13 @@ public class NetworkConfiguration {
      * @return requireHttps
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_REQUIRE_HTTPS)
+    @JsonProperty(value = JSON_PROPERTY_REQUIRE_HTTPS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getRequireHttps() {
         return requireHttps;
     }
 
-    @JsonProperty(JSON_PROPERTY_REQUIRE_HTTPS)
+    @JsonProperty(value = JSON_PROPERTY_REQUIRE_HTTPS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setRequireHttps(@org.eclipse.jdt.annotation.NonNull Boolean requireHttps) {
         this.requireHttps = requireHttps;
@@ -219,13 +220,13 @@ public class NetworkConfiguration {
      * @return certificatePath
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_CERTIFICATE_PATH)
+    @JsonProperty(value = JSON_PROPERTY_CERTIFICATE_PATH, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getCertificatePath() {
         return certificatePath;
     }
 
-    @JsonProperty(JSON_PROPERTY_CERTIFICATE_PATH)
+    @JsonProperty(value = JSON_PROPERTY_CERTIFICATE_PATH, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setCertificatePath(@org.eclipse.jdt.annotation.NonNull String certificatePath) {
         this.certificatePath = certificatePath;
@@ -243,13 +244,13 @@ public class NetworkConfiguration {
      * @return certificatePassword
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_CERTIFICATE_PASSWORD)
+    @JsonProperty(value = JSON_PROPERTY_CERTIFICATE_PASSWORD, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getCertificatePassword() {
         return certificatePassword;
     }
 
-    @JsonProperty(JSON_PROPERTY_CERTIFICATE_PASSWORD)
+    @JsonProperty(value = JSON_PROPERTY_CERTIFICATE_PASSWORD, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setCertificatePassword(@org.eclipse.jdt.annotation.NonNull String certificatePassword) {
         this.certificatePassword = certificatePassword;
@@ -266,13 +267,13 @@ public class NetworkConfiguration {
      * @return internalHttpPort
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_INTERNAL_HTTP_PORT)
+    @JsonProperty(value = JSON_PROPERTY_INTERNAL_HTTP_PORT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getInternalHttpPort() {
         return internalHttpPort;
     }
 
-    @JsonProperty(JSON_PROPERTY_INTERNAL_HTTP_PORT)
+    @JsonProperty(value = JSON_PROPERTY_INTERNAL_HTTP_PORT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setInternalHttpPort(@org.eclipse.jdt.annotation.NonNull Integer internalHttpPort) {
         this.internalHttpPort = internalHttpPort;
@@ -289,13 +290,13 @@ public class NetworkConfiguration {
      * @return internalHttpsPort
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_INTERNAL_HTTPS_PORT)
+    @JsonProperty(value = JSON_PROPERTY_INTERNAL_HTTPS_PORT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getInternalHttpsPort() {
         return internalHttpsPort;
     }
 
-    @JsonProperty(JSON_PROPERTY_INTERNAL_HTTPS_PORT)
+    @JsonProperty(value = JSON_PROPERTY_INTERNAL_HTTPS_PORT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setInternalHttpsPort(@org.eclipse.jdt.annotation.NonNull Integer internalHttpsPort) {
         this.internalHttpsPort = internalHttpsPort;
@@ -312,13 +313,13 @@ public class NetworkConfiguration {
      * @return publicHttpPort
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_PUBLIC_HTTP_PORT)
+    @JsonProperty(value = JSON_PROPERTY_PUBLIC_HTTP_PORT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getPublicHttpPort() {
         return publicHttpPort;
     }
 
-    @JsonProperty(JSON_PROPERTY_PUBLIC_HTTP_PORT)
+    @JsonProperty(value = JSON_PROPERTY_PUBLIC_HTTP_PORT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setPublicHttpPort(@org.eclipse.jdt.annotation.NonNull Integer publicHttpPort) {
         this.publicHttpPort = publicHttpPort;
@@ -335,13 +336,13 @@ public class NetworkConfiguration {
      * @return publicHttpsPort
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_PUBLIC_HTTPS_PORT)
+    @JsonProperty(value = JSON_PROPERTY_PUBLIC_HTTPS_PORT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getPublicHttpsPort() {
         return publicHttpsPort;
     }
 
-    @JsonProperty(JSON_PROPERTY_PUBLIC_HTTPS_PORT)
+    @JsonProperty(value = JSON_PROPERTY_PUBLIC_HTTPS_PORT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setPublicHttpsPort(@org.eclipse.jdt.annotation.NonNull Integer publicHttpsPort) {
         this.publicHttpsPort = publicHttpsPort;
@@ -358,13 +359,13 @@ public class NetworkConfiguration {
      * @return autoDiscovery
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_AUTO_DISCOVERY)
+    @JsonProperty(value = JSON_PROPERTY_AUTO_DISCOVERY, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getAutoDiscovery() {
         return autoDiscovery;
     }
 
-    @JsonProperty(JSON_PROPERTY_AUTO_DISCOVERY)
+    @JsonProperty(value = JSON_PROPERTY_AUTO_DISCOVERY, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setAutoDiscovery(@org.eclipse.jdt.annotation.NonNull Boolean autoDiscovery) {
         this.autoDiscovery = autoDiscovery;
@@ -379,15 +380,17 @@ public class NetworkConfiguration {
      * Gets or sets a value indicating whether to enable automatic port forwarding.
      * 
      * @return enableUPnP
+     * @deprecated
      */
+    @Deprecated
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ENABLE_U_PN_P)
+    @JsonProperty(value = JSON_PROPERTY_ENABLE_U_PN_P, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getEnableUPnP() {
         return enableUPnP;
     }
 
-    @JsonProperty(JSON_PROPERTY_ENABLE_U_PN_P)
+    @JsonProperty(value = JSON_PROPERTY_ENABLE_U_PN_P, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setEnableUPnP(@org.eclipse.jdt.annotation.NonNull Boolean enableUPnP) {
         this.enableUPnP = enableUPnP;
@@ -404,13 +407,13 @@ public class NetworkConfiguration {
      * @return enableIPv4
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ENABLE_I_PV4)
+    @JsonProperty(value = JSON_PROPERTY_ENABLE_I_PV4, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getEnableIPv4() {
         return enableIPv4;
     }
 
-    @JsonProperty(JSON_PROPERTY_ENABLE_I_PV4)
+    @JsonProperty(value = JSON_PROPERTY_ENABLE_I_PV4, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setEnableIPv4(@org.eclipse.jdt.annotation.NonNull Boolean enableIPv4) {
         this.enableIPv4 = enableIPv4;
@@ -427,13 +430,13 @@ public class NetworkConfiguration {
      * @return enableIPv6
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ENABLE_I_PV6)
+    @JsonProperty(value = JSON_PROPERTY_ENABLE_I_PV6, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getEnableIPv6() {
         return enableIPv6;
     }
 
-    @JsonProperty(JSON_PROPERTY_ENABLE_I_PV6)
+    @JsonProperty(value = JSON_PROPERTY_ENABLE_I_PV6, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setEnableIPv6(@org.eclipse.jdt.annotation.NonNull Boolean enableIPv6) {
         this.enableIPv6 = enableIPv6;
@@ -450,13 +453,13 @@ public class NetworkConfiguration {
      * @return enableRemoteAccess
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ENABLE_REMOTE_ACCESS)
+    @JsonProperty(value = JSON_PROPERTY_ENABLE_REMOTE_ACCESS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getEnableRemoteAccess() {
         return enableRemoteAccess;
     }
 
-    @JsonProperty(JSON_PROPERTY_ENABLE_REMOTE_ACCESS)
+    @JsonProperty(value = JSON_PROPERTY_ENABLE_REMOTE_ACCESS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setEnableRemoteAccess(@org.eclipse.jdt.annotation.NonNull Boolean enableRemoteAccess) {
         this.enableRemoteAccess = enableRemoteAccess;
@@ -482,13 +485,13 @@ public class NetworkConfiguration {
      * @return localNetworkSubnets
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_LOCAL_NETWORK_SUBNETS)
+    @JsonProperty(value = JSON_PROPERTY_LOCAL_NETWORK_SUBNETS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<String> getLocalNetworkSubnets() {
         return localNetworkSubnets;
     }
 
-    @JsonProperty(JSON_PROPERTY_LOCAL_NETWORK_SUBNETS)
+    @JsonProperty(value = JSON_PROPERTY_LOCAL_NETWORK_SUBNETS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setLocalNetworkSubnets(@org.eclipse.jdt.annotation.NonNull List<String> localNetworkSubnets) {
         this.localNetworkSubnets = localNetworkSubnets;
@@ -514,13 +517,13 @@ public class NetworkConfiguration {
      * @return localNetworkAddresses
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_LOCAL_NETWORK_ADDRESSES)
+    @JsonProperty(value = JSON_PROPERTY_LOCAL_NETWORK_ADDRESSES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<String> getLocalNetworkAddresses() {
         return localNetworkAddresses;
     }
 
-    @JsonProperty(JSON_PROPERTY_LOCAL_NETWORK_ADDRESSES)
+    @JsonProperty(value = JSON_PROPERTY_LOCAL_NETWORK_ADDRESSES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setLocalNetworkAddresses(@org.eclipse.jdt.annotation.NonNull List<String> localNetworkAddresses) {
         this.localNetworkAddresses = localNetworkAddresses;
@@ -545,13 +548,13 @@ public class NetworkConfiguration {
      * @return knownProxies
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_KNOWN_PROXIES)
+    @JsonProperty(value = JSON_PROPERTY_KNOWN_PROXIES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<String> getKnownProxies() {
         return knownProxies;
     }
 
-    @JsonProperty(JSON_PROPERTY_KNOWN_PROXIES)
+    @JsonProperty(value = JSON_PROPERTY_KNOWN_PROXIES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setKnownProxies(@org.eclipse.jdt.annotation.NonNull List<String> knownProxies) {
         this.knownProxies = knownProxies;
@@ -570,13 +573,13 @@ public class NetworkConfiguration {
      * @return ignoreVirtualInterfaces
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_IGNORE_VIRTUAL_INTERFACES)
+    @JsonProperty(value = JSON_PROPERTY_IGNORE_VIRTUAL_INTERFACES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getIgnoreVirtualInterfaces() {
         return ignoreVirtualInterfaces;
     }
 
-    @JsonProperty(JSON_PROPERTY_IGNORE_VIRTUAL_INTERFACES)
+    @JsonProperty(value = JSON_PROPERTY_IGNORE_VIRTUAL_INTERFACES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setIgnoreVirtualInterfaces(@org.eclipse.jdt.annotation.NonNull Boolean ignoreVirtualInterfaces) {
         this.ignoreVirtualInterfaces = ignoreVirtualInterfaces;
@@ -604,13 +607,13 @@ public class NetworkConfiguration {
      * @return virtualInterfaceNames
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_VIRTUAL_INTERFACE_NAMES)
+    @JsonProperty(value = JSON_PROPERTY_VIRTUAL_INTERFACE_NAMES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<String> getVirtualInterfaceNames() {
         return virtualInterfaceNames;
     }
 
-    @JsonProperty(JSON_PROPERTY_VIRTUAL_INTERFACE_NAMES)
+    @JsonProperty(value = JSON_PROPERTY_VIRTUAL_INTERFACE_NAMES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setVirtualInterfaceNames(@org.eclipse.jdt.annotation.NonNull List<String> virtualInterfaceNames) {
         this.virtualInterfaceNames = virtualInterfaceNames;
@@ -628,13 +631,13 @@ public class NetworkConfiguration {
      * @return enablePublishedServerUriByRequest
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ENABLE_PUBLISHED_SERVER_URI_BY_REQUEST)
+    @JsonProperty(value = JSON_PROPERTY_ENABLE_PUBLISHED_SERVER_URI_BY_REQUEST, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getEnablePublishedServerUriByRequest() {
         return enablePublishedServerUriByRequest;
     }
 
-    @JsonProperty(JSON_PROPERTY_ENABLE_PUBLISHED_SERVER_URI_BY_REQUEST)
+    @JsonProperty(value = JSON_PROPERTY_ENABLE_PUBLISHED_SERVER_URI_BY_REQUEST, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setEnablePublishedServerUriByRequest(
             @org.eclipse.jdt.annotation.NonNull Boolean enablePublishedServerUriByRequest) {
@@ -661,13 +664,13 @@ public class NetworkConfiguration {
      * @return publishedServerUriBySubnet
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_PUBLISHED_SERVER_URI_BY_SUBNET)
+    @JsonProperty(value = JSON_PROPERTY_PUBLISHED_SERVER_URI_BY_SUBNET, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<String> getPublishedServerUriBySubnet() {
         return publishedServerUriBySubnet;
     }
 
-    @JsonProperty(JSON_PROPERTY_PUBLISHED_SERVER_URI_BY_SUBNET)
+    @JsonProperty(value = JSON_PROPERTY_PUBLISHED_SERVER_URI_BY_SUBNET, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setPublishedServerUriBySubnet(
             @org.eclipse.jdt.annotation.NonNull List<String> publishedServerUriBySubnet) {
@@ -694,13 +697,13 @@ public class NetworkConfiguration {
      * @return remoteIPFilter
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_REMOTE_I_P_FILTER)
+    @JsonProperty(value = JSON_PROPERTY_REMOTE_I_P_FILTER, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<String> getRemoteIPFilter() {
         return remoteIPFilter;
     }
 
-    @JsonProperty(JSON_PROPERTY_REMOTE_I_P_FILTER)
+    @JsonProperty(value = JSON_PROPERTY_REMOTE_I_P_FILTER, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setRemoteIPFilter(@org.eclipse.jdt.annotation.NonNull List<String> remoteIPFilter) {
         this.remoteIPFilter = remoteIPFilter;
@@ -720,13 +723,13 @@ public class NetworkConfiguration {
      * @return isRemoteIPFilterBlacklist
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_IS_REMOTE_I_P_FILTER_BLACKLIST)
+    @JsonProperty(value = JSON_PROPERTY_IS_REMOTE_I_P_FILTER_BLACKLIST, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getIsRemoteIPFilterBlacklist() {
         return isRemoteIPFilterBlacklist;
     }
 
-    @JsonProperty(JSON_PROPERTY_IS_REMOTE_I_P_FILTER_BLACKLIST)
+    @JsonProperty(value = JSON_PROPERTY_IS_REMOTE_I_P_FILTER_BLACKLIST, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setIsRemoteIPFilterBlacklist(@org.eclipse.jdt.annotation.NonNull Boolean isRemoteIPFilterBlacklist) {
         this.isRemoteIPFilterBlacklist = isRemoteIPFilterBlacklist;
@@ -856,93 +859,94 @@ public class NetworkConfiguration {
 
         // add `BaseUrl` to the URL query string
         if (getBaseUrl() != null) {
-            joiner.add(String.format("%sBaseUrl%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sBaseUrl%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getBaseUrl()))));
         }
 
         // add `EnableHttps` to the URL query string
         if (getEnableHttps() != null) {
-            joiner.add(String.format("%sEnableHttps%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sEnableHttps%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getEnableHttps()))));
         }
 
         // add `RequireHttps` to the URL query string
         if (getRequireHttps() != null) {
-            joiner.add(String.format("%sRequireHttps%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sRequireHttps%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getRequireHttps()))));
         }
 
         // add `CertificatePath` to the URL query string
         if (getCertificatePath() != null) {
-            joiner.add(String.format("%sCertificatePath%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sCertificatePath%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getCertificatePath()))));
         }
 
         // add `CertificatePassword` to the URL query string
         if (getCertificatePassword() != null) {
-            joiner.add(String.format("%sCertificatePassword%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sCertificatePassword%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getCertificatePassword()))));
         }
 
         // add `InternalHttpPort` to the URL query string
         if (getInternalHttpPort() != null) {
-            joiner.add(String.format("%sInternalHttpPort%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sInternalHttpPort%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getInternalHttpPort()))));
         }
 
         // add `InternalHttpsPort` to the URL query string
         if (getInternalHttpsPort() != null) {
-            joiner.add(String.format("%sInternalHttpsPort%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sInternalHttpsPort%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getInternalHttpsPort()))));
         }
 
         // add `PublicHttpPort` to the URL query string
         if (getPublicHttpPort() != null) {
-            joiner.add(String.format("%sPublicHttpPort%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sPublicHttpPort%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getPublicHttpPort()))));
         }
 
         // add `PublicHttpsPort` to the URL query string
         if (getPublicHttpsPort() != null) {
-            joiner.add(String.format("%sPublicHttpsPort%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sPublicHttpsPort%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getPublicHttpsPort()))));
         }
 
         // add `AutoDiscovery` to the URL query string
         if (getAutoDiscovery() != null) {
-            joiner.add(String.format("%sAutoDiscovery%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sAutoDiscovery%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getAutoDiscovery()))));
         }
 
         // add `EnableUPnP` to the URL query string
         if (getEnableUPnP() != null) {
-            joiner.add(String.format("%sEnableUPnP%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sEnableUPnP%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getEnableUPnP()))));
         }
 
         // add `EnableIPv4` to the URL query string
         if (getEnableIPv4() != null) {
-            joiner.add(String.format("%sEnableIPv4%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sEnableIPv4%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getEnableIPv4()))));
         }
 
         // add `EnableIPv6` to the URL query string
         if (getEnableIPv6() != null) {
-            joiner.add(String.format("%sEnableIPv6%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sEnableIPv6%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getEnableIPv6()))));
         }
 
         // add `EnableRemoteAccess` to the URL query string
         if (getEnableRemoteAccess() != null) {
-            joiner.add(String.format("%sEnableRemoteAccess%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sEnableRemoteAccess%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getEnableRemoteAccess()))));
         }
 
         // add `LocalNetworkSubnets` to the URL query string
         if (getLocalNetworkSubnets() != null) {
             for (int i = 0; i < getLocalNetworkSubnets().size(); i++) {
-                joiner.add(String.format("%sLocalNetworkSubnets%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+                joiner.add(String.format(Locale.ROOT, "%sLocalNetworkSubnets%s%s=%s", prefix, suffix,
+                        "".equals(suffix) ? ""
+                                : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
                         ApiClient.urlEncode(ApiClient.valueToString(getLocalNetworkSubnets().get(i)))));
             }
         }
@@ -950,8 +954,9 @@ public class NetworkConfiguration {
         // add `LocalNetworkAddresses` to the URL query string
         if (getLocalNetworkAddresses() != null) {
             for (int i = 0; i < getLocalNetworkAddresses().size(); i++) {
-                joiner.add(String.format("%sLocalNetworkAddresses%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+                joiner.add(String.format(Locale.ROOT, "%sLocalNetworkAddresses%s%s=%s", prefix, suffix,
+                        "".equals(suffix) ? ""
+                                : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
                         ApiClient.urlEncode(ApiClient.valueToString(getLocalNetworkAddresses().get(i)))));
             }
         }
@@ -959,38 +964,41 @@ public class NetworkConfiguration {
         // add `KnownProxies` to the URL query string
         if (getKnownProxies() != null) {
             for (int i = 0; i < getKnownProxies().size(); i++) {
-                joiner.add(String.format("%sKnownProxies%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+                joiner.add(String.format(Locale.ROOT, "%sKnownProxies%s%s=%s", prefix, suffix,
+                        "".equals(suffix) ? ""
+                                : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
                         ApiClient.urlEncode(ApiClient.valueToString(getKnownProxies().get(i)))));
             }
         }
 
         // add `IgnoreVirtualInterfaces` to the URL query string
         if (getIgnoreVirtualInterfaces() != null) {
-            joiner.add(String.format("%sIgnoreVirtualInterfaces%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sIgnoreVirtualInterfaces%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getIgnoreVirtualInterfaces()))));
         }
 
         // add `VirtualInterfaceNames` to the URL query string
         if (getVirtualInterfaceNames() != null) {
             for (int i = 0; i < getVirtualInterfaceNames().size(); i++) {
-                joiner.add(String.format("%sVirtualInterfaceNames%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+                joiner.add(String.format(Locale.ROOT, "%sVirtualInterfaceNames%s%s=%s", prefix, suffix,
+                        "".equals(suffix) ? ""
+                                : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
                         ApiClient.urlEncode(ApiClient.valueToString(getVirtualInterfaceNames().get(i)))));
             }
         }
 
         // add `EnablePublishedServerUriByRequest` to the URL query string
         if (getEnablePublishedServerUriByRequest() != null) {
-            joiner.add(String.format("%sEnablePublishedServerUriByRequest%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sEnablePublishedServerUriByRequest%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getEnablePublishedServerUriByRequest()))));
         }
 
         // add `PublishedServerUriBySubnet` to the URL query string
         if (getPublishedServerUriBySubnet() != null) {
             for (int i = 0; i < getPublishedServerUriBySubnet().size(); i++) {
-                joiner.add(String.format("%sPublishedServerUriBySubnet%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+                joiner.add(String.format(Locale.ROOT, "%sPublishedServerUriBySubnet%s%s=%s", prefix, suffix,
+                        "".equals(suffix) ? ""
+                                : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
                         ApiClient.urlEncode(ApiClient.valueToString(getPublishedServerUriBySubnet().get(i)))));
             }
         }
@@ -998,15 +1006,16 @@ public class NetworkConfiguration {
         // add `RemoteIPFilter` to the URL query string
         if (getRemoteIPFilter() != null) {
             for (int i = 0; i < getRemoteIPFilter().size(); i++) {
-                joiner.add(String.format("%sRemoteIPFilter%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+                joiner.add(String.format(Locale.ROOT, "%sRemoteIPFilter%s%s=%s", prefix, suffix,
+                        "".equals(suffix) ? ""
+                                : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
                         ApiClient.urlEncode(ApiClient.valueToString(getRemoteIPFilter().get(i)))));
             }
         }
 
         // add `IsRemoteIPFilterBlacklist` to the URL query string
         if (getIsRemoteIPFilterBlacklist() != null) {
-            joiner.add(String.format("%sIsRemoteIPFilterBlacklist%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sIsRemoteIPFilterBlacklist%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getIsRemoteIPFilterBlacklist()))));
         }
 

@@ -15,6 +15,7 @@ package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
 
@@ -25,7 +26,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
- * MetadataEditorInfo
+ * A class representing metadata editor information.
  */
 @JsonPropertyOrder({ MetadataEditorInfo.JSON_PROPERTY_PARENTAL_RATING_OPTIONS,
         MetadataEditorInfo.JSON_PROPERTY_COUNTRIES, MetadataEditorInfo.JSON_PROPERTY_CULTURES,
@@ -75,18 +76,18 @@ public class MetadataEditorInfo {
     }
 
     /**
-     * Get parentalRatingOptions
+     * Gets or sets the parental rating options.
      * 
      * @return parentalRatingOptions
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_PARENTAL_RATING_OPTIONS)
+    @JsonProperty(value = JSON_PROPERTY_PARENTAL_RATING_OPTIONS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<ParentalRating> getParentalRatingOptions() {
         return parentalRatingOptions;
     }
 
-    @JsonProperty(JSON_PROPERTY_PARENTAL_RATING_OPTIONS)
+    @JsonProperty(value = JSON_PROPERTY_PARENTAL_RATING_OPTIONS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setParentalRatingOptions(
             @org.eclipse.jdt.annotation.NonNull List<ParentalRating> parentalRatingOptions) {
@@ -107,18 +108,18 @@ public class MetadataEditorInfo {
     }
 
     /**
-     * Get countries
+     * Gets or sets the countries.
      * 
      * @return countries
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_COUNTRIES)
+    @JsonProperty(value = JSON_PROPERTY_COUNTRIES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<CountryInfo> getCountries() {
         return countries;
     }
 
-    @JsonProperty(JSON_PROPERTY_COUNTRIES)
+    @JsonProperty(value = JSON_PROPERTY_COUNTRIES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setCountries(@org.eclipse.jdt.annotation.NonNull List<CountryInfo> countries) {
         this.countries = countries;
@@ -138,18 +139,18 @@ public class MetadataEditorInfo {
     }
 
     /**
-     * Get cultures
+     * Gets or sets the cultures.
      * 
      * @return cultures
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_CULTURES)
+    @JsonProperty(value = JSON_PROPERTY_CULTURES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<CultureDto> getCultures() {
         return cultures;
     }
 
-    @JsonProperty(JSON_PROPERTY_CULTURES)
+    @JsonProperty(value = JSON_PROPERTY_CULTURES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setCultures(@org.eclipse.jdt.annotation.NonNull List<CultureDto> cultures) {
         this.cultures = cultures;
@@ -170,18 +171,18 @@ public class MetadataEditorInfo {
     }
 
     /**
-     * Get externalIdInfos
+     * Gets or sets the external id infos.
      * 
      * @return externalIdInfos
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_EXTERNAL_ID_INFOS)
+    @JsonProperty(value = JSON_PROPERTY_EXTERNAL_ID_INFOS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<ExternalIdInfo> getExternalIdInfos() {
         return externalIdInfos;
     }
 
-    @JsonProperty(JSON_PROPERTY_EXTERNAL_ID_INFOS)
+    @JsonProperty(value = JSON_PROPERTY_EXTERNAL_ID_INFOS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setExternalIdInfos(@org.eclipse.jdt.annotation.NonNull List<ExternalIdInfo> externalIdInfos) {
         this.externalIdInfos = externalIdInfos;
@@ -193,18 +194,18 @@ public class MetadataEditorInfo {
     }
 
     /**
-     * Get contentType
+     * Gets or sets the content type.
      * 
      * @return contentType
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_CONTENT_TYPE)
+    @JsonProperty(value = JSON_PROPERTY_CONTENT_TYPE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public CollectionType getContentType() {
         return contentType;
     }
 
-    @JsonProperty(JSON_PROPERTY_CONTENT_TYPE)
+    @JsonProperty(value = JSON_PROPERTY_CONTENT_TYPE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setContentType(@org.eclipse.jdt.annotation.NonNull CollectionType contentType) {
         this.contentType = contentType;
@@ -225,18 +226,18 @@ public class MetadataEditorInfo {
     }
 
     /**
-     * Get contentTypeOptions
+     * Gets or sets the content type options.
      * 
      * @return contentTypeOptions
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_CONTENT_TYPE_OPTIONS)
+    @JsonProperty(value = JSON_PROPERTY_CONTENT_TYPE_OPTIONS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<NameValuePair> getContentTypeOptions() {
         return contentTypeOptions;
     }
 
-    @JsonProperty(JSON_PROPERTY_CONTENT_TYPE_OPTIONS)
+    @JsonProperty(value = JSON_PROPERTY_CONTENT_TYPE_OPTIONS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setContentTypeOptions(@org.eclipse.jdt.annotation.NonNull List<NameValuePair> contentTypeOptions) {
         this.contentTypeOptions = contentTypeOptions;
@@ -329,9 +330,9 @@ public class MetadataEditorInfo {
         if (getParentalRatingOptions() != null) {
             for (int i = 0; i < getParentalRatingOptions().size(); i++) {
                 if (getParentalRatingOptions().get(i) != null) {
-                    joiner.add(getParentalRatingOptions().get(i).toUrlQueryString(String.format(
-                            "%sParentalRatingOptions%s%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
+                    joiner.add(getParentalRatingOptions().get(i).toUrlQueryString(String.format(Locale.ROOT,
+                            "%sParentalRatingOptions%s%s", prefix, suffix, "".equals(suffix) ? ""
+                                    : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
                 }
             }
         }
@@ -340,8 +341,9 @@ public class MetadataEditorInfo {
         if (getCountries() != null) {
             for (int i = 0; i < getCountries().size(); i++) {
                 if (getCountries().get(i) != null) {
-                    joiner.add(getCountries().get(i).toUrlQueryString(String.format("%sCountries%s%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
+                    joiner.add(getCountries().get(i).toUrlQueryString(
+                            String.format(Locale.ROOT, "%sCountries%s%s", prefix, suffix, "".equals(suffix) ? ""
+                                    : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
                 }
             }
         }
@@ -350,8 +352,9 @@ public class MetadataEditorInfo {
         if (getCultures() != null) {
             for (int i = 0; i < getCultures().size(); i++) {
                 if (getCultures().get(i) != null) {
-                    joiner.add(getCultures().get(i).toUrlQueryString(String.format("%sCultures%s%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
+                    joiner.add(getCultures().get(i).toUrlQueryString(
+                            String.format(Locale.ROOT, "%sCultures%s%s", prefix, suffix, "".equals(suffix) ? ""
+                                    : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
                 }
             }
         }
@@ -360,16 +363,16 @@ public class MetadataEditorInfo {
         if (getExternalIdInfos() != null) {
             for (int i = 0; i < getExternalIdInfos().size(); i++) {
                 if (getExternalIdInfos().get(i) != null) {
-                    joiner.add(getExternalIdInfos().get(i).toUrlQueryString(String.format("%sExternalIdInfos%s%s",
-                            prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
+                    joiner.add(getExternalIdInfos().get(i).toUrlQueryString(
+                            String.format(Locale.ROOT, "%sExternalIdInfos%s%s", prefix, suffix, "".equals(suffix) ? ""
+                                    : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
                 }
             }
         }
 
         // add `ContentType` to the URL query string
         if (getContentType() != null) {
-            joiner.add(String.format("%sContentType%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sContentType%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getContentType()))));
         }
 
@@ -377,9 +380,9 @@ public class MetadataEditorInfo {
         if (getContentTypeOptions() != null) {
             for (int i = 0; i < getContentTypeOptions().size(); i++) {
                 if (getContentTypeOptions().get(i) != null) {
-                    joiner.add(getContentTypeOptions().get(i).toUrlQueryString(String.format("%sContentTypeOptions%s%s",
-                            prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
+                    joiner.add(getContentTypeOptions().get(i).toUrlQueryString(String.format(Locale.ROOT,
+                            "%sContentTypeOptions%s%s", prefix, suffix, "".equals(suffix) ? ""
+                                    : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
                 }
             }
         }

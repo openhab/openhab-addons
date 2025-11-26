@@ -15,6 +15,7 @@ package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
 
@@ -74,13 +75,13 @@ public class CultureDto {
      * @return name
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_NAME)
+    @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getName() {
         return name;
     }
 
-    @JsonProperty(JSON_PROPERTY_NAME)
+    @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setName(@org.eclipse.jdt.annotation.NonNull String name) {
         this.name = name;
@@ -97,13 +98,13 @@ public class CultureDto {
      * @return displayName
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_DISPLAY_NAME)
+    @JsonProperty(value = JSON_PROPERTY_DISPLAY_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getDisplayName() {
         return displayName;
     }
 
-    @JsonProperty(JSON_PROPERTY_DISPLAY_NAME)
+    @JsonProperty(value = JSON_PROPERTY_DISPLAY_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setDisplayName(@org.eclipse.jdt.annotation.NonNull String displayName) {
         this.displayName = displayName;
@@ -120,13 +121,13 @@ public class CultureDto {
      * @return twoLetterISOLanguageName
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_TWO_LETTER_I_S_O_LANGUAGE_NAME)
+    @JsonProperty(value = JSON_PROPERTY_TWO_LETTER_I_S_O_LANGUAGE_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getTwoLetterISOLanguageName() {
         return twoLetterISOLanguageName;
     }
 
-    @JsonProperty(JSON_PROPERTY_TWO_LETTER_I_S_O_LANGUAGE_NAME)
+    @JsonProperty(value = JSON_PROPERTY_TWO_LETTER_I_S_O_LANGUAGE_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setTwoLetterISOLanguageName(@org.eclipse.jdt.annotation.NonNull String twoLetterISOLanguageName) {
         this.twoLetterISOLanguageName = twoLetterISOLanguageName;
@@ -138,7 +139,7 @@ public class CultureDto {
      * @return threeLetterISOLanguageName
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_THREE_LETTER_I_S_O_LANGUAGE_NAME)
+    @JsonProperty(value = JSON_PROPERTY_THREE_LETTER_I_S_O_LANGUAGE_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getThreeLetterISOLanguageName() {
         return threeLetterISOLanguageName;
@@ -164,13 +165,13 @@ public class CultureDto {
      * @return threeLetterISOLanguageNames
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_THREE_LETTER_I_S_O_LANGUAGE_NAMES)
+    @JsonProperty(value = JSON_PROPERTY_THREE_LETTER_I_S_O_LANGUAGE_NAMES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<String> getThreeLetterISOLanguageNames() {
         return threeLetterISOLanguageNames;
     }
 
-    @JsonProperty(JSON_PROPERTY_THREE_LETTER_I_S_O_LANGUAGE_NAMES)
+    @JsonProperty(value = JSON_PROPERTY_THREE_LETTER_I_S_O_LANGUAGE_NAMES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setThreeLetterISOLanguageNames(
             @org.eclipse.jdt.annotation.NonNull List<String> threeLetterISOLanguageNames) {
@@ -260,33 +261,34 @@ public class CultureDto {
 
         // add `Name` to the URL query string
         if (getName() != null) {
-            joiner.add(String.format("%sName%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sName%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getName()))));
         }
 
         // add `DisplayName` to the URL query string
         if (getDisplayName() != null) {
-            joiner.add(String.format("%sDisplayName%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sDisplayName%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getDisplayName()))));
         }
 
         // add `TwoLetterISOLanguageName` to the URL query string
         if (getTwoLetterISOLanguageName() != null) {
-            joiner.add(String.format("%sTwoLetterISOLanguageName%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sTwoLetterISOLanguageName%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getTwoLetterISOLanguageName()))));
         }
 
         // add `ThreeLetterISOLanguageName` to the URL query string
         if (getThreeLetterISOLanguageName() != null) {
-            joiner.add(String.format("%sThreeLetterISOLanguageName%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sThreeLetterISOLanguageName%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getThreeLetterISOLanguageName()))));
         }
 
         // add `ThreeLetterISOLanguageNames` to the URL query string
         if (getThreeLetterISOLanguageNames() != null) {
             for (int i = 0; i < getThreeLetterISOLanguageNames().size(); i++) {
-                joiner.add(String.format("%sThreeLetterISOLanguageNames%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix),
+                joiner.add(String.format(Locale.ROOT, "%sThreeLetterISOLanguageNames%s%s=%s", prefix, suffix,
+                        "".equals(suffix) ? ""
+                                : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
                         ApiClient.urlEncode(ApiClient.valueToString(getThreeLetterISOLanguageNames().get(i)))));
             }
         }

@@ -14,6 +14,7 @@
 package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.StringJoiner;
@@ -58,13 +59,13 @@ public class GeneralCommand {
      * @return name
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_NAME)
+    @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public GeneralCommandType getName() {
         return name;
     }
 
-    @JsonProperty(JSON_PROPERTY_NAME)
+    @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setName(@org.eclipse.jdt.annotation.NonNull GeneralCommandType name) {
         this.name = name;
@@ -81,13 +82,13 @@ public class GeneralCommand {
      * @return controllingUserId
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_CONTROLLING_USER_ID)
+    @JsonProperty(value = JSON_PROPERTY_CONTROLLING_USER_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public UUID getControllingUserId() {
         return controllingUserId;
     }
 
-    @JsonProperty(JSON_PROPERTY_CONTROLLING_USER_ID)
+    @JsonProperty(value = JSON_PROPERTY_CONTROLLING_USER_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setControllingUserId(@org.eclipse.jdt.annotation.NonNull UUID controllingUserId) {
         this.controllingUserId = controllingUserId;
@@ -112,13 +113,13 @@ public class GeneralCommand {
      * @return arguments
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ARGUMENTS)
+    @JsonProperty(value = JSON_PROPERTY_ARGUMENTS, required = false)
     @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
     public Map<String, String> getArguments() {
         return arguments;
     }
 
-    @JsonProperty(JSON_PROPERTY_ARGUMENTS)
+    @JsonProperty(value = JSON_PROPERTY_ARGUMENTS, required = false)
     @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
     public void setArguments(@org.eclipse.jdt.annotation.NonNull Map<String, String> arguments) {
         this.arguments = arguments;
@@ -202,21 +203,22 @@ public class GeneralCommand {
 
         // add `Name` to the URL query string
         if (getName() != null) {
-            joiner.add(String.format("%sName%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sName%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getName()))));
         }
 
         // add `ControllingUserId` to the URL query string
         if (getControllingUserId() != null) {
-            joiner.add(String.format("%sControllingUserId%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sControllingUserId%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getControllingUserId()))));
         }
 
         // add `Arguments` to the URL query string
         if (getArguments() != null) {
             for (String _key : getArguments().keySet()) {
-                joiner.add(String.format("%sArguments%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, _key, containerSuffix),
+                joiner.add(String.format(Locale.ROOT, "%sArguments%s%s=%s", prefix, suffix,
+                        "".equals(suffix) ? ""
+                                : String.format(Locale.ROOT, "%s%d%s", containerPrefix, _key, containerSuffix),
                         getArguments().get(_key),
                         ApiClient.urlEncode(ApiClient.valueToString(getArguments().get(_key)))));
             }

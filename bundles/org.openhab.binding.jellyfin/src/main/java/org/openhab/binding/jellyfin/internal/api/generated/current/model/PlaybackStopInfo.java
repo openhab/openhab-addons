@@ -15,6 +15,7 @@ package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
 import java.util.UUID;
@@ -94,13 +95,13 @@ public class PlaybackStopInfo {
      * @return item
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ITEM)
+    @JsonProperty(value = JSON_PROPERTY_ITEM, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public BaseItemDto getItem() {
         return item;
     }
 
-    @JsonProperty(JSON_PROPERTY_ITEM)
+    @JsonProperty(value = JSON_PROPERTY_ITEM, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setItem(@org.eclipse.jdt.annotation.NonNull BaseItemDto item) {
         this.item = item;
@@ -117,13 +118,13 @@ public class PlaybackStopInfo {
      * @return itemId
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ITEM_ID)
+    @JsonProperty(value = JSON_PROPERTY_ITEM_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public UUID getItemId() {
         return itemId;
     }
 
-    @JsonProperty(JSON_PROPERTY_ITEM_ID)
+    @JsonProperty(value = JSON_PROPERTY_ITEM_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setItemId(@org.eclipse.jdt.annotation.NonNull UUID itemId) {
         this.itemId = itemId;
@@ -140,13 +141,13 @@ public class PlaybackStopInfo {
      * @return sessionId
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_SESSION_ID)
+    @JsonProperty(value = JSON_PROPERTY_SESSION_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getSessionId() {
         return sessionId;
     }
 
-    @JsonProperty(JSON_PROPERTY_SESSION_ID)
+    @JsonProperty(value = JSON_PROPERTY_SESSION_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setSessionId(@org.eclipse.jdt.annotation.NonNull String sessionId) {
         this.sessionId = sessionId;
@@ -163,13 +164,13 @@ public class PlaybackStopInfo {
      * @return mediaSourceId
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_MEDIA_SOURCE_ID)
+    @JsonProperty(value = JSON_PROPERTY_MEDIA_SOURCE_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getMediaSourceId() {
         return mediaSourceId;
     }
 
-    @JsonProperty(JSON_PROPERTY_MEDIA_SOURCE_ID)
+    @JsonProperty(value = JSON_PROPERTY_MEDIA_SOURCE_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setMediaSourceId(@org.eclipse.jdt.annotation.NonNull String mediaSourceId) {
         this.mediaSourceId = mediaSourceId;
@@ -186,13 +187,13 @@ public class PlaybackStopInfo {
      * @return positionTicks
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_POSITION_TICKS)
+    @JsonProperty(value = JSON_PROPERTY_POSITION_TICKS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Long getPositionTicks() {
         return positionTicks;
     }
 
-    @JsonProperty(JSON_PROPERTY_POSITION_TICKS)
+    @JsonProperty(value = JSON_PROPERTY_POSITION_TICKS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setPositionTicks(@org.eclipse.jdt.annotation.NonNull Long positionTicks) {
         this.positionTicks = positionTicks;
@@ -209,13 +210,13 @@ public class PlaybackStopInfo {
      * @return liveStreamId
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_LIVE_STREAM_ID)
+    @JsonProperty(value = JSON_PROPERTY_LIVE_STREAM_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getLiveStreamId() {
         return liveStreamId;
     }
 
-    @JsonProperty(JSON_PROPERTY_LIVE_STREAM_ID)
+    @JsonProperty(value = JSON_PROPERTY_LIVE_STREAM_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setLiveStreamId(@org.eclipse.jdt.annotation.NonNull String liveStreamId) {
         this.liveStreamId = liveStreamId;
@@ -232,13 +233,13 @@ public class PlaybackStopInfo {
      * @return playSessionId
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_PLAY_SESSION_ID)
+    @JsonProperty(value = JSON_PROPERTY_PLAY_SESSION_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getPlaySessionId() {
         return playSessionId;
     }
 
-    @JsonProperty(JSON_PROPERTY_PLAY_SESSION_ID)
+    @JsonProperty(value = JSON_PROPERTY_PLAY_SESSION_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setPlaySessionId(@org.eclipse.jdt.annotation.NonNull String playSessionId) {
         this.playSessionId = playSessionId;
@@ -255,13 +256,13 @@ public class PlaybackStopInfo {
      * @return failed
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_FAILED)
+    @JsonProperty(value = JSON_PROPERTY_FAILED, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getFailed() {
         return failed;
     }
 
-    @JsonProperty(JSON_PROPERTY_FAILED)
+    @JsonProperty(value = JSON_PROPERTY_FAILED, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setFailed(@org.eclipse.jdt.annotation.NonNull Boolean failed) {
         this.failed = failed;
@@ -278,13 +279,13 @@ public class PlaybackStopInfo {
      * @return nextMediaType
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_NEXT_MEDIA_TYPE)
+    @JsonProperty(value = JSON_PROPERTY_NEXT_MEDIA_TYPE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getNextMediaType() {
         return nextMediaType;
     }
 
-    @JsonProperty(JSON_PROPERTY_NEXT_MEDIA_TYPE)
+    @JsonProperty(value = JSON_PROPERTY_NEXT_MEDIA_TYPE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setNextMediaType(@org.eclipse.jdt.annotation.NonNull String nextMediaType) {
         this.nextMediaType = nextMediaType;
@@ -301,13 +302,13 @@ public class PlaybackStopInfo {
      * @return playlistItemId
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_PLAYLIST_ITEM_ID)
+    @JsonProperty(value = JSON_PROPERTY_PLAYLIST_ITEM_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getPlaylistItemId() {
         return playlistItemId;
     }
 
-    @JsonProperty(JSON_PROPERTY_PLAYLIST_ITEM_ID)
+    @JsonProperty(value = JSON_PROPERTY_PLAYLIST_ITEM_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setPlaylistItemId(@org.eclipse.jdt.annotation.NonNull String playlistItemId) {
         this.playlistItemId = playlistItemId;
@@ -332,13 +333,13 @@ public class PlaybackStopInfo {
      * @return nowPlayingQueue
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_NOW_PLAYING_QUEUE)
+    @JsonProperty(value = JSON_PROPERTY_NOW_PLAYING_QUEUE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<QueueItem> getNowPlayingQueue() {
         return nowPlayingQueue;
     }
 
-    @JsonProperty(JSON_PROPERTY_NOW_PLAYING_QUEUE)
+    @JsonProperty(value = JSON_PROPERTY_NOW_PLAYING_QUEUE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setNowPlayingQueue(@org.eclipse.jdt.annotation.NonNull List<QueueItem> nowPlayingQueue) {
         this.nowPlayingQueue = nowPlayingQueue;
@@ -443,55 +444,55 @@ public class PlaybackStopInfo {
 
         // add `ItemId` to the URL query string
         if (getItemId() != null) {
-            joiner.add(String.format("%sItemId%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sItemId%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getItemId()))));
         }
 
         // add `SessionId` to the URL query string
         if (getSessionId() != null) {
-            joiner.add(String.format("%sSessionId%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sSessionId%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getSessionId()))));
         }
 
         // add `MediaSourceId` to the URL query string
         if (getMediaSourceId() != null) {
-            joiner.add(String.format("%sMediaSourceId%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sMediaSourceId%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getMediaSourceId()))));
         }
 
         // add `PositionTicks` to the URL query string
         if (getPositionTicks() != null) {
-            joiner.add(String.format("%sPositionTicks%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sPositionTicks%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getPositionTicks()))));
         }
 
         // add `LiveStreamId` to the URL query string
         if (getLiveStreamId() != null) {
-            joiner.add(String.format("%sLiveStreamId%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sLiveStreamId%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getLiveStreamId()))));
         }
 
         // add `PlaySessionId` to the URL query string
         if (getPlaySessionId() != null) {
-            joiner.add(String.format("%sPlaySessionId%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sPlaySessionId%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getPlaySessionId()))));
         }
 
         // add `Failed` to the URL query string
         if (getFailed() != null) {
-            joiner.add(String.format("%sFailed%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sFailed%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getFailed()))));
         }
 
         // add `NextMediaType` to the URL query string
         if (getNextMediaType() != null) {
-            joiner.add(String.format("%sNextMediaType%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sNextMediaType%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getNextMediaType()))));
         }
 
         // add `PlaylistItemId` to the URL query string
         if (getPlaylistItemId() != null) {
-            joiner.add(String.format("%sPlaylistItemId%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sPlaylistItemId%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getPlaylistItemId()))));
         }
 
@@ -499,9 +500,9 @@ public class PlaybackStopInfo {
         if (getNowPlayingQueue() != null) {
             for (int i = 0; i < getNowPlayingQueue().size(); i++) {
                 if (getNowPlayingQueue().get(i) != null) {
-                    joiner.add(getNowPlayingQueue().get(i).toUrlQueryString(String.format("%sNowPlayingQueue%s%s",
-                            prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
+                    joiner.add(getNowPlayingQueue().get(i).toUrlQueryString(
+                            String.format(Locale.ROOT, "%sNowPlayingQueue%s%s", prefix, suffix, "".equals(suffix) ? ""
+                                    : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
                 }
             }
         }

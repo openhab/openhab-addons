@@ -13,6 +13,7 @@
 
 package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
+import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
 import java.util.UUID;
@@ -78,13 +79,13 @@ public class PluginInfo {
      * @return name
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_NAME)
+    @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getName() {
         return name;
     }
 
-    @JsonProperty(JSON_PROPERTY_NAME)
+    @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setName(@org.eclipse.jdt.annotation.NonNull String name) {
         this.name = name;
@@ -101,13 +102,13 @@ public class PluginInfo {
      * @return version
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_VERSION)
+    @JsonProperty(value = JSON_PROPERTY_VERSION, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getVersion() {
         return version;
     }
 
-    @JsonProperty(JSON_PROPERTY_VERSION)
+    @JsonProperty(value = JSON_PROPERTY_VERSION, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setVersion(@org.eclipse.jdt.annotation.NonNull String version) {
         this.version = version;
@@ -124,13 +125,13 @@ public class PluginInfo {
      * @return configurationFileName
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_CONFIGURATION_FILE_NAME)
+    @JsonProperty(value = JSON_PROPERTY_CONFIGURATION_FILE_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getConfigurationFileName() {
         return configurationFileName;
     }
 
-    @JsonProperty(JSON_PROPERTY_CONFIGURATION_FILE_NAME)
+    @JsonProperty(value = JSON_PROPERTY_CONFIGURATION_FILE_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setConfigurationFileName(@org.eclipse.jdt.annotation.NonNull String configurationFileName) {
         this.configurationFileName = configurationFileName;
@@ -147,13 +148,13 @@ public class PluginInfo {
      * @return description
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_DESCRIPTION)
+    @JsonProperty(value = JSON_PROPERTY_DESCRIPTION, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getDescription() {
         return description;
     }
 
-    @JsonProperty(JSON_PROPERTY_DESCRIPTION)
+    @JsonProperty(value = JSON_PROPERTY_DESCRIPTION, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setDescription(@org.eclipse.jdt.annotation.NonNull String description) {
         this.description = description;
@@ -170,13 +171,13 @@ public class PluginInfo {
      * @return id
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ID)
+    @JsonProperty(value = JSON_PROPERTY_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public UUID getId() {
         return id;
     }
 
-    @JsonProperty(JSON_PROPERTY_ID)
+    @JsonProperty(value = JSON_PROPERTY_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setId(@org.eclipse.jdt.annotation.NonNull UUID id) {
         this.id = id;
@@ -193,13 +194,13 @@ public class PluginInfo {
      * @return canUninstall
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_CAN_UNINSTALL)
+    @JsonProperty(value = JSON_PROPERTY_CAN_UNINSTALL, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getCanUninstall() {
         return canUninstall;
     }
 
-    @JsonProperty(JSON_PROPERTY_CAN_UNINSTALL)
+    @JsonProperty(value = JSON_PROPERTY_CAN_UNINSTALL, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setCanUninstall(@org.eclipse.jdt.annotation.NonNull Boolean canUninstall) {
         this.canUninstall = canUninstall;
@@ -216,13 +217,13 @@ public class PluginInfo {
      * @return hasImage
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_HAS_IMAGE)
+    @JsonProperty(value = JSON_PROPERTY_HAS_IMAGE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getHasImage() {
         return hasImage;
     }
 
-    @JsonProperty(JSON_PROPERTY_HAS_IMAGE)
+    @JsonProperty(value = JSON_PROPERTY_HAS_IMAGE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setHasImage(@org.eclipse.jdt.annotation.NonNull Boolean hasImage) {
         this.hasImage = hasImage;
@@ -239,13 +240,13 @@ public class PluginInfo {
      * @return status
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_STATUS)
+    @JsonProperty(value = JSON_PROPERTY_STATUS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public PluginStatus getStatus() {
         return status;
     }
 
-    @JsonProperty(JSON_PROPERTY_STATUS)
+    @JsonProperty(value = JSON_PROPERTY_STATUS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setStatus(@org.eclipse.jdt.annotation.NonNull PluginStatus status) {
         this.status = status;
@@ -336,49 +337,49 @@ public class PluginInfo {
 
         // add `Name` to the URL query string
         if (getName() != null) {
-            joiner.add(String.format("%sName%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sName%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getName()))));
         }
 
         // add `Version` to the URL query string
         if (getVersion() != null) {
-            joiner.add(String.format("%sVersion%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sVersion%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getVersion()))));
         }
 
         // add `ConfigurationFileName` to the URL query string
         if (getConfigurationFileName() != null) {
-            joiner.add(String.format("%sConfigurationFileName%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sConfigurationFileName%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getConfigurationFileName()))));
         }
 
         // add `Description` to the URL query string
         if (getDescription() != null) {
-            joiner.add(String.format("%sDescription%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sDescription%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getDescription()))));
         }
 
         // add `Id` to the URL query string
         if (getId() != null) {
-            joiner.add(
-                    String.format("%sId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
+            joiner.add(String.format(Locale.ROOT, "%sId%s=%s", prefix, suffix,
+                    ApiClient.urlEncode(ApiClient.valueToString(getId()))));
         }
 
         // add `CanUninstall` to the URL query string
         if (getCanUninstall() != null) {
-            joiner.add(String.format("%sCanUninstall%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sCanUninstall%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getCanUninstall()))));
         }
 
         // add `HasImage` to the URL query string
         if (getHasImage() != null) {
-            joiner.add(String.format("%sHasImage%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sHasImage%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getHasImage()))));
         }
 
         // add `Status` to the URL query string
         if (getStatus() != null) {
-            joiner.add(String.format("%sStatus%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sStatus%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getStatus()))));
         }
 

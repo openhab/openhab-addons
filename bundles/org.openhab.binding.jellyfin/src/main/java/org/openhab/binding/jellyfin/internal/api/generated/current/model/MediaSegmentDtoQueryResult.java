@@ -15,6 +15,7 @@ package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
 
@@ -66,13 +67,13 @@ public class MediaSegmentDtoQueryResult {
      * @return items
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_ITEMS)
+    @JsonProperty(value = JSON_PROPERTY_ITEMS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<MediaSegmentDto> getItems() {
         return items;
     }
 
-    @JsonProperty(JSON_PROPERTY_ITEMS)
+    @JsonProperty(value = JSON_PROPERTY_ITEMS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setItems(@org.eclipse.jdt.annotation.NonNull List<MediaSegmentDto> items) {
         this.items = items;
@@ -89,13 +90,13 @@ public class MediaSegmentDtoQueryResult {
      * @return totalRecordCount
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_TOTAL_RECORD_COUNT)
+    @JsonProperty(value = JSON_PROPERTY_TOTAL_RECORD_COUNT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getTotalRecordCount() {
         return totalRecordCount;
     }
 
-    @JsonProperty(JSON_PROPERTY_TOTAL_RECORD_COUNT)
+    @JsonProperty(value = JSON_PROPERTY_TOTAL_RECORD_COUNT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setTotalRecordCount(@org.eclipse.jdt.annotation.NonNull Integer totalRecordCount) {
         this.totalRecordCount = totalRecordCount;
@@ -112,13 +113,13 @@ public class MediaSegmentDtoQueryResult {
      * @return startIndex
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_START_INDEX)
+    @JsonProperty(value = JSON_PROPERTY_START_INDEX, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getStartIndex() {
         return startIndex;
     }
 
-    @JsonProperty(JSON_PROPERTY_START_INDEX)
+    @JsonProperty(value = JSON_PROPERTY_START_INDEX, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setStartIndex(@org.eclipse.jdt.annotation.NonNull Integer startIndex) {
         this.startIndex = startIndex;
@@ -204,21 +205,22 @@ public class MediaSegmentDtoQueryResult {
         if (getItems() != null) {
             for (int i = 0; i < getItems().size(); i++) {
                 if (getItems().get(i) != null) {
-                    joiner.add(getItems().get(i).toUrlQueryString(String.format("%sItems%s%s", prefix, suffix,
-                            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
+                    joiner.add(getItems().get(i).toUrlQueryString(
+                            String.format(Locale.ROOT, "%sItems%s%s", prefix, suffix, "".equals(suffix) ? ""
+                                    : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
                 }
             }
         }
 
         // add `TotalRecordCount` to the URL query string
         if (getTotalRecordCount() != null) {
-            joiner.add(String.format("%sTotalRecordCount%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sTotalRecordCount%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getTotalRecordCount()))));
         }
 
         // add `StartIndex` to the URL query string
         if (getStartIndex() != null) {
-            joiner.add(String.format("%sStartIndex%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sStartIndex%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getStartIndex()))));
         }
 

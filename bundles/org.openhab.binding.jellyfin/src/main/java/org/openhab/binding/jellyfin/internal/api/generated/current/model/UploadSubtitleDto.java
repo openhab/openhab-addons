@@ -13,6 +13,7 @@
 
 package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
+import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
 
@@ -64,13 +65,13 @@ public class UploadSubtitleDto {
      * @return language
      */
     @org.eclipse.jdt.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_LANGUAGE)
+    @JsonProperty(value = JSON_PROPERTY_LANGUAGE, required = true)
     @JsonInclude(value = JsonInclude.Include.ALWAYS)
     public String getLanguage() {
         return language;
     }
 
-    @JsonProperty(JSON_PROPERTY_LANGUAGE)
+    @JsonProperty(value = JSON_PROPERTY_LANGUAGE, required = true)
     @JsonInclude(value = JsonInclude.Include.ALWAYS)
     public void setLanguage(@org.eclipse.jdt.annotation.Nullable String language) {
         this.language = language;
@@ -87,13 +88,13 @@ public class UploadSubtitleDto {
      * @return format
      */
     @org.eclipse.jdt.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_FORMAT)
+    @JsonProperty(value = JSON_PROPERTY_FORMAT, required = true)
     @JsonInclude(value = JsonInclude.Include.ALWAYS)
     public String getFormat() {
         return format;
     }
 
-    @JsonProperty(JSON_PROPERTY_FORMAT)
+    @JsonProperty(value = JSON_PROPERTY_FORMAT, required = true)
     @JsonInclude(value = JsonInclude.Include.ALWAYS)
     public void setFormat(@org.eclipse.jdt.annotation.Nullable String format) {
         this.format = format;
@@ -110,13 +111,13 @@ public class UploadSubtitleDto {
      * @return isForced
      */
     @org.eclipse.jdt.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_IS_FORCED)
+    @JsonProperty(value = JSON_PROPERTY_IS_FORCED, required = true)
     @JsonInclude(value = JsonInclude.Include.ALWAYS)
     public Boolean getIsForced() {
         return isForced;
     }
 
-    @JsonProperty(JSON_PROPERTY_IS_FORCED)
+    @JsonProperty(value = JSON_PROPERTY_IS_FORCED, required = true)
     @JsonInclude(value = JsonInclude.Include.ALWAYS)
     public void setIsForced(@org.eclipse.jdt.annotation.Nullable Boolean isForced) {
         this.isForced = isForced;
@@ -133,13 +134,13 @@ public class UploadSubtitleDto {
      * @return isHearingImpaired
      */
     @org.eclipse.jdt.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_IS_HEARING_IMPAIRED)
+    @JsonProperty(value = JSON_PROPERTY_IS_HEARING_IMPAIRED, required = true)
     @JsonInclude(value = JsonInclude.Include.ALWAYS)
     public Boolean getIsHearingImpaired() {
         return isHearingImpaired;
     }
 
-    @JsonProperty(JSON_PROPERTY_IS_HEARING_IMPAIRED)
+    @JsonProperty(value = JSON_PROPERTY_IS_HEARING_IMPAIRED, required = true)
     @JsonInclude(value = JsonInclude.Include.ALWAYS)
     public void setIsHearingImpaired(@org.eclipse.jdt.annotation.Nullable Boolean isHearingImpaired) {
         this.isHearingImpaired = isHearingImpaired;
@@ -156,13 +157,13 @@ public class UploadSubtitleDto {
      * @return data
      */
     @org.eclipse.jdt.annotation.Nullable
-    @JsonProperty(JSON_PROPERTY_DATA)
+    @JsonProperty(value = JSON_PROPERTY_DATA, required = true)
     @JsonInclude(value = JsonInclude.Include.ALWAYS)
     public String getData() {
         return data;
     }
 
-    @JsonProperty(JSON_PROPERTY_DATA)
+    @JsonProperty(value = JSON_PROPERTY_DATA, required = true)
     @JsonInclude(value = JsonInclude.Include.ALWAYS)
     public void setData(@org.eclipse.jdt.annotation.Nullable String data) {
         this.data = data;
@@ -250,31 +251,31 @@ public class UploadSubtitleDto {
 
         // add `Language` to the URL query string
         if (getLanguage() != null) {
-            joiner.add(String.format("%sLanguage%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sLanguage%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getLanguage()))));
         }
 
         // add `Format` to the URL query string
         if (getFormat() != null) {
-            joiner.add(String.format("%sFormat%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sFormat%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getFormat()))));
         }
 
         // add `IsForced` to the URL query string
         if (getIsForced() != null) {
-            joiner.add(String.format("%sIsForced%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sIsForced%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getIsForced()))));
         }
 
         // add `IsHearingImpaired` to the URL query string
         if (getIsHearingImpaired() != null) {
-            joiner.add(String.format("%sIsHearingImpaired%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sIsHearingImpaired%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getIsHearingImpaired()))));
         }
 
         // add `Data` to the URL query string
         if (getData() != null) {
-            joiner.add(String.format("%sData%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sData%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getData()))));
         }
 

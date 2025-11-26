@@ -13,6 +13,7 @@
 
 package org.openhab.binding.jellyfin.internal.api.generated.current.model;
 
+import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
 
@@ -59,13 +60,13 @@ public class ProfileCondition {
      * @return condition
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_CONDITION)
+    @JsonProperty(value = JSON_PROPERTY_CONDITION, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public ProfileConditionType getCondition() {
         return condition;
     }
 
-    @JsonProperty(JSON_PROPERTY_CONDITION)
+    @JsonProperty(value = JSON_PROPERTY_CONDITION, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setCondition(@org.eclipse.jdt.annotation.NonNull ProfileConditionType condition) {
         this.condition = condition;
@@ -82,13 +83,13 @@ public class ProfileCondition {
      * @return property
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_PROPERTY)
+    @JsonProperty(value = JSON_PROPERTY_PROPERTY, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public ProfileConditionValue getProperty() {
         return property;
     }
 
-    @JsonProperty(JSON_PROPERTY_PROPERTY)
+    @JsonProperty(value = JSON_PROPERTY_PROPERTY, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setProperty(@org.eclipse.jdt.annotation.NonNull ProfileConditionValue property) {
         this.property = property;
@@ -105,13 +106,13 @@ public class ProfileCondition {
      * @return value
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_VALUE)
+    @JsonProperty(value = JSON_PROPERTY_VALUE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getValue() {
         return value;
     }
 
-    @JsonProperty(JSON_PROPERTY_VALUE)
+    @JsonProperty(value = JSON_PROPERTY_VALUE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setValue(@org.eclipse.jdt.annotation.NonNull String value) {
         this.value = value;
@@ -128,13 +129,13 @@ public class ProfileCondition {
      * @return isRequired
      */
     @org.eclipse.jdt.annotation.NonNull
-    @JsonProperty(JSON_PROPERTY_IS_REQUIRED)
+    @JsonProperty(value = JSON_PROPERTY_IS_REQUIRED, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getIsRequired() {
         return isRequired;
     }
 
-    @JsonProperty(JSON_PROPERTY_IS_REQUIRED)
+    @JsonProperty(value = JSON_PROPERTY_IS_REQUIRED, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public void setIsRequired(@org.eclipse.jdt.annotation.NonNull Boolean isRequired) {
         this.isRequired = isRequired;
@@ -220,25 +221,25 @@ public class ProfileCondition {
 
         // add `Condition` to the URL query string
         if (getCondition() != null) {
-            joiner.add(String.format("%sCondition%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sCondition%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getCondition()))));
         }
 
         // add `Property` to the URL query string
         if (getProperty() != null) {
-            joiner.add(String.format("%sProperty%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sProperty%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getProperty()))));
         }
 
         // add `Value` to the URL query string
         if (getValue() != null) {
-            joiner.add(String.format("%sValue%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sValue%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getValue()))));
         }
 
         // add `IsRequired` to the URL query string
         if (getIsRequired() != null) {
-            joiner.add(String.format("%sIsRequired%s=%s", prefix, suffix,
+            joiner.add(String.format(Locale.ROOT, "%sIsRequired%s=%s", prefix, suffix,
                     ApiClient.urlEncode(ApiClient.valueToString(getIsRequired()))));
         }
 
