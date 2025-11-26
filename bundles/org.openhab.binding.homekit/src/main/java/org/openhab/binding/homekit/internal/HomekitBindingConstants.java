@@ -40,14 +40,14 @@ public class HomekitBindingConstants {
 
     /*
      * format string for channel-group-type UIDs which represent services
-     * format: 'channel-group-type'-[serviceIdentifier]-[serviceIid]-[rootThingId]-[accessoryId]
+     * format: 'channel-group-type'-[serviceIdentifier]-[serviceIid]-[thingId]-[accessoryId]
      * example: channel-group-type-accessory-information-1-1234567890abcdef-1
      */
     public static final String CHANNEL_GROUP_TYPE_ID_FMT = "channel-group-type-%s-%d-%s-%s";
 
     /*
      * format string for channel-type UIDs which represent characteristics
-     * format: 'channel-type'-[characteristicIdentifier]-[characteristicIid]-[rootThingId]-[accessoryId]
+     * format: 'channel-type'-[characteristicIdentifier]-[characteristicIid]-[thingId]-[accessoryId]
      * example: channel-type-occupancy-detected-2694-1234567890abcdef-1
      */
     public static final String CHANNEL_TYPE_ID_FMT = "channel-type-%s-%d-%s-%s";

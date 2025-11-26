@@ -70,11 +70,10 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.Gson;
 
 /**
- * Handles I/O with HomeKit server devices -- either simple accessories or bridge accessories that
- * contain child accessories. If the handler is for a HomeKit bridge or a stand alone HomeKit accessory
- * device it performs the pairing and secure session setup. If the handler is for a HomeKit accessory
- * that is part of a bridge, it uses the pairing and session from the bridge handler.
- * Subclasses should override the handleCommand method to handle commands for specific channels.
+ * Handles I/O with HomeKit server devices -- either simply accessories, bridge accessories or bridged
+ * accessories. If the handler is for a HomeKit bridge or a HomeKit accessory it performs the pairing
+ * and secure session setup. If the handler is for a HomeKit bridged accessory, it depends upon the
+ * pairing and session of the bridge accessory handler.
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
@@ -116,7 +115,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
     protected final TranslationProvider i18nProvider;
     protected final Bundle bundle;
 
-    protected boolean isChildAccessory = false;
+    protected boolean isBridgedAccessory = false;
     protected final Throttler throttler = new Throttler();
 
     /**
@@ -172,7 +171,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
     @Override
     public void dispose() {
         cancelRefreshTasks();
-        if (!isChildAccessory) {
+        if (!isBridgedAccessory) {
             try {
                 enableEventsOrThrow(false);
             } catch (Exception e) {
@@ -207,7 +206,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
                         .collect(Collectors.toMap(a -> a.aid, Function.identity())));
             }
             logger.debug("{} fetched {} accessories", thing.getUID(), accessories.size());
-            scheduler.submit(this::processDependentThings);
+            scheduler.submit(this::processBridgedThings);
         } catch (Exception e) {
             if (isCommunicationException(e)) {
                 // communication exception; log at debug and try to reconnect
@@ -223,13 +222,13 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
     }
 
     /**
-     * Waits for all dependent accessory things to be initialized, then processes them by calling the
-     * overloaded abstract 'onRootAccessoriesLoaded' methods, and finally calls the 'onRootThingOnline'
-     * methods (and its eventual overloaded implementations).
+     * Waits for all bridged accessory things to be initialized, then processes them by calling the
+     * overloaded abstract 'onConnectedThingAccessoriesLoaded' methods, and finally calls the
+     * 'onThingOnline' methods (and its eventual overloaded implementations).
      */
-    private void processDependentThings() {
+    private void processBridgedThings() {
         Instant timeout = Instant.now().plus(HANDLER_INITIALIZATION_TIMEOUT);
-        while (!dependentThingsInitialized() && Instant.now().isBefore(timeout)) {
+        while (!bridgedThingsInitialized() && Instant.now().isBefore(timeout)) {
             try {
                 Thread.sleep(100);
             } catch (InterruptedException e) {
@@ -237,18 +236,18 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
                 return;
             }
         }
-        onRootThingAccessoriesLoaded();
-        onRootThingOnline();
+        onConnectedThingAccessoriesLoaded();
+        onThingOnline();
     }
 
     /**
-     * Returns the accessory ID. For bridges and root accessories this is always 1. Whereas for child
-     * accessories it comes from the thing's configuration parameter value.
+     * Returns the accessory ID. For bridges and accessories this is always 1. Whereas for
+     * bridged accessories it comes from the thing's configuration parameter value.
      *
      * @return the accessory ID, or null if it cannot be determined
      */
     protected @Nullable Long getAccessoryId() {
-        if (isChildAccessory) {
+        if (isBridgedAccessory) {
             if (getConfig().get(CONFIG_ACCESSORY_ID) instanceof BigDecimal accessoryId) {
                 try {
                     return accessoryId.longValue();
@@ -264,7 +263,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
     @Override
     public void handleRemoval() {
         cancelRefreshTasks();
-        if (isChildAccessory) {
+        if (isBridgedAccessory) {
             updateStatus(ThingStatus.REMOVED);
         } else {
             scheduler.submit(() -> {
@@ -279,8 +278,8 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
     public void initialize() {
         eventedCharacteristics.clear();
         accessories.clear();
-        isChildAccessory = getBridge() instanceof Bridge;
-        if (!isChildAccessory) {
+        isBridgedAccessory = getBridge() instanceof Bridge;
+        if (!isBridgedAccessory) {
             scheduleConnectionAttempt();
         }
         updateStatus(ThingStatus.UNKNOWN);
@@ -396,12 +395,12 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
     /**
      * Gets the IP transport.
      *
-     * @throws IllegalAccessException if this is a child accessory or if the transport is not initialized.
+     * @throws IllegalAccessException if this is a bridged accessory or if the transport is not initialized.
      * @return the IpTransport
      */
     protected IpTransport getIpTransport() throws IllegalAccessException, IllegalStateException {
-        if (isChildAccessory) {
-            throw new IllegalAccessException("Child accessories must delegate to bridge IP transport");
+        if (isBridgedAccessory) {
+            throw new IllegalAccessException("Bridged accessories must delegate to bridge IP transport");
         }
         IpTransport ipTransport = this.ipTransport;
         if (ipTransport == null) {
@@ -421,8 +420,8 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        // only non child accessories require pairing support
-        return thing.getBridgeUID() != null ? Set.of() : Set.of(HomekitPairingActions.class);
+        // only bridges and accessories require pairing support
+        return isBridgedAccessory ? Set.of() : Set.of(HomekitPairingActions.class);
     }
 
     private @Nullable String checkedIpAddress() {
@@ -489,9 +488,9 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
      * @return OK or ERROR with reason
      */
     public String pair(String code, boolean withExternalAuthentication) {
-        if (isChildAccessory) {
-            logger.warn("{} forbidden to pair a child accessory", thing.getUID());
-            return ACTION_RESULT_ERROR_FORMAT.formatted("child accessory");
+        if (isBridgedAccessory) {
+            logger.warn("{} forbidden to pair a bridged accessory", thing.getUID());
+            return ACTION_RESULT_ERROR_FORMAT.formatted("bridged accessory");
         }
 
         if (!PAIRING_CODE_PATTERN.matcher(code).matches()) {
@@ -547,9 +546,9 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
      * @return OK or ERROR with reason
      */
     private String unpairInner() {
-        if (isChildAccessory) {
-            logger.warn("{} forbidden to unpair a child accessory", thing.getUID());
-            return ACTION_RESULT_ERROR_FORMAT.formatted("child accessory");
+        if (isBridgedAccessory) {
+            logger.warn("{} forbidden to unpair a bridged accessory", thing.getUID());
+            return ACTION_RESULT_ERROR_FORMAT.formatted("bridged accessory");
         }
 
         if (!(getConfig().get(Thing.PROPERTY_MAC_ADDRESS) instanceof String macAddress) || macAddress.isBlank()) {
@@ -638,7 +637,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
 
     /**
      * Wrapper to enable or disable eventing for members of the eventedCharacteristics list of the
-     * accessory or its children, with exception handling.
+     * accessory or its bridged accessories, with exception handling.
      *
      * @param enable true to enable events, false to disable
      */
@@ -663,20 +662,20 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
 
     /**
      * Inner method to enable or disable eventing for members of the eventedCharacteristics list of the
-     * accessory or its children. All exceptions are thrown upwards to the caller.
+     * accessory or its bridged accessories. All exceptions are thrown upwards to the caller.
      *
      * @param enable true to enable events, false to disable
      * @throws Exception the compiler requires us to handle any error; but it will actually be one of the following:
-     *             IllegalStateException if this is a child accessory or if the read/write service is not initialized,
-     *             IllegalAccessException if this is a child accessory,
+     *             IllegalStateException if this is a bridged accessory or if the read/write service is not initialized,
+     *             IllegalAccessException if this is a bridged accessory,
      *             IOException if there is a communication error,
      *             InterruptedException if the operation is interrupted,
      *             TimeoutException if the operation times out,
      *             ExecutionException if there is an execution error
      */
     private void enableEventsOrThrow(boolean enable) throws Exception {
-        if (isChildAccessory) {
-            logger.warn("{} forbidden to enable/disable events on child accessory", thing.getUID());
+        if (isBridgedAccessory) {
+            logger.warn("{} forbidden to enable/disable events on bridged accessories", thing.getUID());
             return;
         }
         Service service = new Service();
@@ -698,7 +697,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
     }
 
     /**
-     * Polls all characteristics in the polledCharacteristics list of the accessory or its children.
+     * Polls all characteristics in the polledCharacteristics list of the accessory or its bridged accessories.
      * Called periodically by the refresh task and on-demand when RefreshType.REFRESH is called.
      */
     private synchronized void refresh() {
@@ -731,19 +730,19 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
     }
 
     /**
-     * Checks if all dependent accessory things have the reached status UNKNOWN, OFFLINE, or ONLINE.
+     * Checks if all bridged accessory things have the reached status UNKNOWN, OFFLINE, or ONLINE.
      * Subclasses MUST override this to perform the check.
      */
-    protected abstract boolean dependentThingsInitialized();
+    protected abstract boolean bridgedThingsInitialized();
 
     /**
-     * Called when the root thing has finished loading the accessories.
+     * Called when the connected thing has finished loading the accessories.
      * Subclasses MUST override this to perform any extra processing required.
      */
-    protected abstract void onRootThingAccessoriesLoaded();
+    protected abstract void onConnectedThingAccessoriesLoaded();
 
     /**
-     * Gets the evented characteristics list for this accessory or its children.
+     * Gets the evented characteristics list for this accessory or its bridged accessories.
      * Subclasses MUST override this to perform any extra processing required.
      *
      * @return map of channel UID to characteristic
@@ -751,7 +750,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
     protected abstract Map<String, Characteristic> getEventedCharacteristics();
 
     /**
-     * Gets the polled characteristics list for this accessory or its children.
+     * Gets the polled characteristics list for this accessory or its bridged accessories.
      * Subclasses MUST override this to perform any extra processing required.
      *
      * @return map of channel UID to characteristic
@@ -762,24 +761,24 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
     public abstract void onEvent(String json);
 
     /**
-     * Called when the root thing is fully online. Updates the thing status to ONLINE. And if the thing
-     * is not a child, enables eventing,and starts the refresh task.
+     * Called when the thing is fully online. Updates the thing status to ONLINE. And if the
+     * thing is not a bridged accessory, enables eventing,and starts the refresh task.
      * Subclasses MAY override this to perform any extra processing required.
      */
-    protected void onRootThingOnline() {
+    protected void onThingOnline() {
         updateStatus(ThingStatus.ONLINE);
-        if (!isChildAccessory) {
+        if (!isBridgedAccessory) {
             enableEvents(true);
-            startRootThingRefreshTask();
+            startConnectedThingRefreshTask();
         }
     }
 
     /**
-     * Called when the root thing handler has been initialized, the pairing verified, the accessories
-     * loaded, and the channels and properties created. Sets up a scheduled task to periodically
-     * refresh the state of the accessory.
+     * Called when the connected thing handler has been initialized, the pairing verified, the accessories
+     * loaded, and the channels and properties created. Sets up a scheduled task to periodically refresh
+     * the state of the accessory.
      */
-    private void startRootThingRefreshTask() {
+    private void startConnectedThingRefreshTask() {
         if (getConfig().get(CONFIG_REFRESH_INTERVAL) instanceof Object refreshInterval) {
             try {
                 int refreshIntervalSeconds = Integer.parseInt(refreshInterval.toString());
@@ -815,7 +814,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
 
     /**
      * Requests a manual refresh by scheduling a refresh task after a short debounce delay. Defers to the
-     * bridge handler if this is a child accessory. And if a manual refresh task is already scheduled or
+     * bridge handler if this is a bridged accessory. And if a manual refresh task is already scheduled or
      * running, it does nothing more.
      */
     protected void requestManualRefresh() {
@@ -830,7 +829,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
     }
 
     /**
-     * Reads characteristic(s) from the accessory. Defers to the bridge handler if this is a child accessory.
+     * Reads characteristic(s) from the accessory. Defers to the bridge handler if this is a bridged accessory.
      *
      * @param query a comma delimited HTTP query string e.g. "1.10,1.11" for aid 1 and iid 10 and 11
      * @return JSON response as String
@@ -852,7 +851,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
     }
 
     /**
-     * Writes characteristic(s) to the accessory. Defers to the bridge handler if this is a child accessory.
+     * Writes characteristic(s) to the accessory. Defers to the bridge handler if this is a bridged accessory.
      *
      * @param json the JSON to write
      * @return the JSON response

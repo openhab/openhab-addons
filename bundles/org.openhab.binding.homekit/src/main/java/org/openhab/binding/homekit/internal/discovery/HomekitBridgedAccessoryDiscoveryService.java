@@ -28,20 +28,20 @@ import org.openhab.core.thing.ThingUID;
 import org.osgi.service.component.annotations.Component;
 
 /**
- * Discovery service component that publishes newly discovered child accessories of a HomeKit bridge accessory.
- * Discovered devices are published as Things of type
- * {@link org.openhab.binding.homekit.internal.HomekitBindingConstants#THING_TYPE_BRIDGED_ACCESSORY} with a ThingUID
- * based on their accessory ID (aid).
+ * Discovery service component that publishes newly discovered bridged accessories of a HomeKit bridge
+ * accessory. Discovered devices are published as Things with thingUID based on accessory ID (aid) of type
+ * {@link org.openhab.binding.homekit.internal.HomekitBindingConstants#THING_TYPE_BRIDGED_ACCESSORY} .
  *
  * @author Andrew Fiddian-Green - Initial Contribution
  */
 @NonNullByDefault
 @Component(service = DiscoveryService.class)
-public class HomekitChildDiscoveryService extends AbstractThingHandlerDiscoveryService<HomekitBridgeHandler> {
+public class HomekitBridgedAccessoryDiscoveryService
+        extends AbstractThingHandlerDiscoveryService<HomekitBridgeHandler> {
 
     private static final int TIMEOUT_SECONDS = 10;
 
-    public HomekitChildDiscoveryService() {
+    public HomekitBridgedAccessoryDiscoveryService() {
         super(HomekitBridgeHandler.class, Set.of(THING_TYPE_BRIDGED_ACCESSORY), TIMEOUT_SECONDS);
     }
 
@@ -60,11 +60,11 @@ public class HomekitChildDiscoveryService extends AbstractThingHandlerDiscoveryS
     @Override
     public void startScan() {
         if (thingHandler instanceof HomekitBridgeHandler handler) {
-            discoverChildren(handler.getThing(), handler.getAccessories().values());
+            discoverBridgedAccessories(handler.getThing(), handler.getAccessories().values());
         }
     }
 
-    private void discoverChildren(Thing bridge, Collection<Accessory> accessories) {
+    private void discoverBridgedAccessories(Thing bridge, Collection<Accessory> accessories) {
         String bridgeMacAddress = thingHandler.getThing().getConfiguration()
                 .get(Thing.PROPERTY_MAC_ADDRESS) instanceof String mac ? mac : null;
         if (bridgeMacAddress == null) {

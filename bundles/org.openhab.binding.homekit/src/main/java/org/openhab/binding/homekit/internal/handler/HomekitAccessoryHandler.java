@@ -85,9 +85,12 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
 
 /**
- * Handles a single HomeKit accessory.
- * It provides a polling mechanism to regularly update the state of the accessory.
- * It also handles commands sent to the accessory's channels.
+ * Handler for a HomeKit accessory or bridged accessory.
+ * It creates channels based on the accessory's services and characteristics.
+ * It handles state updates from the remote device to update channel states.
+ * It handles commands sent to the accessory's channels.
+ * It also manages a light model for accessories with color capabilities,
+ * allowing combined control of hue, saturation, brightness, and color temperature.
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
@@ -320,7 +323,7 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
             return;
         }
         Accessory accessory = accessories.get(accessoryId);
-        if (accessory == null && !isChildAccessory && !accessories.isEmpty()) {
+        if (accessory == null && !isBridgedAccessory && !accessories.isEmpty()) {
             // fallback to the first accessory if the specific one is not found (should not normally happen)
             accessory = accessories.values().iterator().next();
         }
@@ -505,10 +508,10 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
     @Override
     public void initialize() {
         super.initialize();
-        if (isChildAccessory) {
+        if (isBridgedAccessory) {
             if (getBridge() instanceof Bridge bridge && bridge.getStatus() == ThingStatus.ONLINE) {
                 scheduler.submit(() -> {
-                    onRootThingAccessoriesLoaded();
+                    onConnectedThingAccessoriesLoaded();
                     updateStatus(ThingStatus.ONLINE);
                 });
             } else {
@@ -886,14 +889,14 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
     }
 
     /**
-     * Override method to delegate to the bridge IP transport if we are a child accessory.
+     * Override method to delegate to the bridge IP transport if we are a bridged accessory.
      *
-     * @return own IpTransport service or bridge IpTransport service if we are a child.
+     * @return own IpTransport service or bridge IpTransport service if we are a bridged accessory.
      * @throws IllegalAccessException if access to the transport is denied.
      */
     @Override
     protected IpTransport getIpTransport() throws IllegalAccessException {
-        if (isChildAccessory) {
+        if (isBridgedAccessory) {
             if (getBridge() instanceof Bridge bridge
                     && bridge.getHandler() instanceof HomekitBridgeHandler bridgeHandler) {
                 return bridgeHandler.getIpTransport();
@@ -905,12 +908,12 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
     }
 
     @Override
-    protected boolean dependentThingsInitialized() {
-        return ThingHandlerHelper.isHandlerInitialized(thing); // no children; return own status
+    protected boolean bridgedThingsInitialized() {
+        return ThingHandlerHelper.isHandlerInitialized(thing); // no bridged accessories; return own status
     }
 
     @Override
-    protected void onRootThingAccessoriesLoaded() {
+    protected void onConnectedThingAccessoriesLoaded() {
         createProperties();
         createChannels();
     }

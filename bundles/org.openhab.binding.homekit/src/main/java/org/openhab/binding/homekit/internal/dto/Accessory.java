@@ -51,10 +51,10 @@ public class Accessory {
 
     /**
      * Builds and registers channel group definitions for all services of this accessory.
-     * Each child service registers a ChannelGroupType and returns a ChannelGroupDefinition thereof.
-     * Each grandchild category registers a ChannelType and returns a ChannelDefinition thereof.
-     * Child services that do not map to a channel group definition are ignored.
-     * Grandchild categories that do not map to a channel definition are ignored.
+     * Each nested service registers a ChannelGroupType and returns a ChannelGroupDefinition thereof.
+     * Each sub-nested characteristic registers a ChannelType and returns a ChannelDefinition thereof.
+     * Nested services that do not map to a channel group definition are ignored.
+     * Sub-nested characteristics that do not map to a channel definition are ignored.
      *
      * @param thingUID the ThingUID to associate the ChannelGroupDefinitions with
      * @param typeProvider the HomeKit type provider used to look up channel group definitions.

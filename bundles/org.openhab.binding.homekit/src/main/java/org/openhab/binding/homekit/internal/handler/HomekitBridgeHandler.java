@@ -19,7 +19,7 @@ import java.util.Set;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.homekit.internal.action.HomekitPairingActions;
-import org.openhab.binding.homekit.internal.discovery.HomekitChildDiscoveryService;
+import org.openhab.binding.homekit.internal.discovery.HomekitBridgedAccessoryDiscoveryService;
 import org.openhab.binding.homekit.internal.dto.Characteristic;
 import org.openhab.binding.homekit.internal.persistence.HomekitKeyStore;
 import org.openhab.binding.homekit.internal.persistence.HomekitTypeProvider;
@@ -37,19 +37,16 @@ import org.openhab.core.types.Command;
 import org.osgi.framework.Bundle;
 
 /**
- * Handler for HomeKit bridge devices.
- * It marshals the communications with multiple HomeKit child accessories within a HomeKit bridge server.
- * It uses the /accessories endpoint to discover embedded accessories and their services.
- * It notifies the {@link HomekitChildDiscoveryService} when accessories are discovered.
- * It does not currently handle commands for channels, that is left to the child accessory handlers.
- * It extends {@link HomekitBaseAccessoryHandler} to handle pairing and secure session setup.
+ * Handler for a HomeKit bridge accessory.
+ * It marshals the communications with multiple HomeKit bridged accessories within a HomeKit bridge.
+ * It notifies the {@link HomekitBridgedAccessoryDiscoveryService} when bridged accessories are discovered.
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
 @NonNullByDefault
 public class HomekitBridgeHandler extends HomekitBaseAccessoryHandler implements BridgeHandler {
 
-    private @Nullable HomekitChildDiscoveryService childDiscoveryService = null;
+    private @Nullable HomekitBridgedAccessoryDiscoveryService bridgedAccessoryDiscoveryService = null;
 
     public HomekitBridgeHandler(Bridge bridge, HomekitTypeProvider typeProvider, HomekitKeyStore keyStore,
             TranslationProvider i18nProvider, Bundle bundle) {
@@ -82,7 +79,7 @@ public class HomekitBridgeHandler extends HomekitBaseAccessoryHandler implements
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Set.of(HomekitChildDiscoveryService.class, HomekitPairingActions.class);
+        return Set.of(HomekitBridgedAccessoryDiscoveryService.class, HomekitPairingActions.class);
     }
 
     @Override
@@ -96,58 +93,59 @@ public class HomekitBridgeHandler extends HomekitBaseAccessoryHandler implements
     }
 
     @Override
-    protected boolean dependentThingsInitialized() {
-        return getThing().getThings().stream().allMatch(child -> ThingHandlerHelper.isHandlerInitialized(child));
+    protected boolean bridgedThingsInitialized() {
+        return getThing().getThings().stream()
+                .allMatch(bridgedAccessory -> ThingHandlerHelper.isHandlerInitialized(bridgedAccessory));
     }
 
     @Override
-    protected void onRootThingAccessoriesLoaded() {
+    protected void onConnectedThingAccessoriesLoaded() {
         createProperties();
-        getThing().getThings().forEach(child -> {
-            if (child.getHandler() instanceof HomekitAccessoryHandler childAccessoryHandler) {
-                childAccessoryHandler.onRootThingAccessoriesLoaded();
+        getThing().getThings().forEach(bridgedThing -> {
+            if (bridgedThing.getHandler() instanceof HomekitAccessoryHandler accessoryHandler) {
+                accessoryHandler.onConnectedThingAccessoriesLoaded();
             }
         });
     }
 
     @Override
     public void onEvent(String jsonContent) {
-        getThing().getThings().forEach(child -> {
-            if (child.getHandler() instanceof HomekitAccessoryHandler childAccessoryHandler) {
-                childAccessoryHandler.onEvent(jsonContent);
+        getThing().getThings().forEach(bridgedThing -> {
+            if (bridgedThing.getHandler() instanceof HomekitAccessoryHandler accessoryHandler) {
+                accessoryHandler.onEvent(jsonContent);
             }
         });
     }
 
     @Override
-    protected void onRootThingOnline() {
+    protected void onThingOnline() {
         updateStatus(ThingStatus.ONLINE);
-        getThing().getThings().forEach(child -> {
-            if (child.getHandler() instanceof HomekitAccessoryHandler childAccessoryHandler) {
-                childAccessoryHandler.onRootThingOnline();
+        getThing().getThings().forEach(bridgedThing -> {
+            if (bridgedThing.getHandler() instanceof HomekitAccessoryHandler accessoryHandler) {
+                accessoryHandler.onThingOnline();
             }
         });
-        super.onRootThingOnline();
-        HomekitChildDiscoveryService discoveryService = childDiscoveryService;
+        super.onThingOnline();
+        HomekitBridgedAccessoryDiscoveryService discoveryService = bridgedAccessoryDiscoveryService;
         if (discoveryService != null) {
             discoveryService.startScan();
         }
     }
 
-    public void registerDiscoveryService(HomekitChildDiscoveryService discoveryService) {
-        childDiscoveryService = discoveryService;
+    public void registerDiscoveryService(HomekitBridgedAccessoryDiscoveryService discoveryService) {
+        bridgedAccessoryDiscoveryService = discoveryService;
     }
 
     public void unregisterDiscoveryService() {
-        childDiscoveryService = null;
+        bridgedAccessoryDiscoveryService = null;
     }
 
     @Override
     protected Map<String, Characteristic> getEventedCharacteristics() {
         eventedCharacteristics.clear();
-        getThing().getThings().forEach(child -> {
-            if (child.getHandler() instanceof HomekitAccessoryHandler childAccessoryHandler) {
-                eventedCharacteristics.putAll(childAccessoryHandler.getPolledCharacteristics());
+        getThing().getThings().forEach(bridgedThing -> {
+            if (bridgedThing.getHandler() instanceof HomekitAccessoryHandler accessoryHandler) {
+                eventedCharacteristics.putAll(accessoryHandler.getPolledCharacteristics());
             }
         });
         return eventedCharacteristics;
@@ -156,9 +154,9 @@ public class HomekitBridgeHandler extends HomekitBaseAccessoryHandler implements
     @Override
     protected Map<String, Characteristic> getPolledCharacteristics() {
         polledCharacteristics.clear();
-        getThing().getThings().forEach(child -> {
-            if (child.getHandler() instanceof HomekitAccessoryHandler childAccessoryHandler) {
-                polledCharacteristics.putAll(childAccessoryHandler.getPolledCharacteristics());
+        getThing().getThings().forEach(bridgedThing -> {
+            if (bridgedThing.getHandler() instanceof HomekitAccessoryHandler accessoryHandler) {
+                polledCharacteristics.putAll(accessoryHandler.getPolledCharacteristics());
             }
         });
         return polledCharacteristics;
