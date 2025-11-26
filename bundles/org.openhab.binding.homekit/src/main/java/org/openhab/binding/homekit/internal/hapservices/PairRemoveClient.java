@@ -56,11 +56,12 @@ public class PairRemoveClient {
     /**
      * Removes an existing pairing with the accessory.
      *
-     * @throws ExecutionException
-     * @throws TimeoutException
-     * @throws InterruptedException
-     * @throws IOException
-     * @throws IllegalStateException
+     * @throws ExecutionException if there is an error during the HTTP request
+     * @throws TimeoutException if the HTTP request times out
+     * @throws InterruptedException if the HTTP request is interrupted
+     * @throws IOException if there is an I/O error during the HTTP request
+     * @throws IllegalStateException if the state is invalid
+     * @throws SecurityException if required keys are missing or state is invalid
      */
     public void remove()
             throws IOException, InterruptedException, TimeoutException, ExecutionException, IllegalStateException {

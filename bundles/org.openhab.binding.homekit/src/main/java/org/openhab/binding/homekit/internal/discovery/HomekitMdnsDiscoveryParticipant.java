@@ -86,11 +86,11 @@ public class HomekitMdnsDiscoveryParticipant implements MDNSDiscoveryParticipant
             if (ipAddress != null && macAddress != null && category != null) {
                 DiscoveryResultBuilder builder = DiscoveryResultBuilder.create(uid);
                 builder.withLabel(THING_LABEL_FMT.formatted(service.getName(), macAddress)) //
-                        .withProperty(CONFIG_HOST_NAME, getHostName(service)) //
+                        .withProperty(CONFIG_HTTP_HOST_HEADER, getHostName(service)) //
                         .withProperty(CONFIG_IP_ADDRESS, ipAddress) //
-                        .withProperty(Thing.PROPERTY_MAC_ADDRESS, macAddress) //
+                        .withProperty(CONFIG_MAC_ADDRESS, macAddress) //
                         .withProperty(PROPERTY_ACCESSORY_CATEGORY, category.toString()) //
-                        .withRepresentationProperty(Thing.PROPERTY_MAC_ADDRESS);
+                        .withRepresentationProperty(CONFIG_MAC_ADDRESS);
 
                 if (properties.get("md") instanceof String model) {
                     builder.withProperty(Thing.PROPERTY_MODEL_ID, model);
@@ -132,6 +132,7 @@ public class HomekitMdnsDiscoveryParticipant implements MDNSDiscoveryParticipant
     /**
      * The JmDNS library getProperties() method has a bug whereby it fails to return any properties
      * in the case that the TXT record contains zero length parts. This is a drop in replacement.
+     * Fixed upstream by https://github.com/jmdns/jmdns/pull/355
      */
     private Map<String, String> getProperties(ServiceInfo service) {
         Map<String, String> map = new HashMap<>();

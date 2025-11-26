@@ -82,14 +82,14 @@ public class PairSetupClient {
      * Executes the 6-step pairing process with the accessory.
      *
      * @return SessionKeys containing the derived session keys
-     * @throws ExecutionException
-     * @throws TimeoutException
-     * @throws InterruptedException
-     * @throws IOException
-     * @throws InvalidCipherTextException
-     * @throws SecurityException
-     * @throws NoSuchAlgorithmException
-     * @throws IllegalStateException
+     * @throws ExecutionException if there is an error during the HTTP requests
+     * @throws TimeoutException if any HTTP request times out
+     * @throws InterruptedException if any HTTP request is interrupted
+     * @throws IOException if there is an I/O error during the HTTP requests
+     * @throws InvalidCipherTextException if there is an error in cryptographic operations
+     * @throws SecurityException if required keys are missing or state is invalid
+     * @throws NoSuchAlgorithmException if a required cryptographic algorithm is not available
+     * @throws IllegalStateException if the state is invalid
      */
     public Ed25519PublicKeyParameters pair()
             throws NoSuchAlgorithmException, SecurityException, InvalidCipherTextException, IOException,
@@ -102,14 +102,14 @@ public class PairSetupClient {
      * Executes step M1 of the pairing process: Start Pair-Setup.
      *
      * @return byte array containing the response from the accessory
-     * @throws ExecutionException
-     * @throws TimeoutException
-     * @throws IOException
+     * @throws ExecutionException if there is an error during the HTTP request
+     * @throws TimeoutException if the HTTP request times out
+     * @throws IOException if there is an I/O error during the HTTP request
      * @throws InterruptedException if the operation is interrupted
-     * @throws InvalidCipherTextException
-     * @throws SecurityException
-     * @throws NoSuchAlgorithmException
-     * @throws IllegalStateException
+     * @throws InvalidCipherTextException if there is an error in cryptographic operations
+     * @throws SecurityException if required keys are missing or state is invalid
+     * @throws NoSuchAlgorithmException if a required cryptographic algorithm is not available
+     * @throws IllegalStateException if the state is invalid
      */
     private SRPclient m1Execute() throws IOException, InterruptedException, TimeoutException, ExecutionException,
             NoSuchAlgorithmException, SecurityException, InvalidCipherTextException, IllegalStateException {
@@ -129,14 +129,14 @@ public class PairSetupClient {
      * And initializes the SRP client with the received parameters.
      *
      * @param m1Response byte array containing the response from step M1
-     * @throws NoSuchAlgorithmException
-     * @throws ExecutionException
-     * @throws TimeoutException
-     * @throws InterruptedException
-     * @throws IOException
-     * @throws InvalidCipherTextException
-     * @throws SecurityException
-     * @throws IllegalStateException
+     * @throws NoSuchAlgorithmException if a required cryptographic algorithm is not available
+     * @throws ExecutionException if there is an error during the HTTP request
+     * @throws TimeoutException if the HTTP request times out
+     * @throws InterruptedException if the operation is interrupted
+     * @throws IOException if there is an I/O error during the HTTP request
+     * @throws InvalidCipherTextException if there is an error in cryptographic operations
+     * @throws SecurityException if required keys are missing or state is invalid
+     * @throws IllegalStateException if the state is invalid
      */
     private SRPclient m2Execute(byte[] m1Response)
             throws NoSuchAlgorithmException, SecurityException, InvalidCipherTextException, IOException,
@@ -156,13 +156,13 @@ public class PairSetupClient {
      * Executes step M3 of the pairing process: Send client SRP public key & M1 proof.
      *
      * @return byte array containing the response from the accessory
-     * @throws ExecutionException
-     * @throws TimeoutException
-     * @throws InterruptedException
-     * @throws IOException
-     * @throws SecurityException
-     * @throws InvalidCipherTextException
-     * @throws IllegalStateException
+     * @throws ExecutionException if there is an error during the HTTP request
+     * @throws TimeoutException if the HTTP request times out
+     * @throws InterruptedException if the operation is interrupted
+     * @throws IOException if there is an I/O error during the HTTP request
+     * @throws SecurityException if required keys are missing or state is invalid
+     * @throws InvalidCipherTextException if there is an error in cryptographic operations
+     * @throws IllegalStateException if the state is invalid
      */
     private SRPclient m3Execute(SRPclient client) throws SecurityException, IOException, InterruptedException,
             TimeoutException, ExecutionException, InvalidCipherTextException, IllegalStateException {
@@ -181,12 +181,12 @@ public class PairSetupClient {
      * Executes step M4 of the pairing process: Verify accessory SRP proof.
      *
      * @param m3Response byte array containing the response from step M3
-     * @throws ExecutionException
-     * @throws TimeoutException
-     * @throws InterruptedException
-     * @throws IOException
-     * @throws InvalidCipherTextException
-     * @throws IllegalStateException
+     * @throws ExecutionException if there is an error during the HTTP request
+     * @throws TimeoutException if the HTTP request times out
+     * @throws InterruptedException if the operation is interrupted
+     * @throws IOException if there is an I/O error during the HTTP request
+     * @throws InvalidCipherTextException if there is an error in cryptographic operations
+     * @throws IllegalStateException if the state is invalid
      */
     private SRPclient m4Execute(SRPclient client, byte[] m3Response) throws InvalidCipherTextException, IOException,
             InterruptedException, TimeoutException, ExecutionException, IllegalStateException {
@@ -204,12 +204,12 @@ public class PairSetupClient {
      * Sends the session key, pairing identifier, client LTPK, and signature to the accessory.
      *
      * @return byte array containing the response from the accessory
-     * @throws ExecutionException
-     * @throws TimeoutException
-     * @throws InterruptedException
-     * @throws IOException
-     * @throws InvalidCipherTextException
-     * @throws IllegalStateException
+     * @throws ExecutionException if there is an error during the HTTP request
+     * @throws TimeoutException if the HTTP request times out
+     * @throws InterruptedException if the operation is interrupted
+     * @throws IOException if there is an I/O error during the HTTP request
+     * @throws InvalidCipherTextException if there is an error in cryptographic operations
+     * @throws IllegalStateException if the state is invalid
      */
     private SRPclient m5Execute(SRPclient client) throws IOException, InterruptedException, TimeoutException,
             ExecutionException, InvalidCipherTextException, IllegalStateException {
@@ -229,7 +229,7 @@ public class PairSetupClient {
      * Derives and returns the session keys.
      *
      * @param m5Response byte array containing the response from step M5
-     * @throws InvalidCipherTextException
+     * @throws InvalidCipherTextException if there is an error in cryptographic operations
      */
     private SRPclient m6Execute(SRPclient client, byte[] m5Response) throws InvalidCipherTextException {
         logger.debug("Pair-Setup M6: Read accessory id, LTPK, and signature; and verify it");

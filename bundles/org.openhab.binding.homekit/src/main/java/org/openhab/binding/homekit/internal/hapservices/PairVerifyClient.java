@@ -79,12 +79,13 @@ public class PairVerifyClient {
      * Executes the 4-step pairing verification process with the accessory.
      *
      * @return SessionKeys containing the derived session keys
-     * @throws ExecutionException
-     * @throws TimeoutException
-     * @throws InterruptedException
-     * @throws IOException
-     * @throws InvalidCipherTextException
-     * @throws IllegalStateException
+     * @throws ExecutionException if there is an error during the HTTP request
+     * @throws TimeoutException if the HTTP request times out
+     * @throws InterruptedException if the operation is interrupted
+     * @throws IOException if there is an I/O error during the HTTP request
+     * @throws SecurityException if required keys are missing or state is invalid
+     * @throws InvalidCipherTextException if there is an error in cryptographic operations
+     * @throws IllegalStateException if the state is invalid
      */
     public AsymmetricSessionKeys verify() throws IOException, InterruptedException, TimeoutException,
             ExecutionException, InvalidCipherTextException, IllegalStateException {
@@ -95,12 +96,12 @@ public class PairVerifyClient {
     /**
      * M1 — Create new random client ephemeral X25519 public key and send it to server
      *
-     * @throws IOException
-     * @throws InterruptedException
-     * @throws TimeoutException
-     * @throws ExecutionException
-     * @throws InvalidCipherTextException
-     * @throws IllegalStateException
+     * @throws IOException if there is an I/O error during the HTTP request
+     * @throws InterruptedException if the operation is interrupted
+     * @throws TimeoutException if the HTTP request times out
+     * @throws ExecutionException if there is an error during the HTTP request
+     * @throws InvalidCipherTextException if there is an error in cryptographic operations
+     * @throws IllegalStateException if the state is invalid
      */
     private void m1Execute() throws IOException, InterruptedException, TimeoutException, ExecutionException,
             InvalidCipherTextException, IllegalStateException {
@@ -117,12 +118,13 @@ public class PairVerifyClient {
     /**
      * M2 — Receive server ephemeral X25519 public key and encrypted TLV
      *
-     * @param m1Response
-     * @throws InvalidCipherTextException
-     * @throws IOException
-     * @throws InterruptedException
-     * @throws TimeoutException
-     * @throws ExecutionException
+     * @param m1Response the response from step M1
+     *
+     * @throws IOException if there is an I/O error during the HTTP request
+     * @throws InterruptedException if the operation is interrupted
+     * @throws TimeoutException if the HTTP request times out
+     * @throws ExecutionException if there is an error during the HTTP request
+     * @throws InvalidCipherTextException if there is an error in cryptographic operations
      */
     private void m2Execute(byte[] m1Response)
             throws InvalidCipherTextException, IOException, InterruptedException, TimeoutException, ExecutionException {
@@ -142,8 +144,11 @@ public class PairVerifyClient {
         Map<Integer, byte[]> subTlv = Tlv8Codec.decode(plainText);
         byte[] serverPairingId = subTlv.get(TlvType.IDENTIFIER.value);
         byte[] serverSignature = subTlv.get(TlvType.SIGNATURE.value);
-        if (serverPairingId == null || serverSignature == null) {
-            throw new SecurityException("Accessory identifier or signature missing");
+        if (serverPairingId == null) {
+            throw new SecurityException("Accessory identifier missing");
+        }
+        if (serverSignature == null) {
+            throw new SecurityException("Accessory signature missing");
         }
 
         verifySignature(accessoryKey, serverSignature, concat(serverEphemeralPublicKey.getEncoded(), serverPairingId,
@@ -155,12 +160,12 @@ public class PairVerifyClient {
     /**
      * M3 — Send encrypted controller identifier and signature
      *
-     * @throws InvalidCipherTextException
-     * @throws IOException
-     * @throws InterruptedException
-     * @throws TimeoutException
-     * @throws ExecutionException
-     * @throws IllegalStateException
+     * @throws InvalidCipherTextException if there is an error in cryptographic operations
+     * @throws IOException if there is an I/O error during the HTTP request
+     * @throws InterruptedException if the operation is interrupted
+     * @throws TimeoutException if the HTTP request times out
+     * @throws ExecutionException if there is an error during the HTTP request
+     * @throws IllegalStateException if the state is invalid
      */
     private void m3Execute() throws InvalidCipherTextException, IOException, InterruptedException, TimeoutException,
             ExecutionException, IllegalStateException {
@@ -189,7 +194,7 @@ public class PairVerifyClient {
     /**
      * M4 — Final confirmation
      *
-     * @param m3Response
+     * @param m3Response the response from step M3
      */
     private void m4Execute(byte[] m3Response) {
         logger.debug("Pair-Verify M4: Confirm validation; derive session keys");

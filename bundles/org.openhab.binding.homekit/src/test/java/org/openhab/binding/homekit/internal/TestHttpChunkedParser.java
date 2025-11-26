@@ -42,7 +42,7 @@ class TestHttpChunkedParser {
     private final String s9 = "0\r\n";
 
     @Test
-    void testValidChunkedPayload() {
+    void testValidChunkedPayload() throws IOException {
         try (HttpPayloadParser parser = new HttpPayloadParser()) {
             parser.accept(s0.getBytes(StandardCharsets.UTF_8));
             parser.accept(s1.getBytes(StandardCharsets.UTF_8));
@@ -57,12 +57,11 @@ class TestHttpChunkedParser {
             parser.accept(crlf.getBytes(StandardCharsets.UTF_8));
             assertTrue(parser.isComplete());
             assertEquals("123456789123456789abcdef", new String(parser.getContent(), StandardCharsets.UTF_8));
-        } catch (IllegalStateException | IOException e) {
         }
     }
 
     @Test
-    void testBadChunkedSizePayload() {
+    void testBadChunkedSizePayload() throws IOException {
         try (HttpPayloadParser parser = new HttpPayloadParser()) {
             parser.accept(s0.getBytes(StandardCharsets.UTF_8));
             parser.accept(s1.getBytes(StandardCharsets.UTF_8));
@@ -75,12 +74,11 @@ class TestHttpChunkedParser {
             parser.accept(s8.getBytes(StandardCharsets.UTF_8));
             parser.accept(s9.getBytes(StandardCharsets.UTF_8));
             assertThrows(IllegalStateException.class, () -> parser.accept(crlf.getBytes(StandardCharsets.UTF_8)));
-        } catch (IllegalStateException | IOException e) {
         }
     }
 
     @Test
-    void testChunkedPayloadWithEmptyLines() {
+    void testChunkedPayloadWithEmptyLines() throws IOException {
         try (HttpPayloadParser parser = new HttpPayloadParser()) {
             parser.accept(s0.getBytes(StandardCharsets.UTF_8));
             parser.accept(s1.getBytes(StandardCharsets.UTF_8));
@@ -97,12 +95,11 @@ class TestHttpChunkedParser {
             parser.accept(crlf.getBytes(StandardCharsets.UTF_8));
             assertTrue(parser.isComplete());
             assertEquals("123456789123456789abcdef", new String(parser.getContent(), StandardCharsets.UTF_8));
-        } catch (IllegalStateException | IOException e) {
         }
     }
 
     @Test
-    void testIncompleteChunkedPayload() {
+    void testIncompleteChunkedPayload() throws IOException {
         try (HttpPayloadParser parser = new HttpPayloadParser()) {
             parser.accept(s0.getBytes(StandardCharsets.UTF_8));
             parser.accept(s1.getBytes(StandardCharsets.UTF_8));
@@ -116,12 +113,11 @@ class TestHttpChunkedParser {
             parser.accept(s9.getBytes(StandardCharsets.UTF_8));
             assertFalse(parser.isComplete());
             assertEquals("", new String(parser.getContent(), StandardCharsets.UTF_8));
-        } catch (IllegalStateException | IOException e) {
         }
     }
 
     @Test
-    void testValidChunkedPayloadWitSplitFrames() {
+    void testValidChunkedPayloadWitSplitFrames() throws IOException {
         try (HttpPayloadParser parser = new HttpPayloadParser()) {
             parser.accept(s0.getBytes(StandardCharsets.UTF_8));
             parser.accept(s1.getBytes(StandardCharsets.UTF_8));
@@ -140,7 +136,6 @@ class TestHttpChunkedParser {
             parser.accept("\n".getBytes(StandardCharsets.UTF_8));
             assertTrue(parser.isComplete());
             assertEquals("123456789123456789abcdef", new String(parser.getContent(), StandardCharsets.UTF_8));
-        } catch (IllegalStateException | IOException e) {
         }
     }
 }

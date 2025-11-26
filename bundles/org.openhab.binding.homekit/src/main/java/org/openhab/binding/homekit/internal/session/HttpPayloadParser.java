@@ -223,7 +223,7 @@ public class HttpPayloadParser implements AutoCloseable {
      * If the content exceeds the maximum allowed length, a SecurityException is thrown.
      *
      * @param data the byte array containing content data to be processed.
-     * @throws IllegalStateException
+     * @throws IllegalStateException if the content exceeds maximum allowed length.
      */
     private void processContentBytes(byte[] data) throws IllegalStateException {
         if (isChunked && !finalChunkSeen) {

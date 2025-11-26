@@ -88,13 +88,13 @@ public enum ServiceType {
         this.type = type;
     }
 
-    public static ServiceType from(int type) throws IllegalArgumentException {
+    public static ServiceType from(int id) throws IllegalArgumentException {
         for (ServiceType value : values()) {
-            if (value.id == type) {
+            if (value.id == id) {
                 return value;
             }
         }
-        throw new IllegalArgumentException("Unknown ID: " + type);
+        throw new IllegalArgumentException("Unknown ID: " + id);
     }
 
     public String getOpenhabType() {

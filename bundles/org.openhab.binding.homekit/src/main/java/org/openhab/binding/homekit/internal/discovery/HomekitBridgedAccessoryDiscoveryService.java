@@ -66,7 +66,7 @@ public class HomekitBridgedAccessoryDiscoveryService
 
     private void discoverBridgedAccessories(Thing bridge, Collection<Accessory> accessories) {
         String bridgeMacAddress = thingHandler.getThing().getConfiguration()
-                .get(Thing.PROPERTY_MAC_ADDRESS) instanceof String mac ? mac : null;
+                .get(CONFIG_MAC_ADDRESS) instanceof String mac ? mac : null;
         if (bridgeMacAddress == null) {
             return;
         }

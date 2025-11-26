@@ -7,59 +7,13 @@
 	<thing-type id="accessory">
 		<label>HomeKit Accessory</label>
 		<description>HomeKit accessory with its own LAN connection</description>
-		<config-description>
-			<parameter name="ipAddress" type="text" required="true">
-				<context>network-address</context>
-				<label>IP Address</label>
-				<description>IP v4 address of the HomeKit accessory.</description>
-				<advanced>true</advanced>
-			</parameter>
-			<parameter name="macAddress" type="text" required="true">
-				<label>MAC Address</label>
-				<description>Unique accessory identifier.</description>
-				<advanced>true</advanced>
-			</parameter>
-			<parameter name="hostName" type="text" required="true">
-				<label>Host Name</label>
-				<description>The accessory fully qualified host name as discovered by mDNS.</description>
-				<advanced>true</advanced>
-			</parameter>
-			<parameter name="refreshInterval" type="integer" unit="s" min="10" required="false">
-				<label>Refresh Interval</label>
-				<description>Interval at which the accessory is polled in sec.</description>
-				<default>60</default>
-				<advanced>true</advanced>
-			</parameter>
-		</config-description>
+		<config-description-ref uri="thing-type:homekit:network"/>
 	</thing-type>
 
 	<bridge-type id="bridge">
 		<label>HomeKit Bridge</label>
 		<description>HomeKit accessory with LAN connection that supports bridged accessories not having an own LAN connection</description>
-		<config-description>
-			<parameter name="ipAddress" type="text" required="true">
-				<context>network-address</context>
-				<label>IP Address</label>
-				<description>IP v4 address of the HomeKit bridge.</description>
-				<advanced>true</advanced>
-			</parameter>
-			<parameter name="macAddress" type="text" required="true">
-				<label>MAC Address</label>
-				<description>Unique accessory identifier.</description>
-				<advanced>true</advanced>
-			</parameter>
-			<parameter name="hostName" type="text" required="true">
-				<label>Host Name</label>
-				<description>The bridge fully qualified host name as discovered by mDNS.</description>
-				<advanced>true</advanced>
-			</parameter>
-			<parameter name="refreshInterval" type="integer" unit="s" min="10" required="false">
-				<label>Refresh Interval</label>
-				<description>Interval at which the bridge is polled in sec.</description>
-				<default>60</default>
-				<advanced>true</advanced>
-			</parameter>
-		</config-description>
+		<config-description-ref uri="thing-type:homekit:network"/>
 	</bridge-type>
 
 	<thing-type id="bridged-accessory">
@@ -67,7 +21,7 @@
 			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
 		<label>HomeKit Bridged Accessory</label>
-		<description>HomeKit without its own LAN connection and instead supported by a bridge</description>
+		<description>HomeKit accessory without its own LAN connection and instead supported by a bridge</description>
 		<config-description>
 			<parameter name="accessoryID" type="integer" required="true">
 				<label>Accessory ID</label>

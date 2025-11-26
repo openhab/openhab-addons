@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="thing-type:homekit:network">
+		<parameter name="ipAddress" type="text" required="true">
+			<context>network-address</context>
+			<label>IP Address</label>
+			<description>IP v4 address (and optional port) of the HomeKit device.</description>
+		</parameter>
+		<parameter name="macAddress" type="text" required="true">
+			<label>MAC Address</label>
+			<description>Unique accessory identifier.</description>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="httpHostHeader" type="text" required="true">
+			<label>Host Name</label>
+			<description>The device fully qualified host name as discovered by mDNS (needed for HTTP Host headers).</description>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="refreshInterval" type="integer" unit="s" min="10" required="false">
+			<label>Refresh Interval</label>
+			<description>Interval at which the device is polled in sec.</description>
+			<default>60</default>
+			<advanced>true</advanced>
+		</parameter>
+	</config-description>
+
+</config-description:config-descriptions>

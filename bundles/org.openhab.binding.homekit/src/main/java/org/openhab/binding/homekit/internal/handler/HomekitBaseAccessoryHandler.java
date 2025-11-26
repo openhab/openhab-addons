@@ -435,7 +435,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
     }
 
     private @Nullable String checkedMacAddress() {
-        if (!(getConfig().get(Thing.PROPERTY_MAC_ADDRESS) instanceof String macAddress) || macAddress.isBlank()) {
+        if (!(getConfig().get(CONFIG_MAC_ADDRESS) instanceof String macAddress) || macAddress.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     i18nProvider.getText(bundle, "error.missing-mac-address", "Missing MAC address", null));
             return null;
@@ -444,7 +444,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
     }
 
     private @Nullable String checkedHostName() {
-        Object obj = getConfig().get(CONFIG_HOST_NAME);
+        Object obj = getConfig().get(CONFIG_HTTP_HOST_HEADER);
         if (obj == null || !(obj instanceof String hostName)) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     i18nProvider.getText(bundle, "error.invalid-host-name", "Invalid fully qualified host name", null));
@@ -551,7 +551,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
             return ACTION_RESULT_ERROR_FORMAT.formatted("bridged accessory");
         }
 
-        if (!(getConfig().get(Thing.PROPERTY_MAC_ADDRESS) instanceof String macAddress) || macAddress.isBlank()) {
+        if (!(getConfig().get(CONFIG_MAC_ADDRESS) instanceof String macAddress) || macAddress.isBlank()) {
             logger.warn("{} cannot unpair accessory due to missing mac address configuration", thing.getUID());
             return ACTION_RESULT_ERROR_FORMAT.formatted("config error");
         }

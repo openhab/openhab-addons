@@ -47,7 +47,7 @@ class TestHttpPayloadParser {
     private static final String CRLF = "\r\n";
 
     @Test
-    void testHttpWithChunkedContentOk() {
+    void testHttpWithChunkedContentOk() throws IOException {
         try (HttpPayloadParser parser = new HttpPayloadParser()) {
             String h = HEADERS_A + HEADERS_C + HEADERS_Z;
             String hc = h + CHUNK.formatted(100) + CONTENT + CRLF + CHUNK.formatted(0) + CRLF;
@@ -58,12 +58,11 @@ class TestHttpPayloadParser {
             assertEquals(CONTENT, new String(content));
             byte[] headers = parser.getHeaders();
             assertEquals(h, new String(headers));
-        } catch (IllegalStateException | IOException e) {
         }
     }
 
     @Test
-    void testHttpWithChunkedContentOkManyPartial() {
+    void testHttpWithChunkedContentOkManyPartial() throws IOException {
         try (HttpPayloadParser parser = new HttpPayloadParser()) {
             parser.accept(HEADERS_A.substring(0, 8).getBytes());
             parser.accept(HEADERS_A.substring(8).getBytes());
@@ -84,12 +83,11 @@ class TestHttpPayloadParser {
             byte[] headers = parser.getHeaders();
             String h = HEADERS_A + HEADERS_C + HEADERS_Z;
             assertEquals(h, new String(headers));
-        } catch (IllegalStateException | IOException e) {
         }
     }
 
     @Test
-    void testHttpWithChunkedContentOkManyPartialAndSplitChunkHeader() {
+    void testHttpWithChunkedContentOkManyPartialAndSplitChunkHeader() throws IOException {
         try (HttpPayloadParser parser = new HttpPayloadParser()) {
             parser.accept(HEADERS_A.substring(0, 8).getBytes());
             parser.accept(HEADERS_A.substring(8).getBytes());
@@ -111,12 +109,11 @@ class TestHttpPayloadParser {
             byte[] headers = parser.getHeaders();
             String h = HEADERS_A + HEADERS_C + HEADERS_Z;
             assertEquals(h, new String(headers));
-        } catch (IllegalStateException | IOException e) {
         }
     }
 
     @Test
-    void testHttpWithContentDiscardExtra() {
+    void testHttpWithContentDiscardExtra() throws IOException {
         try (HttpPayloadParser parser = new HttpPayloadParser()) {
             String h = HEADERS_A + HEADERS_B.formatted(100) + HEADERS_Z;
             String hc = h + CONTENT + "EXTRA";
@@ -127,12 +124,11 @@ class TestHttpPayloadParser {
             assertEquals(CONTENT, new String(content));
             byte[] headers = parser.getHeaders();
             assertEquals(h, new String(headers));
-        } catch (IllegalStateException | IOException e) {
         }
     }
 
     @Test
-    void testHttpWithContentManyPartialOk() {
+    void testHttpWithContentManyPartialOk() throws IOException {
         try (HttpPayloadParser parser = new HttpPayloadParser()) {
             parser.accept(HEADERS_A.substring(0, 11).getBytes());
             parser.accept(HEADERS_A.substring(11).getBytes());
@@ -149,12 +145,11 @@ class TestHttpPayloadParser {
             byte[] headers = parser.getHeaders();
             String h = HEADERS_A + HEADERS_B.formatted(100) + HEADERS_Z;
             assertEquals(h, new String(headers));
-        } catch (IllegalStateException | IOException e) {
         }
     }
 
     @Test
-    void testHttpWithContentManyPartialOkAndSplitCRLF() {
+    void testHttpWithContentManyPartialOkAndSplitCRLF() throws IOException {
         try (HttpPayloadParser parser = new HttpPayloadParser()) {
             parser.accept(HEADERS_A.substring(0, 11).getBytes());
             parser.accept(HEADERS_A.substring(11).getBytes());
@@ -171,12 +166,11 @@ class TestHttpPayloadParser {
             byte[] headers = parser.getHeaders();
             String h = HEADERS_A + HEADERS_B.formatted(100) + HEADERS_Z;
             assertEquals(h, new String(headers));
-        } catch (IllegalStateException | IOException e) {
         }
     }
 
     @Test
-    void testHttpWithContentOk() {
+    void testHttpWithContentOk() throws IOException {
         try (HttpPayloadParser parser = new HttpPayloadParser()) {
             String h = HEADERS_A + HEADERS_B.formatted(100) + HEADERS_Z;
             String hc = h + CONTENT;
@@ -187,12 +181,11 @@ class TestHttpPayloadParser {
             assertEquals(CONTENT, new String(content));
             byte[] headers = parser.getHeaders();
             assertEquals(h, new String(headers));
-        } catch (IllegalStateException | IOException e) {
         }
     }
 
     @Test
-    void testHttpWithMultipleFrames() {
+    void testHttpWithMultipleFrames() throws IOException {
         try (HttpPayloadParser parser = new HttpPayloadParser()) {
             String h = HEADERS_A + HEADERS_B.formatted(300) + HEADERS_Z;
             String hc = h + CONTENT;
@@ -203,34 +196,31 @@ class TestHttpPayloadParser {
             assertTrue(parser.isComplete());
             byte[] content = parser.getContent();
             assertEquals(300, content.length);
-        } catch (IllegalStateException | IOException e) {
         }
     }
 
     @Test
-    void testHttpWithNoContentLength() {
+    void testHttpWithNoContentLength() throws IOException {
         try (HttpPayloadParser parser = new HttpPayloadParser()) {
             String h = HEADERS_A + HEADERS_B;
             String hc = h + CONTENT;
             parser.accept(hc.getBytes());
             assertFalse(parser.isComplete());
-        } catch (IllegalStateException | IOException e) {
         }
     }
 
     @Test
-    void testHttpWithWrongContentLength() {
+    void testHttpWithWrongContentLength() throws IOException {
         try (HttpPayloadParser parser = new HttpPayloadParser()) {
             String h = HEADERS_A + HEADERS_B.formatted(200) + HEADERS_Z;
             String hc = h + CONTENT;
             parser.accept(hc.getBytes());
             assertFalse(parser.isComplete());
-        } catch (IllegalStateException | IOException e) {
         }
     }
 
     @Test
-    void testHttpWithZeroContentLength() {
+    void testHttpWithZeroContentLength() throws IOException {
         try (HttpPayloadParser parser = new HttpPayloadParser()) {
             String h = HEADERS_A + HEADERS_B.formatted(0) + HEADERS_Z;
             String hc = h + CONTENT;
@@ -240,12 +230,11 @@ class TestHttpPayloadParser {
             assertEquals(0, content.length);
             byte[] headers = parser.getHeaders();
             assertEquals(h, new String(headers));
-        } catch (IllegalStateException | IOException e) {
         }
     }
 
     @Test
-    void testOk204() {
+    void testOk204() throws IOException {
         try (HttpPayloadParser parser = new HttpPayloadParser()) {
             parser.accept(OK_204.getBytes());
             assertTrue(parser.isComplete());
@@ -253,12 +242,11 @@ class TestHttpPayloadParser {
             assertEquals(0, content.length);
             byte[] headers = parser.getHeaders();
             assertEquals(OK_204, new String(headers));
-        } catch (IllegalStateException | IOException e) {
         }
     }
 
     @Test
-    void testError403() {
+    void testError403() throws IOException {
         try (HttpPayloadParser parser = new HttpPayloadParser()) {
             parser.accept(ERROR_403.getBytes());
             parser.accept(CHUNK.formatted(0).getBytes());
@@ -268,12 +256,11 @@ class TestHttpPayloadParser {
             assertEquals(0, content.length);
             byte[] headers = parser.getHeaders();
             assertEquals(ERROR_403, new String(headers));
-        } catch (IllegalStateException | IOException e) {
         }
     }
 
     @Test
-    void testError404() {
+    void testError404() throws IOException {
         try (HttpPayloadParser parser = new HttpPayloadParser()) {
             parser.accept(ERROR_404.getBytes());
             assertTrue(parser.isComplete());
@@ -281,12 +268,11 @@ class TestHttpPayloadParser {
             assertEquals(0, content.length);
             byte[] headers = parser.getHeaders();
             assertEquals(ERROR_404, new String(headers));
-        } catch (IllegalStateException | IOException e) {
         }
     }
 
     @Test
-    void testError500() {
+    void testError500() throws IOException {
         try (HttpPayloadParser parser = new HttpPayloadParser()) {
             parser.accept(ERROR_500.getBytes());
             assertTrue(parser.isComplete());
@@ -294,7 +280,6 @@ class TestHttpPayloadParser {
             assertEquals(0, content.length);
             byte[] headers = parser.getHeaders();
             assertEquals(ERROR_500, new String(headers));
-        } catch (IllegalStateException | IOException e) {
         }
     }
 }

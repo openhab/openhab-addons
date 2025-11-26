@@ -101,8 +101,8 @@ public class SecureSession {
      * @param trace if true, captures the raw decrypted frames for debugging purposes.
      * @return a 3D byte array where the first element is the HTTP headers, the second element is the content,
      *         and the third is the raw trace (if enabled).
-     * @throws IOException
-     * @throws InvalidCipherTextException
+     * @throws IOException if an I/O error occurs
+     * @throws InvalidCipherTextException if decryption fails
      * @throws IllegalStateException if the received data is malformed
      */
     public byte[][] receive(boolean trace) throws IOException, InvalidCipherTextException, IllegalStateException {
@@ -135,8 +135,8 @@ public class SecureSession {
      * incremented after reading the frame to ensure nonce uniqueness.
      *
      * @return the decrypted plaintext of the single frame.
-     * @throws IOException
-     * @throws InvalidCipherTextException
+     * @throws IOException if an I/O error occurs
+     * @throws InvalidCipherTextException if decryption fails
      * @throws IllegalStateException if the frame length is invalid
      */
     private byte[] receiveFrame() throws IOException, InvalidCipherTextException, IllegalStateException {
@@ -155,8 +155,8 @@ public class SecureSession {
     /**
      * Reads bytes from the given input stream until the buffer is completely filled.
      *
-     * @param buffer
-     * @throws IOException
+     * @param buffer the buffer to fill
+     * @throws IOException if an I/O error occurs or end of stream is reached before filling the buffer
      */
     private void readFully(InputStream in, byte[] buffer) throws IOException {
         int offset = 0;
