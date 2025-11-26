@@ -57,7 +57,7 @@ import org.openhab.core.media.model.MediaEntry;
 import org.openhab.core.media.model.MediaQueue;
 import org.openhab.core.media.model.MediaRegistry;
 import org.openhab.core.media.model.MediaSearchResult;
-import org.openhab.core.media.model.MediaSource;
+import org.openhab.core.media.model.MediaCollectionSource;
 import org.openhab.core.media.model.MediaTrack;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -175,8 +175,8 @@ public class UpnpServerHandler extends UpnpHandler implements MediaListenner {
 
         String key = this.thing.getUID().getId();
         this.mediaService.addMediaListenner(key, this);
-        MediaSource mediaSource = mediaCollection.registerEntry(key, () -> {
-            return new MediaSource(key, "" + this.getThing().getLabel(), "/static/Upnp.png");
+        MediaCollectionSource mediaSource = mediaCollection.registerEntry(key, () -> {
+            return new MediaCollectionSource(key, "" + this.getThing().getLabel(), "/static/Upnp.png");
         });
 
         currentMediaEntry = mediaSource;
@@ -243,7 +243,7 @@ public class UpnpServerHandler extends UpnpHandler implements MediaListenner {
         // TODO Auto-generated method stub
         boolean browse = true;
         currentMediaEntry = mediaEntry;
-        if (mediaEntry instanceof MediaSource || mediaEntry instanceof MediaSearchResult
+        if (mediaEntry instanceof MediaCollectionSource || mediaEntry instanceof MediaSearchResult
                 || mediaEntry instanceof MediaQueue || mediaEntry.getPath().indexOf("/Root/Search") >= 0
                 || mediaEntry.getPath().indexOf("/Root/CurrentQueue") >= 0) {
             browse = false;
