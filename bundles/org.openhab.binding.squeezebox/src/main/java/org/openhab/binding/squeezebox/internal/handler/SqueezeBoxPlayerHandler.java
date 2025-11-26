@@ -49,7 +49,7 @@ import org.openhab.core.library.types.RawType;
 import org.openhab.core.library.types.RewindFastforwardType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.Units;
-import org.openhab.core.media.MediaDevice;
+import org.openhab.core.media.MediaSink;
 import org.openhab.core.media.MediaService;
 import org.openhab.core.media.model.MediaAlbum;
 import org.openhab.core.media.model.MediaEntry;
@@ -192,7 +192,7 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
         if (modelId == null) {
             modelId = "unknown";
         }
-        mediaService.registerDevice(new MediaDevice("" + this.getThing().getUID().getId(),
+        mediaService.registerDevice(new MediaSink("" + this.getThing().getUID().getId(),
                 "" + this.getThing().getLabel(), modelId, SqueezeBoxBindingConstants.BINDING_ID));
     }
 

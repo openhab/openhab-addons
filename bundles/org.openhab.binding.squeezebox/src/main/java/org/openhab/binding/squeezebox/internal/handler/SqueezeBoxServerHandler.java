@@ -70,7 +70,7 @@ import org.openhab.core.media.model.MediaPlayList;
 import org.openhab.core.media.model.MediaQueue;
 import org.openhab.core.media.model.MediaRegistry;
 import org.openhab.core.media.model.MediaSearchResult;
-import org.openhab.core.media.model.MediaSource;
+import org.openhab.core.media.model.MediaCollectionSource;
 import org.openhab.core.media.model.MediaTrack;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
@@ -460,8 +460,8 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler implements MediaL
 
         MediaRegistry mediaRegistry = mediaService.getMediaRegistry();
 
-        MediaSource mediaSource = mediaRegistry.registerEntry(SqueezeBoxBindingConstants.BINDING_ID, () -> {
-            return new MediaSource(SqueezeBoxBindingConstants.BINDING_ID, SqueezeBoxBindingConstants.BINDING_LABEL,
+        MediaCollectionSource mediaSource = mediaRegistry.registerEntry(SqueezeBoxBindingConstants.BINDING_ID, () -> {
+            return new MediaCollectionSource(SqueezeBoxBindingConstants.BINDING_ID, SqueezeBoxBindingConstants.BINDING_LABEL,
                     "/static/Lyrion.png");
         });
 
