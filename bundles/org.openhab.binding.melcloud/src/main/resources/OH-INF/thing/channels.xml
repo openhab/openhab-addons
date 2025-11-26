@@ -169,7 +169,7 @@
 
 	<channel-type id="tankTargetWaterTemperature-channel">
 		<item-type>Number:Temperature</item-type>
-		<label>Tank target temperature</label>
+		<label>Tank Target Degrees</label>
 		<description>Setpoint temperature of water</description>
 		<tags>
 			<tag>Setpoint</tag>
@@ -190,7 +190,7 @@
 
 	<channel-type id="roomTemperatureZone1-channel">
 		<item-type>Number:Temperature</item-type>
-		<label>Room Temperature Zone 1</label>
+		<label>Room Temperature Zone1</label>
 		<description>Room temperature for zone 1</description>
 		<tags>
 			<tag>Measurement</tag>
@@ -201,7 +201,7 @@
 
 	<channel-type id="setTemperatureZone1-channel">
 		<item-type>Number:Temperature</item-type>
-		<label>Set Temperature Zone 1</label>
+		<label>Set Temperature Zone1</label>
 		<description>Set temperature for zone 1</description>
 		<tags>
 			<tag>Setpoint</tag>
@@ -212,7 +212,7 @@
 
 	<channel-type id="roomTemperatureZone2-channel">
 		<item-type>Number:Temperature</item-type>
-		<label>Room Temperature Zone 2</label>
+		<label>Room Temperature Zone2</label>
 		<description>Room temperature for zone 2</description>
 		<tags>
 			<tag>Setpoint</tag>
@@ -223,14 +223,14 @@
 
 	<channel-type id="setTemperatureZone2-channel">
 		<item-type>Number:Temperature</item-type>
-		<label>Set Temperature Zone 2</label>
+		<label>Set Temperature Zone2</label>
 		<description>Set temperature for zone 2</description>
 		<state min="10" max="30" step="0.5" pattern="%.1f %unit%" readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="heatFlowTemperatureZone1-channel">
 		<item-type>Number:Temperature</item-type>
-		<label>Heat flow temperature for zone 1</label>
+		<label>Heat Flow Temp Zone1</label>
 		<description>Set temperature for water flow for zone 1</description>
 		<tags>
 			<tag>Setpoint</tag>
@@ -241,7 +241,7 @@
 
 	<channel-type id="heatFlowTemperatureZone2-channel">
 		<item-type>Number:Temperature</item-type>
-		<label>Heat flow temperature for zone 2</label>
+		<label>Heat Flow Temp Zone2</label>
 		<description>Set temperature for water flow for zone 2</description>
 		<tags>
 			<tag>Setpoint</tag>
@@ -252,7 +252,7 @@
 
 	<channel-type id="heatTemperatureModeZone1-channel">
 		<item-type>Number</item-type>
-		<label>Flow mode zone 1</label>
+		<label>Flow Mode Zone1</label>
 		<description>Set flow mode for zone 1</description>
 		<state readOnly="false">
 			<options>
@@ -267,7 +267,7 @@
 
 	<channel-type id="heatTemperatureModeZone2-channel">
 		<item-type>Number</item-type>
-		<label>Flow mode zone 2</label>
+		<label>Flow Mode Zone2</label>
 		<description>Set flow mode for zone 2</description>
 		<state readOnly="false">
 			<options>
