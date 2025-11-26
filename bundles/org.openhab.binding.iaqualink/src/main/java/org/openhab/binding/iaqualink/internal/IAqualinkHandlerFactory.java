@@ -13,11 +13,13 @@
 package org.openhab.binding.iaqualink.internal;
 
 import static org.openhab.binding.iaqualink.internal.IAqualinkBindingConstants.IAQUALINK_DEVICE_THING_TYPE_UID;
+import static org.openhab.binding.iaqualink.internal.IAqualinkBindingConstants.IAQUALINK_DEVICE_V2_THING_TYPE_UID;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
-import org.openhab.binding.iaqualink.internal.handler.IAqualinkHandler;
+import org.openhab.binding.iaqualink.internal.v1.handler.IAqualinkHandler;
+import org.openhab.binding.iaqualink.internal.v2.IAqualinkV2Handler;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
@@ -33,6 +35,7 @@ import org.osgi.service.component.annotations.Reference;
  * thing handlers.
  *
  * @author Dan Cunningham - Initial contribution
+ * @author Jonathan Gilbert - Added V2 handler
  */
 @NonNullByDefault
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.iaqualink")
@@ -47,7 +50,8 @@ public class IAqualinkHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
-        return IAQUALINK_DEVICE_THING_TYPE_UID.equals(thingTypeUID);
+        return IAQUALINK_DEVICE_THING_TYPE_UID.equals(thingTypeUID)
+                || IAQUALINK_DEVICE_V2_THING_TYPE_UID.equals(thingTypeUID);
     }
 
     @Override
@@ -55,6 +59,8 @@ public class IAqualinkHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (IAQUALINK_DEVICE_THING_TYPE_UID.equals(thingTypeUID)) {
             return new IAqualinkHandler(thing, httpClient);
+        } else if (IAQUALINK_DEVICE_V2_THING_TYPE_UID.equals(thingTypeUID)) {
+            return new IAqualinkV2Handler(thing, httpClient);
         }
         return null;
     }
