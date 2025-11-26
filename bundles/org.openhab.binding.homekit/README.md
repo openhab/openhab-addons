@@ -124,5 +124,6 @@ Number:Temperature Color_Temperature "Color Temperature [%.1f mired]" <light> [C
 ### Sitemap Configuration
 
 ```perl
-Slider item=Color_Temperature
+Slider item=SkylightHallway_Position
+Slider item=SkylightBathroom_Position
 ```
