@@ -773,7 +773,6 @@
 				<option value="101">Cleanup Interrupted</option>
 				<option value="102">Breakpoint</option>
 				<option value="103">Manual Interrupt</option>
-				<option value="103">Unknown</option>
 				<option value="104">Cleanup Interrupted</option>
 				<option value="105">Cleanup Interrupted</option>
 				<option value="106">Cleanup Interrupted</option>
@@ -783,7 +782,7 @@
 				<option value="110">Cleanup Interrupted</option>
 				<option value="114">Cruise completed</option>
 				<option value="115">Cruise failed</option>
-				<option value="116">pet found</option>
+				<option value="116">Pet found</option>
 				<option value="117">Pet found failed</option>
 			</options>
 		</state>

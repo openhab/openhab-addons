@@ -236,13 +236,15 @@ public class RoborockVacuumHandler extends BaseThingHandler {
                 }
             }
 
-            if (channelUID.getId().equals(RobotCapabilities.CLEAN_MOP_START.getChannel())) {
+            if (channelUID.getId().equals(RobotCapabilities.CLEAN_MOP_START.getChannel())
+                    && command instanceof OnOffType) {
                 if (command.equals(OnOffType.ON)) {
                     sendRPCCommand(COMMAND_SET_CLEAN_MOP_START);
                     return;
                 }
             }
-            if (channelUID.getId().equals(RobotCapabilities.CLEAN_MOP_STOP.getChannel())) {
+            if (channelUID.getId().equals(RobotCapabilities.CLEAN_MOP_STOP.getChannel())
+                    && command instanceof OnOffType) {
                 if (command.equals(OnOffType.ON)) {
                     sendRPCCommand(COMMAND_SET_CLEAN_MOP_STOP);
                     return;
