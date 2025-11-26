@@ -109,9 +109,9 @@ So for this reason it is difficult to create Things via a '.things' file, and th
 
 ```java
 Bridge homekit:bridge:velux "VELUX Gateway" [ host="192.168.0.235:5001", macAddress="XX:XX:XX:XX:XX:XX", hostName="foobar._hap._tcp.local.", refreshInterval=60 ] {
-    Thing accessory 2 "VELUX Sensor" @ "Hallway" [ accessoryID=2 ]
-    Thing accessory 3 "VELUX Window" @ "Hallway" [ accessoryID=3 ]
-    Thing accessory 4 "VELUX Window" @ "Small bathroom" [ accessoryID=4 ]
+    Thing bridged-accessory sensor "VELUX Sensor" @ "Hallway" [ accessoryID=2 ]
+    Thing bridged-accessory skylight_hallway "VELUX Window" @ "Hallway" [ accessoryID=3 ]
+    Thing bridged-accessory skylight_bathroom "VELUX Window" @ "Bathroom" [ accessoryID=4 ]
 }
 ```
 
