@@ -11,7 +11,7 @@
 			<tag>Measurement</tag>
 			<tag>Power</tag>
 		</tags>
-		<state pattern="%d %unit%" readOnly="true"/>
+		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="battery-power-supply-channel">
 		<item-type>Number:Power</item-type>
@@ -21,7 +21,7 @@
 			<tag>Measurement</tag>
 			<tag>Power</tag>
 		</tags>
-		<state pattern="%d %unit%" readOnly="true"/>
+		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="battery-power-consumption-channel">
 		<item-type>Number:Power</item-type>
@@ -31,7 +31,7 @@
 			<tag>Measurement</tag>
 			<tag>Power</tag>
 		</tags>
-		<state pattern="%d %unit%" readOnly="true"/>
+		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="household-power-consumption-channel">
 		<item-type>Number:Power</item-type>
@@ -41,7 +41,7 @@
 			<tag>Measurement</tag>
 			<tag>Power</tag>
 		</tags>
-		<state pattern="%d %unit%" readOnly="true"/>
+		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="grid-power-consumption-channel">
 		<item-type>Number:Power</item-type>
@@ -51,7 +51,7 @@
 			<tag>Measurement</tag>
 			<tag>Power</tag>
 		</tags>
-		<state pattern="%d %unit%" readOnly="true"/>
+		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="grid-power-supply-channel">
 		<item-type>Number:Power</item-type>
@@ -61,7 +61,7 @@
 			<tag>Measurement</tag>
 			<tag>Power</tag>
 		</tags>
-		<state pattern="%d %unit%" readOnly="true"/>
+		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="external-power-supply-channel">
 		<item-type>Number:Power</item-type>
@@ -71,7 +71,7 @@
 			<tag>Measurement</tag>
 			<tag>Power</tag>
 		</tags>
-		<state pattern="%d %unit%" readOnly="true"/>
+		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="wallbox-power-consumption-channel">
 		<item-type>Number:Power</item-type>
@@ -81,7 +81,7 @@
 			<tag>Measurement</tag>
 			<tag>Power</tag>
 		</tags>
-		<state pattern="%d %unit%" readOnly="true"/>
+		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="wallbox-pv-power-consumption-channel">
 		<item-type>Number:Power</item-type>
@@ -91,19 +91,19 @@
 			<tag>Measurement</tag>
 			<tag>Power</tag>
 		</tags>
-		<state pattern="%d %unit%" readOnly="true"/>
+		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="autarky-channel">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Autarky</label>
 		<description>Your current Autarky Level in Percent</description>
-		<state pattern="%d %%" readOnly="true"/>
+		<state pattern="%.0f %%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="self-consumption-channel">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Self Consumtion</label>
 		<description>Your current Photovoltaic Self Consumption Level in Percent</description>
-		<state pattern="%d %%" readOnly="true"/>
+		<state pattern="%.0f %%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="battery-soc-channel">
 		<item-type>Number:Dimensionless</item-type>
@@ -113,7 +113,7 @@
 			<tag>Status</tag>
 			<tag>Energy</tag>
 		</tags>
-		<state pattern="%d %%" readOnly="true"/>
+		<state pattern="%.0f %%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="battery-charged-channel">
 		<item-type>Number:Energy</item-type>
@@ -134,5 +134,13 @@
 			<tag>Energy</tag>
 		</tags>
 		<state pattern="%.3f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="perf-ratio-channel">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Load</label>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
+		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 </thing:thing-descriptions>
