@@ -106,7 +106,7 @@ So the Thing creates one additional `HSBType` Channel that amalgamates hue, satu
 Many HomeKit accessories are able only to be paired with one client.
 This means that if you want to pair such an accessory with this binding, you must first unpair it from the Apple Home app.
 
-If you want to integrate such an accessory with both this binding and with the Apple Home ecosystem, then you can use this binding to import the Channels as OpenHAB Items, and then use the OpenHAB system integration addon to re-export those Items to the Apple HomeKit eco system.
+If you want to integrate such an accessory with both this binding and with the Apple Home ecosystem, then you can use this binding to import the Channels as openHAB Items, and then use the openHAB system integration addon to re-export those Items to the Apple HomeKit eco system.
 
 ## File Based Configuration
 
