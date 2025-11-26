@@ -230,13 +230,13 @@ public class FroniusWattpilotHandler extends BaseThingHandler implements Wattpil
     }
 
     @Override
-    public void connected() {
+    public void connected(WattpilotInfo info) {
         updateStatus(ThingStatus.ONLINE);
-        updateDeviceProperties(client.getDeviceInfo());
+        updateDeviceProperties(info);
     }
 
     @Override
-    public void disconnected(@Nullable String reason, @Nullable Throwable cause) {
+    public void disconnected(String reason, @Nullable Throwable cause) {
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, reason);
         if (cause instanceof TimeoutException || cause instanceof NoRouteToHostException
                 || cause instanceof EofException || cause instanceof Utf8Appendable.NotUtf8Exception) {
@@ -246,10 +246,7 @@ public class FroniusWattpilotHandler extends BaseThingHandler implements Wattpil
     }
 
     @Override
-    public void statusChanged(@Nullable WattpilotStatus status) {
-        if (status == null) {
-            return;
-        }
+    public void statusChanged(WattpilotStatus status) {
         updateChannelsControl(status);
         updateChannelsStatus(status);
         updateChannelsMetrics(status);
