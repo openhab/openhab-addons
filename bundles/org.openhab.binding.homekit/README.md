@@ -118,7 +118,19 @@ Bridge homekit:bridge:velux "VELUX Gateway" [ host="192.168.0.235:5001", macAddr
 ### Item Configuration
 
 ```java
-Number:Temperature Color_Temperature "Color Temperature [%.1f mired]" <light> [ColorTemperature, Setpoint] { channel="homekit:accessory:297b703df234:lightbulb#color-temperature", unit="mired" }
+Group VeluxSensorSwitch "Velux indoor climate sensor" (Hallway) ["Sensor"]
+
+Number:Dimensionless Velux_Hallway_CO2 "CO2 [%d ppm]" <carbondioxide> (VeluxSensorSwitch) ["Measurement", "CO2"] { channel="homekit:bridged-accessory:velux:sensor:sensor-carbon-dioxide#carbon-dioxide-level-17", unit="ppm" }
+Number:Dimensionless Velux_Hallway_Humidity "Humidity [%.0f %%]" <humidity> (VeluxSensorSwitch) ["Measurement", "Humidity"] { channel="homekit:bridged-accessory:velux:sensor:sensor-humidity#relative-humidity-current-13", unit="%" }
+Number:Temperature Velux_Hallway_Temperature "Temperature" <temperature> (VeluxSensorSwitch) ["Measurement", "Temperature"] { channel="homekit:bridged-accessory:velux:sensor:sensor-temperature#temperature-current-10", unit="°C" }
+
+Group SkylightHallway "Skylight window" (Hallway) ["Window"]
+
+Rollershutter SkylightHallway_Position "Position" (SkylightHallway) ["OpenState"] { channel="homekit:bridged-accessory:velux:skylight_hallway:window#position-target-11" }
+
+Group SkylightBathroom "Skylight window" (SmallBathroom) ["Window"]
+
+Rollershutter SkylightBathroom_Position "Position" (SkylightBathroom) ["OpenState"] { channel="homekit:bridged-accessory:velux:skylight_bathroom:window#position-target-11" }
 ```
 
 ### Sitemap Configuration
