@@ -356,6 +356,15 @@
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
+	<channel-type id="clean-percent">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>Cleaning % Complete</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
 	<channel-type id="water-box-carriage-status">
 		<item-type>Switch</item-type>
 		<label>Water Box Carriage State</label>
@@ -732,7 +741,51 @@
 			<tag>Status</tag>
 			<tag>Info</tag>
 		</tags>
-		<state readOnly="true"/>
+		<state readOnly="true">
+			<options>
+				<option value="21">Manual Interrupt</option>
+				<option value="24">Cleanup Interrupted</option>
+				<option value="29">Interrupt</option>
+				<option value="32">Breakpoint</option>
+				<option value="33">Breakpoint</option>
+				<option value="34">Cleanup Interrupted</option>
+				<option value="35">Manual Interrupt</option>
+				<option value="36">Manual Interrupt</option>
+				<option value="37">Manual Interrupt</option>
+				<option value="43">Manual Interrupt</option>
+				<option value="45">Positioning Failed</option>
+				<option value="48">Manual Interrupt</option>
+				<option value="49">Manual Interrupt</option>
+				<option value="50">Manual Interrupt</option>
+				<option value="51">Cleanup Interrupted</option>
+				<option value="52">Finished Cleaning</option>
+				<option value="54">Finished Cleaning</option>
+				<option value="55">Finished Cleaning</option>
+				<option value="56">Finished Cleaning</option>
+				<option value="57">Finished Cleaning</option>
+				<option value="60">Manual Interrupt</option>
+				<option value="61">Area unreachable</option>
+				<option value="62">Area unreachable</option>
+				<option value="64">Cleanup Interrupted</option>
+				<option value="65">Positioning Failed</option>
+				<option value="67">Washing Error</option>
+				<option value="68">Failed to return to the dock</option>
+				<option value="101">Cleanup Interrupted</option>
+				<option value="102">Breakpoint</option>
+				<option value="103">Manual Interrupt</option>
+				<option value="104">Cleanup Interrupted</option>
+				<option value="105">Cleanup Interrupted</option>
+				<option value="106">Cleanup Interrupted</option>
+				<option value="107">Cleanup Interrupted</option>
+				<option value="108">Cleanup Interrupted</option>
+				<option value="109">Cleanup Interrupted</option>
+				<option value="110">Cleanup Interrupted</option>
+				<option value="114">Cruise completed</option>
+				<option value="115">Cruise failed</option>
+				<option value="116">Pet found</option>
+				<option value="117">Pet found failed</option>
+			</options>
+		</state>
 	</channel-type>
 	<channel-type id="last-clean-dustcollection-status">
 		<item-type>Number</item-type>
