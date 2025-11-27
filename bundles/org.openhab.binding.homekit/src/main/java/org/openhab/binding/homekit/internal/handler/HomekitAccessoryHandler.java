@@ -359,15 +359,13 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
                                     chanDef.getChannelTypeUID(), chanDef.getAutoUpdatePolicy(),
                                     chanDef.getProperties());
 
-                            if (FAKE_PROPERTY_CHANNEL_TYPE_UID.equals(chanDef.getChannelTypeUID())) {
-                                // this is a property, not a channel
-                                String name = chanDef.getId();
-                                if (chanDef.getLabel() instanceof String value) {
-                                    properties.put(name, value);
-                                    logger.trace("{}    Property '{}:{}'", thing.getUID(), name, value);
-                                }
+                            if (CHANNEL_TYPE_STATIC.equals(chanDef.getChannelTypeUID())) {
+                                // static ChannelDefinition: add as a Property (rather than a Channel)
+                                Map<String, String> channelProperties = chanDef.getProperties();
+                                properties.putAll(channelProperties);
+                                logger.trace("{}    Property {}", thing.getUID(), channelProperties);
                             } else {
-                                // this is a real channel
+                                // variable ChannelDefinition: add as a Channel (rather than a Property)
                                 ChannelType channelType = channelTypeRegistry
                                         .getChannelType(chanDef.getChannelTypeUID());
                                 if (channelType == null) {

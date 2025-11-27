@@ -15,7 +15,7 @@ package org.openhab.binding.homekit.internal;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
-import static org.openhab.binding.homekit.internal.HomekitBindingConstants.FAKE_PROPERTY_CHANNEL_TYPE_UID;
+import static org.openhab.binding.homekit.internal.HomekitBindingConstants.CHANNEL_TYPE_STATIC;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -458,12 +458,8 @@ class TestChannelCreationForAppleJson {
                 for (Characteristic characteristic : service.characteristics) {
                     ChannelDefinition channelDef = characteristic.buildAndRegisterChannelDefinition(thingUID,
                             typeProvider, i18nProvider, bundle);
-                    if (channelDef != null && FAKE_PROPERTY_CHANNEL_TYPE_UID.equals(channelDef.getChannelTypeUID())) {
-                        String name = channelDef.getId();
-                        String value = channelDef.getLabel();
-                        if (value != null) {
-                            properties.put(name, value);
-                        }
+                    if (channelDef != null && CHANNEL_TYPE_STATIC.equals(channelDef.getChannelTypeUID())) {
+                        properties.putAll(channelDef.getProperties());
                     }
                 }
                 break;

@@ -35,6 +35,7 @@ import org.openhab.core.semantics.model.DefaultSemanticTags.Property;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.type.ChannelDefinition;
 import org.openhab.core.thing.type.ChannelDefinitionBuilder;
+import org.openhab.core.thing.type.ChannelType;
 import org.openhab.core.thing.type.ChannelTypeBuilder;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.thing.type.StateChannelTypeBuilder;
@@ -74,12 +75,16 @@ public class Characteristic {
     public @NonNullByDefault({}) Integer status;
 
     /**
-     * Builds a ChannelType and a ChannelDefinition based on the characteristic properties.
-     * Registers the ChannelType with the provided HomekitTypeProvider.
-     * Returns a ChannelDefinition that is specific instance of ChannelType.
-     * Returns null if the characteristic cannot be mapped to a channel definition.
-     * Examines characteristic type, data format, permissions, and other properties
-     * to determine appropriate channel type, item type, tags, category, and attributes.
+     * Builds a {@link ChannelType} and a {@link ChannelDefinition} based on the characteristic properties. Registers
+     * the ChannelType with the provided {@link HomekitTypeProvider}, and returns a ChannelDefinition referring to a
+     * specific instance of this ChannelType, or null if the characteristic cannot be mapped to a channel definition.
+     * <p>
+     * Examines characteristic type, data format, permissions, and other properties to determine the appropriate channel
+     * type, item type, tags, category, and attributes.
+     * <p>
+     * Some Characteristics have variable values and others remain static over time. The latter are produced with
+     * a special channel-type uid, so that when Things are being created, rather than adding them as (dynamic data)
+     * Channels of the Thing, instead they are added as (static data) Properties of the Thing.
      *
      * @param thingUID the ThingUID to associate the ChannelDefinition with
      * @param typeProvider the HomekitTypeProvider to register the channel type with
@@ -104,6 +109,7 @@ public class Characteristic {
         boolean isStateChannel = true;
         boolean isPercentage = "percentage".equals(unit);
         boolean isEnumLike = false;
+        boolean isStaticValue = false;
 
         String uom = unit == null ? null : switch (unit) {
             case "celsius" -> "°C";
@@ -173,7 +179,7 @@ public class Characteristic {
                 break;
 
             case AIR_PARTICULATE_SIZE:
-                itemType = FAKE_PROPERTY_CHANNEL;
+                isStaticValue = true;
                 break;
 
             case AIR_PURIFIER_STATE_CURRENT:
@@ -354,7 +360,7 @@ public class Characteristic {
 
             case FIRMWARE_REVISION:
             case HARDWARE_REVISION:
-                itemType = FAKE_PROPERTY_CHANNEL;
+                isStaticValue = true;
                 break;
 
             case HEATER_COOLER_STATE_CURRENT:
@@ -445,7 +451,7 @@ public class Characteristic {
 
             case IN_USE:
             case IS_CONFIGURED:
-                itemType = FAKE_PROPERTY_CHANNEL;
+                isStaticValue = true;
                 break;
 
             case LEAK_DETECTED:
@@ -509,7 +515,7 @@ public class Characteristic {
 
             case MANUFACTURER:
             case MODEL:
-                itemType = FAKE_PROPERTY_CHANNEL;
+                isStaticValue = true;
                 break;
 
             case MOTION_DETECTED:
@@ -525,7 +531,7 @@ public class Characteristic {
                 break;
 
             case NAME:
-                itemType = FAKE_PROPERTY_CHANNEL;
+                isStaticValue = true;
                 break;
 
             case NIGHT_VISION:
@@ -550,7 +556,7 @@ public class Characteristic {
                 break;
 
             case OUTLET_IN_USE:
-                itemType = FAKE_PROPERTY_CHANNEL;
+                propertyTag = Property.POWER;
                 break;
 
             case PAIRING_FEATURES:
@@ -651,7 +657,7 @@ public class Characteristic {
                 break;
 
             case SERIAL_NUMBER:
-                itemType = FAKE_PROPERTY_CHANNEL;
+                isStaticValue = true;
                 break;
 
             case SET_DURATION:
@@ -661,7 +667,7 @@ public class Characteristic {
                 break;
 
             case SIRI_INPUT_TYPE:
-                itemType = FAKE_PROPERTY_CHANNEL;
+                isStaticValue = true;
                 break;
 
             case SLAT_STATE_CURRENT:
@@ -747,7 +753,7 @@ public class Characteristic {
                 break;
 
             case TEMPERATURE_UNITS:
-                itemType = FAKE_PROPERTY_CHANNEL;
+                isStaticValue = true;
                 break;
 
             case TILT_CURRENT:
@@ -760,7 +766,7 @@ public class Characteristic {
             case TYPE_SLAT:
             case VALVE_TYPE:
             case VERSION:
-                itemType = FAKE_PROPERTY_CHANNEL;
+                isStaticValue = true;
                 break;
 
             case VERTICAL_TILT_CURRENT:
@@ -800,17 +806,18 @@ public class Characteristic {
         }
 
         /*
-         * ================ CREATE FAKE PROPERTY CHANNEL =================
+         * ================ CREATE SPECIAL STATIC CHANNEL DEFINITION =================
          *
-         * create and return fake property channel for characteristics that
-         * are not mapped to a real channel
+         * If the Characteristic represents read only values that remain static over time,
+         * then we create a channel definition with a special channel-type uid, so that when
+         * Things are being created, no such channel gets added to the Thing's Channels, but
+         * rather the static value gets added to the Thing's Properties.
          *
          */
-        if (FAKE_PROPERTY_CHANNEL.equals(itemType)) {
+        if (isStaticValue) {
             if (value != null && value.isJsonPrimitive()) {
-                // create fake property channels for characteristics that contain only static information
-                return new ChannelDefinitionBuilder(characteristicType.toCamelCase(), FAKE_PROPERTY_CHANNEL_TYPE_UID)
-                        .withLabel(value.getAsString()).build();
+                return new ChannelDefinitionBuilder("static", CHANNEL_TYPE_STATIC)
+                        .withProperties(Map.of(characteristicType.toCamelCase(), value.getAsString())).build();
             }
             return null;
         }

@@ -17,6 +17,7 @@ import java.util.regex.Pattern;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
+import org.openhab.core.thing.type.ChannelDefinition;
 import org.openhab.core.thing.type.ChannelTypeUID;
 
 /**
@@ -34,19 +35,21 @@ public class HomekitBindingConstants {
     public static final ThingTypeUID THING_TYPE_BRIDGED_ACCESSORY = new ThingTypeUID(BINDING_ID, "bridged-accessory");
     public static final ThingTypeUID THING_TYPE_BRIDGE = new ThingTypeUID(BINDING_ID, "bridge");
 
-    // specific Channel Type UIDs
-    public static final String FAKE_PROPERTY_CHANNEL = "property-fake-channel";
-    public static final ChannelTypeUID FAKE_PROPERTY_CHANNEL_TYPE_UID = new ChannelTypeUID(BINDING_ID,
-            FAKE_PROPERTY_CHANNEL);
+    /**
+     * Some Characteristics have variable values and others remain static over time. The latter are produced with
+     * a {@link ChannelDefinition} with this channel-type uid. And when Things are created, rather than instantiating
+     * them as (dynamic data) Channels of the Thing, instead they are added as (static data) Properties of the Thing.
+     */
+    public static final ChannelTypeUID CHANNEL_TYPE_STATIC = new ChannelTypeUID(BINDING_ID, "static-data");
 
-    /*
+    /**
      * format string for channel-group-type UIDs which represent services
      * format: 'channel-group-type'-[serviceIdentifier]-[serviceIid]-[thingId]-[accessoryId]
      * example: channel-group-type-accessory-information-1-1234567890abcdef-1
      */
     public static final String CHANNEL_GROUP_TYPE_ID_FMT = "channel-group-type-%s-%d-%s-%s";
 
-    /*
+    /**
      * format string for channel-type UIDs which represent characteristics
      * format: 'channel-type'-[characteristicIdentifier]-[characteristicIid]-[thingId]-[accessoryId]
      * example: channel-type-occupancy-detected-2694-1234567890abcdef-1

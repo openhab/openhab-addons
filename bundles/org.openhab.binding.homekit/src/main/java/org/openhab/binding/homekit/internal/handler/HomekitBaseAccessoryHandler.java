@@ -618,21 +618,21 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
             return;
         }
         // search for the accessory information service and collect its properties
+        Map<String, String> thingProperties = thing.getProperties();
         for (Service service : accessory.services) {
             if (ServiceType.ACCESSORY_INFORMATION == service.getServiceType()) {
                 for (Characteristic characteristic : service.characteristics) {
                     ChannelDefinition channelDef = characteristic.buildAndRegisterChannelDefinition(thing.getUID(),
                             typeProvider, i18nProvider, bundle);
-                    if (channelDef != null && FAKE_PROPERTY_CHANNEL_TYPE_UID.equals(channelDef.getChannelTypeUID())) {
-                        String name = channelDef.getId();
-                        if (channelDef.getLabel() instanceof String value) {
-                            thing.setProperty(name, value);
-                        }
+                    if (channelDef != null && CHANNEL_TYPE_STATIC.equals(channelDef.getChannelTypeUID())) {
+                        // only static ChannelDefinitions contribute to the properties
+                        thingProperties.putAll(channelDef.getProperties());
                     }
                 }
                 break; // only one accessory information service per accessory
             }
         }
+        thing.setProperties(thingProperties);
     }
 
     /**
