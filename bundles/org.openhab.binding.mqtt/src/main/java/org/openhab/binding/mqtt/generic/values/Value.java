@@ -161,10 +161,10 @@ public abstract class Value {
      */
     public Type parseMessage(Command command) throws IllegalArgumentException {
         if (command instanceof StringType string) {
-            if (string.toString().equals(nullValue) || string.toString().isEmpty()) {
-                return UnDefType.NULL;
-            } else if (string.toString().equals(ignoreValue)) {
+            if (string.toString().equals(ignoreValue)) {
                 return IgnoreType.SENTINEL;
+            } else if (string.toString().equals(nullValue) || string.toString().isEmpty()) {
+                return UnDefType.NULL;
             }
         }
         return parseCommand(command);

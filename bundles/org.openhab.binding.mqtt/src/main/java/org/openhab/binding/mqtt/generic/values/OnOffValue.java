@@ -40,9 +40,6 @@ public class OnOffValue extends Value {
     private final String onCommand;
     private final String offCommand;
 
-    private @Nullable String nullValue = null;
-    private @Nullable String ignoreValue = null;
-
     /**
      * Creates a switch On/Off type, that accepts "ON" for on and "OFF" for off.
      */
