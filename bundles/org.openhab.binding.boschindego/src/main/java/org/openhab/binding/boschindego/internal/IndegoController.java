@@ -156,8 +156,7 @@ public class IndegoController {
         } catch (TimeoutException e) {
             throw new IndegoException(e);
         } catch (ExecutionException e) {
-            Throwable cause = e.getCause();
-            if (cause != null && cause instanceof HttpResponseException httpResponseException) {
+            if (e.getCause() instanceof HttpResponseException httpResponseException) {
                 Response response = httpResponseException.getResponse();
                 if (response.getStatus() == HttpStatus.UNAUTHORIZED_401) {
                     /*
@@ -216,8 +215,7 @@ public class IndegoController {
         } catch (TimeoutException e) {
             throw new IndegoException(e);
         } catch (ExecutionException e) {
-            Throwable cause = e.getCause();
-            if (cause != null && cause instanceof HttpResponseException httpResponseException) {
+            if (e.getCause() instanceof HttpResponseException httpResponseException) {
                 Response response = httpResponseException.getResponse();
                 if (response.getStatus() == HttpStatus.UNAUTHORIZED_401) {
                     /*
@@ -315,8 +313,7 @@ public class IndegoController {
         } catch (TimeoutException e) {
             throw new IndegoException(e);
         } catch (ExecutionException e) {
-            Throwable cause = e.getCause();
-            if (cause != null && cause instanceof HttpResponseException httpResponseException) {
+            if (e.getCause() instanceof HttpResponseException httpResponseException) {
                 Response response = httpResponseException.getResponse();
                 if (response.getStatus() == HttpStatus.UNAUTHORIZED_401) {
                     /*
