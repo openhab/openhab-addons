@@ -22,12 +22,12 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.knx.internal.handler.KNXBridgeBaseThingHandler;
 
-import tuwien.auto.calimero.GroupAddress;
-import tuwien.auto.calimero.IndividualAddress;
-import tuwien.auto.calimero.knxnetip.SecureConnection;
-import tuwien.auto.calimero.secure.Keyring;
-import tuwien.auto.calimero.secure.KnxSecureException;
-import tuwien.auto.calimero.secure.Security;
+import io.calimero.GroupAddress;
+import io.calimero.IndividualAddress;
+import io.calimero.knxnetip.SecureConnection;
+import io.calimero.secure.Keyring;
+import io.calimero.secure.KnxSecureException;
+import io.calimero.secure.Security;
 
 /**
  *

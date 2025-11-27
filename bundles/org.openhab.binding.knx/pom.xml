@@ -26,9 +26,9 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>com.github.calimero</groupId>
+      <groupId>io.calimero</groupId>
       <artifactId>calimero-core</artifactId>
-      <version>2.6</version>
+      <version>3.0-M1</version>
       <scope>compile</scope>
       <exclusions>
         <exclusion>
@@ -38,9 +38,9 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>com.github.calimero</groupId>
+      <groupId>io.calimero</groupId>
       <artifactId>calimero-device</artifactId>
-      <version>2.6</version>
+      <version>3.0-M1</version>
       <scope>compile</scope>
       <exclusions>
         <exclusion>
@@ -70,10 +70,10 @@ Require-Capability:
     osgi.extender:=
       filter:="(osgi.extender=osgi.serviceloader.processor)",
     osgi.serviceloader:=
-      filter:="(osgi.serviceloader=tuwien.auto.calimero.serial.spi.SerialCom)";
+      filter:="(osgi.serviceloader=io.calimero.serial.spi.SerialCom)";
       cardinality:=multiple
-SPI-Provider: tuwien.auto.calimero.serial.spi.SerialCom
-SPI-Consumer: java.util.ServiceLoader#load(java.lang.Class[tuwien.auto.calimero.serial.spi.SerialCom])
+SPI-Provider: io.calimero.serial.spi.SerialCom
+SPI-Consumer: java.util.ServiceLoader#load(java.lang.Class[io.calimero.serial.spi.SerialCom])
             ]]></bnd>
           </configuration>
         </plugin>
@@ -95,7 +95,6 @@ SPI-Consumer: java.util.ServiceLoader#load(java.lang.Class[tuwien.auto.calimero.
         <version>0.8.14</version>
         <configuration>
           <excludes>
-            <exclude>tuwien/auto/calimero/**/*</exclude>
             <exclude>io/calimero/**/*</exclude>
           </excludes>
         </configuration>
