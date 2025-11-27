@@ -136,11 +136,17 @@ public interface Job extends SchedulerRunnable, Runnable {
         Calendar start = range.getStart();
         Calendar end = range.getEnd();
 
-        if (config.forceEvent && start == null) {
-            start = getAdjustedEarliest(Calendar.getInstance(zone, locale), config);
-        }
-        if (config.forceEvent && end == null) {
-            end = getAdjustedLatest(Calendar.getInstance(zone, locale), config);
+        if (config.forceEvent) {
+            Calendar reference = start != null ? start : end;
+            if (reference == null) {
+                reference = Calendar.getInstance(zone, locale);
+            }
+            if (start == null) {
+                start = getAdjustedEarliest(truncateToMidnight(reference), config);
+            }
+            if (end == null) {
+                end = getAdjustedLatest(endOfDayDate(reference), config);
+            }
         }
 
         // depending on the location and configuration you might not have a valid range for day/night, so skip the
