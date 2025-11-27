@@ -129,7 +129,7 @@
 			<parameter name="token" type="text" required="true">
 				<context>password</context>
 				<label>Token</label>
-				<description>Token to access the device. To generate token go to `settings` > `API` > `Show API token`</description>
+				<description>Token to access the device. To generate token, go to `settings` > `API` > `Show API token`</description>
 			</parameter>
 			<parameter name="refreshIntervalSeconds" type="integer" unit="s" min="1">
 				<label>Refresh Interval</label>
