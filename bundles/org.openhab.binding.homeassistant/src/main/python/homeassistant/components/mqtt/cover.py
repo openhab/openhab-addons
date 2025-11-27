@@ -20,6 +20,7 @@ from homeassistant.const import (
     STATE_OPENING,
 )
 from homeassistant.helpers import config_validation as cv
+from homeassistant.helpers.typing import ConfigType
 
 from .config import MQTT_BASE_SCHEMA
 from .const import (
@@ -77,7 +78,7 @@ DEFAULT_TILT_OPEN_POSITION = 100
 DEFAULT_TILT_OPTIMISTIC = False
 
 
-def validate_options(config: dict[str, Any]) -> dict[str, Any]:
+def validate_options(config: ConfigType) -> ConfigType:
     """Validate options.
 
     If set position topic is set then get position topic is set as well.

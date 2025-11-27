@@ -13,8 +13,8 @@ from .const import (  # noqa: F401
 )
 
 def valid_supported_color_modes(
-    color_modes: Iterable,
-) -> set:
+    color_modes: Iterable[ColorMode | str],
+) -> set[ColorMode | str]:
     """Validate the given color modes."""
     color_modes = set(color_modes)
     if (

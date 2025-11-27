@@ -319,9 +319,18 @@ class Template:
         """Representation of Template."""
         return f"Template<template=({self.template}) renders={self._renders}>"
 
-def forgiving_boolean(
-    value: Any, default: object = _SENTINEL
-) -> bool | object:
+
+@overload
+def forgiving_boolean(value: Any) -> bool | object: ...
+
+
+@overload
+def forgiving_boolean[_T](value: Any, default: _T) -> bool | _T: ...
+
+
+def forgiving_boolean[_T](
+    value: Any, default: _T | object = _SENTINEL
+) -> bool | _T | object:
     """Try to convert value to a boolean."""
     try:
         # Import here, not at top-level to avoid circular import

@@ -14,6 +14,7 @@ from homeassistant.const import (
     MAX_LENGTH_STATE_STATE,
 )
 from homeassistant.helpers import config_validation as cv
+from homeassistant.helpers.typing import ConfigType
 
 from .config import MQTT_RW_SCHEMA
 from .const import CONF_COMMAND_TEMPLATE
@@ -24,7 +25,7 @@ CONF_MIN = "min"
 CONF_PATTERN = "pattern"
 
 
-def valid_text_size_configuration(config: dict[str, Any]) -> dict[str, Any]:
+def valid_text_size_configuration(config: ConfigType) -> ConfigType:
     """Validate that the text length configuration is valid, throws if it isn't."""
     if config[CONF_MIN] > config[CONF_MAX]:
         raise vol.Invalid("text length min must be <= max")

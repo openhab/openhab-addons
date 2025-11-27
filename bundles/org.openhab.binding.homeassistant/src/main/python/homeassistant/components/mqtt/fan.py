@@ -12,6 +12,7 @@ from homeassistant.const import (
     CONF_PAYLOAD_ON,
 )
 from homeassistant.helpers import config_validation as cv
+from homeassistant.helpers.typing import ConfigType
 
 from .config import MQTT_RW_SCHEMA
 from .const import (
@@ -55,7 +56,7 @@ OSCILLATE_ON_PAYLOAD = "oscillate_on"
 OSCILLATE_OFF_PAYLOAD = "oscillate_off"
 
 
-def valid_speed_range_configuration(config: dict[str, Any]) -> dict[str, Any]:
+def valid_speed_range_configuration(config: ConfigType) -> ConfigType:
     """Validate that the fan speed_range configuration is valid, throws if it isn't."""
     if config[CONF_SPEED_RANGE_MIN] == 0:
         raise vol.Invalid("speed_range_min must be > 0")
@@ -64,7 +65,7 @@ def valid_speed_range_configuration(config: dict[str, Any]) -> dict[str, Any]:
     return config
 
 
-def valid_preset_mode_configuration(config: dict[str, Any]) -> dict[str, Any]:
+def valid_preset_mode_configuration(config: ConfigType) -> ConfigType:
     """Validate that the preset mode reset payload is not one of the preset modes."""
     if config[CONF_PAYLOAD_RESET_PRESET_MODE] in config[CONF_PRESET_MODES_LIST]:
         raise vol.Invalid("preset_modes must not contain payload_reset_preset_mode")

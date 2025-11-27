@@ -21,6 +21,7 @@ from homeassistant.const import (
     CONF_VALUE_TEMPLATE,
 )
 from homeassistant.helpers import config_validation as cv
+from homeassistant.helpers.typing import ConfigType
 
 from .config import MQTT_RW_SCHEMA
 from .const import (
@@ -35,7 +36,7 @@ CONF_STEP = "step"
 
 DEFAULT_PAYLOAD_RESET = "None"
 
-def validate_config(config: dict[str, Any]) -> dict[str, Any]:
+def validate_config(config: ConfigType) -> ConfigType:
     """Validate that the configuration is valid, throws if it isn't."""
     if config[CONF_MIN] > config[CONF_MAX]:
         raise vol.Invalid(f"{CONF_MAX} must be >= {CONF_MIN}")

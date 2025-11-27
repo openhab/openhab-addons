@@ -14,6 +14,7 @@ from homeassistant.const import (
     STATE_NOT_HOME,
 )
 from homeassistant.helpers import config_validation as cv
+from homeassistant.helpers.typing import ConfigType
 
 from .config import MQTT_BASE_SCHEMA
 from .const import (
@@ -32,7 +33,7 @@ DEFAULT_PAYLOAD_RESET = "None"
 DEFAULT_SOURCE_TYPE = SourceType.GPS
 
 
-def valid_config(config: dict[str, Any]) -> dict[str, Any]:
+def valid_config(config: ConfigType) -> ConfigType:
     """Check if there is a state topic or json_attributes_topic."""
     if CONF_STATE_TOPIC not in config and CONF_JSON_ATTRS_TOPIC not in config:
         raise vol.Invalid(

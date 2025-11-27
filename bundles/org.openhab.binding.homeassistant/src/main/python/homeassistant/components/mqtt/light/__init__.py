@@ -6,6 +6,8 @@ from typing import Any
 
 import voluptuous as vol
 
+from homeassistant.helpers.typing import ConfigType
+
 from .schema import CONF_SCHEMA, MQTT_LIGHT_SCHEMA_SCHEMA
 from .schema_basic import (
     DISCOVERY_SCHEMA_BASIC,
@@ -18,14 +20,14 @@ from .schema_template import (
 )
 
 
-def validate_mqtt_light_discovery(config_value: dict[str, Any]) -> dict[str, Any]:
+def validate_mqtt_light_discovery(config_value: ConfigType) -> ConfigType:
     """Validate MQTT light schema for discovery."""
     schemas: dict[str, vol.Schema | vol.All | vol.Any] = {
         "basic": DISCOVERY_SCHEMA_BASIC,
         "json": DISCOVERY_SCHEMA_JSON,
         "template": DISCOVERY_SCHEMA_TEMPLATE,
     }
-    config: dict[str, Any] = schemas[config_value[CONF_SCHEMA]](config_value)
+    config: ConfigType = schemas[config_value[CONF_SCHEMA]](config_value)
     return config
 
 

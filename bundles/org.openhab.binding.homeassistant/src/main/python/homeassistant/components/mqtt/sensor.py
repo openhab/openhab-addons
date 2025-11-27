@@ -22,6 +22,7 @@ from homeassistant.const import (
     CONF_UNIT_OF_MEASUREMENT,
 )
 from homeassistant.helpers import config_validation as cv
+from homeassistant.helpers.typing import ConfigType
 
 from .config import MQTT_RO_SCHEMA
 from .const import (
@@ -51,7 +52,7 @@ _PLATFORM_SCHEMA_BASE = MQTT_RO_SCHEMA.extend(
 ).extend(MQTT_ENTITY_COMMON_SCHEMA.schema)
 
 
-def validate_sensor_state_and_device_class_config(config: dict[str, Any]) -> dict[str, Any]:
+def validate_sensor_state_and_device_class_config(config: ConfigType) -> ConfigType:
     """Validate the sensor options, state and device class config."""
     if (
         CONF_LAST_RESET_VALUE_TEMPLATE in config

@@ -31,6 +31,7 @@ from homeassistant.const import (
     PRECISION_WHOLE,
 )
 from homeassistant.helpers import config_validation as cv
+from homeassistant.helpers.typing import ConfigType
 
 from .config import DEFAULT_RETAIN, MQTT_BASE_SCHEMA
 from .const import (
@@ -105,14 +106,14 @@ CONF_TEMP_STEP = "temp_step"
 DEFAULT_INITIAL_TEMPERATURE = 21.0
 
 
-def valid_preset_mode_configuration(config: dict[str, Any]) -> dict[str, Any]:
+def valid_preset_mode_configuration(config: ConfigType) -> ConfigType:
     """Validate that the preset mode reset payload is not one of the preset modes."""
     if PRESET_NONE in config[CONF_PRESET_MODES_LIST]:
         raise vol.Invalid("preset_modes must not include preset mode 'none'")
     return config
 
 
-def valid_humidity_range_configuration(config: dict[str, Any]) -> dict[str, Any]:
+def valid_humidity_range_configuration(config: ConfigType) -> ConfigType:
     """Validate a target_humidity range configuration, throws otherwise."""
     if config[CONF_HUMIDITY_MIN] >= config[CONF_HUMIDITY_MAX]:
         raise vol.Invalid("target_humidity_max must be > target_humidity_min")
@@ -122,7 +123,7 @@ def valid_humidity_range_configuration(config: dict[str, Any]) -> dict[str, Any]
     return config
 
 
-def valid_humidity_state_configuration(config: dict[str, Any]) -> dict[str, Any]:
+def valid_humidity_state_configuration(config: ConfigType) -> ConfigType:
     """Validate humidity state.
 
     Ensure that if CONF_HUMIDITY_STATE_TOPIC is set then

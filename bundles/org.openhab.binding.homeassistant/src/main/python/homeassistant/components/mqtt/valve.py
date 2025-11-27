@@ -17,6 +17,7 @@ from homeassistant.const import (
     CONF_VALUE_TEMPLATE,
 )
 from homeassistant.helpers import config_validation as cv
+from homeassistant.helpers.typing import ConfigType
 
 from .config import MQTT_BASE_SCHEMA
 from .const import (
@@ -60,7 +61,7 @@ DEFAULTS = {
 }
 
 
-def _validate_and_add_defaults(config: dict[str, Any]) -> dict[str, Any]:
+def _validate_and_add_defaults(config: ConfigType) -> ConfigType:
     """Validate config options and set defaults."""
     if config[CONF_REPORTS_POSITION] and any(key in config for key in NO_POSITION_KEYS):
         raise vol.Invalid(
