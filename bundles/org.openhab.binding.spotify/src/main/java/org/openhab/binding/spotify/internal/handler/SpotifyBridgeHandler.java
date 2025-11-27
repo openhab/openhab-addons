@@ -72,19 +72,18 @@ import org.openhab.core.library.types.RawType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.media.Image;
-import org.openhab.core.media.MediaSink;
 import org.openhab.core.media.MediaListenner;
 import org.openhab.core.media.MediaService;
 import org.openhab.core.media.model.MediaAlbum;
 import org.openhab.core.media.model.MediaArtist;
 import org.openhab.core.media.model.MediaCollection;
+import org.openhab.core.media.model.MediaEntrySupplier;
 import org.openhab.core.media.model.MediaEntry;
 import org.openhab.core.media.model.MediaPlayList;
 import org.openhab.core.media.model.MediaPodcast;
 import org.openhab.core.media.model.MediaQueue;
 import org.openhab.core.media.model.MediaRegistry;
 import org.openhab.core.media.model.MediaSearchResult;
-import org.openhab.core.media.model.MediaCollectionSource;
 import org.openhab.core.media.model.MediaTrack;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
@@ -360,7 +359,7 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
         MediaRegistry mediaRegistry = mediaService.getMediaRegistry();
 
         mediaRegistry.registerEntry(SpotifyBindingConstants.BINDING_ID, () -> {
-            return new MediaCollectionSource(SpotifyBindingConstants.BINDING_ID, SpotifyBindingConstants.BINDING_LABEL,
+            return new MediaEntrySupplier(SpotifyBindingConstants.BINDING_ID, SpotifyBindingConstants.BINDING_LABEL,
                     "/static/Spotify.png");
         });
 
@@ -695,8 +694,6 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
         for (Thing playerThing : playerThings) {
             logger.debug("devices:" + playerThing.getLabel());
             SpotifyDeviceHandler handler = (SpotifyDeviceHandler) playerThing.getHandler();
-            mediaService.registerDevice(new MediaSink(playerThing.getUID().getId(), "" + playerThing.getLabel(),
-                    handler.getDeviceType(), SpotifyBindingConstants.BINDING_ID));
 
         }
 

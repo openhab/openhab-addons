@@ -78,7 +78,7 @@ public class SpotifyHandlerFactory extends BaseThingHandlerFactory {
             return handler;
         }
         if (SpotifyBindingConstants.THING_TYPE_DEVICE.equals(thingTypeUID)) {
-            return new SpotifyDeviceHandler(thing);
+            return new SpotifyDeviceHandler(bundleContext, thing);
         }
         return null;
     }

@@ -14,12 +14,16 @@ package org.openhab.binding.spotify.internal.handler;
 
 import static org.openhab.binding.spotify.internal.SpotifyBindingConstants.*;
 
+import java.util.Hashtable;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.spotify.internal.SpotifyAudioSink;
 import org.openhab.binding.spotify.internal.SpotifyBindingConstants;
 import org.openhab.binding.spotify.internal.api.SpotifyApi;
 import org.openhab.binding.spotify.internal.api.exception.SpotifyException;
 import org.openhab.binding.spotify.internal.api.model.CurrentlyPlayingContext;
 import org.openhab.binding.spotify.internal.api.model.Device;
+import org.openhab.core.audio.AudioSink;
 import org.openhab.core.library.types.MediaStateType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
@@ -35,6 +39,8 @@ import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceRegistration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,6 +56,7 @@ public class SpotifyDeviceHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(SpotifyDeviceHandler.class);
     private @NonNullByDefault({}) SpotifyHandleCommands commandHandler;
     private @NonNullByDefault({}) SpotifyApi spotifyApi;
+    private final BundleContext bundleContext;
     private String deviceName = "";
     private String deviceId = "";
     private String deviceType = "";
@@ -61,8 +68,9 @@ public class SpotifyDeviceHandler extends BaseThingHandler {
      *
      * @param thing Thing representing this device.
      */
-    public SpotifyDeviceHandler(Thing thing) {
+    public SpotifyDeviceHandler(BundleContext bundleContext, Thing thing) {
         super(thing);
+        this.bundleContext = bundleContext;
     }
 
     @Override
@@ -96,6 +104,8 @@ public class SpotifyDeviceHandler extends BaseThingHandler {
             commandHandler = new SpotifyHandleCommands(bridgeHandler, spotifyApi);
             updateStatus(ThingStatus.UNKNOWN);
         }
+
+        registerAudioSink();
     }
 
     @Override
@@ -208,4 +218,12 @@ public class SpotifyDeviceHandler extends BaseThingHandler {
     public String getDeviceType() {
         return deviceType;
     }
+
+    public void registerAudioSink() {
+        SpotifyAudioSink audioSink = new SpotifyAudioSink(this);
+        @SuppressWarnings("unchecked")
+        ServiceRegistration<AudioSink> reg = (ServiceRegistration<AudioSink>) bundleContext
+                .registerService(AudioSink.class.getName(), audioSink, new Hashtable<>());
+    }
+
 }
