@@ -21,7 +21,6 @@ import org.eclipse.jdt.annotation.NonNull;
  */
 public class PushAudioPlayerStateTO extends PushDeviceTO {
     public String mediaReferenceId;
-    public String quality;
     public boolean error;
     public AudioPlayerState audioPlayerState;
     public String errorMessage;
