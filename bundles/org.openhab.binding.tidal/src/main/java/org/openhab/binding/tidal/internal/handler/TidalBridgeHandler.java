@@ -66,7 +66,7 @@ import org.openhab.core.media.model.MediaEntry;
 import org.openhab.core.media.model.MediaPlayList;
 import org.openhab.core.media.model.MediaQueue;
 import org.openhab.core.media.model.MediaRegistry;
-import org.openhab.core.media.model.MediaSource;
+import org.openhab.core.media.model.MediaEntrySupplier;
 import org.openhab.core.media.model.MediaTrack;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
@@ -353,7 +353,7 @@ public class TidalBridgeHandler extends BaseBridgeHandler
         MediaRegistry mediaRegistry = mediaService.getMediaRegistry();
 
         mediaRegistry.registerEntry(TidalBindingConstants.BINDING_ID, () -> {
-            return new MediaSource(TidalBindingConstants.BINDING_ID, TidalBindingConstants.BINDING_LABEL,
+            return new MediaEntrySupplier(TidalBindingConstants.BINDING_ID, TidalBindingConstants.BINDING_LABEL,
                     "/static/Tidal.png");
         });
 
