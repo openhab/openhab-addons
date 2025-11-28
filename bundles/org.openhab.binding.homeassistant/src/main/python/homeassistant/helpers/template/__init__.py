@@ -3,14 +3,11 @@
 from __future__ import annotations
 
 from ast import literal_eval
-import base64
-import collections.abc
 from collections.abc import Callable, Iterable, Mapping, MutableSequence
 from contextlib import AbstractContextManager
 from contextvars import ContextVar
 from datetime import date, datetime, time, timedelta
 from functools import lru_cache, wraps
-import hashlib
 import json
 import logging
 import math
@@ -39,7 +36,6 @@ from jinja2.utils import Namespace
 
 import voluptuous as vol
 
-from homeassistant.exceptions import TemplateError
 from homeassistant.util import (
     dt as dt_util,
     slugify as slugify_util,
@@ -319,13 +315,22 @@ class Template:
         """Representation of Template."""
         return f"Template<template=({self.template}) renders={self._renders}>"
 
-def forgiving_boolean(
-    value: Any, default: object = _SENTINEL
-) -> bool | object:
+
+@overload
+def forgiving_boolean(value: Any) -> bool | object: ...
+
+
+@overload
+def forgiving_boolean[_T](value: Any, default: _T) -> bool | _T: ...
+
+
+def forgiving_boolean[_T](
+    value: Any, default: _T | object = _SENTINEL
+) -> bool | _T | object:
     """Try to convert value to a boolean."""
     try:
         # Import here, not at top-level to avoid circular import
-        from . import config_validation as cv  # pylint: disable=import-outside-toplevel
+        from homeassistant.helpers import config_validation as cv  # noqa: PLC0415
 
         return cv.boolean(value)
     except vol.Invalid:
@@ -393,6 +398,34 @@ def add(value, amount, default=_SENTINEL):
         if default is _SENTINEL:
             raise_no_default("add", value)
         return default
+
+
+def apply(value, fn, *args, **kwargs):
+    """Call the given callable with the provided arguments and keyword arguments."""
+    return fn(value, *args, **kwargs)
+
+
+def as_function(macro: jinja2.runtime.Macro) -> Callable[..., Any]:
+    """Turn a macro with a 'returns' keyword argument into a function that returns what that argument is called with."""
+
+    def wrapper(*args, **kwargs):
+        return_value = None
+
+        def returns(value):
+            nonlocal return_value
+            return_value = value
+            return value
+
+        # Call the callable with the value and other args
+        macro(*args, **kwargs, returns=returns)
+        return return_value
+
+    # Remove "macro_" from the macro's name to avoid confusion in the wrapper's name
+    trimmed_name = macro.name.removeprefix("macro_")
+
+    wrapper.__name__ = trimmed_name
+    wrapper.__qualname__ = trimmed_name
+    return wrapper
 
 
 def logarithm(value, base=math.e, default=_SENTINEL):
@@ -891,18 +924,9 @@ def struct_unpack(value: bytes, format_string: str, offset: int = 0) -> Any | No
         return None
 
 
-def base64_encode(value: str) -> str:
-    """Perform base64 encode."""
-    return base64.b64encode(value.encode("utf-8")).decode("utf-8")
-
-
-def base64_decode(value: str, encoding: str | None = "utf-8") -> str | bytes:
-    """Perform base64 decode."""
-    decoded = base64.b64decode(value)
-    if encoding:
-        return decoded.decode(encoding)
-
-    return decoded
+def from_hex(value: str) -> bytes:
+    """Perform hex string decode."""
+    return bytes.fromhex(value)
 
 
 def ordinal(value):
@@ -915,9 +939,14 @@ def ordinal(value):
     )
 
 
-def from_json(value):
+def from_json(value, default=_SENTINEL):
     """Convert a JSON string to an object."""
-    return json.loads(value)
+    try:
+        return json.loads(value)
+    except JSON_DECODE_EXCEPTIONS:
+        if default is _SENTINEL:
+            raise_no_default("from_json", value)
+        return default
 
 
 def to_json(
@@ -1168,26 +1197,6 @@ def combine(*args: Any, recursive: bool = False) -> dict[Any, Any]:
     return result
 
 
-def md5(value: str) -> str:
-    """Generate md5 hash from a string."""
-    return hashlib.md5(value.encode()).hexdigest()
-
-
-def sha1(value: str) -> str:
-    """Generate sha1 hash from a string."""
-    return hashlib.sha1(value.encode()).hexdigest()
-
-
-def sha256(value: str) -> str:
-    """Generate sha256 hash from a string."""
-    return hashlib.sha256(value.encode()).hexdigest()
-
-
-def sha512(value: str) -> str:
-    """Generate sha512 hash from a string."""
-    return hashlib.sha512(value.encode()).hexdigest()
-
-
 class TemplateContextManager(AbstractContextManager):
     """Context manager to store template being parsed or rendered in a ContextVar."""
 
@@ -1228,9 +1237,13 @@ class TemplateEnvironment(ImmutableSandboxedEnvironment):
             str | jinja2.nodes.Template, CodeType | None
         ] = weakref.WeakValueDictionary()
         self.add_extension("jinja2.ext.loopcontrols")
+        self.add_extension("jinja2.ext.do")
+        self.add_extension("homeassistant.helpers.template.extensions.Base64Extension")
+        self.add_extension("homeassistant.helpers.template.extensions.CryptoExtension")
 
         self.globals["acos"] = arc_cosine
         self.globals["as_datetime"] = as_datetime
+        self.globals["as_function"] = as_function
         self.globals["as_local"] = dt_util.as_local
         self.globals["as_timedelta"] = as_timedelta
         self.globals["as_timestamp"] = forgiving_as_timestamp
@@ -1245,21 +1258,18 @@ class TemplateEnvironment(ImmutableSandboxedEnvironment):
         self.globals["e"] = math.e
         self.globals["flatten"] = flatten
         self.globals["float"] = forgiving_float
+        self.filters["from_hex"] = from_hex
         self.globals["iif"] = iif
         self.globals["int"] = forgiving_int
         self.globals["intersect"] = intersect
         self.globals["is_number"] = is_number
         self.globals["log"] = logarithm
         self.globals["max"] = min_max_from_filter(self.filters["max"], "max")
-        self.globals["md5"] = md5
         self.globals["median"] = median
         self.globals["min"] = min_max_from_filter(self.filters["min"], "min")
         self.globals["pack"] = struct_pack
         self.globals["pi"] = math.pi
         self.globals["set"] = _to_set
-        self.globals["sha1"] = sha1
-        self.globals["sha256"] = sha256
-        self.globals["sha512"] = sha512
         self.globals["shuffle"] = shuffle
         self.globals["sin"] = sine
         self.globals["slugify"] = slugify
@@ -1280,7 +1290,9 @@ class TemplateEnvironment(ImmutableSandboxedEnvironment):
 
         self.filters["acos"] = arc_cosine
         self.filters["add"] = add
+        self.filters["apply"] = apply
         self.filters["as_datetime"] = as_datetime
+        self.filters["as_function"] = as_function
         self.filters["as_local"] = dt_util.as_local
         self.filters["as_timedelta"] = as_timedelta
         self.filters["as_timestamp"] = forgiving_as_timestamp
@@ -1288,8 +1300,6 @@ class TemplateEnvironment(ImmutableSandboxedEnvironment):
         self.filters["atan"] = arc_tangent
         self.filters["atan2"] = arc_tangent2
         self.filters["average"] = average
-        self.filters["base64_decode"] = base64_decode
-        self.filters["base64_encode"] = base64_encode
         self.filters["bitwise_and"] = bitwise_and
         self.filters["bitwise_or"] = bitwise_or
         self.filters["bitwise_xor"] = bitwise_xor
@@ -1307,7 +1317,6 @@ class TemplateEnvironment(ImmutableSandboxedEnvironment):
         self.filters["is_defined"] = fail_when_undefined
         self.filters["is_number"] = is_number
         self.filters["log"] = logarithm
-        self.filters["md5"] = md5
         self.filters["median"] = median
         self.filters["multiply"] = multiply
         self.filters["ord"] = ord
@@ -1320,9 +1329,6 @@ class TemplateEnvironment(ImmutableSandboxedEnvironment):
         self.filters["regex_replace"] = regex_replace
         self.filters["regex_search"] = regex_search
         self.filters["round"] = forgiving_round
-        self.filters["sha1"] = sha1
-        self.filters["sha256"] = sha256
-        self.filters["sha512"] = sha512
         self.filters["shuffle"] = shuffle
         self.filters["sin"] = sine
         self.filters["slugify"] = slugify
@@ -1339,6 +1345,7 @@ class TemplateEnvironment(ImmutableSandboxedEnvironment):
         self.filters["unpack"] = struct_unpack
         self.filters["version"] = version
 
+        self.tests["apply"] = apply
         self.tests["contains"] = contains
         self.tests["datetime"] = _is_datetime
         self.tests["is_number"] = is_number

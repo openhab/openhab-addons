@@ -17,13 +17,12 @@ from homeassistant.helpers import config_validation as cv
 from .config import MQTT_RW_SCHEMA
 from .const import (
     CONF_COMMAND_TEMPLATE,
+    CONF_STATE_OFF,
+    CONF_STATE_ON,
+    DEFAULT_PAYLOAD_OFF,
+    DEFAULT_PAYLOAD_ON,
 )
 from .schemas import MQTT_ENTITY_COMMON_SCHEMA
-
-DEFAULT_PAYLOAD_ON = "ON"
-DEFAULT_PAYLOAD_OFF = "OFF"
-CONF_STATE_ON = "state_on"
-CONF_STATE_OFF = "state_off"
 
 PLATFORM_SCHEMA_MODERN = MQTT_RW_SCHEMA.extend(
     {

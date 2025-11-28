@@ -2,11 +2,12 @@
 
 from __future__ import annotations
 
+from collections.abc import Callable
 from enum import StrEnum
 import logging
 from numbers import Number
 import re
-from typing import Any, Callable, cast
+from typing import TYPE_CHECKING, Any, cast, overload
 from urllib.parse import urlparse
 
 import voluptuous as vol
@@ -85,12 +86,28 @@ def is_regex(value: Any) -> re.Pattern[Any]:
     return r
 
 
-def ensure_list(value) -> list:
+@overload
+def ensure_list(value: None) -> list[Any]: ...
+
+
+@overload
+def ensure_list[_T](value: list[_T]) -> list[_T]: ...
+
+
+@overload
+def ensure_list[_T](value: list[_T] | _T) -> list[_T]: ...
+
+
+def ensure_list[_T](value: _T | None) -> list[_T] | list[Any]:
     """Wrap value in list if it is not one."""
     if value is None:
         return []
     if isinstance(value, list):
-        return value
+        if TYPE_CHECKING:
+            # https://github.com/home-assistant/core/pull/71960
+            # cast with a type variable is still slow.
+            return cast(list[_T], value)
+        return value  # type: ignore[unreachable]
     return [value]
 
 

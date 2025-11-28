@@ -9,12 +9,15 @@ from homeassistant.const import CONF_DEVICE_CLASS, CONF_NAME
 from homeassistant.helpers import config_validation as cv
 
 from .config import DEFAULT_RETAIN, MQTT_BASE_SCHEMA
-from .const import CONF_COMMAND_TEMPLATE, CONF_COMMAND_TOPIC, CONF_RETAIN
+from .const import (
+    CONF_COMMAND_TEMPLATE,
+    CONF_COMMAND_TOPIC,
+    CONF_PAYLOAD_PRESS,
+    CONF_RETAIN,
+    DEFAULT_PAYLOAD_PRESS,
+)
 from .schemas import MQTT_ENTITY_COMMON_SCHEMA
 from .util import valid_publish_topic
-
-CONF_PAYLOAD_PRESS = "payload_press"
-DEFAULT_PAYLOAD_PRESS = "PRESS"
 
 PLATFORM_SCHEMA_MODERN = MQTT_BASE_SCHEMA.extend(
     {
