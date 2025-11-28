@@ -5,60 +5,60 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<channel-type id="air_pressure_at_mean_sea_level">
-		<item-type unitHint="hPa">Number:Pressure</item-type>
+		<item-type>Number:Pressure</item-type>
 		<label>Air Pressure</label>
 		<description>Air pressure in hPa</description>
 		<tags>
 			<tag>Forecast</tag>
 			<tag>Pressure</tag>
 		</tags>
-		<state readOnly="true" pattern="%.1f hPa"/>
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="air_temperature">
-		<item-type unitHint="°C">Number:Temperature</item-type>
+		<item-type>Number:Temperature</item-type>
 		<label>Temperature</label>
 		<description>Temperature</description>
 		<tags>
 			<tag>Forecast</tag>
 			<tag>Temperature</tag>
 		</tags>
-		<state readOnly="true" pattern="%.1f °C"/>
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="temperature_max">
-		<item-type unitHint="°C">Number:Temperature</item-type>
+		<item-type>Number:Temperature</item-type>
 		<label>Max Temperature</label>
 		<description>Highest temperature of the day</description>
 		<tags>
 			<tag>Forecast</tag>
 			<tag>Temperature</tag>
 		</tags>
-		<state readOnly="true" pattern="%.1f °C"/>
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="temperature_min">
-		<item-type unitHint="°C">Number:Temperature</item-type>
+		<item-type>Number:Temperature</item-type>
 		<label>Min Temperature</label>
 		<description>Lowest temperature of the day</description>
 		<tags>
 			<tag>Forecast</tag>
 			<tag>Temperature</tag>
 		</tags>
-		<state readOnly="true" pattern="%.1f °C"/>
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="visibility_in_air" advanced="true">
 		<item-type unitHint="km">Number:Length</item-type>
 		<label>Visibility</label>
 		<description>Horizontal visibility</description>
-		<state readOnly="true" pattern="%.1f km"/>
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="wind_from_direction">
-		<item-type unitHint="°">Number:Angle</item-type>
+		<item-type>Number:Angle</item-type>
 		<label>Wind Direction</label>
 		<description>Wind direction</description>
 		<tags>
 			<tag>Forecast</tag>
 			<tag>Wind</tag>
 		</tags>
-		<state readOnly="true" pattern="%d °"/>
+		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 	<channel-type id="wind_speed">
 		<item-type unitHint="m/s">Number:Speed</item-type>
@@ -68,7 +68,7 @@
 			<tag>Forecast</tag>
 			<tag>Wind</tag>
 		</tags>
-		<state readOnly="true" pattern="%.1f m/s"/>
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="wind_speed_max">
 		<item-type unitHint="m/s">Number:Speed</item-type>
@@ -78,7 +78,7 @@
 			<tag>Forecast</tag>
 			<tag>Wind</tag>
 		</tags>
-		<state readOnly="true" pattern="%.1f m/s"/>
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="wind_speed_min">
 		<item-type unitHint="m/s">Number:Speed</item-type>
@@ -88,7 +88,7 @@
 			<tag>Forecast</tag>
 			<tag>Wind</tag>
 		</tags>
-		<state readOnly="true" pattern="%.1f m/s"/>
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="relative_humidity">
 		<item-type unitHint="%">Number:Dimensionless</item-type>
@@ -98,49 +98,49 @@
 			<tag>Forecast</tag>
 			<tag>Humidity</tag>
 		</tags>
-		<state readOnly="true" pattern="%d %%"/>
+		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 	<channel-type id="thunderstorm_probability" advanced="true">
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Thunder Probability</label>
 		<description>Probability of thunder in percent</description>
-		<state readOnly="true" pattern="%d %%"/>
+		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 	<channel-type id="cloud_base_altitude" advanced="true">
-		<item-type unitHint="m">Number:Length</item-type>
+		<item-type>Number:Length</item-type>
 		<label>Cloud base altitude</label>
 		<description>Altitude of the cloud cover base</description>
-		<state readOnly="true" pattern="%d m"/>
+		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 	<channel-type id="cloud_top_altitude" advanced="true">
-		<item-type unitHint="m">Number:Length</item-type>
+		<item-type>Number:Length</item-type>
 		<label>Cloud top altitude</label>
 		<description>Altitude of the cloud cover top</description>
-		<state readOnly="true" pattern="%d m"/>
+		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 	<channel-type id="cloud_area_fraction">
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Total Cloud Cover</label>
 		<description>Mean value of total cloud cover in percent</description>
-		<state readOnly="true" pattern="%.1f %%"/>
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="low_type_cloud_area_fraction" advanced="true">
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Low Level Cloud Cover</label>
 		<description>Mean value of low level cloud cover (0-2500 m) in percent</description>
-		<state readOnly="true" pattern="%.1f %%"/>
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="medium_type_cloud_area_fraction" advanced="true">
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Medium Level Cloud Cover</label>
 		<description>Mean value of medium level cloud cover (2500-6000 m) in percent</description>
-		<state readOnly="true" pattern="%.1f %%"/>
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="high_type_cloud_area_fraction" advanced="true">
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>High Level Cloud Cover</label>
 		<description>Mean value of high level cloud cover (> 6000 m) in percent</description>
-		<state readOnly="true" pattern="%.1f %%"/>
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="wind_speed_of_gust">
 		<item-type unitHint="m/s">Number:Speed</item-type>
@@ -150,7 +150,7 @@
 			<tag>Forecast</tag>
 			<tag>Wind</tag>
 		</tags>
-		<state readOnly="true" pattern="%.1f m/s"/>
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="precipitation_amount_min">
 		<item-type unitHint="mm/h">Number:Speed</item-type>
@@ -160,7 +160,7 @@
 			<tag>Forecast</tag>
 			<tag>Rain</tag>
 		</tags>
-		<state readOnly="true" pattern="%.1f mm/h"/>
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="precipitation_amount_max">
 		<item-type unitHint="mm/h">Number:Speed</item-type>
@@ -170,7 +170,7 @@
 			<tag>Forecast</tag>
 			<tag>Rain</tag>
 		</tags>
-		<state readOnly="true" pattern="%.1f mm/h"/>
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="precipitation_amount_total">
 		<item-type unitHint="mm">Number:Length</item-type>
@@ -180,7 +180,7 @@
 			<tag>Forecast</tag>
 			<tag>Rain</tag>
 		</tags>
-		<state readOnly="true" pattern="%.1f mm"/>
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="precipitation_amount_mean" advanced="true">
 		<item-type unitHint="mm/h">Number:Speed</item-type>
@@ -190,7 +190,7 @@
 			<tag>Forecast</tag>
 			<tag>Rain</tag>
 		</tags>
-		<state readOnly="true" pattern="%.1f mm/h"/>
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="precipitation_amount_median" advanced="true">
 		<item-type unitHint="mm/h">Number:Speed</item-type>
@@ -200,7 +200,7 @@
 			<tag>Forecast</tag>
 			<tag>Rain</tag>
 		</tags>
-		<state readOnly="true" pattern="%.1f mm/h"/>
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="probability_of_precipitation">
 		<item-type unitHint="%">Number:Dimensionless</item-type>
@@ -210,7 +210,7 @@
 			<tag>Forecast</tag>
 			<tag>Precipitation</tag>
 		</tags>
-		<state readOnly="true" pattern="%.1f %"/>
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="predominant_precipitation_type_at_surface">
 		<item-type>Number</item-type>
@@ -247,7 +247,7 @@
 			<tag>Forecast</tag>
 			<tag>Precipitation</tag>
 		</tags>
-		<state readOnly="true" pattern="%d %%"/>
+		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 	<channel-type id="probability_of_frozen_precipitation" advanced="true">
 		<item-type unitHint="%">Number:Dimensionless</item-type>
@@ -257,7 +257,7 @@
 			<tag>Forecast</tag>
 			<tag>Precipitation</tag>
 		</tags>
-		<state readOnly="true" pattern="%.1f %"/>
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="symbol_code">
 		<item-type>Number</item-type>

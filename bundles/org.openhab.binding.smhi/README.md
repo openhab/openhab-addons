@@ -104,7 +104,6 @@ The precipitation category can have a value from 0-6, representing different typ
 | 11    | Drizzle                  |
 | 12    | Freezing drizzle         |
 
-
 ### Weather conditions
 
 The weather condition channel can take values from 1-27, each corresponding to a different weather condition:
