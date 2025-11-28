@@ -329,6 +329,11 @@ public class RemehaApiClient {
             } else {
                 logger.debug("Token exchange failed with status: {}", response.getStatus());
             }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            logger.debug("Token exchange interrupted", e);
+        } catch (java.util.concurrent.TimeoutException e) {
+            logger.debug("Token exchange timed out after {}ms", REQUEST_TIMEOUT_MS, e);
         } catch (Exception e) {
             logger.debug("Failed to exchange code for token: {}", e.getMessage());
         }
