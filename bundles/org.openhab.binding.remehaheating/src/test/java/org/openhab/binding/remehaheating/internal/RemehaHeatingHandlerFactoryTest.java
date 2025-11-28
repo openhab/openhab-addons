@@ -14,7 +14,6 @@ package org.openhab.binding.remehaheating.internal;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
-import static org.mockito.Mockito.lenient;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,7 +23,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
-import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandler;
 
 /**
@@ -42,15 +40,11 @@ public class RemehaHeatingHandlerFactoryTest {
     @Mock
     private org.eclipse.jetty.client.HttpClient httpClient;
     private RemehaHeatingHandlerFactory factory;
-    private ThingUID thingUID;
 
     @BeforeEach
     public void setUp() {
-        when(httpClientFactory.getCommonHttpClient()).thenReturn(httpClient);
+        lenient().when(httpClientFactory.createHttpClient("remehaheating")).thenReturn(httpClient);
         factory = new RemehaHeatingHandlerFactory(httpClientFactory);
-        thingUID = new ThingUID(RemehaHeatingBindingConstants.THING_TYPE_BOILER, "test");
-        lenient().when(thing.getUID()).thenReturn(thingUID);
-        lenient().when(thing.getThingTypeUID()).thenReturn(RemehaHeatingBindingConstants.THING_TYPE_BOILER);
     }
 
     @Test
@@ -61,10 +55,14 @@ public class RemehaHeatingHandlerFactoryTest {
 
     @Test
     public void testCreateHandler() {
+        when(thing.getThingTypeUID()).thenReturn(RemehaHeatingBindingConstants.THING_TYPE_BOILER);
+
         ThingHandler handler = factory.createHandler(thing);
 
         assertNotNull(handler);
         assertInstanceOf(RemehaHeatingHandler.class, handler);
+        verify(httpClient).setRequestBufferSize(16384);
+        verify(httpClient).setResponseBufferSize(16384);
     }
 
     @Test

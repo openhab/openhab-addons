@@ -46,11 +46,11 @@ import org.osgi.service.component.annotations.Reference;
 public class RemehaHeatingHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_BOILER);
-    private final HttpClient httpClient;
+    private final HttpClientFactory httpClientFactory;
 
     @Activate
     public RemehaHeatingHandlerFactory(@Reference HttpClientFactory httpClientFactory) {
-        this.httpClient = httpClientFactory.getCommonHttpClient();
+        this.httpClientFactory = httpClientFactory;
     }
 
     /**
@@ -75,6 +75,9 @@ public class RemehaHeatingHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (THING_TYPE_BOILER.equals(thingTypeUID)) {
+            HttpClient httpClient = httpClientFactory.createHttpClient("remehaheating");
+            httpClient.setRequestBufferSize(16384);
+            httpClient.setResponseBufferSize(16384);
             return new RemehaHeatingHandler(thing, httpClient);
         }
 

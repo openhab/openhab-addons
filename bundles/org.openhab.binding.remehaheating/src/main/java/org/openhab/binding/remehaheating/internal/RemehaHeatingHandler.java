@@ -12,16 +12,7 @@
  */
 package org.openhab.binding.remehaheating.internal;
 
-import static org.openhab.binding.remehaheating.internal.RemehaHeatingBindingConstants.CHANNEL_DHW_MODE;
-import static org.openhab.binding.remehaheating.internal.RemehaHeatingBindingConstants.CHANNEL_DHW_STATUS;
-import static org.openhab.binding.remehaheating.internal.RemehaHeatingBindingConstants.CHANNEL_DHW_TARGET;
-import static org.openhab.binding.remehaheating.internal.RemehaHeatingBindingConstants.CHANNEL_DHW_TEMPERATURE;
-import static org.openhab.binding.remehaheating.internal.RemehaHeatingBindingConstants.CHANNEL_OUTDOOR_TEMPERATURE;
-import static org.openhab.binding.remehaheating.internal.RemehaHeatingBindingConstants.CHANNEL_ROOM_TEMPERATURE;
-import static org.openhab.binding.remehaheating.internal.RemehaHeatingBindingConstants.CHANNEL_STATUS;
-import static org.openhab.binding.remehaheating.internal.RemehaHeatingBindingConstants.CHANNEL_TARGET_TEMPERATURE;
-import static org.openhab.binding.remehaheating.internal.RemehaHeatingBindingConstants.CHANNEL_WATER_PRESSURE;
-import static org.openhab.binding.remehaheating.internal.RemehaHeatingBindingConstants.CHANNEL_WATER_PRESSURE_OK;
+import static org.openhab.binding.remehaheating.internal.RemehaHeatingBindingConstants.*;
 
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -29,6 +20,7 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.openhab.binding.remehaheating.internal.api.RemehaApiClient;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
@@ -116,8 +108,9 @@ public class RemehaHeatingHandler extends BaseThingHandler {
             String password = config.password;
             int refreshInterval = config.refreshInterval;
 
-            if (email.isEmpty() || password.isEmpty()) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Email and password required");
+            if (email.isBlank() || password.isBlank()) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "@text/offline.conf-error-no-credentials");
                 return;
             }
 
@@ -125,10 +118,10 @@ public class RemehaHeatingHandler extends BaseThingHandler {
             apiClient = new RemehaApiClient(httpClient);
 
             scheduler.execute(() -> authenticateAndStart(email, password, refreshInterval));
-        } catch (Exception e) {
-            logger.debug("Initialization failed", e);
+        } catch (IllegalArgumentException e) {
+            logger.debug("Invalid configuration", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Configuration error: " + e.getMessage());
+                    "@text/offline.conf-error-invalid-config");
         }
     }
 
@@ -139,12 +132,13 @@ public class RemehaHeatingHandler extends BaseThingHandler {
                 updateStatus(ThingStatus.ONLINE);
                 startRefreshJob(refreshInterval > 0 ? refreshInterval : 60);
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Authentication failed");
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "@text/offline.comm-error-authentication-failed");
             }
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             logger.debug("Authentication error", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Authentication error: " + e.getMessage());
+                    "@text/offline.comm-error-authentication-error");
         }
     }
 
@@ -197,7 +191,8 @@ public class RemehaHeatingHandler extends BaseThingHandler {
         try {
             JsonObject dashboard = client.getDashboard();
             if (dashboard == null) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Failed to get data");
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "@text/offline.comm-error-data-fetch-failed");
                 return;
             }
 
@@ -244,9 +239,10 @@ public class RemehaHeatingHandler extends BaseThingHandler {
                     updateState(CHANNEL_DHW_STATUS, new StringType(dhwStatus));
                 }
             }
-        } catch (Exception e) {
+        } catch (IllegalStateException | NullPointerException e) {
             logger.debug("Error updating data", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Data update failed");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/offline.comm-error-data-update-failed");
         }
     }
 
@@ -308,7 +304,7 @@ public class RemehaHeatingHandler extends BaseThingHandler {
                     }
                 }
             }
-        } catch (Exception e) {
+        } catch (IllegalStateException | NullPointerException e) {
             logger.debug("Error getting climate zone ID: {}", e.getMessage());
         }
         return null;
@@ -338,7 +334,7 @@ public class RemehaHeatingHandler extends BaseThingHandler {
                     }
                 }
             }
-        } catch (Exception e) {
+        } catch (IllegalStateException | NullPointerException e) {
             logger.debug("Error getting hot water zone ID: {}", e.getMessage());
         }
         return null;

@@ -15,7 +15,6 @@ package org.openhab.binding.remehaheating.internal;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.mockito.Mockito.verify;
 
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
@@ -25,6 +24,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.openhab.binding.remehaheating.internal.api.RemehaApiClient;
 import org.openhab.core.io.net.http.HttpClientFactory;
 
 import com.google.gson.JsonObject;
@@ -55,8 +55,6 @@ public class RemehaApiClientTest {
     @Test
     public void testConstructor() {
         assertNotNull(apiClient);
-        verify(httpClient).setRequestBufferSize(16384);
-        verify(httpClient).setResponseBufferSize(16384);
     }
 
     @Test
