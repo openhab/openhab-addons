@@ -146,7 +146,7 @@ public class UpnpServerHandlerTest extends UpnpHandlerTest {
         when(thing.getStatus()).thenReturn(ThingStatus.OFFLINE);
 
         // stub upnpIOService methods for initialize
-        Map<String, String> result = new HashMap<>();
+        Map<String, @Nullable String> result = new HashMap<>();
         result.put("Result", BASE_CONTAINER);
         when(upnpIOService.invokeAction(any(), eq("ContentDirectory"), eq("Browse"), anyMap())).thenReturn(result);
 

@@ -219,7 +219,7 @@ public class UpnpRendererHandler extends UpnpHandler {
     protected void initJob() {
         synchronized (jobLock) {
             if (!upnpIOService.isRegistered(this)) {
-                String msg = String.format("@text/offline.device-not-registered [ \"%s\" ]", getUDN());
+                String msg = String.format("@text/offline.device-not-registered [ \"%s\" ]", getDeviceUDN());
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, msg);
                 return;
             }
@@ -229,7 +229,7 @@ public class UpnpRendererHandler extends UpnpHandler {
 
                 getCurrentConnectionInfo();
                 if (!checkForConnectionIds()) {
-                    String msg = String.format("@text/offline.no-connection-ids [ \"%s\" ]", getUDN());
+                    String msg = String.format("@text/offline.no-connection-ids [ \"%s\" ]", getDeviceUDN());
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, msg);
                     return;
                 }
@@ -258,7 +258,7 @@ public class UpnpRendererHandler extends UpnpHandler {
     public void updateDeviceConfig(RemoteDevice device) {
         super.updateDeviceConfig(device);
 
-        UpnpRenderingControlConfiguration config = new UpnpRenderingControlConfiguration(device);
+        UpnpRenderingControlConfiguration config = new UpnpRenderingControlConfiguration(getDevice());
         renderingControlConfiguration = config;
         for (String audioChannel : config.audioChannels) {
             createAudioChannels(audioChannel);
