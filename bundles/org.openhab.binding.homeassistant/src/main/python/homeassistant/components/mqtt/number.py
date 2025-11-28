@@ -13,6 +13,7 @@ from homeassistant.components.number import (
     NumberDeviceClass,
     NumberMode,
 )
+from homeassistant.components.sensor import AMBIGUOUS_UNITS
 from homeassistant.const import (
     CONF_DEVICE_CLASS,
     CONF_MODE,
@@ -26,18 +27,22 @@ from homeassistant.helpers.typing import ConfigType
 from .config import MQTT_RW_SCHEMA
 from .const import (
     CONF_COMMAND_TEMPLATE,
+    CONF_MAX,
+    CONF_MIN,
     CONF_PAYLOAD_RESET,
+    CONF_STEP,
+    DEFAULT_PAYLOAD_RESET,
 )
 from .schemas import MQTT_ENTITY_COMMON_SCHEMA
 
-CONF_MIN = "min"
-CONF_MAX = "max"
-CONF_STEP = "step"
-
-DEFAULT_PAYLOAD_RESET = "None"
-
 def validate_config(config: ConfigType) -> ConfigType:
     """Validate that the configuration is valid, throws if it isn't."""
+    if (
+        CONF_UNIT_OF_MEASUREMENT in config
+        and (unit_of_measurement := config[CONF_UNIT_OF_MEASUREMENT]) in AMBIGUOUS_UNITS
+    ):
+        config[CONF_UNIT_OF_MEASUREMENT] = AMBIGUOUS_UNITS[unit_of_measurement]
+
     if config[CONF_MIN] > config[CONF_MAX]:
         raise vol.Invalid(f"{CONF_MAX} must be >= {CONF_MIN}")
 

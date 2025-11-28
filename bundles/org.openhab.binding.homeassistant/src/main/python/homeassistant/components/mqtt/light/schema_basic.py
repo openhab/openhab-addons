@@ -63,12 +63,11 @@ from ..const import (
     DEFAULT_PAYLOAD_OFF,
     DEFAULT_PAYLOAD_ON,
     DEFAULT_WHITE_SCALE,
+    VALUES_ON_COMMAND_TYPE,
 )
 from ..schemas import MQTT_ENTITY_COMMON_SCHEMA
 from ..util import valid_publish_topic, valid_subscribe_topic
 from .schema import MQTT_LIGHT_SCHEMA_SCHEMA
-
-VALUES_ON_COMMAND_TYPE = ["first", "last", "brightness"]
 
 PLATFORM_SCHEMA_MODERN_BASIC = (
     MQTT_RW_SCHEMA.extend(

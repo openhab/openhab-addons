@@ -1,7 +1,7 @@
 # MQTT Home Assistant Binding Development
 
-src/main/python is forked from [Home Assistant core](https://github.com/home-assistant/core), in order to have near-perfect compatibility with for the Jinja templates.
-It was forked from the dev branch as of 2025-04-23, corresponding to the 2025.4.3 release of Home Assistant.
+src/main/python is forked from [Home Assistant core](https://github.com/home-assistant/core), in order to have near-perfect compatibility with the Jinja templates and configuration validation.
+It was forked from the the 2025.11.3 release of Home Assistant.
 
 The following alterations have been made:
 

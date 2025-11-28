@@ -7,7 +7,7 @@ from enum import StrEnum
 import logging
 from numbers import Number
 import re
-from typing import Any, cast, overload
+from typing import TYPE_CHECKING, Any, cast, overload
 from urllib.parse import urlparse
 
 import voluptuous as vol
@@ -102,7 +102,13 @@ def ensure_list[_T](value: _T | None) -> list[_T] | list[Any]:
     """Wrap value in list if it is not one."""
     if value is None:
         return []
-    return cast(list[_T], value) if isinstance(value, list) else [value]
+    if isinstance(value, list):
+        if TYPE_CHECKING:
+            # https://github.com/home-assistant/core/pull/71960
+            # cast with a type variable is still slow.
+            return cast(list[_T], value)
+        return value  # type: ignore[unreachable]
+    return [value]
 
 
 def icon(value: Any) -> str:

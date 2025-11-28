@@ -46,7 +46,6 @@ CONF_TARGET_HUMIDITY_MAX = "max_humidity"
 CONF_TARGET_HUMIDITY_STATE_TEMPLATE = "target_humidity_state_template"
 CONF_TARGET_HUMIDITY_STATE_TOPIC = "target_humidity_state_topic"
 
-DEFAULT_NAME = "MQTT Humidifier"
 DEFAULT_PAYLOAD_ON = "ON"
 DEFAULT_PAYLOAD_OFF = "OFF"
 DEFAULT_PAYLOAD_RESET = "None"
