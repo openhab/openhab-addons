@@ -89,8 +89,10 @@ public class AccountController {
     public void clientAuthenticate(String username, String userPassword)
             throws SunSynkClientAuthenticateException, SunSynkAuthenticateException {
         long nonce = Instant.now().toEpochMilli();
+        String signSource = "nonce=" + String.valueOf(nonce) + "&source=" + SOURCE + SECRET_KEY;
         try {
-            String authEndpoint = "nonce=" + String.valueOf(nonce) + "&source=" + SOURCE + "&sign=" + getSign(nonce);
+            String authEndpoint = "nonce=" + String.valueOf(nonce) + "&source=" + SOURCE + "&sign="
+                    + getSign(signSource);
             httpGetPublicKey(authEndpoint);
             String encryptedPassword = getEncryptPassword(userPassword, this.publicKey.getPublicKey());
             userAuthenticate(username, encryptedPassword);
@@ -123,8 +125,17 @@ public class AccountController {
      * @throws SunSynkTokenException
      */
     public void userAuthenticate(String username, String saltedPassword)
-            throws SunSynkAuthenticateException, SunSynkTokenException {
-        String payload = makeLoginBody(username, saltedPassword);
+            throws SunSynkAuthenticateException, SunSynkTokenException, SunSynkClientAuthenticateException {
+        Long nonce = Instant.now().toEpochMilli();
+        String signSource = "nonce=" + String.valueOf(nonce) + "&source=" + SOURCE
+                + this.publicKey.getPublicKey().substring(0, 10);
+        String payload = "";
+
+        try {
+            payload = makeLoginBody(username, saltedPassword, getSign(signSource), nonce);
+        } catch (NoSuchAlgorithmException e) {
+            throw new SunSynkClientAuthenticateException("Error attempting to authenticate client:" + e.getMessage());
+        }
         httpTokenPost(payload);
     }
 
@@ -289,9 +300,9 @@ public class AccountController {
         return "https://api.sunsynk.net" + "/" + path;
     }
 
-    private static String makeLoginBody(String username, String password) {
+    private static String makeLoginBody(String username, String password, String signature, Long nonce) {
         Gson gson = new Gson();
-        SunSynkLogin login = new SunSynkLogin(username, password);
+        SunSynkLogin login = new SunSynkLogin(username, password, signature, nonce);
         return gson.toJson(login);
     }
 
@@ -306,17 +317,14 @@ public class AccountController {
         APIdata.staticAccessToken = data.getAccessToken();
     }
 
-    private String getSign(Long nonce) throws NoSuchAlgorithmException {
-        String inputString = "nonce=" + String.valueOf(nonce) + "&source=" + SOURCE + SECRET_KEY;
-
+    private String getSign(String inputString) throws NoSuchAlgorithmException {
         MessageDigest messageDigest = MessageDigest.getInstance("MD5");
         byte[] hashBytes = messageDigest.digest(inputString.getBytes(StandardCharsets.UTF_8));
-
         StringBuilder sb = new StringBuilder();
         for (byte b : hashBytes) {
             sb.append(String.format("%02x", b));
         }
-        logger.trace("nonce : {} encrypted nonce : {}", nonce.toString(), sb.toString());
+        logger.trace("nonce : {} encrypted nonce : {}", inputString, sb.toString());
         return sb.toString();
     }
 
