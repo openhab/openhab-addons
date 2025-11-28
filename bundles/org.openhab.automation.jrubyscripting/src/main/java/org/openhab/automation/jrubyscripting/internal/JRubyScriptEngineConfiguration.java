@@ -49,6 +49,7 @@ public class JRubyScriptEngineConfiguration {
     public static final Path HOME_PATH = Path.of("automation", "ruby");
     public static final Path HOME_PATH_ABS = Path.of(OpenHAB.getConfigFolder()).resolve(HOME_PATH);
     private static final Path DEFAULT_GEMFILE_PATH = HOME_PATH_ABS.resolve("Gemfile");
+    private static final Path BUNDLE_USER_HOME = Path.of(OpenHAB.getUserDataFolder(), "cache", "automation", "ruby");
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JRubyScriptEngineConfiguration.class);
 
@@ -83,6 +84,10 @@ public class JRubyScriptEngineConfiguration {
 
     private String specificGemHome = "";
     private File bundleGemfile = DEFAULT_GEMFILE_PATH.toFile();
+
+    JRubyScriptEngineConfiguration() {
+        ensureDirectoryExists(BUNDLE_USER_HOME.toString(), "Ruby Bundler user path");
+    }
 
     /**
      * Update configuration
@@ -200,15 +205,18 @@ public class JRubyScriptEngineConfiguration {
             return false;
         }
 
-        File gemHomeDirectory = new File(gemHome);
-        if (!gemHomeDirectory.exists()) {
-            LOGGER.debug("gem_home directory '{}' does not exist, creating", gemHome);
-            if (!gemHomeDirectory.mkdirs()) {
-                LOGGER.warn("Error creating gem_home directory: {}", gemHome);
-                return false;
+        return ensureDirectoryExists(gemHome, "gem_home directory");
+    }
+
+    private boolean ensureDirectoryExists(String dir, String description) {
+        File directory = new File(dir);
+        if (!directory.exists()) {
+            LOGGER.debug("{} '{}' does not exist, creating", description, dir);
+            if (!directory.mkdirs()) {
+                LOGGER.warn("Error creating {}: {}", description, dir);
             }
         }
-        return true;
+        return directory.exists();
     }
 
     private File resolveGemfile() {
@@ -241,7 +249,7 @@ public class JRubyScriptEngineConfiguration {
 
     /**
      * Run bundle install or update.
-     * 
+     *
      * This is to be called at start up or configuration change,
      * so that gems are available when user scripts are run.
      *
@@ -302,7 +310,7 @@ public class JRubyScriptEngineConfiguration {
 
     /**
      * Install a gems in ScriptEngine
-     * 
+     *
      * @param engine Engine to install gems
      */
     synchronized void configureGems(ScriptEngine engine, boolean update) {
@@ -345,11 +353,22 @@ public class JRubyScriptEngineConfiguration {
         }
 
         // Set update_native_env_enabled to false so that bundler doesn't leak into other script engines
+        // Override unbundle_env to reinsert BUNDLE_USER_HOME into the environment,
+        // so that the inline bundler creates the bundle cache in BUNDLE_USER_HOME instead of in ~openhab/.bundle
         String gemCommand = """
                 require 'jruby'
                 JRuby.runtime.instance_config.update_native_env_enabled = false
+                require 'bundler'
                 require 'bundler/inline'
                 require 'openssl'
+
+                module BundlerEnvironmentOverride
+                  def unbundle_env(...)
+                    bundle_user_home = ENV['BUNDLE_USER_HOME']
+                    super.tap { |env| env['BUNDLE_USER_HOME'] = bundle_user_home }
+                  end
+                end
+                Bundler.singleton_class.prepend(BundlerEnvironmentOverride)
 
                 gemfile(%b) do
                   source 'https://rubygems.org/'
@@ -415,7 +434,12 @@ public class JRubyScriptEngineConfiguration {
     public void configureRubyEnvironment(ScriptEngine scriptEngine) {
         setEnvironmentVariable(scriptEngine, "GEM_HOME", getSpecificGemHome());
         setEnvironmentVariable(scriptEngine, "RUBYLIB", configuration.rubylib);
+        setEnvironmentVariable(scriptEngine, "BUNDLE_USER_HOME", BUNDLE_USER_HOME.toString());
         if (bundleGemfile.exists()) {
+            Path bundleUserConfigDir = bundleGemfile.toPath().resolveSibling(".bundle");
+            ensureDirectoryExists(bundleUserConfigDir.toString(), "Ruby Bundler user config path");
+            setEnvironmentVariable(scriptEngine, "BUNDLE_USER_CONFIG",
+                    bundleUserConfigDir.resolve("config").toString());
             setEnvironmentVariable(scriptEngine, "BUNDLE_GEMFILE", bundleGemfile.toString());
         }
 
