@@ -18,6 +18,7 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.upnpcontrol.internal.UpnpControlBindingConstants;
 import org.openhab.binding.upnpcontrol.internal.handler.UpnpRendererHandler;
 import org.openhab.core.audio.AudioFormat;
 import org.openhab.core.audio.AudioHTTPServer;
@@ -60,6 +61,21 @@ public class UpnpAudioSink extends AudioSinkAsync {
     @Override
     public @Nullable String getLabel(@Nullable Locale locale) {
         return handler.getThing().getLabel();
+    }
+
+    @Override
+    public String getName() {
+        return handler.getThing().getUID().getId();
+    }
+
+    @Override
+    public String getBinding() {
+        return UpnpControlBindingConstants.BINDING_ID;
+    }
+
+    @Override
+    public String getType() {
+        return "";
     }
 
     @Override
