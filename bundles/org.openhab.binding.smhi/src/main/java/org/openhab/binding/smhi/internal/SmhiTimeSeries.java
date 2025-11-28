@@ -13,15 +13,19 @@
 package org.openhab.binding.smhi.internal;
 
 import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.Spliterator;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
+import java.util.function.Predicate;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.core.types.State;
+import org.openhab.core.types.TimeSeries;
+import org.openhab.core.types.UnDefType;
 
 /**
  * A collection class with utility methods to retrieve forecasts pertaining to a specified time.
@@ -29,14 +33,20 @@ import org.eclipse.jdt.annotation.Nullable;
  * @author Anders Alfredsson - Initial contribution
  */
 @NonNullByDefault
-public class TimeSeries implements Iterable<Forecast> {
+public class SmhiTimeSeries implements Iterable<Forecast> {
 
+    private final ZonedDateTime createdTime;
     private final ZonedDateTime referenceTime;
     private final List<Forecast> forecasts;
 
-    public TimeSeries(ZonedDateTime referenceTime, List<Forecast> forecasts) {
+    public SmhiTimeSeries(ZonedDateTime createdTime, ZonedDateTime referenceTime, List<Forecast> forecasts) {
+        this.createdTime = createdTime;
         this.referenceTime = referenceTime;
         this.forecasts = forecasts;
+    }
+
+    public ZonedDateTime getCreatedTime() {
+        return createdTime;
     }
 
     public ZonedDateTime getReferenceTime() {
@@ -44,7 +54,7 @@ public class TimeSeries implements Iterable<Forecast> {
     }
 
     /**
-     * Retrieves the first {@link Forecast} that is equal to or after offset time (from now).
+     * Retrieves the first {@link Forecast} that is equal to or after offset time (from the reference time).
      *
      * @param hourOffset number of hours after now.
      * @return
@@ -65,7 +75,7 @@ public class TimeSeries implements Iterable<Forecast> {
         }
 
         for (Forecast forecast : forecasts) {
-            if (forecast.getValidTime().compareTo(startTime.plusHours(hourOffset)) > 0) {
+            if (forecast.getTime().compareTo(startTime.plusHours(hourOffset)) > 0) {
                 return Optional.of(forecast);
             }
         }
@@ -79,9 +89,24 @@ public class TimeSeries implements Iterable<Forecast> {
      * @return
      */
     public List<Forecast> getDay(int dayOffset) {
-        ZonedDateTime day = referenceTime.plusDays(dayOffset).plusHours(1);
-        return forecasts.stream().filter(forecast -> forecast.getValidTime().getDayOfMonth() == day.getDayOfMonth())
-                .collect(Collectors.toList());
+        ZonedDateTime day = referenceTime.plusDays(dayOffset).truncatedTo(ChronoUnit.DAYS);
+        return filter(forecast -> !forecast.getTime().isBefore(day) && forecast.getTime().isBefore(day.plusDays(1)));
+    }
+
+    public List<Forecast> filter(Predicate<Forecast> predicate) {
+        return forecasts.stream().filter(predicate).toList();
+    }
+
+    public TimeSeries getTimeSeries(String parameter) {
+        TimeSeries ts = new TimeSeries(TimeSeries.Policy.REPLACE);
+
+        forecasts.forEach(f -> {
+            State state = f.getParameterAsState(parameter);
+            if (!(state instanceof UnDefType)) {
+                ts.add(f.getTime().toInstant(), state);
+            }
+        });
+        return ts;
     }
 
     @Override
