@@ -32,20 +32,27 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.spotify.internal.SpotifyAccountHandler;
+import org.openhab.binding.spotify.internal.SpotifyBindingConstants;
 import org.openhab.binding.spotify.internal.SpotifyBridgeConfiguration;
 import org.openhab.binding.spotify.internal.actions.SpotifyActions;
 import org.openhab.binding.spotify.internal.api.SpotifyApi;
 import org.openhab.binding.spotify.internal.api.exception.SpotifyAuthorizationException;
 import org.openhab.binding.spotify.internal.api.exception.SpotifyException;
 import org.openhab.binding.spotify.internal.api.model.Album;
+import org.openhab.binding.spotify.internal.api.model.ApiSearchResult;
 import org.openhab.binding.spotify.internal.api.model.Artist;
+import org.openhab.binding.spotify.internal.api.model.Categorie;
 import org.openhab.binding.spotify.internal.api.model.Context;
+import org.openhab.binding.spotify.internal.api.model.CurrentPlay;
 import org.openhab.binding.spotify.internal.api.model.CurrentlyPlayingContext;
 import org.openhab.binding.spotify.internal.api.model.Device;
-import org.openhab.binding.spotify.internal.api.model.Image;
 import org.openhab.binding.spotify.internal.api.model.Item;
 import org.openhab.binding.spotify.internal.api.model.Me;
+import org.openhab.binding.spotify.internal.api.model.PlayListTracks;
 import org.openhab.binding.spotify.internal.api.model.Playlist;
+import org.openhab.binding.spotify.internal.api.model.Show;
+import org.openhab.binding.spotify.internal.api.model.Track;
+import org.openhab.binding.spotify.internal.api.model.Tracks;
 import org.openhab.binding.spotify.internal.discovery.SpotifyDeviceDiscoveryService;
 import org.openhab.core.auth.client.oauth2.AccessTokenRefreshListener;
 import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
@@ -56,6 +63,7 @@ import org.openhab.core.auth.client.oauth2.OAuthResponseException;
 import org.openhab.core.cache.ExpiringCache;
 import org.openhab.core.io.net.http.HttpUtil;
 import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.MediaStateType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.PlayPauseType;
@@ -63,9 +71,24 @@ import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.RawType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.Units;
+import org.openhab.core.media.Image;
+import org.openhab.core.media.MediaListenner;
+import org.openhab.core.media.MediaService;
+import org.openhab.core.media.model.MediaAlbum;
+import org.openhab.core.media.model.MediaArtist;
+import org.openhab.core.media.model.MediaCollection;
+import org.openhab.core.media.model.MediaEntrySupplier;
+import org.openhab.core.media.model.MediaEntry;
+import org.openhab.core.media.model.MediaPlayList;
+import org.openhab.core.media.model.MediaPodcast;
+import org.openhab.core.media.model.MediaQueue;
+import org.openhab.core.media.model.MediaRegistry;
+import org.openhab.core.media.model.MediaSearchResult;
+import org.openhab.core.media.model.MediaTrack;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingUID;
@@ -86,7 +109,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class SpotifyBridgeHandler extends BaseBridgeHandler
-        implements SpotifyAccountHandler, AccessTokenRefreshListener {
+        implements SpotifyAccountHandler, AccessTokenRefreshListener, MediaListenner {
 
     private static final CurrentlyPlayingContext EMPTY_CURRENTLY_PLAYING_CONTEXT = new CurrentlyPlayingContext();
     private static final Album EMPTY_ALBUM = new Album();
@@ -120,6 +143,7 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
     private final SpotifyDynamicStateDescriptionProvider spotifyDynamicStateDescriptionProvider;
     private final ChannelUID devicesChannelUID;
     private final ChannelUID playlistsChannelUID;
+    private final MediaService mediaService;
 
     // Field members assigned in initialize method
     private @NonNullByDefault({}) Future<?> pollingFuture;
@@ -128,7 +152,6 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
     private @NonNullByDefault({}) SpotifyBridgeConfiguration configuration;
     private @NonNullByDefault({}) SpotifyHandleCommands handleCommand;
     private @NonNullByDefault({}) ExpiringCache<CurrentlyPlayingContext> playingContextCache;
-    private @NonNullByDefault({}) ExpiringCache<List<Playlist>> playlistCache;
     private @NonNullByDefault({}) ExpiringCache<List<Device>> devicesCache;
 
     /**
@@ -142,18 +165,29 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
     private int imageChannelAlbumImageUrlIndex;
 
     public SpotifyBridgeHandler(Bridge bridge, OAuthFactory oAuthFactory, HttpClient httpClient,
-            SpotifyDynamicStateDescriptionProvider spotifyDynamicStateDescriptionProvider) {
+            SpotifyDynamicStateDescriptionProvider spotifyDynamicStateDescriptionProvider, MediaService mediaService) {
         super(bridge);
         this.oAuthFactory = oAuthFactory;
         this.httpClient = httpClient;
         this.spotifyDynamicStateDescriptionProvider = spotifyDynamicStateDescriptionProvider;
+        this.mediaService = mediaService;
         devicesChannelUID = new ChannelUID(bridge.getUID(), CHANNEL_DEVICES);
         playlistsChannelUID = new ChannelUID(bridge.getUID(), CHANNEL_PLAYLISTS);
+        lp = null;
     }
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
         return List.of(SpotifyActions.class, SpotifyDeviceDiscoveryService.class);
+    }
+
+    @Override
+    public String getStreamUri(String cmdVal) {
+        return "";
+    }
+
+    public MediaService getMediaService() {
+        return mediaService;
     }
 
     @Override
@@ -164,7 +198,7 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
                     albumUpdater.refreshAlbumImage(channelUID);
                     break;
                 case CHANNEL_PLAYLISTS:
-                    playlistCache.invalidateValue();
+                    // playlistCache.invalidateValue();
                     break;
                 case CHANNEL_ACCESSTOKEN:
                     onAccessTokenResponse(getAccessTokenResponse());
@@ -312,13 +346,23 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
         this.oAuthService = oAuthService;
         oAuthService.addAccessTokenRefreshListener(SpotifyBridgeHandler.this);
         spotifyApi = new SpotifyApi(oAuthService, scheduler, httpClient);
-        handleCommand = new SpotifyHandleCommands(spotifyApi);
+        handleCommand = new SpotifyHandleCommands(this, spotifyApi);
         final Duration expiringPeriod = Duration.ofSeconds(configuration.refreshPeriod);
 
         playingContextCache = new ExpiringCache<>(expiringPeriod, spotifyApi::getPlayerInfo);
         final int offset = getIntChannelParameter(CHANNEL_PLAYLISTS, CHANNEL_PLAYLISTS_OFFSET, 0);
-        final int limit = getIntChannelParameter(CHANNEL_PLAYLISTS, CHANNEL_PLAYLISTS_LIMIT, 20);
-        playlistCache = new ExpiringCache<>(POLL_PLAY_LIST_HOURS, () -> spotifyApi.getPlaylists(offset, limit));
+        final int limit = 30;
+        // getIntChannelParameter(CHANNEL_PLAYLISTS, CHANNEL_PLAYLISTS_LIMIT, 100);
+
+        mediaService.addMediaListenner(SpotifyBindingConstants.BINDING_ID, this);
+
+        MediaRegistry mediaRegistry = mediaService.getMediaRegistry();
+
+        mediaRegistry.registerEntry(SpotifyBindingConstants.BINDING_ID, () -> {
+            return new MediaEntrySupplier(SpotifyBindingConstants.BINDING_ID, SpotifyBindingConstants.BINDING_LABEL,
+                    "/static/Spotify.png");
+        });
+
         devicesCache = new ExpiringCache<>(expiringPeriod, spotifyApi::getDevices);
 
         // Start with update status by calling Spotify. If no credentials available no polling should be started.
@@ -330,6 +374,165 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
         imageChannelAlbumImageIndex = getIntChannelParameter(CHANNEL_PLAYED_ALBUMIMAGE, CHANNEL_CONFIG_IMAGE_INDEX, 0);
         imageChannelAlbumImageUrlIndex = getIntChannelParameter(CHANNEL_PLAYED_ALBUMIMAGEURL,
                 CHANNEL_CONFIG_IMAGE_INDEX, 0);
+    }
+
+    @Override
+    public void refreshEntry(MediaEntry mediaEntry, long start, long size) {
+        if (mediaEntry.getKey().equals(SpotifyBindingConstants.BINDING_ID)) {
+
+            mediaEntry.registerEntry("Albums", () -> {
+                return new MediaCollection("Albums", "Albums", "/static/Albums.png");
+            });
+
+            mediaEntry.registerEntry("Artists", () -> {
+                return new MediaCollection("Artists", "Artists", "/static/Artists.png");
+            });
+
+            mediaEntry.registerEntry("Playlists", () -> {
+                return new MediaCollection("Playlists", "Playlists", "/static/playlist.png");
+            });
+
+            mediaEntry.registerEntry("Tracks", () -> {
+                return new MediaCollection("Tracks", "Tracks", "/static/Tracks.png");
+            });
+
+            mediaEntry.registerEntry("RecentlyPlayed", () -> {
+                return new MediaCollection("RecentlyPlayed", "Recently Played", "/static/RecentlyPlayed.png");
+            });
+
+            mediaEntry.registerEntry("Podcasts", () -> {
+                return new MediaCollection("Podcasts", "Podcasts", "/static/PodCasts.png");
+            });
+
+            mediaEntry.registerEntry("TopTracks", () -> {
+                return new MediaCollection("TopTracks", "TopTracks", "/static/TopTracks.png");
+            });
+
+            mediaEntry.registerEntry("TopArtists", () -> {
+                return new MediaCollection("TopArtists", "TopArtists", "/static/TopArtists.png");
+            });
+
+            mediaEntry.registerEntry("NewReleases", () -> {
+                return new MediaCollection("NewReleases", "New Releases", "/static/NewReleases.png");
+            });
+
+            mediaEntry.registerEntry("Categories", () -> {
+                return new MediaCollection("Categories", "Categories", "/static/Categories.png");
+            });
+        } else if ("Playlists".equals(mediaEntry.getKey())) {
+            List<Playlist> playLists = spotifyApi.getPlaylists(start, size);
+            mediaService.RegisterCollections(mediaEntry, playLists, MediaPlayList.class);
+        } else if ("Albums".equals(mediaEntry.getKey())) {
+            List<Album> albums = spotifyApi.getAlbums(start, size);
+            mediaService.RegisterCollections(mediaEntry, albums, MediaAlbum.class);
+        } else if ("Artists".equals(mediaEntry.getKey())) {
+            List<Artist> artists = spotifyApi.getArtists(start, size);
+            mediaService.RegisterCollections(mediaEntry, artists, MediaArtist.class);
+        } else if ("TopTracks".equals(mediaEntry.getKey())) {
+            List<Track> tracks = spotifyApi.getTopTracks(start, size);
+            mediaService.RegisterCollections(mediaEntry, tracks, MediaTrack.class);
+        } else if ("TopArtists".equals(mediaEntry.getKey())) {
+            List<Artist> artists = spotifyApi.getTopArtists(start, size);
+            mediaService.RegisterCollections(mediaEntry, artists, MediaArtist.class);
+        } else if ("Podcasts".equals(mediaEntry.getKey())) {
+            List<Show> shows = spotifyApi.getShows(start, size);
+            mediaService.RegisterCollections(mediaEntry, shows, MediaPodcast.class);
+        } else if ("Tracks".equals(mediaEntry.getKey())) {
+            List<Track> tracks = spotifyApi.getTracks(start, size);
+            mediaService.RegisterCollections(mediaEntry, tracks, MediaTrack.class);
+        } else if ("NewReleases".equals(mediaEntry.getKey())) {
+            List<Album> albums = spotifyApi.getNewReleases(start, size);
+            mediaService.RegisterCollections(mediaEntry, albums, MediaAlbum.class);
+        } else if ("RecentlyPlayed".equals(mediaEntry.getKey())) {
+            List<Track> tracks = spotifyApi.getRecentlyPlayedTracks(start, size);
+            mediaService.RegisterCollections(mediaEntry, tracks, MediaTrack.class);
+        } else if ("Categories".equals(mediaEntry.getKey())) {
+            List<Categorie> categories = spotifyApi.getCategories(start, size);
+            mediaService.RegisterCollections(mediaEntry, categories, MediaPlayList.class);
+        } else if (mediaEntry instanceof MediaArtist) {
+            MediaArtist mediaArtist = (MediaArtist) mediaEntry;
+            List<Album> albumList = spotifyApi.getArtistAlbums(mediaArtist.getKey().replace("spotify:artist:", ""));
+            mediaService.RegisterCollections(mediaEntry, albumList, MediaAlbum.class);
+        } else if (mediaEntry instanceof MediaAlbum) {
+            MediaAlbum mediaAlbum = (MediaAlbum) mediaEntry;
+            List<Album> albums = spotifyApi.getAlbums(start, size);
+
+            Optional<Album> optAlbum = albums.stream().filter(x -> x.getUri().equals(mediaAlbum.getKey())).findFirst();
+
+            if (optAlbum.isPresent()) {
+                Album album = optAlbum.get();
+                Tracks tracks = album.getTracks();
+                mediaService.RegisterCollections(mediaAlbum, tracks.getItems(), MediaTrack.class);
+            } else {
+                Album album = spotifyApi.getAlbum(mediaAlbum.getKey().replace("spotify:album:", ""));
+                Tracks tracks = album.getTracks();
+                mediaService.RegisterCollections(mediaEntry, tracks.getItems(), MediaTrack.class);
+            }
+        } else if (mediaEntry instanceof MediaPlayList) {
+            Playlist pl = spotifyApi.getPlaylist(mediaEntry.getKey());
+
+            if (pl != null) {
+                PlayListTracks playListTracks = pl.getTracks();
+                List<Track> tracks = playListTracks.getTrack();
+                mediaService.RegisterCollections(mediaEntry, tracks, MediaTrack.class);
+            }
+        } else if (mediaEntry instanceof MediaQueue) {
+            logger.trace("MediaQueue");
+            CurrentPlay currentPlay = spotifyApi.getCurrentPlaylist(start, size);
+            ((MediaQueue) mediaEntry).Clear();
+            if (currentPlay != null) {
+                mediaService.RegisterCollections(mediaEntry, currentPlay.getQueue(), MediaTrack.class);
+            }
+
+        } else if (mediaEntry instanceof MediaSearchResult) {
+            MediaSearchResult searchResult = (MediaSearchResult) mediaEntry;
+
+            ApiSearchResult apiSearchResult = spotifyApi.search(searchResult.getSearchQuery(), 0, 30);
+
+            MediaCollection mediaAlbums = mediaEntry.registerEntry("Albums", () -> {
+                return new MediaCollection("Albums", "Albums", "/static/Albums.png");
+            });
+
+            MediaCollection mediaArtists = mediaEntry.registerEntry("Artists", () -> {
+                return new MediaCollection("Artists", "Artists", "/static/Artists.png");
+            });
+
+            MediaCollection mediaPlaylists = mediaEntry.registerEntry("Playlists", () -> {
+                return new MediaCollection("Playlists", "Playlists", "/static/playlist.png");
+            });
+
+            MediaCollection mediaTracks = mediaEntry.registerEntry("Tracks", () -> {
+                return new MediaCollection("Tracks", "Tracks", "/static/Tracks.png");
+            });
+
+            MediaCollection mediaShows = mediaEntry.registerEntry("Shows", () -> {
+                return new MediaCollection("Shows", "Shows", "/static/Shows.png");
+            });
+
+            MediaCollection mediaEpisodes = mediaEntry.registerEntry("Episode", () -> {
+                return new MediaCollection("Episode", "Episode", "/static/Episode.png");
+            });
+
+            MediaCollection mediaAudiobooks = mediaEntry.registerEntry("Audiobook", () -> {
+                return new MediaCollection("Audiobook", "Audiobook", "/static/Audiobook.png");
+            });
+
+            mediaAlbums.Clear();
+            mediaArtists.Clear();
+            mediaPlaylists.Clear();
+            mediaTracks.Clear();
+            mediaShows.Clear();
+            mediaEpisodes.Clear();
+            mediaAudiobooks.Clear();
+
+            mediaService.RegisterCollections(mediaAlbums, apiSearchResult.albums.getItems(), MediaAlbum.class);
+            mediaService.RegisterCollections(mediaArtists, apiSearchResult.artists.getItems(), MediaArtist.class);
+            mediaService.RegisterCollections(mediaPlaylists, apiSearchResult.playlists.getItems(), MediaPlayList.class);
+            mediaService.RegisterCollections(mediaTracks, apiSearchResult.tracks.getItems(), MediaTrack.class);
+            mediaService.RegisterCollections(mediaShows, apiSearchResult.shows.getItems(), MediaTrack.class);
+            mediaService.RegisterCollections(mediaEpisodes, apiSearchResult.episodes.getItems(), MediaTrack.class);
+            mediaService.RegisterCollections(mediaAudiobooks, apiSearchResult.audiobooks.getItems(), MediaTrack.class);
+        }
     }
 
     private int getIntChannelParameter(String channelName, String parameter, int _default) {
@@ -381,9 +584,12 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
 
     private void expireCache() {
         playingContextCache.invalidateValue();
-        playlistCache.invalidateValue();
+        // playlistCache.invalidateValue();
         devicesCache.invalidateValue();
     }
+
+    @Nullable
+    List<Playlist> lp;
 
     /**
      * Calls the Spotify API and collects user data. Returns true if method completed without errors.
@@ -413,11 +619,16 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
 
                 // Update play status information.
                 if (hasPlayData || getThing().getStatus() == ThingStatus.UNKNOWN) {
-                    final List<Playlist> lp = playlistCache.getValue();
+
+                    // @todo : need review
+                    if (lp == null) {
+                        lp = spotifyApi.getPlaylists(0, 30);
+                    }
                     final List<Playlist> playlists = lp == null ? Collections.emptyList() : lp;
                     handleCommand.setPlaylists(playlists);
                     updatePlayerInfo(playingContext, playlists);
                     spotifyDynamicStateDescriptionProvider.setPlayLists(playlistsChannelUID, playlists);
+
                 }
                 updateStatus(ThingStatus.ONLINE);
                 return true;
@@ -439,6 +650,12 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
             }
         }
         return false;
+    }
+
+    public CurrentlyPlayingContext getCurrentlyPlayingContext() {
+        final CurrentlyPlayingContext pc = playingContextCache.getValue();
+        final CurrentlyPlayingContext playingContext = pc == null ? EMPTY_CURRENTLY_PLAYING_CONTEXT : pc;
+        return playingContext;
     }
 
     /**
@@ -469,6 +686,17 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
                 .filter(thing -> !spotifyDevices.stream()
                         .anyMatch(sd -> ((SpotifyDeviceHandler) thing.getHandler()).updateDeviceStatus(sd, playing)))
                 .forEach(thing -> ((SpotifyDeviceHandler) thing.getHandler()).setStatusGone());
+
+        List<Thing> playerThings = getThing().getThings().stream()
+                .filter(thing -> thing.getHandler() instanceof SpotifyDeviceHandler).toList();
+
+        // List<Device> devices = spotifyApi.getDevices();
+        for (Thing playerThing : playerThings) {
+            logger.debug("devices:" + playerThing.getLabel());
+            SpotifyDeviceHandler handler = (SpotifyDeviceHandler) playerThing.getHandler();
+
+        }
+
     }
 
     /**
@@ -478,7 +706,28 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
      * @param playlists List of available playlists
      */
     private void updatePlayerInfo(CurrentlyPlayingContext playerInfo, List<Playlist> playlists) {
-        updateChannelState(CHANNEL_TRACKPLAYER, playerInfo.isPlaying() ? PlayPauseType.PLAY : PlayPauseType.PAUSE);
+        // updateChannelState(CHANNEL_TRACKPLAYER, playerInfo.isPlaying() ? PlayPauseType.PLAY : PlayPauseType.PAUSE);
+
+        final Device device = playerInfo.getDevice() == null ? EMPTY_DEVICE : playerInfo.getDevice();
+        // Only update lastKnownDeviceId if it has a value, otherwise keep old value.
+        if (device.getId() != null) {
+            lastKnownDeviceId = device.getId();
+            updateChannelState(CHANNEL_DEVICEID, valueOrEmpty(lastKnownDeviceId));
+            updateChannelState(CHANNEL_DEVICES, valueOrEmpty(lastKnownDeviceId));
+            updateChannelState(CHANNEL_DEVICENAME, valueOrEmpty(device.getName()));
+        }
+        lastKnownDeviceActive = device.isActive();
+        updateChannelState(CHANNEL_DEVICEACTIVE, OnOffType.from(lastKnownDeviceActive));
+        updateChannelState(CHANNEL_DEVICETYPE, valueOrEmpty(device.getType()));
+
+        MediaStateType mediaStateType = new MediaStateType(
+                playerInfo.isPlaying() ? PlayPauseType.PLAY : PlayPauseType.PAUSE, new StringType(lastKnownDeviceId),
+                new StringType(SpotifyBindingConstants.BINDING_ID));
+
+        mediaStateType.setCurrentPlayingPosition(playerInfo.getProgressMs());
+
+        updateChannelState(CHANNEL_TRACKPLAYER, mediaStateType);
+
         updateChannelState(CHANNEL_DEVICESHUFFLE, OnOffType.from(playerInfo.isShuffleState()));
         updateChannelState(CHANNEL_TRACKREPEAT, playerInfo.getRepeatState());
 
@@ -529,18 +778,6 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
             updateChannelState(CHANNEL_PLAYED_ARTISTNAME, valueOrEmpty(firstArtist.getName()));
             updateChannelState(CHANNEL_PLAYED_ARTISTTYPE, valueOrEmpty(firstArtist.getType()));
         }
-        final Device device = playerInfo.getDevice() == null ? EMPTY_DEVICE : playerInfo.getDevice();
-        // Only update lastKnownDeviceId if it has a value, otherwise keep old value.
-        if (device.getId() != null) {
-            lastKnownDeviceId = device.getId();
-            updateChannelState(CHANNEL_DEVICEID, valueOrEmpty(lastKnownDeviceId));
-            updateChannelState(CHANNEL_DEVICES, valueOrEmpty(lastKnownDeviceId));
-            updateChannelState(CHANNEL_DEVICENAME, valueOrEmpty(device.getName()));
-        }
-        lastKnownDeviceActive = device.isActive();
-        updateChannelState(CHANNEL_DEVICEACTIVE, OnOffType.from(lastKnownDeviceActive));
-        updateChannelState(CHANNEL_DEVICETYPE, valueOrEmpty(device.getType()));
-
         // experienced situations where volume seemed to be undefined...
         updateChannelState(CHANNEL_DEVICEVOLUME,
                 device.getVolumePercent() == null ? UnDefType.UNDEF : new PercentType(device.getVolumePercent()));

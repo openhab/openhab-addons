@@ -22,11 +22,16 @@ import org.openhab.binding.spotify.internal.api.SpotifyApi;
 import org.openhab.binding.spotify.internal.api.model.Device;
 import org.openhab.binding.spotify.internal.api.model.Playlist;
 import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.MediaCommandEnumType;
+import org.openhab.core.library.types.MediaCommandType;
 import org.openhab.core.library.types.NextPreviousType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.PlayPauseType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.media.MediaService;
+import org.openhab.core.media.model.MediaEntry;
+import org.openhab.core.media.model.MediaRegistry;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.types.Command;
 import org.slf4j.Logger;
@@ -44,6 +49,7 @@ class SpotifyHandleCommands {
     private final Logger logger = LoggerFactory.getLogger(SpotifyHandleCommands.class);
 
     private final SpotifyApi spotifyApi;
+    private final SpotifyBridgeHandler bridgeHandler;
 
     private List<Device> devices = Collections.emptyList();
     private List<Playlist> playlists = Collections.emptyList();
@@ -53,8 +59,9 @@ class SpotifyHandleCommands {
      *
      * @param spotifyApi The api class to use to call the spotify api
      */
-    public SpotifyHandleCommands(SpotifyApi spotifyApi) {
+    public SpotifyHandleCommands(SpotifyBridgeHandler bridgeHandler, SpotifyApi spotifyApi) {
         this.spotifyApi = spotifyApi;
+        this.bridgeHandler = bridgeHandler;
     }
 
     public void setDevices(final List<Device> devices) {
@@ -176,6 +183,54 @@ class SpotifyHandleCommands {
             } else {
                 spotifyApi.previous(deviceId);
             }
+            return true;
+        } else if (command instanceof MediaCommandType) {
+            MediaCommandType mediaType = (MediaCommandType) command;
+            MediaCommandEnumType mediaTypeCommand = mediaType.getCommand();
+            String param = mediaType.getParam().toFullString();
+            String targetDevice = mediaType.getDevice().toFullString().isEmpty() ? deviceId
+                    : mediaType.getDevice().toFullString();
+
+            MediaService mediaService = bridgeHandler.getMediaService();
+            MediaRegistry registry = mediaService.getMediaRegistry();
+            MediaEntry mediaEntry = registry.getEntry(param);
+            MediaEntry parentEntry = mediaEntry.getParent();
+
+            int px = param.lastIndexOf("/");
+            if (px >= 0) {
+                param = param.substring(px + 1);
+            }
+
+            if (mediaTypeCommand == MediaCommandEnumType.VOLUME) {
+                String newVolume = mediaType.getParam().toFullString();
+                logger.info("newVolume:" + newVolume);
+                spotifyApi.setVolume(deviceId, Integer.parseInt(newVolume));
+            } else if (mediaTypeCommand == MediaCommandEnumType.SEARCH) {
+                String searchQuery = mediaType.getParam().toFullString();
+                logger.info("Search Query:" + searchQuery);
+                // bridgeHandler.Search(searchQuery);
+
+            } else if (mediaTypeCommand == MediaCommandEnumType.DEVICE) {
+                final boolean play = true;
+
+                if (!active || targetDevice.isEmpty()) {
+                    if (play) {
+                        spotifyApi.play(targetDevice);
+                    } else {
+                        spotifyApi.pause(targetDevice);
+                    }
+                } else {
+                    spotifyApi.transferPlay(targetDevice, play);
+                }
+            } else if (mediaTypeCommand == MediaCommandEnumType.PLAY) {
+                spotifyApi.playTrack(targetDevice, param, 0, 0);
+            } else if (mediaTypeCommand == MediaCommandEnumType.ENQUEUE) {
+                spotifyApi.queueTrack(targetDevice, param, 0, 0);
+            }
+            return true;
+        } else if (command instanceof StringType) {
+            String val = command.toFullString();
+            spotifyApi.playTrack(deviceId, val, 0, 0);
             return true;
         }
         return false;

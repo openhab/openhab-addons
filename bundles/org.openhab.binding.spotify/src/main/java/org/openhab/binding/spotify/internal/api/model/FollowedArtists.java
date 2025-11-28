@@ -13,18 +13,14 @@
 package org.openhab.binding.spotify.internal.api.model;
 
 /**
- * Spotify Web Api Playlist data class.
+ * Spotify Web Api FollowedArtists data class : Artists that are followed by the spotify account.
  *
- * @author Hilbrand Bouwkamp - Initial contribution
+ * @author Laurent Arnal - Initial contribution
  */
-public class Playlist extends BaseEntry {
+public class FollowedArtists {
+    private Artists artists;
 
-    private String description;
-    private PlayListTracks tracks;
-    private String href;
-
-    public PlayListTracks getTracks() {
-        return tracks;
+    public Artists getArtists() {
+        return artists;
     }
-
 }

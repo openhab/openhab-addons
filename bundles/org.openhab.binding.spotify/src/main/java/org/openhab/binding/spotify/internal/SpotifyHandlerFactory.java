@@ -20,6 +20,7 @@ import org.openhab.binding.spotify.internal.handler.SpotifyDeviceHandler;
 import org.openhab.binding.spotify.internal.handler.SpotifyDynamicStateDescriptionProvider;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.openhab.core.io.net.http.HttpClientFactory;
+import org.openhab.core.media.MediaService;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
@@ -46,14 +47,17 @@ public class SpotifyHandlerFactory extends BaseThingHandlerFactory {
     private final HttpClient httpClient;
     private final SpotifyAuthService authService;
     private final SpotifyDynamicStateDescriptionProvider spotifyDynamicStateDescriptionProvider;
+    private final MediaService mediaService;
 
     @Activate
     public SpotifyHandlerFactory(@Reference OAuthFactory oAuthFactory,
             @Reference final HttpClientFactory httpClientFactory, @Reference SpotifyAuthService authService,
-            @Reference SpotifyDynamicStateDescriptionProvider spotifyDynamicStateDescriptionProvider) {
+            @Reference SpotifyDynamicStateDescriptionProvider spotifyDynamicStateDescriptionProvider,
+            @Reference MediaService mediaService) {
         this.oAuthFactory = oAuthFactory;
         this.httpClient = httpClientFactory.getCommonHttpClient();
         this.authService = authService;
+        this.mediaService = mediaService;
         this.spotifyDynamicStateDescriptionProvider = spotifyDynamicStateDescriptionProvider;
     }
 
@@ -69,12 +73,12 @@ public class SpotifyHandlerFactory extends BaseThingHandlerFactory {
 
         if (SpotifyBindingConstants.THING_TYPE_PLAYER.equals(thingTypeUID)) {
             final SpotifyBridgeHandler handler = new SpotifyBridgeHandler((Bridge) thing, oAuthFactory, httpClient,
-                    spotifyDynamicStateDescriptionProvider);
+                    spotifyDynamicStateDescriptionProvider, mediaService);
             authService.addSpotifyAccountHandler(handler);
             return handler;
         }
         if (SpotifyBindingConstants.THING_TYPE_DEVICE.equals(thingTypeUID)) {
-            return new SpotifyDeviceHandler(thing);
+            return new SpotifyDeviceHandler(bundleContext, thing);
         }
         return null;
     }
