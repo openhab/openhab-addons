@@ -78,6 +78,11 @@ public class RemehaHeatingHandlerFactory extends BaseThingHandlerFactory {
             HttpClient httpClient = httpClientFactory.createHttpClient("remehaheating");
             httpClient.setRequestBufferSize(16384);
             httpClient.setResponseBufferSize(16384);
+            try {
+                httpClient.start();
+            } catch (Exception e) {
+                throw new IllegalStateException("Failed to start HTTP client", e);
+            }
             return new RemehaHeatingHandler(thing, httpClient);
         }
 

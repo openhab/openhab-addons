@@ -150,6 +150,13 @@ public class RemehaHeatingHandler extends BaseThingHandler {
     public void dispose() {
         stopRefreshJob();
         apiClient = null;
+        try {
+            if (httpClient.isStarted()) {
+                httpClient.stop();
+            }
+        } catch (Exception e) {
+            logger.debug("Error stopping HTTP client", e);
+        }
         super.dispose();
     }
 
