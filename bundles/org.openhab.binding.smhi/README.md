@@ -1,8 +1,5 @@
 # Smhi Binding
 
-> __IMPORTANT NOTE:__ Due to updates to SMHI's API, the channel ids have changed. 
-> Measures have been taken to ensure backwards compatibility, but to avoid future issues all items need to be relinked to the new channels.
-
 This binding gets hourly and daily forecast from SMHI - the Swedish Meteorological and Hydrological Institute.
 It can get forecasts for the nordic countries (Sweden, Norway, Denmark and Finland).
 
