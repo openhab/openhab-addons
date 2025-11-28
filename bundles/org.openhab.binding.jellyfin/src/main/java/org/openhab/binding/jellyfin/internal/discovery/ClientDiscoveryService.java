@@ -133,8 +133,9 @@ public class ClientDiscoveryService extends AbstractThingHandlerDiscoveryService
             }
 
             // Build discovery result
-            DiscoveryResultBuilder resultBuilder = DiscoveryResultBuilder.create(clientUID).withBridge(bridgeUID)
-                    .withLabel(label).withRepresentationProperty(Thing.PROPERTY_SERIAL_NUMBER)
+            DiscoveryResultBuilder resultBuilder = DiscoveryResultBuilder.create(clientUID)
+                    .withThingType(THING_TYPE_JELLYFIN_CLIENT).withBridge(bridgeUID).withLabel(label)
+                    .withRepresentationProperty(Thing.PROPERTY_SERIAL_NUMBER)
                     .withProperty(Thing.PROPERTY_SERIAL_NUMBER, deviceId);
 
             // Add firmware version if available

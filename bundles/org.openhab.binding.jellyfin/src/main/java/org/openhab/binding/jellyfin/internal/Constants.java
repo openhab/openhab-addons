@@ -40,7 +40,7 @@ public class Constants {
     public static final ThingTypeUID THING_TYPE_SERVER = new ThingTypeUID(BINDING_ID, "server");
     public static final ThingTypeUID THING_TYPE_JELLYFIN_CLIENT = new ThingTypeUID(BINDING_ID, "client");
     // Only server handler is implemented - client discovery exists but no client handler yet
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_SERVER);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_SERVER, THING_TYPE_JELLYFIN_CLIENT);
     public static final Set<ThingTypeUID> DISCOVERABLE_CLIENT_THING_TYPES = Set.of(THING_TYPE_JELLYFIN_CLIENT);
 
     // List of all Channel ids

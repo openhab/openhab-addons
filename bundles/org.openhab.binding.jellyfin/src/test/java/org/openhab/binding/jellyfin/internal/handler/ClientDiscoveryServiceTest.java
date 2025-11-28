@@ -11,12 +11,16 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.openhab.binding.jellyfin.internal.Constants;
 import org.openhab.binding.jellyfin.internal.api.generated.current.model.SessionInfoDto;
 import org.openhab.binding.jellyfin.internal.discovery.ClientDiscoveryService;
+import org.openhab.core.config.discovery.DiscoveryListener;
+import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingUID;
 
@@ -254,5 +258,129 @@ class ClientDiscoveryServiceTest {
     void testSupportedThingTypesContainsClientType() {
         // Assert
         assertTrue(Constants.DISCOVERABLE_CLIENT_THING_TYPES.contains(Constants.THING_TYPE_JELLYFIN_CLIENT));
+    }
+
+    @Test
+    void testDiscoveryResultIncludesThingType() {
+        // Arrange
+        String deviceId = "device-with-thing-type";
+        String deviceName = "Test Device";
+
+        SessionInfoDto session = new SessionInfoDto();
+        session.setDeviceId(deviceId);
+        session.setDeviceName(deviceName);
+        session.setClient("Jellyfin Web");
+
+        Map<String, SessionInfoDto> clients = new HashMap<>();
+        clients.put("session-1", session);
+
+        when(serverHandler.getClients()).thenReturn(clients);
+
+        // Create a mock DiscoveryListener to capture the discovery result
+        DiscoveryListener listener = mock(DiscoveryListener.class);
+        ArgumentCaptor<DiscoveryResult> resultCaptor = ArgumentCaptor.forClass(DiscoveryResult.class);
+
+        discoveryService.addDiscoveryListener(listener);
+
+        // Act
+        discoveryService.discoverClients();
+
+        // Assert
+        verify(listener).thingDiscovered(any(), resultCaptor.capture());
+        DiscoveryResult result = resultCaptor.getValue();
+
+        assertNotNull(result, "Discovery result should not be null");
+        assertEquals(Constants.THING_TYPE_JELLYFIN_CLIENT, result.getThingTypeUID(),
+                "Discovery result should have correct ThingTypeUID");
+        assertTrue(result.getThingUID().getId().contains(deviceId.replaceAll("[^a-zA-Z0-9_-]", "-")),
+                "ThingUID should contain sanitized device ID");
+        assertEquals(bridgeUID, result.getBridgeUID(), "Discovery result should have correct bridge UID");
+    }
+
+    @Test
+    void testDiscoveryResultIncludesAllProperties() {
+        // Arrange
+        String deviceId = "device-full-props";
+        String deviceName = "Full Properties Device";
+        String clientName = "Jellyfin iOS";
+        String appVersion = "10.9.7";
+
+        SessionInfoDto session = new SessionInfoDto();
+        session.setDeviceId(deviceId);
+        session.setDeviceName(deviceName);
+        session.setClient(clientName);
+        session.setApplicationVersion(appVersion);
+
+        Map<String, SessionInfoDto> clients = new HashMap<>();
+        clients.put("session-1", session);
+
+        when(serverHandler.getClients()).thenReturn(clients);
+
+        // Create a mock DiscoveryListener to capture the discovery result
+        DiscoveryListener listener = mock(DiscoveryListener.class);
+        ArgumentCaptor<DiscoveryResult> resultCaptor = ArgumentCaptor.forClass(DiscoveryResult.class);
+
+        discoveryService.addDiscoveryListener(listener);
+
+        // Act
+        discoveryService.discoverClients();
+
+        // Assert
+        verify(listener).thingDiscovered(any(), resultCaptor.capture());
+        DiscoveryResult result = resultCaptor.getValue();
+
+        assertNotNull(result, "Discovery result should not be null");
+
+        // Verify all properties are set
+        Map<String, Object> properties = result.getProperties();
+        assertEquals(deviceId, properties.get(Thing.PROPERTY_SERIAL_NUMBER),
+                "Serial number property should match device ID");
+        assertEquals(appVersion, properties.get(Thing.PROPERTY_FIRMWARE_VERSION),
+                "Firmware version property should be set");
+        assertEquals(clientName, properties.get(Thing.PROPERTY_VENDOR), "Vendor property should be set");
+
+        // Verify representation property
+        assertEquals(Thing.PROPERTY_SERIAL_NUMBER, result.getRepresentationProperty(),
+                "Representation property should be serial number");
+
+        // Verify label
+        assertEquals(deviceName, result.getLabel(), "Label should match device name");
+    }
+
+    @Test
+    void testSanitizeDeviceIdReplacesSpecialCharacters() {
+        // Arrange
+        String deviceId = "device:with/special@chars!";
+        String expectedSanitized = "device-with-special-chars-";
+
+        SessionInfoDto session = new SessionInfoDto();
+        session.setDeviceId(deviceId);
+        session.setDeviceName("Test Device");
+
+        Map<String, SessionInfoDto> clients = new HashMap<>();
+        clients.put("session-1", session);
+
+        when(serverHandler.getClients()).thenReturn(clients);
+
+        // Create a mock DiscoveryListener to capture the discovery result
+        DiscoveryListener listener = mock(DiscoveryListener.class);
+        ArgumentCaptor<DiscoveryResult> resultCaptor = ArgumentCaptor.forClass(DiscoveryResult.class);
+
+        discoveryService.addDiscoveryListener(listener);
+
+        // Act
+        discoveryService.discoverClients();
+
+        // Assert
+        verify(listener).thingDiscovered(any(), resultCaptor.capture());
+        DiscoveryResult result = resultCaptor.getValue();
+
+        String thingId = result.getThingUID().getId();
+        assertTrue(thingId.contains(expectedSanitized),
+                "ThingUID should contain sanitized device ID with special characters replaced");
+        assertFalse(thingId.contains(":"), "ThingUID should not contain colon");
+        assertFalse(thingId.contains("/"), "ThingUID should not contain slash");
+        assertFalse(thingId.contains("@"), "ThingUID should not contain at sign");
+        assertFalse(thingId.contains("!"), "ThingUID should not contain exclamation mark");
     }
 }
