@@ -23,12 +23,12 @@ import org.openhab.binding.spotify.internal.api.SpotifyApi;
 import org.openhab.binding.spotify.internal.api.exception.SpotifyException;
 import org.openhab.binding.spotify.internal.api.model.CurrentlyPlayingContext;
 import org.openhab.binding.spotify.internal.api.model.Device;
-import org.openhab.core.audio.AudioSink;
 import org.openhab.core.library.types.MediaStateType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.PlayPauseType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.media.MediaSink;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -220,10 +220,10 @@ public class SpotifyDeviceHandler extends BaseThingHandler {
     }
 
     public void registerAudioSink() {
-        SpotifyAudioSink audioSink = new SpotifyAudioSink(this);
+        SpotifyAudioSink mediaSink = new SpotifyAudioSink(this);
         @SuppressWarnings("unchecked")
-        ServiceRegistration<AudioSink> reg = (ServiceRegistration<AudioSink>) bundleContext
-                .registerService(AudioSink.class.getName(), audioSink, new Hashtable<>());
+        ServiceRegistration<MediaSink> reg = (ServiceRegistration<MediaSink>) bundleContext
+                .registerService(MediaSink.class.getName(), mediaSink, new Hashtable<>());
     }
 
 }
