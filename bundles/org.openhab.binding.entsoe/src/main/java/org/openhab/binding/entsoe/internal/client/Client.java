@@ -16,7 +16,6 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.time.Duration;
 import java.time.Instant;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.LinkedHashMap;
@@ -39,6 +38,7 @@ import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.entsoe.internal.exception.EntsoeConfigurationException;
 import org.openhab.binding.entsoe.internal.exception.EntsoeResponseException;
+import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,6 +52,7 @@ import org.xml.sax.SAXException;
 /**
  * @author Miika Jukka - Initial contribution
  * @author Jørgen Melhus - Contribution
+ * @author Bernd Weymann - Unit test preparation
  */
 @NonNullByDefault
 public class Client {
@@ -62,7 +63,12 @@ public class Client {
 
     public Client(HttpClient httpClient) {
         this.httpClient = httpClient;
-        userAgent = "openHAB/" + FrameworkUtil.getBundle(this.getClass()).getVersion().toString();
+        String bundleVersion = "unknown";
+        Bundle bundle = FrameworkUtil.getBundle(this.getClass());
+        if (bundle != null) {
+            bundleVersion = bundle.getHeaders().get("Bundle-Version");
+        }
+        userAgent = "openHAB-EntsoeBinding/" + bundleVersion;
     }
 
     public Map<Instant, SpotPrice> doGetRequest(EntsoeRequest entsoeRequest, int timeout, String configResolution)
@@ -112,9 +118,12 @@ public class Client {
         }
     }
 
-    private Map<Instant, SpotPrice> parseXmlResponse(String responseText, String configResolution)
+    public Map<Instant, SpotPrice> parseXmlResponse(String responseText, String configResolution)
             throws ParserConfigurationException, SAXException, IOException, EntsoeResponseException,
             EntsoeConfigurationException {
+        if (logger.isTraceEnabled()) {
+            logger.trace("Entso-E response {}", responseText);
+        }
         Map<Instant, SpotPrice> responseMap = new LinkedHashMap<>();
 
         DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
@@ -165,9 +174,6 @@ public class Client {
                 Duration durationTotal = Duration.between(startTimeInstant, endTimeInstant);
                 int numberOfDurations = Math.round(durationTotal.toMinutes() / durationResolution.toMinutes());
 
-                logger.debug("\"timeSeries\" node: {}/{} with start time: {} and resolution {}", (i + 1),
-                        listOfTimeSeries.getLength(), startTimeInstant.atZone(ZoneId.of("UTC")), resolution);
-
                 NodeList listOfPoints = periodElement.getElementsByTagName("Point");
 
                 /*
@@ -189,8 +195,6 @@ public class Client {
                         SpotPrice t = new SpotPrice(currency, measureUnit, priceAsDouble, startTimeInstant, multiplier,
                                 resolution);
                         responseMap.put(t.getInstant(), t);
-                        logger.trace("\"Point\" node: {}/{} with values: {} - {} {}/{}", (p + 1), numberOfDurations,
-                                t.getInstant(), priceAsDouble, currency, measureUnit);
                     }
 
                     Node nextPointNode = listOfPoints.item(pointNr + 1);

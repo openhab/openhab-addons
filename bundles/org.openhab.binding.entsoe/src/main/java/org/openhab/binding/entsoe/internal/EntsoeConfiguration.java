@@ -26,5 +26,5 @@ public class EntsoeConfiguration {
     public int spotPricesAvailableCetHour = 13;
     public int historicDays = 1;
     public int requestTimeout = 30;
-    public String resolution = "PT60M";
+    public String resolution = "PT15M";
 }
