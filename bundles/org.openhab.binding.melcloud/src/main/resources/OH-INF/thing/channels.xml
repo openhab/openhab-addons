@@ -19,6 +19,10 @@
 		<item-type>Switch</item-type>
 		<label>Pending Command</label>
 		<description>Device has a pending command(s)</description>
+		<tags>
+            <tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -26,6 +30,10 @@
 		<item-type>Switch</item-type>
 		<label>Is Offline</label>
 		<description>Is device in offline state.</description>
+		<tags>
+            <tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -34,8 +42,8 @@
 		<label>Last Communication</label>
 		<description>Last communication time between device and MELCloud</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
+            <tag>Status</tag>
+			<tag>Info</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -46,7 +54,7 @@
 		<description>Next communication time between device and MELCloud</description>
 		<tags>
 			<tag>Status</tag>
-			<tag>Timestamp</tag>
+            <tag>Info</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -57,7 +65,7 @@
 		<label>Operation Mode</label>
 		<description>Operation mode</description>
 		<tags>
-			<tag>Status</tag>
+            <tag>Control</tag>
 			<tag>Mode</tag>
 		</tags>
 		<state readOnly="false">
@@ -87,7 +95,7 @@
 		<label>Fan Speed</label>
 		<description>Fan speed</description>
 		<tags>
-			<tag>Status</tag>
+			<tag>Control</tag>
 			<tag>Speed</tag>
 		</tags>
 		<state readOnly="false">
@@ -107,7 +115,7 @@
 		<label>Vane Horizontal</label>
 		<description>Vane horizontal</description>
 		<tags>
-			<tag>Status</tag>
+			<tag>Control</tag>
 			<tag>Tilt</tag>
 		</tags>
 		<state readOnly="false">
@@ -128,7 +136,7 @@
 		<label>Vane Vertical</label>
 		<description>Vane vertical</description>
 		<tags>
-			<tag>Status</tag>
+			<tag>Control</tag>
 			<tag>Tilt</tag>
 		</tags>
 		<state readOnly="false">
@@ -215,7 +223,7 @@
 		<label>Room Temperature Zone2</label>
 		<description>Room temperature for zone 2</description>
 		<tags>
-			<tag>Setpoint</tag>
+			<tag>Measurement</tag>
 			<tag>Temperature</tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
@@ -225,6 +233,10 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Set Temperature Zone2</label>
 		<description>Set temperature for zone 2</description>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state min="10" max="30" step="0.5" pattern="%.1f %unit%" readOnly="false"/>
 	</channel-type>
 
@@ -254,6 +266,10 @@
 		<item-type>Number</item-type>
 		<label>Flow Mode Zone1</label>
 		<description>Set flow mode for zone 1</description>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="false">
 			<options>
 				<option value="0">Heat thermostat</option>
@@ -269,6 +285,10 @@
 		<item-type>Number</item-type>
 		<label>Flow Mode Zone2</label>
 		<description>Set flow mode for zone 2</description>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="false">
 			<options>
 				<option value="0">Heat thermostat</option>
@@ -284,6 +304,10 @@
 		<item-type>String</item-type>
 		<label>Operation Mode</label>
 		<description>Operation mode</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="0">Idle</option>

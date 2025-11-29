@@ -32,6 +32,10 @@
 			<channel id="nextCommunication" typeId="nextCommunication-channel"/>
 		</channels>
 
+		<properties>
+			<property name="thingTypeVersion">2</property>
+		</properties>
+
 		<representation-property>deviceID</representation-property>
 
 		<config-description>
