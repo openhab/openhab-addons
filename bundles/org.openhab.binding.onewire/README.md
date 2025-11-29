@@ -61,10 +61,10 @@ Depending on the chip, either `present`, `temperature`, `digitalX` or `counterX`
 
 ### Multisensor (`ms-tx`)
 
-The multisensor is build around the DS2438 or DS1923 chipset.
+The multisensor is built around the DS2438 or DS1923 chipset.
 It always provides a `temperature` channel.
 
-Depnding on the actual sensor, additional channels (`current`, `humidity`, `light`, `voltage`, `supplyvoltage`) are added.
+Depending on the actual sensor, additional channels (`current`, `humidity`, `light`, `voltage`, `supplyvoltage`) are added.
 If the voltage input of the DS2438 is connected to a humidity sensor, several common types are supported (see below).
 
 It has three parameters: sensor id `id`, refresh time `refresh` and `manualsensor` (advanced option).
@@ -115,7 +115,7 @@ Additional channels (`light`, `pressure`, `humidity`, `dewpoint`, `abshumidity`)
 Currently this thing only supports BAE0910 sensors.
 All functional pins of this sensor have multiple functions which can be configured individually.
 For detailed information of each mode, please see the official documentation.
-Each pin has the can be configured as `disabled`.
+Each pin can be configured as `disabled`.
 The necessary channels are automatically added.
 
 Pin 1 (`pin1`) has only one function `counter` (channel `counter`).
@@ -186,13 +186,13 @@ It defaults to 300s.
 
 ### Temperature (`temperature`, `temperature-por`, `temperature-por-res`)
 
-There are three temperature channel types: `temperature`, `temperature-por`and `temperature-por-res`.
+There are three temperature channel types: `temperature`, `temperature-por` and `temperature-por-res`.
 The correct channel-type is selected automatically by the thing handler depending on the sensor type.
 
 If the channel-type is `temperature`, there is nothing else to configure.
 
 Some sensors (e.g. DS18x20) report 85 °C as Power-On-Reset value.
-In some installations this leads to errorneous temperature readings.
+In some installations this leads to erroneous temperature readings.
 If the `ignorepor` parameter is set to `true` 85 °C values will be filtered.
 The default is `false` as correct reading of 85 °C will otherwise be filtered, too.
 Please note that the parameter value must not be set in quotation marks (see example below).
@@ -221,7 +221,7 @@ The duty cycle can be set from 0-100%.
 ### BAE PIO (`bae-pio`)
 
 The PIO channel (programmable I/O channel) has two configuration options: `mode` and `pulldevice`.
-The `mode`can be set to `input`or `output`.
+The `mode` can be set to `input` or `output`.
 The default is `input`.
 
 The `pulldevice` is only relevant for  `input` mode.

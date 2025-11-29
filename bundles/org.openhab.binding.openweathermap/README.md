@@ -185,7 +185,7 @@ The `forecastMinutely` channel group provides [time series support](#persisting-
 | forecastHours03, forecastHours06, ... forecastHours120 | rain                 | Number:Length        | Expected rain volume.                                                      |
 | forecastHours03, forecastHours06, ... forecastHours120 | snow                 | Number:Length        | Expected snow volume.                                                      |
 | forecastHours01 ... forecastHours48                    | dew-point            | Number:Temperature   | Expected dew-point. Only available in the One Call API                     |
-| forecastHours01 ... forecastHours48                    | precip-probability   | Number:Dimensionles  | Precipitation probability. Only available in the One Call API              |
+| forecastHours01 ... forecastHours48                    | precip-probability   | Number:Dimensionless | Precipitation probability. Only available in the One Call API              |
 
 ### One Call API Hourly Forecast
 
@@ -205,7 +205,7 @@ In a future release, the `forecastHours01` to `forecastHours48` channel groups w
 | forecastDaily, forecastToday, forecastTomorrow, forecastDay2, ... forecastDay16 | sunset               | DateTime             | Time of sunset for the given day.                                                                                                                                                                                                                                   |
 | forecastDaily, forecastToday, forecastTomorrow, forecastDay2, ... forecastDay16 | moonrise             | DateTime             | Time of moonrise for the given day.                                                                                                                                                                                                                                 |
 | forecastDaily, forecastToday, forecastTomorrow, forecastDay2, ... forecastDay16 | moonset              | DateTime             | Time of moonset for the given day.                                                                                                                                                                                                                                  |
-| forecastDaily, forecastToday, forecastTomorrow, forecastDay2, ... forecastDay16 | moon-phase           | Number:Dimensionless | Moon phase for the given day. 0 and 1 are 'new moon', 0.25 is 'first quarter moon', 0.5 is 'full moon' and 0.75 is 'last quarter moon'. The periods in between are called 'waxing crescent', 'waxing gibous', 'waning gibous', and 'waning crescent', respectively. |
+| forecastDaily, forecastToday, forecastTomorrow, forecastDay2, ... forecastDay16 | moon-phase           | Number:Dimensionless | Moon phase for the given day. 0 and 1 are 'new moon', 0.25 is 'first quarter moon', 0.5 is 'full moon' and 0.75 is 'last quarter moon'. The periods in between are called 'waxing crescent', 'waxing gibbous', 'waning gibbous', and 'waning crescent', respectively. |
 | forecastDaily, forecastToday, forecastTomorrow, forecastDay2, ... forecastDay16 | condition            | String               | Forecast weather condition.                                                                                                                                                                                                                                         |
 | forecastDaily, forecastToday, forecastTomorrow, forecastDay2, ... forecastDay16 | condition-id         | String               | Id of the forecasted weather condition. **Advanced**                                                                                                                                                                                                                |
 | forecastDaily, forecastToday, forecastTomorrow, forecastDay2, ... forecastDay16 | icon                 | Image                | Icon representing the forecasted weather condition.                                                                                                                                                                                                                 |
@@ -399,7 +399,7 @@ Number:Temperature localHours01Temperature "Temperature [%.1f %unit%]" <temperat
 Number:Temperature localHours01ApparentTemperature  "Apparent temperature [%.1f %unit%]" <temperature> { channel="openweathermap:onecall:api:local:forecastHours01#apparent-temperature" }
 Number:Pressure localHours01Pressure  "Barometric pressure [%.1f %unit%]"  <pressure> { channel="openweathermap:onecall:api:local:forecastHours01#pressure" }
 Number:Dimensionless localHours01Humidity  "Atmospheric humidity [%d %unit%]" <humidity> { channel="openweathermap:onecall:api:local:forecastHours01#humidity" }
-Number:Temperature localHours01Dewpoint "Dew point [%.1f %unit%]" <Temperature> { channel="openweathermap:onecall:api:local:current#dew-point" }
+Number:Temperature localHours01Dewpoint "Dew point [%.1f %unit%]" <Temperature> { channel="openweathermap:onecall:api:local:forecastHours01#dew-point" }
 Number:Speed localHours01WindSpeed  "Wind speed [%.1f km/h]"   <wind> { channel="openweathermap:onecall:api:local:forecastHours01#wind-speed" }
 Number:Angle localHours01WindDirection  "Wind direction [%d %unit%]"  <wind> { channel="openweathermap:onecall:api:local:forecastHours01#wind-direction" }
 Number:Speed localHours01GustSpeed "Gust speed [%.1f km/h]" <wind> { channel="openweathermap:onecall:api:local:forecastHours01#gust-speed" }
@@ -415,7 +415,7 @@ Number:Temperature localHours48Temperature "Temperature [%.1f %unit%]" <temperat
 Number:Temperature localHours48ApparentTemperature  "Apparent temperature [%.1f %unit%]" <temperature> { channel="openweathermap:onecall:api:local:forecastHours48#apparent-temperature" }
 Number:Pressure localHours48Pressure  "Barometric pressure [%.1f %unit%]"  <pressure> { channel="openweathermap:onecall:api:local:forecastHours48#pressure" }
 Number:Dimensionless localHours48Humidity  "Atmospheric humidity [%d %unit%]" <humidity> { channel="openweathermap:onecall:api:local:forecastHours48#humidity" }
-Number:Temperature localHours48Dewpoint "Dew point [%.1f %unit%]" <Temperature> { channel="openweathermap:onecall:api:local:current#dew-point" }
+Number:Temperature localHours48Dewpoint "Dew point [%.1f %unit%]" <Temperature> { channel="openweathermap:onecall:api:local:forecastHours48#dew-point" }
 Number:Speed localHours48WindSpeed  "Wind speed [%.1f km/h]"   <wind> { channel="openweathermap:onecall:api:local:forecastHours48#wind-speed" }
 Number:Angle localHours48WindDirection  "Wind direction [%d %unit%]"  <wind> { channel="openweathermap:onecall:api:local:forecastHours48#wind-direction" }
 Number:Speed localHours48GustSpeed "Gust speed [%.1f km/h]" <wind> { channel="openweathermap:onecall:api:local:forecastHours48#gust-speed" }
@@ -512,7 +512,7 @@ Number:Temperature localHistory1Temperature "Temperature [%.1f %unit%]"   <tempe
 Number:Temperature localHistory1ApparentTemperature "Apparent temperature [%.1f %unit%]"   <temperature> { channel="openweathermap:onecall-history:api:local-history:history#apparent-temperature" }
 Number:Pressure localHistory1Pressure "Barometric pressure [%.1f %unit%]"  <pressure> { channel="openweathermap:onecall-history:api:local-history:history#pressure" }
 Number:Dimensionless localHistory1Humidity "Atmospheric humidity [%d %unit%]"  <humidity> { channel="openweathermap:onecall-history:api:local-history:history#humidity" }
-Number:Temperature localHistory1Dewpoint "Dew point [%.1f %unit%]"   <Temperature> { channel="openweathermap:onecall-history:api:local-history:current#dew-point" }
+Number:Temperature localHistory1Dewpoint "Dew point [%.1f %unit%]"   <Temperature> { channel="openweathermap:onecall-history:api:local-history:history#dew-point" }
 Number:Speed localHistory1WindSpeed "Wind speed [%.1f km/h]"  <wind> { channel="openweathermap:onecall-history:api:local-history:history#wind-speed" }
 Number:Angle localHistory1WindDirection "Wind direction [%d %unit%]"  <wind> { channel="openweathermap:onecall-history:api:local-history:history#wind-direction" }
 Number:Speed localHistory1GustSpeed "Gust speed [%.1f km/h]"  <wind> { channel="openweathermap:onecall-history:api:local-history:history#gust-speed" }
@@ -531,7 +531,7 @@ Number:Temperature localHistory1Hours01Temperature "Minimum temperature [%.1f %u
 Number:Temperature localHistory1Hours01ApparentTemperature "Minimum temperature [%.1f %unit%]"   <temperature> { channel="openweathermap:onecall-history:api:local-history:historyHours01#apparent-temperature" }
 Number:Pressure localHistory1Hours01Pressure "Barometric pressure [%.1f %unit%]"  <pressure> { channel="openweathermap:onecall-history:api:local-history:historyHours01#pressure" }
 Number:Dimensionless localHistory1Hours01Humidity "Atmospheric humidity [%d %unit%]"  <humidity> { channel="openweathermap:onecall-history:api:local-history:historyHours01#humidity" }
-Number:Temperature localHistory1Hours01Dewpoint "Dew point [%.1f %unit%]"   <Temperature> { channel="openweathermap:onecall-history:api:local-history:current#dew-point" }
+Number:Temperature localHistory1Hours01Dewpoint "Dew point [%.1f %unit%]"   <Temperature> { channel="openweathermap:onecall-history:api:local-history:historyHours01#dew-point" }
 Number:Speed localHistory1Hours01WindSpeed "Wind speed [%.1f km/h]"  <wind> { channel="openweathermap:onecall-history:api:local-history:historyHours01#wind-speed" }
 Number:Angle localHistory1Hours01WindDirection "Wind direction [%d %unit%]"  <wind> { channel="openweathermap:onecall-history:api:local-history:historyHours01#wind-direction" }
 Number:Speed localHistory1Hours01GustSpeed "Gust speed [%.1f km/h]"  <wind> { channel="openweathermap:onecall-history:api:local-history:historyHours01#gust-speed" }

@@ -5,7 +5,7 @@ This binding integrates **BTicino / Legrand** **MyHOME &reg; - BUS/SCS** and **M
 The binding supports:
 
 - both wired MyHOME - BUS/SCS and wireless MyHOME Radio - Zigbee setups. The two networks can be configured simultaneously
-- auto discovery of MyHOME - BUS/SCS IP and  MyHOME Radio - Zigbee USB gateways; auto discovery of devices
+- auto-discovery of MyHOME - BUS/SCS IP and  MyHOME Radio - Zigbee USB gateways; auto-discovery of devices
 - commands from openHAB and feedback (events) from BUS/SCS and Radio network
 
 ![MyHOMEServer1 Gateway](doc/MyHOMEServer1_gateway.jpg)
@@ -110,7 +110,7 @@ Configuration parameters are:
   - if the BUS/SCS gateway is configured to accept connections from the openHAB computer IP address, no password should be required
   - in all other cases, a password must be configured. This includes gateways that have been discovered and added from Inbox: without a password configured they will remain OFFLINE
 - `discoveryByActivation`: discover BUS devices when they are activated also when a device scan hasn't been started from Inbox (`boolean`, _optional_, default: `false`). See [Discovery by Activation](#discovery-by-activation).
-- `dateTimeSynch`: synchronise date and time of slave elements on the BUS using openHAB timestamp (`boolean`, _optional_, default: `false`). Set this parameter to `true` to send time-date synchronisation commands on the BUS when the timestamp received from the gateway differs by more than 1 minute from that of openHAB. Useful if the BUS gateway is not syncronized with Internet time servers and with daylight saving time changes.
+- `dateTimeSynch`: synchronise date and time of slave elements on the BUS using openHAB timestamp (`boolean`, _optional_, default: `false`). Set this parameter to `true` to send time-date synchronisation commands on the BUS when the timestamp received from the gateway differs by more than 1 minute from that of openHAB. Useful if the BUS gateway is not synchronised with Internet time servers and with daylight saving time changes.
 
 Alternatively the MyHOME - BUS/SCS Gateway Thing can be configured using the `.things` file, see `openwebnet.things` example [below](#full-example).
 
@@ -153,7 +153,7 @@ Thermo zones can be configured defining a `bus_thermo_zone` Thing for each zone 
 
 - the `where` configuration parameter (`OpenWebNet Address`):
   - example BUS/SCS zone `1` --> `where="1"`
-- the `standAlone` configuration parameter (`boolean`, default: `true`): identifies if the zone is managed or not by a Central Unit (4- or 99-zones). `standAlone=true` means the zone is indipendent and no Central Unit is present in the system.
+- the `standAlone` configuration parameter (`boolean`, default: `true`): identifies if the zone is managed or not by a Central Unit (4- or 99-zones). `standAlone=true` means the zone is independent and no Central Unit is present in the system.
 
 Temperature sensors can be configured defining a `bus_thermo_sensor` Thing with the following parameters:
 
@@ -317,14 +317,14 @@ See [openwebnet.sitemap](#openwebnetsitemap) & [openwebnet.rules](#openwebnetrul
   - possible events are:
     - for CEN:
       - `START_PRESS` - sent when you start pressing the button
-      - `SHORT_PRESS` - sent if you pressed the button shorter than 0,5sec (sent at the moment when you release it)
-      - `EXTENDED_PRESS` - sent if you keep the button pressed longer than 0,5sec; will be sent again every 0,5sec as long as you hold pressed (good for dimming rules)
-      - `RELEASE_EXTENDED_PRESS` - sent once when you finally release the button after having it pressed longer than 0,5sec
+  - `SHORT_PRESS` - sent if you pressed the button shorter than 0.5 sec (sent at the moment when you release it)
+  - `EXTENDED_PRESS` - sent if you keep the button pressed longer than 0.5 sec; will be sent again every 0.5 sec as long as you hold pressed (good for dimming rules)
+  - `RELEASE_EXTENDED_PRESS` - sent once when you finally release the button after having it pressed longer than 0.5 sec
     - for CEN+:
-      - `SHORT_PRESS` - sent if you pressed the button shorter than 0,5sec (sent at the moment when you release it)
-      - `START_EXTENDED_PRESS` - sent once as soon as you keep the button pressed longer than 0,5sec
-      - `EXTENDED_PRESS` - sent after `START_EXTENDED_PRESS` if you keep the button pressed longer; will be sent again every 0,5sec as long as you hold pressed (good for rules involving dimming/volume)
-      - `RELEASE_EXTENDED_PRESS` - sent once when you finally release the button after having it pressed longer than 0,5sec
+  - `SHORT_PRESS` - sent if you pressed the button shorter than 0.5 sec (sent at the moment when you release it)
+  - `START_EXTENDED_PRESS` - sent once as soon as you keep the button pressed longer than 0.5 sec
+  - `EXTENDED_PRESS` - sent after `START_EXTENDED_PRESS` if you keep the button pressed longer; will be sent again every 0.5 sec as long as you hold pressed (good for rules involving dimming/volume)
+  - `RELEASE_EXTENDED_PRESS` - sent once when you finally release the button after having it pressed longer than 0.5 sec
 
 #### Thermo Central Unit `mode`: `WEEKLY` and `SCENARIO`
 
