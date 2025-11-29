@@ -57,7 +57,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class SagerCasterHandler extends BaseThingHandler {
-    private final static Duration ALGORITHM_WINDOW = Duration.ofHours(6);
+    private static final Duration ALGORITHM_WINDOW = Duration.ofHours(6);
     private final Logger logger = LoggerFactory.getLogger(SagerCasterHandler.class);
 
     private final SagerWeatherCaster sagerWeatherCaster;

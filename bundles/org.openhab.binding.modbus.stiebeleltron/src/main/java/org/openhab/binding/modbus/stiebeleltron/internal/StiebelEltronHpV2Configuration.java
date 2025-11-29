@@ -16,7 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * The {@link StiebelEltronHpV2Configuration} class contains configuration parameters for Stiebel Eltron Heat Pump V2
- *
+ * @author Thomas Burri - Initial contribution
  * @author Thomas Burri - Added additional configuration items for new WPM compatible heat pumps
  */
 @NonNullByDefault

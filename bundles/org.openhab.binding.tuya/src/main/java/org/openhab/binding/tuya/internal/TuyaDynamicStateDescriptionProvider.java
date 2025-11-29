@@ -84,7 +84,6 @@ public class TuyaDynamicStateDescriptionProvider extends BaseDynamicStateDescrip
     @Override
     protected List<StateOption> localizedStateOptions(List<StateOption> origOptions, Channel channel,
             @Nullable Locale locale) {
-
         ChannelTypeI18nLocalizationService channelTypeI18nLocalizationService = this.channelTypeI18nLocalizationService;
         ChannelTypeUID channelTypeUID = channel.getChannelTypeUID();
         if (channelTypeI18nLocalizationService == null || channelTypeUID == null) {

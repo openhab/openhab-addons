@@ -80,7 +80,7 @@ public class HomeAssistantDiscovery extends AbstractMQTTDiscovery {
     static final String BIRTH_TOPIC = "homeassistant/status";
     static final String ONLINE_STATUS = "online";
     private volatile long lastEventTime = 0;
-    private final static long DISCOVERY_TIMEOUT_MS = 2000;
+    private static final long DISCOVERY_TIMEOUT_MS = 2000;
 
     @NonNullByDefault({})
     protected MqttChannelTypeProvider typeProvider;

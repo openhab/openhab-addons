@@ -37,7 +37,6 @@ public class A5_30_03 extends _4BSMessage {
     protected static final byte WAKEUPPIN_HIGH = 0x10;
 
     public A5_30_03() {
-
         this.supportsTeachInVariation3 = true;
     }
 

@@ -250,7 +250,7 @@ public class ComponentChannel {
         public Builder inferOptimistic(@Nullable Boolean optimistic) {
             String localStateTopic = stateTopic;
             if (optimistic == null && (localStateTopic == null || localStateTopic.isBlank())
-                    || optimistic != null && optimistic == true) {
+                    || optimistic != null && optimistic) {
                 this.autoUpdatePolicy = AutoUpdatePolicy.RECOMMEND;
             }
             return this;
