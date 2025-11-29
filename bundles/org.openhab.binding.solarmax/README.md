@@ -4,7 +4,7 @@ This binding supports SolarMax PV inverters.
 
 ## Supported Things
 
-This binding only has a single `inverter` thing that can be added manually.
+This binding only has a single `inverter` Thing that can be added manually.
 The SolarMax MT Series is supported (tested with 8MT2 devices).
 
 ## Discovery
@@ -35,9 +35,9 @@ Each inverter requires the following configuration parameters:
 | ------------------------ | ------------------------ | -------------------------------------------- |
 | lastUpdated              | DateTime                 | Time when data was last read from the device |
 | startups                 | Number                   | Number of times the device has started       |
-| acPhase1Current          | Number:ElectricCurrent   | Ac Phase 1 Current in Amps                   |
-| acPhase2Current          | Number:ElectricCurrent   | Ac Phase 2 Current in Amps                   |
-| acPhase3Current          | Number:ElectricCurrent   | Ac Phase 3 Current in Amps                   |
+| acPhase1Current          | Number:ElectricCurrent   | AC Phase 1 current in A                      |
+| acPhase2Current          | Number:ElectricCurrent   | AC Phase 2 current in A                      |
+| acPhase3Current          | Number:ElectricCurrent   | AC Phase 3 current in A                      |
 | energyGeneratedToday     | Number:Energy            | Energy Generated Today in Wh                 |
 | energyGeneratedTotal     | Number:Energy            | Energy Generated since recording began in Wh |
 | operatingHours           | Number                   | Operating Hours since recording began in h   |
@@ -47,15 +47,15 @@ Each inverter requires the following configuration parameters:
 | energyGeneratedThisMonth | Number:Energy            | Energy Generated This Month in Wh            |
 | energyGeneratedThisYear  | Number:Energy            | Energy Generated This Year in Wh             |
 | currentPowerGenerated    | Number:Power             | Power currently being generated in W         |
-| acFrequency              | Number:Frequency         | AcFrequency in Hz                            |
-| acPhase1Voltage          | Number:ElectricPotential | Ac Phase1 Voltage in V                       |
-| acPhase2Voltage          | Number:ElectricPotential | Ac Phase2 Voltage in V                       |
-| acPhase3Voltage          | Number:ElectricPotential | Ac Phase3 Voltage in V                       |
-| heatSinkTemperature      | Number:Temperature       | Heat Sink Temperature in degrees celcius     |
+| acFrequency              | Number:Frequency         | AC frequency in Hz                           |
+| acPhase1Voltage          | Number:ElectricPotential | AC Phase 1 voltage in V                      |
+| acPhase2Voltage          | Number:ElectricPotential | AC Phase 2 voltage in V                      |
+| acPhase3Voltage          | Number:ElectricPotential | AC Phase 3 voltage in V                      |
+| heatSinkTemperature      | Number:Temperature       | Heat sink temperature in degrees Celsius     |
 
 ### Full Example
 
-Below you can find some example textual configuration for a solarmax with some basic functionallity. This can be extended/adjusted according to your needs and depending on the required channels (see list above).
+Below you can find an example textual configuration for a SolarMax with some basic functionality. This can be extended/adjusted according to your needs and depending on the required channels (see list above).
 
 _inverter.things:_
 
@@ -64,7 +64,7 @@ Thing solarmax:inverter:solarmax "SolarMax Inverter" [
     host="192.168.1.151",
     portNumber="12345",
     deviceAddress="1",
-    refresh="15"
+    refreshInterval="15"
 ]
 ```
 
@@ -77,29 +77,29 @@ DateTime lastUpdated "Last Updated" <clock> (gInverter) {channel="solarmax:inver
 
 Number startups "Startups" (gInverter) { channel="solarmax:inverter:solarmax:startups" }
 
-Number:ElectricCurrent acPhase1Current "Ac Phase 1 Current in Amps" <energy> (gInverter) { channel="solarmax:inverter:solarmax:acPhase1Current" }
-Number:ElectricCurrent acPhase2Current "Ac Phase 2 Current in Amps" <energy> (gInverter) { channel="solarmax:inverter:solarmax:acPhase2Current" }
-Number:ElectricCurrent acPhase3Current "Ac Phase 3 Current in Amps" <energy> (gInverter) { channel="solarmax:inverter:solarmax:acPhase3Current" }
+Number:ElectricCurrent acPhase1Current "AC Phase 1 current in A" <energy> (gInverter) { channel="solarmax:inverter:solarmax:acPhase1Current" }
+Number:ElectricCurrent acPhase2Current "AC Phase 2 current in A" <energy> (gInverter) { channel="solarmax:inverter:solarmax:acPhase2Current" }
+Number:ElectricCurrent acPhase3Current "AC Phase 3 current in A" <energy> (gInverter) { channel="solarmax:inverter:solarmax:acPhase3Current" }
 
 Number:Energy energyGeneratedToday "Energy Generated Today in Wh" <energy> (gInverter) { channel="solarmax:inverter:solarmax:energyGeneratedToday" }
 Number:Energy energyGeneratedTotal "Energy Generated since recording began in Wh" <energy> (gInverter) { channel="solarmax:inverter:solarmax:energyGeneratedTotal" }
 
 Number operatingHours "Operating Hours since recording began in h" <time> (gInverter) { channel="solarmax:inverter:solarmax:operatingHours" }
 
-Number:Energy energyGeneratedYesterday "Energy Generated Yesterday in Wh" <energy> (gInverter) { channel="solarmax:inverter:solarmax:operatingHours" }
+Number:Energy energyGeneratedYesterday "Energy generated yesterday in Wh" <energy> (gInverter) { channel="solarmax:inverter:solarmax:energyGeneratedYesterday" }
 Number:Energy energyGeneratedLastMonth "Energy Generated Last Month in Wh" <energy> (gInverter) { channel="solarmax:inverter:solarmax:energyGeneratedLastMonth" }
 Number:Energy energyGeneratedLastYear "Energy Generated Last Year in Wh" <energy> (gInverter) { channel="solarmax:inverter:solarmax:energyGeneratedLastYear" }
 Number:Energy energyGeneratedThisMonth "Energy Generated This Month in Wh" <energy> (gInverter) { channel="solarmax:inverter:solarmax:energyGeneratedThisMonth" }
 Number:Energy energyGeneratedThisYear "Energy Generated This Year in Wh" <energy> (gInverter) { channel="solarmax:inverter:solarmax:energyGeneratedThisYear" }
 
 Number:Power currentPowerGenerated "Power currently being generated in W" (gInverter) { channel="solarmax:inverter:solarmax:currentPowerGenerated" }
-Number:Frequency acFrequency "AcFrequency in Hz" (gInverter) { channel="solarmax:inverter:solarmax:acFrequency" }
+Number:Frequency acFrequency "AC frequency in Hz" (gInverter) { channel="solarmax:inverter:solarmax:acFrequency" }
 
-Number:ElectricPotential acPhase1Voltage "Ac Phase1 Voltage in V" <energy> (gInverter) { channel="solarmax:inverter:solarmax:acPhase1Voltage" }
-Number:ElectricPotential acPhase2Voltage "Ac Phase2 Voltage in V" <energy> (gInverter) { channel="solarmax:inverter:solarmax:acPhase2Voltage" }
-Number:ElectricPotential acPhase3Voltage "Ac Phase3 Voltage in V" <energy> (gInverter) { channel="solarmax:inverter:solarmax:acPhase3Voltage" }
+Number:ElectricPotential acPhase1Voltage "AC Phase 1 voltage in V" <energy> (gInverter) { channel="solarmax:inverter:solarmax:acPhase1Voltage" }
+Number:ElectricPotential acPhase2Voltage "AC Phase 2 voltage in V" <energy> (gInverter) { channel="solarmax:inverter:solarmax:acPhase2Voltage" }
+Number:ElectricPotential acPhase3Voltage "AC Phase 3 voltage in V" <energy> (gInverter) { channel="solarmax:inverter:solarmax:acPhase3Voltage" }
 
-Number:Temperature heatSinkTemperature "Heat Sink Temperature in degrees celcius" <temperature> (gInverter) { channel="solarmax:inverter:solarmax:heatSinkTemperature" }
+Number:Temperature heatSinkTemperature "Heat sink temperature in degrees Celsius" <temperature> (gInverter) { channel="solarmax:inverter:solarmax:heatSinkTemperature" }
 
 ```
 

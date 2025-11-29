@@ -31,7 +31,7 @@
 			<bridge-type-ref id="account"/>
 		</supported-bridge-type-refs>
 		<label>SunSynk Inverter</label>
-		<description>Inverter thing for SunSynk Binding.</description>
+		<description>Inverter thing for the SunSynk binding.</description>
 		<semantic-equipment-tag>Inverter</semantic-equipment-tag>
 		<channels>
 			<channel id="interval-1-grid-charge" typeId="grid-charge">
@@ -150,7 +150,7 @@
 			</channel>
 			<channel id="inverter-dc-temperature" typeId="system.indoor-temperature">
 				<label>Inverter DC Temperature</label>
-				<description>Temperature of the inverter dc side.</description>
+				<description>Temperature of the inverter DC side.</description>
 			</channel>
 			<channel id="inverter-grid-power" typeId="system.electric-power">
 				<label>Grid Power</label>
@@ -248,9 +248,9 @@
 				<label>Plant Name</label>
 				<description>Plant Name of the inverter from Sun Synk Connect.</description>
 			</parameter>
-			<parameter name="refresh" type="integer" required="true">
+			<parameter name="refresh" type="integer" required="true" min="60">
 				<label>Refresh Interval</label>
-				<description>Time in seconds to retrieve status from Sun Synk Connect services. Greater than 60 seconds.</description>
+				<description>Time in seconds to retrieve status from Sun Synk Connect services. At least 60 seconds.</description>
 				<default>60</default>
 				<advanced>true</advanced>
 			</parameter>
@@ -300,14 +300,14 @@
 	<channel-type id="power-charge-limit" advanced="true">
 		<item-type>Number:Power</item-type>
 		<label>Maximum Charge Rate</label>
-		<description>maximum charge power desired (limited by inverter capability).</description>
+		<description>Maximum charge power desired (limited by inverter capability).</description>
 		<category>Inverter</category>
 		<state pattern="%d %unit%" readOnly="false"/>
 	</channel-type>
 	<channel-type id="control-timer" advanced="true">
 		<item-type>Switch</item-type>
 		<label>System Timer</label>
-		<description>Use the system mode timer to control battery charge discharge.</description>
+		<description>Use the system mode timer to control battery charge/discharge.</description>
 		<state readOnly="false"/>
 	</channel-type>
 	<channel-type id="control-pattern" advanced="true">
@@ -324,11 +324,11 @@
 	<channel-type id="control-work-mode" advanced="true">
 		<item-type>String</item-type>
 		<label>System Work Mode</label>
-		<description>Set the work mode to '0' Selling First; '1' Zero-Export + Limited to Load or '2' Limited to Home.</description>
+		<description>Set the work mode to '0' Selling First; '1' Zero-Export + Limited to Load; or '2' Limited to Home.</description>
 		<command>
 			<options>
 				<option value="0">Selling First</option>
-				<option value="1">"Zero-Export + Limited to Load"</option>
+				<option value="1">Zero-Export + Limited to Load</option>
 				<option value="2">Limited to Home</option>
 			</options>
 		</command>

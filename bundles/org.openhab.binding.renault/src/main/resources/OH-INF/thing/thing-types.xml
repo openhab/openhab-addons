@@ -7,7 +7,7 @@
 	<thing-type id="car">
 
 		<label>Renault Car</label>
-		<description>A MyRenault registered car.</description>
+		<description>A MyRenault-registered car</description>
 		<semantic-equipment-tag>Vehicle</semantic-equipment-tag>
 
 		<channels>
@@ -127,7 +127,7 @@
 	<channel-type id="plugstatus">
 		<item-type>String</item-type>
 		<label>Plug Status</label>
-		<description>Status of charging plug.</description>
+		<description>Status of the charging plug</description>
 		<tags>
 			<tag>Status</tag>
 			<tag>Power</tag>
@@ -197,7 +197,7 @@
 	<channel-type id="estimatedrange">
 		<item-type>Number:Length</item-type>
 		<label>Estimated Range</label>
-		<description>Estimated range of the car.</description>
+		<description>Estimated range of the car</description>
 		<state pattern="%.1f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="odometer">
