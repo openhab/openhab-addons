@@ -25,7 +25,7 @@ The binding supports either a TCP/IP connection or direct serial port connection
 
 Auto-discovery is supported for Alto and Strato components if the device can be located on the local network using SDDP.
 Manually initiated discovery will locate all legacy Premiere line components if they are on the same IP subnet of the openHAB server.
-In the Inbox, select Search For Things and then choose the Kaleidescape Binding to initiate a discovery scan.
+In the Inbox, select Search for Things and then choose the Kaleidescape Binding to initiate a discovery scan.
 
 ## Thing Configuration
 
@@ -35,12 +35,12 @@ The thing has the following configuration parameters:
 |-----------------------------------|------------------------|-----------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------|
 | Address                           | host                   | Host name or IP address of the Kaleidescape component                                                                                   | A host name or IP address                            |
 | Port                              | port                   | Communication port of the IP connection                                                                                                 | 10000 (default - should not need to change)          |
-| Serial Port                       | serialPort             | Serial port for connecting directly a component                                                                                         | Serial port name (optional)                          |
+| Serial Port                       | serialPort             | Serial port for connecting directly to a component                                                                                       | Serial port name (optional)                          |
 | Update Period                     | updatePeriod           | Tells the component how often time status updates should be sent (see notes below)                                                      | 0 or 1 are the currently accepted values (default 0) |
 | Advanced Volume Control Enabled   | volumeEnabled          | Enable the volume and mute controls in the K iPad & phone apps; when enabled the volume and mute channels described below are active    | Boolean (default false)                              |
 | Initial Volume Setting            | initialVolume          | Initial volume level set when the binding starts up                                                                                     | 0 to 75 (default 25)                                 |
 | Basic Volume Control Enabled      | volumeBasicEnabled     | Enables stateless volume up/down and mute controls in the K apps; cannot be used when `volumeEnabled` is true (see rules example below) | Boolean (default false)                              |
-| Load Highlighted Details          | loadHighlightedDetails | When enabled the binding will automatically load the the metadata channels when the selected item in the UI (Movie or Album) changes    | Boolean (default false)                              |
+| Load Highlighted Details          | loadHighlightedDetails | When enabled the binding will automatically load the metadata channels when the selected item in the UI (Movie or Album) changes        | Boolean (default false)                              |
 | Load Album Details                | loadAlbumDetails       | When enabled the binding will automatically load the metadata channels for the currently playing Album                                  | Boolean (default false) N/A for Alto and Strato      |
 
 Some notes:
@@ -212,7 +212,7 @@ String z1_Music_TrackHandle "Track Handle: [%s]" { channel="kaleidescape:player:
 String z1_Music_AlbumHandle "Album Handle: [%s]" { channel="kaleidescape:player:myzone1:music#album_handle" }
 String z1_Music_NowplayHandle "Now Playing Handle: [%s]" { channel="kaleidescape:player:myzone1:music#nowplay_handle" }
 
-// Metatdata Display Channels (Album Title, Artist & Review are not available on Alto or Strato)
+// Metadata Display Channels (Album Title, Artist & Review are not available on Alto or Strato)
 String z1_Detail_Type "Metadata type: [%s]" { channel="kaleidescape:player:myzone1:detail#type" }
 String z1_Detail_Title "Title: [%s]" { channel="kaleidescape:player:myzone1:detail#title" }
 String z1_Detail_AlbumTitle "Album: [%s]" { channel="kaleidescape:player:myzone1:detail#album_title" }
@@ -360,11 +360,11 @@ then
     // *RELEASE events are not used in this example
 
     if (volEvt == "VOLUME_UP" || volEvt == "VOLUME_UP_PRESS") {
-        logInfo("k rules", "Volumne Up received")
+        logInfo("k rules", "Volume Up received")
     }
 
     if (volEvt == "VOLUME_DOWN" || volEvt == "VOLUME_DOWN_PRESS") {
-        logInfo("k rules", "Volumne Down received")
+        logInfo("k rules", "Volume Down received")
     }
 
     if (volEvt == "TOGGLE_MUTE") {
@@ -379,7 +379,7 @@ when
     Item z1_Ui_UserDefinedEvent received update
 then
     if (z1_Ui_UserDefinedEvent.state.toString == "DO_THE_NEEDFUL") {
-        logInfo("k rules", "handing the NEEDFUL script command...")
+        logInfo("k rules", "handling the NEEDFUL script command...")
     }
 end
 

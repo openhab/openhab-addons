@@ -9,7 +9,7 @@ The Keba KeContact P20 and P30 stations which are providing the UDP interface (P
 ## Thing Configuration
 
 The Keba KeContact P20/30 requires the IP address as the configuration parameter `ipAddress`.
-Optionally, a refresh interval (in seconds) can be defined as parameter `refreshInterval` that defines the polling of values from the charging station.
+Optionally, a refresh interval (in seconds) can be defined as the parameter `refreshInterval` that defines the polling interval for values from the charging station.
 
 ## Channels
 
@@ -69,8 +69,8 @@ end
 | Parameter                | Description                                                                                                                                                                      |
 | ------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | text                     | Text shown on the display. Maximum 23 ASCII characters can be used. `~` == Σ, `$` == blank, `,` == comma                                                                         |
-| durationMin _(optional)_ | Defines the duration in seconds how long the text will displayed before another display command will be processed (internal MID metering relevant information may overrule this) |
-| durationMax _(optional)_ | Defines the duration in seconds how long the text will displayed if no additional display command follows.                                                                       |
+| durationMin _(optional)_ | Defines the duration in seconds how long the text will be displayed before another display command will be processed (internal MID metering relevant information may overrule this) |
+| durationMax _(optional)_ | Defines the duration in seconds how long the text will be displayed if no additional display command follows.                                                                    |
 
 ## Example
 
