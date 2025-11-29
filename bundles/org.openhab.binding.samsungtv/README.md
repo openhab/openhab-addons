@@ -677,7 +677,7 @@ If you have more than one network interface on your openHAB machine, you may hav
   - enable/disable `Enable multicast enhancement (IGMPv3)` if you have it (sometimes this helps).
   - Try to connect your openHAB machine or TV via Ethernet instead of WiFi (AP's can filter Multicasts).
   - Make sure you don't have any firewall rules blocking multicast.
-  - if you are using a Docker container, ensure you use the `--net=host` setting, as Docker filters multicast broadcasts by default.
+  - if you are using a Docker container, ensure you use the `--net=host` setting, as Docker filters multicast broadcasts by default. (if you still have problems, consider the usage of some jupnp environment variables as discussed at https://community.openhab.org/t/upnp-based-discovery-does-not-work-on-host-networked-docker-container/144360/21)
 
 ### I see the messages, but something else is not working properly
 
