@@ -426,6 +426,7 @@
 /bundles/org.openhab.binding.ventaair/ @t2000
 /bundles/org.openhab.binding.verisure/ @jannegpriv
 /bundles/org.openhab.binding.vesync/ @dag81
+/bundles/org.openhab.binding.viessmann/ @rogrun
 /bundles/org.openhab.binding.vigicrues/ @clinique
 /bundles/org.openhab.binding.visualcrossing/ @magx2
 /bundles/org.openhab.binding.vitotronic/ @steand
