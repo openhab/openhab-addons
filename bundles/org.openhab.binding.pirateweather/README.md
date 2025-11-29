@@ -21,7 +21,7 @@ Severe weather alerts are available in the United States.
 
 ## Discovery
 
-If a system location is set, a "Local Weather And Forecast" (`weather-and-forecast`) thing will be automatically discovered for this location.
+If a location is set in the openHAB configuration, a "Local Weather And Forecast" (`weather-and-forecast`) thing will be automatically discovered for this location.
 Once the system location will be changed, the background discovery updates the configuration of "Local Weather And Forecast" accordingly.
 
 ## Thing Configuration
