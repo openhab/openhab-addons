@@ -1,81 +1,83 @@
-# XmlTV Binding
+# XMLTV Binding
 
-XMLTV is an XML based file format for describing TV listings.
-This format is often used by Home Theater software to produce their Electronic Program Guide (<http://wiki.xmltv.org/index.php/Main_Page>)
+XMLTV is an XML-based file format for describing TV listings.
+It's commonly used by home theater software to produce an electronic program guide (EPG).
+See the XMLTV project wiki for details: <http://wiki.xmltv.org/index.php/Main_Page>
 
-The norm allows to separate program display from its building.
-The building of the XMLTV file itself is taken in charge by so called "grabbers" (<http://wiki.xmltv.org/index.php/HowtoUseGrabbers>).
+The format separates building the guide from displaying it.
+The XMLTV file itself is produced by so‑called "grabbers": <http://wiki.xmltv.org/index.php/HowtoUseGrabbers>
 
-Some websites provides updated XMLTV files than can be directly downloaded.
+Some websites provide updated XMLTV files that can be downloaded directly (for example, France and Switzerland: <https://xmltv.ch/>).
 
-Here is a sample for France and Switzerland: <https://xmltv.ch/>
+This binding reads an XMLTV file and creates a thing for each channel contained in it.
+Channels from the XMLTV file are represented as "Media Channels" to avoid confusion with openHAB Channels.
 
-This binding takes an XMLTV file as input and creates a thing for each channel contained in it.
-XmlTV channels are called Media Channels in this binding in order to avoid messing with openHAB Channels.
-
-For each thing, you will be able to get information regarding the current program and the next to come.
+Each channel thing exposes information about the current program and the next one.
 
 ## Supported Things
 
+- xmltvfile — Bridge to an XMLTV file (reads and parses the file)
+- channel — A TV channel defined in the XMLTV file
+
 ## Discovery
 
-Once the XmlTV bridge to a file is created, you can add all known channels by searching new things.
+Once the XMLTV file bridge is created, you can add all known channels by scanning for new things.
 
 ## Binding Configuration
 
-| Configuration Parameter | Required | Description                                         | Default |
-|-------------------------|----------|-----------------------------------------------------|---------|
-| filePath                | X        | Full path (including filename) to an Xml TV file    |         |
-| refresh                 | X        | XMLTV file reload interval in hours                 | 24h     |
-| encoding                | X        | XMLTV file encoding                                 | UTF8    |
+| Configuration Parameter | Required | Description                                    | Default |
+|-------------------------|----------|------------------------------------------------|---------|
+| filePath                | Yes      | Full path (including filename) to an XMLTV file |         |
+| refresh                 | No       | XMLTV file reload interval (hours)              | 24 h    |
+| encoding                | Yes      | XMLTV file encoding                              | UTF-8   |
 
 ## Thing Configuration
 
-| Configuration Parameter | Required | Description                                                    | Default |
-|-------------------------|----------|----------------------------------------------------------------|---------|
-| channelId               | X        | Id of the channel as presented in the XmlTV file               |         |
-| offset                  | X        | Offset applied to program times (forward or backward (minutes) | 0       |
-| refresh                 | X        | Refresh interval in seconds                                    | 60      |
+| Configuration Parameter | Required | Description                                          | Default |
+|-------------------------|----------|------------------------------------------------------|---------|
+| channelId               | Yes      | ID of the channel as presented in the XMLTV file     |         |
+| offset                  | No       | Offset applied to program times (minutes; +/-)       | 0       |
+| refresh                 | No       | Refresh interval (seconds)                           | 60      |
 
 ## Channels
 
-| Channel Type ID | Item Type            | Description                         |
-|-----------------|----------------------|-------------------------------------|
-| iconUrl         | String               | Channel Icon URL                    |
-| icon            | Image                | Icon of the channel                 |
+| Channel Type ID | Item Type | Description              |
+|-----------------|-----------|--------------------------|
+| iconUrl         | String    | Channel icon URL         |
+| icon            | Image     | Icon of the channel      |
 
-### Current program (currentprog) Channels Group
+### Current program (currentprog) channel group
 
 | Channel Type ID | Item Type            | Description                                 |
 |-----------------|----------------------|---------------------------------------------|
-| progStart       | DateTime             | Program Start Time                          |
-| progEnd         | DateTime             | Program End Time                            |
-| progTitle       | String               | Program Title                               |
-| progCategory    | String               | Program Category                            |
+| progStart       | DateTime             | Program start time                          |
+| progEnd         | DateTime             | Program end time                            |
+| progTitle       | String               | Program title                               |
+| progCategory    | String               | Program category                            |
 | progIconUrl     | String               | URL to an image of the program              |
 | icon            | Image                | Icon of the program                         |
-| elapsedTime     | Number:Time          | Current time of currently playing program   |
-| remainingTime   | Number:Time          | Time remaining until end of the program     |
+| elapsedTime     | Number:Time          | Elapsed time of the current program         |
+| remainingTime   | Number:Time          | Time remaining until the end of the program |
 | progress        | Number:Dimensionless | Relative progression of the current program |
 
-### Next program (nextprog) Channels Group
+### Next program (nextprog) channel group
 
-| Channel Type ID | Item Type            | Description                                 |
-|-----------------|----------------------|---------------------------------------------|
-| progStart       | DateTime             | Program Start Time                          |
-| timeLeft        | Number:Time          | Time left before program start              |
-| progEnd         | DateTime             | Program End Time                            |
-| progTitle       | String               | Program Title                               |
-| progCategory    | String               | Program Category                            |
-| progIconUrl     | String               | URL to an image of the program              |
-| icon            | Image                | Icon of the program                         |
+| Channel Type ID | Item Type  | Description                        |
+|-----------------|------------|------------------------------------|
+| progStart       | DateTime   | Program start time                 |
+| timeLeft        | Number:Time| Time left before program start     |
+| progEnd         | DateTime   | Program end time                   |
+| progTitle       | String     | Program title                      |
+| progCategory    | String     | Program category                   |
+| progIconUrl     | String     | URL to an image of the program     |
+| icon            | Image      | Icon of the program                |
 
 ## Full Example
 
 ### xmltv.things
 
 ```java
-Bridge xmltv:xmltvfile:france "XmlTV" @ "TV" [filePath="/etc/openhab/scripts/tvguide.xml"]
+Bridge xmltv:xmltvfile:france "XMLTV" @ "TV" [filePath="/etc/openhab/scripts/tvguide.xml"]
 {
     Thing channel france2 "France 2" @ "TV" [channelId="C4.api.telerama.fr", offset=0, refresh=60]
 }
