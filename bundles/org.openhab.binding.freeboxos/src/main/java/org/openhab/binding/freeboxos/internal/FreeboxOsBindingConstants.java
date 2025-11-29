@@ -177,6 +177,11 @@ public class FreeboxOsBindingConstants {
     // Home channels
     public static final String TIMESTAMP_POSTFIX = "-timestamp";
 
+    // VPN Server channels
+    public static final String VPN_STATE = "state";
+    public static final String VPN_CONNECTIONS = "connections";
+    public static final String VPN_AUTHENTICATED = "auth-connections";
+
     public static final String KEYFOB_ENABLE = "enable";
     public static final String KEYFOB_PUSHED = "pushed";
     public static final String KEYFOB_PUSHED_UPDATE = KEYFOB_PUSHED + TIMESTAMP_POSTFIX;
