@@ -146,6 +146,7 @@ public class ComponentChannel {
         private @Nullable Predicate<Command> commandFilter;
 
         private org.graalvm.polyglot.@Nullable Value templateIn;
+        private String templateDefault = HomeAssistantChannelTransformation.PAYLOAD_SENTINEL_NONE;
         private org.graalvm.polyglot.@Nullable Value templateOut;
 
         private @Nullable Configuration configuration;
@@ -244,6 +245,11 @@ public class ComponentChannel {
             return this;
         }
 
+        public Builder withTemplateDefault(String templateDefault) {
+            this.templateDefault = templateDefault;
+            return this;
+        }
+
         // If the component explicitly specifies optimistic, or it's missing a state topic
         // put it in optimistic mode (which, in openHAB parlance, means to auto-update the
         // item).
@@ -274,7 +280,7 @@ public class ComponentChannel {
             org.graalvm.polyglot.Value localTemplateIn = templateIn;
             if (localTemplateIn != null) {
                 incomingTransformation = new HomeAssistantChannelTransformation(component.getPython(), component,
-                        localTemplateIn, false);
+                        localTemplateIn, templateDefault);
             }
             org.graalvm.polyglot.Value localTemplateOut = templateOut;
             if (localTemplateOut != null) {

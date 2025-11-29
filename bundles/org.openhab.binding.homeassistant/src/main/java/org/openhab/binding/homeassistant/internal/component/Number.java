@@ -75,6 +75,7 @@ public class Number extends AbstractComponent<Number.Configuration> {
 
         NumberValue value = new NumberValue(BigDecimal.valueOf(config.getMin()), BigDecimal.valueOf(config.getMax()),
                 BigDecimal.valueOf(config.getStep()), UnitUtils.parseUnit(config.getUnitOfMeasurement()));
+        value.setNullValue(config.getPayloadReset());
 
         buildChannel(NUMBER_CHANNEL_ID, ComponentChannelType.NUMBER, value, "Number",
                 componentContext.getUpdateListener()).stateTopic(config.getStateTopic(), config.getValueTemplate())

@@ -142,6 +142,7 @@ public class Lock extends AbstractComponent<Lock.Configuration> {
         lockValue = new OnOffValue(new String[] { config.getStateLocked() },
                 new String[] { stateLocked, stateUnlocked, stateLocking, stateUnlocking, stateJammed }, payloadLock,
                 payloadUnlock);
+        lockValue.setNullValue(config.getPayloadReset());
 
         buildChannel(LOCK_CHANNEL_ID, ComponentChannelType.SWITCH, lockValue, "Lock",
                 componentContext.getUpdateListener()).stateTopic(stateTopic, config.getValueTemplate())
@@ -166,6 +167,7 @@ public class Lock extends AbstractComponent<Lock.Configuration> {
         states.put(stateUnlocking, STATE_UNLOCKING);
         states.put(stateJammed, STATE_JAMMED);
         stateValue = new TextValue(states, commands, STATE_LABELS, COMMAND_LABELS);
+        stateValue.setNullValue(config.getPayloadReset());
 
         buildChannel(STATE_CHANNEL_ID, ComponentChannelType.STRING, stateValue, "State",
                 componentContext.getUpdateListener()).stateTopic(stateTopic, config.getValueTemplate())

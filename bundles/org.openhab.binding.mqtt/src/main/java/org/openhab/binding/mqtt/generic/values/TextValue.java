@@ -22,14 +22,15 @@ import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.mqtt.generic.IgnoreType;
 import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.CommandDescriptionBuilder;
 import org.openhab.core.types.CommandOption;
-import org.openhab.core.types.State;
 import org.openhab.core.types.StateDescriptionFragmentBuilder;
 import org.openhab.core.types.StateOption;
+import org.openhab.core.types.Type;
 import org.openhab.core.types.UnDefType;
 
 /**
@@ -43,8 +44,6 @@ public class TextValue extends Value {
     private final @Nullable Map<String, String> commands;
     private final @Nullable Map<String, String> stateLabels;
     private final @Nullable Map<String, String> commandLabels;
-
-    protected @Nullable String nullValue = null;
 
     /**
      * Create a string value with a limited number of allowed states and commands.
@@ -154,10 +153,6 @@ public class TextValue extends Value {
         this.commandLabels = null;
     }
 
-    public void setNullValue(@Nullable String nullValue) {
-        this.nullValue = nullValue;
-    }
-
     @Override
     public StringType parseCommand(Command command) throws IllegalArgumentException {
         final Map<String, String> commands = this.commands;
@@ -172,9 +167,13 @@ public class TextValue extends Value {
     }
 
     @Override
-    public State parseMessage(Command command) throws IllegalArgumentException {
-        if (command instanceof StringType string && string.toString().equals(nullValue)) {
-            return UnDefType.NULL;
+    public Type parseMessage(Command command) throws IllegalArgumentException {
+        if (command instanceof StringType) {
+            if (command.toString().equals(nullValue)) {
+                return UnDefType.NULL;
+            } else if (command.toString().equals(ignoreValue)) {
+                return IgnoreType.SENTINEL;
+            }
         }
 
         final Map<String, String> states = this.states;

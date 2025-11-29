@@ -19,6 +19,7 @@ import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.mqtt.generic.IgnoreType;
 import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.PercentType;
@@ -57,9 +58,20 @@ public abstract class Value {
     protected final List<Class<? extends Command>> commandTypes;
     private final String itemType;
 
+    protected @Nullable String nullValue = null;
+    protected @Nullable String ignoreValue = null;
+
     protected Value(String itemType, List<Class<? extends Command>> commandTypes) {
         this.itemType = itemType;
         this.commandTypes = commandTypes;
+    }
+
+    public void setNullValue(@Nullable String nullValue) {
+        this.nullValue = nullValue;
+    }
+
+    public void setIgnoreValue(@Nullable String ignoreValue) {
+        this.ignoreValue = ignoreValue;
     }
 
     /**
@@ -148,8 +160,12 @@ public abstract class Value {
      * @exception IllegalArgumentException Thrown if for example a text is assigned to a number type.
      */
     public Type parseMessage(Command command) throws IllegalArgumentException {
-        if (command instanceof StringType string && string.toString().isEmpty()) {
-            return UnDefType.NULL;
+        if (command instanceof StringType string) {
+            if (string.toString().equals(ignoreValue)) {
+                return IgnoreType.SENTINEL;
+            } else if (string.toString().equals(nullValue) || string.toString().isEmpty()) {
+                return UnDefType.NULL;
+            }
         }
         return parseCommand(command);
     }

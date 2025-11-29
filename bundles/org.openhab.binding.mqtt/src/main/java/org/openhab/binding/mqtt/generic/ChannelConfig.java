@@ -62,6 +62,7 @@ public class ChannelConfig {
     public @Nullable String onState;
     public @Nullable String offState;
     public @Nullable String nullValue;
+    public @Nullable String ignoreValue;
 
     public int onBrightness = 10;
     public String colorMode = ColorMode.HSB.toString();

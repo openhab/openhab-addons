@@ -18,6 +18,7 @@ import java.util.Map;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.homeassistant.internal.ComponentChannelType;
+import org.openhab.binding.homeassistant.internal.HomeAssistantChannelTransformation;
 import org.openhab.binding.homeassistant.internal.config.dto.EntityConfiguration;
 import org.openhab.binding.homeassistant.internal.config.dto.ROConfiguration;
 import org.openhab.binding.homeassistant.internal.listener.ExpireUpdateStateListener;
@@ -35,6 +36,7 @@ import org.openhab.core.types.util.UnitUtils;
 @NonNullByDefault
 public class Sensor extends AbstractComponent<Sensor.Configuration> {
     public static final String SENSOR_CHANNEL_ID = "sensor";
+    public static final String PAYLOAD_NONE = "None";
 
     /**
      * Configuration class for MQTT component
@@ -94,9 +96,12 @@ public class Sensor extends AbstractComponent<Sensor.Configuration> {
             value = new TextValue();
             type = ComponentChannelType.STRING;
         }
+        value.setIgnoreValue(HomeAssistantChannelTransformation.PAYLOAD_SENTINEL_DEFAULT);
+        value.setNullValue(PAYLOAD_NONE);
 
         buildChannel(SENSOR_CHANNEL_ID, type, value, "Sensor", getListener(componentContext, value))
-                .stateTopic(config.getStateTopic(), config.getValueTemplate()).build();
+                .stateTopic(config.getStateTopic(), config.getValueTemplate())
+                .withTemplateDefault(HomeAssistantChannelTransformation.PAYLOAD_SENTINEL_DEFAULT).build();
 
         finalizeChannels();
     }
