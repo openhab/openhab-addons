@@ -63,7 +63,7 @@ import org.mockito.quality.Strictness;
 import org.openhab.binding.mqtt.discovery.MQTTTopicDiscoveryService;
 import org.openhab.binding.mqtt.ruuvigateway.internal.RuuviGatewayBindingConstants;
 import org.openhab.binding.mqtt.ruuvigateway.internal.discovery.RuuviGatewayDiscoveryService;
-import org.openhab.binding.mqtt.ruuvigateway.internal.handler.RuuviTagHandler;
+import org.openhab.binding.mqtt.ruuvigateway.internal.handler.RuuviHandler;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.i18n.UnitProvider;
 import org.openhab.core.io.transport.mqtt.MqttBrokerConnection;
@@ -224,10 +224,10 @@ public class RuuviGatewayTest extends MqttOSGiTest {
     private void callInternalHeartbeat(Thing ruuviThing) {
         ThingHandler handler = ruuviThing.getHandler();
         Objects.requireNonNull(handler);
-        assertInstanceOf(RuuviTagHandler.class, handler);
-        RuuviTagHandler ruuviHandler = (RuuviTagHandler) handler;
+        assertInstanceOf(RuuviHandler.class, handler);
+        RuuviHandler ruuviHandler = (RuuviHandler) handler;
         try {
-            Method heartbeatMethod = RuuviTagHandler.class.getDeclaredMethod("heartbeat");
+            Method heartbeatMethod = RuuviHandler.class.getDeclaredMethod("heartbeat");
             Objects.requireNonNull(heartbeatMethod);
             heartbeatMethod.setAccessible(true);
             heartbeatMethod.invoke(ruuviHandler);
