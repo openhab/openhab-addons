@@ -43,7 +43,6 @@ Once the system location will be changed, the background discovery updates the c
 | forecastDays   | Number of days for daily forecast (including today’s forecast).                | 8       | No       |
 | numberOfAlerts | Number of alerts to be shown.                                                  | 0       | No       |
 
-
 Once one of the parameters `forecastHours`, `forecastDays` or `numberOfAlerts` will be changed, the available channel groups on the thing will be created or removed accordingly.
 
 ## Channels
