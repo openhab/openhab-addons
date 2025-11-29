@@ -88,8 +88,8 @@ public class VerisureSession {
     private final Gson gson = new Gson();
     private final Set<DeviceStatusListener<VerisureThingDTO>> deviceStatusListeners = ConcurrentHashMap.newKeySet();
     private final Map<BigDecimal, VerisureInstallation> verisureInstallations = new ConcurrentHashMap<>();
-    private static final List<String> APISERVERLIST = Arrays.asList("https://m-api01.verisure.com",
-            "https://m-api02.verisure.com");
+    private static final List<String> APISERVERLIST = Arrays.asList("https://mypages-api01.verisure.com",
+            "https://mypages-api02.verisure.com");
     private int apiServerInUseIndex = 0;
     private int numberOfEvents = 15;
     private static final int REQUEST_TIMEOUT_MS = 10_000;
@@ -107,7 +107,7 @@ public class VerisureSession {
     private String userName = "";
     private String password = "";
     private String vid = "";
-    private String vsAccess = "";
+    private @Nullable String vsAccess = "";
     private String vsRefresh = "";
     private String vsStepup = "";
     private String jsessionId = "";
@@ -299,13 +299,6 @@ public class VerisureSession {
         });
     }
 
-    private void addCookieIfPresent(Request request, String name, String value) {
-        if (!value.isEmpty()) {
-            request.cookie(new HttpCookie(name, value));
-            logger.debug("Setting cookie with {} = {}", name, value);
-        }
-    }
-
     private boolean addRequiredCookies(CookieStore from, CookieStore to, URI authUri) {
         boolean hasAllRequired = true;
         String[] requiredCookies = { VID, USER_NAME, JSESSIONID };
@@ -384,7 +377,7 @@ public class VerisureSession {
             if (!addRequiredCookies(originalCookieStore, tempCookieStore, authUri)) {
                 logger.debug("Missing required Incapsula cookies, might fail");
             }
-            HttpCookie vsRefreshCookie = new HttpCookie("vs-refresh", vsRefresh);
+            HttpCookie vsRefreshCookie = new HttpCookie(VS_RESFRESH, vsRefresh);
             tempCookieStore.add(authUri, vsRefreshCookie);
             httpClient.setCookieStore(tempCookieStore);
         } catch (URISyntaxException e) {
@@ -429,6 +422,8 @@ public class VerisureSession {
 
         Request request = httpClient.newRequest(url).method(HttpMethod.POST);
         request.timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+
+        // 1. General Headers
         if (isJSON) {
             request.header(HttpHeader.CONTENT_TYPE, "application/json");
         } else {
@@ -436,31 +431,69 @@ public class VerisureSession {
                 request.header("X-CSRF-TOKEN", csrf);
             }
         }
-        request.header(HttpHeader.ACCEPT, "application/json").header(HttpHeader.ORIGIN, "https://mypages.verisure.com");
 
+        // Mimic Browser - add Accept-Language and Accept-Encoding
+        request.header(HttpHeader.ACCEPT, "application/json").header(HttpHeader.ORIGIN, "https://mypages.verisure.com")
+                .header(HttpHeader.ACCEPT_LANGUAGE, "sv-SE,sv;q=0.9,en-US;q=0.8,en;q=0.7")
+                .header(HttpHeader.ACCEPT_ENCODING, "gzip, deflate, br, zstd");
+
+        // 2. Authentication Logic
         if (url.contains(AUTH_LOGIN) || url.contains(AUTH_TOKEN)) {
             request.header("APPLICATION_ID", "MyPages_Login");
+            // Add Sec-Fetch headers for auth endpoints (same-site)
+            request.header("Sec-Fetch-Dest", "empty").header("Sec-Fetch-Mode", "cors").header("Sec-Fetch-Site",
+                    "same-site");
             if (url.contains(AUTH_LOGIN)) {
-                String basicAuhentication = Base64.getEncoder().encodeToString((userName + ":" + password).getBytes());
-                request.header("authorization", "Basic " + basicAuhentication);
+                String basicAuthentication = Base64.getEncoder().encodeToString((userName + ":" + password).getBytes());
+                request.header("authorization", "Basic " + basicAuthentication);
             }
         } else {
-            if (url.contains(LOGON_SUF)) {
-                request.header(HttpHeader.CONTENT_TYPE, "application/x-www-form-urlencoded")
-                        .header(HttpHeader.REFERER, "https://mypages.verisure.com/login")
-                        .header("x-vs-refresh", vsRefresh);
+            // Add Bearer Token for GraphQL and other API calls
+            if (vsAccess != null && !vsAccess.isEmpty()) {
+                request.header(HttpHeader.AUTHORIZATION, "Bearer " + vsAccess);
             }
-            addCookieIfPresent(request, VID, vid);
-            addCookieIfPresent(request, VS_ACCESS, vsAccess);
-            addCookieIfPresent(request, USER_NAME, userName);
+
+            // Handle Legacy Login Headers for j_spring_security_check
+            if (url.contains(LOGON_SUF)) {
+                // Note: Content-Type is set via request.content() below, don't set it here to avoid duplicates
+                request.header(HttpHeader.REFERER, "https://mypages.verisure.com/login")
+                        .header("X-Vs-Refresh", vsRefresh).header("X-Vs-Single-Sign-On", "false");
+                // Add Sec-Fetch headers for same-origin request
+                request.header("Sec-Fetch-Dest", "empty").header("Sec-Fetch-Mode", "cors").header("Sec-Fetch-Site",
+                        "same-origin");
+            }
         }
 
+        // 3. Body Content
         if (!"empty".equals(data)) {
-            request.content(new BytesContentProvider(data.getBytes(StandardCharsets.UTF_8)),
-                    "application/x-www-form-urlencoded; charset=UTF-8");
+            if (url.contains(LOGON_SUF)) {
+                // URL encode the username (e.g. '@' -> '%40')
+                // Note: the 'data' parameter is ignored for LOGON_SUF - we always use userName
+                String encodedData = "j_username=" + java.net.URLEncoder.encode(userName, StandardCharsets.UTF_8);
+                request.content(new BytesContentProvider(encodedData.getBytes(StandardCharsets.UTF_8)),
+                        "application/x-www-form-urlencoded; charset=UTF-8");
+            } else if (isJSON) {
+                // For JSON requests, use BytesContentProvider without content-type to avoid duplicate header
+                // Content-Type is already set above via request.header()
+                request.content(new BytesContentProvider(data.getBytes(StandardCharsets.UTF_8)));
+            } else {
+                request.content(new BytesContentProvider(data.getBytes(StandardCharsets.UTF_8)),
+                        "application/x-www-form-urlencoded; charset=UTF-8");
+            }
         }
 
         logger.debug("HTTP POST Request {}.", request.toString());
+        // Log cookies being sent for debugging
+        if (url.contains(LOGON_SUF)) {
+            CookieStore cookieStore = httpClient.getCookieStore();
+            try {
+                URI requestUri = new URI(url);
+                List<HttpCookie> cookies = cookieStore.get(requestUri);
+                logger.debug("Cookies being sent to {}: {}", url, cookies);
+            } catch (URISyntaxException e) {
+                logger.debug("Could not parse URI for cookie logging");
+            }
+        }
         return request.send();
     }
 
@@ -484,7 +517,10 @@ public class VerisureSession {
                     return gson.fromJson(contentChomped, jsonClass);
                 }
             } else {
+                String content = response.getContentAsString();
                 logger.debug("Failed to send POST, Http status code: {}", response.getStatus());
+                logger.debug("HTTP {} Response body: {}", response.getStatus(), content);
+                logger.debug("HTTP {} Response headers: {}", response.getStatus(), response.getHeaders());
             }
         }
         throw new PostToAPIException("Failed to POST to API");
@@ -492,7 +528,7 @@ public class VerisureSession {
 
     private int postVerisureAPI(String urlString, String data) {
         String url;
-        if (urlString.contains("https://mypages")) {
+        if (urlString.contains("https://mypages.verisure.com")) {
             url = urlString;
         } else {
             url = apiServerInUse + urlString;
@@ -506,7 +542,7 @@ public class VerisureSession {
                 if (httpStatus == HttpStatus.OK_200) {
                     String content = response.getContentAsString();
                     if (content.contains("\"message\":\"Request Failed. Code 503 from")) {
-                        if (url.contains("https://mypages")) {
+                        if (url.contains("https://mypages.verisure.com")) {
                             // Not an API URL
                             return HttpStatus.SERVICE_UNAVAILABLE_503;
                         } else {
@@ -519,8 +555,15 @@ public class VerisureSession {
                         return httpStatus;
                     }
                 } else if (httpStatus == HttpStatus.BAD_REQUEST_400) {
+                    String content = response.getContentAsString();
+                    logger.debug("HTTP 400 Response body: {}", content);
+                    logger.debug("HTTP 400 Response headers: {}", response.getHeaders());
                     setApiServerInUse(getNextApiServer());
-                    url = apiServerInUse + urlString;
+                    if (urlString.contains("https://mypages.verisure.com")) {
+                        url = urlString;
+                    } else {
+                        url = apiServerInUse + urlString;
+                    }
                 } else {
                     logger.debug("Failed to send POST, Http status code: {}", response.getStatus());
                 }
@@ -610,6 +653,19 @@ public class VerisureSession {
                     store.remove(authUri, cookie);
                 });
 
+                // Step 1: GET the login page first to acquire WAF/Imperva cookies
+                logger.debug("Fetching login page to acquire WAF cookies");
+                Request loginPageRequest = httpClient.newRequest(LOGIN).method(HttpMethod.GET).header(HttpHeader.ACCEPT,
+                        "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8")
+                        .header(HttpHeader.ACCEPT_LANGUAGE, "sv-SE,sv;q=0.9,en-US;q=0.8,en;q=0.7")
+                        .header(HttpHeader.ACCEPT_ENCODING, "gzip, deflate, br, zstd")
+                        .header("Sec-Fetch-Dest", "document").header("Sec-Fetch-Mode", "navigate")
+                        .header("Sec-Fetch-Site", "none").header("Sec-Fetch-User", "?1");
+                loginPageRequest.timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+                ContentResponse loginPageResponse = loginPageRequest.send();
+                logger.debug("Login page response status: {}", loginPageResponse.getStatus());
+
+                // Step 2: Call /auth/login to get tokens
                 String url = AUTH_LOGIN;
                 int httpStatusCode = postVerisureAPI(url, "empty");
                 analyzeCookies();
@@ -618,6 +674,19 @@ public class VerisureSession {
                     return false;
                 }
 
+                // Step 3: Add the username cookie (required by j_spring_security_check)
+                try {
+                    URI mypagesUri = new URI(BASE_URL);
+                    HttpCookie usernameCookie = new HttpCookie(USERNAME, userName);
+                    usernameCookie.setDomain("mypages.verisure.com");
+                    usernameCookie.setPath("/");
+                    store.add(mypagesUri, usernameCookie);
+                    logger.debug("Added username cookie: {}", userName);
+                } catch (URISyntaxException e) {
+                    logger.debug("Failed to add username cookie: {}", e.getMessage());
+                }
+
+                // Step 4: Call j_spring_security_check
                 url = LOGON_SUF;
                 logger.debug("Login URL: {}", url);
                 httpStatusCode = postVerisureAPI(url, authstring);
@@ -626,6 +695,7 @@ public class VerisureSession {
                     return false;
                 }
 
+                // Step 5: Verify login by accessing status page
                 url = STATUS;
                 Request request = httpClient.newRequest(url).method(HttpMethod.GET).header(HttpHeader.ACCEPT,
                         "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7")
