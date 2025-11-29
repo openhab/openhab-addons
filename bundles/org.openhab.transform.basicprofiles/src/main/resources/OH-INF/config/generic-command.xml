@@ -7,11 +7,11 @@
 	<config-description uri="profile:basic-profiles:generic-command">
 		<parameter name="events" type="text" required="true" multiple="true">
 			<label>Events</label>
-			<description>Comma separated list of events to which the profile should listen.</description>
+			<description>Comma-separated list of events to which the profile should listen.</description>
 		</parameter>
 		<parameter name="command" type="text" required="true">
 			<label>Command</label>
-			<description>Command which should be sent if the event is triggered.</description>
+			<description>Command to send when the event is triggered.</description>
 			<limitToOptions>false</limitToOptions>
 			<options>
 				<option value="INCREASE">INCREASE</option>

@@ -1,14 +1,14 @@
-# Binary To JSON Transformation Service
+# Binary to JSON Transformation Service
 
-Transforms the input by Java Binary Block Parser syntax.
+Transforms input using the Java Binary Block Parser (JBBP) syntax.
 
-See details about syntax from [JBBP homepage](https://github.com/raydac/java-binary-block-parser)
+See details about the syntax on the [JBBP homepage](https://github.com/raydac/java-binary-block-parser).
 
 ## Example
 
-Let's assume we have received string containing bytes in hexa string format `03FAFF` and we want to convert binary data to JSON format. Binary data contains 3 bytes and strict data format is following `byte a; byte b; ubyte c;`.
+Let's assume we have received a string containing bytes in hexadecimal string format `03FAFF` and we want to convert the binary data to JSON. The binary data contains 3 bytes and the strict data format is the following: `byte a; byte b; ubyte c;`.
 
-Binary to JSON converter will return following result `{"a":3,"b":-6,"c":255}`
+The Binary to JSON converter will return the following result: `{"a":3,"b":-6,"c":255}`
 
 ## Usage as a Profile
 
