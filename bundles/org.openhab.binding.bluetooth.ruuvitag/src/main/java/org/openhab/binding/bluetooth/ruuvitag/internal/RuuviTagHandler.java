@@ -17,7 +17,6 @@ import static org.openhab.binding.bluetooth.ruuvitag.internal.RuuviTagBindingCon
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.measure.Quantity;
 import javax.measure.Unit;
@@ -27,7 +26,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.bluetooth.BeaconBluetoothHandler;
 import org.openhab.binding.bluetooth.notification.BluetoothScanNotification;
 import org.openhab.core.library.types.DecimalType;
-import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
@@ -42,32 +40,25 @@ import org.slf4j.LoggerFactory;
 
 import fi.tkgwf.ruuvi.common.bean.RuuviMeasurement;
 import fi.tkgwf.ruuvi.common.parser.impl.AnyDataFormatParser;
-import fi.tkgwf.ruuvi.common.utils.MeasurementValueCalculator;
 
 /**
- * The {@link RuuviHandler} is responsible for handling commands, which are
+ * The {@link RuuviTagHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
  * @author Sami Salonen - Initial contribution
  */
 @NonNullByDefault
-public class RuuviHandler extends BeaconBluetoothHandler {
+public class RuuviTagHandler extends BeaconBluetoothHandler {
 
     // Ruuvitag sends an update every 10 seconds. So we keep a heartbeat to give it some slack
     private static final int HEARTBEAT_TIMEOUT_MINUTES = 1;
-    // Per Ruuvi specification: BT5.0+ devices should discard Format 6 once E1 is detected
-    private static final int FORMAT_E1 = 0xE1;
-    private static final int FORMAT_6 = 6;
-
-    private final Logger logger = LoggerFactory.getLogger(RuuviHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(RuuviTagHandler.class);
     private final AnyDataFormatParser parser = new AnyDataFormatParser();
     private final AtomicBoolean receivedStatus = new AtomicBoolean();
-    // Track detected format to prefer E1 over Format 6 as per spec
-    private final AtomicInteger detectedFormat = new AtomicInteger(0);
 
     private @NonNullByDefault({}) ScheduledFuture<?> heartbeatFuture;
 
-    public RuuviHandler(Thing thing) {
+    public RuuviTagHandler(Thing thing) {
         super(thing);
     }
 
@@ -107,32 +98,13 @@ public class RuuviHandler extends BeaconBluetoothHandler {
     public void onScanRecordReceived(BluetoothScanNotification scanNotification) {
         synchronized (receivedStatus) {
             receivedStatus.set(true);
+            super.onScanRecordReceived(scanNotification);
             final byte[] manufacturerData = scanNotification.getManufacturerData();
             if (manufacturerData != null && manufacturerData.length > 0) {
                 final RuuviMeasurement ruuvitagData = parser.parse(manufacturerData);
                 logger.trace("Ruuvi received new scan notification for {}: {}", scanNotification.getAddress(),
                         ruuvitagData);
                 if (ruuvitagData != null) {
-                    // Per Ruuvi specification: once E1 format is detected, ignore Format 6 packets
-                    // This ensures BT5.0+ capable devices prefer E1 over Format 6
-                    Integer currentFormat = ruuvitagData.getDataFormat();
-                    if (currentFormat != null) {
-                        int detected = detectedFormat.get();
-                        if (detected == FORMAT_E1 && currentFormat == FORMAT_6) {
-                            // E1 already detected, discard Format 6 packet
-                            logger.trace("Ignoring Format 6 packet for {} as E1 format has already been detected",
-                                    scanNotification.getAddress());
-                            return;
-                        } else if (detected == 0 || detected == currentFormat) {
-                            // First detection or same format, record it
-                            detectedFormat.set(currentFormat);
-                        } else if (detected == FORMAT_6 && currentFormat == FORMAT_E1) {
-                            // Format 6 was detected first, but now E1 received - switch preference
-                            logger.debug("Switching from Format 6 to Format E1 for {} as per specification",
-                                    scanNotification.getAddress());
-                            detectedFormat.set(FORMAT_E1);
-                        }
-                    }
                     boolean atLeastOneRuuviFieldPresent = false;
                     for (Channel channel : getThing().getChannels()) {
                         ChannelUID channelUID = channel.getUID();
@@ -181,65 +153,17 @@ public class RuuviHandler extends BeaconBluetoothHandler {
                                 atLeastOneRuuviFieldPresent |= updateStateIfLinked(channelUID,
                                         ruuvitagData.getTxPower(), Units.DECIBEL_MILLIWATTS);
                                 break;
-                            case CHANNEL_ID_PM1:
-                                atLeastOneRuuviFieldPresent |= updateStateIfLinked(channelUID, ruuvitagData.getPm1(),
-                                        Units.MICROGRAM_PER_CUBICMETRE);
-                                break;
-                            case CHANNEL_ID_PM25:
-                                atLeastOneRuuviFieldPresent |= updateStateIfLinked(channelUID, ruuvitagData.getPm25(),
-                                        Units.MICROGRAM_PER_CUBICMETRE);
-                                break;
-                            case CHANNEL_ID_PM4:
-                                atLeastOneRuuviFieldPresent |= updateStateIfLinked(channelUID, ruuvitagData.getPm4(),
-                                        Units.MICROGRAM_PER_CUBICMETRE);
-                                break;
-                            case CHANNEL_ID_PM10:
-                                atLeastOneRuuviFieldPresent |= updateStateIfLinked(channelUID, ruuvitagData.getPm10(),
-                                        Units.MICROGRAM_PER_CUBICMETRE);
-                                break;
-                            case CHANNEL_ID_CO2:
-                                atLeastOneRuuviFieldPresent |= updateStateIfLinked(channelUID, ruuvitagData.getCo2(),
-                                        Units.PARTS_PER_MILLION);
-                                break;
-                            case CHANNEL_ID_VOC_INDEX:
-                                atLeastOneRuuviFieldPresent |= updateStateIfLinked(channelUID,
-                                        ruuvitagData.getVocIndex());
-                                break;
-                            case CHANNEL_ID_NOX_INDEX:
-                                atLeastOneRuuviFieldPresent |= updateStateIfLinked(channelUID,
-                                        ruuvitagData.getNoxIndex());
-                                break;
-                            case CHANNEL_ID_LUMINOSITY:
-                                atLeastOneRuuviFieldPresent |= updateStateIfLinked(channelUID,
-                                        ruuvitagData.getLuminosity(), Units.LUX);
-                                break;
-                            case CHANNEL_ID_CALIBRATION_COMPLETED:
-                                if (ruuvitagData.isCalibrationInProgress() != null) {
-                                    OnOffType status = ruuvitagData.isCalibrationInProgress() ? OnOffType.OFF
-                                            : OnOffType.ON;
-                                    atLeastOneRuuviFieldPresent |= updateStateIfLinked(channelUID, status);
-                                }
-                                break;
-                            case CHANNEL_ID_AIR_QUALITY_INDEX:
-                                atLeastOneRuuviFieldPresent |= updateStateIfLinked(channelUID,
-                                        MeasurementValueCalculator.airQualityIndex(ruuvitagData.getPm25(),
-                                                ruuvitagData.getCo2()),
-                                        Units.PERCENT);
-                                break;
                         }
                     }
                     if (atLeastOneRuuviFieldPresent) {
-                        // Update to ONLINE by super.onScanRecordReceived already, based on RSSI value
-                        super.onScanRecordReceived(scanNotification);
+                        // In practice, updated to ONLINE by super.onScanRecordReceived already, based on RSSI value
                     } else {
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                                 "Received Ruuvi Tag data but no fields could be parsed");
-                        return;
                     }
                 } else {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                             "Received bluetooth data which could not be parsed to any known Ruuvi Tag data formats");
-                    return;
                 }
             } else {
                 // Received Bluetooth scan with no manufacturer data
@@ -284,22 +208,6 @@ public class RuuviHandler extends BeaconBluetoothHandler {
         }
         if (isLinked(channelUID)) {
             updateState(channelUID, new DecimalType(value));
-        }
-        return true;
-    }
-
-    /**
-     * Update OnOffType channel state
-     *
-     * Update is done when value is not null.
-     *
-     * @param channelUID channel UID
-     * @param value value to update
-     * @return true (value is always present)
-     */
-    private boolean updateStateIfLinked(ChannelUID channelUID, OnOffType value) {
-        if (isLinked(channelUID)) {
-            updateState(channelUID, value);
         }
         return true;
     }

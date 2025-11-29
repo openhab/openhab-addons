@@ -45,8 +45,8 @@ public class RuuviTagHandlerFactory extends BaseThingHandlerFactory {
     protected ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
-            return new RuuviHandler(thing);
+        if (thingTypeUID.equals(RuuviTagBindingConstants.THING_TYPE_BEACON)) {
+            return new RuuviTagHandler(thing);
         }
 
         return null;
