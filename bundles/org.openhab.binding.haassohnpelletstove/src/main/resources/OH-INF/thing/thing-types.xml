@@ -41,7 +41,7 @@
 				<label>Refresh Rate</label>
 				<description>How often the pellet stove schedules a refresh after a channel is linked to an item.
 					Temperature data
-					will be refreshed according to this interval in seconds. Valid input is 1–999.</description>
+					will be refreshed according to this interval in seconds. Valid input is 1–1000.</description>
 				<advanced>true</advanced>
 				<default>30</default>
 			</parameter>

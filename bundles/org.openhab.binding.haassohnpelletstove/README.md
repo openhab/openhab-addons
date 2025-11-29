@@ -1,7 +1,7 @@
 # Haas+Sohn Pellet Stove Binding
 
-This binding communicates with a Haas+Sohn pellet stove through the optional
-Wi‑Fi module. More information about the Wi‑Fi module can be found here: <https://www.haassohn.com/de/ihr-plus/WLAN-Funktion>
+This binding communicates with a Haas+Sohn pellet stove through the optional Wi‑Fi module.
+More information about the Wi‑Fi module can be found here: <https://www.haassohn.com/de/ihr-plus/WLAN-Funktion>
 
 ## Supported Things
 
@@ -59,7 +59,7 @@ Number ZieltemperaturFeuer "ZieltemperaturFeuer" (g_FeuerThermostat) {ga="thermo
 Number TemperaturFeuer "TemperaturFeuer" (g_FeuerThermostat) {ga="thermostatTemperatureAmbient"}
 ```
 
-## Tested hardware
+## Tested Hardware
 
 The binding has been successfully tested with the following ovens:
 

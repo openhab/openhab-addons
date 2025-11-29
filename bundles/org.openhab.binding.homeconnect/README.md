@@ -336,7 +336,9 @@ The Home Connect API enforces rate [limits](https://developer.home-connect.com/d
 
 ### Error message 'Program not supported', 'Unsupported operation', or 'SDK.Error.UnsupportedOption'
 
-Not all appliance programs and program options are supported by the Home Connect API. Unfortunately, you can't use them. You will see error messages like the following in the binding UI (request log):
+Not all appliance programs and program options are supported by the Home Connect API.
+Unfortunately, you can't use them.
+You will see error messages like the following in the binding UI (request log):
 
 ```json
 {

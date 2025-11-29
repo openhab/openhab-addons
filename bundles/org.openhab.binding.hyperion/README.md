@@ -20,7 +20,8 @@ Automatic background discovery only works for Hyperion.ng servers as they advert
 
 ### Hyperion Server (V1)
 
-In order to use a Hyperion Server, it must be properly configured. You can do this either through a UI/REST or through static `.things` files.
+In order to use a Hyperion Server, it must be properly configured.
+You can do this either through a UI/REST or through static `.things` files.
 
 | Parameter      | Data type | Required | Example        |
 |----------------|-----------|----------|----------------|
@@ -39,7 +40,8 @@ Thing hyperion:serverV1:myServer [ host="192.168.0.10", port=19444, priority=50,
 
 ### Hyperion.ng Server
 
-In order to use a Hyperion.ng Server, it must be properly configured. You can do this either through a UI/REST or through static `.things` files.
+In order to use a Hyperion.ng Server, it must be properly configured.
+You can do this either through a UI/REST or through static `.things` files.
 
 | Parameter      | Data type | Required | Example        |
 |----------------|-----------|----------|----------------|

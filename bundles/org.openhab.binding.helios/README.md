@@ -24,8 +24,8 @@ Thing helios:ipvario213:gate [ipAddress="192.168.0.14", username="admin", passwo
 
 All devices support the following channels:
 
-| Channel Type ID | Item Type | Description                                                                   |
-|-----------------|-----------|-------------------------------------------------------------------------------|
+| Channel Type ID | Item Type | Description                                                                    |
+|-----------------|-----------|--------------------------------------------------------------------------------|
 | keypressed      | Trigger   | Code of a key pressed on the videophone keyboard                               |
 | keyreleased     | Trigger   | Code of a key released on the videophone keyboard                              |
 | callstate       | String    | State of the call being made                                                   |

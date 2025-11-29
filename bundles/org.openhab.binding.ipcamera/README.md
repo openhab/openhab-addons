@@ -41,7 +41,6 @@ Example:
 ```java
 Thing ipcamera:generic:Esp32Cam
 [
-Not all ONVIF cameras work with all of the methods, so testing first to confirm what works is a good idea and the presets cannot be created with the binding, only loaded after they are already created in a program like ODM.
     gifPreroll=1,
     snapshotUrl="http://192.168.1.181/capture",
     mjpegUrl="http://192.168.1.181:81/stream",
