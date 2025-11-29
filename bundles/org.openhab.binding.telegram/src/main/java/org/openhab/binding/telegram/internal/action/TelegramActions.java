@@ -559,7 +559,6 @@ public class TelegramActions implements ThingActions {
             @ActionInput(name = "replyToMessageId") @Nullable Integer replyToMessageId,
             @ActionInput(name = "disableNotification") @Nullable Boolean disableNotification,
             @ActionInput(name = "messageThreadId") @Nullable Integer messageThreadId) {
-
         TelegramHandler localHandler = handler;
         if (localHandler == null) {
             logger.warn("TelegramActions: Action service ThingHandler is null");

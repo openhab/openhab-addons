@@ -121,7 +121,6 @@ public class ChatGPTHandler extends BaseThingHandler {
                 if (msg != null) {
                     updateState(channelUID, new StringType(msg));
                 }
-
             } else {
                 logger.warn("Didn't receive any response from ChatGPT - this is unexpected.");
             }

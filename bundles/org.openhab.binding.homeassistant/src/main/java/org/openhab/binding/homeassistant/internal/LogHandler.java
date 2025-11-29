@@ -44,8 +44,9 @@ public class LogHandler extends Handler {
             logger.atLevel(level).log(message, record.getThrown());
         }
 
-        if (!isLoggable(record))
+        if (!isLoggable(record)) {
             return;
+        }
     }
 
     @Override

@@ -92,7 +92,7 @@ public class AzureBlobWatcherHandler extends BaseThingHandler {
     }
 
     private boolean refreshAzureBlobInformation() {
-        if (previousBlobListing.size() == 0) {
+        if (previousBlobListing.isEmpty()) {
             try {
                 previousBlobListing = WatcherCommon.initStorage(currentBlobListingFile,
                         config.azureAccountName + "-" + config.azureContainerName);

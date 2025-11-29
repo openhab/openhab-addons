@@ -131,7 +131,7 @@ public class FroniusConfigAuthUtil {
                 ha1 + ":" + nonce + ":" + String.format("%08x", nc) + ":" + cnonce + ":" + qop + ":" + ha2);
 
         // Fronius expects "SHA256" as algorithm name instead of the standard "SHA-256"
-        String algorithm = hashAlgorithm.equals("SHA-256") ? "SHA256" : "MD5";
+        String algorithm = "SHA-256".equals(hashAlgorithm) ? "SHA256" : "MD5";
         return String.format(DIGEST_AUTH_HEADER_FORMAT, username, realm, nonce, algorithm, uri, response, qop, nc,
                 cnonce);
     }

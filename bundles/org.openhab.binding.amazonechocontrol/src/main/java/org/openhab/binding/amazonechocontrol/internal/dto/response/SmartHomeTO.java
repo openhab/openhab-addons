@@ -39,7 +39,6 @@ public class SmartHomeTO {
     public List<JsonSmartHomeDevice> getLegacySmartHomeDevices() {
         if (data instanceof Data data && data.endpoints != null && data.endpoints instanceof Endpoints endpoints
                 && endpoints.items instanceof List<EndPointItemTO> items) {
-
             return items.stream().map(item -> item.legacyAppliance).filter(java.util.Objects::nonNull)
                     .map(device -> (@NonNull JsonSmartHomeDevice) device).toList();
         }
