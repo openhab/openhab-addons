@@ -11,6 +11,7 @@ This binding supports the following thing type:
 | ruuvitag_beacon  | Ruuvi Beacon (RuuviTag or Ruuvi Air)  |
 
 The `ruuvitag_beacon` thing type supports both RuuviTag and Ruuvi Air devices:
+
 - **RuuviTag**: Environmental sensors (temperature, humidity, pressure, acceleration)
 - **Ruuvi Air**: Air quality sensors (environmental + PM, CO2, VOC, NOx, luminosity)
 
