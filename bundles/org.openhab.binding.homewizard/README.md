@@ -4,18 +4,17 @@ The HomeWizard binding provides access to several HomeWizard devices by using th
 
 ## Installation
 
-There are two important points of attention:
+There are two important points to note:
 
 1. For API v1, the local API of each device must be enabled.
-1. For API v2, a bearer token needs to be obtained from the device. 
+1. For API v2, a bearer token needs to be obtained from the device.
 
-See <https://api-documentation.homewizard.com/docs/getting-started> for a more detailed description of the API and for instructions how to enable/use the API versions.
-
+See <https://api-documentation.homewizard.com/docs/getting-started> for a more detailed description of the API and for instructions on how to enable/use the API versions.
 
 ### Fixed Address
 
-The devices support mDNS discovery but the binding does not support that yet.
-As a result the devices should be reachable through a hostname or a fixed IP address.
+The devices support mDNS discovery, but the binding does not support that yet.
+As a result, the devices should be reachable through a hostname or a fixed IP address.
 Since the devices themselves have no option to set a fixed IP address you will need a different solution, for instance having your router hand out an IP address based upon the MAC address of the devices.
 
 ## Supported Things
@@ -25,12 +24,12 @@ The binding offers Things, providing access to all the supported HomeWizard devi
 | Thing         | Device              | Description                                                                                         |
 |---------------|---------------------|-----------------------------------------------------------------------------------------------------|
 | hwe-p1        | P1 Meter            | Reads total and current energy usage and total gas usage (v1 and v2).                               |
-| hwe-skt       | Energy Socket       | Reads total and current energy usage. Controls power switch, lock and ring brightness (v1).         |
+| hwe-skt       | Energy Socket       | Reads total and current energy usage. Controls power switch, lock, and ring brightness (v1).        |
 | hwe-wtr       | Watermeter          | Reads total and current water usage (v1).                                                           |
 | hwe-kwh       | kWh Meter           | Reads total and current energy usage (v1).                                                          |
 | hwe-bat       | Plug-In Battery     | Reads total and current energy usage and the current charge (v2).                                   |
 | p1_wifi_meter | Wi-Fi P1 Meter      | [Deprecated] Reads total and current energy usage and total gas usage.                              |
-| energy_socket | Wi-Fi Energy Socket | [Deprecated] Reads total and current energy usage. Controls power switch, lock and ring brightness. |
+| energy_socket | Wi-Fi Energy Socket | [Deprecated] Reads total and current energy usage. Controls power switch, lock, and ring brightness.|
 | watermeter    | Wi-Fi Watermeter    | [Deprecated] Reads total and current water usage.                                                   |
 
 ## Discovery
@@ -71,8 +70,8 @@ For DSMR5 meters this is generally once per second, for older versions the frequ
 | energy_import_t1          | Number:Energy             | This channel provides the energy usage meter reading for tariff 1 in kWh.                                    | hwe-p1                            |
 | energy_import_t2          | Number:Energy             | This channel provides the energy usage meter reading for tariff 2 in kWh.                                    | hwe-p1                            |
 | energy_export             | Number:Energy             | This channel provides the total energy feed-in meter reading in kWh.                                         | hwe-p1, hwe-skt, hwe-kwh, hwe-bat |
-| energy_export_t1          | Number:Energy             | This channel provides the energy feed-in meter reading for tarff 1 in kWh.                                   | hwe-p1                            |
-| energy_export_t2          | Number:Energy             | This channel provides the energy feed-in meter reading for tarff 2 in kWh.                                   | hwe-p1                            |
+| energy_export_t1          | Number:Energy             | This channel provides the energy feed-in meter reading for tariff 1 in kWh.                                  | hwe-p1                            |
+| energy_export_t2          | Number:Energy             | This channel provides the energy feed-in meter reading for tariff 2 in kWh.                                  | hwe-p1                            |
 | reactive_power            | Number                    | This channel provides the active reactive power in Volt-Ampere reactive.                                     | hwe-p1, hwe-skt, hwe-kwh          |
 | apparent_power            | Number                    | This channel provides the active apparent power in Volt-Ampere.                                              | hwe-p1, hwe-skt, hwe-kwh          |
 | power_factor              | Number:Dimensionless      | This channel provides the active power factor.                                                               | hwe-p1, hwe-skt, hwe-kwh          |

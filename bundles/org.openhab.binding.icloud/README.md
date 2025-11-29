@@ -30,9 +30,9 @@ The account can be connected to multiple Apple devices which are represented as 
 You may create multiple account Things for multiple accounts.
 
 If your Apple account has 2-factor-authentication enabled configuration requires two steps.
-First start by adding the Apple ID and password to your account thing configuration.
+First start by adding the Apple ID and password to your account Thing configuration.
 You will receive a notification with a code on one of your Apple devices then.
-Add this code to the code parameter of the thing then and wait.
+Add this code to the code parameter of the Thing then and wait.
 The binding should be reinitialized and perform the authentication.
 
 ### Device Thing

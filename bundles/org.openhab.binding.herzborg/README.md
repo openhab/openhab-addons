@@ -4,10 +4,10 @@ This binding supports smart curtain motors by Herzborg (<http://www.herzborg.com
 
 ## Supported Things
 
-- `herzborg` A bridge thing that connects to a RS485 serial bus.
-- `curtain` A curtain motor thing that can be controlled via the `herzborg` bridge .
+- `herzborg` A bridge Thing that connects to a RS485 serial bus.
+- `curtain` A curtain motor Thing that can be controlled via the `herzborg` bridge .
 
-The binding was developed and tested using DT300TV-1.2/14 type motor; others are expected to be compatible
+The binding was developed and tested using DT300TV-1.2/14 type motor; others are expected to be compatible.
 
 ## Discovery
 
@@ -21,7 +21,7 @@ Due to nature of serial bus being used, no automatic discovery is possible.
 |-----------|---------------------------------------------------------|
 | port      | Serial port name to use                                 |
 
-Herzborg devices appear to use fixed 9600 8n1 communication parameters, so no other parameters are needed
+Herzborg devices appear to use fixed 9600 8n1 communication parameters, so no other parameters are needed.
 
 ### Curtain Motor Thing (id "curtain")
 
@@ -34,7 +34,7 @@ Herzborg devices appear to use fixed 9600 8n1 communication parameters, so no ot
 
 | channel    | type          | description                                   | Read-only |
 |------------|---------------|-----------------------------------------------|-----------|
-| position   | RollerShutter | Controls position of the curtain. Position reported back is in percents; 0 - fully closed; 100 - fully open | N |
+| position   | RollerShutter | Controls position of the curtain. Position reported back is in percent; 0 - fully closed; 100 - fully open | N |
 | mode       | String        | Reports current motor mode:                   | Y |
 |            |               | 0 - Stop                                      |   |
 |            |               | 1 - Open                                      |   |
@@ -49,14 +49,14 @@ Herzborg devices appear to use fixed 9600 8n1 communication parameters, so no ot
 |            |               | 4 - single button cyclic switch               |   |
 | hvSwitch   | String        | Main (high-voltage) switch mode:              | N |
 |            |               | 0 - dual channel biased switch                |   |
-|            |               | 1 - hotel mode（power on while card in）        |   |
+|            |               | 1 - hotel mode (power on while card in)       |   |
 |            |               | 2 - dual channel rocker switch                |   |
 
-All the channels are read-write
+All channels except mode are read-write.
 
 ## Example
 
-herzborg.things:
+`herzborg.things`:
 
 ```java
 Bridge herzborg:serial_bus:my_herzborg_bus [ port="/dev/ttyAMA1" ]
@@ -65,13 +65,13 @@ Bridge herzborg:serial_bus:my_herzborg_bus [ port="/dev/ttyAMA1" ]
 }
 ```
 
-herzborg.items:
+`herzborg.items`:
 
 ```java
 Rollershutter LivingRoom_Window {channel="herzborg:curtain:livingroom:position"}
 ```
 
-herzborg.sitemap:
+`herzborg.sitemap`:
 
 ```perl
 Frame label="Living room curtain"
@@ -79,5 +79,4 @@ Frame label="Living room curtain"
     Switch item=LivingRoom_Window label="Control" mappings=["DOWN"="Close", "STOP"="Stop", "UP"="Open"]
     Slider item=LivingRoom_Window label="Position [%d %%]" minValue=0 maxValue=100
 }
-
 ```
