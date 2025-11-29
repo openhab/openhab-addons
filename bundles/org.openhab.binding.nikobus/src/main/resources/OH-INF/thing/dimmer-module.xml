@@ -10,7 +10,7 @@
 		</supported-bridge-type-refs>
 
 		<label>Dimmer Module</label>
-		<description>Nikobus Dimmer module</description>
+		<description>Nikobus dimmer module</description>
 		<semantic-equipment-tag>LightSource</semantic-equipment-tag>
 
 		<channels>

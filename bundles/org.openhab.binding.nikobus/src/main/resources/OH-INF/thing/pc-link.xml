@@ -13,7 +13,7 @@
 				<label>Port</label>
 				<context>serial-port</context>
 				<limitToOptions>false</limitToOptions>
-				<description>The serial port used to connect to the Nikobus PC Link.</description>
+				<description>The serial port used to connect to the Nikobus PC-Link.</description>
 			</parameter>
 			<parameter name="refreshInterval" type="integer" max="65535" min="10" unit="s">
 				<default>60</default>

@@ -20,7 +20,7 @@ Make sure that you've selected the correct primary address in the [network setti
 
 If you want to manage the callbacks from the Nuki Bridge to the openHAB server by yourself, you need to set _manageCallbacks_ to `false`.
 Then add the callback on the Nuki Bridge via Bridge API Endpoint _/callback/add_ in the format `http://<openHAB_IP>:<openHAB_PORT>/nuki/bcb`.
-The Sheet [NukiBridgeAPI](https://docs.google.com/spreadsheets/d/1SGKWhqwqRyOGbv4NEq-8PAPjBORRixvEjRuzO-nVabQ) is a helpfull tool for listing, adding and removing callbacks.
+The sheet [NukiBridgeAPI](https://docs.google.com/spreadsheets/d/1SGKWhqwqRyOGbv4NEq-8PAPjBORRixvEjRuzO-nVabQ) is a helpful tool for listing, adding and removing callbacks.
 
 ## Supported Bridges
 
@@ -75,12 +75,12 @@ This is a common thing for all Nuki smart lock products - Nuki Smart Lock 1.0/2.
 | lowBattery       | Switch | Low battery warning channel                                                                                                                                                             |
 | keypadLowBattery | Switch | Indicates if keypad connected to Nuki Lock has low battery                                                                                                                              |
 | batteryLevel     | Number | Current battery level                                                                                                                                                                   |
-| batteryCharging  | Swtich | Flag indicating if the batteries of the Nuki device are charging at the moment                                                                                                          |
+| batteryCharging  | Switch | Flag indicating if the batteries of the Nuki device are charging at the moment                                                                                                          |
 | doorsensorState  | Number | Read only channel for monitoring door sensor state, see [supported values](#supported-doorsensorstate-values)                                                                           |
 
 ##### Supported lockState commands
 
-These values can be sent to _lockState_ channel as a commands:
+These values can be sent to the _lockState_ channel as commands:
 
 | Command | Name                     |
 | ------- | ------------------------ |
@@ -114,7 +114,7 @@ Unfortunately the Nuki Bridge is not reporting any transition states (e.g. for L
 | 1     | Deactivated         |
 | 2     | Closed              |
 | 3     | Open                |
-| 4     | Door state unknonwn |
+| 4     | Door state unknown |
 | 5     | Calibrating         |
 | 16    | Uncalibrated        |
 | 240   | Removed             |
