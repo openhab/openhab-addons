@@ -414,6 +414,7 @@
 /bundles/org.openhab.binding.tuya/ @J-N-K
 /bundles/org.openhab.binding.unifi/ @mgbowman @Hilbrand
 /bundles/org.openhab.binding.unifiedremote/ @GiviMAD
+/bundles/org.openhab.binding.unifiprotect/ @digitaldan
 /bundles/org.openhab.binding.upb/ @marcusb
 /bundles/org.openhab.binding.upnpcontrol/ @mherwege
 /bundles/org.openhab.binding.urtsi/ @openhab/add-ons-maintainers
