@@ -12,17 +12,17 @@ For Helios ventilation devices supporting the easyControls web interface, the se
 
 ## Supported Things
 
-There is only one thing type supported by this binding: a Helios Ventilation System KWL EC 200/300/500 Pro from Helios.
+There is only one Thing type supported by this binding: a Helios Ventilation System KWL EC 200/300/500 Pro from Helios.
 The binding was developed and tested on a KWL EC 200 Pro device.
 
 ## Binding Configuration
 
 The binding requires access to the serial device connecting to the RS485 bus as described in <https://www.openhab.org/docs/administration/serial.html>.
-Otherwise only thing configuration is needed.
+Otherwise only Thing configuration is needed.
 
 ## Thing Configuration
 
-The binding supports only one thing and requires the configuration of the serial port (typically /dev/ttyUSB0 on Linux and COM3 on Windows) and optionally the polling time which is the cycle time after which the binding tries to reconnect to the bus and requests data updates.
+The binding supports only one Thing and requires the configuration of the serial port (typically /dev/ttyUSB0 on Linux and COM3 on Windows) and optionally the polling time which is the cycle time after which the binding tries to reconnect to the bus and requests data updates.
 
 ## Channels
 

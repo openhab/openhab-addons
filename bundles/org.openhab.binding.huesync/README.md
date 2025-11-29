@@ -20,8 +20,8 @@ The integration happens directly through the Hue [HDMI Sync Box API](https://dev
 
 ## Supported Things
 
-This binding provides only one thing type: **`box`**.
-Each thing will represent a Hue Play HDMI sync box.
+This binding provides only one Thing type: **`box`**.
+Each Thing will represent a Hue Play HDMI sync box.
 
 ## Discovery
 
@@ -50,10 +50,10 @@ If the device is not discovered you can check if it is properly configured and d
 </p>
 
 mDNS uses link-local multicast addresses; its scope is limited to a single physical or logical LAN ([Layer 3](https://en.wikipedia.org/wiki/OSI_model#Layer_3:_Network_layer")).
-If your device is not automatically discovered, create a thing and manually configure the "host" parameter.
+If your device is not automatically discovered, create a Thing and manually configure the "host" parameter.
 
-To communicate with the sync box, you need to couple the thing with the hardware (registration).
-The thing will start this process automatically.
+To communicate with the sync box, you need to couple the Thing with the hardware (registration).
+The Thing will start this process automatically.
 To complete the registration, simply press the "coupling" button on the sync box for 3 seconds:
 
 ![Device Registration](doc/device_registration.png)

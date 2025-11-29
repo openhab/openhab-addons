@@ -5,11 +5,11 @@ This binding will keep track of your rubbish collection days and uses the [Fight
 
 ## Supported Things
 
-A single supported thing called `collection`.
+A single supported Thing called `collection`.
 
 ## Thing Configuration
 
-The thing supports one setting labeled `address`, which is your street number and name as it appears on Google.<br>
+The Thing supports one setting labeled `address`, which is your street number and name as it appears on Google.<br>
 _For example:
 1 Victoria Street_
 

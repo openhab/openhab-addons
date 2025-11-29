@@ -37,7 +37,7 @@ After the bridge has been added and authorized, devices are discovered automatic
 
 ## Channels
 
-| Channel Type ID | Item Type | Read only | Description | Available on thing |
+| Channel Type ID | Item Type | Read only | Description | Available on Thing |
 | --------------- | --------- | --------- | ----------- | ------------------ |
 | power_state | Switch | false | This setting describes the current power state of the home appliance. | dishwasher, oven, coffeemaker, hood, hob, washer, washerdryer  |
 | door_state | Contact | true | This status describes the door state of a home appliance. A status change is either triggered by the user operating the home appliance locally (i.e. opening/closing door) or automatically by the home appliance (i.e. locking the door). | dishwasher, washer, washerdryer, dryer, oven, fridgefreezer |
@@ -124,7 +124,7 @@ The Home Connect bridge can be configured in the openHAB UI as follows:
 1. Go to the Inbox and press the add button
 1. Choose `Home Connect Binding`
 1. Select `Home Connect API`
-1. Setup and save thing
+1. Setup and save Thing
     - **client id:** your application client id
     - **client secret:** your application client secret
     - **simulator:** false

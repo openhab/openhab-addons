@@ -207,4 +207,4 @@ end
 
 ### Thing status
 
-Check thing status for errors.
+Check Thing status for errors.

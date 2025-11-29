@@ -5,18 +5,18 @@ The API exposed by the Harmony Hub is relatively limited, but it does allow for 
 
 ## Overview
 
-The Harmony binding represents a "Hub" as a bridge thing type and "Devices" as things connected to the bridge.
+The Harmony binding represents a "Hub" as a bridge Thing type and "Devices" as things connected to the bridge.
 
 ### Hub
 
-A hub (bridge thing) represents a physical Harmony Hub.
+A hub (bridge Thing) represents a physical Harmony Hub.
 The hub possesses a single channel with the id "activity" which is a StringType set to the name of the current activity.
 This channel is dynamically generated with the possible activity strings listed as channel state options.
 
 ### Devices
 
 Devices are dynamically created.
-There is a single device thing for every physical device configured on the harmony hub.
+There is a single device Thing for every physical device configured on the harmony hub.
 Each device has a single channel with the id "button" which sends a string with the name of the button to press on the device.
 This channel is dynamically generated with the possible button press strings listed as channel state options.
 
@@ -33,18 +33,18 @@ The binding requires no special configuration.
 
 This is optional, it is recommended to let the binding discover and add hubs and devices.
 
-To manually configure a Harmony Hub thing you may specify its host name ("host") as well as an optional search timeout value in seconds ("discoveryTimeout") and optional heartbeat interval (heartBeatInterval) in seconds.
+To manually configure a Harmony Hub Thing you may specify its host name ("host") as well as an optional search timeout value in seconds ("discoveryTimeout") and optional heartbeat interval (heartBeatInterval) in seconds.
 
-In the thing file, this looks for example like
+In the Thing file, this looks for example like
 
 ```java
 Bridge harmonyhub:hub:GreatRoom [ host="192.168.1.100"]
 ```
 
-To manually configure a Harmony device thing you may specify its numeric ID ("id") or its name ("name"), but not both.
+To manually configure a Harmony device Thing you may specify its numeric ID ("id") or its name ("name"), but not both.
 Note that this is prefixed by the hub the device is controlled from.
 
-In the thing file, this looks e.g. like
+In the Thing file, this looks e.g. like
 
 ```java
 Bridge harmonyhub:hub:GreatRoom [ name="Great Room"] {
@@ -82,7 +82,7 @@ String HarmonyHubGreatButton            { channel="harmonyhub:hub:GreatRoom:butt
 Player HarmonyHubGreatPlayer            { channel="harmonyhub:hub:GreatRoom:player" }
 ```
 
-Devices can be sent button commands directly, regardless if they are part of the current running activity or not. Note that you must define a Harmony device thing for this to work.
+Devices can be sent button commands directly, regardless if they are part of the current running activity or not. Note that you must define a Harmony device Thing for this to work.
 
 ```java
 String HarmonyGreatRoomDenon            "Denon Button Press" (gMain) { channel="harmonyhub:device:GreatRoom:denon:buttonPress" }

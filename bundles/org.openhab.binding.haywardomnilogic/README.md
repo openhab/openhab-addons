@@ -6,7 +6,7 @@ The Hayward OmniLogic API interacts with Hayward's cloud servers and requires an
 
 ## Supported Things
 
-The table below lists the Hayward OmniLogic binding thing types:
+The table below lists the Hayward OmniLogic binding Thing types:
 
 | Things                       | Description                                                                     | Thing Type    |
 |------------------------------|---------------------------------------------------------------------------------|---------------|
@@ -172,6 +172,6 @@ Note: Item types such as Number:Dimensionless should have their units (e.g., %, 
 
 ## Full Example
 
-After installing the binding, manually add the Hayward Connection thing and enter your credentials.
+After installing the binding, manually add the Hayward Connection Thing and enter your credentials.
 All pool items can be automatically discovered by scanning the bridge.
 Go to the Inbox and add the things.

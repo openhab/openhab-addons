@@ -4,7 +4,7 @@
 
 ## Use of the binding
 
-The Iammeter is exposed as one thing with a number of channels that can be used to read the values for different aspects of your Iammeter devices.
+The Iammeter is exposed as one Thing with a number of channels that can be used to read the values for different aspects of your Iammeter devices.
 
 ## Setup of the binding
 

@@ -4,8 +4,8 @@ This binding supports smart curtain motors by Herzborg (<http://www.herzborg.com
 
 ## Supported Things
 
-- `herzborg` A bridge thing that connects to a RS485 serial bus.
-- `curtain` A curtain motor thing that can be controlled via the `herzborg` bridge .
+- `herzborg` A bridge Thing that connects to a RS485 serial bus.
+- `curtain` A curtain motor Thing that can be controlled via the `herzborg` bridge .
 
 The binding was developed and tested using DT300TV-1.2/14 type motor; others are expected to be compatible.
 

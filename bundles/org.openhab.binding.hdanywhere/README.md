@@ -10,7 +10,7 @@ The matrices can be controlled by either UDP/IP and/or serial connections, but d
 
 ## Supported Things
 
-This binding currently supports the following thing types:
+This binding currently supports the following Thing types:
 
 - _multiroomplus_ : Multiroom+ V3 (**Note:** This product is no longer sold by HDanywhere)
 - _mhub4k431_ : MHUB 4K (4X3+1)
@@ -25,7 +25,7 @@ This binding does not require any special configuration.
 
 ## Thing Configuration
 
-Each thing requires the IP address of the matrix, and the interval in between status updates that are fetched from the matrix.
+Each Thing requires the IP address of the matrix, and the interval in between status updates that are fetched from the matrix.
 Additionally, the _multiroomplus_ has an additional required parameter 'ports' to specify the number of physical ports (e.g., 4x4, 8x8, ...) of the matrix.
 
 ```java

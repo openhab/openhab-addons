@@ -58,17 +58,17 @@ You might also need to edit the names and types of your items, depending on the 
 
 ### Migration via Automatic Discovery Services
 
-When new API v2 things are created via the discovery services, then if a matching legacy API v1 thing exists, the new v2 thing will clone some of the attributes of the existing API v1 thing.
-And also, if a legacy API v1 thing exists and has items linked to its channels, then the new API v2 thing will replicate the links between those items and the respective new API v2 thing's channels.
+When new API v2 things are created via the discovery services, then if a matching legacy API v1 Thing exists, the new v2 Thing will clone some of the attributes of the existing API v1 Thing.
+And also, if a legacy API v1 Thing exists and has items linked to its channels, then the new API v2 Thing will replicate the links between those items and the respective new API v2 Thing's channels.
 
 ### Migration via a `.things` File
 
-You need to manually edit your bridge and thing definitions as shown below:
+You need to manually edit your bridge and Thing definitions as shown below:
 
 - Bridge definitions change from `hue:bridge:bridgename` to `hue:bridge-api2:bridgename`.
 - Bridge configuration parameters change `userName` to `applicationKey`.
-- Physical thing definitions change from `hue:0100:thingname` or `hue:0210:thingname` etc. to `hue:device:thingname`.
-- Room or zone thing definitions change from `hue:group:thingname` to `hue:room:thingname` resp. `hue:zone:thingname`.
+- Physical Thing definitions change from `hue:0100:thingname` or `hue:0210:thingname` etc. to `hue:device:thingname`.
+- Room or zone Thing definitions change from `hue:group:thingname` to `hue:room:thingname` resp. `hue:zone:thingname`.
 - Thing configuration parameters change from `lightId` or `sensorId` etc. to `resourceId`.
 
 Notes:

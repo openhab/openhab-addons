@@ -15,20 +15,20 @@ An account must be manually added and configured.
 
 The Controller Thing type is the primary way most users will control and monitor their irrigation system.
 This allows full control over zones, sensors and weather forecasts.<br>
-Changes made through this thing type will be reflected in the Hydrawise mobile and web applications as well as in their reporting modules.
+Changes made through this Thing type will be reflected in the Hydrawise mobile and web applications as well as in their reporting modules.
 Controller Things require a parent `account` Bridge
 
 ### `local` Thing
 
-The Local thing type uses an undocumented API that allows direct HTTP access to an irrigation controller on the user's network.
-This provides a subset of features compared to the Cloud thing type, limited to basic zone control.
+The Local Thing type uses an undocumented API that allows direct HTTP access to an irrigation controller on the user's network.
+This provides a subset of features compared to the Cloud Thing type, limited to basic zone control.
 Controlling zones through the local API will not be reported back to the cloud service or the Hydrawise mobile/web applications, and reporting functionality will not reflect the locally controlled state.
 
 Local control may not be available on later Hydrawise controller firmware versions.
 
 Use Cases
 
-- The Local thing can be useful when testing zones, as there is no delay when starting/stopping zones as compared to the cloud API, which can take anywhere between 5-15 seconds.
+- The Local Thing can be useful when testing zones, as there is no delay when starting/stopping zones as compared to the cloud API, which can take anywhere between 5-15 seconds.
 - This is also useful if you wish to not use the cloud scheduling at all and use openHAB as the irrigation scheduling system.
 
 ## Thing Configuration
@@ -87,7 +87,7 @@ Use Cases
 
 #### Zone Channel Group
 
-Up to 36 total zones are supported per Local or Cloud thing
+Up to 36 total zones are supported per Local or Cloud Thing
 
 | channel group ID | Description               |
 |------------------|---------------------------|

@@ -4,7 +4,7 @@ This binding supports [HP Printers](https://store.hp.com/us/en/cv/printers), whi
 
 ## Supported Things
 
-There is only one thing type named `printer`.
+There is only one Thing type named `printer`.
 All channels are added dynamically depending on the type of printer and its capabilities.
 
 ## Discovery

@@ -34,7 +34,7 @@ The new user should have the following configuration:
 
 The user and password must then be entered in the 'Username' and 'Password' settings.
 
-If this is not done, the binding will not be able to connect to the CCU and the CCU thing will stay uninitialized and set a timeout exception or an authentication error:
+If this is not done, the binding will not be able to connect to the CCU and the CCU Thing will stay uninitialized and set a timeout exception or an authentication error:
 
 ```text
 xxx-xx-xx xx:xx:xx.xxx [hingStatusInfoChangedEvent] - - 'homematic:bridge:xxx' changed from INITIALIZING to OFFLINE (COMMUNICATION_ERROR): java.net.SocketTimeoutException: Connect Timeout
@@ -192,7 +192,7 @@ Bridge homematic:bridge:occu  [ gatewayAddress="..."]
 
 Things are all discovered automatically.
 
-If you really like to manually configure a thing:
+If you really like to manually configure a Thing:
 
 ```java
 Bridge homematic:bridge:ccu [ gatewayAddress="..." ]
@@ -231,7 +231,7 @@ The disadvantage is, of course, that all events for this channel are delayed.
 ```
 
 The `Type` is the device type, channel number, and UPPERCASE channel name separated with an underscore.
-Note that for Homegear devices, in contrast to the specification of the thing above, no `HG-` prefix is needed for the specification of the type of the channel.
+Note that for Homegear devices, in contrast to the specification of the Thing above, no `HG-` prefix is needed for the specification of the type of the channel.
 
 The channel configs are optional.
 
@@ -677,8 +677,8 @@ Var_1.refresh
 
 ::::
 
-**Note:** adding new and removing deleted variables from the GATEWAY-EXTRAS thing is currently not supported.
-You have to delete the thing, start a scan and add it again.
+**Note:** adding new and removing deleted variables from the GATEWAY-EXTRAS Thing is currently not supported.
+You have to delete the Thing, start a scan and add it again.
 
 **`openhab.log` contains an exception with message: `Buffering capacity 2097152 exceeded` resp. discovery detects no devices**
 

@@ -4,15 +4,15 @@ This binding allows using HTTP to bring external data into openHAB or execute HT
 
 ## Supported Things
 
-Only one thing named `url` is available.
+Only one Thing named `url` is available.
 It can be extended with different channels.
 
 ## Thing Configuration
 
 | parameter             | optional | default | description                                                                                                                                                                |
 |-----------------------|----------|---------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `baseURL`             | no       | -       | The base URL (including protocol `http://` or `https://`) for this thing. Can be extended in channel-configuration.                                                        |
-| `refresh`             | no       | 30      | Time in seconds between two refresh calls for the channels of this thing.                                                                                                  |
+| `baseURL`             | no       | -       | The base URL (including protocol `http://` or `https://`) for this Thing. Can be extended in channel-configuration.                                                        |
+| `refresh`             | no       | 30      | Time in seconds between two refresh calls for the channels of this Thing.                                                                                                  |
 | `timeout`             | no       | 3000    | Timeout for HTTP requests in ms.                                                                                                                                           |
 | `bufferSize`          | no       | 2048    | The buffer size for the response data (in kB).                                                                                                                             |
 | `delay`               | no       | 0       | Delay between two requests in ms (advanced parameter).                                                                                                                     |
@@ -25,7 +25,7 @@ It can be extended with different channels.
 | `encoding`            | yes      | -       | Encoding to be used if no encoding is found in responses (advanced parameter).                                                                                             |
 | `headers`             | yes      | -       | Additional headers that are sent along with the request. Format is "header=value". Multiple values can be stored as `headers="key1=value1", "key2=value2", "key3=value3"`. |
 | `ignoreSSLErrors`     | no       | false   | If set to true, ignores invalid SSL certificate errors. This is potentially dangerous.                                                                                     |
-| `strictErrorHandling` | no       | false   | If set to true, thing status is changed depending on last request result (failed = `OFFLINE`). Failed requests result in `UNDEF` for channel values.                       |
+| `strictErrorHandling` | no       | false   | If set to true, Thing status is changed depending on last request result (failed = `OFFLINE`). Failed requests result in `UNDEF` for channel values.                       |
 | `userAgent`           | yes      | (yes )  | Sets a custom user agent (default is "Jetty/version", e.g. "Jetty/9.4.20.v20190813").                                                                                      |
 
 _Note:_ Optional "no" means that you have to configure a value unless a default is provided, and you are ok with that setting.
@@ -43,9 +43,9 @@ When automatic encoding is not possible (e.g. because you need to include an enc
 
 ## Channels
 
-The thing has two channels of type `request-date-time` which provide the timestamp of the last successful (`last-success`) and last failed (`last-failure`) request.
+The Thing has two channels of type `request-date-time` which provide the timestamp of the last successful (`last-success`) and last failed (`last-failure`) request.
 
-Additionally, the thing can be extended with data channels.
+Additionally, the Thing can be extended with data channels.
 Each item type has its own channel-type.
 Depending on the channel-type, channels have different configuration options.
 All channel-types (except `image`) have `stateExtension`, `commandExtension`, `stateTransformation`, `commandTransformation` and `mode` parameters.

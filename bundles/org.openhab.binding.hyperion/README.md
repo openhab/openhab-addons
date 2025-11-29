@@ -31,7 +31,7 @@ In order to use a Hyperion Server, it must be properly configured. You can do th
 
 To manually configure a Hyperion Server you must specify the following parameters: host, port, priority and polling frequency.
 
-In the thing file, this looks for e.g. like
+In the Thing file, this looks for e.g. like
 
 ```java
 Thing hyperion:serverV1:myServer [ host="192.168.0.10", port=19444, priority=50, poll_frequency=15]

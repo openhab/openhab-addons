@@ -12,16 +12,16 @@ Connection to the bridge is done via a Telnet connection on port 1255.
 
 Bridge:
 The binding supports a bridge to connect to the HEOS network.
-A bridge uses the thing ID `bridge`.
+A bridge uses the Thing ID `bridge`.
 
 Player:
 A generic player is supported via this binding.
 Currently no differences are made between the players.
-A player uses the thing ID `player`.
+A player uses the Thing ID `player`.
 
 Groups:
 The binding supports HEOS groups.
-A group uses the thing ID `group`.
+A group uses the Thing ID `group`.
 
 ## Discovery
 
@@ -288,11 +288,11 @@ This section gives some detailed explanations how to use the binding.
 ### Grouping Players
 
 Players can be grouped via the binding.
-The easiest way to do this is to use the created Group type thing. To group them, simply use the `Ungroup` channel on the Group. Switching this switch ON and OFF will group and ungroup that group.
+The easiest way to do this is to use the created Group type Thing. To group them, simply use the `Ungroup` channel on the Group. Switching this switch ON and OFF will group and ungroup that group.
 The first player that is selected will be the group leader.
 Therefore, changing play/pause and some other things at any player (which is included in that group) will also change that for the whole group.
 Muting and volume, on the other hand, can be changed individually for each player, also for the group leader.
-If you want to change that for the whole group, you have to do it via the Group thing.
+If you want to change that for the whole group, you have to do it via the Group Thing.
 
 ### Inputs
 
@@ -397,7 +397,7 @@ Multiple actions are supported by this binding. In classic rules these are acces
 ```java
  val actions = getActions("heos","heos:bridge:bridgeId")
  if(null === actions) {
-        logInfo("actions", "Actions not found, check thing ID")
+        logInfo("actions", "Actions not found, check Thing ID")
         return
  } else {
         actions.playInputFromPlayer(-3213214, "aux_in_1", 89089081)

@@ -12,9 +12,9 @@ There is no specific binding configuration.
 
 ## Thing Configuration
 
-The ipvario221 thing requires the IP address of the videophone, and the username and password as a configuration value in order for the binding to log into the videophone.
+The ipvario221 Thing requires the IP address of the videophone, and the username and password as a configuration value in order for the binding to log into the videophone.
 
-In the thing file, this looks for example like
+In the Thing file, this looks for example like
 
 ```java
 Thing helios:ipvario213:gate [ipAddress="192.168.0.14", username="admin", password="mypassword"]
