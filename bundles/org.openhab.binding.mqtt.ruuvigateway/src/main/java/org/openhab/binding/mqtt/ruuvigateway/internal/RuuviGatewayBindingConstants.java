@@ -32,7 +32,7 @@ public class RuuviGatewayBindingConstants {
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_BEACON = new ThingTypeUID(BINDING_ID, "ruuvitag_beacon");
 
-    // Channel IDs - Environmental measurements (RuuviTag)
+    // Channel IDs
     public static final String CHANNEL_ID_BATTERY = "batteryVoltage";
     public static final String CHANNEL_ID_DATA_FORMAT = "dataFormat";
     public static final String CHANNEL_ID_TEMPERATURE = "temperature";
@@ -45,19 +45,6 @@ public class RuuviGatewayBindingConstants {
     public static final String CHANNEL_ID_MEASUREMENT_SEQUENCE_NUMBER = "measurementSequenceNumber";
     public static final String CHANNEL_ID_MOVEMENT_COUNTER = "movementCounter";
 
-    // Channel IDs - Air Quality measurements (Ruuvi Air Format 6+)
-    public static final String CHANNEL_ID_PM1 = "pm1";
-    public static final String CHANNEL_ID_PM25 = "pm25";
-    public static final String CHANNEL_ID_PM4 = "pm4";
-    public static final String CHANNEL_ID_PM10 = "pm10";
-    public static final String CHANNEL_ID_CO2 = "co2";
-    public static final String CHANNEL_ID_VOC_INDEX = "vocIndex";
-    public static final String CHANNEL_ID_NOX_INDEX = "noxIndex";
-    public static final String CHANNEL_ID_LUMINOSITY = "luminosity";
-    public static final String CHANNEL_ID_CALIBRATION_COMPLETED = "calibrationCompleted";
-    public static final String CHANNEL_ID_AIR_QUALITY_INDEX = "airQualityIndex";
-
-    // Channel IDs - Gateway metadata
     public static final String CHANNEL_ID_RSSI = "rssi";
     public static final String CHANNEL_ID_TS = "ts";
     public static final String CHANNEL_ID_GWTS = "gwts";
