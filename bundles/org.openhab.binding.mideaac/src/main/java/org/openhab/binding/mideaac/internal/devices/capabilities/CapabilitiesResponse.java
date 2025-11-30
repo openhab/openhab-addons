@@ -10,22 +10,30 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.mideaac.internal.discovery;
+package org.openhab.binding.mideaac.internal.devices.capabilities;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.core.config.discovery.DiscoveryResult;
 
 /**
- * Discovery {@link DiscoveryHandler}
- * 
- * @author Jacek Dobrowolski - Initial contribution
+ * The {@link CapabilityResponse} handles the raw capability message
+ * from the device
+ *
+ * @author Bob Eckhoff - Initial contribution
  */
 @NonNullByDefault
-public interface DiscoveryHandler {
+public class CapabilitiesResponse {
+    private final byte[] rawData;
+
     /**
-     * Discovery result
+     * Initialization
      * 
-     * @param discoveryResult Midea device
+     * @param rawData as bytes
      */
-    public void discovered(DiscoveryResult discoveryResult);
+    public CapabilitiesResponse(byte[] rawData) {
+        this.rawData = rawData;
+    }
+
+    public byte[] getRawData() {
+        return rawData;
+    }
 }

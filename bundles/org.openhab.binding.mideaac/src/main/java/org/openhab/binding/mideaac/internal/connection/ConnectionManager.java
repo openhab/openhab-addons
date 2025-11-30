@@ -20,25 +20,29 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.HexFormat;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mideaac.internal.Utils;
+import org.openhab.binding.mideaac.internal.callbacks.Callback;
 import org.openhab.binding.mideaac.internal.cloud.CloudProvider;
 import org.openhab.binding.mideaac.internal.connection.exception.MideaAuthenticationException;
 import org.openhab.binding.mideaac.internal.connection.exception.MideaConnectionException;
 import org.openhab.binding.mideaac.internal.connection.exception.MideaException;
-import org.openhab.binding.mideaac.internal.handler.Callback;
-import org.openhab.binding.mideaac.internal.handler.CommandBase;
-import org.openhab.binding.mideaac.internal.handler.CommandSet;
-import org.openhab.binding.mideaac.internal.handler.EnergyResponse;
-import org.openhab.binding.mideaac.internal.handler.HumidityResponse;
-import org.openhab.binding.mideaac.internal.handler.Packet;
-import org.openhab.binding.mideaac.internal.handler.Response;
-import org.openhab.binding.mideaac.internal.handler.TemperatureResponse;
-import org.openhab.binding.mideaac.internal.handler.capabilities.CapabilitiesResponse;
+import org.openhab.binding.mideaac.internal.devices.CommandBase;
+import org.openhab.binding.mideaac.internal.devices.Packet;
+import org.openhab.binding.mideaac.internal.devices.a1.A1CommandBase;
+import org.openhab.binding.mideaac.internal.devices.a1.A1CommandSet;
+import org.openhab.binding.mideaac.internal.devices.a1.A1Response;
+import org.openhab.binding.mideaac.internal.devices.ac.ACCommandSet;
+import org.openhab.binding.mideaac.internal.devices.ac.EnergyResponse;
+import org.openhab.binding.mideaac.internal.devices.ac.HumidityResponse;
+import org.openhab.binding.mideaac.internal.devices.ac.Response;
+import org.openhab.binding.mideaac.internal.devices.ac.TemperatureResponse;
+import org.openhab.binding.mideaac.internal.devices.capabilities.CapabilitiesResponse;
 import org.openhab.binding.mideaac.internal.security.Decryption8370Result;
 import org.openhab.binding.mideaac.internal.security.Security;
 import org.openhab.binding.mideaac.internal.security.Security.MsgType;
@@ -68,7 +72,9 @@ public class ConnectionManager {
     private String token;
     private final String cloud;
     private final String deviceId;
+    private String deviceType;
     private Response lastResponse;
+    private A1Response lastA1Response;
     private CloudProvider cloudProvider;
     private Security security;
     private final int version;
@@ -95,9 +101,10 @@ public class ConnectionManager {
      * @param deviceId Device ID
      * @param version Device version
      * @param promptTone Tone after command true or false
+     * @param deviceType Device type a1 or ac
      */
     public ConnectionManager(String ipAddress, int ipPort, int timeout, String key, String token, String cloud,
-            String email, String password, String deviceId, int version, boolean promptTone) {
+            String email, String password, String deviceId, int version, boolean promptTone, String deviceType) {
         this.deviceIsConnected = false;
         this.ipAddress = ipAddress;
         this.ipPort = ipPort;
@@ -106,10 +113,13 @@ public class ConnectionManager {
         this.token = token;
         this.cloud = cloud;
         this.deviceId = deviceId;
+        this.deviceType = deviceType;
         this.version = version;
         this.promptTone = promptTone;
         this.lastResponse = new Response(HexFormat.of().parseHex("C00042667F7F003C0000046066000000000000000000F9ECDB"),
                 version);
+        this.lastA1Response = new A1Response(
+                HexFormat.of().parseHex("C80104507F7F003700000000000000001E64000000003A67C2"));
         this.cloudProvider = CloudProvider.getCloudProvider(cloud);
         this.security = new Security(cloudProvider);
     }
@@ -117,15 +127,6 @@ public class ConnectionManager {
     private Socket socket = new Socket();
     private InputStream inputStream = new ByteArrayInputStream(new byte[0]);
     private DataOutputStream writer = new DataOutputStream(System.out);
-
-    /**
-     * Gets last response
-     * 
-     * @return byte array of last response
-     */
-    public Response getLastResponse() {
-        return this.lastResponse;
-    }
 
     /**
      * The socket is established with the writer and inputStream (for reading responses)
@@ -270,7 +271,7 @@ public class ConnectionManager {
                     } else {
                         throw new MideaAuthenticationException("Invalid Key. Correct Key in configuration.");
                     }
-                } else if (Arrays.equals(new String("ERROR").getBytes(), response)) {
+                } else if (Arrays.equals(new String("ERROR").getBytes(StandardCharsets.US_ASCII), response)) {
                     throw new MideaAuthenticationException("Authentication failed!");
                 } else {
                     logger.debug("Authentication reponse unexpected data length ({} instead of 72)!", response.length);
@@ -284,7 +285,7 @@ public class ConnectionManager {
 
     /**
      * Sends the routine polling command from the DoPoll
-     * in the MideaACHandler
+     * in the Abstract Midea Handler that is passed to subclasses
      * 
      * @param callback
      * @throws MideaConnectionException
@@ -293,13 +294,22 @@ public class ConnectionManager {
      */
     public void getStatus(Callback callback)
             throws MideaConnectionException, MideaAuthenticationException, MideaException, IOException {
-        CommandBase requestStatusCommand = new CommandBase();
+        CommandBase requestStatusCommand;
+        if ("a1".equals(deviceType)) {
+            requestStatusCommand = new A1CommandBase();
+        } else {
+            requestStatusCommand = new CommandBase();
+        }
         sendCommand(requestStatusCommand, callback);
     }
 
     private void ensureConnected() throws MideaConnectionException, MideaAuthenticationException, IOException {
         disconnect();
         connect();
+    }
+
+    void setDeviceType(String deviceType) {
+        this.deviceType = deviceType;
     }
 
     /**
@@ -322,9 +332,14 @@ public class ConnectionManager {
             throws MideaConnectionException, MideaAuthenticationException, MideaException, IOException {
         ensureConnected();
 
-        if (command instanceof CommandSet cmdSet) {
+        if (command instanceof ACCommandSet cmdSet) {
             cmdSet.setPromptTone(promptTone);
         }
+
+        if (command instanceof A1CommandSet cmdSet) {
+            cmdSet.setPromptTone(promptTone);
+        }
+
         Packet packet = new Packet(command, deviceId, security);
         packet.compose();
 
@@ -436,7 +451,7 @@ public class ConnectionManager {
                 Utils.bytesToBinary(data));
 
         // Validate the proper length
-        if (data.length < 21) {
+        if (data.length < 21 && bodyType != (byte) 0x1E && bodyType != (byte) 0xB5) {
             logger.warn("Response data is {} long, minimum is 21!", data.length);
             return;
         }
@@ -446,7 +461,7 @@ public class ConnectionManager {
                 logger.warn("Error response 0x1E received {} from IP Address:{}", bodyType, ipAddress);
                 return;
 
-            case (byte) 0xB5:
+            case (byte) 0xB5: // Possible same for 0xB1 - future?
                 try {
                     logger.debug("Capabilities response detected with bodyType 0xB5.");
                     CapabilitiesResponse capabilitiesResponse = new CapabilitiesResponse(data);
@@ -478,18 +493,35 @@ public class ConnectionManager {
                 return;
 
             case (byte) 0xA0:
-                try {
-                    logger.debug("Response detected with bodyType 0xA0. Data length: {}", data.length);
-                    HumidityResponse humidityResponse = new HumidityResponse(data);
-                    if (callback != null) {
-                        callback.updateChannels(humidityResponse);
-                    } else {
-                        logger.debug("Callback is null for unsolicited 0xA0 humidity response, channels not updated.");
+                if ("ac".equals(deviceType)) {
+                    try {
+                        logger.debug("Response detected with bodyType 0xA0. Data length: {}", data.length);
+                        HumidityResponse humidityResponse = new HumidityResponse(data);
+                        if (callback != null) {
+                            callback.updateChannels(humidityResponse);
+                        } else {
+                            logger.debug(
+                                    "Callback is null for unsolicited 0xA0 humidity response, channels not updated.");
+                        }
+                    } catch (Exception ex) {
+                        logger.debug("Unsolicited 0xA0 response exception: {}", ex.getMessage());
+                        throw new MideaException(ex);
                     }
-                } catch (Exception ex) {
-                    logger.debug("Unsolicited 0xA0 response exception: {}", ex.getMessage());
-                    throw new MideaException(ex);
+                    return;
+                } else if ("a1".equals(deviceType)) {
+                    lastA1Response = new A1Response(data);
+                    try {
+                        logger.trace("Data length is {}, dehumidifier, IP address is {}", data.length, ipAddress);
+                        if (callback != null) {
+                            callback.updateChannels(lastA1Response);
+                        }
+                    } catch (Exception ex) {
+                        logger.debug("Dehumidifer Poll response exception: {}", ex.getMessage());
+                        throw new MideaException(ex);
+                    }
+                    return;
                 }
+                logger.debug("0xA0 response received for unknown device type: {}", deviceType);
                 return;
 
             case (byte) 0xA1:
@@ -526,6 +558,19 @@ public class ConnectionManager {
                 }
                 return;
 
+            case (byte) 0xC8:
+                lastA1Response = new A1Response(data);
+                try {
+                    logger.trace("Data length is {}, dehumidifier, IP address is {}", data.length, ipAddress);
+                    if (callback != null) {
+                        callback.updateChannels(lastA1Response);
+                    }
+                } catch (Exception ex) {
+                    logger.debug("Dehumidifer Poll response exception: {}", ex.getMessage());
+                    throw new MideaException(ex);
+                }
+                return;
+
             default:
                 logger.warn("Unexpected response bodyType {}", bodyType);
         }
@@ -546,7 +591,7 @@ public class ConnectionManager {
             inputStream.close();
             socket.close();
         } catch (IOException e) {
-            logger.warn("IOException closing connection to device at {}: {}", ipAddress, e.getMessage(), e);
+            logger.warn("IOException closing connection to device at {}: {}", ipAddress, e.getMessage());
         }
         socket = null;
         inputStream = null;
@@ -591,6 +636,14 @@ public class ConnectionManager {
             String message = e.getMessage();
             logger.debug("Write error {}", message);
         }
+    }
+
+    public Response getLastResponse() {
+        return lastResponse;
+    }
+
+    public A1Response getLastA1Response() {
+        return lastA1Response;
     }
 
     /**
