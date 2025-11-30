@@ -12,7 +12,7 @@ The new binding (as of openHAB 5.0.0) will need some tweaks to your configuratio
 Mainly the new binding uses Bridge to access Enedis data, so you will have to add this bridge to your configuration.
 Step are:
 
-1. before updating to openHAB 5.0, in case you defined your thing with Main UI, backup username, password & internalAuthId configuration parameters as you will need to fill them again.
+1. before updating to openHAB 5.0, in case you defined your Thing with Main UI, backup username, password & internalAuthId configuration parameters as you will need to fill them again.
 1. add a bridge definition
 
     ``` java
@@ -23,8 +23,8 @@ Step are:
        }
     ```
 
-1. Move username, password and internalAuthId configuration parameters from the old linky thing to the bridge thing.
-1. Link your old thing to the new created bridge thing:
+1. Move username, password and internalAuthId configuration parameters from the old linky Thing to the bridge Thing.
+1. Link your old Thing to the new created bridge Thing:
 
      ```java
      Thing linky:linky:linkremotexxxx "Linky xxxx" (linky:enedis:local)

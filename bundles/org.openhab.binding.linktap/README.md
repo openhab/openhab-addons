@@ -45,7 +45,7 @@ This will remove any DNS caching related issues, depending on your setup.
 
 ## Supported Things
 
-This binding supports the follow thing types:
+This binding supports the follow Thing types:
 
 | Thing Type | Thing Type UID | Discovery          | Description                                                      |
 |------------|----------------|--------------------|------------------------------------------------------------------|

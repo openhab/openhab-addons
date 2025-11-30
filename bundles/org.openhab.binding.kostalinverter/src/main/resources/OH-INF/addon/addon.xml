@@ -5,7 +5,7 @@
 
 	<type>binding</type>
 	<name>Kostal Inverter Binding</name>
-	<description>Extracts informations from a Kostal Inverter</description>
+	<description>Extracts information from a Kostal Inverter</description>
 	<connection>local</connection>
 
 </addon:addon>
