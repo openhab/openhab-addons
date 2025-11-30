@@ -60,48 +60,39 @@ public class UnifiProtectSensorHandler extends UnifiProtectAbstractDeviceHandler
 
         switch (event.type) {
             case SENSOR_OPENED:
-                if (event instanceof SensorOpenEvent e) {
+                if (eventType == WSEventType.ADD && event instanceof SensorOpenEvent e) {
                     String payload = e.metadata != null && e.metadata.sensorMountType != null
                             && e.metadata.sensorMountType.text != null ? e.metadata.sensorMountType.text.getApiValue()
                                     : "none";
-                    if (hasChannel(UnifiProtectBindingConstants.CHANNEL_OPENED)) {
-                        triggerChannel(new ChannelUID(thing.getUID(), UnifiProtectBindingConstants.CHANNEL_OPENED),
-                                payload);
-                    }
+                    triggerChannel(new ChannelUID(thing.getUID(), UnifiProtectBindingConstants.CHANNEL_OPENED),
+                            payload);
                     updateState(UnifiProtectBindingConstants.CHANNEL_CONTACT, OpenClosedType.OPEN);
                 }
                 break;
             case SENSOR_CLOSED:
-                if (event instanceof SensorClosedEvent e) {
+                if (eventType == WSEventType.ADD && event instanceof SensorClosedEvent e) {
                     String payload = e.metadata != null && e.metadata.sensorMountType != null
                             && e.metadata.sensorMountType.text != null ? e.metadata.sensorMountType.text.getApiValue()
                                     : "none";
-                    if (hasChannel(UnifiProtectBindingConstants.CHANNEL_CLOSED)) {
-                        triggerChannel(new ChannelUID(thing.getUID(), UnifiProtectBindingConstants.CHANNEL_CLOSED),
-                                payload);
-                    }
+                    triggerChannel(new ChannelUID(thing.getUID(), UnifiProtectBindingConstants.CHANNEL_CLOSED),
+                            payload);
                     updateState(UnifiProtectBindingConstants.CHANNEL_CONTACT, OpenClosedType.CLOSED);
                 }
                 break;
             case SENSOR_MOTION:
                 if (event instanceof SensorMotionEvent) {
-                    if (hasChannel(UnifiProtectBindingConstants.CHANNEL_SENSOR_MOTION)) {
-                        triggerChannel(
-                                new ChannelUID(thing.getUID(), UnifiProtectBindingConstants.CHANNEL_SENSOR_MOTION));
-                    }
+                    triggerChannel(new ChannelUID(thing.getUID(), UnifiProtectBindingConstants.CHANNEL_SENSOR_MOTION));
                 }
                 break;
             case SENSOR_ALARM:
                 if (event instanceof SensorAlarmEvent e) {
                     String payload = e.metadata != null && e.metadata.alarmType != null
                             && e.metadata.alarmType.text != null ? e.metadata.alarmType.text.getApiValue() : "";
-                    if (hasChannel(UnifiProtectBindingConstants.CHANNEL_ALARM)) {
-                        if (payload.isEmpty()) {
-                            triggerChannel(new ChannelUID(thing.getUID(), UnifiProtectBindingConstants.CHANNEL_ALARM));
-                        } else {
-                            triggerChannel(new ChannelUID(thing.getUID(), UnifiProtectBindingConstants.CHANNEL_ALARM),
-                                    payload);
-                        }
+                    if (payload.isEmpty()) {
+                        triggerChannel(new ChannelUID(thing.getUID(), UnifiProtectBindingConstants.CHANNEL_ALARM));
+                    } else {
+                        triggerChannel(new ChannelUID(thing.getUID(), UnifiProtectBindingConstants.CHANNEL_ALARM),
+                                payload);
                     }
                     updateState(UnifiProtectBindingConstants.CHANNEL_ALARM_CONTACT,
                             eventType == WSEventType.ADD ? OpenClosedType.OPEN : OpenClosedType.CLOSED);
