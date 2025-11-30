@@ -41,6 +41,7 @@ flowchart TD
     JCH[Client Handler - Thing]
     JA[API Client]
     JS[Jellyfin Server]
+    SEB[SessionEventBus]
 
     OH -->|Thing/Channel Events| JB
     JB --> JD
@@ -49,7 +50,8 @@ flowchart TD
     JH --> JA
     JA <--> JS
     JD -->|Discovered Things| JH
-    JH -->|Session Updates| JCH
+    JH -->|Publishes| SEB
+    SEB -->|Session Events| JCH
     JCH -->|Commands| JH
     %% Note: Record members are omitted for clarity. See Record Details section.
 ```
@@ -61,11 +63,14 @@ flowchart TD
   bridge thing.
   Handles authentication, server polling, and maintains the list of active client
   sessions.
-  Notifies child ClientHandlers about session state changes.
+  Publishes session updates to the SessionEventBus.
+- **SessionEventBus**: Event bus for distributing session updates from ServerHandler
+  to ClientHandler instances.
+  Implements the Observer pattern for loose coupling between bridge and things.
 - **Client Handler (Thing)**: Manages individual Jellyfin client devices as child
   things of the server bridge.
-  Updates channels based on session information and delegates commands to the
-  ServerHandler.
+  Subscribes to SessionEventBus for session updates and updates channels accordingly.
+  Delegates commands to the ServerHandler.
 - **API Client**: Handles communication with the Jellyfin server using its REST API.
 
 Auto-generated code in `internal.api.generated` is not described here.
@@ -82,6 +87,8 @@ For detailed diagrams and explanations, see:
     Task manager and factory design for extensibility.
 - [Error Handling Architecture](architecture/error-handling.md):
     Event-driven error management using the Observer pattern.
+- [Session Event Architecture](architecture/session-events.md):
+    Event bus for session updates using the Observer pattern.
 - [Discovery Architecture](architecture/discovery.md):
     Network discovery services and result registration.
 - [API Architecture](architecture/api.md):
