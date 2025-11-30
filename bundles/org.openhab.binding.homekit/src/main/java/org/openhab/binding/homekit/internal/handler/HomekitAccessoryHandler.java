@@ -14,6 +14,7 @@ package org.openhab.binding.homekit.internal.handler;
 
 import static org.openhab.binding.homekit.internal.HomekitBindingConstants.*;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,6 +23,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
 
 import javax.measure.Unit;
 import javax.measure.format.MeasurementParseException;
@@ -490,17 +492,16 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
             if (isCommunicationException(e)) {
                 // communication exception; log at debug and try to reconnect
                 logger.debug("{} communication error '{}' sending command '{}' to '{}', reconnecting..", thing.getUID(),
-                        e.getMessage(), command, channelUID);
+                        e.getMessage(), command, channelUID, e);
                 scheduleConnectionAttempt();
             } else {
                 // other exception; log at warn and don't try to reconnect
                 logger.warn("{} unexpected error '{}' sending command '{}' to '{}'", thing.getUID(), e.getMessage(),
-                        command, channelUID);
+                        command, channelUID, e);
             }
-            logger.debug("Stack trace", e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/error.error-sending-command:" + e.getMessage());
         }
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                i18nProvider.getText(bundle, "error.error-sending-command", "Error sending command", null));
     }
 
     @Override
@@ -626,11 +627,11 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
      * @param hsbCommand the HSBType command containing hue, saturation, and brightness
      * @param writer the CharacteristicReadWriteClient to send the command
      * @throws Exception compiler requires us to handle any exception; but actually will be one of the following:
-     *             ExecutionException,
-     *             TimeoutException,
-     *             InterruptedException,
-     *             IOException,
-     *             IllegalStateException
+     * @throws ExecutionException if there is an execution error
+     * @throws TimeoutException if the operation times out
+     * @throws InterruptedException if the operation is interrupted
+     * @throws IOException if there is a communication error
+     * @throws IllegalStateException if the accessory ID or characteristic IID are not initialized
      */
     private void lightModelHandleCommand(Command command) throws Exception {
         LightModel lightModel = this.lightModel;
@@ -783,11 +784,11 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
      * @param channel the channel to read
      * @return the current state of the channel, or null if not found
      * @throws Exception compiler requires us to handle any exception; but actually will be one of the following:
-     *             ExecutionException,
-     *             TimeoutException,
-     *             InterruptedException,
-     *             IOException,
-     *             IllegalStateException
+     * @throws ExecutionException if there is an execution error
+     * @throws TimeoutException if the operation times out
+     * @throws InterruptedException if the operation is interrupted
+     * @throws IOException if there is a communication error
+     * @throws IllegalStateException if the read/write service is not initialized
      */
     private synchronized @Nullable State readChannel(Channel channel) throws Exception {
         Long aid = getAccessoryId();
@@ -815,11 +816,11 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
      * @param command the command to send
      * @param writer the CharacteristicReadWriteClient to send the command
      * @throws Exception compiler requires us to handle any exception; but actually will be one of the following:
-     *             ExecutionException,
-     *             TimeoutException,
-     *             InterruptedException,
-     *             IOException,
-     *             IllegalStateException
+     * @throws ExecutionException if there is an execution error
+     * @throws TimeoutException if the operation times out
+     * @throws InterruptedException if the operation is interrupted
+     * @throws IOException if there is a communication error
+     * @throws IllegalStateException if the accessory ID or characteristic IID are not initialized
      */
     private synchronized void writeChannel(Channel channel, Command command) throws Exception {
         Long aid = getAccessoryId();

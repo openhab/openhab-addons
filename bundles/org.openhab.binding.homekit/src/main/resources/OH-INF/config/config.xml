@@ -16,7 +16,7 @@
 			<advanced>true</advanced>
 		</parameter>
 		<parameter name="httpHostHeader" type="text" required="true">
-			<label>Host Name</label>
+			<label>HTTP Host Header</label>
 			<description>The device fully qualified host name as discovered by mDNS (needed for HTTP Host headers).</description>
 			<advanced>true</advanced>
 		</parameter>

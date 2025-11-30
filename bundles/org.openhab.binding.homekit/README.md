@@ -29,25 +29,19 @@ The following table shows the Thing configuration parameters for `bridge` and `a
 
 | Name              | Type    | Description                                          | Default   | Required | Advanced |
 |-------------------|---------|------------------------------------------------------|-----------|----------|----------|
-| `ipAddress`       | text    | IP v4 address of the HomeKit accessory.              | see below | yes      | yes      |
+| `ipAddress`       | text    | IP v4 address of the HomeKit accessory.              | see below | yes      | no       |
 | `httpHostHeader`  | text    | The fully qualified host name as discovered by mDNS. | see below | yes      | yes      |
-| `macAddress`      | text    | Unique accessory identifier.                         | see below | yes      | yes      |
+| `macAddress`      | text    | Unique accessory identifier as discovered by mDNS.   | see below | yes      | yes      |
 | `refreshInterval` | integer | Interval at which the accessory is polled in sec.    | 60        | no       | yes      |
 
-NOTE: as a general rule, if you create the Things via the Inbox, then all of the above configuration parameters will have their proper values already preset.
+NOTE: as a general rule, if you create the Things via the Inbox from the mDNS discovery result, then all of the above configuration parameters will have their proper values already preset.
 
-As a general rule `ipAddress` is set by the mDNS auto-discovery process.
-However you can configure it manually if you wish.
-It must match the format `123.123.123.123:4567` representing its IP v4 address and port.
+`ipAddress` must match the format `123.123.123.123:4567` representing its IP v4 address and port.
 
-As a general rule `httpHostHeader` is set by the mDNS auto-discovery process.
-However you can configure it manually if you wish.
-The `httpHostHeader` is required for the 'Host:' header of HTTP requests sent to the `accessory` or `bridge`.
+`httpHostHeader` is required for the 'Host:' header of HTTP requests sent to the `accessory` or `bridge`.
 It must be the fully qualified host name (e.g. `foobar._hap._tcp.local.` or, if the port is not 0 or 80, `foobar._hap._tcp.local.:1234`) as found manually via (say) an mDNS discovery app.
 
-As a general rule `macAddress` is set by the mDNS auto-discovery process.
-However you can configure it manually if you wish.
-It must be the unique accessory identifier as found manually via (say) an mDNS discovery app.
+`macAddress` must be the unique accessory identifier as found manually via (say) an mDNS discovery app.
 
 ### Configuration for `bridged-accessory` Things
 

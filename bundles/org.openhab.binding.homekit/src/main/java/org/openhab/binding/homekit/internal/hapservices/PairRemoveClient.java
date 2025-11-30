@@ -48,7 +48,6 @@ public class PairRemoveClient {
     private final byte[] controllerId;
 
     public PairRemoveClient(IpTransport ipTransport, byte[] controllerId) {
-        logger.debug("Created..");
         this.ipTransport = ipTransport;
         this.controllerId = controllerId;
     }

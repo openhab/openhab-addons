@@ -142,11 +142,12 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
                 if (next == null) {
                     notBeforeInstant = next = Instant.now().plus(MIN_INTERVAL);
                 }
-                long delay = Duration.between(Instant.now(), next).toMillis();
-                if (delay > 0) {
-                    delay = Math.min(delay, MIN_INTERVAL.toMillis());
-                    logger.trace("{} throttling call for {} ms to respect minimum interval", thing.getUID(), delay);
-                    Thread.sleep(delay);
+                Duration delay = Duration.between(Instant.now(), next);
+                if (!delay.isNegative() && !delay.isZero()) {
+                    Duration sleepDuration = delay.compareTo(MIN_INTERVAL) < 0 ? delay : MIN_INTERVAL;
+                    logger.trace("{} throttling call for {} to respect minimum interval", thing.getUID(),
+                            sleepDuration);
+                    Thread.sleep(sleepDuration);
                 }
                 return task.call();
             } finally {
@@ -170,6 +171,8 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
 
     @Override
     public void dispose() {
+        eventedCharacteristics.clear();
+        accessories.clear();
         cancelRefreshTasks();
         if (!isBridgedAccessory) {
             try {
@@ -276,8 +279,6 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
 
     @Override
     public void initialize() {
-        eventedCharacteristics.clear();
-        accessories.clear();
         isBridgedAccessory = getBridge() instanceof Bridge;
         if (!isBridgedAccessory) {
             scheduleConnectionAttempt();
@@ -304,8 +305,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
         Ed25519PublicKeyParameters accessoryKey = keyStore.getAccessoryKey(macAddress);
         if (accessoryKey == null) {
             logger.debug("{} no stored pairing credentials", thing.getUID());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    i18nProvider.getText(bundle, "error.not-paired", "Not paired", null));
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.not-paired");
             return false;
         }
 
@@ -332,8 +332,8 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
                 | ExecutionException | IllegalStateException e) {
             logger.debug("{} restored pairing was not verified", thing.getUID(), e);
             // pairing restore failed => exit and perhaps try again later
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, i18nProvider.getText(bundle,
-                    "error.pairing-verification-failed", "Pairing / Verification failed", null));
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/error.pairing-verification-failed:" + e.getMessage());
             return false;
         }
     }
@@ -427,8 +427,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
     private @Nullable String checkedIpAddress() {
         Object obj = getConfig().get(CONFIG_IP_ADDRESS);
         if (obj == null || !(obj instanceof String ipAddress) || !IPV4_PATTERN.matcher(ipAddress).matches()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    i18nProvider.getText(bundle, "error.invalid-ip-address", "Invalid IP address", null));
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.invalid-ip-address");
             return null;
         }
         return ipAddress;
@@ -436,8 +435,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
 
     private @Nullable String checkedMacAddress() {
         if (!(getConfig().get(CONFIG_MAC_ADDRESS) instanceof String macAddress) || macAddress.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    i18nProvider.getText(bundle, "error.missing-mac-address", "Missing MAC address", null));
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.missing-mac-address");
             return null;
         }
         return macAddress;
@@ -446,8 +444,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
     private @Nullable String checkedHostName() {
         Object obj = getConfig().get(CONFIG_HTTP_HOST_HEADER);
         if (obj == null || !(obj instanceof String hostName)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    i18nProvider.getText(bundle, "error.invalid-host-name", "Invalid fully qualified host name", null));
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.invalid-host-name");
             return null;
         }
         if (!HOST_PATTERN.matcher(hostName).matches()) {
@@ -460,7 +457,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
         accessoryId = getAccessoryId();
         if (accessoryId == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    i18nProvider.getText(bundle, "error.invalid-accessory-id", "Invalid accessory ID", null));
+                    "@text/error.invalid-accessory-id");
             return null;
         }
         return accessoryId;
@@ -472,9 +469,8 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
             this.ipTransport = ipTransport;
             return ipTransport;
         } catch (IOException e) {
-            logger.warn("{} error '{}' creating transport", thing.getUID(), e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    i18nProvider.getText(bundle, "error.failed-to-connect", "Failed to connect", null));
+                    "@text/error.failed-to-connect:" + e.getMessage());
         }
         return null;
     }
@@ -532,10 +528,9 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
             return ACTION_RESULT_OK; // pairing succeeded
         } catch (Exception e) {
             // catch all; log all exceptions
-            logger.warn("{} pairing / verification failed '{}'", thing.getUID(), e.getMessage());
-            logger.debug("Stack trace", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, i18nProvider.getText(bundle,
-                    "error.pairing-verification-failed", "Pairing / Verification failed", null));
+            logger.debug("{} pairing / verification failed '{}'", thing.getUID(), e.getMessage(), e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/error.pairing-verification-failed:" + e.getMessage());
             return ACTION_RESULT_ERROR_FORMAT.formatted("pairing error");
         }
     }
@@ -580,8 +575,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
     public String unpair() {
         String result = unpairInner();
         if (result.startsWith(ACTION_RESULT_OK)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    i18nProvider.getText(bundle, "error.not-paired", "Not paired", null));
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.not-paired");
         }
         return result;
     }
@@ -717,15 +711,14 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
             if (isCommunicationException(e)) {
                 // communication exception; log at debug and try to reconnect
                 logger.debug("{} communication error '{}' polling accessories, reconnecting..", thing.getUID(),
-                        e.getMessage());
+                        e.getMessage(), e);
                 scheduleConnectionAttempt();
             } else {
                 // other exception; log at warn and don't try to reconnect
-                logger.warn("{} unexpected error '{}' polling accessories", thing.getUID(), e.getMessage());
+                logger.warn("{} unexpected error '{}' polling accessories", thing.getUID(), e.getMessage(), e);
             }
-            logger.debug("Stack trace", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    i18nProvider.getText(bundle, "error.polling-error", "Polling error", null));
+                    "@text/error.polling-error:" + e.getMessage());
         }
     }
 
@@ -834,11 +827,11 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
      * @param query a comma delimited HTTP query string e.g. "1.10,1.11" for aid 1 and iid 10 and 11
      * @return JSON response as String
      * @throws Exception compiler requires us to handle any exception; but actually will be one of the following:
-     *             ExecutionException,
-     *             TimeoutException,
-     *             InterruptedException,
-     *             IOException,
-     *             IllegalStateException
+     * @throws ExecutionException if there is an execution error
+     * @throws TimeoutException if the operation times out
+     * @throws InterruptedException if the operation is interrupted
+     * @throws IOException if there is a communication error
+     * @throws IllegalStateException if the read/write service is not initialized
      */
     protected String readCharacteristics(String query) throws Exception {
         CharacteristicReadWriteClient rwService = getBridge() instanceof Bridge bridge
@@ -856,11 +849,11 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
      * @param json the JSON to write
      * @return the JSON response
      * @throws Exception compiler requires us to handle any exception; but actually will be one of the following:
-     *             ExecutionException,
-     *             TimeoutException,
-     *             InterruptedException,
-     *             IOException,
-     *             IllegalStateException
+     * @throws ExecutionException if there is an execution error
+     * @throws TimeoutException if the operation times out
+     * @throws InterruptedException
+     * @throws IOException if there is a communication error
+     * @throws IllegalStateException if the read/write service is not initialized
      */
     protected String writeCharacteristics(String json) throws Exception {
         CharacteristicReadWriteClient rwService = getBridge() instanceof Bridge bridge
