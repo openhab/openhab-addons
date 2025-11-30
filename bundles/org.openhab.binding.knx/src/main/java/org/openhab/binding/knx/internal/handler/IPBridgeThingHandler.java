@@ -82,7 +82,7 @@ public class IPBridgeThingHandler extends KNXBridgeBaseThingHandler {
                         && (secureTunnel.userKey.length == 16));
                 logger.debug("KNX secure: tunnel keys are {} set", (tunnelOk ? "properly" : "not"));
 
-                if (keyring.isPresent()) {
+                if (keyring != null) {
                     logger.debug("KNX secure available for {} devices, {} group addresses",
                             openhabSecurity.deviceToolKeys().size(), openhabSecurity.groupKeys().size());
 
