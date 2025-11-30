@@ -145,7 +145,7 @@ Some of the Wallbox Settings can be changed. See the Access column if the actual
 ## Full Example
 
 Following example provides the full configuration.
-If you enter the correct Connection Data, IP Address, Device ID and Port number in the thing configuration you should be fine.
+If you enter the correct Connection Data, IP Address, Device ID and Port number in the Thing configuration you should be fine.
 
 ### Things
 

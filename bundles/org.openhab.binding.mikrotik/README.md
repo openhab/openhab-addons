@@ -22,7 +22,7 @@ configuration section in
 [WinBox](https://wiki.mikrotik.com/wiki/Manual:Winbox).
 Take note of the API port number as you'll need it below.
 [SSL API connection](https://wiki.mikrotik.com/wiki/Manual:API-SSL) is not yet supported by this binding.
-To connect to the RouterOS API, you will need to provide user credentials for the bridge thing.
+To connect to the RouterOS API, you will need to provide user credentials for the bridge Thing.
 You may use your current credentials that you use to manage your devices, but it is highly recommended to **create a read-only RouterOS user** since this binding only needs to read data from the device.
 To do this, proceed to <kbd>System -> Users</kbd> configuration section and add a user to the `read` group.
 
@@ -51,7 +51,7 @@ The RouterOS Bridge configuration parameters are:
 | totalMemory | Number:DataAmount | Amount of total memory available on device in bytes |  |
 | usedMemory | Number:Dimensionless | Percentage of used device memory |  |
 | cpuLoad | Number:Dimensionless | CPU load percentage |  |
-| upSince | DateTime | Time when thing got up |  |
+| upSince | DateTime | Time when Thing got up |  |
 
 ## WiFi Client Thing Configuration
 
@@ -59,12 +59,12 @@ The RouterOS Bridge configuration parameters are:
 
 Represents a wireless client connected to a RouterOS wireless network (direct or CAPsMAN-managed).
 
-The WiFi client thing configuration parameters are:
+The WiFi client Thing configuration parameters are:
 
 | Name | Type | Required | Default | Description |
 |---|---|---|---|---|
 | mac | text | Yes |  | WiFi client MAC address |
-| ssid | text | No |  | Constraining SSID for the WiFi client (optional). If client will connect to another SSID, this thing will stay offline until client reconnects to specified SSID. |
+| ssid | text | No |  | Constraining SSID for the WiFi client (optional). If client will connect to another SSID, this Thing will stay offline until client reconnects to specified SSID. |
 | considerContinuous | integer | No | 180 | The interval in seconds to treat the client as connected permanently |
 
 ### WiFi client Thing Channels
@@ -78,7 +78,7 @@ The WiFi client thing configuration parameters are:
 | ssid | String | Wireless Network (SSID) the wireless client is connected to |  |
 | interface | String | Network interface name |  |
 | signal | system.signal-strength | Signal strength (RSSI) |  |
-| upSince | DateTime | Time when thing got up |  |
+| upSince | DateTime | Time when Thing got up |  |
 | lastSeen | DateTime | Time of when the client was last seen connected |  |
 | txRate | Number:DataTransferRate | Rate of data transmission in megabits per second |  |
 | rxRate | Number:DataTransferRate | Rate of data receiving in megabits per second |  |
@@ -106,7 +106,7 @@ At the moment the binding supports the following RouterOS interface types:
 - `l2tp-in`
 - `l2tp-out`
 
-The interface thing configuration parameters are:
+The interface Thing configuration parameters are:
 
 ### Interface Thing Configuration
 
@@ -150,7 +150,7 @@ Common for all kinds of interfaces:
 | state | String | WiFi interface state |  |
 | registeredClients | Number | Amount of clients registered to WiFi interface | Populated only for `cap` interfaces |
 | authorizedClients | Number | Amount of clients authorized by WiFi interface | Populated only for `cap` interfaces |
-| upSince | DateTime | Time when thing got up | Populated only for `cap` interfaces |
+| upSince | DateTime | Time when Thing got up | Populated only for `cap` interfaces |
 
 ## Text Configuration Example
 

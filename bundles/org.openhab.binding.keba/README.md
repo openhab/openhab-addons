@@ -4,7 +4,7 @@ This binding integrates the [Keba KeContact EV Charging Stations](https://www.ke
 
 ## Supported Things
 
-The Keba KeContact P20 and P30 stations which are providing the UDP interface (P20 LSA+ socket, P30 c-series and x-series or BMW wallbox) are supported by this binding, the thing type id is `kecontact`.
+The Keba KeContact P20 and P30 stations which are providing the UDP interface (P20 LSA+ socket, P30 c-series and x-series or BMW wallbox) are supported by this binding, the Thing type id is `kecontact`.
 
 ## Thing Configuration
 

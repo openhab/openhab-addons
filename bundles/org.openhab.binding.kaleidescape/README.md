@@ -10,9 +10,9 @@ See [Kaleidescape-System-Control-Protocol-Reference-Manual.pdf](https://support.
 ## Supported Things
 
 All movie player components including the original K-Player series, M Class Players, Cinema One, Alto, and Strato are supported.
-It is important to choose the correct thing type to ensure the available channels are correct for the component being used.
+It is important to choose the correct Thing type to ensure the available channels are correct for the component being used.
 
-The supported thing types are:
+The supported Thing types are:
 
 - `player` Any KPlayer, M Class [M300, M500, M700] or Cinema One 1st Gen player
 - `cinemaone` Cinema One (2nd Gen)
@@ -29,7 +29,7 @@ In the Inbox, select Search for Things and then choose the Kaleidescape Binding 
 
 ## Thing Configuration
 
-The thing has the following configuration parameters:
+The Thing has the following configuration parameters:
 
 | Parameter Label                   | Parameter ID           | Description                                                                                                                             | Accepted values                                      |
 |-----------------------------------|------------------------|-----------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------|

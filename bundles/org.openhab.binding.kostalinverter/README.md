@@ -221,7 +221,7 @@ demo.things
 Thing kostalinverter:kostalinverter:inverter [ url="http://192.168.0.128" ]
 ```
 
-If the thing goes online then the connection to the web interface is successful.
+If the Thing goes online then the connection to the web interface is successful.
 In case it is offline you should see an error message.
 You optionally can define a `userName` and a `password` parameter if the access to the webinterface is protected and a desired `refreshInterval` (the time interval between updates, default 60 seconds).
 
@@ -260,7 +260,7 @@ The refresh interval should be chosen wisely.
 To small interval may led to high workload for the inverter.
 It is recommended to use an interval of 30 seconds.
 
-Full sample of thing configuration:
+Full sample of Thing configuration:
 
 ```java
 Thing kostalinverter:PLENTICOREPLUS100WITHBATTERY:MyPlentiCore100WithBattery [ url = "192.168.1.2", userPassword="myPassword", refreshInternalInSeconds="30"]

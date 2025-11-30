@@ -89,7 +89,7 @@ For those who prefer textual configuration, we share this example here.
 
 To use these examples for textual configuration, you must already have configured an MQTT `broker` Thing and know its unique ID.
 This UID will be used in the things file and will replace the text `myBroker`.
-The first line in the things file will create a `broker` thing and this can be removed if you have already setup a broker in another file or via the UI already.
+The first line in the things file will create a `broker` Thing and this can be removed if you have already setup a broker in another file or via the UI already.
 
 ### *.things
 

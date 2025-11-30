@@ -6,7 +6,7 @@ With the openHAB MPD binding you can control Music Player Daemons.
 
 ## Supported Things
 
-This binding supports one thing type: mpd
+This binding supports one Thing type: mpd
 
 ## Discovery
 
@@ -14,7 +14,7 @@ If zeroconf is enabled in the Music Player Daemon, it is discovered. Each Music 
 
 ## Thing Configuration
 
-The thing type mpd requires the following configuration parameters:
+The Thing type mpd requires the following configuration parameters:
 
 | Parameter Label  | Parameter ID | Description                                                              | Required |
 |------------------|--------------|--------------------------------------------------------------------------|----------|

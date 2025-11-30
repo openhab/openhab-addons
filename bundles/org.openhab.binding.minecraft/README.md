@@ -22,7 +22,7 @@ Discovery uses zeroconf, which may not work if you host a Minecraft server in a 
 
 ## Channels
 
-Depending on the thing type, different channels are provided:
+Depending on the Thing type, different channels are provided:
 
 ### Server
 
@@ -66,7 +66,7 @@ Depending on the thing type, different channels are provided:
 ### Example Thing Definition
 
 The easiest method to add Minecraft servers, players, and signs is to use automatic discovery.
-You can also manually define the objects using thing configuration files.
+You can also manually define the objects using Thing configuration files.
 Players and signs are connected through Minecraft server bridges ([see documentation](https://www.openhab.org/docs/configuration/things.html#defining-bridges-using-files)).
 
 ```java

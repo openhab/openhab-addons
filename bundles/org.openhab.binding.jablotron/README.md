@@ -5,7 +5,7 @@ This is the binding for Jablotron alarms.
 
 ## Supported Things
 
-| thing   | note                                      |
+| Thing   | note                                      |
 |---------|-------------------------------------------|
 | bridge  | the bridge to your Jablonet cloud account |
 | JA-80   | the OASIS alarm                           |
@@ -14,7 +14,7 @@ This is the binding for Jablotron alarms.
 
 ## Discovery
 
-This binding supports auto discovery. Manually add a bridge thing and supply the username and password to your Jablonet account.
+This binding supports auto discovery. Manually add a bridge Thing and supply the username and password to your Jablonet account.
 
 ## Binding Configuration
 
@@ -22,7 +22,7 @@ The binding itself doesn't require any specific configuration.
 
 ## Thing Configuration
 
-| thing                | config parameter name | description                                                                        | type                  |
+| Thing                | config parameter name | description                                                                        | type                  |
 |----------------------|-----------------------|------------------------------------------------------------------------------------|-----------------------|
 | bridge               | login                 | the login to your Jablonet account                                                 | mandatory             |
 | bridge               | password              | the password to your Jablonet account                                              | mandatory             |
@@ -34,7 +34,7 @@ The binding itself doesn't require any specific configuration.
 
 ## Channels
 
-| thing                | channel name     | item type          | description                                               |
+| Thing                | channel name     | item type          | description                                               |
 |----------------------|------------------|--------------------|-----------------------------------------------------------|
 | bridge               | N/A              | N/A                | the bridge does not expose any channels                   |
 | JA-80                | statusA          | Switch             | the status of the A section                               |

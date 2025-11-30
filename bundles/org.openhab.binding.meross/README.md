@@ -7,7 +7,7 @@ If possible, it will communicate in the local network with the device to send co
 
 ## Supported Things
 
-Supported thing types
+Supported Thing types
 
 - `gateway` : Acts as a Bridge to your Meross cloud account.
 - `light` : Represents a device recognized as a smart light or plug device with no specific support, on/off should work.
@@ -28,8 +28,8 @@ The Discovery service is supported.
 Automatic discovery will run when the gateway start, or when manually scanning for new devices.
 Background discovery is not supported.
 
-Discovery tries to detect specific hardware and find the appropriate thing type.
-If no specific thing type is available, it will default to a generic thing type for the class of devices.
+Discovery tries to detect specific hardware and find the appropriate Thing type.
+If no specific Thing type is available, it will default to a generic Thing type for the class of devices.
 
 ## Binding Configuration
 
@@ -67,7 +67,7 @@ You will need to manually scan for new devices.
 | ipAddress | text | The IP address of the device in the local network        | N/A     | no       | light, msg100, msg200 | no       |
 
 The unique key to the device is the `uuid` and will be retrieved and set during discovery.
-If you wish to use textual thing configuration, you get the ID from the discovered thing or through the console `devices` command.
+If you wish to use textual Thing configuration, you get the ID from the discovered Thing or through the console `devices` command.
 
 The `ipAddress` will be retrieved during initial configuration of the device.
 Once established, it will be used for local device communication.

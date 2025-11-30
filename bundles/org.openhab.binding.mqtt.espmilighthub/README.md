@@ -89,7 +89,7 @@ The Milight protocol is 1 way only so there is no way to find actual globes.
 
 ## Discovery
 
-First install the MQTT binding and set up a `broker` thing and make sure it is ONLINE, as this binding uses the MQTT binding to talk to your broker and hence that binding must be set up first.
+First install the MQTT binding and set up a `broker` Thing and make sure it is ONLINE, as this binding uses the MQTT binding to talk to your broker and hence that binding must be set up first.
 Next, move a control on either a physical remote, or use a virtual control inside the ESP8266 control panel web page, which causes an MQTT message to be sent.
 This binding should then detect the new device the moment the control is moved and a new entry should appear in your INBOX.
 
@@ -99,7 +99,7 @@ To remove a saved state from your MQTT broker that causes an entry in your INBOX
 mosquitto_pub -u username -P password -p 1883 -t 'milight/states/0x0/rgb_cct/1' -n -r
 ```
 
-Note that the group 0 (or ALL group) is not auto-discovered as a thing and thus has to be added manually if needed.
+Note that the group 0 (or ALL group) is not auto-discovered as a Thing and thus has to be added manually if needed.
 
 ## Thing Configuration
 
@@ -174,14 +174,14 @@ Since the group 0 is not needed in every case the auto-discovery feature will no
 To create the group, use textual files or the openHAB UI to manually add a Thing with the correct Unique ID as described in section [Important for Textual Configuration](#important-for-textual-configuration).
 To create a Thing for the group 0, simply create a new Thing that has the same type as one of the auto discovered Things of the same remote and modify the ThingUID as described in section linked above.
 
-If you do not need separate group 0 controls in openHAB, but wish to have all the controls for the sub groups update when a physical remote is used, you only need to create the thing for group 0.
-Only if you want the controls do you need to link any channels and create the items, as creating the thing will subscribe the binding to the MQTT topic for group 0.
+If you do not need separate group 0 controls in openHAB, but wish to have all the controls for the sub groups update when a physical remote is used, you only need to create the Thing for group 0.
+Only if you want the controls do you need to link any channels and create the items, as creating the Thing will subscribe the binding to the MQTT topic for group 0.
 
 ## Full Example
 
-To use these examples for textual configuration, you must already have a configured MQTT `broker` thing, and know its unique ID.
+To use these examples for textual configuration, you must already have a configured MQTT `broker` Thing, and know its unique ID.
 This UID will be used in the things file and will replace the text `myBroker`.
-The first line in the things file will create a `broker` thing and this can be removed if you have already setup a broker in another file or via the UI already.
+The first line in the things file will create a `broker` Thing and this can be removed if you have already setup a broker in another file or via the UI already.
 
 *.things
 

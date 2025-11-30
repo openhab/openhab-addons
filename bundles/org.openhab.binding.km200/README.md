@@ -49,7 +49,7 @@ The _kmdevice_ bridge requires the following configuration parameters:
 
 This binding creates the channels depending on the connected heating system fully automatically.
 These channels depend on the connected heating system.
-You can see the complete list of supported channels of the thing in the UI.
+You can see the complete list of supported channels of the Thing in the UI.
 There is no official documentation for the parameters available from Buderus, so the names of the channels is all that reflects their purpose.
 
 ## Full Examples

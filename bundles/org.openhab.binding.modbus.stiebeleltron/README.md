@@ -15,16 +15,16 @@ Note about the new ISG version "*ISG connect*": it is unknown, if this binding s
 
 ## Supported Things
 
-This bundle adds the following thing types to the Modbus binding.
+This bundle adds the following Thing types to the Modbus binding.
 Note, that the things will show up under the Modbus binding.
 
 | Thing                                     | ThingTypeID                   | Description                                                                                                         |
 | ----------------------------------------- | ----------------------------- | --------------------------------------------------------------------------------------------------------------------|
 | Stiebel Eltron Heat Pump                  | heatpump                      | A Stiebel Eltron Heat Pump connected through modbus to an ISG                                                       |
-| Stiebel Eltron Heat Pump (WPM compatible) | stiebeleltron-heatpump-allwpm | A Stiebel Eltron Heat Pump (WPM compatible) thing with extended function support connected through Modbus to an ISG |
+| Stiebel Eltron Heat Pump (WPM compatible) | stiebeleltron-heatpump-allwpm | A Stiebel Eltron Heat Pump (WPM compatible) Thing with extended function support connected through Modbus to an ISG |
 
-The first thing *Stiebel Eltron Heat Pump* and its channel IDs have been kept for compatibility reasons.
-It's recommended to switch to the second thing *Stiebel Eltron Heat Pump (WPM compatible)* as it supports the retrieval of much more information from a compatible heat pump controller (WPM).
+The first Thing *Stiebel Eltron Heat Pump* and its channel IDs have been kept for compatibility reasons.
+It's recommended to switch to the second Thing *Stiebel Eltron Heat Pump (WPM compatible)* as it supports the retrieval of much more information from a compatible heat pump controller (WPM).
 Supported controllers are WPMsystem, WPM3 and WPM3i.
 If the SG  Ready (Smart Grid Ready) polling is enabled using configuration parameter *pollSgReady*, the controller id is retrieved and visible in the appropriate channel.
 If the id is known, it can be set in the configuration parameter *wpmControllerId*.
@@ -44,12 +44,12 @@ Bridge modbus:tcp:bridge [ host="10.0.0.2", port=502, id=1 ]
 
 The things in this extension will use the selected bridge to connect to the device.
 
-The following configuration parameters are valid for the `stiebeleltron-heatpump-allwpm` thing:
+The following configuration parameters are valid for the `stiebeleltron-heatpump-allwpm` Thing:
 
 | Parameter | Type    | Required | Default if omitted | Description                                                                |
 | --------- | ------- | -------- | ------------------ | -------------------------------------------------------------------------- |
 | refresh   | integer | no       | 5                  | Poll interval in seconds. Increase this if you encounter connection errors |
-| maxTries  | integer | no       | 3                  | Number of retries before giving up reading from this thing                 |
+| maxTries  | integer | no       | 3                  | Number of retries before giving up reading from this Thing                 |
 
 
 | Parameter       | Type    | Required | Default if omitted | Description                                                                          |
@@ -59,7 +59,7 @@ The following configuration parameters are valid for the `stiebeleltron-heatpump
 | wpmControllerId | integer | no       | WMP3               | Default WPM controller id (WPM3 = 390, WPM3I = 391, WPMsystem = 449)                 |
 | pollSgReady     | boolean | no       | false              | Flag to enable polling of the SG Ready registers of the WPM                          |
 
-A typcial bridge and thing setup would look like this:
+A typcial bridge and Thing setup would look like this:
 
 ```java
 Bridge modbus:tcp:bridge [ host="10.0.0.2", port=502, id=1 ] {
@@ -70,13 +70,13 @@ Bridge modbus:tcp:bridge [ host="10.0.0.2", port=502, id=1 ] {
 ## Channels
 
 Channels are grouped into channel groups.
-The heat pump thing *Stiebel Eltron Heat Pump (WPM compatible)* supports more channels dependant on the available heat pump type.
+The heat pump Thing *Stiebel Eltron Heat Pump (WPM compatible)* supports more channels dependant on the available heat pump type.
 
 ### System State Groups
 
 This groups contain general state information about the heat pump.
 
-#### Channels supported by the legacy thing *Stiebel Eltron Heat Pump*
+#### Channels supported by the legacy Thing *Stiebel Eltron Heat Pump*
 
 | Channel ID       | Item Type | Read only | Description                                                   |
 | ---------------- | --------- | --------- | ------------------------------------------------------------- |
@@ -128,7 +128,7 @@ Note: The column WPM is for WPMsystem.
 
 This group contains system paramters of the heat pump.
 
-#### Channels supported by thing *Stiebel Eltron Heat Pump*
+#### Channels supported by Thing *Stiebel Eltron Heat Pump*
 
 | Channel ID                  | Item Type          | Read only | Description                                                                                      |
 | --------------------------- | ------------------ | --------- | ------------------------------------------------------------------------------------------------ |
@@ -178,7 +178,7 @@ Channel 'restart-isg': The binding only accepts command 1 - command 2 (service k
 
 This group contains general operational information about the device.
 
-#### Channels supported by thing *Stiebel Eltron Heat Pump*
+#### Channels supported by Thing *Stiebel Eltron Heat Pump*
 
 | Channel ID                 | Item Type            | Read only | Description                                           |
 | -------------------------- | -------------------- | --------- | ----------------------------------------------------- |
@@ -336,7 +336,7 @@ The following channels are only available for the thing *Stiebel Eltron Heat Pum
 | sg-ready-operating-state           | Number    | true      | SG Ready Operating State           |
 | sg-ready-controller-identification | Number    | true      | SG Ready Controller Identification |
 
-## Full Example for the thing *Stiebel Eltron Heat Pump*
+## Full Example for the Thing *Stiebel Eltron Heat Pump*
 
 ### Thing Configuration
 
