@@ -79,29 +79,34 @@ public class BindingServlet extends HttpServlet {
 
         String code;
         String error = "{\"error\": \"invalid-code-request\"}";
+        String errorCallUriFromBrowser = "You are attempting to authenticate via your browser. "
+                + "The viessmann binding does not support this. Authentication is handled automatically by the binding.";
 
         StringBuilder html = new StringBuilder();
         int codeEnd;
-        if (queryString != null && !queryString.isEmpty()) {
-            if (queryString.contains("code=")) {
-                if (!queryString.contains("&")) {
-                    codeEnd = queryString.length();
-                } else {
-                    codeEnd = queryString.indexOf("&");
-                }
-                code = queryString.substring(queryString.indexOf("code=") + 5, codeEnd);
-                logger.debug("doGet Authcode: {}", code);
-
-                html.append("{\"code\": \"");
-                html.append(code);
-                html.append("\"}");
+        if (queryString != null && queryString.contains("code=")) {
+            if (!queryString.contains("&")) {
+                codeEnd = queryString.length();
             } else {
-                logger.debug("doGet Authcode: {}", error);
-                html.append(error);
+                codeEnd = queryString.indexOf("&");
             }
+            code = queryString.substring(queryString.indexOf("code=") + 5, codeEnd);
+            logger.debug("doGet Authcode: {}", code);
+
+            html.append("{\"code\": \"");
+            html.append(code);
+            html.append("\"}");
         } else {
-            logger.debug("doGet Authcode: {}", error);
-            html.append(error);
+            String ua = req.getHeader("User-Agent");
+            logger.trace("User-Agent: {}", ua);
+
+            if (!ua.contains("Jetty")) {
+                html.append(errorCallUriFromBrowser);
+                logger.warn("doGet Authcode warn: {}", errorCallUriFromBrowser);
+            } else {
+                html.append(error);
+                logger.debug("doGet Authcode error: {}", error);
+            }
         }
 
         resp.addHeader("content-type", "application/json");
