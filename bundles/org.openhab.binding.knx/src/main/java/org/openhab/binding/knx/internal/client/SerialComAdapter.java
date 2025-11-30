@@ -60,7 +60,7 @@ public class SerialComAdapter implements SerialCom {
             try {
                 return tmpSerialPort.getInputStream();
             } catch (IOException e) {
-                logger.info("Cannot open input stream");
+                logger.warn("Cannot open input stream");
             }
         }
         // should not throw, create a dummy return value
@@ -75,7 +75,7 @@ public class SerialComAdapter implements SerialCom {
             try {
                 return tmpSerialPort.getOutputStream();
             } catch (IOException e) {
-                logger.info("Cannot open output stream");
+                logger.warn("Cannot open output stream");
             }
         }
         // should not throw, create a dummy return value

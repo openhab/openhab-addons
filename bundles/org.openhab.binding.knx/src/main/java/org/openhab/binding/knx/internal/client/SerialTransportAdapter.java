@@ -98,14 +98,14 @@ public class SerialTransportAdapter implements SerialConnectionProvider {
 
                 return new SerialComAdapter(serialPort);
             } else {
-                logger.info("Port {} not available", settings.portId());
+                logger.warn("Port {} not available", settings.portId());
                 throw new IOException("Port " + settings.portId() + " not available");
             }
         } catch (PortInUseException e) {
-            logger.info("Port {} already in use", settings.portId());
+            logger.warn("Port {} already in use", settings.portId());
             throw new IOException("Port " + settings.portId() + " already in use", e);
         } catch (UnsupportedCommOperationException e) {
-            logger.info("Port {} unsupported com operation", settings.portId());
+            logger.warn("Port {} unsupported com operation", settings.portId());
             throw new IOException("Port " + settings.portId() + " unsupported com operation", e);
         }
     }
