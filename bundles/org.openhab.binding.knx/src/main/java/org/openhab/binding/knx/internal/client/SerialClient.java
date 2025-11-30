@@ -44,7 +44,7 @@ import io.calimero.serial.FT12Connection;
 @NonNullByDefault
 public class SerialClient extends AbstractKNXClient {
 
-    private static final String CALIMERO_ERROR_CANNOT_OPEN_PORT = "failed to open serial port";
+    private static final String CALIMERO_ERROR_CANNOT_OPEN_PORT = "opening device ";
 
     private final Logger logger = LoggerFactory.getLogger(SerialClient.class);
 
