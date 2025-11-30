@@ -22,6 +22,7 @@ import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
+import org.openhab.binding.mqtt.generic.IgnoreType;
 import org.openhab.binding.mqtt.generic.mapping.ColorMode;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
@@ -451,5 +452,8 @@ public class ValueTests {
         v.setNullValue("NULL");
         assertThat(v.parseMessage(new StringType("NULL")), is(UnDefType.NULL));
         assertThat(v.parseMessage(new StringType("")), is(new StringType("")));
+
+        v.setIgnoreValue("IGNORE");
+        assertThat(v.parseMessage(new StringType("IGNORE")), is(IgnoreType.SENTINEL));
     }
 }

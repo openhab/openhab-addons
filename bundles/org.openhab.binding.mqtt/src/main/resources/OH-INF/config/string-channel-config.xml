@@ -84,6 +84,11 @@
 			<description>If the received MQTT value matches this, treat it as NULL.</description>
 			<advanced>true</advanced>
 		</parameter>
+		<parameter name="ignoreValue" type="text">
+			<label>Ignore Value</label>
+			<description>If the received MQTT value matches this, ignore the update.</description>
+			<advanced>true</advanced>
+		</parameter>
 
 		<parameter name="allowedStates" type="text">
 			<label>Allowed States</label>
