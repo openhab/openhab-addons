@@ -26,7 +26,7 @@ No binding-level configuration is required.
 
 ## Thing Discovery
 
-Only sensor discovery is supported, the thing for the USB receiver / LaCrosseGateway has to be created manually. Pay attention to use the correct serial port, as otherwise the binding may interfere with other bindings accessing serial ports.
+Only sensor discovery is supported, the Thing for the USB receiver / LaCrosseGateway has to be created manually. Pay attention to use the correct serial port, as otherwise the binding may interfere with other bindings accessing serial ports.
 
 Afterwards, sensor discovery can be triggered using the `Scan` button in `Things` &rarr; `+` &rarr; `JeeLink Binding`.
 Discovery only detects sensors that actually send a value during discovery.
@@ -171,14 +171,14 @@ The available init commands depend on the sketch that is running on the USB stic
 
 ## Full Example
 
-A typical thing configuration for PCA301 looks like this:
+A typical Thing configuration for PCA301 looks like this:
 
 ```java
 Bridge jeelink:jeelinkUsb:pca301 "Jeelink pca301" @ "home" [ serialPort="/dev/ttyUSB0" ]
 Thing jeelink:pca301:1-160-236 "ec3k 1" (jeelink:jeelinkUsb:pca301)  @ "home" [ sensorId="1-160-236"]
 ```
 
-A typical thing configuration for EC3000 looks like this:
+A typical Thing configuration for EC3000 looks like this:
 
 ```java
 Bridge jeelink:jeelinkUsb:ec3k "Jeelink ec3k" @ "home" [ serialPort="COM4" ]
@@ -194,7 +194,7 @@ Thing jeelink:lacrosse:sensor1 "Jeelink lacrosse 1" (jeelink:jeelinkUsb:lacrosse
 Thing jeelink:lacrosse:sensor2 "Jeelink lacrosse 2" (jeelink:jeelinkUsb:lacrosse)  @ "home" [ sensorId="18", minTemp=10, maxTemp=32]
 ```
 
-A typical thing configuration for Revolt looks like this:
+A typical Thing configuration for Revolt looks like this:
 
 ```java
 Bridge jeelink:jeelinkUsb:revolt "Jeelink revolt" @ "home" [ serialPort="COM4" ]

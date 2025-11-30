@@ -19,7 +19,7 @@ If you already know the IP-address of your HomBot you might as well just configu
 
 ## Thing Configuration
 
-The thing only requires an IP-address to function, this could also be found using the discovery method.
+The Thing only requires an IP-address to function, this could also be found using the discovery method.
 The parameter is called "ipAdress".
 
 You can also configure the polling interval in seconds by setting "pollingPeriod", and the network port of the server by using "port".
@@ -54,7 +54,7 @@ You can also configure the polling interval in seconds by setting "pollingPeriod
 
 ## Full Example
 
-Example of how to configure a thing.
+Example of how to configure a Thing.
 
 demo.thing
 

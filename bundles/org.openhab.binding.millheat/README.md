@@ -15,11 +15,11 @@ This binding supports all Wi-Fi enabled heaters as well as the Wi-Fi socket.
 
 The binding will discover homes with rooms and heaters.
 
-To enable discovery, add a thing of type Mill Heating API and provide your username and password.
+To enable discovery, add a Thing of type Mill Heating API and provide your username and password.
 
 ## Thing Configuration
 
-See the full example below for how to configure using thing files.
+See the full example below for how to configure using Thing files.
 
 ### Account
 
@@ -77,7 +77,7 @@ Either `macAddress` or `heaterId` must be specified.
 | ------------------- | ------------- | ------------------ | ----------- |
 | currentTemperature  | R             | Number:Temperature | Measured temperature by this heater |
 | targetTemperature   | R/W           | Number:Temperature | Target temperature for this heater. Channel available only if heater is not connected to a room |
-| currentPower        | R             | Number:Power       | Current power usage in watts. Note that the power attribute of the heater thing config must be set for this channel to be active  |
+| currentPower        | R             | Number:Power       | Current power usage in watts. Note that the power attribute of the heater Thing config must be set for this channel to be active  |
 | heatingActive       | R             | Switch             | Whether the heater is active/heating  |
 | fanActive           | R/W           | Switch             | Whether the fan (if available) is active (UNTESTED) |
 | independent         | R             | Switch             | Whether this heater is controlled independently or part of a room setup |

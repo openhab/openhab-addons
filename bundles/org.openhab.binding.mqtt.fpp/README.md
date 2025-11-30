@@ -4,11 +4,11 @@ Binding to control Falcon Player (FPP) devices using MQTT and HTTP. Status messa
 
 ## Discovery
 
-Auto-discovery is not supported. Define the thing manually.
+Auto-discovery is not supported. Define the Thing manually.
 
 ## Supported Things
 
-The binding supports one thing `player` that represents the Falcon Player.
+The binding supports one Thing `player` that represents the Falcon Player.
 
 ## Thing Configuration
 
@@ -44,9 +44,9 @@ The binding supports one thing `player` that represents the Falcon Player.
 
 ## Full Example
 
-To use these examples for textual configuration, you must already have a configured MQTT `broker` thing, and know its unique ID.
+To use these examples for textual configuration, you must already have a configured MQTT `broker` Thing, and know its unique ID.
 This UID will be used in the things file and will replace the text `myBroker`.
-The first line in the things file will create a `broker` thing and this can be removed if you have already setup a broker in another file or via the UI already.
+The first line in the things file will create a `broker` Thing and this can be removed if you have already setup a broker in another file or via the UI already.
 
 ### fpp.things
 

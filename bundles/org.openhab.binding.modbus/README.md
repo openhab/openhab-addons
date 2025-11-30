@@ -58,7 +58,7 @@ This binding supports 4 different things types
 | `tcp`    | Bridge | Modbus TCP server (Modbus TCP slave)                                                                                                                                                                                                      |
 | `serial` | Bridge | Modbus serial slave                                                                                                                                                                                                                       |
 | `poller` | Bridge | Thing taking care of polling the data from modbus slaves. One poller corresponds to single Modbus read request (FC01, FC02, FC03, or FC04). Is child of `tcp` or `serial`.                                                                |
-| `data`   | Thing  | thing for converting polled data to meaningful numbers. Analogously, is responsible of converting openHAB commands to Modbus write requests. Is child of `poller` (read-only or read-write things) or `tcp`/`serial` (write-only things). |
+| `data`   | Thing  | Thing for converting polled data to meaningful numbers. Analogously, is responsible of converting openHAB commands to Modbus write requests. Is child of `poller` (read-only or read-write things) or `tcp`/`serial` (write-only things). |
 
 Typically one defines either `tcp` or `serial` bridge, depending on the variant of Modbus slave.
 For each Modbus read request, a `poller` is defined.
@@ -78,7 +78,7 @@ See [general documentation about serial port configuration](/docs/administration
 
 ## Thing Configuration
 
-In the tables below the thing configuration parameters are grouped by thing type.
+In the tables below the Thing configuration parameters are grouped by Thing type.
 
 Things can be configured using the UI, or using a `.things` file.
 The configuration in this documentation explains the `.things` file, although you can find the same parameters in the UI.
@@ -167,7 +167,7 @@ With low baud rates and/or long read requests (that is, many items polled), ther
 
 ### `poller` Thing
 
-`poller` thing takes care of polling the Modbus serial slave or Modbus TCP server data regularly.
+`poller` Thing takes care of polling the Modbus serial slave or Modbus TCP server data regularly.
 You must give each of your bridge Things a reference (thing ID) that is unique for this binding.
 
 | Parameter     | Type    | Required | Default if omitted | Description                                                                                                                                                                                    |
@@ -179,7 +179,7 @@ You must give each of your bridge Things a reference (thing ID) that is unique f
 | `maxTries`    | integer |          | `3`                | Maximum tries when reading. <br /><br />Number of tries when reading data, if some of the reading fail. For single try, enter 1.                                                               |
 | `cacheMillis` | integer |          | `50`               | Duration for data cache to be valid, in milliseconds. This cache is used only to serve `REFRESH`  commands. Use zero to disable the caching.                                                   |
 
-Polling can be manually triggered by sending `REFRESH` command to item bound to channel of `data` thing.
+Polling can be manually triggered by sending `REFRESH` command to item bound to channel of `data` Thing.
 When manually triggering polling, a new poll is executed as soon as possible, and sibling `data` things (i.e. things that share the same `poller` bridge) are updated.
 In case the `poller` had just received a data response or an error occurred, a cached response is used instead.
 See [Refresh command](#refresh-command) section for more details.
@@ -190,7 +190,7 @@ Split your poller into multiple smaller ones to work around this problem.
 ### `data` Thing
 
 `data` is responsible of extracting relevant piece of data (e.g. a number `3.14`) from binary received from the slave.
-Similarly, `data` thing is responsible of converting openHAB commands to write requests to the Modbus slave.
+Similarly, `data` Thing is responsible of converting openHAB commands to write requests to the Modbus slave.
 n.b. note that some numerics like 'readStart' need to be entered as 'text'.
 You must give each of your data Things a reference (thing ID) that is unique for this binding.
 
@@ -209,7 +209,7 @@ You must give each of your data Things a reference (thing ID) that is unique for
 
 ## Channels
 
-Only the `data` thing has channels.
+Only the `data` Thing has channels.
 It has several "data channels", serving the polled data in different formats, and for accepting openHAB commands from different item types.
 
 Please note that transformations might be _necessary_ in order to update some data channels, or to convert some openHAB commands to suitable Modbus data.
@@ -241,7 +241,7 @@ Furthermore, there are additional channels that are useful for diagnostics:
 
 Items are configured the typical way, using `channel` to bind the item to a particular channel.
 
-For example, in the following example, item `Temperature_Modbus_Livingroom` is bound to channel `number` of thing `modbus:data:siemensplc:holding:livingroom_temperature`.
+For example, in the following example, item `Temperature_Modbus_Livingroom` is bound to channel `number` of Thing `modbus:data:siemensplc:holding:livingroom_temperature`.
 
 ```java
 Number  Temperature_Modbus_Livingroom                       "Temperature Living room [%.1f °C]"           <temperature>   { channel="modbus:data:siemensplc:holding:livingroom_temperature:number" }
@@ -347,13 +347,13 @@ Note that entity begins counting at 1, data frame address at 0.
 
 The openHAB modbus binding uses data frame entity addresses when referring to modbus entities.
 That is, the entity address configured in modbus binding is passed to modbus protocol frame as-is.
-For example, Modbus `poller` thing with `start=3`, `length=2` and `type=holding` will read modbus entities with the following numbers 40004 and 40005.
+For example, Modbus `poller` Thing with `start=3`, `length=2` and `type=holding` will read modbus entities with the following numbers 40004 and 40005.
 The manufacturer of any modbus device may choose to use either notation, you may have to infer which, or use trial and error.
 
 ### Value Types On Read And Write
 
 This section explains the detailed descriptions of different value types on read and write.
-Note that value types less than 16 bits are not supported on write to holding registers (see [poller thing](#poller-thing) documentation for details).
+Note that value types less than 16 bits are not supported on write to holding registers (see [poller Thing](#poller-thing) documentation for details).
 
 See [Full examples](#full-examples) section for practical examples.
 
@@ -445,7 +445,7 @@ If you get strange values using the `int32`, `uint32`, `float32`, `int64`, or `u
 
 ### REFRESH Command
 
-`REFRESH` command to item bound to any [data channel](#channels) makes `poller` thing to poll new from the Modbus slave.
+`REFRESH` command to item bound to any [data channel](#channels) makes `poller` Thing to poll new from the Modbus slave.
 All data channels of children `data` things are refreshed per the normal logic.
 
 `REFRESH` can be useful tool if you like to refresh only on demand (`poller` has refresh disabled, i.e. `refresh=0`), or have custom logic of refreshing only in some special cases.
@@ -471,7 +471,7 @@ In case of read errors, all data channels are left unchanged, and `lastReadError
 Examples of errors include connection errors, IO errors on read, and explicit exception responses from the slave.
 
 Note: there is a performance optimization that channel state is only updated when enough time has passed since last update, or when the state differs from previous update.
-See `updateUnchangedValuesEveryMillis` parameter in `data` thing.
+See `updateUnchangedValuesEveryMillis` parameter in `data` Thing.
 
 ### Write Steps
 
@@ -656,7 +656,7 @@ Bridge modbus:tcp:localhostTCP [ host="127.0.0.1", port=502, id=2 ] {
         Thing data di1201 [ readStart="1201", readValueType="bit" ]
     }
 
-    // Write-only entry: thing is child of tcp directly. No readStart etc. need to be defined.
+    // Write-only entry: Thing is child of tcp directly. No readStart etc. need to be defined.
     // Note that the openHAB state might differ from the physical slave since it is not refreshed at all
     Thing data holding5write [ writeStart="5", writeValueType="int16", writeType="holding" ]
 }
@@ -1040,7 +1040,7 @@ So check ALL interfaces. Usually either the IP on Ethernet will do.
 
 - some devices do not allow to query a range of registers that is too large or spans reserved registers. Do not poll more than 123 registers.
 Devices may respond with an error or no error but invalid register data so this error can easily go undedetected.
-Turn your poller thing into multiple things to cover smaller ranges to work around this problem.
+Turn your poller Thing into multiple things to cover smaller ranges to work around this problem.
 
 - there's potentially many more or less weird inconsistencies with some devices.
   If you fail to read a register or you only ever get invalid values (such as 00 or FF bytes), try with various poller lengths such as the exact length of a register in question or twice the amount.
@@ -1051,7 +1051,7 @@ Turn your poller thing into multiple things to cover smaller ranges to work arou
 The openHAB 1 Modbus binding is quite different from this binding.
 The biggest difference is that this binding uses things.
 
-Unfortunately there is no conversion tool to convert old configurations to new thing structure.
+Unfortunately there is no conversion tool to convert old configurations to new Thing structure.
 
 Due to the introduction of things, the configuration was bound to be backwards incompatible.
 This offered opportunity to simplify some aspects of configuration.
@@ -1093,7 +1093,7 @@ Old binding had converted the input based on item type.
 ### Trigger Removed
 
 The old binding had `trigger` parameter in item configuration to react only to some openHAB commands, or to some polled states.
-There is no trigger anymore but one can use transformations to accomplish the same thing. See [Transformations](#transformations) for examples.
+There is no trigger anymore but one can use transformations to accomplish the same Thing. See [Transformations](#transformations) for examples.
 
 ### Support For 32, 64 Bit Value Types In Writing
 
@@ -1204,7 +1204,7 @@ The second Item of the 1.x binding (offset `1`) is defined as follows.
 Switch BarSwitch  "Bar Switch" {modbus="slave1:1"}
 ```
 
-This leads to the thing definition
+This leads to the Thing definition
 
 ```java
 Thing data wago_s1_001 [ readStart="12289", readValueType="bit", writeStart="12289", writeValueType="bit", writeType="coil" ]
@@ -1212,7 +1212,7 @@ Thing data wago_s1_001 [ readStart="12289", readValueType="bit", writeStart="122
 
 Note the absolute address `12289` (12288+1) which has to be used here.
 
-Incorporating this definitions into the thing file leads to:
+Incorporating this definitions into the Thing file leads to:
 
 `wago.things`:
 
@@ -1291,7 +1291,7 @@ Save your updated item file and check whether updates come in as expected.
 
 ### Thing Status
 
-Check thing status for errors in configuration or communication.
+Check Thing status for errors in configuration or communication.
 
 ### Enable Verbose Logging
 

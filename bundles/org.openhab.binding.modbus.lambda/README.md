@@ -12,7 +12,7 @@ Other configurations of the E-Manager are not supported (yet).
 
 ## Supported Things
 
-This bundle adds the following thing types to the Modbus binding.
+This bundle adds the following Thing types to the Modbus binding.
 Note, that the things will show up under the Modbus binding.
 
 | Thing           | ThingTypeID         | Description                             |
@@ -26,7 +26,7 @@ Note, that the things will show up under the Modbus binding.
 
 A Modbus Bridge has to be installed before installing the above mentioned things.
 The binding supports installations with more than one Heat Pump, Boiler, Buffer, Heating Circuit.
-For each of these parts you have to provide the Subindex of your thing in the configurations section, usually using the User Interface. 
+For each of these parts you have to provide the Subindex of your Thing in the configurations section, usually using the User Interface. 
 So if you have two Heating Circuits use 0 for the first and 1 for the second Heating Circuit.
 Handling of General System Settings (Base Adress 200) is not supported (yet). Solar functions (Base Address 4000) are now supported.
 Some of the registers noted RW in the manual are read only in the binding.
@@ -52,13 +52,13 @@ The following parameters are valid for all things:
 | Parameter | Type    | Required | Default if omitted | Description                                                                |
 | --------- | ------- | -------- | ------------------ | -------------------------------------------------------------------------- |
 | refresh   | integer | no       | 30                 | Poll interval in seconds. Increase this if you encounter connection errors |
-| maxTries  | integer | no       | 3                  | Number of retries when before giving up reading from this thing.           |
+| maxTries  | integer | no       | 3                  | Number of retries when before giving up reading from this Thing.           |
 
 Heat Pump, Boiler, Buffer and Heating Circuit things use another parameter Subindex to add one or more things of this type:
 
 | Parameter | Type    | Required | Default if omitted | Description                                                                |
 | --------- | ------- | -------- | ------------------ | -------------------------------------------------------------------------- |
-| Subindex  | integer | yes      | 0                  | Subindex for things of the same thing type, starting with 0                |
+| Subindex  | integer | yes      | 0                  | Subindex for things of the same Thing type, starting with 0                |
 
 | Thing Type       | Range   | 
 | ---------------- | ------- | 

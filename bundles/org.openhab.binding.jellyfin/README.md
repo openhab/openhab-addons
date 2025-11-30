@@ -18,10 +18,10 @@ After that, device discovery will detect controllable clients.
 
 ## Authentication
 
-To allow the server thing to go online, you must provide valid credentials (`userId` and `token`) for the user that the binding will use to interact with the server.
+To allow the server Thing to go online, you must provide valid credentials (`userId` and `token`) for the user that the binding will use to interact with the server.
 Please note that the user should be allowed on the Jellyfin server to remote control devices.
 
-To assist you with this process, the binding exposes a simple login form you can access at `<local openHAB server URL>/jellyfin/<server thing id>` (for example `http://127.0.0.1:8080/jellyfin/2846b8fb60ad444f9ebd085335e3f6bf`).
+To assist you with this process, the binding exposes a simple login form you can access at `<local openHAB server URL>/jellyfin/<server Thing id>` (for example `http://127.0.0.1:8080/jellyfin/2846b8fb60ad444f9ebd085335e3f6bf`).
 
 ## Server Thing Configuration
 

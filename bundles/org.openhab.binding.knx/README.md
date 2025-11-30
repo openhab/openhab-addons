@@ -101,7 +101,7 @@ It can safely be turned off to save bandwidth on the bus or avoid problems with 
 |--------------|----------|--------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------|
 | address      | N        | The individual device address (in 0.0.0 notation)                                                                        | -  |
 | fetch        | N        | Read out the device parameters and address/communication object tables (requires the address)                            | false                                                                       |
-| pingInterval | N        | Interval (in seconds) to contact the device and set the thing status based on the result (requires the address)          | 600                                                                         |
+| pingInterval | N        | Interval (in seconds) to contact the device and set the Thing status based on the result (requires the address)          | 600                                                                         |
 | readInterval | N        | Interval (in seconds) to actively request reading of values from the bus (0 if they should only be read once at startup) | 0                                                                           |
 
 Different kinds of channels are defined and can be used to group together Group Addresses.
@@ -483,7 +483,7 @@ Data Secure does _not_ necessarily require a KNX Secure Router or a Secure IP In
 
 > NOTE: openHAB currently does fully support passive (listening) access to secure group addresses.
 Write access to secure group addresses is currently disabled in openHAB.
-Initial/periodic read will fail; avoid automatic read (`<` in thing definition).
+Initial/periodic read will fail; avoid automatic read (`<` in Thing definition).
 
 All necessary information to decode secure group addresses is included in ETS keyring export (ETS, project settings, export keyring).
 The keyring file is configured using `keyringFile` (put it in `config\misc` folder of the openHAB installation) and also requires `keyringPassword`.

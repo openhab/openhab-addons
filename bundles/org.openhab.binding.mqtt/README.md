@@ -131,7 +131,7 @@ Remember that you need a configured broker Thing first!
 
 The following optional parameters can be set for the Thing:
 
-- **availabilityTopic**: The MQTT topic that represents the availability of the thing. This can be the thing's LWT topic.
+- **availabilityTopic**: The MQTT topic that represents the availability of the Thing. This can be the Thing's LWT topic.
 - **payloadAvailable**: Payload of the `Availability Topic`, when the device is available. Default: `ON`.
 - **payloadNotAvailable**: Payload of the `Availability Topic`, when the device is _not_ available. Default: `OFF`.
 - **transformationPattern**: An optional transformation pattern like [JSONPath](https://goessner.net/articles/JsonPath/index.html#e2) that is applied to the incoming availability payload.
@@ -156,10 +156,10 @@ You can add the following channels:
 
 ## Channel Configuration
 
-- **stateTopic**: The MQTT topic that represents the state of the thing. This can be empty, the thing channel will be a state-less trigger then. You can use a wildcard topic like "sensors/+/event" to retrieve state from multiple MQTT topics.
+- **stateTopic**: The MQTT topic that represents the state of the Thing. This can be empty, the Thing channel will be a state-less trigger then. You can use a wildcard topic like "sensors/+/event" to retrieve state from multiple MQTT topics.
 - **transformationPattern**: An optional transformation pattern like [JSONPath](https://goessner.net/articles/JsonPath/index.html#e2) that is applied to all incoming MQTT values.
 - **transformationPatternOut**: An optional transformation pattern like [JSONPath](https://goessner.net/articles/JsonPath/index.html#e2) that is applied before publishing a value to MQTT.
-- **commandTopic**: The MQTT topic that commands are send to. This can be empty, the thing channel will be read-only then. Transformations are not applied for sending data.
+- **commandTopic**: The MQTT topic that commands are send to. This can be empty, the Thing channel will be read-only then. Transformations are not applied for sending data.
 - **formatBeforePublish**: Format a value before it is published to the MQTT broker. The default is to just pass the channel/item state. If you want to apply a prefix, say "MYCOLOR,", you would use "MYCOLOR,%s". Currently only "%s" is supported. Note that this format does not apply to the special on/off command values for dimmer channels, or up/down/stop command values for rollershutter channels.
 - **postCommand**: If `true`, the received MQTT value will not only update the state of linked items, but command it.
   The default is `false`.

@@ -5,8 +5,8 @@ Enables the user to show the latest departure times for specific street car stop
 
 ## Supported Things
 
-Every street car stop is represented by one thing.
-Each thing contains channels for the information referred to the next n trains.
+Every street car stop is represented by one Thing.
+Each Thing contains channels for the information referred to the next n trains.
 This includes the name of the train, the final destination and the estimated time available (eta).
 
 ## Thing Configuration
