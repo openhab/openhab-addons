@@ -12,13 +12,9 @@
  */
 package org.openhab.binding.knx.internal.client;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.Collections;
-import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -34,13 +30,14 @@ import org.slf4j.LoggerFactory;
 import aQute.bnd.annotation.spi.ServiceProvider;
 import io.calimero.KNXException;
 import io.calimero.serial.spi.SerialCom;
+import io.calimero.serial.spi.SerialConnectionProvider;
 
 /**
  * The {@link SerialTransportAdapter} provides org.openhab.core.io.transport.serial
  * services to the Calimero library.
  * 
  * {@literal @}ServiceProvider annotation (biz.aQute.bnd.annotation) automatically creates the file
- * /META-INF/services/io.calimero.serial.spi.SerialCom
+ * /META-INF/services/io.calimero.serial.spi.SerialConnectionProvider
  * to register SerialTransportAdapter to the service loader.
  * Additional attributes for SerialTransportAdapter can be specified as well, e.g.
  * attribute = { "position=1" }
@@ -48,9 +45,9 @@ import io.calimero.serial.spi.SerialCom;
  * 
  * @author Holger Friedrich - Initial contribution
  */
-@ServiceProvider(value = SerialCom.class)
+@ServiceProvider(value = SerialConnectionProvider.class)
 @NonNullByDefault
-public class SerialTransportAdapter implements SerialCom {
+public class SerialTransportAdapter implements SerialConnectionProvider {
     private static final int OPEN_TIMEOUT_MS = 200;
     private static final int RECEIVE_TIMEOUT_MS = 5;
     private static final int RECEIVE_THRESHOLD = 1024;
@@ -59,8 +56,6 @@ public class SerialTransportAdapter implements SerialCom {
     private Logger logger = LoggerFactory.getLogger(SerialTransportAdapter.class);
     @Nullable
     private static SerialPortManager serialPortManager = null;
-    @Nullable
-    private SerialPort serialPort = null;
 
     public static void setSerialPortManager(SerialPortManager serialPortManager) {
         SerialTransportAdapter.serialPortManager = serialPortManager;
@@ -69,142 +64,60 @@ public class SerialTransportAdapter implements SerialCom {
     public SerialTransportAdapter() {
     }
 
-    public void open(@Nullable String portId) throws IOException, KNXException {
-        if (portId == null) {
+    public SerialCom open(@Nullable Settings settings) throws IOException, KNXException {
+        if (settings == null) {
+            throw new IOException("Settings not available");
+        }
+        if (settings.portId() == null) {
             throw new IOException("Port not available");
         }
-        logger = LoggerFactory.getLogger(SerialTransportAdapter.class.getName() + ":" + portId);
+        logger = LoggerFactory.getLogger(SerialTransportAdapter.class.getName() + ":" + settings.portId());
 
         final @Nullable SerialPortManager tmpSerialPortManager = serialPortManager;
         if (tmpSerialPortManager == null) {
             throw new IOException("PortManager not available");
         }
         try {
-            SerialPortIdentifier portIdentifier = tmpSerialPortManager.getIdentifier(portId);
+            SerialPortIdentifier portIdentifier = tmpSerialPortManager.getIdentifier(settings.portId());
             if (portIdentifier != null) {
                 if (portIdentifier.isCurrentlyOwned()) {
-                    logger.warn("Configured port {} is currently in use by another application: {}", portId,
+                    logger.warn("Configured port {} is currently in use by another application: {}", settings.portId(),
                             portIdentifier.getCurrentOwner());
                 }
-                logger.trace("Trying to open port {}", portId);
+                logger.trace("Trying to open port {}", settings.portId());
                 SerialPort serialPort = portIdentifier.open(this.getClass().getName(), OPEN_TIMEOUT_MS);
                 // apply default settings for com port, may be overwritten by caller
                 serialPort.setSerialPortParams(BAUDRATE, SerialPort.DATABITS_8, SerialPort.STOPBITS_1,
                         SerialPort.PARITY_EVEN);
                 serialPort.enableReceiveThreshold(RECEIVE_THRESHOLD);
                 serialPort.enableReceiveTimeout(RECEIVE_TIMEOUT_MS);
-                this.serialPort = serialPort;
 
                 // Notification / event listeners are available and may be used to log/trace com failures
                 // serialPort.notifyOnDataAvailable(true);
                 logger.trace("Port opened successfully");
+
+                return new SerialComAdapter(serialPort);
             } else {
-                logger.info("Port {} not available", portId);
-                throw new IOException("Port " + portId + " not available");
+                logger.warn("Port {} not available", settings.portId());
+                throw new IOException("Port " + settings.portId() + " not available");
             }
         } catch (PortInUseException e) {
-            logger.info("Port {} already in use", portId);
-            throw new IOException("Port " + portId + " already in use", e);
+            logger.warn("Port {} already in use", settings.portId());
+            throw new IOException("Port " + settings.portId() + " already in use", e);
         } catch (UnsupportedCommOperationException e) {
-            logger.info("Port {} unsupported com operation", portId);
-            throw new IOException("Port " + portId + " unsupported com operation", e);
+            logger.warn("Port {} unsupported com operation", settings.portId());
+            throw new IOException("Port " + settings.portId() + " unsupported com operation", e);
         }
-    }
-
-    // SerialCom extends AutoCloseable, close() throws Exception
-    @Override
-    public void close() {
-        logger.trace("Closing serial port");
-        final @Nullable SerialPort tmpSerialPort = serialPort;
-        if (tmpSerialPort != null) {
-            tmpSerialPort.close();
-            serialPort = null;
-        }
-    }
-
-    @Override
-    public @Nullable InputStream inputStream() {
-        final @Nullable SerialPort tmpSerialPort = serialPort;
-        if (tmpSerialPort != null) {
-            try {
-                return tmpSerialPort.getInputStream();
-            } catch (IOException e) {
-                logger.info("Cannot open input stream");
-            }
-        }
-        // should not throw, create a dummy return value
-        byte[] buf = {};
-        return new ByteArrayInputStream(buf);
-    }
-
-    @Override
-    public @Nullable OutputStream outputStream() {
-        final @Nullable SerialPort tmpSerialPort = serialPort;
-        if (tmpSerialPort != null) {
-            try {
-                return tmpSerialPort.getOutputStream();
-            } catch (IOException e) {
-                logger.info("Cannot open output stream");
-            }
-        }
-        // should not throw, create a dummy return value
-        return new ByteArrayOutputStream(0);
     }
 
     // disable NonNullByDefault for this function, legacy interface List<String>
     @NonNullByDefault({})
-    public List<String> portIdentifiers() {
+    public Set<String> portIdentifiers() {
         final @Nullable SerialPortManager tmpSerialPortManager = serialPortManager;
         if (tmpSerialPortManager == null) {
-            return Collections.emptyList();
+            return Collections.emptySet();
         }
         // typecast only required to avoid warning about less-annotated type
-        return (List<String>) tmpSerialPortManager.getIdentifiers().map(SerialPortIdentifier::getName)
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public int baudRate() throws IOException {
-        final @Nullable SerialPort tmpSerialPort = serialPort;
-        if (tmpSerialPort == null) {
-            throw new IOException("Port not available");
-        }
-        return tmpSerialPort.getBaudRate();
-    }
-
-    public void setSerialPortParams(final int baudrate, final int databits, @Nullable StopBits stopbits,
-            @Nullable Parity parity) throws IOException {
-        final @Nullable SerialPort tmpSerialPort = serialPort;
-        if (tmpSerialPort == null) {
-            throw new IOException("Port not available");
-        }
-        if ((stopbits == null) || (parity == null)) {
-            throw new IOException("Invalid parameters");
-        }
-        try {
-            tmpSerialPort.setSerialPortParams(baudrate, databits, stopbits.value(), parity.value());
-        } catch (final UnsupportedCommOperationException e) {
-            throw new IOException("Setting serial port parameters for " + tmpSerialPort.getName() + " failed", e);
-        }
-    }
-
-    public void setFlowControlMode(@Nullable FlowControl mode) throws IOException {
-        final @Nullable SerialPort tmpSerialPort = serialPort;
-        if (tmpSerialPort == null) {
-            throw new IOException("Port not available");
-        }
-        if (mode == null) {
-            throw new IOException("Invalid parameters");
-        }
-        if (mode == FlowControl.None) {
-            try {
-                tmpSerialPort.setFlowControlMode(SerialPort.FLOWCONTROL_NONE);
-            } catch (final UnsupportedCommOperationException e) {
-                throw new IOException("Setting flow control parameters for " + tmpSerialPort.getName() + " failed", e);
-            }
-        } else {
-            logger.warn("Unknown FlowControl mode {}", mode);
-            throw new IOException("Invalid flow mode");
-        }
+        return tmpSerialPortManager.getIdentifiers().map(SerialPortIdentifier::getName).collect(Collectors.toSet());
     }
 }
