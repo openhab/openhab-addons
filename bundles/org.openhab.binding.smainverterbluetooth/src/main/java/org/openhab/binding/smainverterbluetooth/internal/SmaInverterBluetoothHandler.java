@@ -109,16 +109,14 @@ public class SmaInverterBluetoothHandler extends BaseThingHandler {
                     "CLI exited with code: " + exitCode + ". Check the CLI program is installed and executable.");
             return;
         }
-        if (inverter.getCode() == 0) {
-            updateStatus(ThingStatus.ONLINE);
-        } else if (inverter.getCode() == 1) {
-            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NOT_YET_READY, "Inverter asleep");
-        } else {
+        if (inverter.getCode() != 0) {
             logger.debug("Inverter returned error code: {}", inverter.getCode());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Inverter returned error code: " + inverter.getCode() + " CLI message: " + inverter.getMessage());
         }
-
+        if (inverter.getCode() == 1) {
+            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NOT_YET_READY, "Inverter asleep");
+        }
         publishChannels();
     }
 
