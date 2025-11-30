@@ -67,8 +67,8 @@ public class Util {
     }
 
     private static final Pattern URL_PATTERN = Pattern.compile("^(?:(?<scheme>[a-zA-Z][a-zA-Z0-9+.-]*):)?//"
-            + "(?:(?<userinfo>[^@/?#]*)@)?" + "(?<host>(?:\\[[a-fA-F0-9:]+\\])|(?:[^:/?#]*))(?::(?<port>\\d+))?" + "(?<path>/[^?#]*)?"
-            + "(?:\\?(?<query>[^#]*))?" + "(?:#(?<fragment>.*))?");
+            + "(?:(?<userinfo>[^@/?#]*)@)?" + "(?<host>(?:\\[[a-fA-F0-9:]+\\])|(?:[^:/?#]*))(?::(?<port>\\d+))?"
+            + "(?<path>/[^?#]*)?" + "(?:\\?(?<query>[^#]*))?" + "(?:#(?<fragment>.*))?");
 
     /**
      * Parses a URL string and returns a {@link URI} object, converting Unicode hostnames to ASCII as needed.
