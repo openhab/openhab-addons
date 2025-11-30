@@ -17,7 +17,7 @@ There is no automatic discovery.
 
 ## Thing Configuration
 
-There are 2 different working modes for the `SDS011` thing: Reporting and Polling.
+There are 2 different working modes for the `SDS011` Thing: Reporting and Polling.
 
 ### Reporting
 
@@ -32,7 +32,7 @@ The `pollingInterval` parameter specifies the time in seconds when data will be 
 
 In addition to the mode one has to provide the port to which the device is connected.
 
-A full overview about the parameters of the `SDS011` thing is given in the following table:
+A full overview about the parameters of the `SDS011` Thing is given in the following table:
 
 | parameter name    | mandatory | description                                                                           |
 |-------------------|-----------|---------------------------------------------------------------------------------------|

@@ -7,10 +7,10 @@ This binding supports data telegrams (containing a maximum of 20 registers) from
 The binding can also read other registers from the pump.
 It is recommended to add the most frequently updated variables to a telegram.
 The binding will then read all other registers automatically from the pump when channels are linked to an item.
-Register reading needs to be enabled in the thing configuration.
+Register reading needs to be enabled in the Thing configuration.
 The binding also has experimental support for writing registers.
 This can be used to configure the heat pump.
-Write mode needs to be enabled in the thing configuration and, for safety reasons, all register identifiers need to be explicitly defined.
+Write mode needs to be enabled in the Thing configuration and, for safety reasons, all register identifiers need to be explicitly defined.
 
 ## Supported Things
 
@@ -115,7 +115,7 @@ No binding configuration is required.
 ## Thing Configuration
 
 Things can be fully configured via the UI.
-The following information is useful when configuring things via thing configuration files.
+The following information is useful when configuring things via Thing configuration files.
 
 ### UDP connection
 

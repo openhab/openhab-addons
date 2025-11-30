@@ -13,7 +13,7 @@ This binding scrapes multiple websites for water levels:
 
 ## Thing Configuration
 
-The binding and thing ID is `nzwateralerts:wateralert`.
+The binding and Thing ID is `nzwateralerts:wateralert`.
 
 ### Configuration Values
 
