@@ -110,6 +110,7 @@ public class AccountController {
             throw new SunSynkAuthenticateException(message);
         } catch (SunSynkTokenException e) {
             String message = Objects.requireNonNullElse(e.getMessage(), "An unknown token error occurred");
+            ;
             throw new SunSynkAuthenticateException(message);
         } catch (Exception e) { // Catch the generic one last
             throw new SunSynkClientAuthenticateException("An unexpected error occurred: " + e.getMessage());
@@ -161,6 +162,8 @@ public class AccountController {
         httpTokenPost(payload);
     }
 
+    @SuppressWarnings("unused") // We need client to be nullable. Then we check for null. Without this compiler warns of
+                                // unused block under null check
     private void httpGetPublicKey(String endpoint) throws SunSynkClientAuthenticateException, JsonSyntaxException {
         Gson gson = new Gson();
         String response = "";
@@ -171,11 +174,13 @@ public class AccountController {
         try {
             response = HttpUtil.executeUrl(HttpMethod.GET.asString(), httpsURL, headers, null,
                     MediaType.APPLICATION_JSON, TIMEOUT_IN_MS);
-            if (gson.fromJson(response, SunSynkPublicKey.class) instanceof SunSynkPublicKey key) {
-                this.publicKey = key;
-                return;
+            logger.trace("SunSynk private key response: {}", response);
+            @Nullable
+            SunSynkPublicKey key = gson.fromJson(response, SunSynkPublicKey.class);
+            if (key == null) {
+                throw new SunSynkClientAuthenticateException("Failed get private key");
             }
-            throw new SunSynkClientAuthenticateException("Failed get private key");
+            this.publicKey = key;
         } catch (IOException | JsonSyntaxException e) {
             if (logger.isDebugEnabled()) {
                 String message = Objects.requireNonNullElse(e.getMessage(), "unknown error message");
@@ -188,6 +193,8 @@ public class AccountController {
         }
     }
 
+    @SuppressWarnings("unused") // We need client to be nullable. Then we check for null. Without this compiler warns of
+                                // unused block under null check
     private void httpTokenPost(String payload) throws SunSynkAuthenticateException, SunSynkTokenException {
         Gson gson = new Gson();
         String response = "";
@@ -199,12 +206,14 @@ public class AccountController {
         try {
             response = HttpUtil.executeUrl(HttpMethod.POST.asString(), httpsURL, headers, stream,
                     MediaType.APPLICATION_JSON, TIMEOUT_IN_MS);
-            if (gson.fromJson(response, Client.class) instanceof Client client){
-                this.sunAccount = client;
-            } else {
+
+            @Nullable
+            Client client = gson.fromJson(response, Client.class);
+            if (client == null) {
                 throw new SunSynkAuthenticateException(
-                        "Synk account could not be authenticated: Try re-enabling account");
+                        "Sun Synk account could not be authenticated: Try re-enabling account");
             }
+            this.sunAccount = client;
         } catch (IOException | JsonSyntaxException e) {
             throw new SunSynkAuthenticateException("Sun Synk account could not be authenticated", e);
         }
