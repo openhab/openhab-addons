@@ -67,7 +67,7 @@ public class Util {
     }
 
     private static final Pattern URL_PATTERN = Pattern.compile("^(?:(?<scheme>[a-zA-Z][a-zA-Z0-9+.-]*):)?//"
-            + "(?:(?<userinfo>[^@/?#]*)@)?" + "(?<host>[^:/?#]*)(?::(?<port>\\d+))?" + "(?<path>/[^?#]*)?"
+            + "(?:(?<userinfo>[^@/?#]*)@)?" + "(?<host>(?:\\[[a-fA-F0-9:]+\\])|(?:[^:/?#]*))(?::(?<port>\\d+))?" + "(?<path>/[^?#]*)?"
             + "(?:\\?(?<query>[^#]*))?" + "(?:#(?<fragment>.*))?");
 
     /**
