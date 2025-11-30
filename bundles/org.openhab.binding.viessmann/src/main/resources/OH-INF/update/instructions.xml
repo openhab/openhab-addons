@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<update:update-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:update="https://openhab.org/schemas/update-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/update-description/v1.0.0 https://openhab.org/schemas/update-description-1.0.0.xsd">
+
+	<thing-type uid="viessmann:device">
+		<instruction-set targetVersion="1">
+			<remove-channel id="heatingBoilerSensorsTemperatureMain"/>
+			<remove-channel id="heatingBoilerTemperature"/>
+			<remove-channel id="hours" groupIds="heatingBurners0Statistic"/>
+			<remove-channel id="starts" groupIds="heatingBurners0Statistic"/>
+			<remove-channel id="heatingBurners0Modulation"/>
+			<remove-channel id="shift"
+				groupIds="heatingCircuits0HeatingCurve,heatingCircuits1HeatingCurve,heatingCircuits2HeatingCurve"/>
+			<remove-channel id="slope"
+				groupIds="heatingCircuits0HeatingCurve,heatingCircuits1HeatingCurve,heatingCircuits2HeatingCurve"/>
+			<remove-channel id="temperature"
+				groupIds="heatingCircuits0OperatingProgramsComfort,heatingCircuits0OperatingProgramEco,heatingCircuits0OperatingProgramsExternal,heatingCircuits0OperatingProgramsNormal,heatingCircuits0OperatingProgramsReduced"/>
+			<remove-channel id="heatingCircuits0SensorsTemperatureSupply"/>
+			<remove-channel id="heatingDeviceTimeOffset"/>
+			<remove-channel id="heatingDhwChargingLevel"/>
+			<remove-channel id="top" groupIds="heatingDhwChargingLevel"/>
+			<remove-channel id="middle" groupIds="heatingDhwChargingLevel"/>
+			<remove-channel id="bottom" groupIds="heatingDhwChargingLevel"/>
+			<remove-channel id="heatingDhwSensorsTemperatureHotWaterStorage"/>
+			<remove-channel id="heatingDhwTemperatureMain"/>
+			<remove-channel id="heatingSensorsTemperatureOutside"/>
+			<remove-channel id="heatingSolarSensorsTemperatureDhw"/>
+			<remove-channel id="heatingSolarSensorsTemperatureCollector"/>
+		</instruction-set>
+		<instruction-set targetVersion="2">
+			<remove-channel id="heatingDhwTemperatureHysteresis"/>
+		</instruction-set>
+		<instruction-set targetVersion="3">
+			<remove-channel id="heatingDhwTemperatureTemp2"/>
+			<remove-channel id="heatingDhwTemperatureMain"/>
+			<remove-channel id="temperature"
+				groupIds="heatingCircuits0OperatingProgramsComfort,heatingCircuits0OperatingProgramsEco,heatingCircuits0OperatingProgramsExternal,heatingCircuits0OperatingProgramsNormal,heatingCircuits0OperatingProgramsReduced"/>
+			<remove-channel id="temperature"
+				groupIds="heatingCircuits1OperatingProgramsComfort,heatingCircuits1OperatingProgramsEco,heatingCircuits1OperatingProgramsExternal,heatingCircuits1OperatingProgramsNormal,heatingCircuits1OperatingProgramsReduced"/>
+			<remove-channel id="temperature"
+				groupIds="heatingCircuits2OperatingProgramsComfort,heatingCircuits2OperatingProgramsEco,heatingCircuits2OperatingProgramsExternal,heatingCircuits2OperatingProgramsNormal,heatingCircuits2OperatingProgramsReduced"/>
+		</instruction-set>
+		<instruction-set targetVersion="4">
+			<remove-channel id="heatingSensorsVolumetricFlowReturn"/>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="viessmann:bridge">
+		<instruction-set targetVersion="3">
+			<add-channel id="errorIsActive">
+				<type>viessmann:errorIsActive</type>
+			</add-channel>
+			<add-channel id="lastErrorMessage">
+				<type>viessmann:lastErrorMessage</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+</update:update-descriptions>

@@ -1,0 +1,569 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="viessmann"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="account">
+		<label>Viessmann Account</label>
+		<description>Account Bridge with Client ID</description>
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
+
+		<channels>
+			<channel id="count-api-calls" typeId="number">
+				<label>Count API Calls</label>
+			</channel>
+		</channels>
+		<properties>
+			<property name="thingTypeVersion">4</property>
+		</properties>
+		<config-description>
+			<parameter name="apiKey" type="text" required="true">
+				<label>Client ID</label>
+				<description>The Client ID (can be obtained by registering an
+					Application on the Viessmann Developer Website)
+				</description>
+			</parameter>
+			<parameter name="user" type="text" required="true">
+				<label>E-Mail Address</label>
+				<description>The E-Mail address for which the application key has been issued</description>
+				<context>email</context>
+			</parameter>
+			<parameter name="password" type="text" required="true">
+				<label>Password</label>
+				<description>The password for the given E-Mail address</description>
+				<context>password</context>
+			</parameter>
+			<parameter name="disablePolling" type="boolean" required="false">
+				<label>Disable Polling</label>
+				<description>Deactivates the polling to carry out the manual poll using an item</description>
+				<default>false</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="apiCallLimit" type="integer" required="false">
+				<label>API Call Limit</label>
+				<description>The limit how often call the API. For calculating the time how often the data is queried in
+					seconds</description>
+				<default>1450</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="bufferApiCommands" type="integer" required="false">
+				<label>API Command Buffer</label>
+				<description>The buffer for commands. For calculating the time how often the data is queried in seconds</description>
+				<default>450</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="pollingInterval" type="integer" required="false" unit="s">
+				<label>Polling Interval</label>
+				<default>0</default>
+				<description>How often the heating should be queried in seconds (If it's set to 0, then the interval will
+					be
+					calculated by the binding)</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="pollingIntervalErrors" type="integer" required="false" unit="min">
+				<label>Polling Interval Errors</label>
+				<description>How often the errors should be queried in minutes</description>
+				<default>60</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+	<bridge-type id="gateway">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="account"/>
+		</supported-bridge-type-refs>
+
+		<label>Viessmann Gateway</label>
+		<description>The gateway to communicate with the Viessmann Account</description>
+		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
+
+		<channels>
+			<channel id="error-is-active" typeId="error-is-active">
+				<label>Error Is Active</label>
+			</channel>
+			<channel id="last-error-message" typeId="last-error-message">
+				<label>Last Error Message</label>
+			</channel>
+			<channel id="run-query-once" typeId="run-query-once">
+				<label>Run Device Query</label>
+			</channel>
+			<channel id="run-error-query-once" typeId="run-error-query-once">
+				<label>Run Error Query</label>
+			</channel>
+		</channels>
+		<properties>
+			<property name="thingTypeVersion">4</property>
+		</properties>
+		<config-description>
+			<parameter name="gatewaySerial" type="text" required="true">
+				<label>Gateway Serial ID</label>
+				<description>The gatewaySerial</description>
+			</parameter>
+			<parameter name="installationId" type="text" required="true">
+				<label>Installation ID</label>
+				<description>The Installation ID</description>
+			</parameter>
+			<parameter name="disablePolling" type="boolean" required="false">
+				<label>Disable Polling</label>
+				<description>Deactivates the polling to carry out the manual poll using an item</description>
+				<default>false</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="pollingIntervalErrors" type="integer" required="false" unit="min">
+				<label>Polling Interval Errors</label>
+				<description>How often the errors should be queried in minutes</description>
+				<default>60</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+	<bridge-type id="bridge" listed="false">
+		<label>Bridge (DEPRECATED)</label>
+		<description>The bridge to communicate with the Viessmann API</description>
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
+
+		<channels>
+			<channel id="count-api-calls" typeId="number">
+				<label>Count API Calls</label>
+			</channel>
+			<channel id="error-is-active" typeId="error-is-active">
+				<label>Error Is Active</label>
+			</channel>
+			<channel id="last-error-message" typeId="last-error-message">
+				<label>Last Error Message</label>
+			</channel>
+			<channel id="run-query-once" typeId="run-query-once">
+				<label>Run Device Query</label>
+			</channel>
+			<channel id="run-error-query-once" typeId="run-error-query-once">
+				<label>Run Error Query</label>
+			</channel>
+		</channels>
+		<properties>
+			<property name="thingTypeVersion">3</property>
+		</properties>
+		<config-description>
+			<parameter name="apiKey" type="text" required="true">
+				<label>Client ID</label>
+				<description>The Client ID (can be obtained by registering an
+					Application on the Viessmann Developer Website)
+				</description>
+			</parameter>
+			<parameter name="user" type="text" required="true">
+				<label>E-Mail Address</label>
+				<description>The E-Mail address for which the application key has been issued</description>
+				<context>email</context>
+			</parameter>
+			<parameter name="password" type="text" required="true">
+				<label>Password</label>
+				<description>The password for the given E-Mail address</description>
+				<context>password</context>
+			</parameter>
+			<parameter name="installationId" type="text" required="false">
+				<label>Installation ID</label>
+				<description>The Installations ID</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="gatewaySerial" type="text" required="false">
+				<label>Gateway Serial ID</label>
+				<description>The gatewaySerial</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="disablePolling" type="boolean" required="false">
+				<label>Disable Polling</label>
+				<description>Deactivates the polling to carry out the manual poll using an item</description>
+				<default>false</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="apiCallLimit" type="integer" required="false">
+				<label>API Call Limit</label>
+				<description>The limit how often call the API. For calculating the time how often the data is queried in
+					seconds</description>
+				<default>1450</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="bufferApiCommands" type="integer" required="false">
+				<label>Buffer For API Commands</label>
+				<description>The buffer for commands. For calculating the time how often the data is queried in seconds</description>
+				<default>450</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="pollingInterval" type="integer" required="false" unit="s">
+				<label>Polling Interval</label>
+				<default>0</default>
+				<description>How often the heating should be queried in seconds (If it's set to 0, then the interval will
+					be
+					calculated by the binding)</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="pollingIntervalErrors" type="integer" required="false" unit="min">
+				<label>Polling Interval Errors</label>
+				<description>How often the errors should be queried in minutes</description>
+				<default>60</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+	<!-- Viessmann Device Thing Type -->
+	<thing-type id="device">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+			<bridge-type-ref id="gateway"/>
+		</supported-bridge-type-refs>
+		<label>Viessmann Device</label>
+		<semantic-equipment-tag>WaterHeater</semantic-equipment-tag>
+
+		<properties>
+			<property name="thingTypeVersion">4</property>
+		</properties>
+		<representation-property>deviceId</representation-property>
+		<config-description>
+			<parameter name="deviceId" type="text" required="true">
+				<label>Device Id</label>
+				<default>0</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<!-- Channel Types -->
+	<channel-type id="temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature</label>
+		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="set-temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Set Temperature</label>
+		<category>Temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state min="3" max="99" step="1" pattern="%d %unit%" readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="set-target-temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Set Target Temperature</label>
+		<category>Temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state min="10" max="140" step="1" pattern="%d %unit%" readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="set-target-hysteresis">
+		<item-type>Number</item-type>
+		<label>Set Target Hysteresis</label>
+		<category>Temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state min="1" max="10" step="0.5" pattern="%.1f K" readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="set-hysteresis-off">
+		<item-type>Number</item-type>
+		<label>DHW Hysteresis Switch-Off</label>
+		<category>Temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state min="0" max="2.5" step="0.5" pattern="%.1f K" readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="set-min">
+		<item-type>Number:Temperature</item-type>
+		<label>Set Target Temp. Min</label>
+		<category>Temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state min="1" max="86" step="1" pattern="%d %unit%" readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="set-max">
+		<item-type>Number:Temperature</item-type>
+		<label>Set Target Temp. Max</label>
+		<category>Temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state min="10" max="158" step="1" pattern="%d %unit%" readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="power-energy">
+		<item-type>Number:Energy</item-type>
+		<label>Energy</label>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
+		<state pattern="%.3f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="gas-energy">
+		<item-type>Number:Energy</item-type>
+		<label>Gas Energy</label>
+		<category>Gas</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="heat-energy">
+		<item-type>Number:Energy</item-type>
+		<label>Heat Energy</label>
+		<category>Fire</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="power">
+		<item-type unitHint="kW">Number:Power</item-type>
+		<label>Power</label>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="house-heating-load">
+		<item-type>Number</item-type>
+		<label>Specific Heating Demand</label>
+		<category>Number</category>
+		<state pattern="%.1f kWh/m²·a"/>
+	</channel-type>
+
+	<channel-type id="volume">
+		<item-type>Number:Volume</item-type>
+		<label>Volume</label>
+		<category>Number</category>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="gas-volume">
+		<item-type>Number:Volume</item-type>
+		<label>Volume</label>
+		<category>Gas</category>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="decimal">
+		<item-type>Number</item-type>
+		<label>Number</label>
+		<category>Number</category>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state pattern="%.1f" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="number">
+		<item-type>Number</item-type>
+		<label>Number</label>
+		<category>Number</category>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="duration">
+		<item-type>Number:Time</item-type>
+		<label>Duration</label>
+		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Duration</tag>
+		</tags>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="percent">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Percentage</label>
+		<category>Number</category>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="liter">
+		<item-type>Number:Volume</item-type>
+		<label>Liter</label>
+		<category>Number</category>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="liter-per-minute">
+		<item-type>Number:VolumetricFlowRate</item-type>
+		<label>Liter Per Minute</label>
+		<category>Number</category>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="string">
+		<item-type>String</item-type>
+		<label>String</label>
+		<category>Text</category>
+		<state readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="schedule">
+		<item-type>String</item-type>
+		<label>Schedule</label>
+		<category>Time</category>
+		<tags>
+			<tag>Control</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="array">
+		<item-type>String</item-type>
+		<label>Array</label>
+		<category>Text</category>
+	</channel-type>
+
+	<channel-type id="boolean">
+		<item-type>Switch</item-type>
+		<label>Switch</label>
+		<category>Switch</category>
+	</channel-type>
+
+	<channel-type id="boolean-read-only">
+		<item-type>Switch</item-type>
+		<label>Status</label>
+		<category>Switch</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="run-query-once" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Run Device Query</label>
+		<category>Switch</category>
+	</channel-type>
+
+	<channel-type id="run-error-query-once" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Run Error Query</label>
+		<category>Error</category>
+	</channel-type>
+
+	<channel-type id="error-is-active">
+		<item-type>Switch</item-type>
+		<label>Error Is Active</label>
+		<category>Error</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="last-error-message">
+		<item-type>String</item-type>
+		<label>Last Error Message</label>
+		<category>Text</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="set-mode">
+		<item-type>String</item-type>
+		<label>Set Mode</label>
+		<category>heating</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
+		<state readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="bar">
+		<item-type unitHint="bar">Number:Pressure</item-type>
+		<label>Pressure</label>
+		<category>Pressure</category>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<!-- Heating Curve: slope -->
+	<channel-type id="slope">
+		<item-type>Number</item-type>
+		<label>Heating Curve Slope</label>
+		<state min="0.2" max="3.5" step="0.1" pattern="%.1f" readOnly="false"/>
+	</channel-type>
+
+	<!-- Heating Curve: shift -->
+	<channel-type id="shift">
+		<item-type>Number</item-type>
+		<label>Heating Curve Shift</label>
+		<state min="-13" max="40" step="1" pattern="%d" readOnly="false"/>
+	</channel-type>
+
+
+	<channel-type id="revolutions-per-second">
+		<item-type>Number:Frequency</item-type>
+		<label>Frequency</label>
+		<category>iconify:mdi:speedometer</category>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="ampere">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>Ampere</label>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+
+
+</thing:thing-descriptions>
