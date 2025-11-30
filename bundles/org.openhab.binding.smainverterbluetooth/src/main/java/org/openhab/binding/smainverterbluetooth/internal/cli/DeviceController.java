@@ -133,14 +133,12 @@ public class DeviceController {
         return this.inverterData.getMessage();
     }
 
-    public double getDaily() {
-        double result = this.inverterData.getDaily() / 1000.0; // kW
-        return result;
+    public int getDaily() {
+        return this.inverterData.getDaily() / 1000;
     }
 
-    public double getTotal() {
-        double result = this.inverterData.getTotal() / 1000.0; // kW
-        return result;
+    public long getTotal() {
+        return this.inverterData.getTotal() / 1000;
     }
 
     public int getSpotPower() {
