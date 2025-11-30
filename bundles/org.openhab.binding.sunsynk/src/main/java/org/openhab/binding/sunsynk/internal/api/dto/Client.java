@@ -39,7 +39,7 @@ public class Client {
     public Client() {
     }
 
-    public String getAccessTokenString() {
+    public static String getAccessTokenString() {
         return APIdata.staticAccessToken;
     }
 
