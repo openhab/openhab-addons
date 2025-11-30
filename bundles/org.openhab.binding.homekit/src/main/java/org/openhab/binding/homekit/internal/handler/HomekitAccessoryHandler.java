@@ -500,7 +500,7 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
                         command, channelUID, e);
             }
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/error.error-sending-command:" + e.getMessage());
+                    THING_STATUS_FMT.formatted("error.error-sending-command", e.getMessage()));
         }
     }
 

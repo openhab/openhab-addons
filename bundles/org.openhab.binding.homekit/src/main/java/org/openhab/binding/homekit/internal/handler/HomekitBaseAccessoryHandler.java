@@ -102,6 +102,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
     private @NonNullByDefault({}) Long accessoryId;
 
     protected static final Gson GSON = new Gson();
+    protected static final String THING_STATUS_FMT = "@text/%s [\"%s\"]";
 
     /**
      * Maps of evented and polled Characteristics.
@@ -143,7 +144,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
                     notBeforeInstant = next = Instant.now().plus(MIN_INTERVAL);
                 }
                 Duration delay = Duration.between(Instant.now(), next);
-                if (!delay.isNegative() && !delay.isZero()) {
+                if (!delay.isPositive()) {
                     Duration sleepDuration = delay.compareTo(MIN_INTERVAL) < 0 ? delay : MIN_INTERVAL;
                     logger.trace("{} throttling call for {} to respect minimum interval", thing.getUID(),
                             sleepDuration);
@@ -333,7 +334,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
             logger.debug("{} restored pairing was not verified", thing.getUID(), e);
             // pairing restore failed => exit and perhaps try again later
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/error.pairing-verification-failed:" + e.getMessage());
+                    THING_STATUS_FMT.formatted("error.pairing-verification-failed", e.getMessage()));
             return false;
         }
     }
@@ -470,7 +471,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
             return ipTransport;
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/error.failed-to-connect:" + e.getMessage());
+                    THING_STATUS_FMT.formatted("error.failed-to-connect", e.getMessage()));
         }
         return null;
     }
@@ -530,7 +531,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
             // catch all; log all exceptions
             logger.debug("{} pairing / verification failed '{}'", thing.getUID(), e.getMessage(), e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/error.pairing-verification-failed:" + e.getMessage());
+                    THING_STATUS_FMT.formatted("error.pairing-verification-failed", e.getMessage()));
             return ACTION_RESULT_ERROR_FORMAT.formatted("pairing error");
         }
     }
@@ -718,7 +719,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
                 logger.warn("{} unexpected error '{}' polling accessories", thing.getUID(), e.getMessage(), e);
             }
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/error.polling-error:" + e.getMessage());
+                    THING_STATUS_FMT.formatted("error.polling-error", e.getMessage()));
         }
     }
 
