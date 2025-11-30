@@ -4,7 +4,7 @@ The NTP binding displays the local date and time, updated from an NTP server.
 
 ## Supported Things
 
-This binding supports one thing type: ntp
+This binding supports one Thing type: ntp
 
 ## Discovery
 
@@ -16,7 +16,7 @@ The binding has no configuration options, all configuration is done at Thing lev
 
 ## Thing Configuration
 
-The thing has a few configuration options:
+The Thing has a few configuration options:
 
 | Option          | Description                                                                                                                                                               |
 | --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |

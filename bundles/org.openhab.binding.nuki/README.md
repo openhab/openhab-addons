@@ -41,7 +41,7 @@ The following configuration options are available:
 Bridges on local network can be discovered automatically if both Nuki Bridge and openHAB have working internet connection. You can check whether discovery
 is working by checking [discovery API endpoint](https://api.nuki.io/discover/bridges). To discover bridges do the following:
 
-- In openHAB UI add new thing, select Nuki Binding and start scan. LED on bridge should light up.
+- In openHAB UI add new Thing, select Nuki Binding and start scan. LED on bridge should light up.
 - Within 30s press button on Nuki Bridge you want to discover.
 - Bridge should appear in inbox.
 
@@ -58,7 +58,7 @@ connected to is configured and online.
 
 ### Nuki Smart Lock
 
-This is a common thing for all Nuki smart lock products - Nuki Smart Lock 1.0/2.0/3.0 (Pro) and Nuki Smart Door. The following configuration options are available:
+This is a common Thing for all Nuki smart lock products - Nuki Smart Lock 1.0/2.0/3.0 (Pro) and Nuki Smart Door. The following configuration options are available:
 
 | Parameter  | Description                                                                                                                                                                                               | Comment                                                          |
 | ---------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------- |

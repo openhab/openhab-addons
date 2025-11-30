@@ -50,7 +50,7 @@ The Account bridge has the following configuration elements:
 | webHookPostfix    | String | No       | String appended to the generated webhook address (should start with "/")                                            |
 | reconnectInterval | Number | No       | The reconnection interval to Netatmo API (in s)                                                                     |
 
-**Supported channels for the Account bridge thing:**
+**Supported channels for the Account bridge Thing:**
 
 | Channel Group | Channel Id    | Item Type | Description                                                        |
 | ------------- | ------------- | --------- | ------------------------------------------------------------------ |
@@ -60,8 +60,8 @@ The Account bridge has the following configuration elements:
 
 1. Complete the Netatmo Application Registration if you have not already done so, see above.
 1. Make sure you have your _Client ID_ and _Client Secret_ identities available.
-1. Add a new **"Netatmo Account"** thing. Choose new Id for the account, unless you like the generated one, put in the _Client ID_ and _Client Secret_ from the Netatmo Connect Application registration in their respective fields of the bridge configuration. Save the bridge.
-1. The bridge thing will go _OFFLINE_ / _CONFIGURATION_ERROR_ - this is fine. You have to authorize this bridge with Netatmo Connect.
+1. Add a new **"Netatmo Account"** Thing. Choose new Id for the account, unless you like the generated one, put in the _Client ID_ and _Client Secret_ from the Netatmo Connect Application registration in their respective fields of the bridge configuration. Save the bridge.
+1. The bridge Thing will go _OFFLINE_ / _CONFIGURATION_ERROR_ - this is fine. You have to authorize this bridge with Netatmo Connect.
 1. Go to the authorization page of your server. `http://<your openHAB address>:8080/netatmo/connect/<_CLIENT_ID_>`. Your newly added bridge should be listed there (no need for you to expose your openHAB server outside your local network for this).
 1. Press the _"Authorize Thing"_ button. This will take you either to the login page of Netatmo Connect or directly to the authorization screen. Login and/or authorize the application. You will be returned and the entry should go green.
 1. The bridge will go _ONLINE_.
@@ -404,7 +404,7 @@ All these channels are read only.
 
 ### Room
 
-**Supported channels for the Room thing:**
+**Supported channels for the Room Thing:**
 
 | Channel Group | Channel Id            | Item Type            | Description                                             |
 | ------------- | --------------------- | -------------------- | ------------------------------------------------------- |
@@ -452,7 +452,7 @@ A Home is the Thing holding various modules and devices. They can hold two areas
 Depending on the way it is configured the behaviour will be adapted and available channels can vary.
 
 **Home Configuration**
-The Home thing has the following configuration elements:
+The Home Thing has the following configuration elements:
 
 | Parameter       | Type    | Required | Description                                                                         |
 | --------------- | ------- | -------- | ----------------------------------------------------------------------------------- |
@@ -471,7 +471,7 @@ At least one of these parameter must be filled - at most two:
 
 All channels are read only.
 
-**Supported channels for the Security Home thing:**
+**Supported channels for the Security Home Thing:**
 
 | Channel Group | Channel Id             | Item Type | Description                                      |
 | ------------- | ---------------------- | --------- | ------------------------------------------------ |
@@ -479,7 +479,7 @@ All channels are read only.
 | security      | unknown-person-count   | Number    | Total number of unknown persons that are at home |
 | security      | unknown-person-picture | Image     | Snapshot of unknown person that is at home       |
 
-**Supported channels for the Energy Home thing:**
+**Supported channels for the Energy Home Thing:**
 
 | Channel Group | Channel Id             | Item Type   | Read/Write | Description                                               |
 | ------------- | ---------------------- | ----------- | ---------- | --------------------------------------------------------- |
@@ -488,7 +488,7 @@ All channels are read only.
 | energy        | mode                   | String      | Read-write | Chosen thermostat mode (home, frost guard, manual, max)   |
 | energy        | end                    | DateTime    | Read-only  | End time of the currently applied thermostat mode         |
 
-**Supported trigger channels for the Security Home, Presence and Doorbell thing:**
+**Supported trigger channels for the Security Home, Presence and Doorbell Thing:**
 
 | Channel Type ID | Options            | Description                                                         |
 |-----------------|--------------------|---------------------------------------------------------------------|
@@ -525,7 +525,7 @@ Warnings:
 - The URL of the live snapshot is a fixed URL so the value of the channel cameraLivePictureUrl / welcomeCameraLivePictureUrl will never be updated once first set by the binding. So to get a refreshed picture, you need to use the refresh parameter in your sitemap image element.
 - Some features like the video monitoring are accessed via the local network, so it may be helpful to set a static IP address for the camera within your local network.
 
-**Supported channels for the Welcome Camera thing:**
+**Supported channels for the Welcome Camera Thing:**
 
 | Channel Group  | Channel ID           | Item Type    | Read/Write | Description                                                                                                                                 |
 |----------------| -------------------- | ------------ | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -554,7 +554,7 @@ Warnings:
 (*) This channel is configurable: low, poor, high.
 (**) This channel handles the REFRESH command for on demand update.
 
-**Supported channels for the Presence Camera thing:**
+**Supported channels for the Presence Camera Thing:**
 
 Warnings:
 
@@ -594,7 +594,7 @@ Warnings:
 
 (*) This channel is configurable: low, poor, high.
 
-**Supported channels for the Doorbell thing:**
+**Supported channels for the Doorbell Thing:**
 
 | Channel Group       | Channel ID        | Item Type    | Read/Write | Description                                                                                                                                 |
 |---------------------| ----------------- |--------------| ---------- |---------------------------------------------------------------------------------------------------------------------------------------------|
@@ -621,7 +621,7 @@ Warnings:
 
 Note: live feeds either locally or via VPN are not available in Netatmo API.
 
-**Supported channels for the Siren thing:**
+**Supported channels for the Siren Thing:**
 
 | Channel Group | Channel ID  | Item Type    | Read/Write | Description                                         |
 | ------------- | ----------- | ------------ | ---------- | --------------------------------------------------- |
@@ -633,7 +633,7 @@ Note: live feeds either locally or via VPN are not available in Netatmo API.
 | battery       | value       | Number       | Read-only  | Battery level                                       |
 | battery       | low-battery | Switch       | Read-only  | Low battery                                         |
 
-**Supported channels for the Door Tag thing:**
+**Supported channels for the Door Tag Thing:**
 
 | Channel Group | Channel ID  | Item Type    | Read/Write | Description                                      |
 | ------------- | ----------- | ------------ | ---------- | ------------------------------------------------ |
@@ -653,7 +653,7 @@ Netatmo API distinguishes two kinds of persons:
 
 Person things are automatically created in discovery process for all known persons.
 
-**Supported channels for the Person thing:**
+**Supported channels for the Person Thing:**
 
 | Channel Group  | Channel ID   | Item Type | Description                                                                                       |
 | -------------- | ------------ | --------- | ------------------------------------------------------------------------------------------------- |
@@ -675,7 +675,7 @@ All these channels except at-home are read only.
 
 All these channels are read only.
 
-**Supported channels for the Smoke Detector thing:**
+**Supported channels for the Smoke Detector Thing:**
 
 | Channel Group | Channel Id | Item Type    | Description                                      |
 | ------------- | ---------- | ------------ | ------------------------------------------------ |
@@ -691,7 +691,7 @@ All these channels are read only.
 
 All these channels are read only.
 
-**Supported channels for the Carbon Monoxide Detector thing:**
+**Supported channels for the Carbon Monoxide Detector Thing:**
 
 | Channel Group | Channel Id | Item Type    | Description                                      |
 | ------------- | ---------- | ------------ | ------------------------------------------------ |
@@ -897,7 +897,7 @@ Example
 ```java
  val actions = getActions("netatmo","netatmo:room:myaccount:myhome:livingroom")
  if(null === actions) {
-        logInfo("actions", "Actions not found, check thing ID")
+        logInfo("actions", "Actions not found, check Thing ID")
         return
  }
 ```

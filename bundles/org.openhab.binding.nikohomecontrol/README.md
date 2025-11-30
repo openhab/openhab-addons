@@ -32,7 +32,7 @@ Niko Home Control alarm and notice messages are retrieved and made available in 
 The Niko Home Control Controller is represented as a bridge in the binding.
 Connected to a bridge, the Niko Home Control Binding supports all off actions, on/off actions (e.g. for lights or groups of lights), dimmers, rollershutters or blinds, thermostats, energy meters, access control devices (Niko Home Control II only) and alarm systems (Niko Home Control II only).
 
-The following thing types are available in the binding:
+The following Thing types are available in the binding:
 
 | Thing Type          | NHC I | NHC II | Description                                                                       |
 |---------------------|:-----:|:------:|-----------------------------------------------------------------------------------|
@@ -92,8 +92,8 @@ It is possible to trigger a manual scan for things on the Niko Home Control brid
 Note that Niko Home Control II will require the API token to be set on the bridge before the scan for actions can succeed.
 The bridge will remain offline as long as these parameters are not set.
 
-If the Niko Home Control system has locations configured, these will be copied to thing locations and grouped as such.
-Locations can subsequently be changed through the thing location parameter.
+If the Niko Home Control system has locations configured, these will be copied to Thing locations and grouped as such.
+Locations can subsequently be changed through the Thing location parameter.
 
 ## Bridge Configuration
 
@@ -153,8 +153,8 @@ Open the file with an unzip tool to read its content.
 For Niko Home Control II, the `actionId` parameter is a unique ID for the action in the controller.
 It can only be auto-discovered.
 If you want to define the action through textual configuration, the easiest way is to first do discovery on the bridge to get the correct `actionId` to use in the textual configuration.
-Discover and add the thing you want to add.
-You can directly create the textual configuration for the discovered thing in the UI.
+Discover and add the Thing you want to add.
+You can directly create the textual configuration for the discovered Thing in the UI.
 The same applies for `thermostatId`, `meterId`, `accessId`, `alarmId` and `carChargerId`.
 
 An example **action** textual configuration looks like:

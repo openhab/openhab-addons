@@ -76,7 +76,7 @@ Use the following options for a **network:speedtest**:
 - **uploadSize:** Size of the file to be uploaded in bytes. Default: `1000000`.
 - **url:** URL of the speed test server.- **fileName:** Name of the file to download from test server.
 - **initialDelay:** Delay (in minutes) before starting the first speed test (can help avoid flooding your server at startup). Default: `5`.
-- **maxTimeout:** Number of timeout events that can happen (reset when successful) before setting the thing offline. Default: `3`.
+- **maxTimeout:** Number of timeout events that can happen (reset when successful) before setting the Thing offline. Default: `3`.
 
 ## Presence detection - Configure target device
 
@@ -258,7 +258,7 @@ sitemap demo label="Main Menu"
 
 ## Rule Actions
 
-A Wake-on-LAN action is supported by this binding for the `pingdevice` and `servicedevice` thing types.
+A Wake-on-LAN action is supported by this binding for the `pingdevice` and `servicedevice` Thing types.
 In classic rules this action is accessible as shown in the example below:
 
 ```java

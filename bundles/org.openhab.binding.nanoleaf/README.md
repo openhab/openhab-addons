@@ -54,7 +54,7 @@ The binding supports pairing of the device with your openHAB instance as follows
 1. Make sure that the authentication token field in your Nanoleaf controller Thing configuration is left empty.
 1. Hold down the on-off button of the controller for 5–7 seconds until the LED starts flashing/cycling in a pattern, which turns the device into pairing mode; openHAB will then try to request an authentication token for it.
 
-Once your openHAB instance successfully requested and stored the authentication token in the controller's thing configuration, the controller status changes to ONLINE, and you can start linking the channels to your items.
+Once your openHAB instance successfully requested and stored the authentication token in the controller's Thing configuration, the controller status changes to ONLINE, and you can start linking the channels to your items.
 
 Tip: If you perform step (2) just before adding the item from the inbox, it usually catches the auth token right away and may automatically start discovering the panels in one go (see below).
 
@@ -74,8 +74,8 @@ In this case:
 ### Panel Layout
 
 If you want to program individual panels, it can be hard to figure out which panel has which ID. To make this easier, there is a Layout channel on the Nanoleaf controller Thing in openHAB.
-The easiest way to visualize the layout of the individual panels is to open the controller thing in the openHAB UI, go to Channels and add a new item to the Layout channel.
-Clicking on that image or adding it to a dashboard will show a picture of your canvas with the individual thing ID in the picture.
+The easiest way to visualize the layout of the individual panels is to open the controller Thing in the openHAB UI, go to Channels and add a new item to the Layout channel.
+Clicking on that image or adding it to a dashboard will show a picture of your canvas with the individual Thing ID in the picture.
 
 If your canvas has elements we don't know how to draw a layout for yet, please reach out, and we will ask for some information and will try to add support for your elements.
 
@@ -117,7 +117,7 @@ This is because Nanoleaf does not return updates on colors for dynamic effects a
 
 ## Thing Configuration
 
-The controller thing has the following parameters:
+The controller Thing has the following parameters:
 
 | Config          | Description                                                                           |
 | --------------- | ------------------------------------------------------------------------------------- |
@@ -214,7 +214,7 @@ Bridge nanoleaf:controller:MyLightPanels @ "mylocation" [ address="192.168.1.100
 }
 ```
 
-If you define your device statically in the thing file, auto-discovery of the same thing is suppressed by using
+If you define your device statically in the Thing file, auto-discovery of the same Thing is suppressed by using
 
 - the [address="..." ]  of the controller
 - and the [id=123] of the lightpanel
@@ -362,16 +362,16 @@ var oldEffect = null
 
 The idea behind that rule is to use one panel to switch on / off brightness control for a specific openHAB item.
 
- - In this case the panel with the id=36604 has been created as a thing.
+ - In this case the panel with the id=36604 has been created as a Thing.
  - The controller color item is named SZNanoCanvas_Color
  - The controller effect item that holds the last chosen effect is SZNanoCanvas_Effect
- - Also that thing has channel to control the color of the panel
+ - Also that Thing has channel to control the color of the panel
 
 We use that specific panel to toggle the brightness swipe mode on or off.
 We indicate that mode by  setting the canvas to red. When switching it
 off we make sure we return the effect that was on before.
 Only if the brightness swipe mode is ON we then use this to control the brightness of
-another thing which in this case is a lamp. Every swipe changes the brightness by 10.
+another Thing which in this case is a lamp. Every swipe changes the brightness by 10.
 By extending it further this would also allow to select different items to control by
 tapping different panels before.
 

@@ -10,16 +10,16 @@ This binding lets you integrate NUT servers with openHAB.
 ## Supported Things
 
 The binding can connect to multiple NUT instances.
-The thing is an `ups` thing.
-The thing supports a number of NUT features out-of-the-box and supports the option to configure additional channels to get other NUT variables.
-The thing queries the NUT server for the status of the UPS approximately every 3 seconds and updates the status when a change happens.
+The Thing is an `ups` Thing.
+The Thing supports a number of NUT features out-of-the-box and supports the option to configure additional channels to get other NUT variables.
+The Thing queries the NUT server for the status of the UPS approximately every 3 seconds and updates the status when a change happens.
 When a change to the UPS status occurs, it will query the NUT server to update all linked channels.
 Outside of status changes, all linked channels are updated at the user-configured refresh interval.
 
 Some NUT variables are static in nature and are not suited for a channel.
 Some of these could change, like the firmware version.
 Therefore these properties are updated with a 1 hour frequency.
-The following NUT variables are read and added to the thing as properties:
+The following NUT variables are read and added to the Thing as properties:
 
 | Property         | Description               |
 | ---------------- | ------------------------- |
@@ -37,7 +37,7 @@ Discovery is not supported.
 
 ## Thing Configuration
 
-The thing configuration requires the name of the UPS device as configured on the NUT server.
+The Thing configuration requires the name of the UPS device as configured on the NUT server.
 If the NUT service isn't running locally, the IP address or domain name (FQDN) of the server running NUT must be configured.
 Optionally, the port, username, and password might need to be configured if required.
 
