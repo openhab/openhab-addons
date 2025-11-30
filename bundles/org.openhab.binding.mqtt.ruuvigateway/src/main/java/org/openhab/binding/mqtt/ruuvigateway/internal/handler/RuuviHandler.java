@@ -25,6 +25,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import javax.measure.Quantity;
@@ -37,12 +38,14 @@ import org.openhab.binding.mqtt.generic.ChannelState;
 import org.openhab.binding.mqtt.ruuvigateway.internal.RuuviCachedDateTimeState;
 import org.openhab.binding.mqtt.ruuvigateway.internal.RuuviCachedNumberState;
 import org.openhab.binding.mqtt.ruuvigateway.internal.RuuviCachedStringState;
+import org.openhab.binding.mqtt.ruuvigateway.internal.RuuviCachedSwitchState;
 import org.openhab.binding.mqtt.ruuvigateway.internal.RuuviGatewayBindingConstants;
 import org.openhab.binding.mqtt.ruuvigateway.internal.parser.GatewayPayloadParser;
 import org.openhab.binding.mqtt.ruuvigateway.internal.parser.GatewayPayloadParser.GatewayPayload;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.io.transport.mqtt.MqttBrokerConnection;
 import org.openhab.core.io.transport.mqtt.MqttMessageSubscriber;
+import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Channel;
@@ -57,17 +60,22 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonSyntaxException;
 
+import fi.tkgwf.ruuvi.common.utils.MeasurementValueCalculator;
+
 /**
- * The {@link RuuviTagHandler} is responsible updating RuuviTag Sensor data received from
+ * The {@link RuuviHandler} is responsible updating RuuviTag Sensor data received from
  * Ruuvi Gateway via MQTT.
  *
  * @author Sami Salonen - Initial contribution
  */
 @NonNullByDefault
-public class RuuviTagHandler extends AbstractMQTTThingHandler implements MqttMessageSubscriber {
+public class RuuviHandler extends AbstractMQTTThingHandler implements MqttMessageSubscriber {
 
     // Ruuvitag sends an update every 10 seconds. So we keep a heartbeat to give it some slack
     private int heartbeatTimeoutMillisecs = 60_000;
+    // Per Ruuvi specification: BT5.0+ devices should discard Format 6 once E1 is detected
+    private static final int FORMAT_E1 = 0xE1;
+    private static final int FORMAT_6 = 6;
     // This map is used to initialize channel caches.
     // Key is channel ID.
     // Value is one of the following
@@ -75,7 +83,7 @@ public class RuuviTagHandler extends AbstractMQTTThingHandler implements MqttMes
     // - Unit (QuantityType Number), uses RuuviCachedNumberState with unit
     // - Class object, uses given class object with String constructor
 
-    private static final Map<String, @Nullable Object> unitByChannelUID = new HashMap<>(11);
+    private static final Map<String, @Nullable Object> unitByChannelUID = new HashMap<>(25);
     static {
         unitByChannelUID.put(CHANNEL_ID_ACCELERATIONX, Units.STANDARD_GRAVITY);
         unitByChannelUID.put(CHANNEL_ID_ACCELERATIONY, Units.STANDARD_GRAVITY);
@@ -88,17 +96,33 @@ public class RuuviTagHandler extends AbstractMQTTThingHandler implements MqttMes
         unitByChannelUID.put(CHANNEL_ID_PRESSURE, SIUnits.PASCAL);
         unitByChannelUID.put(CHANNEL_ID_TEMPERATURE, SIUnits.CELSIUS);
         unitByChannelUID.put(CHANNEL_ID_TX_POWER, Units.DECIBEL_MILLIWATTS);
+        // Air quality measurements (Format 6+)
+        unitByChannelUID.put(CHANNEL_ID_PM1, Units.MICROGRAM_PER_CUBICMETRE);
+        unitByChannelUID.put(CHANNEL_ID_PM25, Units.MICROGRAM_PER_CUBICMETRE);
+        unitByChannelUID.put(CHANNEL_ID_PM4, Units.MICROGRAM_PER_CUBICMETRE);
+        unitByChannelUID.put(CHANNEL_ID_PM10, Units.MICROGRAM_PER_CUBICMETRE);
+        unitByChannelUID.put(CHANNEL_ID_CO2, Units.PARTS_PER_MILLION);
+        unitByChannelUID.put(CHANNEL_ID_VOC_INDEX, null);
+        unitByChannelUID.put(CHANNEL_ID_NOX_INDEX, null);
+        unitByChannelUID.put(CHANNEL_ID_LUMINOSITY, Units.LUX);
+        unitByChannelUID.put(CHANNEL_ID_CALIBRATION_COMPLETED, RuuviCachedSwitchState.class);
+        unitByChannelUID.put(CHANNEL_ID_AIR_QUALITY_INDEX, Units.PERCENT);
+        // Gateway metadata
         unitByChannelUID.put(CHANNEL_ID_RSSI, Units.DECIBEL_MILLIWATTS);
         unitByChannelUID.put(CHANNEL_ID_TS, RuuviCachedDateTimeState.class);
         unitByChannelUID.put(CHANNEL_ID_GWTS, RuuviCachedDateTimeState.class);
         unitByChannelUID.put(CHANNEL_ID_GWMAC, RuuviCachedStringState.class);
     }
 
-    private final Logger logger = LoggerFactory.getLogger(RuuviTagHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(RuuviHandler.class);
     /**
      * Indicator whether we have received data recently
      */
     private final AtomicBoolean receivedData = new AtomicBoolean();
+    /**
+     * Track detected format to prefer E1 over Format 6 as per spec
+     */
+    private final AtomicInteger detectedFormat = new AtomicInteger(0);
     private final Map<ChannelUID, ChannelState> channelStateByChannelUID = new HashMap<>();
     private @NonNullByDefault({}) ScheduledFuture<?> heartbeatFuture;
 
@@ -107,7 +131,7 @@ public class RuuviTagHandler extends AbstractMQTTThingHandler implements MqttMes
      */
     private @NonNullByDefault({}) String topic;
 
-    public RuuviTagHandler(Thing thing, int subscribeTimeout) {
+    public RuuviHandler(Thing thing, int subscribeTimeout) {
         super(thing, subscribeTimeout);
     }
 
@@ -264,6 +288,27 @@ public class RuuviTagHandler extends AbstractMQTTThingHandler implements MqttMes
         }
         var ruuvitagData = parsed.measurement;
 
+        synchronized (detectedFormat) {
+            // Per Ruuvi specification: once E1 format is detected, ignore Format 6 packets
+            // This ensures BT5.0+ capable devices prefer E1 over Format 6
+            Integer currentFormat = ruuvitagData.getDataFormat();
+            if (currentFormat != null) {
+                int detected = detectedFormat.get();
+                if (detected == FORMAT_E1 && currentFormat == FORMAT_6) {
+                    // E1 already detected, discard Format 6 packet
+                    logger.trace("Ignoring Format 6 packet as E1 format has already been detected");
+                    return;
+                } else if (detected == 0 || detected == currentFormat) {
+                    // First detection or same format, record it
+                    detectedFormat.set(currentFormat);
+                } else if (detected == FORMAT_6 && currentFormat == FORMAT_E1) {
+                    // Format 6 was detected first, but now E1 received - switch preference
+                    logger.debug("Switching from Format 6 to Format E1 as per specification");
+                    detectedFormat.set(FORMAT_E1);
+                }
+            }
+        }
+
         boolean atLeastOneRuuviFieldPresent = false;
         for (Channel channel : thing.getChannels()) {
             ChannelUID channelUID = channel.getUID();
@@ -301,6 +346,41 @@ public class RuuviTagHandler extends AbstractMQTTThingHandler implements MqttMes
                     break;
                 case CHANNEL_ID_TX_POWER:
                     atLeastOneRuuviFieldPresent |= updateStateIfLinked(channelUID, ruuvitagData.getTxPower());
+                    break;
+                // Air quality measurements (Format 6+)
+                case CHANNEL_ID_PM1:
+                    atLeastOneRuuviFieldPresent |= updateStateIfLinked(channelUID, ruuvitagData.getPm1());
+                    break;
+                case CHANNEL_ID_PM25:
+                    atLeastOneRuuviFieldPresent |= updateStateIfLinked(channelUID, ruuvitagData.getPm25());
+                    break;
+                case CHANNEL_ID_PM4:
+                    atLeastOneRuuviFieldPresent |= updateStateIfLinked(channelUID, ruuvitagData.getPm4());
+                    break;
+                case CHANNEL_ID_PM10:
+                    atLeastOneRuuviFieldPresent |= updateStateIfLinked(channelUID, ruuvitagData.getPm10());
+                    break;
+                case CHANNEL_ID_CO2:
+                    atLeastOneRuuviFieldPresent |= updateStateIfLinked(channelUID, ruuvitagData.getCo2());
+                    break;
+                case CHANNEL_ID_VOC_INDEX:
+                    atLeastOneRuuviFieldPresent |= updateStateIfLinked(channelUID, ruuvitagData.getVocIndex());
+                    break;
+                case CHANNEL_ID_NOX_INDEX:
+                    atLeastOneRuuviFieldPresent |= updateStateIfLinked(channelUID, ruuvitagData.getNoxIndex());
+                    break;
+                case CHANNEL_ID_LUMINOSITY:
+                    atLeastOneRuuviFieldPresent |= updateStateIfLinked(channelUID, ruuvitagData.getLuminosity());
+                    break;
+                case CHANNEL_ID_CALIBRATION_COMPLETED:
+                    if (ruuvitagData.isCalibrationInProgress() != null) {
+                        OnOffType status = ruuvitagData.isCalibrationInProgress() ? OnOffType.OFF : OnOffType.ON;
+                        atLeastOneRuuviFieldPresent |= updateSwitchStateIfLinked(channelUID, status);
+                    }
+                    break;
+                case CHANNEL_ID_AIR_QUALITY_INDEX:
+                    atLeastOneRuuviFieldPresent |= updateStateIfLinked(channelUID,
+                            MeasurementValueCalculator.airQualityIndex(ruuvitagData.getPm25(), ruuvitagData.getCo2()));
                     break;
                 //
                 // Auxiliary channels, not part of bluetooth advertisement
@@ -427,5 +507,28 @@ public class RuuviTagHandler extends AbstractMQTTThingHandler implements MqttMes
             }
             return true;
         }
+    }
+
+    /**
+     * Update OnOffType (Switch) channel state
+     *
+     * Update is done when value is not null.
+     *
+     * @param channelUID channel UID
+     * @param value value to update
+     * @return true (value is always present)
+     */
+    private boolean updateSwitchStateIfLinked(ChannelUID channelUID, OnOffType value) {
+        RuuviCachedSwitchState cache = (RuuviCachedSwitchState) channelStateByChannelUID.get(channelUID);
+        if (cache == null) {
+            // Invariant as channels should be initialized already
+            logger.error("Channel {} not initialized. BUG", channelUID);
+            return false;
+        }
+        cache.update(value);
+        if (isLinked(channelUID)) {
+            updateChannelState(channelUID, cache.getCache().getChannelState());
+        }
+        return true;
     }
 }
