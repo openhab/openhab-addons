@@ -123,7 +123,7 @@ public class SmaInverterBluetoothHandler extends BaseThingHandler {
     private void publishChannels() {
         if (inverter.getCode() == 0) {
             updateState(CHANNEL_INVERTER_DAY_GENERATION, new DecimalType(inverter.getDaily()));
-            updateState(CHANNEL_INVERTER_TOTAL_GENERATION, new DecimalType(inverter.getTotal()/1000));
+            updateState(CHANNEL_INVERTER_TOTAL_GENERATION, new DecimalType(inverter.getTotal()));
             updateState(CHANNEL_INVERTER_SPOT_AC_VOLTAGE, new DecimalType(inverter.getSpotACVolts()));
             updateState(CHANNEL_INVERTER_SPOT_POWER, new DecimalType(inverter.getSpotPower()));
             updateState(CHANNEL_INVERTER_SPOT_TEMPERATURE, new DecimalType(inverter.getSpotTemperature()));
