@@ -66,7 +66,7 @@ public class Util {
         return URI.create(uri.toASCIIString().replace("+", "%2B").replace("%25%25", "%"));
     }
 
-    private static final Pattern URL_PATTERN = Pattern.compile("^(?:(?<scheme>[a-zA-Z][a-zA-Z0-9+.-]*):)?//?"
+    private static final Pattern URL_PATTERN = Pattern.compile("^(?:(?<scheme>[a-zA-Z][a-zA-Z0-9+.-]*):)?//"
             + "(?:(?<userinfo>[^@/?#]*)@)?" + "(?<host>[^:/?#]*)(?::(?<port>\\d+))?" + "(?<path>/[^?#]*)?"
             + "(?:\\?(?<query>[^#]*))?" + "(?:#(?<fragment>.*))?");
 
