@@ -12,13 +12,17 @@
  */
 package org.openhab.binding.modbus.sungrow.internal;
 
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.modbus.handler.BaseModbusThingHandler;
+import org.openhab.binding.modbus.sungrow.internal.mapper.impl.DeviceTypeMapper;
+import org.openhab.binding.modbus.sungrow.internal.mapper.impl.OutputTypeMapper;
 import org.openhab.core.io.transport.modbus.AsyncModbusFailure;
 import org.openhab.core.io.transport.modbus.AsyncModbusReadResult;
 import org.openhab.core.io.transport.modbus.ModbusBitUtilities;
@@ -69,6 +73,12 @@ public class SungrowInverterHandler extends BaseModbusThingHandler {
                     tries //
             );
         }
+
+        @Override
+        public String toString() {
+            return "first: " + registers.getFirst().getRegisterNumber() + ", last: "
+                    + registers.getLast().getRegisterNumber();
+        }
     }
 
     private final Logger logger = LoggerFactory.getLogger(SungrowInverterHandler.class);
@@ -88,7 +98,6 @@ public class SungrowInverterHandler extends BaseModbusThingHandler {
         int currentRequestFirstRegister = 0;
 
         for (SungrowInverterRegisters channel : SungrowInverterRegisters.values()) {
-
             if (currentRequest.isEmpty()) {
                 currentRequest.add(channel);
                 currentRequestFirstRegister = channel.getRegisterNumber();
@@ -97,8 +106,8 @@ public class SungrowInverterHandler extends BaseModbusThingHandler {
                         + channel.getRegisterCount();
                 if (sizeWithRegisterAdded > ModbusConstants.MAX_REGISTERS_READ_COUNT) {
                     requests.add(new ModbusRequest(currentRequest, getSlaveId(), tries));
-                    currentRequest = new ArrayDeque<>();
 
+                    currentRequest = new ArrayDeque<>();
                     currentRequest.add(channel);
                     currentRequestFirstRegister = channel.getRegisterNumber();
                 } else {
@@ -110,7 +119,8 @@ public class SungrowInverterHandler extends BaseModbusThingHandler {
         if (!currentRequest.isEmpty()) {
             requests.add(new ModbusRequest(currentRequest, getSlaveId(), tries));
         }
-        logger.debug("Created {} modbus request templates.", requests.size());
+        logger.debug("Created {} modbus request templates:\n\t{}", requests.size(),
+                requests.stream().map(ModbusRequest::toString).collect(Collectors.joining("\n\t")));
         return requests;
     }
 
@@ -144,6 +154,9 @@ public class SungrowInverterHandler extends BaseModbusThingHandler {
         }
 
         this.updateStatus(ThingStatus.UNKNOWN);
+
+        this.updateProperties(config);
+
         this.modbusRequests = this.buildRequests(config.maxTries);
 
         for (ModbusRequest request : modbusRequests) {
@@ -155,6 +168,64 @@ public class SungrowInverterHandler extends BaseModbusThingHandler {
                     this::readError //
             );
         }
+    }
+
+    private void updateProperties(SungrowInverterConfiguration config) {
+        ModbusReadRequestBlueprint getVersionRequest = new ModbusReadRequestBlueprint(this.getSlaveId(),
+                ModbusReadFunctionCode.READ_INPUT_REGISTERS, //
+                4949, //
+                33, //
+                config.maxTries //
+        );
+        this.submitOneTimePoll(getVersionRequest, this::updateVersionProperties, this::readError);
+
+        ModbusReadRequestBlueprint getDeviceInfo = new ModbusReadRequestBlueprint(this.getSlaveId(),
+                ModbusReadFunctionCode.READ_INPUT_REGISTERS, //
+                4989, //
+                13, //
+                config.maxTries //
+        );
+        this.submitOneTimePoll(getDeviceInfo, this::updateDeviceInfoProperties, this::readError);
+    }
+
+    private void updateVersionProperties(AsyncModbusReadResult result) {
+        result.getRegisters().ifPresent(registers -> {
+            if (getThing().getStatus() != ThingStatus.ONLINE) {
+                updateStatus(ThingStatus.ONLINE);
+            }
+
+            long protocolNo = ModbusBitUtilities.extractUInt32(registers.getBytes(), 0);
+            getThing().setProperty(ModbusSungrowBindingConstants.PROP_KEY_PROTOCOL_NUMBER, String.valueOf(protocolNo));
+            long protocolVersion = ModbusBitUtilities.extractUInt32(registers.getBytes(), 4);
+            getThing().setProperty(ModbusSungrowBindingConstants.PROP_KEY_PROTOCOL_VERSION,
+                    String.valueOf(protocolVersion));
+            String certVersionArm = ModbusBitUtilities.extractStringFromRegisters(registers, 4, 28,
+                    StandardCharsets.UTF_8);
+            getThing().setProperty(ModbusSungrowBindingConstants.PROP_KEY_ARM_CERT_VERSION_NUMBER, certVersionArm);
+            String certVersionDsp = ModbusBitUtilities.extractStringFromRegisters(registers, 19, 28,
+                    StandardCharsets.UTF_8);
+            getThing().setProperty(ModbusSungrowBindingConstants.PROP_KEY_DSP_CERT_VERSION_NUMBER, certVersionDsp);
+        });
+    }
+
+    private void updateDeviceInfoProperties(AsyncModbusReadResult result) {
+        result.getRegisters().ifPresent(registers -> {
+            if (getThing().getStatus() != ThingStatus.ONLINE) {
+                updateStatus(ThingStatus.ONLINE);
+            }
+            String serialNumber = ModbusBitUtilities.extractStringFromRegisters(registers, 0, 20,
+                    StandardCharsets.UTF_8);
+            getThing().setProperty(ModbusSungrowBindingConstants.PROP_KEY_SERIAL_NUMBER, serialNumber);
+            int deviceTypeCode = ModbusBitUtilities.extractUInt16(registers.getBytes(), 20);
+            getThing().setProperty(ModbusSungrowBindingConstants.PROP_KEY_DEVICE_TYPE,
+                    DeviceTypeMapper.instance().map(deviceTypeCode));
+            int outputPower = ModbusBitUtilities.extractUInt16(registers.getBytes(), 22);
+            getThing().setProperty(ModbusSungrowBindingConstants.PROP_KEY_NOMINAL_OUTPUT_POWER,
+                    outputPower * 100 + " W");
+            int outputType = ModbusBitUtilities.extractUInt16(registers.getBytes(), 24);
+            getThing().setProperty(ModbusSungrowBindingConstants.PROP_KEY_OUTPUT_TYPE,
+                    OutputTypeMapper.instance().map(outputType));
+        });
     }
 
     private void readSuccessful(ModbusRequest request, AsyncModbusReadResult result) {

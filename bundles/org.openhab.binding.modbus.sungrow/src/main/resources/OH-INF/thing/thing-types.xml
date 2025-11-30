@@ -13,12 +13,16 @@
 		<label>Sungrow Inverter</label>
 		<description>Sungrow inverter connected via Modbus.</description>
 		<category>Inverter</category>
+		<semantic-equipment-tag>Inverter</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="sg-overview" typeId="sg-overview"/>
+			<channel-group id="sg-power-flow-information" typeId="sg-power-flow-information"/>
 			<channel-group id="sg-mppt-information" typeId="sg-mppt-information"/>
 			<channel-group id="sg-battery-information" typeId="sg-battery-information"/>
 			<channel-group id="sg-grid-information" typeId="sg-grid-information"/>
 			<channel-group id="sg-load-information" typeId="sg-load-information"/>
+			<channel-group id="sg-backup-information" typeId="sg-backup-information"/>
+			<channel-group id="sg-settings" typeId="sg-settings"/>
 		</channel-groups>
 		<config-description-ref uri="thing-type:sungrow:inverter"/>
 	</thing-type>
@@ -26,6 +30,7 @@
 	<channel-group-type id="sg-overview">
 		<label>Overview</label>
 		<channels>
+			<channel id="sg-running-state" typeId="sg-running-state"/>
 			<channel id="sg-total-active-power" typeId="sg-total-active-power"/>
 			<channel id="sg-total-dc-power" typeId="sg-total-dc-power"/>
 			<channel id="sg-phase-a-voltage" typeId="sg-phase-a-voltage"/>
@@ -35,11 +40,23 @@
 			<channel id="sg-phase-b-current" typeId="sg-phase-b-current"/>
 			<channel id="sg-phase-c-current" typeId="sg-phase-c-current"/>
 			<channel id="sg-reactive-power" typeId="sg-reactive-power"/>
-			<channel id="sg-grid-frequency" typeId="sg-grid-frequency"/>
 			<channel id="sg-daily-pv-generation" typeId="sg-daily-pv-generation"/>
 			<channel id="sg-total-pv-generation" typeId="sg-total-pv-generation"/>
 			<channel id="sg-power-factor" typeId="sg-power-factor"/>
 			<channel id="sg-internal-temperature" typeId="sg-internal-temperature"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="sg-power-flow-information">
+		<label>Power Flow Information</label>
+		<channels>
+			<channel id="sg-power-flow-status-pv-power" typeId="sg-power-flow-status-pv-power"/>
+			<channel id="sg-power-flow-status-battery-charging" typeId="sg-power-flow-status-battery-charging"/>
+			<channel id="sg-power-flow-status-battery-discharging" typeId="sg-power-flow-status-battery-discharging"/>
+			<channel id="sg-power-flow-status-positive-load-power" typeId="sg-power-flow-status-positive-load-power"/>
+			<channel id="sg-power-flow-status-feed-in-power" typeId="sg-power-flow-status-feed-in-power"/>
+			<channel id="sg-power-flow-status-import-from-grid" typeId="sg-power-flow-status-import-from-grid"/>
+			<channel id="sg-power-flow-status-negative-load-power" typeId="sg-power-flow-status-negative-load-power"/>
 		</channels>
 	</channel-group-type>
 
@@ -50,6 +67,10 @@
 			<channel id="sg-mppt1-current" typeId="sg-mppt1-current"/>
 			<channel id="sg-mppt2-voltage" typeId="sg-mppt2-voltage"/>
 			<channel id="sg-mppt2-current" typeId="sg-mppt2-current"/>
+			<channel id="sg-mppt3-voltage" typeId="sg-mppt3-voltage"/>
+			<channel id="sg-mppt3-current" typeId="sg-mppt3-current"/>
+			<channel id="sg-mppt4-voltage" typeId="sg-mppt4-voltage"/>
+			<channel id="sg-mppt4-current" typeId="sg-mppt4-current"/>
 		</channels>
 	</channel-group-type>
 
@@ -60,10 +81,13 @@
 			<channel id="sg-battery-voltage" typeId="sg-battery-voltage"/>
 			<channel id="sg-battery-current" typeId="sg-battery-current"/>
 			<channel id="sg-battery-power" typeId="sg-battery-power"/>
+			<channel id="sg-battery-power-signed" typeId="sg-battery-power-signed"/>
+			<channel id="sg-battery-power-wide-range" typeId="sg-battery-power-wide-range"/>
 			<channel id="sg-battery-level" typeId="sg-battery-level"/>
 			<channel id="sg-battery-healthy" typeId="sg-battery-healthy"/>
 			<channel id="sg-battery-temperature" typeId="sg-battery-temperature"/>
 			<channel id="sg-battery-capacity" typeId="sg-battery-capacity"/>
+			<channel id="sg-battery-capacity-high-precision" typeId="sg-battery-capacity-high-precision"/>
 			<channel id="sg-daily-charge-energy" typeId="sg-daily-charge-energy"/>
 			<channel id="sg-total-charge-energy" typeId="sg-total-charge-energy"/>
 			<channel id="sg-daily-battery-charge" typeId="sg-daily-battery-charge"/>
@@ -83,6 +107,11 @@
 			<channel id="sg-daily-export-power-from-pv" typeId="sg-daily-export-power-from-pv"/>
 			<channel id="sg-total-export-energy-from-pv" typeId="sg-total-export-energy-from-pv"/>
 			<channel id="sg-export-power" typeId="sg-export-power"/>
+			<channel id="sg-daily-output-energy" typeId="sg-daily-output-energy"/>
+			<channel id="sg-total-output-energy" typeId="sg-total-output-energy"/>
+			<channel id="sg-grid-frequency" typeId="sg-grid-frequency"/>
+			<channel id="sg-grid-frequency-high-precision" typeId="sg-grid-frequency-high-precision"/>
+			<channel id="sg-drm-state" typeId="sg-drm-state"/>
 		</channels>
 	</channel-group-type>
 
@@ -96,6 +125,123 @@
 		</channels>
 	</channel-group-type>
 
+	<channel-group-type id="sg-backup-information">
+		<label>Backup Information</label>
+		<channels>
+			<channel id="sg-phase-a-backup-current" typeId="sg-phase-a-backup-current"/>
+			<channel id="sg-phase-b-backup-current" typeId="sg-phase-b-backup-current"/>
+			<channel id="sg-phase-c-backup-current" typeId="sg-phase-c-backup-current"/>
+			<channel id="sg-phase-a-backup-power" typeId="sg-phase-a-backup-power"/>
+			<channel id="sg-phase-b-backup-power" typeId="sg-phase-b-backup-power"/>
+			<channel id="sg-phase-c-backup-power" typeId="sg-phase-c-backup-power"/>
+			<channel id="sg-total-backup-power" typeId="sg-total-backup-power"/>
+			<channel id="sg-phase-a-backup-voltage" typeId="sg-phase-a-backup-voltage"/>
+			<channel id="sg-phase-b-backup-voltage" typeId="sg-phase-b-backup-voltage"/>
+			<channel id="sg-phase-c-backup-voltage" typeId="sg-phase-c-backup-voltage"/>
+			<channel id="sg-backup-frequency" typeId="sg-backup-frequency"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="sg-settings">
+		<label>Settings Information</label>
+		<channels>
+			<channel id="sg-export-limit-min" typeId="sg-export-limit-min"/>
+			<channel id="sg-export-limit-max" typeId="sg-export-limit-max"/>
+			<channel id="sg-bdc-rated-power" typeId="sg-bdc-rated-power"/>
+			<channel id="sg-max-charging-current-bms" typeId="sg-max-charging-current-bms"/>
+			<channel id="sg-max-discharging-current-bms" typeId="sg-max-discharging-current-bms"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-type id="sg-device-type">
+		<item-type>String</item-type>
+		<label>Device Type</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="sg-output-type" advanced="true">
+		<item-type>String</item-type>
+		<label>Output Type</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="sg-running-state">
+		<item-type>String</item-type>
+		<label>Running State</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="sg-drm-state" advanced="true">
+		<item-type>String</item-type>
+		<label>DRM State</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="sg-power-flow-status-pv-power" advanced="true">
+		<item-type>Switch</item-type>
+		<label>PV Generation</label>
+		<description>Power Flow Status - Power generated from PV</description>
+		<category>Switch</category>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="sg-power-flow-status-battery-charging" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Battery Charging</label>
+		<description>Power Flow Status - Battery charging</description>
+		<category>Switch</category>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="sg-power-flow-status-battery-discharging" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Battery Discharging</label>
+		<description>Power Flow Status - Battery discharging</description>
+		<category>Switch</category>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="sg-power-flow-status-positive-load-power" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Load Active</label>
+		<description>Power Flow Status - OFF: Load is reactive, ON: Load is active</description>
+		<category>Switch</category>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="sg-power-flow-status-feed-in-power" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Feed Into Grid</label>
+		<description>Power Flow Status - Feed in power to grid</description>
+		<category>Switch</category>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="sg-power-flow-status-import-from-grid" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Import From Grid</label>
+		<description>Power Flow Status - Import power from grid</description>
+		<category>Switch</category>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="sg-power-flow-status-negative-load-power" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Load Power Generated</label>
+		<description>Power Flow Status - Power generated from Load</description>
+		<category>Switch</category>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="sg-daily-output-energy" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Daily Output Energy</label>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="sg-total-output-energy" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Total Output Energy</label>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
 	<channel-type id="sg-internal-temperature" advanced="true">
 		<item-type>Number:Temperature</item-type>
 		<label>Internal Temperature</label>
@@ -143,6 +289,56 @@
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Current</tag>
+		</tags>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="sg-mppt3-voltage" advanced="true">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>MPPT3 Voltage</label>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Voltage</tag>
+		</tags>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="sg-mppt3-current" advanced="true">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>MPPT3 Current</label>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Current</tag>
+		</tags>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="sg-mppt4-voltage" advanced="true">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>MPPT4 Voltage</label>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Voltage</tag>
+		</tags>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="sg-mppt4-current" advanced="true">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>MPPT4 Current</label>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Current</tag>
+		</tags>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="sg-nominal-output-power" advanced="true">
+		<item-type>Number:Power</item-type>
+		<label>Nominal Output Power</label>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -197,14 +393,56 @@
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="sg-power-factor" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type>Number</item-type>
 		<label>Power Factor</label>
+		<category>Energy</category>
+		<state pattern="%.3f" readOnly="true"/>
+	</channel-type>
+	<channel-type id="sg-export-limit-min" advanced="true">
+		<item-type>Number:Power</item-type>
+		<label>Export Limit Min</label>
+		<category>Energy</category>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="sg-export-limit-max" advanced="true">
+		<item-type>Number:Power</item-type>
+		<label>Export Limit Max</label>
+		<category>Energy</category>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="sg-bdc-rated-power" advanced="true">
+		<item-type>Number:Power</item-type>
+		<label>BDC Rated Power</label>
+		<category>Energy</category>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="sg-max-charging-current-bms" advanced="true">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>Max. Charging Current</label>
+		<category>Energy</category>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="sg-max-discharging-current-bms" advanced="true">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>Max. Discharging Current</label>
 		<category>Energy</category>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="sg-grid-frequency" advanced="true">
 		<item-type>Number:Frequency</item-type>
 		<label>Grid Frequency</label>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Frequency</tag>
+		</tags>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="sg-grid-frequency-high-precision" advanced="true">
+		<item-type>Number:Frequency</item-type>
+		<label>Grid Frequency HP</label>
+		<description>Grid Frequency - High Precision</description>
+		<category>Energy</category>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Frequency</tag>
@@ -335,7 +573,39 @@
 	<channel-type id="sg-battery-power">
 		<item-type>Number:Power</item-type>
 		<label>Battery Power</label>
-		<category>Battery</category>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="sg-battery-power-signed">
+		<item-type>Number:Power</item-type>
+		<label>Battery Power signed</label>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="sg-battery-capacity-high-precision" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Battery Capacity HP</label>
+		<description>Battery Capacity High Precision</description>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="sg-battery-power-wide-range" advanced="true">
+		<item-type>Number:Power</item-type>
+		<label>Battery Power WR</label>
+		<description>Battery Power - Wide Range</description>
+		<category>Energy</category>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Power</tag>
@@ -358,10 +628,10 @@
 		<category>Battery</category>
 		<state pattern="%.2f %%" readOnly="true"/>
 	</channel-type>
-	<channel-type id="sg-battery-temperature">
+	<channel-type id="sg-battery-temperature" advanced="true">
 		<item-type>Number:Temperature</item-type>
 		<label>Battery Temperature</label>
-		<category>Battery</category>
+		<category>Temperature</category>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Temperature</tag>
@@ -504,4 +774,115 @@
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
+	<channel-type id="sg-phase-a-backup-voltage" advanced="true">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Phase A Backup Voltage</label>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Voltage</tag>
+		</tags>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="sg-phase-a-backup-current" advanced="true">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>Phase A Backup Current</label>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Current</tag>
+		</tags>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="sg-phase-a-backup-power" advanced="true">
+		<item-type>Number:Power</item-type>
+		<label>Phase A Backup Power</label>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="sg-phase-b-backup-voltage" advanced="true">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Phase B Backup Voltage</label>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Voltage</tag>
+		</tags>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="sg-phase-b-backup-current" advanced="true">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>Phase B Backup Current</label>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Current</tag>
+		</tags>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="sg-phase-b-backup-power" advanced="true">
+		<item-type>Number:Power</item-type>
+		<label>Phase B Backup Power</label>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="sg-phase-c-backup-voltage" advanced="true">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Phase C Backup Voltage</label>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Voltage</tag>
+		</tags>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="sg-phase-c-backup-current" advanced="true">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>Phase C Backup Current</label>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Current</tag>
+		</tags>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="sg-phase-c-backup-power" advanced="true">
+		<item-type>Number:Power</item-type>
+		<label>Phase C Backup Power</label>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="sg-total-backup-power" advanced="true">
+		<item-type>Number:Power</item-type>
+		<label>Total Backup Power</label>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="sg-backup-frequency" advanced="true">
+		<item-type>Number:Frequency</item-type>
+		<label>Backup Frequency</label>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Frequency</tag>
+		</tags>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+
 </thing:thing-descriptions>
