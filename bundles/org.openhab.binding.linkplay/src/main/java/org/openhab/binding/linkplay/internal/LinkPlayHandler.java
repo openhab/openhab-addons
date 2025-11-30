@@ -15,6 +15,7 @@ package org.openhab.binding.linkplay.internal;
 import static org.openhab.binding.linkplay.internal.LinkPlayBindingConstants.*;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -404,7 +405,7 @@ public class LinkPlayHandler extends BaseThingHandler implements LinkPlayUpnpDev
                     logger.debug("{}: No handler implemented for channel {}", udn, channelUID);
                     break;
             }
-        } catch (Exception e) {
+        } catch (ExecutionException | InterruptedException e) {
             logger.debug("Error while handling command: {}", e.getMessage(), e);
         }
     }
@@ -489,6 +490,7 @@ public class LinkPlayHandler extends BaseThingHandler implements LinkPlayUpnpDev
         upnpValueListeners.forEach(listener -> {
             try {
                 listener.onUpnpValueReceived(variable, value, service);
+                // catch generic exceptions so we don't break the entire listener chain
             } catch (Exception e) {
                 logger.debug("{}: Error in UPnP value listener", udn, e);
             }
@@ -705,7 +707,7 @@ public class LinkPlayHandler extends BaseThingHandler implements LinkPlayUpnpDev
                                             }
                                             commands.playQueueWithIndex(queueName, String.valueOf(lastPlayIndex)).get();
                                             commands.deleteQueue(notifyListName).get();
-                                        } catch (Exception e) {
+                                        } catch (ExecutionException | InterruptedException e) {
                                             logger.error("{}: Error while removing notification track: {}", udn,
                                                     e.getMessage(), e);
                                         }
@@ -756,7 +758,7 @@ public class LinkPlayHandler extends BaseThingHandler implements LinkPlayUpnpDev
                 registerUpnpValueListener(listener);
                 commands.play().get();
             }
-        } catch (Exception e) {
+        } catch (ExecutionException | InterruptedException e) {
             logger.error("{}: Error while playing notification: {}", udn, e.getMessage(), e);
             returnFuture.completeExceptionally(e);
         }
@@ -782,16 +784,11 @@ public class LinkPlayHandler extends BaseThingHandler implements LinkPlayUpnpDev
         CompletableFuture<Map<String, String>> future = new CompletableFuture<>();
         pendingFutures.add(future);
         scheduler.execute(() -> {
-            try {
-                Map<String, String> result = upnpIOService.invokeAction(this, namespace, serviceId, actionId, inputs);
-                if (logger.isTraceEnabled() && !"GetPositionInfo".equals(actionId)) {
-                    logger.trace("{}: Action result: {}", udn, result);
-                }
-                future.complete(result != null ? result : Collections.emptyMap());
-            } catch (Exception e) {
-                logger.debug("{}: Error executing UPnP action {}:{}", udn, serviceId, actionId, e);
-                future.completeExceptionally(e);
+            Map<String, String> result = upnpIOService.invokeAction(this, namespace, serviceId, actionId, inputs);
+            if (logger.isTraceEnabled() && !"GetPositionInfo".equals(actionId)) {
+                logger.trace("{}: Action result: {}", udn, result);
             }
+            future.complete(result != null ? result : Collections.emptyMap());
         });
         future.whenComplete((r, t) -> {
             pendingFutures.remove(future);
@@ -813,11 +810,7 @@ public class LinkPlayHandler extends BaseThingHandler implements LinkPlayUpnpDev
         }
         logger.debug("{}: Executing ack action {}:{} with inputs {}", udn, serviceId, actionId, inputs);
         CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
-            try {
-                upnpIOService.invokeAction(this, namespace, serviceId, actionId, inputs);
-            } catch (Exception e) {
-                throw new IllegalStateException(e);
-            }
+            upnpIOService.invokeAction(this, namespace, serviceId, actionId, inputs);
         }, scheduler);
         pendingFutures.add(future);
         future.whenComplete((r, t) -> pendingFutures.remove(future));
@@ -1128,20 +1121,19 @@ public class LinkPlayHandler extends BaseThingHandler implements LinkPlayUpnpDev
             if (value == null) {
                 continue;
             }
-            try {
-                if (key.endsWith("Volume")) {
+            if (key.endsWith("Volume")) {
+                try {
                     currentVolume = Integer.parseInt(value);
                     updateState(LinkPlayBindingConstants.GROUP_PLAYBACK, LinkPlayBindingConstants.CHANNEL_VOLUME,
                             new PercentType(currentVolume));
-                } else if (key.endsWith("Mute")) {
-                    OnOffType muteState = "1".equals(value) ? OnOffType.ON : OnOffType.OFF;
-                    updateState(LinkPlayBindingConstants.GROUP_PLAYBACK, LinkPlayBindingConstants.CHANNEL_MUTE,
-                            muteState);
-                } else if ("Slave".equals(key)) {
-                    updateMultiroom();
+                } catch (NumberFormatException ignored) {
+                    logger.debug("{}: Error parsing volume: {}", udn, value, ignored);
                 }
-            } catch (Exception ignored) {
-                // ignore parse errors
+            } else if (key.endsWith("Mute")) {
+                OnOffType muteState = "1".equals(value) ? OnOffType.ON : OnOffType.OFF;
+                updateState(LinkPlayBindingConstants.GROUP_PLAYBACK, LinkPlayBindingConstants.CHANNEL_MUTE, muteState);
+            } else if ("Slave".equals(key)) {
+                updateMultiroom();
             }
         }
     }
@@ -1628,7 +1620,8 @@ public class LinkPlayHandler extends BaseThingHandler implements LinkPlayUpnpDev
                 Constructor<? extends State> ctor = stateClass.getConstructor(String.class);
                 return ctor.newInstance(strValue);
             }
-        } catch (Exception e) {
+        } catch (NoSuchMethodException | InstantiationException | IllegalAccessException
+                | InvocationTargetException e) {
             logger.debug("Failed to instantiate {} for value {}: {}", stateClass.getSimpleName(), value, e.getMessage(),
                     e);
             return UnDefType.NULL;

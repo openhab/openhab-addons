@@ -12,7 +12,9 @@
  */
 package org.openhab.binding.linkplay.internal.client.http;
 
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -26,6 +28,13 @@ import org.eclipse.jetty.client.HttpClient;
 @NonNullByDefault
 public class LinkPlayConnectionUtils {
 
+    /**
+     * Test the connection to a LinkPlay device and return the port number if the connection is successful.
+     * 
+     * @param httpClient the HTTP client to use
+     * @param host the host to test
+     * @return the port number if the connection is successful, null otherwise
+     */
     public static @Nullable Integer testConnection(HttpClient httpClient, String host) {
         LinkPlayHTTPClient apiClient = new LinkPlayHTTPClient(httpClient);
         apiClient.setHost(host);
@@ -36,7 +45,7 @@ public class LinkPlayConnectionUtils {
                 // test that the device is reachable on the given port
                 apiClient.getStatusEx().get(5000, TimeUnit.MILLISECONDS);
                 return port;
-            } catch (Exception ignored) {
+            } catch (TimeoutException | ExecutionException | InterruptedException ignored) {
                 // Continue to next port
             }
         }
