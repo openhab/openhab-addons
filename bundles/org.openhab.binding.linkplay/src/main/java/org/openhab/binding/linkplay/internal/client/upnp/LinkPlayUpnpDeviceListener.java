@@ -22,5 +22,10 @@ import org.jupnp.model.meta.RemoteDevice;
  */
 @NonNullByDefault
 public interface LinkPlayUpnpDeviceListener {
+    /**
+     * Called when an UPnP RemoteDevice is updated.
+     * 
+     * @param device the device to update the configuration for
+     */
     void updateDeviceConfig(RemoteDevice device);
 }

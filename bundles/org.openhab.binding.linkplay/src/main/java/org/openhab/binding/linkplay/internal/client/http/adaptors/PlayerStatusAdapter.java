@@ -57,11 +57,11 @@ public class PlayerStatusAdapter implements JsonDeserializer<PlayerStatus> {
         if (obj.has("mode") && !obj.get("mode").isJsonNull()) {
             try {
                 modeCode = obj.get("mode").getAsInt();
-            } catch (Exception ignored) {
+            } catch (NumberFormatException ignored) {
                 // some firmwares might return string; try parse
                 try {
                     modeCode = Integer.parseInt(obj.get("mode").getAsString().trim());
-                } catch (Exception ignored2) {
+                } catch (NumberFormatException ignored2) {
                     modeCode = null;
                 }
             }
@@ -72,10 +72,10 @@ public class PlayerStatusAdapter implements JsonDeserializer<PlayerStatus> {
         if (obj.has("loop") && !obj.get("loop").isJsonNull()) {
             try {
                 loopCode = obj.get("loop").getAsInt();
-            } catch (Exception ignored) {
+            } catch (NumberFormatException ignored) {
                 try {
                     loopCode = Integer.parseInt(obj.get("loop").getAsString().trim());
-                } catch (Exception ignored2) {
+                } catch (NumberFormatException ignored2) {
                     loopCode = null;
                 }
             }
@@ -118,7 +118,7 @@ public class PlayerStatusAdapter implements JsonDeserializer<PlayerStatus> {
                         + Character.digit(hex.charAt(i + 1), 16));
             }
             return new String(data, StandardCharsets.UTF_8);
-        } catch (Exception e) {
+        } catch (NumberFormatException e) {
             return hex;
         }
     }

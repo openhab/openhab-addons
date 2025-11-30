@@ -21,7 +21,18 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public interface LinkPlayUpnpRegistry {
+    /**
+     * Add a device listener for a given UDN.
+     * 
+     * @param udn the UDN of the device to add the listener for
+     * @param listener the listener to add
+     */
     void addDeviceListener(String udn, LinkPlayUpnpDeviceListener listener);
 
+    /**
+     * Remove a device listener for a given UDN.
+     * 
+     * @param udn the UDN of the device to remove the listener for
+     */
     void removeDeviceListener(String udn);
 }
