@@ -23,6 +23,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -613,7 +614,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
             return;
         }
         // search for the accessory information service and collect its properties
-        Map<String, String> thingProperties = thing.getProperties();
+        Map<String, String> thingProperties = new HashMap<>(thing.getProperties());
         for (Service service : accessory.services) {
             if (ServiceType.ACCESSORY_INFORMATION == service.getServiceType()) {
                 for (Characteristic characteristic : service.characteristics) {
