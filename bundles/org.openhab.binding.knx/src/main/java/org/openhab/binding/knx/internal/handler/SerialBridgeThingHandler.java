@@ -71,7 +71,7 @@ public class SerialBridgeThingHandler extends KNXBridgeBaseThingHandler {
         SerialBridgeConfiguration config = getConfigAs(SerialBridgeConfiguration.class);
         try {
             if (initializeSecurity(config.getKeyringFile(), config.getKeyringPassword())) {
-                if (keyring.isPresent()) {
+                if (keyring != null) {
                     logger.info("KNX secure available for {} devices, {} group addresses",
                             openhabSecurity.deviceToolKeys().size(), openhabSecurity.groupKeys().size());
 
@@ -94,6 +94,11 @@ public class SerialBridgeThingHandler extends KNXBridgeBaseThingHandler {
             return;
         }
 
+        try {
+            Thread.sleep(5500); // add small delay for serviceloader to be ready
+        } catch (InterruptedException e) {
+            logger.warn("Initialization delay interrupted", e);
+        }
         SerialClient tmpClient = client;
         if (tmpClient != null) {
             tmpClient.initialize();

@@ -15,6 +15,7 @@ package org.openhab.binding.knx.internal.client;
 import static org.openhab.binding.knx.internal.KNXBindingConstants.*;
 import static org.openhab.binding.knx.internal.handler.DeviceConstants.*;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HexFormat;
@@ -190,8 +191,8 @@ public class DeviceInspector {
             if (orderInfo != null) {
                 final String hexString = toHex(orderInfo, "");
                 if (!"ffffffffffffffffffff".equals(hexString) && !"00000000000000000000".equals(hexString)) {
-                    String result = new String(orderInfo);
-                    result = result.trim();
+                    // according to spec, ISO-8859-1 encoding
+                    String result = new String(orderInfo, StandardCharsets.ISO_8859_1).trim();
                     if (result.isEmpty()) {
                         result = "0x" + hexString;
                     } else {
@@ -220,7 +221,8 @@ public class DeviceInspector {
                                 false, OPERATION_TIMEOUT);
                         if (toUnsigned(data) != 0) {
                             if (data != null) {
-                                buf.append(new String(data));
+                                // according to spec, ISO-8859-1 encoding
+                                buf.append(new String(data, StandardCharsets.ISO_8859_1));
                             }
                         } else {
                             break;
