@@ -23,6 +23,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Locale;
 import java.util.Random;
 
 import javax.crypto.BadPaddingException;
@@ -506,7 +507,7 @@ public class Security {
 
             String sign = path + query + cloudProvider.appkey();
             logger.trace("sign: {}", sign);
-            return HexUtils.bytesToHex(sha256(sign.getBytes(StandardCharsets.US_ASCII))).toLowerCase();
+            return HexUtils.bytesToHex(sha256(sign.getBytes(StandardCharsets.US_ASCII))).toLowerCase(Locale.ROOT);
         } catch (URISyntaxException e) {
             logger.warn("Error parsing URI '{}': {}", url, e.getMessage());
         }
@@ -554,10 +555,10 @@ public class Security {
      * @return lower case string
      */
     public String hmac(String data, String key, String algorithm) throws NoSuchAlgorithmException, InvalidKeyException {
-        SecretKeySpec secretKeySpec = new SecretKeySpec(key.getBytes(), algorithm);
+        SecretKeySpec secretKeySpec = new SecretKeySpec(key.getBytes(StandardCharsets.UTF_8), algorithm);
         Mac mac = Mac.getInstance(algorithm);
         mac.init(secretKeySpec);
-        return HexUtils.bytesToHex(mac.doFinal(data.getBytes())).toLowerCase();
+        return HexUtils.bytesToHex(mac.doFinal(data.getBytes(StandardCharsets.UTF_8))).toLowerCase(Locale.ROOT);
     }
 
     /**
@@ -574,10 +575,11 @@ public class Security {
             m.update(password.getBytes(StandardCharsets.US_ASCII));
 
             // Create the login hash with the loginID + password hash + appKey, then hash it all AGAIN
-            String loginHash = loginId + HexUtils.bytesToHex(m.digest()).toLowerCase() + cloudProvider.appkey();
+            String loginHash = loginId + HexUtils.bytesToHex(m.digest()).toLowerCase(Locale.ROOT)
+                    + cloudProvider.appkey();
             m = MessageDigest.getInstance("SHA-256");
             m.update(loginHash.getBytes(StandardCharsets.US_ASCII));
-            return HexUtils.bytesToHex(m.digest()).toLowerCase();
+            return HexUtils.bytesToHex(m.digest()).toLowerCase(Locale.ROOT);
         } catch (NoSuchAlgorithmException e) {
             logger.warn("encryptPassword error: NoSuchAlgorithmException: {}", e.getMessage());
         }
@@ -597,12 +599,14 @@ public class Security {
             md.update(password.getBytes(StandardCharsets.US_ASCII));
 
             MessageDigest mdSecond = MessageDigest.getInstance("MD5");
-            mdSecond.update((HexUtils.bytesToHex(md.digest()).toLowerCase()).getBytes(StandardCharsets.US_ASCII));
+            mdSecond.update(
+                    (HexUtils.bytesToHex(md.digest()).toLowerCase(Locale.ROOT)).getBytes(StandardCharsets.US_ASCII));
 
-            String loginHash = loginId + HexUtils.bytesToHex(mdSecond.digest()).toLowerCase() + cloudProvider.appkey();
-            return HexUtils.bytesToHex(sha256(loginHash.getBytes(StandardCharsets.US_ASCII))).toLowerCase();
+            String loginHash = loginId + HexUtils.bytesToHex(mdSecond.digest()).toLowerCase(Locale.ROOT)
+                    + cloudProvider.appkey();
+            return HexUtils.bytesToHex(sha256(loginHash.getBytes(StandardCharsets.US_ASCII))).toLowerCase(Locale.ROOT);
         } catch (NoSuchAlgorithmException e) {
-            logger.warn("encryptIamPasswordt error: NoSuchAlgorithmException: {}", e.getMessage());
+            logger.warn("encryptIamPassword error: NoSuchAlgorithmException: {}", e.getMessage());
         }
         return null;
     }
@@ -624,6 +628,6 @@ public class Security {
             b3[i] = (byte) (b1[i] ^ b2[i]);
             i++;
         }
-        return HexUtils.bytesToHex(b3).toLowerCase();
+        return HexUtils.bytesToHex(b3).toLowerCase(Locale.ROOT);
     }
 }
