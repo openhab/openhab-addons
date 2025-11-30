@@ -145,7 +145,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
                     notBeforeInstant = next = Instant.now().plus(MIN_INTERVAL);
                 }
                 Duration delay = Duration.between(Instant.now(), next);
-                if (!delay.isPositive()) {
+                if (delay.isPositive()) {
                     Duration sleepDuration = delay.compareTo(MIN_INTERVAL) < 0 ? delay : MIN_INTERVAL;
                     logger.trace("{} throttling call for {} to respect minimum interval", thing.getUID(),
                             sleepDuration);
