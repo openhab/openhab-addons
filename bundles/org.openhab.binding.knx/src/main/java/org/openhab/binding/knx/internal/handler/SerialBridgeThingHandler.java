@@ -94,11 +94,6 @@ public class SerialBridgeThingHandler extends KNXBridgeBaseThingHandler {
             return;
         }
 
-        try {
-            Thread.sleep(5500); // add small delay for serviceloader to be ready
-        } catch (InterruptedException e) {
-            logger.warn("Initialization delay interrupted", e);
-        }
         SerialClient tmpClient = client;
         if (tmpClient != null) {
             tmpClient.initialize();
