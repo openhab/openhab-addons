@@ -118,7 +118,8 @@ public class GatewayPayloadParser {
             // This handles advertisements with or without optional Flags AD structure
             // Supports both classic (max 31 bytes per AD) and extended advertisements (max 255 bytes per AD)
             // Format 5 typically: [02 01 06] [1B FF 99 04 05 ...] where 0xFF is at index 4
-            // Format E1 typically: [2B FF 99 04 E1 ...] where 0xFF is at index 1 (manufacturer-specific data AD structure with length 0x2B=43)
+            // Format E1 typically: [2B FF 99 04 E1 ...] where 0xFF is at index 1 (manufacturer-specific data AD
+            // structure with length 0x2B=43)
             int manufacturerIndex = -1;
             for (int i = 1; i < bytes.length; i++) {
                 if ((bytes[i] & 0xff) == 0xff) {
