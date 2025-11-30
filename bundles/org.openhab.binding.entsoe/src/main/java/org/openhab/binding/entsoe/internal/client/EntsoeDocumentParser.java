@@ -18,6 +18,9 @@ import java.time.Duration;
 import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
+import java.util.Map;
+import java.util.SortedMap;
 import java.util.TreeMap;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -48,6 +51,12 @@ public class EntsoeDocumentParser {
     private @Nullable String failureReason;
     private @Nullable Document document;
 
+    /**
+     * Constructor. Parses the given XML response string.
+     * Errors during parsing are captured and can be retrieved via {@link #isValid()} and {@link #getFailureReason()}.
+     *
+     * @param response The XML response string from EntsoE
+     */
     public EntsoeDocumentParser(String response) {
         try {
             Document workingDocument = parseDocument(response);
@@ -78,18 +87,39 @@ public class EntsoeDocumentParser {
         }
     }
 
+    /**
+     * Check if the parsing was successful.
+     *
+     * @return true if parsing was successful, false otherwise
+     */
     public boolean isValid() {
         return failureReason == null;
     }
 
+    /**
+     * Get the failure reason if parsing was not successful.
+     *
+     * @return The failure reason, or null if parsing was successful
+     */
     public @Nullable String getFailureReason() {
         return failureReason;
     }
 
+    /**
+     * Get the map of sequence numbers to their corresponding durations.
+     *
+     * @return A TreeMap with sequence numbers as keys and durations as values
+     */
     public TreeMap<String, String> getSequences() {
         return sequenceDurationMap;
     }
 
+    /**
+     * Get the price map for a given sequence number.
+     *
+     * @param sequenceNumber The sequence number to retrieve the price map for
+     * @return A TreeMap with Instants as keys and SpotPrices as values
+     */
     public TreeMap<Instant, SpotPrice> getPriceMap(String sequenceNumber) {
         TreeMap<Instant, SpotPrice> returnMap = sequencePriceMap.get(sequenceNumber);
         if (returnMap == null) {
@@ -99,6 +129,74 @@ public class EntsoeDocumentParser {
         }
     }
 
+    /**
+     * Transform the price map of one sequence to a different resolution by averaging prices over the new time windows.
+     *
+     * @param sequenceNumber The sequence number to transform
+     * @param targetResolution The target resolution in ISO 8601 duration format (e.g. "PT15M" for 15 minutes)
+     * @return A TreeMap with the transformed prices
+     * @throws EntsoeResponseException
+     */
+    public TreeMap<Instant, SpotPrice> transform(String sequenceNumber, Duration targetDuration)
+            throws EntsoeResponseException {
+        TreeMap<Instant, SpotPrice> priceMap = getPriceMap(sequenceNumber);
+        TreeMap<Instant, SpotPrice> targetMap = new TreeMap<>();
+        logger.debug("Transforming Duration {} to {}", getSequences().get(sequenceNumber), targetDuration);
+        String duration = sequenceDurationMap.get(sequenceNumber);
+        if (duration == null) {
+            throw new EntsoeResponseException("No duration found for sequence " + sequenceNumber);
+        }
+        Instant timeWindowStart = priceMap.firstKey();
+        Instant endTime = priceMap.lastKey().plus(Duration.parse(duration));
+        SpotPrice investigationPrice = priceMap.firstEntry().getValue();
+
+        while (timeWindowStart.isBefore(endTime)) {
+            Instant timeWindowEnd = timeWindowStart.plus(targetDuration.toMinutes(), ChronoUnit.MINUTES);
+            SortedMap<Instant, SpotPrice> subMap = priceMap.subMap(timeWindowStart, timeWindowEnd);
+            SpotPrice averagePrice = average(timeWindowStart, timeWindowEnd, subMap, investigationPrice);
+            targetMap.put(timeWindowStart, averagePrice);
+            // shift time window and get starting price for next window
+            timeWindowStart = timeWindowEnd;
+            investigationPrice = priceMap.floorEntry(timeWindowStart).getValue();
+        }
+        return targetMap;
+    }
+
+    /**
+     * Calculate the average price time weighted over the given time window.
+     *
+     * @param timeWindowStartTime The start time of the time window
+     * @param timeWindowEnd The end time of the time window
+     * @param subMap The sub map of prices within the time window
+     * @param investigationPrice The price to use for periods without a price change
+     * @return The average SpotPrice over the time window
+     * @throws EntsoeResponseException
+     */
+    private SpotPrice average(Instant timeWindowStartTime, Instant timeWindowEnd, SortedMap<Instant, SpotPrice> subMap,
+            SpotPrice investigationPrice) throws EntsoeResponseException {
+        double investigationPriceDouble = investigationPrice.getPrice();
+        Instant loopIterator = timeWindowStartTime;
+        double averagePrice = 0.0;
+        for (Map.Entry<Instant, SpotPrice> entry : subMap.entrySet()) {
+            Instant step = entry.getKey();
+            long durationMinutes = Duration.between(loopIterator, step).toMinutes();
+            averagePrice += investigationPriceDouble * durationMinutes;
+            investigationPriceDouble = entry.getValue().getPrice();
+            loopIterator = step;
+        }
+        // add last segment
+        long durationMinutes = Duration.between(loopIterator, timeWindowEnd).toMinutes();
+        averagePrice += investigationPriceDouble * durationMinutes;
+        averagePrice = averagePrice / Duration.between(timeWindowStartTime, timeWindowEnd).toMinutes();
+        return new SpotPrice(investigationPrice.getCurrency(), "kWh", averagePrice);
+    }
+
+    /**
+     * Parse the XML response and populate the sequenceDurationMap and sequencePriceMap.
+     *
+     * @param responseText The XML response text
+     * @throws EntsoeResponseException If there is an error during parsing
+     */
     private void parseXmlResponse(String responseText) throws EntsoeResponseException {
         // Get all "timeSeries" nodes from document
         Document workingDocument = document;
@@ -174,6 +272,15 @@ public class EntsoeDocumentParser {
         }
     }
 
+    /**
+     * Parse the XML response string into a Document object.
+     *
+     * @param response The XML response string
+     * @return The parsed Document object
+     * @throws ParserConfigurationException If a DocumentBuilder cannot be created
+     * @throws SAXException If any parse errors occur
+     * @throws IOException If any IO errors occur
+     */
     private @Nullable Document parseDocument(String response)
             throws ParserConfigurationException, SAXException, IOException {
         DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
@@ -182,6 +289,14 @@ public class EntsoeDocumentParser {
         return document;
     }
 
+    /**
+     * Calculate the date and time for a given iteration based on the start time and resolution.
+     *
+     * @param start The start time as an Instant
+     * @param iteration The iteration number (0-based)
+     * @param resolution The resolution in ISO 8601 duration format
+     * @return The calculated Instant
+     */
     private Instant calculateDateTime(Instant start, int iteration, String resolution) {
         Duration d = Duration.parse(resolution).multipliedBy(iteration);
         return start.plus(d);

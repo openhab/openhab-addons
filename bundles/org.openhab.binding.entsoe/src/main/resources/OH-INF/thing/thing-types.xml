@@ -90,6 +90,18 @@
 				<description>Specify number of days to download historic data of energy spot prices (historic data will get exchange
 					rate of today)</description>
 			</parameter>
+			<parameter name="resolution" type="text" required="false">
+				<label>Resolution</label>
+				<description>Data resolution</description>
+				<limitToOptions>false</limitToOptions>
+				<options>
+					<option value="">Auto detect</option>
+					<option value="PT15M">15 minutes</option>
+					<option value="PT30M">30 minutes</option>
+					<option value="PT60M">60 minutes</option>
+				</options>
+				<advanced>true</advanced>
+			</parameter>
 			<parameter name="spotPricesAvailableCetHour" type="integer" min="0" max="23" required="false">
 				<label>Publish Hour</label>
 				<default>13</default>

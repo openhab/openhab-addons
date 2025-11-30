@@ -57,6 +57,19 @@ public class SpotPrice {
         }
     }
 
+    public double getPrice() {
+        return getPrice(DEFAULT_ENERGY_UNIT).doubleValue();
+    }
+
+    public String getCurrency() {
+        return currency;
+    }
+
+    @Override
+    public String toString() {
+        return getState().toFullString();
+    }
+
     private Unit<Energy> convertEntsoeUnit(String unit) throws EntsoeResponseException {
         Unit<Energy> decodedUnit = ENERGY_UNIT_MAP.get(unit.toLowerCase());
         if (decodedUnit != null) {

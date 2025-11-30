@@ -17,13 +17,14 @@ This token ensures secure access to the platform's data and services.
 For detailed instructions on obtaining this token, you can refer to the [ENTSO-E API Guide 2. Authentication and Authorisation](https://transparencyplatform.zendesk.com/hc/en-us/articles/12845911031188-How-to-get-security-token).
 
 Mandatory parameters of the Thing are security token and area.
-Optional parameters are historic days, availability hour for day ahead spot prices and request timeout.
+Optional parameters are historic days, resolution, availability hour for day ahead spot prices and request timeout.
 
 | Name                          | Type              | Description                                                                           | Default   | Required | Advanced |
 |-------------------------------|-------------------|---------------------------------------------------------------------------------------|-----------|----------|----------|
 | securityToken                 | text              | Security token to fetch from ENTSO-E                                                  | N/A       | yes      | no       |
 | area                          | text              | Area                                                                                  | N/A       | yes      | no       |
 | historicDays                  | integer           | Historic days to get prices from (will use exchange rate as of today)                 | 1         | no       | no       |
+| resolution                    | text              | Data resolution                                                                       | N/A       | no       | yes      |
 | spotPricesAvailableCetHour    | integer           | Which CET hour binding assumes new spot prices for next day is available              | 13        | no       | yes      |
 | requestTimeout                | integer           | Request timeout in seconds                                                            | 30        | no       | yes      |
 

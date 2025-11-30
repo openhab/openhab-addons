@@ -23,6 +23,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class EntsoeConfiguration {
     public String securityToken = "";
     public String area = "";
+    public String resolution = "";
     public int spotPricesAvailableCetHour = 13;
     public int historicDays = 1;
     public int requestTimeout = 30;

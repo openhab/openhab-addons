@@ -61,9 +61,7 @@ public class EntsoeClient {
 
         try {
             logger.debug("Sending GET request with parameters: {}", entsoeRequest);
-
             ContentResponse response = request.send();
-
             int status = response.getStatus();
             if (status == HttpStatus.UNAUTHORIZED_401) {
                 // This will currently not happen because "WWW-Authenticate" header is missing; see below.
