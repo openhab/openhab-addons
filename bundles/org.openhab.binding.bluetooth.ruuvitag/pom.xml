@@ -34,18 +34,4 @@
       <scope>compile</scope>
     </dependency>
   </dependencies>
-
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>biz.aQute.bnd</groupId>
-        <artifactId>bnd-maven-plugin</artifactId>
-        <configuration>
-          <bnd><![CDATA[
-            -includeresource: @ruuvitag-common-*.jar!/!META-INF/*
-          ]]></bnd>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
 </project>
