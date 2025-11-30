@@ -65,13 +65,13 @@ Note: the configuration channels are not intended to be written regularly.
 
 ## Full Example
 
-things:
+`heliosventilation.things`:
 
 ```java
 heliosventilation:ventilation:MyKWL  [ serialPort="/dev/ttyUSB0" ]
 ```
 
-items:
+`heliosventilation.items`:
 
 ```java
 Switch KWLOnOff { channel="heliosventilation:ventilation:MyKWL:powerState" }
@@ -90,7 +90,7 @@ Number Max_Fan_Speed "Max Fan Speed" <fan> { channel="heliosventilation:ventilat
 
 ```
 
-sitemap:
+`heliosventilation.sitemap`:
 
 ```perl
 sitemap helios_kwl label="Helios Ventilation" {

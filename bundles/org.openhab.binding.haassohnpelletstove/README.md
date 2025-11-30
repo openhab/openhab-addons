@@ -22,18 +22,18 @@ Thing haassohnpelletstove:oven:myOven "Pelletstove"  [ hostIP="192.168.0.23", ho
 
 The following channels are supported:
 
-| Channel | Type  | Access| Description|
-|---------|-------|-------|------------|
-| power                | Switch            | read/write | Turn the stove on/off                             |
-| channelIsTemp        | Number:Temperature| read       | Current stove temperature                         |
-| channelSpTemp        | Number:Temperature| read/write | Target stove temperature                          |
-| channelMode          | String            | read       | Current stove mode (e.g., heating, error)         |
-| channelEcoMode       | Switch            | read/write | Enable/disable Eco Mode                           |
-| channelIgnitions     | Number            | read       | Total number of ignitions                         |
-| channelMaintenanceIn | Number:Mass       | read       | Estimated pellets until next maintenance (kg)     |
-| channelCleaningIn    | String            | read       | Estimated time until next cleaning (hh:mm)        |
-| channelConsumption   | Number:Mass       | read       | Total pellet consumption                          |
-| channelOnTime        | Number            | read       | Total operating hours                             |
+| Channel              | Type               | Access     | Description                                   |
+|----------------------|--------------------|------------|-----------------------------------------------|
+| power                | Switch             | read/write | Turn the stove on/off                         |
+| channelIsTemp        | Number:Temperature | read       | Current stove temperature                     |
+| channelSpTemp        | Number:Temperature | read/write | Target stove temperature                      |
+| channelMode          | String             | read       | Current stove mode (e.g., heating, error)     |
+| channelEcoMode       | Switch             | read/write | Enable/disable Eco Mode                       |
+| channelIgnitions     | Number             | read       | Total number of ignitions                     |
+| channelMaintenanceIn | Number:Mass        | read       | Estimated pellets until next maintenance (kg) |
+| channelCleaningIn    | String             | read       | Estimated time until next cleaning (hh:mm)    |
+| channelConsumption   | Number:Mass        | read       | Total pellet consumption                      |
+| channelOnTime        | Number             | read       | Total operating hours                         |
 
 ## Full Example
 
