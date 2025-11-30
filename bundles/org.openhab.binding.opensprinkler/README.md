@@ -15,7 +15,7 @@ Mixing the two concepts can also be done, the choice is yours.
 - `OpenSprinkler Station` is for gaining advanced controls and status information over a single station (zone) of a device, e.g., to turn it on or off, or the time remaining.
 - `OpenSprinkler Device` is for device-specific controls that usually apply to multiple stations or main unit sensors, e.g., if rain was detected.
 
-It is recommended that you first add a single `device` thing and then, if you need the extra controls, add as many of the `station` things as you wish.
+It is recommended that you first add a single `device` Thing and then, if you need the extra controls, add as many of the `station` things as you wish.
 
 ## Discovery
 
@@ -35,13 +35,13 @@ Due to this method used, it is very slow at finding devices and can saturate net
 
 ### Station Thing Configuration
 
-The `station` thing must be used with a `http` bridge and has the following configuration properties:
+The `station` Thing must be used with a `http` bridge and has the following configuration properties:
 
 - stationIndex: The index of the station to communicate with, starting with 0 for the first station.
 
 ## Channels
 
-The following channels are supported by the `station` thing.
+The following channels are supported by the `station` Thing.
 
 | Channel Type ID    | Item Type   |    | Description                                              |
 |--------------------|-------------|----|----------------------------------------------------------|
@@ -58,7 +58,7 @@ The following channels are supported by the `station` thing.
 
 When using the `nextDuration` channel, it is advised to setup persistence (e.g. MapDB) in order to persist the value through restarts.
 
-The following channels are supported by the `device` thing.
+The following channels are supported by the `device` Thing.
 NOTE: Some channels will only show up if the hardware has the required sensor and is setup correctly.
 
 | Channel Type ID | Item Type              |    | Description                                                                        |

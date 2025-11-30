@@ -20,7 +20,7 @@ Note the values in sysfs are in Celsius.
 
 The optional `precision` parameter lets you lower the precision of the sensor value, e.g., precision `1` shows one digit after the decimal point, precision `2` shows two digits. Rounding is applied (e.g., 20.534 °C with precision 1 becomes 20.5 °C; 20.555 °C with the same precision becomes 20.6 °C). Allowed values are from 0 to 3. The default is 3 (maximum precision).
 
-In the thing file, this looks e.g. like
+In the Thing file, this looks e.g. like
 
 ```java
 Thing onewiregpio:sensor:livingRoom "Living room" [gpio_bus_file="/sys/bus/w1/devices/28-0000061b587b/w1_slave",refresh_time=30,precision=1]

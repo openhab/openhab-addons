@@ -10,11 +10,11 @@ So far only the [Orbit B-hyve 8-zone Indoor Timer](https://bhyve.orbitonline.com
 ## Discovery
 
 This binding supports the auto-discovery of the sprinklers bound to your Orbit B-hyve account.
-To start the discovery you need to create a bridge thing and enter valid credentials to your Orbit B-hyve cloud account.
+To start the discovery you need to create a bridge Thing and enter valid credentials to your Orbit B-hyve cloud account.
 
 ## Thing Configuration
 
-The bridge thing requires manual configuration. You must enter valid credentials to your Orbit B-hyve account, and you can also set the refresh time in seconds for polling data from the Orbit cloud.
+The bridge Thing requires manual configuration. You must enter valid credentials to your Orbit B-hyve account, and you can also set the refresh time in seconds for polling data from the Orbit cloud.
 There is no user configuration for sprinkler things. Sprinklers have an _id_ configuration property identifying the device; it is populated when the bridge auto-discovers sprinklers.
 
 ## Channels
@@ -27,7 +27,7 @@ This binding automatically detects all zones and programs for each sprinkler and
 | program_%        | Switch | This channel controls the manual program watering (ON/OFF)       |
 | enable_program_% | Switch | This channel controls the automatic program scheduling (ON/OFF)  |
 
-Beside the dynamic channels each sprinkler thing provides these standard channels:
+Beside the dynamic channels each sprinkler Thing provides these standard channels:
 
 | channel        | type        | description                                                        |
 |----------------|-------------|--------------------------------------------------------------------|

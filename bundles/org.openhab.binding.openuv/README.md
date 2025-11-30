@@ -24,7 +24,7 @@ Will accept a Refresh command in order to reinitiate connection (e.g., in case o
 
 ## Thing Configuration
 
-The thing has a few configuration parameters:
+The Thing has a few configuration parameters:
 
 | Parameter | Description                                                  |
 |-----------|--------------------------------------------------------------|
@@ -41,7 +41,7 @@ For the location parameter, the following syntax is allowed (comma separated lat
 
 ## Channels
 
-The OpenUV Report thing that is retrieved has these channels:
+The OpenUV Report Thing that is retrieved has these channels:
 
 | Channel ID   | Item Type           | Description                                     |
 |--------------|---------------------|-------------------------------------------------|

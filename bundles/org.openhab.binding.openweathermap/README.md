@@ -14,16 +14,16 @@ If your system language is supported by the OpenWeatherMap API it will be used a
 
 ### Current Weather And Forecast
 
-The second thing `weather-and-forecast` supports the [current weather](https://openweathermap.org/current), [5 day / 3 hour forecast](https://openweathermap.org/forecast5) and optional [16 day / daily forecast](https://openweathermap.org/forecast16) services for a specific location.
+The second Thing `weather-and-forecast` supports the [current weather](https://openweathermap.org/current), [5 day / 3 hour forecast](https://openweathermap.org/forecast5) and optional [16 day / daily forecast](https://openweathermap.org/forecast16) services for a specific location.
 It requires coordinates of the location of your interest.
 You can add as many `weather-and-forecast` things for different locations to your setup as you like to observe.
 **Attention**: The daily forecast is only available for [paid accounts](https://openweathermap.org/price).
 The binding tries to request daily forecast data from the OpenWeatherMap API.
-If the request fails, all daily forecast channel groups will be removed from the thing and further request will be omitted.
+If the request fails, all daily forecast channel groups will be removed from the Thing and further request will be omitted.
 
 ### Current And Forecasted Air Pollution
 
-Another thing is the `air-pollution` which provides the [current air pollution](https://openweathermap.org/api/air-pollution) and [forecasted air pollution](https://openweathermap.org/api/air-pollution#forecast) for a specific location.
+Another Thing is the `air-pollution` which provides the [current air pollution](https://openweathermap.org/api/air-pollution) and [forecasted air pollution](https://openweathermap.org/api/air-pollution#forecast) for a specific location.
 It requires coordinates of the location of your interest.
 Air pollution forecast is available for 5 days with hourly granularity.
 You can add as much `air-pollution` things for different locations to your setup as you like to observe.
@@ -42,21 +42,21 @@ However, it is possible to set a [daily API call limit to 1000](https://openweat
 
 ### One Call API Weather and Forecast
 
-The thing `onecall` supports the [current and forecast weather data](https://openweathermap.org/api/one-call-3#current) for a specific location using the One Call API.
+The Thing `onecall` supports the [current and forecast weather data](https://openweathermap.org/api/one-call-3#current) for a specific location using the One Call API.
 It requires coordinates of the location of your interest.
 You can add as many `onecall` things for different locations to your setup as you like to observe.
 It also supports persisting forecast data using time series support, please read [Persisting Time Series](#persisting-time-series).
 
 ### One Call API History Data
 
-The thing `onecall-history` supports the [historical weather data](https://openweathermap.org/api/one-call-3#history) for a specific location using the One Call API.
+The Thing `onecall-history` supports the [historical weather data](https://openweathermap.org/api/one-call-3#history) for a specific location using the One Call API.
 It requires coordinates of the location of your interest.
 You can add as many `onecall-history` things for different locations to your setup as you like to observe.
-For every day in history you have to create a different thing.
+For every day in history you have to create a different Thing.
 
 ## Discovery
 
-If a system location is set, a "Local Weather And Forecast" (`weather-and-forecast`) thing will be automatically discovered for this location.
+If a system location is set, a "Local Weather And Forecast" (`weather-and-forecast`) Thing will be automatically discovered for this location.
 Once the system location will be changed, the background discovery updates the configuration of both things accordingly.
 
 ## Thing Configuration
@@ -78,7 +78,7 @@ Once the system location will be changed, the background discovery updates the c
 | forecastHours | Number of hours for hourly forecast. Optional, the default value is 12 (min="0", max="120", step="3").                          |
 | forecastDays  | Number of days for daily forecast (including today's forecast). Optional, the default value is 6 (min="0", max="16", step="1"). |
 
-Once the parameters `forecastHours` or `forecastDays` will be changed, the available channel groups on the thing will be created or removed accordingly.
+Once the parameters `forecastHours` or `forecastDays` will be changed, the available channel groups on the Thing will be created or removed accordingly.
 
 ### Current Air Pollution And Forecast
 
@@ -87,7 +87,7 @@ Once the parameters `forecastHours` or `forecastDays` will be changed, the avail
 | location       | Location of weather in geographical coordinates (latitude/longitude/altitude). **Mandatory**                                   |
 | forecastHours  | Number of hours for air pollution forecast. Optional, the default value is 0 (min="0", max="120", step="1").                   |
 
-Once the parameter `forecastHours` will be changed, the available channel groups on the thing will be created or removed accordingly.
+Once the parameter `forecastHours` will be changed, the available channel groups on the Thing will be created or removed accordingly.
 
 ### One Call API Weather and Forecast
 

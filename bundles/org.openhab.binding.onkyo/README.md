@@ -8,7 +8,7 @@ The binding is compatible with Onkyo AV receivers that support ISCP (Integra Ser
 
 ## Supported Things
 
-This binding supports only one thing: the Onkyo AV receiver.
+This binding supports only one Thing: the Onkyo AV receiver.
 All supported Onkyo devices are registered as an audio sink in the framework.
 
 ## Discovery
@@ -78,7 +78,7 @@ Sometimes it is necessary to use the Callback URL to override the default, such 
 The Onkyo AVR Thing requires the IP address and the port to access it.
 In the code, `avr-livingroom` refers to the user-defined unique ID of your Onkyo device.
 A second device could be called avr2.
-In the thing file, this looks for example like
+In the Thing file, this looks for example like
 
 Model specific
 

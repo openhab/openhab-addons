@@ -41,7 +41,7 @@ An Omni or Lumina controller requires the IP address (`ipAddress`), optional por
 The hexadecimal pairs in the encryption keys are typically delimited using a colon`:`, but dashes `-`, spaces ` ` or no delimiter may be used.
 <!-- markdownlint-enable MD038 -->
 
-In the thing file, this looks like:
+In the Thing file, this looks like:
 
 ```java
 Bridge omnilink:controller:home [ ipAddress="127.0.0.1", port=4369, key1="XXXXXXXXXXXXXXXX", key2="XXXXXXXXXXXXXXXX" ] {

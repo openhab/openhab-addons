@@ -17,7 +17,7 @@ You can connect it for example to a Raspberry Pi and use [ser2net Linux tool](ht
 
 ## Supported Things
 
-There is exactly one supported thing type, which represents the player.
+There is exactly one supported Thing type, which represents the player.
 It has the `player` id.
 
 ## Discovery
@@ -28,11 +28,11 @@ In the Inbox, select Search For Things and then choose the Oppo Blu-ray Player B
 ## Binding Configuration
 
 There are no overall binding configuration settings that need to be set.
-All settings are through thing configuration parameters.
+All settings are through Thing configuration parameters.
 
 ## Thing Configuration
 
-The thing has the following configuration parameters:
+The Thing has the following configuration parameters:
 
 | Parameter Label  | Parameter ID | Description                                                                                                                      | Accepted values           |
 |------------------|--------------|----------------------------------------------------------------------------------------------------------------------------------|---------------------------|

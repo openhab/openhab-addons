@@ -52,7 +52,7 @@ The `openthermgateway` bridge supports the following channels:
 
 ### Channels for `boiler`
 
-The `boiler` thing supports the following channels:
+The `boiler` Thing supports the following channels:
 
 | Channel ID | Item Type | Description | Access |
 |------------|-----------|-------------|--------|
@@ -110,7 +110,7 @@ The `boiler` thing supports the following channels:
 
 ### Channels for `ventilationheatrecovery`
 
-The `ventilationheatrecovery` thing supports the following channels:
+The `ventilationheatrecovery` Thing supports the following channels:
 
 | Channel ID | Item Type | Description | Access |
 |------------|-----------|-------------|--------|

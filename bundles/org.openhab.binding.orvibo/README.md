@@ -19,7 +19,7 @@ This binding does not require any special configuration.
 
 This is optional; it is recommended to let the binding discover and add Orvibo devices.
 To manually configure an S20 Thing you must specify its deviceId (MAC address).
-In the thing file, this looks like:
+In the Thing file, this looks like:
 
 ```java
 Thing orvibo:s20:mysocket [ deviceId="AABBCCDDEEFF"]

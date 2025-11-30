@@ -121,7 +121,7 @@ Configuration parameters are:
 - `serialPort`: the serial port where the  MyHOME Radio - Zigbee USB Gateway is connected (`String`, _mandatory_)
   - Examples: `/dev/ttyUSB0` (Linux/RaPi), `COM3` (Windows)
 
-Alternatively the MyHOME Radio - Zigbee USB Gateway thing can be configured using the `.things` file, see `openwebnet.things` example [below](#full-example).
+Alternatively the MyHOME Radio - Zigbee USB Gateway Thing can be configured using the `.things` file, see `openwebnet.things` example [below](#full-example).
 
 ### Configuring Devices
 
