@@ -14,6 +14,8 @@ package org.openhab.binding.sedif.internal.handler;
 
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Set;
@@ -32,6 +34,9 @@ import org.openhab.binding.sedif.internal.config.SedifBridgeConfiguration;
 import org.openhab.binding.sedif.internal.constants.SedifBindingConstants;
 import org.openhab.binding.sedif.internal.discovery.SedifDiscoveryService;
 import org.openhab.binding.sedif.internal.dto.Contract;
+import org.openhab.binding.sedif.internal.dto.ContractDetail;
+import org.openhab.binding.sedif.internal.dto.ContractDetail.CompteInfo;
+import org.openhab.binding.sedif.internal.dto.MeterReading;
 import org.openhab.binding.sedif.internal.helpers.SedifListener;
 import org.openhab.binding.sedif.internal.types.SedifException;
 import org.openhab.core.io.net.http.HttpClientFactory;
@@ -170,5 +175,17 @@ public class BridgeSedifWebHandler extends BaseBridgeHandler {
 
     public @Nullable Contract getContract(String contractName) {
         return sedifApi.getContract(contractName);
+    }
+
+    public @Nullable ContractDetail getContractDetails(String contractId) throws SedifException {
+        return sedifApi.getContractDetails(contractId);
+    }
+
+    public @Nullable MeterReading getConsumptionData(String contractId, @Nullable CompteInfo meterInfo, LocalDate from,
+            LocalDate to) throws SedifException {
+        logger.debug("getConsumptionData for from {} to {}", from.format(DateTimeFormatter.ISO_LOCAL_DATE),
+                to.format(DateTimeFormatter.ISO_LOCAL_DATE));
+
+        return sedifApi.getConsumptionData(contractId, meterInfo, from, to);
     }
 }

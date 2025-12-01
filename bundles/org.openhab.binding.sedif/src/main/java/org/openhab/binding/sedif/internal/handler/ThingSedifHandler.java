@@ -24,7 +24,6 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.Map;
 import java.util.Objects;
@@ -35,7 +34,6 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.sedif.internal.api.ExpiringDayCache;
-import org.openhab.binding.sedif.internal.api.SedifHttpApi;
 import org.openhab.binding.sedif.internal.api.helpers.MeterReadingHelper;
 import org.openhab.binding.sedif.internal.config.SedifConfiguration;
 import org.openhab.binding.sedif.internal.dto.Contract;
@@ -82,7 +80,6 @@ public class ThingSedifHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(ThingSedifHandler.class);
     private @Nullable ScheduledFuture<?> refreshJob;
-    private @Nullable SedifHttpApi sedifApi;
 
     private static final String JSON_DIR = OpenHAB.getUserDataFolder() + File.separatorChar + "sedif";
 
@@ -121,7 +118,12 @@ public class ThingSedifHandler extends BaseThingHandler {
         this.contractDetail = new ExpiringDayCache<ContractDetail>("contractDetail", REFRESH_HOUR_OF_DAY,
                 REFRESH_MINUTE_OF_DAY, () -> {
                     try {
-                        return getContractDetails();
+                        Bridge lcBridge = getBridge();
+                        if (lcBridge != null && lcBridge.getHandler() instanceof BridgeSedifWebHandler bridgeSedif) {
+                            return bridgeSedif.getContractDetails(contractId);
+                        }
+
+                        return null;
                     } catch (CommunicationFailedException ex) {
                         // We just return null, EpiringDayCache logic will retry the operation later.
                         logger.error("Failed to get contract details", ex);
@@ -268,7 +270,6 @@ public class ThingSedifHandler extends BaseThingHandler {
     public void dispose() {
         logger.debug("Disposing the Sedif handler {}", numCompteur);
         cancelRefreshJob();
-        sedifApi = null;
     }
 
     @Override
@@ -337,14 +338,19 @@ public class ThingSedifHandler extends BaseThingHandler {
             boolean updateHistorical) throws SedifException {
         logger.trace("startDate: {}, currentDate: {}", startDate, currentDate);
 
-        MeterReading meterReading = getConsumptionData(startDate, currentDate);
-        if (updateHistorical && meterReading == null) {
-            return null;
+        Bridge lcBridge = getBridge();
+        if (lcBridge != null && lcBridge.getHandler() instanceof BridgeSedifWebHandler bridgeSedif) {
+            MeterReading meterReading = bridgeSedif.getConsumptionData(contractId, currentMeterInfo, startDate,
+                    currentDate);
+            if (updateHistorical && meterReading == null) {
+                return null;
+            }
+
+            if (meterReading != null) {
+                return sedifState.updateMeterReading(meterReading);
+            }
         }
 
-        if (meterReading != null) {
-            return sedifState.updateMeterReading(meterReading);
-        }
         return null;
     }
 
@@ -593,27 +599,6 @@ public class ThingSedifHandler extends BaseThingHandler {
         });
     }
 
-    private @Nullable ContractDetail getContractDetails() throws SedifException {
-        SedifHttpApi api = this.sedifApi;
-        if (api != null) {
-            return api.getContractDetails(contractId);
-        }
-
-        return null;
-    }
-
-    private @Nullable MeterReading getConsumptionData(LocalDate from, LocalDate to) throws SedifException {
-        logger.debug("getConsumptionData for from {} to {}", from.format(DateTimeFormatter.ISO_LOCAL_DATE),
-                to.format(DateTimeFormatter.ISO_LOCAL_DATE));
-
-        SedifHttpApi api = this.sedifApi;
-        if (api != null) {
-            return api.getConsumptionData(contractId, currentMeterInfo, from, to);
-        }
-
-        return null;
-    }
-
     @Override
     protected void updateStatus(ThingStatus status, ThingStatusDetail statusDetail, @Nullable String description) {
         super.updateStatus(status, statusDetail, description);
@@ -646,7 +631,6 @@ public class ThingSedifHandler extends BaseThingHandler {
                 contractId = Objects.requireNonNull(contract.id);
             }
 
-            sedifApi = bridgeHandler.getSedifApi();
             updateData();
 
             final LocalDateTime now = LocalDateTime.now();
