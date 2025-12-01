@@ -110,7 +110,7 @@ Things are automatically configured when they are discovered.
 So for this reason it is difficult to create Things via a '.things' file, and therefore not recommended.
 
 ```java
-Bridge homekit:bridge:velux "VELUX Gateway" [ host="192.168.0.235:5001", macAddress="XX:XX:XX:XX:XX:XX", hostName="foobar._hap._tcp.local.", refreshInterval=60 ] {
+Bridge homekit:bridge:velux "VELUX Gateway" [ ipAddress="192.168.0.235:5001", macAddress="XX:XX:XX:XX:XX:XX", httpHostHeader="foobar._hap._tcp.local.", refreshInterval=60 ] {
     Thing bridged-accessory sensor "VELUX Sensor" @ "Hallway" [ accessoryID=2 ]
     Thing bridged-accessory skylight_hallway "VELUX Window" @ "Hallway" [ accessoryID=3 ]
     Thing bridged-accessory skylight_bathroom "VELUX Window" @ "Bathroom" [ accessoryID=4 ]
