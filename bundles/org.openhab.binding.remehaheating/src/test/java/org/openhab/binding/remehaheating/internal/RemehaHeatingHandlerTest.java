@@ -17,6 +17,7 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.lenient;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -39,19 +40,16 @@ import org.openhab.core.types.RefreshType;
  * @author Michael Fraedrich - Initial contribution
  */
 @ExtendWith(MockitoExtension.class)
+@NonNullByDefault
 public class RemehaHeatingHandlerTest {
 
-    @Mock
-    private Thing thing;
-    @Mock
-    private ThingHandlerCallback callback;
-    @Mock
-    private Configuration configuration;
-    @Mock
-    private org.eclipse.jetty.client.HttpClient httpClient;
-    private RemehaHeatingHandler handler;
-    private ThingUID thingUID;
-    private ChannelUID channelUID;
+    private @Mock @NonNullByDefault({}) Thing thing;
+    private @Mock @NonNullByDefault({}) ThingHandlerCallback callback;
+    private @Mock @NonNullByDefault({}) Configuration configuration;
+    private @Mock @NonNullByDefault({}) org.eclipse.jetty.client.HttpClient httpClient;
+    private @NonNullByDefault({}) RemehaHeatingHandler handler;
+    private @NonNullByDefault({}) ThingUID thingUID;
+    private @NonNullByDefault({}) ChannelUID channelUID;
 
     @BeforeEach
     public void setUp() {

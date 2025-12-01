@@ -15,6 +15,7 @@ package org.openhab.binding.remehaheating.internal;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -31,15 +32,13 @@ import org.openhab.core.thing.binding.ThingHandler;
  * @author Michael Fraedrich - Initial contribution
  */
 @ExtendWith(MockitoExtension.class)
+@NonNullByDefault
 public class RemehaHeatingHandlerFactoryTest {
 
-    @Mock
-    private Thing thing;
-    @Mock
-    private HttpClientFactory httpClientFactory;
-    @Mock
-    private org.eclipse.jetty.client.HttpClient httpClient;
-    private RemehaHeatingHandlerFactory factory;
+    private @Mock @NonNullByDefault({}) Thing thing;
+    private @Mock @NonNullByDefault({}) HttpClientFactory httpClientFactory;
+    private @Mock @NonNullByDefault({}) org.eclipse.jetty.client.HttpClient httpClient;
+    private @NonNullByDefault({}) RemehaHeatingHandlerFactory factory;
 
     @BeforeEach
     public void setUp() {

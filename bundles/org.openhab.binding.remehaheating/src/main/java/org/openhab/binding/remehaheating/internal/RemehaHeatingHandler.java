@@ -63,7 +63,6 @@ public class RemehaHeatingHandler extends BaseThingHandler {
     private final HttpClient httpClient;
     private @Nullable RemehaApiClient apiClient;
     private @Nullable ScheduledFuture<?> refreshJob;
-    private @Nullable RemehaHeatingConfiguration config;
 
     public RemehaHeatingHandler(Thing thing, HttpClient httpClient) {
         super(thing);
@@ -103,7 +102,7 @@ public class RemehaHeatingHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         try {
-            config = getConfigAs(RemehaHeatingConfiguration.class);
+            RemehaHeatingConfiguration config = getConfigAs(RemehaHeatingConfiguration.class);
             String email = config.email;
             String password = config.password;
             int refreshInterval = config.refreshInterval;
@@ -173,8 +172,9 @@ public class RemehaHeatingHandler extends BaseThingHandler {
      * Stops the periodic data refresh job if running.
      */
     private void stopRefreshJob() {
-        if (refreshJob != null) {
-            refreshJob.cancel(true);
+        ScheduledFuture<?> job = refreshJob;
+        if (job != null) {
+            job.cancel(true);
             refreshJob = null;
         }
     }

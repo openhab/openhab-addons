@@ -14,6 +14,7 @@ package org.openhab.binding.remehaheating.internal;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -21,6 +22,7 @@ import org.junit.jupiter.api.Test;
  *
  * @author Michael Fraedrich - Initial contribution
  */
+@NonNullByDefault
 public class RemehaHeatingConfigurationTest {
 
     @Test

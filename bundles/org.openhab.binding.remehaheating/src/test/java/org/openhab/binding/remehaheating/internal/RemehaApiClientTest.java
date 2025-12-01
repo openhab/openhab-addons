@@ -16,6 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
@@ -35,17 +36,14 @@ import com.google.gson.JsonObject;
  * @author Michael Fraedrich - Initial contribution
  */
 @ExtendWith(MockitoExtension.class)
+@NonNullByDefault
 public class RemehaApiClientTest {
 
-    @Mock
-    private HttpClientFactory httpClientFactory;
-    @Mock
-    private HttpClient httpClient;
-    @Mock
-    private Request request;
-    @Mock
-    private ContentResponse response;
-    private RemehaApiClient apiClient;
+    private @Mock @NonNullByDefault({}) HttpClientFactory httpClientFactory;
+    private @Mock @NonNullByDefault({}) HttpClient httpClient;
+    private @Mock @NonNullByDefault({}) Request request;
+    private @Mock @NonNullByDefault({}) ContentResponse response;
+    private @NonNullByDefault({}) RemehaApiClient apiClient;
 
     @BeforeEach
     public void setUp() {
