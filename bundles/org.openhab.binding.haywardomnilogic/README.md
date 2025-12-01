@@ -1,25 +1,25 @@
-# Hayward Omnilogic Binding
+# Hayward OmniLogic Binding
 
-The Hayward Omnilogic binding integrates the Omnilogic pool controller using the Hayward API.
+The Hayward OmniLogic binding integrates the OmniLogic pool controller using the Hayward API.
 
-The Hayward Omnilogic API interacts with Hayward's cloud server requiring a connection with the Internet for sending and receiving information.
+The Hayward OmniLogic API interacts with Hayward's cloud servers and requires an Internet connection for sending and receiving information.
 
 ## Supported Things
 
-The table below lists the Hayward OmniLogic binding thing types:
+The table below lists the Hayward OmniLogic binding Thing types:
 
 | Things                       | Description                                                                     | Thing Type    |
 |------------------------------|---------------------------------------------------------------------------------|---------------|
-| Hayward OmniLogix Connection | Connection to Hayward's Server                                                  | bridge        |
+| Hayward OmniLogic Connection | Connection to Hayward's server                                                  | bridge        |
 | Backyard                     | Backyard                                                                        | backyard      |
 | Body of Water                | Body of Water                                                                   | bow           |
 | Chlorinator                  | Chlorinator                                                                     | chlorinator   |
 | Colorlogic Light             | Colorlogic Light                                                                | colorlogic    |
 | Filter                       | Filter control                                                                  | filter        |
 | Heater Equipment             | Actual heater (i.e. gas, solar, electric)                                       | heater        |
-| Pump                         | Auxillary pump control (i.e. spillover)                                         | pump          |
+| Pump                         | Auxiliary pump control (i.e., spillover)                                        | pump          |
 | Relay                        | Accessory relay control (deck jet sprinklers, lights, etc.)                     | relay         |
-| Virtaul Heater               | A Virtual Heater that can control all of the heater equipment based on priority | virtualHeater |
+| Virtual Heater               | A virtual heater that can control all heater equipment based on priority        | virtualHeater |
 
 ## Discovery
 
@@ -150,7 +150,7 @@ Hayward OmniLogic Connection Parameters:
 |------------------|----------------------|----------------------|:----------:|
 | pumpEnable       | Switch               | Pump enable          |     R/W    |
 | pumpSpeedPercent | Number:Dimensionless | Pump speed (%)       |     R/W    |
-| pumpSpeedRpm     | Number: Frequency    | Pump speed in rpm    |     R/W    |
+| pumpSpeedRpm     | Number:Frequency     | Pump speed in RPM    |     R/W    |
 | pumpSpeedSelect  | String               | Pump speed presets   |     R/W    |
 | pumpState        | String               | Pump state           |      R     |
 | pumpLastSpeed    | Number:Dimensionless | Pump last speed (%)  |      R     |
@@ -168,10 +168,10 @@ Hayward OmniLogic Connection Parameters:
 | heaterEnable          | Switch             | Heater enable           |      R     |
 | heaterCurrentSetpoint | Number:Temperature | Heater Current Setpoint |     R/W    |
 
-**Item Types Number:Dimensionless should have the units (i.e. %, ppm) defined in the Unit metadata
+Note: Item types such as Number:Dimensionless should have their units (e.g., %, ppm) defined in the unit metadata.
 
 ## Full Example
 
-After installing the binding, you will need to manually add the Hayward Connection thing and enter your credentials.
+After installing the binding, manually add the Hayward Connection Thing and enter your credentials.
 All pool items can be automatically discovered by scanning the bridge.
-Goto the inbox and add the things.
+Go to the Inbox and add the things.

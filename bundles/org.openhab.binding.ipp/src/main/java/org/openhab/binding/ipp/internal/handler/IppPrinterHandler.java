@@ -16,6 +16,7 @@ import static org.openhab.binding.ipp.internal.IppBindingConstants.*;
 
 import java.math.BigDecimal;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.time.Instant;
 import java.util.Collection;
@@ -81,7 +82,7 @@ public class IppPrinterHandler extends BaseThingHandler implements DiscoveryList
             if (obj instanceof URL newUrl) {
                 url = newUrl;
             } else if (obj instanceof String urlString) {
-                url = new URL(urlString);
+                url = URI.create(urlString).toURL();
             }
             printer = new CupsPrinter(null, url, name);
         } catch (MalformedURLException e) {

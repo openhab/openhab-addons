@@ -196,6 +196,7 @@
     <module>org.openhab.binding.heliosventilation</module>
     <module>org.openhab.binding.heos</module>
     <module>org.openhab.binding.herzborg</module>
+    <module>org.openhab.binding.homeassistant</module>
     <module>org.openhab.binding.homeconnect</module>
     <module>org.openhab.binding.homematic</module>
     <module>org.openhab.binding.homewizard</module>
@@ -276,7 +277,9 @@
     <module>org.openhab.binding.minecraft</module>
     <module>org.openhab.binding.modbus</module>
     <module>org.openhab.binding.modbus.e3dc</module>
+    <module>org.openhab.binding.modbus.foxinverter</module>
     <module>org.openhab.binding.modbus.kermi</module>
+    <module>org.openhab.binding.modbus.lambda</module>
     <module>org.openhab.binding.modbus.sbc</module>
     <module>org.openhab.binding.modbus.studer</module>
     <module>org.openhab.binding.modbus.sungrow</module>
@@ -289,8 +292,6 @@
     <module>org.openhab.binding.mqtt.awtrixlight</module>
     <module>org.openhab.binding.mqtt.espmilighthub</module>
     <module>org.openhab.binding.mqtt.fpp</module>
-    <module>org.openhab.binding.mqtt.generic</module>
-    <module>org.openhab.binding.mqtt.homeassistant</module>
     <module>org.openhab.binding.mqtt.homie</module>
     <module>org.openhab.binding.mqtt.ruuvigateway</module>
     <module>org.openhab.binding.mspa</module>
@@ -409,6 +410,7 @@
     <module>org.openhab.binding.solarmax</module>
     <module>org.openhab.binding.solarwatt</module>
     <module>org.openhab.binding.solax</module>
+    <module>org.openhab.binding.somfycul</module>
     <module>org.openhab.binding.somfymylink</module>
     <module>org.openhab.binding.somfytahoma</module>
     <module>org.openhab.binding.somneo</module>
@@ -457,6 +459,7 @@
     <module>org.openhab.binding.ventaair</module>
     <module>org.openhab.binding.verisure</module>
     <module>org.openhab.binding.vesync</module>
+    <module>org.openhab.binding.viessmann</module>
     <module>org.openhab.binding.vigicrues</module>
     <module>org.openhab.binding.visualcrossing</module>
     <module>org.openhab.binding.vitotronic</module>
@@ -706,6 +709,50 @@
           </execution>
         </executions>
       </plugin>
+      <!-- 1. Download XSD -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <version>3.2.0</version>
+        <inherited>false</inherited>
+        <executions>
+          <!-- 1. Download XSD -->
+          <execution>
+            <id>download-xsd</id>
+            <goals>
+              <goal>run</goal>
+            </goals>
+            <phase>generate-resources</phase>
+            <configuration>
+              <target>
+                <mkdir dir="${maven.multiModuleProjectDirectory}/target/schemas"/>
+                <get dest="${maven.multiModuleProjectDirectory}/target/schemas/thing-description-1.0.0.xsd" src="https://openhab.org/schemas/thing-description-1.0.0.xsd" usetimestamp="true"/>
+              </target>
+            </configuration>
+          </execution>
+
+          <!-- 2. Generate catalog dynamically -->
+          <execution>
+            <id>generate-catalog</id>
+            <goals>
+              <goal>run</goal>
+            </goals>
+            <phase>generate-resources</phase>
+            <configuration>
+              <target>
+                <mkdir dir="${maven.multiModuleProjectDirectory}/target/schemas"/>
+                <echo file="${maven.multiModuleProjectDirectory}/target/schemas/thing-type-xml-validation-catalog.xml"><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+<catalog xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog">
+    <uri name="https://openhab.org/schemas/thing-description-1.0.0.xsd"
+         uri="file:///${maven.multiModuleProjectDirectory}/target/schemas/thing-description-1.0.0.xsd"/>
+</catalog>]]></echo>
+              </target>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- 3. XML validation plugin -->
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>xml-maven-plugin</artifactId>
@@ -719,7 +766,7 @@
             </validationSet>
           </validationSets>
           <catalogs>
-            <catalog>${basedirRoot}/src/thing-type-xml-validation-catalog.xml</catalog>
+            <catalog>file:///${maven.multiModuleProjectDirectory}/target/schemas/thing-type-xml-validation-catalog.xml</catalog>
           </catalogs>
         </configuration>
         <executions>

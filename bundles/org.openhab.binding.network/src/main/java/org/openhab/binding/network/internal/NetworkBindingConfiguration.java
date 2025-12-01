@@ -29,9 +29,9 @@ import org.openhab.binding.network.internal.utils.NetworkUtils.ArpPingUtilEnum;
 @NonNullByDefault
 public class NetworkBindingConfiguration {
 
-    public final static int DEFAULT_DISCOVERY_THREADS = 100;
-    public final static String DEFAULT_ARPING_TOOL_PATH = "arping";
-    public final static ArpPingUtilEnum DEFAULT_ARPING_METHOD = ArpPingUtilEnum.DISABLED;
+    public static final int DEFAULT_DISCOVERY_THREADS = 100;
+    public static final String DEFAULT_ARPING_TOOL_PATH = "arping";
+    public static final ArpPingUtilEnum DEFAULT_ARPING_METHOD = ArpPingUtilEnum.DISABLED;
     public boolean allowSystemPings = true;
     public boolean allowDHCPlisten = true;
     public BigDecimal cacheDeviceStateTimeInMS = BigDecimal.valueOf(2000);

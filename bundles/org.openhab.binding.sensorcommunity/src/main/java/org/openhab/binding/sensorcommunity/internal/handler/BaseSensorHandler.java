@@ -20,7 +20,6 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.sensorcommunity.internal.SensorCommunityConfiguration;
-import org.openhab.binding.sensorcommunity.internal.utils.Constants;
 import org.openhab.binding.sensorcommunity.internal.utils.DateTimeUtils;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -141,7 +140,7 @@ public abstract class BaseSensorHandler extends BaseThingHandler {
      */
     private ConfigStatus checkConfig(@Nullable SensorCommunityConfiguration c) {
         if (c != null) {
-            if (c.ipAddress != null && !Constants.EMPTY.equals(c.ipAddress)) {
+            if (!c.ipAddress.isBlank()) {
                 sensorUrl = Optional.of("http://" + c.ipAddress + "/data.json");
                 return ConfigStatus.INTERNAL_SENSOR_OK;
             } else {

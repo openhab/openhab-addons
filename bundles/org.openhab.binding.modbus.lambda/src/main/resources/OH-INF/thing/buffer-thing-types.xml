@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="modbus"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="buffer">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="tcp"/>
+		</supported-bridge-type-refs>
+		<label>Buffer</label>
+		<description>Lambda Buffer connected through modbus</description>
+
+		<channel-groups>
+			<channel-group id="buffer-group" typeId="buffer"/>
+			<channel-group id="buffer-reg50-group" typeId="buffer-reg50"/>
+		</channel-groups>
+
+		<config-description>
+			<parameter name="refresh" type="integer" min="1" max="3600">
+				<label>Refresh Interval</label>
+				<description>Poll interval in seconds. Increase this if you encounter connection errors.</description>
+				<default>30</default>
+			</parameter>
+			<parameter name="maxTries" type="integer" min="1" max="10">
+				<label>Maximum Tries</label>
+				<description>Number of retries before giving up reading from this thing.</description>
+				<default>3</default>
+			</parameter>
+			<parameter name="subindex" type="integer" min="0" max="4" required="true">
+				<label>Subindex</label>
+				<description>Subindex for multiple buffer components</description>
+				<default>0</default>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+	<channel-group-type id="buffer">
+		<label>Buffer</label>
+		<channels>
+			<channel id="buffer-error-number" typeId="buffer-error-number-channel"/>
+			<channel id="buffer-operating-state" typeId="buffer-operating-state-channel"/>
+			<channel id="buffer-actual-high-temperature" typeId="buffer-actual-high-temperature-channel"/>
+			<channel id="buffer-actual-low-temperature" typeId="buffer-actual-low-temperature-channel"/>
+			<channel id="buffer-actual-modbus-temperature" typeId="buffer-actual-modbus-temperature-channel"/>
+			<channel id="buffer-request-type" typeId="buffer-request-type-channel"/>
+			<channel id="buffer-request-flow-line-temperature" typeId="buffer-request-flow-line-temperature-channel"/>
+			<channel id="buffer-request-return-line-temperature" typeId="buffer-request-return-line-temperature-channel"/>
+			<channel id="buffer-request-heat-sink-temperature" typeId="buffer-request-heat-sink-temperature-channel"/>
+			<channel id="buffer-request-heating-capacity" typeId="buffer-request-heating-capacity-channel"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="buffer-reg50">
+		<label>Buffer Reg50 Group</label>
+		<channels>
+			<channel id="maximum-buffer-temperature" typeId="maximum-buffer-temperature-channel"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-type id="buffer-error-number-channel">
+		<item-type>Number</item-type>
+		<label>Error Number</label>
+		<state readOnly="true">
+			<options>
+				<option value="0">No Error</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="buffer-operating-state-channel">
+		<item-type>Number</item-type>
+		<label>Operating State</label>
+		<state readOnly="true">
+			<options>
+				<option value="0">STBY</option>
+				<option value="1">HEATING</option>
+				<option value="2">COOLING</option>
+				<option value="3">SUMMER</option>
+				<option value="4">FROST</option>
+				<option value="5">HOLIDAY</option>
+				<option value="6">PRIO-STOP</option>
+				<option value="7">ERROR</option>
+				<option value="8">OFF</option>
+				<option value="9">STBY-FROST</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="buffer-actual-high-temperature-channel">
+		<item-type>Number:Temperature</item-type>
+		<label>Actual High Temperature</label>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="buffer-actual-low-temperature-channel">
+		<item-type>Number:Temperature</item-type>
+		<label>Buffer Actual Low Temperature</label>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="buffer-actual-modbus-temperature-channel">
+		<item-type>Number:Temperature</item-type>
+		<label>Actual Modbus Temperature</label>
+		<state readOnly="false" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="buffer-request-type-channel">
+		<item-type>Number</item-type>
+		<label>Request Type</label>
+		<state readOnly="false">
+			<options>
+				<option value="-1">INVALID REQUEST</option>
+				<option value="0">NO REQUEST</option>
+				<option value="1">FLOW PUMP CIRCULATION</option>
+				<option value="2">CENTRAL HEATING</option>
+				<option value="3">CENTRAL COOLING</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="buffer-request-flow-line-temperature-channel">
+		<item-type>Number:Temperature</item-type>
+		<label>Request Flow Line Temperature</label>
+		<state readOnly="false" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="buffer-request-return-line-temperature-channel">
+		<item-type>Number:Temperature</item-type>
+		<label>Request Return Line Temperature</label>
+		<state readOnly="false" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="buffer-request-heat-sink-temperature-channel">
+		<item-type>Number:Temperature</item-type>
+		<label>Request Heat Sink Temperature</label>
+		<state readOnly="false" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="buffer-request-heating-capacity-channel">
+		<item-type>Number:Power</item-type>
+		<label>Request Heating Capacity</label>
+		<state readOnly="false" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="maximum-buffer-temperature-channel">
+		<item-type>Number:Temperature</item-type>
+		<label>Max. Buffer Temperature</label>
+		<state readOnly="false" pattern="%.1f %unit%"/>
+	</channel-type>
+
+</thing:thing-descriptions>

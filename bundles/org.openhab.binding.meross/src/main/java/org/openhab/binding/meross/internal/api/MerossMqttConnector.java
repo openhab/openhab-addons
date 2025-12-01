@@ -89,7 +89,7 @@ public class MerossMqttConnector implements MqttConnectionObserver {
      * @throws MqttException
      * @throws InterruptedException
      */
-    synchronized public void startConnection() throws MqttException, InterruptedException {
+    public synchronized void startConnection() throws MqttException, InterruptedException {
         MqttBrokerConnection mqttConnection = this.mqttConnection;
         if (mqttConnection == null) {
             logger.debug("MQTT broker connection not initialized");

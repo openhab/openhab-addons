@@ -17,7 +17,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.openhab.binding.mielecloud.internal.util.ReflectionUtil.setPrivate;
 
-import java.net.URL;
+import java.net.URI;
 import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.Map;
@@ -107,7 +107,7 @@ public class ConfigFlowTest extends AbstractConfigFlowTest {
                 + MieleCloudBindingIntegrationTestConstants.BRIDGE_ID + "&" + ForwardToLoginServlet.EMAIL_PARAMETER_NAME
                 + "=" + MieleCloudBindingIntegrationTestConstants.EMAIL);
 
-        var loginSiteUrl = new URL(mieleLoginSiteUrl);
+        var loginSiteUrl = URI.create(mieleLoginSiteUrl);
         assertEquals(loginSiteUrl.getHost(), "api.mcs3.miele.com");
         assertEquals(loginSiteUrl.getPath(), "/thirdparty/login");
 

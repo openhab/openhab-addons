@@ -213,11 +213,15 @@ public class DateTimeUtils {
     }
 
     public static Calendar getAdjustedEarliest(Calendar cal, AstroChannelConfig config) {
-        return config.earliest == null ? cal : adjustTime(cal, getMinutesFromTime(config.earliest));
+        int minutes = getMinutesFromTime(config.earliest);
+        // MainUI sets earliest to 00:00 if unconfigured, which is why zero must be treated as such
+        return minutes > 0 ? adjustTime(cal, minutes) : cal;
     }
 
     public static Calendar getAdjustedLatest(Calendar cal, AstroChannelConfig config) {
-        return config.latest == null ? cal : adjustTime(cal, getMinutesFromTime(config.latest));
+        int minutes = getMinutesFromTime(config.latest);
+        // MainUI sets latest to 00:00 if unconfigured, which is why zero must be treated as such
+        return minutes > 0 ? adjustTime(cal, minutes) : cal;
     }
 
     /**
@@ -230,20 +234,45 @@ public class DateTimeUtils {
             cCal.add(Calendar.MINUTE, config.offset);
         }
 
-        Calendar cEarliest = getAdjustedEarliest(cal, config);
-        if (cCal.before(cEarliest)) {
-            return cEarliest;
+        int minutes = getMinutesFromTime(config.earliest);
+        Calendar threshold, actual;
+        // MainUI sets earliest to 00:00 if unconfigured, which is why zero must be treated as such
+        if (minutes > 0) {
+            if ((threshold = truncateToMidnight(cal)).equals(actual = truncateToMidnight(cCal))) {
+                // Same day
+                Calendar cEarliest = getAdjustedEarliest(cCal, config);
+                if (cCal.before(cEarliest)) {
+                    return cEarliest;
+                }
+            } else {
+                // Previous or next day
+                if (actual.before(threshold)) {
+                    return getAdjustedEarliest(threshold, config);
+                }
+            }
         }
-        Calendar cLatest = getAdjustedLatest(cal, config);
-        if (cCal.after(cLatest)) {
-            return cLatest;
+        minutes = getMinutesFromTime(config.latest);
+        // MainUI sets latest to 00:00 if unconfigured, which is why zero must be treated as such
+        if (minutes > 0) {
+            if ((threshold = endOfDayDate(cal)).equals(actual = endOfDayDate(cCal))) {
+                // Same day
+                Calendar cLatest = getAdjustedLatest(cCal, config);
+                if (cCal.after(cLatest)) {
+                    return cLatest;
+                }
+            } else {
+                // Previous or next day
+                if (actual.after(threshold)) {
+                    return getAdjustedLatest(threshold, config);
+                }
+            }
         }
 
         return cCal;
     }
 
-    private static Calendar adjustTime(Calendar cal, int minutes) {
-        if (minutes > 0) {
+    static Calendar adjustTime(Calendar cal, int minutes) {
+        if (minutes >= 0) {
             Calendar cTime = truncateToMidnight(cal);
             cTime.add(Calendar.MINUTE, minutes);
             return cTime;
@@ -256,12 +285,14 @@ public class DateTimeUtils {
     }
 
     /**
-     * Parses a HH:MM string and returns the minutes.
+     * Parses a HH:MM string and returns hours and minutes in minutes.
+     *
+     * @return The number of minutes from midnight, or {@code -1} if the string couldn't be parsed.
      */
-    private static int getMinutesFromTime(@Nullable String configTime) {
+    static int getMinutesFromTime(@Nullable String configTime) {
         if (configTime != null) {
             String time = configTime.trim();
-            if (!time.isEmpty()) {
+            if (!time.isBlank()) {
                 try {
                     if (!HHMM_PATTERN.matcher(time).matches()) {
                         throw new NumberFormatException();
@@ -276,9 +307,8 @@ public class DateTimeUtils {
                             "Can not parse astro channel configuration '{}' to hour and minutes, use pattern hh:mm, ignoring!",
                             time);
                 }
-
             }
         }
-        return 0;
+        return -1;
     }
 }

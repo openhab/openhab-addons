@@ -51,7 +51,6 @@ public class FadeAction extends BaseAction {
      * @param holdTime time in ms to hold the color before moving to the next action. -1 is indefinite.
      */
     public FadeAction(int fadeTime, int targetValue, int holdTime) {
-
         this.fadeTime = fadeTime;
         this.targetValue = Util.toDmxValue(targetValue) << 8;
         this.holdTime = holdTime;

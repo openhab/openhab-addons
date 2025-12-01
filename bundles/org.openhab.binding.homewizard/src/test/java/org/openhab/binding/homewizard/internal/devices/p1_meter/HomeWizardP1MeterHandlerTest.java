@@ -73,6 +73,8 @@ public class HomeWizardP1MeterHandlerTest extends HomeWizardHandlerTest {
                 mockChannel(thing.getUID(), HomeWizardBindingConstants.CHANNEL_GROUP_ENERGY,
                         HomeWizardBindingConstants.CHANNEL_POWER), //
                 mockChannel(thing.getUID(), HomeWizardBindingConstants.CHANNEL_GROUP_ENERGY,
+                        HomeWizardBindingConstants.CHANNEL_TARIFF), //
+                mockChannel(thing.getUID(), HomeWizardBindingConstants.CHANNEL_GROUP_ENERGY,
                         HomeWizardBindingConstants.CHANNEL_POWER_L1), //
                 mockChannel(thing.getUID(), HomeWizardBindingConstants.CHANNEL_GROUP_ENERGY,
                         HomeWizardBindingConstants.CHANNEL_POWER_L2), //
@@ -155,6 +157,8 @@ public class HomeWizardP1MeterHandlerTest extends HomeWizardHandlerTest {
                     getState(333.0, Units.AMPERE));
             verify(callback).stateUpdated(getEnergyChannelUid(thing, HomeWizardBindingConstants.CHANNEL_POWER),
                     getState(-543, Units.WATT));
+            verify(callback).stateUpdated(getEnergyChannelUid(thing, HomeWizardBindingConstants.CHANNEL_TARIFF),
+                    getState(2));
             verify(callback).stateUpdated(getEnergyChannelUid(thing, HomeWizardBindingConstants.CHANNEL_POWER_L1),
                     getState(-676, Units.WATT));
             verify(callback).stateUpdated(getEnergyChannelUid(thing, HomeWizardBindingConstants.CHANNEL_POWER_L2),

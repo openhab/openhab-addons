@@ -30,6 +30,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -230,17 +231,22 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
                     updateThing(builder.withChannels(channels).build());
                 }
             }
-            Optional.ofNullable(stateResolver).ifPresent(resolver -> {
-                State state = resolver.resolveState(key, value);
-                if (null != state) {
-                    updateState(channelUID, state);
-                }
-            });
+            resolveAndUpdateState(channelUID, thingKey, value);
         }
         updateStatus(ThingStatus.ONLINE);
     }
 
-    protected void sendCommand(String url) {
+    protected void resolveAndUpdateState(ChannelUID channelUID, String key, JsonElement value) {
+        Optional.ofNullable(stateResolver).ifPresent(resolver -> {
+            State state = resolver.resolveState(key, value);
+            if (null != state) {
+                updateState(channelUID, state);
+            }
+        });
+    }
+
+    protected boolean sendCommand(String url) {
+        AtomicBoolean successful = new AtomicBoolean(false);
         Optional.ofNullable(bridgeHandler).ifPresent(handler -> {
             HttpClient httpClient = handler.getHttpClient();
             try {
@@ -249,6 +255,7 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
 
                 if (response.getStatus() == 200) {
                     logger.debug("Sending command was successful");
+                    successful.set(true);
                 } else {
                     @Nullable
                     JsonObject responseJson = gson.fromJson(response.getContentAsString(), JsonObject.class);
@@ -268,6 +275,7 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
                 logger.warn("evcc bridge couldn't call the API", e);
             }
         });
+        return successful.get();
     }
 
     private ChannelUID channelUID(String id) {

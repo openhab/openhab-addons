@@ -17,7 +17,6 @@ import java.net.CookieStore;
 import java.net.HttpCookie;
 import java.net.MalformedURLException;
 import java.net.URI;
-import java.net.URL;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -517,7 +516,7 @@ public class MiCloudConnector {
             throws MalformedURLException, InterruptedException, TimeoutException, ExecutionException {
         final ContentResponse responseStep3;
         Request request;
-        logger.trace("Xiaomi Login step 3 @ {}", (new URL(location)).getHost());
+        logger.trace("Xiaomi Login step 3 @ {}", (URI.create(location).toURL()).getHost());
         request = httpClient.newRequest(location).timeout(REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS);
         request.agent(USERAGENT);
         request.header(HttpHeader.CONTENT_TYPE, "application/x-www-form-urlencoded");

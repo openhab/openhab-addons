@@ -826,7 +826,6 @@ public class StiebelEltronHandlerAllWpm extends BaseThingHandler {
             updateState(channelUID(GROUP_SYSTEM_INFORMATION_ALLWPM, CHANNEL_RETURN_TEMPERATURE),
                     getScaled(block.temperatureReturn, 10, CELSIUS));
         } else if (!mySysInfoCtrl.featureReported(SysInfoFeatureKeys.TEMP_RETURN)) {
-
             logger.trace("HP Return temperature not available");
             updateState(channelUID(GROUP_SYSTEM_INFORMATION_ALLWPM, CHANNEL_RETURN_TEMPERATURE), UnDefType.UNDEF);
             mySysInfoCtrl.setFeatureReported(SysInfoFeatureKeys.TEMP_RETURN, true);

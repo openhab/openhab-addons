@@ -191,8 +191,10 @@ public class LightsAndGroups implements RegistryChangeListener<Item> {
      * The HUE API enforces a Group 0 that contains all lights.
      */
     private void updateGroup0() {
-        cs.ds.groups.get("0").lights = cs.ds.lights.keySet().stream().map(v -> String.valueOf(v))
-                .collect(Collectors.toList());
+        HueGroupEntry group0 = cs.ds.groups.get("0");
+        if (group0 != null) {
+            group0.lights = cs.ds.lights.keySet().stream().map(v -> String.valueOf(v)).toList();
+        }
     }
 
     @Override
@@ -207,7 +209,6 @@ public class LightsAndGroups implements RegistryChangeListener<Item> {
     /**
      * The tags might have changed
      */
-    @SuppressWarnings({ "null", "unused" })
     @Override
     public synchronized void updated(Item oldElement, Item newElement) {
         if (!(newElement instanceof GenericItem element)) {
@@ -291,7 +292,6 @@ public class LightsAndGroups implements RegistryChangeListener<Item> {
         return Response.ok(cs.gson.toJson(cs.ds.lights.get(id))).build();
     }
 
-    @SuppressWarnings({ "null", "unused" })
     @DELETE
     @Path("{username}/lights/{id}")
     @Operation(summary = "Deletes the item that is represented by this id", responses = {
@@ -316,7 +316,6 @@ public class LightsAndGroups implements RegistryChangeListener<Item> {
         }
     }
 
-    @SuppressWarnings({ "null", "unused" })
     @PUT
     @Path("{username}/lights/{id}")
     @Operation(summary = "Rename a light", responses = { @ApiResponse(responseCode = "200", description = "OK") })
@@ -333,6 +332,10 @@ public class LightsAndGroups implements RegistryChangeListener<Item> {
 
         final HueChangeRequest changeRequest = cs.gson.fromJson(body, HueChangeRequest.class);
 
+        if (changeRequest == null) {
+            return NetworkUtils.singleError(cs.gson, uri, HueResponse.INVALID_JSON, "Empty body");
+        }
+
         String name = changeRequest.name;
         if (name == null || name.isEmpty()) {
             return NetworkUtils.singleError(cs.gson, uri, HueResponse.INVALID_JSON, "Invalid request: No name set");
@@ -344,7 +347,6 @@ public class LightsAndGroups implements RegistryChangeListener<Item> {
         return NetworkUtils.singleSuccess(cs.gson, name, "/lights/" + id + "/name");
     }
 
-    @SuppressWarnings({ "null", "unused" })
     @PUT
     @Path("{username}/lights/{id}/state")
     @Operation(summary = "Set light state", responses = { @ApiResponse(responseCode = "200", description = "OK") })
@@ -390,7 +392,6 @@ public class LightsAndGroups implements RegistryChangeListener<Item> {
         }.getType())).build();
     }
 
-    @SuppressWarnings({ "null", "unused" })
     @PUT
     @Path("{username}/groups/{id}/action")
     @Operation(summary = "Initiate group action", responses = {
@@ -402,11 +403,11 @@ public class LightsAndGroups implements RegistryChangeListener<Item> {
             return NetworkUtils.singleError(cs.gson, uri, HueResponse.UNAUTHORIZED, "Not Authorized");
         }
         HueGroupEntry hueDevice = cs.ds.groups.get(id);
-        GroupItem groupItem = hueDevice.groupItem;
-        if (hueDevice == null || groupItem == null) {
+        if (hueDevice == null || hueDevice.groupItem == null) {
             return NetworkUtils.singleError(cs.gson, uri, HueResponse.NOT_AVAILABLE, "Group not existing");
         }
 
+        GroupItem groupItem = hueDevice.groupItem;
         HueStateChange state = cs.gson.fromJson(body, HueStateChange.class);
         if (state == null) {
             return NetworkUtils.singleError(cs.gson, uri, HueResponse.INVALID_JSON,
@@ -459,7 +460,6 @@ public class LightsAndGroups implements RegistryChangeListener<Item> {
         return Response.ok(cs.gson.toJson(cs.ds.groups.get(id))).build();
     }
 
-    @SuppressWarnings({ "null", "unused" })
     @POST
     @Path("{username}/groups")
     @Operation(summary = "Create a new group", responses = { @ApiResponse(responseCode = "200", description = "OK") })
@@ -486,7 +486,6 @@ public class LightsAndGroups implements RegistryChangeListener<Item> {
             groupItem.addTag("hueroom_" + state.roomclass);
         }
 
-        List<Item> groupItems = new ArrayList<>();
         for (String id : state.lights) {
             Item item = itemRegistry.get(id);
             if (item == null) {
@@ -502,7 +501,6 @@ public class LightsAndGroups implements RegistryChangeListener<Item> {
         return NetworkUtils.singleSuccess(cs.gson, groupid, "id");
     }
 
-    @SuppressWarnings({ "null", "unused" })
     @DELETE
     @Path("{username}/groups/{id}")
     @Operation(summary = "Deletes the item that is represented by this id", responses = {

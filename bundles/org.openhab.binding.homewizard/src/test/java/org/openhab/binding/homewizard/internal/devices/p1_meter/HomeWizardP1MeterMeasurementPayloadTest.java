@@ -61,6 +61,7 @@ public class HomeWizardP1MeterMeasurementPayloadTest {
         assertThat(key.getGasTimestamp(ZoneId.systemDefault()),
                 is(ZonedDateTime.of(2021, 6, 06, 14, 0, 10, 0, ZoneId.systemDefault())));
         assertThat(key.getTotalGasM3(), is(2569.646));
+        assertThat(key.getTariff(), is(2));
 
         assertThat(key.getMeterModel(), is("ISKRA  2M550T-101"));
         assertThat(key.getProtocolVersion(), is(50));
@@ -90,6 +91,7 @@ public class HomeWizardP1MeterMeasurementPayloadTest {
         assertThat(key.getEnergyImportT2(), is(0.0));
         assertThat(key.getGasTimestamp(ZoneId.systemDefault()), is(nullValue()));
         assertThat(key.getTotalGasM3(), is(0.0));
+        assertThat(key.getTariff(), is(0));
 
         assertThat(key.getMeterModel(), is(""));
         assertThat(key.getProtocolVersion(), is(0));

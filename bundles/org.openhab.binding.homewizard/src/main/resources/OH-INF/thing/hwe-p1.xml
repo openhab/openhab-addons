@@ -14,7 +14,7 @@
 			<channel-group id="batteries" typeId="p1-batteries-group"/>
 		</channel-groups>
 		<properties>
-			<property name="thingTypeVersion">2</property>
+			<property name="thingTypeVersion">3</property>
 		</properties>
 
 		<config-description-ref uri="thing-type:homewizard:device"/>
@@ -24,6 +24,7 @@
 		<label>Recent Measurements</label>
 		<channels>
 			<channel id="power" typeId="hw-power"/>
+			<channel id="tariff" typeId="p1-tariff"/>
 			<channel id="power_l1" typeId="hw-power-advanced">
 				<label>Active Power L1</label>
 				<description>
@@ -156,6 +157,12 @@
 
 		</channels>
 	</channel-group-type>
+
+	<channel-type id="p1-tariff">
+		<item-type>Number</item-type>
+		<label>Tariff</label>
+		<description>This channel provides the active tariff, matches one of the totals.</description>
+	</channel-type>
 
 	<channel-type id="p1-power-failures">
 		<item-type>Number</item-type>

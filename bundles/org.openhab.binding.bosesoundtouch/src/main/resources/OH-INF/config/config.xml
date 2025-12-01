@@ -40,13 +40,13 @@
 		<parameter name="notificationReason" type="text" required="false">
 			<label>Notification Reason</label>
 			<description>This indicates the reason for the notification. This text will appear on the device display (when
-				available) and the SoundTouch application screen. If a reason string is not provided, the field with be blank.
+				available) and the SoundTouch application screen. If a reason string is not provided, the field will be blank.
 			</description>
 		</parameter>
 		<parameter name="notificationMessage" type="text" required="false">
 			<label>Notification Message</label>
 			<description>This indicates further details about the notification. This text will appear on the device display (when
-				available) and the SoundTouch application screen. If a message string is not provided, the field with be blank.
+				available) and the SoundTouch application screen. If a message string is not provided, the field will be blank.
 			</description>
 		</parameter>
 	</config-description>

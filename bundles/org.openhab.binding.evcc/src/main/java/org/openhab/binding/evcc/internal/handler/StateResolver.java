@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.evcc.internal.handler;
 
+import java.util.regex.Pattern;
+
 import javax.measure.Unit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -43,62 +45,137 @@ public final class StateResolver {
         return INSTANCE;
     }
 
+    // Regex patterns for key matching (case-insensitive)
+    private static final Pattern DECIMAL_PATTERN = Pattern.compile("(?i)(price|tariff)");
+    private static final Pattern KILO_EQ_PATTERN = Pattern
+            .compile("(?i)^(energy|grid-energy|charged-energy|pv-energy|charged-kwh)$");
+    private static final Pattern KILO_CONTAINS_PATTERN = Pattern
+            .compile("(?i)(limit-energy|import|capacity|odometer|range)");
+    private static final Pattern TIMESTAMP_PATTERN = Pattern.compile("(?i)(timestamp)");
+
     /**
-     * Resolves a {@link State} object from a given JSON element based on the provided key.
-     * This method interprets the JSON value heuristically, mapping numeric values to
-     * {@link QuantityType} or {@link DecimalType}, strings to {@link StringType} or {@link DateTimeType},
-     * and booleans to {@link OnOffType}. The key is used to infer the appropriate unit of measurement
-     * or semantic meaning.
+     * Resolves an openHAB {@link State} from a given JSON element and semantic key.
+     * <p>
+     * This method determines the appropriate {@link State} type based on:
+     * <ul>
+     * <li>Numeric values → {@link QuantityType} or {@link DecimalType}</li>
+     * <li>String values → {@link StringType} or {@link DateTimeType}</li>
+     * <li>Boolean values → {@link OnOffType}</li>
+     * </ul>
+     * The key is analyzed using regex-based heuristics to infer semantic meaning
+     * (e.g., energy → Wh, odometer → m, price → DecimalType).
      *
-     * @param key the semantic key associated with the value (e.g. "Odometer", "Timestamp", "Price")
-     * @param value the JSON element to be converted into an openHAB {@link State}
+     * @param key the semantic key associated with the value (e.g., "Odometer", "Price", "Timestamp")
+     * @param value the JSON element to convert into an openHAB {@link State}
      * @return the resolved {@link State}, or {@code null} if the value is not a supported primitive
      */
+
     @Nullable
     public State resolveState(String key, JsonElement value) {
         if (value.isJsonNull() || !value.isJsonPrimitive()) {
             return null;
         }
-        JsonPrimitive prim = value.getAsJsonPrimitive();
+
+        final JsonPrimitive prim = value.getAsJsonPrimitive();
+
         if (prim.isNumber()) {
-            String lowerKey = key.toLowerCase();
-            Number raw = prim.getAsNumber();
-            Unit<?> base = determineBaseUnitFromKey(key);
-            if (lowerKey.contains("price") || key.contains("tariff")) {
-                return new DecimalType(raw);
-            } else if (raw.toString().contains(".")) {
-                if ("energy".equals(lowerKey) || "gridenergy".equals(lowerKey) || "chargedenergy".equals(lowerKey)
-                        || "pvenergy".equals(lowerKey) || "limitenergy".equals(lowerKey)
-                        || "chargedkwh".equals(lowerKey) || lowerKey.contains("import")
-                        || lowerKey.contains("capacity")) {
-                    return new QuantityType<>(raw, MetricPrefix.KILO(base));
-                }
-            } else if (lowerKey.contains("capacity") || lowerKey.contains("odometer") || lowerKey.contains("range")
-                    || lowerKey.contains("import") || "limitenergy".equals(lowerKey)) {
-                return new QuantityType<>(raw, MetricPrefix.KILO(base));
-            }
-            return new QuantityType<>(raw, base);
-        } else if (prim.isString()) {
-            if (key.contains("Timestamp")) {
-                return new DateTimeType(value.getAsString());
-            } else {
-                return new StringType(value.getAsString());
-            }
-        } else if (prim.isBoolean()) {
-            return value.getAsBoolean() ? OnOffType.ON : OnOffType.OFF;
-        } else {
-            return null;
+            return resolveNumberState(key, prim.getAsNumber());
         }
+        if (prim.isString()) {
+            return resolveStringState(key, prim.getAsString());
+        }
+        if (prim.isBoolean()) {
+            return prim.getAsBoolean() ? OnOffType.ON : OnOffType.OFF;
+        }
+        return null;
     }
 
     /**
-     * Determines the most appropriate base {@link Units} for a given key using keyword heuristics.
-     * This method performs a case-insensitive analysis of the key to infer the expected unit
-     * (e.g. "temperature" → °C, "energy" → Wh). It is used to assign meaningful units to numeric values
-     * when constructing {@link QuantityType} instances.
+     * Resolves a numeric JSON value into an openHAB {@link State}.
+     * <p>
+     * The resolution process:
+     * <ol>
+     * <li>If the key matches decimal patterns (e.g., price, tariff), returns {@link DecimalType}.</li>
+     * <li>If the key matches energy or capacity patterns, applies {@link MetricPrefix#KILO} to the base unit.</li>
+     * <li>Otherwise, uses the inferred base unit from {@link #determineBaseUnitFromKey(String)}.</li>
+     * </ol>
      *
-     * @param key the semantic key to analyze (e.g. "chargingPower", "batterySoc", "sessionEnergy")
-     * @return the inferred {@link Units}/{@link SIUnits}, or {@link Units#ONE} if no specific unit is matched
+     * @param key the semantic key (case-insensitive)
+     * @param raw the numeric value to convert
+     * @return the resolved {@link State} as {@link QuantityType} or {@link DecimalType}
+     */
+    private State resolveNumberState(String key, Number raw) {
+        // Decimal overrides first
+        if (isDecimalKey(key)) {
+            return new DecimalType(raw);
+        }
+
+        final Unit<?> base = determineBaseUnitFromKey(key);
+
+        // Exact-match KILO keys
+        if (KILO_EQ_PATTERN.matcher(key).matches()) {
+            return new QuantityType<>(raw, MetricPrefix.KILO(base));
+        }
+
+        // Contains-match KILO keys
+        if (KILO_CONTAINS_PATTERN.matcher(key).find()) {
+            return new QuantityType<>(raw, MetricPrefix.KILO(base));
+        }
+
+        // Default: base unit
+        return new QuantityType<>(raw, base);
+    }
+
+    /**
+     * Checks if the given key represents a decimal-like value (e.g., price or tariff).
+     * <p>
+     * Uses a precompiled regex pattern for case-insensitive matching.
+     *
+     * @param key the semantic key to check
+     * @return {@code true} if the key matches decimal patterns, {@code false} otherwise
+     */
+
+    private boolean isDecimalKey(String key) {
+        return DECIMAL_PATTERN.matcher(key).find();
+    }
+
+    /**
+     * Resolves a string JSON value into an openHAB {@link State}.
+     * <p>
+     * If the key matches timestamp patterns, returns {@link DateTimeType}.
+     * Otherwise, returns {@link StringType}.
+     *
+     * @param key the semantic key (case-insensitive)
+     * @param raw the string value to convert
+     * @return the resolved {@link State} as {@link DateTimeType} or {@link StringType}
+     */
+
+    private State resolveStringState(String key, String raw) {
+        if (TIMESTAMP_PATTERN.matcher(key).find()) {
+            return new DateTimeType(raw);
+        }
+        return new StringType(raw);
+    }
+
+    /**
+     * Infers the most appropriate base {@link Unit} for a given semantic key.
+     * <p>
+     * Performs case-insensitive keyword analysis to map keys to units:
+     * <ul>
+     * <li>"soc", "percentage" → %</li>
+     * <li>"power" → W</li>
+     * <li>"energy", "capacity" → Wh</li>
+     * <li>"temperature" → °C</li>
+     * <li>"voltage" → V</li>
+     * <li>"current" → A</li>
+     * <li>"duration", "time" → s</li>
+     * <li>"odometer", "distance" → m</li>
+     * <li>"co2" → g/kWh</li>
+     * </ul>
+     * Defaults to {@link Units#ONE} if no match is found.
+     *
+     * @param key the semantic key to analyze
+     * @return the inferred {@link Unit}
      */
     private Unit<?> determineBaseUnitFromKey(String key) {
         String lower = key.toLowerCase();
