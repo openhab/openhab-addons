@@ -90,7 +90,7 @@ public class ThingSedifHandler extends BaseThingHandler {
     private static final int REFRESH_HOUR_OF_DAY = 1;
     private static final int REFRESH_MINUTE_OF_DAY = RANDOM_NUMBERS.nextInt(60);
     private static final int REFRESH_INTERVAL_IN_MIN = 120;
-    private final static int HISTORICAL_LOOKBACK_DAYS = 89;
+    private static final int HISTORICAL_LOOKBACK_DAYS = 89;
 
     private String contractName;
     private String contractId;

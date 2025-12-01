@@ -14,7 +14,6 @@ package org.openhab.binding.sedif.internal.api.gson;
 
 import java.io.IOException;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
@@ -37,7 +36,7 @@ import com.google.gson.stream.JsonWriter;
 public class FloatTypeAdapter extends TypeAdapter<Float> {
 
     @Override
-    public @NonNull Float read(@Nullable JsonReader reader) throws IOException {
+    public @Nullable Float read(@Nullable JsonReader reader) throws IOException {
         if (reader != null) {
             if (reader.peek() == JsonToken.NULL) {
                 reader.nextNull();
