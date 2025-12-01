@@ -26,7 +26,6 @@ import org.openhab.core.library.unit.Units;
  */
 @NonNullByDefault
 public enum Label {
-
     // Historical labels
     ADCO(ValueType.STRING, NOT_A_CHANNEL, Units.ONE),
     OPTARIF(ValueType.STRING, NOT_A_CHANNEL, Units.ONE),
@@ -65,8 +64,8 @@ public enum Label {
 
     // Standard TIC mode labels
     ADSC(ValueType.STRING, NOT_A_CHANNEL, Units.ONE),
-    VTIC(ValueType.INTEGER, NOT_A_CHANNEL, Units.ONE),
-    DATE(ValueType.STRING, NOT_A_CHANNEL, CHANNEL_LSM_DATE, Units.ONE),
+    VTIC(ValueType.STRING, NOT_A_CHANNEL, Units.ONE),
+    DATE(ValueType.DATE, CHANNEL_LSM_DATE, Units.ONE),
     NGTF(ValueType.STRING, CHANNEL_LSM_NGTF, Units.ONE),
     LTARF(ValueType.STRING, CHANNEL_LSM_LTARF, Units.ONE),
     EAST(ValueType.INTEGER, CHANNEL_LSM_EAST, Units.WATT_HOUR),
@@ -98,6 +97,9 @@ public enum Label {
     PREF(ValueType.INTEGER, CHANNEL_LSM_PREF, Units.VOLT_AMPERE, 1000),
     PCOUP(ValueType.INTEGER, CHANNEL_LSM_PCOUP, Units.VOLT_AMPERE, 1000),
     SINSTS(ValueType.INTEGER, CHANNEL_LSM_SINSTS, Units.VOLT_AMPERE),
+    SINST1(ValueType.INTEGER, CHANNEL_LSM_SINSTS1, Units.VOLT_AMPERE),
+    SINST2(ValueType.INTEGER, CHANNEL_LSM_SINSTS2, Units.VOLT_AMPERE),
+    SINST3(ValueType.INTEGER, CHANNEL_LSM_SINSTS3, Units.VOLT_AMPERE),
     SINSTS1(ValueType.INTEGER, CHANNEL_LSM_SINSTS1, Units.VOLT_AMPERE),
     SINSTS2(ValueType.INTEGER, CHANNEL_LSM_SINSTS2, Units.VOLT_AMPERE),
     SINSTS3(ValueType.INTEGER, CHANNEL_LSM_SINSTS3, Units.VOLT_AMPERE),
@@ -137,7 +139,18 @@ public enum Label {
     NJOURF(ValueType.STRING, CHANNEL_LSM_NJOURF, Units.ONE),
     NJOURF_PLUS_1(ValueType.STRING, CHANNEL_LSM_NJOURF_PLUS_1, Units.ONE),
     PJOURF_PLUS_1(ValueType.STRING, CHANNEL_LSM_PJOURF_PLUS_1, Units.ONE),
-    PPOINTE(ValueType.STRING, CHANNEL_LSM_PPOINTE, Units.ONE);
+    PPOINTE(ValueType.STRING, CHANNEL_LSM_PPOINTE, Units.ONE),
+
+    // ID D2L Channels
+    _ID_D2L(ValueType.STRING, NOT_A_CHANNEL, Units.ONE),
+    _TYPE_TRAME(ValueType.STRING, NOT_A_CHANNEL, Units.ONE),
+    _DATE_FIRMWARE(ValueType.DATE, NOT_A_CHANNEL, Units.ONE),
+
+    // Additional Calculated Channels
+    IRMS1F(ValueType.INTEGER, CHANNEL_IRMS1F, Units.AMPERE),
+    COSPHI(ValueType.INTEGER, CHANNEL_COSPHI, Units.ONE),
+    SACTIVE(ValueType.INTEGER, CHANNEL_SACTIVE, Units.WATT),
+    SREACTIVE(ValueType.INTEGER, CHANNEL_SREACTIVE, Units.WATT);
 
     private final ValueType type;
     private final String channelName;
