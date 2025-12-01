@@ -3,9 +3,12 @@
 from __future__ import annotations
 
 import json
-from typing import Any
 
-def json_loads_object(obj: bytes | bytearray | memoryview | str, /) -> dict[str, Any]:
+type JsonValueType = (
+    dict[str, JsonValueType] | list[JsonValueType] | str | int | float | bool | None
+)
+
+def json_loads_object(obj: bytes | bytearray | memoryview | str, /) -> JsonValueType:
     """Parse JSON data and ensure result is a dictionary."""
     value = json.loads(obj)
     # Avoid isinstance overhead as we are not interested in dict subclasses

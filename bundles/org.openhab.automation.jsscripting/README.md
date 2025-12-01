@@ -146,10 +146,13 @@ This table gives an overview over the `event` object:
 | `triggerType`     | all except `PWMTrigger`, `PIDTrigger`               | Type of trigger that triggered event                                                                   | N/A                    |                             |
 | `eventName`       | all                                                 | simple Java class name of the triggering event, e.g. `ExecutionEvent`                                  | N/A                    | `type`                      |
 | `eventClass`      | all                                                 | full Java class name of the triggering event, e.g. `org.openhab.core.automation.events.ExecutionEvent` | N/A                    |                             |
+| `eventSource`     | all                                                 | structured source identifier of the sender of the event, not all senders will set the source           | N/A                    |                             |
 | `module`          | all                                                 | (user-defined or auto-generated) name of trigger                                                       | N/A                    |                             |
 | `raw`             | all                                                 | Original contents of the event including data passed from a calling rule                               | N/A                    |                             |
 
 All properties are typeof `string` except for properties contained by `raw` which are unmodified from the original types.
+
+To learn more about the structure of the event source, refer to the [Event Bus](https://www.openhab.org/docs/developer/utils/events.html#the-core-events) documentation.
 
 Please note that when using `GenericEventTrigger`, the available properties depend on the chosen event types.
 It is not possible for the openhab-js library to provide type conversions for all properties of all openHAB events, as those are too many.

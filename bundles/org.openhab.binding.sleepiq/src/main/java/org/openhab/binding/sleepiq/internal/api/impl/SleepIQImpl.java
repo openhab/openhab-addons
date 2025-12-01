@@ -377,8 +377,7 @@ public class SleepIQImpl implements SleepIQ {
             throw new CommunicationException("Communication error while accessing API: " + e.getMessage());
         } catch (ExecutionException e) {
             logger.debug("SleepIQ: doRequest: ExecutionException message={}", e.getMessage(), e);
-            Throwable cause = e.getCause();
-            if (cause instanceof HttpResponseException httpResponseException) {
+            if (e.getCause() instanceof HttpResponseException httpResponseException) {
                 Response response = httpResponseException.getResponse();
                 if (response.getStatus() == HttpStatus.UNAUTHORIZED_401) {
                     /*

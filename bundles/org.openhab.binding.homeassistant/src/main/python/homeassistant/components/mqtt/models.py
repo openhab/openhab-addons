@@ -10,6 +10,8 @@ from typing import Any
 
 from homeassistant.exceptions import ServiceValidationError, TemplateError
 from homeassistant.helpers import template
+from homeassistant.helpers.service_info.mqtt import ReceivePayloadType
+from homeassistant.helpers.typing import TemplateVarsType
 
 from .const import TEMPLATE_ERRORS
 
@@ -22,10 +24,12 @@ class PayloadSentinel(StrEnum):
 
 _LOGGER = logging.getLogger(__name__)
 
+type PublishPayloadType = str | bytes | int | float | None
+
 
 def convert_outgoing_mqtt_payload(
-    payload: str | bytes | int | float | None,
-) -> str | bytes | int | float | None:
+    payload: PublishPayloadType,
+) -> PublishPayloadType:
     """Ensure correct raw MQTT payload is passed as bytes for publishing."""
     if isinstance(payload, str) and payload.startswith(("b'", 'b"')):
         try:
@@ -49,7 +53,7 @@ class MqttCommandTemplateException(ServiceValidationError):
         *args: object,
         base_exception: Exception,
         command_template: str,
-        value: str | bytes | int | float | None,
+        value: PublishPayloadType,
     ) -> None:
         """Initialize exception."""
         super().__init__(base_exception, *args)
@@ -77,9 +81,9 @@ class MqttCommandTemplate:
 
     def render(
         self,
-        value: str | bytes | int | float | None = None,
-        variables: Mapping[str, Any] | None = None,
-    ) -> str | bytes | int | float | None:
+        value: PublishPayloadType = None,
+        variables: TemplateVarsType = None,
+    ) -> PublishPayloadType:
         """Render or convert the command template with given value or variables."""
         if self._command_template is None:
             return value
@@ -115,8 +119,8 @@ class MqttValueTemplateException(TemplateError):
         *args: object,
         base_exception: Exception,
         value_template: str,
-        default: str | bytes | bytearray | PayloadSentinel,
-        payload: str | bytes | bytearray,
+        default: ReceivePayloadType | PayloadSentinel,
+        payload: ReceivePayloadType,
     ) -> None:
         """Initialize exception."""
         super().__init__(base_exception, *args)
@@ -147,10 +151,10 @@ class MqttValueTemplate:
 
     def render_with_possible_json_value(
         self,
-        payload: str | bytes | bytearray,
-        default: str | bytes | bytearray | PayloadSentinel = PayloadSentinel.NONE,
+        payload: ReceivePayloadType,
+        default: ReceivePayloadType | PayloadSentinel = PayloadSentinel.NONE,
         variables: Mapping[str, Any] | None = None,
-    ) -> str | bytes | bytearray:
+    ) -> ReceivePayloadType:
         """Render with possible json value or pass-though a received MQTT value."""
         rendered_payload: str | bytes | bytearray
 

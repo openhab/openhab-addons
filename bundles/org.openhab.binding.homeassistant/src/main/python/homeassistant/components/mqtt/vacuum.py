@@ -62,7 +62,6 @@ DEFAULT_SERVICES = (
     VacuumEntityFeature.START
     | VacuumEntityFeature.STOP
     | VacuumEntityFeature.RETURN_HOME
-    | VacuumEntityFeature.BATTERY
     | VacuumEntityFeature.CLEAN_SPOT
 )
 

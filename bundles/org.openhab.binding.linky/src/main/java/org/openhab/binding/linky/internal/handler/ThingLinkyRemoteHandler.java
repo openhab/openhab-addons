@@ -614,7 +614,6 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
      */
     private void addDynamicChannelByLabel(List<Channel> channels, ChannelTypeUID chanTypeUid, MeterReading values,
             IndexMode indexMode) {
-
         if (indexMode.getIdx() < 0) {
             logger.error(
                     "We only support indexMode values of Supplier or Distributor. Your incoming data seems corrupted—please check! !");

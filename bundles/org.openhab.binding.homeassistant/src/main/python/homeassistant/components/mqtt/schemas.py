@@ -19,6 +19,7 @@ from homeassistant.const import (
 )
 from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers.entity import ENTITY_CATEGORIES_SCHEMA
+from homeassistant.helpers.typing import ConfigType
 
 from .const import (
     AVAILABILITY_LATEST,
@@ -29,6 +30,7 @@ from .const import (
     CONF_AVAILABILITY_TOPIC,
     CONF_CONFIGURATION_URL,
     CONF_CONNECTIONS,
+    CONF_DEFAULT_ENTITY_ID,
     CONF_DEPRECATED_VIA_HUB,
     CONF_ENABLED_BY_DEFAULT,
     CONF_ENTITY_PICTURE,
@@ -94,7 +96,7 @@ _MQTT_AVAILABILITY_SCHEMA = _MQTT_AVAILABILITY_SINGLE_SCHEMA.extend(
 )
 
 
-def validate_device_has_at_least_one_identifier(value: dict[str, Any]) -> dict[str, Any]:
+def validate_device_has_at_least_one_identifier(value: ConfigType) -> ConfigType:
     """Validate that a device info entry has at least one identifying value."""
     if value.get(CONF_IDENTIFIERS) or value.get(CONF_CONNECTIONS):
         return value
@@ -150,6 +152,7 @@ MQTT_ENTITY_COMMON_SCHEMA = _MQTT_AVAILABILITY_SCHEMA.extend(
         vol.Optional(CONF_ICON): cv.icon,
         vol.Optional(CONF_JSON_ATTRS_TOPIC): valid_subscribe_topic,
         vol.Optional(CONF_JSON_ATTRS_TEMPLATE): cv.template,
+        vol.Optional(CONF_DEFAULT_ENTITY_ID): cv.string,
         vol.Optional(CONF_OBJECT_ID): cv.string,
         vol.Optional(CONF_UNIQUE_ID): cv.string,
     }

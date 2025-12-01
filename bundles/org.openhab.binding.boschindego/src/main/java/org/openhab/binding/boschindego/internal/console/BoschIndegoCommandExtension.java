@@ -55,7 +55,6 @@ public class BoschIndegoCommandExtension extends AbstractConsoleCommandExtension
 
     @Override
     public void execute(String[] args, Console console) {
-
         if (args.length != 3 || !AUTHORIZE.equals(args[0])) {
             printUsage(console);
             return;

@@ -17,6 +17,7 @@ from homeassistant.const import (
     CONF_PAYLOAD_ON,
 )
 from homeassistant.helpers import config_validation as cv
+from homeassistant.helpers.typing import ConfigType
 
 from .config import MQTT_RW_SCHEMA
 from .const import (
@@ -45,20 +46,19 @@ CONF_TARGET_HUMIDITY_MAX = "max_humidity"
 CONF_TARGET_HUMIDITY_STATE_TEMPLATE = "target_humidity_state_template"
 CONF_TARGET_HUMIDITY_STATE_TOPIC = "target_humidity_state_topic"
 
-DEFAULT_NAME = "MQTT Humidifier"
 DEFAULT_PAYLOAD_ON = "ON"
 DEFAULT_PAYLOAD_OFF = "OFF"
 DEFAULT_PAYLOAD_RESET = "None"
 
 
-def valid_mode_configuration(config: dict[str, Any]) -> dict[str, Any]:
+def valid_mode_configuration(config: ConfigType) -> ConfigType:
     """Validate that the mode reset payload is not one of the available modes."""
     if config[CONF_PAYLOAD_RESET_MODE] in config[CONF_AVAILABLE_MODES_LIST]:
         raise vol.Invalid("modes must not contain payload_reset_mode")
     return config
 
 
-def valid_humidity_range_configuration(config: dict[str, Any]) -> dict[str, Any]:
+def valid_humidity_range_configuration(config: ConfigType) -> ConfigType:
     """Validate humidity range.
 
     Ensures that the target_humidity range configuration is valid,

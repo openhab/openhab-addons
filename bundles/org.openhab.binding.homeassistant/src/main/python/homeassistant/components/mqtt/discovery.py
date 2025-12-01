@@ -10,6 +10,7 @@ import voluptuous as vol
 
 from homeassistant.const import CONF_DEVICE
 from homeassistant.helpers import config_validation as cv
+from homeassistant.helpers.typing import DiscoveryInfoType
 from homeassistant.util.json import json_loads_object
 
 from .abbreviations import ABBREVIATIONS, DEVICE_ABBREVIATIONS, ORIGIN_ABBREVIATIONS
@@ -33,6 +34,15 @@ TOPIC_MATCHER = re.compile(
 )
 
 TOPIC_BASE = "~"
+
+
+class MQTTDiscoveryPayload(dict[str, Any]):
+    """Class to hold and MQTT discovery payload and discovery data."""
+
+    device_discovery: bool = False
+    migrate_discovery: bool = False
+    discovery_data: DiscoveryInfoType
+
 
 def _replace_abbreviations(
     payload: dict[str, Any] | str,
@@ -79,7 +89,7 @@ def _replace_all_abbreviations(
         for comp_conf in discovery_payload[CONF_COMPONENTS].values():
             _replace_all_abbreviations(comp_conf, component_only=True)
 
-def _replace_topic_base(discovery_payload: dict[str, Any]) -> None:
+def _replace_topic_base(discovery_payload: MQTTDiscoveryPayload) -> None:
     """Replace topic base in MQTT discovery data."""
     base = discovery_payload.pop(TOPIC_BASE)
     for key, value in discovery_payload.items():
@@ -98,7 +108,7 @@ def _replace_topic_base(discovery_payload: dict[str, Any]) -> None:
                 if topic[-1] == TOPIC_BASE:
                     availability_conf[CONF_TOPIC] = f"{topic[:-1]}{base}"
 
-def _valid_origin_info(discovery_payload: dict[str, Any]) -> bool:
+def _valid_origin_info(discovery_payload: MQTTDiscoveryPayload) -> bool:
     """Parse and validate origin info from a single component discovery payload."""
     if CONF_ORIGIN not in discovery_payload:
         return True

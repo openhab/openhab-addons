@@ -17,8 +17,6 @@ import static org.openhab.binding.sensorcommunity.internal.utils.Constants.*;
 
 import java.util.List;
 
-import javax.measure.quantity.Dimensionless;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.sensorcommunity.internal.dto.SensorDataValue;
@@ -26,18 +24,21 @@ import org.openhab.binding.sensorcommunity.internal.utils.NumberUtils;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Thing;
+import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
 
 /**
  * The {@link NoiseHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
  * @author Bernd Weymann - Initial contribution
+ * @author Bernd Weymann - Cache initialization with UNDEF
  */
 @NonNullByDefault
 public class NoiseHandler extends BaseSensorHandler {
-    protected QuantityType<Dimensionless> noiseEQCache = QuantityType.valueOf(-1, Units.DECIBEL);
-    protected QuantityType<Dimensionless> noiseMinCache = QuantityType.valueOf(-1, Units.DECIBEL);
-    protected QuantityType<Dimensionless> noiseMaxCache = QuantityType.valueOf(-1, Units.DECIBEL);
+    protected State noiseEQCache = UnDefType.UNDEF;
+    protected State noiseMinCache = UnDefType.UNDEF;
+    protected State noiseMaxCache = UnDefType.UNDEF;
 
     public NoiseHandler(Thing thing) {
         super(thing);

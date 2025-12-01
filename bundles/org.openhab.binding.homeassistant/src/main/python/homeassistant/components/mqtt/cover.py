@@ -20,64 +20,56 @@ from homeassistant.const import (
     STATE_OPENING,
 )
 from homeassistant.helpers import config_validation as cv
+from homeassistant.helpers.typing import ConfigType
 
 from .config import MQTT_BASE_SCHEMA
 from .const import (
     CONF_COMMAND_TOPIC,
+    CONF_GET_POSITION_TEMPLATE,
+    CONF_GET_POSITION_TOPIC,
     CONF_PAYLOAD_CLOSE,
     CONF_PAYLOAD_OPEN,
     CONF_PAYLOAD_STOP,
+    CONF_PAYLOAD_STOP_TILT,
     CONF_POSITION_CLOSED,
     CONF_POSITION_OPEN,
     CONF_RETAIN,
+    CONF_SET_POSITION_TEMPLATE,
+    CONF_SET_POSITION_TOPIC,
     CONF_STATE_CLOSED,
     CONF_STATE_CLOSING,
     CONF_STATE_OPEN,
     CONF_STATE_OPENING,
+    CONF_STATE_STOPPED,
     CONF_STATE_TOPIC,
+    CONF_TILT_CLOSED_POSITION,
+    CONF_TILT_COMMAND_TEMPLATE,
+    CONF_TILT_COMMAND_TOPIC,
+    CONF_TILT_MAX,
+    CONF_TILT_MIN,
+    CONF_TILT_OPEN_POSITION,
+    CONF_TILT_STATE_OPTIMISTIC,
+    CONF_TILT_STATUS_TEMPLATE,
+    CONF_TILT_STATUS_TOPIC,
     DEFAULT_OPTIMISTIC,
     DEFAULT_PAYLOAD_CLOSE,
     DEFAULT_PAYLOAD_OPEN,
+    DEFAULT_PAYLOAD_STOP,
     DEFAULT_POSITION_CLOSED,
     DEFAULT_POSITION_OPEN,
     DEFAULT_RETAIN,
+    DEFAULT_STATE_STOPPED,
+    DEFAULT_TILT_CLOSED_POSITION,
+    DEFAULT_TILT_MAX,
+    DEFAULT_TILT_MIN,
+    DEFAULT_TILT_OPEN_POSITION,
+    DEFAULT_TILT_OPTIMISTIC,
 )
 from .schemas import MQTT_ENTITY_COMMON_SCHEMA
 from .util import valid_publish_topic, valid_subscribe_topic
 
-CONF_GET_POSITION_TOPIC = "position_topic"
-CONF_GET_POSITION_TEMPLATE = "position_template"
-CONF_SET_POSITION_TOPIC = "set_position_topic"
-CONF_SET_POSITION_TEMPLATE = "set_position_template"
-CONF_TILT_COMMAND_TOPIC = "tilt_command_topic"
-CONF_TILT_COMMAND_TEMPLATE = "tilt_command_template"
-CONF_TILT_STATUS_TOPIC = "tilt_status_topic"
-CONF_TILT_STATUS_TEMPLATE = "tilt_status_template"
 
-CONF_STATE_STOPPED = "state_stopped"
-CONF_PAYLOAD_STOP_TILT = "payload_stop_tilt"
-CONF_TILT_CLOSED_POSITION = "tilt_closed_value"
-CONF_TILT_MAX = "tilt_max"
-CONF_TILT_MIN = "tilt_min"
-CONF_TILT_OPEN_POSITION = "tilt_opened_value"
-CONF_TILT_STATE_OPTIMISTIC = "tilt_optimistic"
-
-TILT_PAYLOAD = "tilt"
-COVER_PAYLOAD = "cover"
-
-DEFAULT_NAME = "MQTT Cover"
-
-DEFAULT_STATE_STOPPED = "stopped"
-DEFAULT_PAYLOAD_STOP = "STOP"
-
-DEFAULT_TILT_CLOSED_POSITION = 0
-DEFAULT_TILT_MAX = 100
-DEFAULT_TILT_MIN = 0
-DEFAULT_TILT_OPEN_POSITION = 100
-DEFAULT_TILT_OPTIMISTIC = False
-
-
-def validate_options(config: dict[str, Any]) -> dict[str, Any]:
+def validate_options(config: ConfigType) -> ConfigType:
     """Validate options.
 
     If set position topic is set then get position topic is set as well.

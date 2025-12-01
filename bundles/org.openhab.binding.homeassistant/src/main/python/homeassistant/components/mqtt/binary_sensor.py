@@ -17,9 +17,9 @@ from homeassistant.const import (
 from homeassistant.helpers import config_validation as cv
 
 from .config import MQTT_RO_SCHEMA
+from .const import CONF_OFF_DELAY
 from .schemas import MQTT_ENTITY_COMMON_SCHEMA
 
-CONF_OFF_DELAY = "off_delay"
 DEFAULT_PAYLOAD_OFF = "OFF"
 DEFAULT_PAYLOAD_ON = "ON"
 DEFAULT_FORCE_UPDATE = False

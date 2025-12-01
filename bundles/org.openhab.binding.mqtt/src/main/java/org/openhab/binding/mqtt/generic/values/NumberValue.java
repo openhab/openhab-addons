@@ -19,6 +19,7 @@ import javax.measure.Unit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.mqtt.generic.IgnoreType;
 import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.IncreaseDecreaseType;
@@ -139,9 +140,11 @@ public class NumberValue extends Value {
     @Override
     public Type parseMessage(Command command) throws IllegalArgumentException {
         if (command instanceof StringType) {
-            if (command.toString().equalsIgnoreCase(NAN) || command.toString().equalsIgnoreCase(NEGATIVE_NAN)) {
+            if (command.toString().equals(ignoreValue)) {
+                return IgnoreType.SENTINEL;
+            } else if (command.toString().equalsIgnoreCase(NAN) || command.toString().equalsIgnoreCase(NEGATIVE_NAN)) {
                 return UnDefType.UNDEF;
-            } else if (command.toString().isEmpty()) {
+            } else if (command.toString().equals(nullValue) || command.toString().isEmpty()) {
                 return UnDefType.NULL;
             }
         }

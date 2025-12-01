@@ -13,6 +13,7 @@
 package org.openhab.binding.sensorcommunity.internal;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
 
 import java.util.HashMap;
 
@@ -26,6 +27,8 @@ import org.openhab.binding.sensorcommunity.internal.mock.ThingMock;
 import org.openhab.binding.sensorcommunity.internal.util.FileReader;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
+import org.openhab.core.thing.binding.ThingHandlerCallback;
+import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,6 +51,7 @@ public class PMHandlerTest {
         t.setConfiguration(properties);
 
         PMHandlerExtension pmHandler = new PMHandlerExtension(t);
+        pmHandler.setCallback(mock(ThingHandlerCallback.class));
         pmHandler.initialize();
         logger.info("LC status: {}", pmHandler.getLifecycleStatus());
         int retryCount = 0; // Test shall fail after max 10 seconds
@@ -77,6 +81,7 @@ public class PMHandlerTest {
         t.setConfiguration(properties);
 
         PMHandlerExtension pmHandler = new PMHandlerExtension(t);
+        pmHandler.setCallback(mock(ThingHandlerCallback.class));
         pmHandler.initialize();
         logger.info("LC status: {}", pmHandler.getLifecycleStatus());
         int retryCount = 0; // Test shall fail after max 10 seconds
@@ -106,7 +111,7 @@ public class PMHandlerTest {
         t.setConfiguration(properties);
 
         PMHandlerExtension pmHandler = new PMHandlerExtension(t);
-        pmHandler.initialize();
+        pmHandler.setCallback(mock(ThingHandlerCallback.class));
         String pmJson = FileReader.readFileInString("src/test/resources/pm-result.json");
         if (pmJson != null) {
             UpdateStatus result = pmHandler.updateChannels(pmJson);
@@ -128,14 +133,13 @@ public class PMHandlerTest {
         t.setConfiguration(properties);
 
         PMHandlerExtension pmHandler = new PMHandlerExtension(t);
+        pmHandler.setCallback(mock(ThingHandlerCallback.class));
         String pmJson = FileReader.readFileInString("src/test/resources/noise-result.json");
         if (pmJson != null) {
             UpdateStatus result = pmHandler.updateChannels(pmJson);
             assertEquals(UpdateStatus.VALUE_ERROR, result, "Valid update");
-            assertEquals(QuantityType.valueOf(-1, Units.MICROGRAM_PER_CUBICMETRE), pmHandler.getPM25Cache(),
-                    "Values undefined");
-            assertEquals(QuantityType.valueOf(-1, Units.MICROGRAM_PER_CUBICMETRE), pmHandler.getPM100Cache(),
-                    "Values undefined");
+            assertEquals(UnDefType.UNDEF, pmHandler.getPM25Cache(), "Values undefined");
+            assertEquals(UnDefType.UNDEF, pmHandler.getPM100Cache(), "Values undefined");
         } else {
             assertTrue(false);
         }
@@ -151,6 +155,7 @@ public class PMHandlerTest {
         t.setConfiguration(properties);
 
         PMHandlerExtension pmHandler = new PMHandlerExtension(t);
+        pmHandler.setCallback(mock(ThingHandlerCallback.class));
         UpdateStatus result = pmHandler.updateChannels("[]");
         assertEquals(UpdateStatus.VALUE_EMPTY, result, "Valid update");
     }
@@ -165,6 +170,7 @@ public class PMHandlerTest {
         t.setConfiguration(properties);
 
         PMHandlerExtension pmHandler = new PMHandlerExtension(t);
+        pmHandler.setCallback(mock(ThingHandlerCallback.class));
         UpdateStatus result = pmHandler.updateChannels(null);
         assertEquals(UpdateStatus.CONNECTION_ERROR, result, "Valid update");
     }
@@ -179,7 +185,7 @@ public class PMHandlerTest {
         t.setConfiguration(properties);
 
         PMHandlerExtension pmHandler = new PMHandlerExtension(t);
-        pmHandler.initialize();
+        pmHandler.setCallback(mock(ThingHandlerCallback.class));
         String pmJson = FileReader.readFileInString("src/test/resources/internal-data.json");
         if (pmJson != null) {
             UpdateStatus result = pmHandler.updateChannels("[" + pmJson + "]");

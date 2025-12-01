@@ -378,6 +378,7 @@
 /bundles/org.openhab.binding.solarmax/ @jamietownsend
 /bundles/org.openhab.binding.solarwatt/ @sven-carstens
 /bundles/org.openhab.binding.solax/ @theater
+/bundles/org.openhab.binding.somfycul/ @Nookyx
 /bundles/org.openhab.binding.somfymylink/ @loungeflyz
 /bundles/org.openhab.binding.somfytahoma/ @octa22
 /bundles/org.openhab.binding.somneo/ @0x4d4d
@@ -426,6 +427,7 @@
 /bundles/org.openhab.binding.ventaair/ @t2000
 /bundles/org.openhab.binding.verisure/ @jannegpriv
 /bundles/org.openhab.binding.vesync/ @dag81
+/bundles/org.openhab.binding.viessmann/ @rogrun
 /bundles/org.openhab.binding.vigicrues/ @clinique
 /bundles/org.openhab.binding.visualcrossing/ @magx2
 /bundles/org.openhab.binding.vitotronic/ @steand

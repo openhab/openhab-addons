@@ -21,22 +21,24 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.sensorcommunity.internal.dto.SensorDataValue;
 import org.openhab.binding.sensorcommunity.internal.utils.NumberUtils;
-import org.openhab.core.library.dimension.Density;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Thing;
+import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
 
 /**
  * The {@link PMHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
  * @author Bernd Weymann - Initial contribution
+ * @author Bernd Weymann - Cache initialization with UNDEF
  */
 @NonNullByDefault
 public class PMHandler extends BaseSensorHandler {
 
-    protected QuantityType<Density> pm25Cache = QuantityType.valueOf(-1, Units.MICROGRAM_PER_CUBICMETRE);
-    protected QuantityType<Density> pm100Cache = QuantityType.valueOf(-1, Units.MICROGRAM_PER_CUBICMETRE);
+    protected State pm25Cache = UnDefType.UNDEF;
+    protected State pm100Cache = UnDefType.UNDEF;
 
     public PMHandler(Thing thing) {
         super(thing);

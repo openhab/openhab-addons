@@ -22,6 +22,7 @@ import java.util.TimeZone;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.astro.internal.calc.SeasonCalc;
+import org.openhab.binding.astro.internal.config.AstroChannelConfig;
 import org.openhab.binding.astro.internal.model.Season;
 
 /**
@@ -81,6 +82,86 @@ public class DateTimeUtilsTest {
         target2.set(Calendar.SECOND, 59);
         target2.set(Calendar.MILLISECOND, 999);
         assertEquals(endOfDay, target2);
+    }
+
+    @Test
+    public void testCreateCalendarForToday() {
+        Calendar cal = DateTimeUtils.createCalendarForToday(8, 0, TIME_ZONE, Locale.ROOT);
+        assertEquals(8, cal.get(Calendar.HOUR_OF_DAY));
+        assertEquals(0, cal.get(Calendar.MINUTE));
+        assertEquals(0, cal.get(Calendar.SECOND));
+        assertEquals(0, cal.get(Calendar.MILLISECOND));
+        cal = DateTimeUtils.createCalendarForToday(22, 59, TIME_ZONE, Locale.ROOT);
+        assertEquals(22, cal.get(Calendar.HOUR_OF_DAY));
+        assertEquals(59, cal.get(Calendar.MINUTE));
+        assertEquals(0, cal.get(Calendar.SECOND));
+        assertEquals(0, cal.get(Calendar.MILLISECOND));
+        cal = DateTimeUtils.createCalendarForToday(0, 0, TIME_ZONE, Locale.ROOT);
+        assertEquals(0, cal.get(Calendar.HOUR_OF_DAY));
+        assertEquals(0, cal.get(Calendar.MINUTE));
+        assertEquals(0, cal.get(Calendar.SECOND));
+        assertEquals(0, cal.get(Calendar.MILLISECOND));
+    }
+
+    @Test
+    public void testAdjustTime() {
+        assertEquals(JAN_20_2020, DateTimeUtils.adjustTime(JAN_20_2020, 60));
+        assertNotSame(JAN_20_2020, DateTimeUtils.adjustTime(JAN_20_2020, 60));
+        assertEquals(JAN_20_2020, DateTimeUtils.adjustTime(JAN_20_2020, -1));
+        assertSame(JAN_20_2020, DateTimeUtils.adjustTime(JAN_20_2020, -2));
+    }
+
+    @Test
+    public void testApplyConfig() {
+        AstroChannelConfig config = new AstroChannelConfig();
+        assertEquals(JAN_20_2020.getTime(), DateTimeUtils.applyConfig(JAN_20_2020, config).getTime());
+        assertSame(JAN_20_2020, DateTimeUtils.applyConfig(JAN_20_2020, config));
+        config.earliest = "00:00";
+        assertEquals(JAN_20_2020, DateTimeUtils.applyConfig(JAN_20_2020, config));
+        assertSame(JAN_20_2020, DateTimeUtils.applyConfig(JAN_20_2020, config));
+        config.earliest = "00:01";
+        assertEquals(JAN_20_2020, DateTimeUtils.applyConfig(JAN_20_2020, config));
+        config.earliest = "03:33";
+        assertEquals(newCalendar(2020, Calendar.JANUARY, 20, 3, 33, TIME_ZONE),
+                DateTimeUtils.applyConfig(JAN_20_2020, config));
+        config.earliest = null;
+        config.latest = "00:50";
+        assertEquals(newCalendar(2020, Calendar.JANUARY, 20, 0, 50, TIME_ZONE),
+                DateTimeUtils.applyConfig(JAN_20_2020, config));
+
+        config.latest = null;
+        config.offset = -79;
+        assertEquals(newCalendar(2020, Calendar.JANUARY, 19, 23, 41, TIME_ZONE),
+                DateTimeUtils.applyConfig(JAN_20_2020, config));
+        config.earliest = "03:33";
+        assertEquals(newCalendar(2020, Calendar.JANUARY, 20, 3, 33, TIME_ZONE),
+                DateTimeUtils.applyConfig(JAN_20_2020, config));
+        config.earliest = null;
+        config.latest = "00:50";
+        assertEquals(newCalendar(2020, Calendar.JANUARY, 19, 23, 41, TIME_ZONE),
+                DateTimeUtils.applyConfig(JAN_20_2020, config));
+        config.latest = null;
+        config.offset = 1504;
+        assertEquals(newCalendar(2020, Calendar.JANUARY, 21, 2, 4, TIME_ZONE),
+                DateTimeUtils.applyConfig(JAN_20_2020, config));
+        config.earliest = "03:33";
+        assertEquals(newCalendar(2020, Calendar.JANUARY, 21, 2, 4, TIME_ZONE),
+                DateTimeUtils.applyConfig(JAN_20_2020, config));
+        config.earliest = null;
+        config.latest = "21:12";
+        assertEquals(newCalendar(2020, Calendar.JANUARY, 20, 21, 12, TIME_ZONE),
+                DateTimeUtils.applyConfig(JAN_20_2020, config));
+        config.offset = 135;
+        assertEquals(newCalendar(2020, Calendar.JANUARY, 20, 3, 15, TIME_ZONE),
+                DateTimeUtils.applyConfig(JAN_20_2020, config));
+    }
+
+    @Test
+    public void testGetMinutesFromTime() {
+        assertEquals(-1, DateTimeUtils.getMinutesFromTime(null));
+        assertEquals(-1, DateTimeUtils.getMinutesFromTime(" "));
+        assertEquals(-1, DateTimeUtils.getMinutesFromTime("2023"));
+        assertEquals(1223, DateTimeUtils.getMinutesFromTime("20:23"));
     }
 
     private static void assertNextSeason(Calendar expectedSeason, int expectedYear, Calendar date, Season season) {

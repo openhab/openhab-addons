@@ -15,17 +15,15 @@ package org.openhab.binding.froniuswattpilot.internal;
 import static org.openhab.binding.froniuswattpilot.internal.FroniusWattpilotBindingConstants.*;
 
 import java.io.IOException;
-import java.net.NoRouteToHostException;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.io.EofException;
-import org.eclipse.jetty.util.Utf8Appendable;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
@@ -67,6 +65,7 @@ public class FroniusWattpilotHandler extends BaseThingHandler implements Wattpil
     private final WattpilotClient client;
 
     private @Nullable FroniusWattpilotConfiguration config;
+    private @Nullable ScheduledFuture<?> reconnectJob;
 
     public FroniusWattpilotHandler(Thing thing, HttpClient httpClient) {
         super(thing);
@@ -213,6 +212,7 @@ public class FroniusWattpilotHandler extends BaseThingHandler implements Wattpil
 
         updateStatus(ThingStatus.UNKNOWN);
         try {
+            logger.debug("Connecting to Wattpilot at {} ...", config.hostname);
             client.connect(config.hostname, config.password);
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
@@ -230,26 +230,30 @@ public class FroniusWattpilotHandler extends BaseThingHandler implements Wattpil
     }
 
     @Override
-    public void connected() {
+    public void connected(WattpilotInfo info) {
+        logger.debug("Connected to Wattpilot.");
+        var reconnectJob = this.reconnectJob;
+        if (reconnectJob != null) {
+            reconnectJob.cancel(false);
+            this.reconnectJob = null;
+        }
         updateStatus(ThingStatus.ONLINE);
-        updateDeviceProperties(client.getDeviceInfo());
+        updateDeviceProperties(info);
     }
 
     @Override
-    public void disconnected(@Nullable String reason, @Nullable Throwable cause) {
+    public void disconnected(String reason, @Nullable Throwable cause) {
+        logger.debug("Disconnected from Wattpilot: {}", reason, cause);
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, reason);
-        if (cause instanceof TimeoutException || cause instanceof NoRouteToHostException
-                || cause instanceof EofException || cause instanceof Utf8Appendable.NotUtf8Exception) {
-            this.logger.debug("Connection to Wattpilot lost, scheduling reconnection attempt.");
-            this.scheduler.schedule(this::initialize, 30L, TimeUnit.SECONDS);
+        var reconnectJob = this.reconnectJob;
+        if (cause != null && reconnectJob == null) {
+            logger.debug("Connection to Wattpilot lost, scheduling reconnection job ...", cause);
+            this.reconnectJob = scheduler.scheduleAtFixedRate(this::initialize, 30L, 60L, TimeUnit.SECONDS);
         }
     }
 
     @Override
-    public void statusChanged(@Nullable WattpilotStatus status) {
-        if (status == null) {
-            return;
-        }
+    public void statusChanged(WattpilotStatus status) {
         updateChannelsControl(status);
         updateChannelsStatus(status);
         updateChannelsMetrics(status);
