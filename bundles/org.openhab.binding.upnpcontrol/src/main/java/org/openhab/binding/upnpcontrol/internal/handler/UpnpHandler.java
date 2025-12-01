@@ -95,7 +95,7 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
     protected volatile int rcsId = 0; // UPnP Rendering Control Id
 
     protected UpnpControlBindingConfiguration bindingConfig;
-    protected UpnpControlConfiguration config;
+    protected volatile UpnpControlConfiguration config;
 
     protected final Object invokeActionLock = new Object();
 
