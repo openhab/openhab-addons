@@ -42,10 +42,10 @@
 		<parameter name="eventConversionEnabled" type="boolean" required="true" groupName="environment">
 			<label>Convert Event from Java to JavaScript type in Script Actions &amp; Script Conditions scripts</label>
 			<description><![CDATA[
-            Converting the event data from Java to JavaScript types in Script Actions &amp; Script Conditions allows working with event data in a native JS way without special handling for Java types.<br>
-            With this option enabled, the event data available in Script Actions &amp; Script Conditions is all JS types and the same as in rules created from script files.<br>
-            Please note that this option <strong>requires auto-injection enabled at least for Script Actions &amp; Script Conditions</strong>.
-            ]]></description>
+			Converting the event data from Java to JavaScript types in Script Actions &amp; Script Conditions allows working with event data in a native JS way without special handling for Java types.<br>
+			With this option enabled, the event data available in Script Actions &amp; Script Conditions is all JS types and the same as in rules created from script files.<br>
+			Please note that this option <strong>requires auto-injection enabled at least for Script Actions &amp; Script Conditions</strong>.
+			]]></description>
 			<default>true</default>
 			<advanced>true</advanced>
 		</parameter>
