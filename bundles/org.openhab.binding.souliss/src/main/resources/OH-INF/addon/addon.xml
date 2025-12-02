@@ -5,7 +5,7 @@
 
 	<type>binding</type>
 	<name>Souliss Binding</name>
-	<description>This is the binding for Souliss. The Arduino based SmartHome..</description>
+	<description>This is the openHAB binding for Souliss, an Arduino-based smart home framework.</description>
 	<connection>local</connection>
 
 </addon:addon>

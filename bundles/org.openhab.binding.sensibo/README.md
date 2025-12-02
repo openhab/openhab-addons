@@ -1,6 +1,6 @@
 # Sensibo Binding
 
-This binding integrates the Sensibo Sky aircondition remote control
+This binding integrates the Sensibo Sky air conditioner remote control.
 See <https://www.sensibo.com/>
 
 ## Supported Things
@@ -12,12 +12,12 @@ This binding supports Sensibo Sky only.
 
 ## Discovery
 
-In order to do discovery, add a thing of type Sensibo API and add the API key.
-API key can be obtained here: <https://home.sensibo.com/me/api>
+To perform discovery, add a Thing of type Sensibo API and provide the API key.
+An API key can be obtained here: <https://home.sensibo.com/me/api>.
 
 ## Thing Configuration
 
-See full example below for how to configure using thing files.
+See full example below for how to configure using Thing files.
 
 ### Account
 

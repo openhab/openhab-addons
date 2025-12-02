@@ -1,20 +1,20 @@
 # SonyProjector Binding
 
-This binding can be used to conrol Sony Projectors through:
+This binding can be used to control Sony projectors through:
 
 - an Ethernet connection using PJ Talk
 - or a (direct) serial connection
 - or a serial over IP connection
 
-For serial connection, you have to use a D-Sub 9 Pin cross (reverse) cable also called null modem.
-For this cable, you will need a female connector on openHAB server side and a male connector on projector side (projector connector is female).
-For users without serial connector on server side, of course you can add a serial to USB adapter to this serial cable.
-Has been tested successfully using [this cable](https://www.amazon.fr/UGREEN-PL2303-Windows-Chrome-Connecteur/dp/B00QUZY4UG/ref=sr_1_3?ie=UTF8&qid=1548652565&sr=8-3&keywords=serial+usb) connected to a Windows 10 PC and Raspberry Pi 2.
-In such cases, setup a serial connection thing type in openHAB.
+For a serial connection, use a D-Sub 9 pin cross (null modem) cable.
+For this cable, you’ll need a female connector on the openHAB server side and a male connector on the projector side (the projector connector is female).
+If your server doesn’t have a serial port, add a serial-to-USB adapter to this cable.
+This has been tested successfully using [this cable](https://www.amazon.fr/UGREEN-PL2303-Windows-Chrome-Connecteur/dp/B00QUZY4UG/ref=sr_1_3?ie=UTF8&qid=1548652565&sr=8-3&keywords=serial+usb) connected to a Windows 10 PC and a Raspberry Pi 2.
+In such cases, set up a Serial connection Thing in openHAB.
 
-You don't need to have your projector directly connected to your openHAB server.
-You can connect it for example to a Raspberry Pi and use [ser2net Linux tool](https://sourceforge.net/projects/ser2net/) to make the serial connection available on LAN (serial over IP).
-In such a case, setup a serial over IP connection thing type in openHAB.
+You don’t need to connect your projector directly to your openHAB server.
+For example, you can connect it to a Raspberry Pi and use the [ser2net](https://sourceforge.net/projects/ser2net/) tool to make the serial connection available on the LAN (serial over IP).
+In such a case, set up a Serial over IP connection Thing in openHAB.
 
 Here is the list of supported Sony projectors based on Sony protocol manuals:
 
@@ -47,7 +47,7 @@ Here is the list of supported Sony projectors based on Sony protocol manuals:
 - VPL-VW1000ES
 - VPL-VW1100ES
 
-Here is the list of supported Sony projectors but not sure due to assumptions done based on Sony user manuals and protocol manuals of other similar models (because Sony protocol manuals unfortunately not available for these models):
+Here is the list of Sony projectors that are likely supported but not guaranteed, based on assumptions from Sony user manuals and protocol manuals of similar models (Sony protocol manuals are unfortunately not available for these models):
 
 - VPL-HW10
 - VPL-HW45ES
@@ -72,7 +72,7 @@ Here is the list of supported Sony projectors but not sure due to assumptions do
 - VPL-VW885ES
 - VPL-VW995ES
 
-Control of other (HW or VW) models could work with the binding by selecting one of the supported models but without any guarantee.
+Control of other (HW or VW) models may work by selecting one of the supported models, but there is no guarantee.
 Here is a list of potential candidates:
 
 - VPL-VW10HT
@@ -84,7 +84,7 @@ Here is a list of potential candidates:
 
 ## Supported Things
 
-This binding supports the following thing types:
+This binding supports the following Thing types:
 
 | Thing Type             | Description                                             |
 | ---------------------- | ------------------------------------------------------- |
@@ -94,34 +94,34 @@ This binding supports the following thing types:
 
 ## Discovery
 
-If the projector is connected via Ethernet and the 'Start SDDP Service' option is present and enabled in the projector Advanced Settings->Service page, the Thing using Ethernet connection and PJ Talk will be discovered automatically.
+If the projector is connected via Ethernet and the “Start SDDP Service” option is enabled under Advanced Settings → Service, an Ethernet (PJ Talk) Thing will be discovered automatically.
 Serial or Serial over IP connections must be configured manually.
 
 ## Binding Configuration
 
-There are no overall binding configuration settings that need to be set.
-All settings are through thing configuration parameters.
+There are no global binding configuration settings.
+All configuration is done via Thing parameters.
 
 ## Thing Configuration
 
 ### Ethernet connection
 
-The Ethernet connection thing requires the following configuration parameters:
+The Ethernet connection Thing requires the following configuration parameters:
 
 | Parameter Label | Parameter ID | Description                                                              | Required | Default | Accepted values                                                                                                                                                                                                                                                                                                                                                                                           |
 | --------------- | ------------ | ------------------------------------------------------------------------ | -------- | ------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Address         | host         | Host name or IP address of the projector                                 | true     |         |                                                                                                                                                                                                                                                                                                                                                                                                           |
 | Port            | port         | Communication port. Default is 53484                                     | false    | 53484   |                                                                                                                                                                                                                                                                                                                                                                                                           |
 | Model           | model        | Projector model to be controlled. Default is AUTO                        | false    | AUTO    | AUTO, VPL-HW60, VPL-HW65, VPL-HW68, VPL-VW100, VPL-VW200, VPL-VW260ES, VPL-VW270ES, VPL-VW285ES, VPL-VW295ES, VPL-VW300ES, VPL-VW315, VPL-VW320, VPL-VW328, VPL-VW350ES, VPL-VW365, VPL-VW385ES, VPL-VW500ES, VPL-VW515, VPL-VW520, VPL-VW528, VPL-VW550ES, VPL-VW570ES, VPL-VW600ES, VPL-VW665, VPL-VW675ES, VPL-VW695ES, VPL-VW760ES, VPL-VW870ES, VPL-VW885ES, VPL-VW995ES, VPL-VW1000ES, VPL-VW1100ES |
-| Community       | community    | Community of the projector. Length must be 4 characters. Default is SONY | false    | SONY    |                                                                                                                                                                                                                                                                                                                                                                                                           |
+| Community       | community    | Community string for the projector. Must be 4 characters. Default is SONY | false    | SONY    |                                                                                                                                                                                                                                                                                                                                                                                                           |
 
 Some notes:
 
-- Take care to enable PJ Talk on your projector.
+- Make sure PJ Talk is enabled on your projector.
 
 ### Serial connection
 
-The serial connection thing requires the following configuration parameters:
+The Serial connection Thing requires the following configuration parameters:
 
 | Parameter Label | Parameter ID | Description                                        | Required | Default   | Accepted values                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | --------------- | ------------ | -------------------------------------------------- | -------- | --------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -135,7 +135,7 @@ Some notes:
 
 ### Serial over IP connection
 
-The serial over IP connection thing requires the following configuration parameters:
+The Serial over IP connection Thing requires the following configuration parameters:
 
 | Parameter Label | Parameter ID | Description                                                       | Required | Default   | Accepted values                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | --------------- | ------------ | ----------------------------------------------------------------- | -------- | --------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -303,12 +303,12 @@ Here is the list of infrared remote commands you can use, some of them will work
 | PLAY                | Play                      |
 | STOP                | Stop                      |
 | PAUSE               | Pause                     |
-| FAST_REWIND(        | Fast Rewind               |
+| FAST_REWIND         | Fast Rewind               |
 | FAST_FORWARD        | Fast Forward              |
 | PREVIOUS            | Previous                  |
 | NEXT                | Next                      |
 
-In case you know an infrared remote command not listed in this list and you know its hexadecimal code, you can send the hexadecimal value directly; it must be 4 characters started with either 17, 19 or 1B.
+If you know an infrared remote command not listed here and you know its hexadecimal code, you can send the hexadecimal value directly; it must be 4 characters starting with 17, 19, or 1B.
 
 ## Full Example
 

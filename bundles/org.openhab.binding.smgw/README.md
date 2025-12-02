@@ -14,11 +14,11 @@ To use the HAN interface you need to connect it to your local network with an et
 
 ### `smgw` Thing Configuration
 
-| Name       | Type | Description                          | Default        | Required | Advanced |
-|------------|------|--------------------------------------|----------------|----------|----------|
-| `hostname` | text | Hostname or IP address of the device | `192.168.1.200 | no       | no       |
-| `username` | text | Username to access the device        | N/A            | yes      | no       |
-| `password` | text | Password to access the device        | N/A            | yes      | no       |
+| Name       | Type | Description                          | Default         | Required | Advanced |
+|------------|------|--------------------------------------|-----------------|----------|----------|
+| `hostname` | text | Hostname or IP address of the device | `192.168.1.200` | no       | no       |
+| `username` | text | Username to access the device        | N/A             | yes      | no       |
+| `password` | text | Password to access the device        | N/A             | yes      | no       |
 
 The default value for the hostname matches the default value according to PPC's documentation.
 Check with your network operator's documentation if DHCP has been enabled or a different fixed address has been set.
@@ -28,9 +28,9 @@ Login with certificate is not supported.
 
 ## Channels
 
-| Channel     | Type          | Read/Write | Description                                    |
-|-------------|---------------|------------|------------------------------------------------|
-| `meter`     | Number:Energy | R          | The meter reading of the smart meter.          |
-| `timestamp` | DateTime      | R          | The date and time for which the meter reading. |
+| Channel     | Type          | Read/Write | Description                                            |
+|-------------|---------------|------------|--------------------------------------------------------|
+| `meter`     | Number:Energy | R          | The meter reading of the smart meter.                  |
+| `timestamp` | DateTime      | R          | The date and time for which the meter reading is taken |
 
 Channels are refreshed every 900s.
