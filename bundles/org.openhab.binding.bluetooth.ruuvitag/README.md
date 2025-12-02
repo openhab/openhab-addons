@@ -118,6 +118,7 @@ Per the Ruuvi specification, once Format E1 is detected from a device, subsequen
 to ensure the device preferentially uses the newer, more comprehensive E1 format.
 
 **PM Measurements:**
+
 - **Format 6** provides: PM2.5
 - **Format E1** provides: PM1.0, PM2.5, PM4.0, PM10.0 (all four particulate matter sizes)
 
