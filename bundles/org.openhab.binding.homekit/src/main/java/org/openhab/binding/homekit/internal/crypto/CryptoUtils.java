@@ -130,33 +130,6 @@ public class CryptoUtils {
         return signer.generateSignature();
     }
 
-    public static BigInteger toBigInteger(String hexBlock) throws IllegalArgumentException {
-        String plainHex = hexBlock.replaceAll("\\s+", "");
-        if (plainHex.length() % 2 != 0) {
-            throw new IllegalArgumentException("Hex string must have even length");
-        }
-        return new BigInteger(plainHex, 16);
-    }
-
-    public static byte[] toBytes(String hexBlock) throws IllegalArgumentException {
-        String plainHex = hexBlock.replaceAll("\\s+", "");
-        if (plainHex.length() % 2 != 0) {
-            throw new IllegalArgumentException("Hex string must have even length");
-        }
-        int length = plainHex.length();
-        byte[] result = new byte[length / 2];
-        for (int i = 0; i < length; i += 2) {
-            int hi = Character.digit(plainHex.charAt(i), 16);
-            int lo = Character.digit(plainHex.charAt(i + 1), 16);
-            if (hi == -1 || lo == -1) {
-                throw new IllegalArgumentException(
-                        "Invalid hex character: " + plainHex.charAt(i) + plainHex.charAt(i + 1));
-            }
-            result[i / 2] = (byte) ((hi << 4) + lo);
-        }
-        return result;
-    }
-
     public static String toHex(byte @Nullable [] bytes) {
         return bytes == null ? "null" : Hex.toHexString(bytes);
     }

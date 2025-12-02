@@ -37,6 +37,7 @@ import org.openhab.binding.homekit.internal.enums.PairingState;
 import org.openhab.binding.homekit.internal.enums.TlvType;
 import org.openhab.binding.homekit.internal.hapservices.PairVerifyClient;
 import org.openhab.binding.homekit.internal.transport.IpTransport;
+import org.openhab.core.util.HexUtils;
 
 /**
  * Test cases for the {@link PairVerifyClient} class.
@@ -58,10 +59,10 @@ class TestPairVerify {
     byte[] accessoryId = new byte[] { 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1 };
 
     private final Ed25519PrivateKeyParameters controllerLongTermPrivateKey = new Ed25519PrivateKeyParameters(
-            toBytes(CLIENT_PRIVATE_HEX));
+            HexUtils.hexBlockToBytes(CLIENT_PRIVATE_HEX));
 
     private final Ed25519PrivateKeyParameters accessoryLongTermPrivateKey = new Ed25519PrivateKeyParameters(
-            toBytes(SERVER_PRIVATE_HEX));
+            HexUtils.hexBlockToBytes(SERVER_PRIVATE_HEX));
 
     private @NonNullByDefault({}) X25519PrivateKeyParameters accessoryEphemeralSecretKey;
     private @NonNullByDefault({}) X25519PublicKeyParameters controllerEphemeralPublicKey;

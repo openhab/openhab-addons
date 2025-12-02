@@ -28,6 +28,20 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class CryptoConstants {
 
+    /*
+     * ***************************************************************************************
+     *
+     * DEVELOPER NOTE:
+     *
+     * Some of the field names in this class follow the Crytographic "Alice and Bob Notation"
+     * where for example 'A' (uppercase) is the conventional meaning for "Alice's Public Key"
+     * and 'a' (lowercase) is the conventional meaning for "Alice's Private Key". Such names
+     * are legal according to Java language syntax, but the openHAB style checker warns about
+     * some of them. => Please ignore such warnings.
+     *
+     * ***************************************************************************************
+     */
+
     public static final BigInteger N = new BigInteger("""
             FFFFFFFF FFFFFFFF C90FDAA2 2168C234 C4C6628B 80DC1CD1 29024E08 8A67CC74
             020BBEA6 3B139B22 514A0879 8E3404DD EF9519B3 CD3A431B 302B0A6D F25F1437

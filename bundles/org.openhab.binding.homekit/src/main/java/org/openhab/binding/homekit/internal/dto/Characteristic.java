@@ -839,7 +839,8 @@ public class Characteristic {
         String channelTypeLabel = characteristicType.toString();
 
         if (!isStateChannel) {
-            typeProvider.putChannelType(ChannelTypeBuilder.trigger(channelTypeUid, channelTypeLabel).build());
+            ChannelType channelType = ChannelTypeBuilder.trigger(channelTypeUid, channelTypeLabel).build();
+            typeProvider.putChannelType(channelType);
 
         } else {
             if (itemType == null) {
@@ -916,7 +917,8 @@ public class Characteristic {
             }
 
             // persist the (state) channel TYPE
-            typeProvider.putChannelType(chanTypBldr.build());
+            ChannelType channelType = chanTypBldr.build();
+            typeProvider.putChannelType(channelType);
         }
 
         /*

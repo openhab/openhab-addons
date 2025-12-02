@@ -24,6 +24,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.homekit.internal.crypto.CryptoUtils;
 import org.openhab.binding.homekit.internal.crypto.SRPclient;
+import org.openhab.core.util.HexUtils;
 
 /**
  * Tests to validate the code against the test vectors in Apple HomeKit Accessory Protocol
@@ -33,6 +34,21 @@ import org.openhab.binding.homekit.internal.crypto.SRPclient;
  */
 @NonNullByDefault
 class TestAppleTestVectors {
+
+    /*
+     * ***************************************************************************************
+     *
+     * DEVELOPER NOTE:
+     *
+     * Some of the field names in this class follow the Crytographic "Alice and Bob Notation"
+     * where for example 'A' (uppercase) is the conventional meaning for "Alice's Public Key"
+     * and 'a' (lowercase) is the conventional meaning for "Alice's Private Key". Such names
+     * are legal according to Java language syntax, but the openHAB style checker warns about
+     * some of them. => Please ignore such warnings.
+     *
+     * ***************************************************************************************
+     */
+
     // Modulus N
     private static final String N_hex = """
             FFFFFFFF FFFFFFFF C90FDAA2 2168C234 C4C6628B 80DC1CD1 29024E08 8A67CC74
@@ -150,30 +166,30 @@ class TestAppleTestVectors {
 
     @Test
     void testBasicConversions() {
-        BigInteger N1 = CryptoUtils.toBigInteger(N_hex);
+        BigInteger N1 = HexUtils.hexBlockToBigInteger(N_hex);
         assertEquals(3072, N1.bitLength());
 
-        BigInteger N2 = new BigInteger(1, CryptoUtils.toBytes(N_hex));
+        BigInteger N2 = new BigInteger(1, HexUtils.hexBlockToBytes(N_hex));
         assertEquals(3072, N2.bitLength());
 
         assertEquals(N1, N2);
 
         byte[] nBytes = CryptoUtils.toUnsigned(N1, 384);
         assertEquals(384, nBytes.length);
-        assertArrayEquals(CryptoUtils.toBytes(N_hex), nBytes);
+        assertArrayEquals(HexUtils.hexBlockToBytes(N_hex), nBytes);
 
-        BigInteger g1 = new BigInteger(1, CryptoUtils.toBytes(g_hex));
+        BigInteger g1 = new BigInteger(1, HexUtils.hexBlockToBytes(g_hex));
         assertEquals(5, g1.intValue());
-        assertEquals(g1, CryptoUtils.toBigInteger(g_hex));
+        assertEquals(g1, HexUtils.hexBlockToBigInteger(g_hex));
     }
 
     @Test
     void testClientKeyConversion() {
-        BigInteger N = CryptoUtils.toBigInteger(N_hex);
-        BigInteger g = CryptoUtils.toBigInteger(g_hex);
+        BigInteger N = HexUtils.hexBlockToBigInteger(N_hex);
+        BigInteger g = HexUtils.hexBlockToBigInteger(g_hex);
 
-        BigInteger a = CryptoUtils.toBigInteger(a_hex);
-        BigInteger A = CryptoUtils.toBigInteger(A_hex);
+        BigInteger a = HexUtils.hexBlockToBigInteger(a_hex);
+        BigInteger A = HexUtils.hexBlockToBigInteger(A_hex);
 
         BigInteger calcA = g.modPow(a, N);
 
@@ -183,23 +199,23 @@ class TestAppleTestVectors {
         byte[] exp;
 
         act = CryptoUtils.toUnsigned(a, 32);
-        exp = CryptoUtils.toBytes(a_hex);
+        exp = HexUtils.hexBlockToBytes(a_hex);
         assertArrayEquals(exp, act);
 
         act = CryptoUtils.toUnsigned(A, 384);
-        exp = CryptoUtils.toBytes(A_hex);
+        exp = HexUtils.hexBlockToBytes(A_hex);
         assertArrayEquals(exp, act);
     }
 
     @Test
     void testClientVectors() {
-        byte[] a = CryptoUtils.toBytes(a_hex);
-        byte[] A = CryptoUtils.toBytes(A_hex);
-        byte[] B = CryptoUtils.toBytes(B_hex);
-        byte[] s = CryptoUtils.toBytes(s_hex);
-        byte[] u = CryptoUtils.toBytes(u_hex);
-        byte[] S = CryptoUtils.toBytes(S_hex);
-        byte[] K = CryptoUtils.toBytes(K_hex);
+        byte[] a = HexUtils.hexBlockToBytes(a_hex);
+        byte[] A = HexUtils.hexBlockToBytes(A_hex);
+        byte[] B = HexUtils.hexBlockToBytes(B_hex);
+        byte[] s = HexUtils.hexBlockToBytes(s_hex);
+        byte[] u = HexUtils.hexBlockToBytes(u_hex);
+        byte[] S = HexUtils.hexBlockToBytes(S_hex);
+        byte[] K = HexUtils.hexBlockToBytes(K_hex);
 
         AtomicReference<SRPclient> clientRef = new AtomicReference<>();
 
@@ -216,14 +232,14 @@ class TestAppleTestVectors {
 
     @Test
     void testServerVectors() {
-        byte[] b = CryptoUtils.toBytes(b_hex);
-        byte[] A = CryptoUtils.toBytes(A_hex);
-        byte[] B = CryptoUtils.toBytes(B_hex);
-        byte[] s = CryptoUtils.toBytes(s_hex);
-        byte[] u = CryptoUtils.toBytes(u_hex);
-        byte[] v = CryptoUtils.toBytes(v_hex);
-        byte[] S = CryptoUtils.toBytes(S_hex);
-        byte[] K = CryptoUtils.toBytes(K_hex);
+        byte[] b = HexUtils.hexBlockToBytes(b_hex);
+        byte[] A = HexUtils.hexBlockToBytes(A_hex);
+        byte[] B = HexUtils.hexBlockToBytes(B_hex);
+        byte[] s = HexUtils.hexBlockToBytes(s_hex);
+        byte[] u = HexUtils.hexBlockToBytes(u_hex);
+        byte[] v = HexUtils.hexBlockToBytes(v_hex);
+        byte[] S = HexUtils.hexBlockToBytes(S_hex);
+        byte[] K = HexUtils.hexBlockToBytes(K_hex);
 
         Ed25519PrivateKeyParameters dummyLTPK = new Ed25519PrivateKeyParameters(new SecureRandom());
         byte[] dummyPID = "serverPairingId".getBytes(StandardCharsets.UTF_8);

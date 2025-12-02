@@ -38,6 +38,7 @@ import org.openhab.binding.homekit.internal.enums.PairingState;
 import org.openhab.binding.homekit.internal.enums.TlvType;
 import org.openhab.binding.homekit.internal.hapservices.PairSetupClient;
 import org.openhab.binding.homekit.internal.transport.IpTransport;
+import org.openhab.core.util.HexUtils;
 
 /**
  * Test cases for the {@link PairSetupClient} class.
@@ -75,7 +76,8 @@ class TestPairSetup {
     @Test
     void testSrpClient() throws InvalidCipherTextException, NoSuchAlgorithmException {
         byte[] plainText0 = "the quick brown dog".getBytes(StandardCharsets.UTF_8);
-        SRPclient client = new SRPclient("password123", toBytes(SALT_HEX), toBytes(SERVER_PRIVATE_HEX));
+        SRPclient client = new SRPclient("password123", HexUtils.hexBlockToBytes(SALT_HEX),
+                HexUtils.hexBlockToBytes(SERVER_PRIVATE_HEX));
         byte[] sharedKey = generateHkdfKey(client.K, PAIR_SETUP_ENCRYPT_SALT, PAIR_SETUP_ENCRYPT_INFO);
         byte[] cipherText = encrypt(sharedKey, PS_M5_NONCE, plainText0, new byte[0]);
         byte[] plainText1 = decrypt(sharedKey, PS_M5_NONCE, cipherText, new byte[0]);
@@ -89,13 +91,13 @@ class TestPairSetup {
         String password = "password123";
         byte[] iOSDeviceId = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16 };
         byte[] accessoryId = new byte[] { 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1 };
-        byte[] serverSalt = toBytes(SALT_HEX);
+        byte[] serverSalt = HexUtils.hexBlockToBytes(SALT_HEX);
 
         // initialize signing keys
         Ed25519PrivateKeyParameters controllerLongTermSecretKey = new Ed25519PrivateKeyParameters(
-                toBytes(CLIENT_PRIVATE_HEX));
+                HexUtils.hexBlockToBytes(CLIENT_PRIVATE_HEX));
         Ed25519PrivateKeyParameters accessoryLongTermSecretKey = new Ed25519PrivateKeyParameters(
-                toBytes(SERVER_PRIVATE_HEX));
+                HexUtils.hexBlockToBytes(SERVER_PRIVATE_HEX));
 
         // create mock
         IpTransport mockTransport = mock(IpTransport.class);

@@ -17,7 +17,6 @@ import java.util.regex.Pattern;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
-import org.openhab.core.thing.type.ChannelDefinition;
 import org.openhab.core.thing.type.ChannelTypeUID;
 
 /**
@@ -37,8 +36,8 @@ public class HomekitBindingConstants {
 
     /**
      * Some Characteristics have variable values and others remain static over time. The latter are produced with
-     * a {@link ChannelDefinition} with this channel-type uid. And when Things are created, rather than instantiating
-     * them as (dynamic data) Channels of the Thing, instead they are added as (static data) Properties of the Thing.
+     * a ChannelDefinition with this channel-type uid. And when Things are created, rather than instantiating them
+     * as (dynamic data) Channels of the Thing, instead they are added as (static data) Properties of the Thing.
      */
     public static final ChannelTypeUID CHANNEL_TYPE_STATIC = new ChannelTypeUID(BINDING_ID, "static-data");
 

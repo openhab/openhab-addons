@@ -39,6 +39,20 @@ import org.openhab.binding.homekit.internal.enums.TlvType;
 @NonNullByDefault
 public class SRPserver {
 
+    /*
+     * ***************************************************************************************
+     *
+     * DEVELOPER NOTE:
+     *
+     * Some of the field names in this class follow the Crytographic "Alice and Bob Notation"
+     * where for example 'A' (uppercase) is the conventional meaning for "Alice's Public Key"
+     * and 'a' (lowercase) is the conventional meaning for "Alice's Private Key". Such names
+     * are legal according to Java language syntax, but the openHAB style checker warns about
+     * some of them. => Please ignore such warnings.
+     *
+     * ***************************************************************************************
+     */
+
     // Session state
     public @NonNullByDefault({}) BigInteger A; // client public SRP key
     public final BigInteger b; // server private SRP key
