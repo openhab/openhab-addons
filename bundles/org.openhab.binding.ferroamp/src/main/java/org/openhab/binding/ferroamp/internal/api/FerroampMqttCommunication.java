@@ -21,13 +21,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.ferroamp.internal.FerroampBindingConstants;
-//import org.openhab.binding.ferroamp.internal.config.ChannelMapping;
-//import org.openhab.binding.ferroamp.internal.handler.FerroampHandler;
-//import org.openhab.binding.ferroamp.internal.handler.StateHelper;
 import org.openhab.core.io.transport.mqtt.MqttBrokerConnection;
 import org.openhab.core.io.transport.mqtt.MqttConnectionState;
 import org.openhab.core.io.transport.mqtt.MqttMessageSubscriber;
-//import org.openhab.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,18 +41,24 @@ import com.google.gson.JsonSyntaxException;
  */
 
 @NonNullByDefault
-public class FerroampMqttCommunication implements MqttMessageSubscriber {
-
-    private @Nullable FerroAmpUpdateListener ferroAmpUpdateListeners;
+public class FerroampMqttCommunication implements MqttMessageSubscriber, FerroAmpUpdateListener {
 
     private final static Logger logger = LoggerFactory.getLogger(FerroampMqttCommunication.class);
+
     private final MqttBrokerConnection ferroampConnection;
+
+    static DataType ehubTypeCached = DataType.UNKNOWN;
+    static Map<String, @Nullable String> ehubKeyValueMapCached = new HashMap<>();
+    static DataType ssoTypeCached = DataType.UNKNOWN;
+    static Map<String, @Nullable String> ssoKeyValueMapCached = new HashMap<>();
+
+    static DataType typeCached = DataType.UNKNOWN;
+    static Map<String, @Nullable String> keyValueMapCached = new HashMap<>();
 
     public FerroampMqttCommunication(String username, String password, String host, int port) {
         super();
         ferroampConnection = new MqttBrokerConnection(host, port, false, false, username);
         ferroampConnection.setCredentials(username, password);
-
     }
 
     public void start() {
@@ -66,14 +68,6 @@ public class FerroampMqttCommunication implements MqttMessageSubscriber {
         ferroampConnection.subscribe(FerroampBindingConstants.ESO_TOPIC, this);
         ferroampConnection.subscribe(FerroampBindingConstants.ESM_TOPIC, this);
 
-    }
-
-    public void registerFerroAmpUpdateListener(FerroAmpUpdateListener listener) {
-        ferroAmpUpdateListeners = listener;
-    }
-
-    public void unregisterFerroAmpUpdateListener() {
-        ferroAmpUpdateListeners = null;
     }
 
     // Handles request topic
@@ -87,7 +81,6 @@ public class FerroampMqttCommunication implements MqttMessageSubscriber {
         DataType type = DataType.UNKNOWN;
         Map<String, @Nullable String> keyValueMap = new HashMap<>();
         String message = new String(payload, StandardCharsets.UTF_8);
-
         if (FerroampBindingConstants.EHUB_TOPIC.equals(topic)) {
             keyValueMap = extractKeyValuePairs(message, null);
             type = DataType.EHUB;
@@ -103,10 +96,98 @@ public class FerroampMqttCommunication implements MqttMessageSubscriber {
         } else {
             logger.warn("Received message on unknown topic: {}", topic);
         }
-        FerroAmpUpdateListener ferroAmpUpdateListeners = this.ferroAmpUpdateListeners;
+
+        FerroAmpListener ferroAmpUpdateListeners = new FerroAmpListener(type, keyValueMap);
+
+        // System.out.println("FerroampMqtt... listener = " + ferroAmpUpdateListeners);
+
         if (ferroAmpUpdateListeners != null && type != DataType.UNKNOWN) {
-            ferroAmpUpdateListeners.onFerroAmpUpdate(type, keyValueMap);
+            try {
+
+                // System.out.println("FerroampMqtt.... ferroAmpUpdateListeners = " + ferroAmpUpdateListeners);
+                // System.out.println("FerroampMqtt... type = " + type);
+                // System.out.println("FerroampMqtt... keyValueMap = " + keyValueMap);
+
+                if (type == DataType.EHUB) {
+                    ehubTypeCached = type;
+                    ehubKeyValueMapCached = keyValueMap;
+
+                    // typeCached = type;
+                    // keyValueMapCached = keyValueMap;
+
+                }
+                if (type == DataType.SSO) {
+                    ssoTypeCached = type;
+                    ssoKeyValueMapCached = keyValueMap;
+
+                    // typeCached = type;
+                    // keyValueMapCached = keyValueMap;
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else {
+            logger.warn(
+                    "MQTT message received for topic {}, but FerroAmpUpdateListener ferroAmpUpdateListeners isn't active",
+                    topic);
+            return;
         }
+
+    }
+
+    public static DataType getEhubTypeCached() {
+        try {
+            return ehubTypeCached;
+        } catch (Exception e) {
+            logger.debug("Failed to get EhubType: {}", e.getMessage());
+        }
+        return ehubTypeCached;
+    }
+
+    public static Map<String, @Nullable String> getEhubKeyValueMapCached() {
+        try {
+            return ehubKeyValueMapCached;
+        } catch (Exception e) {
+            logger.debug("Failed to get EhubKeyValueMap: {}", e.getMessage());
+        }
+        return ehubKeyValueMapCached;
+    }
+
+    public static DataType getSsoTypeCached() {
+        try {
+            return ssoTypeCached;
+        } catch (Exception e) {
+            logger.debug("Failed to get SsoType: {}", e.getMessage());
+        }
+        return ssoTypeCached;
+    }
+
+    public static Map<String, @Nullable String> getSsoKeyValueMapCached() {
+        try {
+            return ssoKeyValueMapCached;
+        } catch (Exception e) {
+            logger.debug("Failed to get sSoKeyValueMap: {}", e.getMessage());
+        }
+        return ssoKeyValueMapCached;
+    }
+
+    public static DataType gettypeCached() {
+        try {
+            return typeCached;
+        } catch (Exception e) {
+            logger.debug("Failed to get type: {}", e.getMessage());
+        }
+        return typeCached;
+    }
+
+    public static Map<String, @Nullable String> getkeyValueMapCached() {
+        try {
+            return keyValueMapCached;
+        } catch (Exception e) {
+            logger.debug("Failed to get keyValueMap: {}", e.getMessage());
+        }
+        return keyValueMapCached;
     }
 
     // Prepare actual Json-topic Ehub-message and update values for channels
@@ -189,5 +270,9 @@ public class FerroampMqttCommunication implements MqttMessageSubscriber {
 
     public boolean isConnected() {
         return !MqttConnectionState.DISCONNECTED.equals(ferroampConnection.connectionState());
+    }
+
+    @Override
+    public void onFerroAmpUpdateListener(DataType type, Map<String, @Nullable String> keyValueMap) {
     }
 }

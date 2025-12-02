@@ -21,7 +21,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.ferroamp.internal.FerroampBindingConstants;
 import org.openhab.binding.ferroamp.internal.api.DataType;
-import org.openhab.binding.ferroamp.internal.api.FerroAmpUpdateListener;
 import org.openhab.binding.ferroamp.internal.api.FerroampMqttCommunication;
 import org.openhab.binding.ferroamp.internal.config.ChannelMapping;
 import org.openhab.binding.ferroamp.internal.config.FerroampConfiguration;
@@ -43,7 +42,7 @@ import org.slf4j.LoggerFactory;
  */
 
 @NonNullByDefault
-public class FerroampHandler extends BaseThingHandler implements FerroAmpUpdateListener {
+public class FerroampHandler extends BaseThingHandler {
     private final static Logger logger = LoggerFactory.getLogger(FerroampHandler.class);
     private FerroampConfiguration ferroampConfig = new FerroampConfiguration();
     private @Nullable FerroampMqttCommunication ferroampMqttCommunication;
@@ -81,6 +80,7 @@ public class FerroampHandler extends BaseThingHandler implements FerroAmpUpdateL
         String requestCommand = "{\"" + "transId" + "\":\"" + UUID.randomUUID().toString() + "\",\"cmd\":{\"name\":\""
                 + commandType + "\",\"arg\":\"" + command.toString() + "\"}}";
         ferroampMqttCommunication.sendPublishedTopic(requestCommand);
+
     }
 
     @Override
@@ -126,15 +126,27 @@ public class FerroampHandler extends BaseThingHandler implements FerroAmpUpdateL
         }
 
         updateStatus(ThingStatus.ONLINE);
+
+        DataType ehubType = FerroampMqttCommunication.getEhubTypeCached();
+        if (ehubType == DataType.EHUB) {
+            Map<String, @Nullable String> keyValueMap = FerroampMqttCommunication.getEhubKeyValueMapCached();
+            onFerroAmpUpdate(ehubType, keyValueMap);
+        }
+
+        DataType ssoType = FerroampMqttCommunication.getSsoTypeCached();
+        if (ssoType == DataType.SSO) {
+            Map<String, @Nullable String> keyValueMap = FerroampMqttCommunication.getSsoKeyValueMapCached();
+            onFerroAmpUpdate(ssoType, keyValueMap);
+        }
     }
 
-    @Override
     public void onFerroAmpUpdate(DataType type, Map<String, @Nullable String> keyValueMap) {
-
         if (type == DataType.EHUB) {
             for (ChannelMapping mapping : ChannelMapping.getChannelConfigurationEhub()) {
                 State newState = StateHelper.convertToState(mapping, keyValueMap.get(mapping.jsonPath));
-                updateState("ehub" + mapping.id, newState);
+                updateState(mapping.id, newState);
+                System.out.println("onFerroAmpUpdate EHUB mapping.id = " + mapping.id);
+                System.out.println("onFerroAmpUpdate EHUB newState = " + newState);
             }
         } else if (type == DataType.SSO) {
             // TODO the SSO need to have a consistent ordering of the SSO's (by some key?), so that the channel id's are
@@ -146,7 +158,9 @@ public class FerroampHandler extends BaseThingHandler implements FerroAmpUpdateL
                 for (ChannelMapping mapping : ChannelMapping.getSSOMapping()) {
                     State newState = StateHelper.convertToState(mapping,
                             keyValueMap.get(ssoIndex + "-" + mapping.jsonPath));
-                    updateState("sso-" + (ssoIndex + 1) + "#" + mapping.id, newState);
+                    updateState(mapping.id, newState);
+                    System.out.println("onFerroAmpUpdate SSO mapping.id = " + mapping.id);
+                    System.out.println("onFerroAmpUpdate SSO newState = " + newState);
                 }
             }
         } else if (type == DataType.ESO) {

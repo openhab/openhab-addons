@@ -33,6 +33,5 @@ public interface FerroAmpUpdateListener {
      * @param keyValueMap a map containing the key-value pairs of the data
      * @param type the type of data being updated (e.g., EHUB, SSO, ESM, ESO)
      */
-    void onFerroAmpUpdate(DataType type, Map<String, @Nullable String> keyValueMap);
-
+    void onFerroAmpUpdateListener(DataType type, Map<String, @Nullable String> keyValueMap);
 }
