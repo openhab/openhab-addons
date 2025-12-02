@@ -105,7 +105,6 @@ public class UpnpRendererHandler extends UpnpHandler {
     private UpnpRenderingControlConfiguration renderingControlConfiguration = new UpnpRenderingControlConfiguration();
 
     private volatile List<CommandOption> favoriteCommandOptionList = List.of();
-    private volatile List<CommandOption> playlistCommandOptionList = List.of();
 
     private @NonNullByDefault({}) ChannelUID favoriteSelectChannelUID;
     private @NonNullByDefault({}) ChannelUID playlistSelectChannelUID;
@@ -1018,7 +1017,7 @@ public class UpnpRendererHandler extends UpnpHandler {
 
     @Override
     public void playlistsListChanged() {
-        playlistCommandOptionList = UpnpControlUtil.playlists().stream().map(p -> (new CommandOption(p, p)))
+        List<CommandOption> playlistCommandOptionList = UpnpControlUtil.playlists().stream().map(p -> (new CommandOption(p, p)))
                 .collect(Collectors.toList());
         updateCommandDescription(playlistSelectChannelUID, playlistCommandOptionList);
     }
