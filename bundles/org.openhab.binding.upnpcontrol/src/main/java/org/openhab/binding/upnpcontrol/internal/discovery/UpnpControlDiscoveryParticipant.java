@@ -75,8 +75,6 @@ public class UpnpControlDiscoveryParticipant implements UpnpDiscoveryParticipant
             result = DiscoveryResultBuilder.create(thingUid).withLabel(label).withProperties(properties)
                     .withRepresentationProperty("udn").build();
         }
-
-        logger.info("UpnpControl discovery result: {}", result); // TODO: (Nad) Temp debug
         return result;
     }
 
