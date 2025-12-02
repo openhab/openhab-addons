@@ -278,7 +278,7 @@ public class SpotifyApi {
      * @return Returns the albums of the user.
      */
     public List<Album> getAlbums(long offset, long limit) {
-        final SavedAlbums savedAlbums = request(GET, SPOTIFY_API_URL + "/albums?offset" + offset + "&limit=" + limit,
+        final SavedAlbums savedAlbums = request(GET, SPOTIFY_API_URL + "/albums?offset=" + offset + "&limit=" + limit,
                 "", SavedAlbums.class);
 
         List<Album> albums = new ArrayList<Album>();
