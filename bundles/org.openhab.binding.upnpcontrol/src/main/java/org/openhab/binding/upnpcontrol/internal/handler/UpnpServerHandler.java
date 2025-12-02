@@ -33,6 +33,7 @@ import java.util.stream.Collectors;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.jupnp.UpnpService;
+import org.jupnp.model.types.UDN;
 import org.openhab.binding.upnpcontrol.internal.UpnpDynamicCommandDescriptionProvider;
 import org.openhab.binding.upnpcontrol.internal.UpnpDynamicStateDescriptionProvider;
 import org.openhab.binding.upnpcontrol.internal.config.UpnpControlBindingConfiguration;
@@ -168,8 +169,16 @@ public class UpnpServerHandler extends UpnpHandler {
 
     @Override
     protected void initJob() {
+        setConfig();
+        String udn = config.udn;
+        if (udn != null && !udn.isBlank()) {
+            device = upnpService.getRegistry().getRemoteDevice(new UDN(udn), false);
+        }
+
+        upnpIOService.registerParticipant(this);
+
         synchronized (jobLock) {
-            if (!upnpIOService.isRegistered(this)) {
+            if (device == null || !upnpIOService.isDevicePresent(this)) {
                 String msg = String.format("@text/offline.device-not-registered [ \"%s\" ]", getDeviceUDN());
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, msg);
                 return;
