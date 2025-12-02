@@ -4,7 +4,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/update-description/v1.0.0 https://openhab.org/schemas/update-description-1.0.0.xsd">
 
 	<thing-type uid="melcloud:heatpumpdevice">
-		<instruction-set targetVersion="2">
+		<instruction-set targetVersion="1">
 
             <update-channel id="nextCommunication-channel">
                 <type>melcloud:nextCommunication-channel</type>
@@ -42,7 +42,7 @@
 				</tags>
 			</update-channel>
 
-			<!-- Nuovi canali -->
+			<!-- New channels -->
 			<add-channel id="tankTargetWaterTemperature-channel">
 				<type>melcloud:tankTargetWaterTemperature-channel</type>
 				<label>Tank Target Degrees</label>

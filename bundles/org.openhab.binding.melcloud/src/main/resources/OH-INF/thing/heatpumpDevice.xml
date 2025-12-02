@@ -33,7 +33,7 @@
 		</channels>
 
 		<properties>
-			<property name="thingTypeVersion">2</property>
+			<property name="thingTypeVersion">1</property>
 		</properties>
 
 		<representation-property>deviceID</representation-property>
