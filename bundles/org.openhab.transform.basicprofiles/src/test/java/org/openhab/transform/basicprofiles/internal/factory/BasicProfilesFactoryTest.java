@@ -57,7 +57,7 @@ import org.openhab.transform.basicprofiles.internal.profiles.TimeRangeCommandPro
 @NonNullByDefault
 public class BasicProfilesFactoryTest {
 
-    private static final int NUMBER_OF_PROFILES = 10;
+    private static final int NUMBER_OF_PROFILES = 11;
 
     private static final Map<String, Object> PROPERTIES = Map.of(ThresholdStateProfile.PARAM_THRESHOLD, 15,
             RoundStateProfile.PARAM_SCALE, 2, GenericCommandTriggerProfile.PARAM_EVENTS, "1002,1003",

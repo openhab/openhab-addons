@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="profile:basic-profiles:time-weighted-average">
+		<parameter name="duration" type="text" min="5" step="1" required="true">
+			<label>Duration</label>
+			<description>Duration of the time frame to collect state updates</description>
+			<default>1m</default>
+		</parameter>
+	</config-description>
+</config-description:config-descriptions>

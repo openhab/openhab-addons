@@ -14,7 +14,9 @@ This bundle provides a list of useful Profiles:
 | [Time Range Command Profile](#time-range-command-profile)       | An enhanced implementation of a follow profile which converts `OnOffType` to a `PercentType` |
 | [State Filter Profile](#state-filter-profile)                   | Filters input data using arithmetic comparison conditions                                    |
 | [Inactivity Profile](#inactivity-profile)                       | Sets the linked Item On or Off depending whether the Channel has recently produced data      |
+| [Time-weighted Average Profile](#time-weighted-average-profile) | Collects updates for given duration to calculate time-weighted average value                 |
 
+Time-weighted Average Profile
 ## Generic Command Profile
 
 This Profile can be used to send a Command towards the Item when one event of a specified event list is triggered.
@@ -360,4 +362,26 @@ Switch myChannelInactivityStatus {
 Switch myChannelActivityStatus {
   channel="mybinding:mything:mychannel" [ profile="basic-profiles:inactivity", timeout="1d", inverted=true ]
 }
+```
+
+## Time-weighted Average Profile
+
+This profile collects all state updates within the configured duration and delivers one time-weighted average value afterwards.
+**Rationale:**
+Devices like inverters, smart meters plugs with power measurements are delivering frequent live values within seconds.
+This profile reduces the amount of state updates and the corresponding storage in persistence without loosing too much information.
+
+### Time-weighted Average Profile Configuration
+
+| Configuration Parameter | Type    | Description                                                                                                                                         |
+|-------------------------|---------|-----------------------------------------------------------------------------------------------------------------------------------------------------|
+| `duration`              | text    | Duration of the time frame to collect state updates. See [format exmaples](https://www.openhab.org/docs/configuration/items.html#parameter-expire). |
+
+### Time-weighted Average Profile Example
+
+```java
+Number:Power SmartmeterPower {
+  channel="mybinding:mything:mychannel" [ profile="basic-profiles:time-weighted-average", duration="1m" ]
+}
+
 ```
