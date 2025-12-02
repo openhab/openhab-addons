@@ -100,7 +100,6 @@
 					<option value="PT30M">30 minutes</option>
 					<option value="PT60M">60 minutes</option>
 				</options>
-				<advanced>true</advanced>
 			</parameter>
 			<parameter name="spotPricesAvailableCetHour" type="integer" min="0" max="23" required="false">
 				<label>Publish Hour</label>

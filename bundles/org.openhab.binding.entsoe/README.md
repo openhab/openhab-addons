@@ -24,7 +24,7 @@ Optional parameters are historic days, resolution, availability hour for day ahe
 | securityToken                 | text              | Security token to fetch from ENTSO-E                                                  | N/A       | yes      | no       |
 | area                          | text              | Area                                                                                  | N/A       | yes      | no       |
 | historicDays                  | integer           | Historic days to get prices from (will use exchange rate as of today)                 | 1         | no       | no       |
-| resolution                    | text              | Data resolution                                                                       | N/A       | no       | yes      |
+| resolution                    | text              | Data resolution                                                                       | N/A       | no       | no      |
 | spotPricesAvailableCetHour    | integer           | Which CET hour binding assumes new spot prices for next day is available              | 13        | no       | yes      |
 | requestTimeout                | integer           | Request timeout in seconds                                                            | 30        | no       | yes      |
 
