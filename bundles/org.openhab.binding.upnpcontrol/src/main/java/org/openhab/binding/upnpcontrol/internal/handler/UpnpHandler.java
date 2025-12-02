@@ -28,8 +28,10 @@ import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.jupnp.UpnpService;
 import org.jupnp.model.action.ActionException;
 import org.jupnp.model.meta.RemoteDevice;
+import org.jupnp.model.types.UDN;
 import org.openhab.binding.upnpcontrol.internal.UpnpChannelName;
 import org.openhab.binding.upnpcontrol.internal.UpnpDynamicCommandDescriptionProvider;
 import org.openhab.binding.upnpcontrol.internal.UpnpDynamicStateDescriptionProvider;
@@ -81,6 +83,8 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
 
     protected UpnpIOService upnpIOService;
 
+    protected final UpnpService upnpService;
+
     protected volatile @Nullable RemoteDevice device;
 
     // The handlers can potentially create an important number of tasks, therefore put them in a separate thread pool
@@ -122,9 +126,10 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
 
     public UpnpHandler(Thing thing, UpnpIOService upnpIOService, UpnpControlBindingConfiguration configuration,
             UpnpDynamicStateDescriptionProvider upnpStateDescriptionProvider,
-            UpnpDynamicCommandDescriptionProvider upnpCommandDescriptionProvider) {
+            UpnpDynamicCommandDescriptionProvider upnpCommandDescriptionProvider, UpnpService upnpService) {
         super(thing);
 
+        this.upnpService = upnpService;
         this.upnpIOService = upnpIOService;
         this.bindingConfig = configuration;
 
@@ -138,13 +143,22 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
 
     @Override
     public void initialize() {
-        config = getConfigAs(UpnpControlConfiguration.class);
+        setConfig();
+        String udn = config.udn;
+        if (udn != null && !udn.isBlank()) {
+            device = upnpService.getRegistry().getRemoteDevice(new UDN(udn), false);
+        }
 
         upnpIOService.registerParticipant(this);
 
         UpnpControlUtil.updatePlaylistsList(bindingConfig.path);
         UpnpControlUtil.playlistsSubscribe(this);
     }
+
+    /**
+     * Sets the {@code config} field using the appropriate configuration class
+     */
+    protected abstract void setConfig();
 
     @Override
     public void dispose() {

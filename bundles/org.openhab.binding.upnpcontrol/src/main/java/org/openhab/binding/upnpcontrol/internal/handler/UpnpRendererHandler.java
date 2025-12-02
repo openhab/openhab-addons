@@ -36,6 +36,7 @@ import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.jupnp.UpnpService;
 import org.jupnp.model.meta.RemoteDevice;
 import org.openhab.binding.upnpcontrol.internal.UpnpChannelName;
 import org.openhab.binding.upnpcontrol.internal.UpnpDynamicCommandDescriptionProvider;
@@ -163,8 +164,9 @@ public class UpnpRendererHandler extends UpnpHandler {
     public UpnpRendererHandler(Thing thing, UpnpIOService upnpIOService, UpnpAudioSinkReg audioSinkReg,
             UpnpDynamicStateDescriptionProvider upnpStateDescriptionProvider,
             UpnpDynamicCommandDescriptionProvider upnpCommandDescriptionProvider,
-            UpnpControlBindingConfiguration configuration) {
-        super(thing, upnpIOService, configuration, upnpStateDescriptionProvider, upnpCommandDescriptionProvider);
+            UpnpControlBindingConfiguration configuration, UpnpService upnpService) {
+        super(thing, upnpIOService, configuration, upnpStateDescriptionProvider, upnpCommandDescriptionProvider,
+                upnpService);
 
         serviceSubscriptions.add(AV_TRANSPORT);
         serviceSubscriptions.add(RENDERING_CONTROL);
@@ -173,9 +175,13 @@ public class UpnpRendererHandler extends UpnpHandler {
     }
 
     @Override
+    protected void setConfig() {
+        config = getConfigAs(UpnpControlRendererConfiguration.class);
+    }
+
+    @Override
     public void initialize() {
         super.initialize();
-        config = getConfigAs(UpnpControlRendererConfiguration.class);
         if (config.seekStep < 1) {
             config.seekStep = 1;
         }

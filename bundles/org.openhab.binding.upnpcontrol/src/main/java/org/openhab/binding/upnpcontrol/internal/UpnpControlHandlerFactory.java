@@ -148,7 +148,7 @@ public class UpnpControlHandlerFactory extends BaseThingHandlerFactory implement
 
     private UpnpServerHandler addServer(Thing thing) {
         UpnpServerHandler handler = new UpnpServerHandler(thing, upnpIOService, upnpRenderers,
-                upnpStateDescriptionProvider, upnpCommandDescriptionProvider, configuration);
+                upnpStateDescriptionProvider, upnpCommandDescriptionProvider, configuration, upnpService);
         String key = thing.getUID().toString();
         upnpServers.put(key, handler);
         logger.debug("Media server handler created for {} with UID {}", thing.getLabel(), thing.getUID());
@@ -165,7 +165,7 @@ public class UpnpControlHandlerFactory extends BaseThingHandlerFactory implement
     private UpnpRendererHandler addRenderer(Thing thing) {
         callbackUrl = createCallbackUrl();
         UpnpRendererHandler handler = new UpnpRendererHandler(thing, upnpIOService, this, upnpStateDescriptionProvider,
-                upnpCommandDescriptionProvider, configuration);
+                upnpCommandDescriptionProvider, configuration, upnpService);
         String key = thing.getUID().toString();
         upnpRenderers.put(key, handler);
         upnpServers.forEach((thingId, value) -> value.addRendererOption(key));

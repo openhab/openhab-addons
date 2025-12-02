@@ -32,6 +32,7 @@ import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.jupnp.UpnpService;
 import org.openhab.binding.upnpcontrol.internal.UpnpDynamicCommandDescriptionProvider;
 import org.openhab.binding.upnpcontrol.internal.UpnpDynamicStateDescriptionProvider;
 import org.openhab.binding.upnpcontrol.internal.config.UpnpControlBindingConfiguration;
@@ -104,8 +105,9 @@ public class UpnpServerHandler extends UpnpHandler {
             ConcurrentMap<String, UpnpRendererHandler> upnpRenderers,
             UpnpDynamicStateDescriptionProvider upnpStateDescriptionProvider,
             UpnpDynamicCommandDescriptionProvider upnpCommandDescriptionProvider,
-            UpnpControlBindingConfiguration configuration) {
-        super(thing, upnpIOService, configuration, upnpStateDescriptionProvider, upnpCommandDescriptionProvider);
+            UpnpControlBindingConfiguration configuration, UpnpService upnpService) {
+        super(thing, upnpIOService, configuration, upnpStateDescriptionProvider, upnpCommandDescriptionProvider,
+                upnpService);
         this.upnpRenderers = upnpRenderers;
 
         // put root as highest level in parent map
@@ -113,9 +115,13 @@ public class UpnpServerHandler extends UpnpHandler {
     }
 
     @Override
+    protected void setConfig() {
+        config = getConfigAs(UpnpControlServerConfiguration.class);
+    }
+
+    @Override
     public void initialize() {
         super.initialize();
-        config = getConfigAs(UpnpControlServerConfiguration.class);
 
         logger.debug("Initializing handler for media server device {}", thing.getLabel());
 

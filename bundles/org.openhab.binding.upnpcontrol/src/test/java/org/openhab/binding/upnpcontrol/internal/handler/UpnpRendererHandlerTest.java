@@ -32,6 +32,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.jupnp.UpnpService;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.openhab.binding.upnpcontrol.internal.audiosink.UpnpAudioSinkReg;
@@ -162,6 +163,9 @@ public class UpnpRendererHandlerTest extends UpnpHandlerTest {
     @Mock
     private @Nullable UpnpAudioSinkReg audioSinkReg;
 
+    @Mock
+    private @Nullable UpnpService upnpService;
+
     @Override
     @BeforeEach
     public void setUp() {
@@ -206,7 +210,7 @@ public class UpnpRendererHandlerTest extends UpnpHandlerTest {
 
         handler = spy(new UpnpRendererHandler(requireNonNull(thing), requireNonNull(upnpIOService),
                 requireNonNull(audioSinkReg), requireNonNull(upnpStateDescriptionProvider),
-                requireNonNull(upnpCommandDescriptionProvider), configuration));
+                requireNonNull(upnpCommandDescriptionProvider), configuration, requireNonNull(upnpService)));
 
         initHandler(requireNonNull(handler));
 
