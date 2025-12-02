@@ -54,10 +54,10 @@ import org.openhab.core.media.MediaService;
 import org.openhab.core.media.model.MediaAlbum;
 import org.openhab.core.media.model.MediaCollection;
 import org.openhab.core.media.model.MediaEntry;
+import org.openhab.core.media.model.MediaEntrySupplier;
 import org.openhab.core.media.model.MediaQueue;
 import org.openhab.core.media.model.MediaRegistry;
 import org.openhab.core.media.model.MediaSearchResult;
-import org.openhab.core.media.model.MediaEntrySupplier;
 import org.openhab.core.media.model.MediaTrack;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -190,9 +190,32 @@ public class UpnpServerHandler extends UpnpHandler implements MediaListenner {
         }
     }
 
+    private volatile @Nullable CompletableFuture<Boolean> isSettingURI; // Set to wait for setting URI before starting
+    // to play or seeking
+
     @Override
     public String getStreamUri(String cmdVal) {
-        return "";
+        String val = cmdVal;
+        if (val.contains("/Root/upnpcontrol")) {
+            int idx = val.indexOf("/l");
+            if (idx >= 0) {
+                val = val.substring(idx);
+            }
+        }
+
+        browse(val, "BrowseDirectChildren", "*", "0", "0", "+dc:title");
+
+        try {
+            Thread.sleep(2000);
+        } catch (Exception ex) {
+
+        }
+
+        serveMedia();
+
+        String res = currentEntry.getRes();
+
+        return res;
     }
 
     @Override
@@ -733,6 +756,7 @@ public class UpnpServerHandler extends UpnpHandler implements MediaListenner {
         for (UpnpEntry upnpEntry : titleList) {
             String id = upnpEntry.getId();
 
+            currentEntry = upnpEntry;
             if (id.startsWith(mediaEntry.getSubPath())) {
                 id = id.substring(mediaEntry.getSubPath().length());
             }

@@ -815,6 +815,7 @@ public class UpnpRendererHandler extends UpnpHandler {
             } else if (mediaTypeCommand == MediaCommandEnumType.PLAY
                     || mediaTypeCommand == MediaCommandEnumType.ENQUEUE) {
                 if (val.contains("/Root/upnpcontrol")) {
+<<<<<<< HEAD
                 int idx = val.indexOf("/l");
 				 if (val.contains("/Root/tidal")) {
                     int p1 = val.lastIndexOf('/');
@@ -852,6 +853,12 @@ public class UpnpRendererHandler extends UpnpHandler {
                     try {
                         Thread.sleep(2000);
                     } catch (Exception ex) {
+=======
+                    int idx = val.indexOf("/l");
+                    if (idx >= 0) {
+                        val = val.substring(idx);
+                    }
+>>>>>>> c62fe04e63 (experiment playing stream to Java audio or WebAudio sink)
 
                     }
 
