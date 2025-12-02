@@ -85,7 +85,9 @@ public class SpotifyAuthServlet extends HttpServlet {
     protected void doGet(@Nullable HttpServletRequest req, @Nullable HttpServletResponse resp)
             throws ServletException, IOException {
         logger.debug("Spotify auth callback servlet received GET request {}.", req.getRequestURI());
-        final String servletBaseURL = req.getRequestURL().toString();
+        String servletBaseURL = req.getRequestURL().toString();
+        servletBaseURL = servletBaseURL.replace("http://", "https://");
+
         final Map<String, String> replaceMap = new HashMap<>();
 
         handleSpotifyRedirect(replaceMap, servletBaseURL, req.getQueryString());
