@@ -1,13 +1,41 @@
 # EditorConfig helps maintain consistent coding styles
 root = true
 
-
+# Defaults for all files
 [*]
 charset = utf-8
 end_of_line = lf
 insert_final_newline = true
 trim_trailing_whitespace = true
 
+# Java source files - spaces (not tabs per openHAB guidelines)
+[*.java]
+indent_style = space
+indent_size = 4
+max_line_length = 120
+
+# XML files (thing definitions, config, etc.) - tabs
+[*.xml]
+indent_style = tab
+indent_size = 4
+max_line_length = 120
+
+# pom.xml specifically - 2 spaces
+[pom.xml]
+indent_style = space
+indent_size = 2
+
+# JSON files - tabs
+[*.json]
+indent_style = tab
+indent_size = 4
+
+# Properties files (i18n) - spaces
+[*.properties]
+indent_style = space
+indent_size = 4
+
+# Markdown documentation - spaces
 [*.md]
 indent_style = space
 indent_size = 2
