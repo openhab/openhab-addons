@@ -48,7 +48,7 @@
 	<channel-type id="power-ps3-channel">
 		<item-type>Switch</item-type>
 		<label>PlayStation 3 Power</label>
-		<description>Shows if PlayStation 3 is On or Off.</description>
+		<description>Shows if the PlayStation 3 is on or off.</description>
 		<tags>
 			<tag>Status</tag>
 			<tag>Power</tag>
@@ -58,7 +58,7 @@
 	<channel-type id="power-channel">
 		<item-type>Switch</item-type>
 		<label>PlayStation 4 Power</label>
-		<description>Shows if PlayStation 4 is On or in Standby/Off.</description>
+		<description>Shows if the PlayStation 4 is on or in standby/off.</description>
 		<tags>
 			<tag>Status</tag>
 			<tag>Power</tag>
@@ -67,7 +67,7 @@
 	<channel-type id="application-channel">
 		<item-type>String</item-type>
 		<label>Application</label>
-		<description>Name of the Currently Running Application.</description>
+		<description>Name of the currently running application.</description>
 		<tags>
 			<tag>Status</tag>
 			<tag>App</tag>
@@ -77,24 +77,24 @@
 	<channel-type id="applicationId-channel">
 		<item-type>String</item-type>
 		<label>Application ID</label>
-		<description>ID of the Currently running application.</description>
+		<description>ID of the currently running application.</description>
 		<category>MediaControl</category>
 	</channel-type>
 	<channel-type id="applicationImage-channel">
 		<item-type>Image</item-type>
 		<label>Artwork</label>
-		<description>Application Artwork.</description>
+		<description>Application artwork.</description>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="oskText-channel" advanced="true">
 		<item-type>String</item-type>
 		<label>OSK Text</label>
-		<description>The Text from the OnScreenKeyboard.</description>
+		<description>The text from the on-screen keyboard.</description>
 	</channel-type>
 	<channel-type id="sendKey-channel" advanced="true">
 		<item-type>String</item-type>
 		<label>Send a Key Press</label>
-		<description>Send a Key Press to the PS4 UI.</description>
+		<description>Send a key press to the PS4 UI.</description>
 		<category>MoveControl</category>
 		<command>
 			<options>
@@ -112,13 +112,13 @@
 	<channel-type id="secondScreen-channel" advanced="true">
 		<item-type>String</item-type>
 		<label>Second screen</label>
-		<description>Link to 2ndScreen HTTP Server.</description>
+		<description>Link to the Second Screen HTTP server.</description>
 		<state pattern="%s" readOnly="true"/>
 	</channel-type>
 	<channel-type id="connect-channel" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Connected</label>
-		<description>Connect/Disconnect to/from PS4 without Sending Command.</description>
+		<description>Connect to or disconnect from the PS4 without sending a command.</description>
 	</channel-type>
 
 </thing:thing-descriptions>

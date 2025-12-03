@@ -1,18 +1,18 @@
 # Pushover Binding
 
-The Pushover binding allows you to notify mobile devices of a message using the [Pushover REST API](https://pushover.net/api).
-To get started you first need to register (a free process) to get an API token.
-Initially you have to create an application, set its name and optionally upload an icon, and get the API token in return.
-Once you have the token, you need a user key (or group key) and optionally a device name for each user to which you want to push notifications.
+This binding allows you to notify mobile devices using the [Pushover REST API](https://pushover.net/api).
+To get started, first register (a free process) to get an API token.
+Initially, create an application, set its name, and optionally upload an icon to get the API token in return.
+Once you have the token, you need a user key (or group key) and optionally a device name for each user to whom you want to push notifications.
 
 ## Supported Things
 
-There is only one Thing available - the `pushover-account`.
-You are able to create multiple instances of this Thing to broadcast to different users, groups or devices.
+There is only one Thing available: `pushover-account`.
+You can create multiple instances of this Thing to broadcast to different users, groups, or devices.
 
 openHAB is listed as a _featured application_ on the [Pushover homepage](https://pushover.net/apps).
 It provides a clone function to directly add a _prefilled_ application to your Pushover account and retrieve an API key.
-You can reach it via [https://pushover.net/apps/clone/openHAB](https://pushover.net/apps/clone/openHAB)
+You can reach it via <https://pushover.net/apps/clone/openHAB>.
 
 ## Thing Configuration
 
@@ -34,12 +34,11 @@ Currently the binding does not support any Channels.
 
 ## Thing Actions
 
-All actions return a `Boolean` value to indicate if the message was sent successfully or not.
-If the communication to Pushover servers fails the binding does not try to send the message again.
-One has to take care of that on its own if it is important.
-The parameter `message` is **mandatory**, the `title` parameter defaults to whatever value you defined in the `title` related configuration parameter.
-Parameters declared as `@Nullable` are not optional.
-One has to pass a `null` value if it should be skipped or the default value for it should be used.
+All actions return a `Boolean` value to indicate if the message was sent successfully.
+If communication to Pushover servers fails, the binding does not try to send the message again.
+You must handle retries yourself if necessary.
+The parameter `message` is **mandatory**; the `title` parameter defaults to whatever value you defined in the `title` configuration parameter.
+Parameters declared as `@Nullable` are not optional—you must pass a `null` value if the parameter should be skipped or if the default value should be used.
 
 - `sendMessage(String message, @Nullable String title, @Nullable String sound, @Nullable String url, @Nullable String urlTitle, @Nullable String attachment, @Nullable String contentType, @Nullable Integer priority, @Nullable String device, @Nullable Duration ttl)` - This method is used to send a plain text message providing all available parameters.
 

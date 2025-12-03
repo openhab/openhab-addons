@@ -1,25 +1,24 @@
 # PLCLogo Binding
 
-This binding provides native support of Siemens LOGO! PLC devices.
-Communication with LOGO! is done via Moka7 library.
+This binding provides native support for Siemens LOGO! PLC devices.
+Communication with LOGO! is done via the Moka7 library.
 Currently only two devices are supported: `0BA7` (LOGO! 7) and `0BA8` (LOGO! 8).
-Additionally multiple devices are supported.
-Different families of LOGO! devices should work also, but was not tested now due to lack of hardware.
-Binding works nicely at least 100ms polling rate, if network connection is stable.
+Multiple devices are supported as well.
+Different families of LOGO! devices should also work, but have not been tested due to lack of hardware.
+The binding works reliably with a polling rate of at least 100 ms, provided the network connection is stable.
 
 ## Pitfalls
 
-- Changing of block parameter while running the binding may kill your LOGO!, so that program flashing via LOGO! SoftComort
-  will be required. Furthermore programs within LOGO! SoftComfort and LOGO! itself will differ, so that online simulation
-  will not work anymore without program synchronisation.
+- Changing block parameters while the binding is running may crash your LOGO!, requiring program flashing via LOGO! SoftComfort.
+  Furthermore, programs within LOGO! SoftComfort and LOGO! itself will differ, so online simulation will no longer work without program synchronization.
 
-- Flashing the LOGO! while running the binding may crash the network interface of your LOGO!. Before flashing the LOGO!
-  with LOGO! SoftComfort stop openHAB service. If network interface is crashed, no reader could be created for this
-  device. See troubleshooting section below how to recover.
+- Flashing the LOGO! while the binding is running may crash the network interface of your LOGO!. Before flashing the LOGO!
+  with LOGO! SoftComfort, stop the openHAB service. If the network interface crashes, no reader can be created for this
+  device. See the troubleshooting section below for recovery instructions.
 
 ## Discovery
 
-Siemens LOGO! devices can be manually discovered by sending a request to every IP on the network.
+Siemens LOGO! devices can be manually discovered by sending a request to every IP address on the network.
 This functionality should be used with caution, because it produces heavy load to the operating hardware.
 For this reason, the binding does not do an automatic background discovery, but discovery can be triggered manually.
 
@@ -39,13 +38,13 @@ Bridge plclogo:device:<DeviceId> [ address="<ip>", family="<0BA7/0BA8>", localTS
 |            |         |            |           | in LOGO!Soft Comfort. Common used value is `0x3000`.             |
 | remoteTSAP | String  | Yes        |           | TSAP (as hex) of the remote LOGO! PLC, as configured by          |
 |            |         |            |           | LOGO!Soft Comfort. Common used value is `0x2000`.                |
-| refresh    | Integer | No         | 100ms     | Polling interval, in milliseconds. Is used for query the LOGO!.  |
+| refresh    | Integer | No         | 100ms     | Polling interval (in milliseconds) used to query the LOGO!.  |
 
-Be sure not to use the same values for localTSAP and remoteTSAP, if configure more than one LOGO!
+Be sure not to use the same values for localTSAP and remoteTSAP if you configure more than one LOGO!
 
 ## Thing configuration
 
-Binding supports four types of things: digital, analog, memory and datetime.
+The binding supports four types of things: digital, analog, memory, and datetime.
 
 ### Digital Things
 
@@ -58,9 +57,9 @@ Thing digital <ThingId> "Label" @ "Location" [ kind="<kind>", force=<true/false>
 | Parameter | Type    | Required   | Default   | Description                                                  |
 | --------- | :-----: | :--------: | :-------: | ------------------------------------------------------------ |
 | kind      | String  | Yes        |           | Blocks kind                                                  |
-| force     | Boolean | No         | false     | Send current value to openHAB, independent if changed or not |
+| force     | Boolean | No         | false     | Send current value to openHAB, independent of whether changed or not |
 
-Follow block kinds are allowed for digital things:
+The following block kinds are allowed for digital things:
 
 | Type           | `0BA7` | `0BA8` |
 | -------------- | :----: | ------ |
@@ -81,10 +80,10 @@ Thing analog <ThingId>  "Label" @ "Location" [ kind="<kind>", threshold=<number>
 | Parameter | Type    | Required   | Default   | Description                                                   |
 | --------- | :-----: | :--------: | :-------: | ------------------------------------------------------------- |
 | kind      | String  | Yes        |           | Blocks kind                                                   |
-| threshold | Integer | No         | 0         | Send current value to openHAB, if changed more than threshold |
-| force     | Boolean | No         | false     | Send current value to openHAB, independent if changed or not  |
+| threshold | Integer | No         | 0         | Send current value to openHAB if changed by more than threshold |
+| force     | Boolean | No         | false     | Send current value to openHAB, independent of whether changed or not  |
 
-Follow block kinds are allowed for analog things:
+The following block kinds are allowed for analog things:
 
 | Type           | `0BA7` | `0BA8` |
 | -------------- | :----: | ------ |
@@ -102,7 +101,7 @@ The configuration pattern for analog things is:
 Thing memory <ThingId>  "Label" @ "Location" [ block="<name>", threshold=<number>, force=<true/false> ]
 ```
 
-Follow block names are allowed for memory things:
+The following block names are allowed for memory things:
 
 | Type  | `0BA7`            | `0BA8`            |
 | ----- | :---------------: | ----------------- |
@@ -111,7 +110,7 @@ Follow block names are allowed for memory things:
 | Word  | `VW[0-849]`       | `VW[0-849]`       |
 | DWord | `VD[0-847]`       | `VD[0-847]`       |
 
-Parameter `threshold` will be taken into account for Byte, Word and DWord, i.e Number items, only.
+Parameter `threshold` will be taken into account for Byte, Word, and DWord (i.e., Number items) only.
 
 ### DateTime Things
 
@@ -121,16 +120,16 @@ The configuration pattern for datetime things is:
 Thing datetime <ThingId>  "Label" @ "Location" [ block="<name>", type=<type>, force=<true/false> ]
 ```
 
-Follow block names are allowed for datetime things:
+The following block names are allowed for datetime things:
 
 | Type  | `0BA7`      | `0BA8`      |
 | ----- | :---------: | ----------- |
 | Word  | `VW[0-849]` | `VW[0-849]` |
 
-If parameter `type` is `"date"`, then the binding will try to interpret incoming data as calendar date.
-The time this case will be taken from openHAB host.
-If `type` is set to `"time"`, then incoming data will be tried to interpret as time of day.
-The date this case will be taken from openHAB host.
+If parameter `type` is `"date"`, the binding will try to interpret incoming data as a calendar date.
+The time in this case will be taken from the openHAB host.
+If `type` is set to `"time"`, incoming data will be interpreted as the time of day.
+The date in this case will be taken from the openHAB host.
 
 ### Pulse Things
 
@@ -140,13 +139,13 @@ The configuration pattern for pulse things is:
 Thing pulse <ThingId>  "Label" @ "Location" [ block="<name>", observe="<name>", pulse=<number> ]
 ```
 
-Follow block names are allowed for pulse things:
+The following block names are allowed for pulse things:
 
 | Type  | `0BA7`            | `0BA8`            |
 | ----- | :---------------: | ----------------- |
 | Bit   | `VB[0-850].[0-7]` | `VB[0-850].[0-7]` |
 
-Follow observed block names are allowed for pulse things:
+The following observed block names are allowed for pulse things:
 
 | Type  | `0BA7`            | `0BA8`            |
 | ----- | :---------------: | ----------------- |
@@ -157,17 +156,16 @@ Follow observed block names are allowed for pulse things:
 | Bit   |                   | `NI[1-64]`        |
 | Bit   |                   | `NQ[1-64]`        |
 
-If `observe` is not set or set equal `block`, simply pulse with length `pulse` milliseconds is send to `block`.
-If `observe` is set and differ from `block`, binding will wait for value change on `observe` and send then a pulse
-with length `pulse` milliseconds to block.
-Please note, update rate for change detection depends on bridge refresh value.
-For both use cases: if `block` was `0` then `1` is send and vice versa.
+If `observe` is not set or is set equal to `block`, a pulse with length `pulse` milliseconds is sent to `block`.
+If `observe` is set and differs from `block`, the binding will wait for a value change on `observe` and then send a pulse with length `pulse` milliseconds to `block`.
+Please note the update rate for change detection depends on the bridge refresh value.
+For both use cases: if `block` was `0`, then `1` is sent and vice versa.
 
 ## Channels
 
 ### Bridge
 
-Each device have currently three channels `diagnostic`, `rtc` and `weekday`:
+Each device currently has three channels: `diagnostic`, `rtc`, and `weekday`:
 
 ```java
 channel="plclogo:device:<DeviceId>:diagnostic"
@@ -176,10 +174,10 @@ channel="plclogo:device:<DeviceId>:datetime"
 channel="plclogo:device:<DeviceId>:weekday"
 ```
 
-Channel `diagnostic` contains the last diagnostic message reported by LOGO! as `String` item.
-Channel `weekday` contains current day of the week and shall be linked to `String` item too.
+Channel `diagnostic` contains the last diagnostic message reported by LOGO!.
+Channel `weekday` contains the current day of the week.
 Channel `datetime` reports current date/time used in LOGO! as `DateTime` item.
-These values are also provided by LOGO!.
+The value is provided by LOGO!.
 Channel `rtc` supports `DateTime` items only and returns the LOGO! real time clock value.
 Since Siemens `0BA7` (LOGO! 7) devices will not transfer any useful data for this channel, local time of
 openHAB host will be used.
@@ -188,13 +186,13 @@ Since the smallest resolution provided by LOGO! is one second, `rtc` channel wil
 
 ### Digital
 
-Format pattern for digital channels is
+The format pattern for digital channels is
 
 ```java
 channel="plclogo:digital:<DeviceId>:<ThingId>:<Channel>"
 ```
 
-Dependent on configured LOGO! PLC and thing kind, follow channels are available:
+Dependent on the configured LOGO! PLC and thing kind, the following channels are available:
 
 | Kind | `0BA7`    | `0BA8`     | Item      |
 | ---- | :-------: | :--------: | --------- |
@@ -206,13 +204,13 @@ Dependent on configured LOGO! PLC and thing kind, follow channels are available:
 
 ### Analog
 
-Format pattern for analog channels is
+The format pattern for analog channels is
 
 ```java
 channel="plclogo:analog:<DeviceId>:<ThingId>:<Channel>"
 ```
 
-Dependent on configured LOGO! PLC and thing kind, follow channels are available:
+Dependent on the configured LOGO! PLC and thing kind, the following channels are available:
 
 | Kind  | `0BA7`     | `0BA8`      | Item     |
 | ----- | :--------: | :---------: | -------- |
@@ -224,13 +222,13 @@ Dependent on configured LOGO! PLC and thing kind, follow channels are available:
 
 ### Memory
 
-Format pattern for memory channels for bit values is
+The format pattern for memory channels for bit values is
 
 ```java
 channel="plclogo:memory:<DeviceId>:<ThingId>:<state/value>"
 ```
 
-Dependent on configured LOGO! PLC and thing kind, follow channels are available:
+Dependent on the configured LOGO! PLC and thing kind, the following channels are available:
 
 | Kind              | `0BA7`  | `0BA8`  | Item     |
 | ----------------- | :-----: | :-----: | -------- |
@@ -241,13 +239,13 @@ Dependent on configured LOGO! PLC and thing kind, follow channels are available:
 
 ### DateTime
 
-Format pattern depends for date/time channels is
+The format pattern for date/time channels is
 
 ```java
 channel="plclogo:datetime:<DeviceId>:<ThingId>:<date/time>"
 ```
 
-Dependent on configured LOGO! PLC and thing kind, follow channels are available:
+Dependent on the configured LOGO! PLC and thing kind, the following channels are available:
 
 | Kind        | `0BA7`  | `0BA8`  | Item       |
 | ----------- | :-----: | :-----: | ---------- |
@@ -255,9 +253,9 @@ Dependent on configured LOGO! PLC and thing kind, follow channels are available:
 | `VW[0-849]` | `time`  | `time`  | `DateTime` |
 | `VW[0-849]` | `value` | `value` | `Number`   |
 
-Channel `date` is available, if thing is configured as `"date"`.
-Is thing configured as `"time"`, then channel `time` is provided.
-Raw block data is provided via `value` channel, independed from thing configuration:
+Channel `date` is available if the thing is configured as `"date"`.
+If the thing is configured as `"time"`, then channel `time` is provided.
+Raw block data is provided via the `value` channel, independent of the thing configuration:
 
 ```java
 channel="plclogo:datetime:<DeviceId>:<ThingId>:value"
@@ -265,19 +263,19 @@ channel="plclogo:datetime:<DeviceId>:<ThingId>:value"
 
 ### Pulse
 
-Format pattern depends for pulse channels is
+The format pattern for pulse channels is
 
 ```java
 channel="plclogo:pulse:<DeviceId>:<ThingId>:state"
 ```
 
-Additionally the state of observed block data is provided via `observed` channel
+Additionally, the state of the observed block data is provided via the `observed` channel
 
 ```java
 channel="plclogo:pulse:<DeviceId>:<ThingId>:observed"
 ```
 
-Dependent on configured LOGO! PLC and thing kind, follow channels are available:
+Dependent on the configured LOGO! PLC and thing kind, the following channels are available:
 
 | Kind              | `0BA7`     | `0BA8`     | Item      |
 | ----------------- | :--------: | :--------: | --------- |
@@ -376,16 +374,16 @@ DateTime Logo2_RTC  { channel="plclogo:device:Logo2:rtc"}
 
 Be sure to have only one bridge for each LOGO! device.
 
-### Log shows reader was created but no communication with LOGO! possible
+### Log shows reader was created but no communication with LOGO! is possible
 
 Check TSAP values: localTSAP and remoteTSAP should not be the same.
 You have to choose different addresses.
 
 **openHAB is starting without errors but no reader was created for the LOGO!**
 
-If all configuration parameters were checked and fine, it maybe possible that the network interface of the LOGO! is crashed.
-To recover stop openHAB, cold boot your LOGO! (power off/on) and reflash the program with LOGO! SoftComfort.
-Then restart openHAB and check logging for a created reader.
+If all configuration parameters have been checked and are correct, it may be possible that the network interface of the LOGO! has crashed.
+To recover, stop openHAB, cold boot your LOGO! (power off/on), and reflash the program with LOGO! SoftComfort.
+Then restart openHAB and check the logging for a created reader.
 
 ### RTC value differs from the value shown in LOGO! (0BA7)
 

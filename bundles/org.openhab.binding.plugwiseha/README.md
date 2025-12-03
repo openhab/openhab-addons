@@ -1,16 +1,16 @@
 # PlugwiseHA Binding
 
 The Plugwise Home Automation binding adds support to openHAB for the [Plugwise Home Automation ecosystem](https://www.plugwise.com/en_US/adam_zone_control).
-This system is built around a gateway from Plugwise called the 'Adam' which incorporates a Zigbee controller to manage thermostatic radiator valves, room thermostats, floor heating pumps, et cetera.
+This system is built around a gateway from Plugwise called the “Adam,” which incorporates a Zigbee controller to manage thermostatic radiator valves, room thermostats, floor-heating pumps, etc.
 
-Users can manage and control this system either via a web app or a mobile phone app developed by Plugwise.
-The (web) app allows users to define heating zone's (e.g. rooms) and add radiator valves to those rooms to manage and control their heating irrespective of other rooms.
+Users can manage and control this system via a web app or a mobile app developed by Plugwise.
+The app allows users to define heating zones (for example, rooms) and add radiator valves to those zones to manage and control their heating independently of other zones.
 
-Using the Plugwise Home Automation binding you can incorporate the management of these devices and heating zones into openHAB.
-The binding uses the same RESTfull API that both the mobile phone app and the web app use.
+Using the Plugwise Home Automation binding, you can integrate the management of these devices and heating zones into openHAB.
+The binding uses the same RESTful API that both the mobile app and the web app use.
 
-The binding requires users to have a working Plugwise Home Automation setup consisting of at least 1 gateway device (the 'Adam') and preferably 1 radiator valve as a bare minimum.
-The 'Adam' (from hereon called the gateway) needs to be accessible from the openHAB instance via a TCP/IP connection.
+The binding requires a working Plugwise Home Automation setup consisting of at least one gateway device (the “Adam”) and preferably at least one radiator valve.
+The “Adam” (hereafter called the gateway) must be accessible from the openHAB instance via a TCP/IP connection.
 
 ## Supported Things
 
@@ -26,9 +26,9 @@ The 'Adam' (from hereon called the gateway) needs to be accessible from the open
 
 ## Discovery
 
-After setting up the Plugwise Home Automation bridge you can start a manual scan to find all devices registered on the gateway.
-You can also manually add things by entering the corresponding device id as a configuration parameter.
-The device IDs can be found be enabling TRACE logging in the Karaf console.
+After setting up the Plugwise Home Automation bridge, you can start a manual scan to find all devices registered on the gateway.
+You can also manually add things by entering the corresponding device ID as a configuration parameter.
+The device IDs can be found by enabling TRACE logging in the Karaf console.
 
 ## Thing Configuration
 
@@ -36,12 +36,12 @@ You must define a Plugwise Home Automation gateway (Bridge) before defining zone
 
 ### Plugwise Home Automation gateway (Bridge)
 
-| Parameter | Description                                                             | Config   | Default |
-|-----------|-------------------------------------------------------------------------|----------|---------|
-| host      | The IP address or hostname of the Adam HA gateway                       | Required | 'adam'  |
-| username  | The username for the Adam HA gateway                                    | Optional | 'smile' |
-| smileID   | The 8 letter code on the sticker on the back of the Adam boiler gateway | Required | -       |
-| refresh   | The refresh interval in seconds                                         | Optional | 15      |
+| Parameter | Description                                                              | Config   | Default |
+|-----------|--------------------------------------------------------------------------|----------|---------|
+| host      | The IP address or hostname of the Adam HA gateway                        | Required | 'adam'  |
+| username  | The username for the Adam HA gateway                                     | Optional | 'smile' |
+| smileID   | The 8-letter code on the sticker on the back of the Adam boiler gateway  | Required | -       |
+| refresh   | The refresh interval, in seconds                                         | Optional | 15      |
 
 ### Plugwise Home Automation zone (`zone`)
 
@@ -51,17 +51,17 @@ You must define a Plugwise Home Automation gateway (Bridge) before defining zone
 
 ### Plugwise Home Automation appliance (`appliance_valve`)
 
-| Parameter            | Description                                                                                                        | Config   | Default |
-|----------------------|--------------------------------------------------------------------------------------------------------------------|----------|---------|
-| id                   | The unique ID of the radiator valve appliance                                                                      | Required | -       |
-| lowBatteryPercentage | Battery charge remaining at which to trigger battery low warning. (_Only applicable for battery operated devices_) | Optional | 15      |
+| Parameter            | Description                                                                                                         | Config   | Default |
+|----------------------|---------------------------------------------------------------------------------------------------------------------|----------|---------|
+| id                   | The unique ID of the radiator valve appliance                                                                       | Required | -       |
+| lowBatteryPercentage | Battery charge remaining at which to trigger a low-battery warning. (_Only applicable to battery-operated devices_) | Optional | 15      |
 
 ### Plugwise Home Automation appliance (`appliance_thermostat`)
 
-| Parameter            | Description                                                                                                        | Config   | Default |
-|----------------------|--------------------------------------------------------------------------------------------------------------------|----------|---------|
-| id                   | The unique ID of the room thermostat appliance                                                                     | Required | -       |
-| lowBatteryPercentage | Battery charge remaining at which to trigger battery low warning. (_Only applicable for battery operated devices_) | Optional | 15      |
+| Parameter            | Description                                                                                                         | Config   | Default |
+|----------------------|---------------------------------------------------------------------------------------------------------------------|----------|---------|
+| id                   | The unique ID of the room thermostat appliance                                                                      | Required | -       |
+| lowBatteryPercentage | Battery charge remaining at which to trigger a low-battery warning. (_Only applicable to battery-operated devices_) | Optional | 15      |
 
 ### Plugwise Home Automation appliance (`appliance_pump`)
 
@@ -81,8 +81,8 @@ You must define a Plugwise Home Automation gateway (Bridge) before defining zone
 |-----------------------|----------------------|------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | temperature           | Number:Temperature   | Yes        | The temperature of an appliance that supports the thermostat functionality                                                                                                                           |
 | setpointTemperature   | Number:Temperature   | No         | The setpoint temperature (read/write) of an appliance that supports the thermostat functionality                                                                                                     |
-| power                 | Switch               | No         | Toggle an appliance ON/OFF that supports the relay functionality                                                                                                                                     |
-| lock                  | Switch               | No         | Toggle an appliance lock ON/OFF that supports the relay functionality.(_When the lock is ON the gateway will not automatically control the corresponding relay switch depending on thermostat mode_) |
+| power                 | Switch               | No         | Turn an appliance on or off if it supports relay functionality                                                                                                                                        |
+| lock                  | Switch               | No         | Toggle an appliance lock on or off if it supports relay functionality. (_When the lock is on, the gateway will not automatically control the corresponding relay switch depending on thermostat mode_) |
 | powerUsage            | Number:Power         | Yes        | The current power usage in Watts of an appliance that supports this                                                                                                                                  |
 | batteryLevel          | Number               | Yes        | The current battery level of an appliance that is battery operated                                                                                                                                   |
 | batteryLevelLow       | Switch               | Yes        | Switches ON when the battery level of an appliance that is battery operated drops below a certain threshold                                                                                          |
@@ -100,12 +100,12 @@ You must define a Plugwise Home Automation gateway (Bridge) before defining zone
 | intendedHeatingState  | Switch               | Yes        | The intended heating state of the boiler                                                                                                                                                             |
 | modulationLevel       | Number:Dimensionless | Yes        | The current modulation level of the boiler                                                                                                                                                           |
 | otAppFaultCode        | Number               | Yes        | The Opentherm application fault code of the boiler                                                                                                                                                   |
-| dhwTemperature        | Number:Temperature   | Yes        | The current central heating state of the boiler                                                                                                                                                      |
+| dhwTemperature        | Number:Temperature   | Yes        | The current domestic hot water temperature of the boiler                                                                                                                                             |
 | otOEMFaultCode        | Number               | Yes        | The Opentherm OEM fault code of the boiler                                                                                                                                                           |
 | boilerTemperature     | Number:Temperature   | Yes        | The current temperature of the boiler                                                                                                                                                                |
 | dhwSetpoint           | Number:Temperature   | Yes        | The domestic hot water setpoint                                                                                                                                                                      |
 | maxBoilerTemperature  | Number:Temperature   | Yes        | The maximum temperature of the boiler                                                                                                                                                                |
-| dhwComfortMode        | Switch               | Yes        | The domestic hot water confortmode                                                                                                                                                                   |
+| dhwComfortMode        | Switch               | Yes        | The domestic hot water comfort mode                                                                                                                                                                  |
 | burnerStartsFailed    | Number               | Yes        | Total count of failed burner starts                                                                                                                                                                  |
 | burnerStarts          | Number               | Yes        | Total count of burner starts                                                                                                                                                                         |
 | burnerIgnitionsFailed | Number               | Yes        | Total count of failed burner ignitions                                                                                                                                                               |
@@ -142,15 +142,15 @@ Number:Temperature living_room_radiator_temperature "Radiator valve temperature"
 Number:Temperature living_room_radiator_temperature_setpoint "Radiator valve temperature setpoint" {channel="plugwiseha:appliance_valve:home:living_room_radiator:setpointTemperature"}
 Number living_room_radiator_valve_position "Radiator valve position" {channel="plugwiseha:appliance_valve:home:living_room_radiator:valvePosition"}
 
-Number:Temperature living_room_thermostat_temperature "Room thermostat temperature" {channel="plugwiseha:appliance_valve:home:living_room_thermostat:temperature"}
-Number:Temperature living_room_thermostat_temperature_setpoint "Room thermostat temperature setpoint" {channel="plugwiseha:appliance_valve:home:living_room_thermostat:setpointTemperature"}
-Number:Temperature living_room_thermostat_temperature_offset "Room thermostat temperature offset" {channel="plugwiseha:appliance_valve:home:living_room_thermostat:offsetTemperature"}
+Number:Temperature living_room_thermostat_temperature "Room thermostat temperature" {channel="plugwiseha:appliance_thermostat:home:living_room_thermostat:temperature"}
+Number:Temperature living_room_thermostat_temperature_setpoint "Room thermostat temperature setpoint" {channel="plugwiseha:appliance_thermostat:home:living_room_thermostat:setpointTemperature"}
+Number:Temperature living_room_thermostat_temperature_offset "Room thermostat temperature offset" {channel="plugwiseha:appliance_thermostat:home:living_room_thermostat:offsetTemperature"}
 
 Switch living_room_pump_power "Floor heating pump power" {channel="plugwiseha:appliance_pump:home:living_room_pump:power"}
 Switch living_room_pump_lock "Floor heating pump lock [MAP:(plugwiseha.map):%s]" {channel="plugwiseha:appliance_pump:home:living_room_pump:lock"}
-Number:Power living_room_pump_power_usage "Floor heating pump power [%0.2fW]" {channel="plugwiseha:appliance_pump:home:living_room_pump:powerUsage"}
+Number:Power living_room_pump_power_usage "Floor heating pump power [%0.2f W]" {channel="plugwiseha:appliance_pump:home:living_room_pump:powerUsage"}
 
-Number:Pressure main_boiler_waterpressure "Waterpressure" { channel="plugwiseha:appliance_boiler:home:main_boiler:waterPressure"}
+Number:Pressure main_boiler_waterpressure "Water pressure" { channel="plugwiseha:appliance_boiler:home:main_boiler:waterPressure"}
 Switch  main_boiler_chState "Heating active" { channel="plugwiseha:appliance_boiler:home:main_boiler:chState"}
 Switch  main_boiler_dhwState "Domestic hot water active" { channel="plugwiseha:appliance_boiler:home:main_boiler:dhwState"}
 
@@ -159,9 +159,9 @@ Number:Temperature main_boiler_intendedBoilerTemp "Intended boiler temperature" 
 Switch main_boiler_flameState "Flame state" { channel="plugwiseha:appliance_boiler:home:main_boiler:flameState"}
 Switch main_boiler_intendedHeatingState "Intended heating state" { channel="plugwiseha:appliance_boiler:home:main_boiler:intendedHeatingState"}
 Number main_boiler_modulationLevel "Modulation level" {channel="plugwiseha:appliance_boiler:home:living_room_radiator:modulationLevel"}
-Number main_boiler_otAppFaultCode "Opentherm app. faultcode" {channel="plugwiseha:appliance_boiler:home:living_room_radiator:otAppFaultCode"}
+Number main_boiler_otAppFaultCode "OpenTherm application fault code" {channel="plugwiseha:appliance_boiler:home:living_room_radiator:otAppFaultCode"}
 Number:Temperature main_boiler_dhwTemperature "DHW temperature" {channel="plugwiseha:appliance_boiler:home:main_boiler:dhwTemperature"}
-Number main_boiler_otOEMFaultCode "Opentherm OEM faultcode" {channel="plugwiseha:appliance_boiler:home:main_boiler:otOEMFaultCode"}
+Number main_boiler_otOEMFaultCode "OpenTherm OEM fault code" {channel="plugwiseha:appliance_boiler:home:main_boiler:otOEMFaultCode"}
 Number:Temperature main_boiler_boilerTemperature "Boiler temperature" {channel="plugwiseha:appliance_boiler:home:main_boiler:boilerTemperature"}
 Number:Temperature main_boiler_dhwSetpoint "DHW setpoint" {channel="plugwiseha:appliance_boiler:home:main_boiler:dhwSetpoint"}
 Number:Temperature main_boiler_maxBoilerTemperature "Max. boiler temperature" {channel="plugwiseha:appliance_boiler:home:main_boiler:maxBoilerTemperature"}
