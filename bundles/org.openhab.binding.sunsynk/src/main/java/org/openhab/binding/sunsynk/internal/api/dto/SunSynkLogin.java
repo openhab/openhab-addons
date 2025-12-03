@@ -26,7 +26,7 @@ import com.google.gson.annotations.SerializedName;
 
 @NonNullByDefault
 public class SunSynkLogin {
-    // {"sign": "MD5 sign", "nonce": "unix time", "username":"xxx", "password":"xxx", "grant_type":"password",
+    // {"sign":"MD5 sign", "nonce":"unix time", "username":"xxx", "password":"xxx", "grant_type":"password",
     // "client_id":"csp-web"}
     @SerializedName("sign")
     private String signature = "";
@@ -43,9 +43,9 @@ public class SunSynkLogin {
     @SerializedName("source")
     private String source = "sunsynk";
 
-    public SunSynkLogin(String UserName, String PassWord, String signature, Long nonce) {
-        this.userName = UserName;
-        this.passWord = PassWord;
+    public SunSynkLogin(String userName, String password, String signature, Long nonce) {
+        this.userName = userName;
+        this.passWord = password;
         this.signature = signature;
         this.nonce = nonce.toString();
     }

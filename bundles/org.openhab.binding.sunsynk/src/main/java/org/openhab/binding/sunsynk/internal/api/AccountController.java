@@ -89,10 +89,9 @@ public class AccountController {
     public void clientAuthenticate(String username, String userPassword)
             throws SunSynkClientAuthenticateException, SunSynkAuthenticateException {
         long nonce = Instant.now().toEpochMilli();
-        String signSource = "nonce=" + String.valueOf(nonce) + "&source=" + SOURCE + SECRET_KEY;
+        String signSource = "nonce=" + nonce + "&source=" + SOURCE + SECRET_KEY;
         try {
-            String authEndpoint = "nonce=" + String.valueOf(nonce) + "&source=" + SOURCE + "&sign="
-                    + getSign(signSource);
+            String authEndpoint = "nonce=" + nonce + "&source=" + SOURCE + "&sign=" + getSign(signSource);
             httpGetPublicKey(authEndpoint);
             String encryptedPassword = getEncryptPassword(userPassword, this.publicKey.getPublicKey());
             userAuthenticate(username, encryptedPassword);
@@ -126,10 +125,13 @@ public class AccountController {
      */
     public void userAuthenticate(String username, String saltedPassword)
             throws SunSynkAuthenticateException, SunSynkTokenException, SunSynkClientAuthenticateException {
-        Long nonce = Instant.now().toEpochMilli();
-        String signSource = "nonce=" + String.valueOf(nonce) + "&source=" + SOURCE
-                + this.publicKey.getPublicKey().substring(0, 10);
-        String payload = "";
+        long nonce = Instant.now().toEpochMilli();
+        String publicKeyString = this.publicKey.getPublicKey();
+        if (publicKeyString.length() < 10) {
+            throw new SunSynkClientAuthenticateException("Public key is too short");
+        }
+        String signSource = "nonce=" + nonce + "&source=" + SOURCE + publicKeyString.substring(0, 10);
+        String payload;
 
         try {
             payload = makeLoginBody(username, saltedPassword, getSign(signSource), nonce);
@@ -324,7 +326,7 @@ public class AccountController {
         for (byte b : hashBytes) {
             sb.append(String.format("%02x", b));
         }
-        logger.trace("nonce : {} encrypted nonce : {}", inputString, sb.toString());
+        logger.trace("sign source : {} MD5 hash : {}", inputString, sb.toString());
         return sb.toString();
     }
 
