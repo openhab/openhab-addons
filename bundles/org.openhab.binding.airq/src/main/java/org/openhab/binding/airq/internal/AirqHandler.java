@@ -474,6 +474,7 @@ public class AirqHandler extends BaseThingHandler {
                 processType(decObj, "pm2_5", "fineDustConc02_5", "pair");
                 processType(decObj, "pm10", "fineDustConc10", "pair");
                 processType(decObj, "pressure", "pressure", "pair");
+                processType(decObj, "radon", "radon", "pair");
                 processType(decObj, "so2", "so2", "pair");
                 processType(decObj, "sound", "sound", "pairDB");
                 processType(decObj, "temperature", "temperature", "pair");
