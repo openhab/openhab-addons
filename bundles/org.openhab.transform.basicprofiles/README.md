@@ -367,24 +367,27 @@ Switch myChannelActivityStatus {
 ## Time-weighted Average Profile
 
 This profile collects all state updates within the configured duration and delivers one time-weighted average value afterwards.
-It's useful to reduce high frequent data which goes finally into your persistence databse, like data from 
+It's useful to reduce high frequent data which goes finally into your persistence database, like data from 
 
 - inverters
 - smart meters 
-- powert plugs with electric measurement
+- power plugs with electric measurement
 
 Profile is only applicable to number channels with or without unit metadata.
 The average is build for all state updates from handler to item, neither commands nor updates towards an item form rules or UI are affected.
-Check the semantiucs of the channel if this profile fits. 
+Check the semantics of the channel if this profile fits. 
 E.g. a channel providing _power measurement_ values is a valid candidate to build averages.
-A channel providing a status or accumlated value like _total energy production today_ is not a good candidate.
+A channel providing a status or accumulated value like _total energy production today_ is not a good candidate.
 
+The optional `delta` parameter is used to identify increases / decreases of state values above or equal the configured delta.
+This will break the steady time frame but reports rapid changes e.g. for power consumption immediately. 
 
 ### Time-weighted Average Profile Configuration
 
 | Configuration Parameter | Type    | Description                                                                                                                                         |
 |-------------------------|---------|-----------------------------------------------------------------------------------------------------------------------------------------------------|
-| `duration`              | text    | Duration of the time frame to collect state updates. See [format exmaples](https://www.openhab.org/docs/configuration/items.html#parameter-expire). |
+| `duration`              | text    | Duration of the time frame to collect state updates. See [format examples](https://www.openhab.org/docs/configuration/items.html#parameter-expire). |
+| `delta`                 | decimal | Optional: If state change increases or decreases above configured delta it's published immediately.                                                 |
 
 ### Time-weighted Average Profile Example
 

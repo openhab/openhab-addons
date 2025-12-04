@@ -40,7 +40,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Debounces a {@link State} by time.
+ * Build time-weighted average {@link State} values.
  *
  * @author Bernd Weymann - Initial contribution
  */
@@ -82,9 +82,19 @@ public class TimeweightedAverageStateProfile implements StateProfile {
     @Override
     public void onStateUpdateFromHandler(State state) {
         logger.trace("Received {} {}", itemName, state);
+
+        // first call initialization
         if (latestState == null) {
             init(state);
         }
+
+        // if state change is above delta threshold, deliver immediately collected values plus latest reported state
+        if (deltaExceeded(state)) {
+            deliver();
+            callback.sendUpdate(state);
+        }
+
+        // start new time frame
         synchronized (timeframe) {
             startJob();
             timeframe.put(Instant.now(), state);
@@ -106,15 +116,29 @@ public class TimeweightedAverageStateProfile implements StateProfile {
         }
     }
 
+    private boolean deltaExceeded(State state) {
+        if (config.delta > 0) {
+            State localLatestState = latestState;
+            if (localLatestState != null) {
+                double delta = Math.abs(state2Double(state) - state2Double(localLatestState));
+                if (delta >= config.delta) {
+                    logger.debug("{} rapid change from {} to {}", itemName, latestState, state);
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     private void deliver() {
         TreeMap<Instant, State> delivery = new TreeMap<>();
         synchronized (timeframe) {
+            resetJob();
             delivery = (TreeMap<Instant, State>) timeframe.clone();
             // add termination element
             delivery.put(Instant.now(), DecimalType.ZERO);
             // clear timeframe and put latest reported state as start point of the next calculation
             timeframe.clear();
-            resetJob();
 
             State localState = latestState;
             if (localState != null) {
@@ -146,12 +170,25 @@ public class TimeweightedAverageStateProfile implements StateProfile {
     }
 
     private void resetJob() {
+        ScheduledFuture<?> localTwaJob = twaJob;
+        if (localTwaJob != null) {
+            localTwaJob.cancel(false);
+        }
         twaJob = null;
+    }
+
+    private double state2Double(State state) {
+        DecimalType as = state.as(DecimalType.class);
+        if (as == null) {
+            logger.error("Cannot convert state {} of item {} to DecimalType for average calculation", state, itemName);
+            return 0;
+        }
+        return as.doubleValue();
     }
 
     public double average(TreeMap<Instant, State> values) {
         Instant iterationTimestamp = null;
-        State iterationValue = null;
+        State iterationValue = DecimalType.ZERO;
         double totalWeightedValue = 0;
         long totalDurationMs = 0;
 
@@ -162,7 +199,7 @@ public class TimeweightedAverageStateProfile implements StateProfile {
             } else {
                 Instant end = entry.getKey();
                 long durationMs = Duration.between(iterationTimestamp, end).toMillis();
-                totalWeightedValue += iterationValue.as(DecimalType.class).doubleValue() * durationMs;
+                totalWeightedValue += state2Double(iterationValue) * durationMs;
                 totalDurationMs += durationMs;
                 iterationTimestamp = end;
                 iterationValue = entry.getValue();

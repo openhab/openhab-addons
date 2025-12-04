@@ -10,5 +10,9 @@
 			<description>Duration of the time frame to collect state updates</description>
 			<default>1m</default>
 		</parameter>
+		<parameter name="delta" type="decimal" min="0" step="1" required="false">
+			<label>Delta</label>
+			<description>If state change increases or decreases above configured delta it's published immediately</description>
+		</parameter>
 	</config-description>
 </config-description:config-descriptions>
