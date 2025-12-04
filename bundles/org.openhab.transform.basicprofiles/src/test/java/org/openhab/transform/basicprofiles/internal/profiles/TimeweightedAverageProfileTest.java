@@ -17,13 +17,13 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.TreeMap;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -33,6 +33,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.link.ItemChannelLink;
 import org.openhab.core.thing.profiles.ProfileCallback;
 import org.openhab.core.thing.profiles.ProfileContext;
 import org.openhab.core.types.State;
@@ -49,6 +51,9 @@ class TimeweightedAverageProfileTest {
     private @NonNullByDefault({}) @Mock ProfileCallback mockCallback;
     private @NonNullByDefault({}) @Mock ProfileContext mockContext;
     private @NonNullByDefault({}) @Mock ScheduledExecutorService mockScheduler;
+    private final String testItemName = "testItem";
+    private final ChannelUID testChannelUID = new ChannelUID("this:test:channel:uid");
+    private ItemChannelLink testLink = new ItemChannelLink(testItemName, testChannelUID);
 
     private TimeweightedAverageStateProfile initTWAProfile(String duration) {
         Configuration config = new Configuration();
@@ -60,47 +65,47 @@ class TimeweightedAverageProfileTest {
 
         when(mockContext.getExecutorService()).thenReturn(mockScheduler);
         when(mockContext.getConfiguration()).thenReturn(config);
+        testLink = new ItemChannelLink(testItemName, testChannelUID, config);
+        when(mockCallback.getItemChannelLink()).thenReturn(testLink);
 
         return new TimeweightedAverageStateProfile(mockCallback, mockContext);
     }
 
-    public static Stream<Arguments> testTWAProfile() {
+    public static Stream<Arguments> testTWATimeframe() {
         return Stream.of( //
-                Arguments.of("10s", 10000), //
-                Arguments.of("", 60000), //
-                Arguments.of(null, 60000), //
+                Arguments.of("10s", 10 * 1000), //
+                Arguments.of("", 60 * 1000), //
+                Arguments.of(null, 60 * 1000), //
                 Arguments.of("500ms", 500), //
-                Arguments.of("7s", 7000));
+                Arguments.of("7m", 7 * 60 * 1000));
     }
 
     @ParameterizedTest
     @MethodSource
-    public void testTWAProfile(String timeout, long expectedSchedule) {
+    public void testTWATimeframe(String timeout, long expectedSchedule) {
         TimeweightedAverageStateProfile profile = initTWAProfile(timeout);
         profile.onStateUpdateFromHandler(DecimalType.ZERO);
         verify(mockScheduler, times(1)).schedule(any(Runnable.class), eq(expectedSchedule), eq(TimeUnit.MILLISECONDS));
     }
 
-    @Test
-    public void testAverages() {
+    public static Stream<Arguments> testTWAAverages() {
+        return Stream.of( //
+                Arguments.of(List.of("2024-01-01T00:00:00Z", "2024-01-01T00:01:00Z"), List.of("750 W", "0 W"), 750.0), //
+                Arguments.of(List.of("2024-01-01T00:00:00Z", "2024-01-01T00:00:30Z", "2024-01-01T00:01:00Z"),
+                        List.of("750 W", "1000 W", "0 W"), 875.0), //
+                Arguments.of(List.of("2024-01-01T00:00:00Z", "2024-01-01T00:00:20Z", "2024-01-01T00:00:40Z",
+                        "2024-01-01T00:01:00Z"), List.of("300 W", "900 W", "600 W", "0 W"), 600.0) //
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource
+    public void testTWAAverages(List<String> timeStrings, List<String> stateStrings, double expectedAverage) {
         TimeweightedAverageStateProfile profile = initTWAProfile("10s");
         TreeMap<Instant, State> testData = new TreeMap<>();
-        Instant baseTime = Instant.parse("2024-01-01T00:00:00Z");
-        testData.put(baseTime, QuantityType.valueOf("750 W"));
-        testData.put(baseTime.plusSeconds(60), QuantityType.valueOf("0 W"));
-        assertEquals(750.0, profile.average(testData), 0.1, "One value for 60s average should be 750W");
-
-        testData.clear();
-        testData.put(baseTime, QuantityType.valueOf("750 W"));
-        testData.put(baseTime.plusSeconds(30), QuantityType.valueOf("1000 W"));
-        testData.put(baseTime.plusSeconds(60), QuantityType.valueOf("0 W"));
-        assertEquals(875.0, profile.average(testData), 0.1, "One value for 60s average should be 750W");
-
-        testData.clear();
-        testData.put(baseTime, QuantityType.valueOf("300 W"));
-        testData.put(baseTime.plusSeconds(20), QuantityType.valueOf("900 W"));
-        testData.put(baseTime.plusSeconds(40), QuantityType.valueOf("600 W"));
-        testData.put(baseTime.plusSeconds(60), QuantityType.valueOf("0 W"));
-        assertEquals(600.0, profile.average(testData), 0.1, "One value for 60s average should be 750W");
+        for (int i = 0; i < timeStrings.size(); i++) {
+            testData.put(Instant.parse(timeStrings.get(i)), QuantityType.valueOf(stateStrings.get(i)));
+        }
+        assertEquals(expectedAverage, profile.average(testData));
     }
 }

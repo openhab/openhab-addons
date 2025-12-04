@@ -56,6 +56,7 @@ public class TimeweightedAverageStateProfile implements StateProfile {
 
     private boolean streamingInTimeframe = false;
     private Duration scheduleDuration;
+    private String itemName;
     private @Nullable ScheduledFuture<?> twaJob;
     private @Nullable State latestState;
     private @Nullable Unit<?> stateUnit;
@@ -64,12 +65,12 @@ public class TimeweightedAverageStateProfile implements StateProfile {
         this.callback = callback;
         this.scheduler = context.getExecutorService();
         this.config = context.getConfiguration().as(TimeweightedAverageProfileConfig.class);
-
+        itemName = callback.getItemChannelLink().getItemName();
         try {
             scheduleDuration = DurationUtils.parse(config.duration);
         } catch (IllegalArgumentException e) {
             scheduleDuration = DEFAULT_TIMEOUT;
-            logger.warn("Inavlid duration configuration {}", config.duration);
+            logger.warn("Invalid duration configuration {} for item {}", config.duration, itemName);
         }
     }
 
@@ -80,7 +81,7 @@ public class TimeweightedAverageStateProfile implements StateProfile {
 
     @Override
     public void onStateUpdateFromHandler(State state) {
-        logger.trace("Received state {}", state);
+        logger.trace("Received {} {}", itemName, state);
         if (latestState == null) {
             init(state);
         }
@@ -95,12 +96,13 @@ public class TimeweightedAverageStateProfile implements StateProfile {
     private void init(State first) {
         if (first instanceof QuantityType<?> qtState) {
             stateUnit = qtState.getUnit();
-            logger.debug("Profile initialized for QunatityTypes {}", stateUnit);
+            logger.debug("Profile initialized for {} with QunatityTypes {}", itemName, stateUnit);
         } else if (first instanceof DecimalType) {
             // nothing to do, ustateUnit stays empty
-            logger.debug("Profile initialized for Numbers");
+            logger.debug("Profile initialized for {} with DecimalType", itemName);
         } else {
-            logger.error("Time-weighted average profile not applicable for {}", first.getClass());
+            logger.error("Time-weighted average profile not applicable for {} with class {}", itemName,
+                    first.getClass());
         }
     }
 
@@ -129,7 +131,8 @@ public class TimeweightedAverageStateProfile implements StateProfile {
         }
 
         if (delivery.size() <= 1) {
-            logger.debug("Cannot calculate time-weighted average with {} elements", delivery.size());
+            logger.debug("Cannot calculate time-weighted average for item {} with {} elements", itemName,
+                    delivery.size());
         } else {
             callback.sendUpdate(getState(average(delivery)));
         }
@@ -137,7 +140,7 @@ public class TimeweightedAverageStateProfile implements StateProfile {
 
     private void startJob() {
         if (twaJob == null) {
-            logger.debug("Start new job with delay {} ms", scheduleDuration.toMillis());
+            logger.trace("Start next time frame for {} with delay {} ms", itemName, scheduleDuration.toMillis());
             twaJob = scheduler.schedule(this::deliver, scheduleDuration.toMillis(), TimeUnit.MILLISECONDS);
         }
     }
@@ -166,7 +169,7 @@ public class TimeweightedAverageStateProfile implements StateProfile {
             }
         }
         double average = (totalDurationMs > 0) ? totalWeightedValue / totalDurationMs : 0;
-        logger.debug("Average {} for {} ms", average, totalDurationMs);
+        logger.debug("Average {} is {} for {} updates", itemName, average, values.size());
         return average;
     }
 

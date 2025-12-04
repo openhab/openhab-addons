@@ -16,7 +16,7 @@ This bundle provides a list of useful Profiles:
 | [Inactivity Profile](#inactivity-profile)                       | Sets the linked Item On or Off depending whether the Channel has recently produced data      |
 | [Time-weighted Average Profile](#time-weighted-average-profile) | Collects updates for given duration to calculate time-weighted average value                 |
 
-Time-weighted Average Profile
+
 ## Generic Command Profile
 
 This Profile can be used to send a Command towards the Item when one event of a specified event list is triggered.
@@ -367,9 +367,18 @@ Switch myChannelActivityStatus {
 ## Time-weighted Average Profile
 
 This profile collects all state updates within the configured duration and delivers one time-weighted average value afterwards.
-**Rationale:**
-Devices like inverters, smart meters plugs with power measurements are delivering frequent live values within seconds.
-This profile reduces the amount of state updates and the corresponding storage in persistence without loosing too much information.
+It's useful to reduce high frequent data which goes finally into your persistence databse, like data from 
+
+- inverters
+- smart meters 
+- powert plugs with electric measurement
+
+Profile is only applicable to number channels with or without unit metadata.
+The average is build for all state updates from handler to item, neither commands nor updates towards an item form rules or UI are affected.
+Check the semantiucs of the channel if this profile fits. 
+E.g. a channel providing _power measurement_ values is a valid candidate to build averages.
+A channel providing a status or accumlated value like _total energy production today_ is not a good candidate.
+
 
 ### Time-weighted Average Profile Configuration
 
