@@ -28,7 +28,7 @@ The following devices will likely work because they are using similar protocols 
 - Deebot (OZMO) T8 series
 - Deebot T9 series
 - Deebot T10 series
-- Deebox T20 series
+- Deebot T20 series
 - Deebot Slim 2
 - Deebot N3 MAX
 - Deebot N30 series
@@ -106,7 +106,7 @@ Remarks:
 - [7] Only present on newer generation devices (Deebot OZMO 950 and newer)
 - [8] Only present if device has a main brush
 - [9] Only present on newer generation devices (Deebot N8/T8 or newer)
-- [10] Ony present if device has round mops (and not just a mopping plate)
+- [10] Only present if device has round mops (and not just a mopping plate)
 - [11] Only present if device has a dustbin auto empty station; supports both on/off command (to turn on/off the setting) and the string `trigger` (to trigger immediate auto empty)
 - [12] Only present if device can control power level. Possible values vary by device: `normal` and `high` are always supported, `silent` and `higher` are supported for some models
 - [13] Only present if device supports True Detect 3D
