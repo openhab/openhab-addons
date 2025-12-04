@@ -15,12 +15,12 @@
 
   <description>The Apple iCloud is used to retrieve data such as the battery level or current location of one or
     multiple Apple devices connected to an iCloud account.</description>
-    
+
   <properties>
     <bouncycastle.version>1.81</bouncycastle.version>
   </properties>
-  
-   <dependencies>
+
+  <dependencies>
     <dependency>
       <groupId>org.bouncycastle</groupId>
       <artifactId>bcpkix-jdk18on</artifactId>
@@ -44,7 +44,7 @@
       <artifactId>bctls-jdk18on</artifactId>
       <version>${bouncycastle.version}</version>
       <scope>compile</scope>
-    </dependency>    
+    </dependency>
 
-  </dependencies>   
+  </dependencies>
 </project>
