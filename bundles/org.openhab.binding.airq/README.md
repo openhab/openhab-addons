@@ -70,6 +70,7 @@ The rw column is empty if the channel is only readable, w if the channel can be 
 | o2                        | Number:Dimensionless |    | Oxygen (O₂) concentration                                           |
 | performanceIndex          | Number:Dimensionless |    | Performance Index in percent                                        |
 | performance               | Number:Dimensionless |    | Performance Index (0 to 1000)                                       |
+| Radon                     | Number:Dimensionless |    | Radon concentration                                                 |
 | fineDustConc01            | Number               |    | Fine Dust concentration >1 µm                                       |
 | fineDustConc02_5          | Number               |    | Fine Dust concentration >2.5 µm                                     |
 | fineDustConc10            | Number               |    | Fine Dust concentration >10 µm                                      |
@@ -160,6 +161,7 @@ Number                airQ_no2                    "NO2 concentration"           
 Number                airQ_o3                     "O3 concentration"                      {channel="airq:airq:1:o3"}
 Number:Dimensionless  airQ_o2                     "Oxygen concentration"                  {channel="airq:airq:1:o2"}
 Number:Dimensionless  airQ_performance            "Performance Index"                     {channel="airq:airq:1:performance"}
+Number:Dimensionless  airQ_radon                  "Radon Concentration"                   {channel="airq:airq:1:radon"}
 Number                airQ_fineDustConc01         "Fine Dust Concentration >1µ"           {channel="airq:airq:1:fineDustConc01"}
 Number                airQ_fineDustConc02_5       "Fine Dust Concentration >2.5µ"         {channel="airq:airq:1:fineDustConc02_5"}
 Number                airQ_fineDustConc10         "Fine Dust Concentration >10µ"          {channel="airq:airq:1:fineDustConc10"}
