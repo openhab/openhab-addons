@@ -56,7 +56,11 @@ import org.openhab.binding.homekit.internal.persistence.HomekitKeyStore;
 import org.openhab.binding.homekit.internal.persistence.HomekitTypeProvider;
 import org.openhab.binding.homekit.internal.session.EventListener;
 import org.openhab.binding.homekit.internal.transport.IpTransport;
+import org.openhab.core.events.Event;
+import org.openhab.core.events.EventSubscriber;
+import org.openhab.core.events.system.StartlevelEvent;
 import org.openhab.core.i18n.TranslationProvider;
+import org.openhab.core.service.StartLevelService;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -65,6 +69,7 @@ import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.thing.type.ChannelDefinition;
 import org.osgi.framework.Bundle;
+import org.osgi.framework.ServiceRegistration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -79,13 +84,11 @@ import com.google.gson.Gson;
  * @author Andrew Fiddian-Green - Initial contribution
  */
 @NonNullByDefault
-public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler implements EventListener {
+public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler implements EventListener, EventSubscriber {
 
     private static final int MIN_CONNECTION_ATTEMPT_DELAY_SECONDS = 2;
     private static final int MAX_CONNECTION_ATTEMPT_DELAY_SECONDS = 600;
     private static final int MANUAL_REFRESH_DELAY_SECONDS = 3;
-
-    private static final Duration HANDLER_INITIALIZATION_TIMEOUT = Duration.ofSeconds(10);
 
     private final Logger logger = LoggerFactory.getLogger(HomekitBaseAccessoryHandler.class);
     private final Map<Long, Accessory> accessories = new ConcurrentHashMap<>();
@@ -119,6 +122,8 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
 
     protected boolean isBridgedAccessory = false;
     protected final Throttler throttler = new Throttler();
+
+    private @Nullable ServiceRegistration<?> eventSubscription;
 
     /**
      * A helper class that runs a {@link Callable} and enforces a minimum delay between calls.
@@ -191,6 +196,10 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
             transport.close();
         }
         ipTransport = null;
+        if (eventSubscription instanceof ServiceRegistration<?> registration) {
+            registration.unregister();
+        }
+        eventSubscription = null;
         super.dispose();
     }
 
@@ -227,19 +236,13 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
     }
 
     /**
-     * Waits for all bridged accessory things to be initialized, then processes them by calling the
+     * Called after all bridged accessory things are initialized, and processes them by calling the
      * overloaded abstract 'onConnectedThingAccessoriesLoaded' methods, and finally calls the
      * 'onThingOnline' methods (and its eventual overloaded implementations).
      */
     private void processBridgedThings() {
-        Instant timeout = Instant.now().plus(HANDLER_INITIALIZATION_TIMEOUT);
-        while (!bridgedThingsInitialized() && Instant.now().isBefore(timeout)) {
-            try {
-                Thread.sleep(100);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt(); // shutting down; restore interrupt flag, and exit immediately
-                return;
-            }
+        if (!bridgedThingsInitialized()) {
+            logger.warn("{} unexpected error: bridged Things not initialized.", thing.getUID());
         }
         onConnectedThingAccessoriesLoaded();
         onThingOnline();
@@ -283,9 +286,26 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
     public void initialize() {
         isBridgedAccessory = getBridge() instanceof Bridge;
         if (!isBridgedAccessory) {
-            scheduleConnectionAttempt();
+            // delay connection attempt until Start Level notification via the receive() method below
+            eventSubscription = bundle.getBundleContext().registerService(EventSubscriber.class.getName(), this, null);
         }
         updateStatus(ThingStatus.UNKNOWN);
+    }
+
+    /**
+     * STARTLEVEL_COMPLETE means Thing handlers instantiated, initialize() methods called, and all registries loaded,
+     * so everything is now finally ready for us to schedule a connection attempt.
+     */
+    @Override
+    public void receive(Event event) {
+        if (event instanceof StartlevelEvent sle && sle.getStartlevel() >= StartLevelService.STARTLEVEL_COMPLETE) {
+            scheduleConnectionAttempt();
+        }
+    }
+
+    @Override
+    public Set<String> getSubscribedEventTypes() {
+        return Set.of(StartlevelEvent.TYPE);
     }
 
     /**
@@ -662,17 +682,15 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
      *
      * @param enable true to enable events, false to disable
      * @throws Exception the compiler requires us to handle any error; but it will actually be one of the following:
-     *             IllegalStateException if this is a bridged accessory or if the read/write service is not initialized,
-     *             IllegalAccessException if this is a bridged accessory,
-     *             IOException if there is a communication error,
-     *             InterruptedException if the operation is interrupted,
-     *             TimeoutException if the operation times out,
-     *             ExecutionException if there is an execution error
+     * @throws IllegalStateException if this is a bridged accessory or if the read/write service is not initialized,
+     * @throws IOException if there is a communication error,
+     * @throws InterruptedException if the operation is interrupted,
+     * @throws TimeoutException if the operation times out,
+     * @throws ExecutionException if there is an execution error
      */
     private void enableEventsOrThrow(boolean enable) throws Exception {
         if (isBridgedAccessory) {
-            logger.warn("{} forbidden to enable/disable events on bridged accessories", thing.getUID());
-            return;
+            throw new IllegalStateException("Forbidden to enable/disable events on bridged accessory");
         }
         Service service = new Service();
         service.characteristics = new ArrayList<>();
