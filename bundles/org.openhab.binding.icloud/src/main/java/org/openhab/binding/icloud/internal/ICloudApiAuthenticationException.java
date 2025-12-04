@@ -21,11 +21,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @author Simon Spielmann - Initial contribution
  */
 @NonNullByDefault
-public class ICloudApiResponseException extends Exception {
+public class ICloudApiAuthenticationException extends ICloudApiResponseException {
 
     private static final long serialVersionUID = 1L;
-    protected int statusCode;
-    protected String body;
 
     /**
      * The constructor.
@@ -33,21 +31,36 @@ public class ICloudApiResponseException extends Exception {
      * @param url URL for which the exception occurred
      * @param statusCode HTTP status code which was reported
      */
-    public ICloudApiResponseException(String url, int statusCode, String body) {
-        super(String.format("Request %s failed with %s.", url, statusCode));
-        this.statusCode = statusCode;
-        this.body = body;
+    public ICloudApiAuthenticationException(String url, int statusCode, String body) {
+        super(String.format("Request %s failed with %s.", url, statusCode), statusCode, body);
     }
 
     @Override
     public String toString() {
-        return "ICloudApiResponseException [statusCode=" + statusCode + ", body=" + body + "]";
+        return "ICloudApiAuthenticationException [statusCode=" + statusCode + ", body=" + body + "]";
     }
 
     /**
+     * TODO: Enum
+     *
      * @return statusCode HTTP status code of failed request.
      */
-    public int getStatusCode() {
-        return this.statusCode;
+    public String getReason() {
+        switch (this.statusCode) {
+            case 421:
+                return "LOGIN_TOKEN_EXPIRED";
+            case 409:
+                return "2FA_REQUIRED";
+            case 450:
+                return "FIND_MY_AUTH_REQUIRED";
+            case 500:
+                return "GENERAL_AUTH_ERROR";
+            default:
+                return "UNKNOWN_ERROR";
+        }
+    }
+
+    public static boolean isAuthError(int statusCode) {
+        return statusCode == 409 || statusCode == 421 || statusCode == 450 || statusCode == 500;
     }
 }
