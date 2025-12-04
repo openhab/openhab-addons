@@ -285,17 +285,19 @@ public class MediaRendererService implements UpnpIOParticipant, SamsungTvService
         }
     }
 
-    protected Map<String, String> updateResourceState(String actionId) {
+    protected Map<String, @Nullable String> updateResourceState(String actionId) {
         return updateResourceState(actionId, Map.of());
     }
 
-    protected synchronized Map<String, String> updateResourceState(String actionId, Map<String, String> inputs) {
+    protected synchronized Map<String, @Nullable String> updateResourceState(String actionId,
+            Map<String, String> inputs) {
         Map<String, String> inputsMap = new LinkedHashMap<String, String>(Map.of("InstanceID", "0"));
         if (Utils.isSoundChannel(actionId)) {
             inputsMap.put("Channel", "Master");
         }
         inputsMap.putAll(inputs);
-        Map<String, String> result = service.invokeAction(this, SERVICE_RENDERING_CONTROL, actionId, inputsMap);
+        Map<String, @Nullable String> result = service.invokeAction(this, SERVICE_RENDERING_CONTROL, actionId,
+                inputsMap);
         if (!subscription) {
             result.keySet().stream().forEach(a -> onValueReceived(a, result.get(a), SERVICE_RENDERING_CONTROL));
         }
@@ -334,7 +336,7 @@ public class MediaRendererService implements UpnpIOParticipant, SamsungTvService
     public void visitRecursively(Node node) {
         // get all child nodes, NodeList doesn't have a stream, so do this
         Optional.ofNullable(node.getChildNodes()).ifPresent(nList -> IntStream.range(0, nList.getLength())
-                .mapToObj(i -> (Node) nList.item(i)).forEach(childNode -> parseNode(childNode)));
+                .mapToObj(i -> nList.item(i)).forEach(childNode -> parseNode(childNode)));
     }
 
     public void parseNode(Node node) {

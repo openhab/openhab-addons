@@ -32,6 +32,8 @@ import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.jupnp.UpnpService;
+import org.jupnp.model.types.UDN;
 import org.openhab.binding.upnpcontrol.internal.UpnpDynamicCommandDescriptionProvider;
 import org.openhab.binding.upnpcontrol.internal.UpnpDynamicStateDescriptionProvider;
 import org.openhab.binding.upnpcontrol.internal.config.UpnpControlBindingConfiguration;
@@ -104,8 +106,9 @@ public class UpnpServerHandler extends UpnpHandler {
             ConcurrentMap<String, UpnpRendererHandler> upnpRenderers,
             UpnpDynamicStateDescriptionProvider upnpStateDescriptionProvider,
             UpnpDynamicCommandDescriptionProvider upnpCommandDescriptionProvider,
-            UpnpControlBindingConfiguration configuration) {
-        super(thing, upnpIOService, configuration, upnpStateDescriptionProvider, upnpCommandDescriptionProvider);
+            UpnpControlBindingConfiguration configuration, UpnpService upnpService) {
+        super(thing, upnpIOService, configuration, upnpStateDescriptionProvider, upnpCommandDescriptionProvider,
+                upnpService);
         this.upnpRenderers = upnpRenderers;
 
         // put root as highest level in parent map
@@ -113,9 +116,13 @@ public class UpnpServerHandler extends UpnpHandler {
     }
 
     @Override
+    protected void setConfig() {
+        config = getConfigAs(UpnpControlServerConfiguration.class);
+    }
+
+    @Override
     public void initialize() {
         super.initialize();
-        config = getConfigAs(UpnpControlServerConfiguration.class);
 
         logger.debug("Initializing handler for media server device {}", thing.getLabel());
 
@@ -162,9 +169,17 @@ public class UpnpServerHandler extends UpnpHandler {
 
     @Override
     protected void initJob() {
+        setConfig();
+        String udn = config.udn;
+        if (udn != null && !udn.isBlank()) {
+            device = upnpService.getRegistry().getRemoteDevice(new UDN(udn), false);
+        }
+
+        upnpIOService.registerParticipant(this);
+
         synchronized (jobLock) {
-            if (!upnpIOService.isRegistered(this)) {
-                String msg = String.format("@text/offline.device-not-registered [ \"%s\" ]", getUDN());
+            if (device == null || !upnpIOService.isDevicePresent(this)) {
+                String msg = String.format("@text/offline.device-not-registered [ \"%s\" ]", getDeviceUDN());
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, msg);
                 return;
             }
@@ -516,7 +531,7 @@ public class UpnpServerHandler extends UpnpHandler {
             if (mediaQueue.isEmpty() && !currentEntry.isContainer()) {
                 mediaQueue.add(currentEntry);
             }
-            UpnpEntryQueue queue = new UpnpEntryQueue(mediaQueue, config.udn);
+            UpnpEntryQueue queue = new UpnpEntryQueue(mediaQueue, getDeviceUDN());
             queue.persistQueue(playlistName, append, bindingConfig.path);
             UpnpControlUtil.updatePlaylistsList(bindingConfig.path);
         }
@@ -732,7 +747,7 @@ public class UpnpServerHandler extends UpnpHandler {
                 logger.debug("Nothing to serve from server {} to renderer {}", thing.getLabel(),
                         handler.getThing().getLabel());
             } else {
-                UpnpEntryQueue queue = new UpnpEntryQueue(mediaQueue, getUDN());
+                UpnpEntryQueue queue = new UpnpEntryQueue(mediaQueue, getDeviceUDN());
                 handler.registerQueue(queue);
                 logger.debug("Serving media queue {} from server {} to renderer {}", mediaQueue, thing.getLabel(),
                         handler.getThing().getLabel());

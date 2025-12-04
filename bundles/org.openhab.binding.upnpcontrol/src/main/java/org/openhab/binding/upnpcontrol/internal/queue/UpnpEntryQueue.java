@@ -29,6 +29,7 @@ import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.upnpcontrol.internal.handler.UpnpHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -89,8 +90,8 @@ public class UpnpEntryQueue {
      * @param udn Defines the UPnP media server source of the queue, could be used to re-query the server if URL
      *            resources are out of date.
      */
-    public UpnpEntryQueue(List<UpnpEntry> queue, @Nullable String udn) {
-        String serverUdn = (udn != null) ? udn : "";
+    public UpnpEntryQueue(List<UpnpEntry> queue, String udn) {
+        String serverUdn = UpnpHandler.UNDEFINED_UDN.equals(udn) ? "" : udn;
         Map<String, List<UpnpEntry>> masterList = Collections.synchronizedMap(new HashMap<>());
         List<UpnpEntry> localQueue = new ArrayList<>(queue);
         masterList.put(serverUdn, localQueue);
@@ -295,7 +296,12 @@ public class UpnpEntryQueue {
 
         try {
             // ensure full path exists
-            file.getParentFile().mkdirs();
+            File parent = file.getParentFile();
+            if (parent == null) {
+                logger.debug("Could not append to playlist playlist {}, invalid path \"{}\"", name, path);
+                return;
+            }
+            parent.mkdirs();
 
             if (append && file.exists()) {
                 try {

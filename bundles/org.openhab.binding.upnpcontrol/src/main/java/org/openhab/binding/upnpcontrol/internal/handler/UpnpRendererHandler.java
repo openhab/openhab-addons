@@ -36,6 +36,7 @@ import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.jupnp.UpnpService;
 import org.jupnp.model.meta.RemoteDevice;
 import org.openhab.binding.upnpcontrol.internal.UpnpChannelName;
 import org.openhab.binding.upnpcontrol.internal.UpnpDynamicCommandDescriptionProvider;
@@ -104,7 +105,6 @@ public class UpnpRendererHandler extends UpnpHandler {
     private UpnpRenderingControlConfiguration renderingControlConfiguration = new UpnpRenderingControlConfiguration();
 
     private volatile List<CommandOption> favoriteCommandOptionList = List.of();
-    private volatile List<CommandOption> playlistCommandOptionList = List.of();
 
     private @NonNullByDefault({}) ChannelUID favoriteSelectChannelUID;
     private @NonNullByDefault({}) ChannelUID playlistSelectChannelUID;
@@ -163,8 +163,9 @@ public class UpnpRendererHandler extends UpnpHandler {
     public UpnpRendererHandler(Thing thing, UpnpIOService upnpIOService, UpnpAudioSinkReg audioSinkReg,
             UpnpDynamicStateDescriptionProvider upnpStateDescriptionProvider,
             UpnpDynamicCommandDescriptionProvider upnpCommandDescriptionProvider,
-            UpnpControlBindingConfiguration configuration) {
-        super(thing, upnpIOService, configuration, upnpStateDescriptionProvider, upnpCommandDescriptionProvider);
+            UpnpControlBindingConfiguration configuration, UpnpService upnpService) {
+        super(thing, upnpIOService, configuration, upnpStateDescriptionProvider, upnpCommandDescriptionProvider,
+                upnpService);
 
         serviceSubscriptions.add(AV_TRANSPORT);
         serviceSubscriptions.add(RENDERING_CONTROL);
@@ -173,9 +174,13 @@ public class UpnpRendererHandler extends UpnpHandler {
     }
 
     @Override
+    protected void setConfig() {
+        config = getConfigAs(UpnpControlRendererConfiguration.class);
+    }
+
+    @Override
     public void initialize() {
         super.initialize();
-        config = getConfigAs(UpnpControlRendererConfiguration.class);
         if (config.seekStep < 1) {
             config.seekStep = 1;
         }
@@ -219,7 +224,7 @@ public class UpnpRendererHandler extends UpnpHandler {
     protected void initJob() {
         synchronized (jobLock) {
             if (!upnpIOService.isRegistered(this)) {
-                String msg = String.format("@text/offline.device-not-registered [ \"%s\" ]", getUDN());
+                String msg = String.format("@text/offline.device-not-registered [ \"%s\" ]", getDeviceUDN());
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, msg);
                 return;
             }
@@ -229,7 +234,7 @@ public class UpnpRendererHandler extends UpnpHandler {
 
                 getCurrentConnectionInfo();
                 if (!checkForConnectionIds()) {
-                    String msg = String.format("@text/offline.no-connection-ids [ \"%s\" ]", getUDN());
+                    String msg = String.format("@text/offline.no-connection-ids [ \"%s\" ]", getDeviceUDN());
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, msg);
                     return;
                 }
@@ -258,7 +263,7 @@ public class UpnpRendererHandler extends UpnpHandler {
     public void updateDeviceConfig(RemoteDevice device) {
         super.updateDeviceConfig(device);
 
-        UpnpRenderingControlConfiguration config = new UpnpRenderingControlConfiguration(device);
+        UpnpRenderingControlConfiguration config = new UpnpRenderingControlConfiguration(getDevice());
         renderingControlConfiguration = config;
         for (String audioChannel : config.audioChannels) {
             createAudioChannels(audioChannel);
@@ -1012,7 +1017,7 @@ public class UpnpRendererHandler extends UpnpHandler {
 
     @Override
     public void playlistsListChanged() {
-        playlistCommandOptionList = UpnpControlUtil.playlists().stream().map(p -> (new CommandOption(p, p)))
+        List<CommandOption> playlistCommandOptionList = UpnpControlUtil.playlists().stream().map(p -> (new CommandOption(p, p)))
                 .collect(Collectors.toList());
         updateCommandDescription(playlistSelectChannelUID, playlistCommandOptionList);
     }
