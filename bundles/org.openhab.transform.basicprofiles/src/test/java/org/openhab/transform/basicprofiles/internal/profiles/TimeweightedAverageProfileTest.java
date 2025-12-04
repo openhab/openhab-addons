@@ -55,9 +55,12 @@ class TimeweightedAverageProfileTest {
     private final ChannelUID testChannelUID = new ChannelUID("this:test:channel:uid");
     private ItemChannelLink testLink = new ItemChannelLink(testItemName, testChannelUID);
 
-    private TimeweightedAverageStateProfile initTWAProfile(String duration) {
+    private TimeweightedAverageStateProfile initTWAProfile(String duration, double delta) {
         Configuration config = new Configuration();
         config.put("duration", duration);
+        if (delta > 0) {
+            config.put("delta", delta);
+        }
 
         reset(mockContext);
         reset(mockCallback);
@@ -83,7 +86,7 @@ class TimeweightedAverageProfileTest {
     @ParameterizedTest
     @MethodSource
     public void testTWATimeframe(String timeout, long expectedSchedule) {
-        TimeweightedAverageStateProfile profile = initTWAProfile(timeout);
+        TimeweightedAverageStateProfile profile = initTWAProfile(timeout, 0);
         profile.onStateUpdateFromHandler(DecimalType.ZERO);
         verify(mockScheduler, times(1)).schedule(any(Runnable.class), eq(expectedSchedule), eq(TimeUnit.MILLISECONDS));
     }
@@ -101,11 +104,32 @@ class TimeweightedAverageProfileTest {
     @ParameterizedTest
     @MethodSource
     public void testTWAAverages(List<String> timeStrings, List<String> stateStrings, double expectedAverage) {
-        TimeweightedAverageStateProfile profile = initTWAProfile("10s");
+        TimeweightedAverageStateProfile profile = initTWAProfile("10s", 0);
         TreeMap<Instant, State> testData = new TreeMap<>();
         for (int i = 0; i < timeStrings.size(); i++) {
             testData.put(Instant.parse(timeStrings.get(i)), QuantityType.valueOf(stateStrings.get(i)));
         }
         assertEquals(expectedAverage, profile.average(testData));
+    }
+
+    public static Stream<Arguments> testTWADelta() {
+        return Stream.of( //
+                Arguments.of(List.of("750 W", "1000 W", "900 W", "800 W"), 0), //
+                Arguments.of(List.of("750 W", "1000 W", "900 W", "800 W", "1300 W"), 2), //
+                Arguments.of(List.of("750 W", "1000 W", "900 W", "800 W", "300 W"), 2), //
+                Arguments.of(
+                        List.of("750 W", "1000 W", "900 W", "800 W", "1500 W", "1400 W", "1300 W", "1100 W", "500 W"),
+                        4) //
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource
+    public void testTWADelta(List<String> stateStrings, int expectedCallbacks) {
+        TimeweightedAverageStateProfile profile = initTWAProfile("1h", 500);
+        for (String stateString : stateStrings) {
+            profile.onStateUpdateFromHandler(QuantityType.valueOf(stateString));
+        }
+        verify(mockCallback, times(expectedCallbacks)).sendUpdate(any());
     }
 }

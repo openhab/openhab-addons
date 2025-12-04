@@ -22,4 +22,5 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class TimeweightedAverageProfileConfig {
     public String duration = "60s";
+    public double delta = 0.0;
 }
