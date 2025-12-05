@@ -65,7 +65,7 @@ public class EmbyHandlerFactory extends BaseThingHandlerFactory {
     private Logger logger = LoggerFactory.getLogger(EmbyHandlerFactory.class);
 
     private TranslationProvider i18nProvider;
-    private @Nullable WebSocketClient webSocketClient;
+    private WebSocketClient webSocketClient;
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
             .unmodifiableSet(Stream.of(THING_TYPE_EMBY_CONTROLLER, THING_TYPE_EMBY_DEVICE).collect(Collectors.toSet()));
@@ -113,12 +113,7 @@ public class EmbyHandlerFactory extends BaseThingHandlerFactory {
         }
 
         if (THING_TYPE_EMBY_CONTROLLER.equals(thing.getThingTypeUID())) {
-            WebSocketClient client = this.webSocketClient;
-            if (client == null) {
-                logger.error("WebSocketClient not initialized");
-                return null;
-            }
-            EmbyBridgeHandler bridgeHandler = new EmbyBridgeHandler((Bridge) thing, client, this.i18nProvider);
+            EmbyBridgeHandler bridgeHandler = new EmbyBridgeHandler((Bridge) thing, this.webSocketClient, this.i18nProvider);
             Dictionary<String, Object> cfg = new Hashtable<>();
             cfg.put("bridgeUID", bridgeHandler.getThing().getUID().toString());
 
