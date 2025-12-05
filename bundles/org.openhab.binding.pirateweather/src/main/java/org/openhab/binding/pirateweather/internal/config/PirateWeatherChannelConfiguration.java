@@ -77,26 +77,21 @@ public class PirateWeatherChannelConfiguration {
     /**
      * Parses a hh:mm string and returns the minutes.
      */
-    private long getMinutesFromTime(@Nullable String configTime) {
-        String time = configTime;
-        if (time != null && !(time = time.trim()).isEmpty()) {
-            try {
-                if (!HHMM_PATTERN.matcher(time).matches()) {
-                    throw new NumberFormatException();
-                } else {
-                    String[] splittedConfigTime = time.split(TIME_SEPARATOR);
-                    int hour = Integer.parseInt(splittedConfigTime[0]);
-                    int minutes = Integer.parseInt(splittedConfigTime[1]);
-                    return Duration.ofMinutes(minutes).plusHours(hour).toMinutes();
-                }
-            } catch (NumberFormatException ex) {
-                logger.warn("Cannot parse channel configuration '{}' to hour and minutes, use pattern hh:mm, ignoring!",
-                        time);
-            } catch (Exception ex) {
-                logger.warn("Cannot parse channel configuration '{}' to hour and minutes, use pattern hh:mm, ignoring!",
-                        time);
-            }
+    public long getMinutesFromTime(@Nullable String configTime) {
+        if (configTime == null || configTime.isBlank()) {
+            return 0;
         }
-        return 0;
+
+        String time = configTime.trim();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+        try {
+            LocalTime localTime = LocalTime.parse(time, formatter);
+            return Duration.ofHours(localTime.getHour())
+                           .plusMinutes(localTime.getMinute())
+                           .toMinutes();
+        } catch (DateTimeParseException ex) {
+            logger.warn("Cannot parse channel configuration '{}' to hour and minutes, use pattern HH:mm, ignoring!", time);
+            return 0;
+        }
     }
 }
