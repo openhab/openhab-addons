@@ -10,7 +10,7 @@
 		<description>Provides access to the Pirate Weather API.</description>
 
 		<representation-property>apikey</representation-property>
-
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 		<config-description-ref uri="bridge-type:pirateweather:weather-api"/>
 	</bridge-type>
 
