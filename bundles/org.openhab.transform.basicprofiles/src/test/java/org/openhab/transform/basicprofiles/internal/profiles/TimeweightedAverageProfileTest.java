@@ -12,7 +12,7 @@
  */
 package org.openhab.transform.basicprofiles.internal.profiles;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
@@ -89,6 +89,7 @@ class TimeweightedAverageProfileTest {
         TimeweightedAverageStateProfile profile = initTWAProfile(timeout, 0);
         profile.onStateUpdateFromHandler(DecimalType.ZERO);
         verify(mockScheduler, times(1)).schedule(any(Runnable.class), eq(expectedSchedule), eq(TimeUnit.MILLISECONDS));
+        reset(mockScheduler);
     }
 
     public static Stream<Arguments> testTWAAverages() {
@@ -129,7 +130,13 @@ class TimeweightedAverageProfileTest {
         TimeweightedAverageStateProfile profile = initTWAProfile("1h", 500);
         for (String stateString : stateStrings) {
             profile.onStateUpdateFromHandler(QuantityType.valueOf(stateString));
+            try {
+                Thread.sleep(25); // ensure different time stamps
+            } catch (InterruptedException e) {
+                fail(e.getMessage());
+            }
         }
         verify(mockCallback, times(expectedCallbacks)).sendUpdate(any());
+        reset(mockCallback);
     }
 }

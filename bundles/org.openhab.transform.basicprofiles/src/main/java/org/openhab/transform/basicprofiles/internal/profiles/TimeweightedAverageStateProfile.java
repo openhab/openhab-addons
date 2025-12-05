@@ -137,7 +137,7 @@ public class TimeweightedAverageStateProfile implements StateProfile {
             delivery = (TreeMap<Instant, State>) timeframe.clone();
             // add termination element
             delivery.put(Instant.now(), DecimalType.ZERO);
-            // clear timeframe and put latest reported state as start point of the next calculation
+            // clear time frame and put latest reported state as start point of the next calculation
             timeframe.clear();
 
             State localState = latestState;
