@@ -69,6 +69,8 @@ import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.thing.type.ChannelDefinition;
 import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -286,15 +288,43 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
     public void initialize() {
         isBridgedAccessory = getBridge() instanceof Bridge;
         if (!isBridgedAccessory) {
-            // delay connection attempt until Start Level notification via the receive() method below
-            eventSubscription = bundle.getBundleContext().registerService(EventSubscriber.class.getName(), this, null);
+            if (alreadyAtStartLevelComplete()) {
+                // schedule connection attempt immediately
+                scheduleConnectionAttempt();
+            } else {
+                // delay connection attempt until STARTLEVEL_COMPLETE is signalled via receive() method below
+                BundleContext context = bundle.getBundleContext();
+                eventSubscription = context.registerService(EventSubscriber.class.getName(), this, null);
+            }
         }
         updateStatus(ThingStatus.UNKNOWN);
     }
 
     /**
-     * STARTLEVEL_COMPLETE means Thing handlers instantiated, initialize() methods called, and all registries loaded,
-     * so everything is now finally ready for us to schedule a connection attempt.
+     * Return true if STARTLEVEL_COMPLETE has already been acheived.
+     * <p>
+     * Note: STARTLEVEL_COMPLETE means all Thing handlers are instantiated and their initialize() methods have
+     * been called, and the registries for item, thing, and item-channel-links have all been loaded.
+     */
+    private boolean alreadyAtStartLevelComplete() {
+        BundleContext context = bundle.getBundleContext();
+        ServiceReference<StartLevelService> reference = context.getServiceReference(StartLevelService.class);
+        if (reference != null && context.getService(reference) instanceof StartLevelService service) {
+            try {
+                return service.getStartLevel() >= StartLevelService.STARTLEVEL_COMPLETE;
+            } finally {
+                context.ungetService(reference);
+            }
+        }
+        return false;
+    }
+
+    /**
+     * When an event is received, checks if {@link StartLevelService#STARTLEVEL_COMPLETE} is reached, and if so
+     * schedules a connection attempt.
+     * <p>
+     * Note: STARTLEVEL_COMPLETE means all Thing handlers are instantiated and their initialize() methods have
+     * been called, and the registries for item, thing, and item-channel-links have all been loaded.
      */
     @Override
     public void receive(Event event) {
