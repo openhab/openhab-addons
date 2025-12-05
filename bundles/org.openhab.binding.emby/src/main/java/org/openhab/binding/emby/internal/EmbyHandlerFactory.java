@@ -92,7 +92,7 @@ public class EmbyHandlerFactory extends BaseThingHandlerFactory {
             try {
                 client.start();
             } catch (Exception e) {
-                logger.warn("Unable to start websocket client.", e);
+                logger.warn("Unable to start websocket client. Emby bridge handlers will be unavailable.", e);
             }
         }
     }
