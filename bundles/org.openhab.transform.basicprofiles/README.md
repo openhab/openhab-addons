@@ -374,7 +374,7 @@ It's useful to reduce high frequent data which goes finally into your persistenc
 - power plugs with electric measurement
 
 Profile is only applicable to number channels with or without unit metadata.
-The average is build for all state updates from handler to item, neither commands nor updates towards an item form rules or UI are affected.
+The average is built for all state updates from handler to item, neither commands nor updates towards an item from rules or UI are affected.
 Check the semantics of the channel if this profile fits. 
 E.g. a channel providing _power measurement_ values is a valid candidate to build averages.
 A channel providing a status or accumulated value like _total energy production today_ is not a good candidate.
