@@ -27,6 +27,7 @@ import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.openhab.binding.emby.internal.discovery.EmbyClientDiscoveryService;
 import org.openhab.binding.emby.internal.handler.EmbyBridgeHandler;
 import org.openhab.binding.emby.internal.handler.EmbyDeviceHandler;
@@ -46,6 +47,7 @@ import org.osgi.service.component.ComponentInstance;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ConfigurationPolicy;
+import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,8 +64,9 @@ public class EmbyHandlerFactory extends BaseThingHandlerFactory {
 
     private Logger logger = LoggerFactory.getLogger(EmbyHandlerFactory.class);
 
-    private WebSocketFactory webSocketClientFactory;
     private TranslationProvider i18nProvider;
+    private @Nullable WebSocketClient webSocketClient;
+    private @Nullable WebSocketFactory webSocketFactory;
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
             .unmodifiableSet(Stream.of(THING_TYPE_EMBY_CONTROLLER, THING_TYPE_EMBY_DEVICE).collect(Collectors.toSet()));
@@ -73,11 +76,25 @@ public class EmbyHandlerFactory extends BaseThingHandlerFactory {
     private final Map<ThingUID, ComponentInstance<DiscoveryService>> discoveryInstances = new HashMap<>();
 
     @Activate
-    public EmbyHandlerFactory(@Reference WebSocketFactory webSocketClientFactory, ComponentContext componentContext,
-            @Reference TranslationProvider i18nProvider) {
+    public EmbyHandlerFactory(ComponentContext componentContext, @Reference TranslationProvider i18nProvider,
+            @Reference WebSocketFactory webSocketFactory) {
         super.activate(componentContext);
-        this.webSocketClientFactory = webSocketClientFactory;
         this.i18nProvider = i18nProvider;
+        this.webSocketFactory = webSocketFactory;
+
+        // Create our own WebSocketClient with increased message size limit for Emby's large payloads
+        // This follows the pattern used by LGWebOS binding for similar large payload requirements
+        this.webSocketClient = webSocketFactory.createWebSocketClient(EmbyBindingConstants.BINDING_ID);
+        // Set max text message size to 512KB to handle large Emby session messages
+        WebSocketClient client = this.webSocketClient;
+        if (client != null) {
+            client.getPolicy().setMaxTextMessageSize(512 * 1024);
+            try {
+                client.start();
+            } catch (Exception e) {
+                logger.warn("Unable to start websocket client.", e);
+            }
+        }
     }
 
     @Override
@@ -93,8 +110,12 @@ public class EmbyHandlerFactory extends BaseThingHandlerFactory {
         }
 
         if (THING_TYPE_EMBY_CONTROLLER.equals(thing.getThingTypeUID())) {
-            EmbyBridgeHandler bridgeHandler = new EmbyBridgeHandler((Bridge) thing,
-                    webSocketClientFactory.getCommonWebSocketClient(), this.i18nProvider);
+            WebSocketClient client = this.webSocketClient;
+            if (client == null) {
+                logger.error("WebSocketClient not initialized");
+                return null;
+            }
+            EmbyBridgeHandler bridgeHandler = new EmbyBridgeHandler((Bridge) thing, client, this.i18nProvider);
             Dictionary<String, Object> cfg = new Hashtable<>();
             cfg.put("bridgeUID", bridgeHandler.getThing().getUID().toString());
 
@@ -130,5 +151,21 @@ public class EmbyHandlerFactory extends BaseThingHandlerFactory {
         }
 
         super.removeHandler(handler);
+    }
+
+    @Deactivate
+    @Override
+    protected void deactivate(ComponentContext componentContext) {
+        super.deactivate(componentContext);
+        WebSocketClient client = this.webSocketClient;
+        if (client != null) {
+            try {
+                client.stop();
+            } catch (Exception e) {
+                logger.warn("Unable to stop websocket client.", e);
+            }
+            this.webSocketClient = null;
+        }
+        this.webSocketFactory = null;
     }
 }
