@@ -118,7 +118,7 @@ Heatpump device channels
 
 ### melcloud.things
 
-```java
+```
 Bridge melcloud:melcloudaccount:myaccount "My MELCloud account" [ username="user.name@example.com", password="xxxxxx", language="0" ] {
  Thing acdevice livingroom "Livingroom A.C. device" [ deviceID=123456, pollingInterval=360 ]
  Thing heatpumpdevice attic "Attic Heatpump device" [ deviceID=789012, pollingInterval=360 ]
@@ -127,7 +127,7 @@ Bridge melcloud:melcloudaccount:myaccount "My MELCloud account" [ username="user
 
 ### melcloud.items
 
-```java
+```
 Switch      power               { channel="melcloud:acdevice:myaccount:livingroom:power" }
 String      operationMode       { channel="melcloud:acdevice:myaccount:livingroom:operationMode" }
 Number      setTemperature      { channel="melcloud:acdevice:myaccount:livingroom:setTemperature" }
@@ -140,13 +140,22 @@ DateTime    nextCommunication   { channel="melcloud:acdevice:myaccount:livingroo
 Switch      offline             { channel="melcloud:acdevice:myaccount:livingroom:offline" }
 Switch      hasPendingCommand   { channel="melcloud:acdevice:myaccount:livingroom:hasPendingCommand" }
 
-Switch      heatpumpPower               { channel="melcloud:heatpumpdevice:myaccount:attic:power" }
-Switch      heatpumpForcedHotWaterMode  { channel="melcloud:heatpumpdevice:myaccount:attic:forcedHotWaterMode" }
-Number      heatpumpSetTemperatureZone1 { channel="melcloud:heatpumpdevice:myaccount:attic:setTemperatureZone1" }
-Number      heatpumpRoomTemperatureZone1{ channel="melcloud:heatpumpdevice:myaccount:attic:roomTemperatureZone1" }
-Number      heatpumpTankWaterTemperature{ channel="melcloud:heatpumpdevice:myaccount:attic:tankWaterTemperature" }
-DateTime    heatpumpLastCommunication   { channel="melcloud:heatpumpdevice:myaccount:attic:lastCommunication" }
-DateTime    heatpumpNextCommunication   { channel="melcloud:heatpumpdevice:myaccount:attic:nextCommunication" }
-Switch      heatpumpOffline             { channel="melcloud:heatpumpdevice:myaccount:attic:offline" }
-Switch      heatpumpHasPendingCommand   { channel="melcloud:heatpumpdevice:myaccount:attic:hasPendingCommand" }
+Switch      heatpumpPower                { channel="melcloud:heatpumpdevice:myaccount:attic:power" }
+Switch      heatpumpForcedHotWaterMode   { channel="melcloud:heatpumpdevice:myaccount:attic:forcedHotWaterMode" }
+Number      heatpumpSetTemperatureZone1  { channel="melcloud:heatpumpdevice:myaccount:attic:setTemperatureZone1" }
+Number      heatpumpRoomTemperatureZone1 { channel="melcloud:heatpumpdevice:myaccount:attic:roomTemperatureZone1" }
+Number      heatpumpSetTemperatureZone2  { channel="melcloud:heatpumpdevice:myaccount:attic:setTemperatureZone1" }
+Number      heatpumpRoomTemperatureZone2 { channel="melcloud:heatpumpdevice:myaccount:attic:roomTemperatureZone1" }
+Number      heatpumpTankWaterTemperature { channel="melcloud:heatpumpdevice:myaccount:attic:tankWaterTemperature" }
+Number      heatpumpTankTargetWaterTemperature{ channel="melcloud:heatpumpdevice:myaccount:attic:tankTargetWaterTemperature" }
+DateTime    heatpumpLastCommunication    { channel="melcloud:heatpumpdevice:myaccount:attic:lastCommunication" }
+DateTime    heatpumpNextCommunication    { channel="melcloud:heatpumpdevice:myaccount:attic:nextCommunication" }
+Switch      heatpumpOffline              { channel="melcloud:heatpumpdevice:myaccount:attic:offline" }
+Switch      heatpumpHasPendingCommand    { channel="melcloud:heatpumpdevice:myaccount:attic:hasPendingCommand" }
+Number      heatpumpFlowTemperatureZone1 { channel="melcloud:heatpumpdevice:myaccount:attic:heatFlowTemperatureZone1" }
+Number      heatpumpFlowTemperatureZone2 { channel="melcloud:heatpumpdevice:myaccount:attic:heatFlowTemperatureZone2" }
+String      heatpumpHeatTemperatureModeZone1 { channel="melcloud:heatpumpdevice:myaccount:attic:heatTemperatureModeZone1" }
+String      heatpumpHeatTemperatureModeZone2 { channel="melcloud:heatpumpdevice:myaccount:attic:heatTemperatureModeZone2" }
+String      heatpumpHeatPumpOperationMode { channel="melcloud:heatpumpdevice:myaccount:attic:heatPumpOperationMode" }}
+
 ```
