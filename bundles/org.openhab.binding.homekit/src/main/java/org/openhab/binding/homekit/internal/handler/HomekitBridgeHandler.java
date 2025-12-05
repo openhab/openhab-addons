@@ -32,7 +32,6 @@ import org.openhab.core.thing.binding.BridgeHandler;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.thing.binding.builder.BridgeBuilder;
-import org.openhab.core.thing.util.ThingHandlerHelper;
 import org.openhab.core.types.Command;
 import org.osgi.framework.Bundle;
 
@@ -90,12 +89,6 @@ public class HomekitBridgeHandler extends HomekitBaseAccessoryHandler implements
     @Override
     public void childHandlerDisposed(ThingHandler childHandler, Thing childThing) {
         // do nothing
-    }
-
-    @Override
-    protected boolean bridgedThingsInitialized() {
-        return getThing().getThings().stream()
-                .allMatch(bridgedAccessory -> ThingHandlerHelper.isHandlerInitialized(bridgedAccessory));
     }
 
     @Override

@@ -70,7 +70,6 @@ import org.openhab.core.thing.type.ChannelGroupTypeRegistry;
 import org.openhab.core.thing.type.ChannelType;
 import org.openhab.core.thing.type.ChannelTypeRegistry;
 import org.openhab.core.thing.type.ChannelTypeUID;
-import org.openhab.core.thing.util.ThingHandlerHelper;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
@@ -907,11 +906,6 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
     }
 
     @Override
-    protected boolean bridgedThingsInitialized() {
-        return ThingHandlerHelper.isHandlerInitialized(thing); // no bridged accessories; return own status
-    }
-
-    @Override
     protected void onConnectedThingAccessoriesLoaded() {
         createProperties();
         createChannels();
@@ -928,7 +922,11 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
      */
     @Override
     public void channelLinked(ChannelUID channelUID) {
+        boolean eventedCharacteristicsChanged = false;
         try {
+            if (!alreadyAtStartLevelComplete()) {
+                return; // item-channel-links not yet fully initialized
+            }
             final Channel channel = thing.getChannel(channelUID);
             if (channel == null) {
                 return; // OH core ensures this does not happen
@@ -969,6 +967,7 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
                             entry.aid = aid;
                             entry.iid = iid;
                             eventedCharacteristics.put(AID_IID_FORMAT.formatted(entry.aid, entry.iid), entry);
+                            eventedCharacteristicsChanged = true;
                         }
                         if (checkChannelLinkByIID) {
                             return; // unique match found; return directly
@@ -977,6 +976,9 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
                 }
             }
         } finally {
+            if (eventedCharacteristicsChanged) { // if evented list changes (re-) enable eventing (using new list)
+                scheduler.submit(() -> enableEvents(true));
+            }
             super.channelLinked(channelUID);
         }
     }

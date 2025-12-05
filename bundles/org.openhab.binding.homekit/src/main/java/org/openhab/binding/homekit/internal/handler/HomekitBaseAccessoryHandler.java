@@ -243,9 +243,6 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
      * 'onThingOnline' methods (and its eventual overloaded implementations).
      */
     private void processBridgedThings() {
-        if (!bridgedThingsInitialized()) {
-            logger.warn("{} unexpected error: bridged Things not initialized.", thing.getUID());
-        }
         onConnectedThingAccessoriesLoaded();
         onThingOnline();
     }
@@ -291,10 +288,9 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
             if (alreadyAtStartLevelComplete()) {
                 // schedule connection attempt immediately
                 scheduleConnectionAttempt();
-            } else {
+            } else if (bundle.getBundleContext() instanceof BundleContext ctx) {
                 // delay connection attempt until STARTLEVEL_COMPLETE is signalled via receive() method below
-                BundleContext context = bundle.getBundleContext();
-                eventSubscription = context.registerService(EventSubscriber.class.getName(), this, null);
+                eventSubscription = ctx.registerService(EventSubscriber.class.getName(), this, null);
             }
         }
         updateStatus(ThingStatus.UNKNOWN);
@@ -306,14 +302,16 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
      * Note: STARTLEVEL_COMPLETE means all Thing handlers are instantiated and their initialize() methods have
      * been called, and the registries for item, thing, and item-channel-links have all been loaded.
      */
-    private boolean alreadyAtStartLevelComplete() {
-        BundleContext context = bundle.getBundleContext();
-        ServiceReference<StartLevelService> reference = context.getServiceReference(StartLevelService.class);
-        if (reference != null && context.getService(reference) instanceof StartLevelService service) {
-            try {
-                return service.getStartLevel() >= StartLevelService.STARTLEVEL_COMPLETE;
-            } finally {
-                context.ungetService(reference);
+    protected boolean alreadyAtStartLevelComplete() {
+        if (bundle.getBundleContext() instanceof BundleContext ctx) {
+            if (ctx.getServiceReference(StartLevelService.class) instanceof ServiceReference<StartLevelService> ref) {
+                if (ctx.getService(ref) instanceof StartLevelService svc) {
+                    try {
+                        return svc.getStartLevel() >= StartLevelService.STARTLEVEL_COMPLETE;
+                    } finally {
+                        ctx.ungetService(ref);
+                    }
+                }
             }
         }
         return false;
@@ -416,12 +414,11 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
     protected void scheduleConnectionAttempt() {
         if (getBridge() instanceof Bridge bridge && bridge.getHandler() instanceof HomekitBridgeHandler bridgeHandler) {
             bridgeHandler.scheduleConnectionAttempt();
-        } else {
-            ScheduledFuture<?> task = connectionAttemptTask;
-            if (task == null || task.isDone() || task.isCancelled()) {
-                connectionAttemptTask = scheduler.schedule(this::attemptConnect, connectionAttemptDelay,
-                        TimeUnit.SECONDS);
-            }
+            return;
+        }
+        ScheduledFuture<?> task = connectionAttemptTask;
+        if (task == null || task.isDone() || task.isCancelled()) {
+            connectionAttemptTask = scheduler.schedule(this::attemptConnect, connectionAttemptDelay, TimeUnit.SECONDS);
         }
     }
 
@@ -687,7 +684,11 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
      *
      * @param enable true to enable events, false to disable
      */
-    private void enableEvents(boolean enable) {
+    protected void enableEvents(boolean enable) {
+        if (getBridge() instanceof Bridge bridge && bridge.getHandler() instanceof HomekitBridgeHandler bridgeHandler) {
+            bridgeHandler.enableEvents(true);
+            return;
+        }
         try {
             enableEventsOrThrow(enable);
         } catch (InterruptedException e) {
@@ -771,12 +772,6 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
                     THING_STATUS_FMT.formatted("error.polling-error", e.getMessage()));
         }
     }
-
-    /**
-     * Checks if all bridged accessory things have the reached status UNKNOWN, OFFLINE, or ONLINE.
-     * Subclasses MUST override this to perform the check.
-     */
-    protected abstract boolean bridgedThingsInitialized();
 
     /**
      * Called when the connected thing has finished loading the accessories.
@@ -863,11 +858,11 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
     protected void requestManualRefresh() {
         if (getBridge() instanceof Bridge bridge && bridge.getHandler() instanceof HomekitBridgeHandler bridgeHandler) {
             bridgeHandler.requestManualRefresh();
-        } else {
-            Future<?> task = manualRefreshTask;
-            if (task == null || task.isDone() || task.isCancelled()) {
-                manualRefreshTask = scheduler.schedule(this::refresh, MANUAL_REFRESH_DELAY_SECONDS, TimeUnit.SECONDS);
-            }
+            return;
+        }
+        Future<?> task = manualRefreshTask;
+        if (task == null || task.isDone() || task.isCancelled()) {
+            manualRefreshTask = scheduler.schedule(this::refresh, MANUAL_REFRESH_DELAY_SECONDS, TimeUnit.SECONDS);
         }
     }
 
