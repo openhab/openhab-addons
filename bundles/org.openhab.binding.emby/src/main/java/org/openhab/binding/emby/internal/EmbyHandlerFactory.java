@@ -83,8 +83,15 @@ public class EmbyHandlerFactory extends BaseThingHandlerFactory {
         // Create our own WebSocketClient with increased message size limit for Emby's large payloads
         // This follows the pattern used by LGWebOS binding for similar large payload requirements
         this.webSocketClient = webSocketFactory.createWebSocketClient(EmbyBindingConstants.BINDING_ID);
-        // Set max text message size to 512KB to handle large Emby session messages
+    }
+
+    @Override
+    protected void activate(ComponentContext componentContext) {
+        super.activate(componentContext);
+        
+        // Configure and start the WebSocket client
         WebSocketClient client = this.webSocketClient;
+        // Set max text message size to 512KB to handle large Emby session messages
         client.getPolicy().setMaxTextMessageSize(512 * 1024);
         try {
             client.start();
