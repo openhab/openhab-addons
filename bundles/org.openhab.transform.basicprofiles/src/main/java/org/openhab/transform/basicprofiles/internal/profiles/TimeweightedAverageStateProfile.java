@@ -70,7 +70,8 @@ public class TimeweightedAverageStateProfile implements StateProfile {
             scheduleDuration = DurationUtils.parse(config.duration);
         } catch (IllegalArgumentException e) {
             scheduleDuration = DEFAULT_TIMEOUT;
-            logger.warn("Invalid duration configuration {} for item {}", config.duration, itemName);
+            logger.warn("Invalid duration configuration {} for item {}. Fallback to {}", config.duration, itemName,
+                    DEFAULT_TIMEOUT);
         }
     }
 
@@ -131,15 +132,24 @@ public class TimeweightedAverageStateProfile implements StateProfile {
     }
 
     private void deliver() {
-        TreeMap<Instant, State> delivery = new TreeMap<>();
+        TreeMap<Instant, State> delivery = prepareDelivery();
+        if (delivery.size() <= 1) {
+            logger.debug("Cannot calculate time-weighted average for item {} with {} elements", itemName,
+                    delivery.size());
+        } else {
+            callback.sendUpdate(getState(average(delivery)));
+        }
+    }
+
+    private TreeMap<Instant, State> prepareDelivery() {
+        TreeMap<Instant, State> delivery;
         synchronized (timeframe) {
             resetJob();
-            delivery = (TreeMap<Instant, State>) timeframe.clone();
+            delivery = new TreeMap<>(timeframe);
             // add termination element
             delivery.put(Instant.now(), DecimalType.ZERO);
             // clear time frame and put latest reported state as start point of the next calculation
             timeframe.clear();
-
             State localState = latestState;
             if (localState != null) {
                 if (streamingInTimeframe) {
@@ -149,17 +159,11 @@ public class TimeweightedAverageStateProfile implements StateProfile {
                     startJob();
                 } else {
                     // no new states received during this time frame
-                    logger.debug("no new states received, wait for next state update");
+                    logger.debug("No new states for {} received, wait for next state update", itemName);
                 }
             }
         }
-
-        if (delivery.size() <= 1) {
-            logger.debug("Cannot calculate time-weighted average for item {} with {} elements", itemName,
-                    delivery.size());
-        } else {
-            callback.sendUpdate(getState(average(delivery)));
-        }
+        return delivery;
     }
 
     private void startJob() {
@@ -173,37 +177,34 @@ public class TimeweightedAverageStateProfile implements StateProfile {
         ScheduledFuture<?> localTwaJob = twaJob;
         if (localTwaJob != null) {
             localTwaJob.cancel(false);
+            twaJob = null;
         }
-        twaJob = null;
     }
 
     private double state2Double(State state) {
         DecimalType as = state.as(DecimalType.class);
         if (as == null) {
-            logger.error("Cannot convert state {} of item {} to DecimalType for average calculation", state, itemName);
+            // may happen if state delivery contains NULL or UNDEF states
+            logger.warn("Cannot convert state {} of item {} to DecimalType for average calculation", state, itemName);
             return 0;
         }
         return as.doubleValue();
     }
 
     public double average(TreeMap<Instant, State> values) {
-        Instant iterationTimestamp = null;
-        State iterationValue = DecimalType.ZERO;
+        Instant previousTimestamp = null;
+        State previousValue = DecimalType.ZERO;
         double totalWeightedValue = 0;
         long totalDurationMs = 0;
 
         for (Map.Entry<Instant, State> entry : values.entrySet()) {
-            if (iterationTimestamp == null) {
-                iterationTimestamp = entry.getKey();
-                iterationValue = entry.getValue();
-            } else {
-                Instant end = entry.getKey();
-                long durationMs = Duration.between(iterationTimestamp, end).toMillis();
-                totalWeightedValue += state2Double(iterationValue) * durationMs;
+            if (previousTimestamp != null) {
+                long durationMs = Duration.between(previousTimestamp, entry.getKey()).toMillis();
+                totalWeightedValue += state2Double(previousValue) * durationMs;
                 totalDurationMs += durationMs;
-                iterationTimestamp = end;
-                iterationValue = entry.getValue();
             }
+            previousTimestamp = entry.getKey();
+            previousValue = entry.getValue();
         }
         double average = (totalDurationMs > 0) ? totalWeightedValue / totalDurationMs : 0;
         logger.debug("Average {} is {} for {} updates", itemName, average, values.size());

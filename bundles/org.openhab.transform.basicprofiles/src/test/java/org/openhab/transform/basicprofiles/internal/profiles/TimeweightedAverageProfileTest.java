@@ -38,6 +38,7 @@ import org.openhab.core.thing.link.ItemChannelLink;
 import org.openhab.core.thing.profiles.ProfileCallback;
 import org.openhab.core.thing.profiles.ProfileContext;
 import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
 
 /**
  * Unit test for {@link TimeweightedAverageStateProfile}.
@@ -130,6 +131,35 @@ class TimeweightedAverageProfileTest {
         TimeweightedAverageStateProfile profile = initTWAProfile("1h", 500);
         for (String stateString : stateStrings) {
             profile.onStateUpdateFromHandler(QuantityType.valueOf(stateString));
+            try {
+                Thread.sleep(25); // ensure different time stamps
+            } catch (InterruptedException e) {
+                fail(e.getMessage());
+            }
+        }
+        verify(mockCallback, times(expectedCallbacks)).sendUpdate(any());
+        reset(mockCallback);
+    }
+
+    public static Stream<Arguments> testTWAInvalidStates() {
+        List<State> statesWithNull = List.of(QuantityType.valueOf("700 W"), UnDefType.NULL,
+                QuantityType.valueOf("900 W"), QuantityType.valueOf("900 W"));
+        List<State> statesWithUndef = List.of(QuantityType.valueOf("700 W"), UnDefType.UNDEF,
+                QuantityType.valueOf("900 W"), QuantityType.valueOf("900 W"));
+        List<State> statesWithBoth = List.of(QuantityType.valueOf("700 W"), UnDefType.UNDEF, UnDefType.NULL,
+                UnDefType.UNDEF, QuantityType.valueOf("900 W"), QuantityType.valueOf("900 W"));
+        return Stream.of(Arguments.of(statesWithNull, 4), //
+                Arguments.of(statesWithUndef, 4), //
+                Arguments.of(statesWithBoth, 4) //
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource
+    public void testTWAInvalidStates(List<State> states, int expectedCallbacks) {
+        TimeweightedAverageStateProfile profile = initTWAProfile("1h", 500);
+        for (State state : states) {
+            profile.onStateUpdateFromHandler(state);
             try {
                 Thread.sleep(25); // ensure different time stamps
             } catch (InterruptedException e) {
