@@ -5,21 +5,21 @@
 
 	<thing-type uid="melcloud:heatpumpdevice">
 		<instruction-set targetVersion="1">
-            <update-channel id="hasPendingCommand">
-                <type>melcloud:hasPendingCommand-channel</type>
-                <tags>
-                    <tag>Status</tag>
-                    <tag>Info</tag>
-                </tags>
-            </update-channel>
+			<update-channel id="hasPendingCommand">
+				<type>melcloud:hasPendingCommand-channel</type>
+				<tags>
+					<tag>Status</tag>
+					<tag>Info</tag>
+				</tags>
+			</update-channel>
 
-            <update-channel id="offline">
-                <type>melcloud:offline-channel</type>
-                <tags>
-                    <tag>Status</tag>
-                    <tag>Info</tag>
-                </tags>
-            </update-channel>
+			<update-channel id="offline">
+				<type>melcloud:offline-channel</type>
+				<tags>
+					<tag>Status</tag>
+					<tag>Info</tag>
+				</tags>
+			</update-channel>
 
 			<update-channel id="roomTemperatureZone1">
 				<type>melcloud:roomTemperatureZone1-channel</type>
@@ -40,15 +40,15 @@
 			</update-channel>
 
 			<!-- New channels -->
-            <add-channel id="tankTargetWaterTemperature">
-                <type>melcloud:tankTargetWaterTemperature-channel</type>
-                <label>Tank Target Degrees</label>
-                <description>Setpoint temperature of water</description>
-                <tags>
-                    <tag>Setpoint</tag>
-                    <tag>Temperature</tag>
-                </tags>
-            </add-channel>
+			<add-channel id="tankTargetWaterTemperature">
+				<type>melcloud:tankTargetWaterTemperature-channel</type>
+				<label>Tank Target Degrees</label>
+				<description>Setpoint temperature of water</description>
+				<tags>
+					<tag>Setpoint</tag>
+					<tag>Temperature</tag>
+				</tags>
+			</add-channel>
 
 			<add-channel id="roomTemperatureZone2">
 				<type>melcloud:roomTemperatureZone2-channel</type>

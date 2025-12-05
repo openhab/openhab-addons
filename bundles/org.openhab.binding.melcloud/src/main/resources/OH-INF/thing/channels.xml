@@ -87,7 +87,7 @@
 			<tag>Control</tag>
 			<tag>Temperature</tag>
 		</tags>
-		<state min="10" max="40" step="0.5" pattern="%.1f %unit%" />
+cd		<state min="10" max="40" step="0.5" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="fanSpeed-channel">
@@ -98,7 +98,7 @@
 			<tag>Status</tag>
 			<tag>Speed</tag>
 		</tags>
-		<state >
+		<state>
 			<options>
 				<option value="0">Auto</option>
 				<option value="1">1</option>
@@ -118,7 +118,7 @@
 			<tag>Status</tag>
 			<tag>Tilt</tag>
 		</tags>
-		<state >
+		<state>
 			<options>
 				<option value="0">Auto</option>
 				<option value="1">1</option>
@@ -139,7 +139,7 @@
 			<tag>Status</tag>
 			<tag>Tilt</tag>
 		</tags>
-		<state >
+		<state>
 			<options>
 				<option value="0">Auto</option>
 				<option value="1">1</option>
@@ -215,7 +215,7 @@
 			<tag>Setpoint</tag>
 			<tag>Temperature</tag>
 		</tags>
-		<state min="10" max="30" step="0.5" pattern="%.1f %unit%" />
+		<state min="10" max="30" step="0.5" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="roomTemperatureZone2-channel">
@@ -237,7 +237,7 @@
 			<tag>Setpoint</tag>
 			<tag>Temperature</tag>
 		</tags>
-		<state min="10" max="30" step="0.5" pattern="%.1f %unit%" />
+		<state min="10" max="30" step="0.5" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="heatFlowTemperatureZone1-channel">
@@ -259,7 +259,7 @@
 			<tag>Setpoint</tag>
 			<tag>Temperature</tag>
 		</tags>
-		<state min="20" max="65" step="1" pattern="%.1f %unit%" />
+		<state min="20" max="65" step="1" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="heatTemperatureModeZone1-channel">
@@ -270,7 +270,7 @@
 			<tag>Setpoint</tag>
 			<tag>Mode</tag>
 		</tags>
-		<state >
+		<state>
 			<options>
 				<option value="0">Heat thermostat</option>
 				<option value="1">Heat flow</option>
@@ -289,7 +289,7 @@
 			<tag>Setpoint</tag>
 			<tag>Mode</tag>
 		</tags>
-		<state >
+		<state>
 			<options>
 				<option value="0">Heat thermostat</option>
 				<option value="1">Heat flow</option>
