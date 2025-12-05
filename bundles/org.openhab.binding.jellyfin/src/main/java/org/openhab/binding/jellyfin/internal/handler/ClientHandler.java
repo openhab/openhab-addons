@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.jellyfin.internal.handler;
 
+import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -23,6 +24,7 @@ import org.openhab.binding.jellyfin.internal.api.generated.current.model.BaseIte
 import org.openhab.binding.jellyfin.internal.api.generated.current.model.PlayCommand;
 import org.openhab.binding.jellyfin.internal.api.generated.current.model.PlaystateCommand;
 import org.openhab.binding.jellyfin.internal.api.generated.current.model.SessionInfoDto;
+import org.openhab.binding.jellyfin.internal.util.client.ClientStateUpdater;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -31,6 +33,7 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -439,143 +442,24 @@ public class ClientHandler extends BaseThingHandler {
      * @param session The session information to update from, or null to clear state
      */
     public synchronized void updateStateFromSession(@Nullable SessionInfoDto session) {
+        Map<String, State> states;
         synchronized (sessionLock) {
             currentSession = session;
-
-            if (session == null) {
-                logger.debug("Clearing client state - session is null");
-                clearChannelStates();
-                updateStatus(ThingStatus.OFFLINE);
-                return;
-            }
-
-            logger.debug("Updating client state from session: {}", session.getId());
-
-            // Map the session content similar to legacy handler
-            BaseItemDto playingItem = session.getNowPlayingItem();
-            org.openhab.binding.jellyfin.internal.api.generated.current.model.PlayerStateInfo playState = session
-                    .getPlayState();
-
-            Long runTimeTicks = playingItem == null ? null : playingItem.getRunTimeTicks();
-            Long positionTicks = playState == null ? null : playState.getPositionTicks();
-
-            // Media control channel
-            if (isLinked(Constants.MEDIA_CONTROL_CHANNEL)) {
-                org.openhab.core.library.types.PlayPauseType state = (playingItem != null && playState != null
-                        && !playState.getIsPaused()) ? org.openhab.core.library.types.PlayPauseType.PLAY
-                                : org.openhab.core.library.types.PlayPauseType.PAUSE;
-                updateState(channel(Constants.MEDIA_CONTROL_CHANNEL), state);
-            }
-
-            // Position percentage channel
-            if (isLinked(Constants.PLAYING_ITEM_PERCENTAGE_CHANNEL)) {
-                if (positionTicks != null && runTimeTicks != null) {
-                    int percentage = (int) Math.round((positionTicks * 100.0) / runTimeTicks);
-                    updateState(channel(Constants.PLAYING_ITEM_PERCENTAGE_CHANNEL),
-                            new org.openhab.core.library.types.PercentType(percentage));
-                } else {
-                    updateState(channel(Constants.PLAYING_ITEM_PERCENTAGE_CHANNEL), UnDefType.NULL);
-                }
-            }
-
-            // Position seconds channel
-            if (isLinked(Constants.PLAYING_ITEM_SECOND_CHANNEL)) {
-                if (positionTicks != null) {
-                    long seconds = Math.round((float) positionTicks / 10000000.0);
-                    updateState(channel(Constants.PLAYING_ITEM_SECOND_CHANNEL),
-                            new org.openhab.core.library.types.DecimalType(seconds));
-                } else {
-                    updateState(channel(Constants.PLAYING_ITEM_SECOND_CHANNEL), UnDefType.NULL);
-                }
-            }
-
-            // Total runtime seconds channel
-            if (isLinked(Constants.PLAYING_ITEM_TOTAL_SECOND_CHANNEL)) {
-                if (runTimeTicks != null) {
-                    long seconds = Math.round((float) runTimeTicks / 10000000.0);
-                    updateState(channel(Constants.PLAYING_ITEM_TOTAL_SECOND_CHANNEL),
-                            new org.openhab.core.library.types.DecimalType(seconds));
-                } else {
-                    updateState(channel(Constants.PLAYING_ITEM_TOTAL_SECOND_CHANNEL), UnDefType.NULL);
-                }
-            }
-
-            // Basic item metadata channels
-            if (isLinked(Constants.PLAYING_ITEM_ID_CHANNEL)) {
-                if (playingItem != null && playingItem.getId() != null) {
-                    updateState(channel(Constants.PLAYING_ITEM_ID_CHANNEL),
-                            new org.openhab.core.library.types.StringType(playingItem.getId().toString()));
-                } else {
-                    updateState(channel(Constants.PLAYING_ITEM_ID_CHANNEL), UnDefType.NULL);
-                }
-            }
-
-            if (isLinked(Constants.PLAYING_ITEM_NAME_CHANNEL)) {
-                if (playingItem != null && playingItem.getName() != null) {
-                    updateState(channel(Constants.PLAYING_ITEM_NAME_CHANNEL),
-                            new org.openhab.core.library.types.StringType(playingItem.getName()));
-                } else {
-                    updateState(channel(Constants.PLAYING_ITEM_NAME_CHANNEL), UnDefType.NULL);
-                }
-            }
-
-            if (isLinked(Constants.PLAYING_ITEM_SERIES_NAME_CHANNEL)) {
-                if (playingItem != null && playingItem.getSeriesName() != null) {
-                    updateState(channel(Constants.PLAYING_ITEM_SERIES_NAME_CHANNEL),
-                            new org.openhab.core.library.types.StringType(playingItem.getSeriesName()));
-                } else {
-                    updateState(channel(Constants.PLAYING_ITEM_SERIES_NAME_CHANNEL), UnDefType.NULL);
-                }
-            }
-
-            if (isLinked(Constants.PLAYING_ITEM_SEASON_NAME_CHANNEL)) {
-                if (playingItem != null && playingItem.getSeasonName() != null) {
-                    updateState(channel(Constants.PLAYING_ITEM_SEASON_NAME_CHANNEL),
-                            new org.openhab.core.library.types.StringType(playingItem.getSeasonName()));
-                } else {
-                    updateState(channel(Constants.PLAYING_ITEM_SEASON_NAME_CHANNEL), UnDefType.NULL);
-                }
-            }
-
-            if (isLinked(Constants.PLAYING_ITEM_SEASON_CHANNEL)) {
-                if (playingItem != null && playingItem.getIndexNumber() != null) {
-                    updateState(channel(Constants.PLAYING_ITEM_SEASON_CHANNEL),
-                            new org.openhab.core.library.types.DecimalType(playingItem.getIndexNumber()));
-                } else {
-                    updateState(channel(Constants.PLAYING_ITEM_SEASON_CHANNEL), UnDefType.NULL);
-                }
-            }
-
-            if (isLinked(Constants.PLAYING_ITEM_EPISODE_CHANNEL)) {
-                if (playingItem != null && playingItem.getParentIndexNumber() != null) {
-                    updateState(channel(Constants.PLAYING_ITEM_EPISODE_CHANNEL),
-                            new org.openhab.core.library.types.DecimalType(playingItem.getParentIndexNumber()));
-                } else if (playingItem != null && playingItem.getIndexNumber() != null) {
-                    updateState(channel(Constants.PLAYING_ITEM_EPISODE_CHANNEL),
-                            new org.openhab.core.library.types.DecimalType(playingItem.getIndexNumber()));
-                } else {
-                    updateState(channel(Constants.PLAYING_ITEM_EPISODE_CHANNEL), UnDefType.NULL);
-                }
-            }
-
-            if (isLinked(Constants.PLAYING_ITEM_GENRES_CHANNEL)) {
-                if (playingItem != null && playingItem.getGenres() != null && !playingItem.getGenres().isEmpty()) {
-                    updateState(channel(Constants.PLAYING_ITEM_GENRES_CHANNEL),
-                            new org.openhab.core.library.types.StringType(String.join(", ", playingItem.getGenres())));
-                } else {
-                    updateState(channel(Constants.PLAYING_ITEM_GENRES_CHANNEL), UnDefType.NULL);
-                }
-            }
-
-            if (isLinked(Constants.PLAYING_ITEM_TYPE_CHANNEL)) {
-                if (playingItem != null && playingItem.getType() != null) {
-                    updateState(channel(Constants.PLAYING_ITEM_TYPE_CHANNEL),
-                            new org.openhab.core.library.types.StringType(playingItem.getType().toString()));
-                } else {
-                    updateState(channel(Constants.PLAYING_ITEM_TYPE_CHANNEL), UnDefType.NULL);
-                }
-            }
+            states = ClientStateUpdater.calculateChannelStates(session);
         }
+
+        if (session == null) {
+            logger.debug("Clearing client state - session is null");
+            updateStatus(ThingStatus.OFFLINE);
+        } else {
+            logger.debug("Updating client state from session: {}", session.getId());
+        }
+
+        states.forEach((channelId, state) -> {
+            if (isLinked(channelId)) {
+                updateState(channel(channelId), state);
+            }
+        });
     }
 
     /**

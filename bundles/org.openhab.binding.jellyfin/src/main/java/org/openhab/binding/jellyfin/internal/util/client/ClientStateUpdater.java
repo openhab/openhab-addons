@@ -31,6 +31,8 @@ import org.openhab.core.types.UnDefType;
 /**
  * Calculates channel states for a Jellyfin client session.
  * Pure utility: callers apply the returned states to their channels.
+ *
+ * @author Patrik Gfeller - Initial contribution
  */
 @NonNullByDefault
 public final class ClientStateUpdater {
