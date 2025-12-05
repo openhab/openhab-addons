@@ -88,7 +88,7 @@ public class EmbyHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected void activate(ComponentContext componentContext) {
         super.activate(componentContext);
-        
+
         // Configure and start the WebSocket client
         WebSocketClient client = this.webSocketClient;
         // Set max text message size to 512KB to handle large Emby session messages
@@ -113,7 +113,8 @@ public class EmbyHandlerFactory extends BaseThingHandlerFactory {
         }
 
         if (THING_TYPE_EMBY_CONTROLLER.equals(thing.getThingTypeUID())) {
-            EmbyBridgeHandler bridgeHandler = new EmbyBridgeHandler((Bridge) thing, this.webSocketClient, this.i18nProvider);
+            EmbyBridgeHandler bridgeHandler = new EmbyBridgeHandler((Bridge) thing, this.webSocketClient,
+                    this.i18nProvider);
             Dictionary<String, Object> cfg = new Hashtable<>();
             cfg.put("bridgeUID", bridgeHandler.getThing().getUID().toString());
 
@@ -155,14 +156,10 @@ public class EmbyHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected void deactivate(ComponentContext componentContext) {
         super.deactivate(componentContext);
-        WebSocketClient client = this.webSocketClient;
-        if (client != null) {
-            try {
-                client.stop();
-            } catch (Exception e) {
-                logger.warn("Unable to stop websocket client.", e);
-            }
-            this.webSocketClient = null;
+        try {
+            this.webSocketClient.stop();
+        } catch (Exception e) {
+            logger.warn("Unable to stop websocket client.", e);
         }
     }
 }
