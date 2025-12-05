@@ -686,7 +686,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
      */
     protected void enableEvents(boolean enable) {
         if (getBridge() instanceof Bridge bridge && bridge.getHandler() instanceof HomekitBridgeHandler bridgeHandler) {
-            bridgeHandler.enableEvents(true);
+            bridgeHandler.enableEvents(enable);
             return;
         }
         try {
