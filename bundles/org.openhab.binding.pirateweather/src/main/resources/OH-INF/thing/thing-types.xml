@@ -12,6 +12,7 @@
 
 		<label>Weather and Forecast</label>
 		<description>Provides current weather and forecast data from the Pirate Weather API.</description>
+		<semantic-equipment-tag>WeatherService</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group id="current" typeId="current"/>
