@@ -12,7 +12,7 @@
  */
 package org.openhab.transform.basicprofiles.internal.profiles;
 
-import static org.openhab.transform.basicprofiles.internal.factory.BasicProfilesFactory.DEBOUNCE_TIME_UID;
+import static org.openhab.transform.basicprofiles.internal.factory.BasicProfilesFactory.TIME_WEIGHTED_AVERAGE_UID;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -77,26 +77,27 @@ public class TimeweightedAverageStateProfile implements StateProfile {
 
     @Override
     public ProfileTypeUID getProfileTypeUID() {
-        return DEBOUNCE_TIME_UID;
+        return TIME_WEIGHTED_AVERAGE_UID;
     }
 
     @Override
     public void onStateUpdateFromHandler(State state) {
         logger.trace("Received {} {}", itemName, state);
 
-        // first call initialization
-        if (latestState == null) {
-            init(state);
-        }
-
-        // if state change is above delta threshold, deliver immediately collected values plus latest reported state
-        if (deltaExceeded(state)) {
-            deliver();
-            callback.sendUpdate(state);
-        }
-
-        // start new time frame
+        // first call initialization and threshold check
+        // synchronize access to timeframe and latestState to avoid parallel execution of delivery by twaJob
         synchronized (timeframe) {
+            if (latestState == null) {
+                init(state);
+            }
+
+            // if state change is above delta threshold, deliver immediately collected values plus latest reported state
+            if (deltaExceeded(state)) {
+                deliver();
+                callback.sendUpdate(state);
+            }
+
+            // start new time frame
             startJob();
             timeframe.put(Instant.now(), state);
             latestState = state;
@@ -107,9 +108,9 @@ public class TimeweightedAverageStateProfile implements StateProfile {
     private void init(State first) {
         if (first instanceof QuantityType<?> qtState) {
             stateUnit = qtState.getUnit();
-            logger.debug("Profile initialized for {} with QunatityTypes {}", itemName, stateUnit);
+            logger.debug("Profile initialized for {} with QuantityType {}", itemName, stateUnit);
         } else if (first instanceof DecimalType) {
-            // nothing to do, ustateUnit stays empty
+            // nothing to do, stateUnit stays empty
             logger.debug("Profile initialized for {} with DecimalType", itemName);
         } else {
             logger.error("Time-weighted average profile not applicable for {} with class {}", itemName,
@@ -143,18 +144,21 @@ public class TimeweightedAverageStateProfile implements StateProfile {
 
     private TreeMap<Instant, State> prepareDelivery() {
         TreeMap<Instant, State> delivery;
+        // synchronize access to timeframe and latestState to prepare delivery without parallel execution of
+        // onStateUpdateFromHandler
         synchronized (timeframe) {
             resetJob();
             delivery = new TreeMap<>(timeframe);
             // add termination element
-            delivery.put(Instant.now(), DecimalType.ZERO);
+            Instant now = Instant.now();
+            delivery.put(now, DecimalType.ZERO);
             // clear time frame and put latest reported state as start point of the next calculation
             timeframe.clear();
             State localState = latestState;
             if (localState != null) {
                 if (streamingInTimeframe) {
                     // state updates retrieved in time frame, start new job
-                    timeframe.put(Instant.now(), localState);
+                    timeframe.put(now, localState);
                     streamingInTimeframe = false;
                     startJob();
                 } else {

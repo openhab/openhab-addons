@@ -5,7 +5,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
 
 	<config-description uri="profile:basic-profiles:time-weighted-average">
-		<parameter name="duration" type="text" min="5" step="1" required="true">
+		<parameter name="duration" type="text" required="true">
 			<label>Duration</label>
 			<description>Duration of the time frame to collect state updates</description>
 			<default>1m</default>

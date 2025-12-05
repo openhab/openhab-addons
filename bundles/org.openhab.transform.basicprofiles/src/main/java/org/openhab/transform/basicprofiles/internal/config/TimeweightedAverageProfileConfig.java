@@ -15,7 +15,7 @@ package org.openhab.transform.basicprofiles.internal.config;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Configuration for {@link org.openhab.transform.basicprofiles.internal.profiles.DebounceTimeStateProfile}.
+ * Configuration for {@link org.openhab.transform.basicprofiles.internal.profiles.TimeweightedAverageStateProfile}.
  *
  * @author Bernd Weymann - Initial contribution
  */
