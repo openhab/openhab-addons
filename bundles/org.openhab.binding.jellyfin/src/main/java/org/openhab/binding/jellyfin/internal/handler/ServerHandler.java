@@ -43,11 +43,13 @@ import org.openhab.binding.jellyfin.internal.discovery.ClientDiscoveryService;
 import org.openhab.binding.jellyfin.internal.events.ErrorEvent;
 import org.openhab.binding.jellyfin.internal.events.ErrorEventBus;
 import org.openhab.binding.jellyfin.internal.events.ErrorEventListener;
+import org.openhab.binding.jellyfin.internal.events.SessionEventBus;
 import org.openhab.binding.jellyfin.internal.handler.tasks.AbstractTask;
 import org.openhab.binding.jellyfin.internal.types.ServerState;
 import org.openhab.binding.jellyfin.internal.util.client.ClientListUpdater;
 import org.openhab.binding.jellyfin.internal.util.config.SystemInfoConfigurationExtractor;
 import org.openhab.binding.jellyfin.internal.util.config.UriConfigurationExtractor;
+import org.openhab.binding.jellyfin.internal.util.session.SessionManager;
 import org.openhab.binding.jellyfin.internal.util.state.ServerStateManager;
 import org.openhab.binding.jellyfin.internal.util.user.UserManager;
 import org.openhab.core.config.core.validation.ConfigValidationException;
@@ -76,6 +78,7 @@ public class ServerHandler extends BaseBridgeHandler implements ErrorEventListen
 
     private final Logger logger = LoggerFactory.getLogger(ServerHandler.class);
     private final ErrorEventBus errorEventBus;
+    private final SessionEventBus sessionEventBus;
     private final ApiClient apiClient;
     private final Configuration configuration;
     private final TaskManagerInterface taskManager;
@@ -83,15 +86,13 @@ public class ServerHandler extends BaseBridgeHandler implements ErrorEventListen
     // Utility classes for better separation of concerns
     private final UserManager userManager;
     private final ServerStateManager serverStateManager;
+    private final SessionManager sessionManager;
 
     private ServerState state = ServerState.INITIALIZING;
 
     private final Map<String, AbstractTask> tasks = new HashMap<>();
     private final Map<String, @Nullable ScheduledFuture<?>> scheduledTasks = new HashMap<>();
     private final List<String> activeUserIds = new ArrayList<>();
-
-    // Maintains the list of Jellyfin clients (key: session/client id, value: session info)
-    private final Map<String, SessionInfoDto> clients = new HashMap<>();
 
     // Discovery service for automatically discovering client devices
     @Nullable
@@ -115,9 +116,11 @@ public class ServerHandler extends BaseBridgeHandler implements ErrorEventListen
         this.userManager = new UserManager();
         this.serverStateManager = new ServerStateManager();
 
-        // Create event bus and register as listener
+        // Create event buses
         this.errorEventBus = new ErrorEventBus();
         this.errorEventBus.addListener(this);
+        this.sessionEventBus = new SessionEventBus();
+        this.sessionManager = new SessionManager(this.sessionEventBus);
 
         // Initialize tasks through the task manager
         this.tasks.putAll(
@@ -356,7 +359,7 @@ public class ServerHandler extends BaseBridgeHandler implements ErrorEventListen
      * @return the map of clients, where the key is the session/client ID and the value is the session info
      */
     public Map<String, SessionInfoDto> getClients() {
-        return clients;
+        return sessionManager.getSessions();
     }
 
     /**
@@ -451,6 +454,14 @@ public class ServerHandler extends BaseBridgeHandler implements ErrorEventListen
         // Clean up event bus registration
         if (errorEventBus != null) {
             errorEventBus.removeListener(this);
+        }
+        // Clear session manager state
+        if (sessionManager != null) {
+            sessionManager.clear();
+        }
+        // Clear session event bus
+        if (sessionEventBus != null) {
+            sessionEventBus.clear();
         }
         // Use injected task manager
         taskManager.stopAllTasks(scheduledTasks);
@@ -610,7 +621,11 @@ public class ServerHandler extends BaseBridgeHandler implements ErrorEventListen
      */
     private void updateClientList() {
         try {
-            ClientListUpdater.updateClients(apiClient, Set.copyOf(activeUserIds), clients);
+            Map<String, SessionInfoDto> newSessions = new HashMap<>();
+            ClientListUpdater.updateClients(apiClient, Set.copyOf(activeUserIds), newSessions);
+
+            // Update session manager, which will publish events
+            sessionManager.updateSessions(newSessions);
 
             // Trigger client discovery after updating the client list
             if (discoveryService != null) {
