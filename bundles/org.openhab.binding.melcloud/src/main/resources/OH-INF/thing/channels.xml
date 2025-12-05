@@ -87,7 +87,7 @@
 			<tag>Control</tag>
 			<tag>Temperature</tag>
 		</tags>
-cd		<state min="10" max="40" step="0.5" pattern="%.1f %unit%"/>
+		<state min="10" max="40" step="0.5" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="fanSpeed-channel">
