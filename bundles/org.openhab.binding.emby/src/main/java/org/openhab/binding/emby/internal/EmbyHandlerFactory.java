@@ -66,7 +66,6 @@ public class EmbyHandlerFactory extends BaseThingHandlerFactory {
 
     private TranslationProvider i18nProvider;
     private @Nullable WebSocketClient webSocketClient;
-    private @Nullable WebSocketFactory webSocketFactory;
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
             .unmodifiableSet(Stream.of(THING_TYPE_EMBY_CONTROLLER, THING_TYPE_EMBY_DEVICE).collect(Collectors.toSet()));
@@ -80,7 +79,6 @@ public class EmbyHandlerFactory extends BaseThingHandlerFactory {
             @Reference WebSocketFactory webSocketFactory) {
         super.activate(componentContext);
         this.i18nProvider = i18nProvider;
-        this.webSocketFactory = webSocketFactory;
 
         // Create our own WebSocketClient with increased message size limit for Emby's large payloads
         // This follows the pattern used by LGWebOS binding for similar large payload requirements
@@ -164,6 +162,5 @@ public class EmbyHandlerFactory extends BaseThingHandlerFactory {
             }
             this.webSocketClient = null;
         }
-        this.webSocketFactory = null;
     }
 }
