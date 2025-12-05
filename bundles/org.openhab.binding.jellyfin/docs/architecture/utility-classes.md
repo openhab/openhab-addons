@@ -9,12 +9,10 @@ classDiagram
     ServerHandler --> UserManager : uses
     ServerHandler --> ConfigurationManager : uses
     ServerHandler --> ServerStateManager : uses
+    ClientHandler --> ClientStateUpdater : uses
 
     class UserManager {
         +processUsersList(List, List) UserChangeResult
-        -logAllUsers(List)
-        -logIncludedUsers(List)
-        -logUserChanges(List, List, List)
     }
 
     class ConfigurationManager {
@@ -33,6 +31,10 @@ classDiagram
         +getStateDescription(ServerState) String
     }
 
+    class ClientStateUpdater {
+        +calculateChannelStates(SessionInfoDto$) Map~String, State~
+    }
+
     %% Records for immutable data transfer (details omitted, see Record Details section)
     class UserChangeResult {
         <<record>>
@@ -47,12 +49,19 @@ classDiagram
 
 ## Summary
 
-Utility classes provide focused, testable logic for user management,
-configuration, and state analysis.
+Utility classes provide focused, testable logic for distinct responsibilities:
 
-The `ConfigurationManager` uses the Strategy pattern with
-`ConfigurationExtractor<T>` interface to support multiple configuration sources.
-See [Configuration Management Architecture](configuration-management.md) for
-detailed documentation.
+- **UserManager**: User list processing and change tracking
+- **ConfigurationManager**: Configuration extraction and update analysis (Strategy pattern)
+- **ServerStateManager**: Server state transitions and validation
+- **ClientStateUpdater**: Jellyfin session state calculation into openHAB channel states
+
+Each utility is designed for independent testing and reusability across handlers
+and services.
+
+### Detailed Documentation
+
+- **Configuration Strategy Pattern**: See [Configuration Management Architecture](configuration-management.md)
+- **State Calculation Flow**: See [State Calculation Architecture](state-calculation.md)
 
 See the [architecture overview](../architecture.md) for context.

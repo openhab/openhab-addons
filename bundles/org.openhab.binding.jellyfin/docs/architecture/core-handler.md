@@ -20,6 +20,7 @@ classDiagram
     ServerHandler --> ClientHandler : notifies via\nupdateStateFromSession()
     
     ClientHandler --> ServerHandler : delegates commands to
+    ClientHandler --> ClientStateUpdater : delegates\nstate calculation to
     ClientHandler ..> SessionInfoDto : receives updates
     
     %% Key interfaces
@@ -44,6 +45,10 @@ classDiagram
     class ClientHandler {
         -SessionInfoDto currentSession
         +updateStateFromSession(SessionInfoDto)
+    }
+    
+    class ClientStateUpdater {
+        +calculateChannelStates(SessionInfoDto$) Map~String, State~
     }
     
     class TaskManagerInterface {

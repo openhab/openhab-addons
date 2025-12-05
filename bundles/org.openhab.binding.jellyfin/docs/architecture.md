@@ -80,7 +80,9 @@ For detailed diagrams and explanations, see:
 - [Core Handler Architecture](architecture/core-handler.md):
     Overview of handler structure and dependency injection.
 - [Utility Classes Architecture](architecture/utility-classes.md):
-    Focused classes for user management, configuration, and state analysis.
+    Focused classes for user management, configuration, state analysis, and state calculation.
+- [State Calculation Architecture](architecture/state-calculation.md):
+    Pure utility for transforming Jellyfin session data into openHAB channel states.
 - [Configuration Management Architecture](architecture/configuration-management.md):
     Strategy pattern-based configuration extraction and management system.
 - [Task Management Architecture](architecture/task-management.md):
