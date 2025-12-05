@@ -16,7 +16,7 @@ At this point, the following devices are fully supported and verified to be work
 - Deebot OZMO 950
 - Deebot OZMO Slim 10/11
 - Deebot N8 series
-- Deebot T30 OMNI
+- Deebot T30 series
 
 The following devices will likely work because they are using similar protocols as the above ones:
 
@@ -27,11 +27,15 @@ The following devices will likely work because they are using similar protocols 
 - Deebot OZMO T5
 - Deebot (OZMO) T8 series
 - Deebot T9 series
+- Deebot T10 series
+- Deebot T20 series
 - Deebot Slim 2
 - Deebot N3 MAX
+- Deebot N30 series
 - Deebot N7
 - Deebot U2 series
-- Deebot X1 Omni
+- Deebot X1 series
+- Deebot X2 series
 
 ## Discovery
 
@@ -74,6 +78,7 @@ In case a particular channel is not supported by a given device (see remarks), i
 | consumables#side-brush-lifetime         | Number:Dimensionless | The remaining life time of the side brush in percent      | Yes       | Polling    |          |
 | consumables#dust-filter-lifetime        | Number:Dimensionless | The remaining life time of the dust bin filter in percent | Yes       | Polling    |          |
 | consumables#other-component-lifetime    | Number:Dimensionless | The remaining time until device maintenance in percent    | Yes       | Polling    | [9]      |
+| consumables#round-mop-lifetime          | Number:Dimensionless | The remaining life time of the mops in percent            | Yes       | Polling    | [10]     |
 | last-clean#last-clean-start             | DateTime             | The start time of the last completed cleaning run         | Yes       | Polling    |          |
 | last-clean#last-clean-duration          | Number:Time          | The duration of the last completed cleaning run           | Yes       | Polling    |          |
 | last-clean#last-clean-area              | Number:Area          | The area cleaned in the last completed cleaning run       | Yes       | Polling    |          |
@@ -82,13 +87,13 @@ In case a particular channel is not supported by a given device (see remarks), i
 | total-stats#total-cleaning-time         | Number:Time          | The total time spent cleaning during the device life time | Yes       | Polling    |          |
 | total-stats#total-cleaned-area          | Number:Area          | The total area cleaned during the device life time        | Yes       | Polling    |          |
 | total-stats#total-clean-runs            | Number               | The total number of clean runs in the device life time    | Yes       | Polling    |          |
-| settings#auto-empty                     | Switch               | Whether dust bin auto empty to station is enabled         | No        | Polling    | [10]     |
+| settings#auto-empty                     | Switch               | Whether dust bin auto empty to station is enabled         | No        | Polling    | [11]     |
 | settings#cleaning-passes                | Number               | Number of cleaning passes to be used (1 or 2)             | No        | Polling    | [9]      |
 | settings#continuous-cleaning            | Switch               | Whether unfinished cleaning resumes after charging        | No        | Polling    |          |
-| settings#suction-power                  | String               | The power level used during cleaning                      | No        | Polling    | [11]     |
-| settings#true-detect-3d                 | Switch               | Whether True Detect 3D is enabled                         | No        | Polling    | [12]     |
-| settings#voice-volume                   | Dimmer               | The voice volume level in percent                         | No        | Polling    | [13]     |
-| settings#water-amount                   | String               | The amount of water to be used when mopping               | No        | Polling    | [14]     |
+| settings#suction-power                  | String               | The power level used during cleaning                      | No        | Polling    | [12]     |
+| settings#true-detect-3d                 | Switch               | Whether True Detect 3D is enabled                         | No        | Polling    | [13]     |
+| settings#voice-volume                   | Dimmer               | The voice volume level in percent                         | No        | Polling    | [14]     |
+| settings#water-amount                   | String               | The amount of water to be used when mopping               | No        | Polling    | [15]     |
 
 Remarks:
 
@@ -101,11 +106,12 @@ Remarks:
 - [7] Only present on newer generation devices (Deebot OZMO 950 and newer)
 - [8] Only present if device has a main brush
 - [9] Only present on newer generation devices (Deebot N8/T8 or newer)
-- [10] Only present if device has a dustbin auto empty station; supports both on/off command (to turn on/off the setting) and the string `trigger` (to trigger immediate auto empty)
-- [11] Only present if device can control power level. Possible values vary by device: `normal` and `high` are always supported, `silent` and `higher` are supported for some models
-- [12] Only present if device supports True Detect 3D
-- [13] Only present if device has voice reporting
-- [14] Only present if device has a mopping system. Possible values include `low`, `medium`, `high` and `veryhigh`
+- [10] Only present if device has round mops (and not just a mopping plate)
+- [11] Only present if device has a dustbin auto empty station; supports both on/off command (to turn on/off the setting) and the string `trigger` (to trigger immediate auto empty)
+- [12] Only present if device can control power level. Possible values vary by device: `normal` and `high` are always supported, `silent` and `higher` are supported for some models
+- [13] Only present if device supports True Detect 3D
+- [14] Only present if device has voice reporting
+- [15] Only present if device has a mopping system. Possible values include `low`, `medium`, `high` and `veryhigh`
 
 ## Command Channel Actions
 

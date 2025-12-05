@@ -28,6 +28,7 @@ TVs are auto discovered through SSDP in the local network.
 The binding broadcasts a search message via UDP on the network in order to discover and monitor availability of the TV.
 
 Please note, that if you are running openHAB in a Docker container you have several alternatives for this binding to work:
+
 * use macvlan or host networking
 * manually configure the device:
   * host and access key for basic functionality
@@ -55,6 +56,7 @@ broadcast address of the network the TV is located in as `broadcastAddress`.
 Example: If your TV has the IP address `192.168.0.123`, the broadcast address is `192.168.0.255`.
 
 In addition forwarding of broadcast packets needs to be enabled:
+
 * net.ipv4.icmp_echo_ignore_broadcasts=0
 * net.ipv4.conf.all.bc_forwarding=1
 * net.ipv4.conf.${interface}.bc_forwarding=1

@@ -250,6 +250,7 @@ Note: The column WPM is for WPMsystem.
 | hp1-flow-rate                             | Number:VolumetricFlowRate | true      | Heat Pump 1 current flow rate                                        |  x  |  x   |       |
 
 #### Note
+
 The last block can be available for up to 6 heat pumps. The number of available heat pumps shall be set with the configuration paramaeter *nrOfHps*.
 
 ### Energy Information Group
@@ -314,9 +315,11 @@ Note: The column WPM is for WPMsystem.
 | hp1-cooling-runtime                | Number:Time   | true      | Heat Pump 1 compressor runtime for cooling in total                  |  x  |  x   |       |
 
 #### Note
+
 The last block can be available for up to 6 heat pumps. The number of available heat pumps shall be set with the configuration paramaeter *nrOfHps*.
 
 ### SG Ready - Energy Management Settings
+
 The following channels are only available for the thing *Stiebel Eltron Heat Pump (WPM compatible)*
 
 | Channel ID             | Item Type | Read only | Description            |
@@ -325,6 +328,7 @@ The following channels are only available for the thing *Stiebel Eltron Heat Pum
 | sg-ready-input-lines   | Number    | false     | SG Ready Input Lines   |
 
 ### SG Ready - Energy Management System Information
+
 The following channels are only available for the thing *Stiebel Eltron Heat Pump (WPM compatible)*
 
 | Channel ID                         | Item Type | Read only | Description                        |
@@ -342,6 +346,7 @@ Thing modbus:heatpump:stiebelEltron "StiebelEltron" (modbus:tcp:bridge) @"Room" 
 ```
 
 #### Note
+
 If using the notation with braces, the thing UID gets automatically a bridge label inbetween (like modbus:heatpump:bridge:stiebelEltron).
 Therefore, the notation without braces is used.
 

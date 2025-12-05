@@ -441,6 +441,12 @@ public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDev
         if (!device.hasCapability(DeviceCapability.DEFAULT_CLEAN_COUNT_SETTING)) {
             hasChanges |= removeUnsupportedChannel(builder, CHANNEL_ID_CLEANING_PASSES);
         }
+        if (!device.hasCapability(DeviceCapability.UNIT_CARE_LIFESPAN)) {
+            hasChanges |= removeUnsupportedChannel(builder, CHANNEL_ID_OTHER_COMPONENT_LIFETIME);
+        }
+        if (!device.hasCapability(DeviceCapability.ROUND_MOP_LIFESPAN)) {
+            hasChanges |= removeUnsupportedChannel(builder, CHANNEL_ID_ROUND_MOP_LIFETIME);
+        }
 
         if (hasChanges) {
             updateThing(builder.build());
@@ -645,6 +651,10 @@ public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDev
             if (device.hasCapability(DeviceCapability.UNIT_CARE_LIFESPAN)) {
                 int unitCarePercent = device.sendCommand(new GetComponentLifeSpanCommand(Component.UNIT_CARE));
                 updateState(CHANNEL_ID_OTHER_COMPONENT_LIFETIME, new QuantityType<>(unitCarePercent, Units.PERCENT));
+            }
+            if (device.hasCapability(DeviceCapability.ROUND_MOP_LIFESPAN)) {
+                int roundMopPercent = device.sendCommand(new GetComponentLifeSpanCommand(Component.ROUND_MOP));
+                updateState(CHANNEL_ID_ROUND_MOP_LIFETIME, new QuantityType<>(roundMopPercent, Units.PERCENT));
             }
             if (device.hasCapability(DeviceCapability.VOICE_REPORTING)) {
                 int level = device.sendCommand(new GetVolumeCommand());
