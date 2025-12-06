@@ -21,5 +21,7 @@ public class WaterInfoReport {
     @SerializedName("enable")
     public int waterPlatePresent;
     @SerializedName("amount")
-    public int waterAmount;
+    public Integer waterAmount; // enum (1-4)
+    @SerializedName("customAmount")
+    public Integer customWaterAmount; // numeric value (0-100)
 }
