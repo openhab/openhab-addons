@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * The {@link ClientDiscoveryService} discovers Jellyfin client devices connected to a Jellyfin server.
- * 
+ *
  * This discovery service is bridge-bound and depends on {@link ServerHandler} to provide the list of active
  * client sessions. It automatically discovers clients when the server handler updates its client list and
  * supports both manual scans and automatic background discovery.
@@ -47,7 +47,7 @@ public class ClientDiscoveryService extends AbstractThingHandlerDiscoveryService
 
     /**
      * Creates a new instance of the client discovery service.
-     * 
+     *
      * @throws IllegalArgumentException if service initialization fails
      */
     public ClientDiscoveryService() throws IllegalArgumentException {
@@ -77,16 +77,20 @@ public class ClientDiscoveryService extends AbstractThingHandlerDiscoveryService
 
     /**
      * Discovers Jellyfin client devices from the server handler's client list.
-     * 
+     *
      * This method retrieves the current list of active client sessions from the server handler,
      * validates each client, and creates discovery results for valid clients. Clients with missing
      * or empty device IDs are skipped with a debug log message.
-     * 
+     *
      * For each valid client, a discovery result is created with:
      * - ThingUID based on the sanitized device ID
      * - Representation property using device name (with fallback to client name)
      * - Properties including serial number (device ID) and firmware version (if available)
-     * 
+     *
+     * The openHAB Inbox framework automatically handles deduplication:
+     * - First call with a ThingUID: fires ADDED event (new discovery)
+     * - Subsequent calls with same ThingUID: fires UPDATED event (not ADDED)
+     *
      * This method is called:
      * - When a manual scan is triggered
      * - During background discovery (every 60 seconds)
@@ -159,10 +163,10 @@ public class ClientDiscoveryService extends AbstractThingHandlerDiscoveryService
 
     /**
      * Sanitizes a device ID for use in a ThingUID by removing or replacing invalid characters.
-     * 
+     *
      * ThingUIDs have strict requirements: only alphanumeric characters, hyphens, and underscores are allowed.
      * This method replaces any other characters with hyphens to ensure valid ThingUID generation.
-     * 
+     *
      * @param deviceId the raw device ID from the Jellyfin session
      * @return the sanitized device ID safe for use in a ThingUID
      */
