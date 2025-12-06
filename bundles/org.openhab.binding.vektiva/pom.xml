@@ -5,7 +5,7 @@
   <parent>
     <artifactId>org.openhab.addons.reactor.bundles</artifactId>
     <groupId>org.openhab.addons.bundles</groupId>
-    <version>4.3.9-SNAPSHOT</version>
+    <version>4.3.9</version>
   </parent>
 
   <artifactId>org.openhab.binding.vektiva</artifactId>
