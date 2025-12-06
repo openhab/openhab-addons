@@ -71,7 +71,7 @@ import org.slf4j.LoggerFactory;
  * @author Miguel Álvarez - Initial contribution
  * @author Patrik Gfeller - Adjustments to work independently of the Android SDK
  *         and respective runtime
- * 
+ *
  */
 @NonNullByDefault
 public class ServerHandler extends BaseBridgeHandler implements ErrorEventListener {
@@ -100,7 +100,7 @@ public class ServerHandler extends BaseBridgeHandler implements ErrorEventListen
 
     /**
      * Constructor with dependency injection for TaskManager
-     * 
+     *
      * @param bridge The openHAB bridge
      * @param apiClient The API client for Jellyfin communication
      * @param taskManager The task manager that handles all task operations
@@ -327,12 +327,12 @@ public class ServerHandler extends BaseBridgeHandler implements ErrorEventListen
 
     /**
      * Called by {@link ClientDiscoveryService} when it has been initialized by the framework.
-     * 
+     *
      * This callback ensures that the discovery service reference is available before initializing
      * the DiscoveryTask through the TaskManager. The openHAB framework injects ThingHandlerServices
      * asynchronously after initialize() completes, so we cannot pass the service reference during
      * ServerHandler initialization.
-     * 
+     *
      * @param discoveryService the initialized discovery service
      */
     public void onDiscoveryServiceInitialized(ClientDiscoveryService discoveryService) {
@@ -353,9 +353,9 @@ public class ServerHandler extends BaseBridgeHandler implements ErrorEventListen
 
     /**
      * Returns the current map of active Jellyfin clients.
-     * 
+     *
      * This method is used by the {@link ClientDiscoveryService} to discover client devices.
-     * 
+     *
      * @return the map of clients, where the key is the session/client ID and the value is the session info
      */
     public Map<String, SessionInfoDto> getClients() {
@@ -363,8 +363,17 @@ public class ServerHandler extends BaseBridgeHandler implements ErrorEventListen
     }
 
     /**
+     * Returns the session event bus for client handlers to subscribe to session updates.
+     *
+     * @return the session event bus
+     */
+    public SessionEventBus getSessionEventBus() {
+        return sessionEventBus;
+    }
+
+    /**
      * Get the current state of the server handler
-     * 
+     *
      * @return The current state
      */
     public ServerState getState() {
@@ -373,7 +382,7 @@ public class ServerHandler extends BaseBridgeHandler implements ErrorEventListen
 
     /**
      * Set the state of the server handler
-     * 
+     *
      * @param newState The new state
      */
     private synchronized void setState(ServerState newState) {
@@ -411,7 +420,7 @@ public class ServerHandler extends BaseBridgeHandler implements ErrorEventListen
 
     /**
      * Determines the current state based on the available configuration
-     * 
+     *
      * @return The determined state
      */
     private ServerState determineState() {
@@ -525,7 +534,7 @@ public class ServerHandler extends BaseBridgeHandler implements ErrorEventListen
 
     /**
      * Processes server initialization with a state-driven approach
-     * 
+     *
      * @return A runnable that handles the initialization process
      */
     private synchronized Runnable initializeHandler() {
@@ -593,7 +602,7 @@ public class ServerHandler extends BaseBridgeHandler implements ErrorEventListen
 
     /**
      * Handles the retrieved users list from the server
-     * 
+     *
      * @param users The list of users retrieved from the server
      */
     private void handleUsersList(List<UserDto> users) {
@@ -638,7 +647,7 @@ public class ServerHandler extends BaseBridgeHandler implements ErrorEventListen
 
     /**
      * Updates configuration from a URI
-     * 
+     *
      * @param uri The URI containing server information
      */
     private void updateConfiguration(URI uri) {
@@ -702,7 +711,7 @@ public class ServerHandler extends BaseBridgeHandler implements ErrorEventListen
     /**
      * Helper method to update a single Thing property.
      * Creates a new properties map with the updated property and calls updateProperties.
-     * 
+     *
      * @param key The property key
      * @param value The property value
      */

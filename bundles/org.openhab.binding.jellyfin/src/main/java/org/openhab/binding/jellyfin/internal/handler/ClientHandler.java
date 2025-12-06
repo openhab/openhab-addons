@@ -24,6 +24,8 @@ import org.openhab.binding.jellyfin.internal.api.generated.current.model.BaseIte
 import org.openhab.binding.jellyfin.internal.api.generated.current.model.PlayCommand;
 import org.openhab.binding.jellyfin.internal.api.generated.current.model.PlaystateCommand;
 import org.openhab.binding.jellyfin.internal.api.generated.current.model.SessionInfoDto;
+import org.openhab.binding.jellyfin.internal.events.SessionEventBus;
+import org.openhab.binding.jellyfin.internal.events.SessionEventListener;
 import org.openhab.binding.jellyfin.internal.util.client.ClientStateUpdater;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
@@ -40,13 +42,14 @@ import org.slf4j.LoggerFactory;
 
 /**
  * The {@link ClientHandler} is responsible for managing Jellyfin client devices.
- * It receives session updates from the parent ServerHandler bridge and handles
- * commands sent to client channels (media controls, playback position, etc.).
+ * It receives session updates from the parent ServerHandler bridge via event bus
+ * and handles commands sent to client channels (media controls, playback position, etc.).
  *
  * <p>
  * Key responsibilities:
  * <ul>
  * <li>Maintain bridge connection to ServerHandler</li>
+ * <li>Subscribe to session events from event bus</li>
  * <li>Update channels based on session state (synchronized)</li>
  * <li>Route commands to appropriate API endpoints</li>
  * <li>Handle position/seek conversions (percent/seconds to ticks)</li>
@@ -55,7 +58,7 @@ import org.slf4j.LoggerFactory;
  * @author Patrik Gfeller - Initial contribution
  */
 @NonNullByDefault
-public class ClientHandler extends BaseThingHandler {
+public class ClientHandler extends BaseThingHandler implements SessionEventListener {
 
     private final Logger logger = LoggerFactory.getLogger(ClientHandler.class);
 
@@ -66,8 +69,14 @@ public class ClientHandler extends BaseThingHandler {
     private final Object sessionLock = new Object();
 
     /**
+     * The device ID extracted from ThingUID, used to subscribe to event bus.
+     */
+    @Nullable
+    private String deviceId;
+
+    /**
      * The current session information for this client.
-     * Updated by the parent ServerHandler through updateStateFromSession().
+     * Updated via event bus notifications through onSessionUpdate().
      */
     @Nullable
     private SessionInfoDto currentSession;
@@ -92,6 +101,13 @@ public class ClientHandler extends BaseThingHandler {
     public void initialize() {
         logger.debug("Initializing ClientHandler for thing {}", thing.getUID());
 
+        // Extract device ID from ThingUID (last segment)
+        deviceId = thing.getUID().getId();
+        if (deviceId == null || deviceId.isBlank()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Invalid device ID in ThingUID");
+            return;
+        }
+
         // Validate bridge connection
         Bridge bridge = getBridge();
         if (bridge == null) {
@@ -100,7 +116,8 @@ public class ClientHandler extends BaseThingHandler {
         }
 
         // Verify bridge is a ServerHandler
-        if (!(bridge.getHandler() instanceof ServerHandler)) {
+        ServerHandler serverHandler = getServerHandler();
+        if (serverHandler == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Bridge is not a Jellyfin server");
             return;
         }
@@ -111,7 +128,12 @@ public class ClientHandler extends BaseThingHandler {
             return;
         }
 
-        // Client is ready - ServerHandler will push session updates
+        // Subscribe to event bus for session updates
+        SessionEventBus eventBus = serverHandler.getSessionEventBus();
+        eventBus.subscribe(deviceId, this);
+        logger.debug("ClientHandler subscribed to event bus for device ID: {}", deviceId);
+
+        // Client is ready - will receive session updates via event bus
         updateStatus(ThingStatus.ONLINE);
         logger.debug("ClientHandler initialized successfully for thing {}", thing.getUID());
     }
@@ -120,11 +142,23 @@ public class ClientHandler extends BaseThingHandler {
     public void dispose() {
         logger.debug("Disposing ClientHandler for thing {}", thing.getUID());
 
+        // Unsubscribe from event bus
+        if (deviceId != null) {
+            ServerHandler serverHandler = getServerHandler();
+            if (serverHandler != null) {
+                SessionEventBus eventBus = serverHandler.getSessionEventBus();
+                eventBus.unsubscribe(deviceId, this);
+                logger.debug("ClientHandler unsubscribed from event bus for device ID: {}", deviceId);
+            }
+        }
+
         cancelDelayedCommand();
 
         synchronized (sessionLock) {
             currentSession = null;
         }
+
+        deviceId = null;
 
         super.dispose();
     }
@@ -431,8 +465,29 @@ public class ClientHandler extends BaseThingHandler {
     }
 
     /**
+     * Receives session update notifications from the event bus.
+     * This method implements the SessionEventListener interface.
+     *
+     * <p>
+     * Catches and logs any exceptions to prevent disruption of the event bus.
+     * Delegates to updateStateFromSession() for actual state update logic.
+     *
+     * @param session The updated session information, or null if session ended/offline
+     */
+    @Override
+    public void onSessionUpdate(@Nullable SessionInfoDto session) {
+        try {
+            logger.trace("Received session update event for device: {}", deviceId);
+            updateStateFromSession(session);
+        } catch (Exception e) {
+            logger.warn("Error processing session update for device {}: {}", deviceId, e.getMessage());
+            logger.debug("Session update exception", e);
+        }
+    }
+
+    /**
      * Updates the client state based on a new session information object.
-     * This method is called by the parent ServerHandler when session state changes.
+     * This method processes session updates received from the event bus.
      *
      * <p>
      * This method is synchronized to prevent concurrent modifications and ensure

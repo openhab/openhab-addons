@@ -1028,44 +1028,53 @@ classDiagram
 
 ---
 
-### Phase 4: ClientHandler Event Integration ⚠️ HIGH PRIORITY
+### Phase 4: ClientHandler Event Integration ✅ COMPLETED (2025-12-06)
 
 **Goal**: Connect ClientHandler to event bus for session updates.
 
-#### Task 4.1: Implement SessionEventListener in ClientHandler
+#### Task 4.1: Implement SessionEventListener in ClientHandler ✅
 
-- [ ] Add `implements SessionEventListener` to ClientHandler
-- [ ] Add `@Override` to `onSessionUpdate()` method
-- [ ] Keep existing `updateStateFromSession()` implementation
-- [ ] Delegate from `onSessionUpdate()` to `updateStateFromSession()`
-- [ ] **Acceptance**: Compiles, interface contract satisfied
+- [x] Add `implements SessionEventListener` to ClientHandler
+- [x] Add `@Override` to `onSessionUpdate()` method
+- [x] Keep existing `updateStateFromSession()` implementation
+- [x] Delegate from `onSessionUpdate()` to `updateStateFromSession()`
+- [x] **Acceptance**: Compiles, interface contract satisfied
 
-#### Task 4.2: Add Event Bus Subscription Lifecycle
+#### Task 4.2: Add Event Bus Subscription Lifecycle ✅
 
-- [ ] Get ServerHandler's SessionEventBus in `initialize()`
-- [ ] Subscribe to event bus with device ID from ThingUID
-- [ ] Unsubscribe in `dispose()` with null-safety
-- [ ] Add debug logging for subscribe/unsubscribe
-- [ ] **Acceptance**: Subscription/unsubscription working
+- [x] Get ServerHandler's SessionEventBus in `initialize()`
+- [x] Subscribe to event bus with device ID from ThingUID
+- [x] Unsubscribe in `dispose()` with null-safety
+- [x] Add debug logging for subscribe/unsubscribe
+- [x] **Acceptance**: Subscription/unsubscription working
 
-#### Task 4.3: Update Channel State from Events
+#### Task 4.3: Update Channel State from Events ✅
 
-- [ ] Verify `onSessionUpdate()` triggers `updateStateFromSession()`
-- [ ] Use `ClientStateUpdater.calculateChannelStates()`
-- [ ] Apply states with `isLinked()` checks
-- [ ] Test with null session (offline handling)
-- [ ] **Acceptance**: Channels update when events arrive
+- [x] Verify `onSessionUpdate()` triggers `updateStateFromSession()`
+- [x] Use `ClientStateUpdater.calculateChannelStates()`
+- [x] Apply states with `isLinked()` checks
+- [x] Test with null session (offline handling)
+- [x] **Acceptance**: Channels update when events arrive
 
-#### Task 4.4: Integration Tests
+#### Task 4.4: Integration Tests ✅
 
-- [ ] Create `ClientHandlerEventIntegrationTest.java`
-- [ ] Mock ServerHandler with SessionEventBus
-- [ ] Simulate session updates via event bus
-- [ ] Verify channel states updated correctly
-- [ ] Test subscribe/unsubscribe lifecycle
-- [ ] **Acceptance**: All integration tests pass
+- [x] Create `ClientHandlerEventIntegrationTest.java`
+- [x] Test SessionEventListener interface implementation
+- [x] Simulate session updates via event bus
+- [x] Verify session state propagation
+- [x] Test subscribe/unsubscribe lifecycle
+- [x] Test offline notifications
+- [x] Test exception handling
+- [x] **Acceptance**: All integration tests pass (7/7 tests passing)
 
 **Deliverables**: ClientHandler receives and processes session events.
+
+**Implementation Notes**:
+
+- Added `deviceId` field extracted from ThingUID in `initialize()`
+- Added `getSessionEventBus()` public method to ServerHandler
+- Exception handling in `onSessionUpdate()` prevents event bus disruption
+- All 113 tests passing (added 7 new integration tests)
 
 ---
 
@@ -1313,12 +1322,14 @@ If issues arise during implementation:
 ## Implementation Progress
 
 **Phase 1**: ✅ COMPLETED (2025-11-30)
+
 - SessionEventBus implemented with full thread safety
 - SessionEventListener interface defined
 - 9/9 unit tests passing with 100% coverage
 - Concurrency and exception handling validated
 
 **Phase 2**: ✅ COMPLETED (2025-12-05)
+
 - SessionManager created in `internal/util/session/` package
 - Extracted session state management from ServerHandler
 - Integrated SessionManager into ServerHandler constructor with SessionEventBus dependency injection
@@ -1338,8 +1349,16 @@ If issues arise during implementation:
 - ClientStateUpdaterTest added (null handling, metadata, playback state, edge cases)
 - Full Maven build success: 106 tests passing, spotless clean
 
+**Phase 4**: ✅ COMPLETED (2025-12-06)
 
-**Phase 4**: ⏳ NOT STARTED (ClientHandler event integration)
+- ClientHandler implements SessionEventListener interface
+- Added `deviceId` field extracted from ThingUID in `initialize()`
+- Event bus subscription in `initialize()`, unsubscription in `dispose()`
+- `onSessionUpdate()` method with exception handling delegates to `updateStateFromSession()`
+- Added `getSessionEventBus()` public method to ServerHandler
+- ClientHandlerEventIntegrationTest created with 7 comprehensive tests
+- All 113 tests passing (added 7 new integration tests)
+- Full build SUCCESS: zero compilation errors, spotless clean
 
 **Phase 5**: ⏳ NOT STARTED (Discovery deduplication)
 
@@ -1349,10 +1368,10 @@ If issues arise during implementation:
 
 ---
 
-**Version:** 1.3
+**Version:** 1.4
 **Created:** 2025-11-28
 **Last Updated:** 2025-12-06
-**Status:** In Progress (Phase 3 Complete)
+**Status:** In Progress (Phase 4 Complete)
 **Estimated Effort:** 8-10 developer days
 **Target Completion:** 2025-12-08
 
