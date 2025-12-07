@@ -7,7 +7,7 @@ weather data to Weather Underground.
 
 ## Supported Things
 
-The following thing types are supported:
+The following Thing types are supported:
 
 | Thing        |  ID                  |  Description |
 |--------------|----------------------|--------------|
@@ -17,15 +17,15 @@ The following thing types are supported:
 
 ## Discovery
 
-Once an Account thing is configured with a valid API key, the binding will auto-discover
-a _Local Weather Forecast_ thing if the location (i.e. latitude and longitude)
+Once an Account Thing is configured with a valid API key, the binding will auto-discover
+a _Local Weather Forecast_ Thing if the location (i.e. latitude and longitude)
 and locale are set in the openHAB configuration.
 
 ## Thing Configuration
 
 ### Account
 
-The following configuration parameters are available on the Account thing:
+The following configuration parameters are available on the Account Thing:
 
 | Parameter        | Parameter ID      | Required/Optional | Description |
 |------------------|-------------------|-------------------|-------------|
@@ -33,7 +33,7 @@ The following configuration parameters are available on the Account thing:
 
 ### Weather Forecast
 
-The following configuration parameters are available on the Weather Forecast thing:
+The following configuration parameters are available on the Weather Forecast Thing:
 
 | Parameter        | Parameter ID      | Required/Optional                      | Description |
 |------------------|-------------------|----------------------------------------|-------------|
@@ -41,12 +41,12 @@ The following configuration parameters are available on the Weather Forecast thi
 | Postal Code      | postalCode        | Required for Postal Code location type | Available for the following countries: US, UK, DE, FR, IT, CA. The format is a concatenation of the postal code and the 2-character country code (e.g. 10001:US, W6C:CA). |
 | Geocode          | geocode           | Required for Geocode location type     | Specify latitude and longitude of the location for which the forecast is desired (e.g. 25.762272,-80.216425). |
 | IATA Code        | iataCode          | Required for IATA Code location type   | Three character airport code (e.g. BWI, FCO). |
-| Language         | language          | Optional                               | Languages supported by The Weather Company API. If the language not specified in the thing configuration, the binding will try to select the language based on the locale set in openHAB. |
+| Language         | language          | Optional                               | Languages supported by The Weather Company API. If the language not specified in the Thing configuration, the binding will try to select the language based on the locale set in openHAB. |
 | Refresh Interval | refreshInterval   | Required                               | Frequency with which forecast will be updated. Defaults to 30 minutes. Minimum is 2 minutes. |
 
 ### Weather Observations
 
-The following configuration parameters are available on the Weather Observations thing:
+The following configuration parameters are available on the Weather Observations Thing:
 
 | Parameter        | Parameter ID      | Required/Optional | Description |
 |------------------|-------------------|-------------------|-------------|
@@ -129,7 +129,7 @@ The following configuration parameters are available on the Weather Observations
 
 ### Local Language Support
 
-The following channels will be translated to local language based on the language setting in the thing configuration.
+The following channels will be translated to local language based on the language setting in the Thing configuration.
 
 - dayOfWeek
 - daypartName

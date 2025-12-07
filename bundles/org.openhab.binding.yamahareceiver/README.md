@@ -16,7 +16,7 @@ If your Yamaha receiver is not on the list, it likely is a newer model that supp
 ## Discovery
 
 Use the auto-discovery feature to detect your hardware.
-Initially a thing for the main zone will be created.
+Initially a Thing for the main zone will be created.
 This will trigger a zone detection internally, and all available additional zones will appear as new things.
 
 ## Thing Configuration
@@ -62,7 +62,7 @@ The implemented channels for the `yamahaAV` bridge are:
 | `party_mode_mute`   | `Switch`     | Switches mute on or off when in party mode. Write only (state updates are not available). Applicable only when party mode is on. May not be supported on all models.                                        |
 | `party_mode_volume` | `Dimmer`     | Increase or decrease volume when in party mode. Write only (state updates are not available). INCREASE/DECREASE commands only. Applicable only when party mode is on. May not be supported on all models.    |
 
-The implemented channels for a `zone` thing are grouped in three groups. These are the zones supported: `Main_Zone`, `Zone_2`, `Zone_3`, `Zone_4`.
+The implemented channels for a `zone` Thing are grouped in three groups. These are the zones supported: `Main_Zone`, `Zone_2`, `Zone_3`, `Zone_4`.
 
 Zone control channels are:
 
@@ -260,7 +260,7 @@ The `openhab.log` will contain internal workings of the binding:
 Certain AVR models in the XML protocol require different values for the input (i.e. `HDMI1` vs `HDMI_1`).
 On top of that some AVR models during status updates report different value than sent in the command (i.e. return `HDMI_1` for `HDMI1` command).
 
-To account for all variations a Yamaha thing setting got introduced: `Input mapping`.
+To account for all variations a Yamaha Thing setting got introduced: `Input mapping`.
 This allows to map the input value reported by the AVR after status update to the desired canonical value.
 
 Use the UI to customize the setting for your particular AVR: `Things > Edit > Yamaha Receiver XXX > Input mapping`.

@@ -10,7 +10,7 @@ The X (formerly known as Twitter) binding lets your home post messages (up to 28
 
 ## Thing Configuration
 
-The X account thing requires you to create an app in the X Developer Portal and obtain API keys/tokens.
+The X account Thing requires you to create an app in the X Developer Portal and obtain API keys/tokens.
 
 |   Property        | Default | Required | Description                        |
 |-------------------|---------|:--------:|-----------------------------------|

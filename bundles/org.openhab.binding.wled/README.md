@@ -7,15 +7,15 @@ This binding allows you to auto discover and use LED strings based on the WLED p
 
 | Thing Type ID | Description |
 |-|-|
-| `json` | A bridge to a WLED device using the JSON API. Add this thing first. |
+| `json` | A bridge to a WLED device using the JSON API. Add this Thing first. |
 | `segment` | A segment is used to turn a LED strip or string, into 1 or more lights. Each segment is like a separate light globe that can have its own color or effect. |
 
 ## Discovery
 
 The auto discovery will find your WLED if your network supports mDNS and the UDP port 5353 is not blocked by a fire wall.
 Before discovering any WLED devices, you may wish to name them by providing a 'Server description' in the WLED web page, CONFIG>User Interface> setup page.
-openHAB will then discover and auto name your WLED bridge thing to the name provided as the 'Server description'.
-Segments will be discovered with an Inbox scan after the bridge thing is first showing up as ONLINE.
+openHAB will then discover and auto name your WLED bridge Thing to the name provided as the 'Server description'.
+Segments will be discovered with an Inbox scan after the bridge Thing is first showing up as ONLINE.
 Any segments that have been given a name in the WLED firmware, will be given the same name when discovery adds them to the Inbox.
 
 ## Bridge Thing Configuration
@@ -83,7 +83,7 @@ getActions("wled", "wled:json:XmasTree").savePreset(5,"Flashy Preset")
 
 ## Sitemap Example
 
-If you use the ADMIN>MODEL>`Create equipment from thing` feature you can use the below and just change the name before the underscore to match what you named the `segment` thing when it was added via the Inbox.
+If you use the ADMIN>MODEL>`Create equipment from Thing` feature you can use the below and just change the name before the underscore to match what you named the `segment` Thing when it was added via the Inbox.
 
 *.sitemap
 

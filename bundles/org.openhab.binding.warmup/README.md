@@ -27,7 +27,7 @@ The binding’s API implementation is derived from the implementations at <https
 
 ## Supported Things
 
-The Warmup binding supports the following thing types:
+The Warmup binding supports the following Thing types:
 
 | Bridge         | Label             | Description                                                                             |
 |----------------|-------------------|-----------------------------------------------------------------------------------------|

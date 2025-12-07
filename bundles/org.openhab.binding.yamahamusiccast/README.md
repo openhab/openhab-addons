@@ -27,7 +27,7 @@ The Yamaha Receiver will send update messages to UDP port 41100.
 
 ## Supported Things
 
-Each model (AV receiver, etc.) is a thing (Thing Type ID: `yamahamusiccast:device`). Things are linked to a bridge (Thing Type ID: `yamahamusiccast:bridge`) for receiving UDP events.
+Each model (AV receiver, etc.) is a Thing (Thing Type ID: `yamahamusiccast:device`). Things are linked to a bridge (Thing Type ID: `yamahamusiccast:bridge`) for receiving UDP events.
 
 ## Discovery
 
@@ -146,7 +146,7 @@ String YamahaAlbum "" {channel="yamahamusiccast:device:virtual:Living:playerCont
 ### MusicCast setup
 
 The idea here is to select which device/model will be the master. This needs to be done for each device/model that will be a slave.
-If you want the _Living_ to be the master for the _Kitchen_, select _Living - zone (IP)_ from the thing _Kitchen_.
+If you want the _Living_ to be the master for the _Kitchen_, select _Living - zone (IP)_ from the Thing _Kitchen_.
 The binding will check if there is already a group active for which _Living_ is the master. If yes, this group will be used and _Kitchen_ will be added.
 If not, a new group will be created.
 

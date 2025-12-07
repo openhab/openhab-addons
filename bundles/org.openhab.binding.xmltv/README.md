@@ -9,10 +9,10 @@ The XMLTV file itself is produced by so‑called "grabbers": <http://wiki.xmltv.
 
 Some websites provide updated XMLTV files that can be downloaded directly (for example, France and Switzerland: <https://xmltv.ch/>).
 
-This binding reads an XMLTV file and creates a thing for each channel contained in it.
+This binding reads an XMLTV file and creates a Thing for each channel contained in it.
 Channels from the XMLTV file are represented as "Media Channels" to avoid confusion with openHAB Channels.
 
-Each channel thing exposes information about the current program and the next one.
+Each channel Thing exposes information about the current program and the next one.
 
 ## Supported Things
 
