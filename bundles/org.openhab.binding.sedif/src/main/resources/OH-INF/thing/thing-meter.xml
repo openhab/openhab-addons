@@ -11,13 +11,10 @@
 
 		<label>Meter</label>
 		<description>
-			Act as a gateway between a Meter and your Sedif web account.
-			In order to receive the data, you must
-			activate your account on Sedif web site.
-			You will need to get your contractId from this Sedif web site, and eventually
-			your meterId if you have multiple meter on the same account.
-			See the documentation about where to find this
-			informations.
+		    Provides your water consumption data.
+			If you don't use autodiscovery, you will need to get your contractId from this Sedif web site, 
+			and eventually your meterId if you have multiple meter on the same account.
+			See the documentation about where to find this informations.
 		</description>
 		<semantic-equipment-tag>WaterMeter</semantic-equipment-tag>
 
