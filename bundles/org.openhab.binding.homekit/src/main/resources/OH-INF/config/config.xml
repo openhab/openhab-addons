@@ -10,8 +10,8 @@
 			<label>IP Address</label>
 			<description>IP v4 address (and optional port) of the HomeKit device.</description>
 		</parameter>
-		<parameter name="macAddress" type="text" required="true">
-			<label>MAC Address</label>
+		<parameter name="uniqueId" type="text" required="true">
+			<label>Unique ID</label>
 			<description>Unique accessory identifier.</description>
 			<advanced>true</advanced>
 		</parameter>

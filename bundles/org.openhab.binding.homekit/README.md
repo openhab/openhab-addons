@@ -31,7 +31,7 @@ The following table shows the Thing configuration parameters for `bridge` and `a
 |-------------------|---------|------------------------------------------------------|-----------|----------|----------|
 | `ipAddress`       | text    | IP v4 address of the HomeKit accessory.              | see below | yes      | no       |
 | `httpHostHeader`  | text    | The fully qualified host name as discovered by mDNS. | see below | yes      | yes      |
-| `macAddress`      | text    | Unique accessory identifier as discovered by mDNS.   | see below | yes      | yes      |
+| `uniqueId`        | text    | Unique accessory identifier as discovered by mDNS.   | see below | yes      | yes      |
 | `refreshInterval` | integer | Interval at which the accessory is polled in sec.    | 60        | no       | yes      |
 
 NOTE: as a general rule, if you create the Things via the Inbox from the mDNS discovery result, then all of the above configuration parameters will have their proper values already preset.
@@ -41,7 +41,8 @@ NOTE: as a general rule, if you create the Things via the Inbox from the mDNS di
 `httpHostHeader` is required for the 'Host:' header of HTTP requests sent to the `accessory` or `bridge`.
 It must be the fully qualified host name (e.g. `foobar._hap._tcp.local.` or, if the port is not 0 or 80, `foobar._hap._tcp.local.:1234`) as found manually via (say) an mDNS discovery app.
 
-`macAddress` must be the unique accessory identifier as found manually via (say) an mDNS discovery app.
+`uniqueId` must be the unique accessory identifier as found manually via (say) an mDNS discovery app.
+Typically it takes the form `00:1A:2B:3C:4D:5E` which is similar to (or the same as) a MAC address.
 
 ### Configuration for `bridged-accessory` Things
 

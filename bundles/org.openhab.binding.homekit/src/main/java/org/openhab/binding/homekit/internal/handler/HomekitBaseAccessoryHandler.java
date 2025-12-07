@@ -344,15 +344,15 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
         isConfigured = false;
         Long accessoryId = checkedAccessoryId();
         String ipAddress = checkedIpAddress();
-        String macAddress = checkedMacAddress();
+        String uniqueId = checkedUniqueId();
         String hostName = checkedHostName();
-        if (accessoryId == null || ipAddress == null || macAddress == null || hostName == null) {
+        if (accessoryId == null || ipAddress == null || uniqueId == null || hostName == null) {
             return false; // configuration error
         }
         isConfigured = true;
 
         // check if we have a stored key
-        Ed25519PublicKeyParameters accessoryKey = keyStore.getAccessoryKey(macAddress);
+        Ed25519PublicKeyParameters accessoryKey = keyStore.getAccessoryKey(uniqueId);
         if (accessoryKey == null) {
             logger.debug("{} no stored pairing credentials", thing.getUID());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.not-paired");
@@ -482,12 +482,12 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
         return ipAddress;
     }
 
-    private @Nullable String checkedMacAddress() {
-        if (!(getConfig().get(CONFIG_MAC_ADDRESS) instanceof String macAddress) || macAddress.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.missing-mac-address");
+    private @Nullable String checkedUniqueId() {
+        if (!(getConfig().get(CONFIG_UNIQUE_ID) instanceof String uniqueId) || uniqueId.isBlank()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.missing-unique-id");
             return null;
         }
-        return macAddress;
+        return uniqueId;
     }
 
     private @Nullable String checkedHostName() {
@@ -547,14 +547,14 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
         isConfigured = false;
         Long accessoryId = checkedAccessoryId();
         String ipAddress = checkedIpAddress();
-        String macAddress = checkedMacAddress();
+        String uniqueId = checkedUniqueId();
         String hostName = checkedHostName();
-        if (accessoryId == null || ipAddress == null || macAddress == null || hostName == null) {
+        if (accessoryId == null || ipAddress == null || uniqueId == null || hostName == null) {
             return ACTION_RESULT_ERROR_FORMAT.formatted("config error");
         }
         isConfigured = true;
 
-        if (keyStore.getAccessoryKey(macAddress) != null) {
+        if (keyStore.getAccessoryKey(uniqueId) != null) {
             return ACTION_RESULT_OK_FORMAT.formatted("already paired"); // OK if already paired
         }
 
@@ -569,7 +569,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
                     keyStore.getControllerKey(), pairingCode, withExternalAuthentication);
 
             Ed25519PublicKeyParameters accessoryKey = pairSetupClient.pair();
-            keyStore.setAccessoryKey(macAddress, accessoryKey);
+            keyStore.setAccessoryKey(uniqueId, accessoryKey);
 
             logger.debug("{} completed Pair-Setup; starting Pair-Verify", thing.getUID());
             connectionAttemptDelay = MIN_CONNECTION_ATTEMPT_DELAY_SECONDS; // reset delay on manual pairing
@@ -595,19 +595,19 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
             return ACTION_RESULT_ERROR_FORMAT.formatted("bridged accessory");
         }
 
-        if (!(getConfig().get(CONFIG_MAC_ADDRESS) instanceof String macAddress) || macAddress.isBlank()) {
-            logger.warn("{} cannot unpair accessory due to missing mac address configuration", thing.getUID());
+        if (!(getConfig().get(CONFIG_UNIQUE_ID) instanceof String uid) || uid.isBlank()) {
+            logger.warn("{} cannot unpair accessory due to missing unique id configuration", thing.getUID());
             return ACTION_RESULT_ERROR_FORMAT.formatted("config error");
         }
 
-        if (keyStore.getAccessoryKey(macAddress) == null) {
+        if (keyStore.getAccessoryKey(uid) == null) {
             return ACTION_RESULT_ERROR_FORMAT.formatted("not paired");
         }
 
         try {
             PairRemoveClient service = new PairRemoveClient(getIpTransport(), keyStore.getControllerUUID());
             service.remove();
-            keyStore.setAccessoryKey(macAddress, null);
+            keyStore.setAccessoryKey(uid, null);
             return ACTION_RESULT_OK;
         } catch (IOException | InterruptedException | TimeoutException | ExecutionException | IllegalAccessException
                 | IllegalStateException e) {

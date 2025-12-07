@@ -15,7 +15,6 @@ package org.openhab.binding.homekit.internal;
 import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.type.ChannelTypeUID;
 
@@ -74,7 +73,7 @@ public class HomekitBindingConstants {
     public static final String CONFIG_IP_ADDRESS = "ipAddress";
     public static final String CONFIG_REFRESH_INTERVAL = "refreshInterval";
     public static final String CONFIG_ACCESSORY_ID = "accessoryID";
-    public static final String CONFIG_MAC_ADDRESS = Thing.PROPERTY_MAC_ADDRESS;
+    public static final String CONFIG_UNIQUE_ID = "uniqueId";
 
     // thing properties
     public static final String PROPERTY_PROTOCOL_VERSION = "protocolVersion";

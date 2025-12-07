@@ -15,8 +15,10 @@ package org.openhab.binding.homekit.internal.discovery;
 import static org.openhab.binding.homekit.internal.HomekitBindingConstants.*;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 import javax.jmdns.ServiceInfo;
@@ -35,9 +37,9 @@ import org.osgi.service.component.annotations.Component;
 /**
  * Discovers new HomeKit server devices.
  * HomeKit devices advertise themselves using mDNS with the service type "_hap._tcp.local.".
- * Each device is identified by its MAC address, which is included in the mDNS properties.
+ * Each device is identified by its unique id, which is included in the mDNS properties.
  * The device category is also included, allowing differentiation between bridges and accessories.
- * The discovery participant creates a ThingUID based on the MAC address and device category.
+ * The discovery participant creates a ThingUID based on the unique id and device category.
  * Discovered devices are published as Things of type
  * {@link org.openhab.binding.homekit.internal.HomekitBindingConstants#THING_TYPE_ACCESSORY}
  * or {@link org.openhab.binding.homekit.internal.HomekitBindingConstants#THING_TYPE_BRIDGE}.
@@ -68,8 +70,9 @@ public class HomekitMdnsDiscoveryParticipant implements MDNSDiscoveryParticipant
         if (getThingUID(service) instanceof ThingUID uid) {
             Map<String, String> properties = getProperties(service);
 
-            String macAddress = properties.get("id"); // MAC address
-            String ipAddress = service.getHostAddresses()[0]; // ipV4 address
+            String uniqueId = properties.get("id"); // unique id
+            String ipAddress = Arrays.stream(service.getInet4Addresses()).filter(Objects::nonNull)
+                    .map(ipv4 -> ipv4.getHostAddress()).findFirst().orElse(null);
             int port = service.getPort();
             if (port != 0) {
                 ipAddress = ipAddress + ":" + port;
@@ -83,14 +86,14 @@ public class HomekitMdnsDiscoveryParticipant implements MDNSDiscoveryParticipant
                 category = null;
             }
 
-            if (ipAddress != null && macAddress != null && category != null) {
+            if (ipAddress != null && uniqueId != null && category != null) {
                 DiscoveryResultBuilder builder = DiscoveryResultBuilder.create(uid);
-                builder.withLabel(THING_LABEL_FMT.formatted(service.getName(), macAddress)) //
+                builder.withLabel(THING_LABEL_FMT.formatted(service.getName(), uniqueId)) //
                         .withProperty(CONFIG_HTTP_HOST_HEADER, getHostName(service)) //
                         .withProperty(CONFIG_IP_ADDRESS, ipAddress) //
-                        .withProperty(CONFIG_MAC_ADDRESS, macAddress) //
+                        .withProperty(CONFIG_UNIQUE_ID, uniqueId) //
                         .withProperty(PROPERTY_ACCESSORY_CATEGORY, category.toString()) //
-                        .withRepresentationProperty(CONFIG_MAC_ADDRESS);
+                        .withRepresentationProperty(CONFIG_UNIQUE_ID);
 
                 if (properties.get("md") instanceof String model) {
                     builder.withProperty(Thing.PROPERTY_MODEL_ID, model);
@@ -112,18 +115,18 @@ public class HomekitMdnsDiscoveryParticipant implements MDNSDiscoveryParticipant
     public @Nullable ThingUID getThingUID(ServiceInfo service) {
         Map<String, String> properties = getProperties(service);
 
-        String mac = properties.get("id"); // MAC address
-        AccessoryCategory cat;
+        String uniqueId = properties.get("id");
+        AccessoryCategory category;
         try {
             String ci = properties.getOrDefault("ci", "");
-            cat = AccessoryCategory.from(Integer.parseInt(ci));
+            category = AccessoryCategory.from(Integer.parseInt(ci));
         } catch (IllegalArgumentException e) {
-            cat = null;
+            category = null;
         }
 
-        if (mac != null && cat != null) {
-            return new ThingUID(AccessoryCategory.BRIDGE == cat ? THING_TYPE_BRIDGE : THING_TYPE_ACCESSORY,
-                    mac.replace(":", "").toLowerCase()); // thing id example "a1b2c3d4e5f6"
+        if (uniqueId != null && category != null) {
+            return new ThingUID(AccessoryCategory.BRIDGE == category ? THING_TYPE_BRIDGE : THING_TYPE_ACCESSORY,
+                    uniqueId.replace(":", "").toLowerCase()); // thing id example "a1b2c3d4e5f6"
         }
 
         return null;

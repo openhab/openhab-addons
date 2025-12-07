@@ -65,15 +65,15 @@ public class HomekitBridgedAccessoryDiscoveryService
     }
 
     private void discoverBridgedAccessories(Thing bridge, Collection<Accessory> accessories) {
-        String bridgeMacAddress = thingHandler.getThing().getConfiguration()
-                .get(CONFIG_MAC_ADDRESS) instanceof String mac ? mac : null;
-        if (bridgeMacAddress == null) {
+        String bridgeUniqueId = thingHandler.getThing().getConfiguration()
+                .get(CONFIG_UNIQUE_ID) instanceof String uniqueId ? uniqueId : null;
+        if (bridgeUniqueId == null) {
             return;
         }
         accessories.forEach(accessory -> {
             if (accessory.aid instanceof Long aid && aid != 1L && accessory.services != null) {
                 ThingUID uid = new ThingUID(THING_TYPE_BRIDGED_ACCESSORY, bridge.getUID(), aid.toString());
-                String uniqueId = STRING_AID_FMT.formatted(bridgeMacAddress, aid);
+                String uniqueId = STRING_AID_FMT.formatted(bridgeUniqueId, aid);
                 String label = THING_LABEL_FMT.formatted(accessory.getAccessoryInstanceLabel(), uniqueId);
                 thingDiscovered(DiscoveryResultBuilder.create(uid) //
                         .withBridge(bridge.getUID()) //
