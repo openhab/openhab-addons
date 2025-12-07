@@ -179,7 +179,8 @@ public class RoborockWebTargets {
             safeToken = generateSafeToken(email); // Generate if somehow missed
         }
 
-        String payload = "?username=" + email + "&verifycode=" + twofa + "&verifycodetype=AUTH_EMAIL_CODE";
+        String payload = "?username=" + URLEncoder.encode(email, StandardCharsets.UTF_8) + "&verifycode=" + twofa
+                + "&verifycodetype=AUTH_EMAIL_CODE";
 
         return invoke(baseUri + GET_TOKEN_PATH + payload, HttpMethod.POST);
     }

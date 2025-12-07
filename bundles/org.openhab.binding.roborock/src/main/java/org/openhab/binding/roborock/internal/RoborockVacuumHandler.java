@@ -548,6 +548,8 @@ public class RoborockVacuumHandler extends BaseThingHandler {
             updateState(CHANNEL_FAN_POWER, new DecimalType(getStatus.result[0].fanPower));
             updateState(CHANNEL_FAN_CONTROL,
                     new DecimalType(FanModeType.getType(getStatus.result[0].fanPower).getId()));
+            updateState(CHANNEL_CLEAN_AREA,
+                    new QuantityType<>(getStatus.result[0].cleanArea / 1000000.0, SIUnits.SQUARE_METRE));
             updateState(CHANNEL_CLEAN_TIME,
                     new QuantityType<>(TimeUnit.SECONDS.toMinutes(getStatus.result[0].cleanTime), Units.MINUTE));
             updateState(CHANNEL_DND_ENABLED, new DecimalType(getStatus.result[0].dndEnabled));
