@@ -192,7 +192,7 @@ The format pattern for digital channels is
 channel="plclogo:digital:<DeviceId>:<ThingId>:<Channel>"
 ```
 
-Dependent on the configured LOGO! PLC and thing kind, the following channels are available:
+Dependent on the configured LOGO! PLC and Thing kind, the following channels are available:
 
 | Kind | `0BA7`    | `0BA8`     | Item      |
 | ---- | :-------: | :--------: | --------- |
@@ -210,7 +210,7 @@ The format pattern for analog channels is
 channel="plclogo:analog:<DeviceId>:<ThingId>:<Channel>"
 ```
 
-Dependent on the configured LOGO! PLC and thing kind, the following channels are available:
+Dependent on the configured LOGO! PLC and Thing kind, the following channels are available:
 
 | Kind  | `0BA7`     | `0BA8`      | Item     |
 | ----- | :--------: | :---------: | -------- |
@@ -228,7 +228,7 @@ The format pattern for memory channels for bit values is
 channel="plclogo:memory:<DeviceId>:<ThingId>:<state/value>"
 ```
 
-Dependent on the configured LOGO! PLC and thing kind, the following channels are available:
+Dependent on the configured LOGO! PLC and Thing kind, the following channels are available:
 
 | Kind              | `0BA7`  | `0BA8`  | Item     |
 | ----------------- | :-----: | :-----: | -------- |
@@ -245,7 +245,7 @@ The format pattern for date/time channels is
 channel="plclogo:datetime:<DeviceId>:<ThingId>:<date/time>"
 ```
 
-Dependent on the configured LOGO! PLC and thing kind, the following channels are available:
+Dependent on the configured LOGO! PLC and Thing kind, the following channels are available:
 
 | Kind        | `0BA7`  | `0BA8`  | Item       |
 | ----------- | :-----: | :-----: | ---------- |
@@ -253,9 +253,9 @@ Dependent on the configured LOGO! PLC and thing kind, the following channels are
 | `VW[0-849]` | `time`  | `time`  | `DateTime` |
 | `VW[0-849]` | `value` | `value` | `Number`   |
 
-Channel `date` is available if the thing is configured as `"date"`.
-If the thing is configured as `"time"`, then channel `time` is provided.
-Raw block data is provided via the `value` channel, independent of the thing configuration:
+Channel `date` is available if the Thing is configured as `"date"`.
+If the Thing is configured as `"time"`, then channel `time` is provided.
+Raw block data is provided via the `value` channel, independent of the Thing configuration:
 
 ```java
 channel="plclogo:datetime:<DeviceId>:<ThingId>:value"
@@ -275,7 +275,7 @@ Additionally, the state of the observed block data is provided via the `observed
 channel="plclogo:pulse:<DeviceId>:<ThingId>:observed"
 ```
 
-Dependent on the configured LOGO! PLC and thing kind, the following channels are available:
+Dependent on the configured LOGO! PLC and Thing kind, the following channels are available:
 
 | Kind              | `0BA7`     | `0BA8`     | Item      |
 | ----------------- | :--------: | :--------: | --------- |

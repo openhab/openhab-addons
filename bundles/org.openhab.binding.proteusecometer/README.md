@@ -21,7 +21,7 @@ No autodiscovery is implemented yet.
 
 Plug the wireless display into a USB port.
 See the [openHAB Serial Port documentation](https://www.openhab.org/docs/administration/serial.html) for general serial port configuration.
-After that, you can add the device as a thing and configure the usbPort your OS generated for the display.
+After that, you can add the device as a Thing and configure the usbPort your OS generated for the display.
 
 ```text
 UID: proteusecometer:EcoMeterS:e90705eaa4

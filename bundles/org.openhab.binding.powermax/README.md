@@ -6,11 +6,11 @@ This binding lets you control the alarm panel (arm/disarm) and use Visonic senso
 The PowerMax provides support for a serial interface.
 This serial interface is not installed by default but can be ordered from any PowerMax vendor (called the Visonic RS-232 Adapter Kit).
 
-If your alarm panel is connected directly to a serial port of your openHAB server (or to a USB port through a serial-to-USB converter), you must set up a serial connection thing type in openHAB.
+If your alarm panel is connected directly to a serial port of your openHAB server (or to a USB port through a serial-to-USB converter), you must set up a serial connection Thing type in openHAB.
 
 You don't even need to have your alarm panel connected directly to your openHAB server.
 For example, you can connect it to a Raspberry Pi and use the [ser2net](https://sourceforge.net/projects/ser2net/) Linux tool to make the serial connection available on the LAN (serial over IP).
-In this case, you must set up an IP connection thing type in openHAB.
+In this case, you must set up an IP connection Thing type in openHAB.
 
 Here is an example ser2net.conf you can use to share your serial port /dev/ttyUSB0 on IP port 4444:
 
@@ -24,7 +24,7 @@ The binding implementation of this protocol is largely inspired by the [Vera plu
 
 ## Supported Things
 
-This binding supports the following thing types:
+This binding supports the following Thing types:
 
 | Thing  | Thing Type | Description                                                                       |
 |--------|------------|----------------------------------------------------------------------------------|
@@ -36,19 +36,19 @@ This binding supports the following thing types:
 ## Discovery
 
 The alarm system is not discovered automatically.
-First, manually create a bridge thing—either of type IP or serial—depending on how your openHAB server is connected to the alarm system.
+First, manually create a bridge Thing—either of type IP or serial—depending on how your openHAB server is connected to the alarm system.
 Then the binding will automatically discover all zones and X10 devices that are set up in your alarm system.
 
 ## Binding configuration
 
 There are no global binding configuration settings that need to be set.
-All settings are provided through thing configuration parameters.
+All settings are provided through Thing configuration parameters.
 
 ## Thing Configuration
 
 ### IP connection
 
-The IP bridge thing requires the following configuration parameters:
+The IP bridge Thing requires the following configuration parameters:
 
 | Parameter Label     | Parameter ID      | Description                                                         | Required | Default |
 |---------------------|-------------------|---------------------------------------------------------------------|----------|---------|
@@ -64,7 +64,7 @@ The IP bridge thing requires the following configuration parameters:
 
 ### Serial connection
 
-The serial bridge thing requires the following configuration parameters:
+The serial bridge Thing requires the following configuration parameters:
 
 | Parameter Label     | Parameter ID      | Description                                                         | Required | Default |
 |---------------------|-------------------|---------------------------------------------------------------------|----------|---------|
@@ -86,7 +86,7 @@ Notes:
 
 ### X10 device
 
-The X10 thing requires the following configuration parameters:
+The X10 Thing requires the following configuration parameters:
 
 | Parameter Label | Parameter ID | Description        | Required |
 |-----------------|--------------|--------------------|----------|
@@ -94,7 +94,7 @@ The X10 thing requires the following configuration parameters:
 
 ### Zone
 
-The zone thing requires the following configuration parameters:
+The zone Thing requires the following configuration parameters:
 
 | Parameter Label | Parameter ID | Description      | Required |
 |-----------------|--------------|------------------|----------|

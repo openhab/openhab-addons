@@ -22,7 +22,7 @@ Autodiscovery scans all Class C IPv4 subnets connected to the openHAB system for
 
 ## Thing Configuration
 
-The _pjLinkDevice_ thing type has the following parameters:
+The _pjLinkDevice_ Thing type has the following parameters:
 
 | Parameter             | Description                                                                                                                                                  |
 |-----------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------|

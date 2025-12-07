@@ -29,14 +29,14 @@ To allow the binding to control the player while it is off (network active in st
 **UHD Model Command Authentication:**
 
 The UHD models require authentication to use the control API.
-A player key must be specified in the thing configuration in order for the `power`, `button` and `control` channels to work.
+A player key must be specified in the Thing configuration in order for the `power`, `button` and `control` channels to work.
 
 UHD model players that are patched do not require a player key.
 See the [AVForums discussions](https://www.avforums.com/forums/blu-ray-dvd-player-multiregion-hacks.126/) of the DP-UB420/820/9000 players for more information.
 
 ## Supported Things
 
-There are two supported thing types, which represent either a BD player or a UHD player.
+There are two supported Thing types, which represent either a BD player or a UHD player.
 A supported Blu-ray player uses the `bd-player` id and a supported UHD Blu-ray player uses the `uhd-player` id.
 Multiple Things can be added if more than one player is to be controlled.
 

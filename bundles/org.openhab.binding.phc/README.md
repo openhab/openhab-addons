@@ -89,7 +89,7 @@ Not implemented yet.
 
 ## Thing Configuration
 
-A thing corresponds with a module in the PHC software, and the channels (with linked items) correspond with the inputs and outputs.
+A Thing corresponds with a module in the PHC software, and the channels (with linked items) correspond with the inputs and outputs.
 Please note, if you define the things manually (not in the UI), that the ThingID always has to be the address (like the PID switches on the module).
 
 ### Parameters

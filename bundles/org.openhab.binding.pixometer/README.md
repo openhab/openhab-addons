@@ -4,7 +4,7 @@ This binding connects to the pixometer API, which can manage your meter readings
 
 ## Supported Things
 
-This binding supports the following thing types according to pixometer's capabilities:
+This binding supports the following Thing types according to pixometer's capabilities:
 
 | Name        | Type   | Description                                                                 |
 | ----------- | ------ | --------------------------------------------------------------------------- |
@@ -39,7 +39,7 @@ All meter things have the following channels:
 | ------------------ | ------------------------------------------------------ | ------------------- | -------- |
 | last_reading_value | The last value that has been read for this meter.      | Number              | false    |
 | last_reading_date  | The time at which the last reading value was recorded. | DateTime            | false    |
-| last_refresh_date  | The last time that the current thing has been updated. | DateTime            | false    |
+| last_refresh_date  | The last time that the current Thing has been updated. | DateTime            | false    |
 
 ## Full Example
 

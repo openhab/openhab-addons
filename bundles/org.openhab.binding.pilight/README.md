@@ -52,7 +52,7 @@ These things have all one required parameter:
 
 ## Channels
 
-The `bridge` thing has no channels.
+The `bridge` Thing has no channels.
 
 The `contact`, `dimmer` and `switch` things all have one channel:
 
@@ -62,7 +62,7 @@ The `contact`, `dimmer` and `switch` things all have one channel:
 | `dimmer`  | dimlevel | Dimmer  | Dim level of the dimmer |
 | `switch`  | state    | Switch  | State of the switch     |
 
-The `generic` thing has no fixed channels, so you have to add them manually.
+The `generic` Thing has no fixed channels, so you have to add them manually.
 Currently, only String and Number channels are supported.
 
 ## Auto Discovery
@@ -74,7 +74,7 @@ After loading the binding, this bridge discovery is automatically run and schedu
 
 ### Device Auto Discovery
 
-After a `bridge` thing has been configured in openHAB, it automatically establishes a connection between the pilight daemon and openHAB.
+After a `bridge` Thing has been configured in openHAB, it automatically establishes a connection between the pilight daemon and openHAB.
 As soon as the bridge is connected, the devices configured in the pilight daemon are automatically found via autodiscovery in the background (or via a manually triggered discovery) and are displayed in the inbox to easily create things from them.
 
 ## Full Example

@@ -20,7 +20,7 @@ Moreover, if the openHAB auto-discovery is disabled, the PioneerAVR auto-discove
 
 In the things folder, create a file called `pioneeravr.things` (or any other name) and configure your AVRs inside.
 
-The binding can control AVRs through the local network (ipAvr/ipAvrUnsupported thing type) or through a serial connection (serialAvr) if the AVR is directly connected to your computer.
+The binding can control AVRs through the local network (ipAvr/ipAvrUnsupported Thing type) or through a serial connection (serialAvr) if the AVR is directly connected to your computer.
 
 Configuration of ipAvr/ipAvrUnsupported:
 

@@ -50,7 +50,7 @@ In order for the Pentair controller to receive commands from this binding, you m
 
 ## Supported Things
 
-This binding supports the following thing types:
+This binding supports the following Thing types:
 
 | ThingType UID   | Thing Type | Description                             |
 | --------------- | :--------: | --------------------------------------- |

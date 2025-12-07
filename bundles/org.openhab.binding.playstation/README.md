@@ -30,7 +30,7 @@ Settings -> System Settings -> Connect PS Vita System Using Network.
 | outboundIP          |         | No       | Use this if your PS4 is not on the normal openHAB network.               |
 | ipPort              |  997    | No       | The port to probe the PS4 on, no need to change normally.                |
 
-If you want to control your PS4, the first thing you need is your user credentials. This is a 64-character hex string that is most easily obtained by using PS4-waker (<https://github.com/dhleong/ps4-waker>).
+If you want to control your PS4, the first Thing you need is your user credentials. This is a 64-character hex string that is most easily obtained by using PS4-waker (<https://github.com/dhleong/ps4-waker>).
 To run PS4-waker, you will need Node.js installed (for example: <https://nodejs.org/en/download/>).
 Enter "npx ps4-waker --help" in the command prompt. Agree to install by entering "y".
 After that send "npx ps4-waker --check". You will get asked to connect the "PS4 Second screen" Android app to the running clone.
@@ -38,7 +38,7 @@ Do this, and then you will need to get the pairing key from your PS4: Settings -
 On the PS4 screen you will see your pairing code and in the command prompt you will find the user credentials.
 
 Then you need to pair openHAB with the PS4.
-This can be done by saving the thing while the pairing screen is open on the PS4. The code is only needed during pairing.
+This can be done by saving the Thing while the pairing screen is open on the PS4. The code is only needed during pairing.
 
 If you have a passcode when you log in to your PS4, you must specify that as well.
 
@@ -63,7 +63,7 @@ If you have a passcode when you log in to your PS4, you must specify that as wel
 
 ## Full Example
 
-Example of how to configure a thing.
+Example of how to configure a Thing.
 
 demo.things
 
