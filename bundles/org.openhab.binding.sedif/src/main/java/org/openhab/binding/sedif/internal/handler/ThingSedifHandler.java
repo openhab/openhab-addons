@@ -38,7 +38,6 @@ import org.openhab.binding.sedif.internal.api.helpers.MeterReadingHelper;
 import org.openhab.binding.sedif.internal.config.SedifConfiguration;
 import org.openhab.binding.sedif.internal.dto.Contract;
 import org.openhab.binding.sedif.internal.dto.ContractDetail;
-import org.openhab.binding.sedif.internal.dto.ContractDetail.Client;
 import org.openhab.binding.sedif.internal.dto.ContractDetail.CompteInfo;
 import org.openhab.binding.sedif.internal.dto.MeterReading;
 import org.openhab.binding.sedif.internal.dto.MeterReading.Data.Consommation;
@@ -381,14 +380,8 @@ public class ThingSedifHandler extends BaseThingHandler {
             if (contrat != null) {
                 addProps(props, PROPERTY_CONTRACT_ORGANIZING_AUTHORITY, contrat.autoriteOrganisatrice);
                 addProps(props, PROPERTY_CONTRACT_DATE_SORTIE_EPT, contrat.dateSortieEPT);
-                addProps(props, PROPERTY_CONTRACT_EINVOICE, "" + contrat.eFacture);
                 addProps(props, PROPERTY_CONTRACT_ICL_ACTIVE, "" + contrat.iclActive);
-                addProps(props, PROPERTY_CONTRACT_DIRECT_DEBIT, "" + contrat.prelevAuto);
                 addProps(props, PROPERTY_CONTRACT_NAME, contrat.name);
-                addProps(props, PROPERTY_CONTRACT_STREET, contrat.siteRue);
-                addProps(props, PROPERTY_CONTRACT_POST_CODE, contrat.siteCp);
-                addProps(props, PROPERTY_CONTRACT_TOWN, contrat.siteCommune);
-                addProps(props, PROPERTY_CONTRACT_STATE, contrat.statut);
             }
             addProps(props, PROPERTY_CONTRACT_BALANCE, "" + values.solde);
 
@@ -397,36 +390,6 @@ public class ThingSedifHandler extends BaseThingHandler {
             addProps(props, PROPERTY_ELMB, comptInfo.eLmb);
             addProps(props, PROPERTY_ID_PDS, comptInfo.idPds);
             addProps(props, PROPERTY_NUM_METER, comptInfo.numCompteur);
-
-            Client client = values.contratClient;
-            if (client != null) {
-                addProps(props, PROPERTY_CUSTOMER_BILLING_TOWN, client.billingCity);
-                addProps(props, PROPERTY_CUSTOMER_BILLING_POST_CODE, client.billingPostalCode);
-                addProps(props, PROPERTY_CUSTOMER_BILLING_STREET, client.billingStreet);
-                addProps(props, PROPERTY_CUSTOMER_FIRST_NAME, client.firstName);
-                addProps(props, PROPERTY_CUSTOMER_LAST_NAME, client.lastName);
-                addProps(props, PROPERTY_CUSTOMER_NAME_SUP, client.name);
-                addProps(props, PROPERTY_CUSTOMER_EMAIL, client.email);
-                addProps(props, PROPERTY_CUSTOMER_GC, "" + client.gC);
-                addProps(props, PROPERTY_CUSTOMER_MOBILE_PHONE, client.mobilePhone);
-                addProps(props, PROPERTY_CUSTOMER_TITLE, client.salutation);
-                addProps(props, PROPERTY_CUSTOMER_LOCK, "" + client.verrouillageFiche);
-            }
-
-            Client payeurClient = values.contratClient;
-            if (payeurClient != null) {
-                addProps(props, PROPERTY_PAYER_BILLING_CITY, payeurClient.billingCity);
-                addProps(props, PROPERTY_PAYER_BILLING_POSTAL_CODE, payeurClient.billingPostalCode);
-                addProps(props, PROPERTY_PAYER_BILLING_STREET, payeurClient.billingStreet);
-                addProps(props, PROPERTY_PAYER_FIRST_NAME, payeurClient.firstName);
-                addProps(props, PROPERTY_PAYER_LAST_NAME, payeurClient.lastName);
-                addProps(props, PROPERTY_PAYER_NAME_SUP, payeurClient.name);
-                addProps(props, PROPERTY_PAYER_EMAIL, payeurClient.email);
-                addProps(props, PROPERTY_PAYER_GC, "" + payeurClient.gC);
-                addProps(props, PROPERTY_PAYER_MOBILE_PHONE, payeurClient.mobilePhone);
-                addProps(props, PROPERTY_PAYER_TITLE, payeurClient.salutation);
-                addProps(props, PROPERTY_PAYER_LOCK, "" + payeurClient.verrouillageFiche);
-            }
 
             updateProperties(props);
         }, () -> {

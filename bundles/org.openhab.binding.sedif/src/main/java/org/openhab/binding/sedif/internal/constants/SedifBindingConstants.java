@@ -65,14 +65,8 @@ public class SedifBindingConstants {
 
     public static final String PROPERTY_CONTRACT_ORGANIZING_AUTHORITY = "contractOrganizingAuthority";
     public static final String PROPERTY_CONTRACT_DATE_SORTIE_EPT = "contractDateSortieEpt";
-    public static final String PROPERTY_CONTRACT_EINVOICE = "contractEInvoice";
     public static final String PROPERTY_CONTRACT_ICL_ACTIVE = "contractIclActive";
-    public static final String PROPERTY_CONTRACT_DIRECT_DEBIT = "contractDirectDebit";
     public static final String PROPERTY_CONTRACT_NAME = "contractName";
-    public static final String PROPERTY_CONTRACT_STREET = "contractStreet";
-    public static final String PROPERTY_CONTRACT_POST_CODE = "contractPostCode";
-    public static final String PROPERTY_CONTRACT_TOWN = "contractTown";
-    public static final String PROPERTY_CONTRACT_STATE = "contractState";
     public static final String PROPERTY_CONTRACT_BALANCE = "balance";
 
     public static final String PROPERTY_ELMA = "meterElema";
@@ -80,30 +74,6 @@ public class SedifBindingConstants {
     public static final String PROPERTY_ID_PDS = "meterIdPds";
     public static final String PROPERTY_NUM_METER = "meterId";
     public static final String PROPERTY_CONTRACT_ID = "contractId";
-
-    public static final String PROPERTY_CUSTOMER_BILLING_TOWN = "customerBillingTown";
-    public static final String PROPERTY_CUSTOMER_BILLING_POST_CODE = "customerBillingPostCode";
-    public static final String PROPERTY_CUSTOMER_BILLING_STREET = "customerBillingStreet";
-    public static final String PROPERTY_CUSTOMER_FIRST_NAME = "customerFirstName";
-    public static final String PROPERTY_CUSTOMER_LAST_NAME = "customerLastName";
-    public static final String PROPERTY_CUSTOMER_NAME_SUP = "customernameComplement";
-    public static final String PROPERTY_CUSTOMER_EMAIL = "customerEmail";
-    public static final String PROPERTY_CUSTOMER_GC = "customerGc";
-    public static final String PROPERTY_CUSTOMER_MOBILE_PHONE = "customerMobilePhone";
-    public static final String PROPERTY_CUSTOMER_TITLE = "customerTitle";
-    public static final String PROPERTY_CUSTOMER_LOCK = "customerCustomerLock";
-
-    public static final String PROPERTY_PAYER_BILLING_CITY = "payerBillingTown";
-    public static final String PROPERTY_PAYER_BILLING_POSTAL_CODE = "payerBillingPostCode";
-    public static final String PROPERTY_PAYER_BILLING_STREET = "payerBillingStreet";
-    public static final String PROPERTY_PAYER_FIRST_NAME = "payerFirstName";
-    public static final String PROPERTY_PAYER_LAST_NAME = "payerLastName";
-    public static final String PROPERTY_PAYER_NAME_SUP = "payernameComplement";
-    public static final String PROPERTY_PAYER_EMAIL = "payerEmail";
-    public static final String PROPERTY_PAYER_GC = "payerGc";
-    public static final String PROPERTY_PAYER_MOBILE_PHONE = "payerMobilePhone";
-    public static final String PROPERTY_PAYER_TITLE = "payerTitle";
-    public static final String PROPERTY_PAYER_LOCK = "payerLock";
 
     public static final int REQUEST_TIMEOUT = 30;
 }
