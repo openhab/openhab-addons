@@ -16,7 +16,7 @@ After (manually) adding a Teslascope Account bridge, registered vehicles will be
 
 Account configuration is necessary.
 The easiest way to do this is from the UI.
-Just add a new thing, select the Teslascope binding, then Teslascope Account Binding Thing, and enter the apiKey from the Teslascope website.
+Just add a new Thing, select the Teslascope binding, then Teslascope Account Binding Thing, and enter the apiKey from the Teslascope website.
 
 As a minimum, the apiKey is needed:
 

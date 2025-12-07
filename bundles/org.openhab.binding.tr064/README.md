@@ -13,18 +13,18 @@ Two Bridge things are supported:
 
 Two kind of Things are supported:
 
-- `subDevice`: a sub-device of the Bridge thing (e.g. a WAN interface)
+- `subDevice`: a sub-device of the Bridge Thing (e.g. a WAN interface)
 - `subDeviceLan`: a special type of sub-device that supports MAC-detection
 
 ## Discovery
 
 The gateway device needs to be added manually.
 After that, sub-devices should be detected automatically.
-Otherwise go to "Things", click "+" to add a new thing, select the TR-064 binding and click the "Scan" button.
+Otherwise go to "Things", click "+" to add a new Thing, select the TR-064 binding and click the "Scan" button.
 
 ## Thing Configuration
 
-All thing types have a `refresh` parameter.
+All Thing types have a `refresh` parameter.
 It sets the refresh-interval in seconds for each device channel.
 The default value is 60.
 
@@ -48,7 +48,7 @@ The `fritzbox` devices can give additional information in dedicated channels, co
 If the parameters are specified, the corresponding channels will be added to the device.
 
 One or more TAM (telephone answering machines) are supported by most fritzbox devices.
-By setting the `tamIndices` parameter you can instruct the binding to add channels for these devices to the thing.
+By setting the `tamIndices` parameter you can instruct the binding to add channels for these devices to the Thing.
 Values start with `0`.
 This is an optional parameter and multiple values are allowed: add one value per line in the Main User Interface.
 
@@ -77,7 +77,7 @@ These parameters that accept list can also contain comments.
 Comments are separated from the value with a '#' (e.g. `192.168.0.77 # Daughter's iPhone`).
 The full string is used for the channel label.
 
-Two more advanced parameters are used for the backup thing action.
+Two more advanced parameters are used for the backup Thing action.
 The `backupDirectory` is the directory where the backup files are stored.
 The default value is the userdata directory.
 The `backupPassword` is used to encrypt the backup file.
@@ -189,9 +189,9 @@ They are replaced by `wifiXEnable` (with `X` being a number between `1` and `4`)
 The binding provides a profile for using the FritzBox phonebooks for resolving numbers to names.
 The `PHONEBOOK` profile takes strings containing the number as input and provides strings with the caller's name, if found.
 
-The parameter `thingUid` with the UID of the phonebook providing thing is a mandatory parameter.
+The parameter `thingUid` with the UID of the phonebook providing Thing is a mandatory parameter.
 If only a specific phonebook from the device should be used, this can be specified with the `phonebookName` parameter.
-The default is to use all available phonebooks from the specified thing.
+The default is to use all available phonebooks from the specified Thing.
 In case the format of the number in the phonebook and the format of the number from the channel are different (e.g. regarding country prefixes), the `matchCount` parameter can be used.
 The configured `matchCount` is counted from the right end and denotes the number of matching characters needed to consider this number as matching.
 Negative `matchCount` values skip digits from the left (e.g. if the input number is `033998005671` a `matchCount` of `-1` would remove the leading `0` ).
@@ -203,7 +203,7 @@ There is an optional configuration parameter called `phoneNumberIndex` that shou
 
 ### Phonebook lookup
 
-The phonebooks of a `fritzbox` thing can be used to lookup a number from rules via a thing action:
+The phonebooks of a `fritzbox` Thing can be used to lookup a number from rules via a Thing action:
 
 `String name = phonebookLookup(String number, String phonebook, int matchCount)`
 

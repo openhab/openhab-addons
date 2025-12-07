@@ -5,7 +5,7 @@ The control and status reporting is done on the local network.
 Cloud access is only needed for discovery and initial connection.
 
 Devices need to be connected to a Tuya account (Tuya Smart app or Smart Life app).
-Each device has a unique "local key" (password/secret) which needs to be added during thing creation.
+Each device has a unique "local key" (password/secret) which needs to be added during Thing creation.
 It is highly recommended to use the discovery feature for that, but you can also sniff the local key with a MITM proxy during pairing.
 
 Please note that only one local connection is allowed per device.
@@ -16,7 +16,7 @@ The other app (and/or tuya-mqtt) must be closed in order for this binding to ope
 
 There are two things: `project` and `tuyaDevice`.
 
-The `project` thing represents a Tuya developer portal cloud project (see below).
+The `project` Thing represents a Tuya developer portal cloud project (see below).
 `project` things must be configured manually and are needed for discovery only.
 
 `tuyaDevice` things represent a single device.
@@ -51,9 +51,9 @@ The `countryCode` is the international dial prefix of the country you registered
 Depending on the app you use, set `schema` to `tuyaSmart` (for the Tuya Smart app) or `smartLife` (for the Smart Life app).
 The `dataCenter` needs to be set to the same value as in your IoT project.
 
-The thing should come online immediately.
+The Thing should come online immediately.
 
-If the thing does not come online, check
+If the Thing does not come online, check
 
 - if you really used the app and not the developer portal credentials
 - if you entered the correct country code (check in the app if you accidentally chose a wrong country)
@@ -183,17 +183,17 @@ After receiving the key code, learning mode automatically continues until you se
 
 ## Troubleshooting
 
-- If the `project` thing is not coming `ONLINE`, check if you see your devices in the cloud account on `iot.tuya.com`.
+- If the `project` Thing is not coming `ONLINE`, check if you see your devices in the cloud account on `iot.tuya.com`.
 If the list is empty, most likely you selected the wrong data center.
-- Check if there are errors in the log and if you see messages like `Configuring IP address '192.168.1.100' for thing 'tuya:tuya:tuyaDevice:bf3122fba012345fc9pqa'`.
+- Check if there are errors in the log and if you see messages like `Configuring IP address '192.168.1.100' for Thing 'tuya:tuya:tuyaDevice:bf3122fba012345fc9pqa'`.
 If this is missing, try configuring the IP manually.
-The MAC of your device can be found in the auto-discovered thing properties (this helps to identify the device in your router).
+The MAC of your device can be found in the auto-discovered Thing properties (this helps to identify the device in your router).
 - Provide TRACE level logs.
 Type `log:set TRACE org.openhab.binding.tuya` on the Karaf console to enable TRACE logging.
 Use `log:tail` to display the log.
 You can revert to normal logging with `log:set DEFAULT org.openhab.binding.tuya`
-- At least disable/enable the thing when providing logs.
+- At least disable/enable the Thing when providing logs.
 For most details better remove the device, use discovery and re-add the device.
 Please use PasteBin or a similar service, do not use JPG or other images, they can't be analyzed properly.
 Check that the log doesn't contain any credentials.
-- Add the thing configuration to your report (in the UI use the "Code" view).
+- Add the Thing configuration to your report (in the UI use the "Code" view).

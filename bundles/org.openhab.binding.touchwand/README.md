@@ -42,12 +42,12 @@ Auto discovery scans periodically and adds to the Inbox new devices added to the
 
 ## Thing Configuration
 
-No thing configuration is needed.
+No Thing configuration is needed.
 
 ## Channels
 
 Note: **TouchWand Wanderfull™** supports various types of alarm sensors such as water leak, door/window sensor and motion sensor.
-Alarm Sensor thing represents a generic sensor, relevant sensor channels will be displayed once a sensor is added as a Thing.
+Alarm Sensor Thing represents a generic sensor, relevant sensor channels will be displayed once a sensor is added as a Thing.
 
 ## Switch Shutters Channels
 

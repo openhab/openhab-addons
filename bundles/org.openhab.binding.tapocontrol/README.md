@@ -42,7 +42,7 @@ To satisfy this requirement while keeping the device isolated, your router shoul
 For Wi-Fi devices, discovery is done by connecting to the Tapo Cloud Service or use local UDP discovery.
 If enabled, all devices stored in your cloud account will be detected even if they are not in your local network.
 From cloud you can get more information such as "Device-Alias" than from UDP discovery.
-But you need to know the IP address of your device. This must be set manually in the thing configuration.
+But you need to know the IP address of your device. This must be set manually in the Thing configuration.
 
 UDP discovery can find only devices which are online in your local network and get less information than from the cloud.
 But therefore it sets device IP and protocol automatically.
@@ -59,7 +59,7 @@ You can discover them manually or use `backgroundDiscovery`
 The bridge needs to be configured with by `username` and `password` (Tapo-Cloud login) .
 This is used for device discovery and to create a handshake (cookie) to act with your devices over the local network.
 
-The thing has the following configuration parameters:
+The Thing has the following configuration parameters:
 
 | Parameter              | Description                                                                                                                                                |
 |------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -116,7 +116,7 @@ All devices support some of the following channels:
 
 ## Channel Refresh
 
-When the thing receives a `RefreshType` command the thing will send a new refresh request over HTTP.
+When the Thing receives a `RefreshType` command the Thing will send a new refresh request over HTTP.
 To minimize network traffic the default refresh rate is set to 30 seconds.
 This can be reduced down to 10 seconds in advanced settings of the device.
 If any command was sent to a channel, it will do an immediate refresh of the whole device.

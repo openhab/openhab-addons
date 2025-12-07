@@ -7,7 +7,7 @@ See the [Tasmota Supported Devices Repository](https://templates.blakadder.com/p
 
 ## Supported Things
 
-There is exactly one supported thing type, which represents any supported Tasmota smart plug.
+There is exactly one supported Thing type, which represents any supported Tasmota smart plug.
 It has the `plug` id.
 Multiple Things can be added if more than one plug is to be controlled.
 
