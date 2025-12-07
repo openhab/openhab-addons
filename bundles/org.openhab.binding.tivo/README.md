@@ -26,11 +26,11 @@ TiVo devices with the network remote control interface enabled will be displayed
 ## Binding Configuration
 
 There are no overall binding configuration settings that need to be set.
-All settings are through thing configuration parameters.
+All settings are through Thing configuration parameters.
 
 ## Thing Configuration
 
-The thing has the following configuration parameters:
+The Thing has the following configuration parameters:
 
 | Parameter         | Display Name                         | Description                                                                                                                                                                                                                                                                        |
 |-------------------|--------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|

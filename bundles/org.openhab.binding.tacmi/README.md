@@ -30,18 +30,18 @@ If you plan things mainly for user interaction the "Schema API Page" might be be
 ## Supported Bridge and Things
 
 - TA C.M.I. **Schema API Connection** - Thing \
-  This thing reflects one of our 'schema API page' as defined in the prerequisites.
-  This thing doesn't need the bridge.
+  This Thing reflects one of our 'schema API page' as defined in the prerequisites.
+  This Thing doesn't need the bridge.
   Multiple of these pages on different C.M.I.'s could be defined within an openHAB instance.
 - TA C.M.I. **CoE Bridge** \
   In order to get the CAN over Ethernet (CoE) environment working a `coe-bridge` has to be created.
   The bridge itself opens the UDP port 5441 for communication with the C.M.I. devices.
   The bridge could be used for multiple C.M.I. devices.
 - TA C.M.I. **CoE Connection** - Thing \
-  This thing reflects a connection to a node behind a specific C.M.I.
+  This Thing reflects a connection to a node behind a specific C.M.I.
   This node could be every CAN-capable device from TA which allows to define a CAN input.
 - TA C.M.I. **JSON API Connection** - Thing \
-  This is a thing connection that regularly polls the C.M.I. using the JSON API.
+  This is a Thing connection that regularly polls the C.M.I. using the JSON API.
 
 ## Discovery
 
@@ -55,7 +55,7 @@ You have to define the things manually.
 The "Schema API page" is a special schema page created via TA's _TA-Designer_ application available as download on their website.
 This page just needs to exist and be deployed on the C.M.I. but it doesn't need to be linked by the other schema pages you are using to control your TA installation.
 
-All objects from this special 'API' page are automatically mapped as channels of this thing, so the labels of the objects on this page have to follow a specific schema.
+All objects from this special 'API' page are automatically mapped as channels of this Thing, so the labels of the objects on this page have to follow a specific schema.
 
 When adding objects to this page, the schema for the Object's _Pre-Text_ field has to follow the schema `<channelName> <channel description>:`.
 
@@ -83,7 +83,7 @@ In this screenshot you also see the schema page id - the parenthesized number on
 
 The _TA C.M.I. Schema API Connection_ has to be manually configured.
 
-The thing has the following configuration parameters:
+The Thing has the following configuration parameters:
 
 | Parameter Label         | Parameter ID | Description                                                                                                   | Accepted values        |
 |-------------------------|--------------|---------------------------------------------------------------------------------------------------------------|------------------------|
@@ -93,11 +93,11 @@ The thing has the following configuration parameters:
 | API Schema ID           | schemaId     | ID of the schema API page                                                                                     | 1-256                  |
 | Poll Interval           | pollInterval | Poll interval (in seconds) how often to poll the API Page                                                     | 1-300; default 10      |
 
-This thing doesn't need a bridge. Multiple of these things for different C.M.I.'s could be defined within an openHAB instance.
+This Thing doesn't need a bridge. Multiple of these things for different C.M.I.'s could be defined within an openHAB instance.
 
 ### TA C.M.I. schema API Channels
 
-The channels provided by this thing depend on the configuration of the "schema API page".
+The channels provided by this Thing depend on the configuration of the "schema API page".
 All the channels are dynamically created to match it.
 Also when the API Page is updated, the channels are also updated during the next refresh.
 
@@ -146,14 +146,14 @@ Don't forget to reboot the C.M.I. after you uploaded the coe.csv file.
 
 The _TA C.M.I. CoE Connection_ has to be manually configured.
 
-This thing reflects a connection to a node behind a specific C.M.I. This node could be every CAN-capable device from TA which allows to define a CAN input.
+This Thing reflects a connection to a node behind a specific C.M.I. This node could be every CAN-capable device from TA which allows to define a CAN input.
 
 | Parameter Label         | Parameter ID    | Description                                                                                                   | Accepted values        |
 |-------------------------|-----------------|---------------------------------------------------------------------------------------------------------------|------------------------|
 | C.M.I. IP Address       | host            | Host name or IP address of the C.M.I                                                                          | host name or ip        |
 | Node                    | node            | The CoE / CAN Node number openHAB should represent                                                            | 1-64                   |
 
-The thing has no channels by default - they have to be added manually matching the configured inputs / outputs for the related CAN Node. Digital and Analog channels are supported. Please read TA's documentation related to the CAN-protocol - multiple analog (4) and digital (16) channels are combined so please be aware of this design limitation.
+The Thing has no channels by default - they have to be added manually matching the configured inputs / outputs for the related CAN Node. Digital and Analog channels are supported. Please read TA's documentation related to the CAN-protocol - multiple analog (4) and digital (16) channels are combined so please be aware of this design limitation.
 
 ### CoE Connection Channels
 
@@ -162,7 +162,7 @@ As you might already have taken notice when studying the TA's manual, there are 
 This is a design decision made by TA.
 But this also means for CoE messages from openHAB to TA C.M.I. we have to send multiple values at once.
 But due to openHAB's design there is no default restore of previous values out of the box.
-So after openHAB startup the _output thing channels_ are either initialized with its configured default value or flagged as 'unknown' until the first update on the channel happens.
+So after openHAB startup the _output Thing channels_ are either initialized with its configured default value or flagged as 'unknown' until the first update on the channel happens.
 You could either use some 'illegal' value as initial value and use _CoE Value Validation_ on the TA side to detect invalid values.
 Another option would be to use only every 4th analog and 16th digital channel if you only need a few channels.
 Additionally you could use [openHAB's persistence service](https://www.openhab.org/docs/configuration/persistence.html#restoring-item-states-on-restart) and its option to [restore the item states](https://www.openhab.org/docs/configuration/persistence.html#restoring-item-states-on-restart) during openHAB startup.

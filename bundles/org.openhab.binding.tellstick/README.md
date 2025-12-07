@@ -14,7 +14,7 @@ The latest versions have also implemented Z-Wave as a transmission protocol whic
 
 ## Supported Things
 
-This binding supports the following thing types:
+This binding supports the following Thing types:
 
 - _Dimmable Device_ - Usually for controlling lamps.  `dimmer`
 - _Switchable Device_ - On/Off only could be lamps or other electronic equipment. `switch`
