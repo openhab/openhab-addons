@@ -188,7 +188,7 @@ public class ThingSedifHandler extends BaseThingHandler {
         this.consumption.invalidate();
 
         if (lcConfig.seemsValid()) {
-            contractName = lcConfig.contractId;
+            contractName = lcConfig.contractName;
             numCompteur = lcConfig.meterId;
             updateStatus(ThingStatus.UNKNOWN);
         } else {

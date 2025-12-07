@@ -79,7 +79,6 @@ public class SedifBindingConstants {
     public static final String PROPERTY_ELMB = "meterElemb";
     public static final String PROPERTY_ID_PDS = "meterIdPds";
     public static final String PROPERTY_NUM_METER = "meterId";
-    public static final String PROPERTY_CONTRACT_ID = "contractId";
 
     public static final String PROPERTY_CUSTOMER_BILLING_TOWN = "customerBillingTown";
     public static final String PROPERTY_CUSTOMER_BILLING_POST_CODE = "customerBillingPostCode";

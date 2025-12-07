@@ -36,9 +36,9 @@ After creating the bridge, the binding will populate the inbox with meters regis
 
 ### Meter Thing Configuration
 
-To create a meter thing, you will need your contractId.
+To create a meter thing, you will need your contractName.
 You can find it on the Sedif website, under the section "Tous mes contrats".
-You will see a list where the first column labeled "Contrat" is the contractId.
+You will see a list where the first column labeled "Contrat" is the contractName.
 
 If you have multiple meters on the same contract, you will also need to get your(s) meterId's.
 MeterId is displayed at the contract details page. 
@@ -49,13 +49,13 @@ Once you create the gateway, the inbox will be populated automatically with all 
 
 | Name            | Type    | Description                                             | Default | Required | Advanced |
 |-----------------|---------|---------------------------------------------------------|---------|----------|----------|
-| contractId      | text    | The identifier of your contract                         | N/A     | yes      | no       |
+| contractName    | text    | The identifier of your contract                         | N/A     | yes      | no       |
 | meterId         | text    | The identifier of the meter associated  with this thing | N/A     | no       | no       |
 
 ```java
 Thing sedif:meter:meter1 "Sedif Meter 1" (sedif:gateway:local)
 	[  
-		contractId="907....", meterId="D08MA......"
+		contractName="907....", meterId="D08MA......"
 	]  
 ``
 
@@ -105,8 +105,8 @@ The yearly group will give consumption information with year granularity
 
 ```java
 Bridge sedif:gateway:local "GatewayBridge" [username="testuser@test.fr", password="mypassword"] {
-    Thing sedif:meter:meter1 "Meter 1" (sedif:gateway:local)    [   contractId="907....", meterId="D08MA......" ]  
-    Thing sedif:meter:meter1 "Meter 1" (sedif:gateway:local)    [   contractId="908....", meterId="D08MA......" ]
+    Thing sedif:meter:meter1 "Meter 1" (sedif:gateway:local)    [   contractName="907....", meterId="D08MA......" ]  
+    Thing sedif:meter:meter1 "Meter 1" (sedif:gateway:local)    [   contractName="908....", meterId="D08MA......" ]
 }
 
 
@@ -214,8 +214,8 @@ If this is the case, simply create one Sedif thing for each separate contract.
 Contract change on the same meter:
 Sometimes, you might have two contracts for the same meter. In this scenario, create only one Sedif thing and follow these steps:
 
-Set the contractId to the older contract and let the binding retrieve the full historical data.
+Set the contractName to the older contract and let the binding retrieve the full historical data.
 
-Then, update the contractId to the new contract and restart openHAB.
+Then, update the contractName to the new contract and restart openHAB.
 
 By following this process, you will preserve the full history of the meter.
