@@ -103,12 +103,12 @@ Example of connection to a remote server in the local network:
 
 ```java
 Bridge remoteopenhab:server:oh2 "OH2 server" [ host="192.168.0.100", port=8443, useHttps=true, trustedCertificate=true ] {
-    Thing thing tv "TV living room" [ thingUID="lgwebos:WebOSTV:tv" ]
-    Thing thing astroSun "Astro sun" [ thingUID="astro:sun:local", buildTriggerChannels=false ] {
+    Thing Thing tv "TV living room" [ thingUID="lgwebos:WebOSTV:tv" ]
+    Thing Thing astroSun "Astro sun" [ thingUID="astro:sun:local", buildTriggerChannels=false ] {
         Channels:
             Type trigger : nightEvent "Night Event" [ channelUID="astro:sun:local:night#event" ]
     }
-    Thing thing astroMoon "Astro moon" [ thingUID="astro:moon:local" ]
+    Thing Thing astroMoon "Astro moon" [ thingUID="astro:moon:local" ]
 }
 ```
 

@@ -164,7 +164,7 @@ Thing event-log EventLog [ ]
 
 ### atd-100
 
-You can configure the following settings for this thing:
+You can configure the following settings for this Thing:
 
 | Name    | Required | Description                                                |
 | ------- | -------- | ---------------------------------------------------------- |

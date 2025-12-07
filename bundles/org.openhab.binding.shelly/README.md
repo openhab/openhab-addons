@@ -277,7 +277,7 @@ This means: The primary Shelly has to complete initialization before linked seco
 - Check Inbox to find the secondary/linked devices
 - Add secondary device as usual
 
-If you add another secondary device to the same hub device, suspend and resume the primary thing; this will run a new initialization and add the new secondary device to the Inbox.
+If you add another secondary device to the same hub device, suspend and resume the primary Thing; this will run a new initialization and add the new secondary device to the Inbox.
 
 ### Dynamic creation of channels
 

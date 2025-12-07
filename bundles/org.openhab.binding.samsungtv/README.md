@@ -652,7 +652,7 @@ With your **TV OFF** (ie totally off)
 
 ### What you should see
 
-You may see some messages (this is a good thing, it means you are receiving UPnP traffic).
+You may see some messages (this is a good Thing, it means you are receiving UPnP traffic).
 
 Now turn your TV ON (with the remote control).
 
