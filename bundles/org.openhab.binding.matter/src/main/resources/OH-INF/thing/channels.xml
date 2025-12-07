@@ -440,6 +440,38 @@
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
+	<channel-type id="doorlock-alarm">
+		<kind>trigger</kind>
+		<label>Door Lock Alarm</label>
+		<description>Event that fires when a lock alarm occurs with a payload containing the alarm code</description>
+		<event>
+			<options>
+				<option value="0">Lock Jammed</option>
+				<option value="1">Lock Factory Reset</option>
+				<option value="3">Lock Radio Power Cycled</option>
+				<option value="4">Wrong Code Entry Limit</option>
+				<option value="5">Front Esceutcheon Removed</option>
+				<option value="6">Door Forced Open</option>
+				<option value="7">Door Ajar</option>
+				<option value="8">Forced User</option>
+			</options>
+		</event>
+	</channel-type>
+
+	<channel-type id="doorlock-lockoperationerror">
+		<kind>trigger</kind>
+		<label>Door Lock Lock Operation Error</label>
+		<description>Event that fires when a lock operation error occurs with a payload containing the lock operation type</description>
+		<event>
+			<options>
+				<option value="0">Lock</option>
+				<option value="1">Unlock</option>
+				<option value="2">Non Access User Event</option>
+				<option value="3">Forced User Event</option>
+				<option value="4">Unlatch</option>
+			</options>
+		</event>
+	</channel-type>
 
 	<channel-type id="electricalenergymeasurement-energymeasurmement-energy">
 		<item-type>Number:Energy</item-type>

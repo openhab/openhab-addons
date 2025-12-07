@@ -76,7 +76,7 @@ import org.slf4j.LoggerFactory;
 public class ControllerHandler extends BaseBridgeHandler implements MatterClientListener, MatterDiscoveryHandler {
 
     private final Logger logger = LoggerFactory.getLogger(ControllerHandler.class);
-    private static final int CONNECTION_TIMEOUT_MS = 180000; // 3 minutes
+    private static final int CONNECTION_TIMEOUT_MS = 300000; // 5 minutes
     private final MatterWebsocketService websocketService;
     // Set of nodes we are waiting to connect to
     private Set<BigInteger> outstandingNodeRequests = Collections.synchronizedSet(new HashSet<>());
