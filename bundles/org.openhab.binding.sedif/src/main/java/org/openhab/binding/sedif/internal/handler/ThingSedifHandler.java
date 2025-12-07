@@ -341,15 +341,23 @@ public class ThingSedifHandler extends BaseThingHandler {
 
         Bridge lcBridge = getBridge();
         if (lcBridge != null && lcBridge.getHandler() instanceof BridgeSedifWebHandler bridgeSedif) {
-            MeterReading meterReading = bridgeSedif.getConsumptionData(contractId, currentMeterInfo, startDate,
-                    currentDate);
-            if (updateHistorical && meterReading == null) {
-                return null;
+            CompteInfo lcCurrentMeterInfo = currentMeterInfo;
+
+            if (lcCurrentMeterInfo != null) {
+                MeterReading meterReading = bridgeSedif.getConsumptionData(contractId, lcCurrentMeterInfo, startDate,
+                        currentDate);
+
+                if (updateHistorical && meterReading == null) {
+                    return null;
+                }
+
+                if (meterReading != null) {
+                    return sedifState.updateMeterReading(meterReading);
+                }
+            } else {
+                throw new SedifException("currentMeterInfo is null");
             }
 
-            if (meterReading != null) {
-                return sedifState.updateMeterReading(meterReading);
-            }
         }
 
         return null;
@@ -426,8 +434,8 @@ public class ThingSedifHandler extends BaseThingHandler {
 
             Consommation[] consommation = values.data.consommation;
 
-            logger.trace("updateConsumptionData> consommation : {}", consommation);
-            logger.trace("updateConsumptionData> consommation : {}", consommation.length);
+            logger.trace("updateConsumptionData> consommation : {}", consommation != null);
+            logger.trace("updateConsumptionData> consommation : {}", consommation != null ? consommation.length : 0);
 
             if (consommation != null) {
                 if (consommation.length - 1 >= 0) {
