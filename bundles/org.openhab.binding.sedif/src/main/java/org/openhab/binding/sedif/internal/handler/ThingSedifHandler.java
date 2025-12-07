@@ -353,6 +353,8 @@ public class ThingSedifHandler extends BaseThingHandler {
 
                 if (meterReading != null) {
                     return sedifState.updateMeterReading(meterReading);
+                } else {
+                    return sedifState.getMeterReading();
                 }
             } else {
                 throw new SedifException("currentMeterInfo is null");

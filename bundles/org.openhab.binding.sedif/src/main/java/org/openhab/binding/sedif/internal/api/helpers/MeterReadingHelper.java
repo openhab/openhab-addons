@@ -40,7 +40,9 @@ public class MeterReadingHelper {
 
         // Normalize dateIndex
         for (int idx = 0; idx < incomingConso.length; idx++) {
-            incomingConso[idx].dateIndex = incomingConso[idx].dateIndex.withHour(0).withMinute(0).withSecond(0);
+            Consommation conso = incomingConso[idx];
+            conso.dateIndex = conso.dateIndex.withHour(0).withMinute(0).withSecond(0);
+            conso.consommation *= 1000.00;
         }
 
         if (currentMeterReading.data.consommation == null) {
@@ -141,10 +143,8 @@ public class MeterReadingHelper {
         }
 
         for (int idx = 0; idx < lcConso.length; idx++) {
-            Data.Consommation conso = lcConso[idx];
-            LocalDate dt = conso.dateIndex.toLocalDate();
+            LocalDate dt = lcConso[idx].dateIndex.toLocalDate();
             meterReading.data.putEntries(dt.toString(), lcConso[idx]);
-            conso.consommation *= 1000.00;
         }
 
         LocalDate startDate = lcConso[0].dateIndex.toLocalDate();
