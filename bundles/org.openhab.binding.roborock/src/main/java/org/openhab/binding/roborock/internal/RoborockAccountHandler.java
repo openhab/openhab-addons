@@ -214,15 +214,15 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
         if (localConfig == null) {
             return;
         }
-        String country = "";
-        String countryCode = "";
+        String country = "AU";
+        String countryCode = "61";
         if (baseUri.isEmpty()) {
             try {
                 GetUrlByEmail getUrlByEmail = webTargets.getUrlByEmail(localConfig.email);
                 if (getUrlByEmail != null) {
                     baseUri = getUrlByEmail.data.url;
-                    country = getUrlByEmail.data.country;
-                    countryCode = getUrlByEmail.data.countrycode;
+                    // country = getUrlByEmail.data.country;
+                    // countryCode = getUrlByEmail.data.countrycode;
                     logger.trace("Country determined to be {} and code {}", country, countryCode);
                 } else {
                     baseUri = EU_IOT_BASE_URL;
@@ -246,11 +246,10 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
         } else {
             logger.debug("No available token or rriot values from sessionStorage, logging in");
             try {
-                String response = webTargets.requestCodeV4(baseUri, localConfig.email);
-                logger.trace("response = {}", response);
-
-                if (!localConfig.twofa.isBlank()) {
-                    response = webTargets.doLoginV4(baseUri, country, countryCode, localConfig.email,
+                if (localConfig.twofa.isBlank()) {
+                    String response = webTargets.requestCodeV4(baseUri, localConfig.email);
+                } else {
+                    String response = webTargets.doLoginV4(baseUri, country, countryCode, localConfig.email,
                             localConfig.twofa);
                     int code = 0;
                     String message = "";
