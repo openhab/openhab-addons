@@ -37,6 +37,7 @@ public class RoborockBindingConstants {
 
     // Constants used by RoborockWebTargets
     public static final int TIMEOUT_MS = 30000;
+    public static final String CODE_LOGIN = "/api/v1/loginWithCode";
     public static final String CODE_LOGIN_V4 = "/api/v4/auth/email/login/code";
     public static final String EU_IOT_BASE_URL = "https://euiot.roborock.com";
     public static final String GET_URL_BY_EMAIL_URI = EU_IOT_BASE_URL + "/api/v1/getUrlByEmail";

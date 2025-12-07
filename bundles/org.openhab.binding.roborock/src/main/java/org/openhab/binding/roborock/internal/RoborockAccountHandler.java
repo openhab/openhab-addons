@@ -48,6 +48,7 @@ import org.openhab.binding.roborock.internal.discovery.RoborockVacuumDiscoverySe
 import org.openhab.binding.roborock.internal.util.ProtocolUtils;
 import org.openhab.binding.roborock.internal.util.SchedulerTask;
 import org.openhab.core.cache.ExpiringCache;
+import org.openhab.core.config.core.Configuration;
 import org.openhab.core.storage.Storage;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
@@ -83,6 +84,8 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
     private final SchedulerTask mqttConnectTask;
     private final RoborockWebTargets webTargets;
     private @Nullable MqttClient mqttClient;
+    private String country = "";
+    private String countryCode = "";
     private String token = "";
     private String baseUri = "";
     private Rriot rriot = new Login().new Rriot();
@@ -214,15 +217,13 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
         if (localConfig == null) {
             return;
         }
-        String country = "AU";
-        String countryCode = "61";
         if (baseUri.isEmpty()) {
             try {
                 GetUrlByEmail getUrlByEmail = webTargets.getUrlByEmail(localConfig.email);
                 if (getUrlByEmail != null) {
                     baseUri = getUrlByEmail.data.url;
-                    // country = getUrlByEmail.data.country;
-                    // countryCode = getUrlByEmail.data.countrycode;
+                    country = getUrlByEmail.data.country;
+                    countryCode = getUrlByEmail.data.countrycode;
                     logger.trace("Country determined to be {} and code {}", country, countryCode);
                 } else {
                     baseUri = EU_IOT_BASE_URL;
@@ -248,9 +249,19 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
             try {
                 if (localConfig.twofa.isBlank()) {
                     String response = webTargets.requestCodeV4(baseUri, localConfig.email);
+                    updateStatus(ThingStatus.UNKNOWN);
+                    return;
                 } else {
-                    String response = webTargets.doLoginV4(baseUri, country, countryCode, localConfig.email,
-                            localConfig.twofa);
+                    String response = "";
+                    if (!country.isBlank()) {
+                        response = webTargets.doLoginV4(baseUri, country, countryCode, localConfig.email,
+                                localConfig.twofa);
+                        Configuration configuration = editConfiguration();
+                        configuration.put("twofa", "");
+                        updateConfiguration(configuration);
+                    } else {
+                        response = webTargets.doLogin(baseUri, localConfig.email, localConfig.twofa);
+                    }
                     int code = 0;
                     String message = "";
                     if (response != null && !response.isEmpty()

@@ -174,14 +174,12 @@ public class RoborockWebTargets {
      * @throws RoborockException If authentication fails.
      */
     @Nullable
-    public String doLogin(String baseUri, String email, String password) throws RoborockException {
+    public String doLogin(String baseUri, String email, String twofa) throws RoborockException {
         if (safeToken.isEmpty()) {
             safeToken = generateSafeToken(email); // Generate if somehow missed
         }
 
-        String encodedUsername = URLEncoder.encode(email, StandardCharsets.UTF_8);
-        String encodedPassword = URLEncoder.encode(password, StandardCharsets.UTF_8);
-        String payload = "?username=" + encodedUsername + "&password=" + encodedPassword + "&needtwostepauth=false";
+        String payload = "?username=" + email + "&verifycode=" + twofa + "&verifycodetype=AUTH_EMAIL_CODE";
 
         return invoke(baseUri + GET_TOKEN_PATH + payload, HttpMethod.POST);
     }
