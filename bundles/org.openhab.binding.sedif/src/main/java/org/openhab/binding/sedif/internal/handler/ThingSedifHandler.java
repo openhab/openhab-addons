@@ -426,8 +426,8 @@ public class ThingSedifHandler extends BaseThingHandler {
 
             Consommation[] consommation = values.data.consommation;
 
-            logger.trace("updateConsumptionData> consommation : " + consommation);
-            logger.trace("updateConsumptionData> consommation : " + consommation.length);
+            logger.trace("updateConsumptionData> consommation : {}", consommation);
+            logger.trace("updateConsumptionData> consommation : {}", consommation.length);
 
             if (consommation != null) {
                 if (consommation.length - 1 >= 0) {
@@ -441,9 +441,9 @@ public class ThingSedifHandler extends BaseThingHandler {
                 }
             }
 
-            logger.trace("updateConsumptionData> updateState/yesterdayConso : " + yesterdayConso);
-            logger.trace("updateConsumptionData> updateState/dayConsoMinus2 : " + dayConsoMinus2);
-            logger.trace("updateConsumptionData> updateState/dayConsoMinus3 : " + dayConsoMinus3);
+            logger.trace("updateConsumptionData> updateState/yesterdayConso : {}", yesterdayConso);
+            logger.trace("updateConsumptionData> updateState/dayConsoMinus2 : {}", dayConsoMinus2);
+            logger.trace("updateConsumptionData> updateState/dayConsoMinus3 : {}", dayConsoMinus3);
 
             updateState(GROUP_DAILY_CONSUMPTION, CHANNEL_DAILY_YESTERDAY_CONSUMPTION,
                     new QuantityType<>(yesterdayConso, Units.LITRE));

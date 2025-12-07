@@ -307,7 +307,7 @@ public class SedifHttpApi {
 
     public @Nullable MeterReading getConsumptionData(String contractId, @Nullable CompteInfo meterInfo, LocalDate from,
             LocalDate to) throws SedifException {
-        logger.trace(" Step 8: getConsumptionData() " + contractId + " " + from + " " + to);
+        logger.trace(" Step 8: getConsumptionData() {} {} {}", contractId, from, to);
 
         AuraCommand cmd = AuraCommand.make("", "LTN015_ICL_ContratConsoHisto", "getData");
         Hashtable<String, Object> paramsSub = cmd.getParamsSub();
