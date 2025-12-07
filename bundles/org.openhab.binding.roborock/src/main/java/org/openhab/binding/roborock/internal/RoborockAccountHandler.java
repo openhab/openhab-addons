@@ -39,6 +39,7 @@ import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
+import org.openhab.binding.roborock.internal.api.GetUrlByEmail;
 import org.openhab.binding.roborock.internal.api.Home;
 import org.openhab.binding.roborock.internal.api.HomeData;
 import org.openhab.binding.roborock.internal.api.Login;
@@ -213,9 +214,19 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
         if (localConfig == null) {
             return;
         }
+        String country = "";
+        String countryCode = "";
         if (baseUri.isEmpty()) {
             try {
-                baseUri = webTargets.getUrlByEmail(localConfig.email);
+                GetUrlByEmail getUrlByEmail = webTargets.getUrlByEmail(localConfig.email);
+                if (getUrlByEmail != null) {
+                    baseUri = getUrlByEmail.data.url;
+                    country = getUrlByEmail.data.country;
+                    countryCode = getUrlByEmail.data.countrycode;
+                    logger.trace("Country determined to be {} and code {}", country, countryCode);
+                } else {
+                    baseUri = EU_IOT_BASE_URL;
+                }
             } catch (RoborockException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Error " + e.getMessage());
                 return;
@@ -235,29 +246,35 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
         } else {
             logger.debug("No available token or rriot values from sessionStorage, logging in");
             try {
-                String response = webTargets.doLogin(baseUri, localConfig.email, localConfig.password);
-                int code = 0;
-                String message = "";
-                if (response != null && !response.isEmpty()
-                        && JsonParser.parseString(response).getAsJsonObject().has("code")) {
-                    code = JsonParser.parseString(response).getAsJsonObject().get("code").getAsInt();
-                    message = JsonParser.parseString(response).getAsJsonObject().get("msg").getAsString();
-                }
-                if (code == 200) {
-                    Login loginResponse = gson.fromJson(response, Login.class);
-                    if (loginResponse == null) {
+                String response = webTargets.requestCodeV4(baseUri, localConfig.email);
+                logger.trace("response = {}", response);
+
+                if (!localConfig.twofa.isBlank()) {
+                    response = webTargets.doLoginV4(baseUri, country, countryCode, localConfig.email,
+                            localConfig.twofa);
+                    int code = 0;
+                    String message = "";
+                    if (response != null && !response.isEmpty()
+                            && JsonParser.parseString(response).getAsJsonObject().has("code")) {
+                        code = JsonParser.parseString(response).getAsJsonObject().get("code").getAsInt();
+                        message = JsonParser.parseString(response).getAsJsonObject().get("msg").getAsString();
+                    }
+                    if (code == 200) {
+                        Login loginResponse = gson.fromJson(response, Login.class);
+                        if (loginResponse == null) {
+                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                                    "@text/offline.comm-error.login-failed " + message);
+                            return;
+                        }
+                        sessionStorage.put("token", loginResponse.data.token);
+                        sessionStorage.put("rriot", gson.toJson(loginResponse.data.rriot));
+                        token = loginResponse.data.token;
+                        rriot = loginResponse.data.rriot;
+                    } else {
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                                 "@text/offline.comm-error.login-failed " + message);
                         return;
                     }
-                    sessionStorage.put("token", loginResponse.data.token);
-                    sessionStorage.put("rriot", gson.toJson(loginResponse.data.rriot));
-                    token = loginResponse.data.token;
-                    rriot = loginResponse.data.rriot;
-                } else {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "@text/offline.comm-error.login-failed " + message);
-                    return;
                 }
             } catch (RoborockException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Error " + e.getMessage());
