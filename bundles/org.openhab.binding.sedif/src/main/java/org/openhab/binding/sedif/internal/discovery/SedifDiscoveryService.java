@@ -131,7 +131,7 @@ public class SedifDiscoveryService extends AbstractThingHandlerDiscoveryService<
                         properties.put(PROPERTY_ELMB, compteInfo.eLmb);
                         properties.put(PROPERTY_NUM_METER, compteInfo.numCompteur);
                         properties.put(PROPERTY_ID_PDS, compteInfo.idPds);
-                        properties.put(PROPERTY_CONTRACT_NAME, Objects.requireNonNull(contract.name));
+                        properties.put(PROPERTY_CONTRACT_ID, Objects.requireNonNull(contract.name));
 
                         DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID)
                                 .withProperties(properties).withLabel("Water Meter " + compteInfo.numCompteur)

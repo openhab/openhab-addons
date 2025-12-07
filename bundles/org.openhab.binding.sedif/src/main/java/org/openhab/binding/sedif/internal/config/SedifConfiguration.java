@@ -23,10 +23,10 @@ import org.openhab.core.config.core.Configuration;
  */
 @NonNullByDefault
 public class SedifConfiguration extends Configuration {
-    public String contractName = "";
+    public String contractId = "";
     public String meterId = "";
 
     public boolean seemsValid() {
-        return !contractName.isBlank();
+        return !contractId.isBlank();
     }
 }
