@@ -144,5 +144,16 @@ public final class ClientStateUpdater {
         states.put(Constants.PLAYING_ITEM_EPISODE_CHANNEL, UnDefType.NULL);
         states.put(Constants.PLAYING_ITEM_GENRES_CHANNEL, UnDefType.NULL);
         states.put(Constants.PLAYING_ITEM_TYPE_CHANNEL, UnDefType.NULL);
+        // Phase 11: Extended player controls (command-only, no state read-back from Jellyfin)
+        states.put(Constants.MEDIA_PLAY_CHANNEL, UnDefType.NULL);
+        states.put(Constants.MEDIA_PAUSE_CHANNEL, UnDefType.NULL);
+        states.put(Constants.MEDIA_STOP_CHANNEL, UnDefType.NULL);
+        states.put(Constants.MEDIA_FORWARD_CHANNEL, UnDefType.NULL);
+        // Phase 11: Extended media controls (command-only)
+        states.put(Constants.MEDIA_SHUFFLE_CHANNEL, UnDefType.NULL);
+        states.put(Constants.MEDIA_REPEAT_CHANNEL, UnDefType.NULL);
+        states.put(Constants.MEDIA_QUALITY_CHANNEL, UnDefType.NULL);
+        states.put(Constants.MEDIA_AUDIO_TRACK_CHANNEL, UnDefType.NULL);
+        states.put(Constants.MEDIA_SUBTITLE_CHANNEL, UnDefType.NULL);
     }
 }

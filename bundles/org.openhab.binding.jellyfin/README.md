@@ -57,6 +57,15 @@ In order to assist you with this process the binding exposes a simple login form
 | -------------------------- | ------ | --------------------------------------------------------------------------------------------------------------- |
 | send-notification          | String | Display message in client                                                                                       |
 | media-control              | Player | Control media playback                                                                                          |
+| media-play                 | Switch | Trigger play/resume playback command                                                                            |
+| media-pause                | Switch | Trigger pause playback command                                                                                  |
+| media-stop                 | Switch | Trigger stop playback command                                                                                   |
+| media-forward              | Switch | Trigger fast forward command                                                                                    |
+| media-shuffle              | Switch | Control shuffle mode (ON=random order, OFF=sequential order)                                                    |
+| media-repeat               | String | Control repeat mode (off=play once, one=repeat item, all=repeat queue)                                          |
+| media-quality              | Number | Set maximum streaming bitrate in Kbps (140-8000)                                                                |
+| media-audio-track          | Number | Select audio track by zero-based index                                                                          |
+| media-subtitle             | Number | Select subtitle stream by index (-1=disable, 0+=track selection)                                                |
 | playing-item-id            | String | Id of the item currently playing (readonly)                                                                     |
 | playing-item-name          | String | Name of the item currently playing (readonly)                                                                   |
 | playing-item-series-name   | String | Name of the item's series currently playing, only have value when item is an episode (readonly)                 |

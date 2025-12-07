@@ -31,6 +31,15 @@
 			<channel id="play-next-by-id" typeId="play-next-by-id-channel"/>
 			<channel id="play-last-by-id" typeId="play-last-by-id-channel"/>
 			<channel id="browse-by-id" typeId="browse-by-id-channel"/>
+			<channel id="media-play" typeId="media-play-channel"/>
+			<channel id="media-pause" typeId="media-pause-channel"/>
+			<channel id="media-stop" typeId="media-stop-channel"/>
+			<channel id="media-forward" typeId="media-forward-channel"/>
+			<channel id="media-shuffle" typeId="media-shuffle-channel"/>
+			<channel id="media-repeat" typeId="media-repeat-channel"/>
+			<channel id="media-quality" typeId="media-quality-channel"/>
+			<channel id="media-audio-track" typeId="media-audio-track-channel"/>
+			<channel id="media-subtitle" typeId="media-subtitle-channel"/>
 		</channels>
 		<config-description>
 		</config-description>

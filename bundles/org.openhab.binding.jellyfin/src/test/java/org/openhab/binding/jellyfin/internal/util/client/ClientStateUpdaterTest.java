@@ -45,7 +45,7 @@ class ClientStateUpdaterTest {
     void calculateChannelStatesReturnsNullStatesWhenSessionMissing() {
         Map<String, State> states = ClientStateUpdater.calculateChannelStates(null);
 
-        assertEquals(12, states.size());
+        assertEquals(21, states.size());
         states.forEach((id, state) -> assertEquals(UnDefType.NULL, state, "Expected NULL for channel " + id));
     }
 

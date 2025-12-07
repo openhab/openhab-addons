@@ -91,7 +91,12 @@
 	<channel-type id="playing-item-percentage-channel">
 		<item-type>Dimmer</item-type>
 		<label>Playing Item Percentage</label>
-		<description>Played percentage for the item currently playing, allow seek</description>
+		<description>
+			<![CDATA[
+			<p>Current playback position as a percentage (0-100%).</p>
+			<p>This channel allows both reading the current position and seeking to a new position by setting a percentage value.</p>
+			]]>
+		</description>
 		<tags>
 			<tag>Control</tag>
 			<tag>Progress</tag>
@@ -100,7 +105,12 @@
 	<channel-type id="playing-item-second-channel">
 		<item-type>Number</item-type>
 		<label>Playing Item Second</label>
-		<description>Current second for the item currently playing, allow seek</description>
+		<description>
+			<![CDATA[
+			<p>Current playback position in seconds.</p>
+			<p>This channel allows both reading the current position and seeking to a specific time by setting a value in seconds.</p>
+			]]>
+		</description>
 		<tags>
 			<tag>Control</tag>
 			<tag>Progress</tag>
@@ -159,5 +169,194 @@
 		<item-type>String</item-type>
 		<label>Browse By Id</label>
 		<description>Browse media by id</description>
+	</channel-type>
+	<channel-type id="media-play-channel">
+		<item-type>String</item-type>
+		<label>Play</label>
+		<description>
+			<![CDATA[
+			<p>Start playback of the current item.</p>
+			<p>Send any value (e.g., <b>"play"</b>) to trigger the play command. The item will resume from its current position or start from the beginning if stopped.</p>
+			]]>
+		</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>MediaControl</tag>
+		</tags>
+		<state>
+			<options>
+				<option value="play">Play</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="media-pause-channel">
+		<item-type>String</item-type>
+		<label>Pause</label>
+		<description>
+			<![CDATA[
+			<p>Pause playback of the current item.</p>
+			<p>Send any value (e.g., <b>"pause"</b>) to trigger the pause command. The playback position is maintained and can be resumed with the play command.</p>
+			]]>
+		</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>MediaControl</tag>
+		</tags>
+		<state>
+			<options>
+				<option value="pause">Pause</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="media-stop-channel">
+		<item-type>String</item-type>
+		<label>Stop</label>
+		<description>
+			<![CDATA[
+			<p>Stop playback of the current item.</p>
+			<p>Send any value (e.g., <b>"stop"</b>) to trigger the stop command. This ends playback and may reset the playback position depending on the client.</p>
+			]]>
+		</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>MediaControl</tag>
+		</tags>
+		<state>
+			<options>
+				<option value="stop">Stop</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="media-forward-channel">
+		<item-type>String</item-type>
+		<label>Forward</label>
+		<description>
+			<![CDATA[
+			<p>Fast forward through the current item.</p>
+			<p>Send any value (e.g., <b>"forward"</b>) to trigger fast forward. The skip interval depends on the client's configuration.</p>
+			]]>
+		</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>MediaControl</tag>
+		</tags>
+		<state>
+			<options>
+				<option value="forward">Forward</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="media-shuffle-channel">
+		<item-type>Switch</item-type>
+		<label>Shuffle</label>
+		<description>
+			<![CDATA[
+			<p>Toggle shuffle mode for the playback queue.</p>
+			<p>
+				<b>ON</b>: Items in the queue will play in random order.<br/>
+				<b>OFF</b>: Items in the queue will play in sequential order.
+			</p>
+			]]>
+		</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>MediaControl</tag>
+		</tags>
+	</channel-type>
+	<channel-type id="media-repeat-channel">
+		<item-type>String</item-type>
+		<label>Repeat Mode</label>
+		<description>
+			<![CDATA[
+			<p>Set the repeat mode for playback.</p>
+			<p>
+				<ul>
+					<li><b>off</b>: Play queue once and stop</li>
+					<li><b>one</b>: Repeat current item continuously</li>
+					<li><b>all</b>: Repeat entire queue continuously</li>
+				</ul>
+			</p>
+			]]>
+		</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>MediaControl</tag>
+		</tags>
+		<state>
+			<options>
+				<option value="off">Off</option>
+				<option value="one">Repeat One</option>
+				<option value="all">Repeat All</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="media-quality-channel">
+		<item-type>String</item-type>
+		<label>Streaming Quality</label>
+		<description>
+			<![CDATA[
+			<p>Set the maximum streaming bitrate to control video quality.</p>
+			<p>
+				Higher bitrates provide better quality but require more bandwidth:
+				<ul>
+					<li><b>140000</b> (140 Kbps): Low quality, minimal bandwidth</li>
+					<li><b>500000</b> (500 Kbps): Medium quality, suitable for mobile</li>
+					<li><b>1500000</b> (1.5 Mbps): High quality, SD streaming</li>
+					<li><b>3000000</b> (3 Mbps): Very high quality, HD streaming</li>
+					<li><b>8000000</b> (8 Mbps): Ultra quality, Full HD streaming</li>
+				</ul>
+			</p>
+			]]>
+		</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>MediaControl</tag>
+		</tags>
+		<state>
+			<options>
+				<option value="140000">Low (140 Kbps)</option>
+				<option value="500000">Medium (500 Kbps)</option>
+				<option value="1500000">High (1.5 Mbps)</option>
+				<option value="3000000">Very High (3 Mbps)</option>
+				<option value="8000000">Ultra (8 Mbps)</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="media-audio-track-channel">
+		<item-type>Number</item-type>
+		<label>Audio Track</label>
+		<description>
+			<![CDATA[
+			<p>Select the audio track for the current media item.</p>
+			<p>Use the <b>zero-based stream index</b> to switch between available audio tracks (e.g., different languages or audio formats).</p>
+			<p>Example: <b>0</b> for first track, <b>1</b> for second track, etc.</p>
+			]]>
+		</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>MediaControl</tag>
+		</tags>
+	</channel-type>
+	<channel-type id="media-subtitle-channel">
+		<item-type>Number</item-type>
+		<label>Subtitle</label>
+		<description>
+			<![CDATA[
+			<p>Select or disable the subtitle track for the current media item.</p>
+			<p>
+				Use the stream index to switch between available subtitle tracks:
+				<ul>
+					<li><b>-1</b>: Disable subtitles</li>
+					<li><b>0</b>: First subtitle track</li>
+					<li><b>1</b>: Second subtitle track</li>
+					<li>etc.</li>
+				</ul>
+			</p>
+			]]>
+		</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>MediaControl</tag>
+		</tags>
 	</channel-type>
 </thing:thing-descriptions>

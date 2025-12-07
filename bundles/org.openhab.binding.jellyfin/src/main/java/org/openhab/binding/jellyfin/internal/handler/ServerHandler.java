@@ -174,6 +174,24 @@ public class ServerHandler extends BaseBridgeHandler implements ErrorEventListen
     }
 
     /**
+     * Send a general command to a session (shuffle, repeat, quality, audio track, subtitle, etc.).
+     */
+    public void sendGeneralCommand(@Nullable String sessionId, Object generalCommand) {
+        try {
+            org.openhab.binding.jellyfin.internal.api.generated.current.SessionApi sessionApi = new org.openhab.binding.jellyfin.internal.api.generated.current.SessionApi(
+                    apiClient);
+            if (generalCommand instanceof org.openhab.binding.jellyfin.internal.api.generated.current.model.GeneralCommand) {
+                sessionApi.sendFullGeneralCommand(sessionId,
+                        (org.openhab.binding.jellyfin.internal.api.generated.current.model.GeneralCommand) generalCommand);
+            } else {
+                logger.warn("Invalid general command type: {}", generalCommand.getClass().getName());
+            }
+        } catch (Exception e) {
+            logger.warn("Failed to send general command to session {}: {}", sessionId, e.getMessage());
+        }
+    }
+
+    /**
      * Ask a session to play an item (or list of items) using PlayCommand.
      */
     public void playItem(@Nullable String sessionId, PlayCommand playCommand, String itemId,

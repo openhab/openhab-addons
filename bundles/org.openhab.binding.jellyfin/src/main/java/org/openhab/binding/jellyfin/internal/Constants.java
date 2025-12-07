@@ -65,6 +65,17 @@ public class Constants {
     public static final String PLAY_NEXT_BY_ID_CHANNEL = "play-next-by-id";
     public static final String PLAY_LAST_BY_ID_CHANNEL = "play-last-by-id";
     public static final String BROWSE_ITEM_BY_ID_CHANNEL = "browse-by-id";
+    // Phase 11: Extended player controls (individual play/pause/stop/forward)
+    public static final String MEDIA_PLAY_CHANNEL = "media-play";
+    public static final String MEDIA_PAUSE_CHANNEL = "media-pause";
+    public static final String MEDIA_STOP_CHANNEL = "media-stop";
+    public static final String MEDIA_FORWARD_CHANNEL = "media-forward";
+    // Phase 11: Extended media controls (shuffle, repeat, quality, audio, subtitle)
+    public static final String MEDIA_SHUFFLE_CHANNEL = "media-shuffle";
+    public static final String MEDIA_REPEAT_CHANNEL = "media-repeat";
+    public static final String MEDIA_QUALITY_CHANNEL = "media-quality";
+    public static final String MEDIA_AUDIO_TRACK_CHANNEL = "media-audio-track";
+    public static final String MEDIA_SUBTITLE_CHANNEL = "media-subtitle";
     // Discovery
     public static final int DISCOVERY_RESULT_TTL_SEC = 600;
 }

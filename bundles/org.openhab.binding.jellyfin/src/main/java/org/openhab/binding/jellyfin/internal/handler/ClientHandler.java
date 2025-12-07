@@ -21,6 +21,8 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.jellyfin.internal.Constants;
 import org.openhab.binding.jellyfin.internal.api.generated.current.model.BaseItemDto;
 import org.openhab.binding.jellyfin.internal.api.generated.current.model.BaseItemKind;
+import org.openhab.binding.jellyfin.internal.api.generated.current.model.GeneralCommand;
+import org.openhab.binding.jellyfin.internal.api.generated.current.model.GeneralCommandType;
 import org.openhab.binding.jellyfin.internal.api.generated.current.model.PlayCommand;
 import org.openhab.binding.jellyfin.internal.api.generated.current.model.PlaystateCommand;
 import org.openhab.binding.jellyfin.internal.api.generated.current.model.SessionInfoDto;
@@ -304,6 +306,77 @@ public class ClientHandler extends BaseThingHandler implements SessionEventListe
                 return;
             }
 
+            // Phase 11: Individual player controls
+            // Play
+            if (Constants.MEDIA_PLAY_CHANNEL.equals(channelId)) {
+                sendPlayStateCommand(PlaystateCommand.UNPAUSE);
+                return;
+            }
+
+            // Pause
+            if (Constants.MEDIA_PAUSE_CHANNEL.equals(channelId)) {
+                sendPlayStateCommand(PlaystateCommand.PAUSE);
+                return;
+            }
+
+            // Stop
+            if (Constants.MEDIA_STOP_CHANNEL.equals(channelId)) {
+                sendPlayStateCommand(PlaystateCommand.STOP);
+                return;
+            }
+
+            // Fast Forward
+            if (Constants.MEDIA_FORWARD_CHANNEL.equals(channelId)) {
+                sendPlayStateCommand(PlaystateCommand.FAST_FORWARD);
+                return;
+            }
+
+            // Shuffle (toggle on/off)
+            if (Constants.MEDIA_SHUFFLE_CHANNEL.equals(channelId)) {
+                if (command instanceof org.openhab.core.library.types.OnOffType) {
+                    var onOff = (org.openhab.core.library.types.OnOffType) command;
+                    sendGeneralCommand(GeneralCommandType.SET_SHUFFLE_QUEUE, "ShuffleMode",
+                            onOff == org.openhab.core.library.types.OnOffType.ON ? "true" : "false");
+                }
+                return;
+            }
+
+            // Repeat mode (off/one/all)
+            if (Constants.MEDIA_REPEAT_CHANNEL.equals(channelId)) {
+                if (command instanceof org.openhab.core.library.types.StringType) {
+                    var mode = ((org.openhab.core.library.types.StringType) command).toString();
+                    sendGeneralCommand(GeneralCommandType.SET_REPEAT_MODE, "RepeatMode", mode);
+                }
+                return;
+            }
+
+            // Streaming quality (bitrate)
+            if (Constants.MEDIA_QUALITY_CHANNEL.equals(channelId)) {
+                if (command instanceof org.openhab.core.library.types.StringType) {
+                    var bitrate = ((org.openhab.core.library.types.StringType) command).toString();
+                    sendGeneralCommand(GeneralCommandType.SET_MAX_STREAMING_BITRATE, "MaxBitrate", bitrate);
+                }
+                return;
+            }
+
+            // Audio track selection
+            if (Constants.MEDIA_AUDIO_TRACK_CHANNEL.equals(channelId)) {
+                if (command instanceof org.openhab.core.library.types.DecimalType) {
+                    var index = ((org.openhab.core.library.types.DecimalType) command).intValue();
+                    sendGeneralCommand(GeneralCommandType.SET_AUDIO_STREAM_INDEX, "Index", String.valueOf(index));
+                }
+                return;
+            }
+
+            // Subtitle track selection
+            if (Constants.MEDIA_SUBTITLE_CHANNEL.equals(channelId)) {
+                if (command instanceof org.openhab.core.library.types.DecimalType) {
+                    var index = ((org.openhab.core.library.types.DecimalType) command).intValue();
+                    sendGeneralCommand(GeneralCommandType.SET_SUBTITLE_STREAM_INDEX, "Index", String.valueOf(index));
+                }
+                return;
+            }
+
         } catch (Exception e) {
             logger.warn("Error handling command {} for channel {}: {}", command, channelUID, e.getMessage(), e);
         }
@@ -323,6 +396,25 @@ public class ClientHandler extends BaseThingHandler implements SessionEventListe
         }
         String sessionId = currentSession == null ? null : currentSession.getId();
         serverHandler.sendPlayStateCommand(sessionId, command, seekPositionTick);
+    }
+
+    private void sendGeneralCommand(GeneralCommandType commandType, String argumentKey, String argumentValue) {
+        ServerHandler serverHandler = getServerHandler();
+        if (serverHandler == null) {
+            logger.warn("Cannot send general command - server handler not available");
+            return;
+        }
+        String sessionId = currentSession == null ? null : currentSession.getId();
+        try {
+            GeneralCommand command = new GeneralCommand();
+            command.setName(commandType);
+            Map<String, String> arguments = new java.util.HashMap<>();
+            arguments.put(argumentKey, argumentValue);
+            command.setArguments(arguments);
+            serverHandler.sendGeneralCommand(sessionId, command);
+        } catch (Exception e) {
+            logger.warn("Failed to send general command {} for session {}: {}", commandType, sessionId, e.getMessage());
+        }
     }
 
     private void seekToPercent(int percent) {
