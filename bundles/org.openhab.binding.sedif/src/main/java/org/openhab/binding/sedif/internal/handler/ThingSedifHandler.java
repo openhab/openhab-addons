@@ -367,8 +367,7 @@ public class ThingSedifHandler extends BaseThingHandler {
             }
 
             if (meterInfo == null || meterInfo.eLma.isBlank()) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        String.format("Can't find meter for meterId {}", numCompteur));
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/cant-find-meter");
                 return;
             }
 
@@ -590,26 +589,31 @@ public class ThingSedifHandler extends BaseThingHandler {
             Contract contract = bridgeHandler.getContract(contractName);
             if (contract != null) {
                 contractId = Objects.requireNonNull(contract.id);
+
+                updateData();
+
+                final LocalDateTime now = LocalDateTime.now();
+                final LocalDateTime nextDayFirstTimeUpdate = now.plusDays(1).withHour(REFRESH_HOUR_OF_DAY)
+                        .withMinute(REFRESH_MINUTE_OF_DAY).truncatedTo(ChronoUnit.MINUTES);
+
+                cancelRefreshJob();
+                long initialDelay = ChronoUnit.MINUTES.between(now, nextDayFirstTimeUpdate) % REFRESH_INTERVAL_IN_MIN
+                        + 1;
+                long delay = REFRESH_INTERVAL_IN_MIN;
+
+                if (!consumption.isPresent() || !contractDetail.isPresent()) {
+                    initialDelay = 20;
+                }
+                refreshJob = scheduler.scheduleWithFixedDelay(this::updateData, initialDelay, delay, TimeUnit.MINUTES);
+
+                if (this.getThing().getStatusInfo().getStatusDetail() != ThingStatusDetail.COMMUNICATION_ERROR) {
+                    updateStatus(ThingStatus.ONLINE);
+                }
+            } else {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "@text/offline.missing-or-invalid-contract");
             }
 
-            updateData();
-
-            final LocalDateTime now = LocalDateTime.now();
-            final LocalDateTime nextDayFirstTimeUpdate = now.plusDays(1).withHour(REFRESH_HOUR_OF_DAY)
-                    .withMinute(REFRESH_MINUTE_OF_DAY).truncatedTo(ChronoUnit.MINUTES);
-
-            cancelRefreshJob();
-            long initialDelay = ChronoUnit.MINUTES.between(now, nextDayFirstTimeUpdate) % REFRESH_INTERVAL_IN_MIN + 1;
-            long delay = REFRESH_INTERVAL_IN_MIN;
-
-            if (!consumption.isPresent() || !contractDetail.isPresent()) {
-                initialDelay = 20;
-            }
-            refreshJob = scheduler.scheduleWithFixedDelay(this::updateData, initialDelay, delay, TimeUnit.MINUTES);
-
-            if (this.getThing().getStatusInfo().getStatusDetail() != ThingStatusDetail.COMMUNICATION_ERROR) {
-                updateStatus(ThingStatus.ONLINE);
-            }
         }
     }
 
