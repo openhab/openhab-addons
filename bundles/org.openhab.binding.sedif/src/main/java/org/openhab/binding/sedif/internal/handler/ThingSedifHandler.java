@@ -176,26 +176,25 @@ public class ThingSedifHandler extends BaseThingHandler {
     public synchronized void initialize() {
         SedifConfiguration lcConfig = getConfigAs(SedifConfiguration.class);
 
-        loadSedifState();
-
-        if (sedifState.getLastIndexDate() == null) {
-            sedifState.setLastIndexDate(LocalDate.of(1980, 1, 1));
-        }
-
-        // force reread data if we pause / start the thing
-        this.contractDetail.invalidate();
-        this.consumption.invalidate();
-
         if (lcConfig.seemsValid()) {
             contractName = lcConfig.contractId;
             numCompteur = lcConfig.meterId;
             updateStatus(ThingStatus.UNKNOWN);
+
+            loadSedifState();
+
+            if (sedifState.getLastIndexDate() == null) {
+                sedifState.setLastIndexDate(LocalDate.of(1980, 1, 1));
+                saveSedifState();
+            }
+
+            // force reread data if we pause / start the thing
+            this.contractDetail.invalidate();
+            this.consumption.invalidate();
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.config-error-mandatory-settings");
         }
-
-        saveSedifState();
     }
 
     private void loadSedifState() {
@@ -208,7 +207,7 @@ public class ThingSedifHandler extends BaseThingHandler {
 
         File file = null;
         try {
-            file = new File(JSON_DIR + File.separator + "sedif.json");
+            file = new File(JSON_DIR + File.separator + "sedif_" + numCompteur + ".json");
 
             if (file.exists()) {
                 byte[] bytes = Files.readAllBytes(file.toPath());
@@ -233,7 +232,7 @@ public class ThingSedifHandler extends BaseThingHandler {
         }
 
         try {
-            file = new File(JSON_DIR + File.separator + "sedif.json");
+            file = new File(JSON_DIR + File.separator + "sedif_" + numCompteur + ".json");
 
             if (!file.exists()) {
                 File parentFile = file.getParentFile();
@@ -291,6 +290,11 @@ public class ThingSedifHandler extends BaseThingHandler {
         currentDate = currentDate.minusDays(periodLength);
 
         LocalDate lastUpdateDate = sedifState.getLastIndexDate();
+
+        if (!currentDate.isAfter(lastUpdateDate)) {
+            return;
+        }
+
         LocalDate newLastUpdateDate = lastUpdateDate;
         boolean hasData = true;
         boolean hasAlreadyRetrieveData = false;
@@ -298,7 +302,7 @@ public class ThingSedifHandler extends BaseThingHandler {
         while ((hasData || !hasAlreadyRetrieveData) && currentDate.isAfter(lastUpdateDate)) {
             LocalDate startDate = currentDate.minusDays(periodLength - 1);
             try {
-                logger.debug("Retrieve data from {} to {}:", startDate, currentDate);
+                logger.trace("Retrieve data from {} to {}:", startDate, currentDate);
                 MeterReading meterReading = getConsumptionData(startDate, currentDate, true);
                 if (meterReading != null) {
                     Consommation[] consommation = meterReading.data.consommation;
@@ -408,10 +412,11 @@ public class ThingSedifHandler extends BaseThingHandler {
      * Request new daily/weekly data and updates channels
      */
     private void updateConsumptionData() {
-        logger.trace("updateEnergyData() called");
+        logger.trace("updateConsumptionData() called");
 
         consumption.getValue().ifPresentOrElse(values -> {
 
+            logger.trace("updateConsumptionData:getValue()");
             // ===========================
             // Daily conso
             // ===========================
@@ -420,6 +425,9 @@ public class ThingSedifHandler extends BaseThingHandler {
             double dayConsoMinus3 = 0;
 
             Consommation[] consommation = values.data.consommation;
+
+            logger.trace("updateConsumptionData> consommation : " + consommation);
+            logger.trace("updateConsumptionData> consommation : " + consommation.length);
 
             if (consommation != null) {
                 if (consommation.length - 1 >= 0) {
@@ -432,6 +440,10 @@ public class ThingSedifHandler extends BaseThingHandler {
                     dayConsoMinus3 = consommation[consommation.length - 3].consommation;
                 }
             }
+
+            logger.trace("updateConsumptionData> updateState/yesterdayConso : " + yesterdayConso);
+            logger.trace("updateConsumptionData> updateState/dayConsoMinus2 : " + dayConsoMinus2);
+            logger.trace("updateConsumptionData> updateState/dayConsoMinus3 : " + dayConsoMinus3);
 
             updateState(GROUP_DAILY_CONSUMPTION, CHANNEL_DAILY_YESTERDAY_CONSUMPTION,
                     new QuantityType<>(yesterdayConso, Units.LITRE));
@@ -552,9 +564,10 @@ public class ThingSedifHandler extends BaseThingHandler {
             updateConsumptionTimeSeries(GROUP_MONTHLY_CONSUMPTION, CHANNEL_CONSUMPTION, values.data.monthConso);
             updateConsumptionTimeSeries(GROUP_YEARLY_CONSUMPTION, CHANNEL_CONSUMPTION, values.data.yearConso);
 
-            logger.debug("end");
+            logger.trace("updateConsumptionData:getValue() end");
 
         }, () -> {
+            logger.trace("updateConsumptionData:getValue():noValuePresent");
             updateState(GROUP_BASE, CHANNEL_CONSUMPTION, new QuantityType<>(0.00, Units.LITRE));
         });
     }
@@ -575,7 +588,6 @@ public class ThingSedifHandler extends BaseThingHandler {
             if (getThing().getStatus() != ThingStatus.ONLINE) {
                 updateStatus(ThingStatus.UNKNOWN);
             }
-            setupRefreshJob();
         }
     }
 
