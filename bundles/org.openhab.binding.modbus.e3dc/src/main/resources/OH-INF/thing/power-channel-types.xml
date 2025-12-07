@@ -137,7 +137,7 @@
 	</channel-type>
 	<channel-type id="perf-ratio-channel">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Load</label>
+		<label>Performance Ratio</label>
 		<tags>
 			<tag>Measurement</tag>
 		</tags>
