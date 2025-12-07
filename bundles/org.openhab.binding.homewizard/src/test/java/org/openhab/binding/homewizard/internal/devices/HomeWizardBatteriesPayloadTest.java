@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.homewizard.internal.devices.p1_meter;
+package org.openhab.binding.homewizard.internal.devices;
 
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -30,17 +30,20 @@ import org.openhab.binding.homewizard.internal.dto.DataUtil;
  *
  */
 @NonNullByDefault
-public class HomeWizardP1MeterBatteriesPayloadTest {
+public class HomeWizardBatteriesPayloadTest {
 
     private static final DataUtil DATA_UTIL = new DataUtil();
 
     @Test
     public void deserializeResponse() throws IOException {
-        HomeWizardP1MeterBatteriesPayload key = DATA_UTIL.fromJson("response-batteries-p1-meter.json",
-                HomeWizardP1MeterBatteriesPayload.class);
+        HomeWizardBatteriesPayload key = DATA_UTIL.fromJson("response-batteries.json",
+                HomeWizardBatteriesPayload.class);
         assertThat(key, is(notNullValue()));
 
-        assertThat(key.getMode(), is("to_full"));
+        assertThat(key.getMode(), is("zero"));
+        assertThat(key.isChargingAllowed(), is(true));
+        assertThat(key.isDischargingAllowed(), is(false));
+        assertThat(key.getBatteryCount(), is(2));
         assertThat(key.getPower(), is(1599));
         assertThat(key.getTargetPower(), is(1600));
         assertThat(key.getMaxConsumption(), is(1600));
@@ -49,11 +52,13 @@ public class HomeWizardP1MeterBatteriesPayloadTest {
 
     @Test
     public void deserializeResponseEmpty() throws IOException {
-        HomeWizardP1MeterBatteriesPayload key = DATA_UTIL.fromJson("response-empty.json",
-                HomeWizardP1MeterBatteriesPayload.class);
+        HomeWizardBatteriesPayload key = DATA_UTIL.fromJson("response-empty.json", HomeWizardBatteriesPayload.class);
         assertThat(key, is(notNullValue()));
 
         assertThat(key.getMode(), is(""));
+        assertThat(key.isChargingAllowed(), is(true));
+        assertThat(key.isDischargingAllowed(), is(true));
+        assertThat(key.getBatteryCount(), is(0));
         assertThat(key.getPower(), is(0));
         assertThat(key.getTargetPower(), is(0));
         assertThat(key.getMaxConsumption(), is(0));

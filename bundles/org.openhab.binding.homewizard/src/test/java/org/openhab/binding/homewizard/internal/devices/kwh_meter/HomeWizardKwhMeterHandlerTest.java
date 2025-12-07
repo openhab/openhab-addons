@@ -22,6 +22,7 @@ import java.util.List;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.homewizard.internal.HomeWizardBindingConstants;
+import org.openhab.binding.homewizard.internal.devices.HomeWizardBatteriesSubHandler;
 import org.openhab.binding.homewizard.internal.devices.HomeWizardHandlerTest;
 import org.openhab.binding.homewizard.internal.dto.DataUtil;
 import org.openhab.core.library.unit.Units;
@@ -40,12 +41,16 @@ import org.openhab.core.thing.binding.ThingHandlerCallback;
 @NonNullByDefault
 public class HomeWizardKwhMeterHandlerTest extends HomeWizardHandlerTest {
 
-    private static Thing mockThing(boolean legacy) {
+    private static Thing mockThing(int apiVersion, boolean legacy) {
         final Thing thing = mock(Thing.class);
         when(thing.getUID())
-                .thenReturn(new ThingUID(HomeWizardBindingConstants.THING_TYPE_HWE_SKT, "homewizard-test-thing-skt"));
+                .thenReturn(new ThingUID(HomeWizardBindingConstants.THING_TYPE_HWE_KWH, "homewizard-test-thing-kwh"));
         when(thing.getThingTypeUID()).thenReturn(HomeWizardBindingConstants.THING_TYPE_HWE_KWH);
-        when(thing.getConfiguration()).thenReturn(CONFIG_V1);
+        if (apiVersion == 1) {
+            when(thing.getConfiguration()).thenReturn(CONFIG_V1);
+        } else {
+            when(thing.getConfiguration()).thenReturn(CONFIG_V2);
+        }
 
         final List<Channel> channelList = Arrays.asList(
                 mockChannel(thing.getUID(), HomeWizardBindingConstants.CHANNEL_GROUP_ENERGY,
@@ -79,7 +84,19 @@ public class HomeWizardKwhMeterHandlerTest extends HomeWizardHandlerTest {
                 mockChannel(thing.getUID(), HomeWizardBindingConstants.CHANNEL_GROUP_ENERGY,
                         HomeWizardBindingConstants.CHANNEL_APPARENT_POWER), //
                 mockChannel(thing.getUID(), HomeWizardBindingConstants.CHANNEL_GROUP_ENERGY,
-                        HomeWizardBindingConstants.CHANNEL_FREQUENCY)
+                        HomeWizardBindingConstants.CHANNEL_FREQUENCY),
+                mockChannel(thing.getUID(), HomeWizardBindingConstants.CHANNEL_GROUP_P1_BATTERIES,
+                        HomeWizardBindingConstants.CHANNEL_BATTERIES_MODE), //
+                mockChannel(thing.getUID(), HomeWizardBindingConstants.CHANNEL_GROUP_P1_BATTERIES,
+                        HomeWizardBindingConstants.CHANNEL_BATTERIES_COUNT), //
+                mockChannel(thing.getUID(), HomeWizardBindingConstants.CHANNEL_GROUP_P1_BATTERIES,
+                        HomeWizardBindingConstants.CHANNEL_BATTERIES_POWER), //
+                mockChannel(thing.getUID(), HomeWizardBindingConstants.CHANNEL_GROUP_P1_BATTERIES,
+                        HomeWizardBindingConstants.CHANNEL_BATTERIES_TARGET_POWER), //
+                mockChannel(thing.getUID(), HomeWizardBindingConstants.CHANNEL_GROUP_P1_BATTERIES,
+                        HomeWizardBindingConstants.CHANNEL_BATTERIES_MAX_CONSUMPTION), //
+                mockChannel(thing.getUID(), HomeWizardBindingConstants.CHANNEL_GROUP_P1_BATTERIES,
+                        HomeWizardBindingConstants.CHANNEL_BATTERIES_MAX_PRODUCTION)
 
         );
 
@@ -90,11 +107,13 @@ public class HomeWizardKwhMeterHandlerTest extends HomeWizardHandlerTest {
     private static HomeWizardKwhMeterHandlerMock createAndInitHandler(final ThingHandlerCallback callback,
             final Thing thing) {
         final HomeWizardKwhMeterHandlerMock handler = spy(new HomeWizardKwhMeterHandlerMock(thing));
+        handler.batteriesHandler = spy(new HomeWizardBatteriesSubHandler(handler));
 
         try {
             doReturn(DataUtil.fromFile("response-device-information-kwh3-meter.json")).when(handler)
                     .getDeviceInformationData();
             doReturn(DataUtil.fromFile("response-measurement-kwh-meter.json")).when(handler).getMeasurementData();
+            doReturn(DataUtil.fromFile("response-batteries.json")).when(handler.batteriesHandler).getBatteriesData();
         } catch (Exception e) {
             assertFalse(true);
         }
@@ -106,7 +125,7 @@ public class HomeWizardKwhMeterHandlerTest extends HomeWizardHandlerTest {
 
     @Test
     public void testUpdateChannels() {
-        final Thing thing = mockThing(false);
+        final Thing thing = mockThing(2, false);
         final ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
         final HomeWizardKwhMeterHandlerMock handler = createAndInitHandler(callback, thing);
 
@@ -151,6 +170,39 @@ public class HomeWizardKwhMeterHandlerTest extends HomeWizardHandlerTest {
 
             verify(callback).stateUpdated(getEnergyChannelUid(thing, HomeWizardBindingConstants.CHANNEL_FREQUENCY),
                     getState(49.926, Units.HERTZ));
+
+        } finally {
+            handler.dispose();
+        }
+    }
+
+    @Test
+    public void testUpdateBatteriesChannels() {
+        final Thing thing = mockThing(2, false);
+        final ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
+        final HomeWizardKwhMeterHandlerMock handler = createAndInitHandler(callback, thing);
+
+        try {
+            verify(callback).statusUpdated(eq(thing), argThat(arg -> arg.getStatus().equals(ThingStatus.UNKNOWN)));
+            verify(callback).statusUpdated(eq(thing), argThat(arg -> arg.getStatus().equals(ThingStatus.ONLINE)));
+
+            verify(callback).stateUpdated(
+                    getBatteriesChannelUid(thing, HomeWizardBindingConstants.CHANNEL_BATTERIES_MODE),
+                    getState(HomeWizardBindingConstants.BATTERIES_MODE_ZERO_CHARGE_ONLY));
+            verify(callback).stateUpdated(
+                    getBatteriesChannelUid(thing, HomeWizardBindingConstants.CHANNEL_BATTERIES_COUNT), getState(2));
+            verify(callback).stateUpdated(
+                    getBatteriesChannelUid(thing, HomeWizardBindingConstants.CHANNEL_BATTERIES_POWER),
+                    getState(1599, Units.WATT));
+            verify(callback).stateUpdated(
+                    getBatteriesChannelUid(thing, HomeWizardBindingConstants.CHANNEL_BATTERIES_TARGET_POWER),
+                    getState(1600, Units.WATT));
+            verify(callback).stateUpdated(
+                    getBatteriesChannelUid(thing, HomeWizardBindingConstants.CHANNEL_BATTERIES_MAX_CONSUMPTION),
+                    getState(1600, Units.WATT));
+            verify(callback).stateUpdated(
+                    getBatteriesChannelUid(thing, HomeWizardBindingConstants.CHANNEL_BATTERIES_MAX_PRODUCTION),
+                    getState(800, Units.WATT));
 
         } finally {
             handler.dispose();

@@ -21,8 +21,6 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
-import org.openhab.binding.homewizard.internal.devices.p1_meter.HomeWizardP1MeterHandler;
-import org.openhab.binding.homewizard.internal.devices.p1_meter.HomeWizardP1MeterHandlerMock;
 import org.openhab.core.thing.Thing;
 
 /**

@@ -14,12 +14,18 @@ package org.openhab.binding.homewizard.internal.devices.kwh_meter;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.homewizard.internal.HomeWizardBindingConstants;
+import org.openhab.binding.homewizard.internal.devices.HomeWizardBatteriesSubHandler;
 import org.openhab.binding.homewizard.internal.devices.HomeWizardEnergyMeterHandler;
 import org.openhab.binding.homewizard.internal.devices.energy_socket.HomeWizardEnergySocketMeasurementPayload;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
+import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.types.Command;
+import org.openhab.core.types.RefreshType;
 
 /**
  * The {@link HomeWizardKwhMeterHandler} implements functionality to handle a HomeWizard kWh Meter.
@@ -29,6 +35,8 @@ import org.openhab.core.thing.Thing;
  */
 @NonNullByDefault
 public class HomeWizardKwhMeterHandler extends HomeWizardEnergyMeterHandler {
+
+    protected HomeWizardBatteriesSubHandler batteriesHandler;
 
     /**
      * Constructor
@@ -42,6 +50,36 @@ public class HomeWizardKwhMeterHandler extends HomeWizardEnergyMeterHandler {
         supportedTypes.add(HomeWizardBindingConstants.SDM230_WIFI);
         supportedTypes.add(HomeWizardBindingConstants.HWE_KWH3);
         supportedTypes.add(HomeWizardBindingConstants.SDM630_WIFI);
+
+        batteriesHandler = new HomeWizardBatteriesSubHandler(this);
+    }
+
+    @Override
+    public void handleCommand(ChannelUID channelUID, Command command) {
+        if (command instanceof RefreshType) {
+            retrieveData();
+            return;
+        }
+
+        if (channelUID.getIdWithoutGroup().equals(HomeWizardBindingConstants.CHANNEL_BATTERIES_MODE)) {
+            batteriesHandler.handleCommand(command);
+        } else {
+            logger.warn("Should handle {} {}", channelUID.getIdWithoutGroup(), command);
+        }
+    }
+
+    @Override
+    protected void retrieveData() {
+        super.retrieveData();
+        if (config.useApiVersion2()) {
+            try {
+                batteriesHandler.retrieveBatteriesData();
+            } catch (Exception e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        String.format("Device is offline or doesn't support the API version"));
+                return;
+            }
+        }
     }
 
     /**

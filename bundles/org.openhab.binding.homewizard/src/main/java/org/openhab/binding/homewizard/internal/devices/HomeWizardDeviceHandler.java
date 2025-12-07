@@ -79,7 +79,7 @@ public abstract class HomeWizardDeviceHandler extends BaseThingHandler {
     private HttpClient httpClient = new HttpClient();
 
     protected List<String> supportedTypes = new ArrayList<String>();
-    protected String apiURL = "";
+    public String apiURL = "";
 
     /**
      * Constructor
@@ -97,7 +97,7 @@ public abstract class HomeWizardDeviceHandler extends BaseThingHandler {
     public void initialize() {
         config = getConfigAs(HomeWizardConfiguration.class);
 
-        if (config.apiVersion > 1) {
+        if (config.useApiVersion2()) {
             String caCertPath = "homewizard-ca-cert.pem";
 
             // Create an SSL context factory and set the CA certificate
@@ -138,15 +138,15 @@ public abstract class HomeWizardDeviceHandler extends BaseThingHandler {
                     "Missing ipAddress/host configuration");
             return false;
         }
-        if (config.apiVersion == 2 && config.bearerToken.isBlank()) {
+        if (config.useApiVersion2() && config.bearerToken.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Missing bearer token");
             return false;
         }
 
-        if (config.apiVersion == 1) {
-            apiURL = String.format("http://%s/api/", config.ipAddress.trim());
-        } else {
+        if (config.useApiVersion2()) {
             apiURL = String.format("https://%s/api/", config.ipAddress.trim());
+        } else {
+            apiURL = String.format("http://%s/api/", config.ipAddress.trim());
         }
 
         try {
@@ -266,9 +266,9 @@ public abstract class HomeWizardDeviceHandler extends BaseThingHandler {
 
     private ContentResponse sendRequest(Request request)
             throws InterruptedException, TimeoutException, ExecutionException {
-        if (config.apiVersion > 1) {
+        if (config.useApiVersion2()) {
             request.header(HttpHeader.AUTHORIZATION, BEARER + " " + config.bearerToken);
-            request.header(API_VERSION_HEADER, "" + config.apiVersion);
+            request.header(API_VERSION_HEADER, "2");
         }
         return request.timeout(20, TimeUnit.SECONDS).send();
     }
@@ -292,10 +292,10 @@ public abstract class HomeWizardDeviceHandler extends BaseThingHandler {
      */
     public String getMeasurementData() throws InterruptedException, TimeoutException, ExecutionException {
         var url = apiURL;
-        if (config.apiVersion == 1) {
-            url += "v1/data";
-        } else {
+        if (config.useApiVersion2()) {
             url += "measurement";
+        } else {
+            url += "v1/data";
         }
         return getResponseFrom(url).getContentAsString();
     }

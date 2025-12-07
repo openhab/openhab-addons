@@ -14,28 +14,22 @@ package org.openhab.binding.homewizard.internal.devices.p1_meter;
 
 import java.time.DateTimeException;
 import java.time.ZonedDateTime;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.homewizard.internal.HomeWizardBindingConstants;
+import org.openhab.binding.homewizard.internal.devices.HomeWizardBatteriesSubHandler;
 import org.openhab.binding.homewizard.internal.devices.HomeWizardEnergyMeterHandler;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
-import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.SIUnits;
-import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
-
-import com.google.gson.JsonSyntaxException;
 
 /**
  * The {@link HomeWizardP1MeterHandler} implements functionality to handle a HomeWizard P1 Meter.
@@ -45,8 +39,7 @@ import com.google.gson.JsonSyntaxException;
  */
 @NonNullByDefault
 public class HomeWizardP1MeterHandler extends HomeWizardEnergyMeterHandler {
-
-    private final String BATTERIES_URL = "batteries";
+    protected HomeWizardBatteriesSubHandler batteriesHandler;
 
     private String meterModel = "";
     private int meterVersion = 0;
@@ -62,36 +55,33 @@ public class HomeWizardP1MeterHandler extends HomeWizardEnergyMeterHandler {
         super(thing);
         this.timeZoneProvider = timeZoneProvider;
         supportedTypes.add(HomeWizardBindingConstants.HWE_P1);
+
+        batteriesHandler = new HomeWizardBatteriesSubHandler(this);
     }
 
     @Override
     protected void retrieveData() {
         super.retrieveData();
-        if (config.apiVersion == 2) {
-            retrieveBatteriesData();
+        if (config.useApiVersion2()) {
+            try {
+                batteriesHandler.retrieveBatteriesData();
+            } catch (Exception e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        String.format("Device is offline or doesn't support the API version"));
+                return;
+            }
         }
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
-            retrieveBatteriesData();
+            retrieveData();
             return;
         }
 
         if (channelUID.getIdWithoutGroup().equals(HomeWizardBindingConstants.CHANNEL_BATTERIES_MODE)) {
-            var cmd = String.format("{\"mode\": \"%s\"}", command.toFullString());
-
-            try {
-                var response = putDataTo(apiURL + BATTERIES_URL, cmd);
-                if (response.getStatus() == HttpStatus.OK_200) {
-                    handleBatteriesData(response.getContentAsString());
-                } else {
-                    logger.warn("Failed to send command {} to {}", command, apiURL + BATTERIES_URL);
-                }
-            } catch (Exception ex) {
-                logger.warn("Failed to send command {} to {}", command, apiURL + BATTERIES_URL);
-            }
+            batteriesHandler.handleCommand(command);
         } else {
             logger.warn("Should handle {} {}", channelUID.getIdWithoutGroup(), command);
         }
@@ -174,64 +164,6 @@ public class HomeWizardP1MeterHandler extends HomeWizardEnergyMeterHandler {
                     updateState(HomeWizardBindingConstants.CHANNEL_GAS_TIMESTAMP, new DateTimeType(gasTimestamp));
                 }
             }
-        }
-    }
-
-    /**
-     * Device specific handling of the returned batteries data.
-     *
-     * @param data The data obtained form the API call
-     */
-    protected void handleBatteriesData(String data) {
-        HomeWizardP1MeterBatteriesPayload payload = null;
-        try {
-            payload = gson.fromJson(data, HomeWizardP1MeterBatteriesPayload.class);
-        } catch (JsonSyntaxException ex) {
-            logger.warn("No Batteries data available");
-        }
-        if (payload != null) {
-            updateState(HomeWizardBindingConstants.CHANNEL_GROUP_P1_BATTERIES,
-                    HomeWizardBindingConstants.CHANNEL_BATTERIES_MODE, new StringType(payload.getMode()));
-            updateState(HomeWizardBindingConstants.CHANNEL_GROUP_P1_BATTERIES,
-                    HomeWizardBindingConstants.CHANNEL_BATTERIES_POWER,
-                    new QuantityType<>(payload.getPower(), Units.WATT));
-            updateState(HomeWizardBindingConstants.CHANNEL_GROUP_P1_BATTERIES,
-                    HomeWizardBindingConstants.CHANNEL_BATTERIES_TARGET_POWER,
-                    new QuantityType<>(payload.getTargetPower(), Units.WATT));
-            updateState(HomeWizardBindingConstants.CHANNEL_GROUP_P1_BATTERIES,
-                    HomeWizardBindingConstants.CHANNEL_BATTERIES_MAX_CONSUMPTION,
-                    new QuantityType<>(payload.getMaxConsumption(), Units.WATT));
-            updateState(HomeWizardBindingConstants.CHANNEL_GROUP_P1_BATTERIES,
-                    HomeWizardBindingConstants.CHANNEL_BATTERIES_MAX_PRODUCTION,
-                    new QuantityType<>(payload.getMaxProduction(), Units.WATT));
-        }
-    }
-
-    protected void retrieveBatteriesData() {
-        final String batteriesData;
-
-        try {
-            batteriesData = getBatteriesData();
-        } catch (Exception e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    String.format("Device is offline or doesn't support the API version"));
-            return;
-        }
-
-        handleBatteriesData(batteriesData);
-    }
-
-    /**
-     * @return json response from the batteries api
-     * @throws InterruptedException, TimeoutException, ExecutionException
-     */
-    public String getBatteriesData() throws InterruptedException, TimeoutException, ExecutionException {
-        var response = getResponseFrom(apiURL + BATTERIES_URL);
-        if (response.getStatus() == HttpStatus.OK_200) {
-            return response.getContentAsString();
-        } else {
-            logger.warn("No Batteries data available");
-            return "";
         }
     }
 }
