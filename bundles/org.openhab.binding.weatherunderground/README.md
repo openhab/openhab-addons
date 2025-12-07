@@ -10,7 +10,7 @@ To use this binding, you first need to [register and get your API key](https://w
 
 ## Supported Things
 
-There are exactly two supported thing types. The first one is the Bridge Thing, which represents the connection to the Weather Underground service through the API key. It has the ID `bridge`. The second one is the Weather Thing, which represents the weather information for an observed location. It has the ID `weather`. Each `weather` Thing uses a `bridge` Thing; it cannot be set online if no `bridge` Thing is defined.
+There are exactly two supported Thing types. The first one is the Bridge Thing, which represents the connection to the Weather Underground service through the API key. It has the ID `bridge`. The second one is the Weather Thing, which represents the weather information for an observed location. It has the ID `weather`. Each `weather` Thing uses a `bridge` Thing; it cannot be set online if no `bridge` Thing is defined.
 
 ## Discovery
 
@@ -18,7 +18,7 @@ If a system location is set, "Local Weather" will be automatically discovered fo
 
 If the system location is changed, the background discovery updates the configuration of "Local Weather" automatically.
 
-If a bridge is correctly configured, the discovered thing will automatically go online.
+If a bridge is correctly configured, the discovered Thing will automatically go online.
 
 ## Binding Configuration
 
@@ -32,7 +32,7 @@ The bridge only has one configuration parameter:
 |-----------|------------------------------------------------------------------------- |
 | apikey    | API key to access the Weather Underground service. Mandatory.            |
 
-The thing has a few configuration parameters:
+The Thing has a few configuration parameters:
 
 | Parameter | Description                                                              |
 |-----------|------------------------------------------------------------------------- |

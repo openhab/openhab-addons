@@ -4,7 +4,7 @@ Supports the ZoneMinder video surveillance system.
 
 ## Supported Things
 
-The following thing types are supported:
+The following Thing types are supported:
 
 | Thing    | ID       | Discovery | Description |
 |----------|----------|-----------|-------------|
@@ -16,18 +16,18 @@ The following thing types are supported:
 The binding requires ZoneMinder version 1.34.0 or greater and API version 2.0 or greater.
 It also requires that you enable the **OPT_USE_API** parameter in the ZoneMinder configuration.
 
-If your ZoneMinder is installed using a non-standard URL path or port number, you must specify that when you add the ZoneMinder server thing.
+If your ZoneMinder is installed using a non-standard URL path or port number, you must specify that when you add the ZoneMinder server Thing.
 
 There are two different styles of operation, depending on whether or not you have ZoneMinder configured to use authentication.
 
 ### Non-Authenticated
 
-If ZoneMinder authentication is not used, leave the User and Password parameters empty in the _ZoneMinder Server_ thing configuration. No other configuration is required.
+If ZoneMinder authentication is not used, leave the User and Password parameters empty in the _ZoneMinder Server_ Thing configuration. No other configuration is required.
 
 ### Authenticated
 
 The binding can access ZoneMinder with or without authentication.
-If ZoneMinder authentication is used, first make sure the ZoneMinder user has the **API Enabled** permission set in the ZoneMinder Users configuration. Then, enter the username and password into the ZoneMinder Server thing configuration.
+If ZoneMinder authentication is used, first make sure the ZoneMinder user has the **API Enabled** permission set in the ZoneMinder Users configuration. Then, enter the username and password into the ZoneMinder Server Thing configuration.
 
 ## Discovery
 
@@ -39,7 +39,7 @@ all monitors associated with the ZoneMinder server will be discovered.
 
 ### Server Thing
 
-The following configuration parameters are available on the Server thing:
+The following configuration parameters are available on the Server Thing:
 
 | Parameter | Parameter ID | Required/Optional | Description |
 |-----------|--------------|-------------------|-------------|
@@ -56,7 +56,7 @@ The following configuration parameters are available on the Server thing:
 
 ### Monitor Thing
 
-The following configuration parameters are available on the Monitor thing:
+The following configuration parameters are available on the Monitor Thing:
 
 | Parameter | Parameter ID | Required/Optional | Description |
 |-----------|--------------|-------------------|-------------|
@@ -125,7 +125,7 @@ duration - The number of seconds for which the alarm should run.
 ### triggerAlarm
 
 The `triggerAlarm` action triggers an alarm that runs for the number of seconds specified
-in the Monitor thing configuration.
+in the Monitor Thing configuration.
 
 #### triggerAlarm - trigger an alarm
 

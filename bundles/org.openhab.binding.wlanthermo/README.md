@@ -36,7 +36,7 @@ Depending on the WlanThermo you're using, the following channels are available.
 
 ### WlanThermo Nano
 
-If username/password is given in the thing, most channels are writeable.
+If username/password is given in the Thing, most channels are writeable.
 
 #### The device itself provides the following channels
 
@@ -123,7 +123,7 @@ The following trigger apply for all channels of Nano and Mini:
 ### Items
 
 Example .items file for WlanThermo Nano and Mini.
-Make sure to replace <nano_thing_id> or <mini_thing_id> with your individual thing id!
+Make sure to replace <nano_thing_id> or <mini_thing_id> with your individual Thing id!
 
 ```java
 Group                   gWlanThermoNano         "WlanThermo Nano"
