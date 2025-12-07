@@ -146,8 +146,8 @@ public class ThingSedifHandler extends BaseThingHandler {
                     LocalDate today = LocalDate.now();
 
                     try {
-                        MeterReading meterReading = updateConsumptionData(today.minusDays(HISTORICAL_LOOKBACK_DAYS),
-                                today, false);
+                        MeterReading meterReading = getConsumptionData(today.minusDays(HISTORICAL_LOOKBACK_DAYS), today,
+                                false);
                         if (meterReading != null) {
                             MeterReadingHelper.calcAgregat(meterReading);
                         }
@@ -299,7 +299,7 @@ public class ThingSedifHandler extends BaseThingHandler {
             LocalDate startDate = currentDate.minusDays(periodLength - 1);
             try {
                 logger.debug("Retrieve data from {} to {}:", startDate, currentDate);
-                MeterReading meterReading = updateConsumptionData(startDate, currentDate, true);
+                MeterReading meterReading = getConsumptionData(startDate, currentDate, true);
                 if (meterReading != null) {
                     Consommation[] consommation = meterReading.data.consommation;
                     if (consommation != null) {
@@ -331,7 +331,7 @@ public class ThingSedifHandler extends BaseThingHandler {
         saveSedifState();
     }
 
-    public @Nullable MeterReading updateConsumptionData(LocalDate startDate, LocalDate currentDate,
+    public @Nullable MeterReading getConsumptionData(LocalDate startDate, LocalDate currentDate,
             boolean updateHistorical) throws SedifException {
         logger.trace("startDate: {}, currentDate: {}", startDate, currentDate);
 
