@@ -11,7 +11,7 @@ The TRÅDFRI controller and sensor devices currently cannot be observed right aw
 This makes it nearly impossible to trigger events for pressed buttons.
 We can only access some static data like the present status or battery level.
 
-The thing type ids are defined according to the lighting devices defined for Zigbee Light Link ([see page 24, table 2](https://www.nxp.com/docs/en/user-guide/JN-UG-3091.pdf)).
+The Thing type ids are defined according to the lighting devices defined for Zigbee Light Link ([see page 24, table 2](https://www.nxp.com/docs/en/user-guide/JN-UG-3091.pdf)).
 These are:
 
 | Device type                     | Zigbee Device ID | Thing type |
@@ -60,7 +60,7 @@ The gateway requires at least firmware version 1.2.42 to connect to this binding
 
 The `code` is used during the initialization for retrieving unique identity and pre-shared key from the gateway and then it is discarded from the configuration.
 The newly created authentication data is stored in advanced parameters `identity` and `preSharedKey`.
-On each initialization if the code is present in the thing configuration - the `identity` and `preSharedKey` are recreated and the `code` is again discarded.
+On each initialization if the code is present in the Thing configuration - the `identity` and `preSharedKey` are recreated and the `code` is again discarded.
 
 The devices require only a single (integer) parameter, which is their instance id. Unfortunately, this is not displayed anywhere in the IKEA app, but it seems that they are sequentially numbered starting with 65537 for the first device. If in doubt, use the auto-discovered things to find out the correct instance ids.
 

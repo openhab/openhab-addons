@@ -9,8 +9,8 @@ You can then monitor and control all zone types (Heating, AC, Hot Water) as well
 
 ## `home` Thing (the Bridge)
 
-The `home` thing serves as bridge to the tado° cloud services.
-The binding will automatically discover this thing and place it in the Inbox.
+The `home` Thing serves as bridge to the tado° cloud services.
+The binding will automatically discover this Thing and place it in the Inbox.
 It must be authenticated before it will actually go online.
 Authenticatation is done online via the OAuth Device Code Grant Flow (RFC-8628) authentication process via the link provided at `http://[openhab-ip-address]:8080/tado`.
 
@@ -38,7 +38,7 @@ Bridge tado:home:demo
 Bridge tado:home:demo [ rfcWithUser=true, username="mail@example.com", homeId=1234 ]
 ```
 
-Once the `home` thing is online, the binding will discover all its respective zones and mobile devices, and place them in the Inbox.
+Once the `home` Thing is online, the binding will discover all its respective zones and mobile devices, and place them in the Inbox.
 
 ### Channels
 
@@ -148,7 +148,7 @@ In case the zone is currently in smart-schedule mode and thus doesn't have a ter
 
 ## `mobiledevice` Thing
 
-The `mobiledevice` thing represents a smart phone that is configured for tado°. It provides access to the geotracking functionality.
+The `mobiledevice` Thing represents a smart phone that is configured for tado°. It provides access to the geotracking functionality.
 
 | Parameter         | Required | Description                                  | Default |
 | ----------------- | -------- | -------------------------------------------- | ------- |

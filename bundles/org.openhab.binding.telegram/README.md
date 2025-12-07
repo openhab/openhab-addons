@@ -178,7 +178,7 @@ This binding includes a number of rule actions, which allow the sending of Teleg
 val telegramAction = getActions("telegram","telegram:telegramBot:<uid>")
 ```
 
-where uid is the Thing UID of the Telegram thing (not the chat id!).
+where uid is the Thing UID of the Telegram Thing (not the chat id!).
 
 Once this action instance is retrieved, you can invoke the `sendTelegram' method on it:
 
