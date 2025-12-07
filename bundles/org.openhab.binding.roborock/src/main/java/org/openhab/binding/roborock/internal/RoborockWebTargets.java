@@ -205,7 +205,8 @@ public class RoborockWebTargets {
         String x_mercy_ks = UUID.randomUUID().toString().substring(0, 16);
         SignCodeV3 signCodeV3 = signKeyV3(baseUri, x_mercy_ks);
         String x_mercy_k = signCodeV3.data.k;
-        String payload = "?country=" + country + "&countryCode=" + countryCode + "&email=" + email + "&code=" + twofa
+        String payload = "?country=" + country + "&countryCode=" + countryCode + "&email="
+                + URLEncoder.encode(email, StandardCharsets.UTF_8) + "&code=" + twofa
                 + "&majorVersion=14&minorVersion=0";
 
         return invoke(baseUri + CODE_LOGIN_V4 + payload, HttpMethod.POST, "application/json", "x-mercy-ks", x_mercy_ks,
