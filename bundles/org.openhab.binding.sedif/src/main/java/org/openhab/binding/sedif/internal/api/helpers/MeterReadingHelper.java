@@ -141,8 +141,10 @@ public class MeterReadingHelper {
         }
 
         for (int idx = 0; idx < lcConso.length; idx++) {
-            LocalDate dt = lcConso[idx].dateIndex.toLocalDate();
+            Data.Consommation conso = lcConso[idx];
+            LocalDate dt = conso.dateIndex.toLocalDate();
             meterReading.data.putEntries(dt.toString(), lcConso[idx]);
+            conso.consommation *= 1000.00;
         }
 
         LocalDate startDate = lcConso[0].dateIndex.toLocalDate();

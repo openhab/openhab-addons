@@ -11,7 +11,7 @@
 	</channel-type>
 
 	<channel-type id="consumption">
-		<item-type>Number:Volume</item-type>
+		<item-type unitHint="l">Number:Volume</item-type>
 		<label>Total Consumption</label>
 		<description>Consumption at given time interval</description>
 		<category>flow</category>
