@@ -9,7 +9,7 @@ The binding can be used to communicate with simple serial devices for which a de
 
 ## Overview
 
-The Serial binding represents a serial port as a bridge thing, a TCP socket as an alternative bridge thing, and data matching defined patterns as things connected to the bridge.
+The Serial binding represents a serial port as a bridge Thing, a TCP socket as an alternative bridge Thing, and data matching defined patterns as things connected to the bridge.
 
 ### Serial Bridge
 
