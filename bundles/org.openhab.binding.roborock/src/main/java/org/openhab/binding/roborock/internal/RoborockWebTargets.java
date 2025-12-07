@@ -150,8 +150,8 @@ public class RoborockWebTargets {
      */
     @Nullable
     public String requestCodeV4(String baseUri, String email) throws RoborockException {
-        String payload = "?email=" + email + "&type=login&platform=";
-
+        String encodedEmail = URLEncoder.encode(email, StandardCharsets.UTF_8);
+        String payload = "?email=" + encodedEmail + "&type=login&platform=";
         return invoke(baseUri + REQUEST_CODE_V4 + payload, HttpMethod.POST, "application/x-www-form-urlencoded",
                 "header_clientlang", "en");
     }
@@ -204,6 +204,9 @@ public class RoborockWebTargets {
 
         String x_mercy_ks = UUID.randomUUID().toString().substring(0, 16);
         SignCodeV3 signCodeV3 = signKeyV3(baseUri, x_mercy_ks);
+        if (signCodeV3 == null || signCodeV3.data == null || signCodeV3.data.k == null) {
+            throw new RoborockException("Failed to obtain signCodeV3 or its required data for loginV4.");
+        }
         String x_mercy_k = signCodeV3.data.k;
         String payload = "?country=" + country + "&countryCode=" + countryCode + "&email="
                 + URLEncoder.encode(email, StandardCharsets.UTF_8) + "&code=" + twofa

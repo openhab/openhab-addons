@@ -220,7 +220,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
         if (baseUri.isEmpty()) {
             try {
                 GetUrlByEmail getUrlByEmail = webTargets.getUrlByEmail(localConfig.email);
-                if (getUrlByEmail != null) {
+                if (getUrlByEmail != null && getUrlByEmail.data != null) {
                     baseUri = getUrlByEmail.data.url;
                     country = getUrlByEmail.data.country;
                     countryCode = getUrlByEmail.data.countrycode;
