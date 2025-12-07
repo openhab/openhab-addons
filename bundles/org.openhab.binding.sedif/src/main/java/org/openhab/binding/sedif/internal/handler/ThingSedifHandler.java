@@ -100,9 +100,7 @@ public class ThingSedifHandler extends BaseThingHandler {
     private final ExpiringDayCache<ContractDetail> contractDetail;
     private final ExpiringDayCache<MeterReading> consumption;
 
-    protected final Gson gson;
-
-    protected @Nullable SedifConfiguration config;
+    private final Gson gson;
 
     public ThingSedifHandler(Thing thing, LocaleProvider localeProvider, TimeZoneProvider timeZoneProvider, Gson gson) {
         super(thing);
@@ -178,7 +176,6 @@ public class ThingSedifHandler extends BaseThingHandler {
     @Override
     public synchronized void initialize() {
         SedifConfiguration lcConfig = getConfigAs(SedifConfiguration.class);
-        config = lcConfig;
 
         loadSedifState();
 
