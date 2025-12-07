@@ -49,12 +49,12 @@ public class SedifDiscoveryService extends AbstractThingHandlerDiscoveryService<
         implements SedifListener {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_METER);
-    private static final int SCAN_DURATION_IN_S = 60;
+    private static final int SCAN_DURATION_IN_S = 10;
 
     private final Logger logger = LoggerFactory.getLogger(SedifDiscoveryService.class);
 
     public SedifDiscoveryService() {
-        super(BridgeSedifWebHandler.class, SCAN_DURATION_IN_S);
+        super(BridgeSedifWebHandler.class, SUPPORTED_THING_TYPES, SCAN_DURATION_IN_S);
     }
 
     @Override
@@ -65,22 +65,13 @@ public class SedifDiscoveryService extends AbstractThingHandlerDiscoveryService<
 
     @Override
     public void deactivate() {
-        super.deactivate();
         thingHandler.removeListener(this);
+        super.deactivate();
     }
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypes() {
         return SUPPORTED_THING_TYPES;
-    }
-
-    @Override
-    protected void startBackgroundDiscovery() {
-
-    }
-
-    @Override
-    protected void stopBackgroundDiscovery() {
     }
 
     @Override
@@ -92,7 +83,7 @@ public class SedifDiscoveryService extends AbstractThingHandlerDiscoveryService<
         }
 
         SedifHttpApi api = bridgeHandler.getSedifApi();
-        HashMap<String, Contract> contracts = api.getAllContracts();
+        Map<String, Contract> contracts = api.getAllContracts();
         for (Contract contract : contracts.values()) {
             detectNewWaterMeterFromContract(contract);
         }

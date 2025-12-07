@@ -20,6 +20,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -445,7 +446,7 @@ public class SedifHttpApi {
         return contractDict.get(contractName);
     }
 
-    public HashMap<String, Contract> getAllContracts() {
+    public Map<String, Contract> getAllContracts() {
         return contractDict;
     }
 }

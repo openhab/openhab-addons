@@ -17,7 +17,7 @@ import java.security.NoSuchAlgorithmException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.TimeUnit;
@@ -126,7 +126,7 @@ public class BridgeSedifWebHandler extends BaseBridgeHandler {
             try {
                 SedifBridgeConfiguration config = getConfigAs(SedifBridgeConfiguration.class);
                 sedifApi.connectionInit(config.username, config.password);
-                HashMap<String, Contract> contracts = sedifApi.getAllContracts();
+                Map<String, Contract> contracts = sedifApi.getAllContracts();
                 for (Contract contract : contracts.values()) {
                     fireOnContractReceivedEvent(contract);
                 }
