@@ -32,6 +32,7 @@ import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
+import org.openhab.core.thing.binding.ThingHandler;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
@@ -56,9 +57,16 @@ public class SedifDiscoveryService extends AbstractThingHandlerDiscoveryService<
         super(BridgeSedifWebHandler.class, SCAN_DURATION_IN_S);
     }
 
-    public SedifDiscoveryService(BridgeSedifWebHandler controllerHandler) {
-        this();
-        setThingHandler(controllerHandler);
+    @Override
+    public void setThingHandler(ThingHandler handler) {
+        super.setThingHandler(handler);
+        thingHandler.addListener(this);
+    }
+
+    @Override
+    public void deactivate() {
+        super.deactivate();
+        thingHandler.removeListener(this);
     }
 
     @Override
@@ -68,14 +76,11 @@ public class SedifDiscoveryService extends AbstractThingHandlerDiscoveryService<
 
     @Override
     protected void startBackgroundDiscovery() {
-        logger.debug("Start Sedif device background discovery");
-        thingHandler.addListener(this);
+
     }
 
     @Override
     protected void stopBackgroundDiscovery() {
-        logger.debug("Stop Sedif device background discovery");
-        thingHandler.removeListener(this);
     }
 
     @Override
@@ -91,22 +96,17 @@ public class SedifDiscoveryService extends AbstractThingHandlerDiscoveryService<
         for (Contract contract : contracts.values()) {
             detectNewWaterMeterFromContract(contract);
         }
-
-        // Start the search for new devices
-        thingHandler.addListener(this);
     }
 
     @Override
     public synchronized void abortScan() {
         logger.debug("Sedif discovery: Abort {}", thingHandler.getThing().getUID());
-        thingHandler.removeListener(this);
         super.abortScan();
     }
 
     @Override
     protected synchronized void stopScan() {
         logger.debug("Sedif discovery: Stop {}", thingHandler.getThing().getUID());
-        thingHandler.removeListener(this);
         super.stopScan();
     }
 
