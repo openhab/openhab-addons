@@ -18,7 +18,7 @@
 			</parameter>
 			<parameter name="twofa" type="text">
 				<label>2FA</label>
-				<description>2FA code from email</description>
+				<description>2FA code from email. Leave blank until code is received via email</description>
 				<context>password</context>
 			</parameter>
 		</config-description>
