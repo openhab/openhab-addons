@@ -102,7 +102,7 @@ public class ThingSedifHandler extends BaseThingHandler {
 
     protected final Gson gson;
 
-    protected SedifConfiguration config;
+    protected @Nullable SedifConfiguration config;
 
     public ThingSedifHandler(Thing thing, LocaleProvider localeProvider, TimeZoneProvider timeZoneProvider, Gson gson) {
         super(thing);
@@ -173,12 +173,13 @@ public class ThingSedifHandler extends BaseThingHandler {
                         return null;
                     }
                 });
-
-        config = getConfigAs(SedifConfiguration.class);
     }
 
     @Override
     public synchronized void initialize() {
+        SedifConfiguration lcConfig = getConfigAs(SedifConfiguration.class);
+        config = lcConfig;
+
         loadSedifState();
 
         if (sedifState.getLastIndexDate() == null) {
@@ -189,9 +190,9 @@ public class ThingSedifHandler extends BaseThingHandler {
         this.contractDetail.invalidate();
         this.consumption.invalidate();
 
-        if (config.seemsValid()) {
-            contractName = config.contractId;
-            numCompteur = config.meterId;
+        if (lcConfig.seemsValid()) {
+            contractName = lcConfig.contractId;
+            numCompteur = lcConfig.meterId;
             updateStatus(ThingStatus.UNKNOWN);
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,

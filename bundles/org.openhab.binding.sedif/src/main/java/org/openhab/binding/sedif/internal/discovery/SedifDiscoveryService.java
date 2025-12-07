@@ -16,6 +16,7 @@ import static org.openhab.binding.sedif.internal.constants.SedifBindingConstants
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -139,9 +140,7 @@ public class SedifDiscoveryService extends AbstractThingHandlerDiscoveryService<
                         properties.put(PROPERTY_ELMB, compteInfo.eLmb);
                         properties.put(PROPERTY_NUM_METER, compteInfo.numCompteur);
                         properties.put(PROPERTY_ID_PDS, compteInfo.idPds);
-                        if (contract.name != null) {
-                            properties.put(PROPERTY_CONTRACT_ID, contract.name);
-                        }
+                        properties.put(PROPERTY_CONTRACT_ID, Objects.requireNonNull(contract.name));
 
                         DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID)
                                 .withProperties(properties).withLabel("Water Meter " + compteInfo.numCompteur)
