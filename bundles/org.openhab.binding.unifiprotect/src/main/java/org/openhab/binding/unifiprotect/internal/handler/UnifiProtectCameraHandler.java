@@ -133,6 +133,7 @@ public class UnifiProtectCameraHandler extends UnifiProtectAbstractDeviceHandler
                     try {
                         volume = ((DecimalType) command).intValue();
                     } catch (Exception e) {
+                        logger.debug("Error parsing mic volume command: {}", command, e);
                         break;
                     }
                     volume = Math.max(0, Math.min(100, volume));
@@ -234,7 +235,10 @@ public class UnifiProtectCameraHandler extends UnifiProtectAbstractDeviceHandler
             updateStatus(ThingStatus.ONLINE);
         }
 
-        updateIntegerChannel(UnifiProtectBindingConstants.CHANNEL_MIC_VOLUME, camera.micVolume);
+        CameraFeatureFlags flags = camera.featureFlags;
+        if (flags != null && flags.hasMic) {
+            updateDimmerChannel(UnifiProtectBindingConstants.CHANNEL_MIC_VOLUME, camera.micVolume);
+        }
 
         OsdSettings osd = camera.osdSettings;
         if (osd != null) {
@@ -264,7 +268,9 @@ public class UnifiProtectCameraHandler extends UnifiProtectAbstractDeviceHandler
             updateApiValueChannel(UnifiProtectBindingConstants.CHANNEL_VIDEO_MODE, videoMode);
         }
 
-        updateIntegerChannel(UnifiProtectBindingConstants.CHANNEL_ACTIVE_PATROL_SLOT, camera.activePatrolSlot);
+        if (camera.activePatrolSlot != null) {
+            updateIntegerChannel(UnifiProtectBindingConstants.CHANNEL_ACTIVE_PATROL_SLOT, camera.activePatrolSlot);
+        }
         updateRtspsChannels();
     }
 
@@ -495,7 +501,7 @@ public class UnifiProtectCameraHandler extends UnifiProtectAbstractDeviceHandler
         CameraFeatureFlags flags = camera.featureFlags;
         if (flags != null) {
             if (flags.hasMic) {
-                addChannel(UnifiProtectBindingConstants.CHANNEL_MIC_VOLUME, CoreItemFactory.NUMBER,
+                addChannel(UnifiProtectBindingConstants.CHANNEL_MIC_VOLUME, CoreItemFactory.DIMMER,
                         UnifiProtectBindingConstants.CHANNEL_MIC_VOLUME, channelAdd, activeChannelIds);
             }
             if (flags.hasLedStatus) {

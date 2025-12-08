@@ -65,11 +65,7 @@ import com.google.gson.GsonBuilder;
  */
 @NonNullByDefault
 public class UnifiProtectNVRHandler extends BaseBridgeHandler {
-
     private final Logger logger = LoggerFactory.getLogger(UnifiProtectNVRHandler.class);
-
-    private @Nullable UnifiProtectNVRConfiguration config;
-
     private @Nullable UniFiProtectApiClient apiClient;
     private @Nullable ScheduledFuture<?> pollTask;
     private @Nullable ScheduledFuture<?> reconnectTask;

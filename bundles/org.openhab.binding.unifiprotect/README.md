@@ -104,7 +104,7 @@ No channels.
 
 | Channel ID                             | Item Type   | RW | Description                                                                                          | Advanced |
 |----------------------------------------|-------------|----|------------------------------------------------------------------------------------------------------|----------|
-| mic-volume                             | Number      | RW | Microphone volume (0-100)                                                                            | false    |
+| mic-volume                             | Dimmer      | RW | Microphone volume (0-100)                                                                            | false    |
 | video-mode                             | String      | RW | Camera video mode (e.g., `default`, `highFps`, `sport`, `slowShutter`, `lprReflex`, `lprNoneReflex`) | false    |
 | hdr-type                               | String      | RW | HDR mode (`auto`, `on`, `off`)                                                                       | false    |
 | osd-name                               | Switch      | RW | Show name on OSD                                                                                     | false    |
@@ -120,7 +120,7 @@ No channels.
 | rtsp-url-medium                        | String      | R  | RTSP stream URL for medium quality                                                                   | true     |
 | rtsp-url-low                           | String      | R  | RTSP stream URL for low quality                                                                      | true     |
 | rtsp-url-package                       | String      | R  | RTSP stream URL for package quality                                                                  | true     |
-| snapshot                               | Image       | R  | Snapshot image. Send a `REFRESH` command to update.                                                    | false    |
+| snapshot                               | Image       | R  | Snapshot image. Send a `REFRESH` command to update.                                                  | false    |
 | snapshot-url                           | String      | R  | Snapshot image URL                                                                                   | true     |
 | motion-contact                         | Contact     | R  | Motion state (OPEN = motion detected)                                                                | false    |
 | motion-snapshot                        | Image       | R  | Snapshot captured around motion event                                                                | false    |
@@ -268,7 +268,7 @@ Bridge unifiprotect:nvr:myNvr "UniFi Protect NVR" [ hostname="192.168.1.10", tok
 
 ```java
 // Camera
-Number  Cam_Front_MicVolume        "Mic Volume [%d]"                    { channel="unifiprotect:camera:myNvr:frontdoor:mic-volume" }
+Dimmer  Cam_Front_MicVolume        "Mic Volume [%d %%]"                 { channel="unifiprotect:camera:myNvr:frontdoor:mic-volume" }
 String  Cam_Front_VideoMode        "Video Mode [%s]"                    { channel="unifiprotect:camera:myNvr:frontdoor:video-mode" }
 String  Cam_Front_HDR              "HDR [%s]"                           { channel="unifiprotect:camera:myNvr:frontdoor:hdr-type" }
 Switch  Cam_Front_OSD_Name         "OSD Name"                           { channel="unifiprotect:camera:myNvr:frontdoor:osd-name" }

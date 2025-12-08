@@ -34,6 +34,7 @@ import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
+import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.MetricPrefix;
@@ -140,6 +141,10 @@ public abstract class UnifiProtectAbstractDeviceHandler<T extends Device> extend
 
     protected void updateIntegerChannel(String channelId, @Nullable Integer value) {
         updateState(channelId, value == null ? UnDefType.NULL : new DecimalType(value));
+    }
+
+    protected void updateDimmerChannel(String channelId, @Nullable Integer value) {
+        updateState(channelId, value == null ? UnDefType.NULL : new PercentType(value));
     }
 
     protected void updateStringChannel(String channelId, @Nullable String value) {

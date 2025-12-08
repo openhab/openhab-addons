@@ -481,7 +481,7 @@
 	</channel-type>
 
 	<channel-type id="mic-volume">
-		<item-type>Number</item-type>
+		<item-type>Dimmer</item-type>
 		<label>Microphone Volume</label>
 		<description>Microphone volume (0-100)</description>
 		<tags>
