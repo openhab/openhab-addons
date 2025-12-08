@@ -148,6 +148,7 @@ public class UnifiProtectLightHandler extends UnifiProtectAbstractDeviceHandler<
                     try {
                         value = ((DecimalType) command).intValue();
                     } catch (Exception e) {
+                        logger.debug("Error parsing PIR sensitivity command", e);
                         break;
                     }
                     value = Math.max(0, Math.min(100, value));
@@ -161,6 +162,7 @@ public class UnifiProtectLightHandler extends UnifiProtectAbstractDeviceHandler<
                     try {
                         value = ((DecimalType) command).intValue();
                     } catch (Exception e) {
+                        logger.debug("Error parsing LED level command", e);
                         break;
                     }
                     value = Math.max(1, Math.min(6, value));

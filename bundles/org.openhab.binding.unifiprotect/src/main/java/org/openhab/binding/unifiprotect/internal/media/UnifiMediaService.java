@@ -29,19 +29,57 @@ import org.openhab.core.thing.ThingUID;
 @NonNullByDefault
 public interface UnifiMediaService {
 
+    /**
+     * Register a camera handler and its associated streams.
+     * 
+     * @param handler The camera handler to register.
+     * @param streams The streams associated with the camera handler.
+     */
     void registerHandler(UnifiProtectCameraHandler handler, Map<String, List<URI>> streams);
 
+    /**
+     * Unregister a camera handler and its associated streams.
+     * 
+     * @param handler The camera handler to unregister.
+     */
     void unregisterHandler(UnifiProtectCameraHandler handler);
 
+    /**
+     * Get a camera handler by its thing UID.
+     * 
+     * @param thingUID The thing UID of the camera handler to get.
+     * @return The camera handler, or null if not found.
+     */
     @Nullable
     UnifiProtectCameraHandler getHandler(ThingUID thingUID);
 
+    /**
+     * Check if the media service is healthy.
+     * 
+     * @return true if the media service is healthy, false otherwise.
+     */
     boolean isHealthy();
 
+    /**
+     * Get the base path for the media streams.
+     * 
+     * @return The base path for the media streams.
+     */
     String getPlayBasePath();
 
+    /**
+     * Get the base path for serving images.
+     * 
+     * @return The base path for serving images.
+     */
     String getImageBasePath();
 
+    /**
+     * Get the base URL for a go2rtc stream.
+     * 
+     * @param streamId The ID of the stream to get the base URL for.
+     * @return The base URL for the go2rtc stream, or null if not found.
+     */
     @Nullable
     String getGo2RtcBaseForStream(String streamId);
 }

@@ -115,11 +115,10 @@ public class UniFiProtectApiClient implements Closeable {
     @Override
     public void close() throws IOException {
         logger.debug("Closing UniFiProtectApiClient");
-        Exception ex = null;
         try {
             wsClient.stop();
         } catch (Exception e) {
-            throw new IOException("Failed to stop client", ex);
+            throw new IOException("Failed to stop client", e);
         }
     }
 
@@ -314,6 +313,7 @@ public class UniFiProtectApiClient implements Closeable {
         multi.close();
         Request req = newRequest(HttpMethod.POST, path);
         req.content(multi);
+        req.header(HttpHeader.ACCEPT, "application/json");
         try {
             throttleRequest();
             ContentResponse resp = req.send();

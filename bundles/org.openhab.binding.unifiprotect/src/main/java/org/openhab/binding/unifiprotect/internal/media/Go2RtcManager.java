@@ -49,7 +49,7 @@ import org.slf4j.LoggerFactory;
 public class Go2RtcManager {
     private final Logger logger = LoggerFactory.getLogger(Go2RtcManager.class);
     private final ScheduledExecutorService exec = Executors.newSingleThreadScheduledExecutor(r -> {
-        Thread t = new Thread(r, "go2rtc-supervisor");
+        Thread t = new Thread(r, "OH-binding-unifiprotect-go2rtc-supervisor");
         t.setDaemon(true);
         return t;
     });

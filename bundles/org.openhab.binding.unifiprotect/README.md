@@ -36,7 +36,7 @@ See [Binding Configuration](#binding-configuration) to enable/disable downloadin
 
 ## Discovery
 
-- Add the `nvr` bridge by entering its Hostname/IP and an Bearer Token.
+- Add the `nvr` bridge by entering its Hostname/IP and a Bearer Token.
 - Once the NVR is ONLINE, Cameras, Floodlights, and Sensors are discovered automatically and appear in the Inbox.
 - Approve discovered things to add them to your system.
   Manual creation is also possible using `deviceId`.
@@ -45,10 +45,10 @@ See [Binding Configuration](#binding-configuration) to enable/disable downloadin
 
 | Name             | Type    | Description                                                                                                                                                                                                                                                                         | Required |
 |------------------|---------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------|
-| downloadBinaries | boolean | Download binaries if they are not on the system PATH. This setting is used to control whether the binding should download the native binaries if they are not found. By default, the binding will download the binaries if they are not on the system PATH for supported platforms | yes      |
+| downloadBinaries | boolean | Download binaries if they are not on the system PATH. This setting controls whether the binding should download the native binaries if they are not found. By default, the binding will download the binaries if they are not on the system PATH for supported platforms | yes      |
 | useStun          | boolean | Use STUN for external IP discovery. This will allow camera streams to work behind NATs when outside your local network (e.g. when using the openHAB cloud service) and is enabled by default.                                                                                      | yes      |
 
-Note: Enabling STUN will incur an approximately 5 second delay delivering the stream to clients as it discovers your external IP and pins a port on your router for streams. If you are not using the openHAB cloud service with cameras, disabling STUN will allow for near instant stream starts (video will start within a second of loading) on your local network or over a VPN.
+Note: Enabling STUN will incur an approximately 5-second delay delivering the stream to clients as it discovers your external IP and pins a port on your router for streams. If you are not using the openHAB cloud service with cameras, disabling STUN will allow for near-instant stream starts (video will start within a second of loading) on your local network or over a VPN.
 
 ## Thing Configuration
 
@@ -120,7 +120,7 @@ No channels.
 | rtsp-url-medium                        | String      | R  | RTSP stream URL for medium quality                                                                   | true     |
 | rtsp-url-low                           | String      | R  | RTSP stream URL for low quality                                                                      | true     |
 | rtsp-url-package                       | String      | R  | RTSP stream URL for package quality                                                                  | true     |
-| snapshot                               | Image       | R  | Snapshot image. Send a REFRESH command to update.                                                    | false    |
+| snapshot                               | Image       | R  | Snapshot image. Send a `REFRESH` command to update.                                                    | false    |
 | snapshot-url                           | String      | R  | Snapshot image URL                                                                                   | true     |
 | motion-contact                         | Contact     | R  | Motion state (OPEN = motion detected)                                                                | false    |
 | motion-snapshot                        | Image       | R  | Snapshot captured around motion event                                                                | false    |
@@ -232,7 +232,7 @@ You can either use the String URL or select the Item linked to the channel in th
 
 ![video widget settings](doc/video-card.png)
 
-Its also highly recommended to use the camera's Snapshot URL property or the Item linked to the `snapshot-url` channel to get the live snapshot image URL which can be used for the poster image option in the MainUI video widget.
+It's also highly recommended to use the camera's Snapshot URL property or the Item linked to the `snapshot-url` channel to get the live snapshot image URL which can be used for the poster image option in the MainUI video widget.
 
 An example snapshot image URL would be:
 
@@ -256,11 +256,11 @@ Replace the IDs with your own thing and item names.
 
 ### Things (`.things`)
 
-```
+```java
 Bridge unifiprotect:nvr:myNvr "UniFi Protect NVR" [ hostname="192.168.1.10", token="YOUR_LONG_TOKEN" ] {
-	Thing camera:frontdoor [ deviceId="60546f80e4b0abcd12345678" ]
-	Thing light:driveway [ deviceId="60a1b2c3d4e5f67890123456" ]
-	Thing sensor:garagedoor [ deviceId="60112233445566778899aabb" ]
+    Thing camera:frontdoor [ deviceId="60546f80e4b0abcd12345678" ]
+    Thing light:driveway [ deviceId="60a1b2c3d4e5f67890123456" ]
+    Thing sensor:garagedoor [ deviceId="60112233445566778899aabb" ]
 }
 ```
 
@@ -309,26 +309,26 @@ Contact Sensor_Garage_Tamper       "Tamper [%s]"                        { channe
 
 ```perl
 sitemap home label="Home" {
-	Frame label="Front Door Camera" {
-		Text item=Cam_Front_Motion
-		Image item=Cam_Front_MotionSnapshot
-	}
-	Frame label="Driveway Floodlight" {
-		Switch item=Light_Driveway_OnOff
-		Text item=Light_Driveway_IsDark
-		Text item=Light_Driveway_LastMotion
-		Selection item=Light_Driveway_Mode mappings=[always="Always", motion="Motion", off="Off"]
-		Selection item=Light_Driveway_EnableAt mappings=[fulltime="Full time", dark="Dark"]
-		Setpoint item=Light_Driveway_PIR_Sens minValue=0 maxValue=100 step=1
-		Setpoint item=Light_Driveway_LED_Level minValue=1 maxValue=6 step=1
-	}
-	Frame label="Garage Sensor" {
-		Text item=Sensor_Garage_Contact
-		Text item=Sensor_Garage_T
-		Text item=Sensor_Garage_Humidity
-		Text item=Sensor_Garage_L
-		Text item=Sensor_Garage_Battery
-	}
+    Frame label="Front Door Camera" {
+        Text item=Cam_Front_Motion
+        Image item=Cam_Front_MotionSnapshot
+    }
+    Frame label="Driveway Floodlight" {
+        Switch item=Light_Driveway_OnOff
+        Text item=Light_Driveway_IsDark
+        Text item=Light_Driveway_LastMotion
+        Selection item=Light_Driveway_Mode mappings=[always="Always", motion="Motion", off="Off"]
+        Selection item=Light_Driveway_EnableAt mappings=[fulltime="Full time", dark="Dark"]
+        Setpoint item=Light_Driveway_PIR_Sens minValue=0 maxValue=100 step=1
+        Setpoint item=Light_Driveway_LED_Level minValue=1 maxValue=6 step=1
+    }
+    Frame label="Garage Sensor" {
+        Text item=Sensor_Garage_Contact
+        Text item=Sensor_Garage_T
+        Text item=Sensor_Garage_Humidity
+        Text item=Sensor_Garage_L
+        Text item=Sensor_Garage_Battery
+    }
 }
 ```
 
@@ -340,105 +340,105 @@ Examples showing trigger channels.
 // Camera motion start/update
 rule "Front door motion alert"
 when
-	Channel "unifiprotect:camera:myNvr:frontdoor:motion-start" triggered
+    Channel "unifiprotect:camera:myNvr:frontdoor:motion-start" triggered
 then
-	logInfo("protect", "Front door motion started")
+    logInfo("protect", "Front door motion started")
 end
 
 rule "Front door motion update"
 when
-	Channel "unifiprotect:camera:myNvr:frontdoor:motion-update" triggered
+    Channel "unifiprotect:camera:myNvr:frontdoor:motion-update" triggered
 then
-	logInfo("protect", "Front door motion update")
+    logInfo("protect", "Front door motion update")
 end
 
 // Camera smart detection with payload
 rule "Front door smart zone detect"
 when
-	Channel "unifiprotect:camera:myNvr:frontdoor:smart-detect-zone-start" triggered
+    Channel "unifiprotect:camera:myNvr:frontdoor:smart-detect-zone-start" triggered
 then
-	// Access payload from the trigger channel event (person, vehicle, package, licensePlate, face, animal, none)
-	val String payload = receivedEvent.getEvent()
-	logInfo("protect", "Smart zone detection started: {}", payload)
+    // Access payload from the trigger channel event (person, vehicle, package, licensePlate, face, animal, none)
+    val String payload = receivedEvent.getEvent()
+    logInfo("protect", "Smart zone detection started: {}", payload)
 end
 
 rule "Front door smart zone update"
 when
-	Channel "unifiprotect:camera:myNvr:frontdoor:smart-detect-zone-update" triggered
+    Channel "unifiprotect:camera:myNvr:frontdoor:smart-detect-zone-update" triggered
 then
-	val String payload = receivedEvent.getEvent()
-	logInfo("protect", "Smart zone detection updated: {}", payload)
+    val String payload = receivedEvent.getEvent()
+    logInfo("protect", "Smart zone detection updated: {}", payload)
 end
 
 // Camera smart audio detect with payload
 rule "Front door smart audio detect"
 when
-	Channel "unifiprotect:camera:myNvr:frontdoor:smart-audio-detect-start" triggered
+    Channel "unifiprotect:camera:myNvr:frontdoor:smart-audio-detect-start" triggered
 then
-	val String payload = receivedEvent.getEvent() // alrmSmoke, alrmCmonx, alrmSiren, alrmBabyCry, alrmSpeak, alrmBark, alrmBurglar, alrmCarHorn, alrmGlassBreak, none
-	logInfo("protect", "Smart audio detected: {}", payload)
+    val String payload = receivedEvent.getEvent() // alrmSmoke, alrmCmonx, alrmSiren, alrmBabyCry, alrmSpeak, alrmBark, alrmBurglar, alrmCarHorn, alrmGlassBreak, none
+    logInfo("protect", "Smart audio detected: {}", payload)
 end
 
 rule "Front door smart audio update"
 when
-	Channel "unifiprotect:camera:myNvr:frontdoor:smart-audio-detect-update" triggered
+    Channel "unifiprotect:camera:myNvr:frontdoor:smart-audio-detect-update" triggered
 then
-	val String payload = receivedEvent.getEvent()
-	logInfo("protect", "Smart audio detection updated: {}", payload)
+    val String payload = receivedEvent.getEvent()
+    logInfo("protect", "Smart audio detection updated: {}", payload)
 end
 
 // Camera doorbell ring with payload filtering
 rule "Front doorbell pressed"
 when
-	Channel "unifiprotect:camera:myNvr:frontdoor:ring" triggered PRESSED
+    Channel "unifiprotect:camera:myNvr:frontdoor:ring" triggered PRESSED
 then
-	logInfo("protect", "Doorbell pressed")
+    logInfo("protect", "Doorbell pressed")
 end
 
 // Or handle any ring payload generically
 rule "Front doorbell ring generic"
 when
-	Channel "unifiprotect:camera:myNvr:frontdoor:ring" triggered
+    Channel "unifiprotect:camera:myNvr:frontdoor:ring" triggered
 then
-	val String payload = receivedEvent.getEvent() // PRESSED, RELEASED
-	logInfo("protect", "Doorbell ring event: {}", payload)
+    val String payload = receivedEvent.getEvent() // PRESSED, RELEASED
+    logInfo("protect", "Doorbell ring event: {}", payload)
 end
 
 // Floodlight PIR motion trigger
 rule "Driveway PIR motion"
 when
-	Channel "unifiprotect:light:myNvr:driveway:pir-motion" triggered
+    Channel "unifiprotect:light:myNvr:driveway:pir-motion" triggered
 then
-	logInfo("protect", "Driveway PIR motion")
-	// Optionally turn on the light for a bit
-	sendCommand(Light_Driveway_OnOff, ON)
-	createTimer(now.plusSeconds(30), [ | sendCommand(Light_Driveway_OnOff, OFF) ])
+    logInfo("protect", "Driveway PIR motion")
+    // Optionally turn on the light for a bit
+    sendCommand(Light_Driveway_OnOff, ON)
+    createTimer(now.plusSeconds(30), [ | sendCommand(Light_Driveway_OnOff, OFF) ])
 end
 
 // Sensor opened/closed with payload
 rule "Garage sensor opened"
 when
-	Channel "unifiprotect:sensor:myNvr:garagedoor:opened" triggered
+    Channel "unifiprotect:sensor:myNvr:garagedoor:opened" triggered
 then
-	val String payload = receivedEvent.getEvent() // door, window, garage, leak, none
-	logInfo("protect", "Garage sensor opened: {}", payload)
+    val String payload = receivedEvent.getEvent() // door, window, garage, leak, none
+    logInfo("protect", "Garage sensor opened: {}", payload)
 end
 
 rule "Garage sensor closed"
 when
-	Channel "unifiprotect:sensor:myNvr:garagedoor:closed" triggered
+    Channel "unifiprotect:sensor:myNvr:garagedoor:closed" triggered
 then
-	val String payload = receivedEvent.getEvent() // door, window, garage, leak, none
-	logInfo("protect", "Garage sensor closed: {}", payload)
+    val String payload = receivedEvent.getEvent() // door, window, garage, leak, none
+    logInfo("protect", "Garage sensor closed: {}", payload)
 end
 
 // Sensor water leak
 rule "Garage water leak"
 when
-	Channel "unifiprotect:sensor:myNvr:garagedoor:water-leak" triggered
+    Channel "unifiprotect:sensor:myNvr:garagedoor:water-leak" triggered
 then
-	val String payload = receivedEvent.getEvent() // door, window, garage, leak, none
-	logWarn("protect", "Water leak detected by garage sensor: {}", payload)
+    val String payload = receivedEvent.getEvent() // door, window, garage, leak, none
+    logWarn("protect", "Water leak detected by garage sensor: {}", payload)
 end
 ```
 

@@ -312,7 +312,7 @@
 	<channel-type id="contact">
 		<item-type>Contact</item-type>
 		<label>Contact</label>
-		<description>Contact state (open/closed)</description>
+		<description>Contact state (OPEN/CLOSED)</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>OpenState</tag>
@@ -651,7 +651,7 @@
 	<channel-type id="smart-detect-audio-contact">
 		<item-type>Contact</item-type>
 		<label>Smart Detect Audio</label>
-		<description>Smart audio detect state (OPEN = smart audio detect detected)</description>
+		<description>Smart audio detection state (OPEN = audio detection active)</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Noise</tag>
@@ -678,11 +678,12 @@
 	<channel-type id="smart-detect-zone-contact">
 		<item-type>Contact</item-type>
 		<label>Smart Detect Zone</label>
-		<description>Smart detect zone state (OPEN = smart detect zone detected)</description>
+		<description>Smart detect zone state (OPEN = zone detection active)</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Presence</tag>
 		</tags>
+		<config-description-ref uri="thing-type:unifiprotect:latching-contact-config"/>
 	</channel-type>
 	<channel-type id="smart-detect-line" advanced="true">
 		<kind>trigger</kind>
@@ -703,7 +704,7 @@
 	<channel-type id="smart-detect-line-contact">
 		<item-type>Contact</item-type>
 		<label>Smart Detect Line</label>
-		<description>Smart detect line state (OPEN = smart detect line detected)</description>
+		<description>Smart detect line state (OPEN = line detection active)</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Presence</tag>

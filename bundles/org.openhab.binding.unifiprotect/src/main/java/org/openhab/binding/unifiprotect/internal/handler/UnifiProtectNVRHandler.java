@@ -15,7 +15,6 @@ package org.openhab.binding.unifiprotect.internal.handler;
 import java.io.IOException;
 import java.net.URI;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -137,20 +136,16 @@ public class UnifiProtectNVRHandler extends BaseBridgeHandler {
     public void initialize() {
         logger.debug("Initializing NVR");
         shuttingDown = false;
-        config = getConfigAs(UnifiProtectNVRConfiguration.class);
+        final UnifiProtectNVRConfiguration config = getConfigAs(UnifiProtectNVRConfiguration.class);
+        if (config.hostname.isBlank() || config.token.isBlank()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Hostname or token is blank");
+            return;
+        }
         updateStatus(ThingStatus.UNKNOWN);
         scheduler.execute(() -> {
             try {
-                Map<String, String> headers = new HashMap<>();
-                UnifiProtectNVRConfiguration cfg = this.config;
-                if (cfg == null) {
-                    updateStatus(ThingStatus.OFFLINE);
-                    return;
-                }
-                headers.put("Authorization", "Bearer " + cfg.token);
-
-                URI base = URI.create("https://" + cfg.hostname + "/proxy/protect/integration/");
-                UniFiProtectApiClient apiClient = new UniFiProtectApiClient(httpClient, base, gson, cfg.token,
+                URI base = URI.create("https://" + config.hostname + "/proxy/protect/integration/");
+                UniFiProtectApiClient apiClient = new UniFiProtectApiClient(httpClient, base, gson, config.token,
                         scheduler);
                 this.apiClient = apiClient;
 
@@ -564,7 +559,7 @@ public class UnifiProtectNVRHandler extends BaseBridgeHandler {
         }
     }
 
-    private void stopPendingUpdateTasks() {
+    private synchronized void stopPendingUpdateTasks() {
         for (Map.Entry<String, PendingUpdate> e : pendingEventUpdates.entrySet()) {
             PendingUpdate pu = e.getValue();
             ScheduledFuture<?> f1 = pu.debounceFuture;

@@ -25,11 +25,11 @@
 		<parameter name="sequence" type="text" required="false">
 			<label>Sequence</label>
 			<description>The order in which a snapshot is taken relative to the event or item state change. By default, a
-				snapshot is taken before the trigger event fires or item state updates so its immediately available for use in
-				rules. This however can cause a slight delay in the rule execution if the snapshot itself is delayed. To take a
+				snapshot is taken before the trigger event fires or item state updates so it's immediately available for use in
+				rules. This, however, can cause a slight delay in the rule execution if the snapshot itself is delayed. To take a
 				snapshot after the event trigger fires or item state updates, you can set this to "after". If you do not want to
 				take a snapshot on a trigger event or item state update, you can set this to "none". Image items can also be updated
-				in rules using either the setImage action (`actions.HTTP.setImage`) or by sending a Refresh command to the item.</description>
+				in rules using either the setImage action (`actions.HTTP.setImage`) or by sending a `REFRESH` command to the item.</description>
 			<default>before</default>
 			<required>true</required>
 			<options>
