@@ -71,8 +71,8 @@ class ScenarioHandlerTest {
 
     private @NonNullByDefault({}) ScenarioHandler fixture;
 
-    private @NonNullByDefault({}) @Mock BoschHttpClient httpClient;
-    private @NonNullByDefault({}) @Mock Request request;
+    private @Mock @NonNullByDefault({}) BoschHttpClient httpClient;
+    private @Mock @NonNullByDefault({}) Request request;
 
     @BeforeEach
     void beforeEach() {

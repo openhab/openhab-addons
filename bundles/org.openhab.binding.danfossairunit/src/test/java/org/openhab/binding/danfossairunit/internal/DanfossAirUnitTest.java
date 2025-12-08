@@ -42,8 +42,8 @@ import org.openhab.core.library.unit.Units;
 @ExtendWith(MockitoExtension.class)
 public class DanfossAirUnitTest {
 
-    private @NonNullByDefault({}) @Mock CommunicationController communicationController;
-    private @NonNullByDefault({}) @Mock TimeZoneProvider timeZoneProvider;
+    private @Mock @NonNullByDefault({}) CommunicationController communicationController;
+    private @Mock @NonNullByDefault({}) TimeZoneProvider timeZoneProvider;
 
     @Test
     void getUnitNameIsReturned() throws IOException {

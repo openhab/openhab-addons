@@ -68,7 +68,7 @@ import ch.qos.logback.classic.Logger;
 @MockitoSettings(strictness = Strictness.LENIENT)
 public class EnergiDataServiceActionsTest {
 
-    private @NonNullByDefault({}) @Mock EnergiDataServiceHandler handler;
+    private @Mock @NonNullByDefault({}) EnergiDataServiceHandler handler;
     private EnergiDataServiceActions actions = new EnergiDataServiceActions();
 
     private Gson gson = new GsonBuilder().registerTypeAdapter(Instant.class, new InstantDeserializer())

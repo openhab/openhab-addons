@@ -58,13 +58,13 @@ public class GroupePSAHandlerTest {
     private @NonNullByDefault({}) GroupePSABridgeHandler bridgeHandler;
     private @NonNullByDefault({}) GroupePSAHandler thingHandler;
 
-    private @NonNullByDefault({}) @Mock ThingHandlerCallback thingCallback;
-    private @NonNullByDefault({}) @Mock ThingHandlerCallback bridgeCallback;
-    private @NonNullByDefault({}) @Mock Thing thing;
-    private @NonNullByDefault({}) @Mock Bridge bridge;
+    private @Mock @NonNullByDefault({}) ThingHandlerCallback thingCallback;
+    private @Mock @NonNullByDefault({}) ThingHandlerCallback bridgeCallback;
+    private @Mock @NonNullByDefault({}) Thing thing;
+    private @Mock @NonNullByDefault({}) Bridge bridge;
 
-    private @NonNullByDefault({}) @Mock OAuthFactory oAuthFactory;
-    private @NonNullByDefault({}) @Mock HttpClient httpClient;
+    private @Mock @NonNullByDefault({}) OAuthFactory oAuthFactory;
+    private @Mock @NonNullByDefault({}) HttpClient httpClient;
 
     static String getResourceFileAsString(String fileName) throws GroupePSACommunicationException {
         try (InputStream is = GroupePSAConnectApi.class.getResourceAsStream(fileName)) {

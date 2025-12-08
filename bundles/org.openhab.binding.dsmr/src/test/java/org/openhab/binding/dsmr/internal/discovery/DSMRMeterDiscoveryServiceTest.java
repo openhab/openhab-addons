@@ -54,9 +54,9 @@ public class DSMRMeterDiscoveryServiceTest {
     private static final String EXPECTED_CONFIGURED_TELEGRAM = "dsmr_50";
     private static final String UNREGISTERED_METER_TELEGRAM = "unregistered_meter";
 
-    private @NonNullByDefault({}) @Mock(answer = Answers.RETURNS_DEEP_STUBS) DSMRBridgeHandler bridge;
-    private @NonNullByDefault({}) @Mock Thing thing;
-    private @NonNullByDefault({}) @Mock DSMRMeterHandler meterHandler;
+    private @Mock @NonNullByDefault({})(answer = Answers.RETURNS_DEEP_STUBS) DSMRBridgeHandler bridge;
+    private @Mock @NonNullByDefault({}) Thing thing;
+    private @Mock @NonNullByDefault({}) DSMRMeterHandler meterHandler;
 
     /**
      * Test if discovery reports when the user has incorrectly configured the binding with the wrong meter types.
