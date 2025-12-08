@@ -64,6 +64,8 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class ServerHandler extends ApiConsumerHandler implements FreeDeviceIntf {
+    private static final Set<String> VPN_SERVERS = Set.of(PPTP, OPENVPN_ROUTED, OPENVPN_BRIDGE, WIREGUARD);
+
     private final Logger logger = LoggerFactory.getLogger(ServerHandler.class);
     private final ChannelUID eventChannelUID;
 
@@ -185,9 +187,13 @@ public class ServerHandler extends ApiConsumerHandler implements FreeDeviceIntf 
         var servers = vpnManager.getDevices();
         servers.forEach(vpnServer -> {
             var groupName = vpnServer.name().replace("_", "-");
-            updateChannelString(groupName, VPN_STATE, vpnServer.state());
-            updateChannelDecimal(groupName, VPN_CONNECTIONS, vpnServer.connectionCount());
-            updateChannelDecimal(groupName, VPN_AUTHENTICATED, vpnServer.authConnectionCount());
+            if (VPN_SERVERS.contains(groupName)) {
+                updateChannelString(groupName, VPN_STATE, vpnServer.state());
+                updateChannelDecimal(groupName, VPN_CONNECTIONS, vpnServer.connectionCount());
+                updateChannelDecimal(groupName, VPN_AUTHENTICATED, vpnServer.authConnectionCount());
+            } else {
+                logger.warn("Unexpected and VPN server type: {}", groupName);
+            }
         });
 
         var connections = vpnManager.getVpnConnections();

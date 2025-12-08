@@ -155,6 +155,12 @@ public class FreeboxOsBindingConstants {
     // Virtual machine channels
     public static final String STATUS = "status";
 
+    // VPN Server channel groups
+    public static final String PPTP = "pptp";
+    public static final String OPENVPN_ROUTED = "openvpn-routed";
+    public static final String OPENVPN_BRIDGE = "openvpn-bridge";
+    public static final String WIREGUARD = "wireguard";
+
     // Repeater channels
     public static final String LED = "led";
     public static final String HOST_COUNT = "host-count";

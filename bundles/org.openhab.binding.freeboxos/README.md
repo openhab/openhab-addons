@@ -212,6 +212,18 @@ The following channels are supported:
 | revolution, delta     | connection-status | rate-down            | Number:DataTransferRate | R           | Current download rate                                                          |
 | revolution, delta     | connection-status | bytes-up             | Number:DataAmount       | R           | Total data uploaded since last restart                                         |
 | revolution, delta     | connection-status | bytes-down           | Number:DataAmount       | R           | Total data downloaded since last restart                                       |
+| revolution, delta     | wireguard         | state                | String                  | R           | Current state of the VPN Server |
+| revolution, delta     | wireguard         | connections          | Number                  | R           | Number of clients connected to the server |
+| revolution, delta     | wireguard         | auth-connections     | Number                  | R           | Number of authenticated clients connected to the server |
+| revolution, delta     | pptp              | state                | String                  | R           | Current state of the VPN Server |
+| revolution, delta     | pptp              | connections          | Number                  | R           | Number of clients connected to the server |
+| revolution, delta     | pptp              | auth-connections     | Number                  | R           | Number of authenticated clients connected to the server |
+| revolution, delta     | openvpn-routed    | state                | String                  | R           | Current state of the VPN Server |
+| revolution, delta     | openvpn-routed    | connections          | Number                  | R           | Number of clients connected to the server |
+| revolution, delta     | openvpn-routed    | auth-connections     | Number                  | R           | Number of authenticated clients connected to the server |
+| revolution, delta     | openvpn-bridge    | state                | String                  | R           | Current state of the VPN Server |
+| revolution, delta     | openvpn-bridge    | connections          | Number                  | R           | Number of clients connected to the server |
+| revolution, delta     | openvpn-bridge    | auth-connections     | Number                  | R           | Number of authenticated clients connected to the server |
 | active-player, player | player-actions    | key-code             | String                  | W           | Simulates pushing a remote control button                                      |
 | active-player         | player-status     | player-status        | String                  | R           | Status of the Freebox TV player                                                |
 | active-player         | player-status     | package              | String                  | R           | Name of the package currently active on the player                             |
