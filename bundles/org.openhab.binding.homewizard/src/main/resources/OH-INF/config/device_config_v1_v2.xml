@@ -4,7 +4,7 @@
 	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
 
-	<config-description uri="thing-type:homewizard:device">
+	<config-description uri="thing-type:homewizard:device_config_v1_v2">
 		<parameter name="ipAddress" type="text" required="true">
 			<label>Network Address</label>
 			<description>The IP or host name of the HomeWizard device.</description>
@@ -16,7 +16,7 @@
 			<advanced>true</advanced>
 			<default>5</default>
 		</parameter>
-		<parameter name="apiVersion" type="integer" min="1">
+		<parameter name="apiVersion" type="text" min="1">
 			<label>API Version</label>
 			<description>The API version for polling the HomeWizard device.</description>
 			<options>
@@ -27,7 +27,7 @@
 			<default>1</default>
 		</parameter>
 		<parameter name="bearerToken" type="text">
-			<label>Bearer Token</label>
+			<label>API v2 Bearer Token</label>
 			<description>The bearer token to be used when using API v2.</description>
 		</parameter>
 	</config-description>

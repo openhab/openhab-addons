@@ -37,7 +37,7 @@ public class HomeWizardConfiguration {
     /**
      * The API version to be used
      */
-    public Integer apiVersion = 1;
+    public String apiVersion = "2";
 
     /**
      * Bearer token for API v2
@@ -45,6 +45,6 @@ public class HomeWizardConfiguration {
     public String bearerToken = "";
 
     public Boolean useApiVersion2() {
-        return apiVersion == 2;
+        return apiVersion.equals("2");
     }
 }

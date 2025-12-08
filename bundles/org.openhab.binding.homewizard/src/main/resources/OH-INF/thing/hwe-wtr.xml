@@ -16,7 +16,7 @@
 			<property name="thingTypeVersion">1</property>
 		</properties>
 
-		<config-description-ref uri="thing-type:homewizard:device"/>
+		<config-description-ref uri="thing-type:homewizard:device_config_v1_v2"/>
 	</thing-type>
 
 	<channel-group-type id="es-water-group">

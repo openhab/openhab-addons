@@ -39,10 +39,10 @@ import org.openhab.core.types.State;
 @NonNullByDefault
 public class HomeWizardHandlerTest {
 
-    protected static final Configuration CONFIG_V1 = createConfig(1);
-    protected static final Configuration CONFIG_V2 = createConfig(2);
+    protected static final Configuration CONFIG_V1 = createConfig("1");
+    protected static final Configuration CONFIG_V2 = createConfig("2");
 
-    protected static Configuration createConfig(int apiVersion) {
+    protected static Configuration createConfig(String apiVersion) {
         final Configuration config = new Configuration();
         config.put("ipAddress", "192.168.1.1");
         config.put("apiVersion", apiVersion);
