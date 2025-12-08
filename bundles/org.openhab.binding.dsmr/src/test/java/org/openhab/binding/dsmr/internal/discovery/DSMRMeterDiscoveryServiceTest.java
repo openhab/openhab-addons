@@ -54,7 +54,7 @@ public class DSMRMeterDiscoveryServiceTest {
     private static final String EXPECTED_CONFIGURED_TELEGRAM = "dsmr_50";
     private static final String UNREGISTERED_METER_TELEGRAM = "unregistered_meter";
 
-    private @Mock @NonNullByDefault({})(answer = Answers.RETURNS_DEEP_STUBS) DSMRBridgeHandler bridge;
+    private @Mock(answer = Answers.RETURNS_DEEP_STUBS) @NonNullByDefault({}) DSMRBridgeHandler bridge;
     private @Mock @NonNullByDefault({}) Thing thing;
     private @Mock @NonNullByDefault({}) DSMRMeterHandler meterHandler;
 
