@@ -462,8 +462,8 @@
 
 	<channel-type id="APISecondsUntilMaxResets" advanced="true">
 		<item-type>Number:Time</item-type>
-		<label>Time until API Max Duration resets</label>
-		<description>Time before the API count resets (in seconds)</description>
+		<label>Time until API count resets</label>
+		<description>Time until the API count resets (in seconds)</description>
 		<category>Time</category>
 		<tags>
 			<tag>Status</tag>
