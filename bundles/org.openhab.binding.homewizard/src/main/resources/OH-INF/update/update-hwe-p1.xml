@@ -51,8 +51,8 @@
 			<update-channel id="batteries_mode" groupIds="batteries">
 				<type>homewizard:hw-batteries-mode</type>
 			</update-channel>
-			<add-channel id="batteries_count" groupIds="batteries">
-				<type>homewizard:hw-batteries-count</type>
+			<add-channel id="batteries_battery_count" groupIds="batteries">
+				<type>homewizard:hw-batteries-battery-count</type>
 			</add-channel>
 		</instruction-set>
 

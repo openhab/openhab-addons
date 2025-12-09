@@ -8,7 +8,7 @@
 		<label>Batteries</label>
 		<channels>
 			<channel id="batteries_mode" typeId="hw-batteries-mode"/>
-			<channel id="batteries_count" typeId="hw-batteries-count"/>
+			<channel id="batteries_battery_count" typeId="hw-batteries-battery-count"/>
 
 			<channel id="batteries_power" typeId="hw-power-advanced">
 				<label>Power</label>
@@ -236,9 +236,9 @@
 		</command>
 	</channel-type>
 
-	<channel-type id="hw-batteries-count">
+	<channel-type id="hw-batteries-battery-count">
 		<item-type>Number</item-type>
-		<label>Batteries Count</label>
+		<label>Battery Count</label>
 		<description>This channel provides the number of connected Plug-In Batteries.</description>
 	</channel-type>
 
