@@ -180,7 +180,7 @@ Bridge tado:home:demo [ username="mail@example.com", password="secret" ] {
 |----------|--------|--------------------------------------------------|------------|
 | `atHome` | Switch | ON if mobile device is in HOME mode, OFF if AWAY | R          |
 | `APICallsRemainingThisDuration`<sup>1)</sup> | Number:Dimensionless | Number of API calls remaining before the maximum is reached              | R         |
-| `APIMaxCallsPerDuration`<sup>1)</sup> | Number:Dimensionless | Maximum API calls allowed per specified duration              | R         |                        |
+| `APIMaxCallsPerDuration`<sup>1)</sup> | Number:Dimensionless | Maximum API calls allowed per specified duration              | R         |
 | `APIMaxDurationSeconds`<sup>1)</sup> | Number:Time | Duration in which the API count rises until maximum (in seconds)              | R         |
 | `APISecondsUntilMaxResets`<sup>1)</sup> | Number:Time | Duration before the API count resets (in seconds)              | R         |
 
