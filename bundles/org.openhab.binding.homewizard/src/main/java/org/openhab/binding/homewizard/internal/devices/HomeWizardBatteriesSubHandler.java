@@ -50,8 +50,7 @@ public class HomeWizardBatteriesSubHandler {
     /**
      * Constructor
      *
-     * @param thing The thing to handle
-     * @param timeZoneProvider The TimeZoneProvider
+     * @param handler The device handler used to communicate with the HomeWizard device
      */
     public HomeWizardBatteriesSubHandler(HomeWizardDeviceHandler handler) {
         this.handler = handler;
@@ -112,7 +111,7 @@ public class HomeWizardBatteriesSubHandler {
     /**
      * Device specific handling of the returned batteries data.
      *
-     * @param data The data obtained form the API call
+     * @param data The data obtained from the API call
      */
     public void handleBatteriesData(String data) {
         HomeWizardBatteriesPayload payload = null;
