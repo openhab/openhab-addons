@@ -111,7 +111,7 @@ public class HomeWizardBatteriesSubHandler {
     /**
      * Device specific handling of the returned batteries data.
      *
-     * @param data The data obtained form the API call
+     * @param data The data obtained from the API call
      */
     public void handleBatteriesData(String data) {
         HomeWizardBatteriesPayload payload = null;
