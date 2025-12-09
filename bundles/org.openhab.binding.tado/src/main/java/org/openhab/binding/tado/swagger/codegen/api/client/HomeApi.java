@@ -62,29 +62,29 @@ public class HomeApi {
     private String APISecondsUntilMaxResets;
 
     private String createStringForJson(ContentResponse resp) {
-        String stringForJson = "{";
+        StringBuilder stringForJson = new StringBuilder();
         String stringFromResponse = resp.getContentAsString();
         String extractedRateLimitInfo = extractRateLimitInfo(resp);
-        stringForJson = stringForJson.concat(extractedRateLimitInfo).concat(stringFromResponse.substring(1));
-        return stringForJson;
+        stringForJson.append(extractedRateLimitInfo).append(stringFromResponse.substring(1));
+        return stringForJson.toString();
     }
 
     private String createStringListForJson(ContentResponse resp) {
-        String stringForJson = "";
+        StringBuilder stringForJson = new StringBuilder();
         String stringFromResponse = resp.getContentAsString();
         String splitString = "\"name\":";
         String extractedRateLimitInfo = extractRateLimitInfo(resp);
         String[] jsonSubstrings = stringFromResponse.split(splitString);
 
         for (int x = 0; x < jsonSubstrings.length - 1; x++) {
-            stringForJson = stringForJson.concat(jsonSubstrings[x].concat(extractedRateLimitInfo).concat(splitString));
+            stringForJson.append(jsonSubstrings[x]).append(extractedRateLimitInfo).append(splitString);
         }
-        stringForJson = stringForJson.concat(jsonSubstrings[jsonSubstrings.length - 1]);
-        return stringForJson;
+        stringForJson.append(jsonSubstrings[jsonSubstrings.length - 1]);
+        return stringForJson.toString();
     }
 
     private String extractRateLimitInfo(ContentResponse resp) {
-        String extractedString = "";
+        StringBuilder extractedString = new StringBuilder();
         HttpFields headersfields = resp.getHeaders();
         String rateLimitPolicyValueString = headersfields.get("RateLimit-Policy");
         if (rateLimitPolicyValueString != null) {
@@ -92,12 +92,11 @@ public class HomeApi {
             for (int x = 0; x < rateLimitPolicyValues.length; x++) {
                 if (rateLimitPolicyValues[x].startsWith("q=")) {
                     APIMaxCallsPerDuration = rateLimitPolicyValues[x].substring(2);
-                    extractedString = extractedString.concat("\"APIMaxCallsPerDuration\": \"")
-                            .concat(APIMaxCallsPerDuration).concat("\",");
+                    extractedString.append("\"APIMaxCallsPerDuration\": \"").append(APIMaxCallsPerDuration)
+                            .append("\",");
                 } else if (rateLimitPolicyValues[x].startsWith("w=")) {
                     APIMaxDurationSeconds = rateLimitPolicyValues[x].substring(2);
-                    extractedString = extractedString.concat("\"APIMaxDurationSeconds\": \"")
-                            .concat(APIMaxDurationSeconds).concat("\",");
+                    extractedString.append("\"APIMaxDurationSeconds\": \"").append(APIMaxDurationSeconds).append("\",");
                 }
             }
         }
@@ -107,17 +106,17 @@ public class HomeApi {
             for (int x = 0; x < rateLimitValues.length; x++) {
                 if (rateLimitValues[x].startsWith("r=")) {
                     APICallsRemainingThisDuration = rateLimitValues[x].substring(2);
-                    extractedString = extractedString.concat("\"APICallsRemainingThisDuration\": \"")
-                            .concat(APICallsRemainingThisDuration).concat("\",");
+                    extractedString.append("\"APICallsRemainingThisDuration\": \"")
+                            .append(APICallsRemainingThisDuration).append("\",");
                 } else if (rateLimitValues[x].startsWith("w=")) {
                     APISecondsUntilMaxResets = rateLimitValues[x].substring(2);
-                    extractedString = extractedString.concat("\"APISecondsUntilMaxResets\": \"")
-                            .concat(APISecondsUntilMaxResets).concat("\",");
+                    extractedString.append("\"APISecondsUntilMaxResets\": \"").append(APISecondsUntilMaxResets)
+                            .append("\",");
                 }
             }
 
         }
-        return extractedString;
+        return extractedString.toString();
     }
 
     public HomeApi(Gson gson, OAuthorizerV2 authorizer, String baseUrl) {
