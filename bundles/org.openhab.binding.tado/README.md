@@ -47,8 +47,8 @@ Once the `home` thing is online, the binding will discover all its respective zo
 | `homePresence`      | Switch | Current presence value of the tado home; `ON` = HOME / `OFF` = AWAY | RW         |
 | `geofencingEnabled` | Switch | Selects if automatic geofencing is enabled or disabled              | RW         |
 | `APICallsRemainingThisDuration`<sup>1)</sup> | Number:Dimensionless | Number of API calls remaining before the maximum is reached              | R         |
-| `APIMaxCallsPerDuration`<sup>1)</sup> | Number:Time | Maximum API calls allowed per specified duration              | R         |                        |
-| `APIMaxDurationSeconds`<sup>1)</sup> | Number:Dimensionless | Duration in which the API count rises until maximum (in seconds)              | R         |
+| `APIMaxCallsPerDuration`<sup>1)</sup> | Number:Dimensionless | Maximum API calls allowed per specified duration              | R         |                        |
+| `APIMaxDurationSeconds`<sup>1)</sup> | Number:Time | Duration in which the API count rises until maximum (in seconds)              | R         |
 | `APISecondsUntilMaxResets`<sup>1)</sup> | Number:Time | Duration before the API count resets (in seconds)              | R         |
 
 <sup>1)</sup> It probably makes the most sense to link *one and the same* Item to *all* `APICallsRemainingThisDuration` Channels of *all* Things linked to the same `home` Thing (*including* this `home` Thing). That way, that one Item is always as up-to-date as possible. The same applies to `APIMaxCallsPerDuration`, `APIMaxDurationSeconds` and `APISecondsUntilMaxResets`, of course.
@@ -106,8 +106,8 @@ If you are unsure, have a look at the tado° app and see if the functionality is
 | `openWindowRemainingTime`      | Number:Time          | The remaining Open Window heating/cooling Override time in the Zone                                               | R          | `HEATING`, `AC`        |
 | `light`                        | Switch               | State (`ON`, `OFF`) of the control panel light                                                                    | RW         | `AC`                   |
 | `APICallsRemainingThisDuration`<sup>4)</sup> | Number:Dimensionless | Number of API calls remaining before the maximum is reached              | R         | Any Zone               |
-| `APIMaxCallsPerDuration`<sup>4)</sup> | Number:Time | Maximum API calls allowed per specified duration              | R         | Any Zone               |
-| `APIMaxDurationSeconds`<sup>4)</sup> | Number:Dimensionless | Duration in which the API count rises until maximum (in seconds)              | R         | Any Zone               |
+| `APIMaxCallsPerDuration`<sup>4)</sup> | Number:Dimensionless | Maximum API calls allowed per specified duration              | R         | Any Zone               |
+| `APIMaxDurationSeconds`<sup>4)</sup> | Number:Time | Duration in which the API count rises until maximum (in seconds)              | R         | Any Zone               |
 | `APISecondsUntilMaxResets`<sup>4)</sup> | Number:Time | Duration before the API count resets (in seconds)              | R         | Any Zone               |
 
 You will see some of the above mentioned Channels only if your tado° device supports the respective function.
@@ -180,8 +180,8 @@ Bridge tado:home:demo [ username="mail@example.com", password="secret" ] {
 |----------|--------|--------------------------------------------------|------------|
 | `atHome` | Switch | ON if mobile device is in HOME mode, OFF if AWAY | R          |
 | `APICallsRemainingThisDuration`<sup>1)</sup> | Number:Dimensionless | Number of API calls remaining before the maximum is reached              | R         |
-| `APIMaxCallsPerDuration`<sup>1)</sup> | Number:Time | Maximum API calls allowed per specified duration              | R         |                        |
-| `APIMaxDurationSeconds`<sup>1)</sup> | Number:Dimensionless | Duration in which the API count rises until maximum (in seconds)              | R         |
+| `APIMaxCallsPerDuration`<sup>1)</sup> | Number:Dimensionless | Maximum API calls allowed per specified duration              | R         |                        |
+| `APIMaxDurationSeconds`<sup>1)</sup> | Number:Time | Duration in which the API count rises until maximum (in seconds)              | R         |
 | `APISecondsUntilMaxResets`<sup>1)</sup> | Number:Time | Duration before the API count resets (in seconds)              | R         |
 
 Group `OR` can be used to define an item for _'is any device at home'_.
