@@ -92,6 +92,7 @@ public class HomeWizardBatteriesSubHandler {
             }
             default: {
                 logger.warn("Unsupported command {}.", command.toFullString());
+                return;
             }
         }
         var cmd = String.format("{%s\"mode\": \"%s\"}", permissions, mode);
