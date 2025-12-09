@@ -50,8 +50,7 @@ public class HomeWizardBatteriesSubHandler {
     /**
      * Constructor
      *
-     * @param thing The thing to handle
-     * @param timeZoneProvider The TimeZoneProvider
+     * @param handler The device handler used to communicate with the HomeWizard device
      */
     public HomeWizardBatteriesSubHandler(HomeWizardDeviceHandler handler) {
         this.handler = handler;
