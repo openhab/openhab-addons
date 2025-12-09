@@ -75,7 +75,6 @@ public class HomeApi {
         String splitString = "\"name\":";
         String extractedRateLimitInfo = extractRateLimitInfo(resp);
         String[] jsonSubstrings = stringFromResponse.split(splitString);
-        StringBuilder stringForJson = new StringBuilder();
 
         for (int x = 0; x < jsonSubstrings.length - 1; x++) {
             stringForJson.append(jsonSubstrings[x]).append(extractedRateLimitInfo).append(splitString);
