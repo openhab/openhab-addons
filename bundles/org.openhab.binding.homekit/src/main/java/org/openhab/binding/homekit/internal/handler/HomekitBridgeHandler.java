@@ -99,6 +99,7 @@ public class HomekitBridgeHandler extends HomekitBaseAccessoryHandler implements
                 accessoryHandler.onConnectedThingAccessoriesLoaded();
             }
         });
+        onThingOnline();
     }
 
     @Override
@@ -153,5 +154,11 @@ public class HomekitBridgeHandler extends HomekitBaseAccessoryHandler implements
             }
         });
         return polledCharacteristics;
+    }
+
+    @Override
+    protected void initializeNotReadyThings() {
+        notReadyThings.clear();
+        notReadyThings.addAll(getThing().getThings()); // a bridge requires all bridged-accessories to be ready
     }
 }

@@ -56,6 +56,7 @@ import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.types.UpDownType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.semantics.SemanticTag;
+import org.openhab.core.service.StartLevelService;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -79,6 +80,8 @@ import org.openhab.core.types.StateOption;
 import org.openhab.core.types.UnDefType;
 import org.openhab.core.types.util.UnitUtils;
 import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -513,7 +516,7 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
                     updateStatus(ThingStatus.ONLINE);
                 });
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
             }
         }
     }
@@ -909,6 +912,7 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
     protected void onConnectedThingAccessoriesLoaded() {
         createProperties();
         createChannels();
+        removeNotReadyThing(thing);
     }
 
     @Override
@@ -991,5 +995,32 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
     @Override
     protected Map<String, Characteristic> getPolledCharacteristics() {
         return polledCharacteristics;
+    }
+
+    /**
+     * Return true if STARTLEVEL_COMPLETE has already been acheived.
+     * <p>
+     * Note: STARTLEVEL_COMPLETE means all Thing handlers are instantiated and their initialize() methods have
+     * been called, and the registries for item, thing, and item-channel-links have all been loaded.
+     */
+    private boolean alreadyAtStartLevelComplete() {
+        if (bundle.getBundleContext() instanceof BundleContext ctx) {
+            if (ctx.getServiceReference(StartLevelService.class) instanceof ServiceReference<StartLevelService> ref) {
+                if (ctx.getService(ref) instanceof StartLevelService svc) {
+                    try {
+                        return svc.getStartLevel() >= StartLevelService.STARTLEVEL_COMPLETE;
+                    } finally {
+                        ctx.ungetService(ref);
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    @Override
+    protected void initializeNotReadyThings() {
+        notReadyThings.clear();
+        notReadyThings.add(thing); // a self connected accessory requires only itself to be ready
     }
 }

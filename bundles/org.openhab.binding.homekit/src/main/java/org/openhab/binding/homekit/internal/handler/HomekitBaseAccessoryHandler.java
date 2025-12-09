@@ -56,11 +56,7 @@ import org.openhab.binding.homekit.internal.persistence.HomekitKeyStore;
 import org.openhab.binding.homekit.internal.persistence.HomekitTypeProvider;
 import org.openhab.binding.homekit.internal.session.EventListener;
 import org.openhab.binding.homekit.internal.transport.IpTransport;
-import org.openhab.core.events.Event;
-import org.openhab.core.events.EventSubscriber;
-import org.openhab.core.events.system.StartlevelEvent;
 import org.openhab.core.i18n.TranslationProvider;
-import org.openhab.core.service.StartLevelService;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -69,9 +65,6 @@ import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.thing.type.ChannelDefinition;
 import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceReference;
-import org.osgi.framework.ServiceRegistration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -86,7 +79,7 @@ import com.google.gson.Gson;
  * @author Andrew Fiddian-Green - Initial contribution
  */
 @NonNullByDefault
-public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler implements EventListener, EventSubscriber {
+public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler implements EventListener {
 
     private static final int MIN_CONNECTION_ATTEMPT_DELAY_SECONDS = 2;
     private static final int MAX_CONNECTION_ATTEMPT_DELAY_SECONDS = 600;
@@ -118,14 +111,15 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
     protected final Map<String, Characteristic> eventedCharacteristics = new ConcurrentHashMap<>();
     protected final Map<String, Characteristic> polledCharacteristics = new ConcurrentHashMap<>();
 
+    // Set of things that depend on this thing and are not yet ready for processing
+    protected final Set<Thing> notReadyThings = ConcurrentHashMap.newKeySet();
+
     protected final HomekitTypeProvider typeProvider;
     protected final TranslationProvider i18nProvider;
     protected final Bundle bundle;
 
     protected boolean isBridgedAccessory = false;
     protected final Throttler throttler = new Throttler();
-
-    private @Nullable ServiceRegistration<?> eventSubscription;
 
     /**
      * A helper class that runs a {@link Callable} and enforces a minimum delay between calls.
@@ -180,6 +174,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
 
     @Override
     public void dispose() {
+        notReadyThings.clear();
         eventedCharacteristics.clear();
         accessories.clear();
         cancelRefreshTasks();
@@ -198,10 +193,6 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
             transport.close();
         }
         ipTransport = null;
-        if (eventSubscription instanceof ServiceRegistration<?> registration) {
-            registration.unregister();
-        }
-        eventSubscription = null;
         super.dispose();
     }
 
@@ -222,7 +213,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
                         .collect(Collectors.toMap(a -> a.aid, Function.identity())));
             }
             logger.debug("{} fetched {} accessories", thing.getUID(), accessories.size());
-            scheduler.submit(this::processBridgedThings);
+            scheduler.submit(this::onConnectedThingAccessoriesLoaded);
         } catch (Exception e) {
             if (isCommunicationException(e)) {
                 // communication exception; log at debug and try to reconnect
@@ -235,16 +226,6 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
             }
             logger.debug("Stack trace", e);
         }
-    }
-
-    /**
-     * Called after all bridged accessory things are initialized, and processes them by calling the
-     * overloaded abstract 'onConnectedThingAccessoriesLoaded' methods, and finally calls the
-     * 'onThingOnline' methods (and its eventual overloaded implementations).
-     */
-    private void processBridgedThings() {
-        onConnectedThingAccessoriesLoaded();
-        onThingOnline();
     }
 
     /**
@@ -285,55 +266,10 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
     public void initialize() {
         isBridgedAccessory = getBridge() instanceof Bridge;
         if (!isBridgedAccessory) {
-            if (alreadyAtStartLevelComplete()) {
-                // schedule connection attempt immediately
-                scheduleConnectionAttempt();
-            } else if (bundle.getBundleContext() instanceof BundleContext ctx) {
-                // delay connection attempt until STARTLEVEL_COMPLETE is signalled via receive() method below
-                eventSubscription = ctx.registerService(EventSubscriber.class.getName(), this, null);
-            }
-        }
-        updateStatus(ThingStatus.UNKNOWN);
-    }
-
-    /**
-     * Return true if STARTLEVEL_COMPLETE has already been acheived.
-     * <p>
-     * Note: STARTLEVEL_COMPLETE means all Thing handlers are instantiated and their initialize() methods have
-     * been called, and the registries for item, thing, and item-channel-links have all been loaded.
-     */
-    protected boolean alreadyAtStartLevelComplete() {
-        if (bundle.getBundleContext() instanceof BundleContext ctx) {
-            if (ctx.getServiceReference(StartLevelService.class) instanceof ServiceReference<StartLevelService> ref) {
-                if (ctx.getService(ref) instanceof StartLevelService svc) {
-                    try {
-                        return svc.getStartLevel() >= StartLevelService.STARTLEVEL_COMPLETE;
-                    } finally {
-                        ctx.ungetService(ref);
-                    }
-                }
-            }
-        }
-        return false;
-    }
-
-    /**
-     * When an event is received, checks if {@link StartLevelService#STARTLEVEL_COMPLETE} is reached, and if so
-     * schedules a connection attempt.
-     * <p>
-     * Note: STARTLEVEL_COMPLETE means all Thing handlers are instantiated and their initialize() methods have
-     * been called, and the registries for item, thing, and item-channel-links have all been loaded.
-     */
-    @Override
-    public void receive(Event event) {
-        if (event instanceof StartlevelEvent sle && sle.getStartlevel() >= StartLevelService.STARTLEVEL_COMPLETE) {
+            initializeNotReadyThings();
             scheduleConnectionAttempt();
         }
-    }
-
-    @Override
-    public Set<String> getSubscribedEventTypes() {
-        return Set.of(StartlevelEvent.TYPE);
+        updateStatus(ThingStatus.UNKNOWN);
     }
 
     /**
@@ -799,11 +735,26 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
     public abstract void onEvent(String json);
 
     /**
+     * Called by dependent things when they are finally ready to run. When all dependent things are indeed
+     * ready the connected thing can start polling, subscribe to events and indicate itself as online.
+     *
+     * @param readyThing the dependent thing that has become ready and shall be removed from the not-ready set
+     */
+    protected void removeNotReadyThing(Thing readyThing) {
+        logger.trace("{} dependent thing {} is now ready", thing.getUID(), readyThing.getUID());
+        notReadyThings.remove(readyThing);
+        if (notReadyThings.isEmpty()) {
+            onThingOnline();
+        }
+    }
+
+    /**
      * Called when the thing is fully online. Updates the thing status to ONLINE. And if the
      * thing is not a bridged accessory, enables eventing,and starts the refresh task.
      * Subclasses MAY override this to perform any extra processing required.
      */
     protected void onThingOnline() {
+        logger.trace("{} thing going online", thing.getUID());
         updateStatus(ThingStatus.ONLINE);
         if (!isBridgedAccessory) {
             enableEvents(true);
@@ -909,4 +860,13 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
         }
         return throttler.call(() -> rwService.writeCharacteristics(json));
     }
+
+    /**
+     * Loads the set of things that depend on this accessory and which are not yet ready. This accessory
+     * cannot go online until all dependent things are ready. In other words, only when all dependent things
+     * have removed themselves from this set.
+     *
+     * Subclasses MUST override this to perform any extra processing required.
+     */
+    protected abstract void initializeNotReadyThings();
 }
