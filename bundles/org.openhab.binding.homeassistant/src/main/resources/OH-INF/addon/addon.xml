@@ -8,6 +8,8 @@
 	<description>Provides discovery and auto-configuration services for MQTT connected devices that provide Home Assistant
 		discovery metadata.</description>
 	<connection>local</connection>
+	<service-id>org.openhab.binding.homeassistant</service-id>
+	<config-description-ref uri="binding:homeassistant"/>
 
 	<discovery-methods>
 		<discovery-method>
