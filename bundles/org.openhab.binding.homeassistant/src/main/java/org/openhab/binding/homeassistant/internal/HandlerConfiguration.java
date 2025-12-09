@@ -28,6 +28,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class HandlerConfiguration {
     public static final String PROPERTY_BASETOPIC = "basetopic";
+    public static final String PROPERTY_DEVICE_CONFIG = "deviceConfig";
     public static final String PROPERTY_TOPICS = "topics";
     public static final String DEFAULT_BASETOPIC = "homeassistant";
     /**
@@ -64,14 +65,20 @@ public class HandlerConfiguration {
      *
      */
     public List<String> topics;
+    public String deviceConfig = "";
 
     public HandlerConfiguration() {
-        this(DEFAULT_BASETOPIC, Collections.emptyList());
+        this(DEFAULT_BASETOPIC, Collections.emptyList(), "");
     }
 
     public HandlerConfiguration(String basetopic, List<String> topics) {
+        this(basetopic, topics, "");
+    }
+
+    public HandlerConfiguration(String basetopic, List<String> topics, String deviceConfig) {
         this.basetopic = basetopic;
         this.topics = topics;
+        this.deviceConfig = deviceConfig;
     }
 
     /**
@@ -83,6 +90,7 @@ public class HandlerConfiguration {
     public <T extends Map<String, Object>> T appendToProperties(T properties) {
         properties.put(PROPERTY_BASETOPIC, basetopic);
         properties.put(PROPERTY_TOPICS, topics);
+        properties.put(PROPERTY_DEVICE_CONFIG, deviceConfig);
         return properties;
     }
 }

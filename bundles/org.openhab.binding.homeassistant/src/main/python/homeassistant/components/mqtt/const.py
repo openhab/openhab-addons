@@ -3,9 +3,12 @@
 import jinja2
 
 from homeassistant.components.alarm_control_panel import AlarmControlPanelEntityFeature
-from homeassistant.const import CONF_PAYLOAD
+from homeassistant.const import CONF_PAYLOAD, Platform
 from homeassistant.exceptions import TemplateError
 
+ATTR_DISCOVERY_HASH = "discovery_hash"
+ATTR_DISCOVERY_PAYLOAD = "discovery_payload"
+ATTR_DISCOVERY_TOPIC = "discovery_topic"
 ATTR_QOS = "qos"
 ATTR_RETAIN = "retain"
 
@@ -307,4 +310,64 @@ ALARM_CONTROL_PANEL_SUPPORTED_FEATURES = {
     "trigger": AlarmControlPanelEntityFeature.TRIGGER,
 }
 
+ENTITY_PLATFORMS = [
+    Platform.ALARM_CONTROL_PANEL,
+    Platform.BINARY_SENSOR,
+    Platform.BUTTON,
+    Platform.CAMERA,
+    Platform.CLIMATE,
+    Platform.COVER,
+    Platform.DEVICE_TRACKER,
+    Platform.EVENT,
+    Platform.FAN,
+    Platform.HUMIDIFIER,
+    Platform.IMAGE,
+    Platform.LIGHT,
+    Platform.LAWN_MOWER,
+    Platform.LOCK,
+    Platform.NOTIFY,
+    Platform.NUMBER,
+    Platform.SCENE,
+    Platform.SELECT,
+    Platform.SENSOR,
+    Platform.SIREN,
+    Platform.SWITCH,
+    Platform.TEXT,
+    Platform.UPDATE,
+    Platform.VACUUM,
+    Platform.VALVE,
+    Platform.WATER_HEATER,
+]
+
 TEMPLATE_ERRORS = (jinja2.TemplateError, TemplateError, TypeError, ValueError)
+
+SUPPORTED_COMPONENTS = (
+    "alarm_control_panel",
+    "binary_sensor",
+    "button",
+    "camera",
+    "climate",
+    "cover",
+    "device_automation",
+    "device_tracker",
+    "event",
+    "fan",
+    "humidifier",
+    "image",
+    "lawn_mower",
+    "light",
+    "lock",
+    "notify",
+    "number",
+    "scene",
+    "siren",
+    "select",
+    "sensor",
+    "switch",
+    "tag",
+    "text",
+    "update",
+    "vacuum",
+    "valve",
+    "water_heater",
+)

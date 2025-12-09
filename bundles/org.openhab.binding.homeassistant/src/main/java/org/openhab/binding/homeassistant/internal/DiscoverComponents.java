@@ -14,6 +14,7 @@ package org.openhab.binding.homeassistant.internal;
 
 import java.lang.ref.WeakReference;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ScheduledExecutorService;
@@ -25,6 +26,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.homeassistant.internal.component.AbstractComponent;
 import org.openhab.binding.homeassistant.internal.component.ComponentFactory;
+import org.openhab.binding.homeassistant.internal.config.dto.MqttComponentConfig;
 import org.openhab.binding.homeassistant.internal.exception.ConfigurationException;
 import org.openhab.binding.homeassistant.internal.exception.UnsupportedComponentException;
 import org.openhab.binding.mqtt.generic.AvailabilityTracker;
@@ -64,6 +66,7 @@ public class DiscoverComponents implements MqttMessageSubscriber {
     protected @Nullable ComponentDiscovered discoveredListener;
     private int discoverTime;
     private Set<String> topics = new HashSet<>();
+    private final Set<HaID> knownDeviceComponents = new HashSet<>();
 
     /**
      * Implement this to get notified of new components
@@ -72,6 +75,8 @@ public class DiscoverComponents implements MqttMessageSubscriber {
         void componentDiscovered(HaID homeAssistantTopicID, AbstractComponent<?> component);
 
         void componentRemoved(HaID homeAssistantTopicID);
+
+        void deviceConfigUpdated(HaID homeAssistantTopicID, String configPayload);
     }
 
     /**
@@ -102,28 +107,63 @@ public class DiscoverComponents implements MqttMessageSubscriber {
 
         HaID haID = new HaID(topic);
         String config = new String(payload);
-        AbstractComponent<?> component = null;
         ComponentDiscovered discoveredListener = this.discoveredListener;
-
         if (config.length() > 0) {
             try {
-                component = ComponentFactory.createComponent(thingUID, haID, config, updateListener, linkageChecker,
-                        tracker, scheduler, gson, python, unitProvider);
-                component.setConfigSeen();
+                List<MqttComponentConfig> parsedComponentConfigs = python.processDiscoveryConfig(haID.toShortTopic(),
+                        config);
+                boolean migrationMessage = parsedComponentConfigs.stream()
+                        .anyMatch(MqttComponentConfig::isMigrateDiscovery);
+                if (migrationMessage) {
+                    // Just treat a migration message as the component disappearing -
+                    // openHAB doesn't destroy Items when a Channel disappears, so we
+                    // don't need to worry about keeping a sentinel around for components
+                    // that are about to show up again under a device component.
+                    if (HomeAssistantBindingConstants.DEVICE_COMPONENT.equals(haID.component)) {
+                        if (discoveredListener != null) {
+                            knownDeviceComponents.forEach(discoveredListener::componentRemoved);
+                        }
+                        knownDeviceComponents.clear();
+                    } else if (discoveredListener != null) {
+                        discoveredListener.componentRemoved(haID);
+                    }
+                    return;
+                }
 
-                logger.trace("Found HomeAssistant component {}", haID);
+                List<AbstractComponent<?>> components = ComponentFactory.createComponent(thingUID, haID, config,
+                        parsedComponentConfigs, updateListener, linkageChecker, tracker, scheduler, gson, python,
+                        unitProvider);
+                components.forEach(component -> component.setConfigSeen());
+
+                logger.trace("Found Home Assistant component {}", haID);
 
                 if (discoveredListener != null) {
-                    discoveredListener.componentDiscovered(haID, component);
+                    if (HomeAssistantBindingConstants.DEVICE_COMPONENT.equals(haID.component)) {
+                        discoveredListener.deviceConfigUpdated(haID, config);
+                        Set<HaID> currentComponents = components.stream().map(AbstractComponent::getHaID)
+                                .collect(Collectors.toSet());
+                        knownDeviceComponents.stream().filter(component -> !currentComponents.contains(component))
+                                .forEach(discoveredListener::componentRemoved);
+                        components.stream().filter(component -> !knownDeviceComponents.contains(component.getHaID()))
+                                .forEach(component -> discoveredListener.componentDiscovered(component.getHaID(),
+                                        component));
+                        knownDeviceComponents.clear();
+                        knownDeviceComponents.addAll(currentComponents);
+                    } else {
+                        components.forEach(component -> discoveredListener.componentDiscovered(haID, component));
+                    }
                 }
             } catch (UnsupportedComponentException e) {
-                logger.warn("HomeAssistant discover error: thing {} component type is unsupported: {}", haID.objectID,
-                        haID.component);
+                logger.warn("Home Assistant discovery error: component {} is unsupported", haID.toShortTopic());
             } catch (ConfigurationException e) {
-                logger.warn("HomeAssistant discover error: invalid configuration of thing {} component {}: {}",
-                        haID.objectID, haID.component, e.getMessage());
+                logger.warn("Home Assistant discovery error: invalid configuration of component {}: {}",
+                        haID.toShortTopic(), e.getMessage());
             }
         } else if (discoveredListener != null) {
+            if (HomeAssistantBindingConstants.DEVICE_COMPONENT.equals(haID.component)) {
+                knownDeviceComponents.forEach(discoveredListener::componentRemoved);
+                knownDeviceComponents.clear();
+            }
             discoveredListener.componentRemoved(haID);
         }
     }
@@ -183,6 +223,7 @@ public class DiscoverComponents implements MqttMessageSubscriber {
             this.stopDiscoveryFuture = null;
         }
         this.discoveredListener = null;
+        this.knownDeviceComponents.clear();
         final MqttBrokerConnection connection = connectionRef.get();
         if (connection != null) {
             this.topics.stream().forEach(t -> connection.unsubscribe(t, this));

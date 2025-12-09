@@ -8,32 +8,41 @@ from typing import Any
 
 import voluptuous as vol
 
-from homeassistant.const import CONF_DEVICE
+from homeassistant.const import CONF_DEVICE, CONF_PLATFORM
 from homeassistant.helpers import config_validation as cv
+from homeassistant.helpers.service_info.mqtt import ReceivePayloadType
 from homeassistant.helpers.typing import DiscoveryInfoType
 from homeassistant.util.json import json_loads_object
 
 from .abbreviations import ABBREVIATIONS, DEVICE_ABBREVIATIONS, ORIGIN_ABBREVIATIONS
 from .const import (
+    ATTR_DISCOVERY_HASH,
+    ATTR_DISCOVERY_PAYLOAD,
+    ATTR_DISCOVERY_TOPIC,
     CONF_AVAILABILITY,
     CONF_COMPONENTS,
     CONF_ORIGIN,
     CONF_TOPIC,
 )
-from .schemas import MQTT_ORIGIN_INFO_SCHEMA
+from .models import MqttComponentConfig
+from .schemas import DEVICE_DISCOVERY_SCHEMA, MQTT_ORIGIN_INFO_SCHEMA, SHARED_OPTIONS
 
 ABBREVIATIONS_SET = set(ABBREVIATIONS)
 DEVICE_ABBREVIATIONS_SET = set(DEVICE_ABBREVIATIONS)
 ORIGIN_ABBREVIATIONS_SET = set(ORIGIN_ABBREVIATIONS)
 
-_LOGGER = logging.getLogger(__name__)
-
 TOPIC_MATCHER = re.compile(
     r"(?P<component>\w+)/(?:(?P<node_id>[a-zA-Z0-9_-]+)/)"
-    r"?(?P<object_id>[a-zA-Z0-9_-]+)/config"
+    r"?(?P<object_id>[a-zA-Z0-9_-]+)$"
 )
 
 TOPIC_BASE = "~"
+
+CONF_MIGRATE_DISCOVERY = "migrate_discovery"
+
+MIGRATE_DISCOVERY_SCHEMA = vol.Schema(
+    {vol.Optional(CONF_MIGRATE_DISCOVERY): True},
+)
 
 
 class MQTTDiscoveryPayload(dict[str, Any]):
@@ -42,6 +51,19 @@ class MQTTDiscoveryPayload(dict[str, Any]):
     device_discovery: bool = False
     migrate_discovery: bool = False
     discovery_data: DiscoveryInfoType
+
+
+def _process_discovery_migration(payload: MQTTDiscoveryPayload) -> bool:
+    """Process a discovery migration request in the discovery payload."""
+    # Allow abbreviation
+    if migr_discvry := (payload.pop("migr_discvry", None)):
+        payload[CONF_MIGRATE_DISCOVERY] = migr_discvry
+    if CONF_MIGRATE_DISCOVERY in payload:
+        MIGRATE_DISCOVERY_SCHEMA(payload)
+        payload.migrate_discovery = True
+        payload.clear()
+        return True
+    return False
 
 
 def _replace_abbreviations(
@@ -108,20 +130,57 @@ def _replace_topic_base(discovery_payload: MQTTDiscoveryPayload) -> None:
                 if topic[-1] == TOPIC_BASE:
                     availability_conf[CONF_TOPIC] = f"{topic[:-1]}{base}"
 
-def _valid_origin_info(discovery_payload: MQTTDiscoveryPayload) -> bool:
+def _parse_device_payload(
+    payload: ReceivePayloadType,
+    object_id: str,
+    node_id: str | None,
+) -> MQTTDiscoveryPayload:
+    """Parse a device discovery payload.
+
+    The device discovery payload is translated info the config payloads for every single
+    component inside the device based configuration.
+    An empty payload is translated in a cleanup, which forwards an empty payload to all
+    removed components.
+    """
+    device_payload = MQTTDiscoveryPayload()
+    if payload == "":
+        # This should not be possible, because we handle vanishing topics separately in the Java code
+        return device_payload
+    device_payload = MQTTDiscoveryPayload(json_loads_object(payload))
+    if _process_discovery_migration(device_payload):
+        return device_payload
+    _replace_all_abbreviations(device_payload)
+    DEVICE_DISCOVERY_SCHEMA(device_payload)
+    return device_payload
+
+def _valid_origin_info(discovery_payload: MQTTDiscoveryPayload):
     """Parse and validate origin info from a single component discovery payload."""
     if CONF_ORIGIN not in discovery_payload:
-        return True
-    try:
-        MQTT_ORIGIN_INFO_SCHEMA(discovery_payload[CONF_ORIGIN])
-    except Exception as exc:  # noqa:BLE001
-        _LOGGER.warning(
-            "Unable to parse origin information from discovery message: %s, got %s",
-            exc,
-            discovery_payload[CONF_ORIGIN],
-        )
-        return False
-    return True
+        return
+    MQTT_ORIGIN_INFO_SCHEMA(discovery_payload[CONF_ORIGIN])
+
+def _merge_common_device_options(
+    component_config: MQTTDiscoveryPayload, device_config: dict[str, Any]
+) -> None:
+    """Merge common device options with the component config options.
+
+    Common options are:
+        CONF_AVAILABILITY,
+        CONF_AVAILABILITY_MODE,
+        CONF_AVAILABILITY_TEMPLATE,
+        CONF_AVAILABILITY_TOPIC,
+        CONF_COMMAND_TOPIC,
+        CONF_PAYLOAD_AVAILABLE,
+        CONF_PAYLOAD_NOT_AVAILABLE,
+        CONF_STATE_TOPIC,
+    Common options in the body of the device based config are inherited into
+    the component. Unless the option is explicitly specified at component level,
+    in that case the option at component level will override the common option.
+    """
+    for option in SHARED_OPTIONS:
+        if option in device_config and option not in component_config:
+            component_config[option] = device_config.get(option)
+
 
 # ******************************************************************************
 # The rest of this file is _not_ directly Home Assistant code -- but is based on
@@ -152,6 +211,7 @@ from .vacuum import DISCOVERY_SCHEMA as VACUUM_DISCOVERY_SCHEMA
 from .valve import DISCOVERY_SCHEMA as VALVE_DISCOVERY_SCHEMA
 from .water_heater import DISCOVERY_SCHEMA as WATER_HEATER_DISCOVERY_SCHEMA
 
+# This needs to be kept in sync with the Java AbstractComponent subclasses
 _DISCOVERY_SCHEMAS = {
     'alarm_control_panel': ALARM_CONTROL_PANEL_DISCOVERY_SCHEMA,
     'binary_sensor': BINARY_SENSOR_DISCOVERY_SCHEMA,
@@ -182,20 +242,106 @@ _DISCOVERY_SCHEMAS = {
 # This is partially based on async_discovery_message_received
 # Logging is not done; errors are simply raised so the logging
 # can occur in Java
-def process_discovery_config(component, payload):
-    # Process component based discovery message
-    discovery_payload = json_loads_object(payload) if payload else {}
-    _replace_all_abbreviations(discovery_payload)
-    if not _valid_origin_info(discovery_payload):
-        return
-    
-    if TOPIC_BASE in discovery_payload:
-        _replace_topic_base(discovery_payload)
+def process_discovery_config(topic, payload):
+    if not (match := TOPIC_MATCHER.match(topic)):
+        raise ValueError(f"Received message on illegal discovery topic '{topic}'. The topic"
+                         " contains non allowed characters. For more information see "
+                         "https://www.home-assistant.io/integrations/mqtt/#discovery-topic")
 
-    if component not in _DISCOVERY_SCHEMAS:
-        raise ValueError("Unknown component type %s", component)
+    component, node_id, object_id = match.groups()
 
-    discovery_schema = _DISCOVERY_SCHEMAS[component]
-    discovery_payload = discovery_schema(discovery_payload)
+    discovered_components: list[MqttComponentConfig] = []
+    if component == CONF_DEVICE:
+        # Process device based discovery message and regenerate
+        # cleanup config for the all the components that are being removed.
+        # This is done when a component in the device config is omitted and detected
+        # as being removed, or when the device config update payload is empty.
+        # In that case this will regenerate a cleanup message for all every already
+        # discovered components that were linked to the initial device discovery.
+        device_discovery_payload = _parse_device_payload(
+            payload, object_id, node_id
+        )
+        if device_discovery_payload.migrate_discovery:
+            # If this is a migration discovery, we do not want to generate component configs
+            # based on the device config, because the device config will be used to trigger
+            # the migration and will not contain the necessary component config data.
+            return [MqttComponentConfig(component, object_id, node_id, device_discovery_payload)]
+        device_config: dict[str, Any]
+        origin_config: dict[str, Any] | None
+        component_configs: dict[str, dict[str, Any]]
+        device_config = device_discovery_payload[CONF_DEVICE]
+        origin_config = device_discovery_payload.get(CONF_ORIGIN)
+        component_configs = device_discovery_payload[CONF_COMPONENTS]
+        if len(component_configs) == 0:
+            return [MqttComponentConfig(component, object_id, node_id, device_discovery_payload)]
+        for component_id, config in component_configs.items():
+            component = config.pop(CONF_PLATFORM)
+            # The object_id in the device discovery topic is the unique identifier.
+            # It is used as node_id for the components it contains.
+            component_node_id = object_id
+            # The component_id in the discovery playload is used as object_id
+            # If we have an additional node_id in the discovery topic,
+            # we extend the component_id with it.
+            component_object_id = (
+                f"{node_id} {component_id}" if node_id else component_id
+            )
+            # We add wrapper to the discovery payload with the discovery data.
+            # If the dict is empty after removing the platform, the payload is
+            # assumed to remove the existing config and we do not want to add
+            # device or orig or shared availability attributes.
+            if discovery_payload := MQTTDiscoveryPayload(config):
+                discovery_payload[CONF_DEVICE] = device_config
+                discovery_payload[CONF_ORIGIN] = origin_config
+                # Only assign shared config options
+                # when they are not set at entity level
+                _merge_common_device_options(
+                    discovery_payload, device_discovery_payload
+                )
+            discovery_payload.device_discovery = True
+            discovery_payload.migrate_discovery = (
+                device_discovery_payload.migrate_discovery
+            )
+            discovered_components.append(
+                MqttComponentConfig(
+                    component,
+                    component_object_id,
+                    component_node_id,
+                    discovery_payload,
+                )
+            )
+    else:
+        # Process component based discovery message
+        discovery_payload = MQTTDiscoveryPayload(json_loads_object(payload) if payload else {})
+        if not _process_discovery_migration(discovery_payload):
+            _replace_all_abbreviations(discovery_payload)
+            _valid_origin_info(discovery_payload)
+
+        discovered_components.append(
+            MqttComponentConfig(component, object_id, node_id, discovery_payload)
+        )
+
+    for component_config in discovered_components:
+        component = component_config.component
+        node_id = component_config.node_id
+        object_id = component_config.object_id
+        discovery_payload = component_config.discovery_payload
+
+        if TOPIC_BASE in discovery_payload:
+            _replace_topic_base(discovery_payload)
+
+        # If present, the node_id will be included in the discovery_id.
+        discovery_id = f"{node_id} {object_id}" if node_id else object_id
+        discovery_hash = (component, discovery_id)
+
+        # Attach MQTT topic to the payload, used for debug prints
+        discovery_payload.discovery_data = {
+            ATTR_DISCOVERY_HASH: discovery_hash,
+            ATTR_DISCOVERY_PAYLOAD: discovery_payload,
+            ATTR_DISCOVERY_TOPIC: topic,
+        }
+
+        if component in _DISCOVERY_SCHEMAS and not discovery_payload.migrate_discovery:
+            discovery_schema = _DISCOVERY_SCHEMAS[component]
+            component_config.discovery_payload = discovery_schema(discovery_payload)
     
-    return discovery_payload
+    return discovered_components

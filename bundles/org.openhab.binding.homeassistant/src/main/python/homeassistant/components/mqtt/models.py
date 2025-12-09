@@ -4,14 +4,18 @@ from __future__ import annotations
 
 from ast import literal_eval
 from collections.abc import Mapping
+from dataclasses import dataclass
 from enum import StrEnum
 import logging
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from homeassistant.exceptions import ServiceValidationError, TemplateError
 from homeassistant.helpers import template
 from homeassistant.helpers.service_info.mqtt import ReceivePayloadType
 from homeassistant.helpers.typing import TemplateVarsType
+
+if TYPE_CHECKING:
+    from .discovery import MQTTDiscoveryPayload
 
 from .const import TEMPLATE_ERRORS
 
@@ -212,3 +216,13 @@ class MqttValueTemplate:
                 payload=payload,
             ) from exc
         return rendered_payload
+
+
+@dataclass(slots=True)
+class MqttComponentConfig:
+    """(component, object_id, node_id, discovery_payload)."""
+
+    component: str
+    object_id: str
+    node_id: str | None
+    discovery_payload: MQTTDiscoveryPayload

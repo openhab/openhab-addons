@@ -12,18 +12,27 @@
  */
 package org.openhab.binding.homeassistant.internal.component;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ScheduledExecutorService;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.homeassistant.internal.HaID;
+import org.openhab.binding.homeassistant.internal.HomeAssistantBindingConstants;
 import org.openhab.binding.homeassistant.internal.HomeAssistantChannelLinkageChecker;
 import org.openhab.binding.homeassistant.internal.HomeAssistantPythonBridge;
+import org.openhab.binding.homeassistant.internal.config.dto.MqttComponentConfig;
 import org.openhab.binding.homeassistant.internal.exception.ConfigurationException;
 import org.openhab.binding.homeassistant.internal.exception.UnsupportedComponentException;
 import org.openhab.binding.mqtt.generic.AvailabilityTracker;
 import org.openhab.binding.mqtt.generic.ChannelStateUpdateListener;
 import org.openhab.core.i18n.UnitProvider;
 import org.openhab.core.thing.ThingUID;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 
@@ -35,6 +44,8 @@ import com.google.gson.Gson;
  */
 @NonNullByDefault
 public class ComponentFactory {
+    private static final Logger logger = LoggerFactory.getLogger(ComponentFactory.class);
+
     /**
      * Create a HA MQTT component. The configuration JSon string is required.
      *
@@ -46,13 +57,57 @@ public class ComponentFactory {
      * @param updateListener A channel state update listener
      * @return A HA MQTT Component
      */
-    public static AbstractComponent<?> createComponent(ThingUID thingUID, HaID haID, String channelConfigurationJSON,
+    public static List<AbstractComponent<?>> createComponent(ThingUID thingUID, HaID haID,
+            String channelConfigurationJSON, ChannelStateUpdateListener updateListener,
+            HomeAssistantChannelLinkageChecker linkageChecker, AvailabilityTracker tracker,
+            ScheduledExecutorService scheduler, Gson gson, HomeAssistantPythonBridge python, UnitProvider unitProvider)
+            throws ConfigurationException {
+        List<MqttComponentConfig> mqttComponentConfigs = python.processDiscoveryConfig(haID.toShortTopic(),
+                channelConfigurationJSON);
+        return createComponent(thingUID, haID, channelConfigurationJSON, mqttComponentConfigs, updateListener,
+                linkageChecker, tracker, scheduler, gson, python, unitProvider);
+    }
+
+    public static List<AbstractComponent<?>> createComponent(ThingUID thingUID, HaID haID,
+            String channelConfigurationJSON, List<MqttComponentConfig> mqttComponentConfigs,
             ChannelStateUpdateListener updateListener, HomeAssistantChannelLinkageChecker linkageChecker,
             AvailabilityTracker tracker, ScheduledExecutorService scheduler, Gson gson,
             HomeAssistantPythonBridge python, UnitProvider unitProvider) throws ConfigurationException {
+        if (HomeAssistantBindingConstants.DEVICE_COMPONENT.equals(haID.component)) {
+            List<AbstractComponent<?>> components = new ArrayList<>();
+            mqttComponentConfigs.forEach(config -> {
+                try {
+                    String nodeId = config.getNodeId();
+                    if (nodeId == null) {
+                        // Use the device component's object id as the node id for the sub components if
+                        // not explicitly specified
+                        nodeId = haID.objectID;
+                    }
+                    HaID componentHaID = new HaID(haID.baseTopic, config.getObjectId(), nodeId, config.getComponent());
+                    ComponentContext componentContext = new ComponentContext(thingUID, componentHaID,
+                            channelConfigurationJSON, gson, python, updateListener, linkageChecker, tracker, scheduler,
+                            unitProvider, config.getDiscoveryPayload(), false);
+                    components.add(createComponent(componentContext));
+                } catch (UnsupportedComponentException e) {
+                    logger.warn("Home Assistant discovery error: component {} is unsupported", haID.toShortTopic());
+                } catch (ConfigurationException e) {
+                    throw new RuntimeException(e);
+                }
+            });
+
+            return Collections.unmodifiableList(components);
+        }
+
+        MqttComponentConfig mqttComponentConfig = mqttComponentConfigs.getFirst();
         ComponentContext componentContext = new ComponentContext(thingUID, haID, channelConfigurationJSON, gson, python,
-                updateListener, linkageChecker, tracker, scheduler, unitProvider);
-        switch (haID.component) {
+                updateListener, linkageChecker, tracker, scheduler, unitProvider,
+                mqttComponentConfig.getDiscoveryPayload(), true);
+        return List.of(createComponent(componentContext));
+    }
+
+    private static AbstractComponent<?> createComponent(ComponentContext componentContext)
+            throws ConfigurationException {
+        switch (componentContext.getHaID().component) {
             case "alarm_control_panel":
                 return new AlarmControlPanel(componentContext);
             case "binary_sensor":
@@ -102,7 +157,8 @@ public class ComponentFactory {
             case "water_heater":
                 return new WaterHeater(componentContext);
             default:
-                throw new UnsupportedComponentException("Component '" + haID + "' is unsupported!");
+                throw new UnsupportedComponentException(
+                        "Component '" + componentContext.getHaID().toShortTopic() + "' is unsupported!");
         }
     }
 
@@ -117,6 +173,8 @@ public class ComponentFactory {
         private final HomeAssistantPythonBridge python;
         private final ScheduledExecutorService scheduler;
         private final UnitProvider unitProvider;
+        private final Map<String, @Nullable Object> discoveryPayload;
+        private final boolean persistChannelConfiguration;
 
         /**
          * Provide a thingUID and HomeAssistant topic ID to determine the channel group UID and type.
@@ -128,7 +186,8 @@ public class ComponentFactory {
         protected ComponentContext(ThingUID thingUID, HaID haID, String configJSON, Gson gson,
                 HomeAssistantPythonBridge python, ChannelStateUpdateListener updateListener,
                 HomeAssistantChannelLinkageChecker linkageChecker, AvailabilityTracker tracker,
-                ScheduledExecutorService scheduler, UnitProvider unitProvider) {
+                ScheduledExecutorService scheduler, UnitProvider unitProvider,
+                Map<String, @Nullable Object> discoveryPayload, boolean persistChannelConfiguration) {
             this.thingUID = thingUID;
             this.haID = haID;
             this.configJSON = configJSON;
@@ -139,6 +198,8 @@ public class ComponentFactory {
             this.tracker = tracker;
             this.scheduler = scheduler;
             this.unitProvider = unitProvider;
+            this.discoveryPayload = discoveryPayload;
+            this.persistChannelConfiguration = persistChannelConfiguration;
         }
 
         public ThingUID getThingUID() {
@@ -179,6 +240,14 @@ public class ComponentFactory {
 
         public ScheduledExecutorService getScheduler() {
             return scheduler;
+        }
+
+        public Map<String, @Nullable Object> getDiscoveryPayload() {
+            return discoveryPayload;
+        }
+
+        public boolean shouldPersistChannelConfiguration() {
+            return persistChannelConfiguration;
         }
     }
 }
