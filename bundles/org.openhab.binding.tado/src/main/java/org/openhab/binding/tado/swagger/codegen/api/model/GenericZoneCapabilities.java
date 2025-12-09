@@ -25,6 +25,18 @@ public class GenericZoneCapabilities {
     @SerializedName("type")
     private TadoSystemType type = null;
 
+    @SerializedName("APIMaxCallsPerDuration")
+    private Integer APIMaxCallsPerDuration = null;
+
+    @SerializedName("APIMaxDurationSeconds")
+    private Integer APIMaxDurationSeconds = null;
+
+    @SerializedName("APICallsRemainingThisDuration")
+    private Integer APICallsRemainingThisDuration = null;
+
+    @SerializedName("APISecondsUntilMaxResets")
+    private Integer APISecondsUntilMaxResets = null;
+
     public GenericZoneCapabilities type(TadoSystemType type) {
         this.type = type;
         return this;
@@ -36,6 +48,22 @@ public class GenericZoneCapabilities {
 
     public void setType(TadoSystemType type) {
         this.type = type;
+    }
+
+    public Integer getAPIMaxCallsPerDuration() {
+        return APIMaxCallsPerDuration;
+    }
+
+    public Integer getAPIMaxDurationSeconds() {
+        return APIMaxDurationSeconds;
+    }
+
+    public Integer getAPICallsRemainingThisDuration() {
+        return APICallsRemainingThisDuration;
+    }
+
+    public Integer getAPISecondsUntilMaxResets() {
+        return APISecondsUntilMaxResets;
     }
 
     @Override

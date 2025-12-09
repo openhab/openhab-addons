@@ -20,8 +20,11 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import javax.measure.Unit;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.tado.internal.TadoBindingConstants;
 import org.openhab.binding.tado.internal.TadoBindingConstants.TemperatureUnit;
 import org.openhab.binding.tado.internal.api.HomeApiFactory;
 import org.openhab.binding.tado.internal.config.TadoHomeConfig;
@@ -38,6 +41,8 @@ import org.openhab.core.auth.client.oauth2.AccessTokenRefreshListener;
 import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
 import org.openhab.core.auth.client.oauth2.OAuthClientService;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -135,6 +140,15 @@ public class TadoHomeHandler extends BaseBridgeHandler implements AccessTokenRef
                     return;
                 }
 
+                updateAPIChannels(user.getAPIMaxCallsPerDuration(), TadoBindingConstants.CHANNEL_API_MAX_CALLS,
+                        Units.ONE);
+                updateAPIChannels(user.getAPIMaxDurationSeconds(), TadoBindingConstants.CHANNEL_API_MAX_DURATION,
+                        Units.SECOND);
+                updateAPIChannels(user.getAPICallsRemainingThisDuration(),
+                        TadoBindingConstants.CHANNEL_API_CALLS_REMAINING, Units.ONE);
+                updateAPIChannels(user.getAPISecondsUntilMaxResets(),
+                        TadoBindingConstants.CHANNEL_API_SECONDS_UNTIL_MAX_RESETS, Units.SECOND);
+
                 List<UserHomes> homes = user.getHomes();
                 if (homes == null || homes.isEmpty()) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, CONF_ERROR_NO_HOME);
@@ -214,6 +228,16 @@ public class TadoHomeHandler extends BaseBridgeHandler implements AccessTokenRef
             cachedHomePresence.setHomePresence(homePresence);
             updateState(CHANNEL_HOME_PRESENCE_MODE, OnOffType.from(PresenceState.HOME == homePresence));
             updateState(CHANNEL_HOME_GEOFENCING_ENABLED, OnOffType.from(!homeState.isPresenceLocked()));
+
+            updateAPIChannels(homeState.getAPIMaxCallsPerDuration(), TadoBindingConstants.CHANNEL_API_MAX_CALLS,
+                    Units.ONE);
+            updateAPIChannels(homeState.getAPIMaxDurationSeconds(), TadoBindingConstants.CHANNEL_API_MAX_DURATION,
+                    Units.SECOND);
+            updateAPIChannels(homeState.getAPICallsRemainingThisDuration(),
+                    TadoBindingConstants.CHANNEL_API_CALLS_REMAINING, Units.ONE);
+            updateAPIChannels(homeState.getAPISecondsUntilMaxResets(),
+                    TadoBindingConstants.CHANNEL_API_SECONDS_UNTIL_MAX_RESETS, Units.SECOND);
+
         } catch (IOException | ApiException e) {
             logger.debug("Error accessing tado server: {}", e.getMessage(), e);
         }
@@ -286,5 +310,11 @@ public class TadoHomeHandler extends BaseBridgeHandler implements AccessTokenRef
     @Override
     public void onAccessTokenResponse(AccessTokenResponse atr) {
         initializeBridgeStatusAndPropertiesIfOffline();
+    }
+
+    private void updateAPIChannels(@Nullable Integer value, String channelName, Unit unit) {
+        if (value != null) {
+            updateState(channelName, new QuantityType<>(value, unit));
+        }
     }
 }

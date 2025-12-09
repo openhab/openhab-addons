@@ -22,6 +22,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import javax.measure.Unit;
 import javax.measure.quantity.Temperature;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -60,6 +61,7 @@ import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.ImperialUnits;
 import org.openhab.core.library.unit.SIUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -122,12 +124,31 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
     public OverlayTerminationCondition getDefaultTerminationCondition() throws IOException, ApiException {
         OverlayTemplate overlayTemplate = getApi().showZoneDefaultOverlay(getHomeId(), getZoneId());
         logApiTransaction(overlayTemplate, false);
+
+        updateAPIChannels(overlayTemplate.getAPIMaxCallsPerDuration(), TadoBindingConstants.CHANNEL_API_MAX_CALLS,
+                Units.ONE);
+        updateAPIChannels(overlayTemplate.getAPIMaxDurationSeconds(), TadoBindingConstants.CHANNEL_API_MAX_DURATION,
+                Units.SECOND);
+        updateAPIChannels(overlayTemplate.getAPICallsRemainingThisDuration(),
+                TadoBindingConstants.CHANNEL_API_CALLS_REMAINING, Units.ONE);
+        updateAPIChannels(overlayTemplate.getAPISecondsUntilMaxResets(),
+                TadoBindingConstants.CHANNEL_API_SECONDS_UNTIL_MAX_RESETS, Units.SECOND);
+
         return terminationConditionTemplateToTerminationCondition(overlayTemplate.getTerminationCondition());
     }
 
     public ZoneState getZoneState() throws IOException, ApiException {
         ZoneState zoneState = getApi().showZoneState(getHomeId(), getZoneId());
         logApiTransaction(zoneState, false);
+
+        updateAPIChannels(zoneState.getAPIMaxCallsPerDuration(), TadoBindingConstants.CHANNEL_API_MAX_CALLS, Units.ONE);
+        updateAPIChannels(zoneState.getAPIMaxDurationSeconds(), TadoBindingConstants.CHANNEL_API_MAX_DURATION,
+                Units.SECOND);
+        updateAPIChannels(zoneState.getAPICallsRemainingThisDuration(),
+                TadoBindingConstants.CHANNEL_API_CALLS_REMAINING, Units.ONE);
+        updateAPIChannels(zoneState.getAPISecondsUntilMaxResets(),
+                TadoBindingConstants.CHANNEL_API_SECONDS_UNTIL_MAX_RESETS, Units.SECOND);
+
         return zoneState;
     }
 
@@ -147,6 +168,16 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
         try {
             logApiTransaction(overlay, true);
             Overlay newOverlay = getApi().updateZoneOverlay(getHomeId(), getZoneId(), overlay);
+
+            updateAPIChannels(newOverlay.getAPIMaxCallsPerDuration(), TadoBindingConstants.CHANNEL_API_MAX_CALLS,
+                    Units.ONE);
+            updateAPIChannels(newOverlay.getAPIMaxDurationSeconds(), TadoBindingConstants.CHANNEL_API_MAX_DURATION,
+                    Units.SECOND);
+            updateAPIChannels(newOverlay.getAPICallsRemainingThisDuration(),
+                    TadoBindingConstants.CHANNEL_API_CALLS_REMAINING, Units.ONE);
+            updateAPIChannels(newOverlay.getAPISecondsUntilMaxResets(),
+                    TadoBindingConstants.CHANNEL_API_SECONDS_UNTIL_MAX_RESETS, Units.SECOND);
+
             logApiTransaction(newOverlay, false);
             return newOverlay;
         } catch (ApiException e) {
@@ -274,6 +305,7 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
                 logApiTransaction(zoneDetails, false);
 
                 GenericZoneCapabilities capabilities = getApi().showZoneCapabilities(getHomeId(), getZoneId());
+
                 logApiTransaction(capabilities, false);
 
                 if (zoneDetails == null || capabilities == null) {
@@ -281,6 +313,15 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
                             "Can not access zone " + getZoneId() + " of home " + getHomeId());
                     return;
                 }
+
+                updateAPIChannels(capabilities.getAPIMaxCallsPerDuration(), TadoBindingConstants.CHANNEL_API_MAX_CALLS,
+                        Units.ONE);
+                updateAPIChannels(capabilities.getAPIMaxDurationSeconds(),
+                        TadoBindingConstants.CHANNEL_API_MAX_DURATION, Units.SECOND);
+                updateAPIChannels(capabilities.getAPICallsRemainingThisDuration(),
+                        TadoBindingConstants.CHANNEL_API_CALLS_REMAINING, Units.ONE);
+                updateAPIChannels(capabilities.getAPISecondsUntilMaxResets(),
+                        TadoBindingConstants.CHANNEL_API_SECONDS_UNTIL_MAX_RESETS, Units.SECOND);
 
                 updateProperty(TadoBindingConstants.PROPERTY_ZONE_NAME, zoneDetails.getName());
                 updateProperty(TadoBindingConstants.PROPERTY_ZONE_TYPE, zoneDetails.getType().name());
@@ -352,6 +393,27 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
 
             updateState(TadoBindingConstants.CHANNEL_ZONE_OPEN_WINDOW_REMAINING_TIME,
                     state.getOpenWindowRemainingTime());
+
+            /*
+             * Integer APIMaxCallsPerDuration = zoneState.getAPIMaxCallsPerDuration();
+             * if (APIMaxCallsPerDuration != null) {
+             * updateState(TadoBindingConstants.CHANNEL_API_MAX_CALLS,
+             * new QuantityType<>(APIMaxCallsPerDuration, Units.ONE));
+             * }
+             * Integer APIMaxDurationSeconds = zoneState.getAPIMaxDurationSeconds();
+             * if (APIMaxDurationSeconds != null) {
+             * updateState(TadoBindingConstants.CHANNEL_API_MAX_DURATION,
+             * new QuantityType<>(APIMaxCallsPerDuration, Units.ONE));
+             * }
+             * if (zoneState.getAPICallsRemainingThisDuration() != null) {
+             * updateState(TadoBindingConstants.CHANNEL_API_CALLS_REMAINING,
+             * new QuantityType<>(APIMaxCallsPerDuration, Units.ONE));
+             * }
+             * if (zoneState.getAPISecondsUntilMaxResets() != null) {
+             * updateState(TadoBindingConstants.CHANNEL_API_SECONDS_UNTIL_MAX_RESETS,
+             * state.getAPISecondsUntilMaxResets());
+             * }
+             */
 
             updateDynamicStateDescriptions(zoneState);
 
@@ -544,6 +606,12 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
                 logger.debug("Removing unsupported channels for {}: {}", thing.getUID(), joiner.toString());
             }
             updateThing(editThing().withoutChannels(removeList).build());
+        }
+    }
+
+    private void updateAPIChannels(@Nullable Integer value, String channelName, Unit unit) {
+        if (value != null) {
+            updateState(channelName, new QuantityType<>(value, unit));
         }
     }
 }

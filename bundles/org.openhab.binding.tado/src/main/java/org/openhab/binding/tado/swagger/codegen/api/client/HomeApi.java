@@ -22,6 +22,7 @@ import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.http.HttpFields;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
@@ -54,6 +55,70 @@ public class HomeApi {
 
     private Gson gson;
     private OAuthorizerV2 authorizer;
+
+    private String APIMaxCallsPerDuration;
+    private String APIMaxDurationSeconds;
+    private String APICallsRemainingThisDuration;
+    private String APISecondsUntilMaxResets;
+
+    private String createStringForJson(ContentResponse resp) {
+        String stringForJson = "{";
+        String stringFromResponse = resp.getContentAsString();
+        String extractedRateLimitInfo = extractRateLimitInfo(resp);
+        stringForJson = stringForJson.concat(extractedRateLimitInfo).concat(stringFromResponse.substring(1));
+        return stringForJson;
+    }
+
+    private String createStringListForJson(ContentResponse resp) {
+        String stringForJson = "";
+        String stringFromResponse = resp.getContentAsString();
+        String splitString = "\"name\":";
+        String extractedRateLimitInfo = extractRateLimitInfo(resp);
+        String[] jsonSubstrings = stringFromResponse.split(splitString);
+
+        for (int x = 0; x < jsonSubstrings.length - 1; x++) {
+            stringForJson = stringForJson.concat(jsonSubstrings[x].concat(extractedRateLimitInfo).concat(splitString));
+        }
+        stringForJson = stringForJson.concat(jsonSubstrings[jsonSubstrings.length - 1]);
+        return stringForJson;
+    }
+
+    private String extractRateLimitInfo(ContentResponse resp) {
+        String extractedString = "";
+        HttpFields headersfields = resp.getHeaders();
+        String rateLimitPolicyValueString = headersfields.get("RateLimit-Policy");
+        if (rateLimitPolicyValueString != null) {
+            String[] rateLimitPolicyValues = rateLimitPolicyValueString.split(";");
+            for (int x = 0; x < rateLimitPolicyValues.length; x++) {
+                if (rateLimitPolicyValues[x].startsWith("q=")) {
+                    APIMaxCallsPerDuration = rateLimitPolicyValues[x].substring(2);
+                    extractedString = extractedString.concat("\"APIMaxCallsPerDuration\": \"")
+                            .concat(APIMaxCallsPerDuration).concat("\",");
+                } else if (rateLimitPolicyValues[x].startsWith("w=")) {
+                    APIMaxDurationSeconds = rateLimitPolicyValues[x].substring(2);
+                    extractedString = extractedString.concat("\"APIMaxDurationSeconds\": \"")
+                            .concat(APIMaxDurationSeconds).concat("\",");
+                }
+            }
+        }
+        String rateLimitValueString = headersfields.get("RateLimit");
+        if (rateLimitValueString != null) {
+            String[] rateLimitValues = rateLimitValueString.split(";");
+            for (int x = 0; x < rateLimitValues.length; x++) {
+                if (rateLimitValues[x].startsWith("r=")) {
+                    APICallsRemainingThisDuration = rateLimitValues[x].substring(2);
+                    extractedString = extractedString.concat("\"APICallsRemainingThisDuration\": \"")
+                            .concat(APICallsRemainingThisDuration).concat("\",");
+                } else if (rateLimitValues[x].startsWith("w=")) {
+                    APISecondsUntilMaxResets = rateLimitValues[x].substring(2);
+                    extractedString = extractedString.concat("\"APISecondsUntilMaxResets\": \"")
+                            .concat(APISecondsUntilMaxResets).concat("\",");
+                }
+            }
+
+        }
+        return extractedString;
+    }
 
     public HomeApi(Gson gson, OAuthorizerV2 authorizer, String baseUrl) {
         this.gson = gson;
@@ -100,6 +165,7 @@ public class HomeApi {
         if (statusCode >= HttpStatus.BAD_REQUEST_400) {
             throw new ApiException(response, "Operation deleteZoneOverlay failed with error " + statusCode);
         }
+        // There's no point in extracting the API values, if there is no return
     }
 
     public HomeState homeState(Long homeId) throws IOException, ApiException {
@@ -137,7 +203,8 @@ public class HomeApi {
 
         Type returnType = new TypeToken<HomeState>() {
         }.getType();
-        return gson.fromJson(response.getContentAsString(), returnType);
+        String stringForJson = createStringForJson(response);
+        return gson.fromJson(stringForJson, returnType);
     }
 
     public List<MobileDevice> listMobileDevices(Long homeId) throws IOException, ApiException {
@@ -175,7 +242,8 @@ public class HomeApi {
 
         Type returnType = new TypeToken<List<MobileDevice>>() {
         }.getType();
-        return gson.fromJson(response.getContentAsString(), returnType);
+        String stringForJson = createStringListForJson(response);
+        return gson.fromJson(stringForJson, returnType);
     }
 
     public List<Zone> listZones(Long homeId) throws IOException, ApiException {
@@ -213,6 +281,10 @@ public class HomeApi {
 
         Type returnType = new TypeToken<List<Zone>>() {
         }.getType();
+
+        // This method isn't called from classes in which `updateState()` is implemented. There's therefore no point in
+        // returning API values.
+
         return gson.fromJson(response.getContentAsString(), returnType);
     }
 
@@ -251,7 +323,8 @@ public class HomeApi {
 
         Type returnType = new TypeToken<HomeInfo>() {
         }.getType();
-        return gson.fromJson(response.getContentAsString(), returnType);
+        String stringForJson = createStringForJson(response);
+        return gson.fromJson(stringForJson, returnType);
     }
 
     public User showUser() throws IOException, ApiException {
@@ -284,7 +357,8 @@ public class HomeApi {
 
         Type returnType = new TypeToken<User>() {
         }.getType();
-        return gson.fromJson(response.getContentAsString(), returnType);
+        String stringForJson = createStringForJson(response);
+        return gson.fromJson(stringForJson, returnType);
     }
 
     public GenericZoneCapabilities showZoneCapabilities(Long homeId, Long zoneId) throws IOException, ApiException {
@@ -329,7 +403,9 @@ public class HomeApi {
 
         Type returnType = new TypeToken<GenericZoneCapabilities>() {
         }.getType();
-        return gson.fromJson(response.getContentAsString(), returnType);
+
+        String stringForJson = createStringForJson(response);
+        return gson.fromJson(stringForJson, returnType);
     }
 
     public OverlayTemplate showZoneDefaultOverlay(Long homeId, Long zoneId) throws IOException, ApiException {
@@ -374,7 +450,8 @@ public class HomeApi {
 
         Type returnType = new TypeToken<OverlayTemplate>() {
         }.getType();
-        return gson.fromJson(response.getContentAsString(), returnType);
+        String stringForJson = createStringForJson(response);
+        return gson.fromJson(stringForJson, returnType);
     }
 
     public Zone showZoneDetails(Long homeId, Long zoneId) throws IOException, ApiException {
@@ -419,6 +496,10 @@ public class HomeApi {
 
         Type returnType = new TypeToken<Zone>() {
         }.getType();
+
+        // Since this method is only called in one method, in which it is followed by a call to
+        // `showZoneCapabilities()`, it's wasteful to extract the API data here.
+
         return gson.fromJson(response.getContentAsString(), returnType);
     }
 
@@ -464,7 +545,8 @@ public class HomeApi {
 
         Type returnType = new TypeToken<Overlay>() {
         }.getType();
-        return gson.fromJson(response.getContentAsString(), returnType);
+        String stringForJson = createStringForJson(response);
+        return gson.fromJson(stringForJson, returnType);
     }
 
     public ZoneState showZoneState(Long homeId, Long zoneId) throws IOException, ApiException {
@@ -508,7 +590,8 @@ public class HomeApi {
 
         Type returnType = new TypeToken<ZoneState>() {
         }.getType();
-        return gson.fromJson(response.getContentAsString(), returnType);
+        String stringForJson = createStringForJson(response);
+        return gson.fromJson(stringForJson, returnType);
     }
 
     /**
@@ -551,6 +634,7 @@ public class HomeApi {
         if (statusCode >= HttpStatus.BAD_REQUEST_400) {
             throw new ApiException(response, "Operation updatePresenceLock failed with error " + statusCode);
         }
+        // There's no point in extracting the API values, if there is no return
     }
 
     public Overlay updateZoneOverlay(Long homeId, Long zoneId, Overlay json) throws IOException, ApiException {
@@ -603,7 +687,8 @@ public class HomeApi {
 
         Type returnType = new TypeToken<Overlay>() {
         }.getType();
-        return gson.fromJson(response.getContentAsString(), returnType);
+        String stringForJson = createStringForJson(response);
+        return gson.fromJson(stringForJson, returnType);
     }
 
     private static void startHttpClient(HttpClient client) {
