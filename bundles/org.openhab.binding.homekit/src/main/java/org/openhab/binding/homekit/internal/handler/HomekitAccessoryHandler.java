@@ -516,7 +516,7 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
                     updateStatus(ThingStatus.ONLINE);
                 });
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
             }
         }
     }
@@ -998,7 +998,7 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
     }
 
     /**
-     * Return true if STARTLEVEL_COMPLETE has already been acheived.
+     * Return true if STARTLEVEL_COMPLETE has already been achieved.
      * <p>
      * Note: STARTLEVEL_COMPLETE means all Thing handlers are instantiated and their initialize() methods have
      * been called, and the registries for item, thing, and item-channel-links have all been loaded.
