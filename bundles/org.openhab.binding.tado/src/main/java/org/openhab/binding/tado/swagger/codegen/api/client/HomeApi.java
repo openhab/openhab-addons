@@ -62,25 +62,25 @@ public class HomeApi {
     private String APISecondsUntilMaxResets;
 
     private String createStringForJson(ContentResponse resp) {
-        String stringForJson = "{";
         String stringFromResponse = resp.getContentAsString();
         String extractedRateLimitInfo = extractRateLimitInfo(resp);
-        stringForJson = stringForJson.concat(extractedRateLimitInfo).concat(stringFromResponse.substring(1));
-        return stringForJson;
+        StringBuilder stringForJson = new StringBuilder("{");
+        stringForJson.append(extractedRateLimitInfo).append(stringFromResponse.substring(1));
+        return stringForJson.toString();
     }
 
     private String createStringListForJson(ContentResponse resp) {
-        String stringForJson = "";
         String stringFromResponse = resp.getContentAsString();
         String splitString = "\"name\":";
         String extractedRateLimitInfo = extractRateLimitInfo(resp);
         String[] jsonSubstrings = stringFromResponse.split(splitString);
+        StringBuilder stringForJson = new StringBuilder();
 
         for (int x = 0; x < jsonSubstrings.length - 1; x++) {
-            stringForJson = stringForJson.concat(jsonSubstrings[x].concat(extractedRateLimitInfo).concat(splitString));
+            stringForJson.append(jsonSubstrings[x]).append(extractedRateLimitInfo).append(splitString);
         }
-        stringForJson = stringForJson.concat(jsonSubstrings[jsonSubstrings.length - 1]);
-        return stringForJson;
+        stringForJson.append(jsonSubstrings[jsonSubstrings.length - 1]);
+        return stringForJson.toString();
     }
 
     private String extractRateLimitInfo(ContentResponse resp) {
