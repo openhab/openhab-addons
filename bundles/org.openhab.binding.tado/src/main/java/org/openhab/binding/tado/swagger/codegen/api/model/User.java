@@ -42,6 +42,18 @@ public class User {
     @SerializedName("locale")
     private String locale = null;
 
+    @SerializedName("APIMaxCallsPerDuration")
+    private Integer APIMaxCallsPerDuration = null;
+
+    @SerializedName("APIMaxDurationSeconds")
+    private Integer APIMaxDurationSeconds = null;
+
+    @SerializedName("APICallsRemainingThisDuration")
+    private Integer APICallsRemainingThisDuration = null;
+
+    @SerializedName("APISecondsUntilMaxResets")
+    private Integer APISecondsUntilMaxResets = null;
+
     public User name(String name) {
         this.name = name;
         return this;
@@ -126,6 +138,22 @@ public class User {
 
     public void setLocale(String locale) {
         this.locale = locale;
+    }
+
+    public Integer getAPIMaxCallsPerDuration() {
+        return APIMaxCallsPerDuration;
+    }
+
+    public Integer getAPIMaxDurationSeconds() {
+        return APIMaxDurationSeconds;
+    }
+
+    public Integer getAPICallsRemainingThisDuration() {
+        return APICallsRemainingThisDuration;
+    }
+
+    public Integer getAPISecondsUntilMaxResets() {
+        return APISecondsUntilMaxResets;
     }
 
     @Override

@@ -46,6 +46,12 @@ Once the `home` thing is online, the binding will discover all its respective zo
 |---------------------|--------|---------------------------------------------------------------------|------------|
 | `homePresence`      | Switch | Current presence value of the tado home; `ON` = HOME / `OFF` = AWAY | RW         |
 | `geofencingEnabled` | Switch | Selects if automatic geofencing is enabled or disabled              | RW         |
+| `APICallsRemainingThisDuration`<sup>1)</sup> | Number:Dimensionless | Number of API calls remaining before the maximum is reached              | R         |
+| `APIMaxCallsPerDuration`<sup>1)</sup> | Number:Time | Maximum API calls allowed per specified duration              | R         |                        |
+| `APIMaxDurationSeconds`<sup>1)</sup> | Number:Dimensionless | Duration in which the API count rises until maximum (in seconds)              | R         |
+| `APISecondsUntilMaxResets`<sup>1)</sup> | Number:Time | Duration before the API count resets (in seconds)              | R         |
+
+<sup>1)</sup> It probably makes the most sense to link *one and the same* Item to *all* `APICallsRemainingThisDuration` Channels of *all* Things linked to the same `home` Thing (*including* this `home` Thing). That way, that one Item is always as up-to-date as possible. The same applies to `APIMaxCallsPerDuration`, `APIMaxDurationSeconds` and `APISecondsUntilMaxResets`, of course.
 
 ## `zone` Thing
 
@@ -162,7 +168,7 @@ Bridge tado:home:demo [ username="mail@example.com", password="secret" ] {
 }
 ```
 
-### Items
+### Channels
 
 | Name     | Type   | Description                                      | Read/Write |
 |----------|--------|--------------------------------------------------|------------|

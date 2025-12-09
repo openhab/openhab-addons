@@ -25,6 +25,18 @@ public class OverlayTemplate {
     @SerializedName("terminationCondition")
     private OverlayTerminationConditionTemplate terminationCondition = null;
 
+    @SerializedName("APIMaxCallsPerDuration")
+    private Integer APIMaxCallsPerDuration = null;
+
+    @SerializedName("APIMaxDurationSeconds")
+    private Integer APIMaxDurationSeconds = null;
+
+    @SerializedName("APICallsRemainingThisDuration")
+    private Integer APICallsRemainingThisDuration = null;
+
+    @SerializedName("APISecondsUntilMaxResets")
+    private Integer APISecondsUntilMaxResets = null;
+
     public OverlayTemplate terminationCondition(OverlayTerminationConditionTemplate terminationCondition) {
         this.terminationCondition = terminationCondition;
         return this;
@@ -36,6 +48,22 @@ public class OverlayTemplate {
 
     public void setTerminationCondition(OverlayTerminationConditionTemplate terminationCondition) {
         this.terminationCondition = terminationCondition;
+    }
+
+    public Integer getAPIMaxCallsPerDuration() {
+        return APIMaxCallsPerDuration;
+    }
+
+    public Integer getAPIMaxDurationSeconds() {
+        return APIMaxDurationSeconds;
+    }
+
+    public Integer getAPICallsRemainingThisDuration() {
+        return APICallsRemainingThisDuration;
+    }
+
+    public Integer getAPISecondsUntilMaxResets() {
+        return APISecondsUntilMaxResets;
     }
 
     @Override

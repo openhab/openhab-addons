@@ -13,6 +13,10 @@
 		<channels>
 			<channel typeId="homePresence" id="homePresence"/>
 			<channel typeId="geofencingEnabled" id="geofencingEnabled"/>
+			<channel typeId="APIMaxCallsPerDuration" id="APIMaxCallsPerDuration"/>
+			<channel typeId="APIMaxDurationSeconds" id="APIMaxDurationSeconds"/>
+			<channel typeId="APICallsRemainingThisDuration" id="APICallsRemainingThisDuration"/>
+			<channel typeId="APISecondsUntilMaxResets" id="APISecondsUntilMaxResets"/>
 		</channels>
 
 		<properties>
@@ -81,6 +85,10 @@
 				<label>Battery Low Alarm</label>
 				<description>ON if one or more devices in the zone have a low battery</description>
 			</channel>
+			<channel typeId="APIMaxCallsPerDuration" id="APIMaxCallsPerDuration"/>
+			<channel typeId="APIMaxDurationSeconds" id="APIMaxDurationSeconds"/>
+			<channel typeId="APICallsRemainingThisDuration" id="APICallsRemainingThisDuration"/>
+			<channel typeId="APISecondsUntilMaxResets" id="APISecondsUntilMaxResets"/>
 		</channels>
 
 		<properties>
@@ -126,6 +134,10 @@
 
 		<channels>
 			<channel typeId="atHome" id="atHome"/>
+			<channel typeId="APIMaxCallsPerDuration" id="APIMaxCallsPerDuration"/>
+			<channel typeId="APIMaxDurationSeconds" id="APIMaxDurationSeconds"/>
+			<channel typeId="APICallsRemainingThisDuration" id="APICallsRemainingThisDuration"/>
+			<channel typeId="APISecondsUntilMaxResets" id="APISecondsUntilMaxResets"/>
 		</channels>
 
 		<properties>
@@ -414,6 +426,50 @@
 			<tag>Duration</tag>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="APIMaxDurationSeconds" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>API Max Duration</label>
+		<description>Duration in which the API count rises until maximum (in seconds)</description>
+		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Duration</tag>
+		</tags>
+		<state readOnly="true" pattern="%d s"/>
+	</channel-type>
+
+	<channel-type id="APICallsRemainingThisDuration" advanced="true">
+		<item-type>Number:Dimensionless</item-type>
+		<label>API Calls remaining</label>
+		<description>Number of API calls remaining before the maximum is reached</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true" pattern="%d"/>
+	</channel-type>
+
+	<channel-type id="APIMaxCallsPerDuration" advanced="true">
+		<item-type>Number:Dimensionless</item-type>
+		<label>API Max</label>
+		<description>Maximum API calls allowed per specified duration</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true" pattern="%d"/>
+	</channel-type>
+
+	<channel-type id="APISecondsUntilMaxResets" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Time until API Max Duration resets</label>
+		<description>Time before the API count resets (in seconds)</description>
+		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Duration</tag>
+		</tags>
+		<state readOnly="true" pattern="%d s"/>
 	</channel-type>
 
 </thing:thing-descriptions>

@@ -34,6 +34,18 @@ public class MobileDevice {
     @SerializedName("location")
     private MobileDeviceLocation location = null;
 
+    @SerializedName("APIMaxCallsPerDuration")
+    private Integer APIMaxCallsPerDuration = null;
+
+    @SerializedName("APIMaxDurationSeconds")
+    private Integer APIMaxDurationSeconds = null;
+
+    @SerializedName("APICallsRemainingThisDuration")
+    private Integer APICallsRemainingThisDuration = null;
+
+    @SerializedName("APISecondsUntilMaxResets")
+    private Integer APISecondsUntilMaxResets = null;
+
     public Integer getId() {
         return id;
     }
@@ -75,6 +87,22 @@ public class MobileDevice {
 
     public void setLocation(MobileDeviceLocation location) {
         this.location = location;
+    }
+
+    public Integer getAPIMaxCallsPerDuration() {
+        return APIMaxCallsPerDuration;
+    }
+
+    public Integer getAPIMaxDurationSeconds() {
+        return APIMaxDurationSeconds;
+    }
+
+    public Integer getAPICallsRemainingThisDuration() {
+        return APICallsRemainingThisDuration;
+    }
+
+    public Integer getAPISecondsUntilMaxResets() {
+        return APISecondsUntilMaxResets;
     }
 
     @Override
