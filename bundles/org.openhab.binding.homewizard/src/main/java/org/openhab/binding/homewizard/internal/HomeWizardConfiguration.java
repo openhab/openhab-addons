@@ -45,6 +45,6 @@ public class HomeWizardConfiguration {
     public String bearerToken = "";
 
     public Boolean useApiVersion2() {
-        return apiVersion.equals("2");
+        return "2".equals(apiVersion);
     }
 }
