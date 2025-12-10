@@ -4,6 +4,7 @@ This binding can be used to control the following types of whole house multi-zon
 
 - Monoprice MPR-SG6Z (10761), Monoprice Passive Matrix (39261), Dayton Audio DAX66 or compatible clones
 - Monoprice 44519 4 zone / 6 source variant of the 10761 **(untested)**
+- Monoprice 44518 8 zone / 6 source variant of the 10761 **(untested)**
 - Monoprice 31028 or OSD Audio PAM1270 **(untested)**
 - Dayton Audio DAX88 **(untested)**
 - Xantech MRC88, MX88, MRAUDIO8X8 or CM8X8 **(untested)**
@@ -27,6 +28,8 @@ Note: Compatible clones from McLELLAND, Factor, Soundavo, etc. should work as we
 **_The following thing types were implemented via available documentation only and have not been tested. Please open an issue for any bugs found when using these thing types._**
 
 Monoprice 44519 4 zone variants use the `monoprice4` thing id. Up to 12 zones with 3 linked amps and 6 source inputs are supported.
+
+Monoprice 44518 8 zone variants use the `monoprice8` thing id. Up to 24 zones with 3 linked amps and 6 source inputs are supported.
 
 Monoprice 31028 or OSD Audio PAM1270 70 volt amplifiers use the `monoprice70` thing id. 6 zones per amp (not linkable) and 2 source inputs are supported.
 
