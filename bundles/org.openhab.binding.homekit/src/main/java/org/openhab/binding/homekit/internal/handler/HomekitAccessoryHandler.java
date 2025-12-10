@@ -628,8 +628,8 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
      * @throws TimeoutException if the operation times out
      * @throws InterruptedException if the operation is interrupted
      * @throws IllegalStateException if the accessory ID or characteristic IID are not initialized
-     *             plus ExecutionException if there is an execution error
-     *             plus IOException if there is a communication error
+     * @throws java.util.concurrent.ExecutionException if there is an execution error
+     * @throws java.io.IOException if there is a communication error
      */
     private void lightModelHandleCommand(Command command) throws Exception {
         LightModel lightModel = this.lightModel;
@@ -785,8 +785,8 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
      * @throws TimeoutException if the operation times out
      * @throws InterruptedException if the operation is interrupted
      * @throws IllegalStateException if the read/write service is not initialized
-     *             plus ExecutionException if there is an execution error
-     *             plus IOException if there is a communication error
+     * @throws java.util.concurrent.ExecutionException if there is an execution error
+     * @throws java.io.IOException if there is a communication error
      */
     private synchronized @Nullable State readChannel(Channel channel) throws Exception {
         Long aid = getAccessoryId();
@@ -817,8 +817,8 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
      * @throws TimeoutException if the operation times out
      * @throws InterruptedException if the operation is interrupted
      * @throws IllegalStateException if the accessory ID or characteristic IID are not initialized
-     *             plus ExecutionException if there is an execution error
-     *             plus IOException if there is a communication error
+     * @throws java.util.concurrent.ExecutionException if there is an execution error
+     * @throws java.io.IOException if there is a communication error
      */
     private synchronized void writeChannel(Channel channel, Command command) throws Exception {
         Long aid = getAccessoryId();
