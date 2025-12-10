@@ -14,7 +14,6 @@ package org.openhab.binding.homekit.internal.handler;
 
 import static org.openhab.binding.homekit.internal.HomekitBindingConstants.*;
 
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -23,7 +22,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.ExecutionException;
 
 import javax.measure.Unit;
 import javax.measure.format.MeasurementParseException;
@@ -627,11 +625,11 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
      * @param hsbCommand the HSBType command containing hue, saturation, and brightness
      * @param writer the CharacteristicReadWriteClient to send the command
      * @throws Exception compiler requires us to handle any exception; but actually will be one of the following:
-     * @throws ExecutionException if there is an execution error
      * @throws TimeoutException if the operation times out
      * @throws InterruptedException if the operation is interrupted
-     * @throws IOException if there is a communication error
      * @throws IllegalStateException if the accessory ID or characteristic IID are not initialized
+     *             plus ExecutionException if there is an execution error
+     *             plus IOException if there is a communication error
      */
     private void lightModelHandleCommand(Command command) throws Exception {
         LightModel lightModel = this.lightModel;
@@ -784,11 +782,11 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
      * @param channel the channel to read
      * @return the current state of the channel, or null if not found
      * @throws Exception compiler requires us to handle any exception; but actually will be one of the following:
-     * @throws ExecutionException if there is an execution error
      * @throws TimeoutException if the operation times out
      * @throws InterruptedException if the operation is interrupted
-     * @throws IOException if there is a communication error
      * @throws IllegalStateException if the read/write service is not initialized
+     *             plus ExecutionException if there is an execution error
+     *             plus IOException if there is a communication error
      */
     private synchronized @Nullable State readChannel(Channel channel) throws Exception {
         Long aid = getAccessoryId();
@@ -816,11 +814,11 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
      * @param command the command to send
      * @param writer the CharacteristicReadWriteClient to send the command
      * @throws Exception compiler requires us to handle any exception; but actually will be one of the following:
-     * @throws ExecutionException if there is an execution error
      * @throws TimeoutException if the operation times out
      * @throws InterruptedException if the operation is interrupted
-     * @throws IOException if there is a communication error
      * @throws IllegalStateException if the accessory ID or characteristic IID are not initialized
+     *             plus ExecutionException if there is an execution error
+     *             plus IOException if there is a communication error
      */
     private synchronized void writeChannel(Channel channel, Command command) throws Exception {
         Long aid = getAccessoryId();
