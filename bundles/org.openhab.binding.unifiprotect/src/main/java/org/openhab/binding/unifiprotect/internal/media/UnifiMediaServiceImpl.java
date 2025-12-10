@@ -53,7 +53,7 @@ import org.slf4j.LoggerFactory;
  */
 @Component(service = UnifiMediaService.class, immediate = true, configurationPid = UnifiProtectBindingConstants.SERVICE_ID, property = Constants.SERVICE_PID
         + "=" + UnifiProtectBindingConstants.SERVICE_ID)
-@ConfigurableService(category = "system", label = "UnifiProtect", description_uri = "binding:unifiprotect")
+@ConfigurableService(category = "binding", label = "UnifiProtect", description_uri = "binding:unifiprotect")
 @NonNullByDefault
 public class UnifiMediaServiceImpl implements UnifiMediaService {
     private static final Path CACHE_DIR = Paths.get(OpenHAB.getUserDataFolder(), "cache",
