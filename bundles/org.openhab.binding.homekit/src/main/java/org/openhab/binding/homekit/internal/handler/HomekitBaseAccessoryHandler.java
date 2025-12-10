@@ -740,7 +740,11 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
      *
      * @param readyThing the dependent thing that has become ready and shall be removed from the not-ready set
      */
-    protected void removeNotReadyThing(Thing readyThing) {
+    protected void markAsReady(Thing readyThing) {
+        if (getBridge() instanceof Bridge bridge && bridge.getHandler() instanceof HomekitBridgeHandler bridgeHandler) {
+            bridgeHandler.markAsReady(readyThing);
+            return;
+        }
         notReadyThings.remove(readyThing);
         if (notReadyThings.isEmpty()) {
             onThingOnline();
@@ -749,7 +753,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
 
     /**
      * Called when the thing is fully online. Updates the thing status to ONLINE. And if the
-     * thing is not a bridged accessory, enables eventing,and starts the refresh task.
+     * thing is not a bridged accessory, enables eventing, and starts the refresh task.
      * Subclasses MAY override this to perform any extra processing required.
      */
     protected void onThingOnline() {

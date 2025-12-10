@@ -910,7 +910,7 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
     protected void onConnectedThingAccessoriesLoaded() {
         createProperties();
         createChannels();
-        removeNotReadyThing(thing);
+        markAsReady(thing);
     }
 
     @Override
