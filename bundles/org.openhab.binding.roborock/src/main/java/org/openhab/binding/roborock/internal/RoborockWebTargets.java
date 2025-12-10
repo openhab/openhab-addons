@@ -319,6 +319,10 @@ public class RoborockWebTargets {
 
                 if (headerKey2 != null && headerValue2 != null) {
                     request.header(headerKey2, headerValue2);
+                    request.header("header_clientlang", "en");
+                    request.header("header_appversion", "4.54.02");
+                    request.header("header_phonesystem", "iOS");
+                    request.header("header_phonemodel", "iPhone16,1");
                 }
 
                 if (logger.isTraceEnabled()) {
