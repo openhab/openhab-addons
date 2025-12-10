@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.homewizard.internal.devices.kwh_meter;
 
+import java.util.Arrays;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.homewizard.internal.HomeWizardBindingConstants;
 import org.openhab.binding.homewizard.internal.devices.HomeWizardBatteriesSubHandler;
@@ -50,6 +52,7 @@ public class HomeWizardKwhMeterHandler extends HomeWizardEnergyMeterHandler {
         supportedTypes.add(HomeWizardBindingConstants.SDM230_WIFI);
         supportedTypes.add(HomeWizardBindingConstants.HWE_KWH3);
         supportedTypes.add(HomeWizardBindingConstants.SDM630_WIFI);
+        supportedApiVersions = Arrays.asList(API_V1, API_V2);
 
         batteriesHandler = new HomeWizardBatteriesSubHandler(this);
     }
@@ -71,7 +74,7 @@ public class HomeWizardKwhMeterHandler extends HomeWizardEnergyMeterHandler {
     @Override
     protected void retrieveData() {
         super.retrieveData();
-        if (config.useApiVersion2()) {
+        if (config.isUsingApiVersion2()) {
             try {
                 batteriesHandler.retrieveBatteriesData();
             } catch (Exception e) {

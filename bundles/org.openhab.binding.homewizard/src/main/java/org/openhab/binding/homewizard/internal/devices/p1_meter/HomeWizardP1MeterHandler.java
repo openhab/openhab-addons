@@ -14,6 +14,7 @@ package org.openhab.binding.homewizard.internal.devices.p1_meter;
 
 import java.time.DateTimeException;
 import java.time.ZonedDateTime;
+import java.util.Arrays;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.homewizard.internal.HomeWizardBindingConstants;
@@ -55,6 +56,7 @@ public class HomeWizardP1MeterHandler extends HomeWizardEnergyMeterHandler {
         super(thing);
         this.timeZoneProvider = timeZoneProvider;
         supportedTypes.add(HomeWizardBindingConstants.HWE_P1);
+        supportedApiVersions = Arrays.asList(API_V1, API_V2);
 
         batteriesHandler = new HomeWizardBatteriesSubHandler(this);
     }
@@ -62,7 +64,7 @@ public class HomeWizardP1MeterHandler extends HomeWizardEnergyMeterHandler {
     @Override
     protected void retrieveData() {
         super.retrieveData();
-        if (config.useApiVersion2()) {
+        if (config.isUsingApiVersion2()) {
             try {
                 batteriesHandler.retrieveBatteriesData();
             } catch (Exception e) {

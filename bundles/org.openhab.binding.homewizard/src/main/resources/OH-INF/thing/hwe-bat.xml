@@ -16,7 +16,7 @@
 			<property name="thingTypeVersion">2</property>
 		</properties>
 
-		<config-description-ref uri="thing-type:homewizard:device_config_v2"/>
+		<config-description-ref uri="thing-type:homewizard:device"/>
 	</thing-type>
 
 	<channel-group-type id="bat-energy-group">
