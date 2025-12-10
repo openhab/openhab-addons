@@ -29,7 +29,7 @@ Note: Compatible clones from McLELLAND, Factor, Soundavo, etc. should work as we
 
 Monoprice 44519 4 zone variants use the `monoprice4` thing id. Up to 12 zones with 3 linked amps and 6 source inputs are supported.
 
-Monoprice 44518 8 zone variants use the `monoprice8` thing id. Up to 24 zones with 3 linked amps and 6 source inputs are supported.
+Monoprice 44518 8 zone variants use the `monoprice8` Thing id. Up to 24 zones with 3 linked amps and 6 source inputs are supported.
 
 Monoprice 31028 or OSD Audio PAM1270 70 volt amplifiers use the `monoprice70` thing id. 6 zones per amp (not linkable) and 2 source inputs are supported.
 

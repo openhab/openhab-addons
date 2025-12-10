@@ -122,7 +122,7 @@
 			<parameter name="ignoreZones" type="text" required="false">
 				<label>Ignore Zones</label>
 				<description>(Optional) A Comma Separated List of Zone Numbers That Will Ignore the 'All Zone' (Except All Off)
-					Commands (ie: 1,6,10)</description>
+					Commands (e.g., 1,6,10)</description>
 			</parameter>
 			<parameter name="initialAllVolume" type="integer" min="1" max="30" required="false">
 				<label>Initial All Volume</label>
@@ -132,32 +132,32 @@
 			</parameter>
 			<parameter name="inputLabel1" type="text" required="false">
 				<label>Source 1 Input Label</label>
-				<description>Friendly Name for the Input Source to Be Displayed in the UI (ie: Chromecast, Radio, CD, etc.)</description>
+				<description>Friendly Name for the Input Source to Be Displayed in the UI (e.g., Chromecast, Radio, CD, etc.)</description>
 				<default>Source 1</default>
 			</parameter>
 			<parameter name="inputLabel2" type="text" required="false">
 				<label>Source 2 Input Label</label>
-				<description>Friendly Name for the Input Source to Be Displayed in the UI (ie: Chromecast, Radio, CD, etc.)</description>
+				<description>Friendly Name for the Input Source to Be Displayed in the UI (e.g., Chromecast, Radio, CD, etc.)</description>
 				<default>Source 2</default>
 			</parameter>
 			<parameter name="inputLabel3" type="text" required="false">
 				<label>Source 3 Input Label</label>
-				<description>Friendly Name for the Input Source to Be Displayed in the UI (ie: Chromecast, Radio, CD, etc.)</description>
+				<description>Friendly Name for the Input Source to Be Displayed in the UI (e.g., Chromecast, Radio, CD, etc.)</description>
 				<default>Source 3</default>
 			</parameter>
 			<parameter name="inputLabel4" type="text" required="false">
 				<label>Source 4 Input Label</label>
-				<description>Friendly Name for the Input Source to Be Displayed in the UI (ie: Chromecast, Radio, CD, etc.)</description>
+				<description>Friendly Name for the Input Source to Be Displayed in the UI (e.g., Chromecast, Radio, CD, etc.)</description>
 				<default>Source 4</default>
 			</parameter>
 			<parameter name="inputLabel5" type="text" required="false">
 				<label>Source 5 Input Label</label>
-				<description>Friendly Name for the Input Source to Be Displayed in the UI (ie: Chromecast, Radio, CD, etc.)</description>
+				<description>Friendly Name for the Input Source to Be Displayed in the UI (e.g., Chromecast, Radio, CD, etc.)</description>
 				<default>Source 5</default>
 			</parameter>
 			<parameter name="inputLabel6" type="text" required="false">
 				<label>Source 6 Input Label</label>
-				<description>Friendly Name for the Input Source to Be Displayed in the UI (ie: Chromecast, Radio, CD, etc.)</description>
+				<description>Friendly Name for the Input Source to Be Displayed in the UI (e.g., Chromecast, Radio, CD, etc.)</description>
 				<default>Source 6</default>
 			</parameter>
 			<parameter name="disableKeypadPolling" type="boolean" required="false">
