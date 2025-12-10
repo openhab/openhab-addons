@@ -159,6 +159,7 @@ public class HomekitBridgeHandler extends HomekitBaseAccessoryHandler implements
     @Override
     protected void initializeNotReadyThings() {
         notReadyThings.clear();
-        notReadyThings.addAll(getThing().getThings()); // a bridge requires all bridged-accessories to be ready
+        // a bridge requires all enabled bridged-accessories to be ready
+        notReadyThings.addAll(getThing().getThings().stream().filter(thing -> thing.isEnabled()).toList());
     }
 }

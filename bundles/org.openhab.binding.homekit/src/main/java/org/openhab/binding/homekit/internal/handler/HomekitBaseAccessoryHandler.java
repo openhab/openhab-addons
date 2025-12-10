@@ -741,7 +741,6 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
      * @param readyThing the dependent thing that has become ready and shall be removed from the not-ready set
      */
     protected void removeNotReadyThing(Thing readyThing) {
-        logger.trace("{} dependent thing {} is now ready", thing.getUID(), readyThing.getUID());
         notReadyThings.remove(readyThing);
         if (notReadyThings.isEmpty()) {
             onThingOnline();
@@ -754,7 +753,6 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
      * Subclasses MAY override this to perform any extra processing required.
      */
     protected void onThingOnline() {
-        logger.trace("{} thing going online", thing.getUID());
         updateStatus(ThingStatus.ONLINE);
         if (!isBridgedAccessory) {
             enableEvents(true);
