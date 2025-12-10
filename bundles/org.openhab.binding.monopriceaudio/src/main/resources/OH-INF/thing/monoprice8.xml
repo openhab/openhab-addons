@@ -145,7 +145,7 @@
 			</parameter>
 			<parameter name="ignoreZones" type="text" required="false">
 				<label>Ignore Zones</label>
-				<description>(Optional) A Comma Seperated List of Zone Numbers That Will Ignore the 'All Zone' (Except All Off)
+				<description>(Optional) A Comma Separated List of Zone Numbers That Will Ignore the 'All Zone' (Except All Off)
 					Commands (ie: 1,6,10)</description>
 			</parameter>
 			<parameter name="initialAllVolume" type="integer" min="1" max="30" required="false">
