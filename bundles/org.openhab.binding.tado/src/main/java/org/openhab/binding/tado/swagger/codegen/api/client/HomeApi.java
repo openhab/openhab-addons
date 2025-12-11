@@ -63,6 +63,7 @@ public class HomeApi {
 
     private String createStringForJson(ContentResponse resp) {
         StringBuilder stringForJson = new StringBuilder();
+        stringForJson.append("{");
         String stringFromResponse = resp.getContentAsString();
         String extractedRateLimitInfo = extractRateLimitInfo(resp);
         stringForJson.append(extractedRateLimitInfo).append(stringFromResponse.substring(1));
