@@ -129,6 +129,8 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
             switch (propertyName) {
                 case PROPERTY_INDEX:
                     return thing.getProperties().getOrDefault(propertyName, "0");
+                case PROPERTY_VEHICLE_ID:
+                    return thing.getProperties().getOrDefault(propertyName, "");
                 default:
                     return "";
             }

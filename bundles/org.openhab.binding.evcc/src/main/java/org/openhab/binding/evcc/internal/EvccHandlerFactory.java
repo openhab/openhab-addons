@@ -20,6 +20,7 @@ import org.openhab.binding.evcc.internal.handler.EvccBatteryHandler;
 import org.openhab.binding.evcc.internal.handler.EvccBridgeHandler;
 import org.openhab.binding.evcc.internal.handler.EvccHeatingHandler;
 import org.openhab.binding.evcc.internal.handler.EvccLoadpointHandler;
+import org.openhab.binding.evcc.internal.handler.EvccPlanHandler;
 import org.openhab.binding.evcc.internal.handler.EvccPvHandler;
 import org.openhab.binding.evcc.internal.handler.EvccSiteHandler;
 import org.openhab.binding.evcc.internal.handler.EvccStatisticsHandler;
@@ -90,6 +91,8 @@ public class EvccHandlerFactory extends BaseThingHandlerFactory {
             handler = new EvccPvHandler(thing, channelTypeRegistry);
         } else if (THING_TYPE_STATISTICS.equals(type)) {
             handler = new EvccStatisticsHandler(thing, channelTypeRegistry);
+        } else if (THING_TYPE_PLAN.equals(type)) {
+            handler = new EvccPlanHandler(thing, channelTypeRegistry);
         }
         return handler;
     }

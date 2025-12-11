@@ -7,8 +7,8 @@
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="server"/>
 		</supported-bridge-type-refs>
-		<label>Battery</label>
-		<description>A battery configured in your evcc instance</description>
+		<label>Plan</label>
+		<description>A plan configured in for your vehicle in evcc</description>
 		<config-description>
 			<parameter name="id" type="text">
 				<label>ID</label>
@@ -17,6 +17,10 @@
 			</parameter>
 		</config-description>
 	</thing-type>
+	<channel-type id="update-plan-trigger">
+		<kind>trigger</kind>
+		<label>Trigger Channel</label>
+	</channel-type>
 	<channel-type id="plan-soc">
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Plan SoC</label>
@@ -62,7 +66,7 @@
 		</tags>
 	</channel-type>
 	<channel-type id="plan-repeating-time">
-		<item-type>DateTime</item-type>
+		<item-type>String</item-type>
 		<label>Plan Time</label>
 		<description>Scheduled departure time (hh:mm)</description>
 	</channel-type>

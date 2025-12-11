@@ -19,6 +19,7 @@ import java.time.format.TextStyle;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -33,6 +34,7 @@ import org.openhab.core.types.Command;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import org.openhab.core.types.State;
 
 /**
  * The {@link EvccPlanHandler} is responsible for fetching the data from the API response for Plan things
@@ -44,28 +46,20 @@ public class EvccPlanHandler extends EvccBaseThingHandler {
 
     private final int index;
     private final String vehicleID;
-    public final Map<Integer, String> localizedDayOfWeekMap;
+    private final Map<ChannelUID, Command> pendingCommands = new ConcurrentHashMap<>();
+    private JsonObject cachedState = new JsonObject();
+    public Map<Integer, String> localizedDayOfWeekMap = Map.of();
+
 
     public EvccPlanHandler(Thing thing, ChannelTypeRegistry channelTypeRegistry) {
         super(thing, channelTypeRegistry);
         index = Integer.parseInt(getPropertyOrConfigValue(PROPERTY_INDEX));
         vehicleID = getPropertyOrConfigValue(PROPERTY_VEHICLE_ID);
         type = PROPERTY_TYPE_PLAN;
-        localizedDayOfWeekMap = buildLocalizedDayOfWeekMap();
     }
 
-    private Map<Integer, String> buildLocalizedDayOfWeekMap() {
-        var bridge = getBridge();
-        if (bridge == null) {
-            return Map.of();
-        }
-
-        var bridgeHandler = bridge.getHandler();
-        if (bridgeHandler == null) {
-            return Map.of();
-        }
-
-        LocaleProvider localeProvider = ((EvccBridgeHandler) bridgeHandler).getLocaleProvider();
+    private Map<Integer, String> buildLocalizedDayOfWeekMap(EvccBridgeHandler bridgeHandler) {
+        LocaleProvider localeProvider = bridgeHandler.getLocaleProvider();
         Locale locale = localeProvider.getLocale();
         return IntStream.rangeClosed(0, 6).boxed().collect(Collectors.toUnmodifiableMap(d -> d,
                 d -> (d == 0 ? DayOfWeek.SUNDAY : DayOfWeek.of(d)).getDisplayName(TextStyle.FULL, locale)));
@@ -75,6 +69,7 @@ public class EvccPlanHandler extends EvccBaseThingHandler {
     public void initialize() {
         super.initialize();
         Optional.ofNullable(bridgeHandler).ifPresent(handler -> {
+            localizedDayOfWeekMap = buildLocalizedDayOfWeekMap(handler);
             handler.register(this);
             updateStatus(ThingStatus.ONLINE);
             isInitialized = true;
@@ -100,7 +95,7 @@ public class EvccPlanHandler extends EvccBaseThingHandler {
                 state = state.getAsJsonObject(JSON_KEY_PLAN);
             } else if (index > 0 && state.has(JSON_KEY_REPEATING_PLANS)) {
                 // Get the corresponding repeating plan
-                state = state.getAsJsonArray(JSON_KEY_REPEATING_PLANS).get(index).getAsJsonObject();
+                state = state.getAsJsonArray(JSON_KEY_REPEATING_PLANS).get(index - 1).getAsJsonObject();
                 if (state.has("time")) {
                     state.add("repeatingTime", state.get("time"));
                     state.remove("time");
@@ -114,7 +109,7 @@ public class EvccPlanHandler extends EvccBaseThingHandler {
                         }
                     }
                     // Delete last semicolon
-                    if (weekDays.length() > 0) {
+                    if (!weekDays.isEmpty()) {
                         weekDays.setLength(weekDays.length() - 1);
                     } else {
                         state.remove(JSON_KEY_WEEKDAYS);
@@ -123,6 +118,7 @@ public class EvccPlanHandler extends EvccBaseThingHandler {
                     state.addProperty(JSON_KEY_WEEKDAYS, weekDays.toString());
                 }
             }
+            cachedState = state;
             updateStatesFromApiResponse(state);
         }
     }
@@ -134,7 +130,20 @@ public class EvccPlanHandler extends EvccBaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        // TODO Auto-generated method stub
-        super.handleCommand(channelUID, command);
+        if ("update-plan-trigger".equals(channelUID.getId())) {
+            updatePlan();
+        } else {
+            if (command instanceof State) {
+                pendingCommands.put(channelUID, command); // store for later processing
+            } else {
+                super.handleCommand(channelUID, command);
+            }
+        }
+    }
+
+    // endpoint repeating plan: vehicles/db:69/plan/repeating => all plans need to be sent :(, use cachedState :)
+    private void updatePlan() {
+        JsonObject payload = new JsonObject();
+        pendingCommands.clear();
     }
 }
