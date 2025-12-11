@@ -441,7 +441,7 @@
 	</channel-type>
 
 	<channel-type id="APICallsRemainingThisDuration" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type>Number</item-type>
 		<label>API Calls remaining</label>
 		<description>Number of API calls remaining before the maximum is reached</description>
 		<tags>
@@ -451,7 +451,7 @@
 	</channel-type>
 
 	<channel-type id="APIMaxCallsPerDuration" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type>Number</item-type>
 		<label>API Max</label>
 		<description>Maximum API calls allowed per specified duration</description>
 		<tags>
