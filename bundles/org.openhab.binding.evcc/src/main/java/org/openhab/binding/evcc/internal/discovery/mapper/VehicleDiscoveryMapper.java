@@ -14,6 +14,7 @@ package org.openhab.binding.evcc.internal.discovery.mapper;
 
 import static org.openhab.binding.evcc.internal.EvccBindingConstants.*;
 
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -26,6 +27,8 @@ import org.openhab.binding.evcc.internal.handler.EvccBridgeHandler;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.thing.ThingUID;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -37,6 +40,8 @@ import com.google.gson.JsonObject;
  */
 @NonNullByDefault
 public class VehicleDiscoveryMapper implements EvccDiscoveryMapper {
+
+    private final Logger logger = LoggerFactory.getLogger(VehicleDiscoveryMapper.class);
 
     @Override
     public Collection<DiscoveryResult> discover(JsonObject state, EvccBridgeHandler bridgeHandler) {
@@ -53,12 +58,18 @@ public class VehicleDiscoveryMapper implements EvccDiscoveryMapper {
             ThingUID uid = new ThingUID(EvccBindingConstants.THING_TYPE_VEHICLE, bridgeHandler.getThing().getUID(),
                     Utils.sanitizeName(title));
             DiscoveryResult result = DiscoveryResultBuilder.create(uid).withLabel(title)
-                    .withBridge(bridgeHandler.getThing().getUID()).withProperty(PROPERTY_ID, id)
-                    .withRepresentationProperty(PROPERTY_ID).build();
-
+                    .withBridge(bridgeHandler.getThing().getUID()).withProperty(PROPERTY_VEHICLE_ID, id)
+                    .withRepresentationProperty(PROPERTY_VEHICLE_ID).build();
             results.add(result);
+            if (v.has(JSON_KEY_PLAN) || v.has(JSON_KEY_REPEATING_PLANS)) {
+                try {
+                    results.addAll(new PlanDiscoveryMapper().discoverFromVehicle(v, id, title, bridgeHandler));
+                } catch (NoSuchAlgorithmException e) {
+                    // should not happen
+                    logger.warn("Could not get hash algorithm instance");
+                }
+            }
         }
-
         return results;
     }
 }

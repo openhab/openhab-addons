@@ -73,7 +73,6 @@ public abstract class AbstractThingHandlerTestClass<T extends EvccBaseThingHandl
             String json = new String(is.readAllBytes(), StandardCharsets.UTF_8);
             exampleResponse = JsonParser.parseString(json).getAsJsonObject();
             verifyObject = exampleResponse.deepCopy();
-
         } catch (IOException e) {
             fail("Failed to read example response file", e);
         }

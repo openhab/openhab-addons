@@ -14,7 +14,6 @@ package org.openhab.binding.evcc.internal.handler;
 
 import static org.openhab.binding.evcc.internal.EvccBindingConstants.*;
 
-import java.math.BigDecimal;
 import java.util.Map;
 import java.util.Optional;
 
@@ -54,14 +53,7 @@ public class EvccLoadpointHandler extends EvccBaseThingHandler {
 
     public EvccLoadpointHandler(Thing thing, ChannelTypeRegistry channelTypeRegistry) {
         super(thing, channelTypeRegistry);
-        Object index = thing.getConfiguration().get(PROPERTY_INDEX);
-        String indexString;
-        if (index instanceof BigDecimal s) {
-            indexString = s.toString();
-        } else {
-            indexString = thing.getProperties().getOrDefault(PROPERTY_INDEX, "0");
-        }
-        this.index = Integer.parseInt(indexString);
+        this.index = Integer.parseInt(getPropertyOrConfigValue(PROPERTY_INDEX));
         type = PROPERTY_TYPE_LOADPOINT;
     }
 

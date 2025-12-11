@@ -16,6 +16,7 @@ import static org.openhab.binding.evcc.internal.EvccBindingConstants.*;
 import static org.openhab.core.util.StringUtils.capitalize;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -116,6 +117,22 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
         isInitialized = true;
         Optional.ofNullable(bridgeHandler).ifPresentOrElse(handler -> handler.register(this),
                 () -> logger.error("No bridgeHandler present when initializing the thing"));
+    }
+
+    protected String getPropertyOrConfigValue(String propertyName) {
+        Object value = thing.getConfiguration().get(propertyName);
+        if (value instanceof String s) {
+            return s;
+        } else if (value instanceof BigDecimal bd) {
+            return bd.toString();
+        } else {
+            switch (propertyName) {
+                case PROPERTY_INDEX:
+                    return thing.getProperties().getOrDefault(propertyName, "0");
+                default:
+                    return "";
+            }
+        }
     }
 
     @Override

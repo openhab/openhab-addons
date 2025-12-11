@@ -46,12 +46,7 @@ public class EvccVehicleHandler extends EvccBaseThingHandler {
 
     public EvccVehicleHandler(Thing thing, ChannelTypeRegistry channelTypeRegistry) {
         super(thing, channelTypeRegistry);
-        Object id = thing.getConfiguration().get(PROPERTY_ID);
-        if (id instanceof String s) {
-            vehicleId = s;
-        } else {
-            vehicleId = thing.getProperties().getOrDefault(PROPERTY_ID, "");
-        }
+        vehicleId = getPropertyOrConfigValue(PROPERTY_VEHICLE_ID);
         type = PROPERTY_TYPE_VEHICLE;
     }
 
