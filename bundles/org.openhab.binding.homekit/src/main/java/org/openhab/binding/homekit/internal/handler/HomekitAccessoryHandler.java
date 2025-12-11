@@ -398,11 +398,18 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
         String oldLabel = thing.getLabel();
         String newLabel = oldLabel == null || oldLabel.isEmpty() ? accessory.getAccessoryInstanceLabel() : null;
         List<Channel> newChannels = !uniqueChannelsMap.isEmpty() ? uniqueChannelsMap.values().stream().toList() : null;
-        Map<String, String> newProperties = new HashMap<>(thing.getProperties()); // keep existing properties
-        newProperties.putAll(accessory.getProperties(thing.getUID(), typeProvider, i18nProvider, bundle));
+        Map<String, String> oldProperties = new HashMap<>(thing.getProperties());
+        Map<String, String> getProperties = accessory.getProperties(thing.getUID(), typeProvider, i18nProvider, bundle);
+        Map<String, String> newProperties;
+        if (!getProperties.isEmpty()) {
+            newProperties = oldProperties;
+            newProperties.putAll(getProperties);
+        } else {
+            newProperties = null;
+        }
         SemanticTag newEquipmentTag = accessory.getSemanticEquipmentTag();
 
-        if (newLabel != null || newChannels != null || newEquipmentTag != null || !newProperties.isEmpty()) {
+        if (newLabel != null || newChannels != null || newProperties != null || newEquipmentTag != null) {
             ThingBuilder builder = editThing();
             Optional.ofNullable(newLabel).ifPresent(builder::withLabel);
             Optional.ofNullable(newChannels).ifPresent(builder::withChannels);
@@ -413,7 +420,8 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
             logger.debug(
                     "{} updated with {} channels (of which {} polled, {} evented), {} properties, label: '{}', equipment tag: '{}'",
                     thing.getUID(), uniqueChannelsMap.size(), polledCharacteristics.size(),
-                    eventedCharacteristics.size(), newProperties.size(), newLabel, newEquipmentTag);
+                    eventedCharacteristics.size(), newProperties != null ? newProperties.size() : oldProperties.size(),
+                    newLabel != null ? newLabel : oldLabel, newEquipmentTag);
         }
     }
 

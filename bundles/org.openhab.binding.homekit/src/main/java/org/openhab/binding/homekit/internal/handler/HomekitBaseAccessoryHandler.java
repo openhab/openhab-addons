@@ -603,6 +603,11 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
                 break; // only one accessory information service per accessory
             }
         }
+        // for bridged-accessories add the unique id i.e. representation property
+        if (getBridge() instanceof Bridge bridge && bridge.getHandler() instanceof HomekitBridgeHandler bridgeHandler
+                && bridgeHandler.getThing().getConfiguration().get(CONFIG_UNIQUE_ID) instanceof String bridgeUniqueId) {
+            thingProperties.put(PROPERTY_UNIQUE_ID, STRING_AID_FMT.formatted(bridgeUniqueId, accessoryId));
+        }
         thing.setProperties(thingProperties);
     }
 

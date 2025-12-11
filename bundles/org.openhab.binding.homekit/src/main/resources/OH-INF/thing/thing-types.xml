@@ -7,12 +7,14 @@
 	<thing-type id="accessory">
 		<label>HomeKit Accessory</label>
 		<description>HomeKit accessory with its own LAN connection</description>
+		<representation-property>uniqueId</representation-property>
 		<config-description-ref uri="thing-type:homekit:network"/>
 	</thing-type>
 
 	<bridge-type id="bridge">
 		<label>HomeKit Bridge</label>
 		<description>HomeKit accessory with LAN connection that supports bridged accessories not having an own LAN connection</description>
+		<representation-property>uniqueId</representation-property>
 		<config-description-ref uri="thing-type:homekit:network"/>
 	</bridge-type>
 
@@ -22,6 +24,7 @@
 		</supported-bridge-type-refs>
 		<label>HomeKit Bridged Accessory</label>
 		<description>HomeKit accessory without its own LAN connection and instead supported by a bridge</description>
+		<representation-property>uniqueId</representation-property>
 		<config-description>
 			<parameter name="accessoryID" type="integer" required="true">
 				<label>Accessory ID</label>
