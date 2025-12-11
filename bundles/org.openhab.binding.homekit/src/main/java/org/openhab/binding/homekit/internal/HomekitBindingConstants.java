@@ -16,7 +16,6 @@ import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
-import org.openhab.core.thing.type.ChannelTypeUID;
 
 /**
  * Defines common constants which are used across the whole HomeKit binding.
@@ -32,13 +31,6 @@ public class HomekitBindingConstants {
     public static final ThingTypeUID THING_TYPE_ACCESSORY = new ThingTypeUID(BINDING_ID, "accessory");
     public static final ThingTypeUID THING_TYPE_BRIDGED_ACCESSORY = new ThingTypeUID(BINDING_ID, "bridged-accessory");
     public static final ThingTypeUID THING_TYPE_BRIDGE = new ThingTypeUID(BINDING_ID, "bridge");
-
-    /**
-     * Some Characteristics have variable values and others remain static over time. The latter are produced with
-     * a ChannelDefinition with this channel-type uid. And when Things are created, rather than instantiating them
-     * as (dynamic data) Channels of the Thing, instead they are added as (static data) Properties of the Thing.
-     */
-    public static final ChannelTypeUID CHANNEL_TYPE_STATIC = new ChannelTypeUID(BINDING_ID, "static-data");
 
     /**
      * format string for channel-group-type UIDs which represent services
@@ -78,7 +70,7 @@ public class HomekitBindingConstants {
     // thing properties
     public static final String PROPERTY_PROTOCOL_VERSION = "protocolVersion";
     public static final String PROPERTY_ACCESSORY_CATEGORY = "accessoryCategory";
-    public static final String PROPERTY_REPRESENTATION = "representationProperty";
+    public static final String PROPERTY_UNIQUE_ID = CONFIG_UNIQUE_ID;
 
     // channel properties
     public static final String PROPERTY_IID = "iid";

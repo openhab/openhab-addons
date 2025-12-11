@@ -332,81 +332,64 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
 
         lightModelInitialize(accessory);
 
-        // create the channels and properties
+        // create the channels
         Map<String, Channel> uniqueChannelsMap = new HashMap<>(); // use map to prevent duplicate Channel ID
-        Map<String, String> properties = new HashMap<>(thing.getProperties()); // keep existing properties
-        accessory.buildAndRegisterChannelGroupDefinitions(thing.getUID(), typeProvider, i18nProvider, bundle)
-                .forEach(groupDef -> {
-                    logger.trace("{} ChannelGroupDefinition id:{}, typeUID:{}, label:{}, description:{}",
-                            thing.getUID(), groupDef.getId(), groupDef.getTypeUID(), groupDef.getLabel(),
-                            groupDef.getDescription());
+        accessory.getChannelGroupDefinitions(thing.getUID(), typeProvider, i18nProvider, bundle).forEach(groupDef -> {
+            logger.trace("{} ChannelGroupDefinition id:{}, typeUID:{}, label:{}, description:{}", thing.getUID(),
+                    groupDef.getId(), groupDef.getTypeUID(), groupDef.getLabel(), groupDef.getDescription());
 
-                    ChannelGroupType channelGroupType = channelGroupTypeRegistry
-                            .getChannelGroupType(groupDef.getTypeUID());
-                    if (channelGroupType == null) {
-                        logger.warn("{} fatal error ChannelGroupType '{}' is not registered", thing.getUID(),
-                                groupDef.getTypeUID());
+            ChannelGroupType channelGroupType = channelGroupTypeRegistry.getChannelGroupType(groupDef.getTypeUID());
+            if (channelGroupType == null) {
+                logger.warn("{} fatal error ChannelGroupType '{}' is not registered", thing.getUID(),
+                        groupDef.getTypeUID());
+            } else {
+                logger.trace("{}  ChannelGroupType UID:{}, label:{}, category:{}, description:{}", thing.getUID(),
+                        channelGroupType.getUID(), channelGroupType.getLabel(), channelGroupType.getCategory(),
+                        channelGroupType.getDescription());
+
+                channelGroupType.getChannelDefinitions().forEach(chanDef -> {
+                    logger.trace(
+                            "{}   ChannelDefinition id:{}, label:{}, description:{}, channelTypeUID:{}, autoUpdatePolicy:{}, properties:{}",
+                            thing.getUID(), chanDef.getId(), chanDef.getLabel(), chanDef.getDescription(),
+                            chanDef.getChannelTypeUID(), chanDef.getAutoUpdatePolicy(), chanDef.getProperties());
+
+                    ChannelType channelType = channelTypeRegistry.getChannelType(chanDef.getChannelTypeUID());
+                    if (channelType == null) {
+                        logger.warn("{} fatal error ChannelType '{}' is not registered", thing.getUID(),
+                                chanDef.getChannelTypeUID());
                     } else {
-                        logger.trace("{}  ChannelGroupType UID:{}, label:{}, category:{}, description:{}",
-                                thing.getUID(), channelGroupType.getUID(), channelGroupType.getLabel(),
-                                channelGroupType.getCategory(), channelGroupType.getDescription());
+                        logger.trace(
+                                "{}    ChannelType category:{}, description:{}, itemType:{}, label:{}, autoUpdatePolicy:{}, itemType:{}, kind:{}, tags:{}, uid:{}, unitHint:{}",
+                                thing.getUID(), channelType.getCategory(), channelType.getDescription(),
+                                channelType.getItemType(), channelType.getLabel(), channelType.getAutoUpdatePolicy(),
+                                channelType.getItemType(), channelType.getKind(), channelType.getTags(),
+                                channelType.getUID(), channelType.getUnitHint());
 
-                        channelGroupType.getChannelDefinitions().forEach(chanDef -> {
+                        String channelId = chanDef.getId();
+                        if (uniqueChannelsMap.containsKey(channelId)) {
+                            logger.debug("{}     Error duplicate channelId:{}", thing.getUID(), channelId);
+                        } else {
+                            ChannelUID channelUID = new ChannelUID(thing.getUID(), groupDef.getId(), channelId);
+                            ChannelBuilder builder = ChannelBuilder.create(channelUID)
+                                    .withAcceptedItemType(channelType.getItemType())
+                                    .withAutoUpdatePolicy(channelType.getAutoUpdatePolicy())
+                                    .withDefaultTags(channelType.getTags()).withKind(channelType.getKind())
+                                    .withProperties(chanDef.getProperties()).withType(channelType.getUID());
+                            Optional.ofNullable(chanDef.getLabel()).ifPresent(builder::withLabel);
+                            Optional.ofNullable(chanDef.getDescription()).ifPresent(builder::withDescription);
+                            Channel channel = builder.build();
+                            uniqueChannelsMap.put(channelId, channel);
+
                             logger.trace(
-                                    "{}   ChannelDefinition id:{}, label:{}, description:{}, channelTypeUID:{}, autoUpdatePolicy:{}, properties:{}",
-                                    thing.getUID(), chanDef.getId(), chanDef.getLabel(), chanDef.getDescription(),
-                                    chanDef.getChannelTypeUID(), chanDef.getAutoUpdatePolicy(),
-                                    chanDef.getProperties());
-
-                            if (CHANNEL_TYPE_STATIC.equals(chanDef.getChannelTypeUID())) {
-                                // static ChannelDefinition: add as a Property (rather than a Channel)
-                                Map<String, String> channelProperties = chanDef.getProperties();
-                                properties.putAll(channelProperties);
-                                logger.trace("{}    Property {}", thing.getUID(), channelProperties);
-                            } else {
-                                // variable ChannelDefinition: add as a Channel (rather than a Property)
-                                ChannelType channelType = channelTypeRegistry
-                                        .getChannelType(chanDef.getChannelTypeUID());
-                                if (channelType == null) {
-                                    logger.warn("{} fatal error ChannelType '{}' is not registered", thing.getUID(),
-                                            chanDef.getChannelTypeUID());
-                                } else {
-                                    logger.trace(
-                                            "{}    ChannelType category:{}, description:{}, itemType:{}, label:{}, autoUpdatePolicy:{}, itemType:{}, kind:{}, tags:{}, uid:{}, unitHint:{}",
-                                            thing.getUID(), channelType.getCategory(), channelType.getDescription(),
-                                            channelType.getItemType(), channelType.getLabel(),
-                                            channelType.getAutoUpdatePolicy(), channelType.getItemType(),
-                                            channelType.getKind(), channelType.getTags(), channelType.getUID(),
-                                            channelType.getUnitHint());
-
-                                    String channelId = chanDef.getId();
-                                    if (uniqueChannelsMap.containsKey(channelId)) {
-                                        logger.debug("{}     Error duplicate channelId:{}", thing.getUID(), channelId);
-                                    } else {
-                                        ChannelUID channelUID = new ChannelUID(thing.getUID(), groupDef.getId(),
-                                                channelId);
-                                        ChannelBuilder builder = ChannelBuilder.create(channelUID)
-                                                .withAcceptedItemType(channelType.getItemType())
-                                                .withAutoUpdatePolicy(channelType.getAutoUpdatePolicy())
-                                                .withDefaultTags(channelType.getTags()).withKind(channelType.getKind())
-                                                .withProperties(chanDef.getProperties()).withType(channelType.getUID());
-                                        Optional.ofNullable(chanDef.getLabel()).ifPresent(builder::withLabel);
-                                        Optional.ofNullable(chanDef.getDescription())
-                                                .ifPresent(builder::withDescription);
-                                        Channel channel = builder.build();
-                                        uniqueChannelsMap.put(channelId, channel);
-
-                                        logger.trace(
-                                                "{}     Channel acceptedItemType:{}, defaultTags:{}, description:{}, kind:{}, label:{}, properties:{}, uid:{}",
-                                                thing.getUID(), channel.getAcceptedItemType(), channel.getDefaultTags(),
-                                                channel.getDescription(), channel.getKind(), channel.getLabel(),
-                                                channel.getProperties(), channel.getUID());
-                                    }
-                                }
-                            }
-                        });
+                                    "{}     Channel acceptedItemType:{}, defaultTags:{}, description:{}, kind:{}, label:{}, properties:{}, uid:{}",
+                                    thing.getUID(), channel.getAcceptedItemType(), channel.getDefaultTags(),
+                                    channel.getDescription(), channel.getKind(), channel.getLabel(),
+                                    channel.getProperties(), channel.getUID());
+                        }
                     }
                 });
+            }
+        });
 
         lightModelFinalize(accessory, uniqueChannelsMap);
         stopMoveFinalize(accessory, uniqueChannelsMap);
@@ -415,10 +398,11 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
         String oldLabel = thing.getLabel();
         String newLabel = oldLabel == null || oldLabel.isEmpty() ? accessory.getAccessoryInstanceLabel() : null;
         List<Channel> newChannels = !uniqueChannelsMap.isEmpty() ? uniqueChannelsMap.values().stream().toList() : null;
-        Map<String, String> newProperties = !properties.isEmpty() ? properties : null;
+        Map<String, String> newProperties = new HashMap<>(thing.getProperties()); // keep existing properties
+        newProperties.putAll(accessory.getProperties(thing.getUID(), typeProvider, i18nProvider, bundle));
         SemanticTag newEquipmentTag = accessory.getSemanticEquipmentTag();
 
-        if (newLabel != null || newChannels != null || newProperties != null || newEquipmentTag != null) {
+        if (newLabel != null || newChannels != null || newEquipmentTag != null || !newProperties.isEmpty()) {
             ThingBuilder builder = editThing();
             Optional.ofNullable(newLabel).ifPresent(builder::withLabel);
             Optional.ofNullable(newChannels).ifPresent(builder::withChannels);
@@ -429,7 +413,7 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
             logger.debug(
                     "{} updated with {} channels (of which {} polled, {} evented), {} properties, label: '{}', equipment tag: '{}'",
                     thing.getUID(), uniqueChannelsMap.size(), polledCharacteristics.size(),
-                    eventedCharacteristics.size(), properties.size(), newLabel, newEquipmentTag);
+                    eventedCharacteristics.size(), newProperties.size(), newLabel, newEquipmentTag);
         }
     }
 

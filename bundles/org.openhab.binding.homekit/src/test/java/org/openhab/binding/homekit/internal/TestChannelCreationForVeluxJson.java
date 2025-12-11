@@ -15,7 +15,6 @@ package org.openhab.binding.homekit.internal;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
-import static org.openhab.binding.homekit.internal.HomekitBindingConstants.CHANNEL_TYPE_STATIC;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -1613,13 +1612,7 @@ class TestChannelCreationForVeluxJson {
         Map<String, String> properties = new HashMap<>();
         for (Service service : accessory.services) {
             if (ServiceType.ACCESSORY_INFORMATION == service.getServiceType()) {
-                for (Characteristic characteristic : service.characteristics) {
-                    ChannelDefinition channelDef = characteristic.buildAndRegisterChannelDefinition(thingUID,
-                            typeProvider, i18nProvider, bundle);
-                    if (channelDef != null && CHANNEL_TYPE_STATIC.equals(channelDef.getChannelTypeUID())) {
-                        properties.putAll(channelDef.getProperties());
-                    }
-                }
+                properties.putAll(service.getProperties(thingUID, typeProvider, i18nProvider, bundle));
                 break;
             }
         }
@@ -1661,8 +1654,8 @@ class TestChannelCreationForVeluxJson {
         ThingUID thingUID = new ThingUID("hhh", "aaa", "bridge1", "accessory2");
         Accessory accessory = accessories.getAccessory(2L);
         assertNotNull(accessory);
-        List<ChannelGroupDefinition> channelGroupDefinitions = accessory
-                .buildAndRegisterChannelGroupDefinitions(thingUID, typeProvider, i18nProvider, bundle);
+        List<ChannelGroupDefinition> channelGroupDefinitions = accessory.getChannelGroupDefinitions(thingUID,
+                typeProvider, i18nProvider, bundle);
 
         // There should be three channel group definitions for the temperature, humidity and co2 sensors
         assertNotNull(channelGroupDefinitions);
@@ -1820,8 +1813,8 @@ class TestChannelCreationForVeluxJson {
         ThingUID thingUID = new ThingUID("hhh", "aaa", "bridge1", "accessory9");
         Accessory accessory = accessories.getAccessory(9L);
         assertNotNull(accessory);
-        List<ChannelGroupDefinition> channelGroupDefinitions = accessory
-                .buildAndRegisterChannelGroupDefinitions(thingUID, typeProvider, i18nProvider, bundle);
+        List<ChannelGroupDefinition> channelGroupDefinitions = accessory.getChannelGroupDefinitions(thingUID,
+                typeProvider, i18nProvider, bundle);
 
         // There should be one channel group definition for the blind
         assertNotNull(channelGroupDefinitions);

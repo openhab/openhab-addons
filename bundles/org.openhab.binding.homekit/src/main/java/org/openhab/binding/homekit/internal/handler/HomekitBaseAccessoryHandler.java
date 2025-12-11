@@ -63,7 +63,6 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
-import org.openhab.core.thing.type.ChannelDefinition;
 import org.osgi.framework.Bundle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -600,14 +599,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
         Map<String, String> thingProperties = new HashMap<>(thing.getProperties());
         for (Service service : accessory.services) {
             if (ServiceType.ACCESSORY_INFORMATION == service.getServiceType()) {
-                for (Characteristic characteristic : service.characteristics) {
-                    ChannelDefinition channelDef = characteristic.buildAndRegisterChannelDefinition(thing.getUID(),
-                            typeProvider, i18nProvider, bundle);
-                    if (channelDef != null && CHANNEL_TYPE_STATIC.equals(channelDef.getChannelTypeUID())) {
-                        // only static ChannelDefinitions contribute to the properties
-                        thingProperties.putAll(channelDef.getProperties());
-                    }
-                }
+                thingProperties.putAll(service.getProperties(thing.getUID(), typeProvider, i18nProvider, bundle));
                 break; // only one accessory information service per accessory
             }
         }

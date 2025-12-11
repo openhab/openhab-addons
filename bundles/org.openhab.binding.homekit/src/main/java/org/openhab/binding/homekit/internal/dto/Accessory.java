@@ -12,8 +12,12 @@
  */
 package org.openhab.binding.homekit.internal.dto;
 
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -60,11 +64,27 @@ public class Accessory {
      * @param typeProvider the HomeKit type provider used to look up channel group definitions.
      * @return a list of channel group definition instances for the services of this accessory.
      */
-    public List<ChannelGroupDefinition> buildAndRegisterChannelGroupDefinitions(ThingUID thingUID,
-            HomekitTypeProvider typeProvider, TranslationProvider i18nProvider, Bundle bundle) {
-        return services.stream()
-                .map(s -> s.buildAndRegisterChannelGroupDefinition(thingUID, typeProvider, i18nProvider, bundle))
+    public List<ChannelGroupDefinition> getChannelGroupDefinitions(ThingUID thingUID, HomekitTypeProvider typeProvider,
+            TranslationProvider i18nProvider, Bundle bundle) {
+        return services.stream().map(s -> s.getChannelGroupDefinition(thingUID, typeProvider, i18nProvider, bundle))
                 .filter(Objects::nonNull).toList();
+    }
+
+    /**
+     * Returns a property map from all characteristics of all services. In which if multiple characteristics
+     * provide the same property name, their values are concatenated. This may for example occur if an accessory
+     * hosts multiple services each having a characteristic for e.g. a "name" property.
+     *
+     * DEVELOPER NOTE: strictly speaking merging "name" properties from multiple characteristics is somewhat
+     * dubious, since in reality each is the name of a channel-group and neither is the name of the thing. But
+     * we are ignoring this for the time being.
+     */
+    public Map<String, String> getProperties(ThingUID thingUID, HomekitTypeProvider typeProvider,
+            TranslationProvider i18nProvider, Bundle bundle) {
+        return services.stream()
+                .flatMap(s -> s.getProperties(thingUID, typeProvider, i18nProvider, bundle).entrySet().stream())
+                .collect(Collectors.toMap(Entry::getKey, Entry::getValue,
+                        (v1, v2) -> v1.contains(v2) ? v1 : v1 + ", " + v2, LinkedHashMap::new));
     }
 
     public AccessoryCategory getAccessoryType() {

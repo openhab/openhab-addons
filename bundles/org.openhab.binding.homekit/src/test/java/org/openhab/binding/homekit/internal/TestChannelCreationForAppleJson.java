@@ -15,7 +15,6 @@ package org.openhab.binding.homekit.internal;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
-import static org.openhab.binding.homekit.internal.HomekitBindingConstants.CHANNEL_TYPE_STATIC;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -391,8 +390,8 @@ class TestChannelCreationForAppleJson {
         ThingUID thingUID = new ThingUID("hhh", "aaa", "bridge1", "accessory3");
         Accessory accessory = accessories.getAccessory(3L);
         assertNotNull(accessory);
-        List<ChannelGroupDefinition> channelGroupDefinitions = accessory
-                .buildAndRegisterChannelGroupDefinitions(thingUID, typeProvider, i18nProvider, bundle);
+        List<ChannelGroupDefinition> channelGroupDefinitions = accessory.getChannelGroupDefinitions(thingUID,
+                typeProvider, i18nProvider, bundle);
 
         // There should be just one channel group definition for the Light Bulb service
         assertNotNull(channelGroupDefinitions);
@@ -455,13 +454,7 @@ class TestChannelCreationForAppleJson {
         Map<String, String> properties = new HashMap<>();
         for (Service service : accessory.services) {
             if (ServiceType.ACCESSORY_INFORMATION == service.getServiceType()) {
-                for (Characteristic characteristic : service.characteristics) {
-                    ChannelDefinition channelDef = characteristic.buildAndRegisterChannelDefinition(thingUID,
-                            typeProvider, i18nProvider, bundle);
-                    if (channelDef != null && CHANNEL_TYPE_STATIC.equals(channelDef.getChannelTypeUID())) {
-                        properties.putAll(channelDef.getProperties());
-                    }
-                }
+                properties.putAll(service.getProperties(thingUID, typeProvider, i18nProvider, bundle));
                 break;
             }
         }

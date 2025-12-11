@@ -33,7 +33,6 @@ import org.openhab.core.semantics.SemanticTag;
 import org.openhab.core.semantics.model.DefaultSemanticTags.Point;
 import org.openhab.core.semantics.model.DefaultSemanticTags.Property;
 import org.openhab.core.thing.ThingUID;
-import org.openhab.core.thing.type.ChannelDefinition;
 import org.openhab.core.thing.type.ChannelDefinitionBuilder;
 import org.openhab.core.thing.type.ChannelType;
 import org.openhab.core.thing.type.ChannelTypeBuilder;
@@ -75,23 +74,18 @@ public class Characteristic {
     public @NonNullByDefault({}) Integer status;
 
     /**
-     * Builds a {@link ChannelType} and a {@link ChannelDefinition} based on the characteristic properties. Registers
-     * the ChannelType with the provided {@link HomekitTypeProvider}, and returns a ChannelDefinition referring to a
-     * specific instance of this ChannelType, or null if the characteristic cannot be mapped to a channel definition.
-     * <p>
-     * Examines characteristic type, data format, permissions, and other properties to determine the appropriate channel
-     * type, item type, tags, category, and attributes.
-     * <p>
-     * Some Characteristics have variable values and others remain static over time. The latter are produced with
-     * a special channel-type uid, so that when Things are being created, rather than adding them as (dynamic data)
-     * Channels of the Thing, instead they are added as (static data) Properties of the Thing.
+     * Returns the {@link Content} for this characteristic. Some Characteristics have variable values and others remain
+     * static over time. The latter return a 'Property' record and the latter return a 'ChannelDefinition' record.
+     * Examines the characteristic type, data format, permissions, and other properties to determine the appropriate
+     * Content type and, where relevant, the channel type, item type, tags, category, and attributes. In the case of a
+     * 'ChannelDefinition' the method also builds a ChannelType and registers it with the provided HomekitTypeProvider.
      *
-     * @param thingUID the ThingUID to associate the ChannelDefinition with
-     * @param typeProvider the HomekitTypeProvider to register the channel type with
-     * @return the ChannelDefinition or null if it cannot be mapped
+     * @param thingUID the ThingUID to associate the ChannelDefinition with.
+     * @param typeProvider the HomekitTypeProvider to register the channel type with.
+     * @return the {@link Content} or null if it cannot be mapped.
      */
-    public @Nullable ChannelDefinition buildAndRegisterChannelDefinition(ThingUID thingUID,
-            HomekitTypeProvider typeProvider, TranslationProvider i18nProvider, Bundle bundle) {
+    public @Nullable Content getContent(ThingUID thingUID, HomekitTypeProvider typeProvider,
+            TranslationProvider i18nProvider, Bundle bundle) {
         CharacteristicType characteristicType = getCharacteristicType();
         DataFormatType dataFormatType;
         try {
@@ -816,8 +810,7 @@ public class Characteristic {
          */
         if (isStaticValue) {
             if (value != null && value.isJsonPrimitive()) {
-                return new ChannelDefinitionBuilder("static", CHANNEL_TYPE_STATIC)
-                        .withProperties(Map.of(characteristicType.toCamelCase(), value.getAsString())).build();
+                return new Content.Property(characteristicType.toCamelCase(), value.getAsString());
             }
             return null;
         }
@@ -939,7 +932,7 @@ public class Characteristic {
                 channelTypeUid).withLabel(getChannelLabel(characteristicType, i18nProvider, bundle))
                 .withProperties(props);
         Optional.ofNullable(getChannelDescription()).ifPresent(d -> channelDefBuilder.withDescription(d));
-        return channelDefBuilder.build();
+        return new Content.ChannelDefinition(channelDefBuilder.build());
     }
 
     /*

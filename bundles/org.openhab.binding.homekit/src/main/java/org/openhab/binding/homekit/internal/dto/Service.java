@@ -14,8 +14,11 @@ package org.openhab.binding.homekit.internal.dto;
 
 import static org.openhab.binding.homekit.internal.HomekitBindingConstants.*;
 
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -58,7 +61,7 @@ public class Service {
      * @param typeProvider the HomekitStorageBasedTypeProvider to register the channel group type with
      * @return the created ChannelGroupDefinition or null if creation failed
      */
-    public @Nullable ChannelGroupDefinition buildAndRegisterChannelGroupDefinition(ThingUID thingUID,
+    public @Nullable ChannelGroupDefinition getChannelGroupDefinition(ThingUID thingUID,
             HomekitTypeProvider typeProvider, TranslationProvider i18nProvider, Bundle bundle) {
         ServiceType serviceType = getServiceType();
         if (serviceType == null || ServiceType.ACCESSORY_INFORMATION == serviceType) {
@@ -66,8 +69,9 @@ public class Service {
         }
 
         List<ChannelDefinition> channelDefinitions = characteristics.stream()
-                .map(c -> c.buildAndRegisterChannelDefinition(thingUID, typeProvider, i18nProvider, bundle))
-                .filter(Objects::nonNull).toList();
+                .map(c -> c.getContent(thingUID, typeProvider, i18nProvider, bundle))
+                .filter(Content.ChannelDefinition.class::isInstance).map(Content.ChannelDefinition.class::cast)
+                .map(Content.ChannelDefinition::definition).toList();
 
         if (channelDefinitions.isEmpty()) {
             return null;
@@ -90,6 +94,19 @@ public class Service {
         typeProvider.putChannelGroupType(channelGroupType);
         return new ChannelGroupDefinition(serviceType.getOpenhabType(), channelGroupTypeUID,
                 getChannelGroupInstanceLabel(), null);
+    }
+
+    /**
+     * Returns a property map from all characteristics of this service. In which if multiple characteristics
+     * provide the same property name, their values are concatenated. However this should not normally happen
+     * as characteristic types within a service should be unique.
+     */
+    public Map<String, String> getProperties(ThingUID thingUID, HomekitTypeProvider typeProvider,
+            TranslationProvider i18nProvider, Bundle bundle) {
+        return characteristics.stream().map(c -> c.getContent(thingUID, typeProvider, i18nProvider, bundle))
+                .filter(Content.Property.class::isInstance).map(Content.Property.class::cast)
+                .collect(Collectors.toMap(Content.Property::name, Content.Property::value,
+                        (v1, v2) -> v1.contains(v2) ? v1 : v1 + ", " + v2, LinkedHashMap::new));
     }
 
     /*

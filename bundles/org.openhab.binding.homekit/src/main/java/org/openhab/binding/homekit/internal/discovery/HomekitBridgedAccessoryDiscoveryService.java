@@ -79,8 +79,8 @@ public class HomekitBridgedAccessoryDiscoveryService
                         .withBridge(bridge.getUID()) //
                         .withLabel(label) //
                         .withProperty(CONFIG_ACCESSORY_ID, aid.toString()) //
-                        .withProperty(PROPERTY_REPRESENTATION, uniqueId)
-                        .withRepresentationProperty(PROPERTY_REPRESENTATION).build());
+                        .withProperty(PROPERTY_UNIQUE_ID, uniqueId).withRepresentationProperty(PROPERTY_UNIQUE_ID)
+                        .build());
             }
         });
     }
