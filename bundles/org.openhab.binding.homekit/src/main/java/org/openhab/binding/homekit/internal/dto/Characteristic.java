@@ -74,8 +74,9 @@ public class Characteristic {
     public @NonNullByDefault({}) Integer status;
 
     /**
-     * Returns the {@link Content} for this characteristic. Some Characteristics have variable values and others remain
-     * static over time. The latter return a 'Property' record and the latter return a 'ChannelDefinition' record.
+     * Returns the {@link Content} for this characteristic. Some characteristics have values that may change over time,
+     * while others remain static. Characteristics with static values return a {@code Property} record,
+     * whereas characteristics with dynamic values return a {@code ChannelDefinition} record.
      * Examines the characteristic type, data format, permissions, and other properties to determine the appropriate
      * Content type and, where relevant, the channel type, item type, tags, category, and attributes. In the case of a
      * 'ChannelDefinition' the method also builds a ChannelType and registers it with the provided HomekitTypeProvider.
