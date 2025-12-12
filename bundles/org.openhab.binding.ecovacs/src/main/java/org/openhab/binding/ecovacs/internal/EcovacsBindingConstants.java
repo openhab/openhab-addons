@@ -74,6 +74,7 @@ public class EcovacsBindingConstants {
     public static final String CHANNEL_ID_VOICE_VOLUME = "settings#voice-volume";
     public static final String CHANNEL_ID_WATER_PLATE_PRESENT = "status#water-system-present";
     public static final String CHANNEL_ID_WATER_AMOUNT = "settings#water-amount";
+    public static final String CHANNEL_ID_WATER_AMOUNT_PERCENT = "settings#water-amount-percent";
     public static final String CHANNEL_ID_WIFI_RSSI = "status#wifi-rssi";
 
     public static final String CHANNEL_TYPE_ID_CLEAN_MODE = "current-cleaning-mode";

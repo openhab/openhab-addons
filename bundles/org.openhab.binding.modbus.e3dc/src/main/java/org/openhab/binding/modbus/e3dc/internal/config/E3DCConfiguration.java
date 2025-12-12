@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.modbus.e3dc.internal;
+package org.openhab.binding.modbus.e3dc.internal.config;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
@@ -24,4 +24,7 @@ public class E3DCConfiguration {
 
     public int refresh = 2000;
     public double batteryCapacity = -1;
+    public double string1Kwp = 0;
+    public double string2Kwp = 0;
+    public double string3Kwp = 0;
 }

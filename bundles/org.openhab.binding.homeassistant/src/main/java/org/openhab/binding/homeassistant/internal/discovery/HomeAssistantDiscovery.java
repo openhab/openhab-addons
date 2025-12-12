@@ -60,9 +60,9 @@ import org.slf4j.LoggerFactory;
  *
  * @author David Graeff - Initial contribution
  */
-@Component(service = DiscoveryService.class, configurationPid = "discovery.mqttha", property = Constants.SERVICE_PID
-        + "=discovery.mqttha")
-@ConfigurableService(category = "system", label = "Home Assistant Discovery", description_uri = "binding:mqtt.homeassistant")
+@Component(service = DiscoveryService.class, configurationPid = "org.openhab.binding.homeassistant", property = Constants.SERVICE_PID
+        + "=org.openhab.binding.homeassistant")
+@ConfigurableService(category = "binding", label = "Home Assistant Binding", description_uri = "binding:homeassistant")
 @NonNullByDefault
 public class HomeAssistantDiscovery extends AbstractMQTTDiscovery {
     private final Logger logger = LoggerFactory.getLogger(HomeAssistantDiscovery.class);

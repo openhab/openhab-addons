@@ -98,6 +98,7 @@
 		<label>Settings</label>
 		<channels>
 			<channel id="water-amount" typeId="water-amount"/>
+			<channel id="water-amount-percent" typeId="water-amount-percent"/>
 			<channel id="suction-power" typeId="suction-power"/>
 			<channel id="voice-volume" typeId="voice-volume"/>
 			<channel id="auto-empty" typeId="auto-empty"/>
@@ -344,6 +345,12 @@
 				<option value="veryhigh">Very high</option>
 			</options>
 		</state>
+	</channel-type>
+
+	<channel-type id="water-amount-percent" advanced="true">
+		<item-type>Dimmer</item-type>
+		<label>Mopping Water Amount</label>
+		<state pattern="%d%%" min="1" max="100"/>
 	</channel-type>
 
 	<channel-type id="wifi-rssi" advanced="true">

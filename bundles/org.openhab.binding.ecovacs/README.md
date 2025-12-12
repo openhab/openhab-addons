@@ -67,6 +67,7 @@ In case a particular channel is not supported by a given device (see remarks), i
 | Channel                                 | Type                 | Description                                               | Read Only | Updated By | Remarks  |
 |-----------------------------------------|----------------------|-----------------------------------------------------------|-----------|------------|----------|
 | actions#command                         | String               | Command to execute                                        | No        | Event      | [1]      |
+| status#battery                          | Number               | Current battery level                                     | Yes       | Event      |          |
 | status#state                            | String               | Current operational state                                 | Yes       | Event      | [2]      |
 | status#current-cleaning-mode            | String               | Mode used in current cleaning run                         | Yes       | Event      | [3], [4] |
 | status#current-cleaning-time            | Number:Time          | Time spent in current cleaning run                        | Yes       | Event      | [4]      |
@@ -94,6 +95,7 @@ In case a particular channel is not supported by a given device (see remarks), i
 | settings#true-detect-3d                 | Switch               | Whether True Detect 3D is enabled                         | No        | Polling    | [13]     |
 | settings#voice-volume                   | Dimmer               | The voice volume level in percent                         | No        | Polling    | [14]     |
 | settings#water-amount                   | String               | The amount of water to be used when mopping               | No        | Polling    | [15]     |
+| settings#water-amount-percent           | Dimmer               | The amount of water to be used when mopping (in percent)  | No        | Polling    | [16]     |
 
 Remarks:
 
@@ -112,6 +114,7 @@ Remarks:
 - [13] Only present if device supports True Detect 3D
 - [14] Only present if device has voice reporting
 - [15] Only present if device has a mopping system. Possible values include `low`, `medium`, `high` and `veryhigh`
+- [16] Only present on Deebot X8 or newer.
 
 ## Command Channel Actions
 

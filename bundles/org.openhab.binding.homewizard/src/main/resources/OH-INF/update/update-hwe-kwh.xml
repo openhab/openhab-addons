@@ -3,11 +3,14 @@
 	xmlns:update="https://openhab.org/schemas/update-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/update-description/v1.0.0 https://openhab.org/schemas/update-description-1.0.0.xsd">
 
-	<thing-type uid="homewizard:hwe-p1">
+	<thing-type uid="homewizard:hwe-kwh">
 
 		<instruction-set targetVersion="2">
 			<add-channel id="batteries_mode" groupIds="batteries">
-				<type>homewizard:p1-batteries-mode</type>
+				<type>homewizard:hw-batteries-mode</type>
+			</add-channel>
+			<add-channel id="batteries_battery_count" groupIds="batteries">
+				<type>homewizard:hw-batteries-battery-count</type>
 			</add-channel>
 			<add-channel id="batteries_power" groupIds="batteries">
 				<type>homewizard:hw-power-advanced</type>
@@ -39,21 +42,6 @@
 				</description>
 			</add-channel>
 
-		</instruction-set>
-
-		<instruction-set targetVersion="3">
-			<add-channel id="tariff" groupIds="energy">
-				<type>homewizard:p1-tariff</type>
-			</add-channel>
-		</instruction-set>
-
-		<instruction-set targetVersion="4">
-			<update-channel id="batteries_mode" groupIds="batteries">
-				<type>homewizard:hw-batteries-mode</type>
-			</update-channel>
-			<add-channel id="batteries_battery_count" groupIds="batteries">
-				<type>homewizard:hw-batteries-battery-count</type>
-			</add-channel>
 		</instruction-set>
 
 	</thing-type>

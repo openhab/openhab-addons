@@ -4,82 +4,114 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<!-- Xantech 8x8 Amplifier Thing -->
-	<thing-type id="xantech">
-		<label>Xantech 8x8 Amplifier</label>
+	<!-- Monoprice 44518 8 zone/6 source variant -->
+	<thing-type id="monoprice8">
+		<label>Monoprice 44518 8 Zone Amplifier</label>
 		<description>
 			A Multi-zone Whole House Amplifier System
 		</description>
 		<semantic-equipment-tag>AudioVisual</semantic-equipment-tag>
 
 		<channel-groups>
-			<channel-group id="all" typeId="xantech-all">
+			<channel-group id="all" typeId="all">
 				<label>All Zones</label>
 				<description>Control All Zones Simultaneously</description>
 			</channel-group>
-			<channel-group id="zone1" typeId="xantech-zone">
+			<channel-group id="zone1" typeId="zone">
 				<label>Zone 1</label>
 				<description>The Controls for Zone 1</description>
 			</channel-group>
-			<channel-group id="zone2" typeId="xantech-zone">
+			<channel-group id="zone2" typeId="zone">
 				<label>Zone 2</label>
 				<description>The Controls for Zone 2</description>
 			</channel-group>
-			<channel-group id="zone3" typeId="xantech-zone">
+			<channel-group id="zone3" typeId="zone">
 				<label>Zone 3</label>
 				<description>The Controls for Zone 3</description>
 			</channel-group>
-			<channel-group id="zone4" typeId="xantech-zone">
+			<channel-group id="zone4" typeId="zone">
 				<label>Zone 4</label>
 				<description>The Controls for Zone 4</description>
 			</channel-group>
-			<channel-group id="zone5" typeId="xantech-zone">
+			<channel-group id="zone5" typeId="zone">
 				<label>Zone 5</label>
 				<description>The Controls for Zone 5</description>
 			</channel-group>
-			<channel-group id="zone6" typeId="xantech-zone">
+			<channel-group id="zone6" typeId="zone">
 				<label>Zone 6</label>
 				<description>The Controls for Zone 6</description>
 			</channel-group>
-			<channel-group id="zone7" typeId="xantech-zone">
+			<channel-group id="zone7" typeId="zone">
 				<label>Zone 7</label>
 				<description>The Controls for Zone 7</description>
 			</channel-group>
-			<channel-group id="zone8" typeId="xantech-zone">
+			<channel-group id="zone8" typeId="zone">
 				<label>Zone 8</label>
 				<description>The Controls for Zone 8</description>
 			</channel-group>
-			<channel-group id="zone9" typeId="xantech-zone">
+			<channel-group id="zone9" typeId="zone">
 				<label>Zone 9</label>
 				<description>The Controls for Zone 9</description>
 			</channel-group>
-			<channel-group id="zone10" typeId="xantech-zone">
+			<channel-group id="zone10" typeId="zone">
 				<label>Zone 10</label>
 				<description>The Controls for Zone 10</description>
 			</channel-group>
-			<channel-group id="zone11" typeId="xantech-zone">
+			<channel-group id="zone11" typeId="zone">
 				<label>Zone 11</label>
 				<description>The Controls for Zone 11</description>
 			</channel-group>
-			<channel-group id="zone12" typeId="xantech-zone">
+			<channel-group id="zone12" typeId="zone">
 				<label>Zone 12</label>
 				<description>The Controls for Zone 12</description>
 			</channel-group>
-			<channel-group id="zone13" typeId="xantech-zone">
+			<channel-group id="zone13" typeId="zone">
 				<label>Zone 13</label>
 				<description>The Controls for Zone 13</description>
 			</channel-group>
-			<channel-group id="zone14" typeId="xantech-zone">
+			<channel-group id="zone14" typeId="zone">
 				<label>Zone 14</label>
 				<description>The Controls for Zone 14</description>
 			</channel-group>
-			<channel-group id="zone15" typeId="xantech-zone">
+			<channel-group id="zone15" typeId="zone">
 				<label>Zone 15</label>
 				<description>The Controls for Zone 15</description>
 			</channel-group>
-			<channel-group id="zone16" typeId="xantech-zone">
+			<channel-group id="zone16" typeId="zone">
 				<label>Zone 16</label>
 				<description>The Controls for Zone 16</description>
+			</channel-group>
+			<channel-group id="zone17" typeId="zone">
+				<label>Zone 17</label>
+				<description>The Controls for Zone 17</description>
+			</channel-group>
+			<channel-group id="zone18" typeId="zone">
+				<label>Zone 18</label>
+				<description>The Controls for Zone 18</description>
+			</channel-group>
+			<channel-group id="zone19" typeId="zone">
+				<label>Zone 19</label>
+				<description>The Controls for Zone 19</description>
+			</channel-group>
+			<channel-group id="zone20" typeId="zone">
+				<label>Zone 20</label>
+				<description>The Controls for Zone 20</description>
+			</channel-group>
+			<channel-group id="zone21" typeId="zone">
+				<label>Zone 21</label>
+				<description>The Controls for Zone 21</description>
+			</channel-group>
+			<channel-group id="zone22" typeId="zone">
+				<label>Zone 22</label>
+				<description>The Controls for Zone 22</description>
+			</channel-group>
+			<channel-group id="zone23" typeId="zone">
+				<label>Zone 23</label>
+				<description>The Controls for Zone 23</description>
+			</channel-group>
+			<channel-group id="zone24" typeId="zone">
+				<label>Zone 24</label>
+				<description>The Controls for Zone 24</description>
 			</channel-group>
 		</channel-groups>
 
@@ -88,27 +120,28 @@
 				<context>serial-port</context>
 				<limitToOptions>false</limitToOptions>
 				<label>Serial Port</label>
-				<description>Serial Port to Use for Connecting to the Xantech Amplifier</description>
+				<description>Serial Port to Use for Connecting to the Monoprice Amplifier</description>
 			</parameter>
 			<parameter name="host" type="text" required="false">
 				<context>network-address</context>
 				<label>Address</label>
-				<description>Host Name or IP Address of the Machine Connected to the Xantech Amplifier (Serial over IP)</description>
+				<description>Host Name or IP Address of the Monoprice Amplifier or Serial over IP device</description>
 			</parameter>
 			<parameter name="port" type="integer" min="1" max="65535" required="false">
 				<label>Port</label>
-				<description>Communication Port for Serial over IP connection to the Xantech Amplifier</description>
+				<description>Communication Port for Serial over IP connection to the Monoprice Amplifier (8080 for amps with
+					built-in Serial over IP)</description>
 			</parameter>
-			<parameter name="numZones" type="integer" min="1" max="16" required="true">
+			<parameter name="numZones" type="integer" min="1" max="24" required="true">
 				<label>Number of Zones</label>
-				<description>Number of Zones on the Amplifier to Utilize in the Binding (Up to 16 Zones With 2 Amplifiers Connected
+				<description>Number of Zones on the Amplifier to Utilize in the Binding (Up to 24 Zones With 3 Amplifiers Connected
 					Together)</description>
 				<default>8</default>
 			</parameter>
 			<parameter name="pollingInterval" type="integer" min="5" max="60" unit="s" required="false">
 				<label>Polling Interval</label>
-				<description>Configures How Often to Poll the Amplifier to Check for Zone Updates (5-60; Default 30)</description>
-				<default>30</default>
+				<description>Configures How Often to Poll the Amplifier to Check for Zone Updates (5-60; Default 15)</description>
+				<default>15</default>
 			</parameter>
 			<parameter name="ignoreZones" type="text" required="false">
 				<label>Ignore Zones</label>
@@ -151,16 +184,6 @@
 				<description>Friendly Name for the Input Source to Be Displayed in the UI (e.g., Chromecast, Radio, CD, etc.)</description>
 				<default>Source 6</default>
 			</parameter>
-			<parameter name="inputLabel7" type="text" required="false">
-				<label>Source 7 Input Label</label>
-				<description>Friendly Name for the Input Source to Be Displayed in the UI (e.g., Chromecast, Radio, CD, etc.)</description>
-				<default>Source 7</default>
-			</parameter>
-			<parameter name="inputLabel8" type="text" required="false">
-				<label>Source 8 Input Label</label>
-				<description>Friendly Name for the Input Source to Be Displayed in the UI (e.g., Chromecast, Radio, CD, etc.)</description>
-				<default>Source 8</default>
-			</parameter>
 			<parameter name="disableKeypadPolling" type="boolean" required="false">
 				<label>Disable Keypad Polling</label>
 				<description>If physical keypads are not used, this option will disable polling the amplifier for zone updates</description>
@@ -168,98 +191,5 @@
 			</parameter>
 		</config-description>
 	</thing-type>
-
-	<channel-group-type id="xantech-all">
-		<label>All Zones</label>
-		<description>Control All Zones Simultaneously</description>
-		<channels>
-			<channel id="allpower" typeId="xantech-allpower"/>
-			<channel id="allsource" typeId="xantech-source"/>
-			<channel id="allvolume" typeId="system.volume"/>
-			<channel id="allmute" typeId="system.mute"/>
-		</channels>
-	</channel-group-type>
-
-	<channel-group-type id="xantech-zone">
-		<label>Zone Controls</label>
-		<description>The Controls for the Zone</description>
-		<channels>
-			<channel id="power" typeId="system.power"/>
-			<channel id="source" typeId="xantech-source"/>
-			<channel id="volume" typeId="system.volume"/>
-			<channel id="mute" typeId="system.mute"/>
-			<channel id="treble" typeId="xantech-treble"/>
-			<channel id="bass" typeId="xantech-bass"/>
-			<channel id="balance" typeId="xantech-balance"/>
-			<channel id="page" typeId="xantech-page"/>
-			<channel id="keypad" typeId="xantech-keypad"/>
-		</channels>
-	</channel-group-type>
-
-	<channel-type id="xantech-allpower">
-		<item-type>Switch</item-type>
-		<label>All On</label>
-		<description>Turn All Zones On or Off</description>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Power</tag>
-		</tags>
-	</channel-type>
-
-	<channel-type id="xantech-source">
-		<item-type>Number</item-type>
-		<label>Source Input</label>
-		<description>Select the Source Input</description>
-		<state min="1" max="8"/>
-	</channel-type>
-
-	<channel-type id="xantech-treble">
-		<item-type>Number</item-type>
-		<label>Treble Adjustment</label>
-		<description>Adjust the Treble</description>
-		<state min="-7" max="7" step="1" pattern="%d"/>
-	</channel-type>
-
-	<channel-type id="xantech-bass">
-		<item-type>Number</item-type>
-		<label>Bass Adjustment</label>
-		<description>Adjust the Bass</description>
-		<state min="-7" max="7" step="1" pattern="%d"/>
-	</channel-type>
-
-	<channel-type id="xantech-balance">
-		<item-type>Number</item-type>
-		<label>Balance Adjustment</label>
-		<description>Adjust the Balance</description>
-		<state min="-32" max="31" step="1" pattern="%d"/>
-	</channel-type>
-
-	<channel-type id="xantech-page">
-		<item-type>Contact</item-type>
-		<label>Page Active</label>
-		<description>Indicates if the Page Mode is Active for This Zone</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
-		</tags>
-		<state readOnly="true">
-			<options>
-				<option value="CLOSED">Inactive</option>
-				<option value="OPEN">Active</option>
-			</options>
-		</state>
-	</channel-type>
-
-	<channel-type id="xantech-keypad">
-		<item-type>Contact</item-type>
-		<label>Keypad Connected</label>
-		<description>Indicates if a Physical Keypad is Attached to This Zone</description>
-		<state readOnly="true">
-			<options>
-				<option value="CLOSED">Disconnected</option>
-				<option value="OPEN">Connected</option>
-			</options>
-		</state>
-	</channel-type>
 
 </thing:thing-descriptions>

@@ -55,6 +55,8 @@ public enum DeviceCapability {
     ROUND_MOP_LIFESPAN,
     @SerializedName("air_drying")
     AIR_DRYING,
+    @SerializedName("custom_water_amount")
+    CUSTOM_WATER_AMOUNT,
     // implicit capabilities added in code
     EDGE_CLEANING,
     SPOT_CLEANING,

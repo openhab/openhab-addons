@@ -44,7 +44,7 @@ import org.slf4j.LoggerFactory;
 public class MonopriceAudioHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_MP, THING_TYPE_MP4,
-            THING_TYPE_MP70, THING_TYPE_DAX88, THING_TYPE_XT);
+            THING_TYPE_MP8, THING_TYPE_MP70, THING_TYPE_DAX88, THING_TYPE_XT);
 
     private final SerialPortManager serialPortManager;
 
@@ -75,6 +75,11 @@ public class MonopriceAudioHandlerFactory extends BaseThingHandlerFactory {
 
         if (THING_TYPE_MP4.equals(thingTypeUID)) {
             return new MonopriceAudioHandler(thing, AmplifierModel.MONOPRICE4, stateDescriptionProvider,
+                    serialPortManager);
+        }
+
+        if (THING_TYPE_MP8.equals(thingTypeUID)) {
+            return new MonopriceAudioHandler(thing, AmplifierModel.MONOPRICE8, stateDescriptionProvider,
                     serialPortManager);
         }
 
