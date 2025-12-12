@@ -411,17 +411,19 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
         }
 
         String oldEquipmentTag = thing.getSemanticEquipmentTag();
-        SemanticTag newEquipmentTag = accessory.getSemanticEquipmentTag();
-        if (newEquipmentTag == null && oldProperties.get(PROPERTY_ACCESSORY_CATEGORY) instanceof String catProperty
-                && AccessoryCategory.from(catProperty) instanceof AccessoryCategory category
-                && AccessoryCategory.OTHER != category) {
-            newEquipmentTag = accessory.getSemanticEquipmentTag(category);
-        }
-        if (newEquipmentTag == null) {
-            newEquipmentTag = accessory.getSemanticEquipmentTagFromServices();
-        }
-        if (newEquipmentTag != null && newEquipmentTag.getName().equals(oldEquipmentTag)) {
-            newEquipmentTag = null; // do not change prior tag
+        SemanticTag newEquipmentTag;
+        if (oldEquipmentTag != null && oldEquipmentTag.isEmpty()) {
+            newEquipmentTag = null;
+        } else {
+            newEquipmentTag = accessory.getSemanticEquipmentTag();
+            if (newEquipmentTag == null && oldProperties.get(PROPERTY_ACCESSORY_CATEGORY) instanceof String catProperty
+                    && AccessoryCategory.from(catProperty) instanceof AccessoryCategory category
+                    && AccessoryCategory.OTHER != category) {
+                newEquipmentTag = accessory.getSemanticEquipmentTag(category);
+            }
+            if (newEquipmentTag == null) {
+                newEquipmentTag = accessory.getSemanticEquipmentTagFromServices();
+            }
         }
 
         if (newLabel != null || newChannels != null || newProperties != null || newEquipmentTag != null) {
