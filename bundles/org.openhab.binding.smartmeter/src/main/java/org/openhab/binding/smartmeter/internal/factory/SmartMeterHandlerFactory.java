@@ -10,15 +10,18 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.smartmeter.internal;
+package org.openhab.binding.smartmeter.internal.factory;
 
-import static org.openhab.binding.smartmeter.SmartMeterBindingConstants.THING_TYPE_SMLREADER;
+import static org.openhab.binding.smartmeter.SmartMeterBindingConstants.*;
 
 import java.util.Set;
 import java.util.function.Supplier;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.smartmeter.dlms.internal.DlmsMeterHandler;
+import org.openhab.binding.smartmeter.internal.SmartMeterChannelTypeProvider;
+import org.openhab.binding.smartmeter.internal.SmartMeterHandler;
 import org.openhab.core.io.transport.serial.SerialPortManager;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
@@ -39,8 +42,10 @@ import org.osgi.service.component.annotations.Reference;
 @NonNullByDefault
 public class SmartMeterHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_SMLREADER);
-    private @NonNullByDefault({}) SmartMeterChannelTypeProvider channelProvider;
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = //
+            Set.of(THING_TYPE_SMLREADER, DLMS_THING_TYPE_METER);
+
+    private @NonNullByDefault({}) SmartMeterChannelTypeProvider channelTypeProvider;
     private @NonNullByDefault({}) Supplier<SerialPortManager> serialPortManagerSupplier = () -> null;
 
     @Override
@@ -50,11 +55,11 @@ public class SmartMeterHandlerFactory extends BaseThingHandlerFactory {
 
     @Reference
     protected void setSmartMeterChannelTypeProvider(SmartMeterChannelTypeProvider provider) {
-        this.channelProvider = provider;
+        this.channelTypeProvider = provider;
     }
 
     protected void unsetSmartMeterChannelTypeProvider(SmartMeterChannelTypeProvider provider) {
-        this.channelProvider = null;
+        this.channelTypeProvider = null;
     }
 
     @Reference
@@ -71,7 +76,9 @@ public class SmartMeterHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(THING_TYPE_SMLREADER)) {
-            return new SmartMeterHandler(thing, channelProvider, serialPortManagerSupplier);
+            return new SmartMeterHandler(thing, channelTypeProvider, serialPortManagerSupplier);
+        } else if (thingTypeUID.equals(DLMS_THING_TYPE_METER)) {
+            return new DlmsMeterHandler(thing, channelTypeProvider);
         }
 
         return null;

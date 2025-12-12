@@ -363,7 +363,7 @@
 /bundles/org.openhab.binding.sinope/ @chaton78
 /bundles/org.openhab.binding.sleepiq/ @syphr42 @mhilbush
 /bundles/org.openhab.binding.smaenergymeter/ @monnimeter
-/bundles/org.openhab.binding.smartmeter/ @msteigenberger
+/bundles/org.openhab.binding.smartmeter/ @msteigenberger @andrewfg
 /bundles/org.openhab.binding.smartthings/ @BobRak
 /bundles/org.openhab.binding.smgw/ @J-N-K
 /bundles/org.openhab.binding.smhi/ @pacive
