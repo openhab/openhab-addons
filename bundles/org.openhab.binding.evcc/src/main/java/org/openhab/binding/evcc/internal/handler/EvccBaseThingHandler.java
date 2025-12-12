@@ -37,6 +37,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.core.i18n.TranslationProvider;
@@ -261,37 +262,52 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
         });
     }
 
-    protected boolean sendCommand(String url) {
+    protected boolean sendCommand(String url, JsonElement payload) {
         AtomicBoolean successful = new AtomicBoolean(false);
         Optional.ofNullable(bridgeHandler).ifPresent(handler -> {
             HttpClient httpClient = handler.getHttpClient();
             try {
-                ContentResponse response = httpClient.newRequest(url).timeout(5, TimeUnit.SECONDS)
-                        .method(HttpMethod.POST).header(HttpHeader.ACCEPT, "application/json").send();
-
-                if (response.getStatus() == 200) {
-                    logger.debug("Sending command was successful");
-                    successful.set(true);
+                if (!payload.isJsonNull()) {
+                    ContentResponse response = httpClient.newRequest(url).timeout(5, TimeUnit.SECONDS)
+                            .method(HttpMethod.POST).content(new StringContentProvider(payload.toString()))
+                            .header(HttpHeader.ACCEPT, "application/json").send();
+                    successful.set(checkResponse(response));
                 } else {
-                    @Nullable
-                    JsonObject responseJson = gson.fromJson(response.getContentAsString(), JsonObject.class);
-                    Optional.ofNullable(responseJson).ifPresent(json -> {
-                        if (json.has("error")) {
-                            logger.debug("Sending command was unsuccessful, got this error:\n {}",
-                                    json.get("error").getAsString());
-                            updateStatus(getThing().getStatus(), ThingStatusDetail.COMMUNICATION_ERROR,
-                                    json.get("error").getAsString());
-                        } else {
-                            updateStatus(getThing().getStatus(), ThingStatusDetail.COMMUNICATION_ERROR);
-                            logger.warn("evcc API error: HTTP {}", response.getStatus());
-                        }
-                    });
+                    ContentResponse response = httpClient.newRequest(url).timeout(5, TimeUnit.SECONDS)
+                            .method(HttpMethod.POST).header(HttpHeader.ACCEPT, "application/json").send();
+                    successful.set(checkResponse(response));
                 }
             } catch (Exception e) {
                 logger.warn("evcc bridge couldn't call the API", e);
             }
         });
         return successful.get();
+    }
+
+    private boolean checkResponse(ContentResponse response) {
+        if (response.getStatus() == 200) {
+            logger.debug("Sending command was successful");
+            return true;
+        } else {
+            try {
+                @Nullable
+                JsonObject responseJson = gson.fromJson(response.getContentAsString(), JsonObject.class);
+                Optional.ofNullable(responseJson).ifPresent(json -> {
+                    if (json.has("error")) {
+                        logger.debug("Sending command was unsuccessful, got this error:\n {}",
+                                json.get("error").getAsString());
+                        updateStatus(getThing().getStatus(), ThingStatusDetail.COMMUNICATION_ERROR,
+                                json.get("error").getAsString());
+                    } else {
+                        updateStatus(getThing().getStatus(), ThingStatusDetail.COMMUNICATION_ERROR);
+                        logger.warn("evcc API error: HTTP {}", response.getStatus());
+                    }
+                });
+            } catch (Exception e) {
+                logger.warn("evcc bridge couldn't parse the API error response", e);
+            }
+            return false;
+        }
     }
 
     private ChannelUID channelUID(String id) {

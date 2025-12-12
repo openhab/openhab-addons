@@ -38,7 +38,9 @@ import org.openhab.core.types.State;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 
 /**
  * The {@link EvccPlanHandler} is responsible for fetching the data from the API response for Plan things
@@ -54,6 +56,7 @@ public class EvccPlanHandler extends EvccBaseThingHandler {
     private JsonArray cachedRepeatingPlans = new JsonArray();
     private JsonObject cachedOneTimePlan = new JsonObject();
     public Map<Integer, String> localizedDayOfWeekMap = Map.of();
+    public Map<String, Integer> localizedReverseMap = Map.of();
 
     public EvccPlanHandler(Thing thing, ChannelTypeRegistry channelTypeRegistry) {
         super(thing, channelTypeRegistry);
@@ -74,6 +77,8 @@ public class EvccPlanHandler extends EvccBaseThingHandler {
         super.initialize();
         Optional.ofNullable(bridgeHandler).ifPresent(handler -> {
             localizedDayOfWeekMap = buildLocalizedDayOfWeekMap(handler);
+            localizedReverseMap = localizedDayOfWeekMap.entrySet().stream()
+                    .collect(Collectors.toUnmodifiableMap(Map.Entry::getValue, Map.Entry::getKey));
             endpoint = String.join("/", handler.getBaseURL(), "vehicles", vehicleID, "plan");
             if (index == 0) {
                 endpoint = String.join("/", endpoint, "soc");
@@ -129,6 +134,7 @@ public class EvccPlanHandler extends EvccBaseThingHandler {
                     }
                     // Update the weekdays property to a localized string
                     state.addProperty(JSON_KEY_WEEKDAYS, weekDays.toString());
+                    cachedRepeatingPlans.set(index - 1, state);
                 }
             }
             updateStatesFromApiResponse(state);
@@ -144,9 +150,7 @@ public class EvccPlanHandler extends EvccBaseThingHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         if ("send-update".equals(channelUID.getId()) && command == OnOffType.ON && !pendingCommands.isEmpty()) {
             updatePlan();
-            scheduler.schedule(() -> {
-                updateState(channelUID, OnOffType.OFF);
-            }, 500, TimeUnit.MILLISECONDS);
+            scheduler.schedule(() -> updateState(channelUID, OnOffType.OFF), 500, TimeUnit.MILLISECONDS);
         } else {
             if (command instanceof State state) {
                 String stateString = state.toString();
@@ -162,15 +166,50 @@ public class EvccPlanHandler extends EvccBaseThingHandler {
 
     private void updatePlan() {
         if (index != 0) {
-            // TODO: Implementation for repeating plan
-            JsonObject payload = new JsonObject();
+            JsonArray payload = cachedRepeatingPlans.deepCopy();
+            JsonObject plan = cachedRepeatingPlans.get(index - 1).getAsJsonObject();
+            Map<String, String> values = getCachedValues(plan);
+            for (Map.Entry<String, JsonElement> entry : plan.entrySet()) {
+                if (values.containsKey(entry.getKey())) {
+                    switch (entry.getKey()) {
+                        case "weekdays" -> {
+                            JsonArray weekdaysArray = new JsonArray();
+                            String[] days = values.get(entry.getKey()).split(";");
+                            for (String day : days) {
+                                Integer dayValue = localizedReverseMap.get(day);
+                                if (dayValue != null) {
+                                    weekdaysArray.add(new JsonPrimitive(dayValue));
+                                }
+                            }
+                            plan.add(entry.getKey(), weekdaysArray);
+                        }
+                        case "soc", "precondition" -> {
+                            String value = values.get(entry.getKey());
+                            if (value != null) {
+                                plan.add(entry.getKey(), new JsonPrimitive(Integer.parseInt(value)));
+                            }
+                        }
+                        case "active" -> {
+                            String value = values.get(entry.getKey());
+                            if (value != null) {
+                                plan.add(entry.getKey(), new JsonPrimitive(Boolean.parseBoolean(value)));
+                            }
+                        }
+                        default -> plan.add(entry.getKey(), new JsonPrimitive(values.get(entry.getKey())));
+                    }
+                }
+            }
+            plan.add("time", plan.get("repeatingTime"));
+            plan.remove("repeatingTime");
+            payload.set(index - 1, plan);
+            sendCommand(endpoint, payload);
         } else {
             Map<String, String> values = getCachedValues(cachedOneTimePlan);
             String soc = values.get("soc");
             String time = values.get("time");
             String precondition = values.get("precondition");
             String url = String.join("/", endpoint, soc, time + "?" + precondition);
-            sendCommand(url);
+            sendCommand(url, JsonNull.INSTANCE);
         }
         pendingCommands.clear();
     }

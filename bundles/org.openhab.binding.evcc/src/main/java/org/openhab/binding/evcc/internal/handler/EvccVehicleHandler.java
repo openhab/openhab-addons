@@ -28,6 +28,7 @@ import org.openhab.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 
 /**
@@ -60,7 +61,7 @@ public class EvccVehicleHandler extends EvccBaseThingHandler {
             }
             String url = endpoint + "/" + vehicleId + "/" + datapoint + "/" + value;
             logger.debug("Sending command to this url: {}", url);
-            if (sendCommand(url)) {
+            if (sendCommand(url, JsonNull.INSTANCE)) {
                 updateState(channelUID, state);
             }
         } else {

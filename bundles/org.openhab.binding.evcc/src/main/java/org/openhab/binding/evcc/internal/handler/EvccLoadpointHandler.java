@@ -31,6 +31,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 
 /**
@@ -104,7 +105,7 @@ public class EvccLoadpointHandler extends EvccBaseThingHandler {
             }
             String url = endpoint + "/" + datapoint + "/" + value;
             logger.debug("Sending command to this url: {}", url);
-            if (sendCommand(url)) {
+            if (sendCommand(url, JsonNull.INSTANCE)) {
                 updateState(channelUID, state);
             }
         } else {
