@@ -322,7 +322,7 @@ public abstract class HomeWizardDeviceHandler extends BaseThingHandler {
         } catch (Exception ex) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/offline.comm-error-device-offline");
-            logger.error("Unable to get measurement data", ex);
+            logger.debug("Unable to get measurement data", ex);
             return;
         }
         updateStatus(ThingStatus.ONLINE);
