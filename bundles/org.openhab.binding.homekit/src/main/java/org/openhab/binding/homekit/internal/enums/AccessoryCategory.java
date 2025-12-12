@@ -67,7 +67,7 @@ public enum AccessoryCategory {
         this.label = label;
     }
 
-    public static AccessoryCategory from(int id) throws IllegalArgumentException {
+    public static AccessoryCategory from(int id) {
         for (AccessoryCategory value : values()) {
             if (value.id == id) {
                 return value;
