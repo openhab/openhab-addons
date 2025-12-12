@@ -74,7 +74,5 @@ public class CircadianCalc {
         double colorTemp = percentage > 0 ? (DELTA_TEMP * percentage / 100) + MIN_COLOR_TEMP : MIN_COLOR_TEMP;
 
         return new Circadian(Math.abs(percentage), colorTemp);
-
     }
-
 }
