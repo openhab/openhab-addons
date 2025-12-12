@@ -169,7 +169,7 @@ public class RoborockWebTargets {
      *
      * @param baseUri The base URI for API calls.
      * @param email The user's email.
-     * @param password The user's password.
+     * @param two The 2FA code sent by Roborock
      * @return A {@link Login} object containing authentication details, or null if login fails.
      * @throws RoborockException If authentication fails.
      */

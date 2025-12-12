@@ -98,7 +98,7 @@ In case your vacuum does not support one of these commands, it will show "unsupp
 ### `demo.things` Example
 
 ```java
-Bridge roborock:account:account [ email="xxxx", password="xxxx" ] {
+Bridge roborock:account:account [ email="xxxx", twofa="xxxx" ] {
     roborock:vacuum:QrevoS [ refresh=5 ]
 }
 ```
