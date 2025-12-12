@@ -44,10 +44,10 @@ Once the `home` thing is online, the binding will discover all its respective zo
 
 | Name                | Type   | Description                                                         | Read/Write |
 |---------------------|--------|---------------------------------------------------------------------|------------|
-| `homePresence`      | Switch | Current presence value of the tado home; `ON` = HOME / `OFF` = AWAY | RW         |
-| `geofencingEnabled` | Switch | Selects if automatic geofencing is enabled or disabled              | RW         |
-| `APICallsRemainingThisDuration`<sup>1)</sup> | Number | Number of API calls remaining before the maximum is reached              | R         |
-| `APIMaxCallsPerDuration`<sup>1)</sup> | Number | Maximum API calls allowed per specified duration              | R         |
+| `homePresence`      | Switch      | Current presence value of the tado home; `ON` = HOME / `OFF` = AWAY | RW         |
+| `geofencingEnabled` | Switch      | Selects if automatic geofencing is enabled or disabled              | RW         |
+| `APICallsRemainingThisDuration`<sup>1)</sup> | Number      | Number of API calls remaining before the maximum is reached              | R         |
+| `APIMaxCallsPerDuration`<sup>1)</sup> | Number      | Maximum API calls allowed per specified duration              | R         |
 | `APIMaxDurationSeconds`<sup>1)</sup> | Number:Time | Duration in which the API count rises until maximum (in seconds)              | R         |
 | `APISecondsUntilMaxResets`<sup>1)</sup> | Number:Time | Duration before the API count resets (in seconds)              | R         |
 

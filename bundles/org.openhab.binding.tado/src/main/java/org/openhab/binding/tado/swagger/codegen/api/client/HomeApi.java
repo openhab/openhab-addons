@@ -71,10 +71,9 @@ public class HomeApi {
         return stringForJson.toString();
     }
 
-    private String createStringListForJson(ContentResponse resp) {
+    private String createListStringForJson(ContentResponse resp, String splitString) {
         StringBuilder stringForJson = new StringBuilder();
         String stringFromResponse = resp.getContentAsString();
-        String splitString = "\"name\":";
         String extractedRateLimitInfo = extractRateLimitInfo(resp);
         String[] jsonSubstrings = stringFromResponse.split(splitString);
 
@@ -243,7 +242,7 @@ public class HomeApi {
 
         Type returnType = new TypeToken<List<MobileDevice>>() {
         }.getType();
-        String stringForJson = createStringListForJson(response);
+        String stringForJson = createListStringForJson(response, "\"name\":");
         return gson.fromJson(stringForJson, returnType);
     }
 
