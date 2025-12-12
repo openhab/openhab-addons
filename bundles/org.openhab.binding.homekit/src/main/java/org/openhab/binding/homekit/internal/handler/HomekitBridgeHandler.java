@@ -45,7 +45,7 @@ import org.osgi.framework.Bundle;
 @NonNullByDefault
 public class HomekitBridgeHandler extends HomekitBaseAccessoryHandler implements BridgeHandler {
 
-    private @Nullable HomekitBridgedAccessoryDiscoveryService bridgedAccessoryDiscoveryService = null;
+    private @Nullable HomekitBridgedAccessoryDiscoveryService bridgedAccessoryDiscoveryService;
 
     public HomekitBridgeHandler(Bridge bridge, HomekitTypeProvider typeProvider, HomekitKeyStore keyStore,
             TranslationProvider i18nProvider, Bundle bundle) {
