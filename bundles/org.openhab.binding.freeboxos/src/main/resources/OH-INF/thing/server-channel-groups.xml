@@ -12,6 +12,18 @@
 		<label>Fans</label>
 	</channel-group-type>
 
+	<channel-group-type id="vpn-server">
+		<label>VPN Information</label>
+		<channels>
+			<channel id="state" typeId="vpn-state"/>
+			<channel id="connections" typeId="connection-count"/>
+			<channel id="auth-connections" typeId="connection-count">
+				<label>Authenticated Connection Count</label>
+				<description>Number of authenticated clients connected to the server</description>
+			</channel>
+		</channels>
+	</channel-group-type>
+
 	<channel-group-type id="sysinfo">
 		<label>System Informations</label>
 		<channels>
