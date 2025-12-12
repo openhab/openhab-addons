@@ -32,6 +32,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.homekit.internal.dto.Accessory;
 import org.openhab.binding.homekit.internal.dto.Characteristic;
 import org.openhab.binding.homekit.internal.dto.Service;
+import org.openhab.binding.homekit.internal.enums.AccessoryCategory;
 import org.openhab.binding.homekit.internal.enums.CharacteristicType;
 import org.openhab.binding.homekit.internal.enums.DataFormatType;
 import org.openhab.binding.homekit.internal.enums.StatusCode;
@@ -398,6 +399,7 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
         String oldLabel = thing.getLabel();
         String newLabel = oldLabel == null || oldLabel.isEmpty() ? accessory.getAccessoryInstanceLabel() : null;
         List<Channel> newChannels = !uniqueChannelsMap.isEmpty() ? uniqueChannelsMap.values().stream().toList() : null;
+
         Map<String, String> oldProperties = new HashMap<>(thing.getProperties());
         Map<String, String> getProperties = accessory.getProperties(thing.getUID(), typeProvider, i18nProvider, bundle);
         Map<String, String> newProperties;
@@ -407,7 +409,20 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
         } else {
             newProperties = null;
         }
+
+        String oldEquipmentTag = thing.getSemanticEquipmentTag();
         SemanticTag newEquipmentTag = accessory.getSemanticEquipmentTag();
+        if (newEquipmentTag == null && oldProperties.get(PROPERTY_ACCESSORY_CATEGORY) instanceof String catProperty
+                && AccessoryCategory.from(catProperty) instanceof AccessoryCategory category
+                && AccessoryCategory.OTHER != category) {
+            newEquipmentTag = accessory.getSemanticEquipmentTag(category);
+        }
+        if (newEquipmentTag == null) {
+            newEquipmentTag = accessory.getSemanticEquipmentTagFromServices();
+        }
+        if (newEquipmentTag != null && newEquipmentTag.getName().equals(oldEquipmentTag)) {
+            newEquipmentTag = null; // do not change prior tag
+        }
 
         if (newLabel != null || newChannels != null || newProperties != null || newEquipmentTag != null) {
             ThingBuilder builder = editThing();
@@ -421,7 +436,8 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
                     "{} updated with {} channels (of which {} polled, {} evented), {} properties, label: '{}', equipment tag: '{}'",
                     thing.getUID(), uniqueChannelsMap.size(), polledCharacteristics.size(),
                     eventedCharacteristics.size(), newProperties != null ? newProperties.size() : oldProperties.size(),
-                    newLabel != null ? newLabel : oldLabel, newEquipmentTag);
+                    newLabel != null ? newLabel : oldLabel, newEquipmentTag != null ? newEquipmentTag.getName()
+                            : oldEquipmentTag != null ? oldEquipmentTag : "n/a");
         }
     }
 

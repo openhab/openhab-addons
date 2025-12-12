@@ -76,6 +76,15 @@ public enum AccessoryCategory {
         return OTHER;
     }
 
+    public static AccessoryCategory from(String label) {
+        for (AccessoryCategory value : values()) {
+            if (label.equals(value.label)) {
+                return value;
+            }
+        }
+        return OTHER;
+    }
+
     @Override
     public String toString() {
         return label;

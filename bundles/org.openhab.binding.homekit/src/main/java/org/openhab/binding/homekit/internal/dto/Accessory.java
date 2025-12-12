@@ -102,7 +102,11 @@ public class Accessory {
      * @return the corresponding SemanticTag or null if none exists
      */
     public @Nullable SemanticTag getSemanticEquipmentTag() {
-        switch (getAccessoryType()) {
+        return getSemanticEquipmentTag(getAccessoryType());
+    }
+
+    public @Nullable SemanticTag getSemanticEquipmentTag(AccessoryCategory accessoryCategory) {
+        switch (accessoryCategory) {
             case BRIDGE:
                 return Equipment.NETWORK_APPLIANCE;
             case FAN:
@@ -174,6 +178,91 @@ public class Accessory {
                 return Equipment.MEDIA_PLAYER;
             case OTHER:
                 break;
+        }
+        return null;
+    }
+
+    /**
+     * Returns the SemanticTag of the accessory by parsing its services, or null if no match.
+     */
+    public @Nullable SemanticTag getSemanticEquipmentTagFromServices() {
+        for (Service service : services) {
+            ServiceType serviceType = service.getServiceType();
+            if (serviceType != null) {
+                switch (serviceType) {
+                    case GARAGE_DOOR_OPENER:
+                        return Equipment.GARAGE_DOOR;
+                    case LIGHT_BULB:
+                        return Equipment.LIGHT_SOURCE;
+                    case LOCK_MANAGEMENT:
+                    case LOCK_MECHANISM:
+                        return Equipment.LOCK;
+                    case OUTLET:
+                        return Equipment.POWER_OUTLET;
+                    case SWITCH:
+                        return Equipment.CONTROL_DEVICE;
+                    case THERMOSTAT:
+                        return Equipment.THERMOSTAT;
+                    case SENSOR_AIR_QUALITY:
+                    case SENSOR_CARBON_DIOXIDE:
+                    case SENSOR_CARBON_MONOXIDE:
+                    case SENSOR_CONTACT:
+                    case SENSOR_HUMIDITY:
+                    case SENSOR_LEAK:
+                    case SENSOR_LIGHT:
+                    case SENSOR_MOTION:
+                    case SENSOR_OCCUPANCY:
+                    case SENSOR_SMOKE:
+                    case SENSOR_TEMPERATURE:
+                        return Equipment.SENSOR;
+                    case SECURITY_SYSTEM:
+                        return Equipment.ALARM_SYSTEM;
+                    case DOOR:
+                        return Equipment.DOOR;
+                    case WINDOW:
+                        return Equipment.WINDOW;
+                    case WINDOW_COVERING:
+                        return Equipment.WINDOW_COVERING;
+                    case AIR_PURIFIER:
+                        return Equipment.AIR_FILTER;
+                    case HEATER_COOLER:
+                        return Equipment.HVAC;
+                    case HUMIDIFIER_DEHUMIDIFIER:
+                        return Equipment.HUMIDIFIER;
+                    case FAUCET:
+                        return Equipment.HOT_WATER_FAUCET;
+                    case SPEAKER:
+                    case SMART_SPEAKER:
+                        return Equipment.SPEAKER;
+                    case TELEVISION:
+                        return Equipment.TELEVISION;
+                    case AUDIO_STREAM_MANAGEMENT:
+                        return Equipment.AUDIO_VISUAL;
+                    case BATTERY:
+                        return Equipment.BATTERY;
+                    case CAMERA_RTP_STREAM_MANAGEMENT:
+                        return Equipment.CAMERA;
+                    case DOORBELL:
+                        return Equipment.DOORBELL;
+                    case FAN:
+                    case FANV2:
+                        return Equipment.FAN;
+                    case FILTER_MAINTENANCE:
+                        return Equipment.AIR_FILTER;
+                    case IRRIGATION_SYSTEM:
+                        return Equipment.IRRIGATION;
+                    case SIRI:
+                        return Equipment.VOICE_ASSISTANT;
+                    case STATELESS_PROGRAMMABLE_SWITCH:
+                        return Equipment.CONTROL_DEVICE;
+                    case VALVE:
+                        return Equipment.VALVE;
+                    case VERTICAL_SLAT:
+                        return Equipment.WINDOW_COVERING;
+                    default:
+                        break;
+                }
+            }
         }
         return null;
     }
