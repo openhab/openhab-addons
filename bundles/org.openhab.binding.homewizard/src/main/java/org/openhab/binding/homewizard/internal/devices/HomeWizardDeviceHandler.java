@@ -195,7 +195,7 @@ public abstract class HomeWizardDeviceHandler extends BaseThingHandler {
         } catch (Exception ex) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/offline.comm-error-device-offline");
-            logger.error("Unable to get device information", ex);
+            logger.debug("Unable to get device information", ex);
             return false;
         }
 
