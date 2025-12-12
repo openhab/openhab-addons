@@ -42,7 +42,7 @@ public class HomeWizardPlugInBatteryMeasurementPayloadTest {
         assertThat(key.getEnergyExport(), is(123.456));
 
         assertThat(key.getPower(), is(123.0));
-        assertThat(key.getVoltageL1(), is(230.0));
+        assertThat(key.getVoltage(), is(230.0));
         assertThat(key.getCurrent(), is(1.5));
 
         assertThat(key.getFrequency(), is(50.0));
@@ -60,7 +60,7 @@ public class HomeWizardPlugInBatteryMeasurementPayloadTest {
         assertThat(key.getEnergyExport(), is(0.0));
 
         assertThat(key.getPower(), is(0.0));
-        assertThat(key.getVoltageL1(), is(0.0));
+        assertThat(key.getVoltage(), is(0.0));
         assertThat(key.getCurrent(), is(0.0));
 
         assertThat(key.getFrequency(), is(0.0));

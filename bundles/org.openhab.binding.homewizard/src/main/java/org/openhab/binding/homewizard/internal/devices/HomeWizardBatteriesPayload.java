@@ -10,9 +10,12 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.homewizard.internal.devices.p1_meter;
+package org.openhab.binding.homewizard.internal.devices;
+
+import java.util.Arrays;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.homewizard.internal.HomeWizardBindingConstants;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -24,9 +27,14 @@ import com.google.gson.annotations.SerializedName;
  *
  */
 @NonNullByDefault
-public class HomeWizardP1MeterBatteriesPayload {
+public class HomeWizardBatteriesPayload {
 
     private String mode = "";
+
+    private String[] permissions = new String[] { HomeWizardBindingConstants.BATTERIES_PERMISSION_CHARGE_ALLOWED,
+            HomeWizardBindingConstants.BATTERIES_PERMISSION_DISCHARGE_ALLOWED };
+
+    private int batteryCount = 0;
 
     @SerializedName("power_w")
     private Double power = 0.0;
@@ -47,6 +55,33 @@ public class HomeWizardP1MeterBatteriesPayload {
      */
     public String getMode() {
         return mode;
+    }
+
+    /**
+     * Getter for the battery count
+     *
+     * @return batteryCount
+     */
+    public int getBatteryCount() {
+        return batteryCount;
+    }
+
+    /**
+     * Getter for the permission charge_allowed
+     *
+     * @return charging allowed
+     */
+    public Boolean isChargingAllowed() {
+        return Arrays.asList(permissions).contains(HomeWizardBindingConstants.BATTERIES_PERMISSION_CHARGE_ALLOWED);
+    }
+
+    /**
+     * Getter for the permission discharge_allowed
+     *
+     * @return discharging allowed
+     */
+    public Boolean isDischargingAllowed() {
+        return Arrays.asList(permissions).contains(HomeWizardBindingConstants.BATTERIES_PERMISSION_DISCHARGE_ALLOWED);
     }
 
     /**
@@ -88,9 +123,10 @@ public class HomeWizardP1MeterBatteriesPayload {
     @Override
     public String toString() {
         return String.format("""
-                Data [mode: %s power: %f targetPower: %f
-                maxConsumption: %f maxProduction: %f
+                Data [mode: %s batteryCount: %d isChargingAllowed: %B isDischargingAllowed: %B
+                power: %f targetPower: %f maxConsumption: %f maxProduction: %f]
 
-                """, mode, power, targetPower, maxConsumption, maxProduction);
+                """, mode, batteryCount, isChargingAllowed(), isDischargingAllowed(), power, targetPower,
+                maxConsumption, maxProduction);
     }
 }
