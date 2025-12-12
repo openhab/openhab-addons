@@ -69,7 +69,7 @@ public class HomeWizardP1MeterHandler extends HomeWizardEnergyMeterHandler {
                 batteriesHandler.retrieveBatteriesData();
             } catch (Exception e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        String.format("Device is offline or doesn't support the API version"));
+                            "@text/offline.comm-error-device-offline");
                 return;
             }
         }
@@ -85,7 +85,7 @@ public class HomeWizardP1MeterHandler extends HomeWizardEnergyMeterHandler {
         if (channelUID.getIdWithoutGroup().equals(HomeWizardBindingConstants.CHANNEL_BATTERIES_MODE)) {
             batteriesHandler.handleCommand(command);
         } else {
-            logger.warn("Should handle {} {}", channelUID.getIdWithoutGroup(), command);
+            logger.warn("Unhandled command for channel: {} command: {}", channelUID.getIdWithoutGroup(), command);
         }
     }
 

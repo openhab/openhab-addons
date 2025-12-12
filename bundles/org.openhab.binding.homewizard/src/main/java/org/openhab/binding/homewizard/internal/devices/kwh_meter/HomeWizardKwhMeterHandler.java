@@ -79,7 +79,7 @@ public class HomeWizardKwhMeterHandler extends HomeWizardEnergyMeterHandler {
                 batteriesHandler.retrieveBatteriesData();
             } catch (Exception e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        String.format("Device is offline or doesn't support the API version"));
+                            "@text/offline.comm-error-device-offline");
                 return;
             }
         }
