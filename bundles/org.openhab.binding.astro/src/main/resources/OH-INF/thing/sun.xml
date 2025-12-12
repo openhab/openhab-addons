@@ -26,6 +26,10 @@
 				<label>Night</label>
 				<description>The night event range</description>
 			</channel-group>
+			<channel-group id="midnight" typeId="sunRange">
+				<label>Midnight</label>
+				<description>The midnight event range</description>
+			</channel-group>
 			<channel-group id="morningNight" typeId="sunRange">
 				<label>Morning Night</label>
 				<description>The morning night event range</description>
@@ -70,7 +74,12 @@
 			<channel-group id="season" typeId="season"/>
 			<channel-group id="eclipse" typeId="sunEclipse"/>
 			<channel-group id="phase" typeId="sunPhase"/>
+			<channel-group id="circadian" typeId="circadian"/>
 		</channel-groups>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<representation-property>geolocation</representation-property>
 
