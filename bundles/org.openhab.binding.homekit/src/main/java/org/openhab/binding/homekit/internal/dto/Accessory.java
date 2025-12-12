@@ -238,8 +238,6 @@ public class Accessory {
                         return Equipment.TELEVISION;
                     case AUDIO_STREAM_MANAGEMENT:
                         return Equipment.AUDIO_VISUAL;
-                    case BATTERY:
-                        return Equipment.BATTERY;
                     case CAMERA_RTP_STREAM_MANAGEMENT:
                         return Equipment.CAMERA;
                     case DOORBELL:
@@ -259,6 +257,8 @@ public class Accessory {
                         return Equipment.VALVE;
                     case VERTICAL_SLAT:
                         return Equipment.WINDOW_COVERING;
+                    case BATTERY:
+                        // Equipment.BATTERY risks to misclassify accessories that happen to be battery powered
                     default:
                         break;
                 }
