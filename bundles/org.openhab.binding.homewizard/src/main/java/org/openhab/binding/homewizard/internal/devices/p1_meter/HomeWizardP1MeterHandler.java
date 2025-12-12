@@ -69,7 +69,7 @@ public class HomeWizardP1MeterHandler extends HomeWizardEnergyMeterHandler {
                 batteriesHandler.retrieveBatteriesData();
             } catch (Exception e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "@text/offline.comm-error-device-offline");
+                        "@text/offline.comm-error-device-offline");
                 return;
             }
         }
