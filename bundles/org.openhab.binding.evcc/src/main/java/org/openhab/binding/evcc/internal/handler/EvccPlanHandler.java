@@ -31,10 +31,11 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.type.ChannelTypeRegistry;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.State;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import org.openhab.core.types.State;
 
 /**
  * The {@link EvccPlanHandler} is responsible for fetching the data from the API response for Plan things
@@ -46,10 +47,10 @@ public class EvccPlanHandler extends EvccBaseThingHandler {
 
     private final int index;
     private final String vehicleID;
-    private final Map<ChannelUID, Command> pendingCommands = new ConcurrentHashMap<>();
-    private JsonObject cachedState = new JsonObject();
+    private final Map<String, State> pendingCommands = new ConcurrentHashMap<>();
+    private JsonArray cachedRepeatingPlans = new JsonArray();
+    private JsonObject cachedOneTimePlan = new JsonObject();
     public Map<Integer, String> localizedDayOfWeekMap = Map.of();
-
 
     public EvccPlanHandler(Thing thing, ChannelTypeRegistry channelTypeRegistry) {
         super(thing, channelTypeRegistry);
@@ -70,6 +71,12 @@ public class EvccPlanHandler extends EvccBaseThingHandler {
         super.initialize();
         Optional.ofNullable(bridgeHandler).ifPresent(handler -> {
             localizedDayOfWeekMap = buildLocalizedDayOfWeekMap(handler);
+            endpoint = String.join("/", handler.getBaseURL(), "vehicles", vehicleID, "plan");
+            if (index == 0) {
+                endpoint = String.join("/", endpoint, "soc");
+            } else {
+                endpoint = String.join("/", endpoint, "repeating");
+            }
             handler.register(this);
             updateStatus(ThingStatus.ONLINE);
             isInitialized = true;
@@ -93,7 +100,10 @@ public class EvccPlanHandler extends EvccBaseThingHandler {
             updateStatus(ThingStatus.ONLINE);
             if (index == 0 && state.has(JSON_KEY_PLAN)) {
                 state = state.getAsJsonObject(JSON_KEY_PLAN);
+                cachedOneTimePlan = state.deepCopy();
             } else if (index > 0 && state.has(JSON_KEY_REPEATING_PLANS)) {
+                // Cache the plans
+                cachedRepeatingPlans = state.getAsJsonArray(JSON_KEY_REPEATING_PLANS).deepCopy();
                 // Get the corresponding repeating plan
                 state = state.getAsJsonArray(JSON_KEY_REPEATING_PLANS).get(index - 1).getAsJsonObject();
                 if (state.has("time")) {
@@ -118,7 +128,6 @@ public class EvccPlanHandler extends EvccBaseThingHandler {
                     state.addProperty(JSON_KEY_WEEKDAYS, weekDays.toString());
                 }
             }
-            cachedState = state;
             updateStatesFromApiResponse(state);
         }
     }
@@ -133,8 +142,8 @@ public class EvccPlanHandler extends EvccBaseThingHandler {
         if ("update-plan-trigger".equals(channelUID.getId())) {
             updatePlan();
         } else {
-            if (command instanceof State) {
-                pendingCommands.put(channelUID, command); // store for later processing
+            if (command instanceof State state) {
+                pendingCommands.put(channelUID.getId(), state); // store for later processing
             } else {
                 super.handleCommand(channelUID, command);
             }
@@ -143,7 +152,22 @@ public class EvccPlanHandler extends EvccBaseThingHandler {
 
     // endpoint repeating plan: vehicles/db:69/plan/repeating => all plans need to be sent :(, use cachedState :)
     private void updatePlan() {
-        JsonObject payload = new JsonObject();
+
+        if (index != 0) {
+            JsonObject payload = new JsonObject();
+            payload.add(JSON_KEY_REPEATING_PLANS, cachedRepeatingPlans);
+        } else {
+            // TODO: Implementation for one-time planner,
+            // Endpoint is similar to this: /vehicles/vehicle_2/plan/soc/85/2025-12-13T06:00:00.000Z
+            ;
+            String preconditionValue = pendingCommands.get("plan-precondition") == null
+                    ? cachedOneTimePlan.get("precondition").getAsString()
+                    : pendingCommands.get("plan-precondition").toString();
+            String timeValue = pendingCommands.get("plan-time") == null ? cachedOneTimePlan.get("time").getAsString()
+                    : pendingCommands.get("plan-time").toString();
+            String socValue = pendingCommands.get("plan-soc") == null ? cachedOneTimePlan.get("soc").getAsString()
+                    : pendingCommands.get("plan-soc").toString();
+        }
         pendingCommands.clear();
     }
 }

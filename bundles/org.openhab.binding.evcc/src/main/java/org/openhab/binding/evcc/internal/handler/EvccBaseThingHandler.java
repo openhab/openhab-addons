@@ -126,14 +126,11 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
         } else if (value instanceof BigDecimal bd) {
             return bd.toString();
         } else {
-            switch (propertyName) {
-                case PROPERTY_INDEX:
-                    return thing.getProperties().getOrDefault(propertyName, "0");
-                case PROPERTY_VEHICLE_ID:
-                    return thing.getProperties().getOrDefault(propertyName, "");
-                default:
-                    return "";
-            }
+            return switch (propertyName) {
+                case PROPERTY_INDEX -> thing.getProperties().getOrDefault(propertyName, "0");
+                case PROPERTY_VEHICLE_ID -> thing.getProperties().getOrDefault(propertyName, "");
+                default -> "";
+            };
         }
     }
 
