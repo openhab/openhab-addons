@@ -67,7 +67,7 @@ public class HomeWizardKwhMeterHandler extends HomeWizardEnergyMeterHandler {
         if (channelUID.getIdWithoutGroup().equals(HomeWizardBindingConstants.CHANNEL_BATTERIES_MODE)) {
             batteriesHandler.handleCommand(command);
         } else {
-            logger.warn("Should handle {} {}", channelUID.getIdWithoutGroup(), command);
+            logger.warn("Unhandled command for channel: {} command: {}", channelUID.getIdWithoutGroup(), command);
         }
     }
 
