@@ -17,12 +17,12 @@
 			<add-channel id="event" groupIds="midnight">
 				<type>astro:rangeEvent</type>
 			</add-channel>
-            <add-channel id="brightness" groupIds="circadian">
-                <type>system:brightness</type>
-            </add-channel>
-            <add-channel id="temperature" groupIds="circadian">
-                <type>system:color-temperature-abs</type>
-            </add-channel>
+			<add-channel id="brightness" groupIds="circadian">
+				<type>system:brightness</type>
+			</add-channel>
+			<add-channel id="temperature" groupIds="circadian">
+				<type>system:color-temperature-abs</type>
+			</add-channel>
 		</instruction-set>
 	</thing-type>
 </update:update-descriptions>

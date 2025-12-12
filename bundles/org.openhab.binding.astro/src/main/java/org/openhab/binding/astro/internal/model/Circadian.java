@@ -24,6 +24,7 @@ import org.openhab.core.library.unit.Units;
  */
 @NonNullByDefault
 public record Circadian(int brightness, int temperature) {
+
     public static final Circadian DEFAULT = new Circadian(0, 0);
 
     public Circadian(double percentage, double colorTemp) {
@@ -37,5 +38,4 @@ public record Circadian(int brightness, int temperature) {
     public PercentType getBrightness() {
         return new PercentType(brightness);
     }
-
 }
