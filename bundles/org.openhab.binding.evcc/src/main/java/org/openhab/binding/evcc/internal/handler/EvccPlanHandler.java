@@ -16,15 +16,18 @@ import static org.openhab.binding.evcc.internal.EvccBindingConstants.*;
 
 import java.time.DayOfWeek;
 import java.time.format.TextStyle;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -47,7 +50,7 @@ public class EvccPlanHandler extends EvccBaseThingHandler {
 
     private final int index;
     private final String vehicleID;
-    private final Map<String, State> pendingCommands = new ConcurrentHashMap<>();
+    private final Map<String, String> pendingCommands = new ConcurrentHashMap<>();
     private JsonArray cachedRepeatingPlans = new JsonArray();
     private JsonObject cachedOneTimePlan = new JsonObject();
     public Map<Integer, String> localizedDayOfWeekMap = Map.of();
@@ -139,35 +142,57 @@ public class EvccPlanHandler extends EvccBaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if ("update-plan-trigger".equals(channelUID.getId())) {
+        if ("send-update".equals(channelUID.getId()) && command == OnOffType.ON && !pendingCommands.isEmpty()) {
             updatePlan();
+            scheduler.schedule(() -> {
+                updateState(channelUID, OnOffType.OFF);
+            }, 500, TimeUnit.MILLISECONDS);
         } else {
             if (command instanceof State state) {
-                pendingCommands.put(channelUID.getId(), state); // store for later processing
+                String stateString = state.toString();
+                if ("plan-soc".equals(channelUID.getId())) {
+                    stateString = stateString.substring(0, stateString.indexOf(" "));
+                }
+                pendingCommands.put(channelUID.getId().substring(5), stateString); // store for later processing
             } else {
                 super.handleCommand(channelUID, command);
             }
         }
     }
 
-    // endpoint repeating plan: vehicles/db:69/plan/repeating => all plans need to be sent :(, use cachedState :)
     private void updatePlan() {
-
         if (index != 0) {
+            // TODO: Implementation for repeating plan
             JsonObject payload = new JsonObject();
-            payload.add(JSON_KEY_REPEATING_PLANS, cachedRepeatingPlans);
         } else {
-            // TODO: Implementation for one-time planner,
-            // Endpoint is similar to this: /vehicles/vehicle_2/plan/soc/85/2025-12-13T06:00:00.000Z
-            ;
-            String preconditionValue = pendingCommands.get("plan-precondition") == null
-                    ? cachedOneTimePlan.get("precondition").getAsString()
-                    : pendingCommands.get("plan-precondition").toString();
-            String timeValue = pendingCommands.get("plan-time") == null ? cachedOneTimePlan.get("time").getAsString()
-                    : pendingCommands.get("plan-time").toString();
-            String socValue = pendingCommands.get("plan-soc") == null ? cachedOneTimePlan.get("soc").getAsString()
-                    : pendingCommands.get("plan-soc").toString();
+            Map<String, String> values = getCachedValues(cachedOneTimePlan);
+            String soc = values.get("soc");
+            String time = values.get("time");
+            String precondition = values.get("precondition");
+            String url = String.join("/", endpoint, soc, time + "?" + precondition);
+            sendCommand(url);
         }
         pendingCommands.clear();
+    }
+
+    private Map<String, String> getCachedValues(JsonElement cachedValues) {
+        Map<String, String> values = new HashMap<>();
+        JsonObject objectToIterate = new JsonObject();
+        if (cachedValues.isJsonObject()) {
+            objectToIterate = cachedValues.getAsJsonObject();
+        } else if (cachedValues.isJsonArray()) {
+            objectToIterate = cachedValues.getAsJsonArray().get(index - 1).getAsJsonObject();
+        }
+        for (Map.Entry<String, JsonElement> entry : objectToIterate.entrySet()) {
+            if (pendingCommands.containsKey(entry.getKey())) {
+                String value = pendingCommands.get(entry.getKey());
+                if (value != null) {
+                    values.put(entry.getKey(), value);
+                }
+            } else {
+                values.put(entry.getKey(), entry.getValue().getAsString());
+            }
+        }
+        return values;
     }
 }

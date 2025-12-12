@@ -9,6 +9,12 @@
 		</supported-bridge-type-refs>
 		<label>Plan</label>
 		<description>A plan configured in for your vehicle in evcc</description>
+		<channels>
+			<channel id="send-update" typeId="plan-update">
+				<label>Update Plan</label>
+				<description>Sends the updated plan to evcc</description>
+			</channel>
+		</channels>
 		<config-description>
 			<parameter name="id" type="text">
 				<label>ID</label>
@@ -17,9 +23,14 @@
 			</parameter>
 		</config-description>
 	</thing-type>
-	<channel-type id="update-plan-trigger">
-		<kind>trigger</kind>
-		<label>Trigger Channel</label>
+	<channel-type id="plan-update">
+		<item-type>Switch</item-type>
+		<label>Trigger Plan Update</label>
+		<description>The binding will send an API request to update the plan</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Switch</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="plan-soc">
 		<item-type unitHint="%">Number:Dimensionless</item-type>
