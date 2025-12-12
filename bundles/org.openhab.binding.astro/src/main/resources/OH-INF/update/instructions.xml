@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<update:update-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:update="https://openhab.org/schemas/update-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/update-description/v1.0.0 https://openhab.org/schemas/update-description-1.0.0.xsd">
+
+	<thing-type uid="astro:sun">
+		<instruction-set targetVersion="1">
+			<add-channel id="start" groupIds="midnight">
+				<type>astro:start</type>
+			</add-channel>
+			<add-channel id="end" groupIds="midnight">
+				<type>astro:end</type>
+			</add-channel>
+			<add-channel id="duration" groupIds="midnight">
+				<type>astro:duration</type>
+			</add-channel>
+			<add-channel id="event" groupIds="midnight">
+				<type>astro:rangeEvent</type>
+			</add-channel>
+            <add-channel id="brightness" groupIds="circadian">
+                <type>system:brightness</type>
+            </add-channel>
+            <add-channel id="temperature" groupIds="circadian">
+                <type>system:color-temperature-abs</type>
+            </add-channel>
+		</instruction-set>
+	</thing-type>
+</update:update-descriptions>

@@ -12,9 +12,11 @@
  */
 package org.openhab.binding.astro.internal.model;
 
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.TimeZone;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -41,6 +43,8 @@ public class Sun extends RiseSet implements Planet {
     private Radiation radiation = new Radiation();
 
     private SunPhase phase = new SunPhase();
+
+    private Circadian circadian = Circadian.DEFAULT;
 
     /**
      * Returns the astro dawn range.
@@ -135,16 +139,40 @@ public class Sun extends RiseSet implements Planet {
     /**
      * Returns the noon range, start and end is always equal.
      */
-    @Nullable
     public Range getNoon() {
-        return ranges.get(SunPhaseName.NOON);
+        return Objects.requireNonNull(ranges.get(SunPhaseName.NOON),
+                "There should always exist a highest elevation in a day");
+    }
+
+    private void setOneMinutePhase(@Nullable Calendar event, SunPhaseName phase) {
+        Range range;
+        if (event != null) {
+            var eventEnd = (Calendar) event.clone();
+            eventEnd.add(Calendar.MINUTE, 1);
+            range = new Range(event, eventEnd);
+        } else {
+            range = new Range();
+        }
+        ranges.put(phase, range);
     }
 
     /**
      * Sets the noon range.
      */
-    public void setNoon(Range noon) {
-        ranges.put(SunPhaseName.NOON, noon);
+    public void setNoon(@Nullable Calendar noon) {
+        setOneMinutePhase(noon, SunPhaseName.NOON);
+    }
+
+    /**
+     * Sets the midnight range.
+     */
+    public void setMidnight(@Nullable Calendar midnight) {
+        setOneMinutePhase(midnight, SunPhaseName.MIDNIGHT);
+    }
+
+    public Range getMidnight() {
+        return Objects.requireNonNull(ranges.get(SunPhaseName.MIDNIGHT),
+                "There should always exist a lowest elevation in a day");
     }
 
     /**
@@ -307,5 +335,13 @@ public class Sun extends RiseSet implements Planet {
      */
     public Map<SunPhaseName, Range> getAllRanges() {
         return ranges;
+    }
+
+    public Circadian getCircadian() {
+        return circadian;
+    }
+
+    public void setCircadian(Circadian circadian) {
+        this.circadian = circadian;
     }
 }

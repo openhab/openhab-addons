@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.TimeZone;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -67,7 +68,6 @@ public class SunCalc {
     private static final double H3 = Math.toRadians(-18.0); // darkness angle
     private static final double MINUTES_PER_DAY = 60 * 24;
     private static final int CURVE_TIME_INTERVAL = 20; // 20 minutes
-    private static final double JD_ONE_MINUTE_FRACTION = 1.0 / 60 / 24;
 
     /**
      * Calculates the sun position (azimuth and elevation).
@@ -143,6 +143,50 @@ public class SunCalc {
     }
 
     /**
+     * Returns the time when the sun is at its minimum elevation
+     */
+    private Calendar getMinSunElevationTime(@Nullable Calendar noon, double latitude, double longitude,
+            @Nullable Double altitude) {
+        Objects.requireNonNull(noon, "A solar noon should always exist");
+
+        Calendar cal = (Calendar) noon.clone();
+        Sun sun = new Sun();
+
+        double minElevation = Double.POSITIVE_INFINITY;
+        Calendar minCal = (Calendar) noon.clone();
+
+        Double previousElevation = null;
+        boolean wasDecreasing = false;
+
+        final int MINUTES_SPAN = 14 * 60; // don't scan 24h, 14 will be enough
+
+        for (int minutes = 0; minutes <= MINUTES_SPAN; minutes += CURVE_TIME_INTERVAL) {
+            setPositionalInfo(cal, latitude, longitude, altitude, sun);
+            double elevation = sun.getPosition().getElevationAsDouble();
+
+            if (elevation < minElevation) {
+                minElevation = elevation;
+                minCal.setTimeInMillis(cal.getTimeInMillis());
+            }
+
+            if (previousElevation != null) {
+                if (!wasDecreasing) {
+                    if (elevation < previousElevation) {
+                        wasDecreasing = true;
+                    }
+                } else if (elevation > previousElevation) {
+                    break;
+                }
+            }
+
+            previousElevation = elevation;
+            cal.add(Calendar.MINUTE, CURVE_TIME_INTERVAL);
+        }
+
+        return minCal;
+    }
+
+    /**
      * Calculates all sun rise and sets at the specified coordinates.
      */
     public Sun getSunInfo(Calendar calendar, double latitude, double longitude, @Nullable Double altitude,
@@ -189,8 +233,10 @@ public class SunCalc {
             return sun;
         }
 
-        sun.setNoon(new Range(DateTimeUtils.toCalendar(jtransit, zone, locale),
-                DateTimeUtils.toCalendar(jtransit + JD_ONE_MINUTE_FRACTION, zone, locale)));
+        Calendar noon = DateTimeUtils.toCalendar(jtransit, zone, locale);
+        sun.setNoon(noon);
+        sun.setMidnight(getMinSunElevationTime(noon, latitude, longitude, altitude));
+
         sun.setRise(new Range(DateTimeUtils.toCalendar(jrise, zone, locale),
                 DateTimeUtils.toCalendar(jriseend, zone, locale)));
         sun.setSet(new Range(DateTimeUtils.toCalendar(jsetstart, zone, locale),
@@ -253,8 +299,9 @@ public class SunCalc {
         } else {
             Sun sunTomorrow = getSunInfo(addDays(calendar, 1), latitude, longitude, altitude, true,
                     useMeteorologicalSeason, zone, locale);
-            sun.setNight(new Range((range = sun.getAstroDusk()) == null ? null : range.getEnd(),
-                    (range2 = sunTomorrow.getAstroDawn()) == null ? null : range2.getStart()));
+            var rangeEnd = sun.getAstroDusk() instanceof Range end ? end.getEnd() : null;
+            var rangeStart = sunTomorrow.getAstroDawn() instanceof Range start ? start.getStart() : null;
+            sun.setNight(new Range(rangeEnd, rangeStart));
         }
 
         // eclipse
@@ -273,6 +320,10 @@ public class SunCalc {
 
         SeasonCalc seasonCalc = new SeasonCalc();
         sun.setSeason(seasonCalc.getSeason(calendar, latitude, useMeteorologicalSeason, zone, locale));
+
+        CircadianCalc circadianCalc = new CircadianCalc();
+        sun.setCircadian(circadianCalc.calculate(calendar, sun.getRise().getStart(), sun.getSet().getStart(),
+                sun.getNoon(), sun.getMidnight()));
 
         // phase
         for (Entry<SunPhaseName, Range> rangeEntry : sortByValue(sun.getAllRanges()).entrySet()) {
