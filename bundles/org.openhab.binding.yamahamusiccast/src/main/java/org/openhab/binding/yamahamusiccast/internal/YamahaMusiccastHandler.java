@@ -273,6 +273,12 @@ public class YamahaMusiccastHandler extends BaseThingHandler {
                 case CHANNEL_SELECTPRESET:
                     setPreset(command.toString(), zone, this.host);
                     break;
+                case CHANNEL_SELECTPRESET_DAB:
+                    setPresetTuner(command.toString(), zone, this.host, "dab");
+                    break;
+                case CHANNEL_SELECTPRESET_FM:
+                    setPresetTuner(command.toString(), zone, this.host, "fm");
+                    break;
                 case CHANNEL_PLAYER:
                     if (command.equals(PlayPauseType.PLAY)) {
                         setPlayback("play", this.host);
@@ -488,6 +494,8 @@ public class YamahaMusiccastHandler extends BaseThingHandler {
         createChannel(zone, CHANNEL_SOUNDPROGRAM, CHANNEL_TYPE_UID_SOUNDPROGRAM, "String");
         createChannel(zone, CHANNEL_SLEEP, CHANNEL_TYPE_UID_SLEEP, "Number");
         createChannel(zone, CHANNEL_SELECTPRESET, CHANNEL_TYPE_UID_SELECTPRESET, "String");
+        createChannel(zone, CHANNEL_SELECTPRESET_DAB, CHANNEL_TYPE_UID_SELECTPRESET_DAB, "String");
+        createChannel(zone, CHANNEL_SELECTPRESET_FM, CHANNEL_TYPE_UID_SELECTPRESET_FM, "String");
         createChannel(zone, CHANNEL_RECALLSCENE, CHANNEL_TYPE_UID_RECALLSCENE, "Number");
         createChannel(zone, CHANNEL_MCLINKSTATUS, CHANNEL_TYPE_UID_MCLINKSTATUS, "String");
     }
@@ -1268,6 +1276,11 @@ public class YamahaMusiccastHandler extends BaseThingHandler {
     private @Nullable String setPreset(String value, @Nullable String zone, @Nullable String host) {
         return makeRequest("setPreset",
                 host + YAMAHA_EXTENDED_CONTROL + "netusb/recallPreset?zone=" + zone + "&num=" + value);
+    }
+
+    private @Nullable String setPresetTuner(String value, @Nullable String zone, @Nullable String host, String band) {
+        return makeRequest("setPresetTuner",
+                host + YAMAHA_EXTENDED_CONTROL + "tuner/recallPreset?band=" + band + "&zone=" + zone + "&num=" + value);
     }
 
     private @Nullable String setSleep(String value, @Nullable String zone, @Nullable String host) {
