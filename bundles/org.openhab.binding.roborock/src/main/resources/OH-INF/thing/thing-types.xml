@@ -16,10 +16,9 @@
 				<label>Email Address</label>
 				<description>email address for Roborock account</description>
 			</parameter>
-			<parameter name="password" type="text">
-				<label>Password</label>
-				<description>Password for Roborock account</description>
-				<context>password</context>
+			<parameter name="twofa" type="text">
+				<label>2FA</label>
+				<description>2FA code from email. Leave blank until code is received via email</description>
 			</parameter>
 		</config-description>
 	</bridge-type>
