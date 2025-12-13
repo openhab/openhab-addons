@@ -125,13 +125,13 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
         OverlayTemplate overlayTemplate = getApi().showZoneDefaultOverlay(getHomeId(), getZoneId());
         logApiTransaction(overlayTemplate, false);
 
-        updateAPIChannels(overlayTemplate.getAPIMaxCallsPerDuration(), TadoBindingConstants.CHANNEL_API_MAX_CALLS,
+        updateAPIChannels(overlayTemplate.getAPIRateLimit(), TadoBindingConstants.CHANNEL_API_MAX_CALLS,
                 Units.ONE);
-        updateAPIChannels(overlayTemplate.getAPIMaxDurationSeconds(), TadoBindingConstants.CHANNEL_API_MAX_DURATION,
+        updateAPIChannels(overlayTemplate.getAPIRateDuration(), TadoBindingConstants.CHANNEL_API_MAX_DURATION,
                 Units.SECOND);
-        updateAPIChannels(overlayTemplate.getAPICallsRemainingThisDuration(),
+        updateAPIChannels(overlayTemplate.getAPIRateRemaining(),
                 TadoBindingConstants.CHANNEL_API_CALLS_REMAINING, Units.ONE);
-        updateAPIChannels(overlayTemplate.getAPISecondsUntilMaxResets(),
+        updateAPIChannels(overlayTemplate.getAPIRateReset(),
                 TadoBindingConstants.CHANNEL_API_SECONDS_UNTIL_MAX_RESETS, Units.SECOND);
 
         return terminationConditionTemplateToTerminationCondition(overlayTemplate.getTerminationCondition());
@@ -141,12 +141,12 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
         ZoneState zoneState = getApi().showZoneState(getHomeId(), getZoneId());
         logApiTransaction(zoneState, false);
 
-        updateAPIChannels(zoneState.getAPIMaxCallsPerDuration(), TadoBindingConstants.CHANNEL_API_MAX_CALLS, Units.ONE);
-        updateAPIChannels(zoneState.getAPIMaxDurationSeconds(), TadoBindingConstants.CHANNEL_API_MAX_DURATION,
+        updateAPIChannels(zoneState.getAPIRateLimit(), TadoBindingConstants.CHANNEL_API_MAX_CALLS, Units.ONE);
+        updateAPIChannels(zoneState.getAPIRateDuration(), TadoBindingConstants.CHANNEL_API_MAX_DURATION,
                 Units.SECOND);
-        updateAPIChannels(zoneState.getAPICallsRemainingThisDuration(),
+        updateAPIChannels(zoneState.getAPIRateRemaining(),
                 TadoBindingConstants.CHANNEL_API_CALLS_REMAINING, Units.ONE);
-        updateAPIChannels(zoneState.getAPISecondsUntilMaxResets(),
+        updateAPIChannels(zoneState.getAPIRateReset(),
                 TadoBindingConstants.CHANNEL_API_SECONDS_UNTIL_MAX_RESETS, Units.SECOND);
 
         return zoneState;
@@ -169,13 +169,13 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
             logApiTransaction(overlay, true);
             Overlay newOverlay = getApi().updateZoneOverlay(getHomeId(), getZoneId(), overlay);
 
-            updateAPIChannels(newOverlay.getAPIMaxCallsPerDuration(), TadoBindingConstants.CHANNEL_API_MAX_CALLS,
+            updateAPIChannels(newOverlay.getAPIRateLimit(), TadoBindingConstants.CHANNEL_API_MAX_CALLS,
                     Units.ONE);
-            updateAPIChannels(newOverlay.getAPIMaxDurationSeconds(), TadoBindingConstants.CHANNEL_API_MAX_DURATION,
+            updateAPIChannels(newOverlay.getAPIRateDuration(), TadoBindingConstants.CHANNEL_API_MAX_DURATION,
                     Units.SECOND);
-            updateAPIChannels(newOverlay.getAPICallsRemainingThisDuration(),
+            updateAPIChannels(newOverlay.getAPIRateRemaining(),
                     TadoBindingConstants.CHANNEL_API_CALLS_REMAINING, Units.ONE);
-            updateAPIChannels(newOverlay.getAPISecondsUntilMaxResets(),
+            updateAPIChannels(newOverlay.getAPIRateReset(),
                     TadoBindingConstants.CHANNEL_API_SECONDS_UNTIL_MAX_RESETS, Units.SECOND);
 
             logApiTransaction(newOverlay, false);
@@ -313,13 +313,13 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
                     return;
                 }
 
-                updateAPIChannels(capabilities.getAPIMaxCallsPerDuration(), TadoBindingConstants.CHANNEL_API_MAX_CALLS,
+                updateAPIChannels(capabilities.getAPIRateLimit(), TadoBindingConstants.CHANNEL_API_MAX_CALLS,
                         Units.ONE);
-                updateAPIChannels(capabilities.getAPIMaxDurationSeconds(),
+                updateAPIChannels(capabilities.getAPIRateDuration(),
                         TadoBindingConstants.CHANNEL_API_MAX_DURATION, Units.SECOND);
-                updateAPIChannels(capabilities.getAPICallsRemainingThisDuration(),
+                updateAPIChannels(capabilities.getAPIRateRemaining(),
                         TadoBindingConstants.CHANNEL_API_CALLS_REMAINING, Units.ONE);
-                updateAPIChannels(capabilities.getAPISecondsUntilMaxResets(),
+                updateAPIChannels(capabilities.getAPIRateReset(),
                         TadoBindingConstants.CHANNEL_API_SECONDS_UNTIL_MAX_RESETS, Units.SECOND);
 
                 updateProperty(TadoBindingConstants.PROPERTY_ZONE_NAME, zoneDetails.getName());

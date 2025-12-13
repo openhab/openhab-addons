@@ -140,13 +140,13 @@ public class TadoHomeHandler extends BaseBridgeHandler implements AccessTokenRef
                     return;
                 }
 
-                updateAPIChannels(user.getAPIMaxCallsPerDuration(), TadoBindingConstants.CHANNEL_API_MAX_CALLS,
+                updateAPIChannels(user.getAPIRateLimit(), TadoBindingConstants.CHANNEL_API_MAX_CALLS,
                         Units.ONE);
-                updateAPIChannels(user.getAPIMaxDurationSeconds(), TadoBindingConstants.CHANNEL_API_MAX_DURATION,
+                updateAPIChannels(user.getAPIRateDuration(), TadoBindingConstants.CHANNEL_API_MAX_DURATION,
                         Units.SECOND);
-                updateAPIChannels(user.getAPICallsRemainingThisDuration(),
+                updateAPIChannels(user.getAPIRateRemaining(),
                         TadoBindingConstants.CHANNEL_API_CALLS_REMAINING, Units.ONE);
-                updateAPIChannels(user.getAPISecondsUntilMaxResets(),
+                updateAPIChannels(user.getAPIRateReset(),
                         TadoBindingConstants.CHANNEL_API_SECONDS_UNTIL_MAX_RESETS, Units.SECOND);
 
                 List<UserHomes> homes = user.getHomes();
@@ -229,13 +229,13 @@ public class TadoHomeHandler extends BaseBridgeHandler implements AccessTokenRef
             updateState(CHANNEL_HOME_PRESENCE_MODE, OnOffType.from(PresenceState.HOME == homePresence));
             updateState(CHANNEL_HOME_GEOFENCING_ENABLED, OnOffType.from(!homeState.isPresenceLocked()));
 
-            updateAPIChannels(homeState.getAPIMaxCallsPerDuration(), TadoBindingConstants.CHANNEL_API_MAX_CALLS,
+            updateAPIChannels(homeState.getAPIRateLimit(), TadoBindingConstants.CHANNEL_API_MAX_CALLS,
                     Units.ONE);
-            updateAPIChannels(homeState.getAPIMaxDurationSeconds(), TadoBindingConstants.CHANNEL_API_MAX_DURATION,
+            updateAPIChannels(homeState.getAPIRateDuration(), TadoBindingConstants.CHANNEL_API_MAX_DURATION,
                     Units.SECOND);
-            updateAPIChannels(homeState.getAPICallsRemainingThisDuration(),
+            updateAPIChannels(homeState.getAPIRateRemaining(),
                     TadoBindingConstants.CHANNEL_API_CALLS_REMAINING, Units.ONE);
-            updateAPIChannels(homeState.getAPISecondsUntilMaxResets(),
+            updateAPIChannels(homeState.getAPIRateReset(),
                     TadoBindingConstants.CHANNEL_API_SECONDS_UNTIL_MAX_RESETS, Units.SECOND);
 
         } catch (IOException | ApiException e) {
