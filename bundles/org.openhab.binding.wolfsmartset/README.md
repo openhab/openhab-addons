@@ -14,14 +14,14 @@ Wolf systems are connected with official gateways (Wolf Link Home or Wolf Link P
 
 ## Discovery
 
-- System things (bridge) are discovered after Account thing (bridge) is set up
+- System things (bridge) are discovered after Account Thing (bridge) is set up
 - Unit things are discovered after System things are set up
 
 ## Thing Configuration
 
 ### Account (bridge)
 
-The account thing holds the credentials to connect to the wolf-smartset online portal.
+The account Thing holds the credentials to connect to the wolf-smartset online portal.
 
 | Parameter       | Type    | Defaut | Description                                                         |
 |-----------------|---------|----------|---------------------------------------------------------------------|
@@ -33,7 +33,7 @@ The account thing holds the credentials to connect to the wolf-smartset online p
 
 ### System (bridge)
 
-The system thing represents one wolf system connected via a WOLF Link home or a WOLF Link pro to the wolf-smartset online portal.
+The system Thing represents one wolf system connected via a WOLF Link home or a WOLF Link pro to the wolf-smartset online portal.
 You have access to your own or to shared systems.
 
 | Parameter       | Type    | Defaut | Description                                                         |

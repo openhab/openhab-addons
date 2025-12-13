@@ -5,7 +5,7 @@
 
 	<type>binding</type>
 	<name>X Binding</name>
-	<description>Supports adding Thing for getting the Last Post. Send Posts and Pictures with Actions.</description>
+	<description>Provides an X account thing to get the latest post and rule actions to send posts and media.</description>
 	<connection>cloud</connection>
 
 </addon:addon>
