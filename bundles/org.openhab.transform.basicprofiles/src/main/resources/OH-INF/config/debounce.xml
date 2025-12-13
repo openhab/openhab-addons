@@ -6,8 +6,8 @@
 
 	<config-description uri="profile:basic-profiles:debounce-counting">
 		<parameter name="numberOfChanges" type="integer" min="0" step="1">
-			<label>Number Of Changes</label>
-			<description>Number of changes before updating Item State.</description>
+			<label>Number of Changes</label>
+			<description>Number of changes before updating the Item state.</description>
 			<default>1</default>
 		</parameter>
 	</config-description>
@@ -15,12 +15,12 @@
 	<config-description uri="profile:basic-profiles:debounce-time">
 		<parameter name="toItemDelay" type="integer" min="0" step="1" unit="ms">
 			<label>To Item Delay</label>
-			<description>Timespan before an value is forwarded to the item (or discarded after the first value).</description>
+			<description>Time span before a value is forwarded to the Item (or discarded after the first value).</description>
 			<default>0</default>
 		</parameter>
 		<parameter name="toHandlerDelay" type="integer" min="0" step="1" unit="ms">
 			<label>To Handler Delay</label>
-			<description>Timespan before an value is forwarded to the handler (or discarded after the first value).</description>
+			<description>Time span before a value is forwarded to the handler (or discarded after the first value).</description>
 			<default>0</default>
 		</parameter>
 		<parameter name="mode" type="text">

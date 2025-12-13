@@ -4,8 +4,8 @@
 	xsi:schemaLocation="https://openhab.org/schemas/addon/v1.0.0 https://openhab.org/schemas/addon-1.0.0.xsd">
 
 	<type>transformation</type>
-	<name>Scale transformation</name>
-	<description>Transforms a numerical input to a string.</description>
+	<name>Scale Transformation</name>
+	<description>Transforms a numeric input to a string using range-based mappings.</description>
 	<connection>none</connection>
 
 </addon:addon>
