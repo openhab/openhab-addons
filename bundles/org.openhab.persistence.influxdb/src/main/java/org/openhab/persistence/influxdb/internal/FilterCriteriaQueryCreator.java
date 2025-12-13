@@ -32,15 +32,4 @@ public interface FilterCriteriaQueryCreator {
      * @return Created query as a String
      */
     String createQuery(FilterCriteria criteria, String retentionPolicy, @Nullable String alias);
-
-    default String getOperationSymbol(FilterCriteria.Operator operator, InfluxDBVersion version) {
-        return switch (operator) {
-            case EQ -> "=";
-            case LT -> "<";
-            case LTE -> "<=";
-            case GT -> ">";
-            case GTE -> ">=";
-            case NEQ -> version == InfluxDBVersion.V1 ? "<>" : "!=";
-        };
-    }
 }

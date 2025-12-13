@@ -16,39 +16,30 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 
 import java.net.URI;
 import java.util.Optional;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
 import org.openhab.binding.pihole.internal.PiHoleException;
 import org.openhab.binding.pihole.internal.rest.model.DnsStatistics;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
 /**
  * @author Martin Grzeslowski - Initial contribution
  */
 @NonNullByDefault
-public class JettyAdminService implements AdminService {
-    private static final Gson GSON = new GsonBuilder()
-            .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES).create();
-    private static final long TIMEOUT_SECONDS = 10L;
+public class JettyAdminService extends AdminService {
     private final Logger logger = LoggerFactory.getLogger(JettyAdminService.class);
-    private final String token;
-    private final URI baseUrl;
-    private final HttpClient client;
 
-    public JettyAdminService(String token, URI baseUrl, HttpClient client) {
-        this.token = token;
+    private final URI baseUrl;
+    private final String token;
+
+    public JettyAdminService(String token, URI baseUrl, HttpClient client, Gson gson) {
+        super(client, gson);
         this.baseUrl = baseUrl;
-        this.client = client;
+        this.token = token;
     }
 
     @Override
@@ -58,16 +49,7 @@ public class JettyAdminService implements AdminService {
         var request = client.newRequest(url).timeout(TIMEOUT_SECONDS, SECONDS);
         var response = send(request);
         var content = response.getContentAsString();
-        return Optional.ofNullable(GSON.fromJson(content, DnsStatistics.class));
-    }
-
-    private static ContentResponse send(Request request) throws PiHoleException {
-        try {
-            return request.send();
-        } catch (InterruptedException | TimeoutException | ExecutionException e) {
-            throw new PiHoleException(
-                    "Exception while sending request to Pi-hole. %s".formatted(e.getLocalizedMessage()), e);
-        }
+        return Optional.ofNullable(gson.fromJson(content, DnsStatistics.class));
     }
 
     @Override

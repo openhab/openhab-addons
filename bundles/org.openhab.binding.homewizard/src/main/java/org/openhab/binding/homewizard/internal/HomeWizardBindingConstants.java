@@ -57,6 +57,8 @@ public class HomeWizardBindingConstants {
     public static final String CHANNEL_GROUP_SKT_CONTROL = "control";
 
     // Energy Meter Channels
+    public static final String CHANNEL_TARIFF = "tariff";
+
     public static final String CHANNEL_ENERGY_IMPORT = "energy_import";
     public static final String CHANNEL_ENERGY_IMPORT_T1 = "energy_import_t1";
     public static final String CHANNEL_ENERGY_IMPORT_T2 = "energy_import_t2";
@@ -106,10 +108,21 @@ public class HomeWizardBindingConstants {
     public static final String CHANNEL_GAS_TOTAL = "total_gas";
 
     public static final String CHANNEL_BATTERIES_MODE = "batteries_mode";
+    public static final String CHANNEL_BATTERIES_COUNT = "batteries_count";
     public static final String CHANNEL_BATTERIES_POWER = "batteries_power";
     public static final String CHANNEL_BATTERIES_TARGET_POWER = "batteries_target_power";
     public static final String CHANNEL_BATTERIES_MAX_CONSUMPTION = "batteries_max_consumption";
     public static final String CHANNEL_BATTERIES_MAX_PRODUCTION = "batteries_max_production";
+
+    // Batteries
+    public static final String BATTERIES_MODE_STANDBY = "standby";
+    public static final String BATTERIES_MODE_ZERO = "zero";
+    public static final String BATTERIES_MODE_TO_FULL = "to_full";
+    public static final String BATTERIES_MODE_ZERO_CHARGE_ONLY = "zero_charge_only";
+    public static final String BATTERIES_MODE_ZERO_DISCHARGE_ONLY = "zero_discharge_only";
+
+    public static final String BATTERIES_PERMISSION_CHARGE_ALLOWED = "charge_allowed";
+    public static final String BATTERIES_PERMISSION_DISCHARGE_ALLOWED = "discharge_allowed";
 
     // Energy Socket And kWh Meter Channels
     public static final String CHANNEL_REACTIVE_POWER = "reactive_power";

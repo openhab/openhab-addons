@@ -39,16 +39,16 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.types.Command;
 
-import tuwien.auto.calimero.GroupAddress;
-import tuwien.auto.calimero.IndividualAddress;
-import tuwien.auto.calimero.KNXFormatException;
-import tuwien.auto.calimero.knxnetip.SecureConnection;
-import tuwien.auto.calimero.secure.Keyring;
-import tuwien.auto.calimero.secure.Keyring.Backbone;
-import tuwien.auto.calimero.secure.Keyring.Interface;
-import tuwien.auto.calimero.secure.KnxSecureException;
-import tuwien.auto.calimero.secure.Security;
-import tuwien.auto.calimero.xml.KNXMLException;
+import io.calimero.GroupAddress;
+import io.calimero.IndividualAddress;
+import io.calimero.KNXFormatException;
+import io.calimero.knxnetip.SecureConnection;
+import io.calimero.secure.Keyring;
+import io.calimero.secure.Keyring.Backbone;
+import io.calimero.secure.Keyring.Interface;
+import io.calimero.secure.KnxSecureException;
+import io.calimero.secure.Security;
+import io.calimero.xml.KNXMLException;
 
 /**
  * The {@link KNXBridgeBaseThingHandler} is responsible for handling commands, which are
@@ -91,7 +91,8 @@ public abstract class KNXBridgeBaseThingHandler extends BaseBridgeHandler implem
 
     private final ScheduledExecutorService knxScheduler = ThreadPoolManager.getScheduledPool("knx");
     private final ScheduledExecutorService backgroundScheduler = Executors.newSingleThreadScheduledExecutor();
-    protected Optional<Keyring> keyring;
+    @Nullable
+    protected Keyring keyring;
     // password used to protect content of the keyring
     private String keyringPassword = "";
     // backbone key (shared password used for secure router mode)
@@ -103,7 +104,7 @@ public abstract class KNXBridgeBaseThingHandler extends BaseBridgeHandler implem
 
     public KNXBridgeBaseThingHandler(Bridge bridge) {
         super(bridge);
-        keyring = Optional.empty();
+        keyring = null;
         openhabSecurity = Security.newSecurity();
         secureRouting = new SecureRoutingConfig();
         secureTunnel = new SecureTunnelConfig();
@@ -146,7 +147,7 @@ public abstract class KNXBridgeBaseThingHandler extends BaseBridgeHandler implem
     protected boolean initializeSecurity(String cKeyringFile, String cKeyringPassword, String cRouterBackboneGroupKey,
             String cTunnelDevAuth, String cTunnelUser, String cTunnelPassword, String cTunnelSourceAddr)
             throws KnxSecureException {
-        keyring = Optional.empty();
+        keyring = null;
         keyringPassword = "";
         IndividualAddress secureTunnelSourceAddr = null;
         secureRouting = new SecureRoutingConfig();
@@ -203,11 +204,11 @@ public abstract class KNXBridgeBaseThingHandler extends BaseBridgeHandler implem
                 // load keyring file from config dir, folder misc
                 String keyringUri = OpenHAB.getConfigFolder() + File.separator + "misc" + File.separator + cKeyringFile;
                 try {
-                    keyring = Optional.ofNullable(Keyring.load(keyringUri));
+                    keyring = Keyring.load(keyringUri);
                 } catch (KNXMLException e) {
                     throw new KnxSecureException("keyring file configured, but loading failed: ", e);
                 }
-                if (!keyring.isPresent()) {
+                if (keyring == null) {
                     throw new KnxSecureException("keyring file configured, but loading failed: " + keyringUri);
                 }
 
@@ -221,24 +222,24 @@ public abstract class KNXBridgeBaseThingHandler extends BaseBridgeHandler implem
                 // We use a specific Security instance instead of default Calimero static instance
                 // Security.defaultInstallation().
                 // This necessary as it seems there is no possibility to clear the global instance on config changes.
-                openhabSecurity.useKeyring(keyring.get(), keyringPassword.toCharArray());
+                openhabSecurity.useKeyring(keyring, keyringPassword.toCharArray());
 
                 securityInitialized = true;
             } catch (KnxSecureException e) {
-                keyring = Optional.empty();
+                keyring = null;
                 keyringPassword = "";
                 throw e;
             } catch (Exception e) {
                 // load() may throw KnxSecureException or other undeclared exceptions, e.g. UncheckedIOException when
                 // file is not found
-                keyring = Optional.empty();
+                keyring = null;
                 keyringPassword = "";
                 throw new KnxSecureException("keyring file configured, but loading failed", e);
             }
         }
 
         // step 4: router: load backboneGroupKey from keyring if not manually specified
-        if ((secureRouting.backboneGroupKey.length == 0) && (keyring.isPresent())) {
+        if ((secureRouting.backboneGroupKey.length == 0) && (keyring != null)) {
             // backbone group key is only available if secure routers are present
             final Optional<byte[]> key = secHelperReadBackboneKey(keyring, keyringPassword);
             if (key.isPresent()) {
@@ -251,9 +252,9 @@ public abstract class KNXBridgeBaseThingHandler extends BaseBridgeHandler implem
         // default to 2000ms
         // this parameter is currently not exposed in config, in case it must be set by using the keyring
         secureRouting.latencyToleranceMs = 2000;
-        if (keyring.isPresent()) {
+        if (keyring != null) {
             // backbone latency is only relevant if secure routers are present
-            final Optional<Backbone> bb = keyring.get().backbone();
+            final Optional<Backbone> bb = keyring.backbone();
             if (bb.isPresent()) {
                 final long toleranceMs = bb.get().latencyTolerance().toMillis();
                 secureRouting.latencyToleranceMs = toleranceMs;
@@ -263,7 +264,7 @@ public abstract class KNXBridgeBaseThingHandler extends BaseBridgeHandler implem
         // step 6: tunnel: load data from keyring
         if (secureTunnelSourceAddr != null) {
             // requires a valid keyring
-            if (!keyring.isPresent()) {
+            if (keyring == null) {
                 throw new KnxSecureException("valid keyring specification required for secure tunnel mode");
             }
             // other parameters will not be accepted, since all is read from keyring in this case
@@ -304,16 +305,15 @@ public abstract class KNXBridgeBaseThingHandler extends BaseBridgeHandler implem
         return parsed;
     }
 
-    public static Optional<byte[]> secHelperReadBackboneKey(Optional<Keyring> keyring, String keyringPassword) {
-        if (keyring.isEmpty()) {
+    public static Optional<byte[]> secHelperReadBackboneKey(@Nullable Keyring keyring, String keyringPassword) {
+        if (keyring == null) {
             throw new KnxSecureException("keyring not available, cannot read backbone key");
         }
-        final Optional<Backbone> bb = keyring.get().backbone();
+        final Optional<Backbone> bb = keyring.backbone();
         if (bb.isPresent()) {
             final Optional<byte[]> gk = bb.get().groupKey();
             if (gk.isPresent()) {
-                byte[] secureRoutingBackboneGroupKey = keyring.get().decryptKey(gk.get(),
-                        keyringPassword.toCharArray());
+                byte[] secureRoutingBackboneGroupKey = keyring.decryptKey(gk.get(), keyringPassword.toCharArray());
                 if (secureRoutingBackboneGroupKey.length != 16) {
                     throw new KnxSecureException("backbone key found, unexpected length != 16");
                 }
@@ -323,14 +323,14 @@ public abstract class KNXBridgeBaseThingHandler extends BaseBridgeHandler implem
         return Optional.empty();
     }
 
-    public static Optional<SecureTunnelConfig> secHelperReadTunnelConfig(Optional<Keyring> keyring,
+    public static Optional<SecureTunnelConfig> secHelperReadTunnelConfig(@Nullable Keyring keyring,
             String keyringPassword, IndividualAddress secureTunnelSourceAddr) {
-        if (keyring.isEmpty()) {
+        if (keyring == null) {
             throw new KnxSecureException("keyring not available, cannot read tunnel config");
         }
         // iterate all interfaces to find matching secureTunnelSourceAddr
         SecureTunnelConfig secureTunnel = new SecureTunnelConfig();
-        Iterator<List<Interface>> itInterface = keyring.get().interfaces().values().iterator();
+        Iterator<List<Interface>> itInterface = keyring.interfaces().values().iterator();
         boolean complete = false;
         while (!complete && itInterface.hasNext()) {
             List<Interface> eInterface = itInterface.next();
@@ -343,14 +343,14 @@ public abstract class KNXBridgeBaseThingHandler extends BaseBridgeHandler implem
                     String pw = "";
                     final Optional<byte[]> pwBytes = eTunnel.password();
                     if (pwBytes.isPresent()) {
-                        pw = new String(keyring.get().decryptPassword(pwBytes.get(), keyringPassword.toCharArray()));
+                        pw = new String(keyring.decryptPassword(pwBytes.get(), keyringPassword.toCharArray()));
                         secureTunnel.userKey = SecureConnection.hashUserPassword(pw.toCharArray());
                     }
 
                     String au = "";
                     final Optional<byte[]> auBytes = eTunnel.authentication();
                     if (auBytes.isPresent()) {
-                        au = new String(keyring.get().decryptPassword(auBytes.get(), keyringPassword.toCharArray()));
+                        au = new String(keyring.decryptPassword(auBytes.get(), keyringPassword.toCharArray()));
                         secureTunnel.devKey = SecureConnection.hashDeviceAuthenticationPassword(au.toCharArray())
                                 .clone();
                     }

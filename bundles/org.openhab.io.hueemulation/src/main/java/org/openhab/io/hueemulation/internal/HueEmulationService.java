@@ -47,7 +47,6 @@ import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicyOption;
 import org.osgi.service.event.Event;
-import org.osgi.service.event.EventAdmin;
 import org.osgi.service.event.EventConstants;
 import org.osgi.service.event.EventHandler;
 import org.osgi.service.jaxrs.whiteboard.JaxrsWhiteboardConstants;
@@ -194,7 +193,7 @@ public class HueEmulationService implements EventHandler {
     /**
      * We have a hard dependency on the {@link ConfigStore} and that it has initialized the Hue DataStore config
      * completely. That initialization happens asynchronously and therefore we cannot rely on OSGi activate/modified
-     * state changes. Instead the {@link EventAdmin} is used and we listen for the
+     * state changes. Instead the {@link org.osgi.service.event.EventAdmin} is used and we listen for the
      * {@link ConfigStore#EVENT_ADDRESS_CHANGED} event that is fired as soon as the config is ready.
      */
     @Override

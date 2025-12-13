@@ -17,6 +17,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.InetAddress;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -393,7 +395,8 @@ public class LxWebSocket {
     public String httpGet(String request) {
         HttpURLConnection con = null;
         try {
-            URL url = new URL("http", host.getHostAddress(), port, request.startsWith("/") ? request : "/" + request);
+            URL url = new URI("http", null, host.getHostAddress(), port,
+                    request.startsWith("/") ? request : "/" + request, null, null).toURL();
             con = (HttpURLConnection) url.openConnection();
             con.setRequestMethod("GET");
             StringBuilder result = new StringBuilder();
@@ -404,7 +407,8 @@ public class LxWebSocket {
                 }
                 return result.toString();
             }
-        } catch (IOException e) {
+        } catch (URISyntaxException | IOException e) {
+            logger.debug("Error sending HTTP request: {}", e.getMessage());
             return null;
         } finally {
             if (con != null) {

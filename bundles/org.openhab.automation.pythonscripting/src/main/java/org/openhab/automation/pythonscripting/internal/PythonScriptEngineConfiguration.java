@@ -75,7 +75,6 @@ public class PythonScriptEngineConfiguration {
         public boolean dependencyTrackingEnabled = true;
         public boolean cachingEnabled = true;
         public boolean jythonEmulation = false;
-        public boolean nativeModules = false;
         public String pipModules = "";
     }
 
@@ -123,12 +122,13 @@ public class PythonScriptEngineConfiguration {
             throw new IllegalArgumentException("Unable to load build.properties");
         }
 
+        Properties props = System.getProperties();
+        props.setProperty(SYSTEM_PROPERTY_POLYGLOT_ENGINE_USERRESOURCECACHE,
+                userdataDir.resolve("cache").resolve("org.graalvm.polyglot").toString());
+
         String packageName = PythonScriptEngineConfiguration.class.getPackageName();
         packageName = packageName.substring(0, packageName.lastIndexOf("."));
         Path bindingDirectory = userdataDir.resolve("cache").resolve(packageName);
-
-        Properties props = System.getProperties();
-        props.setProperty(SYSTEM_PROPERTY_POLYGLOT_ENGINE_USERRESOURCECACHE, bindingDirectory.toString());
         bytecodeDirectory = PythonScriptEngineHelper.initDirectory(bindingDirectory.resolve("resources"));
         venvDirectory = PythonScriptEngineHelper.initDirectory(bindingDirectory.resolve("venv"));
 
@@ -206,10 +206,6 @@ public class PythonScriptEngineConfiguration {
 
     public boolean isJythonEmulation() {
         return configuration.jythonEmulation;
-    }
-
-    public boolean isNativeModulesEnabled() {
-        return configuration.nativeModules;
     }
 
     public String getPIPModules() {

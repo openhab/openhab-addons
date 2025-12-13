@@ -219,7 +219,7 @@ public class SurePetcarePetHandler extends SurePetcareBaseObjectHandler {
                     SurePetcareDevice device = petcareAPI.getDevice(drinking.deviceId.toString());
                     if (device != null) {
                         updateState(PET_CHANNEL_WATER_DEVICE, new StringType(device.name));
-                        if (drinking.drinkChange.size() > 0) {
+                        if (!drinking.drinkChange.isEmpty()) {
                             updateState(PET_CHANNEL_WATER_LAST_CHANGE,
                                     new QuantityType<>(drinking.drinkChange.get(0), MetricPrefix.MILLI(Units.LITRE)));
                         }

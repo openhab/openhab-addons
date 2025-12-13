@@ -79,6 +79,14 @@ After initial setup the average values will stay NULL until the next day because
 Please note time series are not supported by the default [rrd4j](https://www.openhab.org/addons/persistence/rrd4j/) persistence.
 The items connected to the above channels needs to be stored in e.g. [InfluxDB](https://www.openhab.org/addons/persistence/influxdb/) or [InMemory](https://www.openhab.org/addons/persistence/inmemory/).
 
+#### Trigger Channels
+
+Channel `event` can trigger the following events:
+
+| Event                | Description                    |
+|----------------------|--------------------------------|
+| DAY_AHEAD_AVAILABLE  | Day-ahead prices are available |
+
 ### `live` group
 
 Live information from Tibber Pulse.
@@ -474,4 +482,15 @@ Number:Energy               Tibber_API_Last_Hour_Consumption    "Last Hour Consu
 Number:Energy               Tibber_API_Total_Production         "Total Production"           {channel="tibber:tibberapi:xyz:statistics#total-production"}
 Number:Energy               Tibber_API_Daily_Production         "Daily Production"           {channel="tibber:tibberapi:xyz:statistics#daily-production"}
 Number:Energy               Tibber_API_Last_Hour_Production     "Last Hour Production"       {channel="tibber:tibberapi:xyz:statistics#last-hour-production"}
+```
+
+### Rule listen to day-ahead price update
+
+```java
+rule "Tibber day-ahead prices available"
+when
+    Channel 'tibber:tibberapi:xyz:price#event' triggered
+then
+    logInfo("Tibber Update","Price event {}", receivedEvent)
+end
 ```

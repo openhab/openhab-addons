@@ -32,4 +32,10 @@ public class MetOfficeDataHubBridgeConfiguration {
      * reboots)
      */
     public int siteRateDailyLimit = 250;
+
+    /**
+     * If enabled then API key validation is disabled, and API communication will be attempted without first validating
+     * the key.
+     */
+    public boolean disableKeyValidation = false;
 }

@@ -51,6 +51,12 @@ public enum DeviceCapability {
     UNIT_CARE_LIFESPAN,
     @SerializedName("uses_clean_results_log_api")
     USES_CLEAN_RESULTS_LOG_API,
+    @SerializedName("round_mop_lifespan")
+    ROUND_MOP_LIFESPAN,
+    @SerializedName("air_drying")
+    AIR_DRYING,
+    @SerializedName("custom_water_amount")
+    CUSTOM_WATER_AMOUNT,
     // implicit capabilities added in code
     EDGE_CLEANING,
     SPOT_CLEANING,

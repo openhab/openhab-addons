@@ -119,7 +119,7 @@ public class HomeWizardEnergySocketHandler extends HomeWizardEnergySocketStateHa
                 break;
             }
             default:
-                logger.warn("Should handle {} {}", channelUID.getIdWithoutGroup(), command);
+                logger.warn("Unhandled command for channel: {} command: {}", channelUID.getIdWithoutGroup(), command);
                 break;
         }
     }

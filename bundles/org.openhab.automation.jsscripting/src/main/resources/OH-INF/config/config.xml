@@ -22,9 +22,9 @@
 			If disabled, the openHAB JavaScript library can be imported manually using <code>require('openhab')</code>.
 			]]></description>
 			<options>
-				<option value="3">Auto injection for all scripts, including file-based scripts and transformations</option>
-				<option value="2">Auto injection for UI-based scripts and transformations</option>
-				<option value="1">Auto injection only for UI-based scripts (recommended)</option>
+				<option value="3">Auto injection everywhere, including script files and transformations</option>
+				<option value="2">Auto injection for Script Actions, Script Conditions and transformations</option>
+				<option value="1">Auto injection only for Script Actions &amp; Script Conditions (recommended)</option>
 				<option value="0">Disable auto-injection and import manually instead</option>
 			</options>
 			<default>3</default>
@@ -40,12 +40,12 @@
 			<advanced>true</advanced>
 		</parameter>
 		<parameter name="eventConversionEnabled" type="boolean" required="true" groupName="environment">
-			<label>Convert Event from Java to JavaScript type in UI-based scripts</label>
+			<label>Convert Event from Java to JavaScript type in Script Actions &amp; Script Conditions scripts</label>
 			<description><![CDATA[
-            Converting the event data from Java to JavaScript types in UI-based scripts allows working with event data in a native JS way without special handling for Java types.<br>
-            With this option enabled, the event data available in UI-based scripts is all JS types and the same as in file-based scripts.<br>
-            Please note that this option <strong>requires auto-injection enabled at least for UI-based scripts</strong>.
-            ]]></description>
+			Converting the event data from Java to JavaScript types in Script Actions &amp; Script Conditions allows working with event data in a native JS way without special handling for Java types.<br>
+			With this option enabled, the event data available in Script Actions &amp; Script Conditions is all JS types and the same as in rules created from script files.<br>
+			Please note that this option <strong>requires auto-injection enabled at least for Script Actions &amp; Script Conditions</strong>.
+			]]></description>
 			<default>true</default>
 			<advanced>true</advanced>
 		</parameter>

@@ -23,33 +23,11 @@
 	<feature name="openhab-binding-mqtt" description="MQTT Binding" version="${project.version}">
 		<feature>openhab-runtime-base</feature>
 		<feature>openhab-transport-mqtt</feature>
-		<feature dependency="true">openhab.tp-commons-net</feature>
-		<bundle dependency="true">mvn:org.openhab.osgiify/org.graalvm.llvm.llvm-api/24.2.1</bundle>
-		<bundle dependency="true">mvn:org.openhab.osgiify/org.graalvm.polyglot.polyglot/24.2.1</bundle>
-		<bundle dependency="true">mvn:org.openhab.osgiify/org.graalvm.python.python-embedding/24.2.1</bundle>
-		<bundle dependency="true" start-level="78">mvn:org.openhab.osgiify/org.graalvm.python.python-language/24.2.1</bundle>
-		<bundle dependency="true" start-level="78">mvn:org.openhab.osgiify/org.graalvm.python.python-resources/24.2.1</bundle>
-		<bundle dependency="true" start-level="78">mvn:org.openhab.osgiify/org.graalvm.regex.regex/24.2.1</bundle>
-		<bundle dependency="true">mvn:org.openhab.osgiify/org.graalvm.sdk.collections/24.2.1</bundle>
-		<bundle dependency="true">mvn:org.openhab.osgiify/org.graalvm.sdk.jniutils/24.2.1</bundle>
-		<bundle dependency="true">mvn:org.openhab.osgiify/org.graalvm.sdk.nativeimage/24.2.1</bundle>
-		<bundle dependency="true">mvn:org.openhab.osgiify/org.graalvm.sdk.word/24.2.1</bundle>
-		<bundle dependency="true">mvn:org.openhab.osgiify/org.graalvm.shadowed.icu4j/24.2.1</bundle>
-		<bundle dependency="true">mvn:org.openhab.osgiify/org.graalvm.shadowed.json/24.2.1</bundle>
-		<bundle dependency="true">mvn:org.openhab.osgiify/org.graalvm.shadowed.xz/24.2.1</bundle>
-		<bundle dependency="true">mvn:org.openhab.osgiify/org.graalvm.tools.profiler-tool/24.2.1</bundle>
-		<bundle dependency="true" start-level="79">mvn:org.openhab.osgiify/org.graalvm.truffle.truffle-api/24.2.1</bundle>
-		<bundle dependency="true">mvn:org.openhab.osgiify/org.graalvm.truffle.truffle-compiler/24.2.1</bundle>
-		<bundle dependency="true">mvn:org.openhab.osgiify/org.graalvm.truffle.truffle-nfi/24.2.1</bundle>
-		<bundle dependency="true">mvn:org.openhab.osgiify/org.graalvm.truffle.truffle-runtime/24.2.1</bundle>
 		<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.mqtt/${project.version}</bundle>
 		<bundle start-level="81">mvn:org.openhab.addons.bundles/org.openhab.binding.mqtt.awtrixlight/${project.version}</bundle>
 		<bundle start-level="81">mvn:org.openhab.addons.bundles/org.openhab.binding.mqtt.espmilighthub/${project.version}</bundle>
 		<bundle start-level="81">mvn:org.openhab.addons.bundles/org.openhab.binding.mqtt.fpp/${project.version}</bundle>
-		<bundle start-level="81">mvn:org.openhab.addons.bundles/org.openhab.binding.mqtt.generic/${project.version}</bundle>
-		<bundle start-level="82">mvn:org.openhab.addons.bundles/org.openhab.binding.mqtt.homeassistant/${project.version}</bundle>
-		<bundle start-level="82">mvn:org.openhab.addons.bundles/org.openhab.binding.mqtt.homie/${project.version}</bundle>
-		<bundle start-level="82">mvn:org.openhab.addons.bundles/org.openhab.binding.mqtt.ruuvigateway/${project.version}</bundle>
+		<bundle start-level="81">mvn:org.openhab.addons.bundles/org.openhab.binding.mqtt.ruuvigateway/${project.version}</bundle>
 	</feature>
 	<feature name="openhab-binding-modbus" description="Modbus Binding" version="${project.version}">
 		<feature>openhab-runtime-base</feature>
@@ -58,6 +36,7 @@
 		<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.modbus.e3dc/${project.version}</bundle>
 		<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.modbus.helioseasycontrols/${project.version}</bundle>
 		<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.modbus.kermi/${project.version}</bundle>
+		<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.modbus.lambda/${project.version}</bundle>
 		<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.modbus.sbc/${project.version}</bundle>
 		<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.modbus.stiebeleltron/${project.version}</bundle>
 		<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.modbus.studer/${project.version}</bundle>

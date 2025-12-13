@@ -23,6 +23,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.api.Response;
+import org.eclipse.jetty.client.api.Result;
 import org.eclipse.jetty.client.util.BufferingResponseListener;
 import org.openhab.binding.sensorcommunity.internal.dto.SensorData;
 import org.openhab.binding.sensorcommunity.internal.dto.SensorDataValue;
@@ -63,15 +65,10 @@ public class HTTPHandler {
             req.timeout(15, TimeUnit.SECONDS).send(new BufferingResponseListener() {
                 @NonNullByDefault({})
                 @Override
-                public void onComplete(org.eclipse.jetty.client.api.Result result) {
-                    if (result.getResponse().getStatus() != 200) {
-                        String failure;
-                        if (result.getResponse().getReason() != null) {
-                            failure = result.getResponse().getReason();
-                        } else {
-                            failure = result.getFailure().getMessage();
-                        }
-                        callback.onError(Objects.requireNonNullElse(failure, "Unknown error"));
+                public void onComplete(Result result) {
+                    Response response = result.getResponse();
+                    if (response.getStatus() != 200) {
+                        callback.onError(response.getStatus() + " - " + response.getReason());
                     } else {
                         callback.onResponse(Objects.requireNonNull(getContentAsString()));
                     }
@@ -81,7 +78,8 @@ public class HTTPHandler {
     }
 
     public @Nullable List<SensorDataValue> getLatestValues(String response) {
-        SensorData[] valueArray = GSON.fromJson(response, SensorData[].class);
+        SensorData[] valueArray = Objects.requireNonNullElse(GSON.fromJson(response, SensorData[].class),
+                new SensorData[] {});
         if (valueArray.length == 0) {
             return null;
         } else if (valueArray.length == 1) {
@@ -126,26 +124,17 @@ public class HTTPHandler {
     }
 
     public boolean isParticulate(@Nullable List<SensorDataValue> valueList) {
-        if (valueList == null) {
-            return false;
-        }
-        return valueList.stream().map(v -> v.getValueType()).filter(t -> t.endsWith(P1) || t.endsWith(P2)).findAny()
-                .isPresent();
+        return valueList != null && valueList.stream().map(v -> v.getValueType())
+                .filter(t -> t.endsWith(P1) || t.endsWith(P2)).findAny().isPresent();
     }
 
     public boolean isCondition(@Nullable List<SensorDataValue> valueList) {
-        if (valueList == null) {
-            return false;
-        }
-        return valueList.stream().map(v -> v.getValueType()).filter(t -> t.equals(TEMPERATURE) || t.endsWith(HUMIDITY)
-                || t.endsWith(PRESSURE) || t.endsWith(PRESSURE_SEALEVEL)).findAny().isPresent();
+        return valueList != null && valueList.stream().map(v -> v.getValueType()).filter(t -> t.equals(TEMPERATURE)
+                || t.endsWith(HUMIDITY) || t.endsWith(PRESSURE) || t.endsWith(PRESSURE_SEALEVEL)).findAny().isPresent();
     }
 
     public boolean isNoise(@Nullable List<SensorDataValue> valueList) {
-        if (valueList == null) {
-            return false;
-        }
-        return valueList.stream().map(v -> v.getValueType())
+        return valueList != null && valueList.stream().map(v -> v.getValueType())
                 .filter(t -> t.endsWith(NOISE_EQ) || t.endsWith(NOISE_MAX) || t.endsWith(NOISE_MIN)).findAny()
                 .isPresent();
     }

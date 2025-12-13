@@ -14,9 +14,11 @@ package org.openhab.transform.basicprofiles.internal.profiles;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import java.math.RoundingMode;
+import java.time.Instant;
 
 import javax.measure.Unit;
 import javax.measure.quantity.Temperature;
@@ -34,6 +36,10 @@ import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.thing.profiles.ProfileCallback;
 import org.openhab.core.thing.profiles.ProfileContext;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.State;
+import org.openhab.core.types.TimeSeries;
+import org.openhab.core.types.TimeSeries.Entry;
+import org.openhab.core.types.TimeSeries.Policy;
 
 /**
  * Basic unit tests for {@link RoundStateProfile}.
@@ -139,6 +145,62 @@ public class RoundStateProfileTest {
         QuantityType<Temperature> qtResult = (QuantityType<Temperature>) result;
         assertThat(qtResult.doubleValue(), is(23.3));
         assertThat(qtResult.getUnit(), is(SIUnits.CELSIUS));
+    }
+
+    @Test
+    public void testDecimalTypeOnStateUpdateFromHandler() {
+        ProfileCallback callback = mock(ProfileCallback.class);
+        RoundStateProfile roundProfile = createProfile(callback, 1);
+
+        State state = new DecimalType(23.333);
+        roundProfile.onStateUpdateFromHandler(state);
+
+        ArgumentCaptor<State> capture = ArgumentCaptor.forClass(State.class);
+        verify(callback, times(1)).sendUpdate(capture.capture());
+
+        State result = capture.getValue();
+        DecimalType dtResult = (DecimalType) result;
+        assertThat(dtResult.doubleValue(), is(23.3));
+    }
+
+    @Test
+    public void testQuantityTypeOnCommandFromHandler() {
+        ProfileCallback callback = mock(ProfileCallback.class);
+        RoundStateProfile offsetProfile = createProfile(callback, 1);
+
+        Command cmd = new QuantityType<>("23.333 °C");
+        offsetProfile.onCommandFromHandler(cmd);
+
+        ArgumentCaptor<Command> capture = ArgumentCaptor.forClass(Command.class);
+        verify(callback, times(1)).sendCommand(capture.capture());
+
+        Command result = capture.getValue();
+        QuantityType<?> qtResult = (QuantityType<?>) result;
+        assertThat(qtResult.doubleValue(), is(23.3));
+        assertThat(qtResult.getUnit(), is(SIUnits.CELSIUS));
+    }
+
+    @Test
+    public void testTimeSeriesFromHandler() {
+        ProfileCallback callback = mock(ProfileCallback.class);
+        RoundStateProfile roundProfile = createProfile(callback, 1);
+
+        TimeSeries ts = new TimeSeries(Policy.ADD);
+        Instant now = Instant.now();
+        ts.add(now, new DecimalType(23.333));
+
+        roundProfile.onTimeSeriesFromHandler(ts);
+
+        ArgumentCaptor<TimeSeries> capture = ArgumentCaptor.forClass(TimeSeries.class);
+        verify(callback, times(1)).sendTimeSeries(capture.capture());
+
+        TimeSeries result = capture.getValue();
+        assertEquals(ts.getStates().count(), result.getStates().count());
+        Entry entry = result.getStates().findFirst().get();
+        assertNotNull(entry);
+        assertEquals(now, entry.timestamp());
+        DecimalType dtResult = (DecimalType) entry.state();
+        assertThat(dtResult.doubleValue(), is(23.3));
     }
 
     private RoundStateProfile createProfile(ProfileCallback callback, Integer scale) {

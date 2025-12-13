@@ -17,7 +17,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.openhab.binding.bambulab.internal.BambuLabBindingConstants.NO_CAMERA_CERT;
 import static org.openhab.binding.bambulab.internal.BambuLabBindingConstants.PrinterChannel.*;
 import static org.openhab.binding.bambulab.internal.PrinterConfiguration.CLOUD_MODE_HOSTNAME;
-import static org.openhab.binding.bambulab.internal.PrinterConfiguration.Series.X;
+import static org.openhab.binding.bambulab.internal.PrinterConfiguration.Series.*;
 import static org.openhab.core.library.types.OnOffType.*;
 import static org.openhab.core.thing.ThingStatus.*;
 import static org.openhab.core.thing.ThingStatusDetail.COMMUNICATION_ERROR;
@@ -56,8 +56,8 @@ class Camera implements AutoCloseable {
     }
 
     void handleCommand(OnOffType command) {
-        if (this.config.series == X) {
-            logger.warn("Bambulab binding does not support camera for X series!");
+        if (this.config.series == X || this.config.series == H) {
+            logger.warn("Bambulab binding does not support camera for {} series!", this.config.series);
             turnOffChannels();
             return;
         }
@@ -77,8 +77,8 @@ class Camera implements AutoCloseable {
             var camera = switch (this.config.series) {
                 case A -> new ASeriesCamera(config);
                 case P -> new PSeriesCamera(config);
-                case X ->
-                    throw new UnsupportedOperationException("Bambulab binding does not support camera for X series!");
+                case X, H -> throw new UnsupportedOperationException(
+                        "Bambulab binding does not support camera for %s series!".formatted(this.config.series));
             };
             try {
                 camera.connect();

@@ -52,7 +52,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class PythonScriptEngineHelper {
 
-    private final static Logger logger = LoggerFactory.getLogger(PythonScriptEngineHelper.class);
+    private static final Logger logger = LoggerFactory.getLogger(PythonScriptEngineHelper.class);
 
     private static final Pattern VERSION_PATTERN = Pattern.compile("__version__\\s*=\\s*\"([^\"]*)\"",
             Pattern.CASE_INSENSITIVE);

@@ -109,23 +109,49 @@ public class GatewayPayloadParser {
                                 + localData);
             }
             byte[] bytes = HexUtils.hexToBytes(localData);
-            if (bytes.length < 6) {
-                // We want at least 6 bytes, ensuring bytes[5] is valid as well as Arrays.copyOfRange(bytes, 5, ...)
-                // below
-                // The payload length (might depend on format version ) is validated by parser.parse call
-                throw new IllegalArgumentException("Manufacturerer data is too short");
+            if (bytes.length < 4) {
+                // Minimum: [AD_Len] [0xFF Type] [Company_ID_LowByte] [Company_ID_HighByte]
+                throw new IllegalArgumentException("Advertisement data is too short");
             }
-            if ((bytes[4] & 0xff) != 0xff) {
+
+            // Dynamically find the 0xFF (Manufacturer Specific Data) AD Type marker
+            // This handles advertisements with or without optional Flags AD structure
+            // Supports both classic (max 31 bytes per AD) and extended advertisements (max 255 bytes per AD)
+            // Format 5 typically: [02 01 06] [1B FF 99 04 05 ...] where 0xFF is at index 4
+            // Format E1 typically: [2B FF 99 04 E1 ...] where 0xFF is at index 1 (manufacturer-specific data AD
+            // structure with length 0x2B=43)
+            int manufacturerIndex = -1;
+            for (int i = 1; i < bytes.length; i++) {
+                if ((bytes[i] & 0xff) == 0xff) {
+                    // Found potential 0xFF AD Type marker
+                    // Verify previous byte looks like a valid AD Length (1-255 bytes for extended advertisements)
+                    if (bytes[i - 1] > 0) {
+                        // Verify we have enough data: type byte + company ID (2 bytes) + at least 1 data byte
+                        if (i + 3 <= bytes.length) {
+                            manufacturerIndex = i;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            if (manufacturerIndex < 0) {
                 LOGGER.debug("Data is not representing manufacturer specific bluetooth advertisement: {}",
                         HexUtils.bytesToHex(bytes));
                 throw new IllegalArgumentException(
                         "Data is not representing manufacturer specific bluetooth advertisement");
             }
-            // Manufacturer data starts after 0xFF byte, at index 5
-            byte[] manufacturerData = Arrays.copyOfRange(bytes, 5, bytes.length);
+
+            // Manufacturer data starts after 0xFF type byte (but includes company ID)
+            // Parser expects: [Company_ID_2bytes] [Data_Format] [Rest of data...]
+            // Example: [2B FF 99 04 E1 ...] where index 1 is 0xFF, so data starts at index 2 (99 04 E1...)
+            byte[] manufacturerData = Arrays.copyOfRange(bytes, manufacturerIndex + 1, bytes.length);
+            LOGGER.debug("Found 0xFF manufacturer type at index {}, extracting data from index {}: {}",
+                    manufacturerIndex, manufacturerIndex + 1, HexUtils.bytesToHex(manufacturerData));
             RuuviMeasurement localManufacturerData = parser.parse(manufacturerData);
             if (localManufacturerData == null) {
-                LOGGER.trace("Manufacturer data is not valid: {}", HexUtils.bytesToHex(manufacturerData));
+                LOGGER.debug("Failed to parse manufacturer data: {}. Available parsers may not recognize this format.",
+                        HexUtils.bytesToHex(manufacturerData));
                 throw new IllegalArgumentException("Manufacturer data is not valid");
             }
             measurement = localManufacturerData;

@@ -14,6 +14,7 @@ package org.openhab.binding.linky.internal.handler;
 
 import static org.openhab.binding.linky.internal.constants.LinkyBindingConstants.*;
 
+import java.text.Normalizer;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -22,6 +23,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.WeekFields;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -37,9 +39,12 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.linky.internal.api.EnedisHttpApi;
 import org.openhab.binding.linky.internal.api.ExpiringDayCache;
 import org.openhab.binding.linky.internal.config.LinkyThingRemoteConfiguration;
+import org.openhab.binding.linky.internal.constants.LinkyBindingConstants;
 import org.openhab.binding.linky.internal.dto.Contact;
 import org.openhab.binding.linky.internal.dto.Contract;
 import org.openhab.binding.linky.internal.dto.Identity;
+import org.openhab.binding.linky.internal.dto.IndexInfo;
+import org.openhab.binding.linky.internal.dto.IndexMode;
 import org.openhab.binding.linky.internal.dto.IntervalReading;
 import org.openhab.binding.linky.internal.dto.MetaData;
 import org.openhab.binding.linky.internal.dto.MeterReading;
@@ -51,21 +56,27 @@ import org.openhab.binding.linky.internal.types.LinkyException;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TimeZoneProvider;
+import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.MetricPrefix;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.binding.builder.ChannelBuilder;
+import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.TimeSeries;
 import org.openhab.core.types.TimeSeries.Policy;
 import org.openhab.core.types.UnDefType;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -83,12 +94,15 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
     private static final int REFRESH_HOUR_OF_DAY = 1;
     private static final int REFRESH_MINUTE_OF_DAY = RANDOM_NUMBERS.nextInt(60);
     private static final int REFRESH_INTERVAL_IN_MIN = 120;
+    private static final int NUMBER_OF_DATA_DAY = 1095;
 
     private final TimeZoneProvider timeZoneProvider;
+    private final TranslationProvider translationProvider;
     private final Logger logger = LoggerFactory.getLogger(ThingLinkyRemoteHandler.class);
 
     private final ExpiringDayCache<MetaData> metaData;
     private final ExpiringDayCache<MeterReading> dailyConsumption;
+    private final ExpiringDayCache<MeterReading> dailyIndex;
     private final ExpiringDayCache<MeterReading> dailyConsumptionMaxPower;
     private final ExpiringDayCache<MeterReading> loadCurveConsumption;
 
@@ -108,10 +122,12 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
         ALL
     }
 
-    public ThingLinkyRemoteHandler(Thing thing, LocaleProvider localeProvider, TimeZoneProvider timeZoneProvider) {
+    public ThingLinkyRemoteHandler(Thing thing, LocaleProvider localeProvider, TimeZoneProvider timeZoneProvider,
+            TranslationProvider translationProvider) {
         super(thing);
 
         this.timeZoneProvider = timeZoneProvider;
+        this.translationProvider = translationProvider;
 
         this.metaData = new ExpiringDayCache<>("metaData", REFRESH_HOUR_OF_DAY, REFRESH_MINUTE_OF_DAY, () -> {
             MetaData metaData = getMetaData();
@@ -121,7 +137,7 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
         this.dailyConsumption = new ExpiringDayCache<>("dailyConsumption", REFRESH_HOUR_OF_DAY, REFRESH_MINUTE_OF_DAY,
                 () -> {
                     LocalDate today = LocalDate.now();
-                    MeterReading meterReading = getConsumptionData(today.minusDays(1095), today);
+                    MeterReading meterReading = getConsumptionData(today.minusDays(NUMBER_OF_DATA_DAY), today);
                     meterReading = getMeterReadingAfterChecks(meterReading);
                     if (meterReading != null) {
                         logData(meterReading.baseValue, "Day", DateTimeFormatter.ISO_LOCAL_DATE, Target.ALL);
@@ -130,16 +146,26 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
                     return meterReading;
                 });
 
-        // We request data for yesterday and the day before yesterday
-        // even if the data for the day before yesterday
-        // This is only a workaround to an API bug that will return INTERNAL_SERVER_ERROR rather
-        // than the expected data with a NaN value when the data for yesterday is not yet available.
-        // By requesting two days, the API is not failing and you get the expected NaN value for yesterday
+        this.dailyIndex = new ExpiringDayCache<>("dailyIndex", REFRESH_HOUR_OF_DAY, REFRESH_MINUTE_OF_DAY, () -> {
+            LocalDate today = LocalDate.now();
+            MeterReading meterReading = getConsumptionIndex(today.minusDays(NUMBER_OF_DATA_DAY), today);
+            meterReading = getMeterReadingAfterChecks(meterReading);
+            if (meterReading != null) {
+                logData(meterReading.baseValue, "Day", DateTimeFormatter.ISO_LOCAL_DATE, Target.ALL);
+                logData(meterReading.weekValue, "Week", DateTimeFormatter.ISO_LOCAL_DATE_TIME, Target.ALL);
+            }
+            return meterReading;
+        });
+
+        // We request data for yesterday and the day before yesterday.
+        // This is a workaround for an API bug: if the data for yesterday is not yet available,
+        // the API returns INTERNAL_SERVER_ERROR instead of the expected NaN value.
+        // By requesting both days, the API does not fail, and you get the expected NaN for yesterday
         // when the data is not yet available.
         this.dailyConsumptionMaxPower = new ExpiringDayCache<>("dailyConsumptionMaxPower", REFRESH_HOUR_OF_DAY,
                 REFRESH_MINUTE_OF_DAY, () -> {
                     LocalDate today = LocalDate.now();
-                    MeterReading meterReading = getPowerData(today.minusDays(1095), today);
+                    MeterReading meterReading = getPowerData(today.minusDays(NUMBER_OF_DATA_DAY), today);
                     meterReading = getMeterReadingAfterChecks(meterReading);
                     if (meterReading != null) {
                         logData(meterReading.baseValue, "Day (peak)", DateTimeFormatter.ISO_LOCAL_DATE, Target.ALL);
@@ -355,7 +381,7 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
     }
 
     /**
-     * Request new data and updates channels
+     * Requests new data and updates the channels.
      */
     private synchronized void updateData() {
         // If one of the cache is expired, force also a metaData refresh to prevent 500 error from Enedis servers !
@@ -376,6 +402,7 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
         }
 
         updateEnergyData();
+        updateEnergyIndex();
         updatePowerData();
         updateLoadCurveData();
     }
@@ -400,16 +427,16 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
                 updateState(LINKY_REMOTE_DAILY_GROUP, CHANNEL_PEAK_POWER_TS_DAY_MINUS_3,
                         new DateTimeType(values.baseValue[dSize - 3].date.atZone(zoneId)));
 
-                updateTimeSeries(LINKY_REMOTE_DAILY_GROUP, CHANNEL_MAX_POWER, values.baseValue,
+                updateTimeSeries(LINKY_REMOTE_DAILY_GROUP, CHANNEL_MAX_POWER, values.baseValue, -1,
                         MetricPrefix.KILO(Units.VOLT_AMPERE));
 
-                updateTimeSeries(LINKY_REMOTE_WEEKLY_GROUP, CHANNEL_MAX_POWER, values.weekValue,
+                updateTimeSeries(LINKY_REMOTE_WEEKLY_GROUP, CHANNEL_MAX_POWER, values.weekValue, -1,
                         MetricPrefix.KILO(Units.VOLT_AMPERE));
 
-                updateTimeSeries(LINKY_REMOTE_MONTHLY_GROUP, CHANNEL_MAX_POWER, values.monthValue,
+                updateTimeSeries(LINKY_REMOTE_MONTHLY_GROUP, CHANNEL_MAX_POWER, values.monthValue, -1,
                         MetricPrefix.KILO(Units.VOLT_AMPERE));
 
-                updateTimeSeries(LINKY_REMOTE_YEARLY_GROUP, CHANNEL_MAX_POWER, values.yearValue,
+                updateTimeSeries(LINKY_REMOTE_YEARLY_GROUP, CHANNEL_MAX_POWER, values.yearValue, -1,
                         MetricPrefix.KILO(Units.VOLT_AMPERE));
             }, () -> {
                 updateKwhChannel(LINKY_REMOTE_DAILY_GROUP, CHANNEL_PEAK_POWER_DAY_MINUS_1, Double.NaN);
@@ -425,7 +452,7 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
     }
 
     /**
-     * Request new daily/weekly data and updates channels
+     * Requests new daily or weekly data and updates the corresponding channels.
      */
     private synchronized void updateEnergyData() {
         dailyConsumption.getValue().ifPresentOrElse(values -> {
@@ -464,10 +491,11 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
                         values.yearValue[idxCurrentYear - 2].value);
             }
 
-            updateTimeSeries(LINKY_REMOTE_DAILY_GROUP, CHANNEL_CONSUMPTION, values.baseValue, Units.KILOWATT_HOUR);
-            updateTimeSeries(LINKY_REMOTE_WEEKLY_GROUP, CHANNEL_CONSUMPTION, values.weekValue, Units.KILOWATT_HOUR);
-            updateTimeSeries(LINKY_REMOTE_MONTHLY_GROUP, CHANNEL_CONSUMPTION, values.monthValue, Units.KILOWATT_HOUR);
-            updateTimeSeries(LINKY_REMOTE_YEARLY_GROUP, CHANNEL_CONSUMPTION, values.yearValue, Units.KILOWATT_HOUR);
+            updateTimeSeries(LINKY_REMOTE_DAILY_GROUP, CHANNEL_CONSUMPTION, values.baseValue, -1, Units.KILOWATT_HOUR);
+            updateTimeSeries(LINKY_REMOTE_WEEKLY_GROUP, CHANNEL_CONSUMPTION, values.weekValue, -1, Units.KILOWATT_HOUR);
+            updateTimeSeries(LINKY_REMOTE_MONTHLY_GROUP, CHANNEL_CONSUMPTION, values.monthValue, -1,
+                    Units.KILOWATT_HOUR);
+            updateTimeSeries(LINKY_REMOTE_YEARLY_GROUP, CHANNEL_CONSUMPTION, values.yearValue, -1, Units.KILOWATT_HOUR);
         }, () -> {
             updateKwhChannel(LINKY_REMOTE_DAILY_GROUP, CHANNEL_DAY_MINUS_1, Double.NaN);
             updateKwhChannel(LINKY_REMOTE_DAILY_GROUP, CHANNEL_DAY_MINUS_2, Double.NaN);
@@ -488,12 +516,292 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
     }
 
     /**
-     * Request new loadCurve data and updates channels
+     * This method removes specific localized characters (such as 'é', 'ê', 'â')
+     * to produce a correctly formatted UID from a localized item label.
+     *
+     * @return the label without invalid characters
+     */
+    private static String sanetizeId(String label) {
+        String result = label;
+
+        if (!Normalizer.isNormalized(label, Normalizer.Form.NFKD)) {
+            result = Normalizer.normalize(label, Normalizer.Form.NFKD);
+            result = result.replaceAll("\\p{M}", "");
+        }
+
+        result = result.replaceAll("[^a-zA-Z0-9_]", "");
+        if (!result.isEmpty()) {
+            result = result.substring(0, 1).toLowerCase() + result.substring(1);
+        }
+
+        return result;
+    }
+
+    /**
+     * This method creates a new channel for a consumption index.
+     *
+     * @param channels : the resulting list of channels
+     * @param channelTypeUid : the uid of the ChannelType associated to this channel
+     * @param channelGroup : the group associated to this channel
+     * @param channelName : the name of the channel
+     * @param channelLabel : the label of the channel
+     * @param channelDesc : the description of the channel
+     */
+    private void addChannel(List<Channel> channels, ChannelTypeUID chanTypeUid, String channelGroup, String channelName,
+            String channelLabel, @Nullable String channelDesc) {
+        ChannelUID channelUid = new ChannelUID(this.getThing().getUID(), channelGroup, channelName);
+
+        if (getThing().getChannel(channelUid) != null) {
+            return;
+        }
+
+        ChannelBuilder builder = ChannelBuilder.create(channelUid).withType(chanTypeUid).withLabel(channelLabel);
+
+        if (channelDesc != null) {
+            builder = builder.withDescription(channelDesc);
+        }
+
+        Channel channel = builder.build();
+
+        if (channels.contains(channel)) {
+            return;
+        }
+
+        channels.add(channel);
+    }
+
+    /**
+     * This method creates dynamic channels in the following formats:
+     * consumptionSupplierIdx0, consumptionSupplierIdx1, ..., consumptionSupplierIdx9
+     * consumptionDistributorIdx0, consumptionDistributorIdx1, ..., consumptionDistributorIdx3
+     *
+     * @param channels the resulting list of channels
+     * @param channelTypeUid : the uid of the ChannelType associated to this channel
+     * @param indexMode indicates whether this is Supplier or Distributor index mode
+     */
+    private void addDynamicChannelByIdx(List<Channel> channels, ChannelTypeUID chanTypeUid, IndexMode indexMode) {
+        if (indexMode.getIdx() < 0) {
+            logger.error(
+                    "We only support indexMode values of Supplier or Distributor. Your incoming data seems corrupted—please check! !");
+            return;
+        }
+
+        String channelPrefix = CHANNEL_CONSUMPTION + indexMode.getLabel() + "Idx";
+
+        for (int idx = 0; idx < indexMode.getSize(); idx++) {
+            String channelName = channelPrefix + idx;
+            String channelLabel = indexMode.getLabel() + " Consumption " + idx;
+            Bundle bundle = FrameworkUtil.getBundle(this.getClass());
+
+            String channelDesc = translationProvider.getText(bundle, "consumptionindex.description", "", null) + " \""
+                    + indexMode.getLabel() + " Consumption " + idx + "\"";
+
+            addChannel(channels, chanTypeUid, LINKY_REMOTE_DAILY_GROUP, channelName, channelLabel, channelDesc);
+            addChannel(channels, chanTypeUid, LINKY_REMOTE_WEEKLY_GROUP, channelName, channelLabel, channelDesc);
+            addChannel(channels, chanTypeUid, LINKY_REMOTE_MONTHLY_GROUP, channelName, channelLabel, channelDesc);
+            addChannel(channels, chanTypeUid, LINKY_REMOTE_YEARLY_GROUP, channelName, channelLabel, channelDesc);
+        }
+    }
+
+    /**
+     * This method creates dynamic channels labeled by tariff name:
+     * heuresPleines, heuresCreuses, bleuHeuresCreuses, bleuHeuresPleines, ...
+     *
+     * @param channels the resulting list of channels
+     * @param channelTypeUid : the uid of the ChannelType associated to this channel
+     * @param values : the dataset from enedis.
+     * @param indexMode indicates whether this is Supplier or Distributor index mode
+     */
+    private void addDynamicChannelByLabel(List<Channel> channels, ChannelTypeUID chanTypeUid, MeterReading values,
+            IndexMode indexMode) {
+        if (indexMode.getIdx() < 0) {
+            logger.error(
+                    "We only support indexMode values of Supplier or Distributor. Your incoming data seems corrupted—please check! !");
+            return;
+        }
+
+        for (IntervalReading ir : values.baseValue) {
+            String[] labels = ir.indexInfo[indexMode.getIdx()].label;
+
+            for (String st : labels) {
+                if (st == null) {
+                    continue;
+                }
+
+                String channelName = sanetizeId(st);
+                String channelLabel = st;
+                Bundle bundle = FrameworkUtil.getBundle(this.getClass());
+
+                String channelDesc = translationProvider.getText(bundle, "consumptionindex.description", "", null)
+                        + " \"" + st + "\"";
+
+                addChannel(channels, chanTypeUid, LINKY_REMOTE_DAILY_GROUP, channelName, channelLabel, channelDesc);
+                addChannel(channels, chanTypeUid, LINKY_REMOTE_WEEKLY_GROUP, channelName, channelLabel, channelDesc);
+                addChannel(channels, chanTypeUid, LINKY_REMOTE_MONTHLY_GROUP, channelName, channelLabel, channelDesc);
+                addChannel(channels, chanTypeUid, LINKY_REMOTE_YEARLY_GROUP, channelName, channelLabel, channelDesc);
+            }
+        }
+    }
+
+    /**
+     * This method dynamically creates new channels at runtime when we read datasets from Enedis.
+     * We do this because we want to expose an index for each tariff.
+     * For the Tempo tariff for example, you will have 6 different channels.
+     *
+     * But this is not the only available tariff, so listing all possible channels in a resource file will not work.
+     * It's much easier to create them by looking at the available tariffs in the customer dataset.
+     *
+     * There will be two sets of channels:
+     * - Enedis channels:
+     * Supplier0 to Supplier9: will expose original Enedis Supplier indexes.
+     * Distributor0 to Distributor3: will expose original Enedis Distributor indexes.
+     *
+     * - Named channels:
+     * Will enable having more meaningful channel names. For example:
+     * - For “Heures Pleines / Heures Creuses” tariff: channel names will be heuresPleines / heuresCreuses.
+     * - For Tempo tariff: channel names will be
+     * bleuHeuresCreuses / bleuHeuresPleines / blancHeuresCreuses / blancHeuresPleines / rougeHeuresCreuses /
+     * rougeHeuresPleines.
+     *
+     * @param values : the dataset from enedis.
+     */
+    private void handleDynamicChannel(MeterReading values) {
+        ChannelTypeUID chanTypeUid = new ChannelTypeUID(LinkyBindingConstants.BINDING_ID,
+                LinkyBindingConstants.CHANNEL_TYPE_CONSUMPTION);
+        List<Channel> channels = new ArrayList<Channel>();
+
+        addDynamicChannelByLabel(channels, chanTypeUid, values, IndexMode.SUPPLIER);
+        addDynamicChannelByLabel(channels, chanTypeUid, values, IndexMode.DISTRIBUTOR);
+
+        addDynamicChannelByIdx(channels, chanTypeUid, IndexMode.SUPPLIER);
+        addDynamicChannelByIdx(channels, chanTypeUid, IndexMode.DISTRIBUTOR);
+
+        // If we have channel change, update the thing
+        if (!channels.isEmpty()) {
+            Thing thing = this.getThing();
+
+            for (Channel chan : thing.getChannels()) {
+                channels.add(chan);
+            }
+
+            updateThing(editThing().withChannels(channels).build());
+        }
+    }
+
+    /**
+     * This method takes the full dataset and returns a list of subdatasets,
+     * split on tariff changes.
+     * This can happen if, in your subscription, you ask your supplier to change the tariff.
+     * For example, moving from the Heures Pleines / Heures Creuses tariff to the Tempo tariff.
+     *
+     * We perform this split because we want to expose tariffs on dedicated named channels,
+     * making it easier to display them on a chart.
+     *
+     * @param irs the incoming data in the form of a single IntervalReading
+     * @param indexMode indicates whether this is Supplier or Distributor index mode
+     * @return a list of subdatasets split on tariff change
+     */
+    private List<IntervalReading[]> splitOnTariffBound(IntervalReading[] irs, IndexMode indexMode) {
+        List<IntervalReading[]> result = new ArrayList<IntervalReading[]>();
+        String currentTarif = "";
+        int lastIdx = 0;
+
+        if (indexMode.getIdx() < 0) {
+            logger.error(
+                    "We only support indexMode values of Supplier or Distributor. Your incoming data seems corrupted—please check! !");
+            return result;
+        }
+
+        for (int idx = 0; idx < irs.length; idx++) {
+            IntervalReading ir = irs[idx];
+            if (ir != null) {
+                String tarif = String.join("#", ir.indexInfo[indexMode.getIdx()].label);
+
+                if ((!tarif.equals(currentTarif) && !currentTarif.isEmpty()) || (idx == irs.length - 1)) {
+                    IntervalReading[] subArray;
+                    if (idx == irs.length - 1) {
+                        subArray = Arrays.copyOfRange(irs, lastIdx, idx + 1);
+                    } else {
+                        subArray = Arrays.copyOfRange(irs, lastIdx, idx);
+                    }
+                    result.add(subArray);
+                    lastIdx = idx;
+                }
+
+                currentTarif = tarif;
+            }
+        }
+        return result;
+    }
+
+    /**
+     * The updateEnergyIndex method updates time series for a given energy index.
+     * Two time series are updated for each energy index:
+     * - The index-based time series.
+     * - The tariff-labeled base time series.
+     *
+     * @param irs the incoming data in the form of a single IntervalReading
+     * @param groupName the group name associate to this channel
+     * @param indexMode indicates whether this is Supplier or Distributor index mode
+     */
+    private void updateEnergyIndex(IntervalReading[] irs, String groupName, IndexMode indexMode) {
+        List<IntervalReading[]> lirs = splitOnTariffBound(irs, indexMode);
+
+        if (indexMode.getIdx() < 0) {
+            logger.error(
+                    "We only support indexMode values of Supplier or Distributor. Your incoming data seems corrupted—please check! !");
+            return;
+        }
+
+        int size = indexMode.getSize();
+        String channelPrefix = CHANNEL_CONSUMPTION + indexMode.getLabel() + "Idx";
+
+        for (int idx = 0; idx < size; idx++) {
+            updateTimeSeries(groupName, channelPrefix + idx, irs, idx, Units.KILOWATT_HOUR, indexMode);
+
+            for (IntervalReading[] ir : lirs) {
+                String[] label = ir[0].indexInfo[indexMode.getIdx()].label;
+
+                if (label == null || label[idx] == null) {
+                    continue;
+                }
+
+                updateTimeSeries(groupName, sanetizeId(label[idx]), ir, idx, Units.KILOWATT_HOUR, indexMode);
+            }
+        }
+    }
+
+    private void updateEnergyIndex(IntervalReading[] irs, String groupName) {
+        updateEnergyIndex(irs, groupName, IndexMode.SUPPLIER);
+        updateEnergyIndex(irs, groupName, IndexMode.DISTRIBUTOR);
+    }
+
+    /**
+     * Requests new daily or weekly data and updates the channels.
+     */
+    private synchronized void updateEnergyIndex() {
+        Bridge lcBridge = getBridge();
+        if (!(lcBridge != null && lcBridge.getHandler() instanceof BridgeRemoteEnedisWebHandler)) {
+            return;
+        }
+        dailyIndex.getValue().ifPresentOrElse(values -> {
+            handleDynamicChannel(values);
+
+            updateEnergyIndex(values.baseValue, LINKY_REMOTE_DAILY_GROUP);
+            updateEnergyIndex(values.weekValue, LINKY_REMOTE_WEEKLY_GROUP);
+            updateEnergyIndex(values.monthValue, LINKY_REMOTE_MONTHLY_GROUP);
+            updateEnergyIndex(values.yearValue, LINKY_REMOTE_YEARLY_GROUP);
+        }, () -> {
+        });
+    }
+
+    /**
+     * Requests new load curve data and updates the channels.
      */
     private synchronized void updateLoadCurveData() {
         if (isLinked(LINKY_REMOTE_LOAD_CURVE_GROUP, CHANNEL_POWER)) {
             loadCurveConsumption.getValue().ifPresentOrElse(values -> {
-                updateTimeSeries(LINKY_REMOTE_LOAD_CURVE_GROUP, CHANNEL_POWER, values.baseValue,
+                updateTimeSeries(LINKY_REMOTE_LOAD_CURVE_GROUP, CHANNEL_POWER, values.baseValue, -1,
                         MetricPrefix.KILO(Units.VOLT_AMPERE));
             }, () -> {
             });
@@ -501,23 +809,41 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
     }
 
     private synchronized <T extends Quantity<T>> void updateTimeSeries(String groupId, String channelId,
-            IntervalReading[] iv, Unit<T> unit) {
+            IntervalReading[] iv, int idx, Unit<T> unit) {
+        updateTimeSeries(groupId, channelId, iv, idx, unit, IndexMode.NONE);
+    }
+
+    private synchronized <T extends Quantity<T>> void updateTimeSeries(String groupId, String channelId,
+            IntervalReading[] iv, int idx, Unit<T> unit, IndexMode indexMode) {
         TimeSeries timeSeries = new TimeSeries(Policy.REPLACE);
 
         for (int i = 0; i < iv.length; i++) {
             try {
+                if (iv[i] == null) {
+                    continue;
+                }
                 if (iv[i].date == null) {
                     continue;
                 }
 
                 Instant timestamp = iv[i].date.atZone(zoneId).toInstant();
 
-                if (Double.isNaN(iv[i].value)) {
-                    continue;
+                if (indexMode == IndexMode.NONE) {
+                    if (Double.isNaN(iv[i].value)) {
+                        continue;
+                    }
+
+                    timeSeries.add(timestamp, new QuantityType<>(iv[i].value, unit));
+                } else {
+                    int indexIdx = indexMode.getIdx();
+
+                    if (iv[i].indexInfo[indexIdx].label[idx] != null
+                            && !Double.isNaN(iv[i].indexInfo[indexIdx].value[idx])) {
+                        timeSeries.add(timestamp, new QuantityType<>(iv[i].indexInfo[indexIdx].value[idx], unit));
+                    }
                 }
-                timeSeries.add(timestamp, new QuantityType<>(iv[i].value, unit));
             } catch (Exception ex) {
-                logger.error("error occurs durring updatePowerTimeSeries for {} : {}", config.prmId, ex.getMessage(),
+                logger.error("error occurs during updatePowerTimeSeries for {} : {}", config.prmId, ex.getMessage(),
                         ex);
             }
         }
@@ -544,15 +870,14 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
     }
 
     /**
-     * Produce a report of all daily values between two dates
+     * Produces a report of all daily values between two dates.
      *
      * @param startDay the start day of the report
      * @param endDay the end day of the report
-     * @param separator the separator to be used betwwen the date and the value
+     * @param separator the separator to be used between the date and the value
      *
-     * @return the report as a list of string
+     * @return the report as a list of strings
      */
-
     public synchronized List<String> reportValues(LocalDate startDay, LocalDate endDay, @Nullable String separator) {
         return buildReport(startDay, endDay, separator);
     }
@@ -610,6 +935,23 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
         if (api != null) {
             try {
                 return api.getEnergyData(this, this.userId, config.prmId, segment, from, to);
+            } catch (LinkyException e) {
+                logger.debug("Exception when getting consumption data for {} : {}", config.prmId, e.getMessage(), e);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
+            }
+        }
+
+        return null;
+    }
+
+    private @Nullable MeterReading getConsumptionIndex(LocalDate from, LocalDate to) {
+        logger.debug("getConsumptionIndex for {} from {} to {}", config.prmId,
+                from.format(DateTimeFormatter.ISO_LOCAL_DATE), to.format(DateTimeFormatter.ISO_LOCAL_DATE));
+
+        EnedisHttpApi api = this.enedisApi;
+        if (api != null) {
+            try {
+                return api.getEnergyIndex(this, this.userId, config.prmId, segment, from, to);
             } catch (LinkyException e) {
                 logger.debug("Exception when getting consumption data for {} : {}", config.prmId, e.getMessage(), e);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
@@ -680,6 +1022,101 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
         }
     }
 
+    /**
+     * This method initializes the IndexInfo data structure for a given IntervalReading.
+     *
+     * @param ir the IntervalReading to initialize
+     */
+    private void initIntervalReadingTarif(IntervalReading ir) {
+        if (ir.indexInfo == null) {
+            ir.indexInfo = new IndexInfo[2];
+            ir.indexInfo[0] = new IndexInfo();
+            ir.indexInfo[1] = new IndexInfo();
+
+            ir.indexInfo[0].value = new double[10];
+            ir.indexInfo[0].label = new String[10];
+
+            ir.indexInfo[1].value = new double[4];
+            ir.indexInfo[1].label = new String[4];
+        }
+    }
+
+    /**
+     * This method sums the daily index value into the respective week, month, and year indexes.
+     * This is done for Supplier or Distributor indexes according to the specified indexMode.
+     *
+     * @param indexMode the index mode: Supplier or Distributor
+     * @param meterReading the incoming meter reading data
+     * @param ir the incoming IntervalReading
+     * @param idxWeek : the index of the Week we wants to sum
+     * @param weeksNum : the maximum index for the Week
+     * @param idxMonth : the index of the Month we wants to sum
+     * @param monthsNum : the maximum index for the Month
+     * @param idxYear : the index of the Year we wants to sum
+     * @param yearsNum : the maximum index for the Year
+     */
+    public void sumIndex(IndexMode indexMode, MeterReading meterReading, IntervalReading ir, int idxWeek, int weeksNum,
+            int idxMonth, int monthsNum, int idxYear, int yearsNum) {
+        int indexIdx = indexMode.getIdx();
+        int size = indexMode.getSize();
+
+        if (ir.indexInfo[indexIdx].value != null) {
+            for (int idxIndex = 0; idxIndex < size; idxIndex++) {
+                double valIndex = ir.indexInfo[indexIdx].value[idxIndex];
+                String label = ir.indexInfo[indexIdx].label[idxIndex];
+
+                // Sums day to week
+                if (idxWeek < weeksNum) {
+                    meterReading.weekValue[idxWeek].indexInfo[indexIdx].value[idxIndex] += valIndex;
+                    meterReading.weekValue[idxWeek].indexInfo[indexIdx].label[idxIndex] = label;
+                }
+
+                // Sums day to month
+                if (idxMonth < monthsNum) {
+                    meterReading.monthValue[idxMonth].indexInfo[indexIdx].value[idxIndex] += valIndex;
+                    meterReading.monthValue[idxMonth].indexInfo[indexIdx].label[idxIndex] = label;
+                }
+
+                // Sums day to year
+                if (idxYear < yearsNum) {
+                    meterReading.yearValue[idxYear].indexInfo[indexIdx].value[idxIndex] += valIndex;
+                    meterReading.yearValue[idxYear].indexInfo[indexIdx].label[idxIndex] = label;
+                }
+            }
+        }
+    }
+
+    private void checkData(@Nullable MeterReading meterReading) throws LinkyException {
+        if (meterReading != null) {
+            if (meterReading.baseValue.length == 0) {
+                throw new LinkyException("Invalid meterReading data: no day period");
+            }
+        } else {
+            throw new LinkyException("Invalid meterReading == null");
+        }
+    }
+
+    private boolean isDataLastDayAvailable(@Nullable MeterReading meterReading) {
+        if (meterReading != null) {
+            IntervalReading[] iv = meterReading.baseValue;
+
+            logData(iv, "Last day", DateTimeFormatter.ISO_LOCAL_DATE, Target.LAST);
+            return iv != null && iv.length != 0 && iv[iv.length - 1] != null && !iv[iv.length - 1].value.isNaN();
+        }
+
+        return false;
+    }
+
+    /**
+     * This method performs basic checks on a dataset from Enedis
+     * and calculates the weekly, monthly, and yearly aggregates.
+     *
+     * When data comes from Enedis, it is available only day by day.
+     * To get values for a week, month, or year, we need to sum the daily data.
+     *
+     * @param meterReading the incoming data to check
+     * @return the resulting data after checks
+     */
     public @Nullable MeterReading getMeterReadingAfterChecks(@Nullable MeterReading meterReading) {
         try {
             checkData(meterReading);
@@ -739,12 +1176,16 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
                     int idxWeek = (idxYear * 52) + dtWeek - baseWeek;
                     int month = dt.getMonthValue();
 
+                    // Sums day to week
                     if (idxWeek < weeksNum) {
                         meterReading.weekValue[idxWeek].value += value;
+
                         if (meterReading.weekValue[idxWeek].date == null) {
                             meterReading.weekValue[idxWeek].date = dt;
                         }
                     }
+
+                    // Sums day to month
                     if (idxMonth < monthsNum) {
                         meterReading.monthValue[idxMonth].value += value;
                         if (meterReading.monthValue[idxMonth].date == null) {
@@ -752,38 +1193,29 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
                         }
                     }
 
+                    // Sums day to year
                     if (idxYear < yearsNum) {
                         meterReading.yearValue[idxYear].value += value;
                         if (meterReading.yearValue[idxYear].date == null) {
                             meterReading.yearValue[idxYear].date = LocalDateTime.of(dt.getYear(), 1, 1, 0, 0);
                         }
                     }
+
+                    if (ir.indexInfo != null) {
+                        initIntervalReadingTarif(meterReading.weekValue[idxWeek]);
+                        initIntervalReadingTarif(meterReading.monthValue[idxMonth]);
+                        initIntervalReadingTarif(meterReading.yearValue[idxYear]);
+
+                        sumIndex(IndexMode.SUPPLIER, meterReading, ir, idxWeek, weeksNum, idxMonth, monthsNum, idxYear,
+                                yearsNum);
+                        sumIndex(IndexMode.DISTRIBUTOR, meterReading, ir, idxWeek, weeksNum, idxMonth, monthsNum,
+                                idxYear, yearsNum);
+                    }
                 }
             }
         }
 
         return meterReading;
-    }
-
-    private void checkData(@Nullable MeterReading meterReading) throws LinkyException {
-        if (meterReading != null) {
-            if (meterReading.baseValue.length == 0) {
-                throw new LinkyException("Invalid meterReading data: no day period");
-            }
-        } else {
-            throw new LinkyException("Invalid meterReading == null");
-        }
-    }
-
-    private boolean isDataLastDayAvailable(@Nullable MeterReading meterReading) {
-        if (meterReading != null) {
-            IntervalReading[] iv = meterReading.baseValue;
-
-            logData(iv, "Last day", DateTimeFormatter.ISO_LOCAL_DATE, Target.LAST);
-            return iv.length != 0 && !iv[iv.length - 1].value.isNaN();
-        }
-
-        return false;
     }
 
     private void logData(IntervalReading[] ivArray, String title, DateTimeFormatter dateTimeFormatter, Target target) {

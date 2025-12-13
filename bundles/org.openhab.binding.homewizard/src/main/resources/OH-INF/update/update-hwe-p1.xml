@@ -41,6 +41,21 @@
 
 		</instruction-set>
 
+		<instruction-set targetVersion="3">
+			<add-channel id="tariff" groupIds="energy">
+				<type>homewizard:p1-tariff</type>
+			</add-channel>
+		</instruction-set>
+
+		<instruction-set targetVersion="4">
+			<update-channel id="batteries_mode" groupIds="batteries">
+				<type>homewizard:hw-batteries-mode</type>
+			</update-channel>
+			<add-channel id="batteries_battery_count" groupIds="batteries">
+				<type>homewizard:hw-batteries-battery-count</type>
+			</add-channel>
+		</instruction-set>
+
 	</thing-type>
 
 </update:update-descriptions>

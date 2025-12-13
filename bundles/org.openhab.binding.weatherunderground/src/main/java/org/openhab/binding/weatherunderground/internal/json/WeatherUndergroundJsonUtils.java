@@ -14,6 +14,7 @@ package org.openhab.binding.weatherunderground.internal.json;
 
 import java.math.BigDecimal;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.time.DateTimeException;
 import java.time.Instant;
@@ -100,9 +101,9 @@ public class WeatherUndergroundJsonUtils {
      */
     public static URL getValidUrl(String url) {
         URL validUrl = null;
-        if (url != null && !url.trim().isEmpty()) {
+        if (url != null && !url.isBlank()) {
             try {
-                validUrl = new URL(url.trim());
+                validUrl = URI.create(url.trim()).toURL();
             } catch (MalformedURLException e) {
             }
         }

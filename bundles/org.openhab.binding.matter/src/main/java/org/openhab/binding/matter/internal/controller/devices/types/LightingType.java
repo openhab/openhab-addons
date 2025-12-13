@@ -119,22 +119,29 @@ public class LightingType extends DeviceType {
     protected @Nullable GenericConverter<? extends BaseCluster> createConverter(BaseCluster cluster,
             Map<String, BaseCluster> allClusters, String labelPrefix) {
         logger.debug("checking converter for cluster: {}", cluster.getClass().getSimpleName());
+
+        // The switchBot candle warmer says its a ExtendedColorLight, but is not, and has no color control cluster, so
+        // we need to check for that here, boo.
+        boolean hasColorCluster = allClusters.containsKey(ColorControlCluster.CLUSTER_NAME);
+
         // Skip creating certain converters that this DeviceType will coordinate
-        if ((cluster instanceof OnOffCluster && !isSwitch())
-                || (cluster instanceof LevelControlCluster && (isSwitch() || isColor()))) {
+        if ((cluster instanceof OnOffCluster && !isSwitchDevice()) || (cluster instanceof LevelControlCluster
+                && (isSwitchDevice() || isColorDevice() && hasColorCluster))) {
             return null;
         }
 
         return super.createConverter(cluster, allClusters, labelPrefix);
     }
 
-    private boolean isSwitch() {
+    private boolean isSwitchDevice() {
         return deviceType.equals(DeviceTypes.ON_OFF_LIGHT) || deviceType.equals(DeviceTypes.ON_OFF_LIGHT_SWITCH)
-                || deviceType.equals(DeviceTypes.ON_OFF_PLUG_IN_UNIT);
+                || deviceType.equals(DeviceTypes.ON_OFF_PLUG_IN_UNIT) || deviceType.equals(DeviceTypes.ON_OFF_SENSOR)
+                || deviceType.equals(DeviceTypes.MOUNTED_ON_OFF_CONTROL);
     }
 
-    private boolean isColor() {
+    private boolean isColorDevice() {
         return deviceType.equals(DeviceTypes.EXTENDED_COLOR_LIGHT)
-                || deviceType.equals(DeviceTypes.COLOR_TEMPERATURE_LIGHT);
+                || deviceType.equals(DeviceTypes.COLOR_TEMPERATURE_LIGHT)
+                || deviceType.equals(DeviceTypes.COLOR_DIMMER_SWITCH);
     }
 }

@@ -17,12 +17,13 @@ import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.profiles.ProfileCallback;
 import org.openhab.core.thing.profiles.ProfileContext;
 import org.openhab.core.thing.profiles.ProfileTypeUID;
-import org.openhab.core.thing.profiles.StateProfile;
+import org.openhab.core.thing.profiles.TimeSeriesProfile;
 import org.openhab.core.transform.TransformationException;
 import org.openhab.core.transform.TransformationHelper;
 import org.openhab.core.transform.TransformationService;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
+import org.openhab.core.types.TimeSeries;
 import org.openhab.core.types.Type;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,7 +34,7 @@ import org.slf4j.LoggerFactory;
  * @author Stefan Triller - Initial contribution
  */
 @NonNullByDefault
-public class ScaleTransformationProfile implements StateProfile {
+public class ScaleTransformationProfile implements TimeSeriesProfile {
 
     public static final ProfileTypeUID PROFILE_TYPE_UID = new ProfileTypeUID(
             TransformationService.TRANSFORM_PROFILE_SCOPE, "SCALE");
@@ -43,7 +44,7 @@ public class ScaleTransformationProfile implements StateProfile {
     private final TransformationService service;
     private final ProfileCallback callback;
 
-    private static final String FUNCTION_PARAM = "function";
+    static final String FUNCTION_PARAM = "function";
     private static final String SOURCE_FORMAT_PARAM = "sourceFormat";
 
     @NonNullByDefault({})
@@ -111,6 +112,14 @@ public class ScaleTransformationProfile implements StateProfile {
             return;
         }
         callback.sendUpdate((State) transformState(state));
+    }
+
+    @Override
+    public void onTimeSeriesFromHandler(TimeSeries timeSeries) {
+        TimeSeries transformedTimeSeries = new TimeSeries(timeSeries.getPolicy());
+        timeSeries.getStates()
+                .forEach(entry -> transformedTimeSeries.add(entry.timestamp(), (State) transformState(entry.state())));
+        callback.sendTimeSeries(transformedTimeSeries);
     }
 
     private Type transformState(Type state) {

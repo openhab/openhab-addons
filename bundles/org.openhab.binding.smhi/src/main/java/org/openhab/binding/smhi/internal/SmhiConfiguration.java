@@ -24,8 +24,32 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public class SmhiConfiguration {
-    public double latitude;
-    public double longitude;
-    public @Nullable List<Integer> hourlyForecasts;
-    public @Nullable List<Integer> dailyForecasts;
+    private double latitude;
+    private double longitude;
+    private @Nullable List<Integer> hourlyForecasts;
+    private @Nullable List<Integer> dailyForecasts;
+
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public double getLongitude() {
+        return longitude;
+    }
+
+    public List<Integer> getHourlyForecasts() {
+        List<Integer> local = hourlyForecasts;
+        if (local == null) {
+            return List.of();
+        }
+        return local.stream().filter(i -> i >= 0 && i < 25).toList();
+    }
+
+    public List<Integer> getDailyForecasts() {
+        List<Integer> local = dailyForecasts;
+        if (local == null) {
+            return List.of();
+        }
+        return local.stream().filter(i -> i >= 0 && i < 10).toList();
+    }
 }

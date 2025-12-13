@@ -951,10 +951,15 @@ public class TeslaVehicleHandler extends BaseThingHandler {
 
                         Set<Map.Entry<String, JsonElement>> entrySet = new HashSet<>();
 
-                        entrySet.addAll(gson.toJsonTree(driveState, DriveState.class).getAsJsonObject().entrySet());
+                        if (driveState != null) {
+                            entrySet.addAll(gson.toJsonTree(driveState, DriveState.class).getAsJsonObject().entrySet());
+                        }
                         entrySet.addAll(gson.toJsonTree(guiState, GUIState.class).getAsJsonObject().entrySet());
                         entrySet.addAll(gson.toJsonTree(vehicleState, VehicleState.class).getAsJsonObject().entrySet());
-                        entrySet.addAll(gson.toJsonTree(chargeState, ChargeState.class).getAsJsonObject().entrySet());
+                        if (chargeState != null) {
+                            entrySet.addAll(
+                                    gson.toJsonTree(chargeState, ChargeState.class).getAsJsonObject().entrySet());
+                        }
                         entrySet.addAll(gson.toJsonTree(climateState, ClimateState.class).getAsJsonObject().entrySet());
                         entrySet.addAll(
                                 gson.toJsonTree(softwareUpdate, SoftwareUpdate.class).getAsJsonObject().entrySet());

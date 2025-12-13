@@ -40,6 +40,7 @@ import org.openhab.binding.ecovacs.internal.api.commands.GetChargeStateCommand;
 import org.openhab.binding.ecovacs.internal.api.commands.GetCleanStateCommand;
 import org.openhab.binding.ecovacs.internal.api.commands.GetComponentLifeSpanCommand;
 import org.openhab.binding.ecovacs.internal.api.commands.GetContinuousCleaningCommand;
+import org.openhab.binding.ecovacs.internal.api.commands.GetCustomMoppingWaterAmountCommand;
 import org.openhab.binding.ecovacs.internal.api.commands.GetDefaultCleanPassesCommand;
 import org.openhab.binding.ecovacs.internal.api.commands.GetDustbinAutoEmptyCommand;
 import org.openhab.binding.ecovacs.internal.api.commands.GetErrorCommand;
@@ -57,6 +58,7 @@ import org.openhab.binding.ecovacs.internal.api.commands.PlaySoundCommand;
 import org.openhab.binding.ecovacs.internal.api.commands.ResumeCleaningCommand;
 import org.openhab.binding.ecovacs.internal.api.commands.SceneCleaningCommand;
 import org.openhab.binding.ecovacs.internal.api.commands.SetContinuousCleaningCommand;
+import org.openhab.binding.ecovacs.internal.api.commands.SetCustomMoppingWaterAmountCommand;
 import org.openhab.binding.ecovacs.internal.api.commands.SetDefaultCleanPassesCommand;
 import org.openhab.binding.ecovacs.internal.api.commands.SetDustbinAutoEmptyCommand;
 import org.openhab.binding.ecovacs.internal.api.commands.SetMoppingWaterAmountCommand;
@@ -187,6 +189,9 @@ public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDev
                     device.sendCommand(new SetMoppingWaterAmountCommand(amount.get()));
                     return;
                 }
+            } else if (channel.equals(CHANNEL_ID_WATER_AMOUNT_PERCENT) && command instanceof PercentType percent) {
+                device.sendCommand(new SetCustomMoppingWaterAmountCommand(percent.intValue()));
+                return;
             } else if (channel.equals(CHANNEL_ID_AUTO_EMPTY)) {
                 if (command instanceof OnOffType) {
                     device.sendCommand(new SetDustbinAutoEmptyCommand(command == OnOffType.ON));
@@ -411,7 +416,12 @@ public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDev
 
         if (!device.hasCapability(DeviceCapability.MOPPING_SYSTEM)) {
             hasChanges |= removeUnsupportedChannel(builder, CHANNEL_ID_WATER_AMOUNT);
+            hasChanges |= removeUnsupportedChannel(builder, CHANNEL_ID_WATER_AMOUNT_PERCENT);
             hasChanges |= removeUnsupportedChannel(builder, CHANNEL_ID_WATER_PLATE_PRESENT);
+        } else if (device.hasCapability(DeviceCapability.CUSTOM_WATER_AMOUNT)) {
+            hasChanges |= removeUnsupportedChannel(builder, CHANNEL_ID_WATER_AMOUNT);
+        } else {
+            hasChanges |= removeUnsupportedChannel(builder, CHANNEL_ID_WATER_AMOUNT_PERCENT);
         }
         if (!device.hasCapability(DeviceCapability.CLEAN_SPEED_CONTROL)) {
             hasChanges |= removeUnsupportedChannel(builder, CHANNEL_ID_SUCTION_POWER);
@@ -440,6 +450,12 @@ public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDev
         }
         if (!device.hasCapability(DeviceCapability.DEFAULT_CLEAN_COUNT_SETTING)) {
             hasChanges |= removeUnsupportedChannel(builder, CHANNEL_ID_CLEANING_PASSES);
+        }
+        if (!device.hasCapability(DeviceCapability.UNIT_CARE_LIFESPAN)) {
+            hasChanges |= removeUnsupportedChannel(builder, CHANNEL_ID_OTHER_COMPONENT_LIFETIME);
+        }
+        if (!device.hasCapability(DeviceCapability.ROUND_MOP_LIFESPAN)) {
+            hasChanges |= removeUnsupportedChannel(builder, CHANNEL_ID_ROUND_MOP_LIFETIME);
         }
 
         if (hasChanges) {
@@ -609,8 +625,14 @@ public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDev
             }
 
             if (device.hasCapability(DeviceCapability.MOPPING_SYSTEM)) {
-                MoppingWaterAmount waterAmount = device.sendCommand(new GetMoppingWaterAmountCommand());
-                updateState(CHANNEL_ID_WATER_AMOUNT, new StringType(WATER_AMOUNT_MAPPING.getMappedValue(waterAmount)));
+                if (device.hasCapability(DeviceCapability.CUSTOM_WATER_AMOUNT)) {
+                    Integer waterAmount = device.sendCommand(new GetCustomMoppingWaterAmountCommand());
+                    updateState(CHANNEL_ID_WATER_AMOUNT_PERCENT, new PercentType(waterAmount));
+                } else {
+                    MoppingWaterAmount waterAmount = device.sendCommand(new GetMoppingWaterAmountCommand());
+                    updateState(CHANNEL_ID_WATER_AMOUNT,
+                            new StringType(WATER_AMOUNT_MAPPING.getMappedValue(waterAmount)));
+                }
             }
 
             if (device.hasCapability(DeviceCapability.READ_NETWORK_INFO)) {
@@ -645,6 +667,10 @@ public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDev
             if (device.hasCapability(DeviceCapability.UNIT_CARE_LIFESPAN)) {
                 int unitCarePercent = device.sendCommand(new GetComponentLifeSpanCommand(Component.UNIT_CARE));
                 updateState(CHANNEL_ID_OTHER_COMPONENT_LIFETIME, new QuantityType<>(unitCarePercent, Units.PERCENT));
+            }
+            if (device.hasCapability(DeviceCapability.ROUND_MOP_LIFESPAN)) {
+                int roundMopPercent = device.sendCommand(new GetComponentLifeSpanCommand(Component.ROUND_MOP));
+                updateState(CHANNEL_ID_ROUND_MOP_LIFETIME, new QuantityType<>(roundMopPercent, Units.PERCENT));
             }
             if (device.hasCapability(DeviceCapability.VOICE_REPORTING)) {
                 int level = device.sendCommand(new GetVolumeCommand());

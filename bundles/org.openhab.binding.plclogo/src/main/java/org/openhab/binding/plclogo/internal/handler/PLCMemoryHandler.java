@@ -12,31 +12,33 @@
  */
 package org.openhab.binding.plclogo.internal.handler;
 
-import static org.openhab.binding.plclogo.internal.PLCLogoBindingConstants.*;
+import static org.openhab.binding.plclogo.internal.PLCLogoBindingConstants.ANALOG_ITEM;
+import static org.openhab.binding.plclogo.internal.PLCLogoBindingConstants.BINDING_ID;
+import static org.openhab.binding.plclogo.internal.PLCLogoBindingConstants.BLOCK_PROPERTY;
+import static org.openhab.binding.plclogo.internal.PLCLogoBindingConstants.DIGITAL_OUTPUT_ITEM;
+import static org.openhab.binding.plclogo.internal.PLCLogoBindingConstants.MEMORY_BYTE;
+import static org.openhab.binding.plclogo.internal.PLCLogoBindingConstants.MEMORY_DWORD;
+import static org.openhab.binding.plclogo.internal.PLCLogoBindingConstants.MEMORY_WORD;
+import static org.openhab.binding.plclogo.internal.PLCLogoBindingConstants.STATE_CHANNEL;
+import static org.openhab.binding.plclogo.internal.PLCLogoBindingConstants.VALUE_CHANNEL;
 
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.plclogo.internal.PLCLogoClient;
 import org.openhab.binding.plclogo.internal.config.PLCMemoryConfiguration;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.Bridge;
-import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
-import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
-import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,16 +54,15 @@ import Moka7.S7Client;
 @NonNullByDefault
 public class PLCMemoryHandler extends PLCCommonHandler {
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_MEMORY);
-
     private final Logger logger = LoggerFactory.getLogger(PLCMemoryHandler.class);
-    private AtomicReference<PLCMemoryConfiguration> config = new AtomicReference<>();
+    private volatile @NonNullByDefault({}) PLCMemoryConfiguration config;
 
     /**
      * Constructor.
      */
     public PLCMemoryHandler(Thing thing) {
         super(thing);
+        config = getConfigAs(PLCMemoryConfiguration.class);
     }
 
     @Override
@@ -70,73 +71,89 @@ public class PLCMemoryHandler extends PLCCommonHandler {
             return;
         }
 
-        Channel channel = getThing().getChannel(channelUID.getId());
-        String name = getBlockFromChannel(channel);
+        final var channel = getThing().getChannel(channelUID.getId());
+        final var name = getBlockFromChannel(channel);
         if (!isValid(name) || (channel == null)) {
             logger.debug("Can not update channel {}, block {}.", channelUID, name);
             return;
         }
 
-        int address = getAddress(name);
-        PLCLogoClient client = getLogoClient();
+        final var address = getAddress(name);
+        final var client = getLogoClient();
         if ((address != INVALID) && (client != null)) {
-            String kind = getBlockKind();
-            String type = channel.getAcceptedItemType();
-            if (command instanceof RefreshType) {
-                byte[] buffer = new byte[getBufferLength()];
-                int result = client.readDBArea(1, 0, buffer.length, S7Client.S7WLByte, buffer);
-                if (result == 0) {
-                    if (DIGITAL_OUTPUT_ITEM.equalsIgnoreCase(type) && MEMORY_BYTE.equalsIgnoreCase(kind)) {
-                        boolean value = S7.GetBitAt(buffer, address, getBit(name));
-                        updateState(channelUID, OnOffType.from(value));
-                        logger.debug("Channel {} accepting {} was set to {}.", channelUID, type, value);
-                    } else if (ANALOG_ITEM.equalsIgnoreCase(type) && MEMORY_BYTE.equalsIgnoreCase(kind)) {
-                        int value = buffer[address];
-                        updateState(channelUID, new DecimalType(value));
-                        logger.debug("Channel {} accepting {} was set to {}.", channelUID, type, value);
-                    } else if (ANALOG_ITEM.equalsIgnoreCase(type) && MEMORY_WORD.equalsIgnoreCase(kind)) {
-                        int value = S7.GetShortAt(buffer, address);
-                        updateState(channelUID, new DecimalType(value));
-                        logger.debug("Channel {} accepting {} was set to {}.", channelUID, type, value);
-                    } else if (ANALOG_ITEM.equalsIgnoreCase(type) && MEMORY_DWORD.equalsIgnoreCase(kind)) {
-                        int value = S7.GetDIntAt(buffer, address);
-                        updateState(channelUID, new DecimalType(value));
-                        logger.debug("Channel {} accepting {} was set to {}.", channelUID, type, value);
+            final var kind = getBlockKind();
+            final var type = channel.getAcceptedItemType();
+            switch (command) {
+                case RefreshType ignored -> {
+                    final var buffer = new byte[getBufferLength()];
+                    final var result = client.readBytes(0, buffer.length, buffer);
+                    if (result == 0) {
+                        if (DIGITAL_OUTPUT_ITEM.equalsIgnoreCase(type)) {
+                            updateState(channelUID,
+                                    kind.equalsIgnoreCase(MEMORY_BYTE)
+                                            ? OnOffType.from(S7.GetBitAt(buffer, address, getBit(name)))
+                                            : UnDefType.UNDEF);
+                        } else if (ANALOG_ITEM.equalsIgnoreCase(type)) {
+                            updateState(channelUID, switch (kind.toUpperCase()) {
+                                case MEMORY_BYTE -> new DecimalType(buffer[address]);
+                                case MEMORY_WORD -> new DecimalType(S7.GetShortAt(buffer, address));
+                                case MEMORY_DWORD -> new DecimalType(S7.GetDIntAt(buffer, address));
+                                default -> UnDefType.UNDEF;
+                            });
+                        } else {
+                            logger.debug("Channel {} will not accept {} items.", channelUID, type);
+                        }
+                    } else {
+                        logger.debug("Can not read data from LOGO!: {}.", S7Client.ErrorText(result));
+                    }
+                }
+                case DecimalType decimalCommand -> {
+                    if (ANALOG_ITEM.equalsIgnoreCase(type)) {
+                        if (MEMORY_BYTE.equalsIgnoreCase(kind)) {
+                            final byte[] buffer = { decimalCommand.byteValue() };
+                            final var result = client.writeBytes(address, buffer.length, buffer);
+                            if (result != 0) {
+                                logger.debug("Can not write data to LOGO!: {}.", S7Client.ErrorText(result));
+                            }
+                        } else if (MEMORY_WORD.equalsIgnoreCase(kind)) {
+                            final byte[] buffer = { 0, 0 };
+                            S7.SetShortAt(buffer, 0, decimalCommand.intValue());
+                            final var result = client.writeBytes(address, buffer.length, buffer);
+                            if (result != 0) {
+                                logger.debug("Can not write data to LOGO!: {}.", S7Client.ErrorText(result));
+                            }
+                        } else if (MEMORY_DWORD.equalsIgnoreCase(kind)) {
+                            final byte[] buffer = { 0, 0, 0, 0 };
+                            S7.SetDIntAt(buffer, 0, decimalCommand.intValue());
+                            final var result = client.writeBytes(address, buffer.length, buffer);
+                            if (result != 0) {
+                                logger.debug("Can not write data to LOGO!: {}.", S7Client.ErrorText(result));
+                            }
+                        } else {
+                            logger.debug("Channel {} will not accept {} items.", channelUID, kind);
+                        }
                     } else {
                         logger.debug("Channel {} will not accept {} items.", channelUID, type);
                     }
-                } else {
-                    logger.debug("Can not read data from LOGO!: {}.", S7Client.ErrorText(result));
                 }
-            } else if (command instanceof DecimalType decimalCommand) {
-                int length = MEMORY_BYTE.equalsIgnoreCase(kind) ? 1 : 2;
-                byte[] buffer = new byte[MEMORY_DWORD.equalsIgnoreCase(kind) ? 4 : length];
-                if (ANALOG_ITEM.equalsIgnoreCase(type) && MEMORY_BYTE.equalsIgnoreCase(kind)) {
-                    buffer[0] = decimalCommand.byteValue();
-                } else if (ANALOG_ITEM.equalsIgnoreCase(type) && MEMORY_WORD.equalsIgnoreCase(kind)) {
-                    S7.SetShortAt(buffer, 0, decimalCommand.intValue());
-                } else if (ANALOG_ITEM.equalsIgnoreCase(type) && MEMORY_DWORD.equalsIgnoreCase(kind)) {
-                    S7.SetDIntAt(buffer, 0, decimalCommand.intValue());
-                } else {
-                    logger.debug("Channel {} will not accept {} items.", channelUID, type);
+                case OnOffType ignored -> {
+                    if (DIGITAL_OUTPUT_ITEM.equalsIgnoreCase(type)) {
+                        if (MEMORY_BYTE.equalsIgnoreCase(kind)) {
+                            final byte[] buffer = { 0 };
+                            S7.SetBitAt(buffer, 0, 0, OnOffType.ON.equals(command));
+                            final var bit = 8 * address + getBit(name);
+                            final var result = client.writeBits(bit, buffer.length, buffer);
+                            if (result != 0) {
+                                logger.debug("Can not write data to LOGO!: {}.", S7Client.ErrorText(result));
+                            }
+                        } else {
+                            logger.debug("Channel {} will not accept {} items.", channelUID, kind);
+                        }
+                    } else {
+                        logger.debug("Channel {} will not accept {} items.", channelUID, type);
+                    }
                 }
-                int result = client.writeDBArea(1, address, buffer.length, S7Client.S7WLByte, buffer);
-                if (result != 0) {
-                    logger.debug("Can not write data to LOGO!: {}.", S7Client.ErrorText(result));
-                }
-            } else if (command instanceof OnOffType onOffCommand) {
-                byte[] buffer = new byte[1];
-                if (DIGITAL_OUTPUT_ITEM.equalsIgnoreCase(type) && MEMORY_BYTE.equalsIgnoreCase(kind)) {
-                    S7.SetBitAt(buffer, 0, 0, onOffCommand == OnOffType.ON);
-                } else {
-                    logger.debug("Channel {} will not accept {} items.", channelUID, type);
-                }
-                int result = client.writeDBArea(1, 8 * address + getBit(name), buffer.length, S7Client.S7WLBit, buffer);
-                if (result != 0) {
-                    logger.debug("Can not write data to LOGO!: {}.", S7Client.ErrorText(result));
-                }
-            } else {
-                logger.debug("Channel {} received not supported command {}.", channelUID, command);
+                default -> logger.debug("Channel {} received not supported command {}.", channelUID, command);
             }
         } else {
             logger.info("Invalid channel {} or client {} found.", channelUID, client);
@@ -154,67 +171,65 @@ public class PLCMemoryHandler extends PLCCommonHandler {
             return;
         }
 
-        List<Channel> channels = thing.getChannels();
+        final var channels = getThing().getChannels();
         if (channels.size() != getNumberOfChannels()) {
             logger.info("Received and configured channel sizes does not match.");
             return;
         }
 
-        for (Channel channel : channels) {
-            ChannelUID channelUID = channel.getUID();
-            String name = getBlockFromChannel(channel);
+        for (final var channel : channels) {
+            final var channelUID = channel.getUID();
+            final var name = getBlockFromChannel(channel);
 
             int address = getAddress(name);
             if (address != INVALID) {
-                String kind = getBlockKind();
-                String type = channel.getAcceptedItemType();
-                Boolean force = config.get().isUpdateForced();
+                final var type = channel.getAcceptedItemType();
+                final var force = config.isUpdateForced();
 
-                if (DIGITAL_OUTPUT_ITEM.equalsIgnoreCase(type) && kind.equalsIgnoreCase(MEMORY_BYTE)) {
-                    OnOffType state = (OnOffType) getOldValue(name);
-                    OnOffType value = OnOffType.from(S7.GetBitAt(data, address, getBit(name)));
-                    if ((state == null) || (value != state) || force) {
+                if (DIGITAL_OUTPUT_ITEM.equalsIgnoreCase(type)) {
+                    final var kind = getBlockKind();
+                    if (MEMORY_BYTE.equalsIgnoreCase(kind)) {
+                        final var value = OnOffType.from(S7.GetBitAt(data, address, getBit(name)));
+                        if (!value.equals(getOldValue(name)) || force) {
+                            updateState(channelUID, value);
+                        }
+                        if (logger.isTraceEnabled()) {
+                            final var buffer = Integer.toBinaryString((data[address] & 0xFF) + 0x100);
+                            logger.trace("Channel {} received [{}].", channelUID, buffer.substring(1));
+                        }
+                    } else {
+                        logger.debug("Channel {} will not accept {} items.", channelUID, kind);
+                        updateState(channelUID, UnDefType.UNDEF);
+                    }
+                } else if (ANALOG_ITEM.equalsIgnoreCase(type)) {
+                    final var kind = getBlockKind();
+                    final var value = switch (kind.toUpperCase()) {
+                        case MEMORY_BYTE -> {
+                            logger.trace("Channel {} received [{}].", channelUID, data[address]);
+                            yield new DecimalType(data[address]);
+                        }
+                        case MEMORY_WORD -> {
+                            logger.trace("Channel {} received [{}, {}].", channelUID, data[address], data[address + 1]);
+                            yield new DecimalType(S7.GetShortAt(data, address));
+                        }
+                        case MEMORY_DWORD -> {
+                            logger.trace("Channel {} received [{}, {}, {}, {}].", channelUID, data[address],
+                                    data[address + 1], data[address + 2], data[address + 3]);
+                            yield new DecimalType(S7.GetDIntAt(data, address));
+                        }
+                        default -> {
+                            logger.debug("Channel {} will not accept {} items.", channelUID, kind);
+                            yield UnDefType.UNDEF;
+                        }
+                    };
+                    final var state = getOldValue(name);
+                    if ((state instanceof DecimalType decimalState) && (value instanceof DecimalType decimalValue)) {
+                        final var threshold = config.getThreshold();
+                        if ((Math.abs(decimalValue.longValue() - decimalState.longValue()) > threshold) || force) {
+                            updateState(channelUID, value);
+                        }
+                    } else {
                         updateState(channelUID, value);
-                        logger.debug("Channel {} accepting {} was set to {}.", channelUID, type, value);
-                    }
-                    if (logger.isTraceEnabled()) {
-                        int buffer = (data[address] & 0xFF) + 0x100;
-                        logger.trace("Channel {} received [{}].", channelUID,
-                                Integer.toBinaryString(buffer).substring(1));
-                    }
-                } else if (ANALOG_ITEM.equalsIgnoreCase(type) && MEMORY_BYTE.equalsIgnoreCase(kind)) {
-                    Integer threshold = config.get().getThreshold();
-                    DecimalType state = (DecimalType) getOldValue(name);
-                    int value = data[address];
-                    if ((state == null) || (Math.abs(value - state.intValue()) > threshold) || force) {
-                        updateState(channelUID, new DecimalType(value));
-                        logger.debug("Channel {} accepting {} was set to {}.", channelUID, type, value);
-                    }
-                    if (logger.isTraceEnabled()) {
-                        logger.trace("Channel {} received [{}].", channelUID, data[address]);
-                    }
-                } else if (ANALOG_ITEM.equalsIgnoreCase(type) && MEMORY_WORD.equalsIgnoreCase(kind)) {
-                    Integer threshold = config.get().getThreshold();
-                    DecimalType state = (DecimalType) getOldValue(name);
-                    int value = S7.GetShortAt(data, address);
-                    if ((state == null) || (Math.abs(value - state.intValue()) > threshold) || force) {
-                        updateState(channelUID, new DecimalType(value));
-                        logger.debug("Channel {} accepting {} was set to {}.", channelUID, type, value);
-                    }
-                    if (logger.isTraceEnabled()) {
-                        logger.trace("Channel {} received [{}, {}].", channelUID, data[address], data[address + 1]);
-                    }
-                } else if (ANALOG_ITEM.equalsIgnoreCase(type) && MEMORY_DWORD.equalsIgnoreCase(kind)) {
-                    Integer threshold = config.get().getThreshold();
-                    DecimalType state = (DecimalType) getOldValue(name);
-                    int value = S7.GetDIntAt(data, address);
-                    if ((state == null) || (Math.abs(value - state.intValue()) > threshold) || force) {
-                        updateState(channelUID, new DecimalType(value));
-                        logger.debug("Channel {} accepting {} was set to {}.", channelUID, type, value);
-                    }
-                    if (logger.isTraceEnabled()) {
-                        logger.trace("Channel {} received [{}, {}, {}, {}].", channelUID, data[address],
-                                data[address + 1], data[address + 2], data[address + 3]);
                     }
                 } else {
                     logger.debug("Channel {} will not accept {} items.", channelUID, type);
@@ -227,24 +242,36 @@ public class PLCMemoryHandler extends PLCCommonHandler {
 
     @Override
     protected void updateState(ChannelUID channelUID, State state) {
-        super.updateState(channelUID, state);
-
-        Channel channel = thing.getChannel(channelUID.getId());
-        setOldValue(getBlockFromChannel(channel), state);
+        final var channel = getThing().getChannel(channelUID.getId());
+        final var name = getBlockFromChannel(channel);
+        if (isValid(name) && (channel != null)) {
+            final var type = channel.getAcceptedItemType();
+            try {
+                super.updateState(channelUID, state);
+                setOldValue(name, state);
+                logger.debug("Channel {} accepting {} was set to {}.", channelUID, type, state);
+            } catch (IllegalArgumentException exception) {
+                super.updateState(channelUID, UnDefType.UNDEF);
+                setOldValue(name, UnDefType.UNDEF);
+                logger.warn("Channel {} accepting {} received invalid argument.", channelUID, type);
+            }
+        } else {
+            logger.debug("Can not update channel {}, block {}.", channelUID, name);
+        }
     }
 
     @Override
     protected void updateConfiguration(Configuration configuration) {
         super.updateConfiguration(configuration);
-        config.set(getConfigAs(PLCMemoryConfiguration.class));
+        config = getConfigAs(PLCMemoryConfiguration.class);
     }
 
     @Override
     protected boolean isValid(final String name) {
-        if (3 <= name.length() && (name.length() <= 7)) {
-            String kind = getBlockKind();
+        if ((3 <= name.length()) && (name.length() <= 7)) {
+            final var kind = getBlockKind();
             if (Character.isDigit(name.charAt(2))) {
-                boolean valid = MEMORY_BYTE.equalsIgnoreCase(kind) || MEMORY_WORD.equalsIgnoreCase(kind);
+                var valid = MEMORY_BYTE.equalsIgnoreCase(kind) || MEMORY_WORD.equalsIgnoreCase(kind);
                 return name.startsWith(kind) && (valid || MEMORY_DWORD.equalsIgnoreCase(kind));
             }
         }
@@ -253,7 +280,7 @@ public class PLCMemoryHandler extends PLCCommonHandler {
 
     @Override
     protected String getBlockKind() {
-        return config.get().getBlockKind();
+        return config.getBlockKind();
     }
 
     @Override
@@ -263,21 +290,21 @@ public class PLCMemoryHandler extends PLCCommonHandler {
 
     @Override
     protected void doInitialization() {
-        Thing thing = getThing();
+        final var thing = getThing();
         logger.debug("Initialize LOGO! memory handler.");
 
-        config.set(getConfigAs(PLCMemoryConfiguration.class));
+        config = getConfigAs(PLCMemoryConfiguration.class);
 
         super.doInitialization();
         if (ThingStatus.OFFLINE != thing.getStatus()) {
-            String kind = getBlockKind();
-            String name = config.get().getBlockName();
-            boolean isDigital = MEMORY_BYTE.equalsIgnoreCase(kind) && (getBit(name) != INVALID);
-            String text = isDigital ? "Digital" : "Analog";
+            final var kind = getBlockKind();
+            final var name = config.getBlockName();
+            final var isDigital = MEMORY_BYTE.equalsIgnoreCase(kind) && (getBit(name) != INVALID);
+            final var text = isDigital ? "Digital" : "Analog";
 
-            ThingBuilder tBuilder = editThing();
+            final var tBuilder = editThing();
 
-            String label = thing.getLabel();
+            var label = thing.getLabel();
             if (label == null) {
                 Bridge bridge = getBridge();
                 label = (bridge == null) || (bridge.getLabel() == null) ? "Siemens Logo!" : bridge.getLabel();
@@ -285,9 +312,9 @@ public class PLCMemoryHandler extends PLCCommonHandler {
             }
             tBuilder.withLabel(label);
 
-            String type = config.get().getChannelType();
-            ChannelUID uid = new ChannelUID(thing.getUID(), isDigital ? STATE_CHANNEL : VALUE_CHANNEL);
-            ChannelBuilder cBuilder = ChannelBuilder.create(uid, type);
+            final var type = config.getChannelType();
+            final var uid = new ChannelUID(thing.getUID(), isDigital ? STATE_CHANNEL : VALUE_CHANNEL);
+            final var cBuilder = ChannelBuilder.create(uid, type);
             cBuilder.withType(new ChannelTypeUID(BINDING_ID, type.toLowerCase()));
             cBuilder.withLabel(name);
             cBuilder.withDescription(text + " in/output block " + name);

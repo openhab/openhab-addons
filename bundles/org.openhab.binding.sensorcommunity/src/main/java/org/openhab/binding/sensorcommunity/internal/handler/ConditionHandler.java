@@ -18,10 +18,6 @@ import static org.openhab.core.library.unit.MetricPrefix.HECTO;
 
 import java.util.List;
 
-import javax.measure.quantity.Dimensionless;
-import javax.measure.quantity.Pressure;
-import javax.measure.quantity.Temperature;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.sensorcommunity.internal.dto.SensorDataValue;
@@ -30,19 +26,22 @@ import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Thing;
+import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
 
 /**
  * The {@link ConditionHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
  * @author Bernd Weymann - Initial contribution
+ * @author Bernd Weymann - Cache initialization with UNDEF
  */
 @NonNullByDefault
 public class ConditionHandler extends BaseSensorHandler {
-    protected QuantityType<Temperature> temperatureCache = QuantityType.valueOf(-1, SIUnits.CELSIUS);
-    protected QuantityType<Dimensionless> humidityCache = QuantityType.valueOf(-1, Units.PERCENT);
-    protected QuantityType<Pressure> pressureCache = QuantityType.valueOf(-1, HECTO(SIUnits.PASCAL));
-    protected QuantityType<Pressure> pressureSeaCache = QuantityType.valueOf(-1, HECTO(SIUnits.PASCAL));
+    protected State temperatureCache = UnDefType.UNDEF;
+    protected State humidityCache = UnDefType.UNDEF;
+    protected State pressureCache = UnDefType.UNDEF;
+    protected State pressureSeaCache = UnDefType.UNDEF;
 
     public ConditionHandler(Thing thing) {
         super(thing);

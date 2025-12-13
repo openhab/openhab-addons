@@ -15,7 +15,7 @@
   <name>openHAB Add-ons :: Bundles :: Automation :: Python Scripting</name>
 
   <properties>
-    <helperlib.version>1.0.11</helperlib.version>
+    <helperlib.version>1.0.15</helperlib.version>
   </properties>
 
   <dependencies>
@@ -23,7 +23,7 @@
     <dependency>
       <groupId>org.openhab.osgiify</groupId>
       <artifactId>org.graalvm.polyglot.polyglot</artifactId>
-      <version>${graalpy.version}</version>
+      <version>${graalvm.version}</version>
       <!-- provided as OSGi bundle at runtime, available only at compile time -->
       <scope>provided</scope>
     </dependency>

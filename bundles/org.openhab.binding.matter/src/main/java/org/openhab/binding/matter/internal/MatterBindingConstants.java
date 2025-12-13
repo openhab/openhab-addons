@@ -85,6 +85,15 @@ public class MatterBindingConstants {
     public static final String CHANNEL_ID_DOORLOCK_STATE = "doorlock-lockstate";
     public static final ChannelTypeUID CHANNEL_DOORLOCK_STATE = new ChannelTypeUID(BINDING_ID,
             CHANNEL_ID_DOORLOCK_STATE);
+    public static final String CHANNEL_ID_DOORLOCK_DOORSTATE = "doorlock-doorstate";
+    public static final ChannelTypeUID CHANNEL_DOORLOCK_DOORSTATE = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_ID_DOORLOCK_DOORSTATE);
+    public static final String CHANNEL_ID_DOORLOCK_ALARM = "doorlock-alarm";
+    public static final ChannelTypeUID CHANNEL_DOORLOCK_ALARM = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_ID_DOORLOCK_ALARM);
+    public static final String CHANNEL_ID_DOORLOCK_LOCKOPERATIONERROR = "doorlock-lockoperationerror";
+    public static final ChannelTypeUID CHANNEL_DOORLOCK_LOCKOPERATIONERROR = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_ID_DOORLOCK_LOCKOPERATIONERROR);
     public static final String CHANNEL_ID_WINDOWCOVERING_LIFT = "windowcovering-lift";
     public static final ChannelTypeUID CHANNEL_WINDOWCOVERING_LIFT = new ChannelTypeUID(BINDING_ID,
             CHANNEL_ID_WINDOWCOVERING_LIFT);
@@ -406,4 +415,51 @@ public class MatterBindingConstants {
     public static final String DISCOVERY_MATTER_UNKNOWN_NODE_LABEL = "@text/discovery.matter.unknown-node.label";
     public static final String DISCOVERY_MATTER_SCAN_INPUT_LABEL = "@text/discovery.matter.scan-input.label";
     public static final String DISCOVERY_MATTER_SCAN_INPUT_DESCRIPTION = "@text/discovery.matter.scan-input.description";
+
+    // Door Lock Configuration Keys
+    public static final String CONFIG_DOORLOCK_OPERATING_MODE = "operatingMode";
+    public static final String CONFIG_DOORLOCK_AUTO_RELOCK_TIME = "autoRelockTime";
+    public static final String CONFIG_DOORLOCK_ONE_TOUCH_LOCKING = "oneTouchLocking";
+    public static final String CONFIG_DOORLOCK_DEFAULT_LOCK_PIN = "defaultLockPin";
+    public static final String CONFIG_DOORLOCK_DISPLAYED_USER_COUNT = "displayedUserCount";
+    public static final String CONFIG_DOORLOCK_USER_NAME = "userName";
+    public static final String CONFIG_DOORLOCK_USER_TYPE = "userType";
+    public static final String CONFIG_DOORLOCK_USER_ENABLED = "userEnabled";
+    public static final String CONFIG_DOORLOCK_PIN_CREDENTIAL = "pinCredential";
+    public static final String CONFIG_DOORLOCK_DELETE_USER = "deleteUser";
+
+    // Door Lock Configuration Group Names
+    public static final String CONFIG_GROUP_DOORLOCK_MANAGEMENT = "doorLockManagement";
+    public static final String CONFIG_GROUP_DOORLOCK_USER_PREFIX = "doorLockUser";
+
+    // Door Lock Configuration Labels
+    public static final String CONFIG_LABEL_DOORLOCK_MANAGEMENT = "@text/thing-type.config.matter.node.doorlock_management.label";
+    public static final String CONFIG_LABEL_DOORLOCK_OPERATING_MODE = "@text/thing-type.config.matter.node.doorlock_operating_mode.label";
+    public static final String CONFIG_LABEL_DOORLOCK_AUTO_RELOCK_TIME = "@text/thing-type.config.matter.node.doorlock_auto_relock_time.label";
+    public static final String CONFIG_LABEL_DOORLOCK_ONE_TOUCH_LOCKING = "@text/thing-type.config.matter.node.doorlock_one_touch_locking.label";
+    public static final String CONFIG_LABEL_DOORLOCK_DEFAULT_LOCK_PIN = "@text/thing-type.config.matter.node.doorlock_default_lock_pin.label";
+    public static final String CONFIG_LABEL_DOORLOCK_DISPLAYED_USER_COUNT = "@text/thing-type.config.matter.node.doorlock_displayed_user_count.label";
+    public static final String CONFIG_LABEL_DOORLOCK_USER = "@text/thing-type.config.matter.node.doorlock_user.label";
+    public static final String CONFIG_LABEL_DOORLOCK_USER_NAME = "@text/thing-type.config.matter.node.doorlock_user_name.label";
+    public static final String CONFIG_LABEL_DOORLOCK_NO_USER_NAME = "@text/thing-type.config.matter.node.doorlock_no_user_name.label";
+    public static final String CONFIG_LABEL_DOORLOCK_USER_TYPE = "@text/thing-type.config.matter.node.doorlock_user_type.label";
+    public static final String CONFIG_LABEL_DOORLOCK_USER_ENABLED = "@text/thing-type.config.matter.node.doorlock_user_enabled.label";
+    public static final String CONFIG_LABEL_DOORLOCK_PIN_CREDENTIAL = "@text/thing-type.config.matter.node.doorlock_pin_credential.label";
+    public static final String CONFIG_LABEL_DOORLOCK_DELETE_USER = "@text/thing-type.config.matter.node.doorlock_delete_user.label";
+    public static final String CONFIG_LABEL_DOORLOCK_EXTERNAL_FABRIC = "@text/thing-type.config.matter.node.doorlock_external_fabric.label";
+
+    // Door Lock Configuration Descriptions
+    public static final String CONFIG_DESC_DOORLOCK_MANAGEMENT = "@text/thing-type.config.matter.node.doorlock_management.description";
+    public static final String CONFIG_DESC_DOORLOCK_OPERATING_MODE = "@text/thing-type.config.matter.node.doorlock_operating_mode.description";
+    public static final String CONFIG_DESC_DOORLOCK_AUTO_RELOCK_TIME = "@text/thing-type.config.matter.node.doorlock_auto_relock_time.description";
+    public static final String CONFIG_DESC_DOORLOCK_ONE_TOUCH_LOCKING = "@text/thing-type.config.matter.node.doorlock_one_touch_locking.description";
+    public static final String CONFIG_DESC_DOORLOCK_DEFAULT_LOCK_PIN = "@text/thing-type.config.matter.node.doorlock_default_lock_pin.description";
+    public static final String CONFIG_DESC_DOORLOCK_DISPLAYED_USER_COUNT = "@text/thing-type.config.matter.node.doorlock_displayed_user_count.description";
+    public static final String CONFIG_DESC_DOORLOCK_USER = "@text/thing-type.config.matter.node.doorlock_user.description";
+    public static final String CONFIG_DESC_DOORLOCK_USER_NAME = "@text/thing-type.config.matter.node.doorlock_user_name.description";
+    public static final String CONFIG_DESC_DOORLOCK_USER_TYPE = "@text/thing-type.config.matter.node.doorlock_user_type.description";
+    public static final String CONFIG_DESC_DOORLOCK_USER_ENABLED = "@text/thing-type.config.matter.node.doorlock_user_enabled.description";
+    public static final String CONFIG_DESC_DOORLOCK_PIN_CREDENTIAL = "@text/thing-type.config.matter.node.doorlock_pin_credential.description";
+    public static final String CONFIG_DESC_DOORLOCK_DELETE_USER = "@text/thing-type.config.matter.node.doorlock_delete_user.description";
+    public static final String CONFIG_DESC_DOORLOCK_EXTERNAL_FABRIC = "@text/thing-type.config.matter.node.doorlock_external_fabric.description";
 }

@@ -90,8 +90,8 @@ public class SwitchConverter extends GenericConverter<SwitchCluster> {
             options.add(new StateOption(String.valueOf(i), "Position " + i));
         }
 
-        StateDescription stateDescriptionMode = StateDescriptionFragmentBuilder.create().withPattern("%d")
-                .withOptions(options).build().toStateDescription();
+        StateDescription stateDescriptionMode = StateDescriptionFragmentBuilder.create().withOptions(options).build()
+                .toStateDescription();
 
         map.put(channel, stateDescriptionMode);
 

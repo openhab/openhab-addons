@@ -17,13 +17,15 @@ import static org.openhab.binding.entsoe.internal.EntsoeBindingConstants.*;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.openhab.binding.entsoe.internal.handler.EntsoeHandler;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
+import org.openhab.core.scheduler.CronScheduler;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
-import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -33,18 +35,22 @@ import org.osgi.service.component.annotations.Reference;
  * handlers.
  *
  * @author Jørgen Melhus - Initial contribution
+ * @author Bernd Weymann - Add TimeZoneProvider and cron scheduler
  */
 @NonNullByDefault
 @Component(configurationPid = "binding.entsoe", service = ThingHandlerFactory.class)
 public class EntsoeHandlerFactory extends BaseThingHandlerFactory {
 
+    private final TimeZoneProvider timeZoneProvider;
     private final HttpClient httpClient;
+    private final CronScheduler cron;
 
     @Activate
     public EntsoeHandlerFactory(final @Reference HttpClientFactory httpClientFactory,
-            ComponentContext componentContext) {
-        super.activate(componentContext);
+            final @Reference TimeZoneProvider timeZoneProvider, final @Reference CronScheduler cron) {
         this.httpClient = httpClientFactory.getCommonHttpClient();
+        this.timeZoneProvider = timeZoneProvider;
+        this.cron = cron;
     }
 
     @Override
@@ -57,9 +63,8 @@ public class EntsoeHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (THING_TYPE_DAY_AHEAD.equals(thingTypeUID)) {
-            return new EntsoeHandler(thing, httpClient);
+            return new EntsoeHandler(thing, httpClient, timeZoneProvider, cron);
         }
-
         return null;
     }
 }

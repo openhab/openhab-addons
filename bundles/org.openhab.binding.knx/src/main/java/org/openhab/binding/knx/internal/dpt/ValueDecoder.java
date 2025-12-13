@@ -21,6 +21,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Set;
+import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -43,19 +44,19 @@ import org.openhab.core.util.ColorUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import tuwien.auto.calimero.KNXException;
-import tuwien.auto.calimero.KNXFormatException;
-import tuwien.auto.calimero.KNXIllegalArgumentException;
-import tuwien.auto.calimero.dptxlator.DPTXlator;
-import tuwien.auto.calimero.dptxlator.DPTXlator1BitControlled;
-import tuwien.auto.calimero.dptxlator.DPTXlator2ByteUnsigned;
-import tuwien.auto.calimero.dptxlator.DPTXlator3BitControlled;
-import tuwien.auto.calimero.dptxlator.DPTXlator64BitSigned;
-import tuwien.auto.calimero.dptxlator.DPTXlator8BitUnsigned;
-import tuwien.auto.calimero.dptxlator.DPTXlatorBoolean;
-import tuwien.auto.calimero.dptxlator.DPTXlatorDateTime;
-import tuwien.auto.calimero.dptxlator.DPTXlatorSceneControl;
-import tuwien.auto.calimero.dptxlator.TranslatorTypes;
+import io.calimero.KNXException;
+import io.calimero.KNXFormatException;
+import io.calimero.KNXIllegalArgumentException;
+import io.calimero.dptxlator.DPTXlator;
+import io.calimero.dptxlator.DPTXlator1BitControlled;
+import io.calimero.dptxlator.DPTXlator2ByteUnsigned;
+import io.calimero.dptxlator.DPTXlator3BitControlled;
+import io.calimero.dptxlator.DPTXlator64BitSigned;
+import io.calimero.dptxlator.DPTXlator8BitUnsigned;
+import io.calimero.dptxlator.DPTXlatorBoolean;
+import io.calimero.dptxlator.DPTXlatorDateTime;
+import io.calimero.dptxlator.DPTXlatorSceneControl;
+import io.calimero.dptxlator.TranslatorTypes;
 
 /**
  * This class decodes raw data received from the KNX bus to an openHAB datatype
@@ -191,8 +192,8 @@ public class ValueDecoder {
                 case "10":
                     return handleDpt10(value);
                 case "11":
-                    return DateTimeType.valueOf(new SimpleDateFormat(DateTimeType.DATE_PATTERN)
-                            .format(new SimpleDateFormat(DATE_FORMAT).parse(value)));
+                    return DateTimeType.valueOf(new SimpleDateFormat(DateTimeType.DATE_PATTERN, Locale.ROOT)
+                            .format(new SimpleDateFormat(DATE_FORMAT, Locale.ROOT).parse(value)));
                 case "18":
                     DPTXlatorSceneControl translatorSceneControl = (DPTXlatorSceneControl) translator;
                     int decimalValue = translatorSceneControl.getSceneNumber();
@@ -304,7 +305,7 @@ public class ValueDecoder {
         } catch (ParseException pe) {
             date = new SimpleDateFormat(TIME_FORMAT, Locale.US).parse(value);
         }
-        return DateTimeType.valueOf(new SimpleDateFormat(DateTimeType.DATE_PATTERN).format(date));
+        return DateTimeType.valueOf(new SimpleDateFormat(DateTimeType.DATE_PATTERN, Locale.ROOT).format(date));
     }
 
     private static @Nullable Type handleDpt19(DPTXlator translator, byte[] data) throws KNXFormatException {
@@ -331,7 +332,7 @@ public class ValueDecoder {
             return null;
         }
 
-        Calendar cal = Calendar.getInstance();
+        Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"), Locale.ROOT);
         if (translatorDateTime.isValidField(DPTXlatorDateTime.YEAR)
                 && !translatorDateTime.isValidField(DPTXlatorDateTime.TIME)) {
             // Pure date format, no time information
@@ -341,7 +342,7 @@ public class ValueDecoder {
                 LOGGER.debug("KNX clock msg ignored: {}", e.getMessage());
                 throw e;
             }
-            String value = new SimpleDateFormat(DateTimeType.DATE_PATTERN).format(cal.getTime());
+            String value = new SimpleDateFormat(DateTimeType.DATE_PATTERN, Locale.ROOT).format(cal.getTime());
             return DateTimeType.valueOf(value);
         } else if (!translatorDateTime.isValidField(DPTXlatorDateTime.YEAR)
                 && translatorDateTime.isValidField(DPTXlatorDateTime.TIME)) {
@@ -350,7 +351,7 @@ public class ValueDecoder {
             cal.set(Calendar.HOUR_OF_DAY, translatorDateTime.getHour());
             cal.set(Calendar.MINUTE, translatorDateTime.getMinute());
             cal.set(Calendar.SECOND, translatorDateTime.getSecond());
-            String value = new SimpleDateFormat(DateTimeType.DATE_PATTERN).format(cal.getTime());
+            String value = new SimpleDateFormat(DateTimeType.DATE_PATTERN, Locale.ROOT).format(cal.getTime());
             return DateTimeType.valueOf(value);
         } else if (translatorDateTime.isValidField(DPTXlatorDateTime.YEAR)
                 && translatorDateTime.isValidField(DPTXlatorDateTime.TIME)) {
@@ -367,7 +368,7 @@ public class ValueDecoder {
                 translator.setData(data, 0);
                 cal.setTimeInMillis(translatorDateTime.getValueMilliseconds());
             }
-            String value = new SimpleDateFormat(DateTimeType.DATE_PATTERN).format(cal.getTime());
+            String value = new SimpleDateFormat(DateTimeType.DATE_PATTERN, Locale.ROOT).format(cal.getTime());
             return DateTimeType.valueOf(value);
         } else {
             LOGGER.warn("Failed to convert '{}'", translator.getValue());

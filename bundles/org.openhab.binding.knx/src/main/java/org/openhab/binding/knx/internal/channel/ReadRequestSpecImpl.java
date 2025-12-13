@@ -18,7 +18,7 @@ import java.util.Set;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.knx.internal.client.InboundSpec;
 
-import tuwien.auto.calimero.GroupAddress;
+import io.calimero.GroupAddress;
 
 /**
  * Read meta-data.

@@ -66,7 +66,7 @@ class ForecastSolarTest {
     public static final String TOO_EARLY_INDICATOR = "too early";
     public static final String TOO_LATE_INDICATOR = "too late";
     public static final String INVALID_RANGE_INDICATOR = "invalid time range";
-    public static final String NO_GORECAST_INDICATOR = "No forecast data";
+    public static final String NO_FORECAST_INDICATOR = "No forecast data";
     public static final String DAY_MISSING_INDICATOR = "not available in forecast";
 
     @BeforeAll
@@ -172,8 +172,8 @@ class ForecastSolarTest {
         } catch (SolarForecastException sfe) {
             String message = sfe.getMessage();
             assertNotNull(message);
-            assertTrue(message.contains(NO_GORECAST_INDICATOR),
-                    "Expected: " + NO_GORECAST_INDICATOR + " Received: " + sfe.getMessage());
+            assertTrue(message.contains(NO_FORECAST_INDICATOR),
+                    "Expected: " + NO_FORECAST_INDICATOR + " Received: " + sfe.getMessage());
         }
         try {
             double d = fo.getDayTotal(query.toLocalDate());
@@ -181,8 +181,8 @@ class ForecastSolarTest {
         } catch (SolarForecastException sfe) {
             String message = sfe.getMessage();
             assertNotNull(message);
-            assertTrue(message.contains(NO_GORECAST_INDICATOR),
-                    "Expected: " + NO_GORECAST_INDICATOR + " Received: " + sfe.getMessage());
+            assertTrue(message.contains(NO_FORECAST_INDICATOR),
+                    "Expected: " + NO_FORECAST_INDICATOR + " Received: " + sfe.getMessage());
         }
         try {
             double d = fo.getDayTotal(query.plusDays(1).toLocalDate());
@@ -190,8 +190,8 @@ class ForecastSolarTest {
         } catch (SolarForecastException sfe) {
             String message = sfe.getMessage();
             assertNotNull(message);
-            assertTrue(message.contains(NO_GORECAST_INDICATOR),
-                    "Expected: " + NO_GORECAST_INDICATOR + " Received: " + sfe.getMessage());
+            assertTrue(message.contains(NO_FORECAST_INDICATOR),
+                    "Expected: " + NO_FORECAST_INDICATOR + " Received: " + sfe.getMessage());
         }
 
         // valid object - query date one day too early
@@ -354,8 +354,9 @@ class ForecastSolarTest {
         ForecastSolarObject fo = new ForecastSolarObject("fs-test", content, queryDateTime.toInstant());
 
         TimeSeries powerSeries = fo.getPowerTimeSeries(QueryMode.Average);
-        Instant now = Utils.now();
-        assertEquals(24, powerSeries.size());
+        Instant now = Utils.now().minus(1, ChronoUnit.HOURS);
+        // 24 hours of data plus current hour = 25
+        assertEquals(25, powerSeries.size());
         powerSeries.getStates().forEachOrdered(entry -> {
             assertTrue(Utils.isAfterOrEqual(entry.timestamp(), now));
             State s = entry.state();
@@ -364,7 +365,7 @@ class ForecastSolarTest {
         });
 
         TimeSeries energySeries = fo.getEnergyTimeSeries(QueryMode.Average);
-        assertEquals(24, energySeries.size());
+        assertEquals(25, energySeries.size());
         energySeries.getStates().forEachOrdered(entry -> {
             assertTrue(Utils.isAfterOrEqual(entry.timestamp(), now));
             State s = entry.state();
@@ -380,6 +381,7 @@ class ForecastSolarTest {
                 Optional.of(PointType.valueOf("1,2")));
         CallbackMock cm = new CallbackMock();
         fsbh.setCallback(cm);
+        fsbh.initialize();
 
         String content = FileReader.readFileInString("src/test/resources/forecastsolar/result.json");
         ForecastSolarObject fso1 = new ForecastSolarObject("fs-test", content, Instant.now().plus(1, ChronoUnit.DAYS));
@@ -411,7 +413,7 @@ class ForecastSolarTest {
                 Optional.of(PointType.valueOf("1,2")));
         CallbackMock cmSite = new CallbackMock();
         fsbh.setCallback(cmSite);
-
+        fsbh.initialize();
         String contentOne = FileReader.readFileInString("src/test/resources/forecastsolar/result.json");
         ForecastSolarObject fso1One = new ForecastSolarObject("fs-test", contentOne,
                 Instant.now().plus(1, ChronoUnit.DAYS));
@@ -456,6 +458,7 @@ class ForecastSolarTest {
                 Optional.of(PointType.valueOf("1,2")));
         CallbackMock cmSite = new CallbackMock();
         fsbh.setCallback(cmSite);
+        fsbh.initialize();
 
         String contentOne = FileReader.readFileInString("src/test/resources/forecastsolar/result.json");
         ForecastSolarObject fso1One = new ForecastSolarObject("fs-test", contentOne,
@@ -491,6 +494,7 @@ class ForecastSolarTest {
                 Optional.of(PointType.valueOf("1,2")));
         CallbackMock cm = new CallbackMock();
         fsbh.setCallback(cm);
+        fsbh.initialize();
 
         String content = FileReader.readFileInString("src/test/resources/forecastsolar/result.json");
         ForecastSolarObject fso1 = new ForecastSolarObject("fs-test", content, Instant.now().plus(1, ChronoUnit.DAYS));
@@ -522,6 +526,7 @@ class ForecastSolarTest {
                 Optional.of(PointType.valueOf("1,2")));
         CallbackMock cm = new CallbackMock();
         fsbh.setCallback(cm);
+        fsbh.initialize();
 
         String content = FileReader.readFileInString("src/test/resources/forecastsolar/result.json");
         ForecastSolarObject fso1 = new ForecastSolarObject("fs-test", content, Instant.now().plus(1, ChronoUnit.DAYS));

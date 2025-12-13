@@ -169,7 +169,6 @@ public class ZwaveJSNodeHandlerMock extends ZwaveJSNodeHandler {
 
     // Set inversion for a specific RollerShutterCapability
     public void setRollerShutterInversion(RollerShutterCapability capability, boolean isUpDownInverted) {
-
         // Find the channel config for the roller shutter channel and set inverted
         this.thing.getChannels().stream().filter(c -> c.getUID().getId().equals(capability.rollerShutterChannelId))
                 .findFirst().ifPresent(channel -> {

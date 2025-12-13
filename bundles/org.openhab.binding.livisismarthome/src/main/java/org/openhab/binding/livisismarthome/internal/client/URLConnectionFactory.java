@@ -14,7 +14,7 @@ package org.openhab.binding.livisismarthome.internal.client;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
-import java.net.URL;
+import java.net.URI;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.http.HttpHeader;
@@ -36,7 +36,7 @@ public class URLConnectionFactory {
     private static final String BEARER = "Bearer ";
 
     public HttpURLConnection createRequest(String url) throws IOException {
-        return (HttpURLConnection) new URL(url).openConnection();
+        return (HttpURLConnection) URI.create(url).toURL().openConnection();
     }
 
     public HttpURLConnection createBaseRequest(String url, HttpMethod httpMethod,

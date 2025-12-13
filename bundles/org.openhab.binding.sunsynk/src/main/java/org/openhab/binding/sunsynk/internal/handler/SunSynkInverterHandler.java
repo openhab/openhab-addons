@@ -68,10 +68,10 @@ public class SunSynkInverterHandler extends BaseThingHandler {
     private @Nullable ScheduledFuture<?> refreshTask;
     private boolean batterySettingsUpdated = false;
     private SunSynkInverterConfig config = new SunSynkInverterConfig();
-    private final int INVERTERFLAGS = DeviceController.GRIDREALTIME | DeviceController.BATTERYREALTIME
+    private static final int INVERTERFLAGS = DeviceController.GRIDREALTIME | DeviceController.BATTERYREALTIME
             | DeviceController.INVERTERDAYTEMPS | DeviceController.REALTIMEIN;
-    private final int SUMMARYFLAGS = DeviceController.PLANTSUMMARY;
-    private final int ALLFLAGS = INVERTERFLAGS | SUMMARYFLAGS;
+    private static final int SUMMARYFLAGS = DeviceController.PLANTSUMMARY;
+    private static final int ALLFLAGS = INVERTERFLAGS | SUMMARYFLAGS;
     private int statusFlags = 0;
     public Settings tempInverterChargeSettings = inverter.tempInverterChargeSettings; // Holds modified
                                                                                       // battery settings.

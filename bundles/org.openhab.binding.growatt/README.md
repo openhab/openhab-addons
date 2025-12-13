@@ -12,7 +12,7 @@ But it also sends a (decoded) copy to openHAB as well.
 The binding supports two types of things:
 
 - `bridge`: The bridge is the interface to the Grott application; it receives the data from all inverters.
-- `inverter`: The inverter thing contains channels which are updated with solor production and consumption data.
+- `inverter`: The inverter thing contains channels which are updated with solar production and consumption data.
 
 ## Discovery
 
@@ -28,7 +28,7 @@ The `bridge` thing allows configuration of the user credentials, which are only 
 | userName  | text    | User name for the Growatt Shine app. Only needed if using [Rule Actions](#rule-actions)  | yes      | no      |
 | password  | text    | Password for the Growatt Shine app. Only needed if using [Rule Actions](#rule-actions)   | yes      | no      |
 
-The `inverter` thing requires configuration of its serial number resp. `deviceId`:
+The `inverter` thing requires configuration of its serial number, i.e., `deviceId`:
 
 | Name      | Type    | Description                                                                              | Required |
 |-----------|---------|------------------------------------------------------------------------------------------|----------|
@@ -375,8 +375,8 @@ end
 ### Example `.things` file
 
 ```java
-Bridge growatt:bridge:home "Growattt Bridge" [userName="USERNAME", password="PASSWORD"] {
-    Thing inverter sph "Growatt SPH Inverter" [deviceId="INVERTERTID"]
+Bridge growatt:bridge:home "Growatt Bridge" [userName="USERNAME", password="PASSWORD"] {
+    Thing inverter sph "Growatt SPH Inverter" [deviceId="INVERTERID"]
 }
 ```
 
@@ -395,7 +395,7 @@ Example using a transform profile to invert an item value:
 // charge item with positive value
 Number:Power Charge_Power "Charge Power [%.0f W]" <energy> {channel="growatt:inverter:home:sph:charge-power"}
 
-// discarge item with negative value
+// discharge item with negative value
 Number:Power Discharge_Power "Discharge Power [%.0f W]" <energy> {channel="growatt:inverter:home:sph:discharge-power" [ profile="transform:JS", toItemScript="| Quantity(input).multiply(-1).toString();" ] }
 ```
 
@@ -430,7 +430,7 @@ The following assumes you will be running the Grott application on the same comp
 
 #### Install Python
 
-If Python is not already installed on you computer, then install it first.
+If Python is not already installed on your computer, then install it first.
 And install the following additional necessary python packages:
 
 ```bash
@@ -497,7 +497,7 @@ sudo systemctl enable grott
 ### Route Growatt Inverter Logging via Grott Proxy
 
 Normally the Growatt inverter sends its logging data directly to port `5279` on the Growatt server at `server.growatt.com` (ip=47.91.67.66) on the cloud.
-Grott is a proxy server that interposes itself beween the inverter and the cloud server.
+Grott is a proxy server that interposes itself between the inverter and the cloud server.
 i.e. it receives the inverter logging data and forwards it unchanged to the cloud server.
 
 **WARNING**: make sure that Grott is running on a computer with a **STATIC IP ADDRESS** (and note this safely)!

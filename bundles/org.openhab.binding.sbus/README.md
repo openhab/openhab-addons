@@ -216,6 +216,7 @@ Thing lux-sensor sensor_lux [ id=85, refresh=0 ] {
 ```
 
 **Benefits of this approach:**
+
 - Clear separation of concerns - each thing handles one sensor type
 - Flexible configuration - only create the things you need
 - Follows openHAB best practices for thing organization
@@ -238,6 +239,7 @@ The `enableWhite` parameter for color channels controls whether the white compon
 - Set to `false`: RGB-only control with no white component
 
 This is useful for:
+
 - Pure RGB fixtures without a white channel
 - Creating saturated colors without white dilution
 - Specialized color effects where white would wash out the intended color

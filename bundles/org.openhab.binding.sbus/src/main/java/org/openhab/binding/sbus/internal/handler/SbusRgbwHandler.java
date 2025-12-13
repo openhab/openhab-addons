@@ -91,7 +91,6 @@ public class SbusRgbwHandler extends AbstractSbusHandler {
     protected void pollDevice() {
         final SbusService adapter = super.sbusAdapter;
         if (adapter == null) {
-
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/error.device.adapter-not-initialized");
             return;
@@ -156,7 +155,6 @@ public class SbusRgbwHandler extends AbstractSbusHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         final SbusService adapter = super.sbusAdapter;
         if (adapter == null) {
-
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/error.device.adapter-not-initialized");
             return;

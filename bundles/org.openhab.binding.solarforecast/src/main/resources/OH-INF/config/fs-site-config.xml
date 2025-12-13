@@ -10,13 +10,14 @@
 			<label>PV Location</label>
 			<description>Location of photovoltaic system. Location from openHAB settings is used in case of empty value.</description>
 		</parameter>
-		<parameter name="apiKey" type="text">
-			<label>API Key</label>
-			<description>If you have a paid subscription plan</description>
-		</parameter>
 		<parameter name="inverterKwp" type="decimal" step="0.1">
 			<label>Inverter Kilowatt Peak</label>
 			<description>Inverter maximum kilowatt peak capability</description>
+		</parameter>
+		<parameter name="apiKey" type="text">
+			<label>API Key</label>
+			<description>If you have a paid subscription plan</description>
+			<advanced>true</advanced>
 		</parameter>
 	</config-description>
 </config-description:config-descriptions>

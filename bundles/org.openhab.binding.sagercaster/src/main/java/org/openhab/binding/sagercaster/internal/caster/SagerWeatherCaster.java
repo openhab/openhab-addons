@@ -77,7 +77,6 @@ import org.slf4j.LoggerFactory;
 @Component(service = SagerWeatherCaster.class, scope = ServiceScope.SINGLETON)
 @NonNullByDefault
 public class SagerWeatherCaster {
-    public static final String UNDEF = "-";
     // Northern Polar Zone & Northern Tropical Zone
     private static final String[] NPZDIRECTIONS = { "S", "SW", "W", "NW", "N", "NE", "E", "SE" };
     // Northern Temperate Zone
@@ -101,7 +100,7 @@ public class SagerWeatherCaster {
     // barometer for a period of about 6 hours prior to the forecast.
     private int nubes = -1;
     private int currentBeaufort = -1;
-    private double cloudLevel = -1;
+    private Integer cloudLevel = -1;
     private boolean raining = false;
 
     @Activate
@@ -169,15 +168,12 @@ public class SagerWeatherCaster {
     private void sagerNubesUpdate() {
         int result;
         if (!raining) {
-            if (cloudLevel > 80) {
-                result = 4; // overcast
-            } else if (cloudLevel > 50) {
-                result = 3; // mostly overcast
-            } else if (cloudLevel > 20) {
-                result = 2; // partly cloudy
-            } else {
-                result = 1; // clear
-            }
+            result = switch (cloudLevel) {
+                case Integer i when i > 80 -> 4; // overcast
+                case Integer i when i > 50 -> 3; // mostly overcast
+                case Integer i when i > 20 -> 2; // partly cloudy
+                default -> 1; // clear
+            };
         } else {
             result = 5; // raining
         }
@@ -187,38 +183,29 @@ public class SagerWeatherCaster {
         }
     }
 
-    private static int sagerPressureLevel(double current) {
-        if (current > 1029.46) {
-            return 1;
-        } else if (current > 1019.3) {
-            return 2;
-        } else if (current > 1012.53) {
-            return 3;
-        } else if (current > 1005.76) {
-            return 4;
-        } else if (current > 999) {
-            return 5;
-        } else if (current > 988.8) {
-            return 6;
-        } else if (current > 975.28) {
-            return 7;
-        }
-        return 8;
+    private static int sagerPressureLevel(Double current) {
+        return switch (current) {
+            case Double c when c > 1029.46 -> 1;
+            case Double c when c > 1019.3 -> 2;
+            case Double c when c > 1012.53 -> 3;
+            case Double c when c > 1005.76 -> 4;
+            case Double c when c > 999 -> 5;
+            case Double c when c > 988.8 -> 6;
+            case Double c when c > 975.28 -> 7;
+            default -> 8;
+        };
     }
 
     private static int sagerPressureTrend(double current, double historic) {
-        double evol = current - historic;
+        Double evol = current - historic;
 
-        if (evol > 1.4) {
-            return 1; // Rising Rapidly
-        } else if (evol > 0.68) {
-            return 2; // Rising Slowly
-        } else if (evol > -0.68) {
-            return 3; // Normal
-        } else if (evol > -1.4) {
-            return 4; // Decreasing Slowly
-        }
-        return 5; // Decreasing Rapidly
+        return switch (evol) {
+            case Double e when e > 1.4 -> 1; // Rising Rapidly
+            case Double e when e > 0.68 -> 2; // Rising Slowly
+            case Double e when e > -0.68 -> 3; // Normal
+            case Double e when e > -1.4 -> 4; // Decreasing Slowly
+            default -> 5; // Decreasing Rapidly
+        };
     }
 
     private static int sagerWindTrend(double historic, double position) {
@@ -233,14 +220,14 @@ public class SagerWeatherCaster {
     }
 
     private String getCompass() {
-        double step = 360.0 / NTZDIRECTIONS.length;
+        double step = 360.0 / usedDirections.length;
         double b = Math.floor((currentBearing + (step / 2.0)) / step);
-        return NTZDIRECTIONS[(int) (b % NTZDIRECTIONS.length)];
+        return usedDirections[(int) (b % usedDirections.length)];
     }
 
     private void updatePrediction() {
         int zWind = Arrays.asList(usedDirections).indexOf(getCompass());
-        String d1 = UNDEF;
+        String d1 = null;
         switch (zWind) {
             case 0:
                 if (windEvolution == 3) {
@@ -319,75 +306,52 @@ public class SagerWeatherCaster {
                     d1 = "Z";
                 }
         }
-        String forecast = forecaster.getProperty(d1 + sagerPressure + pressureEvolution + nubes);
+        String forecast = d1 == null ? null : forecaster.getProperty(d1 + sagerPressure + pressureEvolution + nubes);
         prevision = forecast != null ? new SagerPrediction(forecast) : null;
     }
 
-    public String getForecast() {
-        return Objects.requireNonNullElse(this.prevision.getForecast(), UNDEF);
+    public @Nullable String getForecast() {
+        return prevision instanceof SagerPrediction p ? p.getForecast() : null;
     }
 
-    public String getWindVelocity() {
-        SagerPrediction prevision = this.prevision;
-        return prevision != null ? prevision.getWindVelocity() : UNDEF;
+    public @Nullable String getWindVelocity() {
+        return prevision instanceof SagerPrediction p ? p.getWindVelocity() : null;
     }
 
-    public String getWindDirection() {
-        SagerPrediction prevision = this.prevision;
-        return prevision != null ? prevision.getWindDirection() : UNDEF;
+    public @Nullable String getWindDirection() {
+        return prevision instanceof SagerPrediction p ? p.getWindDirection() : null;
     }
 
-    public String getWindDirection2() {
-        SagerPrediction prevision = this.prevision;
-        return prevision != null ? prevision.getWindDirection2() : UNDEF;
+    public @Nullable String getWindDirection2() {
+        return prevision instanceof SagerPrediction p ? p.getWindDirection2() : null;
     }
 
-    public String getSagerCode() {
-        SagerPrediction prevision = this.prevision;
-        return prevision != null ? prevision.getSagerCode() : UNDEF;
+    public @Nullable String getSagerCode() {
+        return prevision instanceof SagerPrediction p ? p.sagerCode() : null;
     }
 
-    public void setLatitude(double latitude) {
-        if (latitude >= 66.6) {
-            usedDirections = NPZDIRECTIONS;
-        } else if (latitude >= 23.5) {
-            usedDirections = NTZDIRECTIONS;
-        } else if (latitude >= 0) {
-            usedDirections = NPZDIRECTIONS;
-        } else if (latitude > -23.5) {
-            usedDirections = SPZDIRECTIONS;
-        } else if (latitude > -66.6) {
-            usedDirections = STZDIRECTIONS;
-        } else {
-            usedDirections = SPZDIRECTIONS;
-        }
+    public void setLatitude(Double latitude) {
+        usedDirections = switch (latitude) {
+            case Double d when d >= 66.6 -> NPZDIRECTIONS;
+            case Double d when d >= 23.5 -> NTZDIRECTIONS;
+            case Double d when d >= 0 -> NPZDIRECTIONS;
+            case Double d when d > -23.5 -> SPZDIRECTIONS;
+            case Double d when d > -66.6 -> STZDIRECTIONS;
+            default -> SPZDIRECTIONS;
+        };
     }
 
     public int getPredictedBeaufort() {
-        int result = currentBeaufort;
-        switch (getWindVelocity()) {
-            case "N":
-                result += 1;
-                break;
-            case "F":
-                result = 4;
-                break;
-            case "S":
-                result = 6;
-                break;
-            case "G":
-                result = 8;
-                break;
-            case "W":
-                result = 10;
-                break;
-            case "H":
-                result = 12;
-                break;
-            case "D":
-                result -= 1;
-                break;
-        }
-        return result;
+        return switch (getWindVelocity()) {
+            case "N" -> currentBeaufort + 1;
+            case "F" -> 4;
+            case "S" -> 6;
+            case "G" -> 8;
+            case "W" -> 10;
+            case "H" -> 12;
+            case "D" -> currentBeaufort - 1;
+            case null -> currentBeaufort;
+            default -> currentBeaufort;
+        };
     }
 }

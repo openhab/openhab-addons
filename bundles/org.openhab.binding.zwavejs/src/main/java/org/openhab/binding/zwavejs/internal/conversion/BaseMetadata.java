@@ -65,10 +65,14 @@ public abstract class BaseMetadata {
     private static final Map<String, String> UNIT_REPLACEMENTS = Map.ofEntries(Map.entry("lux", "lx"), //
             Map.entry("Lux", "lx"), //
             Map.entry("KwH", "kWh"), //
+            Map.entry("hours", "h"), //
+            Map.entry("Hours", "h"), //
             Map.entry("minutes", "min"), //
             Map.entry("Minutes", "min"), //
             Map.entry("seconds", "s"), //
             Map.entry("Seconds", "s"), //
+            Map.entry("fahrenheit", "°F"), //
+            Map.entry("min/sec", ""), // special case ZUI sends min/sec as unit, but is actually dimensionless
             Map.entry("°(C/F)", ""), // special case where Zwave JS sends °F/C as unit, but is actually dimensionless
             Map.entry("°F/C", ""), // special case where Zwave JS sends °F/C as unit, but is actually dimensionless
             Map.entry("oC", "°C"), //
@@ -468,8 +472,6 @@ public abstract class BaseMetadata {
         switch (type) {
             case ANY:
                 return determineTypeFromValue(value, commandClass);
-            case DURATION:
-                return MetadataType.NUMBER;
             case NUMBER:
                 if (COMMAND_CLASS_ALARM == commandClass && optionList != null && optionList.size() == 2) {
                     return MetadataType.BOOLEAN;
@@ -534,6 +536,9 @@ public abstract class BaseMetadata {
         type = correctedType(type, value, commandClass, optionList);
 
         switch (type) {
+            case DURATION:
+            case TIMEOUT:
+                return CoreItemFactory.NUMBER + ":Time";
             case NUMBER:
                 if (VIRTUAL_COMMAND_CLASS_ROLLERSHUTTER.equals(commandClassName)) {
                     return CoreItemFactory.ROLLERSHUTTER;

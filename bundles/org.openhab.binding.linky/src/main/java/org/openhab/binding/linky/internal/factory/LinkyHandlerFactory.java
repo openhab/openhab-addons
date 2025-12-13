@@ -33,6 +33,7 @@ import org.openhab.binding.linky.internal.utils.DoubleTypeAdapter;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TimeZoneProvider;
+import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
@@ -70,6 +71,7 @@ public class LinkyHandlerFactory extends BaseThingHandlerFactory {
     private final HttpService httpService;
     private final ComponentContext componentContext;
     private final TimeZoneProvider timeZoneProvider;
+    private final TranslationProvider translationProvider;
 
     private final Gson gson = new GsonBuilder()
             .registerTypeAdapter(ZonedDateTime.class,
@@ -96,13 +98,15 @@ public class LinkyHandlerFactory extends BaseThingHandlerFactory {
     public LinkyHandlerFactory(final @Reference LocaleProvider localeProvider,
             final @Reference HttpClientFactory httpClientFactory, final @Reference OAuthFactory oAuthFactory,
             final @Reference HttpService httpService, ComponentContext componentContext,
-            final @Reference TimeZoneProvider timeZoneProvider) {
+            final @Reference TimeZoneProvider timeZoneProvider,
+            final @Reference TranslationProvider translationProvider) {
         this.localeProvider = localeProvider;
         this.timeZoneProvider = timeZoneProvider;
         this.httpClientFactory = httpClientFactory;
         this.oAuthFactory = oAuthFactory;
         this.httpService = httpService;
         this.componentContext = componentContext;
+        this.translationProvider = translationProvider;
     }
 
     @Override
@@ -130,7 +134,8 @@ public class LinkyHandlerFactory extends BaseThingHandlerFactory {
                     this.httpClientFactory, this.oAuthFactory, this.httpService, componentContext, gson);
             return handler;
         } else if (THING_TYPE_LINKY.equals(thing.getThingTypeUID())) {
-            ThingLinkyRemoteHandler handler = new ThingLinkyRemoteHandler(thing, localeProvider, timeZoneProvider);
+            ThingLinkyRemoteHandler handler = new ThingLinkyRemoteHandler(thing, localeProvider, timeZoneProvider,
+                    translationProvider);
             return handler;
         } else if (THING_TYPE_TEMPO_CALENDAR.equals(thing.getThingTypeUID())) {
             ThingHandler handler = new ThingTempoCalendarHandler(thing);

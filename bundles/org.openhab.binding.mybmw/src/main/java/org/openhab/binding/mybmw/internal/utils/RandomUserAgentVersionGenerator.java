@@ -20,7 +20,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * The {@link RandomUserAgentVersionGenerator} generates random version numbers for the X-User-Agent in the format
  * xxxxxx.xxx
  *
- * @author Martin Grassl - initial version
+ * @author Martin Grassl - Initial contribution
  */
 @NonNullByDefault
 public interface RandomUserAgentVersionGenerator {
@@ -31,7 +31,6 @@ public interface RandomUserAgentVersionGenerator {
      * @return formatted String xxxxxx.xxx
      */
     static String getRandomUserAgentVersion() {
-
         int decimalPlaces = 3;
         int min = 250000;
         int max = 999999;

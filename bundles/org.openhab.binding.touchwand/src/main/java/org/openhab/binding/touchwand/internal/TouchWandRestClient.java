@@ -16,6 +16,7 @@ import static org.openhab.binding.touchwand.internal.TouchWandBindingConstants.*
 
 import java.net.CookieManager;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -212,7 +213,7 @@ public class TouchWandRestClient {
 
         URL url = null;
         try {
-            url = new URL(command);
+            url = URI.create(command).toURL();
         } catch (MalformedURLException e) {
             logger.warn("Error building URL {} : {}", command, e.getMessage());
             return "";

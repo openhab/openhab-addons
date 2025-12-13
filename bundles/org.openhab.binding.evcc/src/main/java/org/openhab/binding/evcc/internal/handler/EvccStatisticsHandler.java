@@ -19,11 +19,11 @@ import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.thing.ChannelGroupUID;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.type.ChannelTypeRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,6 +43,7 @@ public class EvccStatisticsHandler extends EvccBaseThingHandler {
 
     public EvccStatisticsHandler(Thing thing, ChannelTypeRegistry channelTypeRegistry) {
         super(thing, channelTypeRegistry);
+        type = PROPERTY_TYPE_STATISTICS;
     }
 
     @Override
@@ -52,6 +53,12 @@ public class EvccStatisticsHandler extends EvccBaseThingHandler {
             handler.register(this);
             updateStatus(ThingStatus.ONLINE);
             isInitialized = true;
+            JsonObject stateOpt = handler.getCachedEvccState().deepCopy();
+            if (stateOpt.isEmpty()) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                return;
+            }
+            prepareApiResponseForChannelStateUpdate(stateOpt);
         });
     }
 
@@ -61,8 +68,13 @@ public class EvccStatisticsHandler extends EvccBaseThingHandler {
     }
 
     @Override
-    public void updateFromEvccState(JsonObject state) {
-        state = state.has(JSON_MEMBER_STATISTICS) ? state.getAsJsonObject(JSON_MEMBER_STATISTICS) : new JsonObject();
+    public void prepareApiResponseForChannelStateUpdate(JsonObject state) {
+        state = state.has(JSON_KEY_STATISTICS) ? state.getAsJsonObject(JSON_KEY_STATISTICS) : new JsonObject();
+        if (!isInitialized || state.isEmpty()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            return;
+        }
+        updateStatus(ThingStatus.ONLINE);
         for (String statisticsKey : state.keySet()) {
             JsonObject statistic = state.getAsJsonObject(statisticsKey);
             logger.debug("Extracting statistics for {}", statisticsKey);
@@ -76,7 +88,7 @@ public class EvccStatisticsHandler extends EvccBaseThingHandler {
                         key = "chargedEnergy";
                     }
                     ChannelUID channelUID = new ChannelUID(channelGroupUID, Utils.sanitizeChannelID(key));
-                    updateState(channelUID, new DecimalType(value.getAsDouble()));
+                    resolveAndUpdateState(channelUID, channelUID.getIdWithoutGroup(), value);
                 }
             }
         }

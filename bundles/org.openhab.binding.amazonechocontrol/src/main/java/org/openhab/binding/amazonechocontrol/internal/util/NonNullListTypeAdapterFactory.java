@@ -40,7 +40,6 @@ public class NonNullListTypeAdapterFactory implements TypeAdapterFactory {
     @SuppressWarnings("unchecked")
     public <T> @Nullable TypeAdapter<T> create(@NonNullByDefault({}) Gson gson,
             @NonNullByDefault({}) TypeToken<T> type) {
-
         Class<T> rawType = (Class<T>) type.getRawType();
         if (rawType != List.class) {
             return null;

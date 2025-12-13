@@ -146,6 +146,12 @@
 				<description>Energy needed to reach maximum state of charge</description>
 			</add-channel>
 		</instruction-set>
+		<instruction-set targetVersion="4">
+			<update-channel id="radius-hybrid" groupIds="range-hybrid-values">
+				<type>mercedesme:radius-hybrid</type>
+				<label>Hybrid Radius</label>
+			</update-channel>
+		</instruction-set>
 	</thing-type>
 
 	<thing-type uid="mercedesme:combustion">
