@@ -46,10 +46,10 @@ import org.openhab.core.types.State;
 @NonNullByDefault
 class InactivityProfileTest {
 
-    private @NonNullByDefault({}) @Mock ProfileCallback mockCallback;
-    private @NonNullByDefault({}) @Mock ProfileContext mockContext;
-    private @NonNullByDefault({}) @Mock ScheduledExecutorService mockScheduler;
-    private @NonNullByDefault({}) @Mock ItemChannelLinkRegistry mockLinkRegistry;
+    private @Mock @NonNullByDefault({}) ProfileCallback mockCallback;
+    private @Mock @NonNullByDefault({}) ProfileContext mockContext;
+    private @Mock @NonNullByDefault({}) ScheduledExecutorService mockScheduler;
+    private @Mock @NonNullByDefault({}) ItemChannelLinkRegistry mockLinkRegistry;
 
     private final String testItemName = "testItem";
     private final ChannelUID testChannelUID = new ChannelUID("this:test:channel:uid");
