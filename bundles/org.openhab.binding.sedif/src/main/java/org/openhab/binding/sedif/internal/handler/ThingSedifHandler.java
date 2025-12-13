@@ -25,6 +25,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
+import java.time.temporal.WeekFields;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Random;
@@ -450,6 +451,15 @@ public class ThingSedifHandler extends BaseThingHandler {
         props.put(key, value);
     }
 
+    private float getConso(MeterReading mr, String dtKey) {
+        Consommation conso = mr.data.getEntries(dtKey);
+        if (conso != null) {
+            return conso.consommation;
+        }
+
+        return 0;
+    }
+
     /**
      * Request new daily/weekly data and updates channels
      */
@@ -457,8 +467,10 @@ public class ThingSedifHandler extends BaseThingHandler {
         logger.trace("updateConsumptionData() called");
 
         consumption.getValue().ifPresentOrElse(values -> {
-
             logger.trace("updateConsumptionData:getValue()");
+            LocalDate now = LocalDate.now();
+            Consommation[] consommation = values.data.consommation;
+
             // ===========================
             // Daily conso
             // ===========================
@@ -466,22 +478,13 @@ public class ThingSedifHandler extends BaseThingHandler {
             double dayConsoMinus2 = 0;
             double dayConsoMinus3 = 0;
 
-            Consommation[] consommation = values.data.consommation;
+            String yesterday = now.minusDays(1).toString();
+            String dayMinus2 = now.minusDays(2).toString();
+            String dayMinus3 = now.minusDays(3).toString();
 
-            logger.trace("updateConsumptionData> consommation : {}", consommation != null);
-            logger.trace("updateConsumptionData> consommation : {}", consommation != null ? consommation.length : 0);
-
-            if (consommation != null) {
-                if (consommation.length - 1 >= 0) {
-                    yesterdayConso = consommation[consommation.length - 1].consommation;
-                }
-                if (values.data.consommation.length - 2 >= 0) {
-                    dayConsoMinus2 = consommation[consommation.length - 2].consommation;
-                }
-                if (values.data.consommation.length - 3 >= 0) {
-                    dayConsoMinus3 = consommation[consommation.length - 3].consommation;
-                }
-            }
+            yesterdayConso = getConso(values, yesterday);
+            dayConsoMinus2 = getConso(values, dayMinus2);
+            dayConsoMinus3 = getConso(values, dayMinus3);
 
             logger.trace("updateConsumptionData> updateState/yesterdayConso : {}", yesterdayConso);
             logger.trace("updateConsumptionData> updateState/dayConsoMinus2 : {}", dayConsoMinus2);
@@ -503,34 +506,27 @@ public class ThingSedifHandler extends BaseThingHandler {
 
             Consommation[] weekConso = values.data.weekConso;
 
-            if (weekConso != null) {
-                if (weekConso.length - 1 >= 0) {
-                    if (values.data.weekConso[weekConso.length - 1] != null) {
-                        thisWeekConso = weekConso[weekConso.length - 1].consommation;
-                    }
-                }
-                if (weekConso.length - 2 >= 0) {
-                    if (weekConso[values.data.weekConso.length - 2] != null) {
-                        lastWeekConso = weekConso[weekConso.length - 2].consommation;
-                    }
-                }
-                if (weekConso.length - 3 >= 0) {
-                    if (weekConso[values.data.weekConso.length - 3] != null) {
-                        weekConsoMinus2 = weekConso[weekConso.length - 3].consommation;
-                    }
-                }
-            }
+            LocalDate thisWeek = now;
+            LocalDate lastWeek = now.minusWeeks(1);
+            LocalDate weekMinus2 = now.minusWeeks(2);
 
-            logger.trace("updateConsumptionData> updateState/thisWeekConso : {}", thisWeekConso);
-            logger.trace("updateConsumptionData> updateState/lastWeekConso : {}", lastWeekConso);
-            logger.trace("updateConsumptionData> updateState/weekConsoMinus2 : {}", weekConsoMinus2);
+            String thisWeekKey = thisWeek.get(WeekFields.ISO.weekBasedYear()) + "-w-"
+                    + thisWeek.get(WeekFields.ISO.weekOfWeekBasedYear());
+            String lastWeekKey = lastWeek.get(WeekFields.ISO.weekBasedYear()) + "-w-"
+                    + lastWeek.get(WeekFields.ISO.weekOfWeekBasedYear());
+            String weekMinus2Key = weekMinus2.get(WeekFields.ISO.weekBasedYear()) + "-w-"
+                    + weekMinus2.get(WeekFields.ISO.weekOfWeekBasedYear());
+
+            thisWeekConso = getConso(values, thisWeekKey);
+            lastWeekConso = getConso(values, lastWeekKey);
+            weekConsoMinus2 = getConso(values, weekMinus2Key);
 
             updateState(GROUP_WEEKLY_CONSUMPTION, CHANNEL_WEEKLY_THIS_WEEK_CONSUMPTION,
-                    new QuantityType<>(thisWeekConso * 1000, Units.LITRE));
+                    new QuantityType<>(thisWeekConso, Units.LITRE));
             updateState(GROUP_WEEKLY_CONSUMPTION, CHANNEL_WEEKLY_LAST_WEEK_CONSUMPTION,
-                    new QuantityType<>(lastWeekConso * 1000, Units.LITRE));
+                    new QuantityType<>(lastWeekConso, Units.LITRE));
             updateState(GROUP_WEEKLY_CONSUMPTION, CHANNEL_WEEKLY_WEEK_MINUS_2_CONSUMPTION,
-                    new QuantityType<>(weekConsoMinus2 * 1000, Units.LITRE));
+                    new QuantityType<>(weekConsoMinus2, Units.LITRE));
 
             // ===========================
             // Month conso
@@ -539,36 +535,24 @@ public class ThingSedifHandler extends BaseThingHandler {
             double lastMonthConso = 0;
             double monthConsoMinus2 = 0;
 
-            Consommation[] monthConso = values.data.monthConso;
+            LocalDate thisMonth = now;
+            LocalDate lastMonth = now.minusMonths(1);
+            LocalDate monthMinus2 = now.minusMonths(2);
 
-            if (monthConso != null) {
-                if (monthConso.length - 1 >= 0) {
-                    if (monthConso[monthConso.length - 1] != null) {
-                        thisMonthConso = monthConso[monthConso.length - 1].consommation;
-                    }
-                }
-                if (monthConso.length - 2 >= 0) {
-                    if (monthConso[monthConso.length - 2] != null) {
-                        lastMonthConso = monthConso[monthConso.length - 2].consommation;
-                    }
-                }
-                if (monthConso.length - 3 >= 0) {
-                    if (monthConso[monthConso.length - 3] != null) {
-                        monthConsoMinus2 = monthConso[monthConso.length - 3].consommation;
-                    }
-                }
-            }
+            String thisMonthKey = thisMonth.getYear() + "-" + thisMonth.getMonthValue();
+            String lastMonthKey = lastMonth.getYear() + "-" + lastMonth.getMonthValue();
+            String monthMinus2Key = monthMinus2.getYear() + "-" + monthMinus2.getMonthValue();
 
-            logger.trace("updateConsumptionData> updateState/thisMonthConso : {}", thisMonthConso);
-            logger.trace("updateConsumptionData> updateState/lastMonthConso : {}", lastMonthConso);
-            logger.trace("updateConsumptionData> updateState/monthConsoMinus2 : {}", monthConsoMinus2);
+            thisMonthConso = getConso(values, thisMonthKey);
+            lastMonthConso = getConso(values, lastMonthKey);
+            monthConsoMinus2 = getConso(values, monthMinus2Key);
 
             updateState(GROUP_MONTHLY_CONSUMPTION, CHANNEL_MONTHLY_THIS_MONTH_CONSUMPTION,
-                    new QuantityType<>(thisMonthConso * 1000, Units.LITRE));
+                    new QuantityType<>(thisMonthConso, Units.LITRE));
             updateState(GROUP_MONTHLY_CONSUMPTION, CHANNEL_MONTHLY_LAST_MONTH_CONSUMPTION,
-                    new QuantityType<>(lastMonthConso * 1000, Units.LITRE));
+                    new QuantityType<>(lastMonthConso, Units.LITRE));
             updateState(GROUP_MONTHLY_CONSUMPTION, CHANNEL_MONTHLY_MONTH_MINUS_2_CONSUMPTION,
-                    new QuantityType<>(monthConsoMinus2 * 1000, Units.LITRE));
+                    new QuantityType<>(monthConsoMinus2, Units.LITRE));
 
             // ===========================
             // Year conso
@@ -577,47 +561,30 @@ public class ThingSedifHandler extends BaseThingHandler {
             double lastYearConso = 0;
             double yearConsoMinus2 = 0;
 
-            Consommation[] yearConso = values.data.yearConso;
+            String thisYearKey = "" + now.getYear();
+            String lastYearKey = "" + now.minusYears(1).getYear();
+            String yearMinus2Key = "" + now.minusYears(2).getYear();
 
-            if (yearConso != null) {
-                if (yearConso.length - 1 >= 0) {
-                    if (yearConso[yearConso.length - 1] != null) {
-                        thisYearConso = yearConso[yearConso.length - 1].consommation;
-                    }
-                }
-                if (yearConso.length - 2 >= 0) {
-                    if (yearConso[yearConso.length - 2] != null) {
-                        lastYearConso = yearConso[yearConso.length - 2].consommation;
-                    }
-                }
-                if (yearConso.length - 3 >= 0) {
-                    if (yearConso[yearConso.length - 3] != null) {
-                        yearConsoMinus2 = yearConso[yearConso.length - 3].consommation;
-                    }
-                }
-            }
-
-            logger.trace("updateConsumptionData> updateState/thisYearConso : {}", thisYearConso);
-            logger.trace("updateConsumptionData> updateState/lastYearConso : {}", lastYearConso);
-            logger.trace("updateConsumptionData> updateState/yearConsoMinus2 : {}", yearConsoMinus2);
+            thisYearConso = getConso(values, thisYearKey);
+            lastYearConso = getConso(values, lastYearKey);
+            yearConsoMinus2 = getConso(values, yearMinus2Key);
 
             updateState(GROUP_YEARLY_CONSUMPTION, CHANNEL_YEARLY_THIS_YEAR_CONSUMPTION,
-                    new QuantityType<>(thisYearConso * 1000, Units.LITRE));
+                    new QuantityType<>(thisYearConso, Units.LITRE));
             updateState(GROUP_YEARLY_CONSUMPTION, CHANNEL_YEARLY_LAST_YEAR_CONSUMPTION,
-                    new QuantityType<>(lastYearConso * 1000, Units.LITRE));
+                    new QuantityType<>(lastYearConso, Units.LITRE));
             updateState(GROUP_YEARLY_CONSUMPTION, CHANNEL_YEARLY_YEAR_MINUS_2_CONSUMPTION,
-                    new QuantityType<>(yearConsoMinus2 * 1000, Units.LITRE));
+                    new QuantityType<>(yearConsoMinus2, Units.LITRE));
 
             updateState(GROUP_BASE, CHANNEL_MEAN_WATER_PRICE, new DecimalType(values.prixMoyenEau));
 
             if (consommation != null && consommation.length > 0) {
                 sedifState.setLastIndexDate(consommation[consommation.length - 1].dateIndex.toLocalDate());
             }
-            updateConsumptionTimeSeries(GROUP_DAILY_CONSUMPTION, CHANNEL_CONSUMPTION, values.data.consommation, 1.0F);
-            updateConsumptionTimeSeries(GROUP_WEEKLY_CONSUMPTION, CHANNEL_CONSUMPTION, values.data.weekConso, 1000.0F);
-            updateConsumptionTimeSeries(GROUP_MONTHLY_CONSUMPTION, CHANNEL_CONSUMPTION, values.data.monthConso,
-                    1000.0F);
-            updateConsumptionTimeSeries(GROUP_YEARLY_CONSUMPTION, CHANNEL_CONSUMPTION, values.data.yearConso, 1000.0F);
+            updateConsumptionTimeSeries(GROUP_DAILY_CONSUMPTION, CHANNEL_CONSUMPTION, values.data.consommation);
+            updateConsumptionTimeSeries(GROUP_WEEKLY_CONSUMPTION, CHANNEL_CONSUMPTION, values.data.weekConso);
+            updateConsumptionTimeSeries(GROUP_MONTHLY_CONSUMPTION, CHANNEL_CONSUMPTION, values.data.monthConso);
+            updateConsumptionTimeSeries(GROUP_YEARLY_CONSUMPTION, CHANNEL_CONSUMPTION, values.data.yearConso);
 
             logger.trace("updateConsumptionData:getValue() end");
 
@@ -674,8 +641,7 @@ public class ThingSedifHandler extends BaseThingHandler {
         super.sendTimeSeries(groupId + "#" + channelID, timeSeries);
     }
 
-    private void updateConsumptionTimeSeries(String groupId, String channelId, Consommation[] consoTab,
-            Float factorToConvertInLitre) {
+    private void updateConsumptionTimeSeries(String groupId, String channelId, Consommation[] consoTab) {
         TimeSeries timeSeries = new TimeSeries(Policy.REPLACE);
 
         for (int i = 0; i < consoTab.length; i++) {
@@ -697,7 +663,7 @@ public class ThingSedifHandler extends BaseThingHandler {
             if (Double.isNaN(consommation)) {
                 continue;
             }
-            timeSeries.add(timestamp, new DecimalType(consommation * factorToConvertInLitre));
+            timeSeries.add(timestamp, new DecimalType(consommation));
         }
 
         sendTimeSeries(groupId, channelId, timeSeries);

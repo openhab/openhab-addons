@@ -17,12 +17,15 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjusters;
+import java.time.temporal.WeekFields;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.sedif.internal.dto.MeterReading;
 import org.openhab.binding.sedif.internal.dto.MeterReading.Data;
 import org.openhab.binding.sedif.internal.dto.MeterReading.Data.Consommation;
 import org.openhab.binding.sedif.internal.types.SedifException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * {@link MeterReadingHelper} helper methods for MeterReading
@@ -31,6 +34,8 @@ import org.openhab.binding.sedif.internal.types.SedifException;
  */
 @NonNullByDefault
 public class MeterReadingHelper {
+    private static final Logger logger = LoggerFactory.getLogger(MeterReadingHelper.class);
+
     public static MeterReading merge(MeterReading currentMeterReading, MeterReading incomingMeterReading)
             throws SedifException {
         Data.Consommation[] incomingConso = incomingMeterReading.data.consommation;
@@ -175,9 +180,15 @@ public class MeterReadingHelper {
             float indexFin = getIndex(meterReading, endOfWeek, startDate, endDate);
             float indexDiff = indexFin - indexDeb;
 
-            weekConso.consommation = indexDiff;
+            weekConso.consommation = indexDiff * (float) 1000.00;
             weekConso.dateIndex = LocalDateTime.of(startOfWeek.getYear(), startOfWeek.getMonth(),
                     startOfWeek.getDayOfMonth(), 0, 0, 0);
+
+            int week = weekConso.dateIndex.get(WeekFields.ISO.weekOfWeekBasedYear());
+            int weekYear = weekConso.dateIndex.get(WeekFields.ISO.weekBasedYear());
+            String key = weekYear + "-w-" + week;
+            meterReading.data.putEntries(key, weekConso);
+            logger.debug("");
         }
 
         for (int idxMonth = 0; idxMonth < monthsNum; idxMonth++) {
@@ -191,8 +202,10 @@ public class MeterReadingHelper {
             float indexFin = getIndex(meterReading, endOfMonth, startDate, endDate);
             float indexDiff = indexFin - indexDeb;
 
-            monthConso.consommation = indexDiff;
+            monthConso.consommation = indexDiff * (float) 1000.00;
             monthConso.dateIndex = LocalDateTime.of(startOfMonth.getYear(), startOfMonth.getMonth(), 1, 0, 0, 0);
+            String key = startOfMonth.getYear() + "-" + startOfMonth.getMonthValue();
+            meterReading.data.putEntries(key, monthConso);
         }
 
         for (int idxYear = 0; idxYear < yearsNum; idxYear++) {
@@ -206,8 +219,10 @@ public class MeterReadingHelper {
             float indexFin = getIndex(meterReading, endOfYear, startDate, endDate);
             float indexDiff = indexFin - indexDeb;
 
-            yearConso.consommation = indexDiff;
+            yearConso.consommation = indexDiff * (float) 1000.00;
             yearConso.dateIndex = LocalDateTime.of(startOfYear.getYear(), 1, 1, 0, 0, 0);
+            String key = "" + startOfYear.getYear();
+            meterReading.data.putEntries(key, yearConso);
         }
     }
 
