@@ -163,7 +163,7 @@
 /bundles/org.openhab.binding.heliosventilation/ @ramack
 /bundles/org.openhab.binding.heos/ @Wire82
 /bundles/org.openhab.binding.herzborg/ @Sonic-Amiga
-/bundles/org.openhab.binding.homeassistant/ @antroids @ccutrer
+/bundles/org.openhab.binding.homeassistant/ @ccutrer
 /bundles/org.openhab.binding.homeconnect/ @bruestel
 /bundles/org.openhab.binding.homekit/ @andrewfg
 /bundles/org.openhab.binding.homie/ @ccutrer
@@ -502,12 +502,12 @@
 /itests/org.openhab.binding.astro.tests/ @gerrieg
 /itests/org.openhab.binding.avmfritz.tests/ @cweitkamp
 /itests/org.openhab.binding.feed.tests/ @openhab/add-ons-maintainers
+/itests/org.openhab.binding.homeassistant.tests/ @ccutrer
 /itests/org.openhab.binding.homie.tests/ @ccutrer
 /itests/org.openhab.binding.hue.tests/ @openhab/add-ons-maintainers
 /itests/org.openhab.binding.max.tests/ @marcelrv
 /itests/org.openhab.binding.mielecloud.tests/ @BjoernLange
 /itests/org.openhab.binding.modbus.tests/ @ssalonen
-/itests/org.openhab.binding.mqtt.homeassistant.tests/ @antroids
 /itests/org.openhab.binding.mqtt.ruuvigateway.tests/ @ssalonen
 /itests/org.openhab.binding.ntp.tests/ @marcelrv
 /itests/org.openhab.binding.systeminfo.tests/ @mherwege
