@@ -138,13 +138,19 @@ public class FanControlConverter extends GenericConverter<FanControlCluster> {
                 }
             } else if (command instanceof PercentType percentType) {
                 handler.writeAttribute(endpointNumber, FanControlCluster.CLUSTER_NAME,
-                        FanControlCluster.ATTRIBUTE_PERCENT_SETTING, percentType.toString());
+                        FanControlCluster.ATTRIBUTE_PERCENT_SETTING, percentType.toString()).exceptionally(e -> {
+                            logger.debug("Failed to set percent setting: {}", e.getMessage());
+                            return Void.TYPE.cast(null);
+                        });
             }
         }
         if (channelUID.getIdWithoutGroup().equals(CHANNEL_ID_FANCONTROL_MODE)) {
             if (command instanceof DecimalType decimalType) {
                 handler.writeAttribute(endpointNumber, FanControlCluster.CLUSTER_NAME,
-                        FanControlCluster.ATTRIBUTE_FAN_MODE, decimalType.toString());
+                        FanControlCluster.ATTRIBUTE_FAN_MODE, decimalType.toString()).exceptionally(e -> {
+                            logger.debug("Failed to set fan mode: {}", e.getMessage());
+                            return Void.TYPE.cast(null);
+                        });
             }
         }
         super.handleCommand(channelUID, command);

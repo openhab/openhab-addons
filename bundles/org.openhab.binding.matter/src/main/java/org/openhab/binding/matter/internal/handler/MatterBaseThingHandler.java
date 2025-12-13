@@ -407,6 +407,10 @@ public abstract class MatterBaseThingHandler extends BaseThingHandler
         return translationService.getTranslation(key);
     }
 
+    public final String getTranslation(String key, Object... args) {
+        return translationService.getTranslation(key, args);
+    }
+
     public int getCurrentFabricIndex() {
         return currentFabricIndex;
     }

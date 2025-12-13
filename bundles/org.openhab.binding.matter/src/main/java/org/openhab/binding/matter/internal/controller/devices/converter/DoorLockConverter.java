@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -107,9 +108,10 @@ public class DoorLockConverter extends GenericConverter<DoorLockCluster> {
     private static final int ADDITIONAL_USER_SLOTS = 5;
 
     private final Map<Integer, LockUser> lockUsers = new ConcurrentHashMap<>();
+    private final AtomicBoolean fetchingUsers = new AtomicBoolean(false);
     private int numberOfTotalUsersSupported = 0;
     private int minPinCodeLength = 0;
-    private int maxPinCodeLength = 0;
+    private int maxPinCodeLength = 255; // Maximum length of a PIN code if not specified is 255
     private int autoRelockTime = 0;
     private boolean pinCredentialSupported = false;
     private boolean userFeatureSupported = false;
@@ -253,12 +255,14 @@ public class DoorLockConverter extends GenericConverter<DoorLockCluster> {
     public void onEvent(EventTriggeredMessage message) {
         switch (message.path.eventName) {
             case "doorLockAlarm":
-                if (message.events[0].data instanceof DoorLockCluster.DoorLockAlarm doorLockAlarm) {
+                if (message.events != null && message.events.length > 0
+                        && message.events[0].data instanceof DoorLockCluster.DoorLockAlarm doorLockAlarm) {
                     triggerChannel(CHANNEL_ID_DOORLOCK_ALARM, doorLockAlarm.alarmCode.getValue().toString());
                 }
                 break;
             case "lockOperationError":
-                if (message.events[0].data instanceof DoorLockCluster.LockOperationError lockOperationError) {
+                if (message.events != null && message.events.length > 0
+                        && message.events[0].data instanceof DoorLockCluster.LockOperationError lockOperationError) {
                     triggerChannel(CHANNEL_ID_DOORLOCK_LOCKOPERATIONERROR,
                             lockOperationError.operationError.getValue().toString());
                 }
@@ -415,15 +419,10 @@ public class DoorLockConverter extends GenericConverter<DoorLockCluster> {
                     .create(MatterBindingConstants.CONFIG_DOORLOCK_DEFAULT_LOCK_PIN, Type.TEXT)
                     .withLabel(handler.getTranslation(MatterBindingConstants.CONFIG_LABEL_DOORLOCK_DEFAULT_LOCK_PIN))
                     .withDescription(
-                            handler.getTranslation(MatterBindingConstants.CONFIG_DESC_DOORLOCK_DEFAULT_LOCK_PIN))
+                            handler.getTranslation(MatterBindingConstants.CONFIG_DESC_DOORLOCK_DEFAULT_LOCK_PIN,
+                                    minPinCodeLength, maxPinCodeLength))
                     .withGroupName(MatterBindingConstants.CONFIG_GROUP_DOORLOCK_MANAGEMENT).withDefault("")
-                    .withPattern("^[0-9]*$").withContext("password");
-            if (minPinCodeLength > 0) {
-                builder.withMinimum(BigDecimal.valueOf(minPinCodeLength));
-            }
-            if (maxPinCodeLength > 0) {
-                builder.withMaximum(BigDecimal.valueOf(maxPinCodeLength));
-            }
+                    .withPattern(buildPinCodePattern(minPinCodeLength, maxPinCodeLength)).withContext("password");
             params.add(builder.build());
         }
 
@@ -489,17 +488,12 @@ public class DoorLockConverter extends GenericConverter<DoorLockCluster> {
                     builder = ConfigDescriptionParameterBuilder
                             .create(groupName + "_" + MatterBindingConstants.CONFIG_DOORLOCK_PIN_CREDENTIAL, Type.TEXT)
                             .withLabel(
-                                    handler.getTranslation(MatterBindingConstants.CONFIG_LABEL_DOORLOCK_PIN_CREDENTIAL))
-                            .withPattern("^[0-9]*$")
+                                    handler.getTranslation(MatterBindingConstants.CONFIG_LABEL_DOORLOCK_PIN_CREDENTIAL,
+                                            minPinCodeLength, maxPinCodeLength))
+                            .withPattern(buildPinCodePattern(minPinCodeLength, maxPinCodeLength))
                             .withDescription(
-                                    handler.getTranslation(MatterBindingConstants.CONFIG_DESC_DOORLOCK_PIN_CREDENTIAL))
+                                    buildPinCodeDescription(MatterBindingConstants.CONFIG_DESC_DOORLOCK_PIN_CREDENTIAL))
                             .withGroupName(groupName).withDefault("").withContext("password");
-                    if (minPinCodeLength > 0) {
-                        builder.withMinimum(BigDecimal.valueOf(minPinCodeLength));
-                    }
-                    if (maxPinCodeLength > 0) {
-                        builder.withMaximum(BigDecimal.valueOf(maxPinCodeLength));
-                    }
                     params.add(builder.build());
                 }
             }
@@ -563,41 +557,47 @@ public class DoorLockConverter extends GenericConverter<DoorLockCluster> {
         if (!userFeatureSupported || numberOfTotalUsersSupported == 0) {
             return;
         }
-        lockUsers.clear();
-        fetchUserStartingAtIndex(1);
+        if (!fetchingUsers.compareAndSet(false, true)) {
+            logger.debug("User fetch already in progress, skipping");
+            return;
+        }
+        fetchUserStartingAtIndex(1, new ConcurrentHashMap<>()).thenAccept(users -> {
+            lockUsers.clear();
+            lockUsers.putAll(users);
+            logger.debug("User enumeration complete, found {} users", lockUsers.size());
+        }).exceptionally(e -> {
+            logger.debug("Error fetching users: {}", e.getMessage());
+            return null;
+        }).whenComplete((result, error) -> {
+            updateConfigDescription();
+            updateUserConfiguration();
+            fetchingUsers.set(false);
+        });
     }
 
     /**
      * Fetches users starting at a specific index, will skip empty slots and stop
      * when the last user is reached.
+     *
+     * @param userIndex the user index to start fetching from
+     * @param users the map to accumulate users into
+     * @return a CompletableFuture containing the map of all fetched users
      */
-    private void fetchUserStartingAtIndex(int userIndex) {
-        getUser(userIndex).thenAccept(user -> {
+    private CompletableFuture<Map<Integer, LockUser>> fetchUserStartingAtIndex(int userIndex,
+            Map<Integer, LockUser> users) {
+        return getUser(userIndex).thenCompose(user -> {
             if (user != null) {
                 if (user.isOccupied()) {
-                    lockUsers.put(userIndex, user);
+                    users.put(userIndex, user);
                 }
                 Integer nextUserIndex = user.nextUserIndex;
                 // Use nextUserIndex from the response to jump to the next occupied user
                 if (nextUserIndex != null) {
-                    fetchUserStartingAtIndex(nextUserIndex.intValue());
-                } else {
-                    // No more users
-                    logger.debug("User enumeration complete, found {} users", lockUsers.size());
-                    updateConfigDescription();
-                    updateUserConfiguration();
+                    return fetchUserStartingAtIndex(nextUserIndex.intValue(), users);
                 }
-            } else {
-                logger.debug("User enumeration complete (no response at index {}), found {} users", userIndex,
-                        lockUsers.size());
-                updateConfigDescription();
-                updateUserConfiguration();
             }
-        }).exceptionally(e -> {
-            logger.debug("Error fetching user {}: {}", userIndex, e.getMessage());
-            updateConfigDescription();
-            updateUserConfiguration();
-            return null;
+            // No more users or null response - return accumulated users
+            return CompletableFuture.completedFuture(users);
         });
     }
 
@@ -665,11 +665,9 @@ public class DoorLockConverter extends GenericConverter<DoorLockCluster> {
      * For MODIFY operations only specified fields are updated, other fields are sent as null per Matter spec.
      *
      * @param userIndex The user index starting at 1
-     * @param userName The user name (can be null for changes to foreign fabric
-     *            users)
+     * @param userName The user name (can be null for changes to foreign fabric users)
      * @param userType The user type (can be null for status-only updates)
-     * @param userStatus The user status (can be null to preserve existing status on
-     *            modify)
+     * @param userStatus The user status (can be null to preserve existing status on modify)
      */
     private CompletableFuture<Void> setUser(int userIndex, @Nullable String userName, @Nullable UserTypeEnum userType,
             @Nullable UserStatusEnum userStatus) {
@@ -753,7 +751,6 @@ public class DoorLockConverter extends GenericConverter<DoorLockCluster> {
                             && jsonObject.get("credentialExists").getAsBoolean();
 
                     if (!credentialExists) {
-                        // This slot is available
                         logger.debug("Credential slot {} is available", startIndex);
                         return CompletableFuture.completedFuture(startIndex);
                     }
@@ -782,9 +779,8 @@ public class DoorLockConverter extends GenericConverter<DoorLockCluster> {
         BaseCluster.OctetString pinData = new BaseCluster.OctetString(pinCode, StandardCharsets.UTF_8);
         ClusterCommand command = DoorLockCluster.setCredential(operationType, credential, pinData, userIndex, null,
                 null);
-        // This is a workaround to send null values vs omitting values. I need to figure out a better way to do this
-        // long term (like undefined vs null in JavaScript). I think i will use a builder pattern for commands when i
-        // refactor the code when matter.js 0.16 comes out.
+        // This is a workaround to send null values vs omitting values.
+        // TODO: Refactor command construction to use a builder pattern when matter.js 0.16 comes out.
         command.args.put("userStatus", null);
         command.args.put("userType", null);
         logger.debug("Setting credential at index {}: {}", credentialIndex, command.args);
@@ -924,6 +920,9 @@ public class DoorLockConverter extends GenericConverter<DoorLockCluster> {
                 });
             }
             return;
+        } else {
+            logger.warn("PIN credentials not supported or No PIN provided for user at index {}, skipping PIN set",
+                    userIndex);
         }
 
         // Check if user name/type changed
@@ -948,5 +947,21 @@ public class DoorLockConverter extends GenericConverter<DoorLockCluster> {
                 });
             }
         }
+    }
+
+    private String buildPinCodePattern(int minLength, int maxLength) {
+        if (minLength > 0 && maxLength > 0) {
+            return "^[0-9]{" + minLength + "," + maxLength + "}$";
+        } else if (minLength > 0) {
+            return "^[0-9]{" + minLength + ",}$";
+        } else if (maxLength > 0) {
+            return "^[0-9]{0," + maxLength + "}$";
+        } else {
+            return "^[0-9]*$";
+        }
+    }
+
+    private String buildPinCodeDescription(String descriptionKey) {
+        return handler.getTranslation(descriptionKey, minPinCodeLength, maxPinCodeLength);
     }
 }

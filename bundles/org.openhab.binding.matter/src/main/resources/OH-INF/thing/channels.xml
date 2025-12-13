@@ -450,7 +450,7 @@
 				<option value="1">Lock Factory Reset</option>
 				<option value="3">Lock Radio Power Cycled</option>
 				<option value="4">Wrong Code Entry Limit</option>
-				<option value="5">Front Esceutcheon Removed</option>
+				<option value="5">Front Escutcheon Removed</option>
 				<option value="6">Door Forced Open</option>
 				<option value="7">Door Ajar</option>
 				<option value="8">Forced User</option>
