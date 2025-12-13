@@ -165,6 +165,7 @@
 /bundles/org.openhab.binding.herzborg/ @Sonic-Amiga
 /bundles/org.openhab.binding.homeassistant/ @antroids @ccutrer
 /bundles/org.openhab.binding.homeconnect/ @bruestel
+/bundles/org.openhab.binding.homekit/ @andrewfg
 /bundles/org.openhab.binding.homie/ @ccutrer
 /bundles/org.openhab.binding.homematic/ @FStolte @gerrieg @mdicke2s
 /bundles/org.openhab.binding.homewizard/ @Daniel-42
