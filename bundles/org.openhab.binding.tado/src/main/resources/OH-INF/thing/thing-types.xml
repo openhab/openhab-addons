@@ -13,10 +13,10 @@
 		<channels>
 			<channel typeId="homePresence" id="homePresence"/>
 			<channel typeId="geofencingEnabled" id="geofencingEnabled"/>
-			<channel typeId="APIMaxCallsPerDuration" id="APIMaxCallsPerDuration"/>
-			<channel typeId="APIMaxDurationSeconds" id="APIMaxDurationSeconds"/>
-			<channel typeId="APICallsRemainingThisDuration" id="APICallsRemainingThisDuration"/>
-			<channel typeId="APISecondsUntilMaxResets" id="APISecondsUntilMaxResets"/>
+			<channel typeId="APIRateLimit" id="APIRateLimit"/>
+			<channel typeId="APIRateDuration" id="APIRateDuration"/>
+			<channel typeId="APIRateRemaining" id="APIRateRemaining"/>
+			<channel typeId="APIRateReset" id="APIRateReset"/>
 		</channels>
 
 		<properties>
@@ -85,10 +85,10 @@
 				<label>Battery Low Alarm</label>
 				<description>ON if one or more devices in the zone have a low battery</description>
 			</channel>
-			<channel typeId="APIMaxCallsPerDuration" id="APIMaxCallsPerDuration"/>
-			<channel typeId="APIMaxDurationSeconds" id="APIMaxDurationSeconds"/>
-			<channel typeId="APICallsRemainingThisDuration" id="APICallsRemainingThisDuration"/>
-			<channel typeId="APISecondsUntilMaxResets" id="APISecondsUntilMaxResets"/>
+			<channel typeId="APIRateLimit" id="APIRateLimit"/>
+			<channel typeId="APIRateDuration" id="APIRateDuration"/>
+			<channel typeId="APIRateRemaining" id="APIRateRemaining"/>
+			<channel typeId="APIRateReset" id="APIRateReset"/>
 		</channels>
 
 		<properties>
@@ -134,10 +134,10 @@
 
 		<channels>
 			<channel typeId="atHome" id="atHome"/>
-			<channel typeId="APIMaxCallsPerDuration" id="APIMaxCallsPerDuration"/>
-			<channel typeId="APIMaxDurationSeconds" id="APIMaxDurationSeconds"/>
-			<channel typeId="APICallsRemainingThisDuration" id="APICallsRemainingThisDuration"/>
-			<channel typeId="APISecondsUntilMaxResets" id="APISecondsUntilMaxResets"/>
+			<channel typeId="APIRateLimit" id="APIRateLimit"/>
+			<channel typeId="APIRateDuration" id="APIRateDuration"/>
+			<channel typeId="APIRateRemaining" id="APIRateRemaining"/>
+			<channel typeId="APIRateReset" id="APIRateReset"/>
 		</channels>
 
 		<properties>
@@ -428,7 +428,7 @@
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 
-	<channel-type id="APIMaxDurationSeconds" advanced="true">
+	<channel-type id="APIRateDuration" advanced="true">
 		<item-type>Number:Time</item-type>
 		<label>API Max Duration</label>
 		<description>Duration in which the API count rises until maximum (in seconds)</description>
@@ -437,10 +437,10 @@
 			<tag>Status</tag>
 			<tag>Duration</tag>
 		</tags>
-		<state readOnly="true" pattern="%d s"/>
+		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
-	<channel-type id="APICallsRemainingThisDuration" advanced="true">
+	<channel-type id="APIRateRemaining" advanced="true">
 		<item-type>Number</item-type>
 		<label>API Calls remaining</label>
 		<description>Number of API calls remaining before the maximum is reached</description>
@@ -450,7 +450,7 @@
 		<state readOnly="true" pattern="%d"/>
 	</channel-type>
 
-	<channel-type id="APIMaxCallsPerDuration" advanced="true">
+	<channel-type id="APIRateLimit" advanced="true">
 		<item-type>Number</item-type>
 		<label>API Max</label>
 		<description>Maximum API calls allowed per specified duration</description>
@@ -460,7 +460,7 @@
 		<state readOnly="true" pattern="%d"/>
 	</channel-type>
 
-	<channel-type id="APISecondsUntilMaxResets" advanced="true">
+	<channel-type id="APIRateReset" advanced="true">
 		<item-type>Number:Time</item-type>
 		<label>Time until API count resets</label>
 		<description>Time until the API count resets (in seconds)</description>
@@ -469,7 +469,7 @@
 			<tag>Status</tag>
 			<tag>Duration</tag>
 		</tags>
-		<state readOnly="true" pattern="%d s"/>
+		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
 </thing:thing-descriptions>

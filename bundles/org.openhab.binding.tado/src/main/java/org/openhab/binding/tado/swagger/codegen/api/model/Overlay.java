@@ -22,17 +22,17 @@ import com.google.gson.annotations.SerializedName;
  * @author Andrew Fiddian-Green - Initial contribution
  */
 public class Overlay {
-    @SerializedName("APIMaxCallsPerDuration")
-    private Integer APIMaxCallsPerDuration = null;
+    @SerializedName("APIRateLimit")
+    private Integer APIRateLimit = null;
 
-    @SerializedName("APIMaxDurationSeconds")
-    private Integer APIMaxDurationSeconds = null;
+    @SerializedName("APIRateDuration")
+    private Integer APIRateDuration = null;
 
-    @SerializedName("APICallsRemainingThisDuration")
-    private Integer APICallsRemainingThisDuration = null;
+    @SerializedName("APIRateRemaining")
+    private Integer APIRateRemaining = null;
 
-    @SerializedName("APISecondsUntilMaxResets")
-    private Integer APISecondsUntilMaxResets = null;
+    @SerializedName("APIRateReset")
+    private Integer APIRateReset = null;
 
     @SerializedName("setting")
     private GenericZoneSetting setting = null;
@@ -66,20 +66,20 @@ public class Overlay {
         this.termination = termination;
     }
 
-    public Integer getAPIMaxCallsPerDuration() {
-        return APIMaxCallsPerDuration;
+    public Integer getAPIRateLimit() {
+        return APIRateLimit;
     }
 
-    public Integer getAPIMaxDurationSeconds() {
-        return APIMaxDurationSeconds;
+    public Integer getAPIRateDuration() {
+        return APIRateDuration;
     }
 
-    public Integer getAPICallsRemainingThisDuration() {
-        return APICallsRemainingThisDuration;
+    public Integer getAPIRateRemaining() {
+        return APIRateRemaining;
     }
 
-    public Integer getAPISecondsUntilMaxResets() {
-        return APISecondsUntilMaxResets;
+    public Integer getAPIRateReset() {
+        return APIRateReset;
     }
 
     @Override

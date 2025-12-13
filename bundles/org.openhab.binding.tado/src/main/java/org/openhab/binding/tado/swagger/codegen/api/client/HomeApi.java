@@ -56,10 +56,10 @@ public class HomeApi {
     private Gson gson;
     private OAuthorizerV2 authorizer;
 
-    private String APIMaxCallsPerDuration;
-    private String APIMaxDurationSeconds;
-    private String APICallsRemainingThisDuration;
-    private String APISecondsUntilMaxResets;
+    private String APIRateLimit;
+    private String APIRateDuration;
+    private String APIRateRemaining;
+    private String APIRateReset;
 
     private String createStringForJson(ContentResponse resp) {
         StringBuilder stringForJson = new StringBuilder();
@@ -92,12 +92,12 @@ public class HomeApi {
             String[] rateLimitPolicyValues = rateLimitPolicyValueString.split(";");
             for (int x = 0; x < rateLimitPolicyValues.length; x++) {
                 if (rateLimitPolicyValues[x].startsWith("q=")) {
-                    APIMaxCallsPerDuration = rateLimitPolicyValues[x].substring(2);
-                    extractedString.append("\"APIMaxCallsPerDuration\": \"").append(APIMaxCallsPerDuration)
+                    APIRateLimit = rateLimitPolicyValues[x].substring(2);
+                    extractedString.append("\"APIRateLimit\": \"").append(APIRateLimit)
                             .append("\",");
                 } else if (rateLimitPolicyValues[x].startsWith("w=")) {
-                    APIMaxDurationSeconds = rateLimitPolicyValues[x].substring(2);
-                    extractedString.append("\"APIMaxDurationSeconds\": \"").append(APIMaxDurationSeconds).append("\",");
+                    APIRateDuration = rateLimitPolicyValues[x].substring(2);
+                    extractedString.append("\"APIRateDuration\": \"").append(APIRateDuration).append("\",");
                 }
             }
         }
@@ -106,12 +106,12 @@ public class HomeApi {
             String[] rateLimitValues = rateLimitValueString.split(";");
             for (int x = 0; x < rateLimitValues.length; x++) {
                 if (rateLimitValues[x].startsWith("r=")) {
-                    APICallsRemainingThisDuration = rateLimitValues[x].substring(2);
-                    extractedString.append("\"APICallsRemainingThisDuration\": \"")
-                            .append(APICallsRemainingThisDuration).append("\",");
+                    APIRateRemaining = rateLimitValues[x].substring(2);
+                    extractedString.append("\"APIRateRemaining\": \"")
+                            .append(APIRateRemaining).append("\",");
                 } else if (rateLimitValues[x].startsWith("w=")) {
-                    APISecondsUntilMaxResets = rateLimitValues[x].substring(2);
-                    extractedString.append("\"APISecondsUntilMaxResets\": \"").append(APISecondsUntilMaxResets)
+                    APIRateReset = rateLimitValues[x].substring(2);
+                    extractedString.append("\"APIRateReset\": \"").append(APIRateReset)
                             .append("\",");
                 }
             }
