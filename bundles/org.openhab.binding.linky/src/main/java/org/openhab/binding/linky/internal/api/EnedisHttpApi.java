@@ -42,7 +42,7 @@ import org.openhab.binding.linky.internal.dto.ResponseContract;
 import org.openhab.binding.linky.internal.dto.ResponseIdentity;
 import org.openhab.binding.linky.internal.dto.ResponseMeter;
 import org.openhab.binding.linky.internal.dto.ResponseTempo;
-import org.openhab.binding.linky.internal.dto.SubscribeService;
+import org.openhab.binding.linky.internal.dto.SubscribeServices;
 import org.openhab.binding.linky.internal.dto.UsagePoint;
 import org.openhab.binding.linky.internal.dto.UserInfo;
 import org.openhab.binding.linky.internal.handler.BridgeRemoteBaseHandler;
@@ -276,12 +276,12 @@ public class EnedisHttpApi {
         return contactResponse.contact;
     }
 
-    public SubscribeService[] getSubscribeService(ThingLinkyRemoteHandler handler) throws LinkyException {
+    public SubscribeServices getSubscribeService(ThingLinkyRemoteHandler handler) throws LinkyException {
         String subscribeServiceUrl = linkyBridgeHandler.getSubsribeServiceUrl();
         String body = "{ \"comptage\": true, \"autorisationId\" : 11 }";
 
-        SubscribeService[] services = getData(handler, subscribeServiceUrl, HttpMethod.POST, body,
-                SubscribeService[].class);
+        SubscribeServices services = getData(handler, subscribeServiceUrl, HttpMethod.POST, body,
+                SubscribeServices.class);
         return services;
     }
 

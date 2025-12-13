@@ -25,16 +25,16 @@ public class SubscribeService {
     public String serviceCode;
     // public LocalDateTime dateDebut;
     // public LocalDateTime dateFin;
-    public String etateCode;
+    public String etatCode;
     public String etatLibelle;
     public String pointId;
     public String sirenBeneficiaire;
     public String mesuresTypeCode;
     public String mesuresPas;
     public boolean publicationDonnees;
-    public Authorisation authorisation;
+    public Autorisation autorisation;
 
-    public class Authorisation {
+    public class Autorisation {
         public String autorisationId;
         public String autorisationLibelle;
         public String autorisationType;
