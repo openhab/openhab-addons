@@ -361,7 +361,7 @@ It is not possible to connect to devices on a different network using `deviceId`
 
 The thingId is the product type in lower case. For example `HS100` has thingId `hs100`.
 
-The thing can be configured by `ipAddress` or by `deviceId`.
+The Thing can be configured by `ipAddress` or by `deviceId`.
 If the one of them is used the other is automatically set by the binding.
 When manually configured it is preferred to set the `deviceId` because if the ip address of the device would change this will be automatically updated.
 The `deviceId` is the unique identifier each TP-Link device has.
@@ -374,7 +374,7 @@ With background discovery disabled the ip address, which is needed to communicat
 It will not update the ip address if background discovery is disabled and the ip address of the device changes.
 Manually starting a discovery can also be used to set the ip address directly instead of waiting for the 1 minute background discovery refresh period.
 
-The thing has the following configuration parameters:
+The Thing has the following configuration parameters:
 
 | Parameter          | Description                                                                                  |
 |--------------------|----------------------------------------------------------------------------------------------|
@@ -414,8 +414,8 @@ The following group ids are available:
 
 ### Channel Refresh
 
-When the thing receives a `RefreshType` command the channel state is updated from an internal cache.
-This cache is updated per refresh interval as configured in the thing.
+When the Thing receives a `RefreshType` command the channel state is updated from an internal cache.
+This cache is updated per refresh interval as configured in the Thing.
 However for some use cases it is preferable to set the refresh interval higher than the default.
 For example for switches the 1 second refresh interval may cause a burden to the network traffic.
 Therefore if the refresh interval for switches is set to a value higher than 5 seconds, and for the other devices higher than 1 minute.

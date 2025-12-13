@@ -5,13 +5,13 @@ This binding only supports IKEA TRÅDFRI gateway v1.x, it is **not** compatible 
 
 ## Supported Things
 
-Beside the gateway (thing type "gateway"), the binding currently supports colored bulbs, dimmable warm white bulbs as well as white spectrum bulbs, control outlets and blinds.
+Besides the gateway (thing type "gateway"), the binding currently supports colored bulbs, dimmable warm white bulbs as well as white spectrum bulbs, control outlets and blinds.
 The binding also supports read-only data from remote controls and motion sensors (e.g. the battery status).
 The TRÅDFRI controller and sensor devices currently cannot be observed right away because they are communicating directly with the bulbs or lamps without routing their commands through the gateway.
 This makes it nearly impossible to trigger events for pressed buttons.
-We only can access some static data like the present status or battery level.
+We can only access some static data like the present status or battery level.
 
-The thing type ids are defined according to the lighting devices defined for Zigbee Light Link ([see page 24, table 2](https://www.nxp.com/docs/en/user-guide/JN-UG-3091.pdf)).
+The Thing type ids are defined according to the lighting devices defined for Zigbee Light Link ([see page 24, table 2](https://www.nxp.com/docs/en/user-guide/JN-UG-3091.pdf)).
 These are:
 
 | Device type                     | Zigbee Device ID | Thing type |
@@ -36,7 +36,7 @@ The following matrix lists the capabilities (channels) for each of the supported
 |  0820       |            |       |                   |       X       |      X      |       |
 |  0830       |            |       |                   |       X       |      X      |       |
 
-The following things are also supported even thought they are not standardized in Zigbee Light Link:
+The following things are also supported even though they are not standardized in Zigbee Light Link:
 
 | Device type                     | Zigbee Device ID | Thing type |
 |---------------------------------|------------------|------------|
@@ -60,7 +60,7 @@ The gateway requires at least firmware version 1.2.42 to connect to this binding
 
 The `code` is used during the initialization for retrieving unique identity and pre-shared key from the gateway and then it is discarded from the configuration.
 The newly created authentication data is stored in advanced parameters `identity` and `preSharedKey`.
-On each initialization if the code is present in the thing configuration - the `identity` and `preSharedKey` are recreated and the `code` is again discarded.
+On each initialization if the code is present in the Thing configuration - the `identity` and `preSharedKey` are recreated and the `code` is again discarded.
 
 The devices require only a single (integer) parameter, which is their instance id. Unfortunately, this is not displayed anywhere in the IKEA app, but it seems that they are sequentially numbered starting with 65537 for the first device. If in doubt, use the auto-discovered things to find out the correct instance ids.
 
@@ -72,21 +72,21 @@ The white spectrum bulbs additionally also support the `color_temperature` chann
 Full color bulbs support the `color_temperature` and `color` channels.
 Brightness can be changed with the `color` channel.
 
-The remote control and the motion sensor supports the `battery_level` and `battery_low` channels for reading the battery status.
+The remote control and the motion sensor support the `battery_level` and `battery_low` channels for reading the battery status.
 
 The control outlet supports the `power` channel.
 
-A blind or curtain supports, beside `battery_level` and `battery_low` channels,  a `positon` channel.
+A blind or curtain supports, besides the `battery_level` and `battery_low` channels, a `position` channel.
 
 An air purifier supports:
 
 - `fan_mode` and `fan_speed` channels, which allows for control of the fan and reading of the current speed.
-- `disable_led` and `lock_button` channels, to respectively disable the LED's and lock the button on the physical device.
+- `disable_led` and `lock_button` channels, to respectively disable the LEDs and lock the button on the physical device.
 - `air_quality_pm25` and `air_quality_rating` channels, which reads the particulate matter 2.5μm and corresponding indication of air quality (similar to Tradfri app rating).
 - `filter_check_next` and `filter_check_alarm` channels, which represents the remaining number of minutes until the next filter check and whether it is time to do the filter check now. Filter check must be completed through the TRÅDFRI app (or on the hardware buttons in case of replacement).
 - a `filter_uptime` channel, which represents the current time since last filter change.
 
-Refer to the matrixes above.
+Refer to the matrices above.
 
 | Channel Type ID     | Item Type            | Description                                                                                  |
 |---------------------|----------------------|----------------------------------------------------------------------------------------------|
@@ -99,10 +99,10 @@ Refer to the matrixes above.
 | position            | Rollershutter        | Position of the blinds from 0% = open to 100% = closed                                       |
 | fan_mode            | Number               | Fan mode, target speed of the fan (0 = off, 1 = auto, 10..50 = Level 1 to 5)                 |
 | fan_speed           | Number               | Current Fan Speed between 0 (off) and 50 (maximum speed)                                     |
-| disable_led         | Switch               | Disables the LED's on the device                                                             |
+| disable_led         | Switch               | Disables the LEDs on the device                                                              |
 | lock_button         | Switch               | Disables the physical button on the device (applications can still make changes)             |
 | air_quality_pm25    | Number:Dimensionless | Density of Particulate Matter of 2.5μm, measured in ppm                                      |
-| air_quality_rating  | Number               | Gives a rating about air quality (1 = Good, 2 = OK, 3 = Bad) similar to Tradfri app          |
+| air_quality_rating  | Number               | Gives an air quality rating (1 = Good, 2 = OK, 3 = Bad), similar to the TRÅDFRI app          |
 | filter_check_next   | Number:Time          | Time in minutes before the next filter check if > 0, if < 0 you are late checking the filter |
 | filter_check_alarm  | Switch               | When ON, you must perform a filter check (i.e. `filter_check_next` is < 0)                   |
 | filter_uptime       | Number:Time          | Time elapsed since the last filter change, in minutes                                        |
