@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -66,9 +67,6 @@ public class PythonScriptEngineFactory implements ScriptEngineFactory, ScriptEng
             final @Reference TimeZoneProvider timeZoneProvider, Map<String, Object> config) {
         logger.debug("Loading PythonScriptEngineFactory");
 
-        this.pythonDependencyTracker = pythonDependencyTracker;
-        this.configuration = new PythonScriptEngineConfiguration(config, this);
-
         this.language = PythonScriptEngine.getLanguage();
         if (this.language == null) {
             logger.error(
@@ -82,6 +80,10 @@ public class PythonScriptEngineFactory implements ScriptEngineFactory, ScriptEng
                     "User timezone '{}' is different than openhab regional timezone '{}'. Python Scripting is running with timezone '{}'.",
                     defaultTimezone, providerTimezone, defaultTimezone);
         }
+
+        this.pythonDependencyTracker = pythonDependencyTracker;
+        this.configuration = new PythonScriptEngineConfiguration(config);
+        this.configuration.init(this);
     }
 
     @Deactivate
@@ -104,6 +106,15 @@ public class PythonScriptEngineFactory implements ScriptEngineFactory, ScriptEng
         for (Entry<String, Object> entry : scopeValues.entrySet()) {
             scriptEngine.put(entry.getKey(), entry.getValue());
         }
+    }
+
+    public @Nullable ScriptEngine createScriptEngine(String scriptType, String scriptIdentifier) {
+        ScriptEngine engine = createScriptEngine(scriptType);
+        if (engine != null) {
+            engine.getContext().setAttribute(ScriptEngineFactory.CONTEXT_KEY_ENGINE_IDENTIFIER, scriptIdentifier,
+                    ScriptContext.ENGINE_SCOPE);
+        }
+        return engine;
     }
 
     @Override
