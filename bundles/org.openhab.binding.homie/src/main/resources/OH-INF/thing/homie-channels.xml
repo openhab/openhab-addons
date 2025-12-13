@@ -11,7 +11,7 @@
 
 	<channel-type id="color">
 		<item-type>Color</item-type>
-		<label>Color Value (Red,Green,Blue)</label>
+		<label>Color Value (Red, Green, Blue)</label>
 	</channel-type>
 
 	<channel-type id="datetime">

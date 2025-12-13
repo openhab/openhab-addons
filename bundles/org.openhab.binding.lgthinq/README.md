@@ -202,7 +202,7 @@ OBS: some versions of this device can not support all the channels, depending on
 
 ## Full Example
 
-Example of how to configure a thing.
+Example of how to configure a Thing.
 
 ### Example `demo.things`
 
@@ -213,8 +213,8 @@ Bridge lgthinq:bridge:MyLGThinqBridge [ username="user@registered.com", password
 ```
 
 Until now, there is no way to easily obtain the values of ac-model-url, device-id, platform-type and model-id. So, if you really need
-to configure the LGThinq thing textually, I suggest you to first add it with the UI discovery process through the LG Thinq Bridge, then after, copy
-these properties from the thing created and complete the textual configuration.
+to configure the LGThinq Thing textually, I suggest you to first add it with the UI discovery process through the LG Thinq Bridge, then after, copy
+these properties from the Thing created and complete the textual configuration.
 
 Here are some examples on how to map the channels to items.
 
