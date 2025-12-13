@@ -23,6 +23,8 @@ UDP events are captured to reflect changes in the binding for
 
 If your Yamaha model doesn't support the MusicCast protocol, please try the [Yamaha Receiver Binding](https://www.openhab.org/addons/bindings/yamahareceiver/#yamaha-receiver-binding) instead.
 
+The Yamaha Receiver will send update messages to UDP port 41100.
+
 ## Supported Things
 
 Each model (AV Receiver, ...) is a Thing (Thing Type ID: yamahamusiccast:device). Things are linked to a Bridge (Thing Type ID: yamahamusiccast:bridge) for receiving UDP events.
@@ -46,28 +48,30 @@ You can also use _RADIO / TUNER_ (as _tuner_).
 
 ## Channels
 
-| channel        | type                 | description                                                         |
-|----------------|----------------------|---------------------------------------------------------------------|
-| power          | Switch               | Power ON/OFF                                                        |
-| mute           | Switch               | Mute ON/OFF                                                         |
-| volume         | Dimmer               | Volume as % (recalculated based on Max Volume Model)                |
-| volumeAbs      | Number               | Volume as absolute value                                            |
-| volumeDB       | Number:Dimensionless | Volume in decibel (dB) (availability depends on device)             |
-| input          | String               | See below for list                                                  |
-| soundProgram   | String               | See below for list                                                  |
-| selectPreset   | String               | Select Netradio/USB preset (fetched from Model)                     |
-| sleep          | Number               | Fixed values for Sleep: 0/30/60/90/120 in minutes                   |
-| recallScene    | Number               | Select a scene (8 defaults scenes are foreseen)                     |
-| player         | Player               | PLAY/PAUSE/NEXT/PREVIOUS/REWIND/FASTFORWARD                         |
-| artist         | String               | Artist                                                              |
-| track          | String               | Track                                                               |
-| album          | String               | Album                                                               |
-| albumArt       | Image                | Album Art                                                           |
-| repeat         | String               | Toggle Repeat. Available values: Off, One, All                      |
-| shuffle        | String               | Toggle Shuffle. Available values: Off, On, Songs, Album             |
-| playTime       | String               | Play time of current selection: radio, song, track, ...             |
-| totalTime      | String               | Total time of current selection: radio, song, track, ...            |
-| mclinkStatus   | String               | Select your Musiccast Server or set to Standalone, Server or Client |
+| channel         | type                 | description                                                         |
+|-----------------|----------------------|---------------------------------------------------------------------|
+| power           | Switch               | Power ON/OFF                                                        |
+| mute            | Switch               | Mute ON/OFF                                                         |
+| volume          | Dimmer               | Volume as % (recalculated based on Max Volume Model)                |
+| volumeAbs       | Number               | Volume as absolute value                                            |
+| volumeDB        | Number:Dimensionless | Volume in decibel (dB) (availability depends on device)             |
+| input           | String               | See below for list                                                  |
+| soundProgram    | String               | See below for list                                                  |
+| selectPreset    | String               | Select Netradio/USB preset (fetched from Model)                     |
+| selectPresetDAB | String               | Select DAB tuner preset (fetched from Model)                     |
+| selectPresetFM  | String               | Select FM tuner preset (fetched from Model)                     |
+| sleep           | Number               | Fixed values for Sleep: 0/30/60/90/120 in minutes                   |
+| recallScene     | Number               | Select a scene (8 defaults scenes are foreseen)                     |
+| player          | Player               | PLAY/PAUSE/NEXT/PREVIOUS/REWIND/FASTFORWARD                         |
+| artist          | String               | Artist                                                              |
+| track           | String               | Track                                                               |
+| album           | String               | Album                                                               |
+| albumArt        | Image                | Album Art                                                           |
+| repeat          | String               | Toggle Repeat. Available values: Off, One, All                      |
+| shuffle         | String               | Toggle Shuffle. Available values: Off, On, Songs, Album             |
+| playTime        | String               | Play time of current selection: radio, song, track, ...             |
+| totalTime       | String               | Total time of current selection: radio, song, track, ...            |
+| mclinkStatus    | String               | Select your Musiccast Server or set to Standalone, Server or Client |
 
 | Zones                | description                                          |
 |----------------------|------------------------------------------------------|
@@ -124,6 +128,8 @@ Number YamahaVolumeAbs "" {channel="yamahamusiccast:device:virtual:Living:main#v
 Number:Dimensionless YamahaVolumeDb  "" {channel="yamahamusiccast:device:virtual:Living:main#volumeDB"}
 String YamahaInput "" {channel="yamahamusiccast:device:virtual:Living:main#input"}
 String YamahaSelectPreset "" {channel="yamahamusiccast:device:virtual:Living:main#selectPreset"}
+String YamahaSelectPresetDAB "" {channel="yamahamusiccast:device:virtual:Living:main#selectPresetDAB"}
+String YamahaSelectPresetFM "" {channel="yamahamusiccast:device:virtual:Living:main#selectPresetFM"}
 String YamahaSoundProgram "" {channel="yamahamusiccast:device:virtual:Living:main#soundProgram"}
 ```
 
@@ -171,4 +177,4 @@ sendCommand(Kitchen_YamahaMCServer, "client")
 ## Tested Models
 
 RX-D485 / WX-010 / WX-030 / ISX-80 / YSP-1600 / RX-A860 / R-N303D / EX-A1080 / WXA-050 / HTR-4068 (RX-V479)
-MusicCast 20 / WCX-50 / RX-V6A / YAS-306 / ISX-18D / WX-021 / YAS-408
+MusicCast 20 / WCX-50 / RX-V4A / RX-V6A / YAS-306 / ISX-18D / WX-021 / YAS-408
