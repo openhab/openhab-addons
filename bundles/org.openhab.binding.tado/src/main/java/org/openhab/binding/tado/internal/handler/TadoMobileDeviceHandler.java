@@ -88,14 +88,13 @@ public class TadoMobileDeviceHandler extends BaseHomeThingHandler {
                 MobileDevice device = getMobileDevice();
                 updateProperty(TadoBindingConstants.PROPERTY_MOBILE_DEVICE_NAME, device.getName());
 
-                updateAPIChannels(device.getAPIRateLimit(), TadoBindingConstants.CHANNEL_API_MAX_CALLS,
-                        Units.ONE);
+                updateAPIChannels(device.getAPIRateLimit(), TadoBindingConstants.CHANNEL_API_MAX_CALLS, Units.ONE);
                 updateAPIChannels(device.getAPIRateDuration(), TadoBindingConstants.CHANNEL_API_MAX_DURATION,
                         Units.SECOND);
-                updateAPIChannels(device.getAPIRateRemaining(),
-                        TadoBindingConstants.CHANNEL_API_CALLS_REMAINING, Units.ONE);
-                updateAPIChannels(device.getAPIRateReset(),
-                        TadoBindingConstants.CHANNEL_API_SECONDS_UNTIL_MAX_RESETS, Units.SECOND);
+                updateAPIChannels(device.getAPIRateRemaining(), TadoBindingConstants.CHANNEL_API_CALLS_REMAINING,
+                        Units.ONE);
+                updateAPIChannels(device.getAPIRateReset(), TadoBindingConstants.CHANNEL_API_SECONDS_UNTIL_MAX_RESETS,
+                        Units.SECOND);
 
                 if (!device.getSettings().isGeoTrackingEnabled()) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
@@ -123,14 +122,12 @@ public class TadoMobileDeviceHandler extends BaseHomeThingHandler {
             updateState(TadoBindingConstants.CHANNEL_MOBILE_DEVICE_AT_HOME,
                     OnOffType.from(device.getLocation().isAtHome()));
 
-            updateAPIChannels(device.getAPIRateLimit(), TadoBindingConstants.CHANNEL_API_MAX_CALLS,
+            updateAPIChannels(device.getAPIRateLimit(), TadoBindingConstants.CHANNEL_API_MAX_CALLS, Units.ONE);
+            updateAPIChannels(device.getAPIRateDuration(), TadoBindingConstants.CHANNEL_API_MAX_DURATION, Units.SECOND);
+            updateAPIChannels(device.getAPIRateRemaining(), TadoBindingConstants.CHANNEL_API_CALLS_REMAINING,
                     Units.ONE);
-            updateAPIChannels(device.getAPIRateDuration(), TadoBindingConstants.CHANNEL_API_MAX_DURATION,
+            updateAPIChannels(device.getAPIRateReset(), TadoBindingConstants.CHANNEL_API_SECONDS_UNTIL_MAX_RESETS,
                     Units.SECOND);
-            updateAPIChannels(device.getAPIRateRemaining(),
-                    TadoBindingConstants.CHANNEL_API_CALLS_REMAINING, Units.ONE);
-            updateAPIChannels(device.getAPIRateReset(),
-                    TadoBindingConstants.CHANNEL_API_SECONDS_UNTIL_MAX_RESETS, Units.SECOND);
 
         } catch (IOException | ApiException e) {
             logger.debug("Status update of mobile device with id {} failed: {}", configuration.id, e.getMessage());

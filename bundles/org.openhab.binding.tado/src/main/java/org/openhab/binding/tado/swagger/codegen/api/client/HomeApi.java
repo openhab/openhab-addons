@@ -93,8 +93,7 @@ public class HomeApi {
             for (int x = 0; x < rateLimitPolicyValues.length; x++) {
                 if (rateLimitPolicyValues[x].startsWith("q=")) {
                     APIRateLimit = rateLimitPolicyValues[x].substring(2);
-                    extractedString.append("\"APIRateLimit\": \"").append(APIRateLimit)
-                            .append("\",");
+                    extractedString.append("\"APIRateLimit\": \"").append(APIRateLimit).append("\",");
                 } else if (rateLimitPolicyValues[x].startsWith("w=")) {
                     APIRateDuration = rateLimitPolicyValues[x].substring(2);
                     extractedString.append("\"APIRateDuration\": \"").append(APIRateDuration).append("\",");
@@ -107,12 +106,10 @@ public class HomeApi {
             for (int x = 0; x < rateLimitValues.length; x++) {
                 if (rateLimitValues[x].startsWith("r=")) {
                     APIRateRemaining = rateLimitValues[x].substring(2);
-                    extractedString.append("\"APIRateRemaining\": \"")
-                            .append(APIRateRemaining).append("\",");
+                    extractedString.append("\"APIRateRemaining\": \"").append(APIRateRemaining).append("\",");
                 } else if (rateLimitValues[x].startsWith("w=")) {
                     APIRateReset = rateLimitValues[x].substring(2);
-                    extractedString.append("\"APIRateReset\": \"").append(APIRateReset)
-                            .append("\",");
+                    extractedString.append("\"APIRateReset\": \"").append(APIRateReset).append("\",");
                 }
             }
 
