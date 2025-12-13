@@ -25,18 +25,6 @@ public class GenericZoneCapabilities {
     @SerializedName("type")
     private TadoSystemType type = null;
 
-    @SerializedName("APIRateLimit")
-    private Integer APIRateLimit = null;
-
-    @SerializedName("APIRateDuration")
-    private Integer APIRateDuration = null;
-
-    @SerializedName("APIRateRemaining")
-    private Integer APIRateRemaining = null;
-
-    @SerializedName("APIRateReset")
-    private Integer APIRateReset = null;
-
     public GenericZoneCapabilities type(TadoSystemType type) {
         this.type = type;
         return this;
@@ -48,22 +36,6 @@ public class GenericZoneCapabilities {
 
     public void setType(TadoSystemType type) {
         this.type = type;
-    }
-
-    public Integer getAPIRateLimit() {
-        return APIRateLimit;
-    }
-
-    public Integer getAPIRateDuration() {
-        return APIRateDuration;
-    }
-
-    public Integer getAPIRateRemaining() {
-        return APIRateRemaining;
-    }
-
-    public Integer getAPIRateReset() {
-        return APIRateReset;
     }
 
     @Override

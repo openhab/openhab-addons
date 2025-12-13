@@ -23,18 +23,6 @@ import com.google.gson.annotations.SerializedName;
  */
 public class ZoneState {
 
-    @SerializedName("APIRateLimit")
-    private Integer APIRateLimit = null;
-
-    @SerializedName("APIRateDuration")
-    private Integer APIRateDuration = null;
-
-    @SerializedName("APIRateRemaining")
-    private Integer APIRateRemaining = null;
-
-    @SerializedName("APIRateReset")
-    private Integer APIRateReset = null;
-
     @SerializedName("tadoMode")
     private TadoMode tadoMode = null;
 
@@ -193,22 +181,6 @@ public class ZoneState {
 
     public void setSensorDataPoints(SensorDataPoints sensorDataPoints) {
         this.sensorDataPoints = sensorDataPoints;
-    }
-
-    public Integer getAPIRateLimit() {
-        return APIRateLimit;
-    }
-
-    public Integer getAPIRateDuration() {
-        return APIRateDuration;
-    }
-
-    public Integer getAPIRateRemaining() {
-        return APIRateRemaining;
-    }
-
-    public Integer getAPIRateReset() {
-        return APIRateReset;
     }
 
     @Override

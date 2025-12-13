@@ -56,10 +56,26 @@ public class HomeApi {
     private Gson gson;
     private OAuthorizerV2 authorizer;
 
-    private String APIRateLimit;
-    private String APIRateDuration;
-    private String APIRateRemaining;
-    private String APIRateReset;
+    private int APIRateLimit;
+    private int APIRateDuration;
+    private int APIRateRemaining;
+    private int APIRateReset;
+
+    public int getAPIRateLimit() {
+        return APIRateLimit;
+    }
+
+    public int getAPIRateDuration() {
+        return APIRateDuration;
+    }
+
+    public int getAPIRateRemaining() {
+        return APIRateRemaining;
+    }
+
+    public int getAPIRateReset() {
+        return APIRateReset;
+    }
 
     private String createStringForJson(ContentResponse resp) {
         StringBuilder stringForJson = new StringBuilder();
@@ -84,37 +100,47 @@ public class HomeApi {
         return stringForJson.toString();
     }
 
-    private String extractRateLimitInfo(ContentResponse resp) {
+    private String extractRateLimitInfo(ContentResponse response) {
         StringBuilder extractedString = new StringBuilder();
-        HttpFields headersfields = resp.getHeaders();
+        HttpFields headersfields = response.getHeaders();
+
         String rateLimitPolicyValueString = headersfields.get("RateLimit-Policy");
         if (rateLimitPolicyValueString != null) {
             String[] rateLimitPolicyValues = rateLimitPolicyValueString.split(";");
-            for (int x = 0; x < rateLimitPolicyValues.length; x++) {
-                if (rateLimitPolicyValues[x].startsWith("q=")) {
-                    APIRateLimit = rateLimitPolicyValues[x].substring(2);
-                    extractedString.append("\"APIRateLimit\": \"").append(APIRateLimit).append("\",");
-                } else if (rateLimitPolicyValues[x].startsWith("w=")) {
-                    APIRateDuration = rateLimitPolicyValues[x].substring(2);
-                    extractedString.append("\"APIRateDuration\": \"").append(APIRateDuration).append("\",");
+            for (String value : rateLimitPolicyValues) {
+                if (value.startsWith("q=")) {
+                    APIRateLimit = safeParseInt(value.substring(2));
+                    extractedString.append("\"APIRateLimit\": ").append(APIRateLimit).append(",");
+                } else if (value.startsWith("w=")) {
+                    APIRateDuration = safeParseInt(value.substring(2));
+                    extractedString.append("\"APIRateDuration\": ").append(APIRateDuration).append(",");
                 }
             }
         }
+
         String rateLimitValueString = headersfields.get("RateLimit");
         if (rateLimitValueString != null) {
             String[] rateLimitValues = rateLimitValueString.split(";");
-            for (int x = 0; x < rateLimitValues.length; x++) {
-                if (rateLimitValues[x].startsWith("r=")) {
-                    APIRateRemaining = rateLimitValues[x].substring(2);
-                    extractedString.append("\"APIRateRemaining\": \"").append(APIRateRemaining).append("\",");
-                } else if (rateLimitValues[x].startsWith("w=")) {
-                    APIRateReset = rateLimitValues[x].substring(2);
-                    extractedString.append("\"APIRateReset\": \"").append(APIRateReset).append("\",");
+            for (String value : rateLimitValues) {
+                if (value.startsWith("r=")) {
+                    APIRateRemaining = safeParseInt(value.substring(2));
+                    extractedString.append("\"APIRateRemaining\": ").append(APIRateRemaining).append(",");
+                } else if (value.startsWith("w=")) { // some providers use 'w' as window/reset seconds
+                    APIRateReset = safeParseInt(value.substring(2));
+                    extractedString.append("\"APIRateReset\": ").append(APIRateReset).append(",");
                 }
             }
-
         }
+
         return extractedString.toString();
+    }
+
+    private static int safeParseInt(String s) {
+        try {
+            return Integer.parseInt(s.trim());
+        } catch (NumberFormatException e) {
+            return 0;
+        }
     }
 
     public HomeApi(Gson gson, OAuthorizerV2 authorizer, String baseUrl) {

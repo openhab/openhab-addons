@@ -34,18 +34,6 @@ public class HomeState {
     @SerializedName("showHomePresenceSwitchButton")
     private Boolean showHomePresenceSwitchButton = null;
 
-    @SerializedName("APIRateLimit")
-    private Integer APIRateLimit = null;
-
-    @SerializedName("APIRateDuration")
-    private Integer APIRateDuration = null;
-
-    @SerializedName("APIRateRemaining")
-    private Integer APIRateRemaining = null;
-
-    @SerializedName("APIRateReset")
-    private Integer APIRateReset = null;
-
     public HomeState presence(PresenceState presence) {
         this.presence = presence;
         return this;
@@ -69,22 +57,6 @@ public class HomeState {
 
     public Boolean isShowHomePresenceSwitchButton() {
         return showHomePresenceSwitchButton;
-    }
-
-    public Integer getAPIRateLimit() {
-        return APIRateLimit;
-    }
-
-    public Integer getAPIRateDuration() {
-        return APIRateDuration;
-    }
-
-    public Integer getAPIRateRemaining() {
-        return APIRateRemaining;
-    }
-
-    public Integer getAPIRateReset() {
-        return APIRateReset;
     }
 
     @Override

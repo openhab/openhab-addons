@@ -22,17 +22,6 @@ import com.google.gson.annotations.SerializedName;
  * @author Andrew Fiddian-Green - Initial contribution
  */
 public class Overlay {
-    @SerializedName("APIRateLimit")
-    private Integer APIRateLimit = null;
-
-    @SerializedName("APIRateDuration")
-    private Integer APIRateDuration = null;
-
-    @SerializedName("APIRateRemaining")
-    private Integer APIRateRemaining = null;
-
-    @SerializedName("APIRateReset")
-    private Integer APIRateReset = null;
 
     @SerializedName("setting")
     private GenericZoneSetting setting = null;
@@ -64,22 +53,6 @@ public class Overlay {
 
     public void setTermination(OverlayTerminationCondition termination) {
         this.termination = termination;
-    }
-
-    public Integer getAPIRateLimit() {
-        return APIRateLimit;
-    }
-
-    public Integer getAPIRateDuration() {
-        return APIRateDuration;
-    }
-
-    public Integer getAPIRateRemaining() {
-        return APIRateRemaining;
-    }
-
-    public Integer getAPIRateReset() {
-        return APIRateReset;
     }
 
     @Override
