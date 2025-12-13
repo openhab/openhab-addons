@@ -322,8 +322,19 @@ public class SunCalc {
         sun.setSeason(seasonCalc.getSeason(calendar, latitude, useMeteorologicalSeason, zone, locale));
 
         CircadianCalc circadianCalc = new CircadianCalc();
-        sun.setCircadian(circadianCalc.calculate(calendar, sun.getRise().getStart(), sun.getSet().getStart(),
-                sun.getNoon(), sun.getMidnight()));
+        // For circadian calculation, use next day's sunrise if after sunset (to handle night crossing midnight)
+        Calendar circadianSunrise = sun.getRise().getStart();
+        if (calendar.after(sun.getSet().getStart())) {
+            // Get next day's sunrise (similar to night range calculation)
+            Calendar nextDay = (Calendar) calendar.clone();
+            nextDay.add(Calendar.DATE, 1);
+            Sun nextDaySun = getSunInfo(nextDay, latitude, longitude, altitude, useMeteorologicalSeason, zone, locale);
+            if (nextDaySun.getRise().getStart() != null) {
+                circadianSunrise = nextDaySun.getRise().getStart();
+            }
+        }
+        sun.setCircadian(circadianCalc.calculate(calendar, circadianSunrise, sun.getSet().getStart(), sun.getNoon(),
+                sun.getMidnight()));
 
         // phase
         for (Entry<SunPhaseName, Range> rangeEntry : sortByValue(sun.getAllRanges()).entrySet()) {

@@ -77,7 +77,7 @@ This binding has its own IconProvider and makes available the following list of 
       - `totalElevation, partialElevation, ringElevation` (Number:Angle)
   - **group** `phase`
     - **channel**
-      - `name` (String), values: `SUN_RISE, ASTRO_DAWN, NAUTIC_DAWN, CIVIL_DAWN, CIVIL_DUSK, NAUTIC_DUSK, ASTRO_DUSK, SUN_SET, DAYLIGHT, NOON, NIGHT`
+      - `name` (String), values: `SUN_RISE, ASTRO_DAWN, NAUTIC_DAWN, CIVIL_DAWN, CIVIL_DUSK, NAUTIC_DUSK, ASTRO_DUSK, SUN_SET, DAYLIGHT, NOON, NIGHT,MIDNIGHT`
   - **group** `circadian`
     - **channel**
       - `brightness` (Dimmer)

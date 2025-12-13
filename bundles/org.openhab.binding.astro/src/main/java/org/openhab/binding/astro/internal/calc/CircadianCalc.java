@@ -39,8 +39,8 @@ public class CircadianCalc {
         }
 
         // Figure out where we are in time so we know which half of the parabola to calculate.
-        // We're generating a different sunset-sunrise parabola for before and after solar midnight.
-        // because it might not be half way between sunrise and sunset.
+        // We're generating a different sunset-sunrise parabola for before and after solar midnight,
+        // because solar midnight might not be exactly halfway between sunrise and sunset.
         // We're also generating a different parabola for sunrise-sunset.
 
         var now = calendar.getTimeInMillis();
