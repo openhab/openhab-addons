@@ -109,7 +109,7 @@ public class SedifDiscoveryService extends AbstractThingHandlerDiscoveryService<
     private void detectNewWaterMeterFromContract(final Contract contract) {
         logger.trace("New water meter detection from contract {}", contract);
 
-        if (contract.statut != null && (!"Actif".equals(contract.statut))) {
+        if (!"Actif".equals(contract.statut)) {
             return;
         }
 
