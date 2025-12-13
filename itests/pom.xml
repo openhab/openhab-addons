@@ -23,11 +23,11 @@
     <module>org.openhab.binding.avmfritz.tests</module>
     <module>org.openhab.binding.feed.tests</module>
     <module>org.openhab.binding.homeassistant.tests</module>
+    <module>org.openhab.binding.homie.tests</module>
     <module>org.openhab.binding.hue.tests</module>
     <module>org.openhab.binding.max.tests</module>
     <module>org.openhab.binding.mielecloud.tests</module>
     <module>org.openhab.binding.modbus.tests</module>
-    <module>org.openhab.binding.mqtt.homie.tests</module>
     <module>org.openhab.binding.mqtt.ruuvigateway.tests</module>
     <module>org.openhab.binding.ntp.tests</module>
     <module>org.openhab.binding.systeminfo.tests</module>
