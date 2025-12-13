@@ -114,6 +114,8 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
     public String userId = "";
     public String segment = "";
 
+    private boolean isV26 = true;
+
     private @Nullable ScheduledFuture<?> pollingJob = null;
 
     private enum Target {
@@ -353,13 +355,18 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
             MetaData result = new MetaData();
             if (api != null) {
                 if (supportNewApiFormat()) {
-                    if (config.prmId.isBlank()) {
-                        throw new LinkyException("@text/offline.config-error-mandatory-settings");
+                    if (isV26) {
+                        api.getSubscribeService(this);
+
+                    } else {
+                        if (config.prmId.isBlank()) {
+                            throw new LinkyException("@text/offline.config-error-mandatory-settings");
+                        }
+                        result.identity = api.getIdentity(this, config.prmId);
+                        result.contact = api.getContact(this, config.prmId);
+                        result.contract = api.getContract(this, config.prmId);
+                        result.usagePoint = api.getUsagePoint(this, config.prmId);
                     }
-                    result.identity = api.getIdentity(this, config.prmId);
-                    result.contact = api.getContact(this, config.prmId);
-                    result.contract = api.getContract(this, config.prmId);
-                    result.usagePoint = api.getUsagePoint(this, config.prmId);
                 } else {
                     UserInfo userInfo = api.getUserInfo(this);
                     PrmInfo prmInfo = api.getPrmInfo(this, userInfo.userProperties.internId, config.prmId);

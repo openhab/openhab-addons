@@ -25,6 +25,7 @@ import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.FormContentProvider;
+import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
@@ -41,6 +42,7 @@ import org.openhab.binding.linky.internal.dto.ResponseContract;
 import org.openhab.binding.linky.internal.dto.ResponseIdentity;
 import org.openhab.binding.linky.internal.dto.ResponseMeter;
 import org.openhab.binding.linky.internal.dto.ResponseTempo;
+import org.openhab.binding.linky.internal.dto.SubscribeService;
 import org.openhab.binding.linky.internal.dto.UsagePoint;
 import org.openhab.binding.linky.internal.dto.UserInfo;
 import org.openhab.binding.linky.internal.handler.BridgeRemoteBaseHandler;
@@ -95,8 +97,10 @@ public class EnedisHttpApi {
         return response.getHeaders().get(HttpHeader.LOCATION);
     }
 
-    public String getContent(ThingBaseRemoteHandler handler, String url) throws LinkyException {
-        return getContent(logger, linkyBridgeHandler, url, httpClient, linkyBridgeHandler.getToken(handler));
+    public String getContent(ThingBaseRemoteHandler handler, String url, HttpMethod method, String body)
+            throws LinkyException {
+        return getContent(logger, linkyBridgeHandler, url, method, body, httpClient,
+                linkyBridgeHandler.getToken(handler));
     }
 
     public String getContent(String url) throws LinkyException {
@@ -105,14 +109,23 @@ public class EnedisHttpApi {
 
     private static String getContent(Logger logger, BridgeRemoteBaseHandler linkyBridgeHandler, String url,
             HttpClient httpClient, String token) throws LinkyException {
+        return getContent(logger, linkyBridgeHandler, url, HttpMethod.GET, "", httpClient, token);
+    }
+
+    private static String getContent(Logger logger, BridgeRemoteBaseHandler linkyBridgeHandler, String url,
+            HttpMethod method, String body, HttpClient httpClient, String token) throws LinkyException {
         try {
             Request request = httpClient.newRequest(url);
 
             request = request.agent("Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:47.0) Gecko/20100101 Firefox/47.0");
-            request = request.method(HttpMethod.GET);
+            request = request.method(method);
             if (!token.isEmpty()) {
                 request = request.header("Authorization", "" + token);
                 request = request.header("Accept", "application/json");
+            }
+
+            if (!("".equals(body))) {
+                request = request.content(new StringContentProvider(body));
             }
 
             ContentResponse result = request.send();
@@ -154,6 +167,11 @@ public class EnedisHttpApi {
     }
 
     private <T> T getData(ThingBaseRemoteHandler handler, String url, Class<T> clazz) throws LinkyException {
+        return getData(handler, url, HttpMethod.GET, "", clazz);
+    }
+
+    private <T> T getData(ThingBaseRemoteHandler handler, String url, HttpMethod method, String body, Class<T> clazz)
+            throws LinkyException {
         if (!linkyBridgeHandler.isConnected()) {
             linkyBridgeHandler.initialize();
         }
@@ -164,7 +182,7 @@ public class EnedisHttpApi {
 
         while (numberRetry < 3) {
             try {
-                String data = getContent(handler, url);
+                String data = getContent(handler, url, method, body);
 
                 if (!data.isEmpty()) {
                     try {
@@ -256,6 +274,15 @@ public class EnedisHttpApi {
         String contactUrl = linkyBridgeHandler.getContactUrl().formatted(prmId);
         ResponseContact contactResponse = getData(handler, contactUrl, ResponseContact.class);
         return contactResponse.contact;
+    }
+
+    public SubscribeService[] getSubscribeService(ThingLinkyRemoteHandler handler) throws LinkyException {
+        String subscribeServiceUrl = linkyBridgeHandler.getSubsribeServiceUrl();
+        String body = "{ \"comptage\": true, \"autorisationId\" : 11 }";
+
+        SubscribeService[] services = getData(handler, subscribeServiceUrl, HttpMethod.POST, body,
+                SubscribeService[].class);
+        return services;
     }
 
     private MeterReading getMeasures(ThingLinkyRemoteHandler handler, String apiUrl, String mps, String prmId,
