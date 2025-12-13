@@ -83,7 +83,7 @@ public class BridgeRemoteEnedisHandler extends BridgeRemoteApiHandler {
     private static final String LOAD_CURVE_CONSUMPTION_URL_V26 = "mesure_synchrone_auto/v1/metering_data/consumption_load_curve?usage_point_id=%s&start=%s&end=%s";
     private static final String LOAD_CURVE_PRODUCTION_URL_V26 = "mesure_synchrone_auto/v1/metering_data/production_load_curve?usage_point_id=%s&start=%s&end=%s";
 
-    private static final String MEASURE_MAX_POWER_URL_V26 = "mesure_synchrone_auto/v1/metering_data/daily_consumption_max_power?usage_point_id=%s&start=%s&end=%s&&measuring_period=%sgrandeurPhysique=%s";
+    private static final String MEASURE_MAX_POWER_URL_V26 = "mesure_synchrone_auto/v1/metering_data/daily_consumption_max_power?usage_point_id=%s&start=%s&end=%s&measuring_period=%s&grandeurPhysique=%s";
 
     private boolean isV26 = true;
 

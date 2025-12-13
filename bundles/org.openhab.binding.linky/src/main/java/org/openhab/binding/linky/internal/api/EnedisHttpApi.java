@@ -30,9 +30,13 @@ import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.util.Fields;
+import org.openhab.binding.linky.internal.dto.Alimentation;
 import org.openhab.binding.linky.internal.dto.ConsumptionReport;
 import org.openhab.binding.linky.internal.dto.Contact;
 import org.openhab.binding.linky.internal.dto.Contract;
+import org.openhab.binding.linky.internal.dto.ContractState;
+import org.openhab.binding.linky.internal.dto.ContractSynth;
+import org.openhab.binding.linky.internal.dto.GeneralData;
 import org.openhab.binding.linky.internal.dto.Identity;
 import org.openhab.binding.linky.internal.dto.MeterReading;
 import org.openhab.binding.linky.internal.dto.PrmDetail;
@@ -285,13 +289,51 @@ public class EnedisHttpApi {
         return services;
     }
 
+    public ContractSynth getContractSynth(ThingLinkyRemoteHandler handler, String prmId) throws LinkyException {
+        String contractSynthUrl = linkyBridgeHandler.getContractSynthUrl().formatted(prmId);
+
+        ContractSynth contactSynth = getData(handler, contractSynthUrl, ContractSynth.class);
+        return contactSynth;
+    }
+
+    public ContractState getContractState(ThingLinkyRemoteHandler handler, String prmId) throws LinkyException {
+        String contactStateUrl = linkyBridgeHandler.getContractStateUrl().formatted(prmId);
+
+        ContractState[] contactState = getData(handler, contactStateUrl, ContractState[].class);
+        return contactState[0];
+    }
+
+    public Alimentation getAlimentation(ThingLinkyRemoteHandler handler, String prmId) throws LinkyException {
+        String alimentationUrl = linkyBridgeHandler.getAlimentationUrl().formatted(prmId);
+
+        Alimentation alimentation = getData(handler, alimentationUrl, Alimentation.class);
+        return alimentation;
+    }
+
+    public GeneralData getGeneralData(ThingLinkyRemoteHandler handler, String prmId) throws LinkyException {
+        String generalDataUrl = linkyBridgeHandler.getGeneralDataUrl().formatted(prmId);
+
+        GeneralData generalData = getData(handler, generalDataUrl, GeneralData.class);
+        return generalData;
+    }
+
     private MeterReading getMeasures(ThingLinkyRemoteHandler handler, String apiUrl, String mps, String prmId,
             String segment, LocalDate from, LocalDate to, boolean useIndex) throws LinkyException {
         String dtStart = from.format(linkyBridgeHandler.getApiDateFormat());
         String dtEnd = to.format(linkyBridgeHandler.getApiDateFormat());
 
         if (handler.supportNewApiFormat()) {
-            String url = String.format(apiUrl, prmId, dtStart, dtEnd);
+            boolean isV6 = true;
+            String url = "";
+            if (isV6) {
+                if (apiUrl.contains("daily_consumption_max_power")) {
+                    url = String.format(apiUrl, prmId, dtStart, dtEnd, "P1M", "PMA");
+                } else {
+                    url = String.format(apiUrl, prmId, dtStart, dtEnd, "", "");
+                }
+            } else {
+                url = String.format(apiUrl, prmId, dtStart, dtEnd);
+            }
             ResponseMeter meterResponse = getData(handler, url, ResponseMeter.class);
             return meterResponse.meterReading;
         } else {

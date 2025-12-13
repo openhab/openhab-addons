@@ -23,4 +23,6 @@ public class MetaData {
     public Contact contact;
     public Contract contract;
     public UsagePoint usagePoint;
+
+    // public Ali
 }

@@ -23,14 +23,18 @@ public class SubscribeService {
     public boolean injection;
     public boolean soutirage;
     public String serviceCode;
-    // public LocalDateTime dateDebut;
-    // public LocalDateTime dateFin;
+    public String dateDebut;
+    public String dateFin;
     public String etatCode;
     public String etatLibelle;
     public String pointId;
+    public String sirenTitulaire;
     public String sirenBeneficiaire;
     public String mesuresTypeCode;
     public String mesuresPas;
+    public String periodiciteTransmission;
+    public boolean mesuresCorrigees;
+    public boolean espaceDynamique;
     public boolean publicationDonnees;
     public Autorisation autorisation;
 
