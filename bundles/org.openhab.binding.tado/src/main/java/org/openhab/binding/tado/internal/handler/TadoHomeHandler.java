@@ -140,13 +140,12 @@ public class TadoHomeHandler extends BaseBridgeHandler implements AccessTokenRef
                     return;
                 }
 
-                updateAPIChannels(user.getAPIRateLimit(), TadoBindingConstants.CHANNEL_API_MAX_CALLS, Units.ONE);
-                updateAPIChannels(user.getAPIRateDuration(), TadoBindingConstants.CHANNEL_API_MAX_DURATION,
+                updateAPIChannels(user.getAPIRateLimit(), TadoBindingConstants.CHANNEL_API_RATE_LIMIT, Units.ONE);
+                updateAPIChannels(user.getAPIRateDuration(), TadoBindingConstants.CHANNEL_API_RATE_DURATION,
                         Units.SECOND);
-                updateAPIChannels(user.getAPIRateRemaining(), TadoBindingConstants.CHANNEL_API_CALLS_REMAINING,
+                updateAPIChannels(user.getAPIRateRemaining(), TadoBindingConstants.CHANNEL_API_RATE_REMAINING,
                         Units.ONE);
-                updateAPIChannels(user.getAPIRateReset(), TadoBindingConstants.CHANNEL_API_SECONDS_UNTIL_MAX_RESETS,
-                        Units.SECOND);
+                updateAPIChannels(user.getAPIRateReset(), TadoBindingConstants.CHANNEL_API_RATE_RESET, Units.SECOND);
 
                 List<UserHomes> homes = user.getHomes();
                 if (homes == null || homes.isEmpty()) {
@@ -228,13 +227,12 @@ public class TadoHomeHandler extends BaseBridgeHandler implements AccessTokenRef
             updateState(CHANNEL_HOME_PRESENCE_MODE, OnOffType.from(PresenceState.HOME == homePresence));
             updateState(CHANNEL_HOME_GEOFENCING_ENABLED, OnOffType.from(!homeState.isPresenceLocked()));
 
-            updateAPIChannels(homeState.getAPIRateLimit(), TadoBindingConstants.CHANNEL_API_MAX_CALLS, Units.ONE);
-            updateAPIChannels(homeState.getAPIRateDuration(), TadoBindingConstants.CHANNEL_API_MAX_DURATION,
+            updateAPIChannels(homeState.getAPIRateLimit(), TadoBindingConstants.CHANNEL_API_RATE_LIMIT, Units.ONE);
+            updateAPIChannels(homeState.getAPIRateDuration(), TadoBindingConstants.CHANNEL_API_RATE_DURATION,
                     Units.SECOND);
-            updateAPIChannels(homeState.getAPIRateRemaining(), TadoBindingConstants.CHANNEL_API_CALLS_REMAINING,
+            updateAPIChannels(homeState.getAPIRateRemaining(), TadoBindingConstants.CHANNEL_API_RATE_REMAINING,
                     Units.ONE);
-            updateAPIChannels(homeState.getAPIRateReset(), TadoBindingConstants.CHANNEL_API_SECONDS_UNTIL_MAX_RESETS,
-                    Units.SECOND);
+            updateAPIChannels(homeState.getAPIRateReset(), TadoBindingConstants.CHANNEL_API_RATE_RESET, Units.SECOND);
 
         } catch (IOException | ApiException e) {
             logger.debug("Error accessing tado server: {}", e.getMessage(), e);
