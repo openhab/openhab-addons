@@ -15,6 +15,7 @@ package org.openhab.binding.entsoe.internal.client;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.function.Supplier;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
@@ -27,7 +28,6 @@ import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.entsoe.internal.exception.EntsoeConfigurationException;
 import org.openhab.binding.entsoe.internal.exception.EntsoeResponseException;
 import org.openhab.core.OpenHAB;
-import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,15 +40,11 @@ import org.slf4j.LoggerFactory;
 public class EntsoeClient {
     private final Logger logger = LoggerFactory.getLogger(EntsoeClient.class);
     private final HttpClient httpClient;
-    private final String userAgent;
+    private Supplier<String> userAgentSupplier;
 
     public EntsoeClient(HttpClient httpClient) {
         this.httpClient = httpClient;
-        String bundleVersion = "unknown";
-        if (FrameworkUtil.getBundle(this.getClass()) != null) {
-            bundleVersion = OpenHAB.getVersion();
-        }
-        userAgent = "openHAB/" + bundleVersion;
+        userAgentSupplier = this::getUserAgent;
     }
 
     public String doGetRequest(EntsoeRequest entsoeRequest, int timeoutSeconds)
@@ -56,7 +52,7 @@ public class EntsoeClient {
         String url = entsoeRequest.toUrl();
         Request request = httpClient.newRequest(url) //
                 .timeout(timeoutSeconds, TimeUnit.SECONDS) //
-                .agent(userAgent) //
+                .agent(userAgentSupplier.get()) //
                 .method(HttpMethod.GET);
 
         try {
@@ -96,5 +92,18 @@ public class EntsoeClient {
             Thread.currentThread().interrupt();
             return "";
         }
+    }
+
+    private String getUserAgent() {
+        return "openHAB/" + OpenHAB.getVersion();
+    }
+
+    /**
+     * Override the supplier for unit and release tests.
+     *
+     * @param userAgentSupplier the supplier providing the User-Agent header value
+     */
+    public void setUserAgentSupplier(Supplier<String> userAgentSupplier) {
+        this.userAgentSupplier = userAgentSupplier;
     }
 }

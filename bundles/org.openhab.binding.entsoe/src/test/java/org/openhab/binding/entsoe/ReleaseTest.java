@@ -97,6 +97,7 @@ public class ReleaseTest {
             throws EntsoeResponseException, EntsoeConfigurationException, InterruptedException, SAXException,
             IOException, ParserConfigurationException {
         EntsoeClient entsoeClient = new EntsoeClient(httpClient);
+        entsoeClient.setUserAgentSupplier(this::getUserAgent);
         EntsoeRequest entsoeRequest = new EntsoeRequest(TOKEN, eicCode, Instant.now().minus(0, ChronoUnit.DAYS),
                 Instant.now().plus(2, ChronoUnit.DAYS));
         String response = entsoeClient.doGetRequest(entsoeRequest, 60);
@@ -108,5 +109,9 @@ public class ReleaseTest {
         } else {
             logger.warn("{} : FAILURE REASON {}", description, parser.getFailureReason());
         }
+    }
+
+    public String getUserAgent() {
+        return "openHAB/releaseTest";
     }
 }

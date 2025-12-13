@@ -161,6 +161,7 @@ public class TestResponse {
             fail(e.getMessage());
         }
         EntsoeClient entsoeClient = new EntsoeClient(httpClient);
+        entsoeClient.setUserAgentSupplier(this::getUserAgent);
         EntsoeRequest entsoeRequest = new EntsoeRequest("token", "eicCode", Instant.now().minus(0, ChronoUnit.DAYS),
                 Instant.now().plus(2, ChronoUnit.SECONDS));
         try {
@@ -173,6 +174,10 @@ public class TestResponse {
             return;
         }
         fail("EntsoeResponseException expected");
+    }
+
+    public String getUserAgent() {
+        return "openHAB/unitTest";
     }
 
     @Test
