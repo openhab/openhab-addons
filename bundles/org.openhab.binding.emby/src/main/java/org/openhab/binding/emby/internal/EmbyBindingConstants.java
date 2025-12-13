@@ -24,7 +24,7 @@ import org.openhab.core.thing.ThingTypeUID;
 @NonNullByDefault
 public class EmbyBindingConstants {
 
-    private static final String BINDING_ID = "emby";
+    public static final String BINDING_ID = "emby";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_EMBY_CONTROLLER = new ThingTypeUID(BINDING_ID, "controller");
