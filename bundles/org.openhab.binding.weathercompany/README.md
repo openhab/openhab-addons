@@ -3,11 +3,11 @@
 Provides 5-day weather forecast and _Personal Weather Station_ (PWS) current
 observations from **The Weather Company**.
 This service is available only for PWS users who upload their PWS
-weather data to WeatherUnderground.
+weather data to Weather Underground.
 
 ## Supported Things
 
-The following thing types are supported:
+The following Thing types are supported:
 
 | Thing        |  ID                  |  Description |
 |--------------|----------------------|--------------|
@@ -17,15 +17,15 @@ The following thing types are supported:
 
 ## Discovery
 
-Once an Account thing is configured with a valid API key, the binding will auto-discover
-a _Local Weather Forecast_ thing if the location (i.e. latitude and longitude)
+Once an Account Thing is configured with a valid API key, the binding will auto-discover
+a _Local Weather Forecast_ Thing if the location (i.e. latitude and longitude)
 and locale are set in the openHAB configuration.
 
 ## Thing Configuration
 
 ### Account
 
-The following configuration parameters are available on the Account thing:
+The following configuration parameters are available on the Account Thing:
 
 | Parameter        | Parameter ID      | Required/Optional | Description |
 |------------------|-------------------|-------------------|-------------|
@@ -33,7 +33,7 @@ The following configuration parameters are available on the Account thing:
 
 ### Weather Forecast
 
-The following configuration parameters are available on the Weather Forecast thing:
+The following configuration parameters are available on the Weather Forecast Thing:
 
 | Parameter        | Parameter ID      | Required/Optional                      | Description |
 |------------------|-------------------|----------------------------------------|-------------|
@@ -41,12 +41,12 @@ The following configuration parameters are available on the Weather Forecast thi
 | Postal Code      | postalCode        | Required for Postal Code location type | Available for the following countries: US, UK, DE, FR, IT, CA. The format is a concatenation of the postal code and the 2-character country code (e.g. 10001:US, W6C:CA). |
 | Geocode          | geocode           | Required for Geocode location type     | Specify latitude and longitude of the location for which the forecast is desired (e.g. 25.762272,-80.216425). |
 | IATA Code        | iataCode          | Required for IATA Code location type   | Three character airport code (e.g. BWI, FCO). |
-| Language         | language          | Optional                               | Languages supported by The Weather Company API. If the language not specified in the thing configuration, the binding will try to select the language based on the locale set in openHAB. |
+| Language         | language          | Optional                               | Languages supported by The Weather Company API. If the language not specified in the Thing configuration, the binding will try to select the language based on the locale set in openHAB. |
 | Refresh Interval | refreshInterval   | Required                               | Frequency with which forecast will be updated. Defaults to 30 minutes. Minimum is 2 minutes. |
 
 ### Weather Observations
 
-The following configuration parameters are available on the Weather Observations thing:
+The following configuration parameters are available on the Weather Observations Thing:
 
 | Parameter        | Parameter ID      | Required/Optional | Description |
 |------------------|-------------------|-------------------|-------------|
@@ -98,38 +98,38 @@ The following configuration parameters are available on the Weather Observations
 
 | Channel Group ID             | Channel ID                      | Item Type               | Description                                                    |
 |------------------------------|---------------------------------|-------------------------|----------------------------------------------------------------|
-| forcastDay(0-5)(Day\|Night)   | dayPartName                     | String                  | Name of 12 hour daypart (e.g. Today, Tonight)                  |
-| forcastDay(0-5)(Day\|Night)   | dayOrNight                      | String                  | Day or night indicator (D or N)                                |
-| forcastDay(0-5)(Day\|Night)   | narrative                       | String                  | The narrative forecast for the daypart period                  |
-| forcastDay(0-5)(Day\|Night)   | wxPhraseShort                   | String                  | Sensible weather phrase                                        |
-| forcastDay(0-5)(Day\|Night)   | wxPhraseLong                    | String                  | Sensible weather phrase                                        |
-| forcastDay(0-5)(Day\|Night)   | temperature                     | Number:Temperature      | Maximum temperature for daytime, minimum temperature nighttime |
-| forcastDay(0-5)(Day\|Night)   | temperatureHeatIndex            | Number:Temperature      | Maximum heat index                                             |
-| forcastDay(0-5)(Day\|Night)   | temperatureWindChill            | Number:Temperature      | Minimum wind chill                                             |
-| forcastDay(0-5)(Day\|Night)   | relativeHumidity                | Number:Dimensionless    | The relative humidity of the air                               |
-| forcastDay(0-5)(Day\|Night)   | cloudCover                      | String                  | Daytime average cloud cover expressed as a percentage          |
-| forcastDay(0-5)(Day\|Night)   | windSpeed                       | Number:Speed            | The maximum forecasted wind speed                              |
-| forcastDay(0-5)(Day\|Night)   | windDirection                   | Number:Angle            | Average wind direction in degrees magnetic notation            |
-| forcastDay(0-5)(Day\|Night)   | windDirectionCardinal           | String                  | Average wind direction in cardinal notation                    |
-| forcastDay(0-5)(Day\|Night)   | windPhrase                      | String                  | A phrase that describes the wind direction and speed           |
-| forcastDay(0-5)(Day\|Night)   | precipitationChance             | Number:Dimensionless    | Maximum probability of precipitation                           |
-| forcastDay(0-5)(Day\|Night)   | precipitationType               | String                  | Type of precipitation to display (e.g. rain, snow)             |
-| forcastDay(0-5)(Day\|Night)   | precipitationRain               | Number:Length           | The forecasted measurable liquid precipitation                 |
-| forcastDay(0-5)(Day\|Night)   | precipitationSnow               | Number:Length           | The forecasted measurable precipitation as snow                |
-| forcastDay(0-5)(Day\|Night)   | snowRange                       | String                  | Snow accumulation amount for the forecast period               |
-| forcastDay(0-5)(Day\|Night)   | thunderCategory                 | String                  | The description of probability of thunderstorm activity        |
-| forcastDay(0-5)(Day\|Night)   | thunderIndex                    | Number                  | An enumeration of thunderstorm probability                     |
-| forcastDay(0-5)(Day\|Night)   | uvDescription                   | String                  | Level of risk of skin damage due to exposure                   |
-| forcastDay(0-5)(Day\|Night)   | uvIndex                         | Number                  | Maximum UV index for the forecast period                       |
-| forcastDay(0-5)(Day\|Night)   | iconCode                        | Number                  | Key to the weather icon lookup                                 |
-| forcastDay(0-5)(Day\|Night)   | iconCodeExtend                  | String                  | Code representing full set sensible weather                    |
-| forcastDay(0-5)(Day\|Night)   | iconImage                       | Image                   | Image representing forecast condition                          |
-| forcastDay(0-5)(Day\|Night)   | qualifierPhrase                 | String                  | Describes special weather criteria                             |
-| forcastDay(0-5)(Day\|Night)   | qualifierCode                   | String                  | Code for special weather criteria                              |
+| forecastDay(0-5)(Day\|Night)  | dayPartName                     | String                  | Name of 12-hour daypart (e.g. Today, Tonight)                  |
+| forecastDay(0-5)(Day\|Night)  | dayOrNight                      | String                  | Day or night indicator (D or N)                                |
+| forecastDay(0-5)(Day\|Night)  | narrative                       | String                  | The narrative forecast for the daypart period                  |
+| forecastDay(0-5)(Day\|Night)  | wxPhraseShort                   | String                  | Sensible weather phrase                                        |
+| forecastDay(0-5)(Day\|Night)  | wxPhraseLong                    | String                  | Sensible weather phrase                                        |
+| forecastDay(0-5)(Day\|Night)  | temperature                     | Number:Temperature      | Maximum temperature for daytime, minimum temperature nighttime |
+| forecastDay(0-5)(Day\|Night)  | temperatureHeatIndex            | Number:Temperature      | Maximum heat index                                             |
+| forecastDay(0-5)(Day\|Night)  | temperatureWindChill            | Number:Temperature      | Minimum wind chill                                             |
+| forecastDay(0-5)(Day\|Night)  | relativeHumidity                | Number:Dimensionless    | The relative humidity of the air                               |
+| forecastDay(0-5)(Day\|Night)  | cloudCover                      | String                  | Daytime average cloud cover expressed as a percentage          |
+| forecastDay(0-5)(Day\|Night)  | windSpeed                       | Number:Speed            | The maximum forecasted wind speed                              |
+| forecastDay(0-5)(Day\|Night)  | windDirection                   | Number:Angle            | Average wind direction in degrees (magnetic notation)          |
+| forecastDay(0-5)(Day\|Night)  | windDirectionCardinal           | String                  | Average wind direction in cardinal notation                    |
+| forecastDay(0-5)(Day\|Night)  | windPhrase                      | String                  | A phrase that describes the wind direction and speed           |
+| forecastDay(0-5)(Day\|Night)  | precipitationChance             | Number:Dimensionless    | Maximum probability of precipitation                           |
+| forecastDay(0-5)(Day\|Night)  | precipitationType               | String                  | Type of precipitation to display (e.g. rain, snow)             |
+| forecastDay(0-5)(Day\|Night)  | precipitationRain               | Number:Length           | The forecasted measurable liquid precipitation                 |
+| forecastDay(0-5)(Day\|Night)  | precipitationSnow               | Number:Length           | The forecasted measurable precipitation as snow                |
+| forecastDay(0-5)(Day\|Night)  | snowRange                       | String                  | Snow accumulation amount for the forecast period               |
+| forecastDay(0-5)(Day\|Night)  | thunderCategory                 | String                  | The description of probability of thunderstorm activity        |
+| forecastDay(0-5)(Day\|Night)  | thunderIndex                    | Number                  | An enumeration of thunderstorm probability                     |
+| forecastDay(0-5)(Day\|Night)  | uvDescription                   | String                  | Level of risk of skin damage due to exposure                   |
+| forecastDay(0-5)(Day\|Night)  | uvIndex                         | Number                  | Maximum UV index for the forecast period                       |
+| forecastDay(0-5)(Day\|Night)  | iconCode                        | Number                  | Key to the weather icon lookup                                 |
+| forecastDay(0-5)(Day\|Night)  | iconCodeExtend                  | String                  | Code representing full set of sensible weather                 |
+| forecastDay(0-5)(Day\|Night)  | iconImage                       | Image                   | Image representing forecast condition                          |
+| forecastDay(0-5)(Day\|Night)  | qualifierPhrase                 | String                  | Describes special weather criteria                             |
+| forecastDay(0-5)(Day\|Night)  | qualifierCode                   | String                  | Code for special weather criteria                              |
 
 ### Local Language Support
 
-The following channels will be translated to local language based on the language setting in the thing configuration.
+The following channels will be translated to local language based on the language setting in the Thing configuration.
 
 - dayOfWeek
 - daypartName
@@ -180,7 +180,7 @@ Location WC_PWS_Location "Lat/Lon [%s]" <none> { channel="weathercompany:weather
 Number:Length WC_PWS_Elevation "Elevation [%.0f %unit%]" <none> { channel="weathercompany:weather-observations:myaccount:myobservations:elevation" }
 String WC_PWS_Neighborhood "Neighborhood [%s]" <none> { channel="weathercompany:weather-observations:myaccount:myobservations:neighborhood" }
 DateTime WC_PWS_ObservationTimeLocal "Observation Time [%1$tA, %1$tm/%1$td/%1$tY %1$tl:%1$tM %1$tp]" <time> { channel="weathercompany:weather-observations:myaccount:myobservations:observationTimeLocal" }
-Number WC_PWS_QcStatus "QC Status [%.0f %unit%]" <none> { channel="weathercompany:weather-observations:myaccount:myobservations:qcStatus" }
+Number WC_PWS_QcStatus "QC Status [%.0f]" <none> { channel="weathercompany:weather-observations:myaccount:myobservations:qcStatus" }
 String WC_PWS_SoftwareType "Software Type [%s]" <none> { channel="weathercompany:weather-observations:myaccount:myobservations:softwareType" }
 String WC_PWS_StationId "Station Id [%s]" <none> { channel="weathercompany:weather-observations:myaccount:myobservations:stationId" }
 
@@ -220,8 +220,8 @@ String WC_Day0_Day_ThunderCategory "Thunder Category [%s]" <c_thunder> { channel
 Number WC_Day0_Day_ThunderIndex "Thunder Index [%.0f %unit%]" <c_thunder> { channel="weathercompany:weather-forecast:myaccount:myweather:forecastDay0Day#thunderIndex" }
 String WC_Day0_Day_UVDescription "UV Description [%s]" <sun> { channel="weathercompany:weather-forecast:myaccount:myweather:forecastDay0Day#uvDescription" }
 Number WC_Day0_Day_UVIndex "UV Index [%.0f %unit%]" <sun> { channel="weathercompany:weather-forecast:myaccount:myweather:forecastDay0Day#uvIndex" }
-Number WC_Day0_Day_IconCode "Icon Code [%.0f %unit%]" { channel="weathercompany:weather-forecast:myaccount:myweather:forecastDay0Day#iconCode" }
-Number WC_Day0_Day_IconCodeExtend "Icon Code Extend [%.0f %unit%]" { channel="weathercompany:weather-forecast:myaccount:myweather:forecastDay0Day#iconCodeExtend" }
+Number WC_Day0_Day_IconCode "Icon Code [%.0f]" { channel="weathercompany:weather-forecast:myaccount:myweather:forecastDay0Day#iconCode" }
+Number WC_Day0_Day_IconCodeExtend "Icon Code Extend [%.0f]" { channel="weathercompany:weather-forecast:myaccount:myweather:forecastDay0Day#iconCodeExtend" }
 Image WC_Day0_Day_IconImage "Icon Image [%s]" { channel="weathercompany:weather-forecast:myaccount:myweather:forecastDay0Day#iconImage" }
 
 // Day 0 Night
@@ -250,8 +250,8 @@ String WC_Day0_Night_ThunderCategory "Thunder Category [%s]" <c_thunder> { chann
 Number WC_Day0_Night_ThunderIndex "Thunder Index [%.0f %unit%]" <c_thunder> { channel="weathercompany:weather-forecast:myaccount:myweather:forecastDay0Night#thunderIndex" }
 String WC_Day0_Night_UVDescription "UV Description [%s]" <sun> { channel="weathercompany:weather-forecast:myaccount:myweather:forecastDay0Night#uvDescription" }
 Number WC_Day0_Night_UVIndex "UV Index [%.0f %unit%]" <sun> { channel="weathercompany:weather-forecast:myaccount:myweather:forecastDay0Night#uvIndex" }
-Number WC_Day0_Night_IconCode "Icon Code [%.0f %unit%]" { channel="weathercompany:weather-forecast:myaccount:myweather:forecastDay0Night#iconCode" }
-Number WC_Day0_Night_IconCodeExtend "Icon Code Extend [%.0f %unit%]" { channel="weathercompany:weather-forecast:myaccount:myweather:forecastDay0Night#iconCodeExtend" }
+Number WC_Day0_Night_IconCode "Icon Code [%.0f]" { channel="weathercompany:weather-forecast:myaccount:myweather:forecastDay0Night#iconCode" }
+Number WC_Day0_Night_IconCodeExtend "Icon Code Extend [%.0f]" { channel="weathercompany:weather-forecast:myaccount:myweather:forecastDay0Night#iconCodeExtend" }
 Image WC_Day0_Night_IconImage "Icon Image [%s]" { channel="weathercompany:weather-forecast:myaccount:myweather:forecastDay0Night#iconImage" }
 ```
 

@@ -29,9 +29,9 @@ Any request with an unregistered stationId is recorded and if auto-discovery is 
 For each request parameter a channel is generated, based on a list of known parameters from <https://support.weather.com/s/article/PWS-Upload-Protocol?language=en_US> and other observed parameters from various devices.
 If you have a device that submits a parameter that is unknown in the current version of the binding please feel free to submit an issue to have it added.
 
-While discovery is active, either in the background or during a manual scan, any request parameters that don't have a channel associated with them are added to the thing's channels.
+While discovery is active, either in the background or during a manual scan, any request parameters that don't have a channel associated with them are added to the Thing's channels.
 This supports using multiple devices that submit measurements to the same station ID.
-The thing is the wunderground account, not the individual devices submitting measurements.
+The Thing is the wunderground account, not the individual devices submitting measurements.
 
 ## Thing Configuration
 
@@ -133,7 +133,7 @@ sendHttpGetRequest("https://rtupdate.wunderground.com/weatherstation/updateweath
 ```
 
 The PASSWORD, action and realtime parameters are ignored, as they are wunderground technical constants, that devices must send.
-The ID parameter is used to identify the correct thing the request pertains to, i.e. the stationId configuration value.
+The ID parameter is used to identify the correct Thing the request pertains to, i.e. the stationId configuration value.
 
 As described by the wunderground specification a device can submit multiple values for the outdoor temperature, soil temperature, soil moisture and leaf wetness channels by inserting an index number into the name of the request parameter, fx. tempf can be temp1f, temp2f, etc.
 This is supported by the discovery mechanism, creating a channel for each of the values.
@@ -142,13 +142,13 @@ This is supported by the discovery mechanism, creating a channel for each of the
 
 ## Thing file
 
-Configuration using thing and item files is not the recommended method, as you have to manually replicate the configuration discovery produces.
+Configuration using Thing and item files is not the recommended method, as you have to manually replicate the configuration discovery produces.
 Channels _must_ be named as the request parameters in the channel type table, otherwise the binding will not be able to update with values from requests.
 So the request parameter names submitted by your particular device(s) need to be found before being able to write appropriate thing files.
 You need to intercept a request from your devices(s) using something like wireshark.
 Both thing and item files must be created manually to produce a result practically identical to the one produced through automatic discovery.
 
-Assuming you have intercepted a request such as `https://rtupdate.wunderground.com/weatherstation/updateweatherstation.php?ID=MYSTATIONID&PASSWORD=XXXXXX&windspeedmph=3.11&dateutc=2021-02-07%2014:04:03&softwaretype=WH2600%20V2.2.8&action=updateraw&realtime=1&rtfreq=5`, you can configure a thing to intercept the request thus:
+Assuming you have intercepted a request such as `https://rtupdate.wunderground.com/weatherstation/updateweatherstation.php?ID=MYSTATIONID&PASSWORD=XXXXXX&windspeedmph=3.11&dateutc=2021-02-07%2014:04:03&softwaretype=WH2600%20V2.2.8&action=updateraw&realtime=1&rtfreq=5`, you can configure a Thing to intercept the request thus:
 
 ```java
 Thing wundergroundupdatereceiver:wundergroundUpdateReceiver:ATHINGID "Foo" [stationId="MYSTATIONID"] {
