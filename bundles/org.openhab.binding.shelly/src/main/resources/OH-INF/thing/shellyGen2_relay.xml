@@ -63,7 +63,7 @@
 				<label>@text/channel-group-type.shelly.relayChannel2.label</label>
 			</channel-group>
 			<channel-group id="meter2" typeId="meter">
-				<label>@text/channel-group-type.shelly.meter1.label</label>
+				<label>@text/channel-group-type.shelly.meter2.label</label>
 			</channel-group>
 			<channel-group id="device" typeId="deviceStatus"/>
 		</channel-groups>
@@ -152,7 +152,7 @@
 
 	<thing-type id="shellyplusstrip">
 		<label>ShellyPlus Power Strip</label>
-		<description>@text/thing-type.shelly.shellyplusstripdescription</description>
+		<description>@text/thing-type.shelly.shellyplusstrip.description</description>
 		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="relay1" typeId="relayChannel">
@@ -566,7 +566,7 @@
 	</thing-type>
 
 	<thing-type id="shellyplusem">
-		<label>Shelly Plues EM</label>
+		<label>Shelly Plus EM</label>
 		<description>@text/thing-type.shelly.shellyplusem.description</description>
 		<semantic-equipment-tag>ElectricMeter</semantic-equipment-tag>
 		<channel-groups>
@@ -600,7 +600,7 @@
 	</thing-type>
 
 	<thing-type id="shellyplus3em63">
-		<label>Shelly Plues 3EM-63</label>
+		<label>Shelly Plus 3EM-63</label>
 		<description>@text/thing-type.shelly.shellyplus3em63.description</description>
 		<semantic-equipment-tag>ElectricMeter</semantic-equipment-tag>
 		<channel-groups>
@@ -611,7 +611,7 @@
 				<label>@text/channel-group-type.shelly.meter2.label</label>
 			</channel-group>
 			<channel-group id="meter3" typeId="meter">
-				<label>@text/channel-group-type.shelly.meter2.label</label>
+				<label>@text/channel-group-type.shelly.meter3.label</label>
 			</channel-group>
 			<channel-group id="nmeter" typeId="nmeter"/>
 			<channel-group id="device" typeId="deviceStatus"/>

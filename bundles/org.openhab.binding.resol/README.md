@@ -18,7 +18,7 @@ In the binding might support USB-type bridges in future.
 
 ### Device
 
-On top of the bridge things, which enable access to the VBUS, many - if not all - Resol Controllers and Modules like WMZ heat meters, HKM Heating circuit extensions etc. are supported including branded versions from different suppliers as thing type _device_.
+On top of the bridge Things, which enable access to the VBUS, many - if not all - Resol Controllers and Modules like WMZ heat meters, HKM Heating circuit extensions etc. are supported including branded versions from different suppliers as Thing type _device_.
 The supported devices include
 
 - Solar controller DeltaSol® A/AX/AX HE
@@ -55,7 +55,7 @@ A more complete list can be found in the doc of the [resol-vbus-java library](ht
 
 ### Emulated Extension Module EM
 
-Some controllers like the Deltasol MX can be connected to an extension module, which can be emulated by the thing type _emulatedEM_.
+Some controllers like the Deltasol MX can be connected to an extension module, which can be emulated by the Thing type _emulatedEM_.
 The emulated EM is a virtual device, visible on the VBUS to a Resol controller and provides an interface between openHAB and the controller.
 Relay channels are outputs from the controller point of view and therefore read-only in OH.
 The sensor channels as inputs for the solar or system controller and intended to be written by OH.
@@ -94,7 +94,7 @@ _emulatedEM_ devices cannot be auto-discovered and require beside the bridge the
 
 ## Device Channels
 
-The channels of a thing are determined automatically based on the received VBUS data and are highly dependent on the used device.
+The channels of a Thing are determined automatically based on the received VBUS data and are highly dependent on the used device.
 Here is a list of the channels of a DeltaSol MX with a heat quantity meter (HQM) and an extension module EM.
 The channels supported for your device can be seen in the UI or in the logs if DEBUG logging is enabled for this binding after data is received from the physical device.
 
