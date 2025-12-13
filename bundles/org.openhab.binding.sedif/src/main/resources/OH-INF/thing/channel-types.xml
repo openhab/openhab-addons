@@ -19,6 +19,6 @@
 			<tag>Measurement</tag>
 			<tag>Water</tag>
 		</tags>
-		<state readOnly="true" pattern="%.3f %unit%"/>
+		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 </thing:thing-descriptions>

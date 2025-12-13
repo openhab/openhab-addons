@@ -135,8 +135,7 @@ public class ThingSedifHandler extends BaseThingHandler {
                         }
                         return null;
                     } catch (SedifException ex) {
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                                ex.getMessage());
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, ex.getMessage());
                         return null;
                     }
                 });
@@ -165,36 +164,62 @@ public class ThingSedifHandler extends BaseThingHandler {
                         }
                         return null;
                     } catch (SedifException ex) {
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                                ex.getMessage());
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, ex.getMessage());
                         return null;
                     }
                 });
     }
 
     @Override
-    public synchronized void initialize() {
+    public void initialize() {
+        Bridge bridge = getBridge();
+        if (bridge != null && bridge.getHandler() instanceof BridgeSedifWebHandler bridgeHandler) {
+            initialize(bridgeHandler, bridge.getStatus());
+        } else {
+            initialize(null, bridge == null ? null : bridge.getStatus());
+        }
+    }
+
+    private void initialize(@Nullable BridgeSedifWebHandler bridgeHandler, @Nullable ThingStatus bridgeStatus) {
+        if (bridgeHandler == null || bridgeStatus == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
+            return;
+        }
+        if (bridgeStatus != ThingStatus.ONLINE) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            return;
+        }
+
         SedifConfiguration lcConfig = getConfigAs(SedifConfiguration.class);
 
-        if (lcConfig.seemsValid()) {
-            contractName = lcConfig.contractId;
-            numCompteur = lcConfig.meterId;
-            updateStatus(ThingStatus.UNKNOWN);
-
-            loadSedifState();
-
-            if (sedifState.getLastIndexDate() == null) {
-                sedifState.setLastIndexDate(LocalDate.of(1980, 1, 1));
-                saveSedifState();
-            }
-
-            // force reread data if we pause / start the thing
-            this.contractDetail.invalidate();
-            this.consumption.invalidate();
-        } else {
+        if (!lcConfig.seemsValid()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.config-error-mandatory-settings");
+            return;
         }
+
+        contractName = lcConfig.contractId;
+        numCompteur = lcConfig.meterId;
+
+        contractDetail.invalidate();
+        consumption.invalidate();
+
+        updateStatus(ThingStatus.UNKNOWN);
+
+        scheduler.submit(() -> {
+            initializeAndSetupRefreshJob(bridgeHandler);
+        });
+    }
+
+    private synchronized void initializeAndSetupRefreshJob(BridgeSedifWebHandler bridgeHandler) {
+        loadSedifState();
+
+        if (sedifState.getLastIndexDate() == null) {
+            sedifState.setLastIndexDate(LocalDate.of(1980, 1, 1));
+            saveSedifState();
+        }
+
+        setupRefreshJob(bridgeHandler);
     }
 
     private void loadSedifState() {
@@ -216,11 +241,16 @@ public class ThingSedifHandler extends BaseThingHandler {
                 if (newState != null) {
                     sedifState = newState;
                 }
+                logger.debug("Sedif MetaData information read from {}", file.getAbsolutePath());
             }
         } catch (InterruptedIOException ioe) {
             logger.warn("Couldn't read Sedif MetaData information from file '{}'.", file.getAbsolutePath());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Couldn't read Sedif MetaData information from file " + file.getAbsolutePath());
         } catch (IOException ioe) {
             logger.warn("Couldn't read Sedif MetaData information from file '{}'.", file.getAbsolutePath());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Couldn't read Sedif MetaData information from file " + file.getAbsolutePath());
         }
     }
 
@@ -249,8 +279,11 @@ public class ThingSedifHandler extends BaseThingHandler {
                 os.write(bt);
                 os.flush();
             }
+            logger.debug("Sedif MetaData information wriiten to {}", file.getAbsolutePath());
         } catch (IOException ioe) {
             logger.warn("Couldn't write Sedif MetaData information to file '{}'.", file.getAbsolutePath());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Couldn't write Sedif MetaData information to file " + file.getAbsolutePath());
         }
     }
 
@@ -359,7 +392,6 @@ public class ThingSedifHandler extends BaseThingHandler {
             } else {
                 throw new SedifException("currentMeterInfo is null");
             }
-
         }
 
         return null;
@@ -489,12 +521,16 @@ public class ThingSedifHandler extends BaseThingHandler {
                 }
             }
 
+            logger.trace("updateConsumptionData> updateState/thisWeekConso : {}", thisWeekConso);
+            logger.trace("updateConsumptionData> updateState/lastWeekConso : {}", lastWeekConso);
+            logger.trace("updateConsumptionData> updateState/weekConsoMinus2 : {}", weekConsoMinus2);
+
             updateState(GROUP_WEEKLY_CONSUMPTION, CHANNEL_WEEKLY_THIS_WEEK_CONSUMPTION,
-                    new QuantityType<>(thisWeekConso, Units.LITRE));
+                    new QuantityType<>(thisWeekConso * 1000, Units.LITRE));
             updateState(GROUP_WEEKLY_CONSUMPTION, CHANNEL_WEEKLY_LAST_WEEK_CONSUMPTION,
-                    new QuantityType<>(lastWeekConso, Units.LITRE));
+                    new QuantityType<>(lastWeekConso * 1000, Units.LITRE));
             updateState(GROUP_WEEKLY_CONSUMPTION, CHANNEL_WEEKLY_WEEK_MINUS_2_CONSUMPTION,
-                    new QuantityType<>(weekConsoMinus2, Units.LITRE));
+                    new QuantityType<>(weekConsoMinus2 * 1000, Units.LITRE));
 
             // ===========================
             // Month conso
@@ -503,7 +539,7 @@ public class ThingSedifHandler extends BaseThingHandler {
             double lastMonthConso = 0;
             double monthConsoMinus2 = 0;
 
-            Consommation[] monthConso = values.data.weekConso;
+            Consommation[] monthConso = values.data.monthConso;
 
             if (monthConso != null) {
                 if (monthConso.length - 1 >= 0) {
@@ -523,12 +559,16 @@ public class ThingSedifHandler extends BaseThingHandler {
                 }
             }
 
+            logger.trace("updateConsumptionData> updateState/thisMonthConso : {}", thisMonthConso);
+            logger.trace("updateConsumptionData> updateState/lastMonthConso : {}", lastMonthConso);
+            logger.trace("updateConsumptionData> updateState/monthConsoMinus2 : {}", monthConsoMinus2);
+
             updateState(GROUP_MONTHLY_CONSUMPTION, CHANNEL_MONTHLY_THIS_MONTH_CONSUMPTION,
-                    new QuantityType<>(thisMonthConso, Units.LITRE));
+                    new QuantityType<>(thisMonthConso * 1000, Units.LITRE));
             updateState(GROUP_MONTHLY_CONSUMPTION, CHANNEL_MONTHLY_LAST_MONTH_CONSUMPTION,
-                    new QuantityType<>(lastMonthConso, Units.LITRE));
+                    new QuantityType<>(lastMonthConso * 1000, Units.LITRE));
             updateState(GROUP_MONTHLY_CONSUMPTION, CHANNEL_MONTHLY_MONTH_MINUS_2_CONSUMPTION,
-                    new QuantityType<>(monthConsoMinus2, Units.LITRE));
+                    new QuantityType<>(monthConsoMinus2 * 1000, Units.LITRE));
 
             // ===========================
             // Year conso
@@ -537,7 +577,7 @@ public class ThingSedifHandler extends BaseThingHandler {
             double lastYearConso = 0;
             double yearConsoMinus2 = 0;
 
-            Consommation[] yearConso = values.data.weekConso;
+            Consommation[] yearConso = values.data.yearConso;
 
             if (yearConso != null) {
                 if (yearConso.length - 1 >= 0) {
@@ -557,22 +597,27 @@ public class ThingSedifHandler extends BaseThingHandler {
                 }
             }
 
+            logger.trace("updateConsumptionData> updateState/thisYearConso : {}", thisYearConso);
+            logger.trace("updateConsumptionData> updateState/lastYearConso : {}", lastYearConso);
+            logger.trace("updateConsumptionData> updateState/yearConsoMinus2 : {}", yearConsoMinus2);
+
             updateState(GROUP_YEARLY_CONSUMPTION, CHANNEL_YEARLY_THIS_YEAR_CONSUMPTION,
-                    new QuantityType<>(thisYearConso, Units.LITRE));
+                    new QuantityType<>(thisYearConso * 1000, Units.LITRE));
             updateState(GROUP_YEARLY_CONSUMPTION, CHANNEL_YEARLY_LAST_YEAR_CONSUMPTION,
-                    new QuantityType<>(lastYearConso, Units.LITRE));
+                    new QuantityType<>(lastYearConso * 1000, Units.LITRE));
             updateState(GROUP_YEARLY_CONSUMPTION, CHANNEL_YEARLY_YEAR_MINUS_2_CONSUMPTION,
-                    new QuantityType<>(yearConsoMinus2, Units.LITRE));
+                    new QuantityType<>(yearConsoMinus2 * 1000, Units.LITRE));
 
             updateState(GROUP_BASE, CHANNEL_MEAN_WATER_PRICE, new DecimalType(values.prixMoyenEau));
 
             if (consommation != null && consommation.length > 0) {
                 sedifState.setLastIndexDate(consommation[consommation.length - 1].dateIndex.toLocalDate());
             }
-            updateConsumptionTimeSeries(GROUP_DAILY_CONSUMPTION, CHANNEL_CONSUMPTION, values.data.consommation);
-            updateConsumptionTimeSeries(GROUP_WEEKLY_CONSUMPTION, CHANNEL_CONSUMPTION, values.data.weekConso);
-            updateConsumptionTimeSeries(GROUP_MONTHLY_CONSUMPTION, CHANNEL_CONSUMPTION, values.data.monthConso);
-            updateConsumptionTimeSeries(GROUP_YEARLY_CONSUMPTION, CHANNEL_CONSUMPTION, values.data.yearConso);
+            updateConsumptionTimeSeries(GROUP_DAILY_CONSUMPTION, CHANNEL_CONSUMPTION, values.data.consommation, 1.0F);
+            updateConsumptionTimeSeries(GROUP_WEEKLY_CONSUMPTION, CHANNEL_CONSUMPTION, values.data.weekConso, 1000.0F);
+            updateConsumptionTimeSeries(GROUP_MONTHLY_CONSUMPTION, CHANNEL_CONSUMPTION, values.data.monthConso,
+                    1000.0F);
+            updateConsumptionTimeSeries(GROUP_YEARLY_CONSUMPTION, CHANNEL_CONSUMPTION, values.data.yearConso, 1000.0F);
 
             logger.trace("updateConsumptionData:getValue() end");
 
@@ -583,59 +628,41 @@ public class ThingSedifHandler extends BaseThingHandler {
     }
 
     @Override
-    protected void updateStatus(ThingStatus status, ThingStatusDetail statusDetail, @Nullable String description) {
-        super.updateStatus(status, statusDetail, description);
-
-        Bridge lcBridge = getBridge();
-        if (lcBridge != null && lcBridge.getStatus() == ThingStatus.ONLINE && status == ThingStatus.UNKNOWN) {
-            setupRefreshJob();
-        }
-    }
-
-    @Override
     public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
-        if (bridgeStatusInfo.getStatus() == ThingStatus.ONLINE) {
-            if (getThing().getStatus() != ThingStatus.ONLINE) {
-                updateStatus(ThingStatus.UNKNOWN);
-            }
+        Bridge bridge = getBridge();
+        if (bridge != null && bridge.getHandler() instanceof BridgeSedifWebHandler bridgeHandler) {
+            initialize(bridgeHandler, bridgeStatusInfo.getStatus());
+        } else {
+            initialize(null, bridgeStatusInfo.getStatus());
         }
     }
 
-    private void setupRefreshJob() {
-        Bridge bridge = getBridge();
-        if (bridge == null) {
-            return;
-        }
+    private void setupRefreshJob(BridgeSedifWebHandler bridgeHandler) {
+        Contract contract = bridgeHandler.getContract(contractName);
+        if (contract != null) {
+            contractId = Objects.requireNonNull(contract.id);
 
-        if (bridge.getHandler() instanceof BridgeSedifWebHandler bridgeHandler) {
-            Contract contract = bridgeHandler.getContract(contractName);
-            if (contract != null) {
-                contractId = Objects.requireNonNull(contract.id);
+            updateData();
 
-                updateData();
+            final LocalDateTime now = LocalDateTime.now();
+            final LocalDateTime nextDayFirstTimeUpdate = now.plusDays(1).withHour(REFRESH_HOUR_OF_DAY)
+                    .withMinute(REFRESH_MINUTE_OF_DAY).truncatedTo(ChronoUnit.MINUTES);
 
-                final LocalDateTime now = LocalDateTime.now();
-                final LocalDateTime nextDayFirstTimeUpdate = now.plusDays(1).withHour(REFRESH_HOUR_OF_DAY)
-                        .withMinute(REFRESH_MINUTE_OF_DAY).truncatedTo(ChronoUnit.MINUTES);
+            cancelRefreshJob();
+            long initialDelay = ChronoUnit.MINUTES.between(now, nextDayFirstTimeUpdate) % REFRESH_INTERVAL_IN_MIN + 1;
+            long delay = REFRESH_INTERVAL_IN_MIN;
 
-                cancelRefreshJob();
-                long initialDelay = ChronoUnit.MINUTES.between(now, nextDayFirstTimeUpdate) % REFRESH_INTERVAL_IN_MIN
-                        + 1;
-                long delay = REFRESH_INTERVAL_IN_MIN;
-
-                if (!consumption.isPresent() || !contractDetail.isPresent()) {
-                    initialDelay = 20;
-                }
-                refreshJob = scheduler.scheduleWithFixedDelay(this::updateData, initialDelay, delay, TimeUnit.MINUTES);
-
-                if (this.getThing().getStatusInfo().getStatusDetail() != ThingStatusDetail.COMMUNICATION_ERROR) {
-                    updateStatus(ThingStatus.ONLINE);
-                }
-            } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "@text/offline.missing-or-invalid-contract");
+            if (!consumption.isPresent() || !contractDetail.isPresent()) {
+                initialDelay = 20;
             }
+            refreshJob = scheduler.scheduleWithFixedDelay(this::updateData, initialDelay, delay, TimeUnit.MINUTES);
 
+            if (this.getThing().getStatus() == ThingStatus.UNKNOWN) {
+                updateStatus(ThingStatus.ONLINE);
+            }
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/offline.missing-or-invalid-contract");
         }
     }
 
@@ -647,7 +674,8 @@ public class ThingSedifHandler extends BaseThingHandler {
         super.sendTimeSeries(groupId + "#" + channelID, timeSeries);
     }
 
-    private void updateConsumptionTimeSeries(String groupId, String channelId, Consommation[] consoTab) {
+    private void updateConsumptionTimeSeries(String groupId, String channelId, Consommation[] consoTab,
+            Float factorToConvertInLitre) {
         TimeSeries timeSeries = new TimeSeries(Policy.REPLACE);
 
         for (int i = 0; i < consoTab.length; i++) {
@@ -669,7 +697,7 @@ public class ThingSedifHandler extends BaseThingHandler {
             if (Double.isNaN(consommation)) {
                 continue;
             }
-            timeSeries.add(timestamp, new DecimalType(consommation));
+            timeSeries.add(timestamp, new DecimalType(consommation * factorToConvertInLitre));
         }
 
         sendTimeSeries(groupId, channelId, timeSeries);
