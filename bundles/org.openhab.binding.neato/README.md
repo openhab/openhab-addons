@@ -1,45 +1,45 @@
 # Neato Binding
 
-This binding is used to connect your openHAB system with Neato web (where you log in and find Your Neato's).
-The binding supports discovery via configuring your login and password to a bridge.
-From the binding, you will get status of your vacuum cleaners and also a command channel where you can control them. Since the binding uses a polling mechanism, there may be some latency depending on your setting regarding refresh time.
+This binding connects openHAB to the Neato cloud (where you log in and manage your Neato devices).
+Discovery is supported by configuring your login and password on a bridge.
+The binding provides status channels for your vacuum cleaners and a command channel to control them. Since the binding uses polling, there may be some latency depending on the refresh interval.
 
-For log in transaction, the binding uses Neato Beehive API and for status and control, the binding uses Nucleao API.
+For login, the binding uses the Neato Beehive API; for status and control, it uses the Nucleo API.
 
 ## Supported Things
 
-Supported thing types
+Supported Thing types
 
 - neatoaccount (bridge)
 - vacuumcleaner
 
-A bridge is required to connect to your Neato Cloud account.
+A bridge is required to connect to your Neato cloud account.
 
-All "Connected" type vacuum cleaners should be supported by this binding since they are supported by the Neato API.  As of todays date, it is only verified with Neato Connected and Neato D7 vacuum cleaners.
+All "Connected" type vacuum cleaners should be supported by this binding since they are supported by the Neato API. As of today, it has been verified with Neato Connected and Neato D7 vacuum cleaners.
 
 ## Discovery
 
-Discovery is used _after_ a bridge has been created and configured with your login information.
+Discovery is used after a bridge has been created and configured with your login information.
 
 1. Add the binding
-1. Add a new thing of type NeatoAccount and configure with username and password
-1. Go to Inbox and start discovery of Vacuums using Neato Binding
-1. Vacuums should appear in your inbox!
+1. Add a new Thing of type NeatoAccount and configure with username and password
+1. Go to the Inbox and start discovery of vacuums using the Neato binding
+1. Vacuums should appear in your Inbox
 
 ## Thing Configuration
 
-In order to manually create a thing file and not use the discovery routine you will need to know the vacuums serial number as well as the secret used in web service calls.
+To manually create a Thing file instead of using discovery, you need the vacuum’s serial number as well as the secret used in web service calls.
 This is a bit difficult to get.
 The easiest way of getting this information is to use the third party python library that is available at <https://github.com/stianaske/pybotvac>.
 
-Neato Account Config
+Neato Account Configuration
 
 | Config   | Description                         |
 | -------- | ----------------------------------- |
 | email    | Email address tied to Neato Account |
 | password | Password tied to Neato Account      |
 
-Vacuum Cleaner Config
+Vacuum Cleaner Configuration
 
 | Config  | Description                                                                                  |
 | ------- | -------------------------------------------------------------------------------------------- |
