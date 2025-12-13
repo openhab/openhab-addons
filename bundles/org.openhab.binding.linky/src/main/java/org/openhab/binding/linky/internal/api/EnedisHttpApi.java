@@ -281,12 +281,13 @@ public class EnedisHttpApi {
 
     public MeterReading getEnergyIndex(ThingLinkyRemoteHandler handler, String mps, String prmId, String segment,
             LocalDate from, LocalDate to) throws LinkyException {
-        return getMeasures(handler, linkyBridgeHandler.getDailyIndexUrl(), mps, prmId, segment, from, to, true);
+        return getMeasures(handler, linkyBridgeHandler.getIndexConsumptionUrl(), mps, prmId, segment, from, to, true);
     }
 
     public MeterReading getLoadCurveData(ThingLinkyRemoteHandler handler, String mps, String prmId, String segment,
             LocalDate from, LocalDate to) throws LinkyException {
-        return getMeasures(handler, linkyBridgeHandler.getLoadCurveUrl(), mps, prmId, segment, from, to, false);
+        return getMeasures(handler, linkyBridgeHandler.getLoadCurveConsumptionUrl(), mps, prmId, segment, from, to,
+                false);
     }
 
     public MeterReading getPowerData(ThingLinkyRemoteHandler handler, String mps, String prmId, String segment,

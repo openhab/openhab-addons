@@ -45,16 +45,51 @@ public class BridgeRemoteEnedisHandler extends BridgeRemoteApiHandler {
     private static final String BASE_URL_PROD = "https://gw.ext.prod.api.enedis.fr/";
     public static final String ENEDIS_ACCOUNT_URL_PROD = "https://mon-compte-particulier.enedis.fr/";
 
+    // ====================
+    // = endpoint < 2026
+    // ====================
     private static final String CONTRACT_URL = "customers_upc/v5/usage_points/contracts?usage_point_id=%s";
     private static final String IDENTITY_URL = "customers_i/v5/identity?usage_point_id=%s";
     private static final String CONTACT_URL = "customers_cd/v5/contact_data?usage_point_id=%s";
     private static final String ADDRESS_URL = "customers_upa/v5/usage_points/addresses?usage_point_id=%s";
 
     private static final String MEASURE_DAILY_CONSUMPTION_URL = "metering_data_dc/v5/daily_consumption?usage_point_id=%s&start=%s&end=%s";
-    private static final String MEASURE_DAILY_INDEX_URL = MEASURE_DAILY_CONSUMPTION_URL;
+    private static final String MEASURE_INDEX_CONSUMPTION_URL = MEASURE_DAILY_CONSUMPTION_URL;
+
+    private static final String MEASURE_DAILY_PRODUCTION_URL = "metering_data_dc/v5/daily_production?usage_point_id=%s&start=%s&end=%s";
+    private static final String MEASURE_INDEX_PRODUCTION_URL = MEASURE_DAILY_CONSUMPTION_URL;
+
+    private static final String LOAD_CURVE_CONSUMPTION_URL = "metering_data_clc/v5/consumption_load_curve?usage_point_id=%s&start=%s&end=%s";
+    private static final String LOAD_CURVE_PRODUCTION_URL = "metering_data_clc/v5/production_load_curve?usage_point_id=%s&start=%s&end=%s";
 
     private static final String MEASURE_MAX_POWER_URL = "metering_data_dcmp/v5/daily_consumption_max_power?usage_point_id=%s&start=%s&end=%s";
-    private static final String LOAD_CURVE_CONSUMPTION_URL = "metering_data_clc/v5/consumption_load_curve?usage_point_id=%s&start=%s&end=%s";
+
+    // ====================
+    // = endpoint >= 2026
+    // ====================
+
+    private static final String SUBSCRIBE_SERVICE_URL_V26 = "subscribed_services/v1";
+
+    private static final String GENERAL_DATA_URL_V26 = "donnees_generales_auto/v1/%s";
+    private static final String CONTRACT_SYNTH_URL_V26 = "synth_contrat_auto/v1/%s";
+    private static final String CONTRACT_STATE_URL_V26 = "situation_contrat_auto/v1/%s";
+    private static final String ALIMENTATION_URL_V26 = "alimentation_auto/v1/%s";
+
+    private static final String MEASURE_DAILY_CONSUMPTION_URL_V26 = "mesure_synchrone_auto/v1/metering_data/daily_consumption?usage_point_id=%s&start=%s&end=%s";
+    private static final String MEASURE_INDEX_CONSUMPTION_URL_V26 = "mesure_synchrone_auto/v1/metering_data/index_consumption?usage_point_id=%s&start=%s&end=%s";
+    private static final String MEASURE_DAILY_PRODUCTION_URL_V26 = "mesure_synchrone_auto/v1/metering_data/daily_consumption?usage_point_id=%s&start=%s&end=%s";
+    private static final String MEASURE_INDEX_PRODUCTION_URL_V26 = "mesure_synchrone_auto/v1/metering_data/daily_production?usage_point_id=%s&start=%s&end=%s";
+
+    private static final String LOAD_CURVE_CONSUMPTION_URL_V26 = "mesure_synchrone_auto/v1/metering_data/consumption_load_curve?usage_point_id=%s&start=%s&end=%s";
+    private static final String LOAD_CURVE_PRODUCTION_URL_V26 = "mesure_synchrone_auto/v1/metering_data/production_load_curve?usage_point_id=%s&start=%s&end=%s";
+
+    private static final String MEASURE_MAX_POWER_URL_V26 = "mesure_synchrone_auto/v1/metering_data/daily_consumption_max_power?usage_point_id=%s&start=%s&end=%s&&measuring_period=%sgrandeurPhysique=%s";
+
+    private boolean isV26 = true;
+
+    // ====================
+    // = endpoint Auth
+    // ====================
 
     public static final String ENEDIS_AUTHORIZE_URL = "dataconnect/v1/oauth2/authorize?duration=P36M";
     public static final String ENEDIS_API_TOKEN_URL = "oauth2/v3/token";
@@ -156,6 +191,9 @@ public class BridgeRemoteEnedisHandler extends BridgeRemoteApiHandler {
         }
     }
 
+    // ============================================
+    // = endpoint < 2026
+    // ============================================
     @Override
     public String getContactUrl() {
         return getBaseUrl() + CONTACT_URL;
@@ -178,22 +216,94 @@ public class BridgeRemoteEnedisHandler extends BridgeRemoteApiHandler {
 
     @Override
     public String getDailyConsumptionUrl() {
-        return getBaseUrl() + MEASURE_DAILY_CONSUMPTION_URL;
+        if (!isV26) {
+            return getBaseUrl() + MEASURE_DAILY_CONSUMPTION_URL;
+        } else {
+            return getBaseUrl() + MEASURE_DAILY_CONSUMPTION_URL_V26;
+        }
     }
 
     @Override
-    public String getDailyIndexUrl() {
-        return getBaseUrl() + MEASURE_DAILY_INDEX_URL;
+    public String getDailyProductionUrl() {
+        if (!isV26) {
+            return getBaseUrl() + MEASURE_DAILY_PRODUCTION_URL;
+        } else {
+            return getBaseUrl() + MEASURE_DAILY_PRODUCTION_URL_V26;
+        }
+    }
+
+    @Override
+    public String getIndexConsumptionUrl() {
+        if (!isV26) {
+            return getBaseUrl() + MEASURE_INDEX_CONSUMPTION_URL;
+        } else {
+            return getBaseUrl() + MEASURE_INDEX_CONSUMPTION_URL_V26;
+        }
+    }
+
+    @Override
+    public String getIndexProductionUrl() {
+        if (!isV26) {
+            return getBaseUrl() + MEASURE_INDEX_PRODUCTION_URL;
+        } else {
+            return getBaseUrl() + MEASURE_INDEX_PRODUCTION_URL_V26;
+        }
+    }
+
+    @Override
+    public String getLoadCurveConsumptionUrl() {
+        if (!isV26) {
+            return getBaseUrl() + LOAD_CURVE_CONSUMPTION_URL;
+        } else {
+            return getBaseUrl() + LOAD_CURVE_CONSUMPTION_URL_V26;
+        }
+    }
+
+    @Override
+    public String getLoadCurveProductionUrl() {
+        if (!isV26) {
+            return getBaseUrl() + LOAD_CURVE_PRODUCTION_URL;
+        } else {
+            return getBaseUrl() + LOAD_CURVE_PRODUCTION_URL_V26;
+        }
     }
 
     @Override
     public String getMaxPowerUrl() {
-        return getBaseUrl() + MEASURE_MAX_POWER_URL;
+        if (!isV26) {
+            return getBaseUrl() + MEASURE_MAX_POWER_URL;
+        } else {
+            return getBaseUrl() + MEASURE_MAX_POWER_URL_V26;
+        }
+    }
+
+    // ============================================
+    // = endpoint >= 2026
+    // ============================================
+
+    @Override
+    public String getSubsribeServiceUrl() {
+        return getBaseUrl() + SUBSCRIBE_SERVICE_URL_V26;
     }
 
     @Override
-    public String getLoadCurveUrl() {
-        return getBaseUrl() + LOAD_CURVE_CONSUMPTION_URL;
+    public String getGeneralDataUrl() {
+        return getBaseUrl() + GENERAL_DATA_URL_V26;
+    }
+
+    @Override
+    public String getContractSynthUrl() {
+        return getBaseUrl() + CONTRACT_SYNTH_URL_V26;
+    }
+
+    @Override
+    public String getContractStateUrl() {
+        return getBaseUrl() + CONTRACT_STATE_URL_V26;
+    }
+
+    @Override
+    public String getAlimentationUrl() {
+        return getBaseUrl() + ALIMENTATION_URL_V26;
     }
 
     @Override
