@@ -57,13 +57,13 @@
 			</parameter>
 			<parameter name="maxNotificationDuration" type="integer" unit="s">
 				<label>Maximum Notification Duration</label>
-				<description>Specifies the maximum duration for notifications, longer notification sounds will be interrupted. O
-					represents no maximum duration</description>
+				<description>Specifies the maximum duration for notifications; longer sounds will be interrupted. 0 represents no
+					maximum duration</description>
 				<default>15</default>
 			</parameter>
 			<parameter name="seekStep" type="integer" min="1">
 				<label>Fast Forward/Rewind Step</label>
-				<description>Step in seconds for fast forward rewind</description>
+				<description>Step in seconds for fast forward/rewind</description>
 				<default>5</default>
 			</parameter>
 			<parameter name="responseTimeout" type="integer" unit="ms">
@@ -321,14 +321,14 @@
 	</channel-type>
 	<channel-type id="browse">
 		<item-type>String</item-type>
-		<label>Current Media Id</label>
-		<description>Current id of media entry or container, option list to browse hierarchy</description>
+		<label>Current Media ID</label>
+		<description>Current ID of media entry or container; option list to browse hierarchy</description>
 	</channel-type>
 	<channel-type id="search">
 		<item-type>String</item-type>
 		<label>Search Criteria</label>
 		<description>Search criteria for searching the directory. Search criteria are defined in UPnP search criteria format.
-			Examples: dc:title contains "song", dc:creator contains "SpringSteen", unp:class = "object.item.audioItem",
+			Examples: dc:title contains "song", dc:creator contains "Springsteen", upnp:class = "object.item.audioItem",
 			upnp:album contains "Born in"</description>
 	</channel-type>
 	<channel-type id="playlistselect">
