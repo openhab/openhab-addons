@@ -22,7 +22,7 @@
 				<context>serial-port</context>
 				<limitToOptions>false</limitToOptions>
 				<label>USB Port</label>
-				<description>USB port the device is connected to i.e. /dev/ttyUSB0</description>
+				<description>USB port the device is connected to, for example /dev/ttyUSB0</description>
 			</parameter>
 		</config-description>
 	</thing-type>
@@ -51,8 +51,8 @@
 
 	<channel-type id="UsableLevel">
 		<item-type>Number:Volume</item-type>
-		<label>Usable Level in litre</label>
-		<description>The usable level in litre</description>
+		<label>Usable Level in liters</label>
+		<description>The usable level in liters</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Water</tag>

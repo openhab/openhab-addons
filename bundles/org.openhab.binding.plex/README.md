@@ -4,33 +4,33 @@ This binding can read information from multiple PLEX players connected to a PLEX
 
 It can be used for multiple scenarios:
 
-- Drive light changes based on player status. For instances turn off the lights when movie starts playing and turn them back on when movie is stopped/paused
-- Create a page that displays currently played media of one or more player connected to the server.
-- Send social media messages when player plays new media
-- Inform what the end time of the currently played media is
+- Drive light changes based on player status. For instance, turn off the lights when a movie starts playing and turn them back on when the movie is stopped or paused.
+- Create a page that displays the media currently playing on one or more players connected to the server.
+- Send a social media message when a player starts playing new media.
+- Show the end time of the currently playing media.
 
-The binding can also control `PLAY/PAUSE/NEXT/PREVIOUS` the players which can be used for:
+The binding can also control players (`PLAY/PAUSE/NEXT/PREVIOUS`), which you can use to:
 
-- Start playing some music when someone enters a room
-- Pause the movie when motion is detected
+- Start playing music when someone enters a room.
+- Pause the movie when motion is detected.
 
 ## Supported Things
 
-This binding supports 2 things.
+This binding supports two Things.
 
-- `server`: The PLEX server will act as a bridge to read out the information from all connected players
-- `player`: A PLEX client of any type / os connected to the server.
+- `server`: The PLEX server acts as a Bridge to read information from all connected players.
+- `player`: A PLEX client of any type/OS connected to the server.
 
 ## Discovery
 
-For the auto discovery to work correctly you first need to configure and add the `PLEX Server` Thing.
-Next step is to _PLAY_ something on the desired player. Only when media is played on the player it will show up in the auto discovery!
+For auto-discovery to work correctly, first configure and add the `PLEX Server` Thing.
+Next, play something on the desired player. The player appears in auto-discovery only while media is playing.
 
 ## Thing Configuration
 
-The PLEX Server needs to be configured first. The hostname of the PLEX server is mandatory and the either the PLEX token (recommended) or the username/password of the PLEX server (not recommended).
+Configure the PLEX Server first. The host name of the PLEX server is mandatory, and either the PLEX token (recommended) or the username/password of the PLEX server (not recommended).
 
-Then find the PLEX token please follow the instructions from the PLEX support forum:
+To find the PLEX token, follow the instructions from the PLEX support site:
 
 1. [Sign in to your Plex account](https://support.plex.tv/articles/200933616-plex-account/) in Plex Web App
 1. Browse to a library item and [view the XML](https://support.plex.tv/articles/201998867-investigate-media-information-and-formats/) for it
@@ -49,16 +49,16 @@ Then find the PLEX token please follow the instructions from the PLEX support fo
 
 ### `PLEX Player` Thing Configuration
 
-You can add multiple PLEX players. You can choose to find the player by autodiscovery or add them manually.
+You can add multiple PLEX players. You can either find the player via auto-discovery or add it manually.
 
 #### Autodiscovery
 
-Turn on the player you want to add and _play_ some media on it. Navigate to `/settings/things/add/plex` and start the auto discover.
-The player will be found and you can add it.
+Turn on the player you want to add and play some media on it. Navigate to `/settings/things/add/plex` and start auto-discovery.
+When found, add the player.
 
-#### Manual adding a player Thing
+#### Add a player manually
 
-When you want to add them manually go to the following url [https://plex.tv/devices.xml?X-Plex-Token=YOURTOKENVALUEHERE] .
+To add a player manually, go to <https://plex.tv/devices.xml?X-Plex-Token=YOURTOKENVALUEHERE>.
 
 It will display the following XML file.
 
@@ -87,7 +87,7 @@ It will display the following XML file.
 </MediaContainer>
 ```
 
-Find the `Device` block of the player you want to add and fill in the `clientIdentifier` as `playerID`
+Find the `Device` block of the player you want to add and set the `clientIdentifier` as the `playerID`.
 
 | Name        | Type    | Description                                                                                | Default | Required | Advanced |
 |-------------|---------|--------------------------------------------------------------------------------------------|---------|----------|---------|
@@ -118,26 +118,24 @@ The PLEX Player supports the following channels:
 | ratingKey            | String   | RO         | The unique key in the Plex library identifying the media that is playing                                         |
 | parentRatingKey      | String   | RO         | The unique key in the Plex library identifying the parent (TV show season or album) of the media that is playing |
 | grandparentRatingKey | String   | RO         | The unique key in the Plex library identifying the grandparent (TV show) of the media that is playing            |
-| user                 | String   | RO         | The user title                                                          |
+| user                 | String   | RO         | The user name                                                                                                  |
 
 ## Full Example
 
 `.things` file:
 
 ```java
-Bridge plex:server:plexServer "Bridge Plex : Plex" [host="IP.Address.Or.Hostname", token="SadhjsajjA3AG", refreshRate=5]
-{
-    Thing plex:player:MyViewerName01 "My Viewer Name 01" [playerID="ClientIdentifierFromDevices.XML1"]
-    Thing plex:player:MyViewerName02 "My Viewer Name 02" [playerID="ClientIdentifierFromDevices.XML2"]
+Bridge plex:server:plexrServer "Bridge Plex: Plex" [ host="IP.Address.Or.Hostname", token="SadhjsajjA3AG", refreshRate=5 ] {
+    Thing plex:player:MyViewerName01 "My Viewer Name 01" [ playerID="ClientIdentifierFromDevices.XML1" ]
+    Thing plex:player:MyViewerName02 "My Viewer Name 02" [ playerID="ClientIdentifierFromDevices.XML2" ]
 }
 ```
 
 `.items` file
 
 ```java
-String    BridgePlexCurrent            "Current players"           {channel="plex:server:plexServer:currentPlayers"}
-String    BridgePlexCurrentActive      "Current players active"    {channel="plex:server:plexServer:currentPlayersActive"}
-
+Number    BridgePlexCurrent            "Current players"           { channel="plex:server:plexServer:currentPlayers" }
+Number    BridgePlexCurrentActive      "Current players active"    { channel="plex:server:plexServer:currentPlayersActive" }
 Switch    PlexTVPower01                "Power"                     {channel="plex:player:MyViewerName01:power"}
 String    PlexTVStatus01               "Status [%s]"               {channel="plex:player:MyViewerName01:state"}
 Player    PlexTVControl01              "Player"                    {channel="plex:player:MyViewerName01:player"}
