@@ -24,5 +24,8 @@ public class MetaData {
     public Contract contract;
     public UsagePoint usagePoint;
 
-    // public Ali
+    public Alimentation alimentation;
+    public ContractState contractState;
+    public ContractSynth contractSynth;
+    public GeneralData generalData;
 }

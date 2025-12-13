@@ -67,4 +67,24 @@ public class UsagePoint {
 
         return result;
     }
+
+    public static UsagePoint convertFromContract(GeneralData generalData, ContractSynth contractSynth,
+            ContractState contractState) {
+        UsagePoint result = new UsagePoint();
+
+        result.usagePointId = contractState.usagePointId;
+        result.usagePointStatus = "";
+        result.meterType = "";
+
+        result.usagePointAddresses = result.new AddressInfo();
+
+        result.usagePointAddresses.street = generalData.address.numberStreetName;
+        result.usagePointAddresses.locality = "";
+        result.usagePointAddresses.city = "";
+        result.usagePointAddresses.postalCode = generalData.address.postalCodeCity;
+        result.usagePointAddresses.inseeCode = generalData.address.inseeCode;
+        result.usagePointAddresses.country = "";
+
+        return result;
+    }
 }

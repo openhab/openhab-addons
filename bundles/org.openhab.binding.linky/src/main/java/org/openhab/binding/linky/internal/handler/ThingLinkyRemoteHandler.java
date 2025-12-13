@@ -296,9 +296,6 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
 
     private synchronized void updateMetaData() {
         metaData.getValue().ifPresentOrElse(values -> {
-            if (values.identity == null) {
-                return;
-            }
             String title = values.identity.title;
             String firstName = values.identity.firstname;
             String lastName = values.identity.lastname;
@@ -372,8 +369,10 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
                         ContractSynth contractSynth = api.getContractSynth(this, prmId);
                         ContractState contractState = api.getContractState(this, prmId);
 
-                        logger.debug("");
-
+                        result.identity = Identity.convertFromGeneralData(generalData);
+                        result.contact = Contact.convertFromGeneralData(generalData);
+                        result.contract = Contract.convertFromContract(contractSynth, contractState);
+                        result.usagePoint = UsagePoint.convertFromContract(generalData, contractSynth, contractState);
                     } else {
                         if (config.prmId.isBlank()) {
                             throw new LinkyException("@text/offline.config-error-mandatory-settings");
