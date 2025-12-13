@@ -42,10 +42,16 @@ Once the `home` thing is online, the binding will discover all its respective zo
 
 ### Channels
 
-| Name                | Type   | Description                                                         | Read/Write |
-|---------------------|--------|---------------------------------------------------------------------|------------|
-| `homePresence`      | Switch | Current presence value of the tado home; `ON` = HOME / `OFF` = AWAY | RW         |
-| `geofencingEnabled` | Switch | Selects if automatic geofencing is enabled or disabled              | RW         |
+| Name                            | Type        | Description                                                         | Read/Write |
+|---------------------------------|-------------|---------------------------------------------------------------------|------------|
+| `homePresence`                  | Switch      | Current presence value of the tado home; `ON` = HOME / `OFF` = AWAY | RW         |
+| `geofencingEnabled`             | Switch      | Selects if automatic geofencing is enabled or disabled              | RW         |
+| `APIRateRemaining`<sup>1)</sup> | Number      | Number of API calls remaining before the maximum is reached         | R          |
+| `APIRateLimit`<sup>1)</sup>     | Number      | Maximum API calls allowed per specified duration                    | R          |
+| `APIRateDuration`<sup>1)</sup>  | Number:Time | Duration in which the API count rises until maximum (in seconds)    | R          |
+| `APIRateReset`<sup>1)</sup>     | Number:Time | Duration before the API count resets (in seconds)                   | R          |
+
+<sup>1)</sup> It probably makes the most sense to link *one and the same* Item to *all* `APIRateRemaining` Channels of *all* Things linked to the same `home` Thing (*including* this `home` Thing). That way, that one Item is always as up-to-date as possible. The same applies to `APIRateLimit`, `APIRateDuration` and `APIRateReset`, of course.
 
 ## `zone` Thing
 
@@ -79,26 +85,30 @@ A zone is either of type `HEATING`, `AC` or `DHW` (domestic hot water).
 The availability of items as well as their allowed values depend on type and capabilities of the HVAC setup.
 If you are unsure, have a look at the tado° app and see if the functionality is available and what values are supported.
 
-| Name                           | Type                 | Description                                                                                                       | Read/Write | Zone type              |
-|--------------------------------|----------------------|-------------------------------------------------------------------------------------------------------------------|------------|------------------------|
-| `currentTemperature`           | Number:Temperature   | Current inside temperature                                                                                        | R          | `HEATING`, `AC`        |
-| `humidity`                     | Number:Dimensionless | Current relative inside humidity in percent                                                                       | R          | `HEATING`, `AC`        |
-| `hvacMode`                     | String               | Active mode, one of `OFF`, `HEAT`, `COOL`, `DRY`, `FAN`, `AUTO`                                                   | RW         | `HEATING` and `DHW` support `OFF` and `HEAT`, `AC` can support more |
-| `targetTemperature`            | Number:Temperature   | Set point                                                                                                         | RW         | `HEATING`, `AC`, `DHW` |
-| `operationMode`                | String               | Operation mode the zone is currently in. One of `SCHEDULE` (follow smart schedule), `MANUAL` (override until ended manually), `TIMER` (override for a given time), `UNTIL_CHANGE` (active until next smart schedule block or until AWAY mode becomes active) | RW | `HEATING`, `AC`, `DHW` |
-| `overlayExpiry`                | DateTime             | End date and time of a timer                                                                                      | R          | `HEATING`, `AC`, `DHW` |
-| `timerDuration`                | Number               | Timer duration in minutes                                                                                         | RW         | `HEATING`, `AC`, `DHW` |
-| `heatingPower`                 | Number:Dimensionless | Amount of heating power currently present                                                                         | R          | `HEATING`              |
-| `acPower`                      | Switch               | Indicates if the Air-Conditioning is Off or On                                                                    | R          | `AC`                   |
-| `fanspeed`<sup>1)</sup>        | String               | Fan speed, one of `AUTO`, `LOW`, `MIDDLE`, `HIGH`                                                                 | RW         | `AC`                   |
-| `fanLevel`<sup>1)</sup>        | String               | Fan speed, one of <sup>3)</sup> `AUTO`, `SILENT`, `LEVEL1`, `LEVEL2`, `LEVEL3`, `LEVEL4`, `LEVEL5`                | RW         | `AC`                   |
-| `swing`<sup>2)</sup>           | Switch               | Swing on/off                                                                                                      | RW         | `AC`                   |
-| `verticalSwing`<sup>2)</sup>   | String               | Vertical swing state, one of <sup>3)</sup> `OFF`, `ON`, `UP`, `MID_UP`, `MID`, `MID_DOWN`, `DOWN`, `AUTO`         | RW         | `AC`                   |
-| `horizontalSwing`<sup>2)</sup> | String               | Horizontal swing state, one of <sup>3)</sup> `OFF`, `ON`, `LEFT`, `MID_LEFT`, `MID`, `MID_RIGHT`, `RIGHT`, `AUTO` | RW         | `AC`                   |
-| `batteryLowAlarm`              | Switch               | A control device in the Zone has a low battery                                                                    | R          | Any Zone               |
-| `openWindowDetected`           | Switch               | An open window has been detected in the Zone                                                                      | R          | `HEATING`, `AC`        |
-| `openWindowRemainingTime`      | Number:Time          | The remaining Open Window heating/cooling Override time in the Zone                                               | R          | `HEATING`, `AC`        |
-| `light`                        | Switch               | State (`ON`, `OFF`) of the control panel light                                                                    | RW         | `AC`                   |
+| Name                            | Type                 | Description                                                                                                                                                                                                                                                  | Read/Write | Zone type                                                           |
+|---------------------------------|----------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------|---------------------------------------------------------------------|
+| `currentTemperature`            | Number:Temperature   | Current inside temperature                                                                                                                                                                                                                                   | R          | `HEATING`, `AC`                                                     |
+| `humidity`                      | Number:Dimensionless | Current relative inside humidity in percent                                                                                                                                                                                                                  | R          | `HEATING`, `AC`                                                     |
+| `hvacMode`                      | String               | Active mode, one of `OFF`, `HEAT`, `COOL`, `DRY`, `FAN`, `AUTO`                                                                                                                                                                                              | RW         | `HEATING` and `DHW` support `OFF` and `HEAT`, `AC` can support more |
+| `targetTemperature`             | Number:Temperature   | Set point                                                                                                                                                                                                                                                    | RW         | `HEATING`, `AC`, `DHW`                                              |
+| `operationMode`                 | String               | Operation mode the zone is currently in. One of `SCHEDULE` (follow smart schedule), `MANUAL` (override until ended manually), `TIMER` (override for a given time), `UNTIL_CHANGE` (active until next smart schedule block or until AWAY mode becomes active) | RW         | `HEATING`, `AC`, `DHW`                                              |
+| `overlayExpiry`                 | DateTime             | End date and time of a timer                                                                                                                                                                                                                                 | R          | `HEATING`, `AC`, `DHW`                                              |
+| `timerDuration`                 | Number               | Timer duration in minutes                                                                                                                                                                                                                                    | RW         | `HEATING`, `AC`, `DHW`                                              |
+| `heatingPower`                  | Number:Dimensionless | Amount of heating power currently present                                                                                                                                                                                                                    | R          | `HEATING`                                                           |
+| `acPower`                       | Switch               | Indicates if the Air-Conditioning is Off or On                                                                                                                                                                                                               | R          | `AC`                                                                |
+| `fanspeed`<sup>1)</sup>         | String               | Fan speed, one of `AUTO`, `LOW`, `MIDDLE`, `HIGH`                                                                                                                                                                                                            | RW         | `AC`                                                                |
+| `fanLevel`<sup>1)</sup>         | String               | Fan speed, one of <sup>3)</sup> `AUTO`, `SILENT`, `LEVEL1`, `LEVEL2`, `LEVEL3`, `LEVEL4`, `LEVEL5`                                                                                                                                                           | RW         | `AC`                                                                |
+| `swing`<sup>2)</sup>            | Switch               | Swing on/off                                                                                                                                                                                                                                                 | RW         | `AC`                                                                |
+| `verticalSwing`<sup>2)</sup>    | String               | Vertical swing state, one of <sup>3)</sup> `OFF`, `ON`, `UP`, `MID_UP`, `MID`, `MID_DOWN`, `DOWN`, `AUTO`                                                                                                                                                    | RW         | `AC`                                                                |
+| `horizontalSwing`<sup>2)</sup>  | String               | Horizontal swing state, one of <sup>3)</sup> `OFF`, `ON`, `LEFT`, `MID_LEFT`, `MID`, `MID_RIGHT`, `RIGHT`, `AUTO`                                                                                                                                            | RW         | `AC`                                                                |
+| `batteryLowAlarm`               | Switch               | A control device in the Zone has a low battery                                                                                                                                                                                                               | R          | Any Zone                                                            |
+| `openWindowDetected`            | Switch               | An open window has been detected in the Zone                                                                                                                                                                                                                 | R          | `HEATING`, `AC`                                                     |
+| `openWindowRemainingTime`       | Number:Time          | The remaining Open Window heating/cooling Override time in the Zone                                                                                                                                                                                          | R          | `HEATING`, `AC`                                                     |
+| `light`                         | Switch               | State (`ON`, `OFF`) of the control panel light                                                                                                                                                                                                               | RW         | `AC`                                                                |
+| `APIRateRemaining`<sup>4)</sup> | Number               | Number of API calls remaining before the maximum is reached                                                                                                                                                                                                  | R          | Any Zone                                                            |
+| `APIRateLimit`<sup>4)</sup>     | Number               | Maximum API calls allowed per specified duration                                                                                                                                                                                                             | R          | Any Zone                                                            |
+| `APIRateDuration`<sup>4)</sup>  | Number:Time          | Duration in which the API count rises until maximum (in seconds)                                                                                                                                                                                             | R          | Any Zone                                                            |
+| `APIRateReset`<sup>4)</sup>     | Number:Time          | Duration before the API count resets (in seconds)                                                                                                                                                                                                            | R          | Any Zone                                                            |
 
 You will see some of the above mentioned Channels only if your tado° device supports the respective function.
 
@@ -117,6 +127,8 @@ So you need to choose the respective channel type name that matches the features
 However, in reality different A/C units might only support a **_subset_** of those values.
 And indeed the subset of supported values might depend on the current state of the `acPower` and `hvacMode` channels.
 In that case, if you send a channel command value to an A/C unit which does not (currently) support that particular state value, then openHAB will report a '422' run-time error in the log.
+
+<sup>4)</sup> It probably makes the most sense to link *one and the same* Item to *all* `APIRateRemaining` Channels of *all* Things linked to the same `home` Thing (*including* this `home` Thing). That way, that one Item is always as up-to-date as possible. The same applies to `APIRateLimit`, `APIRateDuration` and `APIRateReset`, of course.
 
 ### Item Command Collection
 
@@ -162,13 +174,19 @@ Bridge tado:home:demo [ username="mail@example.com", password="secret" ] {
 }
 ```
 
-### Items
+### Channels
 
-| Name     | Type   | Description                                      | Read/Write |
-|----------|--------|--------------------------------------------------|------------|
-| `atHome` | Switch | ON if mobile device is in HOME mode, OFF if AWAY | R          |
+| Name                            | Type        | Description                                                      | Read/Write |
+|---------------------------------|-------------|------------------------------------------------------------------|------------|
+| `atHome`                        | Switch      | ON if mobile device is in HOME mode, OFF if AWAY                 | R          |
+| `APIRateRemaining`<sup>1)</sup> | Number      | Number of API calls remaining before the maximum is reached      | R          |
+| `APIRateLimit`<sup>1)</sup>     | Number      | Maximum API calls allowed per specified duration                 | R          |
+| `APIRateDuration`<sup>1)</sup>  | Number:Time | Duration in which the API count rises until maximum (in seconds) | R          |
+| `APIRateReset`<sup>1)</sup>     | Number:Time | Duration before the API count resets (in seconds)                | R          |
 
 Group `OR` can be used to define an item for _'is any device at home'_.
+
+<sup>1)</sup> It probably makes the most sense to link *one and the same* Item to *all* `APIRateRemaining` Channels of *all* Things linked to the same `home` Thing (*including* this `home` Thing). That way, that one Item is always as up-to-date as possible. The same applies to `APIRateLimit`, `APIRateDuration` and `APIRateReset`, of course.
 
 # Full Example
 

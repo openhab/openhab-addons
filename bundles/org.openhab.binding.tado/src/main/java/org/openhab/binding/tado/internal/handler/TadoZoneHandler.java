@@ -22,6 +22,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import javax.measure.Unit;
 import javax.measure.quantity.Temperature;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -60,6 +61,7 @@ import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.ImperialUnits;
 import org.openhab.core.library.unit.SIUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -122,12 +124,26 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
     public OverlayTerminationCondition getDefaultTerminationCondition() throws IOException, ApiException {
         OverlayTemplate overlayTemplate = getApi().showZoneDefaultOverlay(getHomeId(), getZoneId());
         logApiTransaction(overlayTemplate, false);
+
+        updateAPIChannels(overlayTemplate.getAPIRateLimit(), TadoBindingConstants.CHANNEL_API_RATE_LIMIT, Units.ONE);
+        updateAPIChannels(overlayTemplate.getAPIRateDuration(), TadoBindingConstants.CHANNEL_API_RATE_DURATION,
+                Units.SECOND);
+        updateAPIChannels(overlayTemplate.getAPIRateRemaining(), TadoBindingConstants.CHANNEL_API_RATE_REMAINING,
+                Units.ONE);
+        updateAPIChannels(overlayTemplate.getAPIRateReset(), TadoBindingConstants.CHANNEL_API_RATE_RESET, Units.SECOND);
+
         return terminationConditionTemplateToTerminationCondition(overlayTemplate.getTerminationCondition());
     }
 
     public ZoneState getZoneState() throws IOException, ApiException {
         ZoneState zoneState = getApi().showZoneState(getHomeId(), getZoneId());
         logApiTransaction(zoneState, false);
+
+        updateAPIChannels(zoneState.getAPIRateLimit(), TadoBindingConstants.CHANNEL_API_RATE_LIMIT, Units.ONE);
+        updateAPIChannels(zoneState.getAPIRateDuration(), TadoBindingConstants.CHANNEL_API_RATE_DURATION, Units.SECOND);
+        updateAPIChannels(zoneState.getAPIRateRemaining(), TadoBindingConstants.CHANNEL_API_RATE_REMAINING, Units.ONE);
+        updateAPIChannels(zoneState.getAPIRateReset(), TadoBindingConstants.CHANNEL_API_RATE_RESET, Units.SECOND);
+
         return zoneState;
     }
 
@@ -147,6 +163,14 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
         try {
             logApiTransaction(overlay, true);
             Overlay newOverlay = getApi().updateZoneOverlay(getHomeId(), getZoneId(), overlay);
+
+            updateAPIChannels(newOverlay.getAPIRateLimit(), TadoBindingConstants.CHANNEL_API_RATE_LIMIT, Units.ONE);
+            updateAPIChannels(newOverlay.getAPIRateDuration(), TadoBindingConstants.CHANNEL_API_RATE_DURATION,
+                    Units.SECOND);
+            updateAPIChannels(newOverlay.getAPIRateRemaining(), TadoBindingConstants.CHANNEL_API_RATE_REMAINING,
+                    Units.ONE);
+            updateAPIChannels(newOverlay.getAPIRateReset(), TadoBindingConstants.CHANNEL_API_RATE_RESET, Units.SECOND);
+
             logApiTransaction(newOverlay, false);
             return newOverlay;
         } catch (ApiException e) {
@@ -281,6 +305,15 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
                             "Can not access zone " + getZoneId() + " of home " + getHomeId());
                     return;
                 }
+
+                updateAPIChannels(capabilities.getAPIRateLimit(), TadoBindingConstants.CHANNEL_API_RATE_LIMIT,
+                        Units.ONE);
+                updateAPIChannels(capabilities.getAPIRateDuration(), TadoBindingConstants.CHANNEL_API_RATE_DURATION,
+                        Units.SECOND);
+                updateAPIChannels(capabilities.getAPIRateRemaining(), TadoBindingConstants.CHANNEL_API_RATE_REMAINING,
+                        Units.ONE);
+                updateAPIChannels(capabilities.getAPIRateReset(), TadoBindingConstants.CHANNEL_API_RATE_RESET,
+                        Units.SECOND);
 
                 updateProperty(TadoBindingConstants.PROPERTY_ZONE_NAME, zoneDetails.getName());
                 updateProperty(TadoBindingConstants.PROPERTY_ZONE_TYPE, zoneDetails.getType().name());
@@ -544,6 +577,12 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
                 logger.debug("Removing unsupported channels for {}: {}", thing.getUID(), joiner.toString());
             }
             updateThing(editThing().withoutChannels(removeList).build());
+        }
+    }
+
+    private void updateAPIChannels(@Nullable Integer value, String channelName, Unit unit) {
+        if (value != null) {
+            updateState(channelName, new QuantityType<>(value, unit));
         }
     }
 }

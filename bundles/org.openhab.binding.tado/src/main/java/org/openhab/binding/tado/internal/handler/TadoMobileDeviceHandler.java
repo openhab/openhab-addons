@@ -16,6 +16,8 @@ import java.io.IOException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import javax.measure.Unit;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.tado.internal.TadoBindingConstants;
@@ -23,6 +25,8 @@ import org.openhab.binding.tado.internal.config.TadoMobileDeviceConfig;
 import org.openhab.binding.tado.swagger.codegen.api.ApiException;
 import org.openhab.binding.tado.swagger.codegen.api.model.MobileDevice;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -84,6 +88,13 @@ public class TadoMobileDeviceHandler extends BaseHomeThingHandler {
                 MobileDevice device = getMobileDevice();
                 updateProperty(TadoBindingConstants.PROPERTY_MOBILE_DEVICE_NAME, device.getName());
 
+                updateAPIChannels(device.getAPIRateLimit(), TadoBindingConstants.CHANNEL_API_RATE_LIMIT, Units.ONE);
+                updateAPIChannels(device.getAPIRateDuration(), TadoBindingConstants.CHANNEL_API_RATE_DURATION,
+                        Units.SECOND);
+                updateAPIChannels(device.getAPIRateRemaining(), TadoBindingConstants.CHANNEL_API_RATE_REMAINING,
+                        Units.ONE);
+                updateAPIChannels(device.getAPIRateReset(), TadoBindingConstants.CHANNEL_API_RATE_RESET, Units.SECOND);
+
                 if (!device.getSettings().isGeoTrackingEnabled()) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                             "Geotracking is disabled on mobile device " + device.getName());
@@ -109,6 +120,13 @@ public class TadoMobileDeviceHandler extends BaseHomeThingHandler {
             MobileDevice device = getMobileDevice();
             updateState(TadoBindingConstants.CHANNEL_MOBILE_DEVICE_AT_HOME,
                     OnOffType.from(device.getLocation().isAtHome()));
+
+            updateAPIChannels(device.getAPIRateLimit(), TadoBindingConstants.CHANNEL_API_RATE_LIMIT, Units.ONE);
+            updateAPIChannels(device.getAPIRateDuration(), TadoBindingConstants.CHANNEL_API_RATE_DURATION,
+                    Units.SECOND);
+            updateAPIChannels(device.getAPIRateRemaining(), TadoBindingConstants.CHANNEL_API_RATE_REMAINING, Units.ONE);
+            updateAPIChannels(device.getAPIRateReset(), TadoBindingConstants.CHANNEL_API_RATE_RESET, Units.SECOND);
+
         } catch (IOException | ApiException e) {
             logger.debug("Status update of mobile device with id {} failed: {}", configuration.id, e.getMessage());
         }
@@ -149,6 +167,12 @@ public class TadoMobileDeviceHandler extends BaseHomeThingHandler {
         ScheduledFuture<?> refreshTimer = this.refreshTimer;
         if (refreshTimer != null) {
             refreshTimer.cancel(false);
+        }
+    }
+
+    private void updateAPIChannels(@Nullable Integer value, String channelName, Unit unit) {
+        if (value != null) {
+            updateState(channelName, new QuantityType<>(value, unit));
         }
     }
 }
