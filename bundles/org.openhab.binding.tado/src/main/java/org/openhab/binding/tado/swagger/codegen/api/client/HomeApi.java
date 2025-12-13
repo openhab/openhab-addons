@@ -56,10 +56,10 @@ public class HomeApi {
     private Gson gson;
     private OAuthorizerV2 authorizer;
 
-    private int APIRateLimit;
-    private int APIRateDuration;
-    private int APIRateRemaining;
-    private int APIRateReset;
+    private int APIRateLimit = 0;
+    private int APIRateDuration = 0;
+    private int APIRateRemaining = 0;
+    private int APIRateReset = 0;
 
     public int getAPIRateLimit() {
         return APIRateLimit;
