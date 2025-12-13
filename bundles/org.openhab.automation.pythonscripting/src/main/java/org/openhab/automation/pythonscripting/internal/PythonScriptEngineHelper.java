@@ -27,6 +27,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -39,7 +40,6 @@ import javax.script.ScriptException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.core.automation.module.script.ScriptEngineFactory;
 import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,7 +57,8 @@ public class PythonScriptEngineHelper {
     private static final Pattern VERSION_PATTERN = Pattern.compile("__version__\\s*=\\s*\"([^\"]*)\"",
             Pattern.CASE_INSENSITIVE);
 
-    public static void initPipModules(PythonScriptEngineConfiguration configuration, ScriptEngineFactory factory) {
+    public static void initPipModules(PythonScriptEngineConfiguration configuration,
+            PythonScriptEngineFactory factory) {
         String pipModulesConfig = configuration.getPIPModules().strip();
         if (pipModulesConfig.isEmpty()) {
             return;
@@ -86,7 +87,8 @@ public class PythonScriptEngineHelper {
                     exit(1)
                 """;
 
-        ScriptEngine engine = factory.createScriptEngine(PythonScriptEngineFactory.SCRIPT_TYPE);
+        ScriptEngine engine = factory.createScriptEngine(PythonScriptEngineFactory.SCRIPT_TYPE,
+                "python-setup-" + UUID.randomUUID().toString());
         if (engine != null) {
             engine.getContext().setAttribute("pipModules", pipModules, ScriptContext.ENGINE_SCOPE);
             try {
