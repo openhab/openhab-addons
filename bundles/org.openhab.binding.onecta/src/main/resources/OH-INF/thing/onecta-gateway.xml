@@ -53,7 +53,7 @@
 
 	<channel-type id="gw-daylight-savingtime-enabled">
 		<item-type>Switch</item-type>
-		<label>Daylight saving time enabled</label>
+		<label>Daylight Saving Enabled</label>
 		<description>Daylight saving time enabled</description>
 		<tags>
 			<tag>Switch</tag>
@@ -64,8 +64,8 @@
 
 	<channel-type id="gw-firmware-version">
 		<item-type>String</item-type>
-		<label>firmware-version</label>
-		<description>firmware-version</description>
+		<label>Firmware Version</label>
+		<description>firmware version</description>
 		<tags>
 			<tag>Info</tag>
 		</tags>
@@ -74,7 +74,7 @@
 
 	<channel-type id="gw-is-firmware-update-supported">
 		<item-type>Switch</item-type>
-		<label>Is firmware update supported</label>
+		<label>Firmware Upd Supported</label>
 		<description>Is firmware update supported</description>
 		<tags>
 			<tag>Switch</tag>
@@ -85,7 +85,7 @@
 
 	<channel-type id="gw-is-in-error-state">
 		<item-type>Switch</item-type>
-		<label>Is in error state</label>
+		<label>Error State</label>
 		<description>Is in error state</description>
 		<tags>
 			<tag>Switch</tag>
@@ -96,7 +96,7 @@
 
 	<channel-type id="gw-led-enabled">
 		<item-type>Switch</item-type>
-		<label>Led enabled</label>
+		<label>Led Enabled</label>
 		<description>Led enabled</description>
 		<tags>
 			<tag>Switch</tag>
@@ -107,7 +107,7 @@
 
 	<channel-type id="gw-region-code">
 		<item-type>String</item-type>
-		<label>Region code</label>
+		<label>Region Code</label>
 		<description>Region code</description>
 		<tags>
 			<tag>Info</tag>
@@ -117,7 +117,7 @@
 
 	<channel-type id="gw-serial-number">
 		<item-type>String</item-type>
-		<label>Serial number</label>
+		<label>Serial Number</label>
 		<description>Serial number</description>
 		<tags>
 			<tag>Info</tag>
@@ -138,7 +138,7 @@
 
 	<channel-type id="gw-time-zone">
 		<item-type>String</item-type>
-		<label>Time zone</label>
+		<label>Time Zone</label>
 		<description>Time zone</description>
 		<tags>
 			<tag>Info</tag>
@@ -149,7 +149,7 @@
 
 	<channel-type id="gw-wifi-connection-ssid">
 		<item-type>String</item-type>
-		<label>WiFi connection SSID</label>
+		<label>WiFi Conn SSID</label>
 		<description>WiFi connection SSID</description>
 		<category>network</category>
 		<tags>
@@ -160,7 +160,7 @@
 
 	<channel-type id="gw-wifi-connection-strength">
 		<item-type>Number</item-type>
-		<label>Wifi connection strength</label>
+		<label>Wifi Conn Strength</label>
 		<description>Wifi connection strength</description>
 		<category>QualityOfService</category>
 		<tags>
@@ -172,7 +172,7 @@
 
 	<channel-type id="gw-model-info">
 		<item-type>String</item-type>
-		<label>Model info</label>
+		<label>Model Info</label>
 		<description>Model info</description>
 		<tags>
 			<tag>Info</tag>
@@ -182,8 +182,8 @@
 
 	<channel-type id="gw-ip-address">
 		<item-type>String</item-type>
-		<label>IP address</label>
-		<description>IP address</description>
+		<label>IP Address</label>
+		<description>IP Address</description>
 		<category>network</category>
 		<tags>
 			<tag>Info</tag>
@@ -193,7 +193,7 @@
 
 	<channel-type id="gw-mac-address">
 		<item-type>String</item-type>
-		<label>MAC address</label>
+		<label>MAC Address</label>
 		<description>MAC address</description>
 		<category>network</category>
 		<tags>

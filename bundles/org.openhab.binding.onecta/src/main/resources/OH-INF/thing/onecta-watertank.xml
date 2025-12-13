@@ -84,7 +84,7 @@
 
 	<channel-type id="hwt-error-code">
 		<item-type>String</item-type>
-		<label>Error code</label>
+		<label>Error Code</label>
 		<description>Error code</description>
 		<tags>
 			<tag>Info</tag>
@@ -94,7 +94,7 @@
 
 	<channel-type id="hwt-is-holiday-mode-active">
 		<item-type>Switch</item-type>
-		<label>Is holiday mode active</label>
+		<label>Holiday Mode</label>
 		<description>Is holiday mode active</description>
 		<tags>
 			<tag>Switch</tag>
@@ -105,7 +105,7 @@
 
 	<channel-type id="hwt-is-in-error-state">
 		<item-type>Switch</item-type>
-		<label>Is in error state</label>
+		<label>Error State</label>
 		<description>Is in error state</description>
 		<tags>
 			<tag>Switch</tag>
@@ -116,7 +116,7 @@
 
 	<channel-type id="hwt-is-in-installer-state">
 		<item-type>Switch</item-type>
-		<label>Is in installer state</label>
+		<label>Installer State</label>
 		<description>Is in installer state</description>
 		<tags>
 			<tag>Switch</tag>
@@ -127,7 +127,7 @@
 
 	<channel-type id="hwt-is-in-emergency-state">
 		<item-type>Switch</item-type>
-		<label>Is in emergency state</label>
+		<label>Emergency State</label>
 		<description>Is in emergency state</description>
 		<tags>
 			<tag>Switch</tag>
@@ -138,7 +138,7 @@
 
 	<channel-type id="hwt-is-in-warning-state">
 		<item-type>Switch</item-type>
-		<label>Is in warning State</label>
+		<label>Warning State</label>
 		<description>Is in warning State</description>
 		<tags>
 			<tag>Switch</tag>
@@ -160,7 +160,7 @@
 
 	<channel-type id="hwt-heatup-mode">
 		<item-type>String</item-type>
-		<label>Heatup mode</label>
+		<label>Heatup Mode</label>
 		<description>Heatup mode</description>
 		<tags>
 			<tag>Control</tag>
@@ -178,7 +178,7 @@
 
 	<channel-type id="hwt-tank-temperature">
 		<item-type unitHint="°C">Number:Temperature</item-type>
-		<label>Tank temperature</label>
+		<label>Tank Temperature</label>
 		<description>Tank temperature</description>
 		<category>Temperature</category>
 		<tags>
@@ -190,7 +190,7 @@
 
 	<channel-type id="hwt-operation-mode">
 		<item-type>String</item-type>
-		<label>Operation mode</label>
+		<label>Operation Mode</label>
 		<description>Operation mode</description>
 		<tags>
 			<tag>Control</tag>
@@ -205,7 +205,7 @@
 
 	<channel-type id="hwt-setpoint-mode">
 		<item-type>String</item-type>
-		<label>Setpoint mode</label>
+		<label>Setpoint Mode</label>
 		<description>Set point mode</description>
 		<tags>
 			<tag>Control</tag>
@@ -233,7 +233,7 @@
 
 	<channel-type id="hwt-settemp-min">
 		<item-type unitHint="°C">Number:Temperature</item-type>
-		<label>Set Point Min value</label>
+		<label>Setpoint Min Value</label>
 		<description>The set point min temperature</description>
 		<category>Temperature</category>
 		<tags>
@@ -245,7 +245,7 @@
 
 	<channel-type id="hwt-settemp-max">
 		<item-type unitHint="°C">Number:Temperature</item-type>
-		<label>Set Point Max value</label>
+		<label>Setpoint Max Value</label>
 		<description>The set point max temperature</description>
 		<category>Temperature</category>
 		<tags>
@@ -343,7 +343,7 @@
 
 	<channel-type id="hwt-energy-heating-month-0" advanced="true">
 		<item-type unitHint="kWh">Number:Energy</item-type>
-		<label>Energy heating last year (00) January</label>
+		<label>Energy Heating Jan-1</label>
 		<description>The energy usage for heating last year January</description>
 		<category>Energy</category>
 		<tags>
@@ -354,7 +354,7 @@
 	</channel-type>
 	<channel-type id="hwt-energy-heating-month-1" advanced="true">
 		<item-type unitHint="kWh">Number:Energy</item-type>
-		<label>Energy heating last year (01) February</label>
+		<label>Energy Heating Feb-1</label>
 		<description>The energy usage for heating last year February</description>
 		<category>Energy</category>
 		<tags>
@@ -365,7 +365,7 @@
 	</channel-type>
 	<channel-type id="hwt-energy-heating-month-2" advanced="true">
 		<item-type unitHint="kWh">Number:Energy</item-type>
-		<label>Energy heating last year (02) March</label>
+		<label>Energy Heating Mar-1</label>
 		<description>The energy usage for heating last year March</description>
 		<category>Energy</category>
 		<tags>
@@ -376,7 +376,7 @@
 	</channel-type>
 	<channel-type id="hwt-energy-heating-month-3" advanced="true">
 		<item-type unitHint="kWh">Number:Energy</item-type>
-		<label>Energy heating last year (03) April</label>
+		<label>Energy Heating Apr-1</label>
 		<description>The energy usage for heating last year April</description>
 		<category>Energy</category>
 		<tags>
@@ -387,7 +387,7 @@
 	</channel-type>
 	<channel-type id="hwt-energy-heating-month-4" advanced="true">
 		<item-type unitHint="kWh">Number:Energy</item-type>
-		<label>Energy heating last year (04) May</label>
+		<label>Energy Heating May-1</label>
 		<description>The energy usage for heating last year May</description>
 		<category>Energy</category>
 		<tags>
@@ -398,7 +398,7 @@
 	</channel-type>
 	<channel-type id="hwt-energy-heating-month-5" advanced="true">
 		<item-type unitHint="kWh">Number:Energy</item-type>
-		<label>Energy heating last year (05) June</label>
+		<label>Energy Heating Jun-1</label>
 		<description>The energy usage for heating last year June</description>
 		<category>Energy</category>
 		<tags>
@@ -409,7 +409,7 @@
 	</channel-type>
 	<channel-type id="hwt-energy-heating-month-6" advanced="true">
 		<item-type unitHint="kWh">Number:Energy</item-type>
-		<label>Energy heating last year (06) July</label>
+		<label>Energy Heating Jul-1</label>
 		<description>The energy usage for heating last year July</description>
 		<category>Energy</category>
 		<tags>
@@ -420,7 +420,7 @@
 	</channel-type>
 	<channel-type id="hwt-energy-heating-month-7" advanced="true">
 		<item-type unitHint="kWh">Number:Energy</item-type>
-		<label>Energy heating last year (07) August</label>
+		<label>Energy Heating Aug-1</label>
 		<description>The energy usage for heating last year August</description>
 		<category>Energy</category>
 		<tags>
@@ -431,7 +431,7 @@
 	</channel-type>
 	<channel-type id="hwt-energy-heating-month-8" advanced="true">
 		<item-type unitHint="kWh">Number:Energy</item-type>
-		<label>Energy heating last year (08) September</label>
+		<label>Energy Heating Sep-1</label>
 		<description>The energy usage for heating last year September</description>
 		<category>Energy</category>
 		<tags>
@@ -442,7 +442,7 @@
 	</channel-type>
 	<channel-type id="hwt-energy-heating-month-9" advanced="true">
 		<item-type unitHint="kWh">Number:Energy</item-type>
-		<label>Energy heating last year (09) October</label>
+		<label>Energy Heating Oct-1</label>
 		<description>The energy usage for heating last year October</description>
 		<category>Energy</category>
 		<tags>
@@ -453,7 +453,7 @@
 	</channel-type>
 	<channel-type id="hwt-energy-heating-month-10" advanced="true">
 		<item-type unitHint="kWh">Number:Energy</item-type>
-		<label>Energy heating last year (10) November</label>
+		<label>Energy Heating Nov-1</label>
 		<description>The energy usage for heating last year November</description>
 		<category>Energy</category>
 		<tags>
@@ -464,7 +464,7 @@
 	</channel-type>
 	<channel-type id="hwt-energy-heating-month-11" advanced="true">
 		<item-type unitHint="kWh">Number:Energy</item-type>
-		<label>Energy heating last year (11) December</label>
+		<label>Energy Heating Dec-1</label>
 		<description>The energy usage for heating last year December</description>
 		<category>Energy</category>
 		<tags>
@@ -475,7 +475,7 @@
 	</channel-type>
 	<channel-type id="hwt-energy-heating-month-12" advanced="true">
 		<item-type unitHint="kWh">Number:Energy</item-type>
-		<label>Energy heating current year (00) January</label>
+		<label>Energy Heating Jan</label>
 		<description>The energy usage for heating current year January</description>
 		<category>Energy</category>
 		<tags>
@@ -486,7 +486,7 @@
 	</channel-type>
 	<channel-type id="hwt-energy-heating-month-13" advanced="true">
 		<item-type unitHint="kWh">Number:Energy</item-type>
-		<label>Energy heating current year (01) February</label>
+		<label>Energy Heating Feb</label>
 		<description>The energy usage for heating current year February</description>
 		<category>Energy</category>
 		<tags>
@@ -497,7 +497,7 @@
 	</channel-type>
 	<channel-type id="hwt-energy-heating-month-14" advanced="true">
 		<item-type unitHint="kWh">Number:Energy</item-type>
-		<label>Energy heating current year (02) March</label>
+		<label>Energy Heating Mar</label>
 		<description>The energy usage for heating current year March</description>
 		<category>Energy</category>
 		<tags>
@@ -508,7 +508,7 @@
 	</channel-type>
 	<channel-type id="hwt-energy-heating-month-15" advanced="true">
 		<item-type unitHint="kWh">Number:Energy</item-type>
-		<label>Energy heating current year (03) April</label>
+		<label>Energy Heating Apr</label>
 		<description>The energy usage for heating current year April</description>
 		<category>Energy</category>
 		<tags>
@@ -519,7 +519,7 @@
 	</channel-type>
 	<channel-type id="hwt-energy-heating-month-16" advanced="true">
 		<item-type unitHint="kWh">Number:Energy</item-type>
-		<label>Energy heating current year (04) May</label>
+		<label>Energy Heating May</label>
 		<description>The energy usage for heating current year May</description>
 		<category>Energy</category>
 		<tags>
@@ -530,7 +530,7 @@
 	</channel-type>
 	<channel-type id="hwt-energy-heating-month-17" advanced="true">
 		<item-type unitHint="kWh">Number:Energy</item-type>
-		<label>Energy heating current year (05) June</label>
+		<label>Energy Heating Jun</label>
 		<description>The energy usage for heating current year June</description>
 		<category>Energy</category>
 		<tags>
@@ -541,7 +541,7 @@
 	</channel-type>
 	<channel-type id="hwt-energy-heating-month-18" advanced="true">
 		<item-type unitHint="kWh">Number:Energy</item-type>
-		<label>Energy heating current year (06) July</label>
+		<label>Energy Heating Jul</label>
 		<description>The energy usage for heating current year July</description>
 		<category>Energy</category>
 		<tags>
@@ -552,7 +552,7 @@
 	</channel-type>
 	<channel-type id="hwt-energy-heating-month-19" advanced="true">
 		<item-type unitHint="kWh">Number:Energy</item-type>
-		<label>Energy heating current year (07) August</label>
+		<label>Energy Heating Aug</label>
 		<description>The energy usage for heating current year August</description>
 		<category>Energy</category>
 		<tags>
@@ -563,7 +563,7 @@
 	</channel-type>
 	<channel-type id="hwt-energy-heating-month-20" advanced="true">
 		<item-type unitHint="kWh">Number:Energy</item-type>
-		<label>Energy heating current year (08) September</label>
+		<label>Energy Heating Sep</label>
 		<description>The energy usage for heating current year September</description>
 		<category>Energy</category>
 		<tags>
@@ -574,7 +574,7 @@
 	</channel-type>
 	<channel-type id="hwt-energy-heating-month-21" advanced="true">
 		<item-type unitHint="kWh">Number:Energy</item-type>
-		<label>Energy heating current year (09) October</label>
+		<label>Energy Heating Oct</label>
 		<description>The energy usage for heating current year October</description>
 		<category>Energy</category>
 		<tags>
@@ -585,7 +585,7 @@
 	</channel-type>
 	<channel-type id="hwt-energy-heating-month-22" advanced="true">
 		<item-type unitHint="kWh">Number:Energy</item-type>
-		<label>Energy heating current year (10) November</label>
+		<label>Energy Heating Nov</label>
 		<description>The energy usage for heating current year November</description>
 		<category>Energy</category>
 		<tags>
@@ -596,7 +596,7 @@
 	</channel-type>
 	<channel-type id="hwt-energy-heating-month-23" advanced="true">
 		<item-type unitHint="kWh">Number:Energy</item-type>
-		<label>Energy heating current year (11) December</label>
+		<label>Energy Heating Dec</label>
 		<description>The energy usage for heating current year December</description>
 		<category>Energy</category>
 		<tags>
@@ -608,7 +608,7 @@
 
 	<channel-type id="hwt-energy-heating-current-day">
 		<item-type unitHint="kWh">Number:Energy</item-type>
-		<label>Energy Heating current day total</label>
+		<label>Energy Heating Day</label>
 		<description>The energy usage for heating current day total</description>
 		<category>Energy</category>
 		<tags>
@@ -619,7 +619,7 @@
 	</channel-type>
 	<channel-type id="hwt-energy-heating-current-year">
 		<item-type unitHint="kWh">Number:Energy</item-type>
-		<label>Energy Heating current year total</label>
+		<label>Energy Heating Year</label>
 		<description>The energy usage for heating current year total</description>
 		<category>Energy</category>
 		<tags>
@@ -631,7 +631,7 @@
 
 	<channel-type id="hwt-energy-heating-week-0" advanced="true">
 		<item-type unitHint="kWh">Number:Energy</item-type>
-		<label>Energy heating last week (0) Monday</label>
+		<label>Energy Heating Mon-1</label>
 		<description>The energy usage for heating last week Monday</description>
 		<category>Energy</category>
 		<tags>
@@ -642,7 +642,7 @@
 	</channel-type>
 	<channel-type id="hwt-energy-heating-week-1" advanced="true">
 		<item-type unitHint="kWh">Number:Energy</item-type>
-		<label>Energy heating last week (1) Tuesday</label>
+		<label>Energy Heating Tue-1</label>
 		<description>The energy usage for heating last week Tuesday</description>
 		<category>Energy</category>
 		<tags>
@@ -653,7 +653,7 @@
 	</channel-type>
 	<channel-type id="hwt-energy-heating-week-2" advanced="true">
 		<item-type unitHint="kWh">Number:Energy</item-type>
-		<label>Energy heating last week (2) Wednesday</label>
+		<label>Energy Heating Wed-1</label>
 		<description>The energy usage for heating last week Wednesday</description>
 		<category>Energy</category>
 		<tags>
@@ -664,7 +664,7 @@
 	</channel-type>
 	<channel-type id="hwt-energy-heating-week-3" advanced="true">
 		<item-type unitHint="kWh">Number:Energy</item-type>
-		<label>Energy heating last week (3) Thursday</label>
+		<label>Energy Heating Thu-1</label>
 		<description>The energy usage for heating last week Thursday</description>
 		<category>Energy</category>
 		<tags>
@@ -675,7 +675,7 @@
 	</channel-type>
 	<channel-type id="hwt-energy-heating-week-4" advanced="true">
 		<item-type unitHint="kWh">Number:Energy</item-type>
-		<label>Energy heating last week (4) Friday</label>
+		<label>Energy Heating Fri-1</label>
 		<description>The energy usage for heating last week Friday</description>
 		<category>Energy</category>
 		<tags>
@@ -686,7 +686,7 @@
 	</channel-type>
 	<channel-type id="hwt-energy-heating-week-5" advanced="true">
 		<item-type unitHint="kWh">Number:Energy</item-type>
-		<label>Energy heating last week (5) Saturday</label>
+		<label>Energy Heating Sat-1</label>
 		<description>The energy usage for heating last week Saturday</description>
 		<category>Energy</category>
 		<tags>
@@ -697,7 +697,7 @@
 	</channel-type>
 	<channel-type id="hwt-energy-heating-week-6" advanced="true">
 		<item-type unitHint="kWh">Number:Energy</item-type>
-		<label>Energy heating last week (6) Sunday</label>
+		<label>Energy Heating Sun-1</label>
 		<description>The energy usage for heating last week Sunday</description>
 		<category>Energy</category>
 		<tags>
@@ -709,7 +709,7 @@
 
 	<channel-type id="hwt-energy-heating-week-7" advanced="true">
 		<item-type unitHint="kWh">Number:Energy</item-type>
-		<label>Energy heating current week (0) Monday</label>
+		<label>Energy Heating Mon</label>
 		<description>The energy usage for heating current week Monday</description>
 		<category>Energy</category>
 		<tags>
@@ -720,7 +720,7 @@
 	</channel-type>
 	<channel-type id="hwt-energy-heating-week-8" advanced="true">
 		<item-type unitHint="kWh">Number:Energy</item-type>
-		<label>Energy heating current week (1) Tuesday</label>
+		<label>Energy Heating Tue</label>
 		<description>The energy usage for heating current week Tuesday</description>
 		<category>Energy</category>
 		<tags>
@@ -731,7 +731,7 @@
 	</channel-type>
 	<channel-type id="hwt-energy-heating-week-9" advanced="true">
 		<item-type unitHint="kWh">Number:Energy</item-type>
-		<label>Energy heating current week (2) Wednesday</label>
+		<label>Energy Heating Wed</label>
 		<description>The energy usage for heating current week Wednesday</description>
 		<category>Energy</category>
 		<tags>
@@ -742,7 +742,7 @@
 	</channel-type>
 	<channel-type id="hwt-energy-heating-week-10" advanced="true">
 		<item-type unitHint="kWh">Number:Energy</item-type>
-		<label>Energy heating current week (3) Thursday</label>
+		<label>Energy Heating Thu</label>
 		<description>The energy usage for heating current week Thursday</description>
 		<category>Energy</category>
 		<tags>
@@ -753,7 +753,7 @@
 	</channel-type>
 	<channel-type id="hwt-energy-heating-week-11" advanced="true">
 		<item-type unitHint="kWh">Number:Energy</item-type>
-		<label>Energy heating current week (4) Friday</label>
+		<label>Energy Heating Fri</label>
 		<description>The energy usage for heating current week Friday</description>
 		<category>Energy</category>
 		<tags>
@@ -764,7 +764,7 @@
 	</channel-type>
 	<channel-type id="hwt-energy-heating-week-12" advanced="true">
 		<item-type unitHint="kWh">Number:Energy</item-type>
-		<label>Energy heating current week (5) Saturday</label>
+		<label>Energy Heating Sat</label>
 		<description>The energy usage for heating current week Saturday</description>
 		<category>Energy</category>
 		<tags>
@@ -775,7 +775,7 @@
 	</channel-type>
 	<channel-type id="hwt-energy-heating-week-13" advanced="true">
 		<item-type unitHint="kWh">Number:Energy</item-type>
-		<label>Energy heating current week (6) Sunday</label>
+		<label>Energy Heating Sun</label>
 		<description>The energy usage for heating current week Sunday</description>
 		<category>Energy</category>
 		<tags>
@@ -787,7 +787,7 @@
 
 	<channel-type id="hwt-energy-heating-day-0" advanced="true">
 		<item-type unitHint="kWh">Number:Energy</item-type>
-		<label>Energy yesterday (00:00 - 02:00)</label>
+		<label>Energy Heating 00:00-1</label>
 		<description>The energy usage for heating yesterday (00:00 - 02:00)</description>
 		<category>Energy</category>
 		<tags>
@@ -798,7 +798,7 @@
 	</channel-type>
 	<channel-type id="hwt-energy-heating-day-1" advanced="true">
 		<item-type unitHint="kWh">Number:Energy</item-type>
-		<label>Energy heating yesterday (02:00 - 04:00)</label>
+		<label>Energy Heating 02:00-1</label>
 		<description>The energy usage for heating yesterday (02:00 - 04:00)</description>
 		<category>Energy</category>
 		<tags>
@@ -809,7 +809,7 @@
 	</channel-type>
 	<channel-type id="hwt-energy-heating-day-2" advanced="true">
 		<item-type unitHint="kWh">Number:Energy</item-type>
-		<label>Energy heating yesterday (04:00 - 06:00)</label>
+		<label>Energy Heating 04:00-1</label>
 		<description>The energy usage for heating yesterday (04:00 - 06:00)</description>
 		<category>Energy</category>
 		<tags>
@@ -820,7 +820,7 @@
 	</channel-type>
 	<channel-type id="hwt-energy-heating-day-3" advanced="true">
 		<item-type unitHint="kWh">Number:Energy</item-type>
-		<label>Energy heating yesterday (06:00 - 08:00)</label>
+		<label>Energy Heating 06:00-1</label>
 		<description>The energy usage for heating yesterday (06:00 - 08:00)</description>
 		<category>Energy</category>
 		<tags>
@@ -831,7 +831,7 @@
 	</channel-type>
 	<channel-type id="hwt-energy-heating-day-4" advanced="true">
 		<item-type unitHint="kWh">Number:Energy</item-type>
-		<label>Energy heating yesterday (08:00 - 10:00)</label>
+		<label>Energy Heating 08:00-1</label>
 		<description>The energy usage for heating yesterday (08:00 - 10:00)</description>
 		<category>Energy</category>
 		<tags>
@@ -842,7 +842,7 @@
 	</channel-type>
 	<channel-type id="hwt-energy-heating-day-5" advanced="true">
 		<item-type unitHint="kWh">Number:Energy</item-type>
-		<label>Energy heating yesterday (10:00 - 12:00)</label>
+		<label>Energy Heating 10:00-1</label>
 		<description>The energy usage for heating yesterday (10:00 - 12:00)</description>
 		<category>Energy</category>
 		<tags>
@@ -853,7 +853,7 @@
 	</channel-type>
 	<channel-type id="hwt-energy-heating-day-6" advanced="true">
 		<item-type unitHint="kWh">Number:Energy</item-type>
-		<label>Energy heating yesterday (12:00 - 14:00)</label>
+		<label>Energy Heating 12:00-1</label>
 		<description>The energy usage for heating yesterday (12:00 - 14:00)</description>
 		<category>Energy</category>
 		<tags>
@@ -864,7 +864,7 @@
 	</channel-type>
 	<channel-type id="hwt-energy-heating-day-7" advanced="true">
 		<item-type unitHint="kWh">Number:Energy</item-type>
-		<label>Energy heating yesterday (14:00 - 16:00)</label>
+		<label>Energy Heating 14:00-1</label>
 		<description>The energy usage for heating yesterday (14:00 - 16:00)</description>
 		<category>Energy</category>
 		<tags>
@@ -875,7 +875,7 @@
 	</channel-type>
 	<channel-type id="hwt-energy-heating-day-8" advanced="true">
 		<item-type unitHint="kWh">Number:Energy</item-type>
-		<label>Energy heating yesterday (16:00 - 18:00)</label>
+		<label>Energy Heating 16:00-1</label>
 		<description>The energy usage for heating yesterday (16:00 - 18:00)</description>
 		<category>Energy</category>
 		<tags>
@@ -886,7 +886,7 @@
 	</channel-type>
 	<channel-type id="hwt-energy-heating-day-9" advanced="true">
 		<item-type unitHint="kWh">Number:Energy</item-type>
-		<label>Energy heating yesterday (18:00 - 20:00)</label>
+		<label>Energy Heating 18:00-1</label>
 		<description>The energy usage for heating yesterday (18:00 - 20:00)</description>
 		<category>Energy</category>
 		<tags>
@@ -897,7 +897,7 @@
 	</channel-type>
 	<channel-type id="hwt-energy-heating-day-10" advanced="true">
 		<item-type unitHint="kWh">Number:Energy</item-type>
-		<label>Energy heating yesterday (20:00 - 22:00)</label>
+		<label>Energy Heating 20:00-1</label>
 		<description>The energy usage for heating yesterday (20:00 - 22:00)</description>
 		<category>Energy</category>
 		<tags>
@@ -908,7 +908,7 @@
 	</channel-type>
 	<channel-type id="hwt-energy-heating-day-11" advanced="true">
 		<item-type unitHint="kWh">Number:Energy</item-type>
-		<label>Energy heating yesterday (22:00 - 24:00)</label>
+		<label>Energy Heating 22:00-1</label>
 		<description>The energy usage for heating yesterday (22:00 - 24:00)</description>
 		<category>Energy</category>
 		<tags>
@@ -919,7 +919,7 @@
 	</channel-type>
 	<channel-type id="hwt-energy-heating-day-12" advanced="true">
 		<item-type unitHint="kWh">Number:Energy</item-type>
-		<label>Energy heating Today (00:00 - 02:00)</label>
+		<label>Energy Heating 00:00</label>
 		<description>The energy usage for heating today (00:00 - 02:00)</description>
 		<category>Energy</category>
 		<tags>
@@ -930,7 +930,7 @@
 	</channel-type>
 	<channel-type id="hwt-energy-heating-day-13" advanced="true">
 		<item-type unitHint="kWh">Number:Energy</item-type>
-		<label>Energy heating Today (02:00 - 04:00)</label>
+		<label>Energy Heating 02:00</label>
 		<description>The energy usage for heating today (02:00 - 04:00)</description>
 		<category>Energy</category>
 		<tags>
@@ -941,7 +941,7 @@
 	</channel-type>
 	<channel-type id="hwt-energy-heating-day-14" advanced="true">
 		<item-type unitHint="kWh">Number:Energy</item-type>
-		<label>Energy heating Today (04:00 - 06:00)</label>
+		<label>Energy Heating 04:00</label>
 		<description>The energy usage for heating today (04:00 - 06:00)</description>
 		<category>Energy</category>
 		<tags>
@@ -952,7 +952,7 @@
 	</channel-type>
 	<channel-type id="hwt-energy-heating-day-15" advanced="true">
 		<item-type unitHint="kWh">Number:Energy</item-type>
-		<label>Energy heating Today (06:00 - 08:00)</label>
+		<label>Energy Heating 06:00</label>
 		<description>The energy usage for heating today (06:00 - 08:00)</description>
 		<category>Energy</category>
 		<tags>
@@ -963,7 +963,7 @@
 	</channel-type>
 	<channel-type id="hwt-energy-heating-day-16" advanced="true">
 		<item-type unitHint="kWh">Number:Energy</item-type>
-		<label>Energy heating Today (08:00 - 10:00)</label>
+		<label>Energy Heating 08:00</label>
 		<description>The energy usage for heating today (08:00 - 10:00)</description>
 		<category>Energy</category>
 		<tags>
@@ -974,7 +974,7 @@
 	</channel-type>
 	<channel-type id="hwt-energy-heating-day-17" advanced="true">
 		<item-type unitHint="kWh">Number:Energy</item-type>
-		<label>Energy heating Today (10:00 - 12:00)</label>
+		<label>Energy Heating 10:00</label>
 		<description>The energy usage for heating today (10:00 - 12:00)</description>
 		<category>Energy</category>
 		<tags>
@@ -985,7 +985,7 @@
 	</channel-type>
 	<channel-type id="hwt-energy-heating-day-18" advanced="true">
 		<item-type unitHint="kWh">Number:Energy</item-type>
-		<label>Energy heating Today (12:00 - 14:00)</label>
+		<label>Energy Heating 12:00</label>
 		<description>The energy usage for heating today (12:00 - 14:00)</description>
 		<category>Energy</category>
 		<tags>
@@ -996,7 +996,7 @@
 	</channel-type>
 	<channel-type id="hwt-energy-heating-day-19" advanced="true">
 		<item-type unitHint="kWh">Number:Energy</item-type>
-		<label>Energy heating Today (14:00 - 16:00)</label>
+		<label>Energy Heating 14:00</label>
 		<description>The energy usage for heating today (14:00 - 16:00)</description>
 		<category>Energy</category>
 		<tags>
@@ -1007,7 +1007,7 @@
 	</channel-type>
 	<channel-type id="hwt-energy-heating-day-20" advanced="true">
 		<item-type unitHint="kWh">Number:Energy</item-type>
-		<label>Energy heating Today (16:00 - 18:00)</label>
+		<label>Energy Heating 16:00</label>
 		<description>The energy usage for heating today (16:00 - 18:00)</description>
 		<category>Energy</category>
 		<tags>
@@ -1018,7 +1018,7 @@
 	</channel-type>
 	<channel-type id="hwt-energy-heating-day-21" advanced="true">
 		<item-type unitHint="kWh">Number:Energy</item-type>
-		<label>Energy heating Today (18:00 - 20:00)</label>
+		<label>Energy Heating 18:00</label>
 		<description>The energy usage for heating today (18:00 - 20:00)</description>
 		<category>Energy</category>
 		<tags>
@@ -1029,7 +1029,7 @@
 	</channel-type>
 	<channel-type id="hwt-energy-heating-day-22" advanced="true">
 		<item-type unitHint="kWh">Number:Energy</item-type>
-		<label>Energy heating Today (20:00 - 22:00)</label>
+		<label>Energy Heating 20:00</label>
 		<description>The energy usage for heating today (20:00 - 22:00)</description>
 		<category>Energy</category>
 		<tags>
@@ -1040,7 +1040,7 @@
 	</channel-type>
 	<channel-type id="hwt-energy-heating-day-23" advanced="true">
 		<item-type unitHint="kWh">Number:Energy</item-type>
-		<label>Energy heating Today (22:00 - 24:00)</label>
+		<label>Energy Heating 22:00</label>
 		<description>The energy usage for heating today (22:00 - 24:00)</description>
 		<category>Energy</category>
 		<tags>
@@ -1052,7 +1052,7 @@
 
 	<channel-type id="hwt-energyheatingthisweek" advanced="true">
 		<item-type unitHint="kWh">Number:Energy</item-type>
-		<label>Energy heating This Week</label>
+		<label>Energy Heating Week</label>
 		<description>The energy usage for heating this week</description>
 		<category>Energy</category>
 		<tags>
@@ -1064,7 +1064,7 @@
 
 	<channel-type id="hwt-energyheatinglastweek" advanced="true">
 		<item-type unitHint="kWh">Number:Energy</item-type>
-		<label>Energy heating Last Week</label>
+		<label>Energy Heating Week-1</label>
 		<description>The energy usage for heating last week</description>
 		<category>Energy</category>
 		<tags>
@@ -1076,7 +1076,7 @@
 
 	<channel-type id="hwt-energy-heating-current-year-1" advanced="true">
 		<item-type unitHint="kWh">Number:Energy</item-type>
-		<label>Energy Heating Current Year January</label>
+		<label>Energy Heating Jan</label>
 		<description>The energy usage for heating this year January</description>
 		<category>Energy</category>
 		<tags>
@@ -1087,7 +1087,7 @@
 	</channel-type>
 	<channel-type id="hwt-energy-heating-current-year-2" advanced="true">
 		<item-type unitHint="kWh">Number:Energy</item-type>
-		<label>Energy Heating Current Year February</label>
+		<label>Energy Heating Feb</label>
 		<description>The energy usage for heating this year February</description>
 		<category>Energy</category>
 		<tags>
@@ -1098,7 +1098,7 @@
 	</channel-type>
 	<channel-type id="hwt-energy-heating-current-year-3" advanced="true">
 		<item-type unitHint="kWh">Number:Energy</item-type>
-		<label>Energy Heating Current Year March</label>
+		<label>Energy Heating Mar</label>
 		<description>The energy usage for heating this year March</description>
 		<category>Energy</category>
 		<tags>
@@ -1109,7 +1109,7 @@
 	</channel-type>
 	<channel-type id="hwt-energy-heating-current-year-4" advanced="true">
 		<item-type unitHint="kWh">Number:Energy</item-type>
-		<label>Energy Heating Current Year April</label>
+		<label>Energy Heating Apr</label>
 		<description>The energy usage for heating this year April</description>
 		<category>Energy</category>
 		<tags>
@@ -1120,7 +1120,7 @@
 	</channel-type>
 	<channel-type id="hwt-energy-heating-current-year-5" advanced="true">
 		<item-type unitHint="kWh">Number:Energy</item-type>
-		<label>Energy Heating Current Year May</label>
+		<label>Energy Heating May</label>
 		<description>The energy usage for heating this year May</description>
 		<category>Energy</category>
 		<tags>
@@ -1131,7 +1131,7 @@
 	</channel-type>
 	<channel-type id="hwt-energy-heating-current-year-6" advanced="true">
 		<item-type unitHint="kWh">Number:Energy</item-type>
-		<label>Energy Heating Current Year June</label>
+		<label>Energy Heating Jun</label>
 		<description>The energy usage for heating this year June</description>
 		<category>Energy</category>
 		<tags>
@@ -1142,7 +1142,7 @@
 	</channel-type>
 	<channel-type id="hwt-energy-heating-current-year-7" advanced="true">
 		<item-type unitHint="kWh">Number:Energy</item-type>
-		<label>Energy Heating Current Year July</label>
+		<label>Energy Heating Jul</label>
 		<description>The energy usage for heating this year July</description>
 		<category>Energy</category>
 		<tags>
@@ -1153,7 +1153,7 @@
 	</channel-type>
 	<channel-type id="hwt-energy-heating-current-year-8" advanced="true">
 		<item-type unitHint="kWh">Number:Energy</item-type>
-		<label>Energy Heating Current Year August</label>
+		<label>Energy Heating Aug</label>
 		<description>The energy usage for heating this year August</description>
 		<category>Energy</category>
 		<tags>
@@ -1164,7 +1164,7 @@
 	</channel-type>
 	<channel-type id="hwt-energy-heating-current-year-9" advanced="true">
 		<item-type unitHint="kWh">Number:Energy</item-type>
-		<label>Energy Heating Current Year September</label>
+		<label>Energy Heating Sep</label>
 		<description>The energy usage for heating this year September</description>
 		<category>Energy</category>
 		<tags>
@@ -1175,7 +1175,7 @@
 	</channel-type>
 	<channel-type id="hwt-energy-heating-current-year-10" advanced="true">
 		<item-type unitHint="kWh">Number:Energy</item-type>
-		<label>Energy Heating Current Year October</label>
+		<label>Energy Heating Oct</label>
 		<description>The energy usage for heating this year October</description>
 		<category>Energy</category>
 		<tags>
@@ -1186,7 +1186,7 @@
 	</channel-type>
 	<channel-type id="hwt-energy-heating-current-year-11" advanced="true">
 		<item-type unitHint="kWh">Number:Energy</item-type>
-		<label>Energy Heating Current Year November</label>
+		<label>Energy Heating Nov</label>
 		<description>The energy usage for heating this year November</description>
 		<category>Energy</category>
 		<tags>
@@ -1197,7 +1197,7 @@
 	</channel-type>
 	<channel-type id="hwt-energy-heating-current-year-12" advanced="true">
 		<item-type unitHint="kWh">Number:Energy</item-type>
-		<label>Energy Heating Current Year December</label>
+		<label>Energy Heating Dec</label>
 		<description>The energy usage for heating this year December</description>
 		<category>Energy</category>
 		<tags>
@@ -1206,140 +1206,4 @@
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
-	<channel-type id="hwt-energy-heating-current-year-1" advanced="true">
-		<item-type unitHint="kWh">Number:Energy</item-type>
-		<label>Energy heating Current Year January</label>
-		<description>The energy usage for heating this year January</description>
-		<category>Energy</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
-		</tags>
-		<state readOnly="true" pattern="%.1f %unit%"/>
-	</channel-type>
-	<channel-type id="hwt-energy-heating-current-year-2" advanced="true">
-		<item-type unitHint="kWh">Number:Energy</item-type>
-		<label>Energy heating Current Year February</label>
-		<description>The energy usage for heating this year February</description>
-		<category>Energy</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
-		</tags>
-		<state readOnly="true" pattern="%.1f %unit%"/>
-	</channel-type>
-	<channel-type id="hwt-energy-heating-current-year-3" advanced="true">
-		<item-type unitHint="kWh">Number:Energy</item-type>
-		<label>Energy heating Current Year March</label>
-		<description>The energy usage for heating this year March</description>
-		<category>Energy</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
-		</tags>
-		<state readOnly="true" pattern="%.1f %unit%"/>
-	</channel-type>
-	<channel-type id="hwt-energy-heating-current-year-4" advanced="true">
-		<item-type unitHint="kWh">Number:Energy</item-type>
-		<label>Energy heating Current Year April</label>
-		<description>The energy usage for heating this year April</description>
-		<category>Energy</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
-		</tags>
-		<state readOnly="true" pattern="%.1f %unit%"/>
-	</channel-type>
-	<channel-type id="hwt-energy-heating-current-year-5" advanced="true">
-		<item-type unitHint="kWh">Number:Energy</item-type>
-		<label>Energy heating Current Year May</label>
-		<description>The energy usage for heating this year May</description>
-		<category>Energy</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
-		</tags>
-		<state readOnly="true" pattern="%.1f %unit%"/>
-	</channel-type>
-	<channel-type id="hwt-energy-heating-current-year-6" advanced="true">
-		<item-type unitHint="kWh">Number:Energy</item-type>
-		<label>Energy heating Current Year June</label>
-		<description>The energy usage for heating this year June</description>
-		<category>Energy</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
-		</tags>
-		<state readOnly="true" pattern="%.1f %unit%"/>
-	</channel-type>
-	<channel-type id="hwt-energy-heating-current-year-7" advanced="true">
-		<item-type unitHint="kWh">Number:Energy</item-type>
-		<label>Energy heating Current Year July</label>
-		<description>The energy usage for heating this year July</description>
-		<category>Energy</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
-		</tags>
-		<state readOnly="true" pattern="%.1f %unit%"/>
-	</channel-type>
-	<channel-type id="hwt-energy-heating-current-year-8" advanced="true">
-		<item-type unitHint="kWh">Number:Energy</item-type>
-		<label>Energy heating Current Year August</label>
-		<description>The energy usage for heating this year August</description>
-		<category>Energy</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
-		</tags>
-		<state readOnly="true" pattern="%.1f %unit%"/>
-	</channel-type>
-	<channel-type id="hwt-energy-heating-current-year-9" advanced="true">
-		<item-type unitHint="kWh">Number:Energy</item-type>
-		<label>Energy heating Current Year September</label>
-		<description>The energy usage for heating this year September</description>
-		<category>Energy</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
-		</tags>
-		<state readOnly="true" pattern="%.1f %unit%"/>
-	</channel-type>
-	<channel-type id="hwt-energy-heating-current-year-10" advanced="true">
-		<item-type unitHint="kWh">Number:Energy</item-type>
-		<label>Energy heating Current Year October</label>
-		<description>The energy usage for heating this year October</description>
-		<category>Energy</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
-		</tags>
-		<state readOnly="true" pattern="%.1f %unit%"/>
-	</channel-type>
-	<channel-type id="hwt-energy-heating-current-year-11" advanced="true">
-		<item-type unitHint="kWh">Number:Energy</item-type>
-		<label>Energy heating Current Year November</label>
-		<description>The energy usage for heating this year November</description>
-		<category>Energy</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
-		</tags>
-		<state readOnly="true" pattern="%.1f %unit%"/>
-	</channel-type>
-	<channel-type id="hwt-energy-heating-current-year-12" advanced="true">
-		<item-type unitHint="kWh">Number:Energy</item-type>
-		<label>Energy heating Current Year December</label>
-		<description>The energy usage for heating this year December</description>
-		<category>Energy</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
-		</tags>
-		<state readOnly="true" pattern="%.1f %unit%"/>
-	</channel-type>
-
-
-
-
 </thing:thing-descriptions>
