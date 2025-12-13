@@ -79,11 +79,11 @@ public class EvccVehicleHandlerTest extends AbstractThingHandlerTestClass<EvccVe
     @BeforeEach
     public void setup() {
         when(thing.getUID()).thenReturn(new ThingUID("test:thing:uid"));
-        when(thing.getProperties()).thenReturn(Map.of("id", "vehicle_1", "type", "vehicle"));
+        when(thing.getProperties()).thenReturn(Map.of("vehicleId", "vehicle_1", "type", "vehicle"));
         when(thing.getChannels()).thenReturn(new ArrayList<>());
         Configuration configuration = mock(Configuration.class);
         when(configuration.get("index")).thenReturn("0");
-        when(configuration.get("id")).thenReturn("vehicle_1");
+        when(configuration.get("vehicleId")).thenReturn("vehicle_1");
         when(thing.getConfiguration()).thenReturn(configuration);
         handler = spy(createHandler());
         EvccBridgeHandler bridgeHandler = mock(EvccBridgeHandler.class);
