@@ -78,14 +78,14 @@ jobs:
 
       - name: Upload Build Log
         if: ${{ always() && ((steps.build.outcome == 'success') || (steps.build.outcome == 'failure')) }}
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: build-log-java-${{ matrix.java }}-${{ matrix.os }}
           path: build.log
 
       - name: Upload SAT Summary Report
         if: ${{ always() && ((steps.build.outcome == 'success') || (steps.build.outcome == 'failure')) }}
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: sat-summary-report
           path: target/summary_report.html
