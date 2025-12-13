@@ -41,7 +41,7 @@ An Omni or Lumina controller requires the IP address (`ipAddress`), optional por
 The hexadecimal pairs in the encryption keys are typically delimited using a colon`:`, but dashes `-`, spaces ` ` or no delimiter may be used.
 <!-- markdownlint-enable MD038 -->
 
-In the thing file, this looks like:
+In the Thing file, this looks like:
 
 ```java
 Bridge omnilink:controller:home [ ipAddress="127.0.0.1", port=4369, key1="XXXXXXXXXXXXXXXX", key2="XXXXXXXXXXXXXXXX" ] {
@@ -147,7 +147,7 @@ The devices support some of the following trigger channels:
 ## Rule Actions
 
 This binding includes a rule action, which allows synchronizing the controller time to match the openHAB system time with a user specified zone.
-There is a separate instance for each contoller, which can be retrieved through:
+There is a separate instance for each controller, which can be retrieved through:
 
 :::: tabs
 
