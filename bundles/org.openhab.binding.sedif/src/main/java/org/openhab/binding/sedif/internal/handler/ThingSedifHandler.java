@@ -51,6 +51,7 @@ import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.unit.CurrencyUnits;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
@@ -583,7 +584,8 @@ public class ThingSedifHandler extends BaseThingHandler {
             updateState(GROUP_YEARLY_CONSUMPTION, CHANNEL_YEARLY_YEAR_MINUS_2_CONSUMPTION,
                     new QuantityType<>(yearConsoMinus2, Units.LITRE));
 
-            updateState(GROUP_BASE, CHANNEL_MEAN_WATER_PRICE, new DecimalType(values.prixMoyenEau));
+            updateState(GROUP_BASE, CHANNEL_MEAN_WATER_PRICE,
+                    new QuantityType<>(values.prixMoyenEau, CurrencyUnits.BASE_CURRENCY));
 
             if (consommation != null && consommation.length > 0) {
                 sedifState.setLastIndexDate(consommation[consommation.length - 1].dateIndex.toLocalDate());

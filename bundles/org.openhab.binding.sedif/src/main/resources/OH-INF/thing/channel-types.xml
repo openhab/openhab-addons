@@ -5,9 +5,9 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<channel-type id="water-price">
-		<item-type>Number:Currency</item-type>
+		<item-type unitHint="€">Number:Currency</item-type>
 		<label>Water Price</label>
-		<state readOnly="true" pattern="%.0f"/>
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
 	<channel-type id="consumption">

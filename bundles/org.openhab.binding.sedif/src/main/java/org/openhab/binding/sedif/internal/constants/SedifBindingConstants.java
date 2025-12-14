@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.sedif.internal.constants;
 
+import java.util.Currency;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -74,6 +75,8 @@ public class SedifBindingConstants {
     public static final String PROPERTY_ID_PDS = "meterIdPds";
     public static final String PROPERTY_NUM_METER = "meterId";
     public static final String PROPERTY_CONTRACT_ID = "contractId";
+
+    public static final Currency CURRENCY_EUR = Currency.getInstance("EUR");
 
     public static final int REQUEST_TIMEOUT = 30;
 }

@@ -128,6 +128,7 @@ public class MeterReadingHelper {
             currentMeterReading.data.consommation = newConso;
         }
 
+        currentMeterReading.prixMoyenEau = incomingMeterReading.prixMoyenEau;
         return currentMeterReading;
     }
 
