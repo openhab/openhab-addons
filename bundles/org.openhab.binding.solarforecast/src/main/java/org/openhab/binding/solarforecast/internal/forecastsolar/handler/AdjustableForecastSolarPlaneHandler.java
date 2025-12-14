@@ -20,6 +20,7 @@ import java.util.Optional;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.openhab.binding.solarforecast.internal.forecastsolar.ForecastSolarObject;
 import org.openhab.binding.solarforecast.internal.utils.Utils;
 import org.openhab.core.persistence.PersistenceService;
 import org.openhab.core.persistence.PersistenceServiceRegistry;
@@ -106,12 +107,16 @@ public class AdjustableForecastSolarPlaneHandler extends ForecastSolarPlaneHandl
     }
 
     public boolean isHoldingTimeElapsed() {
-        Optional<Instant> firstMeasure = forecast.getFirstPowerTimestamp();
+        return isHoldingTimeElapsed(getForecast());
+    }
+
+    public boolean isHoldingTimeElapsed(ForecastSolarObject queryForecast) {
+        Optional<Instant> firstMeasure = queryForecast.getFirstPowerTimestamp();
         if (firstMeasure.isPresent()) {
             return Instant.now(Utils.getClock())
                     .isAfter(firstMeasure.get().plus(configuration.holdingTime, ChronoUnit.MINUTES));
         }
-        if (!forecast.isEmpty()) {
+        if (!queryForecast.isEmpty()) {
             logger.warn("No adjustment possible: Unable to find first measure in forecast");
         } else {
             logger.debug("Forecast is empty, no first measure available");

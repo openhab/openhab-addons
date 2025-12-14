@@ -133,7 +133,7 @@ public class ForecastSolarBridgeHandler extends BaseBridgeHandler implements Sol
                     break;
                 case CHANNEL_POWER_ESTIMATE:
                 case CHANNEL_ENERGY_ESTIMATE:
-                    forecastUpdate();
+                    requestForecastUpdate();
                     break;
             }
         }

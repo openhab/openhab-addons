@@ -61,20 +61,16 @@ public class SmartForecastSolarPlaneHandler extends AdjustableForecastSolarPlane
      */
     @Override
     protected void setForecast(ForecastSolarObject newForecast) {
-        super.setForecast(newForecast);
         if (persistenceService != null) {
+            // Get inverter energy production till now and predicted energy production from forecast
             Optional<Double> energyCalculation = Utils.getEnergyTillNow(configuration.calculationItemName,
                     persistenceService);
-            Double calculatedEnergyProduction = energyCalculation.orElse(0.0);
-            if (calculatedEnergyProduction != null) {
-                energyProduction = calculatedEnergyProduction.doubleValue();
-            } else {
-                energyProduction = 0;
-            }
+            energyProduction = energyCalculation.isPresent() ? energyCalculation.get() : 0;
             forecastProduction = newForecast.getActualEnergyValue(ZonedDateTime.now(Utils.getClock()));
 
+            // calculate correction factor if holding time elapsed
             double factor = 1;
-            if (isHoldingTimeElapsed()) {
+            if (isHoldingTimeElapsed(newForecast)) {
                 if (forecastProduction > 0) {
                     factor = energyProduction / forecastProduction;
                 }
@@ -89,6 +85,8 @@ public class SmartForecastSolarPlaneHandler extends AdjustableForecastSolarPlane
         } else {
             logger.debug("No persistence service available, no adjustment of forecast");
         }
+        // finally call superclass to set the adjusted forecast
+        super.setForecast(newForecast);
     }
 
     public double getEnergyProduction() {

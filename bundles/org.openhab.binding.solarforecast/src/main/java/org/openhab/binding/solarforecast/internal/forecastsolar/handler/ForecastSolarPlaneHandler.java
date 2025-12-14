@@ -68,11 +68,11 @@ public class ForecastSolarPlaneHandler extends BaseThingHandler implements Solar
     private final Logger logger = LoggerFactory.getLogger(ForecastSolarPlaneHandler.class);
     private final HttpClient httpClient;
     private boolean dirtyFlag = false;
+    private ForecastSolarObject forecast;
 
     protected ForecastSolarPlaneConfiguration configuration = new ForecastSolarPlaneConfiguration();
     protected @Nullable ScheduledFuture<?> futureSchedule;
     protected @Nullable ForecastSolarBridgeHandler bridgeHandler;
-    protected ForecastSolarObject forecast;
     protected ScheduledExecutorService refresher = ThreadPoolManager
             .getPoolBasedSequentialScheduledExecutorService(BINDING_ID, null);
 
@@ -112,7 +112,8 @@ public class ForecastSolarPlaneHandler extends BaseThingHandler implements Solar
 
     private void doInitialize() {
         fetchData();
-        if (!forecast.isEmpty()) {
+        ForecastSolarObject localForecast = getForecast();
+        if (!localForecast.isEmpty()) {
             bridge().addPlane(this);
         } else {
             futureSchedule = refresher.schedule(this::doInitialize, 1, TimeUnit.MINUTES);
@@ -140,10 +141,11 @@ public class ForecastSolarPlaneHandler extends BaseThingHandler implements Solar
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
+            ForecastSolarObject localForecast = getForecast();
             if (CHANNEL_POWER_ESTIMATE.equals(channelUID.getIdWithoutGroup())) {
-                sendTimeSeries(CHANNEL_POWER_ESTIMATE, forecast.getPowerTimeSeries(QueryMode.Average));
+                sendTimeSeries(CHANNEL_POWER_ESTIMATE, localForecast.getPowerTimeSeries(QueryMode.Average));
             } else if (CHANNEL_ENERGY_ESTIMATE.equals(channelUID.getIdWithoutGroup())) {
-                sendTimeSeries(CHANNEL_ENERGY_ESTIMATE, forecast.getEnergyTimeSeries(QueryMode.Average));
+                sendTimeSeries(CHANNEL_ENERGY_ESTIMATE, localForecast.getEnergyTimeSeries(QueryMode.Average));
             } else {
                 fetchData();
             }
@@ -162,12 +164,12 @@ public class ForecastSolarPlaneHandler extends BaseThingHandler implements Solar
         }
         // else use available forecast
         updateStatus(ThingStatus.ONLINE);
-        updateChannels(localForecast);
+        updateChannels();
 
         if (dirtyFlag) {
             // reset dirty flag after first readout of new data
             dirtyFlag = false;
-            bridge().forecastUpdate();
+            bridge().requestForecastUpdate();
         }
         return localForecast;
     }
@@ -176,7 +178,8 @@ public class ForecastSolarPlaneHandler extends BaseThingHandler implements Solar
      * https://doc.forecast.solar/doku.php?id=api:estimate
      */
     private void fetchData() {
-        if (!forecast.isExpired()) {
+        ForecastSolarObject localForecast = getForecast();
+        if (!localForecast.isExpired()) {
             return;
         }
         String url = buildUrl();
@@ -186,8 +189,7 @@ public class ForecastSolarPlaneHandler extends BaseThingHandler implements Solar
             int responseStatus = cr.getStatus();
             if (responseStatus == 200) {
                 try {
-                    ForecastSolarObject localForecast = new ForecastSolarObject(thing.getUID().getAsString(),
-                            cr.getContentAsString(),
+                    localForecast = new ForecastSolarObject(thing.getUID().getAsString(), cr.getContentAsString(),
                             Instant.now(Utils.getClock()).plus(configuration.refreshInterval, ChronoUnit.MINUTES));
                     updateStatus(ThingStatus.ONLINE);
                     setForecast(localForecast);
@@ -241,26 +243,28 @@ public class ForecastSolarPlaneHandler extends BaseThingHandler implements Solar
         return bridge().queryParameters(parameters);
     }
 
-    protected void updateChannels(ForecastSolarObject f) {
+    protected void updateChannels() {
+        ForecastSolarObject localForecast = getForecast();
         ZonedDateTime now = ZonedDateTime.now(Utils.getClock());
-        double energyDay = f.getDayTotal(now.toLocalDate());
-        double energyProduced = f.getActualEnergyValue(now);
+        double energyDay = localForecast.getDayTotal(now.toLocalDate());
+        double energyProduced = localForecast.getActualEnergyValue(now);
         updateState(CHANNEL_ENERGY_ACTUAL, Utils.getEnergyState(energyProduced));
         updateState(CHANNEL_ENERGY_REMAIN, Utils.getEnergyState(energyDay - energyProduced));
         updateState(CHANNEL_ENERGY_TODAY, Utils.getEnergyState(energyDay));
-        updateState(CHANNEL_POWER_ACTUAL, Utils.getPowerState(f.getActualPowerValue(now)));
+        updateState(CHANNEL_POWER_ACTUAL, Utils.getPowerState(localForecast.getActualPowerValue(now)));
     }
 
-    protected void setForecast(ForecastSolarObject f) {
+    protected void setForecast(ForecastSolarObject newForecast) {
         synchronized (this) {
-            forecast = f;
+            forecast = newForecast;
             dirtyFlag = true;
         }
-        sendTimeSeries(CHANNEL_POWER_ESTIMATE, forecast.getPowerTimeSeries(QueryMode.Average));
-        sendTimeSeries(CHANNEL_ENERGY_ESTIMATE, forecast.getEnergyTimeSeries(QueryMode.Average));
+        ForecastSolarObject localForecast = getForecast();
+        sendTimeSeries(CHANNEL_POWER_ESTIMATE, localForecast.getPowerTimeSeries(QueryMode.Average));
+        sendTimeSeries(CHANNEL_ENERGY_ESTIMATE, localForecast.getEnergyTimeSeries(QueryMode.Average));
     }
 
-    private ForecastSolarObject getForecast() {
+    protected ForecastSolarObject getForecast() {
         synchronized (this) {
             ForecastSolarObject localForecast = forecast;
             return localForecast;
@@ -269,9 +273,7 @@ public class ForecastSolarPlaneHandler extends BaseThingHandler implements Solar
 
     @Override
     public List<SolarForecast> getSolarForecasts() {
-        synchronized (this) {
-            return List.of(forecast);
-        }
+        return List.of(getForecast());
     }
 
     private ForecastSolarBridgeHandler bridge() {
