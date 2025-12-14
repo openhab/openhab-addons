@@ -26,5 +26,5 @@ public class RoborockAccountConfiguration {
      * Account configuration parameters.
      */
     public String email = "";
-    public String password = "";
+    public String twofa = "";
 }
