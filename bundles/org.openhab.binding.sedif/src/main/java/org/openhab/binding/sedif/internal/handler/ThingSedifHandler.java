@@ -125,12 +125,13 @@ public class ThingSedifHandler extends BaseThingHandler {
 
                         return null;
                     } catch (CommunicationFailedException ex) {
-                        // We just return null, ExpiringDayCache logic will retry the operation later.
+                        // We return null, ExpiringDayCache logic will retry the operation later.
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, ex.getMessage());
                         logger.error("Failed to get contract details", ex);
                         return null;
                     } catch (InvalidSessionException ex) {
                         // In case of session error, we force the bridge to reconnect after a delay
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, ex.getMessage());
 
                         Bridge lcBridge = getBridge();
                         if (lcBridge != null && lcBridge.getHandler() instanceof BridgeSedifWebHandler bridgeSedif) {
@@ -155,12 +156,13 @@ public class ThingSedifHandler extends BaseThingHandler {
                         }
                         return meterReading;
                     } catch (CommunicationFailedException ex) {
-                        // We just return null, EpxiringDayCache logic will retry the operation later.
+                        // We return null, EpxiringDayCache logic will retry the operation later.
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, ex.getMessage());
                         logger.warn("Failed to get consumption data", ex);
                         return null;
                     } catch (InvalidSessionException ex) {
                         // In case of session error, we force the bridge to reconnect after a delay
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, ex.getMessage());
                         Bridge lcBridge = getBridge();
                         if (lcBridge != null && lcBridge.getHandler() instanceof BridgeSedifWebHandler bridgeSedif) {
                             bridgeSedif.scheduleReconnect();
@@ -318,10 +320,18 @@ public class ThingSedifHandler extends BaseThingHandler {
      * Request new data and updates channels
      */
     private void updateData() {
+        if (thing.getStatus() == ThingStatus.OFFLINE
+                && thing.getStatusInfo().getStatusDetail() == ThingStatusDetail.COMMUNICATION_ERROR) {
+            updateStatus(ThingStatus.UNKNOWN);
+        }
         updateContractDetail();
         updateHistoricalConsumptionData();
         updateConsumptionData();
         saveSedifState();
+
+        if (this.getThing().getStatus() == ThingStatus.UNKNOWN) {
+            updateStatus(ThingStatus.ONLINE);
+        }
     }
 
     private void updateHistoricalConsumptionData() {
@@ -632,10 +642,6 @@ public class ThingSedifHandler extends BaseThingHandler {
                 initialDelay = 20;
             }
             refreshJob = scheduler.scheduleWithFixedDelay(this::updateData, initialDelay, delay, TimeUnit.MINUTES);
-
-            if (this.getThing().getStatus() == ThingStatus.UNKNOWN) {
-                updateStatus(ThingStatus.ONLINE);
-            }
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.missing-or-invalid-contract");
