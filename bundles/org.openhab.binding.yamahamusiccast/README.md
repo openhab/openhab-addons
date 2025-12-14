@@ -58,8 +58,8 @@ You can also use _RADIO / TUNER_ (as _tuner_).
 | input           | String               | See below for list                                                  |
 | soundProgram    | String               | See below for list                                                  |
 | selectPreset    | String               | Select Netradio/USB preset (fetched from Model)                     |
-| selectPresetDAB | String               | Select DAB tuner preset (fetched from Model)                     |
-| selectPresetFM  | String               | Select FM tuner preset (fetched from Model)                     |
+| selectPresetDAB | String               | Select DAB tuner preset (fetched from Model)                        |
+| selectPresetFM  | String               | Select FM tuner preset (fetched from Model)                         |
 | sleep           | Number               | Fixed values for Sleep: 0/30/60/90/120 in minutes                   |
 | recallScene     | Number               | Select a scene (8 defaults scenes are foreseen)                     |
 | player          | Player               | PLAY/PAUSE/NEXT/PREVIOUS/REWIND/FASTFORWARD                         |
