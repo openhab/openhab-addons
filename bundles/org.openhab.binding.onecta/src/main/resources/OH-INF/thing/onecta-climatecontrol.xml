@@ -41,10 +41,10 @@
 		<description>Basic group related information</description>
 		<channels>
 			<channel id="power" typeId="acunit-power"/>
-			<channel id="settemp" typeId="acunit-settemp"/>
-			<channel id="settemp-min" typeId="acunit-settemp-min"/>
-			<channel id="settemp-max" typeId="acunit-settemp-max"/>
-			<channel id="settemp-step" typeId="acunit-settemp-step"/>
+			<channel id="setpoint-temp" typeId="acunit-setpoint-temp"/>
+			<channel id="setpoint-temp-min" typeId="acunit-setpoint-temp-min"/>
+			<channel id="setpoint-temp-max" typeId="acunit-setpoint-temp-max"/>
+			<channel id="setpoint-temp-step" typeId="acunit-setpoint-temp-step"/>
 			<channel id="indoor-temp" typeId="acunit-indoor-temp"/>
 			<channel id="outdoor-temp" typeId="acunit-outdoor-temp"/>
 			<channel id="leaving-water-temp" typeId="acunit-leaving-water-temp"/>
@@ -1702,7 +1702,7 @@
 		</tags>
 	</channel-type>
 
-	<channel-type id="acunit-settemp">
+	<channel-type id="acunit-setpoint-temp">
 		<item-type unitHint="°C">Number:Temperature</item-type>
 		<label>Setpoint</label>
 		<description>Thermostat temperature setpoint</description>
@@ -1714,7 +1714,7 @@
 		<state step="0.5" pattern="%.1d %unit%"/>
 	</channel-type>
 
-	<channel-type id="acunit-settemp-min">
+	<channel-type id="acunit-setpoint-temp-min">
 		<item-type unitHint="°C">Number:Temperature</item-type>
 		<label>Setpoint Min value</label>
 		<description>The set point min temperature</description>
@@ -1726,7 +1726,7 @@
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
-	<channel-type id="acunit-settemp-max">
+	<channel-type id="acunit-setpoint-temp-max">
 		<item-type unitHint="°C">Number:Temperature</item-type>
 		<label>Setpoint Max value</label>
 		<description>The set point max temperature</description>
@@ -1737,7 +1737,7 @@
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
-	<channel-type id="acunit-settemp-step">
+	<channel-type id="acunit-setpoint-temp-step">
 		<item-type unitHint="°C">Number:Temperature</item-type>
 		<label>Setpoint value steps</label>
 		<description>The set point temperature value steps</description>

@@ -36,8 +36,8 @@ public class OnectaWaterTankConstants {
     public static final String CHANNEL_HWT_TANK_TEMPERATURE = "basic#tank-temperature";
     public static final String CHANNEL_HWT_OPERATION_MODE = "basic#operation-mode";
     public static final String CHANNEL_HWT_SETPOINT_MODE = "basic#setpoint-mode";
-    public static final String CHANNEL_HWT_SETTEMP = "basic#settemp";
-    public static final String CHANNEL_HWT_SETTEMP_MIN = "basic#settemp-min";
-    public static final String CHANNEL_HWT_SETTEMP_MAX = "basic#settemp-max";
-    public static final String CHANNEL_HWT_SETTEMP_STEP = "basic#settemp-step";
+    public static final String CHANNEL_HWT_SETTEMP = "basic#setpoint-temp";
+    public static final String CHANNEL_HWT_SETTEMP_MIN = "basic#setpoint-temp-min";
+    public static final String CHANNEL_HWT_SETTEMP_MAX = "basic#setpoint-temp-max";
+    public static final String CHANNEL_HWT_SETTEMP_STEP = "basic#setpoint-temp-step";
 }

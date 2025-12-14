@@ -24,10 +24,10 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class OnectaClimateControlConstants {
 
     // List of all Channel ids
-    public static final String CHANNEL_AC_TEMP = "basic#settemp";
-    public static final String CHANNEL_AC_TEMPMIN = "basic#settemp-min";
-    public static final String CHANNEL_AC_TEMPMAX = "basic#settemp-max";
-    public static final String CHANNEL_AC_TEMPSTEP = "basic#settemp-step";
+    public static final String CHANNEL_AC_TEMP = "basic#setpoint-temp";
+    public static final String CHANNEL_AC_TEMPMIN = "basic#setpoint-temp-min";
+    public static final String CHANNEL_AC_TEMPMAX = "basic#setpoint-temp-max";
+    public static final String CHANNEL_AC_TEMPSTEP = "basic#setpoint-temp-step";
     public static final String CHANNEL_INDOOR_TEMP = "basic#indoor-temp";
     public static final String CHANNEL_LEAVINGWATER_TEMP = "basic#leaving-water-temp";
     public static final String CHANNEL_OUTDOOR_TEMP = "basic#outdoor-temp";

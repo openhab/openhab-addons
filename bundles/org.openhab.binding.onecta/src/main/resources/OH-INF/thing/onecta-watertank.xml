@@ -54,10 +54,10 @@
 			<channel id="tank-temperature" typeId="hwt-tank-temperature"/>
 			<channel id="operation-mode" typeId="hwt-operation-mode"/>
 			<channel id="setpoint-mode" typeId="hwt-setpoint-mode"/>
-			<channel id="settemp" typeId="hwt-settemp"/>
-			<channel id="settemp-min" typeId="hwt-settemp-min"/>
-			<channel id="settemp-max" typeId="hwt-settemp-max"/>
-			<channel id="settemp-step" typeId="hwt-settemp-step"/>
+			<channel id="setpoint-temp" typeId="hwt-setpoint-temp"/>
+			<channel id="setpoint-temp-min" typeId="hwt-setpoint-temp-min"/>
+			<channel id="setpoint-temp-max" typeId="hwt-setpoint-temp-max"/>
+			<channel id="setpoint-temp-step" typeId="hwt-setpoint-temp-step"/>
 		</channels>
 	</channel-group-type>
 
@@ -219,7 +219,7 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="hwt-settemp">
+	<channel-type id="hwt-setpoint-temp">
 		<item-type unitHint="°C">Number:Temperature</item-type>
 		<label>Setpoint</label>
 		<description>Thermostat temperature setpoint</description>
@@ -231,7 +231,7 @@
 		<state pattern="%.1d %unit%"/>
 	</channel-type>
 
-	<channel-type id="hwt-settemp-min">
+	<channel-type id="hwt-setpoint-temp-min">
 		<item-type unitHint="°C">Number:Temperature</item-type>
 		<label>Setpoint Min Value</label>
 		<description>The set point min temperature</description>
@@ -243,7 +243,7 @@
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
-	<channel-type id="hwt-settemp-max">
+	<channel-type id="hwt-setpoint-temp-max">
 		<item-type unitHint="°C">Number:Temperature</item-type>
 		<label>Setpoint Max Value</label>
 		<description>The set point max temperature</description>
@@ -255,7 +255,7 @@
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
-	<channel-type id="hwt-settemp-step">
+	<channel-type id="hwt-setpoint-temp-step">
 		<item-type unitHint="°C">Number:Temperature</item-type>
 		<label>Setpoint Value Steps</label>
 		<description>The setpoint temperature value steps</description>
