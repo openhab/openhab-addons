@@ -147,14 +147,15 @@ public class ForecastSolarPlaneHandler extends BaseThingHandler implements Solar
             } else if (CHANNEL_ENERGY_ESTIMATE.equals(channelUID.getIdWithoutGroup())) {
                 sendTimeSeries(CHANNEL_ENERGY_ESTIMATE, localForecast.getEnergyTimeSeries(QueryMode.Average));
             } else {
-                fetchData();
+                getData();
             }
         }
     }
 
     /**
+     * Get the available forecast data. If expired, an asynchronous fetch of new data is triggered.
      *
-     * @return
+     * @return current available forecast data
      */
     ForecastSolarObject getData() {
         ForecastSolarObject localForecast = getForecast();
@@ -175,6 +176,7 @@ public class ForecastSolarPlaneHandler extends BaseThingHandler implements Solar
     }
 
     /**
+     * Fetch new forecast data from the forecast.solar API if the current data is expired.
      * https://doc.forecast.solar/doku.php?id=api:estimate
      */
     private void fetchData() {
@@ -217,6 +219,11 @@ public class ForecastSolarPlaneHandler extends BaseThingHandler implements Solar
         }
     }
 
+    /**
+     * Build the forecast.solar API URL with mandatory and optional parameters.
+     *
+     * @return complete URL for the forecast request
+     */
     protected String buildUrl() {
         // create URL with mandatory parameters
         String url = bridge().getBaseUrl() + configuration.declination + SLASH + configuration.azimuth + SLASH
@@ -243,6 +250,9 @@ public class ForecastSolarPlaneHandler extends BaseThingHandler implements Solar
         return bridge().queryParameters(parameters);
     }
 
+    /**
+     * Update the channels with the current forecast data.
+     */
     protected void updateChannels() {
         ForecastSolarObject localForecast = getForecast();
         ZonedDateTime now = ZonedDateTime.now(Utils.getClock());
@@ -254,6 +264,11 @@ public class ForecastSolarPlaneHandler extends BaseThingHandler implements Solar
         updateState(CHANNEL_POWER_ACTUAL, Utils.getPowerState(localForecast.getActualPowerValue(now)));
     }
 
+    /**
+     * Set the new forecast data and update the relevant time-series channels.
+     *
+     * @param newForecast The new forecast data
+     */
     protected void setForecast(ForecastSolarObject newForecast) {
         synchronized (this) {
             forecast = newForecast;
@@ -264,6 +279,11 @@ public class ForecastSolarPlaneHandler extends BaseThingHandler implements Solar
         sendTimeSeries(CHANNEL_ENERGY_ESTIMATE, localForecast.getEnergyTimeSeries(QueryMode.Average));
     }
 
+    /**
+     * Get the current forecast data in a thread-safe manner.
+     *
+     * @return current forecast data as local copy
+     */
     protected ForecastSolarObject getForecast() {
         synchronized (this) {
             ForecastSolarObject localForecast = forecast;
