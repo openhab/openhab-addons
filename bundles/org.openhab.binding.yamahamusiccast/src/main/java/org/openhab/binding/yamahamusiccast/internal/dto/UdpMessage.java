@@ -140,12 +140,14 @@ public class UdpMessage {
         public PresetControl getPresetControl() {
             return presetControl;
         }
+
         public String getPlayInfoUpdated() {
             if (playInfoUpdated == null) {
                 playInfoUpdated = "";
             }
             return playInfoUpdated;
         }
+
         public int getPlayTime() {
             return playTime;
         }

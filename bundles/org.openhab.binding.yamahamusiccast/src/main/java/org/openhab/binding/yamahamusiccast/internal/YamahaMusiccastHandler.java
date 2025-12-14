@@ -856,7 +856,6 @@ public class YamahaMusiccastHandler extends BaseThingHandler {
     private void updatePresetsDAB() {
         String inputText = "";
         int presetCounter = 0;
-        int currentPreset = 0;
         tmpString = getPresetInfoTuner(this.host, "dab");
 
         PresetInfo presetinfo = gson.fromJson(tmpString, PresetInfo.class);
@@ -873,9 +872,6 @@ public class YamahaMusiccastHandler extends BaseThingHandler {
                         if (!"".equals(text)) {
                             optionsPresets.add(
                                     new StateOption(String.valueOf(presetCounter), "#" + presetCounter + " " + text));
-                            if (inputText.equals(text)) {
-                                currentPreset = presetCounter;
-                            }
                         }
                     }
                 }
@@ -897,7 +893,6 @@ public class YamahaMusiccastHandler extends BaseThingHandler {
     private void updatePresetsFM() {
         String inputText = "";
         int presetCounter = 0;
-        int currentPreset = 0;
         tmpString = getPresetInfoTuner(this.host, "fm");
 
         PresetInfo presetinfo = gson.fromJson(tmpString, PresetInfo.class);
@@ -914,9 +909,6 @@ public class YamahaMusiccastHandler extends BaseThingHandler {
                         if (!"".equals(text)) {
                             optionsPresets.add(
                                     new StateOption(String.valueOf(presetCounter), "#" + presetCounter + " " + text));
-                            if (inputText.equals(text)) {
-                                currentPreset = presetCounter;
-                            }
                         }
                     }
                 }
@@ -942,7 +934,6 @@ public class YamahaMusiccastHandler extends BaseThingHandler {
         PlayInfoTuner targetObject = gson.fromJson(tmpString, PlayInfoTuner.class);
         if (targetObject != null) {
             String responseCode = targetObject.getResponseCode();
-            String band = targetObject.getBand();
 
             if ("0".equals(responseCode)) {
                 int dabPreset = targetObject.getDAB().getPreset();
