@@ -15,7 +15,7 @@ It must be authenticated before it will actually go online.
 Authenticatation is done online via the OAuth Device Code Grant Flow (RFC-8628) authentication process via the link provided at `http://[openhab-ip-address]:8080/tado`.
 
 | Parameter     | Optional | Description                                                                   | Default                      |
-|---------------|----------|-------------------------------------------------------------------------------|------------------------------|
+| ------------- | -------- | ----------------------------------------------------------------------------- | ---------------------------- |
 | `rfcWithUser` | yes      | Determines if the user name is included in the oAuth RFC-8628 authentication. |                              |
 | `tadoApiUrl`  | no       | Selects the URL to be used for API calls (it's possible to use a proxy)       | `https://my.tado.com/api/v2` |
 | `username`    | yes      | Selects the tado° account to be used if there is more than one account.       |                              |
@@ -43,13 +43,13 @@ Once the `home` thing is online, the binding will discover all its respective zo
 ### Channels
 
 | Name                            | Type        | Description                                                         | Read/Write |
-|---------------------------------|-------------|---------------------------------------------------------------------|------------|
+| ------------------------------- | ----------- | ------------------------------------------------------------------- | ---------- |
 | `homePresence`                  | Switch      | Current presence value of the tado home; `ON` = HOME / `OFF` = AWAY | RW         |
 | `geofencingEnabled`             | Switch      | Selects if automatic geofencing is enabled or disabled              | RW         |
 | `APIRateRemaining`<sup>1)</sup> | Number      | Number of API calls remaining before the maximum is reached         | R          |
 | `APIRateLimit`<sup>1)</sup>     | Number      | Maximum API calls allowed per specified duration                    | R          |
-| `APIRateDuration`<sup>1)</sup>  | Number:Time | Duration in which the API count rises until maximum (in seconds)    | R          |
-| `APIRateReset`<sup>1)</sup>     | Number:Time | Duration before the API count resets (in seconds)                   | R          |
+| `APIRateDuration`<sup>1)</sup>  | Number:Time | Duration in which the API count rises until maximum                 | R          |
+| `APIRateReset`<sup>1)</sup>     | Number:Time | Duration before the API count resets                                | R          |
 
 <sup>1)</sup> It probably makes the most sense to link *one and the same* Item to *all* `APIRateRemaining` Channels of *all* Things linked to the same `home` Thing (*including* this `home` Thing). That way, that one Item is always as up-to-date as possible. The same applies to `APIRateLimit`, `APIRateDuration` and `APIRateReset`, of course.
 
@@ -60,7 +60,7 @@ You have defined them during installation.
 One zone relates to one page in the tado° mobile- or webapp.
 
 | Parameter            | Required | Description                                                   | Default |
-|----------------------|----------|---------------------------------------------------------------|---------|
+| -------------------- | -------- | ------------------------------------------------------------- | ------- |
 | `id`                 | yes      | Zone Id                                                       | -       |
 | `refreshInterval`    | no       | Refresh interval of state updates in seconds                  | 30      |
 | `hvacChangeDebounce` | no       | Duration in seconds to combine multiple HVAC changes into one | 5       |
@@ -153,7 +153,7 @@ In case the zone is currently in smart-schedule mode and thus doesn't have a ter
 The `mobiledevice` thing represents a smart phone that is configured for tado°. It provides access to the geotracking functionality.
 
 | Parameter         | Required | Description                                  | Default |
-|-------------------|----------|----------------------------------------------|---------|
+| ----------------- | -------- | -------------------------------------------- | ------- |
 | `id`              | yes      | Mobile Device Id                             | -       |
 | `refreshInterval` | no       | Refresh interval of state updates in seconds | 60      |
 

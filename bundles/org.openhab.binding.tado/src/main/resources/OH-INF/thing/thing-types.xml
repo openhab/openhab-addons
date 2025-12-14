@@ -431,7 +431,7 @@
 	<channel-type id="APIRateDuration" advanced="true">
 		<item-type>Number:Time</item-type>
 		<label>API Max Duration</label>
-		<description>Duration in which the API count rises until maximum (in seconds)</description>
+		<description>Duration in which the API count rises until maximum</description>
 		<category>Time</category>
 		<tags>
 			<tag>Status</tag>
@@ -463,7 +463,7 @@
 	<channel-type id="APIRateReset" advanced="true">
 		<item-type>Number:Time</item-type>
 		<label>Time until API count resets</label>
-		<description>Time until the API count resets (in seconds)</description>
+		<description>Time until the API count resets</description>
 		<category>Time</category>
 		<tags>
 			<tag>Status</tag>
