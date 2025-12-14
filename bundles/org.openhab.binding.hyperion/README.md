@@ -50,6 +50,7 @@ You can do this either through a UI/REST or through static `.things` files.
 | priority       | Integer   | Y        | 50             |
 | poll_frequency | Integer   | Y        | 15             |
 | origin         | String    | Y        | "openHAB"      |
+| instances      | Integer   | N        | ""=all or 0,1  |
 
 To manually configure a Hyperion.ng Server you must specify the following parameters: host, port, priority, polling frequency and origin.
 
