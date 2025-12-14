@@ -34,7 +34,6 @@ import org.openhab.automation.pythonscripting.internal.console.handler.InfoCmd;
 import org.openhab.automation.pythonscripting.internal.console.handler.TypingCmd;
 import org.openhab.automation.pythonscripting.internal.console.handler.UpdateCmd;
 import org.openhab.core.automation.module.script.ScriptEngineContainer;
-import org.openhab.core.automation.module.script.ScriptEngineFactory;
 import org.openhab.core.automation.module.script.ScriptEngineManager;
 import org.openhab.core.config.core.ConfigDescriptionRegistry;
 import org.openhab.core.io.console.Console;
@@ -298,11 +297,7 @@ public class PythonConsoleCommandExtension extends AbstractConsoleCommandExtensi
                     engine = container.getScriptEngine();
                 }
             } else {
-                engine = pythonScriptEngineFactory.createScriptEngine(scriptType);
-                if (engine != null) {
-                    engine.getContext().setAttribute(ScriptEngineFactory.CONTEXT_KEY_ENGINE_IDENTIFIER,
-                            scriptIdentifier, ScriptContext.ENGINE_SCOPE);
-                }
+                engine = pythonScriptEngineFactory.createScriptEngine(scriptType, scriptIdentifier);
             }
 
             if (engine == null) {
