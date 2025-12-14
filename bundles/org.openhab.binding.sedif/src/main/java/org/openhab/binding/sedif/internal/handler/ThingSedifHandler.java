@@ -60,6 +60,7 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.TimeSeries;
 import org.openhab.core.types.TimeSeries.Policy;
@@ -304,6 +305,12 @@ public class ThingSedifHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        if (command instanceof RefreshType) {
+            logger.debug("Refreshing channel {}", channelUID.getId());
+            updateData();
+        } else {
+            logger.debug("The Sedif binding is read-only and can not handle command {}", command);
+        }
     }
 
     /**
