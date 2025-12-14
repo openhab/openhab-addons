@@ -6,7 +6,7 @@
 
 	<bridge-type id="gateway">
 		<label>Sedif Web Bridge</label>
-		<description>Act as a gateway between your sedif Account and a Sedif mether things. In order to receive the data, you
+		<description>Act as a gateway between your sedif Account and a Sedif meter things. In order to receive the data, you
 			must activate your account on Sedif Web Site.</description>
 		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 
