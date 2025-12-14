@@ -61,8 +61,8 @@ public class ComponentStateCommand extends HyperionCommand {
     }
 
     public Integer getInstance() {
-        if (instance instanceof Number) {
-            return ((Number) instance).intValue();
+        if (instance instanceof Number instanceNumber) {
+            return instanceNumber.intValue();
         }
         return null;
     }
