@@ -161,7 +161,7 @@ public class SedifHttpApi {
         if (token == null) {
             throw new SedifException("Unable to find token in login process");
         } else {
-            logger.debug("Account: Successfully asquire token");
+            logger.debug("Account: Successfully acquire token");
         }
 
         // =====================================================================

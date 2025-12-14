@@ -125,7 +125,7 @@ public class ThingSedifHandler extends BaseThingHandler {
 
                         return null;
                     } catch (CommunicationFailedException ex) {
-                        // We just return null, EpiringDayCache logic will retry the operation later.
+                        // We just return null, ExpiringDayCache logic will retry the operation later.
                         logger.error("Failed to get contract details", ex);
                         return null;
                     } catch (InvalidSessionException ex) {
@@ -282,7 +282,7 @@ public class ThingSedifHandler extends BaseThingHandler {
                 os.write(bt);
                 os.flush();
             }
-            logger.debug("Sedif MetaData information wriiten to {}", file.getAbsolutePath());
+            logger.debug("Sedif MetaData information written to {}", file.getAbsolutePath());
         } catch (IOException ioe) {
             logger.warn("Couldn't write Sedif MetaData information to file '{}'.", file.getAbsolutePath());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
