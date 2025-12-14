@@ -45,7 +45,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class OnectaDeviceHandler extends AbstractOnectaHandler {
-
+    public static final String PROPERTY_AC_NAME = "name";
     private final Logger logger = LoggerFactory.getLogger(OnectaDeviceHandler.class);
 
     private @Nullable OnectaConfiguration config;

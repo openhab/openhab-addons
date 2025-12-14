@@ -56,5 +56,4 @@ public class OnectaClimateControlConstants {
     public static final String CHANNEL_AC_ENERGY_HEATING_CURRENT_YEAR = "consumption-data-heating#energy-heating-current-year";
     public static final String CHANNEL_AC_ENERGY_COOLING_CURRENT_DAY = "consumption-data-cooling#energy-cooling-current-day";
     public static final String CHANNEL_AC_ENERGY_COOLING_CURRENT_YEAR = "consumption-data-cooling#energy-cooling-current-year";
-    public static final String PROPERTY_AC_NAME = "name";
 }
