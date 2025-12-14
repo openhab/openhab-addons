@@ -28,6 +28,8 @@ public class ComponentStateCommand extends HyperionCommand {
 
     @SerializedName("componentstate")
     private ComponentState componentState;
+    @SerializedName("instance")
+    private Object instance;
 
     public ComponentStateCommand(ComponentState componentState) {
         super(NAME);
@@ -40,5 +42,28 @@ public class ComponentStateCommand extends HyperionCommand {
 
     public void setComponentState(ComponentState componentState) {
         this.componentState = componentState;
+    }
+
+    public void setInstance(Integer instanceValue) {
+        this.instance = instanceValue;
+    }
+
+    public void setInstance(java.util.List<Integer> instanceList) {
+        this.instance = instanceList;
+    }
+
+    @SuppressWarnings("unchecked")
+    public java.util.List<Integer> getInstanceList() {
+        if (instance instanceof java.util.List) {
+            return (java.util.List<Integer>) instance;
+        }
+        return null;
+    }
+
+    public Integer getInstance() {
+        if (instance instanceof Number) {
+            return ((Number) instance).intValue();
+        }
+        return null;
     }
 }

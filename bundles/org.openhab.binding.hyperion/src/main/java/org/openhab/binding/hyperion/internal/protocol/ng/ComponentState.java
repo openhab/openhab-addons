@@ -21,6 +21,8 @@ public class ComponentState {
 
     private String component;
     private boolean state;
+    @com.google.gson.annotations.SerializedName("instance")
+    private Object instance = null;
 
     public void setComponent(String component) {
         this.component = component;
@@ -36,5 +38,28 @@ public class ComponentState {
 
     public boolean getState() {
         return state;
+    }
+
+    @SuppressWarnings("unchecked")
+    public java.util.List<Integer> getInstanceList() {
+        if (instance instanceof java.util.List) {
+            return (java.util.List<Integer>) instance;
+        }
+        return null;
+    }
+
+    public Integer getInstance() {
+        if (instance instanceof Number) {
+            return ((Number) instance).intValue();
+        }
+        return null;
+    }
+
+    public void setInstance(java.util.List<Integer> instanceList) {
+        this.instance = instanceList;
+    }
+
+    public void setInstance(Integer instanceValue) {
+        this.instance = instanceValue;
     }
 }
