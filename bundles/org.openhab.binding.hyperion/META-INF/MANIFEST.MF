@@ -1,0 +1,64 @@
+Manifest-Version: 1.0
+Created-By: 21.0.9 (Eclipse Adoptium)
+Build-Jdk-Spec: 21
+Automatic-Module-Name: org.openhab.binding.hyperion
+Bnd-LastModified: 1765663968874
+Bundle-Description: This project contains the official add-ons of openHA
+ B
+Bundle-Developers: openhab;name=openHAB;organiz
+ ation=openHAB;organizationUrl="https://www.openHAB.org"
+Bundle-DocURL: https://github.com/openhab/infrastructure/org.openhab.add
+ ons.reactor/org.openhab.addons.reactor.bundles/org.openhab.binding.hype
+ rion
+Bundle-License: "Eclipse Public License 2.0";link="https://www.eclipse.o
+ rg/legal/epl-2.0/"
+Bundle-ManifestVersion: 2
+Bundle-Name: openHAB Add-ons :: Bundles :: Hyperion Binding
+Bundle-SCM: url="https://github.com/openhab/openhab-addons/org.openhab.a
+ ddons.reactor.bundles/org.openhab.binding.hyperion",connection="scm:git
+ :https://github.com/openhab/openhab-addons.git/org.openhab.addons.react
+ or.bundles/org.openhab.binding.hyperion",developer-connection="scm:git:
+ https://github.com/openhab/openhab-addons.git/org.openhab.addons.reacto
+ r.bundles/org.openhab.binding.hyperion",tag=HEAD
+Bundle-SymbolicName: org.openhab.binding.hyperion
+Bundle-Vendor: openHAB.org
+Bundle-Version: 5.1.0.202512132212
+Import-Package: org.openhab.core.config.core,org.openhab.core.config.dis
+ covery,org.openhab.core.config.discovery.mdns,org.openhab.core.events,o
+ rg.openhab.core.library.types,org.openhab.core.thing,org.openhab.core.t
+ hing.binding,org.openhab.core.thing.i18n,org.openhab.core.thing.link,or
+ g.openhab.core.thing.type,org.openhab.core.types,javax.jmdns;version="[
+ 3.5,4)",javax.lang.model.element,org.slf4j;version="[1.7,2)",sun.misc
+Private-Package: OH-INF.addon,OH-INF.i18n,OH-INF.thing,com.google.errorp
+ rone.annotations,com.google.errorprone.annotations.concurrent,com.googl
+ e.gson,com.google.gson.annotations,com.google.gson.internal,com.google.
+ gson.internal.bind,com.google.gson.internal.bind.util,com.google.gson.i
+ nternal.reflect,com.google.gson.internal.sql,com.google.gson.reflect,co
+ m.google.gson.stream,org.openhab.binding.hyperion.internal,org.openhab.
+ binding.hyperion.internal.connection,org.openhab.binding.hyperion.inter
+ nal.handler,org.openhab.binding.hyperion.internal.protocol,org.openhab.
+ binding.hyperion.internal.protocol.ng,org.openhab.binding.hyperion.inte
+ rnal.protocol.v1
+Provide-Capability: osgi.service;objectClass:List<String>="org.openhab.b
+ inding.hyperion.internal.HyperionStateDescriptionProvider,org.openhab.c
+ ore.thing.type.DynamicStateDescriptionProvider";uses:="org.openhab.bind
+ ing.hyperion.internal,org.openhab.core.thing.type",osgi.service;objectC
+ lass:List<String>="org.openhab.core.config.discovery.mdns.MDNSDiscovery
+ Participant";uses:="org.openhab.core.config.discovery.mdns",osgi.servic
+ e;objectClass:List<String>="org.openhab.core.thing.binding.ThingHandler
+ Factory";uses:="org.openhab.core.thing.binding"
+Require-Capability: osgi.service;filter:="(objectClass=org.openhab.bindi
+ ng.hyperion.internal.HyperionStateDescriptionProvider)";effective:=acti
+ ve,osgi.service;filter:="(objectClass=org.openhab.core.events.EventPubl
+ isher)";effective:=active,osgi.service;filter:="(objectClass=org.openha
+ b.core.thing.i18n.ChannelTypeI18nLocalizationService)";effective:=activ
+ e,osgi.service;filter:="(objectClass=org.openhab.core.thing.link.ItemCh
+ annelLinkRegistry)";effective:=active,osgi.extender;filter:="(&(osgi.ex
+ tender=osgi.component)(version>=1.5.0)(!(version>=2.0.0)))",osgi.ee;fil
+ ter:="(&(osgi.ee=JavaSE)(version=21))"
+Service-Component: OSGI-INF/org.openhab.binding.hyperion.internal.Hyperi
+ onDiscoveryParticipant.xml,OSGI-INF/org.openhab.binding.hyperion.intern
+ al.HyperionHandlerFactory.xml,OSGI-INF/org.openhab.binding.hyperion.int
+ ernal.HyperionStateDescriptionProvider.xml
+Tool: Bnd-7.1.0.202411251545
+

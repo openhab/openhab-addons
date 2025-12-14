@@ -37,6 +37,7 @@ import org.openhab.binding.hyperion.internal.protocol.ng.Component;
 import org.openhab.binding.hyperion.internal.protocol.ng.ComponentState;
 import org.openhab.binding.hyperion.internal.protocol.ng.ComponentStateCommand;
 import org.openhab.binding.hyperion.internal.protocol.ng.Hyperion;
+import org.openhab.binding.hyperion.internal.protocol.ng.InstanceInfo;
 import org.openhab.binding.hyperion.internal.protocol.ng.NgInfo;
 import org.openhab.binding.hyperion.internal.protocol.ng.NgResponse;
 import org.openhab.binding.hyperion.internal.protocol.ng.Priority;
@@ -93,6 +94,8 @@ public class HyperionNgHandler extends BaseThingHandler {
     private int priority;
     private String origin;
     private HyperionStateDescriptionProvider stateDescriptionProvider;
+    private java.util.List<Integer> instanceIndices = new java.util.ArrayList<>();
+    private java.util.List<Integer> availableInstanceIndices = new java.util.ArrayList<>();
 
     private Runnable refreshJob = new Runnable() {
         @Override
@@ -143,6 +146,23 @@ public class HyperionNgHandler extends BaseThingHandler {
             priority = ((BigDecimal) config.get(PROP_PRIORITY)).intValue();
             origin = (String) config.get(PROP_ORIGIN);
 
+            // parse optional instances configuration (comma separated list of integers)
+            Object instancesObj = config.get(PROP_INSTANCES);
+            if (instancesObj != null) {
+                String instancesStr = instancesObj.toString();
+                String[] parts = instancesStr.split(",");
+                for (String p : parts) {
+                    try {
+                        String t = p.trim();
+                        if (!t.isEmpty()) {
+                            instanceIndices.add(Integer.parseInt(t));
+                        }
+                    } catch (NumberFormatException e) {
+                        logger.debug("Ignoring invalid instance id '{}': {}", p, e.getMessage());
+                    }
+                }
+            }
+
             connection = new JsonTcpConnection(address, port);
             connectFuture = scheduler.scheduleWithFixedDelay(connectionJob, 0, refreshInterval, TimeUnit.SECONDS);
             refreshFuture = scheduler.scheduleWithFixedDelay(refreshJob, 0, refreshInterval, TimeUnit.SECONDS);
@@ -176,7 +196,13 @@ public class HyperionNgHandler extends BaseThingHandler {
             // update Hyperion, older API compatibility
             Hyperion hyperion = info.getHyperion();
             if (hyperion != null) {
-                updateHyperion(hyperion);
+                if (instanceIndices.isEmpty()) {
+                    updateHyperion(hyperion);
+                } else {
+                    logger.debug(
+                            "Skipping updateHyperion from serverinfo because specific instances are configured: {}",
+                            instanceIndices);
+                }
             }
 
             // populate the effect states
@@ -189,7 +215,37 @@ public class HyperionNgHandler extends BaseThingHandler {
 
             // update components
             List<Component> components = info.getComponents();
-            updateComponents(components);
+            // If the user configured specific instances, avoid updating the global
+            // `ALL` component from serverinfo because that would overwrite per-instance
+            // intents (e.g., turning instance 1 off shouldn't be reverted by a global
+            // ALL=true reported by the server). Filter out the ALL component in that case.
+            if (components != null) {
+                if (!instanceIndices.isEmpty()) {
+                    List<Component> filtered = new ArrayList<>();
+                    for (Component c : components) {
+                        if (!COMPONENTS_ALL.equals(c.getName())) {
+                            filtered.add(c);
+                        }
+                    }
+                    updateComponents(filtered);
+                } else {
+                    updateComponents(components);
+                }
+            }
+
+            // update available instances (if server provides them) so that when user did not
+            // configure specific instances we can target all available instances
+            try {
+                java.util.List<InstanceInfo> instances = info.getInstance();
+                if (instances != null && !instances.isEmpty()) {
+                    availableInstanceIndices.clear();
+                    for (InstanceInfo ii : instances) {
+                        availableInstanceIndices.add(ii.getInstance());
+                    }
+                }
+            } catch (Exception e) {
+                // ignore if serverinfo doesn't include instance info
+            }
 
             // update colors/effects
             List<Priority> priorities = info.getPriorities();
@@ -400,8 +456,32 @@ public class HyperionNgHandler extends BaseThingHandler {
 
             boolean state = command == OnOffType.ON ? true : false;
             componentState.setState(state);
-            ComponentStateCommand stateCommand = new ComponentStateCommand(componentState);
-            sendCommand(stateCommand);
+
+            // determine which instances to target: user-configured `instanceIndices` take
+            // precedence; otherwise fall back to available instances reported by server
+            java.util.List<Integer> targetInstances = !instanceIndices.isEmpty() ? instanceIndices
+                    : availableInstanceIndices;
+
+            logger.debug("handleHyperionEnabled: instanceIndices={} availableInstanceIndices={} targetInstances={}",
+                    instanceIndices, availableInstanceIndices, targetInstances);
+
+            if (!targetInstances.isEmpty()) {
+                // send per-instance commands (top-level `instance` as array) so the server
+                // applies the change only to the configured instances
+                for (Integer idx : targetInstances) {
+                    ComponentState perInstanceState = new ComponentState();
+                    perInstanceState.setComponent(componentState.getComponent());
+                    perInstanceState.setState(componentState.getState());
+                    ComponentStateCommand perInstanceCommand = new ComponentStateCommand(perInstanceState);
+                    perInstanceCommand.setInstance(java.util.Collections.singletonList(idx));
+                    logger.debug("handleHyperionEnabled: sending per-instance command for instance={}", idx);
+                    sendCommand(perInstanceCommand);
+                }
+            } else {
+                ComponentStateCommand stateCommand = new ComponentStateCommand(componentState);
+                logger.debug("handleHyperionEnabled: sending global command (no instances)");
+                sendCommand(stateCommand);
+            }
         } else {
             logger.debug("Channel {} unable to process command {}", channel, command);
         }
@@ -413,8 +493,31 @@ public class HyperionNgHandler extends BaseThingHandler {
             componentState.setComponent(COMPONENTS_ALL);
             boolean state = command == OnOffType.ON ? true : false;
             componentState.setState(state);
-            ComponentStateCommand stateCommand = new ComponentStateCommand(componentState);
-            sendCommand(stateCommand);
+            // determine which instances to target: user-configured `instanceIndices` take
+            // precedence; otherwise fall back to available instances reported by server
+            java.util.List<Integer> targetInstances = !instanceIndices.isEmpty() ? instanceIndices
+                    : availableInstanceIndices;
+
+            if (!targetInstances.isEmpty()) {
+                if (COMPONENTS_ALL.equals(componentState.getComponent())) {
+                    for (Integer idx : targetInstances) {
+                        ComponentState perInstanceState = new ComponentState();
+                        perInstanceState.setComponent(componentState.getComponent());
+                        perInstanceState.setState(componentState.getState());
+                        ComponentStateCommand perInstanceCommand = new ComponentStateCommand(perInstanceState);
+                        // set top-level instance as an array (server expects arrays for `instance`)
+                        perInstanceCommand.setInstance(java.util.Collections.singletonList(idx));
+                        sendCommand(perInstanceCommand);
+                    }
+                } else {
+                    ComponentStateCommand stateCommand = new ComponentStateCommand(componentState);
+                    stateCommand.setInstance(targetInstances);
+                    sendCommand(stateCommand);
+                }
+            } else {
+                ComponentStateCommand stateCommand = new ComponentStateCommand(componentState);
+                sendCommand(stateCommand);
+            }
         } else {
             logger.debug("Channel {} unable to process command {}", CHANNEL_HYPERION_ENABLED, command);
         }
