@@ -54,7 +54,7 @@ public class EvccPlanHandler extends EvccBaseThingHandler {
     private final String vehicleID;
     private final Map<String, String> pendingCommands = new ConcurrentHashMap<>();
     private final JsonArray cachedRepeatingPlans = new JsonArray();
-    private  JsonObject cachedOneTimePlan = new JsonObject();
+    private JsonObject cachedOneTimePlan = new JsonObject();
     private final Map<Integer, String> localizedDayOfWeekMap = new HashMap<>();
     private final Map<String, Integer> localizedReverseMap = new HashMap<>();
 
@@ -71,7 +71,7 @@ public class EvccPlanHandler extends EvccBaseThingHandler {
         localizedDayOfWeekMap.putAll(IntStream.rangeClosed(0, 6).boxed().collect(Collectors.toUnmodifiableMap(d -> d,
                 d -> (d == 0 ? DayOfWeek.SUNDAY : DayOfWeek.of(d)).getDisplayName(TextStyle.FULL, locale))));
         localizedReverseMap.putAll(localizedDayOfWeekMap.entrySet().stream()
-                    .collect(Collectors.toUnmodifiableMap(Map.Entry::getValue, Map.Entry::getKey)));
+                .collect(Collectors.toUnmodifiableMap(Map.Entry::getValue, Map.Entry::getKey)));
     }
 
     @Override
@@ -111,7 +111,7 @@ public class EvccPlanHandler extends EvccBaseThingHandler {
                 cachedOneTimePlan = state.deepCopy();
             } else if (index > 0 && state.has(JSON_KEY_REPEATING_PLANS)) {
                 // Cache the plans
-                while (cachedRepeatingPlans.size() > 0) {
+                while (!cachedRepeatingPlans.isEmpty()) {
                     cachedRepeatingPlans.remove(0);
                 }
                 cachedRepeatingPlans.addAll(state.getAsJsonArray(JSON_KEY_REPEATING_PLANS).deepCopy());
@@ -146,7 +146,7 @@ public class EvccPlanHandler extends EvccBaseThingHandler {
 
     @Override
     public JsonObject getStateFromCachedState(JsonObject state) {
-        if (index == 0 && cachedOneTimePlan != null) {
+        if (index == 0 && !cachedOneTimePlan.isEmpty()) {
             return cachedOneTimePlan;
         } else if (index > 0 && cachedRepeatingPlans.size() >= index) {
             return cachedRepeatingPlans.get(index - 1).getAsJsonObject();
@@ -163,10 +163,13 @@ public class EvccPlanHandler extends EvccBaseThingHandler {
         } else {
             if (!"send-update".equals(channelUID.getId()) && command instanceof State state) {
                 String stateString = state.toString();
-                if ("plan-soc".equals(channelUID.getId())) {
-                    stateString = stateString.substring(0, stateString.indexOf(" "));
+                if ("plan-soc".equals(channelUID.getId()) || "plan-precondition".equals(channelUID.getId())) {
+                    int spaceIdx = stateString.indexOf(" ");
+                    if (spaceIdx != -1) {
+                        stateString = stateString.substring(0, spaceIdx);
+                    }
                 }
-                String channelKey = channelUID.getId().startsWith("plan-") ? channelUID.getId().substring(5) : channelUID.getId();
+                String channelKey = Utils.getKeyFromChannelUID(channelUID);
                 pendingCommands.put(channelKey, stateString); // store for later processing
             } else {
                 super.handleCommand(channelUID, command);
@@ -175,71 +178,80 @@ public class EvccPlanHandler extends EvccBaseThingHandler {
     }
 
     private void updatePlan() {
-        if (index != 0) {
-            JsonArray payload = cachedRepeatingPlans.deepCopy();
-            JsonObject plan = payload.get(index - 1).getAsJsonObject();
-            Map<String, String> values = getCachedValues(plan);
-            for (Map.Entry<String, JsonElement> entry : plan.entrySet()) {
-                if (values.containsKey(entry.getKey())) {
-                    switch (entry.getKey()) {
-                        case "weekdays" -> {
-                            JsonArray weekdaysArray = new JsonArray();
-                            String[] days = values.get(entry.getKey()).split(";");
-                            for (String day : days) {
-                                Integer dayValue = localizedReverseMap.get(day);
-                                if (dayValue != null) {
-                                    weekdaysArray.add(new JsonPrimitive(dayValue));
-                                }
-                            }
-                            plan.add(entry.getKey(), weekdaysArray);
-                        }
-                        case "soc", "precondition" -> {
-                            String value = values.get(entry.getKey());
-                            if (value != null) {
-                                plan.add(entry.getKey(), new JsonPrimitive(Integer.parseInt(value)));
-                            }
-                        }
-                        case "active" -> {
-                            String value = values.get(entry.getKey());
-                            if (value != null) {
-                                plan.add(entry.getKey(), new JsonPrimitive(Boolean.parseBoolean(value)));
-                            }
-                        }
-                        default -> plan.add(entry.getKey(), new JsonPrimitive(values.get(entry.getKey())));
-                    }
-                }
-            }
-            plan.add("time", plan.get("repeatingTime"));
-            plan.remove("repeatingTime");
-            payload.set(index - 1, plan);
-            sendCommand(endpoint, payload);
+        boolean successful;
+        if (index != 0 && (index - 1) >= 0 && (index - 1) < cachedRepeatingPlans.size()) {
+            successful = updateRepeatingPlan();
         } else {
-            Map<String, String> values = getCachedValues(cachedOneTimePlan);
-            String soc = values.get("soc");
-            String time = values.get("time");
-            String precondition = values.get("precondition");
-            String url = String.join("/", endpoint, soc, time + "?" + precondition);
-            sendCommand(url, JsonNull.INSTANCE);
+            successful = updateOneTimePlan();
         }
-        pendingCommands.clear();
+        if (successful) {
+            pendingCommands.clear();
+        }
     }
 
-    private Map<String, String> getCachedValues(JsonElement cachedValues) {
-        Map<String, String> values = new HashMap<>();
-        JsonObject objectToIterate = new JsonObject();
-        if (cachedValues.isJsonObject()) {
-            objectToIterate = cachedValues.getAsJsonObject();
-        } else if (cachedValues.isJsonArray()) {
-            objectToIterate = cachedValues.getAsJsonArray().get(index - 1).getAsJsonObject();
+    private boolean updateRepeatingPlan() {
+        JsonArray payload = cachedRepeatingPlans.deepCopy();
+        JsonObject plan = payload.get(index - 1).getAsJsonObject();
+        Map<String, String> values = getCachedValues(plan);
+        for (Map.Entry<String, JsonElement> entry : plan.entrySet()) {
+            String key = entry.getKey();
+            if (values.containsKey(key) && values.get(key) instanceof String value) {
+                switch (key) {
+                    case "weekdays" -> {
+                        JsonArray weekdaysArray = new JsonArray();
+                        String[] days = value.split(";");
+                        for (String day : days) {
+                            Integer dayValue = localizedReverseMap.get(day);
+                            if (dayValue != null) {
+                                weekdaysArray.add(new JsonPrimitive(dayValue));
+                            }
+                        }
+                        plan.add(key, weekdaysArray);
+                    }
+                    case "soc", "precondition" -> {
+                        plan.add(key, new JsonPrimitive(Integer.parseInt(value)));
+                    }
+                    case "active" -> {
+                        if ("ON".equals(value)) {
+                            plan.add(key, new JsonPrimitive(true));
+                        } else {
+                            plan.add(key, new JsonPrimitive(false));
+                        }
+                    }
+                    default -> plan.add(key, new JsonPrimitive(value));
+                }
+            }
         }
-        for (Map.Entry<String, JsonElement> entry : objectToIterate.entrySet()) {
+        plan.add("time", plan.get("repeatingTime"));
+        plan.remove("repeatingTime");
+        payload.set(index - 1, plan);
+        return sendCommand(endpoint, payload);
+    }
+
+    private boolean updateOneTimePlan() {
+        Map<String, String> values = getCachedValues(cachedOneTimePlan);
+        String soc = values.get("soc");
+        String time = values.get("time");
+        String precondition = values.get("precondition");
+        String url = String.join("/", endpoint, soc, time);
+        if (precondition != null) {
+            url = String.join("?", url, "precondition=" + precondition);
+        }
+        return sendCommand(url, JsonNull.INSTANCE);
+    }
+
+    private Map<String, String> getCachedValues(JsonObject cachedValues) {
+        Map<String, String> values = new HashMap<>();
+        for (Map.Entry<String, JsonElement> entry : cachedValues.entrySet()) {
             if (pendingCommands.containsKey(entry.getKey())) {
                 String value = pendingCommands.get(entry.getKey());
                 if (value != null) {
                     values.put(entry.getKey(), value);
                 }
             } else {
-                values.put(entry.getKey(), entry.getValue().getAsString());
+                if (entry.getValue().isJsonPrimitive() && entry.getValue().getAsJsonPrimitive().isString()) {
+                    values.put(entry.getKey(), entry.getValue().getAsString());
+                }
             }
         }
         return values;

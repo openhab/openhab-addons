@@ -71,7 +71,7 @@
 	<channel-type id="plan-tz">
 		<item-type>String</item-type>
 		<label>Plan Timezone</label>
-		<description>Timeezone for the Plan (only in repeating plans)</description>
+		<description>Timezone for the Plan (only in repeating plans)</description>
 		<tags>
 			<tag>Setpoint</tag>
 		</tags>

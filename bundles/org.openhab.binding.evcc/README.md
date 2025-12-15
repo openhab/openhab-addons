@@ -42,8 +42,46 @@ Default value for _refreshInterval_ is 30 seconds.
 
 ## Thing(s) Configuration
 
-The Things don't have a configuration. They will be set up automatically when a bridge has been configured.
-You can add them via file configuration or in the openHAB UI.
+Things will be set up automatically when a bridge has been configured and will appear in your inbox.
+You can also manually add them to your things file.
+
+### Thing Site
+The Site Thing represents the overall site data of your evcc instance.
+No configuration parameters are required.
+
+### Thing Battery
+The Battery Thing represents a battery configured in your evcc instance.
+Needs the index of the battery as configuration parameter.
+
+### Thing PV
+The PV Thing represents a photovoltaic system configured in your evcc instance.
+Needs the index of the photovoltaic system as configuration parameter.
+
+### Thing Loadpoint
+The Loadpoint Thing represents a loadpoint configured in your evcc instance.
+Needs the index of the loadpoint as configuration parameter.
+
+### Thing Vehicle
+The Vehicle Thing represents a vehicle configured in your evcc instance.
+Needs the database id of the vehicle as configuration parameter.
+
+### Thing Plan
+The Plan Thing represents a charging plan for a vehicle configured in your evcc instance.
+Needs the index of the plan and the database id of the vehicle as configuration parameters.
+The index 0 is always the one-time plan, higher indices are repeating plans.
+
+Any changes made to the plan channels will not be sent to evcc automatically, but cached.
+If you want to update the plan, you have to use the update plan channel of the thing to send it to evcc.
+The weekdays will be localized based on the language settings of your openHAB instance.
+Here an example to update a repeating charging plan:
+
+```DSLRule
+Repeating_charging_plan_1_for_BMW_iX3_Plan_Weekdays.sendCommand("Monday;Tuesday;Wendsday");
+Repeating_charging_plan_1_for_BMW_iX3_Plan_Time.sendCommand("09:00");
+Repeating_charging_plan_1_for_BMW_iX3_Plan_SoC.sendCommand(85);
+Repeating_charging_plan_1_for_BMW_iX3_Precondition_Time.sendCommand(1800);
+Repeating_charging_plan_1_for_BMW_iX3_Update_Plan.sendCommand("ON");
+```
 
 ## Channels
 
@@ -68,7 +106,11 @@ Bridge evcc:server:demo-server "Demo" [scheme="https", host="demo.evcc.io", port
     Thing loadpoint demo-loadpoint-carport "Loadpoint - evcc Demo Loadpoint 1"[index=0]
     ..
     // You can define as many Vehicle things as you have vehicles configured in your evcc instance
-    Thing vehicle demo-vehicle1 "Vehicle - evcc Demo Vehicle 1"[id="vehicle_1"]
+    Thing vehicle demo-vehicle1 "Vehicle - evcc Demo Vehicle 1"[vehicle-id="vehicle_1"]
+    ..
+    // You can define as many Plan things as you have plans for your vehicle configured
+    Thing plan demo-one-time-plan-for-vehicle1 "One-Time plan for vehicle 1"[index=0, vehicle-id="vehicle_1"]
+    Thing plan demo-repeating-plan-1-for-vehicle1 "Repeating plan 1 for vehicle 1"[index=1, vehicle-id="vehicle_1"]..
     ..
 }
 ```

@@ -58,7 +58,7 @@ public class PlanDiscoveryMapper {
             String label = localizedLabel == null ? "One-time plan for " + title : localizedLabel;
             results.add(createPlanDiscoveryResult(label, createIdString(id, 0), 0, id, bridgeHandler));
         }
-        if (vehicle.get(JSON_KEY_REPEATING_PLANS).isJsonArray()) {
+        if (vehicle.has(JSON_KEY_REPEATING_PLANS) && vehicle.get(JSON_KEY_REPEATING_PLANS).isJsonArray()) {
             for (int index = 1; index <= vehicle.get(JSON_KEY_REPEATING_PLANS).getAsJsonArray().size(); index++) {
                 String localizedLabel = tp.getText(ctx.getBundle(), "discovery.evcc.plan.repeating.label",
                         "Repeating plan {0} for {1}", lp.getLocale(), index, title);
