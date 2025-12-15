@@ -90,7 +90,7 @@ public class EvccLoadpointHandler extends EvccBaseThingHandler {
             }
             // Special Handling for enable and disable endpoints
             if (datapoint.contains("enable")) {
-                datapoint = "/enable/" + datapoint.replace("enable", "");
+                datapoint += "/enable/" + datapoint.replace("enable", "");
             } else if (datapoint.contains("disable")) {
                 datapoint += "/disable/" + datapoint.replace("disable", "");
             }
