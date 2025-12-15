@@ -15,6 +15,11 @@ package org.openhab.binding.evcc.internal.handler;
 import static org.openhab.binding.evcc.internal.EvccBindingConstants.*;
 
 import java.time.DayOfWeek;
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
+import java.time.format.DateTimeParseException;
+import java.time.format.ResolverStyle;
 import java.time.format.TextStyle;
 import java.util.HashMap;
 import java.util.Locale;
@@ -232,6 +237,20 @@ public class EvccPlanHandler extends EvccBaseThingHandler {
         Map<String, String> values = getCachedValues(cachedOneTimePlan);
         String soc = values.get("soc");
         String time = values.get("time");
+        if (time != null) {
+            if (!TimeFormatValidator.isExactTimeFormat(time)) {
+                try {
+                    OffsetDateTime odt = OffsetDateTime.parse(time,
+                            DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZ"));
+                    time = odt.toInstant().toString();
+                } catch (DateTimeParseException ignored) {
+                    ; // time is not null and is not matching the time formats
+                }
+            }
+        } else {
+            // Should never happen, but you'll never know
+            return false;
+        }
         String precondition = values.get("precondition");
         String url = String.join("/", endpoint, soc, time);
         if (precondition != null) {
@@ -255,5 +274,24 @@ public class EvccPlanHandler extends EvccBaseThingHandler {
             }
         }
         return values;
+    }
+
+    private static final class TimeFormatValidator {
+
+        // Exact: yyyy-MM-dd'T'HH:mm:ss'Z'
+        private static final DateTimeFormatter EXACT_TIME_FMT = new DateTimeFormatterBuilder()
+                .appendPattern("yyyy-MM-dd'T'HH:mm:ss'Z'").toFormatter().withResolverStyle(ResolverStyle.STRICT);
+
+        /**
+         * true, if input is exact yyyy-MM-dd'T'HH:mm:ss'Z'
+         */
+        public static boolean isExactTimeFormat(String input) {
+            try {
+                EXACT_TIME_FMT.parse(input);
+                return true;
+            } catch (Exception ex) {
+                return false;
+            }
+        }
     }
 }

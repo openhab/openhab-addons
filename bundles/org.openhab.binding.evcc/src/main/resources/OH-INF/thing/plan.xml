@@ -16,8 +16,12 @@
 			</channel>
 		</channels>
 		<config-description>
-			<parameter name="id" type="text">
-				<label>ID</label>
+			<parameter name="index" type="text">
+				<label>Index</label>
+				<description>The plan index: 0 for one-time plan, 1..N for repeating plans for your vehicle in the evcc setup</description>
+			</parameter>
+			<parameter name="vehicle-id" type="text">
+				<label>Vehicle ID</label>
 				<description>The id of the plan for your vehicle in the evcc setup (starting with 0 for the active plan, repeating
 					plans start with 1)</description>
 			</parameter>

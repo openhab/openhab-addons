@@ -43,29 +43,36 @@ Default value for _refreshInterval_ is 30 seconds.
 ## Thing(s) Configuration
 
 Things will be set up automatically when a bridge has been configured and will appear in your inbox.
-You can also manually add them to your things file.
+It is not possible to add things manually in UI.
+Nevertheless, you can add them manually via things file.
 
 ### Thing Site
+
 The Site Thing represents the overall site data of your evcc instance.
 No configuration parameters are required.
 
 ### Thing Battery
+
 The Battery Thing represents a battery configured in your evcc instance.
 Needs the index of the battery as configuration parameter.
 
 ### Thing PV
+
 The PV Thing represents a photovoltaic system configured in your evcc instance.
 Needs the index of the photovoltaic system as configuration parameter.
 
 ### Thing Loadpoint
+
 The Loadpoint Thing represents a loadpoint configured in your evcc instance.
 Needs the index of the loadpoint as configuration parameter.
 
 ### Thing Vehicle
+
 The Vehicle Thing represents a vehicle configured in your evcc instance.
 Needs the database id of the vehicle as configuration parameter.
 
 ### Thing Plan
+
 The Plan Thing represents a charging plan for a vehicle configured in your evcc instance.
 Needs the index of the plan and the database id of the vehicle as configuration parameters.
 The index 0 is always the one-time plan, higher indices are repeating plans.

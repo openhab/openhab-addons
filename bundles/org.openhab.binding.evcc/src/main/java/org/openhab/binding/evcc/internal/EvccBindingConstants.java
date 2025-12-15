@@ -48,8 +48,8 @@ public class EvccBindingConstants {
     public static final String PROPERTY_INDEX = "index";
     public static final String PROPERTY_TYPE = "type";
     public static final String PROPERTY_TITLE = "title";
-    public static final String PROPERTY_SITE_TITLE = "siteTitle";
-    public static final String PROPERTY_VEHICLE_ID = "vehicleId";
+    public static final String PROPERTY_SITE_TITLE = "site-title";
+    public static final String PROPERTY_VEHICLE_ID = "vehicle-id";
 
     public static final String API_PATH_LOADPOINTS = "/loadpoints";
     public static final String API_PATH_VEHICLES = "/vehicles";
