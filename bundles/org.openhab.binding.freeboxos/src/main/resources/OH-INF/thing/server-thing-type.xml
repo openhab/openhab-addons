@@ -35,10 +35,13 @@
 			<channel-group typeId="vpn-server" id="pptp">
 				<label>PPTP VPN</label>
 			</channel-group>
+			<channel-group typeId="vpn-server" id="ipsec">
+				<label>IPsec VPN</label>
+			</channel-group>
 		</channel-groups>
 
 		<properties>
-			<property name="thingTypeVersion">2</property>
+			<property name="thingTypeVersion">3</property>
 		</properties>
 
 		<representation-property>macAddress</representation-property>
@@ -76,10 +79,13 @@
 			<channel-group typeId="vpn-server" id="pptp">
 				<label>PPTP VPN</label>
 			</channel-group>
+			<channel-group typeId="vpn-server" id="ipsec">
+				<label>IPsec VPN</label>
+			</channel-group>
 		</channel-groups>
 
 		<properties>
-			<property name="thingTypeVersion">2</property>
+			<property name="thingTypeVersion">3</property>
 		</properties>
 
 		<representation-property>macAddress</representation-property>
