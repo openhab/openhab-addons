@@ -53,10 +53,10 @@ public class EvccPlanHandler extends EvccBaseThingHandler {
     private final int index;
     private final String vehicleID;
     private final Map<String, String> pendingCommands = new ConcurrentHashMap<>();
-    private JsonArray cachedRepeatingPlans = new JsonArray();
-    private JsonObject cachedOneTimePlan = new JsonObject();
-    public Map<Integer, String> localizedDayOfWeekMap = Map.of();
-    public Map<String, Integer> localizedReverseMap = Map.of();
+    private final JsonArray cachedRepeatingPlans = new JsonArray();
+    private  JsonObject cachedOneTimePlan = new JsonObject();
+    private final Map<Integer, String> localizedDayOfWeekMap = new HashMap<>();
+    private final Map<String, Integer> localizedReverseMap = new HashMap<>();
 
     public EvccPlanHandler(Thing thing, ChannelTypeRegistry channelTypeRegistry) {
         super(thing, channelTypeRegistry);
@@ -65,20 +65,20 @@ public class EvccPlanHandler extends EvccBaseThingHandler {
         type = PROPERTY_TYPE_PLAN;
     }
 
-    private Map<Integer, String> buildLocalizedDayOfWeekMap(EvccBridgeHandler bridgeHandler) {
+    private void buildLocalizedMaps(EvccBridgeHandler bridgeHandler) {
         LocaleProvider localeProvider = bridgeHandler.getLocaleProvider();
         Locale locale = localeProvider.getLocale();
-        return IntStream.rangeClosed(0, 6).boxed().collect(Collectors.toUnmodifiableMap(d -> d,
-                d -> (d == 0 ? DayOfWeek.SUNDAY : DayOfWeek.of(d)).getDisplayName(TextStyle.FULL, locale)));
+        localizedDayOfWeekMap.putAll(IntStream.rangeClosed(0, 6).boxed().collect(Collectors.toUnmodifiableMap(d -> d,
+                d -> (d == 0 ? DayOfWeek.SUNDAY : DayOfWeek.of(d)).getDisplayName(TextStyle.FULL, locale))));
+        localizedReverseMap.putAll(localizedDayOfWeekMap.entrySet().stream()
+                    .collect(Collectors.toUnmodifiableMap(Map.Entry::getValue, Map.Entry::getKey)));
     }
 
     @Override
     public void initialize() {
         super.initialize();
         Optional.ofNullable(bridgeHandler).ifPresent(handler -> {
-            localizedDayOfWeekMap = buildLocalizedDayOfWeekMap(handler);
-            localizedReverseMap = localizedDayOfWeekMap.entrySet().stream()
-                    .collect(Collectors.toUnmodifiableMap(Map.Entry::getValue, Map.Entry::getKey));
+            buildLocalizedMaps(handler);
             endpoint = String.join("/", handler.getBaseURL(), "vehicles", vehicleID, "plan");
             if (index == 0) {
                 endpoint = String.join("/", endpoint, "soc");
@@ -111,7 +111,10 @@ public class EvccPlanHandler extends EvccBaseThingHandler {
                 cachedOneTimePlan = state.deepCopy();
             } else if (index > 0 && state.has(JSON_KEY_REPEATING_PLANS)) {
                 // Cache the plans
-                cachedRepeatingPlans = state.getAsJsonArray(JSON_KEY_REPEATING_PLANS).deepCopy();
+                while (cachedRepeatingPlans.size() > 0) {
+                    cachedRepeatingPlans.remove(0);
+                }
+                cachedRepeatingPlans.addAll(state.getAsJsonArray(JSON_KEY_REPEATING_PLANS).deepCopy());
                 // Get the corresponding repeating plan
                 state = state.getAsJsonArray(JSON_KEY_REPEATING_PLANS).get(index - 1).getAsJsonObject();
                 if (state.has("time")) {
@@ -143,21 +146,28 @@ public class EvccPlanHandler extends EvccBaseThingHandler {
 
     @Override
     public JsonObject getStateFromCachedState(JsonObject state) {
-        return new JsonObject();
+        if (index == 0 && cachedOneTimePlan != null) {
+            return cachedOneTimePlan;
+        } else if (index > 0 && cachedRepeatingPlans.size() >= index) {
+            return cachedRepeatingPlans.get(index - 1).getAsJsonObject();
+        } else {
+            return new JsonObject();
+        }
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if ("send-update".equals(channelUID.getId()) && command == OnOffType.ON && !pendingCommands.isEmpty()) {
+        if ("send-update".equals(channelUID.getId()) && OnOffType.ON.equals(command) && !pendingCommands.isEmpty()) {
             updatePlan();
             scheduler.schedule(() -> updateState(channelUID, OnOffType.OFF), 500, TimeUnit.MILLISECONDS);
         } else {
-            if (command instanceof State state) {
+            if (!"send-update".equals(channelUID.getId()) && command instanceof State state) {
                 String stateString = state.toString();
                 if ("plan-soc".equals(channelUID.getId())) {
                     stateString = stateString.substring(0, stateString.indexOf(" "));
                 }
-                pendingCommands.put(channelUID.getId().substring(5), stateString); // store for later processing
+                String channelKey = channelUID.getId().startsWith("plan-") ? channelUID.getId().substring(5) : channelUID.getId();
+                pendingCommands.put(channelKey, stateString); // store for later processing
             } else {
                 super.handleCommand(channelUID, command);
             }
@@ -167,7 +177,7 @@ public class EvccPlanHandler extends EvccBaseThingHandler {
     private void updatePlan() {
         if (index != 0) {
             JsonArray payload = cachedRepeatingPlans.deepCopy();
-            JsonObject plan = cachedRepeatingPlans.get(index - 1).getAsJsonObject();
+            JsonObject plan = payload.get(index - 1).getAsJsonObject();
             Map<String, String> values = getCachedValues(plan);
             for (Map.Entry<String, JsonElement> entry : plan.entrySet()) {
                 if (values.containsKey(entry.getKey())) {
