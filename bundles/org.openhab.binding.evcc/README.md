@@ -43,7 +43,7 @@ Default value for _refreshInterval_ is 30 seconds.
 ## Thing(s) Configuration
 
 Things will be set up automatically when a bridge has been configured and will appear in your inbox.
-It is not possible to add things manually in UI.
+It is not possible to add things manually in the UI.
 Nevertheless, you can add them manually via things file.
 
 ### Thing Site
@@ -79,11 +79,13 @@ The index 0 is always the one-time plan, higher indices are repeating plans.
 
 Any changes made to the plan channels will not be sent to evcc automatically, but cached.
 If you want to update the plan, you have to use the update plan channel of the thing to send it to evcc.
+**Updating the plan will only work when setting the update plan channel to state ON**.
 The weekdays will be localized based on the language settings of your openHAB instance.
-Here an example to update a repeating charging plan:
+
+Here is an example to update a repeating charging plan via DLSRule script:
 
 ```DSLRule
-Repeating_charging_plan_1_for_BMW_iX3_Plan_Weekdays.sendCommand("Monday;Tuesday;Wendsday");
+Repeating_charging_plan_1_for_BMW_iX3_Plan_Weekdays.sendCommand("Monday;Tuesday;Wednesday");
 Repeating_charging_plan_1_for_BMW_iX3_Plan_Time.sendCommand("09:00");
 Repeating_charging_plan_1_for_BMW_iX3_Plan_SoC.sendCommand(85);
 Repeating_charging_plan_1_for_BMW_iX3_Precondition_Time.sendCommand(1800);

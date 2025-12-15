@@ -121,6 +121,10 @@ public class EvccPlanHandler extends EvccBaseThingHandler {
                 }
                 cachedRepeatingPlans.addAll(state.getAsJsonArray(JSON_KEY_REPEATING_PLANS).deepCopy());
                 // Get the corresponding repeating plan
+                if (cachedRepeatingPlans.size() < index) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
+                    return;
+                }
                 state = state.getAsJsonArray(JSON_KEY_REPEATING_PLANS).get(index - 1).getAsJsonObject();
                 if (state.has("time")) {
                     state.add("repeatingTime", state.get("time"));

@@ -15,6 +15,7 @@
 				<description>Sends the updated plan to evcc</description>
 			</channel>
 		</channels>
+		<representation-property>id</representation-property>
 		<config-description>
 			<parameter name="index" type="text">
 				<label>Index</label>

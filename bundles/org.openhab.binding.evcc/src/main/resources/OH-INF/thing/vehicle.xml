@@ -9,7 +9,7 @@
 		</supported-bridge-type-refs>
 		<label>Vehicle</label>
 		<description>A vehicle configured in your evcc instance</description>
-		<representation-property>id</representation-property>
+		<representation-property>vehicle-id</representation-property>
 		<config-description>
 			<parameter name="vehicle-id" type="text">
 				<label>Vehicle ID</label>

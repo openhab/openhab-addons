@@ -270,7 +270,7 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
                 if (!payload.isJsonNull()) {
                     ContentResponse response = httpClient.newRequest(url).timeout(5, TimeUnit.SECONDS)
                             .method(HttpMethod.POST).content(new StringContentProvider(payload.toString()))
-                            .header(HttpHeader.ACCEPT, "application/json").send();
+                            .header(HttpHeader.ACCEPT, "application/json").header(HttpHeader.CONTENT_TYPE, "application/json").send();
                     successful.set(checkResponse(response));
                 } else {
                     ContentResponse response = httpClient.newRequest(url).timeout(5, TimeUnit.SECONDS)
