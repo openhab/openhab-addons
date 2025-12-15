@@ -51,7 +51,7 @@ This binding has its own IconProvider and makes available the following list of 
 ## Channels
 
 - **thing** `sun`
-  - **group** `rise, set, noon, night, midnight, morningNight, astroDawn, nauticDawn, civilDawn, astroDusk, nauticDusk, civilDusk, eveningNight, daylight`
+  - **group** `rise, set, noon, night, morningNight, astroDawn, nauticDawn, civilDawn, astroDusk, nauticDusk, civilDusk, eveningNight, daylight`
     - **channel**
       - `start, end` (DateTime)
       - `duration` (Number:Time)
@@ -77,7 +77,7 @@ This binding has its own IconProvider and makes available the following list of 
       - `totalElevation, partialElevation, ringElevation` (Number:Angle)
   - **group** `phase`
     - **channel**
-      - `name` (String), values: `SUN_RISE, ASTRO_DAWN, NAUTIC_DAWN, CIVIL_DAWN, CIVIL_DUSK, NAUTIC_DUSK, ASTRO_DUSK, SUN_SET, DAYLIGHT, NOON, NIGHT,MIDNIGHT`
+      - `name` (String), values: `SUN_RISE, ASTRO_DAWN, NAUTIC_DAWN, CIVIL_DAWN, CIVIL_DUSK, NAUTIC_DUSK, ASTRO_DUSK, SUN_SET, DAYLIGHT, NOON, NIGHT`
   - **group** `circadian`
     - **channel**
       - `brightness` (Dimmer)
@@ -121,7 +121,7 @@ This binding has its own IconProvider and makes available the following list of 
 Only these can be used in rule triggers as shown below. Note that they have their own offset configurations that are independent from offsets configured on the start or end times of e.g. the `rise` or `set` channels.
 
 - **thing** `sun`
-  - **group** `rise, set, noon, night, midnight, morningNight, astroDawn, nauticDawn, civilDawn, astroDusk, nauticDusk, civilDusk, eveningNight, daylight`
+  - **group** `rise, set, noon, night, morningNight, astroDawn, nauticDawn, civilDawn, astroDusk, nauticDusk, civilDusk, eveningNight, daylight`
     - **event** `START, END`
   - **group** `eclipse`
     - **event**: `TOTAL, PARTIAL, RING`

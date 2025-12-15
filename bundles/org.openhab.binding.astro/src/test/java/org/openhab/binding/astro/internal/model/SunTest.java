@@ -119,16 +119,9 @@ public class SunTest {
 
     @Test
     public void testGetAllRangesForNoon() {
-        sun.setNoon(null);
+        sun.setNoon(new Range());
 
         assertTrue(sun.getAllRanges().containsKey(SunPhaseName.NOON));
-    }
-
-    @Test
-    public void testGetAllRangesForMidnight() {
-        sun.setMidnight(null);
-
-        assertTrue(sun.getAllRanges().containsKey(SunPhaseName.MIDNIGHT));
     }
 
     @Test

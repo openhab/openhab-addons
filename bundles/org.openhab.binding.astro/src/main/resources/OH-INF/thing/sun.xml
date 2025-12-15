@@ -26,10 +26,6 @@
 				<label>Night</label>
 				<description>The night event range</description>
 			</channel-group>
-			<channel-group id="midnight" typeId="sunRange">
-				<label>Midnight</label>
-				<description>The midnight event range</description>
-			</channel-group>
 			<channel-group id="morningNight" typeId="sunRange">
 				<label>Morning Night</label>
 				<description>The morning night event range</description>

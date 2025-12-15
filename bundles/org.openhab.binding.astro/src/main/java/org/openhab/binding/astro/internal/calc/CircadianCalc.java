@@ -30,9 +30,11 @@ public class CircadianCalc {
     private static final long MIN_COLOR_TEMP = 2500;
     private static final long MAX_COLOR_TEMP = 5500;
     private static final long DELTA_TEMP = MAX_COLOR_TEMP - MIN_COLOR_TEMP;
+    private static final long TWELVE_HOURS_MS = 12 * 60 * 60 * 1000;
 
-    public Circadian calculate(Calendar calendar, @Nullable Calendar rise, @Nullable Calendar set, Calendar noon,
-            Calendar midnight) {
+    public Circadian calculate(Calendar calendar, @Nullable Calendar rise, @Nullable Calendar set, Calendar noon) {
+
+        // If we have no rise or no set, there's no point to calculate a Circadian Cycle
         if (rise == null || set == null) {
             return Circadian.DEFAULT;
         }
@@ -55,14 +57,17 @@ public class CircadianCalc {
             k = 100.0;
             // parabola before solar_noon else after solar_noon
             x = now < h ? sunRise : sunSet;
-        } else if (sunSet < now && now < sunRise) {
-            // sunset -> sunrise parabola
-            h = midnight.getTimeInMillis();
-            k = -100.0;
-            // parabola before solar_midnight else after solar_midnight
-            x = now < h ? sunSet : sunRise;
         } else {
-            return Circadian.DEFAULT;
+            // sunset -> sunrise parabola
+            h = noon.getTimeInMillis() + TWELVE_HOURS_MS;
+            k = -100.0;
+            if (now >= sunSet) {
+                // parabola before solar_midnight
+                x = sunSet;
+            } else {
+                // parabola after solar_midnight
+                x = sunRise + (2 * TWELVE_HOURS_MS);
+            }
         }
 
         double y = 0.0;
