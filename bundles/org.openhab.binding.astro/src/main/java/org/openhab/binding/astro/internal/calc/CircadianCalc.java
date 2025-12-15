@@ -17,7 +17,6 @@ import java.util.Calendar;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.astro.internal.model.Circadian;
-import org.openhab.binding.astro.internal.model.Range;
 
 /**
  * Calculates the color temperature and brightness depending upon sun positional information
@@ -32,8 +31,8 @@ public class CircadianCalc {
     private static final long MAX_COLOR_TEMP = 5500;
     private static final long DELTA_TEMP = MAX_COLOR_TEMP - MIN_COLOR_TEMP;
 
-    public Circadian calculate(Calendar calendar, @Nullable Calendar rise, @Nullable Calendar set,
-            @Nullable Range noonRange, @Nullable Range midnightRange) {
+    public Circadian calculate(Calendar calendar, @Nullable Calendar rise, @Nullable Calendar set, Calendar noon,
+            Calendar midnight) {
         if (rise == null || set == null) {
             return Circadian.DEFAULT;
         }
@@ -50,15 +49,13 @@ public class CircadianCalc {
         long h, x;
         double k;
 
-        if (sunRise < now && now < sunSet && noonRange instanceof Range range
-                && range.getStart() instanceof Calendar noon) {
+        if (sunRise < now && now < sunSet) {
             // Sunrise -> Sunset parabola
             h = noon.getTimeInMillis();
             k = 100.0;
             // parabola before solar_noon else after solar_noon
             x = now < h ? sunRise : sunSet;
-        } else if (sunSet < now && now < sunRise && midnightRange instanceof Range range
-                && range.getStart() instanceof Calendar midnight) {
+        } else if (sunSet < now && now < sunRise) {
             // sunset -> sunrise parabola
             h = midnight.getTimeInMillis();
             k = -100.0;

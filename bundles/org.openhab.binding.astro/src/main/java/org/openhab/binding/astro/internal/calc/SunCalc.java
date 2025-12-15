@@ -66,7 +66,6 @@ public class SunCalc {
     private static final double H1 = Math.toRadians(-6.0); // nautical twilight angle
     private static final double H2 = Math.toRadians(-12.0); // astronomical twilight angle
     private static final double H3 = Math.toRadians(-18.0); // darkness angle
-    private static final double MINUTES_PER_DAY = 60 * 24;
     private static final int CURVE_TIME_INTERVAL = 20; // 20 minutes
 
     /**
@@ -130,60 +129,15 @@ public class SunCalc {
      * Returns true, if the sun is up all day (no rise and set).
      */
     private boolean isSunUpAllDay(Calendar calendar, double latitude, double longitude, @Nullable Double altitude) {
-        Calendar cal = DateTimeUtils.truncateToMidnight(calendar);
         Sun sun = new Sun();
-        for (int minutes = 0; minutes <= MINUTES_PER_DAY; minutes += CURVE_TIME_INTERVAL) {
+        for (Calendar cal = DateTimeUtils.truncateToMidnight(calendar); DateTimeUtils.isSameDay(cal, calendar); cal
+                .add(Calendar.MINUTE, CURVE_TIME_INTERVAL)) {
             setPositionalInfo(cal, latitude, longitude, altitude, sun);
             if (sun.getPosition().getElevationAsDouble() < SUN_ANGLE) {
                 return false;
             }
-            cal.add(Calendar.MINUTE, CURVE_TIME_INTERVAL);
         }
         return true;
-    }
-
-    /**
-     * Returns the time when the sun is at its minimum elevation
-     */
-    private Calendar getMinSunElevationTime(@Nullable Calendar noon, double latitude, double longitude,
-            @Nullable Double altitude) {
-        Objects.requireNonNull(noon, "A solar noon should always exist");
-
-        Calendar cal = (Calendar) noon.clone();
-        Sun sun = new Sun();
-
-        double minElevation = Double.POSITIVE_INFINITY;
-        Calendar minCal = (Calendar) noon.clone();
-
-        Double previousElevation = null;
-        boolean wasDecreasing = false;
-
-        final int MINUTES_SPAN = 14 * 60; // don't scan 24h, 14 will be enough
-
-        for (int minutes = 0; minutes <= MINUTES_SPAN; minutes += CURVE_TIME_INTERVAL) {
-            setPositionalInfo(cal, latitude, longitude, altitude, sun);
-            double elevation = sun.getPosition().getElevationAsDouble();
-
-            if (elevation < minElevation) {
-                minElevation = elevation;
-                minCal.setTimeInMillis(cal.getTimeInMillis());
-            }
-
-            if (previousElevation != null) {
-                if (!wasDecreasing) {
-                    if (elevation < previousElevation) {
-                        wasDecreasing = true;
-                    }
-                } else if (elevation > previousElevation) {
-                    break;
-                }
-            }
-
-            previousElevation = elevation;
-            cal.add(Calendar.MINUTE, CURVE_TIME_INTERVAL);
-        }
-
-        return minCal;
     }
 
     /**
@@ -233,9 +187,11 @@ public class SunCalc {
             return sun;
         }
 
-        Calendar noon = DateTimeUtils.toCalendar(jtransit, zone, locale);
+        Calendar noon = Objects.requireNonNull(DateTimeUtils.toCalendar(jtransit, zone, locale));
         sun.setNoon(noon);
-        sun.setMidnight(getMinSunElevationTime(noon, latitude, longitude, altitude));
+        Calendar midnight = (Calendar) noon.clone();
+        midnight.add(Calendar.HOUR, 12);
+        sun.setMidnight(midnight);
 
         sun.setRise(new Range(DateTimeUtils.toCalendar(jrise, zone, locale),
                 DateTimeUtils.toCalendar(jriseend, zone, locale)));
@@ -333,8 +289,7 @@ public class SunCalc {
                 circadianSunrise = nextDaySun.getRise().getStart();
             }
         }
-        sun.setCircadian(circadianCalc.calculate(calendar, circadianSunrise, sun.getSet().getStart(), sun.getNoon(),
-                sun.getMidnight()));
+        sun.setCircadian(circadianCalc.calculate(calendar, circadianSunrise, sun.getSet().getStart(), noon, midnight));
 
         // phase
         for (Entry<SunPhaseName, Range> rangeEntry : sortByValue(sun.getAllRanges()).entrySet()) {
