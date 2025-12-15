@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="homeassistant"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="device">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="broker" bindingId="mqtt"/>
+		</supported-bridge-type-refs>
+		<label>Home Assistant Device</label>
+		<description>You need a configured Broker first. This Thing represents an MQTT device that provides Home Assistant
+			discovery metadata.</description>
+		<config-description-ref uri="thing-type:homeassistant:device"/>
+	</thing-type>
+</thing:thing-descriptions>
