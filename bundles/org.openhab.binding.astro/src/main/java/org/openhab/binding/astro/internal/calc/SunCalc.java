@@ -252,9 +252,8 @@ public class SunCalc {
         } else {
             Sun sunTomorrow = getSunInfo(addDays(calendar, 1), latitude, longitude, altitude, true,
                     useMeteorologicalSeason, zone, locale);
-            var rangeEnd = sun.getAstroDusk() instanceof Range end ? end.getEnd() : null;
-            var rangeStart = sunTomorrow.getAstroDawn() instanceof Range start ? start.getStart() : null;
-            sun.setNight(new Range(rangeEnd, rangeStart));
+            sun.setNight(new Range((range = sun.getAstroDusk()) == null ? null : range.getEnd(),
+                    (range2 = sunTomorrow.getAstroDawn()) == null ? null : range2.getStart()));
         }
 
         // eclipse
