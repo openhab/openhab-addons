@@ -79,7 +79,7 @@ public class EvccVehicleHandler extends EvccBaseThingHandler {
     public void initialize() {
         super.initialize();
         Optional.ofNullable(bridgeHandler).ifPresent(handler -> {
-            endpoint = handler.getBaseURL() + API_PATH_VEHICLES;
+            endpoint = String.join("/", handler.getBaseURL(), API_PATH_VEHICLES);
             JsonObject stateOpt = handler.getCachedEvccState().deepCopy();
             if (stateOpt.isEmpty()) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);

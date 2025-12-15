@@ -62,7 +62,7 @@ public class EvccLoadpointHandler extends EvccBaseThingHandler {
     public void initialize() {
         super.initialize();
         Optional.ofNullable(bridgeHandler).ifPresent(handler -> {
-            endpoint = handler.getBaseURL() + API_PATH_LOADPOINTS + "/" + (index + 1);
+            endpoint = String.join("/", handler.getBaseURL(), API_PATH_LOADPOINTS, String.valueOf(index + 1));
             JsonObject stateOpt = handler.getCachedEvccState().deepCopy();
             if (stateOpt.isEmpty()) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
@@ -90,7 +90,7 @@ public class EvccLoadpointHandler extends EvccBaseThingHandler {
             }
             // Special Handling for enable and disable endpoints
             if (datapoint.contains("enable")) {
-                datapoint += "/enable/" + datapoint.replace("enable", "");
+                datapoint = "/enable/" + datapoint.replace("enable", "");
             } else if (datapoint.contains("disable")) {
                 datapoint += "/disable/" + datapoint.replace("disable", "");
             }
@@ -103,7 +103,7 @@ public class EvccLoadpointHandler extends EvccBaseThingHandler {
                     value = value.substring(0, state.toString().indexOf(" "));
                 }
             }
-            String url = endpoint + "/" + datapoint + "/" + value;
+            String url = String.join("/", endpoint, datapoint, value);
             logger.debug("Sending command to this url: {}", url);
             if (sendCommand(url, JsonNull.INSTANCE)) {
                 updateState(channelUID, state);

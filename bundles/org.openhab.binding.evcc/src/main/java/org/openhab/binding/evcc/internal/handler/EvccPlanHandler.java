@@ -84,11 +84,11 @@ public class EvccPlanHandler extends EvccBaseThingHandler {
         super.initialize();
         Optional.ofNullable(bridgeHandler).ifPresent(handler -> {
             buildLocalizedMaps(handler);
-            endpoint = String.join("/", handler.getBaseURL(), "vehicles", vehicleID, "plan");
+            endpoint = String.join("/", handler.getBaseURL(), API_PATH_VEHICLES, vehicleID);
             if (index == 0) {
-                endpoint = String.join("/", endpoint, "soc");
+                endpoint = String.join("/", endpoint, API_PATH_PLAN_SOC);
             } else {
-                endpoint = String.join("/", endpoint, "repeating");
+                endpoint = String.join("/", endpoint, API_PATH_PLAN_REPEATING);
             }
             handler.register(this);
             updateStatus(ThingStatus.ONLINE);
@@ -111,46 +111,56 @@ public class EvccPlanHandler extends EvccBaseThingHandler {
                 return;
             }
             updateStatus(ThingStatus.ONLINE);
-            if (index == 0 && state.has(JSON_KEY_PLAN)) {
-                state = state.getAsJsonObject(JSON_KEY_PLAN);
-                cachedOneTimePlan = state.deepCopy();
+            if (index == 0) {
+                if (state.has(JSON_KEY_PLAN)) {
+                    state = state.getAsJsonObject(JSON_KEY_PLAN);
+                    cachedOneTimePlan = state.deepCopy();
+                } else {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
+                    return;
+                }
             } else if (index > 0 && state.has(JSON_KEY_REPEATING_PLANS)) {
                 // Cache the plans
                 while (!cachedRepeatingPlans.isEmpty()) {
                     cachedRepeatingPlans.remove(0);
                 }
                 cachedRepeatingPlans.addAll(state.getAsJsonArray(JSON_KEY_REPEATING_PLANS).deepCopy());
-                // Get the corresponding repeating plan
+                // Check the bounds
                 if (cachedRepeatingPlans.size() < index) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
                     return;
                 }
+                // Get the corresponding repeating plan
                 state = state.getAsJsonArray(JSON_KEY_REPEATING_PLANS).get(index - 1).getAsJsonObject();
-                if (state.has("time")) {
-                    state.add("repeatingTime", state.get("time"));
-                    state.remove("time");
+                if (state.has(JSON_KEY_TIME)) {
+                    state.add(JSON_KEY_REPEATING_TIME, state.get(JSON_KEY_TIME));
+                    state.remove(JSON_KEY_TIME);
                 }
                 if (state.has(JSON_KEY_WEEKDAYS)) {
-                    StringBuilder weekDays = new StringBuilder();
-                    for (JsonElement dayElement : state.getAsJsonArray(JSON_KEY_WEEKDAYS)) {
-                        String day = localizedDayOfWeekMap.get(dayElement.getAsInt());
-                        if (null != day && !day.isEmpty()) {
-                            weekDays.append(day).append(";");
-                        }
-                    }
-                    // Delete last semicolon
-                    if (!weekDays.isEmpty()) {
-                        weekDays.setLength(weekDays.length() - 1);
-                    } else {
-                        state.remove(JSON_KEY_WEEKDAYS);
-                    }
-                    // Update the weekdays property to a localized string
-                    state.addProperty(JSON_KEY_WEEKDAYS, weekDays.toString());
-                    cachedRepeatingPlans.set(index - 1, state);
+                    parseWeekdaysResponse(state);
                 }
+                cachedRepeatingPlans.set(index - 1, state);
             }
             updateStatesFromApiResponse(state);
         }
+    }
+
+    private void parseWeekdaysResponse(JsonObject state) {
+        StringBuilder weekDays = new StringBuilder();
+        for (JsonElement dayElement : state.getAsJsonArray(JSON_KEY_WEEKDAYS)) {
+            String day = localizedDayOfWeekMap.get(dayElement.getAsInt());
+            if (null != day && !day.isEmpty()) {
+                weekDays.append(day).append(";");
+            }
+        }
+        // Delete last semicolon
+        if (!weekDays.isEmpty()) {
+            weekDays.setLength(weekDays.length() - 1);
+        } else {
+            state.remove(JSON_KEY_WEEKDAYS);
+        }
+        // Update the weekdays property to a localized string
+        state.addProperty(JSON_KEY_WEEKDAYS, weekDays.toString());
     }
 
     @Override
@@ -166,13 +176,15 @@ public class EvccPlanHandler extends EvccBaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if ("send-update".equals(channelUID.getId()) && OnOffType.ON.equals(command) && !pendingCommands.isEmpty()) {
+        if (CHANNEL_SEND_UPDATE.equals(channelUID.getId()) && OnOffType.ON.equals(command)
+                && !pendingCommands.isEmpty()) {
             updatePlan();
             scheduler.schedule(() -> updateState(channelUID, OnOffType.OFF), 500, TimeUnit.MILLISECONDS);
         } else {
-            if (!"send-update".equals(channelUID.getId()) && command instanceof State state) {
+            if (!CHANNEL_SEND_UPDATE.equals(channelUID.getId()) && command instanceof State state) {
                 String stateString = state.toString();
-                if ("plan-soc".equals(channelUID.getId()) || "plan-precondition".equals(channelUID.getId())) {
+                if (CHANNEL_PLAN_SOC.equals(channelUID.getId())
+                        || CHANNEL_PLAN_PRECONDITION.equals(channelUID.getId())) {
                     int spaceIdx = stateString.indexOf(" ");
                     if (spaceIdx != -1) {
                         stateString = stateString.substring(0, spaceIdx);
@@ -206,7 +218,7 @@ public class EvccPlanHandler extends EvccBaseThingHandler {
             String key = entry.getKey();
             if (values.containsKey(key) && values.get(key) instanceof String value) {
                 switch (key) {
-                    case "weekdays" -> {
+                    case JSON_KEY_WEEKDAYS -> {
                         JsonArray weekdaysArray = new JsonArray();
                         String[] days = value.split(";");
                         for (String day : days) {
@@ -217,10 +229,10 @@ public class EvccPlanHandler extends EvccBaseThingHandler {
                         }
                         plan.add(key, weekdaysArray);
                     }
-                    case "soc", "precondition" -> {
+                    case JSON_KEY_SOC, JSON_KEY_PRECONDITION -> {
                         plan.add(key, new JsonPrimitive(Integer.parseInt(value)));
                     }
-                    case "active" -> {
+                    case JSON_KEY_ACTIVE -> {
                         if ("ON".equals(value)) {
                             plan.add(key, new JsonPrimitive(true));
                         } else {
@@ -231,16 +243,16 @@ public class EvccPlanHandler extends EvccBaseThingHandler {
                 }
             }
         }
-        plan.add("time", plan.get("repeatingTime"));
-        plan.remove("repeatingTime");
+        plan.add(JSON_KEY_TIME, plan.get(JSON_KEY_REPEATING_TIME));
+        plan.remove(JSON_KEY_REPEATING_TIME);
         payload.set(index - 1, plan);
         return sendCommand(endpoint, payload);
     }
 
     private boolean updateOneTimePlan() {
         Map<String, String> values = getCachedValues(cachedOneTimePlan);
-        String soc = values.get("soc");
-        String time = values.get("time");
+        String soc = values.get(JSON_KEY_SOC);
+        String time = values.get(JSON_KEY_TIME);
         if (time != null) {
             if (!TimeFormatValidator.isExactTimeFormat(time)) {
                 try {
@@ -255,7 +267,7 @@ public class EvccPlanHandler extends EvccBaseThingHandler {
             // Should never happen, but you'll never know
             return false;
         }
-        String precondition = values.get("precondition");
+        String precondition = values.get(JSON_KEY_PRECONDITION);
         String url = String.join("/", endpoint, soc, time);
         if (precondition != null) {
             url = String.join("?", url, "precondition=" + precondition);

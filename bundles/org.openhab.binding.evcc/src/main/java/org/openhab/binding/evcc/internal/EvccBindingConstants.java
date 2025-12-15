@@ -30,6 +30,10 @@ public class EvccBindingConstants {
 
     public static final String BINDING_ID = "evcc";
 
+    public static final String CHANNEL_SEND_UPDATE = "send-update";
+    public static final String CHANNEL_PLAN_SOC = "plan-soc";
+    public static final String CHANNEL_PLAN_PRECONDITION = "plan-precondition";
+
     public static final ThingTypeUID THING_TYPE_BATTERY = new ThingTypeUID(BINDING_ID, "battery");
     public static final ThingTypeUID THING_TYPE_HEATING = new ThingTypeUID(BINDING_ID, "heating");
     public static final ThingTypeUID THING_TYPE_LOADPOINT = new ThingTypeUID(BINDING_ID, "loadpoint");
@@ -51,8 +55,10 @@ public class EvccBindingConstants {
     public static final String PROPERTY_SITE_TITLE = "site-title";
     public static final String PROPERTY_VEHICLE_ID = "vehicle-id";
 
-    public static final String API_PATH_LOADPOINTS = "/loadpoints";
-    public static final String API_PATH_VEHICLES = "/vehicles";
+    public static final String API_PATH_LOADPOINTS = "loadpoints";
+    public static final String API_PATH_VEHICLES = "vehicles";
+    public static final String API_PATH_PLAN_SOC = "plan/soc";
+    public static final String API_PATH_PLAN_REPEATING = "plan/repeating";
 
     public static final String PROPERTY_TYPE_BATTERY = "battery";
     public static final String PROPERTY_TYPE_HEATING = "heating";
@@ -63,6 +69,7 @@ public class EvccBindingConstants {
     public static final String PROPERTY_TYPE_STATISTICS = "statistics";
     public static final String PROPERTY_TYPE_VEHICLE = "vehicle";
 
+    public static final String JSON_KEY_ACTIVE = "active";
     public static final String JSON_KEY_BATTERY = "battery";
     public static final String JSON_KEY_CHARGE_CURRENT = "chargeCurrent";
     public static final String JSON_KEY_CHARGE_CURRENTS = "chargeCurrents";
@@ -81,10 +88,14 @@ public class EvccBindingConstants {
     public static final String JSON_KEY_PHASES = "phases";
     public static final String JSON_KEY_PHASES_CONFIGURED = "phasesConfigured";
     public static final String JSON_KEY_PLAN = "plan";
+    public static final String JSON_KEY_PRECONDITION = "precondition";
     public static final String JSON_KEY_PV = "pv";
     public static final String JSON_KEY_REPEATING_PLANS = "repeatingPlans";
+    public static final String JSON_KEY_REPEATING_TIME = "repeatingTime";
     public static final String JSON_KEY_SMART_COST_TYPE = "smartCostType";
+    public static final String JSON_KEY_SOC = "soc";
     public static final String JSON_KEY_STATISTICS = "statistics";
+    public static final String JSON_KEY_TIME = "time";
     public static final String JSON_KEY_TITLE = "title";
     public static final String JSON_KEY_VEHICLE_LIMIT_SOC = "vehicleLimitSoc";
     public static final String JSON_KEY_VEHICLE_PRESENT = "vehiclePresent";
