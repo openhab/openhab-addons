@@ -23,8 +23,7 @@
 			</parameter>
 			<parameter name="vehicle-id" type="text">
 				<label>Vehicle ID</label>
-				<description>The id of the plan for your vehicle in the evcc setup (starting with 0 for the active plan, repeating
-					plans start with 1)</description>
+				<description>The ID of the vehicle in your evcc setup (database ID)</description>
 			</parameter>
 		</config-description>
 	</thing-type>
