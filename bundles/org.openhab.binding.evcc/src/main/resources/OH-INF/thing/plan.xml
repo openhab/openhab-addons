@@ -8,7 +8,7 @@
 			<bridge-type-ref id="server"/>
 		</supported-bridge-type-refs>
 		<label>Plan</label>
-		<description>A plan configured in for your vehicle in evcc</description>
+		<description>A plan configured for your vehicle in evcc</description>
 		<channels>
 			<channel id="send-update" typeId="plan-update">
 				<label>Update Plan</label>
