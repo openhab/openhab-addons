@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.TimeZone;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -187,7 +188,7 @@ public class SunCalc {
             return sun;
         }
 
-        Calendar noon = DateTimeUtils.toCalendar(jtransit, zone, locale);
+        Calendar noon = Objects.requireNonNull(DateTimeUtils.toCalendar(jtransit, zone, locale));
         sun.setNoon(new Range(noon, DateTimeUtils.toCalendar(jtransit + JD_ONE_MINUTE_FRACTION, zone, locale)));
 
         sun.setRise(new Range(DateTimeUtils.toCalendar(jrise, zone, locale),
