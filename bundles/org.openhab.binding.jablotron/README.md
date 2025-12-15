@@ -14,7 +14,8 @@ This is the binding for Jablotron alarms.
 
 ## Discovery
 
-This binding supports auto discovery. Manually add a bridge Thing and supply the username and password to your Jablonet account.
+This binding supports auto discovery.
+First, manually add a bridge Thing and supply the username and password to your Jablonet account.
 
 ## Binding Configuration
 

@@ -117,8 +117,8 @@ The interface Thing configuration parameters are:
 ### Interface Thing Channels
 
 Please note that different RouterOS interfaces have different data available depending on the kind of interface.
-While the common dataset is the same, some specific information for specific interface types may be missing. This may
-be improved in future binding versions.
+While the common dataset is the same, some specific information for specific interface types may be missing.
+This may be improved in future binding versions.
 
 Common for all kinds of interfaces:
 

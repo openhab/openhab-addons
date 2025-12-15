@@ -4,7 +4,8 @@ This binding integrates JeeLink USB RF receivers and LaCrosseGateways.
 
 ## Introduction
 
-The binding is compatible with JeeLink USB receivers and LaCrosseGateways. It supports connected LaCrosse temperature sensors, EC3000 sensors, PCA301 power monitoring wireless sockets, and TX22 temperature and humidity sensors (including connected TX23 wind and TX26 rain sensors).
+The binding is compatible with JeeLink USB receivers and LaCrosseGateways.
+It supports connected LaCrosse temperature sensors, EC3000 sensors, PCA301 power monitoring wireless sockets, and TX22 temperature and humidity sensors (including connected TX23 wind and TX26 rain sensors).
 
 ## Supported Things
 
@@ -20,13 +21,10 @@ This binding supports:
 - PCA301 power monitoring wireless sockets
 - TX22 temperature & humidity Sensors (including connected TX23 wind and TX26 rain sensors)
 
-## Binding Configuration
-
-No binding-level configuration is required.
-
 ## Thing Discovery
 
-Only sensor discovery is supported, the Thing for the USB receiver / LaCrosseGateway has to be created manually. Pay attention to use the correct serial port, as otherwise the binding may interfere with other bindings accessing serial ports.
+Only sensor discovery is supported, the Thing for the USB receiver / LaCrosseGateway has to be created manually.
+Pay attention to use the correct serial port, as otherwise the binding may interfere with other bindings accessing serial ports.
 
 Afterwards, sensor discovery can be triggered using the `Scan` button in `Things` &rarr; `+` &rarr; `JeeLink Binding`.
 Discovery only detects sensors that actually send a value during discovery.
@@ -50,11 +48,11 @@ The available init commands depend on the sketch that is running on the USB stic
 
 ### JeeLink / LaCrosseGateway (connected over TCP)
 
-| Parameter     | Item Type | Description                                                                                                                       |
-|---------------|-----------|-----------------------------------------------------------------------------------------------------------------------------------|
-| IP Address    | String    | The IP address of the Server to which the USB Receiver is connected, or the IP address of the LaCrosseGateway                     |
-| TCP Port      | Number    | The TCP port over which the serial port is made available, or the LaCrosseGateway port (which usually is 81)                      |
-| Init Commands | String    | A semicolon separated list of init commands that will be send to the Jeelink / LaCrosseGateway, e.g. "0a" for disabling the LED   |
+| Parameter     | Item Type | Description                                                                                                                     |
+|---------------|-----------|---------------------------------------------------------------------------------------------------------------------------------|
+| IP Address    | String    | The IP address of the Server to which the USB Receiver is connected, or the IP address of the LaCrosseGateway                   |
+| TCP Port      | Number    | The TCP port over which the serial port is made available, or the LaCrosseGateway port (which usually is 81)                    |
+| Init Commands | String    | A semicolon separated list of init commands that will be send to the Jeelink / LaCrosseGateway, e.g. "0a" for disabling the LED |
 
 ### LaCrosse temperature sensors
 
@@ -79,48 +77,48 @@ The available init commands depend on the sketch that is running on the USB stic
 
 ### PCA301 power monitoring wireless sockets
 
-| Parameter         | Item Type    | Description                                                                                                            |
-|-------------------|--------------|------------------------------------------------------------------------------------------------------------------------|
-| Sensor ID         | Number       | The ID of the connected sensor                                                                                         |
-| Sensor Timeout    | Number       | The amount of time in seconds that should result in OFFLINE status when no readings have been received from the sensor |
-| Retry Count       | Number       | The number of times a switch command will be resent to the socket until giving up                                      |
+| Parameter      | Item Type | Description                                                                                                            |
+|----------------|-----------|------------------------------------------------------------------------------------------------------------------------|
+| Sensor ID      | Number    | The ID of the connected sensor                                                                                         |
+| Sensor Timeout | Number    | The amount of time in seconds that should result in OFFLINE status when no readings have been received from the sensor |
+| Retry Count    | Number    | The number of times a switch command will be resent to the socket until giving up                                      |
 
 ### Revolt power monitors
 
-| Parameter         | Item Type    | Description                                                                                                            |
-|-------------------|--------------|------------------------------------------------------------------------------------------------------------------------|
-| Sensor ID         | Number       | The ID of the connected sensor                                                                                         |
-| Sensor Timeout    | Number       | The amount of time in seconds that should result in OFFLINE status when no readings have been received from the sensor |
+| Parameter      | Item Type | Description                                                                                                            |
+|----------------|-----------|------------------------------------------------------------------------------------------------------------------------|
+| Sensor ID      | Number    | The ID of the connected sensor                                                                                         |
+| Sensor Timeout | Number    | The amount of time in seconds that should result in OFFLINE status when no readings have been received from the sensor |
 
 ### EMT7110 energy meter
 
-| Parameter         | Item Type    | Description                                                                                                            |
-|-------------------|--------------|------------------------------------------------------------------------------------------------------------------------|
-| Sensor ID         | Number       | The ID of the connected sensor                                                                                         |
-| Sensor Timeout    | Number       | The amount of time in seconds that should result in OFFLINE status when no readings have been received from the sensor |
+| Parameter      | Item Type | Description                                                                                                            |
+|----------------|-----------|------------------------------------------------------------------------------------------------------------------------|
+| Sensor ID      | Number    | The ID of the connected sensor                                                                                         |
+| Sensor Timeout | Number    | The amount of time in seconds that should result in OFFLINE status when no readings have been received from the sensor |
 
 ## Channels
 
 ### LaCrosse temperature sensors
 
-| Channel Type ID | Item Type             | Description                                       |
-|-----------------|-----------------------|---------------------------------------------------|
-| temperature     | Number:Temperature    | Temperature reading                               |
-| humidity        | Number:Dimensionless  | Humidity reading                                  |
-| batteryNew      | Switch                | Indicates whether the battery was recently replaced |
-| batteryLow      | Switch                | Low battery indication                               |
+| Channel Type ID | Item Type            | Description                                         |
+|-----------------|----------------------|-----------------------------------------------------|
+| temperature     | Number:Temperature   | Temperature reading                                 |
+| humidity        | Number:Dimensionless | Humidity reading                                    |
+| batteryNew      | Switch               | Indicates whether the battery was recently replaced |
+| batteryLow      | Switch               | Low battery indication                              |
 
 ### TX22 temperature and humidity sensors
 
-| Channel Type ID | Item Type             | Description                |
-|-----------------|-----------------------|----------------------------|
-| temperature     | Number:Temperature    | Temperature reading        |
-| humidity        | Number:Dimensionless  | Humidity reading           |
-| pressure        | Number:Pressure       | Current pressure reading   |
-| rain            | Number:Length         | Rainfall today             |
-| windStrength    | Number:Speed          | Current wind speed         |
-| windAngle       | Number:Angle          | Current wind direction     |
-| gustStrength    | Number:Speed          | Gust speed                 |
+| Channel Type ID | Item Type            | Description              |
+|-----------------|----------------------|--------------------------|
+| temperature     | Number:Temperature   | Temperature reading      |
+| humidity        | Number:Dimensionless | Humidity reading         |
+| pressure        | Number:Pressure      | Current pressure reading |
+| rain            | Number:Length        | Rainfall today           |
+| windStrength    | Number:Speed         | Current wind speed       |
+| windAngle       | Number:Angle         | Current wind direction   |
+| gustStrength    | Number:Speed         | Gust speed               |
 
 ### EC3000 power monitors
 
@@ -135,39 +133,39 @@ The available init commands depend on the sketch that is running on the USB stic
 
 ### PCA301 power monitoring wireless sockets
 
-| Channel Type ID         | Item Type     | Description                                          |
-|-------------------------|---------------|------------------------------------------------------|
-| switchingState          | Switch        | Whether the sockets are currently switched on or off |
-| currentPower            | Number:Power  | Current power draw                                   |
-| consumptionTotal        | Number:Energy | Total energy consumption                             |
+| Channel Type ID  | Item Type     | Description                                          |
+|------------------|---------------|------------------------------------------------------|
+| switchingState   | Switch        | Whether the sockets are currently switched on or off |
+| currentPower     | Number:Power  | Current power draw                                   |
+| consumptionTotal | Number:Energy | Total energy consumption                             |
 
 ### Revolt power monitors
-
-| Channel Type ID   | Item Type                | Description                               |
-|-------------------|--------------------------|-------------------------------------------|
-| currentPower      | Number:Power             | Current power draw                        |
-| consumptionTotal  | Number:Energy            | Total energy consumption                  |
-| powerFactor       | Number                   | Ratio of real power to apparent power     |
-| electricCurrent   | Number:ElectricCurrent   | The measured Electric Current             |
-| electricPotential | Number:ElectricPotential | The measured Electric Potential           |
-| powerFrequency    | Number:Frequency         | The measured AC power frequency           |
-
-### EMT7110 energy meter
 
 | Channel Type ID   | Item Type                | Description                           |
 |-------------------|--------------------------|---------------------------------------|
 | currentPower      | Number:Power             | Current power draw                    |
-| consumptionTotal  | Number:Energy            | Total energy consumption in kWh       |
-| electricCurrent   | Number:ElectricCurrent   | The measured electric current         |
-| electricPotential | Number:ElectricPotential | The measured electric potential (V)   |
+| consumptionTotal  | Number:Energy            | Total energy consumption              |
+| powerFactor       | Number                   | Ratio of real power to apparent power |
+| electricCurrent   | Number:ElectricCurrent   | The measured Electric Current         |
+| electricPotential | Number:ElectricPotential | The measured Electric Potential       |
+| powerFrequency    | Number:Frequency         | The measured AC power frequency       |
+
+### EMT7110 energy meter
+
+| Channel Type ID   | Item Type                | Description                         |
+|-------------------|--------------------------|-------------------------------------|
+| currentPower      | Number:Power             | Current power draw                  |
+| consumptionTotal  | Number:Energy            | Total energy consumption in kWh     |
+| electricCurrent   | Number:ElectricCurrent   | The measured electric current       |
+| electricPotential | Number:ElectricPotential | The measured electric potential (V) |
 
 ## Commands
 
 ### PCA301 power monitoring wireless sockets
 
-| Channel Type ID         | Item Type    | Description                                       |
-|-------------------------|--------------|---------------------------------------------------|
-| switchingState          | Switch       | Supports ON and OFF commands to switch the socket |
+| Channel Type ID | Item Type | Description                                       |
+|-----------------|-----------|---------------------------------------------------|
+| switchingState  | Switch    | Supports ON and OFF commands to switch the socket |
 
 ## Full Example
 

@@ -48,7 +48,7 @@ To assist you with this process, the binding exposes a simple login form you can
 | playing-item-season-name   | String | Name of the item's season currently playing, only have value when item is an episode (readonly)                 |
 | playing-item-season        | Number | Number of the item's season currently playing, only have value when item is an episode (readonly)               |
 | playing-item-episode       | Number | Number of the episode item currently playing, only have value when item is an episode (readonly)                |
-| playing-item-genders       | String | Comma-separated list of the item's genres currently playing (readonly)                                           |
+| playing-item-genders       | String | Comma-separated list of the item's genres currently playing (readonly)                                          |
 | playing-item-type          | String | Type of the item currently playing (readonly)                                                                   |
 | playing-item-percentage    | Dimmer | Played percentage for the item currently playing, allow seek                                                    |
 | playing-item-second        | Number | Current second for the item currently playing, allow seek                                                       |

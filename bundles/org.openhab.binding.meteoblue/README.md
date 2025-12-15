@@ -7,9 +7,10 @@ to provide weather information.
 
 The binding has two Thing types.
 
-The first Thing type is the weather Thing. Each weather Thing has the ID `weather` and retrieves weather data for one location.
-The second Thing type is the bridge Thing. The bridge Thing, which has the ID `bridge`, holds the API key to be used for all of
-its child things.
+The first Thing type is the weather Thing.
+Each weather Thing has the ID `weather` and retrieves weather data for one location.
+The second Thing type is the bridge Thing.
+The bridge Thing, which has the ID `bridge`, holds the API key to be used for all of its child Things.
 
 ## Thing Configuration
 

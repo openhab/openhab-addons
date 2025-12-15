@@ -12,10 +12,10 @@ The binding supports one Thing `player` that represents the Falcon Player.
 
 ## Thing Configuration
 
-| Parameter    | Description                             | Required | Default |
-|--------------|-----------------------------------------|----------|---------|
-| `playerAddress`   | Player IP address or host name                 | Y        |         |
-| `playerMQTTTopic` | MQTT player status topic                       | Y        |         |
+| Parameter         | Description                             | Required | Default |
+|-------------------|-----------------------------------------|----------|---------|
+| `playerAddress`   | Player IP address or host name          | Y        |         |
+| `playerMQTTTopic` | MQTT player status topic                | Y        |         |
 
 ## Channels
 
