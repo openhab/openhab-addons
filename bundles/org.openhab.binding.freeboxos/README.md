@@ -195,7 +195,7 @@ The following channels are supported:
 | revolution, delta     | file-sharing      | afp-file-status      | Switch                  | RW          | Indicates whether Mac OS File Sharing is enabled                               |
 | revolution, delta     | sysinfo           | uptime               | Number:Time             | R           | Time since last reboot of the equipment                                        |
 | revolution, delta     | sysinfo           | ip-address           | String                  | R           | Internal IPv4 Address of the Freebox Server                                    |
-| revolution, delta     | sysinfo           | box-event            | Trigger                 | -           | Triggers when an event related to the Freebox server has been detected (**).   |
+| revolution, delta     | sysinfo           | box-event            | Trigger                 | -           | Triggers when an event related to the Freebox Server has been detected (**).   |
 | revolution, delta     | actions           | wifi-status          | Switch                  | RW          | Indicates whether the WiFi network is enabled                                  |
 | revolution, delta     | actions           | upnpav-status        | Switch                  | RW          | Indicates whether UPnP AV is enabled                                           |
 | revolution, delta     | actions           | airmedia-status      | Switch                  | RW          | Indicates whether Air Media is enabled                                         |
@@ -231,7 +231,7 @@ The following channels are supported:
 | active-player         | player-status     | player-status        | String                  | R           | Status of the Freebox TV player                                                |
 | active-player         | player-status     | package              | String                  | R           | Name of the package currently active on the player                             |
 | active-player         | sysinfo           | uptime               | Number:Time             | R           | Time since last reboot of the equipment                                        |
-| active-player         | sysinfo           | box-event            | Trigger                 | -           | Triggers when an event related to the Freebox server has been detected (**).   |
+| active-player         | sysinfo           | box-event            | Trigger                 | -           | Triggers when an event related to the Freebox Player has been detected (**).   |
 | vm                    | vmstatus          | status               | Switch                  | RW          | Status of the virtual machine                                                  |
 | (*)                   | connectivity      | reachable            | Switch                  | R           | Indicates if the network device is reachable or not                            |
 | (*)                   | connectivity      | last-seen            | DateTime                | R           | Date and time of last activity for the network device                          |
