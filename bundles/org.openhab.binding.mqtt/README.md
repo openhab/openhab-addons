@@ -1,4 +1,4 @@
-# MQTT Binding
+# MQTT Things and Channels Binding
 
 MQTT is one of the most commonly used protocols in IoT (Internet of Things) projects. It stands for Message Queuing Telemetry Transport.
 
@@ -13,7 +13,8 @@ MQTT servers are called brokers and the clients are simply the connected devices
 
 ![Publish and Subscribe](doc/subpub.png)
 
-openHAB itself is not an MQTT Broker and needs to connect to one as a regular client.You can use any of the freely available MQTT Brokers like [Mosquitto](https://mosquitto.org/).
+openHAB itself is not an MQTT Broker and needs to connect to one as a regular client.
+You can use any of the freely available MQTT Brokers like [Mosquitto](https://mosquitto.org/).
 
 This particular binding allows to configure connections to brokers via openHAB Things, and configure channels corresponding to MQTT topics.
 This binding does NOT perform auto-discovery of available MQTT topics.
@@ -30,20 +31,19 @@ Example:
 
 Let's assume there is an MQTT capable light bulb.
 
-It has a unique id amongst all light bulbs, say "device123". The manufacturer decided to accept new
-brightness values on "device123/brightness/set". In openHAB we call that a **command topic**.
+It has a unique id amongst all light bulbs, say "device123".
+The manufacturer accepts new brightness values on "device123/brightness/set".
+In openHAB we call that a **command topic**.
 
-And now assume that we have a mobile phone (or openHAB itself) and we register with the MQTT broker,
-and want to retrieve the current brightness value. The manufacturer specified that this value can
-be found on "device123/brightness". In openHAB we call that a **state topic**.
+And now assume that we have a mobile phone (or openHAB itself) and we register with the MQTT broker, and want to retrieve the current brightness value.
+The manufacturer specified that this value can be found on "device123/brightness". In openHAB we call that a **state topic**.
 
-This pattern of a command topic and a stateis very common, that you have a command and a state topic. A sensor would only have a state topic,
-naturally.
+This pattern is very common, that you have a command and a state topic.
+A sensor would only have a state topic, naturally.
 
-Because every manufacturer can decide on their own on which topic their devices publish, this binding can unfortunately not provide auto-discovery.
+Because every manufacturer can decide on his own on which topic his devices publish, this binding can unfortunately not provide any auto-discovery means.
 
-If you use an open source IoT device, the chances are high
-that it supports either the Homie Convention or Home Assistant discovery.
+If you use an open source IoT device, the chances are high, that it has the MQTT Homie convention or HomeAssistant implemented.
 Those conventions specify the topic topology and allow auto discovery.
 Please have a look at the specific openHAB bindings.
 
@@ -65,7 +65,7 @@ Additionally the following parameters can be set:
 - **protocol**:  The protocol used for communicating with the broker (TCP, WEBSOCKETS). Defaults to TCP.
 - **mqttVersion**: The MQTT version used for communicating with the broker (V3, V5). Defaults to V3.
 - **qos**: Quality of Service. Can be 0, 1 or 2. Please read the MQTT specification for details. Defaults to 0.
-- **clientID**: Use a fixed client ID. Defaults to empty which means a user ID is generated for this connection.
+- **clientID**: Use a fixed client ID. Defaults to empty which means a client ID is generated for this connection.
 
 Reconnect parameters are:
 
@@ -103,13 +103,13 @@ For more security, the following optional parameters can be altered:
 By default discovery services (like homie or homeassistant) are enabled on a broker.
 This behaviour can be controlled with a configuration parameter.
 
-- **enableDiscovery**:If set to true, enables discovery on this broker, if set to false, disables discovery services on this broker.
+- **enableDiscovery**: If set to true, enables discovery on this broker; if set to false, disables discovery services on this broker.
 
 ## Supported Channels
 
 You can extend your broker connection bridges with a channel:
 
-- **publishTrigger**: This channel is triggered when a value is published to the configured MQTT topic on this broker connection. The event payload (in `receivedEvent`) will be the received MQTT topic and its value, separated by the hash character (`#`).
+- **publishTrigger**: This channel is triggered when a value is published to the configured MQTT topic on this broker connection. By default, the event payload (in `receivedEvent`) is the received MQTT topic value only. If a separator is configured (see channel config), the payload will contain the topic and the value separated by that character (e.g., `my_topic#my_value`).
 
 Configuration parameters are:
 
@@ -131,7 +131,7 @@ Remember that you need a configured broker Thing first!
 
 The following optional parameters can be set for the Thing:
 
-- **availabilityTopic**: The MQTT topic that represents the availability of the thing. This can be the thing's LWT topic.
+- **availabilityTopic**: The MQTT topic that represents the availability of the Thing. This can be the Thing's LWT topic.
 - **payloadAvailable**: Payload of the `Availability Topic`, when the device is available. Default: `ON`.
 - **payloadNotAvailable**: Payload of the `Availability Topic`, when the device is _not_ available. Default: `OFF`.
 - **transformationPattern**: An optional transformation pattern like [JSONPath](https://goessner.net/articles/JsonPath/index.html#e2) that is applied to the incoming availability payload.
@@ -156,21 +156,21 @@ You can add the following channels:
 
 ## Channel Configuration
 
-- **stateTopic**: The MQTT topic that represents the state of the thing. This can be empty, the thing channel will be a state-less trigger then. You can use a wildcard topic like "sensors/+/event" to retrieve state from multiple MQTT topics.
+- **stateTopic**: The MQTT topic that represents the state of the Thing. This can be empty, the Thing channel will be a state-less trigger then. You can use a wildcard topic like "sensors/+/event" to retrieve state from multiple MQTT topics.
 - **transformationPattern**: An optional transformation pattern like [JSONPath](https://goessner.net/articles/JsonPath/index.html#e2) that is applied to all incoming MQTT values.
 - **transformationPatternOut**: An optional transformation pattern like [JSONPath](https://goessner.net/articles/JsonPath/index.html#e2) that is applied before publishing a value to MQTT.
-- **commandTopic**: The MQTT topic that commands are send to. This can be empty, the thing channel will be read-only then. Transformations are not applied for sending data.
+- **commandTopic**: The MQTT topic that commands are send to. This can be empty, the Thing channel will be read-only then. Transformations are not applied for sending data.
 - **formatBeforePublish**: Format a value before it is published to the MQTT broker. The default is to just pass the channel/item state. If you want to apply a prefix, say "MYCOLOR,", you would use "MYCOLOR,%s". Currently only "%s" is supported. Note that this format does not apply to the special on/off command values for dimmer channels, or up/down/stop command values for rollershutter channels.
 - **postCommand**: If `true`, the received MQTT value will not only update the state of linked items, but command it.
   The default is `false`.
   You usually need this to be `true` if your item is also linked to another channel, say a KNX actor, and you want a received MQTT payload to command that KNX actor.
 - **retained**: The value will be published to the command topic as retained message. A retained value stays on the broker and can even be seen by MQTT clients that are subscribing at a later point in time.
-- **qos**: QoS of this channel. Overrides the connection  QoS (defined in broker connection).
+- **qos**: QoS of this channel. Overrides the connection QoS (defined in broker connection).
 - **trigger**: If `true`, the state topic will not update a state, but trigger a channel instead.
 
 ### Channel Type "string"
 
-- **allowedStates**: An optional comma separated list of allowed states. Example: "ONE,TWO,THREE"
+- **allowedStates**: An optional comma-separated list of allowed states. Example: "ONE,TWO,THREE"
 
 You can connect this channel to a String item.
 
@@ -181,7 +181,7 @@ You can connect this channel to a String item.
 - **step**: For decrease, increase commands the step needs to be known
 - **unit**: Unit of measurement (optional). For supported units see [OpenHAB: List of Units](https://www.openhab.org/docs/concepts/units-of-measurement.html#list-of-units). Examples: "°C", "°F"
 
-A decimal value (like 0.2) is send to the MQTT topic if the number has a fractional part.
+A decimal value (like 0.2) is sent to the MQTT topic if the number has a fractional part.
 If you always require an integer, please use the formatter.
 
 You can connect this channel to a Number item.
@@ -224,7 +224,7 @@ You can connect this channel to a Contact or Switch item.
 
 You can connect this channel to a Color, Dimmer and Switch item.
 
-This channel will publish the color as comma separated list to the MQTT broker,
+This channel will publish the color as a comma-separated list to the MQTT broker,
 e.g. "112,54,123" for the RGB color mode (0-255 per component), "360,100,100" for the HSB color mode (0-359 for hue and 0-100 for saturation and brightness),
 and "0.640074,0.329970,100" for the xyY color mode (0-1 for x and y, and 0-100 for brightness).
 
@@ -244,7 +244,7 @@ the brightness will be set to this configured initial brightness (default: 10%).
 
 You can connect this channel to a Color, Dimmer and Switch item.
 
-This channel will publish the color as comma separated list to the MQTT broker,
+This channel will publish the color as a comma-separated list to the MQTT broker,
 e.g. "112,54,123" for an RGB channel (0-255 per component) and "360,100,100" for a HSB channel (0-359 for hue and 0-100 for saturation and brightness).
 
 The channel expects values on the corresponding MQTT topic to be in this format as well.
@@ -253,7 +253,7 @@ The channel expects values on the corresponding MQTT topic to be in this format 
 
 You can connect this channel to a Location item.
 
-The channel will publish the location as comma separated list to the MQTT broker,
+The channel will publish the location as a comma-separated list to the MQTT broker,
 e.g. "112,54,123" for latitude, longitude, altitude. The altitude is optional.
 
 The channel expects values on the corresponding MQTT topic to be in this format as well.
@@ -263,13 +263,13 @@ The channel expects values on the corresponding MQTT topic to be in this format 
 You can connect this channel to an Image item. This is a read-only channel.
 
 The channel expects values on the corresponding MQTT topic to contain the binary
-data of a bmp, jpg, png or any other format that the installed java runtime supports.
+data of a bmp, jpg, png or any other format that the installed Java runtime supports.
 
 ### Channel Type "datetime"
 
 You can connect this channel to a DateTime item.
 
-The channel will publish the date/time in the format "yyyy-MM-dd'T'HH:mm"
+The channel will publish the date/time in the format "yyyy-MM-dd'T'HH:mm:ss",
 for example 2018-01-01T12:14:00. If you require another format, please use the formatter.
 
 The channel expects values on the corresponding MQTT topic to be in this format as well.
@@ -361,10 +361,10 @@ Thing mqtt:topic:bedroom1-switch (mqtt:broker:myInsecureBroker) [ availabilityTo
 
 ## Limitations
 
-- The HomeAssistant Fan Components only support ON/OFF.
-- The HomeAssistant Cover Components only support OPEN/CLOSE/STOP.
-- The HomeAssistant Light Component does not support XY color changes.
-- The HomeAssistant Climate Components is not yet supported.
+- The HomeAssistant Fan components only support ON/OFF.
+- The HomeAssistant Cover components only support OPEN/CLOSE/STOP.
+- The HomeAssistant Light component does not support XY color changes.
+- The HomeAssistant Climate components are not yet supported.
 
 ## Value Transformations
 

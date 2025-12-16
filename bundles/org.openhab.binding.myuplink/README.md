@@ -11,12 +11,12 @@ You will need to create credentials at <https://dev.myuplink.com/apps> in order 
 
 ## Supported Things
 
-This binding provides two thing types:
+This binding provides two Thing types:
 
 | Thing/Bridge        | Thing Type          | Description                                                       |
 |---------------------|---------------------|-------------------------------------------------------------------|
 | bridge              | account             | cloud connection to a myUplink user account                       |
-| thing               | generic-device      | the physical heatpump which is connected to myUplink              |
+| Thing               | generic-device      | the physical heatpump which is connected to myUplink              |
 
 ## Discovery
 
@@ -39,7 +39,7 @@ If manual configuration is preferred you need to specify configuration as below.
 
 | Configuration Parameter | Required | Description                                                                                                            |
 |-------------------------|----------|------------------------------------------------------------------------------------------------------------------------|
-| deviceId                | yes      | The id of the heatpump that will be represented by this thing. Can be retrieved via API call or autodiscovery.         |
+| deviceId                | yes      | The id of the heatpump that will be represented by this Thing. Can be retrieved via API call or autodiscovery.         |
 | systemId                | no       | The systemId of the heatpump. Only needed for "SmartHomeMode". Can be retrieved via API call or autodiscovery.         |
 
 ## Channels

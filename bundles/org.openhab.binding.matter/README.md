@@ -37,11 +37,11 @@ This describes the Matter controller functionality for discovering and controlli
 ## Quick Start
 
 1. Install the Matter binding from the openHAB add-on store.
-1. Add a Matter "Controller" thing to the inbox using the default settings.
-1. Use the "Pair Matter Device" action on the controller thing to pair a device with the controller.
-1. Add the discovered device from the inbox as a new "Node" thing.
+1. Add a Matter "Controller" Thing to the inbox using the default settings.
+1. Use the "Pair Matter Device" action on the controller Thing to pair a device with the controller.
+1. Add the discovered device from the inbox as a new "Node" Thing.
 
-Note: It is never necessary to remove or delete the "Controller" thing when troubleshooting issues.
+Note: It is never necessary to remove or delete the "Controller" Thing when troubleshooting issues.
 
 ## Supported Things
 
@@ -54,17 +54,17 @@ It requires the configuration parameter `nodeId` which sets the local Matter nod
 The only configuration parameter is `nodeId`.
 A standard Node will map Matter endpoints to openHAB channel groups.
 **This will be discovered automatically** when a pairing code is used to scan for a device and should not be added manually.
-- `endpoint`: Represents an standalone endpoint as a child of a `node` thing. Only Endpoints exposed by Matter bridges will be added as `endpoint` things, otherwise Matter Endpoints are mapped on a `node` thing as channel groups. An `endpoint` thing **will be discovered automatically** when a node is added that has multiple bridged endpoints and should not be added manually.
+- `endpoint`: Represents an standalone endpoint as a child of a `node` Thing. Only Endpoints exposed by Matter bridges will be added as `endpoint` things, otherwise Matter Endpoints are mapped on a `node` Thing as channel groups. An `endpoint` Thing **will be discovered automatically** when a node is added that has multiple bridged endpoints and should not be added manually.
 
 ## Discovery
 
 Matter controllers must be added manually.
 Nodes (devices) will be discovered when a `pairCode` is used to search for a device to add.
-Bridged endpoints will be added to the inbox once the parent Node is added as a thing.
+Bridged endpoints will be added to the inbox once the parent Node is added as a Thing.
 
 ### Device Pairing: General
 
-The pairing action can be found in the settings of the "Controller" thing under the "Actions" -> "Pair Matter Device"
+The pairing action can be found in the settings of the "Controller" Thing under the "Actions" -> "Pair Matter Device"
 
 <img src="./doc/pairing.png" alt="Matter Pairing" width="600"/>
 
@@ -152,7 +152,7 @@ You can find the correct interface name by running `ip a` and looking for the in
 
 ### Controller Thing Configuration
 
-The controller thing must be created manually before devices can be discovered.
+The controller Thing must be created manually before devices can be discovered.
 
 | Name   | Type   | Description                            | Default | Required | Advanced |
 |--------|--------|----------------------------------------|---------|----------|----------|
@@ -428,7 +428,7 @@ openHAB can also expose Items and Item groups as Matter devices to 3rd party Mat
 ## Configuration
 
 Note: The openHAB Matter bridge is **unrelated** to the Matter Controller Thing.
-Adding, modifying or removing a Matter "Controller" thing, or any Matter "Node" thing **will have no affect on the bridge**.
+Adding, modifying or removing a Matter "Controller" Thing, or any Matter "Node" Thing **will have no affect on the bridge**.
 
 There are two ways in which to configure the Matter bridge:
 

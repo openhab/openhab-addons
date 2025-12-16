@@ -16,7 +16,7 @@ Others are untested, but might work:
 
 ## Supported Things
 
-The binding supports only one thing:
+The binding supports only one Thing:
 
 - `mq2200-inverter`: The FoxESS MQ-2200 inverter (also sold with the product name Solakon ONE or Avocado 22 Pro), connected via Modbus TCP.
 
@@ -32,7 +32,7 @@ To troubleshoot, it is recommended to open a telnet connection to port 502. If i
 
 ## Thing Configuration
 
-Once you've configured the Modbus TCP Slave as Bridge, you can configure the mq2200-inverter thing.
+Once you've configured the Modbus TCP Slave as Bridge, you can configure the mq2200-inverter Thing.
 You just have to select the configured bridge and optionally configure the polling interval.
 
 The foxinverter binding supports autodiscovery, so if you enable discovery in the bridge options, you can just press the `scan` button to add your inverter to the inbox.
@@ -48,7 +48,7 @@ The foxinverter binding supports autodiscovery, so if you enable discovery in th
 
 > NOTE: All channels are currently read-only. Writing is not yet implemented.
 
-The `mq2200-inverter` thing has channels that serve the current state of the FoxESS inverter, as you are used to from the vendor app.
+The `mq2200-inverter` Thing has channels that serve the current state of the FoxESS inverter, as you are used to from the vendor app.
 
 | Channel Type ID                    | Item Type                | Description                           | Advanced  | Channel Group       |
 |------------------------------------|--------------------------|---------------------------------------|-----------|---------------------|

@@ -7,7 +7,7 @@
 	<config-description uri="thing-type:mqtt:trigger_channel">
 		<parameter-group name="transformations">
 			<label>Transform Values</label>
-			<description>These configuration parameters allow you to alter before a received value is used in the trigger.</description>
+			<description>These configuration parameters allow you to alter a received value before it is used in the trigger.</description>
 			<advanced>true</advanced>
 		</parameter-group>
 

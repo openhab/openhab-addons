@@ -475,7 +475,7 @@
 	<channel-type id="overlay">
 		<item-type>String</item-type>
 		<label>App Overlay</label>
-		<description>Overlay effect (overriden by global clock overlay)</description>
+		<description>Overlay effect (overridden by global clock overlay)</description>
 		<category>screen</category>
 		<tags>
 			<tag>Status</tag>
