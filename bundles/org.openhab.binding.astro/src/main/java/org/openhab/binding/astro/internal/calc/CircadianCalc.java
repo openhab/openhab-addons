@@ -46,7 +46,10 @@ public class CircadianCalc {
         if (rise == null || set == null || noon == null) {
             return Circadian.DEFAULT;
         }
+        return calculate(calendar, rise, set, noon);
+    }
 
+    public Circadian calculate(Calendar calendar, Calendar rise, Calendar set, Calendar noon) {
         // Figure out where we are in time so we know which half of the parabola to calculate.
         // We're generating a different sunset-sunrise parabola for before and after solar midnight,
         // because solar midnight might not be exactly halfway between sunrise and sunset.

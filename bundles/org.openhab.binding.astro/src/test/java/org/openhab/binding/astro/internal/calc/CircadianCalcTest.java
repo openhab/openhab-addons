@@ -30,7 +30,6 @@ import org.openhab.binding.astro.internal.model.Circadian;
 public class CircadianCalcTest {
 
     private static final TimeZone UTC = TimeZone.getTimeZone("UTC");
-
     private CircadianCalc circadianCalc;
 
     @BeforeEach
