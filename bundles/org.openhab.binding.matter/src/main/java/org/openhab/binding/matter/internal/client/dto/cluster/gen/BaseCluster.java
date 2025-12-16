@@ -16,6 +16,7 @@
 package org.openhab.binding.matter.internal.client.dto.cluster.gen;
 
 import java.math.BigInteger;
+import java.nio.charset.Charset;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNull;
@@ -68,6 +69,10 @@ public class BaseCluster {
 
         public OctetString(byte[] value) {
             this.value = value;
+        }
+
+        public OctetString(String string, Charset charset) {
+            this.value = string.getBytes(charset);
         }
 
         public OctetString(String hexString) {

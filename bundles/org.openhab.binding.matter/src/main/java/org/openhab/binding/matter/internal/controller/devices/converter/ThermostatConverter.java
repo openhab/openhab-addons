@@ -188,18 +188,27 @@ public class ThermostatConverter extends GenericConverter<ThermostatCluster> {
         if (!(command instanceof RefreshType)) {
             String id = channelUID.getIdWithoutGroup();
             if (id.equals(CHANNEL_ID_THERMOSTAT_SYSTEMMODE)) {
-                handler.writeAttribute(endpointNumber, ThermostatCluster.CLUSTER_NAME, "systemMode",
-                        command.toString());
+                handler.writeAttribute(endpointNumber, ThermostatCluster.CLUSTER_NAME, "systemMode", command.toString())
+                        .exceptionally(e -> {
+                            logger.debug("Failed to set system mode: {}", e.getMessage());
+                            return Void.TYPE.cast(null);
+                        });
                 return;
             }
             if (id.equals(CHANNEL_ID_THERMOSTAT_OCCUPIEDHEATING)) {
                 handler.writeAttribute(endpointNumber, ThermostatCluster.CLUSTER_NAME, "occupiedHeatingSetpoint",
-                        String.valueOf(ValueUtils.temperatureToValue(command)));
+                        String.valueOf(ValueUtils.temperatureToValue(command))).exceptionally(e -> {
+                            logger.debug("Failed to set occupied heating setpoint: {}", e.getMessage());
+                            return Void.TYPE.cast(null);
+                        });
                 return;
             }
             if (id.equals(CHANNEL_ID_THERMOSTAT_OCCUPIEDCOOLING)) {
                 handler.writeAttribute(endpointNumber, ThermostatCluster.CLUSTER_NAME, "occupiedCoolingSetpoint",
-                        String.valueOf(ValueUtils.temperatureToValue(command)));
+                        String.valueOf(ValueUtils.temperatureToValue(command))).exceptionally(e -> {
+                            logger.debug("Failed to set occupied cooling setpoint: {}", e.getMessage());
+                            return Void.TYPE.cast(null);
+                        });
                 return;
             }
         }

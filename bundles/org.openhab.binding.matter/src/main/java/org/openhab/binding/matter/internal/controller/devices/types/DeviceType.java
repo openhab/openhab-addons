@@ -29,6 +29,7 @@ import org.openhab.binding.matter.internal.client.dto.ws.EventTriggeredMessage;
 import org.openhab.binding.matter.internal.controller.devices.converter.ConverterRegistry;
 import org.openhab.binding.matter.internal.controller.devices.converter.GenericConverter;
 import org.openhab.binding.matter.internal.handler.MatterBaseThingHandler;
+import org.openhab.core.config.core.Configuration;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelGroupUID;
 import org.openhab.core.thing.ChannelUID;
@@ -179,6 +180,17 @@ public abstract class DeviceType implements AttributeListener, EventTriggeredLis
     public void pollClusters() {
         clusterToConverters.forEach((clusterId, converter) -> {
             converter.pollCluster();
+        });
+    }
+
+    /**
+     * Handles configuration updates by delegating to all cluster converters
+     * 
+     * @param config The updated configuration
+     */
+    public void handleConfigurationUpdate(Configuration config) {
+        clusterToConverters.forEach((clusterId, converter) -> {
+            converter.handleConfigurationUpdate(config);
         });
     }
 

@@ -37,6 +37,8 @@ public class RoborockBindingConstants {
 
     // Constants used by RoborockWebTargets
     public static final int TIMEOUT_MS = 30000;
+    public static final String CODE_LOGIN = "/api/v1/loginWithCode";
+    public static final String CODE_LOGIN_V4 = "/api/v4/auth/email/login/code";
     public static final String EU_IOT_BASE_URL = "https://euiot.roborock.com";
     public static final String GET_URL_BY_EMAIL_URI = EU_IOT_BASE_URL + "/api/v1/getUrlByEmail";
     public static final String GET_TOKEN_PATH = "/api/v1/login";
@@ -44,8 +46,10 @@ public class RoborockBindingConstants {
     public static final String GET_HOME_DATA_PATH = "/user/homes/";
     public static final String GET_HOME_DATA_V3_PATH = "/v3/user/homes/";
     public static final String GET_ROUTINES_PATH = "/user/scene/device/";
+    public static final String REQUEST_CODE_V4 = "/api/v4/email/code/send";
     public static final String SET_ROUTINE_PATH = "/user/scene/";
     public static final String SET_ROUTINE_PATH_SUFFIX = "/execute";
+    public static final String SIGN_KEY_V3 = "/api/v3/key/sign";
 
     // Protocol constants
     public static final String MD5_ALGORITHM = "MD5";
@@ -130,7 +134,6 @@ public class RoborockBindingConstants {
     public static final String COMMAND_APP_SPOT = "app_spot";
     public static final String COMMAND_APP_START = "app_start";
     public static final String COMMAND_APP_START_BUILD_MAP = "app_start_build_map";
-    public static final String COMMAND_APP_START_COLLECT_DUST = "app_start_collect_dust";
     public static final String COMMAND_APP_START_EASTER_EGG = "app_start_easter_egg";
     public static final String COMMAND_APP_START_PATROL = "app_start_patrol";
     public static final String COMMAND_APP_START_PET_PATROL = "app_start_pet_patrol";

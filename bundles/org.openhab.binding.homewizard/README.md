@@ -52,47 +52,107 @@ For DSMR5 meters this is generally once per second, for older versions the frequ
 
 ## Channels
 
-| Channel ID                | Item Type                 | Description                                                                                                  | Available                         |
-|---------------------------|---------------------------|--------------------------------------------------------------------------------------------------------------|-----------------------------------|
-| power                     | Number:Power              | This channel provides the active usage in Watt.                                                              | hwe-p1, hwe-skt, hwe-kwh, hwe-bat |
-| power_l1                  | Number:Power              | This channel provides the active usage for phase 1 in Watt.                                                  | hwe-p1, hwe-kwh                   |
-| power_l2                  | Number:Power              | This channel provides the active usage for phase 2 in Watt.                                                  | hwe-p1, hwe-kwh                   |
-| power_l3                  | Number:Power              | This channel provides the active usage for phase 3 in Watt.                                                  | hwe-p1, hwe-kwh                   |
-| voltage                   | Number:ElectricPotential  | This channel provides the active voltage in Volt.                                                            | hwe-skt                           |
-| voltage_l1                | Number:ElectricPotential  | This channel provides the active usage for phase 1 in Watt.                                                  | hwe-p1, hwe-kwh, hwe-bat          |
-| voltage_l2                | Number:ElectricPotential  | This channel provides the active usage for phase 2 in Watt.                                                  | hwe-p1, hwe-kwh                   |
-| voltage_l3                | Number:ElectricPotential  | This channel provides the active usage for phase 3 in Watt.                                                  | hwe-p1, hwe-kwh                   |
-| current                   | Number:ElectricCurrent    | This channel provides the active current in Ampere.                                                          | hwe-skt, hwe-kwh, hwe-bat         |
-| current_l1                | Number:ElectricCurrent    | This channel provides the active current for phase 1 in Ampere.                                              | hwe-p1, hwe-kwh                   |
-| current_l2                | Number:ElectricCurrent    | This channel provides the active current for phase 2 in Ampere.                                              | hwe-p1, hwe-kwh                   |
-| current_l3                | Number:ElectricCurrent    | This channel provides the active current for phase 3 in Ampere.                                              | hwe-p1, hwe-kwh                   |
-| energy_import             | Number:Energy             | This channel provides the total energy usage meter reading in kWh.                                           | hwe-p1, hwe-skt, hwe-kwh, hwe-bat |
-| energy_import_t1          | Number:Energy             | This channel provides the energy usage meter reading for tariff 1 in kWh.                                    | hwe-p1                            |
-| energy_import_t2          | Number:Energy             | This channel provides the energy usage meter reading for tariff 2 in kWh.                                    | hwe-p1                            |
-| energy_export             | Number:Energy             | This channel provides the total energy feed-in meter reading in kWh.                                         | hwe-p1, hwe-skt, hwe-kwh, hwe-bat |
-| energy_export_t1          | Number:Energy             | This channel provides the energy feed-in meter reading for tariff 1 in kWh.                                  | hwe-p1                            |
-| energy_export_t2          | Number:Energy             | This channel provides the energy feed-in meter reading for tariff 2 in kWh.                                  | hwe-p1                            |
-| reactive_power            | Number                    | This channel provides the active reactive power in Volt-Ampere reactive.                                     | hwe-p1, hwe-skt, hwe-kwh          |
-| apparent_power            | Number                    | This channel provides the active apparent power in Volt-Ampere.                                              | hwe-p1, hwe-skt, hwe-kwh          |
-| power_factor              | Number:Dimensionless      | This channel provides the active power factor.                                                               | hwe-p1, hwe-skt, hwe-kwh          |
-| frequency                 | Number:Frequency          | This channel provides the active frequency in Hertz.                                                         | hwe-p1, hwe-skt, hwe-kwh, hwe-bat |
-| total_gas                 | Number:Volume             | This channel provides the most recently reported total imported gas in m^3.                                  | hwe-p1                            |
-| gas_timestamp             | DateTime                  | This channel provides the time stamp of the total_gas measurement.                                           | hwe-p1                            |
-| power_failures            | Number                    | This channel provides the number of power failures detected by meter.                                        | hwe-p1                            |
-| long_power_failures       | Number                    | This channel provides the number of 'long' power failures detected by meter.                                 | hwe-p1                            |
-| tariff                    | Number                    | This channel provides the active tariff, matches one of the totals.                                        | hwe-p1                            |
-| power_switch              | Switch                    | This channel provides access to the power switch of the Energy Socket.                                       | hwe-skt                           |
-| power_lock                | Switch                    | This channel provides access to the power lock of the Energy Socket.                                         | hwe-skt                           |
-| ring_brightness           | Number:Dimensionless      | This channel provides access to the brightness of the ring of the Energy Socket.                             | hwe-skt                           |
-| total_liter               | Number:Volume             | This channel provides total water usage in cubic meters.                                                     | hwe-wtr                           |
-| active_liter              | Number:VolumetricFlowRate | This channel provides the active water usage in liters per minute.                                           | hwe-wtr                           |
-| state_of_charge           | Number:Dimensionless      | This channel provides access to the current state of charge in percent.                                      | hwe-bat                           |
-| cycles                    | Number:Dimensionless      | This channel provides access to the number of battery cycles.                                                | hwe-bat                           |
-| batteries_mode            | String                    | This channel provides the control mode of the Plug-In Battery.                                               | hwe-p1                            |
-| batteries_power           | Number:Power              | This channel provides the current combined power consumption/production of the controlled Plug-In Batteries. | hwe-p1                            |
-| batteries_target_power    | Number:Power              | This channel provides the target power consumption/production of the controlled Plug-In Batteries.           | hwe-p1                            |
-| batteries_max_consumption | Number:Power              | This channel provides the maximum allowed consumption power of the controlled Plug-In Batteries.             | hwe-p1                            |
-| batteries_max_production  | Number:Power              | This channel provides the maximum allowed production power of the controlled Plug-In Batteries.              | hwe-p1                            |
+### HWE-P1
+
+| Channel ID                | Item Type                 | Description                                                                            | Availability |
+|---------------------------|---------------------------|----------------------------------------------------------------------------------------|--------------|
+| power                     | Number:Power              | The active power in Watt.                                                              | v1, 2.0.0    |
+| power_l1                  | Number:Power              | The active power for phase 1 in Watt.                                                  | v1, 2.0.0    |
+| power_l2                  | Number:Power              | The active power for phase 2 in Watt.                                                  | v1, 2.0.0    |
+| power_l3                  | Number:Power              | The active power for phase 3 in Watt.                                                  | v1, 2.0.0    |
+| voltage_l1                | Number:ElectricPotential  | The active voltage for phase 1 in Volt.                                                | v1, 2.0.0    |
+| voltage_l2                | Number:ElectricPotential  | The active voltage for phase 2 in Volt.                                                | v1, 2.0.0    |
+| voltage_l3                | Number:ElectricPotential  | The active voltage for phase 3 in Volt.                                                | v1, 2.0.0    |
+| current_l1                | Number:ElectricCurrent    | The active current for phase 1 in Ampere.                                              | v1, 2.0.0    |
+| current_l2                | Number:ElectricCurrent    | The active current for phase 2 in Ampere.                                              | v1, 2.0.0    |
+| current_l3                | Number:ElectricCurrent    | The active current for phase 3 in Ampere.                                              | v1, 2.0.0    |
+| energy_import             | Number:Energy             | The total energy usage meter reading in kWh.                                           | v1, 2.0.0    |
+| energy_import_t1          | Number:Energy             | The energy usage meter reading for tariff 1 in kWh.                                    | v1, 2.0.0    |
+| energy_import_t2          | Number:Energy             | The energy usage meter reading for tariff 2 in kWh.                                    | v1, 2.0.0    |
+| energy_export             | Number:Energy             | The total energy feed-in meter reading in kWh.                                         | v1, 2.0.0    |
+| energy_export_t1          | Number:Energy             | The energy feed-in meter reading for tariff 1 in kWh.                                  | v1, 2.0.0    |
+| energy_export_t2          | Number:Energy             | The energy feed-in meter reading for tariff 2 in kWh.                                  | v1, 2.0.0    |
+| reactive_power            | Number                    | The active reactive power in Volt-Ampere reactive.                                     | v1, 2.0.0    |
+| apparent_power            | Number                    | The active apparent power in Volt-Ampere.                                              | v1, 2.0.0    |
+| power_factor              | Number:Dimensionless      | The active power factor.                                                               | v1, 2.0.0    |
+| frequency                 | Number:Frequency          | The active frequency in Hertz.                                                         | v1, 2.0.0    |
+| total_gas                 | Number:Volume             | The most recently reported total imported gas in m^3.                                  | v1, 2.0.0    |
+| gas_timestamp             | DateTime                  | The time stamp of the total_gas measurement.                                           | v1, 2.0.0    |
+| power_failures            | Number                    | The number of power failures detected by meter.                                        | v1, 2.0.0    |
+| long_power_failures       | Number                    | The number of 'long' power failures detected by meter.                                 | v1, 2.0.0    |
+| tariff                    | Number                    | The active tariff, matches one of the totals.                                          | v1, 2.0.0    |
+| batteries_mode            | String                    | The control mode of the Plug-In Battery. Supported modes: "zero", "standby" and "to_full". In 2.2.0, modes "zero_charge_only" and "zero_discharge_only" are also supported. | v1, 2.1.0    |
+| batteries_count           | Number                    | The number of connected Plug-In Batteries.                                             | v1, 2.2.0    |
+| batteries_power           | Number:Power              | The current combined power consumption/production of the controlled Plug-In Batteries. | v1, 2.1.0    |
+| batteries_target_power    | Number:Power              | The target power consumption/production of the controlled Plug-In Batteries.           | v1, 2.1.0    |
+| batteries_max_consumption | Number:Power              | The maximum allowed consumption power of the controlled Plug-In Batteries.             | v1, 2.1.0    |
+| batteries_max_production  | Number:Power              | The maximum allowed production power of the controlled Plug-In Batteries.              | v1, 2.1.0    |
+
+### HWE-KWH
+
+| Channel ID                | Item Type                 | Description                                                                            | Availability |
+|---------------------------|---------------------------|----------------------------------------------------------------------------------------|--------------|
+| power                     | Number:Power              | The active power in Watt.                                                              | v1, 2.0.0    |
+| power_l1                  | Number:Power              | The active power for phase 1 in Watt.                                                  | v1, 2.0.0    |
+| power_l2                  | Number:Power              | The active power for phase 2 in Watt.                                                  | v1, 2.0.0    |
+| power_l3                  | Number:Power              | The active power for phase 3 in Watt.                                                  | v1, 2.0.0    |
+| voltage_l1                | Number:ElectricPotential  | The active voltage for phase 1 in Volt.                                                | v1, 2.0.0    |
+| voltage_l2                | Number:ElectricPotential  | The active voltage for phase 2 in Volt.                                                | v1, 2.0.0    |
+| voltage_l3                | Number:ElectricPotential  | The active voltage for phase 3 in Volt.                                                | v1, 2.0.0    |
+| current                   | Number:ElectricCurrent    | The active current in Ampere.                                                          | v1, 2.0.0    |
+| current_l1                | Number:ElectricCurrent    | The active current for phase 1 in Ampere.                                              | v1, 2.0.0    |
+| current_l2                | Number:ElectricCurrent    | The active current for phase 2 in Ampere.                                              | v1, 2.0.0    |
+| current_l3                | Number:ElectricCurrent    | The active current for phase 3 in Ampere.                                              | v1, 2.0.0    |
+| energy_import             | Number:Energy             | The total energy usage meter reading in kWh.                                           | v1, 2.0.0    |
+| energy_export             | Number:Energy             | The total energy feed-in meter reading in kWh.                                         | v1, 2.0.0    |
+| reactive_power            | Number                    | The active reactive power in Volt-Ampere reactive.                                     | v1, 2.0.0    |
+| apparent_power            | Number                    | The active apparent power in Volt-Ampere.                                              | v1, 2.0.0    |
+| power_factor              | Number:Dimensionless      | The active power factor.                                                               | v1, 2.0.0    |
+| frequency                 | Number:Frequency          | The active frequency in Hertz.                                                         | v1, 2.0.0    |
+| batteries_mode            | String                    | The control mode of the Plug-In Battery. Supported modes: "zero", "standby" and "to_full". In 2.2.0, modes "zero_charge_only" and "zero_discharge_only" are also supported. | v1, 2.1.0    |
+| batteries_count           | Number                    | The number of connected Plug-In Batteries.                                             | v1, 2.2.0    |
+| batteries_power           | Number:Power              | The current combined power consumption/production of the controlled Plug-In Batteries. | v1, 2.1.0    |
+| batteries_target_power    | Number:Power              | The target power consumption/production of the controlled Plug-In Batteries.           | v1, 2.1.0    |
+| batteries_max_consumption | Number:Power              | The maximum allowed consumption power of the controlled Plug-In Batteries.             | v1, 2.1.0    |
+| batteries_max_production  | Number:Power              | The maximum allowed production power of the controlled Plug-In Batteries.              | v1, 2.1.0    |
+
+### HWE-SKT
+
+| Channel ID                | Item Type                 | Description                                                                            | Availability |
+|---------------------------|---------------------------|----------------------------------------------------------------------------------------|--------------|
+| power                     | Number:Power              | The active power in Watt.                                                              | v1           |
+| voltage                   | Number:ElectricPotential  | The active voltage in Volt.                                                            | v1           |
+| current                   | Number:ElectricCurrent    | The active current in Ampere.                                                          | v1           |
+| energy_import             | Number:Energy             | The total energy usage meter reading in kWh.                                           | v1           |
+| energy_export             | Number:Energy             | The total energy feed-in meter reading in kWh.                                         | v1           |
+| reactive_power            | Number                    | The active reactive power in Volt-Ampere reactive.                                     | v1           |
+| apparent_power            | Number                    | The active apparent power in Volt-Ampere.                                              | v1           |
+| power_factor              | Number:Dimensionless      | The active power factor.                                                               | v1           |
+| frequency                 | Number:Frequency          | The active frequency in Hertz.                                                         | v1           |
+| power_switch              | Switch                    | Access to the power switch of the Energy Socket.                                       | v1           |
+| power_lock                | Switch                    | Access to the power lock of the Energy Socket.                                         | v1           |
+| ring_brightness           | Number:Dimensionless      | Access to the brightness of the ring of the Energy Socket.                             | v1           |
+
+### HWE-BAT
+
+| Channel ID                | Item Type                 | Description                                                                            | Availability |
+|---------------------------|---------------------------|----------------------------------------------------------------------------------------|--------------|
+| power                     | Number:Power              | The active power in Watt.                                                              | 2.0.0        |
+| voltage                   | Number:ElectricPotential  | The active voltage in Volt.                                                            | 2.0.0        |
+| current                   | Number:ElectricCurrent    | The active current in Ampere.                                                          | 2.0.0        |
+| energy_import             | Number:Energy             | The total energy usage meter reading in kWh.                                           | 2.0.0        |
+| energy_export             | Number:Energy             | The total energy feed-in meter reading in kWh.                                         | 2.0.0        |
+| frequency                 | Number:Frequency          | The active frequency in Hertz.                                                         | 2.0.0        |
+| state_of_charge           | Number:Dimensionless      | Access to the current state of charge in percent.                                      | 2.0.0        |
+| cycles                    | Number:Dimensionless      | Access to the number of battery cycles.                                                | 2.0.0        |
+
+### HWE-WTR
+
+| Channel ID                | Item Type                 | Description                                                                            | Availability |
+|---------------------------|---------------------------|----------------------------------------------------------------------------------------|--------------|
+| total_liter               | Number:Volume             | Total water usage in cubic meters.                                                     | v1           |
+| active_liter              | Number:VolumetricFlowRate | The active water usage in liters per minute.                                           | v1           |
+
 
 ## Full Example
 

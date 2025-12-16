@@ -198,6 +198,8 @@
     <module>org.openhab.binding.herzborg</module>
     <module>org.openhab.binding.homeassistant</module>
     <module>org.openhab.binding.homeconnect</module>
+    <module>org.openhab.binding.homekit</module>
+    <module>org.openhab.binding.homie</module>
     <module>org.openhab.binding.homematic</module>
     <module>org.openhab.binding.homewizard</module>
     <module>org.openhab.binding.hpprinter</module>
@@ -292,7 +294,6 @@
     <module>org.openhab.binding.mqtt.awtrixlight</module>
     <module>org.openhab.binding.mqtt.espmilighthub</module>
     <module>org.openhab.binding.mqtt.fpp</module>
-    <module>org.openhab.binding.mqtt.homie</module>
     <module>org.openhab.binding.mqtt.ruuvigateway</module>
     <module>org.openhab.binding.mspa</module>
     <module>org.openhab.binding.mybmw</module>
@@ -380,6 +381,7 @@
     <module>org.openhab.binding.samsungtv</module>
     <module>org.openhab.binding.satel</module>
     <module>org.openhab.binding.sbus</module>
+    <module>org.openhab.binding.sedif</module>
     <module>org.openhab.binding.semsportal</module>
     <module>org.openhab.binding.senechome</module>
     <module>org.openhab.binding.seneye</module>
@@ -447,6 +449,7 @@
     <module>org.openhab.binding.tuya</module>
     <module>org.openhab.binding.unifi</module>
     <module>org.openhab.binding.unifiedremote</module>
+    <module>org.openhab.binding.unifiprotect</module>
     <module>org.openhab.binding.upnpcontrol</module>
     <module>org.openhab.binding.upb</module>
     <module>org.openhab.binding.urtsi</module>

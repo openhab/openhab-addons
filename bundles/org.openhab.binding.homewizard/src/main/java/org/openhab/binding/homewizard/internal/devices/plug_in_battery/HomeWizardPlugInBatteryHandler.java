@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.homewizard.internal.devices.plug_in_battery;
 
+import java.util.Arrays;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.homewizard.internal.HomeWizardBindingConstants;
 import org.openhab.binding.homewizard.internal.devices.HomeWizardEnergyMeterHandler;
@@ -36,6 +38,7 @@ public class HomeWizardPlugInBatteryHandler extends HomeWizardEnergyMeterHandler
     public HomeWizardPlugInBatteryHandler(Thing thing) {
         super(thing);
         supportedTypes.add(HomeWizardBindingConstants.HWE_BAT);
+        supportedApiVersions = Arrays.asList(API_V2);
     }
 
     /**

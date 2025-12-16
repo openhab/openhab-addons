@@ -63,6 +63,7 @@ public class EcovacsBindingConstants {
     public static final String CHANNEL_ID_LAST_CLEAN_MAP = "last-clean#last-clean-map";
     public static final String CHANNEL_ID_MAIN_BRUSH_LIFETIME = "consumables#main-brush-lifetime";
     public static final String CHANNEL_ID_OTHER_COMPONENT_LIFETIME = "consumables#other-component-lifetime";
+    public static final String CHANNEL_ID_ROUND_MOP_LIFETIME = "consumables#round-mop-lifetime";
     public static final String CHANNEL_ID_SIDE_BRUSH_LIFETIME = "consumables#side-brush-lifetime";
     public static final String CHANNEL_ID_STATE = "status#state";
     public static final String CHANNEL_ID_SUCTION_POWER = "settings#suction-power";
@@ -73,6 +74,7 @@ public class EcovacsBindingConstants {
     public static final String CHANNEL_ID_VOICE_VOLUME = "settings#voice-volume";
     public static final String CHANNEL_ID_WATER_PLATE_PRESENT = "status#water-system-present";
     public static final String CHANNEL_ID_WATER_AMOUNT = "settings#water-amount";
+    public static final String CHANNEL_ID_WATER_AMOUNT_PERCENT = "settings#water-amount-percent";
     public static final String CHANNEL_ID_WIFI_RSSI = "status#wifi-rssi";
 
     public static final String CHANNEL_TYPE_ID_CLEAN_MODE = "current-cleaning-mode";

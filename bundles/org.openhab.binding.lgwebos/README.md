@@ -28,6 +28,7 @@ TVs are auto discovered through SSDP in the local network.
 The binding broadcasts a search message via UDP on the network in order to discover and monitor availability of the TV.
 
 Please note, that if you are running openHAB in a Docker container you have several alternatives for this binding to work:
+
 * use macvlan or host networking
 * manually configure the device:
   * host and access key for basic functionality
@@ -55,6 +56,7 @@ broadcast address of the network the TV is located in as `broadcastAddress`.
 Example: If your TV has the IP address `192.168.0.123`, the broadcast address is `192.168.0.255`.
 
 In addition forwarding of broadcast packets needs to be enabled:
+
 * net.ipv4.icmp_echo_ignore_broadcasts=0
 * net.ipv4.conf.all.bc_forwarding=1
 * net.ipv4.conf.${interface}.bc_forwarding=1
@@ -74,7 +76,7 @@ Thing lgwebos:WebOSTV:tv1 [host="192.168.2.119", key="6ef1dff6c7c936c8dc5056fc85
 
 | Channel Type ID | Item Type | Description                                                                                                                                                                                                             | Read/Write |
 |-----------------|-----------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------|
-| power           | Switch    | Current power setting. TV can only be powered off, not on, via the TV's API. Turning on is implemented via Wake On Lan, for which the MAC address must be set in the thing configuration. | RW         |
+| power           | Switch    | Current power setting. TV can only be powered off, not on, via the TV's API. Turning on is implemented via Wake On Lan, for which the MAC address must be set in the Thing configuration. | RW         |
 | mute            | Switch    | Current mute setting.                                                                                                                                                                                                   | RW         |
 | volume          | Dimmer    | Current volume setting. Setting and reporting absolute percent values only works when using internal speakers. When connected to an external amp, the volume should be controlled using increase and decrease commands. | RW         |
 | channel         | String    | Current channel. Use the channel number or channel id as command to update the channel.                                                                                                                                 | RW         |

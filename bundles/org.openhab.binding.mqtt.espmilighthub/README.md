@@ -1,37 +1,37 @@
 # EspMilightHub Binding
 
-This binding allows an open source esp8266 based bridge to automatically find and add Milight globes.
-The hubs can be built from 2 ready made boards and only need connecting with 7 wires.
+This binding allows an open source ESP8266-based bridge to automatically find and add Milight globes.
+The hubs can be built from two ready-made boards and only need connecting with seven wires.
 They can be very easy to build with no soldering needed.
 
 Advantages to using this DIY bridge over the OEM bridge:
 
 - Almost unlimited groups to give individual control over an entire house of Milight globes without needing multiple bridges.
 - If using the Milight remotes to control the globes, this binding can update the openHAB controls the moment a key is pressed on the physical remotes.
-- Supports auto discovery.
+- Supports auto-discovery.
 
-## Setup the hardware
+## Set up the hardware
 
-In depth details on how to build and what the bridge is can be found here: <https://blog.christophermullins.com/2017/02/11/milight-wifi-gateway-emulator-on-an-esp8266>
+In-depth details on how to build and what the bridge is can be found here: <https://blog.christophermullins.com/2017/02/11/milight-wifi-gateway-emulator-on-an-esp8266>
 
 A quick overview of the steps to get the hardware going are:
 
-- Connect a nodemcu/D1 mini/esp8266 to your computer via a USB cable.
+- Connect a NodeMCU/D1 mini/ESP8266 to your computer via a USB cable.
 - Download the latest BIN file from here <https://github.com/sidoh/esp8266_milight_hub/releases>
-- Download esp8266flasher if you are on windows <https://github.com/nodemcu/nodemcu-flasher>
+- Download the ESP8266 flasher if you are on Windows <https://github.com/nodemcu/nodemcu-flasher>
 - Check the blog above on more info for Mac or Linux.
-- Open the flasher tool and make sure the flash size is 4mb or whatever your esp8266 board has.
-- Flash the bin and press the reset button on the board when it completes.
-- Connect to the wifi access point of the esp directly with your phone/tablet and setup wifi details.
-- Login by using the IP address of the esp8266 in a web browser and the control panel will show up.
-- Connect 7 wires between the two ready made PCBs as shown in the blog.
-- Setup a MQTT broker as this method uses the faster and lightweight MQTT protocol and not UDP.
+- Open the flasher tool and make sure the flash size is 4 MB (or whatever your ESP8266 board has).
+- Flash the BIN and press the reset button on the board when it completes.
+- Connect to the WiFi access point of the ESP directly with your phone/tablet and set up WiFi details.
+- Log in using the IP address of the ESP8266 in a web browser and the control panel will show up.
+- Connect seven wires between the two ready-made PCBs as shown in the blog.
+- Set up an MQTT broker, as this method uses the faster and lightweight MQTT protocol and not UDP.
 
-## Setup the Firmware
+## Set up the Firmware
 
 Enter the control panel for the ESP8266 by using any browser and enter the IP address.
 The following options need to be changed in the firmware for the binding to work.
-Click on SETTINGS>MQTT>:
+Click SETTINGS > MQTT:
 
 **mqtt_topic_pattern:**
 `milight/commands/:device_id/:device_type/:group_id`
@@ -69,9 +69,9 @@ You can use this Linux command to watch all MQTT topics from Milight:
 mosquitto_sub -u usernamehere -P passwordhere -p 1883 -v -t 'milight/#'
 ```
 
-You can also use the mosquitto_pub command to send your own commands and watch the bulbs respond all without the binding being setup.
+You can also use the mosquitto_pub command to send your own commands and watch the bulbs respond, all without the binding being set up.
 Everything this binding does goes in and out via MQTT and can be watched with the above command.
-Once you have setup and test the hub you can move onto using the binding.
+Once you have set up and tested the hub, you can move on to using the binding.
 
 ## Supported Things
 
@@ -89,8 +89,8 @@ The Milight protocol is 1 way only so there is no way to find actual globes.
 
 ## Discovery
 
-First install the MQTT binding and setup a `broker` thing and make sure it is ONLINE, as this binding uses the MQTT binding to talk to your broker and hence that binding must be setup first.
-Next, move a control on either a physical remote, or used a virtual control inside the esp8266 control panel web page which cause a MQTT message to be sent.
+First install the MQTT binding and set up a `broker` Thing and make sure it is ONLINE, as this binding uses the MQTT binding to talk to your broker and hence that binding must be set up first.
+Next, move a control on either a physical remote, or use a virtual control inside the ESP8266 control panel web page, which causes an MQTT message to be sent.
 This binding should then detect the new device the moment the control is moved and a new entry should appear in your INBOX.
 
 To remove a saved state from your MQTT broker that causes an entry in your INBOX you can use this command or use the ignore feature of openHAB.
@@ -99,18 +99,18 @@ To remove a saved state from your MQTT broker that causes an entry in your INBOX
 mosquitto_pub -u username -P password -p 1883 -t 'milight/states/0x0/rgb_cct/1' -n -r
 ```
 
-Note that the group 0 (or ALL group) is not auto discovered as a thing and thus has to be added manually if needed.
+Note that the group 0 (or ALL group) is not auto-discovered as a Thing and thus has to be added manually if needed.
 
 ## Thing Configuration
 
 | Parameter | Description | Required | Default |
 |-|-|-|-|
-| `whiteHue` | When both the `whiteHue` and `whiteSat` values are seen by the binding it will trigger the white LEDS. Set to -1 to disable, 0 for Alexa, or 35 for Google Home. | Y | 35 |
-| `whiteSat` | When both the whiteHue and whiteSat values are seen by the binding it will trigger the white LEDS. Set to -1 to disable, 100 for Alexa or 32 for Google Home. | Y | 32 |
-| `favouriteWhite` | When one of the shortcuts triggers white mode, use this for the colour white instead of the default colour. | Y |200 |
+| `whiteHue` | When both the `whiteHue` and `whiteSat` values are seen by the binding it will trigger the white LEDs. Set to -1 to disable, 0 for Alexa, or 35 for Google Home. | Y | 35 |
+| `whiteSat` | When both the whiteHue and whiteSat values are seen by the binding it will trigger the white LEDs. Set to -1 to disable, 100 for Alexa or 32 for Google Home. | Y | 32 |
+| `favouriteWhite` | When one of the shortcuts triggers white mode, use this for the colour white instead of the default colour. | Y | 200 |
 | `dimmedCT` | Traditional globes grow warmer the more they are dimmed. Set this to 370, or leave blank to disable. | N | blank |
 | `oneTriggersNightMode` | Night mode is a much lower level of light and this feature allows it to be auto selected when your fader/slider moves to 1%. NOTE: Night mode by design locks out some controls of a physical remote, so this feature is disabled by default. | Y | false |
-| `powerFailsToMinimum` | If lights loose power from the power switch OR a power outage, they will default to using the lowest brightness if the light was turned off before the power failure occurred. | Y | true |
+| `powerFailsToMinimum` | If lights lose power from the power switch OR a power outage, they will default to using the lowest brightness if the light was turned off before the power failure occurred. | Y | true |
 | `whiteThreshold` | This feature allows you to use a color control to change to using the real white LEDs when the saturation is equal to, or below this threshold. -1 will disable this feature. | Y | 12 |
 | `duvThreshold` | This feature allows you to use a color control to change to using the real warm/cool white LEDs to set a white color temperature if the color is within a certain threshold of the block body curve. 1 will effectively disable this feature. The default settings maps well to Apple's HomeKit that will allow you to choose a color temperature, but sends it as an HSB value. See <https://www.waveformlighting.com/tech/calculate-duv-from-cie-1931-xy-coordinates/> for more information. | Y | 0.003 |
 
@@ -167,21 +167,21 @@ For example:
 The group 0 (or ALL group) with the Group ID 0 can be used to control all bulbs that are paired with one specific remote at once.
 While this functionality can also be achieved by using openHAB groups with even greater flexibility, the group 0 must be setup if you want to capture physical remote control events for the ALL group, and keep physical devices synchronized to their openHAB representations.
 Milight remotes send all commands with the Group ID 0 after the master ON/OFF buttons have been used.
-If the group 0 has not been setup these events will be lost and your Item states will no longer be synchonized with the actual device states until you issue a command via openHAB.
+If the group 0 has not been set up these events will be lost and your Item states will no longer be synchronized with the actual device states until you issue a command via openHAB.
 If you do not use a remote at all or you only control other bulbs than the ones controlled by openHAB you should not need to setup the ALL group.
 
-Since the group 0 is not needed in every case the autodiscovery feature will not detect this group as a Thing automatically.
+Since the group 0 is not needed in every case the auto-discovery feature will not detect this group as a Thing automatically.
 To create the group, use textual files or the openHAB UI to manually add a Thing with the correct Unique ID as described in section [Important for Textual Configuration](#important-for-textual-configuration).
 To create a Thing for the group 0, simply create a new Thing that has the same type as one of the auto discovered Things of the same remote and modify the ThingUID as described in section linked above.
 
-If you do not need separate group 0 controls in openHAB, but wish to have all the controls for the sub groups update when a physical remote is used, you only need to create the thing for group 0.
-Only if you want the controls do you need to link any channels and create the items, as creating the thing will subscribe the binding to the MQTT topic for group 0.
+If you do not need separate group 0 controls in openHAB, but wish to have all the controls for the sub groups update when a physical remote is used, you only need to create the Thing for group 0.
+Only if you want the controls do you need to link any channels and create the items, as creating the Thing will subscribe the binding to the MQTT topic for group 0.
 
 ## Full Example
 
-To use these examples for textual configuration, you must already have a configured MQTT `broker` thing, and know its unique ID.
+To use these examples for textual configuration, you must already have a configured MQTT `broker` Thing, and know its unique ID.
 This UID will be used in the things file and will replace the text `myBroker`.
-The first line in the things file will create a `broker` thing and this can be removed if you have already setup a broker in another file or via the UI already.
+The first line in the things file will create a `broker` Thing and this can be removed if you have already setup a broker in another file or via the UI already.
 
 *.things
 

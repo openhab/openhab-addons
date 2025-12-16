@@ -94,9 +94,11 @@ public class MatterWebsocketClient implements WebSocketListener, MatterWebsocket
     private final ScheduledExecutorService scheduler = ThreadPoolManager
             .getScheduledPool("matter.MatterWebsocketClient");
 
-    protected final Gson gson = new GsonBuilder().registerTypeAdapter(Node.class, new NodeDeserializer())
+    protected final Gson gson = new GsonBuilder().serializeNulls()
+            .registerTypeAdapter(Node.class, new NodeDeserializer())
             .registerTypeAdapter(BigInteger.class, new BigIntegerSerializer())
             .registerTypeHierarchyAdapter(BaseCluster.MatterEnum.class, new MatterEnumDeserializer())
+            .registerTypeHierarchyAdapter(BaseCluster.MatterEnum.class, new MatterEnumSerializer())
             .registerTypeAdapter(AttributeChangedMessage.class, new AttributeChangedMessageDeserializer())
             .registerTypeAdapter(EventTriggeredMessage.class, new EventTriggeredMessageDeserializer())
             .registerTypeAdapter(OctetString.class, new OctetStringDeserializer())
@@ -642,6 +644,14 @@ public class MatterWebsocketClient implements WebSocketListener, MatterWebsocket
             }
 
             throw new JsonParseException("Unable to deserialize " + typeOfT);
+        }
+    }
+
+    @NonNullByDefault({})
+    class MatterEnumSerializer implements JsonSerializer<BaseCluster.MatterEnum> {
+        @Override
+        public JsonElement serialize(BaseCluster.MatterEnum src, Type typeOfSrc, JsonSerializationContext context) {
+            return new JsonPrimitive(src.getValue());
         }
     }
 

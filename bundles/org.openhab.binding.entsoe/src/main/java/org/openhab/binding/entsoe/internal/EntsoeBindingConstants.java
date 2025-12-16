@@ -36,6 +36,8 @@ public class EntsoeBindingConstants {
 
     public static final String CHANNEL_TRIGGER_PRICES_RECEIVED = "prices-received";
 
+    public static final String CRON_DAILY_AT = "0 0 %s ? * * *";
+
     // Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_DAY_AHEAD = new ThingTypeUID(BINDING_ID, "day-ahead");
 

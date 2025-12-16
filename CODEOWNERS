@@ -163,8 +163,10 @@
 /bundles/org.openhab.binding.heliosventilation/ @ramack
 /bundles/org.openhab.binding.heos/ @Wire82
 /bundles/org.openhab.binding.herzborg/ @Sonic-Amiga
-/bundles/org.openhab.binding.homeassistant/ @antroids @ccutrer
+/bundles/org.openhab.binding.homeassistant/ @ccutrer
 /bundles/org.openhab.binding.homeconnect/ @bruestel
+/bundles/org.openhab.binding.homekit/ @andrewfg
+/bundles/org.openhab.binding.homie/ @ccutrer
 /bundles/org.openhab.binding.homematic/ @FStolte @gerrieg @mdicke2s
 /bundles/org.openhab.binding.homewizard/ @Daniel-42
 /bundles/org.openhab.binding.hpprinter/ @cossey
@@ -259,7 +261,6 @@
 /bundles/org.openhab.binding.mqtt.awtrixlight/ @DrRSatzteil
 /bundles/org.openhab.binding.mqtt.espmilighthub/ @Skinah
 /bundles/org.openhab.binding.mqtt.fpp/ @computergeek1507
-/bundles/org.openhab.binding.mqtt.homie/ @ccutrer
 /bundles/org.openhab.binding.mqtt.ruuvigateway/ @ssalonen
 /bundles/org.openhab.binding.mspa/ @weymann
 /bundles/org.openhab.binding.mybmw/ @ntruchsess @mherwege @martingrassl
@@ -347,6 +348,7 @@
 /bundles/org.openhab.binding.samsungtv/ @NickWaterton
 /bundles/org.openhab.binding.satel/ @druciak
 /bundles/org.openhab.binding.sbus/ @cipianpascu
+/bundles/org.openhab.binding.sedif/ @lo92fr
 /bundles/org.openhab.binding.semsportal/ @itb3
 /bundles/org.openhab.binding.senechome/ @vctender @KorbinianP @eguib
 /bundles/org.openhab.binding.seneye/ @nikotanghe
@@ -414,6 +416,7 @@
 /bundles/org.openhab.binding.tuya/ @J-N-K
 /bundles/org.openhab.binding.unifi/ @mgbowman @Hilbrand
 /bundles/org.openhab.binding.unifiedremote/ @GiviMAD
+/bundles/org.openhab.binding.unifiprotect/ @digitaldan
 /bundles/org.openhab.binding.upb/ @marcusb
 /bundles/org.openhab.binding.upnpcontrol/ @mherwege
 /bundles/org.openhab.binding.urtsi/ @openhab/add-ons-maintainers
@@ -500,12 +503,12 @@
 /itests/org.openhab.binding.astro.tests/ @gerrieg
 /itests/org.openhab.binding.avmfritz.tests/ @cweitkamp
 /itests/org.openhab.binding.feed.tests/ @openhab/add-ons-maintainers
+/itests/org.openhab.binding.homeassistant.tests/ @ccutrer
+/itests/org.openhab.binding.homie.tests/ @ccutrer
 /itests/org.openhab.binding.hue.tests/ @openhab/add-ons-maintainers
 /itests/org.openhab.binding.max.tests/ @marcelrv
 /itests/org.openhab.binding.mielecloud.tests/ @BjoernLange
 /itests/org.openhab.binding.modbus.tests/ @ssalonen
-/itests/org.openhab.binding.mqtt.homeassistant.tests/ @antroids
-/itests/org.openhab.binding.mqtt.homie.tests/ @openhab/add-ons-maintainers
 /itests/org.openhab.binding.mqtt.ruuvigateway.tests/ @ssalonen
 /itests/org.openhab.binding.ntp.tests/ @marcelrv
 /itests/org.openhab.binding.systeminfo.tests/ @mherwege

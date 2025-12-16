@@ -4,6 +4,7 @@ This binding can be used to control the following types of whole house multi-zon
 
 - Monoprice MPR-SG6Z (10761), Monoprice Passive Matrix (39261), Dayton Audio DAX66 or compatible clones
 - Monoprice 44519 4 zone / 6 source variant of the 10761 **(untested)**
+- Monoprice 44518 8 zone / 6 source variant of the 10761 **(untested)**
 - Monoprice 31028 or OSD Audio PAM1270 **(untested)**
 - Dayton Audio DAX88 **(untested)**
 - Xantech MRC88, MX88, MRAUDIO8X8 or CM8X8 **(untested)**
@@ -21,18 +22,20 @@ Or you can connect it for example to a Raspberry Pi and use [ser2net Linux tool]
 
 ## Supported Things
 
-Monoprice 10761 & 39261 or Dayton Audio DAX66 amplifiers use the `amplifier` thing id. Up to 18 zones with 3 linked amps and 6 source inputs are supported.
+Monoprice 10761 & 39261 or Dayton Audio DAX66 amplifiers use the `amplifier` Thing id. Up to 18 zones with 3 linked amps and 6 source inputs are supported.
 Note: Compatible clones from McLELLAND, Factor, Soundavo, etc. should work as well.
 
-**_The following thing types were implemented via available documentation only and have not been tested. Please open an issue for any bugs found when using these thing types._**
+**_The following Thing types were implemented via available documentation only and have not been tested. Please open an issue for any bugs found when using these Thing types._**
 
 Monoprice 44519 4 zone variants use the `monoprice4` thing id. Up to 12 zones with 3 linked amps and 6 source inputs are supported.
 
-Monoprice 31028 or OSD Audio PAM1270 70 volt amplifiers use the `monoprice70` thing id. 6 zones per amp (not linkable) and 2 source inputs are supported.
+Monoprice 44518 8 zone variants use the `monoprice8` Thing id. Up to 24 zones with 3 linked amps and 6 source inputs are supported.
 
-Dayton Audio DAX88 amplifiers use the `dax88` thing id. 8 zones (2 un-amplified) per amp (not linkable) and 8 source inputs are supported.
+Monoprice 31028 or OSD Audio PAM1270 70 volt amplifiers use the `monoprice70` Thing id. 6 zones per amp (not linkable) and 2 source inputs are supported.
 
-Xantech MRC88, MX88, MRAUDIO8X8 or CM8X8 amplifiers use the `xantech` thing id. Up to 16 zones with 2 linked amps and 8 source inputs are supported.
+Dayton Audio DAX88 amplifiers use the `dax88` Thing id. 8 zones (2 un-amplified) per amp (not linkable) and 8 source inputs are supported.
+
+Xantech MRC88, MX88, MRAUDIO8X8 or CM8X8 amplifiers use the `xantech` Thing id. Up to 16 zones with 2 linked amps and 8 source inputs are supported.
 Some Xantech amps provide unsolicited zone updates for keypad actions and may work with the `disableKeypadPolling` option set to true which will prevent un-necessary polling of the amplifier.
 Note: MRC44 amps do not support serial control.
 
@@ -43,7 +46,7 @@ You have to add all things manually.
 
 ## Thing Configuration
 
-The thing has the following configuration parameters (number of sources and zones is amplifier dependent):
+The Thing has the following configuration parameters (number of sources and zones is amplifier dependent):
 
 | Parameter Label        | Parameter ID         | Description                                                                                                                    | Accepted values  |
 |------------------------|----------------------|--------------------------------------------------------------------------------------------------------------------------------|------------------|
@@ -52,7 +55,7 @@ The thing has the following configuration parameters (number of sources and zone
 | Port                   | port                 | Communication port (8080 for newer amps with built-in serial over IP)                                                          | TCP port number  |
 | Number of Zones        | numZones             | (Optional) Number of amplifier zones to utilize in the binding (See Supported Things for max number of zones per Thing type)   | 1-18; default 6  |
 | Polling Interval       | pollingInterval      | (Optional) Configures how often (in seconds) to poll the amplifier to check for zone updates                                   | 5-60; default 15 |
-| Ignore Zones           | ignoreZones          | (Optional) A comma separated list of Zone numbers that will ignore the 'All Zone' (except All Off) commands                    | ie: "1,6,10"     |
+| Ignore Zones           | ignoreZones          | (Optional) A comma separated list of Zone numbers that will ignore the 'All Zone' (except All Off) commands                    | e.g., "1,6,10"     |
 | Initial All Volume     | initialAllVolume     | (Optional) When 'All' zones are activated, the volume will reset to this value to prevent excessive blaring of sound ;)        | 1-30; default 10 |
 | Source 1 Input Label   | inputLabel1          | (Optional) Friendly name for the input source to be displayed in the UI (ie: Chromecast, Radio, CD, etc.) (default "Source 1") | A free text name |
 | Source 2 Input Label   | inputLabel2          | (Optional) Friendly name for the input source to be displayed in the UI (ie: Chromecast, Radio, CD, etc.) (default "Source 2") | A free text name |
@@ -94,7 +97,7 @@ connection: &conMono
 ## Channels
 
 The following channels are available:
-Note that `dnd`, `page` and `keypad` are not available on all thing types.
+Note that `dnd`, `page` and `keypad` are not available on all Thing types.
 
 | Channel ID                    | Item Type | Description                                                                                                                           |
 |-------------------------------|-----------|---------------------------------------------------------------------------------------------------------------------------------------|
@@ -136,13 +139,13 @@ monopriceaudio:dax88:myamp "Dayton WHA" [ serialPort="COM5", pollingInterval=15,
 // Xantech 8x8
 monopriceaudio:xantech:myamp "Xantech WHA" [ serialPort="COM5", pollingInterval=30, numZones=8, inputLabel1="Chromecast", inputLabel2="Radio", inputLabel3="CD Player", inputLabel4="Bluetooth Audio", inputLabel5="HTPC", inputLabel6="Phono", inputLabel7="Ipod", inputLabel8="Sirius" ]
 
-// Note that host and port can be used with any of the thing types to connect as serial over IP
+// Note that host and port can be used with any of the Thing types to connect as serial over IP
 ```
 
 ### `monoprice.items` Example
 
 ```java
-// substitute 'amplifier' for the appropriate thing id if using 44519, 31028, DAX88 or Xantech amplifier
+// substitute 'amplifier' for the appropriate Thing id if using 44519, 31028, DAX88 or Xantech amplifier
 
 Switch all_allpower "All Zones Power" { channel="monopriceaudio:amplifier:myamp:all#allpower" }
 Number all_source "Source Input [%s]" { channel="monopriceaudio:amplifier:myamp:all#allsource" }

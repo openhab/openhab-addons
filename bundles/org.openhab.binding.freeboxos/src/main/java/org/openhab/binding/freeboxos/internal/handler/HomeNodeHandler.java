@@ -34,8 +34,6 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link HomeNodeHandler} is the base class for handler of home node things.
@@ -44,7 +42,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public abstract class HomeNodeHandler extends ApiConsumerHandler {
-    private final Logger logger = LoggerFactory.getLogger(HomeNodeHandler.class);
 
     public HomeNodeHandler(Thing thing) {
         super(thing);

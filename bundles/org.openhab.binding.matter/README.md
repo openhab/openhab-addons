@@ -37,11 +37,11 @@ This describes the Matter controller functionality for discovering and controlli
 ## Quick Start
 
 1. Install the Matter binding from the openHAB add-on store.
-1. Add a Matter "Controller" thing to the inbox using the default settings.
-1. Use the "Pair Matter Device" action on the controller thing to pair a device with the controller.
-1. Add the discovered device from the inbox as a new "Node" thing.
+1. Add a Matter "Controller" Thing to the inbox using the default settings.
+1. Use the "Pair Matter Device" action on the controller Thing to pair a device with the controller.
+1. Add the discovered device from the inbox as a new "Node" Thing.
 
-Note: It is never necessary to remove or delete the "Controller" thing when troubleshooting issues.
+Note: It is never necessary to remove or delete the "Controller" Thing when troubleshooting issues.
 
 ## Supported Things
 
@@ -54,17 +54,17 @@ It requires the configuration parameter `nodeId` which sets the local Matter nod
 The only configuration parameter is `nodeId`.
 A standard Node will map Matter endpoints to openHAB channel groups.
 **This will be discovered automatically** when a pairing code is used to scan for a device and should not be added manually.
-- `endpoint`: Represents an standalone endpoint as a child of a `node` thing. Only Endpoints exposed by Matter bridges will be added as `endpoint` things, otherwise Matter Endpoints are mapped on a `node` thing as channel groups. An `endpoint` thing **will be discovered automatically** when a node is added that has multiple bridged endpoints and should not be added manually.
+- `endpoint`: Represents an standalone endpoint as a child of a `node` Thing. Only Endpoints exposed by Matter bridges will be added as `endpoint` things, otherwise Matter Endpoints are mapped on a `node` Thing as channel groups. An `endpoint` Thing **will be discovered automatically** when a node is added that has multiple bridged endpoints and should not be added manually.
 
 ## Discovery
 
 Matter controllers must be added manually.
 Nodes (devices) will be discovered when a `pairCode` is used to search for a device to add.
-Bridged endpoints will be added to the inbox once the parent Node is added as a thing.
+Bridged endpoints will be added to the inbox once the parent Node is added as a Thing.
 
 ### Device Pairing: General
 
-The pairing action can be found in the settings of the "Controller" thing under the "Actions" -> "Pair Matter Device"
+The pairing action can be found in the settings of the "Controller" Thing under the "Actions" -> "Pair Matter Device"
 
 <img src="./doc/pairing.png" alt="Matter Pairing" width="600"/>
 
@@ -152,7 +152,7 @@ You can find the correct interface name by running `ip a` and looking for the in
 
 ### Controller Thing Configuration
 
-The controller thing must be created manually before devices can be discovered.
+The controller Thing must be created manually before devices can be discovered.
 
 | Name   | Type   | Description                            | Default | Required | Advanced |
 |--------|--------|----------------------------------------|---------|----------|----------|
@@ -227,6 +227,8 @@ Possible channels include:
 | colorcontrol-temperature-abs                                | Number:Temperature       | Color Temperature            | Sets the color temperature of the light in mirek                                                                                                                                                                                                                     | ColorLight       |          | %.0f %unit% |
 | doorlock-lockstate                                          | Switch                   | Door Lock State              | Locks and unlocks the door and maintains the lock state                                                                                                                                                                                                              | Door             |          |             |
 | doorlock-doorstate                                          | Contact                  | Door Sensor State            | Door Sensor State                                                                                                                                                                                                                                                    | Door             | true     |             |
+| doorlock-alarm                                              | Trigger                  | Door Lock Alarm              | Event that fires when a lock alarm occurs (Lock Jammed=0, Lock Factory Reset=1, Lock Radio Power Cycled=3, Wrong Code Entry Limit=4, Front Escutcheon Removed=5, Door Forced Open=6, Door Ajar=7, Forced User=8)                                                     |                  |          |             |
+| doorlock-lockoperationerror                                 | Trigger                  | Lock Operation Error         | Event that fires when a lock operation error occurs (Lock=0, Unlock=1, Non Access User Event=2, Forced User Event=3, Unlatch=4)                                                                                                                                      |                  |          |             |
 | fancontrol-fanmode                                          | Number                   | Fan Mode                     | Set the fan mode                                                                                                                                                                                                                                                     | HVAC             |          |             |
 | onoffcontrol-onoff                                          | Switch                   | Switch                       | Switches the power on and off                                                                                                                                                                                                                                        | Light            |          |             |
 | levelcontrol-level                                          | Dimmer                   | Dimmer                       | Sets the level of the light                                                                                                                                                                                                                                          | Light            |          |             |
@@ -326,6 +328,63 @@ Other device types may be supported, but with limited or missing functionality.
 | Battery Storage               | 0x0018           | Electrical Power Measurement (0x0090), Electrical Energy Measurement (0x0091), Power Source (0x002F)   |
 | Thread Border Router          | 0x0091           | Thread Network Diagnostics (0x0035), Thread Border Router Management (0x0452)                          |
 
+## Door Lock Management
+
+Matter door locks support user and credential management directly from openHAB.
+This allows you to create, modify, and delete users and their PIN codes without needing the lock manufacturer's app.
+
+### Lock Configuration
+
+Door locks expose several configuration options in the Thing configuration:
+
+| Setting              | Description                                                                                           |
+|----------------------|-------------------------------------------------------------------------------------------------------|
+| Operating Mode       | The lock's operating mode (Normal, Vacation, Privacy, No Remote Lock/Unlock, Passage)                 |
+| Auto Relock Time     | Number of seconds to wait after unlocking before automatically relocking (0 to disable)               |
+| One Touch Locking    | Enable or disable the ability to lock the door with a single touch                                    |
+| Default Lock PIN     | PIN code to use for remote lock/unlock operations when the lock requires a PIN for remote operations  |
+
+### User Management
+
+Door locks that support the "User" feature will display user configuration groups.
+The configuration shows all existing users plus up to 5 additional empty slots for adding new users.
+As you add more users, additional empty slots will automatically appear after saving to allow further expansion (up to the lock's maximum supported users).
+
+Each user slot allows you to:
+
+- **User Name**: Set a descriptive name for the user (max 10 characters)
+- **User Type**: Set the user type (Unrestricted, Schedule Restricted, etc.)
+- **PIN Code**: Set a PIN credential for the user. After saving, the PIN is sent to the lock and cleared from the configuration for security
+- **Enabled**: Enable or disable the user. A disabled user cannot unlock the door with their credentials.
+- **Delete User**: Enable this checkbox and save to delete the user from the lock
+
+#### Fabric Ownership
+
+Matter locks track which controller (fabric) created each user. Users created by other Matter controllers (e.g., Apple Home, Google Home, Amazon Alexa) will appear as "Managed by Other Fabric" in the configuration.
+These users can only be deleted, enabled, or disabled from openHAB - editing their name, type, or PIN requires using the controller that originally created them.
+
+### Lock Events
+
+Door locks can emit events through trigger channels:
+
+| Trigger Channel            | Description                                                                                       |
+|----------------------------|---------------------------------------------------------------------------------------------------|
+| doorlock-alarm             | Fires when a lock alarm occurs (jammed, factory reset, wrong code limit, door forced open, etc.)  |
+| doorlock-lockoperationerror| Fires when a lock operation error occurs (failed lock/unlock attempts)                            |
+
+Example rule to handle lock alarms:
+
+```java
+rule "Door Lock Alarm"
+when
+    Channel "matter:node:main:12345678901234567890:1#doorlock-alarm" triggered
+then
+    logInfo("DoorLock", "Lock alarm triggered with code: " + receivedEvent)
+    // Alarm codes: 0=Jammed, 1=Factory Reset, 3=Radio Power Cycled, 4=Wrong Code Limit, 
+    //              5=Escutcheon Removed, 6=Door Forced Open, 7=Door Ajar, 8=Forced User
+end
+```
+
 ## Full Example
 
 ### Thing Configuration
@@ -369,7 +428,7 @@ openHAB can also expose Items and Item groups as Matter devices to 3rd party Mat
 ## Configuration
 
 Note: The openHAB Matter bridge is **unrelated** to the Matter Controller Thing.
-Adding, modifying or removing a Matter "Controller" thing, or any Matter "Node" thing **will have no affect on the bridge**.
+Adding, modifying or removing a Matter "Controller" Thing, or any Matter "Node" Thing **will have no affect on the bridge**.
 
 There are two ways in which to configure the Matter bridge:
 

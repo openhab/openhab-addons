@@ -37,7 +37,7 @@
 			<description><![CDATA[
 			Applies transformations to an incoming MQTT topic value.
 			A transformation example for a received JSON would be "JSONPATH:$.device.status.temperature" for
-			a json {device: {status: { temperature: 23.2 }}}.
+			a JSON {device: {status: { temperature: 23.2 }}}.
 
 			You can chain transformations by listing each transformation on a separate line, or
 			by separating them with the intersection character ∩.
@@ -47,7 +47,7 @@
 		<parameter name="transformationPatternOut" type="text" groupName="transformations" multiple="true">
 			<label>Outgoing Value Transformation</label>
 			<description><![CDATA[
-			Applies a transformation before publishing a MQTT topic value.
+			Applies a transformation before publishing an MQTT topic value.
 
 			Transformations are specialised in extracting a value, but some transformations like
 			the MAP one could be useful.

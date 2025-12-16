@@ -15,6 +15,7 @@ package org.openhab.binding.homewizard.internal.devices;
 import java.security.KeyStore;
 import java.security.cert.CertificateFactory;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.ExecutionException;
@@ -69,6 +70,9 @@ public abstract class HomeWizardDeviceHandler extends BaseThingHandler {
     private static final String FIRMWARE_VERSION = "firmwareVersion";
     private static final String API_VERSION = "apiVersion";
 
+    protected static final int API_V1 = 1;
+    protected static final int API_V2 = 2;
+
     protected final Logger logger = LoggerFactory.getLogger(HomeWizardDeviceHandler.class);
     protected final Gson gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
             .create();
@@ -79,7 +83,8 @@ public abstract class HomeWizardDeviceHandler extends BaseThingHandler {
     private HttpClient httpClient = new HttpClient();
 
     protected List<String> supportedTypes = new ArrayList<String>();
-    protected String apiURL = "";
+    protected List<Integer> supportedApiVersions = Arrays.asList(API_V1);
+    public String apiURL = "";
 
     /**
      * Constructor
@@ -97,7 +102,7 @@ public abstract class HomeWizardDeviceHandler extends BaseThingHandler {
     public void initialize() {
         config = getConfigAs(HomeWizardConfiguration.class);
 
-        if (config.apiVersion > 1) {
+        if (config.isUsingApiVersion2()) {
             String caCertPath = "homewizard-ca-cert.pem";
 
             // Create an SSL context factory and set the CA certificate
@@ -135,18 +140,24 @@ public abstract class HomeWizardDeviceHandler extends BaseThingHandler {
     private boolean configure() {
         if (config.ipAddress.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Missing ipAddress/host configuration");
+                    "@text/offline.config-error-missing-host");
             return false;
         }
-        if (config.apiVersion == 2 && config.bearerToken.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Missing bearer token");
+        if (!supportedApiVersions.contains(config.apiVersion)) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/offline.config-error-invalid-api-version");
+            return false;
+        }
+        if (config.isUsingApiVersion2() && config.bearerToken.isBlank()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/offline.config-error-missing-bearer-token");
             return false;
         }
 
-        if (config.apiVersion == 1) {
-            apiURL = String.format("http://%s/api/", config.ipAddress.trim());
-        } else {
+        if (config.isUsingApiVersion2()) {
             apiURL = String.format("https://%s/api/", config.ipAddress.trim());
+        } else {
+            apiURL = String.format("http://%s/api/", config.ipAddress.trim());
         }
 
         try {
@@ -154,7 +165,8 @@ public abstract class HomeWizardDeviceHandler extends BaseThingHandler {
             httpClient.start();
         } catch (Exception ex) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    String.format("Unable to communicate with the device: %s", ex.getMessage()));
+                    "@text/offline.comm-error-device-offline");
+            logger.debug("Unable to reach device", ex);
             return false;
         }
 
@@ -182,12 +194,14 @@ public abstract class HomeWizardDeviceHandler extends BaseThingHandler {
             deviceInformation = getDeviceInformationData();
         } catch (Exception ex) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    String.format("Unable to query device: %s", ex.getMessage()));
+                    "@text/offline.comm-error-device-offline");
+            logger.debug("Unable to get device information", ex);
             return false;
         }
 
         if (deviceInformation.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Device returned empty data");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/offline.comm-error-no-data");
             return false;
         }
 
@@ -197,13 +211,14 @@ public abstract class HomeWizardDeviceHandler extends BaseThingHandler {
             return false;
         } else {
             if ("".equals(payload.getProductType())) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Device returned empty data");
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "@text/offline.comm-error-no-data");
                 return false;
             }
 
             if (!supportedTypes.contains(payload.getProductType().toLowerCase(Locale.ROOT))) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
-                        "Device is not compatible with this thing type");
+                        "@text/offline.comm-error-device-not-compatible");
                 return false;
             }
 
@@ -266,9 +281,9 @@ public abstract class HomeWizardDeviceHandler extends BaseThingHandler {
 
     private ContentResponse sendRequest(Request request)
             throws InterruptedException, TimeoutException, ExecutionException {
-        if (config.apiVersion > 1) {
+        if (config.isUsingApiVersion2()) {
             request.header(HttpHeader.AUTHORIZATION, BEARER + " " + config.bearerToken);
-            request.header(API_VERSION_HEADER, "" + config.apiVersion);
+            request.header(API_VERSION_HEADER, "2");
         }
         return request.timeout(20, TimeUnit.SECONDS).send();
     }
@@ -292,10 +307,10 @@ public abstract class HomeWizardDeviceHandler extends BaseThingHandler {
      */
     public String getMeasurementData() throws InterruptedException, TimeoutException, ExecutionException {
         var url = apiURL;
-        if (config.apiVersion == 1) {
-            url += "v1/data";
-        } else {
+        if (config.isUsingApiVersion2()) {
             url += "measurement";
+        } else {
+            url += "v1/data";
         }
         return getResponseFrom(url).getContentAsString();
     }
@@ -304,9 +319,10 @@ public abstract class HomeWizardDeviceHandler extends BaseThingHandler {
         final String measurementData;
         try {
             measurementData = getMeasurementData();
-        } catch (Exception e) {
+        } catch (Exception ex) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    String.format("Device is offline or doesn't support the API version"));
+                    "@text/offline.comm-error-device-offline");
+            logger.debug("Unable to get measurement data", ex);
             return;
         }
         updateStatus(ThingStatus.ONLINE);

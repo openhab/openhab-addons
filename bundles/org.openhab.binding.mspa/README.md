@@ -46,7 +46,7 @@ Region options
 | region            | text    | Region where your country is located                | ROW     | yes      |
 
 The `visitorId` is generated if you create the first time a `visitor-account` via openHAB UI so it's not mandatory.
-Once generated don't lose it e.g. when deleting the account thing because all grants are bound to this `visitorId`!
+Once generated don't lose it e.g. when deleting the account Thing because all grants are bound to this `visitorId`!
 If you use textual configuration you need to generate your own `visitorId` as 16 digit hex lower case characters.
 
 The `grantCode` is a QR code provided by MSpa-Link app.

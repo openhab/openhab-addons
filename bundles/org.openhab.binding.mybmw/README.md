@@ -73,7 +73,7 @@ So it's valid to connect channel group [Charge Sessions](#charge-sessions) in or
 Auto discovery is starting after the bridge is created.
 A list of your registered vehicles is queried and all found things are added in the inbox.
 Unique identifier is the _Vehicle Identification Number_ (VIN).
-If a thing is already declared in a  _.things_ configuration, discovery won't highlight it again.
+If a Thing is already declared in a  _.things_ configuration, discovery won't highlight it again.
 Properties will be attached to predefined vehicles if the VIN is matching.
 
 ## Configuration
@@ -129,7 +129,7 @@ Same configuration is needed for all things
 | vehicleBrand    | text    | Vehicle Brand like BMW or Mini    |
 
 The _vehicleBrand_ is automatically obtained by the discovery service and shall not be changed.
-If thing is defined manually via *.things file following brands are supported
+If Thing is defined manually via *.things file following brands are supported
 
 - BMW
 - MINI

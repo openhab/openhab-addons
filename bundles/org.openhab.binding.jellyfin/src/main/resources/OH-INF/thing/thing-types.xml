@@ -34,7 +34,7 @@
 			</parameter>
 			<parameter name="clientActiveWithInSeconds" type="integer" min="0" max="950" required="true">
 				<label>Client Active Timeout</label>
-				<description>Amount off seconds allowed since the last client activity to assert it's online (0 disabled)</description>
+				<description>Number of seconds since the last client activity to consider it online (0 disables)</description>
 				<default>0</default>
 			</parameter>
 			<parameter name="userId" type="text">
@@ -153,7 +153,7 @@
 	<channel-type id="playing-item-genders-channel">
 		<item-type>String</item-type>
 		<label>Playing Item Genders</label>
-		<description>Coma separate list genders of the item currently playing</description>
+		<description>Comma-separated list genders of the item currently playing</description>
 		<tags>
 			<tag>Status</tag>
 			<tag>Info</tag>
@@ -173,7 +173,7 @@
 	<channel-type id="playing-item-percentage-channel">
 		<item-type>Dimmer</item-type>
 		<label>Playing Item Percentage</label>
-		<description>Played percentage for the item currently playing, allow seek</description>
+		<description>Played percentage for the item currently playing; allows seeking</description>
 		<tags>
 			<tag>Control</tag>
 			<tag>Progress</tag>
@@ -182,7 +182,7 @@
 	<channel-type id="playing-item-second-channel">
 		<item-type>Number</item-type>
 		<label>Playing Item Second</label>
-		<description>Current second for the item currently playing, allow seek</description>
+		<description>Current second for the item currently playing; allows seeking</description>
 		<tags>
 			<tag>Control</tag>
 			<tag>Progress</tag>

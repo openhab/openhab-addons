@@ -515,7 +515,7 @@ sitemap miele label="Miele" {
         }
         Text item=Dishwasher_State label="Dishwasher [%s]" icon="dryer" {
             Text item=Dishwasher_Program visibility=[Dishwasher_RawState>1]
-            Text itemDishwasher_Phase visibility=[Dishwasher_Phase!=UNDEF]
+            Text item=Dishwasher_Phase visibility=[Dishwasher_Phase!=UNDEF]
             Text item=Dishwasher_ElapsedTime
             Text item=Dishwasher_FinishTime
             Text item=Dishwasher_EnergyConsumption

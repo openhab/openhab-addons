@@ -28,7 +28,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.graalvm.polyglot.Context;
 import org.openhab.core.OpenHAB;
-import org.openhab.core.automation.module.script.ScriptEngineFactory;
 import org.openhab.core.config.core.Configuration;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.service.component.annotations.Activate;
@@ -97,7 +96,7 @@ public class PythonScriptEngineConfiguration {
     }
 
     @Activate
-    public PythonScriptEngineConfiguration(Map<String, Object> config, PythonScriptEngineFactory factory) {
+    public PythonScriptEngineConfiguration(Map<String, Object> config) {
         Path userdataDir = Paths.get(OpenHAB.getUserDataFolder());
 
         String tmpDir = System.getProperty(SYSTEM_PROPERTY_JAVA_IO_TMPDIR);
@@ -139,7 +138,11 @@ public class PythonScriptEngineConfiguration {
 
         installedHelperLibVersion = PythonScriptEngineHelper.initHelperLib(this, providedHelperLibVersion);
 
-        this.update(config, factory);
+        configuration = new Configuration(config).as(PythonScriptingConfiguration.class);
+    }
+
+    public void init(PythonScriptEngineFactory factory) {
+        PythonScriptEngineHelper.initPipModules(this, factory);
     }
 
     /**
@@ -148,12 +151,16 @@ public class PythonScriptEngineConfiguration {
      * @param config Configuration parameters to apply to ScriptEngine
      * @param initial
      */
-    public void modified(Map<String, Object> config, ScriptEngineFactory factory) {
+    public void modified(Map<String, Object> config, PythonScriptEngineFactory factory) {
         boolean oldScopeEnabled = configuration.scopeEnabled;
         boolean oldInjectionEnabled = !isInjection(PythonScriptEngineConfiguration.INJECTION_DISABLED);
         boolean oldDependencyTrackingEnabled = isDependencyTrackingEnabled();
 
-        this.update(config, factory);
+        String oldPipModules = configuration.pipModules;
+        configuration = new Configuration(config).as(PythonScriptingConfiguration.class);
+        if (!oldPipModules.equals(configuration.pipModules)) {
+            PythonScriptEngineHelper.initPipModules(this, factory);
+        }
 
         if (oldScopeEnabled != isScopeEnabled()) {
             logger.info("{} scope for Python Scripting. Please resave your scripts to apply this change.",
@@ -166,17 +173,6 @@ public class PythonScriptEngineConfiguration {
         if (oldDependencyTrackingEnabled != isDependencyTrackingEnabled()) {
             logger.info("{} dependency tracking for Python Scripting. Please resave your scripts to apply this change.",
                     isDependencyTrackingEnabled() ? "Enabled" : "Disabled");
-        }
-    }
-
-    private void update(Map<String, Object> config, ScriptEngineFactory factory) {
-        logger.trace("Python Script Engine Configuration: {}", config);
-
-        String oldPipModules = configuration.pipModules;
-        configuration = new Configuration(config).as(PythonScriptingConfiguration.class);
-
-        if (!oldPipModules.equals(configuration.pipModules)) {
-            PythonScriptEngineHelper.initPipModules(this, factory);
         }
     }
 
