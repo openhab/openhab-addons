@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Objects;
 import java.util.TimeZone;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -188,8 +187,8 @@ public class SunCalc {
             return sun;
         }
 
-        Calendar noon = Objects.requireNonNull(DateTimeUtils.toCalendar(jtransit, zone, locale));
-        sun.setNoon(new Range(noon, DateTimeUtils.toCalendar(jtransit + JD_ONE_MINUTE_FRACTION, zone, locale)));
+        sun.setNoon(new Range(DateTimeUtils.toCalendar(jtransit, zone, locale),
+                DateTimeUtils.toCalendar(jtransit + JD_ONE_MINUTE_FRACTION, zone, locale)));
 
         sun.setRise(new Range(DateTimeUtils.toCalendar(jrise, zone, locale),
                 DateTimeUtils.toCalendar(jriseend, zone, locale)));
@@ -273,9 +272,6 @@ public class SunCalc {
 
         SeasonCalc seasonCalc = new SeasonCalc();
         sun.setSeason(seasonCalc.getSeason(calendar, latitude, useMeteorologicalSeason, zone, locale));
-
-        CircadianCalc circadianCalc = new CircadianCalc();
-        sun.setCircadian(circadianCalc.calculate(calendar, sun.getRise().getStart(), sun.getSet().getStart(), noon));
 
         // phase
         for (Entry<SunPhaseName, Range> rangeEntry : sortByValue(sun.getAllRanges()).entrySet()) {

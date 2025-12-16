@@ -17,6 +17,9 @@ import java.util.Calendar;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.astro.internal.model.Circadian;
+import org.openhab.binding.astro.internal.model.Range;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Calculates the color temperature and brightness depending upon sun positional information
@@ -32,10 +35,15 @@ public class CircadianCalc {
     private static final long DELTA_TEMP = MAX_COLOR_TEMP - MIN_COLOR_TEMP;
     private static final long TWELVE_HOURS_MS = 12 * 60 * 60 * 1000;
 
-    public Circadian calculate(Calendar calendar, @Nullable Calendar rise, @Nullable Calendar set, Calendar noon) {
+    private final Logger logger = LoggerFactory.getLogger(CircadianCalc.class);
+
+    public Circadian calculate(Calendar calendar, Range riseRange, Range setRange, @Nullable Range noonRange) {
+        var rise = riseRange.getStart();
+        var set = riseRange.getStart();
+        var noon = noonRange instanceof Range range ? range.getStart() : null;
 
         // If we have no rise or no set, there's no point to calculate a Circadian Cycle
-        if (rise == null || set == null) {
+        if (rise == null || set == null || noon == null) {
             return Circadian.DEFAULT;
         }
 
@@ -53,20 +61,20 @@ public class CircadianCalc {
 
         if (sunRise < now && now < sunSet) {
             // Sunrise -> Sunset parabola
-            h = noon.getTimeInMillis();
             k = 100.0;
+            h = noon.getTimeInMillis();
             // parabola before solar_noon else after solar_noon
             x = now < h ? sunRise : sunSet;
         } else {
-            // sunset -> sunrise parabola
-            h = noon.getTimeInMillis() + TWELVE_HOURS_MS;
             k = -100.0;
-            if (now >= sunSet) {
-                // parabola before solar_midnight
-                x = sunSet;
+            if (now < sunRise) {
+                // Before sunrise we are still in the sunset -> sunrise cycle of the previous day
+                h = noon.getTimeInMillis() - TWELVE_HOURS_MS;
+                x = sunRise;
             } else {
-                // parabola after solar_midnight
-                x = sunRise + (2 * TWELVE_HOURS_MS);
+                // sunset -> sunrise parabola
+                h = noon.getTimeInMillis() + TWELVE_HOURS_MS;
+                x = sunSet;
             }
         }
 
@@ -74,6 +82,8 @@ public class CircadianCalc {
         double a = (y - k) / Math.pow(h - x, 2);
         double percentage = a * Math.pow(now - h, 2) + k;
         double colorTemp = percentage > 0 ? (DELTA_TEMP * percentage / 100) + MIN_COLOR_TEMP : MIN_COLOR_TEMP;
+
+        logger.debug("Percentage: {}, ColorTemp: {}", percentage, colorTemp);
 
         return new Circadian(Math.abs(percentage), colorTemp);
     }
