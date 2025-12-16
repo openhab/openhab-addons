@@ -5,7 +5,7 @@
 
 	<thing-type uid="velbus:vmbdali">
 		<instruction-set targetVersion="1">
-			<add-channel id="CH80" groupIds="81channelColorModule">
+			<add-channel id="CH80" groupIds="color">
 				<type>system.color</type>
 			</add-channel>
 		</instruction-set>
