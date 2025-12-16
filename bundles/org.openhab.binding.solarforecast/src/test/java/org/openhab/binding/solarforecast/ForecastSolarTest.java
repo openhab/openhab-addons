@@ -435,7 +435,7 @@ class ForecastSolarTest {
             TimeSeries.Entry siteEntry = siteIter.next();
             TimeSeries.Entry plane1Entry = null;
             Iterator<TimeSeries.Entry> planeIter1 = tsPlaneOne.getStates().iterator();
-            while (planeIter1.hasNext() && plane1Entry == null) {
+            while (planeIter1.hasNext()) {
                 TimeSeries.Entry e = planeIter1.next();
                 if (e.timestamp().equals(siteEntry.timestamp())) {
                     plane1Entry = e;
@@ -444,7 +444,7 @@ class ForecastSolarTest {
             }
             TimeSeries.Entry plane2Entry = null;
             Iterator<TimeSeries.Entry> planeIter2 = tsPlaneTwo.getStates().iterator();
-            while (planeIter2.hasNext() && plane2Entry == null) {
+            while (planeIter2.hasNext()) {
                 TimeSeries.Entry e = planeIter2.next();
                 if (e.timestamp().equals(siteEntry.timestamp())) {
                     plane2Entry = e;
@@ -490,9 +490,6 @@ class ForecastSolarTest {
 
     @Test
     void testEnergyTimeSeries() {
-        // 0.1, "Power Value");
-        // }
-
         ForecastSolarBridgeMock fsBridgeHandler = ForecastSolarMockFactory.createBridgeHandler();
         ForecastSolarPlaneMock fsPlaneHandler1 = ForecastSolarMockFactory.createPlaneHandler(fsBridgeHandler, "plane1",
                 "src/test/resources/forecastsolar/result.json");

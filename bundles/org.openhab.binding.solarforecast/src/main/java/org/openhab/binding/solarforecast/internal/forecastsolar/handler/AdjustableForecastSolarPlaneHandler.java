@@ -97,7 +97,7 @@ public class AdjustableForecastSolarPlaneHandler extends ForecastSolarPlaneHandl
                         persistenceService);
                 parameters.put("actual", String.valueOf(energyCalculation.orElse(0.0)));
             } else {
-                logger.debug("Add reset parameters - config missing calculationItem, persistence or API key");
+                logger.debug("Add reset parameters - config missing calculationItem or persistence");
                 parameters.put("actual", "0");
             }
         } else {

@@ -67,7 +67,7 @@ public class ForecastSolarPlaneHandler extends BaseThingHandler implements Solar
 
     private final Logger logger = LoggerFactory.getLogger(ForecastSolarPlaneHandler.class);
     private final HttpClient httpClient;
-    private boolean dirtyFlag = false;
+    private volatile boolean dirtyFlag = false;
     private ForecastSolarObject forecast;
 
     protected ForecastSolarPlaneConfiguration configuration = new ForecastSolarPlaneConfiguration();
@@ -116,6 +116,10 @@ public class ForecastSolarPlaneHandler extends BaseThingHandler implements Solar
         if (!localForecast.isEmpty()) {
             bridge().addPlane(this);
         } else {
+            if (futureSchedule != null) {
+                futureSchedule.cancel(true);
+                futureSchedule = null;
+            }
             futureSchedule = refresher.schedule(this::doInitialize, 1, TimeUnit.MINUTES);
         }
     }
@@ -134,7 +138,7 @@ public class ForecastSolarPlaneHandler extends BaseThingHandler implements Solar
         ForecastSolarBridgeHandler localBridgeHandler = bridgeHandler;
         if (localBridgeHandler != null) {
             localBridgeHandler.removePlane(this);
-            localBridgeHandler = null;
+            bridgeHandler = null;
         }
     }
 
@@ -191,10 +195,11 @@ public class ForecastSolarPlaneHandler extends BaseThingHandler implements Solar
             int responseStatus = cr.getStatus();
             if (responseStatus == 200) {
                 try {
-                    localForecast = new ForecastSolarObject(thing.getUID().getAsString(), cr.getContentAsString(),
+                    ForecastSolarObject newForecast = new ForecastSolarObject(thing.getUID().getAsString(),
+                            cr.getContentAsString(),
                             Instant.now(Utils.getClock()).plus(configuration.refreshInterval, ChronoUnit.MINUTES));
                     updateStatus(ThingStatus.ONLINE);
-                    setForecast(localForecast);
+                    setForecast(newForecast);
                 } catch (SolarForecastException fse) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
                             "@text/solarforecast.plane.status.json-status [\"" + fse.getMessage() + "\"]");
@@ -282,7 +287,8 @@ public class ForecastSolarPlaneHandler extends BaseThingHandler implements Solar
     /**
      * Get the current forecast data in a thread-safe manner.
      *
-     * @return current forecast data as local copy
+     * @return current forecast data reference (thread-safe access). Callers should treat the returned
+     *         {@link ForecastSolarObject} as read-only, since it is mutable and shared.
      */
     protected ForecastSolarObject getForecast() {
         synchronized (this) {

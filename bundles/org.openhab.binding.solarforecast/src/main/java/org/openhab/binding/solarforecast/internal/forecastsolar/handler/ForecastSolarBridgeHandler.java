@@ -231,6 +231,7 @@ public class ForecastSolarBridgeHandler extends BaseBridgeHandler implements Sol
         ScheduledFuture<?> localRefreshJob = refreshJob;
         if (localRefreshJob != null) {
             localRefreshJob.cancel(true);
+            refreshJob = null;
         }
     }
 

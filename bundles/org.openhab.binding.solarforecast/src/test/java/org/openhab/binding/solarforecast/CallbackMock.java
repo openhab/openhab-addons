@@ -52,7 +52,7 @@ public class CallbackMock implements ThingHandlerCallback {
     Bridge bridge;
     Map<String, TimeSeries> seriesMap = new HashMap<>();
     Map<String, List<State>> stateMap = new HashMap<>();
-    ThingStatusInfo currentInfo = new ThingStatusInfo(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, null);
+    volatile ThingStatusInfo currentInfo = new ThingStatusInfo(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, null);
 
     @Override
     public void stateUpdated(ChannelUID channelUID, State state) {
@@ -80,9 +80,6 @@ public class CallbackMock implements ThingHandlerCallback {
     @Override
     public void sendTimeSeries(ChannelUID channelUID, TimeSeries timeSeries) {
         seriesMap.put(channelUID.getAsString(), timeSeries);
-        timeSeries.getStates().forEachOrdered(entry -> {
-            // System.out.println(entry.timestamp() + " -> " + entry.state());
-        });
     }
 
     public TimeSeries getTimeSeries(String cuid) {
