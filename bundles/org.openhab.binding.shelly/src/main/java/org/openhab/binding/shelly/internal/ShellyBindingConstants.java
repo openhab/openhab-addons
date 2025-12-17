@@ -130,6 +130,15 @@ public class ShellyBindingConstants {
     public static final String CHANNEL_SENSOR_STEPS = "steps"; // BLU Remote
     public static final String CHANNEL_SENSOR_DIRECTION = "direction"; // BLU Remote
     public static final String CHANNEL_SENSOR_DISTANCE = "distance"; // BLU DIstance
+    public static final String CHANNEL_SENSOR_RAINST = "rainStatus"; // BLU Weather
+    public static final String CHANNEL_SENSOR_WINDSP = "windSpeed"; // BLU Weather
+    public static final String CHANNEL_SENSOR_WINDDIR = "windDirection"; // BLU Weather
+    public static final String CHANNEL_SENSOR_GUSTSP = "gustSpeed"; // BLU Weather
+    public static final String CHANNEL_SENSOR_GUSTDIR = "gustDirection"; // BLU Weather
+    public static final String CHANNEL_SENSOR_UV = "uvIndex"; // BLU Weather
+    public static final String CHANNEL_SENSOR_PRESSURE = "pressurre"; // BLU Weather
+    public static final String CHANNEL_SENSOR_DEWPOINT = "dewPoint"; // BLU Weather
+    public static final String CHANNEL_SENSOR_PRECIPIATION = "precipitation"; // BLU Weather
 
     // TRV
     public static final String CHANNEL_CONTROL_SETTEMP = "targetTemp";
@@ -264,6 +273,8 @@ public class ShellyBindingConstants {
     public static final int DIGITS_PERCENT = 1;
     public static final int DIGITS_ROTATION = 1;
     public static final int DIGITS_DISTANCE = 0;
+    public static final int DIGITS_SPEED = 1;
+    public static final int DIGITS_PRESURE = 0;
 
     public static final int SHELLY_API_TIMEOUT_MS = 10000;
     public static final int UPDATE_STATUS_INTERVAL_SECONDS = 3; // check for updates every x sec
