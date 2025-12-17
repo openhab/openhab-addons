@@ -19,6 +19,9 @@ import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 import java.util.List;
 
 import javax.measure.MetricPrefix;
+import javax.measure.Unit;
+import javax.measure.quantity.Pressure;
+import javax.measure.quantity.Volume;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -39,6 +42,7 @@ import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSe
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyThermnostat;
 import org.openhab.binding.shelly.internal.provider.ShellyChannelDefinitions;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.ImperialUnits;
 import org.openhab.core.library.unit.SIUnits;
@@ -533,6 +537,46 @@ public class ShellyComponents {
             if (sdata.sensor != null && sdata.sensor.vibration != null) {
                 updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_VIBRATION,
                         OnOffType.from(sdata.sensor.vibration));
+            }
+
+            // WS90
+            if (sdata.rain != null) {
+                updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_RAINST,
+                        OnOffType.from(sdata.rain));
+            }
+            if (sdata.windSpeed != null) {
+                updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_WINDSP,
+                        toQuantityType(getDouble(sdata.windSpeed), DIGITS_SPEED, Units.METRE_PER_SECOND));
+            }
+            if (sdata.windDirection != null) {
+                updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_WINDDIR,
+                        toQuantityType(getDouble(sdata.windDirection), DIGITS_NONE, Units.DEGREE_ANGLE));
+            }
+            if (sdata.gustSpeed != null) {
+                updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_GUSTSP,
+                        toQuantityType(getDouble(sdata.gustSpeed), DIGITS_SPEED, Units.METRE_PER_SECOND));
+            }
+            if (sdata.gustDirection != null) {
+                updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_GUSTDIR,
+                        toQuantityType(getDouble(sdata.gustDirection), DIGITS_NONE, Units.DEGREE_ANGLE));
+            }
+            if (sdata.pressure != null) {
+                Unit<Pressure> hpa = MetricPrefix.HECTO(SIUnits.PASCAL).asType(Pressure.class);
+                updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_PRESSURE,
+                        new QuantityType<>(sdata.pressure, hpa));
+            }
+            if (sdata.precipitation != null) {
+                Unit<Volume> cubicMillimeterUnit = MetricPrefix.MILLI(SIUnits.METRE).pow(3).asType(Volume.class);
+                updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_PRECIPIATION,
+                        new QuantityType<>(sdata.precipitation, cubicMillimeterUnit));
+            }
+            if (sdata.dewPoint != null) {
+                updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_DEWPOINT,
+                        toQuantityType(getDouble(sdata.dewPoint), DIGITS_TEMP, SIUnits.CELSIUS));
+            }
+            if (sdata.uvIndex != null) {
+                updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_UV,
+                        getDecimal(sdata.uvIndex));
             }
 
             boolean charger = (getInteger(profile.settings.externalPower) == 1) || getBool(sdata.charger);

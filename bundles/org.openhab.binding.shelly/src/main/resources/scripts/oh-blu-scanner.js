@@ -8,7 +8,7 @@
  * @author Igor Jasan - Sensor parameter fixing, decoding of dimmer
  */
 
-let ALLTERCO_DEVICE_NAME_PREFIX = ["SBBT", "SBDW", "SBMO", "SBHT", "SBDI", "SBRC"];
+let ALLTERCO_DEVICE_NAME_PREFIX = ["SBBT", "SBDW", "SBMO", "SBHT", "SBDI", "SBRC", "SBWS"];
 let ALLTERCO_MFD_ID_STR = "0ba9";
 let BTHOME_SVC_ID_STR = "fcd2";
 
@@ -31,7 +31,7 @@ let uint32 = 6;
 let int32 = 7;
 
 let BTH_DIMMERSTEPS_INDEX = 0x3c;   // Dimmer (Wheel) Steps object ID
-let FORCE_ARRAY_VALUES = ["Temperature", "Button", "Rotation"];
+let FORCE_ARRAY_VALUES = ["Temperature", "Button", "Rotation", "Speed", "Direction"];
 
 // BTHome object definitions: id => {name, type, optional scale factor}
 // https://bthome.io/format/
@@ -64,7 +64,7 @@ BTH[0x1c] = { n: "Gas", t: uint8 };                                           //
 BTH[0x1d] = { n: "Heat", t: uint8 };                                          // Heat normal/hot status (boolean)
 BTH[0x1e] = { n: "Light", t: uint8 };                                         // Light no light/light detected status (boolean)
 BTH[0x1f] = { n: "Lock", t: uint8 };                                          // Lock locked/unlocked status (boolean)
-BTH[0x20] = { n: "Moisture", t: uint8 };                                      // Moisture dry/wet status (boolean)
+BTH[0x20] = { n: "Rain", t: uint8 };                                      // Moisture dry/wet status (boolean)
 BTH[0x21] = { n: "Motion", t: uint8 };                                        // Motion clear/detected status (boolean)
 BTH[0x22] = { n: "Moving", t: uint8 };                                        // Moving not moving/moving status (boolean)
 BTH[0x23] = { n: "Occupancy", t: uint8 };                                     // Occupancy clear/detected status (boolean)
