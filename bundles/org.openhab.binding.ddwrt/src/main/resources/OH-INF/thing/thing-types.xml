@@ -16,7 +16,30 @@
 		</channels>
 
 		<config-description>
-			<parameter name="refreshInterval" type="integer" unit="s" min="1">
+			<parameter name="hostnames" type="text" required="false">
+				<context>network-addresses</context>
+				<label>Hostnames</label>
+				<description>Optional comma separated list of Hostnames or IP addresseses of the devices for discovery</description>
+			</parameter>
+			<parameter name="port" type="integer" min="1" max="65535">
+				<label>SSH port</label>
+				<description>default SSH port on devices</description>
+				<default>22</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="user" type="text" required="true">
+				<context>user</context>
+				<label>User</label>
+				<description>Default username to access the devices</description>
+				<default>root</default>
+			</parameter>
+			<parameter name="password" type="text" required="false">
+				<context>password</context>
+				<label>Password</label>
+				<description>Optional default password to access the devices. To use keys instead of password place the keys in
+					$USER_DATA/ddwrt/keys</description>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" unit="s" min="60">
 				<label>Refresh Interval</label>
 				<description>Interval the devices is polled in sec.</description>
 				<default>600</default>
@@ -71,6 +94,12 @@
 				<context>password</context>
 				<label>Password</label>
 				<description>Password to access the devices</description>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" unit="s" min="60">
+				<label>Refresh Interval</label>
+				<description>Interval the devices is polled in sec.</description>
+				<default>600</default>
+				<advanced>true</advanced>
 			</parameter>
 		</config-description>
 

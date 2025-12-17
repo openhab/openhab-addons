@@ -22,6 +22,8 @@ import org.apache.sshd.client.channel.ChannelExec;
 import org.apache.sshd.client.channel.ClientChannelEvent;
 import org.apache.sshd.client.session.ClientSession;
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link SshRunner} executing command in a ssh session.
@@ -33,12 +35,15 @@ public class SshRunner implements AutoCloseable {
     private final ClientSession session;
     private final Duration defaultTimeout;
 
+    private final Logger logger = LoggerFactory.getLogger(SshRunner.class);
+
     public SshRunner(ClientSession session, Duration defaultTimeout) {
         this.session = session;
         this.defaultTimeout = defaultTimeout;
     }
 
     public String exec(String command, Duration timeout) throws IOException {
+        logger.debug("{} executing command: {}", session.getRemoteAddress(), command);
         try (ChannelExec ch = session.createExecChannel(command)) {
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             ByteArrayOutputStream err = new ByteArrayOutputStream();
@@ -48,8 +53,10 @@ public class SshRunner implements AutoCloseable {
             ch.waitFor(EnumSet.of(ClientChannelEvent.CLOSED), timeout.toMillis());
             Integer rc = ch.getExitStatus();
             if (rc != null && rc == 0) {
+                logger.debug("{} {}", rc, out.toString(StandardCharsets.UTF_8));
                 return out.toString(StandardCharsets.UTF_8);
             }
+            logger.debug("{} {}", rc, err.toString(StandardCharsets.UTF_8));
             throw new IOException("Command failed rc=" + rc + ", stderr=" + err.toString(StandardCharsets.UTF_8));
         }
     }
