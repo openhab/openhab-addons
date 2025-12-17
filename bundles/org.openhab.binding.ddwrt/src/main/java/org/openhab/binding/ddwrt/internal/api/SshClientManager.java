@@ -51,9 +51,18 @@ public class SshClientManager {
     }
 
     private final SshClient client;
+    private final String ohPrivateKeyDirString = OpenHAB.getUserDataFolder() + "/ddwrt/keys";
 
     private SshClientManager() {
+        File ohPrivateKeyDir = new File(ohPrivateKeyDirString);
+
+        if (!ohPrivateKeyDir.exists()) {
+            logger.debug("Creating directory {}", ohPrivateKeyDirString);
+            ohPrivateKeyDir.mkdirs();
+        }
+
         client = SshClient.setUpDefaultClient();
+        logger.debug("SSH Client Ket Verifier Accept All");
         client.setServerKeyVerifier(AcceptAllServerKeyVerifier.INSTANCE); // MVP only; replace with pinning
         client.start();
     }
@@ -63,11 +72,11 @@ public class SshClientManager {
         return home != null ? Paths.get(home, ".ssh") : null;
     }
 
+    // :TODO: change this to openAuthSession()
     public SshRunner openRunner(String host, int port, String user, @Nullable String password,
             @Nullable String privateKeyRef, @Nullable String pinnedFingerprint, Duration defaultTimeout)
             throws IOException {
 
-        String ohPrivateKeyDirString = OpenHAB.getUserDataFolder() + "/ddwrt/keys";
         File ohPrivateKeyDir = new File(ohPrivateKeyDirString);
 
         ConnectFuture cf = client.connect(user, host, port);
@@ -119,6 +128,7 @@ public class SshClientManager {
         session.auth().verify();
 
         logger.debug("Connected to the server {}:{} as {}", host, port, user);
+        logger.debug("Server Ident {}", session.getServerVersion());
 
         return new SshRunner(session, defaultTimeout);
     }

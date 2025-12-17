@@ -15,15 +15,17 @@ package org.openhab.binding.ddwrt.internal;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link DDWRTDeviceConfiguration} class contains fields mapping thing configuration parameters for
- * {@link DDWRTDeviceHandler}.
+ * The {@link DDWRTNetworkConfiguration} class contains fields mapping thing configuration parameters.
  *
  * @author Lee Ballard - Initial contribution
  */
 @NonNullByDefault
-public class DDWRTDeviceConfiguration {
+public class DDWRTNetworkConfiguration {
 
-    public String hostname = "";
+    /**
+     * Sample configuration parameters. Replace with your own.
+     */
+    public String hostnames = "";
     public String user = "";
     public String password = "";
     public int port = 22;

@@ -12,20 +12,9 @@
  */
 package org.openhab.binding.ddwrt.internal.handler;
 
-import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.CHANNEL_UPTIME;
-
-import java.io.IOException;
-import java.time.Duration;
-import java.util.Objects;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.ddwrt.internal.DDWRTDeviceConfiguration;
-import org.openhab.binding.ddwrt.internal.api.SshClientManager;
-import org.openhab.binding.ddwrt.internal.api.SshRunner;
-import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -44,13 +33,9 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class DDWRTDeviceThingHandler extends BaseThingHandler {
-    private final Logger logger = LoggerFactory.getLogger(getClass());
+    private final Logger logger = LoggerFactory.getLogger(DDWRTDeviceThingHandler.class);
 
-    // private volatile @Nullable DDWRTDeviceConfiguration cfg;
-    private volatile @Nullable SshRunner ssh;
-    // private volatile @Nullable SshLogFollower logFollower;
-    private volatile @Nullable ScheduledFuture<?> refreshJob;
-    // private volatile boolean disposing;
+    private DDWRTDeviceConfiguration config = new DDWRTDeviceConfiguration();
 
     public DDWRTDeviceThingHandler(Thing thing) {
         super(thing);
@@ -58,152 +43,53 @@ public class DDWRTDeviceThingHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
+        // The framework requires you to return from this method quickly, i.e. any network access must be done in
+        // the background initialization below.
+        // Also, before leaving this method a thing status from one of ONLINE, OFFLINE or UNKNOWN must be set. This
+        // might already be the real thing status in case you can decide it directly.
+        // In case you can not decide the thing status directly (e.g. for long running connection handshake using WAN
+        // access or similar) you should set status UNKNOWN here and then decide the real status asynchronously in the
+        // background.
+
+        // set the thing status to UNKNOWN temporarily and let the background task decide for the real status.
+        // the framework is then able to reuse the resources from the thing handler initialization.
+        // we set this upfront to reliably check status updates in unit tests.
+
         updateStatus(ThingStatus.UNKNOWN);
-        // disposing = false;
+        config = getConfigAs(DDWRTDeviceConfiguration.class);
+        logger.debug("Initializing DDWRT Device Thing handler '{}' with config = {}.", getThing().getUID(), config);
 
-        DDWRTDeviceConfiguration c = getConfigAs(DDWRTDeviceConfiguration.class);
-        logger.debug("Initializing DDWRT Device Thing handler for '{}'.", getThing().getUID());
-
-        if (isBlank(c.hostname) || isBlank(c.user)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "host and username are required");
+        if (isBlank(config.hostname) || isBlank(config.user)) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "host and username are required");
             return;
         }
-        // this.cfg = c;
 
-        scheduler.execute(() -> {
-            try {
-                connect(c);
-                startLogFollowerIfEnabled(c);
-                schedulePeriodicRefresh(c);
-                updateStatus(ThingStatus.ONLINE);
-            } catch (Exception e) {
-                logger.warn("Init failed for {}: {}", getThing().getUID(), e.getMessage(), e);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            }
-        });
-    }
-
-    @Override
-    public void dispose() {
-        // disposing = true;
-        cancelPeriodicRefresh();
-        // stopLogFollower();
-        closeSsh();
-        super.dispose();
+        // TODO: need to add/update network devices list then update online/offline status or refresh
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        logger.warn("Ignoring command = {} for channel = {} - the DDWRT Device is read-only!", command, channelUID);
         if (command instanceof RefreshType) {
-            scheduler.execute(this::safeRefresh);
+            // TODO: handle data refresh
             return;
         }
         // No direct commands in MVP
+
+        // Note: if communication with thing fails for some reason,
+        // indicate that by setting the status with detail information:
+        // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+        // "Could not control device at IP address x.x.x.x");
     }
 
-    private void connect(DDWRTDeviceConfiguration c) throws IOException {
-        // MVP: accept-all verifier; replace with pinned/known_hosts later.
-        // (See Apache SSHD client setup docs.)
-        this.ssh = SshClientManager.getInstance().openRunner(Objects.requireNonNull(c.hostname), c.port,
-                Objects.requireNonNull(c.user), c.password, null, /* pinnedFingerprint */ null, Duration.ofSeconds(2));
-        logger.debug("SSH connected to {}", c.hostname);
-    }
-
-    private void startLogFollowerIfEnabled(DDWRTDeviceConfiguration c) {
-        // if (!c.logFollow) return;
-        // final SshRunner s = this.ssh;
-        // if (s == null) return;
-
-        // this.logFollower = new SshLogFollower(s, "sh -lc 'logread -f'", line -> {
-        // // MVP: just log syslog lines; add parser later.
-        // log.trace("[{}] {}", getThing().getUID(), line);
-        // }, () -> { if (!disposing) scheduler.schedule(this::restartLogFollowerSafe, 1500, TimeUnit.MILLISECONDS); });
-
-        // scheduler.execute(logFollower);
-    }
-
-    // private void restartLogFollowerSafe() {
-    // stopLogFollower();
-    // Config c = this.cfg;
-    // if (c != null && !disposing) startLogFollowerIfEnabled(c);
+    // private void connect(DDWRTDeviceConfiguration c) throws IOException {
+    // // MVP: accept-all verifier; replace with pinned/known_hosts later.
+    // // (See Apache SSHD client setup docs.)
+    // this.ssh = SshClientManager.getInstance().openRunner(Objects.requireNonNull(c.hostname), c.port,
+    // Objects.requireNonNull(c.user), c.password, null, /* pinnedFingerprint */ null, Duration.ofSeconds(2));
+    // logger.debug("SSH connected to {}", c.hostname);
     // }
 
-    private void schedulePeriodicRefresh(DDWRTDeviceConfiguration c) {
-        cancelPeriodicRefresh();
-        this.refreshJob = scheduler.scheduleWithFixedDelay(this::safeRefresh, 0, 600, TimeUnit.SECONDS);
-    }
-
-    private void cancelPeriodicRefresh() {
-        ScheduledFuture<?> job = this.refreshJob;
-        this.refreshJob = null;
-        if (job != null)
-            job.cancel(true);
-    }
-
-    private void safeRefresh() {
-        try {
-            doRefresh();
-        } catch (Exception e) {
-            logger.debug("Refresh failed: {}", e.getMessage(), e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-        }
-    }
-
-    private void doRefresh() throws IOException {
-        final SshRunner s = requireSsh();
-        // final DDWRTDeviceConfiguration c = Objects.requireNonNull(this.cfg);
-
-        // Example 1: uptime
-        String uptime = s.exec("uptime -s", Duration.ofSeconds(2)).trim();
-        postString(CHANNEL_UPTIME, uptime);
-
-        // // Example 2: WAN IP if gateway
-        // if ("gateway".equalsIgnoreCase(Optional.ofNullable(c.role).orElse(""))) {
-        // String wanIf = s.exec("nvram get wan_iface", Duration.ofSeconds(2)).trim();
-        // if (!wanIf.isEmpty()) {
-        // String wanIp = s.exec("ip -4 -o addr show dev " + wanIf + " | awk '{print $4}' | cut -d/ -f1",
-        // Duration.ofSeconds(2)).trim();
-        // if (!wanIp.isEmpty()) postString(CHANNEL_WAN_IP, wanIp);
-        // }
-        // }
-
-        // postOnline(true);
-    }
-
-    // helpers
-    private SshRunner requireSsh() throws IOException {
-        SshRunner s = this.ssh;
-        if (s == null)
-            throw new IOException("SSH not connected");
-        return s;
-    }
-
-    private void closeSsh() {
-        final SshRunner s = this.ssh; // copy nullable field to a local
-        try {
-            if (s != null) {
-                s.close();
-            }
-        } catch (Exception ignore) {
-            // no-op
-        }
-        this.ssh = null;
-    }
-    // private void stopLogFollower() { try { if (logFollower != null) logFollower.close(); } catch (Exception ignore)
-    // {} logFollower = null; }
-
-    private void postString(String ch, String v) {
-        try {
-            updateState(new ChannelUID(getThing().getUID(), ch), new StringType(v));
-        } catch (Exception ignore) {
-        }
-    }
-
-    // private void postOnline(boolean on) {
-    // try { updateState(new ChannelUID(getThing().getUID(), CHANNEL_ONLINE), on ? OnOffType.ON : OnOffType.OFF); }
-    // catch (Exception ignore) {}
-    // }
     private static boolean isBlank(@Nullable String s) {
         return s == null || s.trim().isEmpty();
     }

@@ -12,7 +12,9 @@
  */
 package org.openhab.binding.ddwrt.internal;
 
-import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.*;
+import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.BRIDGE_TYPE_NETWORK;
+import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.SUPPORTED_THING_TYPES_UIDS;
+import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.THING_TYPE_DEVICE;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
