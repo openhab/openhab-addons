@@ -6,7 +6,7 @@ In fact, the binding is currently only working on macOS computers with Intel x86
 
 ## Supported Things
 
-There is a single thing of type `controller` defined and only one can be connected to the computer at a time.
+There is a single Thing of type `controller` defined and only one can be connected to the computer at a time.
 
 ## Discovery
 

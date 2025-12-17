@@ -7,7 +7,7 @@ To use this binding the meter must be installed, initialized and connected to th
 ## Supported Things
 
 The mecMeter is supported with firmware version starting from 2.0.0.
-There is exactly one supported thing type `meter`, which represents the electric meter.
+There is exactly one supported Thing type `meter`, which represents the electric meter.
 Its unique ID is the serial number.
 
 ## Discovery
@@ -18,7 +18,7 @@ The default update interval is set to 5 seconds. Intervals from 1 to 300 seconds
 
 ## Thing Configuration
 
-The thing has a few configuration parameters:
+The Thing has a few configuration parameters:
 
 | Parameter       | Description                                                           |
 |-----------------|-----------------------------------------------------------------------|

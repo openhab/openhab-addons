@@ -167,7 +167,7 @@
 	<channel-type id="tankWaterTemperature-channel">
 		<item-type>Number:Temperature</item-type>
 		<label>Tank Temperature</label>
-		<description>Temperature of water</description>
+		<description>Temperature of water in tank</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Temperature</tag>

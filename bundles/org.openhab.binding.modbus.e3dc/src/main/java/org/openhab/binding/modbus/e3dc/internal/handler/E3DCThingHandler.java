@@ -19,10 +19,11 @@ import java.util.ArrayList;
 import java.util.Optional;
 
 import javax.measure.quantity.Energy;
+import javax.measure.quantity.Power;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.modbus.e3dc.internal.E3DCConfiguration;
+import org.openhab.binding.modbus.e3dc.internal.config.E3DCConfiguration;
 import org.openhab.binding.modbus.e3dc.internal.dto.EmergencyBlock;
 import org.openhab.binding.modbus.e3dc.internal.dto.InfoBlock;
 import org.openhab.binding.modbus.e3dc.internal.dto.PowerBlock;
@@ -39,6 +40,7 @@ import org.openhab.core.io.transport.modbus.ModbusReadFunctionCode;
 import org.openhab.core.io.transport.modbus.ModbusReadRequestBlueprint;
 import org.openhab.core.io.transport.modbus.PollTask;
 import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.unit.MetricPrefix;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
@@ -91,6 +93,7 @@ public class E3DCThingHandler extends BaseBridgeHandler {
     private ChannelUID dischargeLockTimeChannel;
 
     private ChannelUID pvPowerSupplyChannel;
+    private ChannelUID pvPowerRatioChannel;
     private ChannelUID batteryPowerSupplyChannel;
     private ChannelUID batteryPowerConsumptionChannel;
     private ChannelUID householdPowerConsumptionChannel;
@@ -114,6 +117,9 @@ public class E3DCThingHandler extends BaseBridgeHandler {
     private ChannelUID string3AmpereChannel;
     private ChannelUID string3VoltChannel;
     private ChannelUID string3WattChannel;
+    private ChannelUID string1RatioChannel;
+    private ChannelUID string2RatioChannel;
+    private ChannelUID string3RatioChannel;
 
     private final ArrayList<E3DCWallboxThingHandler> listeners = new ArrayList<>();
     private final Logger logger = LoggerFactory.getLogger(E3DCThingHandler.class);
@@ -121,9 +127,10 @@ public class E3DCThingHandler extends BaseBridgeHandler {
     private ReadStatus dataRead = ReadStatus.NOT_RECEIVED;
     private final Parser infoParser = new Parser(DataType.INFO);
     private ReadStatus infoRead = ReadStatus.NOT_RECEIVED;
+    private E3DCConfiguration config = new E3DCConfiguration();
+    private double totalKwp = 0;
     private @Nullable PollTask infoPoller;
     private @Nullable PollTask dataPoller;
-    private @Nullable E3DCConfiguration config;
 
     /**
      * Communication interface to the slave endpoint we're connecting to
@@ -152,6 +159,7 @@ public class E3DCThingHandler extends BaseBridgeHandler {
         dischargeLockTimeChannel = channelUID(thing, EMERGENCY_GROUP, DISCHARGE_LOCK_TIME);
 
         pvPowerSupplyChannel = channelUID(thing, POWER_GROUP, PV_POWER_SUPPLY_CHANNEL);
+        pvPowerRatioChannel = channelUID(thing, POWER_GROUP, PV_POWER_PERFORMANCE_RATIO_CHANNEL);
         batteryPowerSupplyChannel = channelUID(thing, POWER_GROUP, BATTERY_POWER_SUPPLY_CHANNEL);
         batteryPowerConsumptionChannel = channelUID(thing, POWER_GROUP, BATTERY_POWER_CONSUMPTION);
         householdPowerConsumptionChannel = channelUID(thing, POWER_GROUP, HOUSEHOLD_POWER_CONSUMPTION_CHANNEL);
@@ -175,6 +183,10 @@ public class E3DCThingHandler extends BaseBridgeHandler {
         string3AmpereChannel = channelUID(thing, STRINGS_GROUP, STRING3_DC_CURRENT_CHANNEL);
         string3VoltChannel = channelUID(thing, STRINGS_GROUP, STRING3_DC_VOLTAGE_CHANNEL);
         string3WattChannel = channelUID(thing, STRINGS_GROUP, STRING3_DC_OUTPUT_CHANNEL);
+
+        string1RatioChannel = channelUID(thing, STRINGS_GROUP, STRING1_PERFORMANCE_RATIO_CHANNEL);
+        string2RatioChannel = channelUID(thing, STRINGS_GROUP, STRING2_PERFORMANCE_RATIO_CHANNEL);
+        string3RatioChannel = channelUID(thing, STRINGS_GROUP, STRING3_PERFORMANCE_RATIO_CHANNEL);
     }
 
     public @Nullable ModbusCommunicationInterface getComms() {
@@ -194,8 +206,8 @@ public class E3DCThingHandler extends BaseBridgeHandler {
     public void initialize() {
         updateStatus(ThingStatus.UNKNOWN);
         scheduler.execute(() -> {
-            E3DCConfiguration localConfig = getConfigAs(E3DCConfiguration.class);
-            config = localConfig;
+            config = getConfigAs(E3DCConfiguration.class);
+            totalKwp = config.string1Kwp + config.string2Kwp + config.string3Kwp;
             ModbusCommunicationInterface localComms = connectEndpoint();
             if (localComms != null) {
                 // register low speed info poller
@@ -207,13 +219,8 @@ public class E3DCThingHandler extends BaseBridgeHandler {
                 ModbusReadRequestBlueprint dataRequest = new ModbusReadRequestBlueprint(slaveId,
                         ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, POWER_REG_START,
                         REGISTER_LENGTH - INFO_REG_SIZE, 3);
-                if (config != null) {
-                    dataPoller = localComms.registerRegularPoll(dataRequest, localConfig.refresh, 0,
-                            this::handleDataResult, this::handleDataFailure);
-                } else {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                            "E3DC Configuration missing");
-                }
+                dataPoller = localComms.registerRegularPoll(dataRequest, config.refresh, 0, this::handleDataResult,
+                        this::handleDataFailure);
             } // else state handling performed in connectEndPoint function
         });
     }
@@ -228,7 +235,6 @@ public class E3DCThingHandler extends BaseBridgeHandler {
 
         ModbusEndpointThingHandler slaveEndpointThingHandler = getEndpointThingHandler();
         if (slaveEndpointThingHandler == null) {
-            @SuppressWarnings("null")
             String label = Optional.ofNullable(getBridge()).map(b -> b.getLabel()).orElse("<null>");
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
                     String.format("Bridge '%s' is offline", label));
@@ -243,7 +249,6 @@ public class E3DCThingHandler extends BaseBridgeHandler {
             return null;
         }
         if (comms == null) {
-            @SuppressWarnings("null")
             String label = Optional.ofNullable(getBridge()).map(b -> b.getLabel()).orElse("<null>");
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
                     String.format("Bridge '%s' not completely initialized", label));
@@ -367,17 +372,16 @@ public class E3DCThingHandler extends BaseBridgeHandler {
                 updateState(autarkyChannel, block.autarky);
                 updateState(selfConsumptionChannel, block.selfConsumption);
                 updateState(batterySOCChannel, block.batterySOC);
-                if (config != null) {
-                    if (config.batteryCapacity > 0) {
-                        double soc = block.batterySOC.doubleValue();
-                        QuantityType<Energy> charged = QuantityType.valueOf(soc * config.batteryCapacity / 100,
-                                Units.KILOWATT_HOUR);
-                        updateState(batteryChargedChannel, charged);
-                        QuantityType<Energy> uncharged = QuantityType
-                                .valueOf((100 - soc) * config.batteryCapacity / 100, Units.KILOWATT_HOUR);
-                        updateState(batteryUnchargedChannel, uncharged);
-                    }
+                if (config.batteryCapacity > 0) {
+                    double soc = block.batterySOC.doubleValue();
+                    QuantityType<Energy> charged = QuantityType.valueOf(soc * config.batteryCapacity / 100,
+                            Units.KILOWATT_HOUR);
+                    updateState(batteryChargedChannel, charged);
+                    QuantityType<Energy> uncharged = QuantityType.valueOf((100 - soc) * config.batteryCapacity / 100,
+                            Units.KILOWATT_HOUR);
+                    updateState(batteryUnchargedChannel, uncharged);
                 }
+                calculatePerformanceRatio(block.pvPowerSupply, totalKwp, pvPowerRatioChannel);
             } else {
                 logger.debug("Unable to get {} from provider {}", DataType.POWER, dataParser.toString());
             }
@@ -397,6 +401,9 @@ public class E3DCThingHandler extends BaseBridgeHandler {
                 updateState(string3AmpereChannel, block.string3Ampere);
                 updateState(string3VoltChannel, block.string3Volt);
                 updateState(string3WattChannel, block.string3Watt);
+                calculatePerformanceRatio(block.string1Watt, config.string1Kwp, string1RatioChannel);
+                calculatePerformanceRatio(block.string2Watt, config.string2Kwp, string2RatioChannel);
+                calculatePerformanceRatio(block.string3Watt, config.string3Kwp, string3RatioChannel);
             } else {
                 logger.debug("Unable to get {} from provider {}", DataType.STRINGS, dataParser.toString());
             }
@@ -405,6 +412,18 @@ public class E3DCThingHandler extends BaseBridgeHandler {
         listeners.forEach(l -> {
             l.handle(result);
         });
+    }
+
+    private void calculatePerformanceRatio(QuantityType<Power> power, double stringKwp, ChannelUID channel) {
+        if (stringKwp > 0) {
+            QuantityType<?> kiloWattPower = power.toUnit(MetricPrefix.KILO(Units.WATT));
+            if (kiloWattPower == null) {
+                logger.warn("Cannot convert {} to kW", power);
+                return;
+            }
+            double ratio = kiloWattPower.doubleValue() / stringKwp * 100;
+            updateState(channel, QuantityType.valueOf(ratio, Units.PERCENT));
+        }
     }
 
     void handleDataFailure(AsyncModbusFailure<ModbusReadRequestBlueprint> result) {

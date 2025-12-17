@@ -39,7 +39,7 @@
 			<parameter name="login" type="text" required="true">
 				<label>Username</label>
 				<default>admin</default>
-				<description>The username to access the the RouterOS device</description>
+				<description>The username to access the RouterOS device</description>
 			</parameter>
 			<parameter name="password" type="text" required="true">
 				<label>Password</label>
@@ -267,7 +267,7 @@
 	<channel-type id="linkDowns" advanced="true">
 		<item-type>Number</item-type>
 		<label>Link Downs</label>
-		<description>Amount of link downs</description>
+		<description>Number of link downs</description>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -302,56 +302,56 @@
 	<channel-type id="txBytes" advanced="true">
 		<item-type>Number:DataAmount</item-type>
 		<label>Transmitted Bytes</label>
-		<description>Amount of bytes transmitted</description>
+		<description>Number of bytes transmitted</description>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="rxBytes" advanced="true">
 		<item-type>Number:DataAmount</item-type>
 		<label>Received Bytes</label>
-		<description>Amount of bytes received</description>
+		<description>Number of bytes received</description>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="txPackets" advanced="true">
 		<item-type>Number</item-type>
 		<label>Transmitted Packets</label>
-		<description>Amount of packets transmitted</description>
+		<description>Number of packets transmitted</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="rxPackets" advanced="true">
 		<item-type>Number</item-type>
 		<label>Received Packets</label>
-		<description>Amount of packets received</description>
+		<description>Number of packets received</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="txDrops" advanced="true">
 		<item-type>Number</item-type>
 		<label>Transmission Drops</label>
-		<description>Amount of packets dropped during transmission</description>
+		<description>Number of packets dropped during transmission</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="rxDrops" advanced="true">
 		<item-type>Number</item-type>
 		<label>Receiving Drops</label>
-		<description>Amount of packets dropped during receiving</description>
+		<description>Number of packets dropped during receiving</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="txErrors" advanced="true">
 		<item-type>Number</item-type>
 		<label>Transmission Errors</label>
-		<description>Amount of errors during transmission</description>
+		<description>Number of errors during transmission</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="rxErrors" advanced="true">
 		<item-type>Number</item-type>
 		<label>Receiving Errors</label>
-		<description>Amount of errors during receiving</description>
+		<description>Number of errors during receiving</description>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -379,14 +379,14 @@
 	<channel-type id="registeredClients">
 		<item-type>Number</item-type>
 		<label>Registered Clients</label>
-		<description>Amount of clients registered to WiFi interface</description>
+		<description>Number of clients registered to WiFi interface</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="authorizedClients">
 		<item-type>Number</item-type>
 		<label>Authorized Clients</label>
-		<description>Amount of clients authorized by WiFi interface</description>
+		<description>Number of clients authorized by WiFi interface</description>
 		<state readOnly="true"/>
 	</channel-type>
 

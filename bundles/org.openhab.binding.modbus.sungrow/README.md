@@ -26,7 +26,7 @@ As defined within the spec mentioned above the following inverters are supported
 
 ## Supported Things
 
-The binding supports only one thing:
+The binding supports only one Thing:
 
 - `sungrow-inverter`: The sungrow inverter
 
@@ -45,7 +45,7 @@ Enabling modbus and whitelist setting can be done in WiNet-S Web-UI as shown bel
 
 ## Thing Configuration
 
-Once you've configured the Modbus TCP Slave or Modbus Serial Slave as Bridge you can configure the Sungrow inverter thing.
+Once you've configured the Modbus TCP Slave or Modbus Serial Slave as Bridge you can configure the Sungrow inverter Thing.
 You just have to select the configured bridge and optional configure the polling interval.
 
 ### Sungrow Inverter (`sungrow-inverter`)
@@ -57,7 +57,7 @@ You just have to select the configured bridge and optional configure the polling
 
 ## Channels
 
-The `sungrow-inverter` thing has channels that serve the current state of the sungrow inverter, as you are used to from the iSolareCloud Website and App.
+The `sungrow-inverter` Thing has channels that serve the current state of the sungrow inverter, as you are used to from the iSolareCloud Website and App.
 
 | Channel Type ID                    | Item Type                | Description                           | Advanced  | Channel Group       |
 |------------------------------------|--------------------------|---------------------------------------|-----------|---------------------|

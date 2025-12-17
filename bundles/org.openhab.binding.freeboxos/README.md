@@ -195,7 +195,7 @@ The following channels are supported:
 | revolution, delta     | file-sharing      | afp-file-status      | Switch                  | RW          | Indicates whether Mac OS File Sharing is enabled                               |
 | revolution, delta     | sysinfo           | uptime               | Number:Time             | R           | Time since last reboot of the equipment                                        |
 | revolution, delta     | sysinfo           | ip-address           | String                  | R           | Internal IPv4 Address of the Freebox Server                                    |
-| revolution, delta     | sysinfo           | box-event            | Trigger                 | -           | Triggers when an event related to the Freebox server has been detected. Possible event: "restarted", "firmware_updated" and "reboot_requested" |
+| revolution, delta     | sysinfo           | box-event            | Trigger                 | -           | Triggers when an event related to the Freebox Server has been detected (**).   |
 | revolution, delta     | actions           | wifi-status          | Switch                  | RW          | Indicates whether the WiFi network is enabled                                  |
 | revolution, delta     | actions           | upnpav-status        | Switch                  | RW          | Indicates whether UPnP AV is enabled                                           |
 | revolution, delta     | actions           | airmedia-status      | Switch                  | RW          | Indicates whether Air Media is enabled                                         |
@@ -212,11 +212,26 @@ The following channels are supported:
 | revolution, delta     | connection-status | rate-down            | Number:DataTransferRate | R           | Current download rate                                                          |
 | revolution, delta     | connection-status | bytes-up             | Number:DataAmount       | R           | Total data uploaded since last restart                                         |
 | revolution, delta     | connection-status | bytes-down           | Number:DataAmount       | R           | Total data downloaded since last restart                                       |
+| revolution, delta     | wireguard         | state                | String                  | R           | Current state of the WireGuard VPN Server                                      |
+| revolution, delta     | wireguard         | connections          | Number                  | R           | Number of clients connected to the server                                      |
+| revolution, delta     | wireguard         | auth-connections     | Number                  | R           | Number of authenticated clients connected to the server                        |
+| revolution, delta     | pptp              | state                | String                  | R           | Current state of the PPTP VPN Server                                           |
+| revolution, delta     | pptp              | connections          | Number                  | R           | Number of clients connected to the server                                      |
+| revolution, delta     | pptp              | auth-connections     | Number                  | R           | Number of authenticated clients connected to the server                        |
+| revolution, delta     | openvpn-routed    | state                | String                  | R           | Current state of the OpenVPN Routed Server                                     |
+| revolution, delta     | openvpn-routed    | connections          | Number                  | R           | Number of clients connected to the server                                      |
+| revolution, delta     | openvpn-routed    | auth-connections     | Number                  | R           | Number of authenticated clients connected to the server                        |
+| revolution, delta     | openvpn-bridge    | state                | String                  | R           | Current state of the OpenVPN Bridged Server                                    |
+| revolution, delta     | openvpn-bridge    | connections          | Number                  | R           | Number of clients connected to the server                                      |
+| revolution, delta     | openvpn-bridge    | auth-connections     | Number                  | R           | Number of authenticated clients connected to the server                        |
+| revolution, delta     | ipsec             | state                | String                  | R           | Current state of the IPsec VPN Server                                          |
+| revolution, delta     | ipsec             | connections          | Number                  | R           | Number of clients connected to the server                                      |
+| revolution, delta     | ipsec             | auth-connections     | Number                  | R           | Number of authenticated clients connected to the server                        |
 | active-player, player | player-actions    | key-code             | String                  | W           | Simulates pushing a remote control button                                      |
 | active-player         | player-status     | player-status        | String                  | R           | Status of the Freebox TV player                                                |
 | active-player         | player-status     | package              | String                  | R           | Name of the package currently active on the player                             |
 | active-player         | sysinfo           | uptime               | Number:Time             | R           | Time since last reboot of the equipment                                        |
-| active-player         | sysinfo           | box-event            | Trigger                 | -           | Triggers when an event related to the Freebox Player has been detected. Possible event: "restarted", "firmware_updated" and "reboot_requested" |
+| active-player         | sysinfo           | box-event            | Trigger                 | -           | Triggers when an event related to the Freebox Player has been detected (**).   |
 | vm                    | vmstatus          | status               | Switch                  | RW          | Status of the virtual machine                                                  |
 | (*)                   | connectivity      | reachable            | Switch                  | R           | Indicates if the network device is reachable or not                            |
 | (*)                   | connectivity      | last-seen            | DateTime                | R           | Date and time of last activity for the network device                          |
@@ -246,6 +261,7 @@ The following channels are supported:
 | basic-shutter         |                   | basic-shutter        | Rollershutter           | W           | Up, stop and down commands for a RTS shutter                                   |
 
 (*): any thing type amongst _active-player_, _player_, _host_, _wifihost_, _repeater_ and _vm_.
+(**): Possible event: "restarted", "firmware_updated" and "reboot_requested"
 
 ## Actions for rules
 

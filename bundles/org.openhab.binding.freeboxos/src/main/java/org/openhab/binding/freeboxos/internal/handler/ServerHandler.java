@@ -15,9 +15,9 @@ package org.openhab.binding.freeboxos.internal.handler;
 import static org.openhab.binding.freeboxos.internal.FreeboxOsBindingConstants.*;
 import static org.openhab.core.library.unit.Units.*;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -42,6 +42,7 @@ import org.openhab.binding.freeboxos.internal.api.rest.SambaManager.Samba;
 import org.openhab.binding.freeboxos.internal.api.rest.SystemManager;
 import org.openhab.binding.freeboxos.internal.api.rest.SystemManager.Config;
 import org.openhab.binding.freeboxos.internal.api.rest.UPnPAVManager;
+import org.openhab.binding.freeboxos.internal.api.rest.VpnServerManager;
 import org.openhab.binding.freeboxos.internal.api.rest.WifiManager;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.SIUnits;
@@ -63,7 +64,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class ServerHandler extends ApiConsumerHandler implements FreeDeviceIntf {
-    private static final BigDecimal HUNDRED = BigDecimal.valueOf(100);
+    private static final Set<String> VPN_SERVERS = Set.of(PPTP, OPENVPN_ROUTED, OPENVPN_BRIDGE, WIREGUARD, IPSEC);
 
     private final Logger logger = LoggerFactory.getLogger(ServerHandler.class);
     private final ChannelUID eventChannelUID;
@@ -71,6 +72,7 @@ public class ServerHandler extends ApiConsumerHandler implements FreeDeviceIntf 
     private long uptime = -1;
 
     private boolean tryConfigureMediaSink = true;
+    private Set<String> vpnConnections = new HashSet<>();
 
     public ServerHandler(Thing thing) {
         super(thing);
@@ -129,6 +131,7 @@ public class ServerHandler extends ApiConsumerHandler implements FreeDeviceIntf 
         logger.debug("Polling server state...");
         fetchConnectionStatus();
         fetchSystemConfig();
+        fetchVpnStatus();
 
         if (anyChannelLinked(GROUP_ACTIONS, Set.of(WIFI_STATUS))) {
             updateChannelOnOff(GROUP_ACTIONS, WIFI_STATUS, getManager(WifiManager.class).getStatus());
@@ -177,6 +180,37 @@ public class ServerHandler extends ApiConsumerHandler implements FreeDeviceIntf 
             LanConfig lanConfig = getManager(LanManager.class).getConfig();
             updateChannelString(GROUP_SYS_INFO, IP_ADDRESS, lanConfig.ip());
         }
+    }
+
+    private void fetchVpnStatus() throws FreeboxException {
+        var vpnManager = getManager(VpnServerManager.class);
+        var servers = vpnManager.getDevices();
+        servers.forEach(vpnServer -> {
+            var groupName = vpnServer.name().replace("_", "-");
+            if (VPN_SERVERS.contains(groupName)) {
+                updateChannelString(groupName, VPN_STATE, vpnServer.state());
+                updateChannelDecimal(groupName, VPN_CONNECTIONS, vpnServer.connectionCount());
+                updateChannelDecimal(groupName, VPN_AUTHENTICATED, vpnServer.authConnectionCount());
+            } else {
+                logger.warn("Unexpected and unhandled VPN server type: '{}'", groupName);
+            }
+        });
+
+        var connections = vpnManager.getVpnConnections();
+        Set<String> currentConnections = new HashSet<>();
+        connections.forEach(connection -> {
+            var name = "%s %s:%s".formatted(connection.vpn(), connection.srcIp(), connection.user());
+            currentConnections.add(name);
+            if (!vpnConnections.contains(name)) {
+                triggerChannel(eventChannelUID, "connected %s".formatted(name));
+            }
+        });
+
+        Set<String> disconnected = new HashSet<>(vpnConnections);
+        disconnected.removeAll(currentConnections);
+        disconnected.forEach(c -> triggerChannel(eventChannelUID, "disconnected %s".formatted(c)));
+
+        vpnConnections = currentConnections;
     }
 
     private void fetchConnectionStatus() throws FreeboxException {

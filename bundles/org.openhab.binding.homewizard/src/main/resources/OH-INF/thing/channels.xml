@@ -4,6 +4,41 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
+	<channel-group-type id="hw-batteries-group">
+		<label>Batteries</label>
+		<channels>
+			<channel id="batteries_mode" typeId="hw-batteries-mode"/>
+			<channel id="batteries_battery_count" typeId="hw-batteries-battery-count"/>
+
+			<channel id="batteries_power" typeId="hw-power-advanced">
+				<label>Power</label>
+				<description>
+					This channel provides the current combined power consumption/production of the controlled Plug-In
+					Batteries.
+				</description>
+			</channel>
+			<channel id="batteries_target_power" typeId="hw-power-advanced">
+				<label>Target Power</label>
+				<description>
+					This channel provides the target power consumption/production of the controlled Plug-In Batteries.
+				</description>
+			</channel>
+			<channel id="batteries_max_consumption" typeId="hw-power-advanced">
+				<label>Maximum Consumption</label>
+				<description>
+					This channel provides the maximum allowed consumption power of the controlled Plug-In Batteries.
+				</description>
+			</channel>
+			<channel id="batteries_max_production" typeId="hw-power-advanced">
+				<label>Maximum Production</label>
+				<description>
+					This channel provides the maximum allowed production power of the controlled Plug-In Batteries.
+				</description>
+			</channel>
+
+		</channels>
+	</channel-group-type>
+
 	<channel-type id="hw-power">
 		<item-type>Number:Power</item-type>
 		<label>Active Power</label>
@@ -178,6 +213,33 @@
 			<tag>Frequency</tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="hw-batteries-mode">
+		<item-type>String</item-type>
+		<label>Battery Control Mode</label>
+		<description>
+			This channel provides the control mode of the Plug-In Battery.
+		</description>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Mode</tag>
+		</tags>
+		<command>
+			<options>
+				<option value="zero">Maintain net-zero balance</option>
+				<option value="zero_charge_only">Maintain net-zero balance, charge only</option>
+				<option value="zero_discharge_only">Maintain net-zero balance, discharge only</option>
+				<option value="to_full">Charge to 100%</option>
+				<option value="standby">Stand-by mode</option>
+			</options>
+		</command>
+	</channel-type>
+
+	<channel-type id="hw-batteries-battery-count">
+		<item-type>Number</item-type>
+		<label>Battery Count</label>
+		<description>This channel provides the number of connected Plug-In Batteries.</description>
 	</channel-type>
 
 

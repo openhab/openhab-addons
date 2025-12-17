@@ -84,6 +84,7 @@ The E3DC device offers quite an amount of channels. For clustering 4 Channel Gro
 | Channel Label                 |  Channel Group ID | Channel ID                   | Type                   | Description                                                                            |
 |-------------------------------|-------------------|------------------------------|------------------------|----------------------------------------------------------------------------------------|
 | PV Output                     | power             | pv-power-supply              |  Number:Power          | Photovoltaic Power Production                                                          |
+| PV Performance Ratio          | power             | pv-perf-ratio                |  Number:Dimensionless  | Performance ratio of actual energy produced and installed kWp                          |
 | Battery Discharge             | power             | battery-power-supply         |  Number:Power          | Battery discharges and provides Power                                                  |
 | Battery Charge                | power             | battery-power-consumption    |  Number:Power          | Battery charges and consumes Power                                                     |
 | Household Consumption         | power             | household-power-consumption  |  Number:Power          | Household consuming Power                                                              |
@@ -98,17 +99,15 @@ The E3DC device offers quite an amount of channels. For clustering 4 Channel Gro
 
 ### Channel Group _String Details Block_
 
-| Channel Label         | Channel Group ID | Channel ID         | Type                      | Description                |
-|-----------------------|------------------|--------------------|---------------------------|----------------------------|
-| String 1 Potential    | strings          | string1-dc-voltage |  Number:ElectricPotential | Voltage on String 1        |
-| String 2 Potential    | strings          | string2-dc-voltage |  Number:ElectricPotential | Voltage on String 2        |
-| String 3 Potential    | strings          | string3-dc-voltage |  Number:ElectricPotential | Voltage on String 3        |
-| String 1 Current      | strings          | string1-dc-current |  Number:ElectricCurrent   | Current on String 1        |
-| String 2 Current      | strings          | string2-dc-current |  Number:ElectricCurrent   | Current on String 2        |
-| String 3 Current      | strings          | string3-dc-current |  Number:ElectricCurrent   | Current on String 3        |
-| String 1 Power        | strings          | string1-dc-output  |  Number:Power             | Power produced by String 1 |
-| String 2 Power        | strings          | string2-dc-output  |  Number:Power             | Power produced by String 2 |
-| String 3 Power        | strings          | string3-dc-output  |  Number:Power             | Power produced by String 3 |
+E3DC power plant supports up to 3 photovoltaic strings.
+Each string X = 1,2 or 3 provides following channels:
+
+| Channel Label         | Channel Group ID | Channel ID         | Type                      | Description                                                   |
+|-----------------------|------------------|--------------------|---------------------------|---------------------------------------------------------------|
+| String X Potential    | strings          | stringX-dc-voltage |  Number:ElectricPotential | Voltage on String X                                           |
+| String X Current      | strings          | stringX-dc-current |  Number:ElectricCurrent   | Current on String X                                           |
+| String X Power        | strings          | stringX-dc-output  |  Number:Power             | Power produced by String X                                    |
+| String X Ratio        | strings          | stringX-perf-ratio |  Number:Dimensionless     | Performance ratio of actual energy produced and installed kWp |
 
 ### Channel _EMS Block_
 
@@ -146,7 +145,7 @@ Some of the Wallbox Settings can be changed. See the Access column if the actual
 ## Full Example
 
 Following example provides the full configuration.
-If you enter the correct Connection Data, IP Address, Device ID and Port number in the thing configuration you should be fine.
+If you enter the correct Connection Data, IP Address, Device ID and Port number in the Thing configuration you should be fine.
 
 ### Things
 
@@ -178,6 +177,7 @@ Number:Power    E3DC_GridSupply               "E3DC Power from Grid"       (e3dc
 Number:Power    E3DC_ExternalSupply           "E3DC External Supply"       (e3dc,persist)  { channel="modbus:e3dc:device:powerplant:power#external-power-supply" }
 Number:Power    E3DC_WallboxConsumption       "E3DC Wallbox Consumption"   (e3dc,persist)  { channel="modbus:e3dc:device:powerplant:power#wallbox-power-consumption" }
 Number:Power    E3DC_WallboxPVConsumption     "E3DC Wallbox PV Consumption"         (e3dc)  { channel="modbus:e3dc:device:powerplant:power#wallbox-pv-power-consumption" }
+Number:Dimensionless    E3DC_PV_Performance           "E3DC PV Performance"         (e3dc)  { channel="modbus:e3dc:device:powerplant:power#pv-perf-ratio" }
 Number:Dimensionless    E3DC_AutarkyLevel             "E3DC Autarky Level"          (e3dc)  { channel="modbus:e3dc:device:powerplant:power#autarky" }
 Number:Dimensionless    E3DC_SelfConsumptionLevel     "E3DC Self Consumption Level" (e3dc)  { channel="modbus:e3dc:device:powerplant:power#self-consumption" }
 Number:Dimensionless    E3DC_BatterySOC               "E3DC Battery SOC"            (e3dc,persist)  { channel="modbus:e3dc:device:powerplant:power#battery-soc" }
@@ -205,6 +205,9 @@ Number:ElectricCurrent      E3DC_String3A                 "E3DC String 3 Ampere"
 Number:Power                E3DC_String1W                 "E3DC String 1 Watt"    (e3dc,persist)  { channel="modbus:e3dc:device:powerplant:strings#string1-dc-output" }
 Number:Power                E3DC_String2W                 "E3DC String 2 Watt"    (e3dc,persist)  { channel="modbus:e3dc:device:powerplant:strings#string2-dc-output" }
 Number:Power                E3DC_String3W                 "E3DC String 3 Watt"    (e3dc,persist)  { channel="modbus:e3dc:device:powerplant:strings#string3-dc-output" }
+Number:Dimensionless        E3DC_String1_Performance      "E3DC String 1 Performance"   (e3dc)  { channel="modbus:e3dc:device:powerplant:strings#string1-perf-ratio" }
+Number:Dimensionless        E3DC_String2_Performance      "E3DC String 2 Performance"   (e3dc)  { channel="modbus:e3dc:device:powerplant:strings#string2-perf-ratio" }
+Number:Dimensionless        E3DC_String3_Performance      "E3DC String 3 Performance"   (e3dc)  { channel="modbus:e3dc:device:powerplant:strings#string3-perf-ratio" }
 
 String    E3DC_EMS_Status                       "E3DC EMS Status"                      (e3dc)  { channel="modbus:e3dc:device:powerplant:emergency#emergency-power-status" }
 Switch    E3DC_EMS_BatteryChargingLock          "E3DC EMS Battery Charging Locked"     (e3dc)  { channel="modbus:e3dc:device:powerplant:emergency#battery-charging-lock" }

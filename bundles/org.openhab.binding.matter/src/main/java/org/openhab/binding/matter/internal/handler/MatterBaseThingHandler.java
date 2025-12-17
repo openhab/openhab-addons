@@ -44,6 +44,7 @@ import org.openhab.binding.matter.internal.client.dto.cluster.gen.BasicInformati
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.BridgedDeviceBasicInformationCluster;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.GeneralDiagnosticsCluster;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.GeneralDiagnosticsCluster.NetworkInterface;
+import org.openhab.binding.matter.internal.client.dto.cluster.gen.OperationalCredentialsCluster;
 import org.openhab.binding.matter.internal.client.dto.ws.AttributeChangedMessage;
 import org.openhab.binding.matter.internal.client.dto.ws.EventTriggeredMessage;
 import org.openhab.binding.matter.internal.controller.MatterControllerClient;
@@ -101,6 +102,7 @@ public abstract class MatterBaseThingHandler extends BaseThingHandler
     protected final TranslationService translationService;
     protected Map<Integer, DeviceType> devices = new HashMap<>();
     protected @Nullable MatterControllerClient cachedClient;
+    private int currentFabricIndex = 0;
     private @Nullable ScheduledFuture<?> pollingTask;
 
     public MatterBaseThingHandler(Thing thing, BaseThingHandlerFactory thingHandlerFactory,
@@ -170,6 +172,14 @@ public abstract class MatterBaseThingHandler extends BaseThingHandler
         channelTypeProvider.removeThingType(getThing().getThingTypeUID());
         channelTypeProvider.removeChannelGroupTypesForPrefix(thing.getThingTypeUID().getId());
         super.handleRemoval();
+    }
+
+    @Override
+    public void handleConfigurationUpdate(Map<String, Object> configurationParameters) {
+        super.handleConfigurationUpdate(configurationParameters);
+        // Delegate configuration updates to all device types/converters
+        Configuration config = getThing().getConfiguration();
+        devices.values().forEach(deviceType -> deviceType.handleConfigurationUpdate(config));
     }
 
     @Override
@@ -271,10 +281,11 @@ public abstract class MatterBaseThingHandler extends BaseThingHandler
      * @param attributeName The attribute name.
      * @param value The value to write.
      */
-    public void writeAttribute(Integer endpointId, String clusterName, String attributeName, String value) {
+    public CompletableFuture<Void> writeAttribute(Integer endpointId, String clusterName, String attributeName,
+            String value) {
         MatterControllerClient ws = getClient();
         if (ws != null) {
-            ws.clusterWriteAttribute(getNodeId(), endpointId, clusterName, attributeName, value);
+            return ws.clusterWriteAttribute(getNodeId(), endpointId, clusterName, attributeName, value);
         } else {
             throw new IllegalStateException("Client is null");
         }
@@ -396,6 +407,14 @@ public abstract class MatterBaseThingHandler extends BaseThingHandler
         return translationService.getTranslation(key);
     }
 
+    public final String getTranslation(String key, Object... args) {
+        return translationService.getTranslation(key, args);
+    }
+
+    public int getCurrentFabricIndex() {
+        return currentFabricIndex;
+    }
+
     protected @Nullable ControllerHandler controllerHandler() {
         Bridge bridge = getBridge();
         while (bridge != null) {
@@ -464,6 +483,14 @@ public abstract class MatterBaseThingHandler extends BaseThingHandler
                         GeneralDiagnosticsCluster.ATTRIBUTE_NETWORK_INTERFACES + "-ipv4",
                         String.join(",", allIpv4Addresses));
             }
+        }
+
+        cluster = root.clusters.get(OperationalCredentialsCluster.CLUSTER_NAME);
+        if (cluster != null && cluster instanceof OperationalCredentialsCluster operationalCredentialsCluster) {
+            updateClusterAttributeProperty(OperationalCredentialsCluster.CLUSTER_NAME,
+                    OperationalCredentialsCluster.ATTRIBUTE_CURRENT_FABRIC_INDEX,
+                    operationalCredentialsCluster.currentFabricIndex);
+            currentFabricIndex = operationalCredentialsCluster.currentFabricIndex;
         }
     }
 

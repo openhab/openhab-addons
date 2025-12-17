@@ -38,17 +38,16 @@ import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
+import org.openhab.binding.roborock.internal.api.GetUrlByEmail;
 import org.openhab.binding.roborock.internal.api.Home;
 import org.openhab.binding.roborock.internal.api.HomeData;
 import org.openhab.binding.roborock.internal.api.Login.Rriot;
+import org.openhab.binding.roborock.internal.api.SignCodeV3;
 import org.openhab.binding.roborock.internal.util.ProtocolUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.google.gson.JsonSyntaxException;
 
 /**
  * Handles performing the actual HTTP requests for communicating with the Roborock API.
@@ -128,28 +127,41 @@ public class RoborockWebTargets {
      * Retrieves the base URL for API communication based on the user's email.
      *
      * @param email The user's email.
-     * @return The base URL for the Roborock API.
+     * @return A {@link GetUrlByEmail} object containing login data, or null if retrieval fails.
      * @throws RoborockException If authentication fails.
      */
-    public String getUrlByEmail(String email) throws RoborockException {
+    @Nullable
+    public GetUrlByEmail getUrlByEmail(String email) throws RoborockException {
         safeToken = generateSafeToken(email);
 
         String encodedEmail = URLEncoder.encode(email, StandardCharsets.UTF_8);
         String payload = "?email=" + encodedEmail + "&needtwostepauth=false";
-        String response = invoke(GET_URL_BY_EMAIL_URI + payload, HttpMethod.POST, null, null);
+        String response = invoke(GET_URL_BY_EMAIL_URI + payload, HttpMethod.POST);
+        return gson.fromJson(response, GetUrlByEmail.class);
+    }
 
-        try {
-            JsonObject jsonResponse = JsonParser.parseString(response).getAsJsonObject();
-            if (jsonResponse.has("data") && jsonResponse.get("data").isJsonObject()
-                    && jsonResponse.getAsJsonObject("data").has("url")
-                    && jsonResponse.getAsJsonObject("data").get("url").isJsonPrimitive()) {
-                return jsonResponse.getAsJsonObject("data").get("url").getAsString();
-            }
-            logger.warn("URL not found in getUrlByEmail response: {}", response);
-        } catch (JsonSyntaxException | IllegalStateException e) {
-            logger.error("Failed to parse JSON response for getUrlByEmail: {}", response, e);
-        }
-        return EU_IOT_BASE_URL;
+    /**
+     * Requests a 2FA code based on the user's email.
+     *
+     * @param baseUri The base URI for API calls.
+     * @param email The user's email.
+     * @return A String containing the response.
+     * @throws RoborockException If authentication fails.
+     */
+    @Nullable
+    public String requestCodeV4(String baseUri, String email) throws RoborockException {
+        String encodedEmail = URLEncoder.encode(email, StandardCharsets.UTF_8);
+        String payload = "?email=" + encodedEmail + "&type=login&platform=";
+        return invoke(baseUri + REQUEST_CODE_V4 + payload, HttpMethod.POST, "application/x-www-form-urlencoded",
+                "header_clientlang", "en");
+    }
+
+    @Nullable
+    public SignCodeV3 signKeyV3(String baseUri, String nonce) throws RoborockException {
+        String payload = "?s=" + nonce;
+
+        String response = invoke(baseUri + SIGN_KEY_V3 + payload, HttpMethod.POST);
+        return gson.fromJson(response, SignCodeV3.class);
     }
 
     /**
@@ -157,21 +169,52 @@ public class RoborockWebTargets {
      *
      * @param baseUri The base URI for API calls.
      * @param email The user's email.
-     * @param password The user's password.
+     * @param two The 2FA code sent by Roborock
      * @return A {@link Login} object containing authentication details, or null if login fails.
      * @throws RoborockException If authentication fails.
      */
     @Nullable
-    public String doLogin(String baseUri, String email, String password) throws RoborockException {
+    public String doLogin(String baseUri, String email, String twofa) throws RoborockException {
         if (safeToken.isEmpty()) {
             safeToken = generateSafeToken(email); // Generate if somehow missed
         }
 
-        String encodedUsername = URLEncoder.encode(email, StandardCharsets.UTF_8);
-        String encodedPassword = URLEncoder.encode(password, StandardCharsets.UTF_8);
-        String payload = "?username=" + encodedUsername + "&password=" + encodedPassword + "&needtwostepauth=false";
+        String payload = "?username=" + URLEncoder.encode(email, StandardCharsets.UTF_8) + "&verifycode=" + twofa
+                + "&verifycodetype=AUTH_EMAIL_CODE";
 
-        return invoke(baseUri + GET_TOKEN_PATH + payload, HttpMethod.POST, null, null);
+        return invoke(baseUri + GET_TOKEN_PATH + payload, HttpMethod.POST);
+    }
+
+    /**
+     * Performs a loginV4 operation to obtain authentication tokens.
+     *
+     * @param baseUri The base URI for API calls.
+     * @param email The user's email.
+     * @param country The user's country.
+     * @param countryCode The user's country code.
+     * @param twofa The 2FA code sent to the user's email
+     * @return A {@link Login} object containing authentication details, or null if login fails.
+     * @throws RoborockException If authentication fails.
+     */
+    @Nullable
+    public String doLoginV4(String baseUri, String country, String countryCode, String email, String twofa)
+            throws RoborockException {
+        if (safeToken.isEmpty()) {
+            safeToken = generateSafeToken(email); // Generate if somehow missed
+        }
+
+        String x_mercy_ks = UUID.randomUUID().toString().substring(0, 16);
+        SignCodeV3 signCodeV3 = signKeyV3(baseUri, x_mercy_ks);
+        if (signCodeV3 == null || signCodeV3.data == null || signCodeV3.data.k == null) {
+            throw new RoborockException("Failed to obtain signCodeV3 or its required data for loginV4.");
+        }
+        String x_mercy_k = signCodeV3.data.k;
+        String payload = "?country=" + country + "&countryCode=" + countryCode + "&email="
+                + URLEncoder.encode(email, StandardCharsets.UTF_8) + "&code=" + twofa
+                + "&majorVersion=14&minorVersion=0";
+
+        return invoke(baseUri + CODE_LOGIN_V4 + payload, HttpMethod.POST, "application/json", "x-mercy-ks", x_mercy_ks,
+                "x-mercy-k", x_mercy_k);
     }
 
     /**
@@ -184,7 +227,8 @@ public class RoborockWebTargets {
      */
     @Nullable
     public Home getHomeDetail(String baseUri, String token) throws RoborockException {
-        String response = invoke(baseUri + GET_HOME_DETAIL_PATH, HttpMethod.GET, "Authorization", token);
+        String response = invoke(baseUri + GET_HOME_DETAIL_PATH, HttpMethod.GET, "application/json", "Authorization",
+                token);
         return gson.fromJson(response, Home.class);
     }
 
@@ -201,7 +245,7 @@ public class RoborockWebTargets {
     public HomeData getHomeData(String rrHomeID, Rriot rriot) throws RoborockException {
         String path = GET_HOME_DATA_V3_PATH + rrHomeID;
         String token = getHawkAuthentication(rriot.u, rriot.s, rriot.h, path);
-        String response = invoke(rriot.r.a + path, HttpMethod.GET, "Authorization", token);
+        String response = invoke(rriot.r.a + path, HttpMethod.GET, "application/json", "Authorization", token);
         return gson.fromJson(response, HomeData.class);
     }
 
@@ -218,7 +262,7 @@ public class RoborockWebTargets {
     public String getRoutines(String deviceID, Rriot rriot) throws RoborockException {
         String path = GET_ROUTINES_PATH + deviceID;
         String hawkToken = getHawkAuthentication(rriot.u, rriot.s, rriot.h, path);
-        return invoke(rriot.r.a + path, HttpMethod.GET, "Authorization", hawkToken);
+        return invoke(rriot.r.a + path, HttpMethod.GET, "application/json", "Authorization", hawkToken);
     }
 
     /**
@@ -233,7 +277,16 @@ public class RoborockWebTargets {
     public String setRoutine(String sceneID, Rriot rriot) throws RoborockException {
         String path = SET_ROUTINE_PATH + sceneID + SET_ROUTINE_PATH_SUFFIX;
         String hawkToken = getHawkAuthentication(rriot.u, rriot.s, rriot.h, path);
-        return invoke(rriot.r.a + path, HttpMethod.POST, "Authorization", hawkToken);
+        return invoke(rriot.r.a + path, HttpMethod.POST, "application/json", "Authorization", hawkToken);
+    }
+
+    private String invoke(String uri, HttpMethod method) throws RoborockException {
+        return invoke(uri, method, "application/json", null, null);
+    }
+
+    private String invoke(String uri, HttpMethod method, String contentType, @Nullable String headerKey,
+            @Nullable String headerValue) throws RoborockException {
+        return invoke(uri, method, contentType, headerKey, headerValue, null, null);
     }
 
     /**
@@ -241,23 +294,35 @@ public class RoborockWebTargets {
      *
      * @param uri The full URI to call.
      * @param method The HTTP method (GET, POST, etc.).
+     * @param contentType The content-type of the request
      * @param headerKey Optional: The name of an additional header.
      * @param headerValue Optional: The value of an additional header.
+     * @param headerKey2 Optional: The name of an additional header.
+     * @param headerValue2 Optional: The value of an additional header.
      * @return The response body as a String.
      * @throws RoborockException If there is a comms or authentication error.
      */
-    private String invoke(String uri, HttpMethod method, @Nullable String headerKey, @Nullable String headerValue)
+    private String invoke(String uri, HttpMethod method, String contentType, @Nullable String headerKey,
+            @Nullable String headerValue, @Nullable String headerKey2, @Nullable String headerValue2)
             throws RoborockException {
         logger.debug("Calling url: {}", uri);
         String jsonResponse = "";
 
         synchronized (this) {
             try {
-                Request request = httpClient.newRequest(uri).method(method).header("content-type", "application/json")
+                Request request = httpClient.newRequest(uri).method(method).header("content-type", contentType)
                         .header("header_clientid", safeToken).timeout(TIMEOUT_MS, TimeUnit.MILLISECONDS);
 
                 if (headerKey != null && headerValue != null) {
                     request.header(headerKey, headerValue);
+                }
+
+                if (headerKey2 != null && headerValue2 != null) {
+                    request.header(headerKey2, headerValue2);
+                    request.header("header_clientlang", "en");
+                    request.header("header_appversion", "4.54.02");
+                    request.header("header_phonesystem", "iOS");
+                    request.header("header_phonemodel", "iPhone16,1");
                 }
 
                 if (logger.isTraceEnabled()) {

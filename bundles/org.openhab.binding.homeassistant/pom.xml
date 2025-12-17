@@ -125,6 +125,14 @@
         <groupId>org.graalvm.python</groupId>
         <artifactId>graalpy-maven-plugin</artifactId>
         <version>${graalvm.version}</version>
+        <configuration>
+          <packages>
+            <package>awesomeversion==25.8.0</package>
+            <package>Jinja2==3.1.6</package>
+            <package>python-slugify==8.0.4</package>
+          </packages>
+        </configuration>
+
         <executions>
           <execution>
             <id>install-python-packages</id>
@@ -132,13 +140,6 @@
               <goal>process-graalpy-resources</goal>
             </goals>
             <phase>generate-resources</phase>
-            <configuration>
-              <packages>
-                <package>awesomeversion==24.6.0</package>
-                <package>Jinja2==3.1.6</package>
-                <package>python-slugify==8.0.4</package>
-              </packages>
-            </configuration>
           </execution>
           <!-- yes, this is the same as above, but it needs run again to regenerate the filelist with our .pyc files -->
           <execution>
@@ -147,13 +148,6 @@
               <goal>process-graalpy-resources</goal>
             </goals>
             <phase>process-resources</phase>
-            <configuration>
-              <packages>
-                <package>awesomeversion==24.6.0</package>
-                <package>Jinja2==3.1.6</package>
-                <package>python-slugify==8.0.4</package>
-              </packages>
-            </configuration>
           </execution>
         </executions>
       </plugin>
