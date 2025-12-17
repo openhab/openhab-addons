@@ -14,14 +14,19 @@ package org.openhab.binding.ddwrt.internal.handler;
 
 import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.CHANNEL_TOTAL_CLIENTS;
 
-import java.io.File;
+import java.util.Collection;
+import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.core.OpenHAB;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.ddwrt.internal.DDWRTDiscoveryService;
+import org.openhab.binding.ddwrt.internal.DDWRTNetworkConfiguration;
+import org.openhab.binding.ddwrt.internal.api.DDWRTNetwork;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
+import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
@@ -38,14 +43,25 @@ public class DDWRTNetworkBridgeHandler extends BaseBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(DDWRTNetworkBridgeHandler.class);
 
-    // private @Nullable ddwrtConfiguration config;
+    private DDWRTNetworkConfiguration config = new DDWRTNetworkConfiguration();
+
+    private volatile DDWRTNetwork network = new DDWRTNetwork(); /* volatile because accessed from multiple threads */
 
     public DDWRTNetworkBridgeHandler(Bridge bridge) {
         super(bridge);
     }
 
+    // Public API
+
+    @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return List.of(DDWRTDiscoveryService.class);
+    }
+
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        logger.warn("Ignoring command = {} for channel = {} - the DDWRT Network is read-only!", command, channelUID);
+
         if (CHANNEL_TOTAL_CLIENTS.equals(channelUID.getId())) {
             if (command instanceof RefreshType) {
                 // TODO: handle data refresh
@@ -62,7 +78,7 @@ public class DDWRTNetworkBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void initialize() {
-        // config = getConfigAs(ddwrtConfiguration.class);
+        config = getConfigAs(DDWRTNetworkConfiguration.class);
         // TODO: Add friendly name
         // TODO: Initialize the handler.
         // The framework requires you to return from this method quickly, i.e. any network access must be done in
@@ -76,17 +92,10 @@ public class DDWRTNetworkBridgeHandler extends BaseBridgeHandler {
         // set the thing status to UNKNOWN temporarily and let the background task decide for the real status.
         // the framework is then able to reuse the resources from the thing handler initialization.
         // we set this upfront to reliably check status updates in unit tests.
-        logger.debug("Initializing DDWRT Network Bridge handler for '{}'.", getThing().getUID());
+        logger.debug("Initializing DDWRT Network Bridge handler '{}' with config = {}.", getThing().getUID(), config);
 
         updateStatus(ThingStatus.ONLINE);
-
-        String privateKeyDirString = OpenHAB.getUserDataFolder() + "/ddwrt/keys";
-        File privateKeyDir = new File(privateKeyDirString);
-
-        if (!privateKeyDir.exists()) {
-            logger.debug("Creating directory {}", privateKeyDirString);
-            privateKeyDir.mkdirs();
-        }
+        network.setConfig(config);
 
         // // Example for background initialization:
         // scheduler.execute(() -> {
@@ -165,5 +174,9 @@ public class DDWRTNetworkBridgeHandler extends BaseBridgeHandler {
         // Add a description to give user information to understand why thing does not work as expected. E.g.
         // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
         // "Can not access device as username and/or password are invalid");
+    }
+
+    public @Nullable DDWRTNetwork getNetwork() {
+        return network;
     }
 }

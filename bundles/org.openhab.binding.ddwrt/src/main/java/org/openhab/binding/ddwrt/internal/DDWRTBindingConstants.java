@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.ddwrt.internal;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -34,8 +35,14 @@ public class DDWRTBindingConstants {
     // List of all Thing Type UIDs
     public static final ThingTypeUID BRIDGE_TYPE_NETWORK = new ThingTypeUID(BINDING_ID, "network");
     public static final ThingTypeUID THING_TYPE_DEVICE = new ThingTypeUID(BINDING_ID, "device");
+    public static final ThingTypeUID THING_TYPE_RADIO = new ThingTypeUID(BINDING_ID, "radio");
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(BRIDGE_TYPE_NETWORK, THING_TYPE_DEVICE);
+    public static final Set<ThingTypeUID> DISCOVERABLE_THING_TYPES_UIDS = Set.of(THING_TYPE_DEVICE);
+
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<>(DISCOVERABLE_THING_TYPES_UIDS);
+    static {
+        SUPPORTED_THING_TYPES_UIDS.add(BRIDGE_TYPE_NETWORK);
+    }
 
     // List of network Channel ids
     public static final String CHANNEL_TOTAL_CLIENTS = "totalClients";
@@ -44,9 +51,10 @@ public class DDWRTBindingConstants {
     public static final String CHANNEL_ONLINE = "online";
     public static final String CHANNEL_UPTIME = "uptime";
     public static final String CHANNEL_WAN_IP = "wanIp";
-    
+
     // List of all configuration parameters
     public static final String HOSTNAME = "hostname";
+    public static final String HOSTNAMES = "hostnames";
     public static final String PORT = "port";
     public static final String USER = "user";
     public static final String PASSWORD = "password";
