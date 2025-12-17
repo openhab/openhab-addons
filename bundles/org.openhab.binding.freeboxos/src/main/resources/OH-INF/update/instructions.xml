@@ -83,6 +83,20 @@
 			</add-channel>
 		</instruction-set>
 
+		<instruction-set targetVersion="3">
+			<add-channel id="state" groupIds="ipsec">
+				<type>freeboxos:vpn-state</type>
+			</add-channel>
+			<add-channel id="connections" groupIds="ipsec">
+				<type>freeboxos:connection-count</type>
+			</add-channel>
+			<add-channel id="auth-connections" groupIds="ipsec">
+				<type>freeboxos:connection-count</type>
+				<label>Authenticated Connection Count</label>
+				<description>Number of authenticated clients connected to the server</description>
+			</add-channel>
+		</instruction-set>
+
 	</thing-type>
 
 	<thing-type uid="freeboxos:revolution">
@@ -136,6 +150,20 @@
 				<type>freeboxos:connection-count</type>
 			</add-channel>
 			<add-channel id="auth-connections" groupIds="wireguard,openvpn-bridge,openvpn-routed,pptp">
+				<type>freeboxos:connection-count</type>
+				<label>Authenticated Connection Count</label>
+				<description>Number of authenticated clients connected to the server</description>
+			</add-channel>
+		</instruction-set>
+
+		<instruction-set targetVersion="3">
+			<add-channel id="state" groupIds="ipsec">
+				<type>freeboxos:vpn-state</type>
+			</add-channel>
+			<add-channel id="connections" groupIds="ipsec">
+				<type>freeboxos:connection-count</type>
+			</add-channel>
+			<add-channel id="auth-connections" groupIds="ipsec">
 				<type>freeboxos:connection-count</type>
 				<label>Authenticated Connection Count</label>
 				<description>Number of authenticated clients connected to the server</description>
