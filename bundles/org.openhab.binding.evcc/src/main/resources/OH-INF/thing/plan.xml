@@ -19,7 +19,7 @@
 		<config-description>
 			<parameter name="index" type="text">
 				<label>Index</label>
-				<description>The plan index: 0 for one-time plan, 1..N for repeating plans for your vehicle in the evcc setup</description>
+				<description>The plan index: 0 for one-time plan, 1...N for repeating plans for your vehicle in the evcc setup</description>
 			</parameter>
 			<parameter name="vehicle-id" type="text">
 				<label>Vehicle ID</label>
