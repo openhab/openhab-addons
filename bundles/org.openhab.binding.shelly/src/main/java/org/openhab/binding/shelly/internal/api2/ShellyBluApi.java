@@ -277,6 +277,33 @@ public class ShellyBluApi extends Shelly2ApiRpc {
                         if (e.blu.distance != null) {
                             sensorData.distance = e.blu.distance;
                         }
+                        if (e.blu.rain != null) {
+                            sensorData.rain = e.blu.rain > 0;
+                        }
+                        if (e.blu.speeds != null) {
+                            sensorData.windSpeed = e.blu.speeds[0];
+                            if (e.blu.speeds.length > 0) {
+                                sensorData.gustSpeed = e.blu.speeds[1];
+                            }
+                        }
+                        if (e.blu.directions != null) {
+                            sensorData.windDirection = e.blu.directions[0];
+                            if (e.blu.speeds.length > 0) {
+                                sensorData.gustDirection = e.blu.directions[1];
+                            }
+                        }
+                        if (e.blu.uvIndex != null) {
+                            sensorData.uvIndex = e.blu.uvIndex;
+                        }
+                        if (e.blu.pressure != null) {
+                            sensorData.pressure = e.blu.pressure;
+                        }
+                        if (e.blu.dewPoint != null) {
+                            sensorData.dewPoint = e.blu.dewPoint;
+                        }
+                        if (e.blu.precipitation != null) {
+                            sensorData.precipitation = e.blu.precipitation;
+                        }
                         if (e.blu.firmware32 != null) {
                             profile.fwVersion = getFirmwareVersion(e.blu.firmware32);
                         }
