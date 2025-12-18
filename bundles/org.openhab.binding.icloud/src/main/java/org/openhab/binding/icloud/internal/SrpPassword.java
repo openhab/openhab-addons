@@ -19,6 +19,8 @@ import java.security.NoSuchAlgorithmException;
 import org.bouncycastle.crypto.digests.SHA256Digest;
 import org.bouncycastle.crypto.generators.PKCS5S2ParametersGenerator;
 import org.bouncycastle.crypto.params.KeyParameter;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  *
@@ -26,11 +28,12 @@ import org.bouncycastle.crypto.params.KeyParameter;
  * 
  * @author Simon Spielmann - Initial contribution
  */
+@NonNullByDefault
 public class SrpPassword {
     public final byte[] passwordHash;
-    private byte[] salt;
-    private Integer iterations;
-    private Integer keyLength;
+    private byte @Nullable [] salt;
+    private @Nullable Integer iterations;
+    private @Nullable Integer keyLength;
 
     public SrpPassword(String password) {
         this.passwordHash = sha256(password);
@@ -68,6 +71,9 @@ public class SrpPassword {
      */
 
     public byte[] encode() {
+        byte[] salt = this.salt;
+        Integer iterations = this.iterations;
+        Integer keyLength = this.keyLength;
         if (salt == null || iterations == null || keyLength == null) {
             throw new IllegalStateException("Encrypt info not set");
         }
@@ -80,14 +86,5 @@ public class SrpPassword {
         } catch (Exception e) {
             throw new RuntimeException("Error during PBKDF2 encoding", e);
         }
-    }
-
-    // Helper: Convert byte[] to char[] for PBEKeySpec
-    private char[] toCharArray(byte[] bytes) {
-        char[] chars = new char[bytes.length];
-        for (int i = 0; i < bytes.length; i++) {
-            chars[i] = (char) (bytes[i] & 0xFF);
-        }
-        return chars;
     }
 }

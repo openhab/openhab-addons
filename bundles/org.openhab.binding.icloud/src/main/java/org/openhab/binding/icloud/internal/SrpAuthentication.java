@@ -22,18 +22,16 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import org.bouncycastle.crypto.CryptoException;
 import org.bouncycastle.crypto.Digest;
 import org.bouncycastle.crypto.agreement.srp.SRP6Util;
 import org.bouncycastle.crypto.digests.SHA256Digest;
-import org.bouncycastle.util.BigIntegers;
 import org.bouncycastle.util.encoders.Base64;
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.icloud.internal.utilities.JsonUtils;
 import org.openhab.binding.icloud.internal.utilities.Pair;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -44,11 +42,10 @@ import com.google.gson.JsonObject;
  *
  * @author Simon Spielmann - Initial contribution
  */
+@NonNullByDefault
 public class SrpAuthentication {
-
-    private final Logger logger = LoggerFactory.getLogger(SrpAuthentication.class);
-    private final @NonNull String passwordRaw;
-    private final List<Pair<@NonNull String, @NonNull String>> sessionHeaders;
+    private final String passwordRaw;
+    private final List<Pair<String, String>> sessionHeaders;
 
     private static final BigInteger N = new BigInteger(
             "21766174458617435773191008891802753781907668374255538511144643224689886235383840957210909013086056401571399717235807266581649606472148410291413364152197364477180887395655483738115072677402235101762521901569820740293149529620419333266262073471054548368736039519702486226506248861060256971802984953561121442680157668000761429988222457090413873973970171927093992114751765168063614761119615476233422096442783117971236371647333871414335895773474667308967050807005509320424799678417036867928316761272274230314067548291133582479583061439577559347101961771406173684378522703483495337037655006751328447510550299250924469288819");;
@@ -73,8 +70,7 @@ public class SrpAuthentication {
      * private byte[] M2; // expected accessory server proof
      */
 
-    public SrpAuthentication(String accountName, String passwordRaw,
-            List<Pair<@NonNull String, @NonNull String>> sessionHeaders) {
+    public SrpAuthentication(String accountName, String passwordRaw, List<Pair<String, String>> sessionHeaders) {
         this.I = accountName;
         this.passwordRaw = passwordRaw;
         this.sessionHeaders = sessionHeaders;
@@ -116,7 +112,6 @@ public class SrpAuthentication {
     // https://asecuritysite.com/bouncy/bc_srp6a
     public void auth(String authEndpoint, ICloudSession httpClient) throws IOException, InterruptedException,
             ICloudApiResponseException, CryptoException, NoSuchAlgorithmException {
-        var random = new SecureRandom();
         SrpPassword srpPassword = new SrpPassword(passwordRaw);
 
         // TODO which rfc?
@@ -184,8 +179,8 @@ public class SrpAuthentication {
         requestBody.put("m2", b64Encode(M2));
         requestBody.put("rememberMe", true);
         requestBody.put("trustTokens", new String[] {});
-        String completeResponse = httpClient.post(authEndpoint + "/signin/complete?isRememberMeEnabled=true",
-                JsonUtils.toJson(requestBody), sessionHeaders);
+        httpClient.post(authEndpoint + "/signin/complete?isRememberMeEnabled=true", JsonUtils.toJson(requestBody),
+                sessionHeaders);
     }
 
     /**
@@ -210,7 +205,7 @@ public class SrpAuthentication {
      * b64Decode(b64Encode(passwordRaw.getBytes(StandardCharsets.UTF_8))));
      *
      * // Prepare initial authentication request
-     * List<Pair<@NonNull String, @NonNull String>> initData = new ArrayList<>(
+     * List<Pair<String, String>> initData = new ArrayList<>(
      * List.of(Pair.of("a", b64Encode(A.toByteArray())), Pair.of("protocols", "s2k, s2k_fo")));
      *
      * // POST to signin/init endpoint
@@ -270,7 +265,7 @@ public class SrpAuthentication {
      */
     private JsonObject parseJsonResponse(String jsonResponse) {
         Gson gson = new Gson();
-        return gson.fromJson(jsonResponse, JsonObject.class);
+        return Objects.requireNonNull(gson.fromJson(jsonResponse, JsonObject.class));
     }
 
     public static byte[] sha256(byte[] data) throws NoSuchAlgorithmException {
@@ -310,35 +305,6 @@ public class SrpAuthentication {
         byte[] padded = new byte[length];
         System.arraycopy(unsigned, 0, padded, length - unsigned.length, unsigned.length);
         return padded;
-    }
-
-    private static byte[] getPadded(BigInteger n, int length) {
-        byte[] bs = BigIntegers.asUnsignedByteArray(n);
-        if (bs.length < length) {
-            byte[] tmp = new byte[length];
-            System.arraycopy(bs, 0, tmp, length - bs.length, bs.length);
-            bs = tmp;
-        }
-        return bs;
-    }
-
-    private static BigInteger computeK() {
-        try {
-            byte[] paddedN = toUnsigned(N, 256);
-            byte[] paddedG = toUnsigned(g, 256);
-            byte[] hash = sha256(concat(paddedN, paddedG));
-            return new BigInteger(1, hash);
-        } catch (NoSuchAlgorithmException e) {
-            throw new SecurityException("Failed to compute k", e);
-        }
-    }
-
-    private byte[] sha(Digest digest, byte[] input) {
-        digest.reset();
-        digest.update(input, 0, input.length);
-        byte[] rv = new byte[digest.getDigestSize()];
-        digest.doFinal(rv, 0);
-        return rv;
     }
 
     public static byte[] concat(byte[]... parts) {
