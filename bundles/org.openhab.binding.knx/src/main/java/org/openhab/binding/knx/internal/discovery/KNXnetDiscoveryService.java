@@ -25,8 +25,11 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.DiscoveryService;
+import org.openhab.core.thing.ThingRegistry;
 import org.openhab.core.thing.ThingUID;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,9 +53,12 @@ public class KNXnetDiscoveryService extends AbstractDiscoveryService {
     private final Logger logger = LoggerFactory.getLogger(KNXnetDiscoveryService.class);
 
     private @Nullable Future<?> scanFuture = null;
+    private final ThingRegistry thingRegistry;
 
-    public KNXnetDiscoveryService() {
+    @Activate
+    public KNXnetDiscoveryService(@Reference ThingRegistry thingRegistry) {
         super(Set.of(THING_TYPE_IP_BRIDGE), 3, true);
+        this.thingRegistry = thingRegistry;
     }
 
     @Override
@@ -84,6 +90,15 @@ public class KNXnetDiscoveryService extends AbstractDiscoveryService {
         }
     }
 
+    // this filter prevents adding devices that are already registered as Things
+    private boolean filtered(ThingUID uid) {
+        if (thingRegistry.get(uid) != null) {
+            logger.debug("Ignoring device {} as it is already registered", uid);
+            return true;
+        }
+        return false;
+    }
+
     private synchronized void startDiscovery() {
         try {
             logger.debug("Starting KNXnet/IP discovery scan");
@@ -109,7 +124,11 @@ public class KNXnetDiscoveryService extends AbstractDiscoveryService {
                     }
 
                     if (services.containsKey(ServiceFamiliesDIB.ServiceFamily.Tunneling)) {
-                        thingDiscovered(DiscoveryResultBuilder.create(new ThingUID(THING_TYPE_IP_BRIDGE, serial))
+                        ThingUID uid = new ThingUID(THING_TYPE_IP_BRIDGE, serial);
+                        if (filtered(uid)) {
+                            continue;
+                        }
+                        thingDiscovered(DiscoveryResultBuilder.create(uid)
                                 .withLabel(response.getDevice().getName()).withProperty("serialNumber", serial)
                                 .withProperty("type", "TUNNEL")
                                 .withProperty("ipAddress",
@@ -118,7 +137,11 @@ public class KNXnetDiscoveryService extends AbstractDiscoveryService {
                                 .withRepresentationProperty("serialNumber").build());
                     }
                     if (services.containsKey(ServiceFamiliesDIB.ServiceFamily.Routing)) {
-                        thingDiscovered(DiscoveryResultBuilder.create(new ThingUID(THING_TYPE_IP_BRIDGE, serial))
+                        ThingUID uid = new ThingUID(THING_TYPE_IP_BRIDGE, serial);
+                        if (filtered(uid)) {
+                            continue;
+                        }
+                        thingDiscovered(DiscoveryResultBuilder.create(uid)
                                 .withLabel(response.getDevice().getName() + " (router mode)")
                                 .withProperty("serialNumber", serial + "-r").withProperty("type", "ROUTER")
                                 .withProperty("ipAddress", "224.0.23.12")
