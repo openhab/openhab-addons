@@ -24,7 +24,7 @@ import org.eclipse.jdt.annotation.Nullable;
 
 /**
  *
- * TODO
+ * Helper class to take a raw password, and prepare it for use in SRP Authentication.
  * 
  * @author Simon Spielmann - Initial contribution
  */
@@ -35,6 +35,10 @@ public class SrpPassword {
     private @Nullable Integer iterations;
     private @Nullable Integer keyLength;
 
+    /**
+     * 
+     * @param password The unhashed password
+     */
     public SrpPassword(String password) {
         this.passwordHash = sha256(password);
     }
@@ -48,12 +52,24 @@ public class SrpPassword {
         }
     }
 
+    /**
+     * Set the parameters required for PBKDF2 encoding.
+     * 
+     * @param salt
+     * @param iterations
+     * @param keyLength
+     */
     public void setEncryptInfo(byte[] salt, int iterations, int keyLength) {
         this.salt = salt;
         this.iterations = iterations;
         this.keyLength = keyLength;
     }
 
+    /**
+     * Encode the password using PBKDF2 with the previously set parameters.
+     * 
+     * @return The encoded password
+     */
     public byte[] encode() {
         byte[] salt = this.salt;
         Integer iterations = this.iterations;

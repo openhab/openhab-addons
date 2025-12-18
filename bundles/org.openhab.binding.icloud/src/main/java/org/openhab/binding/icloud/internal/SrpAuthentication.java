@@ -38,7 +38,7 @@ import com.google.gson.JsonObject;
 
 /**
  *
- * TODO
+ * Helper class to perform SRP Authentication.
  *
  * @author Simon Spielmann - Initial contribution
  */
@@ -53,6 +53,12 @@ public class SrpAuthentication {
 
     private String I; // username
 
+    /**
+     * 
+     * @param accountName Username
+     * @param passwordRaw Unhashed password
+     * @param sessionHeaders Additional headers to send with requests
+     */
     public SrpAuthentication(String accountName, String passwordRaw, List<Pair<String, String>> sessionHeaders) {
         this.I = accountName;
         this.passwordRaw = passwordRaw;
