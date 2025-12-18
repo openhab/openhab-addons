@@ -37,8 +37,16 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
 /**
+ * Implements the client-side Secure Remote Password (SRP-6) authentication flow
+ * used by the iCloud web service.
  *
- * Helper class to perform SRP Authentication.
+ * This class encapsulates the SRP computations (such as generation of ephemeral
+ * keys, calculation of proofs and session keys, and hashing of credentials) and
+ * provides helper methods that higher-level components of the iCloud binding can
+ * use to drive the multi-step SRP exchange with Apple's iCloud authentication
+ * endpoints. It leverages Bouncy Castle's SRP and digest implementations, JSON
+ * utilities, and shared session headers to integrate cleanly with the iCloud
+ * HTTP/JSON APIs.
  *
  * @author Simon Spielmann - Initial contribution
  */
@@ -48,12 +56,13 @@ public class SrpAuthentication {
     private final List<Pair<String, String>> sessionHeaders;
 
     private static final BigInteger N = new BigInteger(
-            "21766174458617435773191008891802753781907668374255538511144643224689886235383840957210909013086056401571399717235807266581649606472148410291413364152197364477180887395655483738115072677402235101762521901569820740293149529620419333266262073471054548368736039519702486226506248861060256971802984953561121442680157668000761429988222457090413873973970171927093992114751765168063614761119615476233422096442783117971236371647333871414335895773474667308967050807005509320424799678417036867928316761272274230314067548291133582479583061439577559347101961771406173684378522703483495337037655006751328447510550299250924469288819");;
-    private final static BigInteger g = BigInteger.valueOf(2l);
+            "21766174458617435773191008891802753781907668374255538511144643224689886235383840957210909013086056401571399717235807266581649606472148410291413364152197364477180887395655483738115072677402235101762521901569820740293149529620419333266262073471054548368736039519702486226506248861060256971802984953561121442680157668000761429988222457090413873973970171927093992114751765168063614761119615476233422096442783117971236371647333871414335895773474667308967050807005509320424799678417036867928316761272274230314067548291133582479583061439577559347101961771406173684378522703483495337037655006751328447510550299250924469288819");
+    private final static BigInteger g = BigInteger.valueOf(2L);
 
     private String I; // username
 
     /**
+     * Construct a new instance of SrpAuthentication.
      * 
      * @param accountName Username
      * @param passwordRaw Unhashed password
@@ -75,7 +84,7 @@ public class SrpAuthentication {
     private byte[] toByteArray(BigInteger data) {
         byte[] signedBytes = data.toByteArray();
         if (signedBytes[0] == 0x00) {
-            // Führendes Null-Byte entfernen
+            // Remove leading null byte
             byte[] unsignedBytes = new byte[signedBytes.length - 1];
             System.arraycopy(signedBytes, 1, unsignedBytes, 0, unsignedBytes.length);
             return unsignedBytes;
@@ -103,10 +112,6 @@ public class SrpAuthentication {
             ICloudApiResponseException, CryptoException, NoSuchAlgorithmException {
         SrpPassword srpPassword = new SrpPassword(passwordRaw);
 
-        // TODO which rfc?
-        // BigInteger N = SRP6StandardGroups.rfc5054_2048.getN();
-        // BigInteger G = SRP6StandardGroups.rfc5054_2048.getG();
-
         byte[] client_a = new byte[256];
         new SecureRandom().nextBytes(client_a);
 
@@ -132,11 +137,10 @@ public class SrpAuthentication {
 
         srpPassword.setEncryptInfo(s, iterations, keyLength);
 
-        /*
-         * # SRP-6a safety check
-         * if (self.B % N) == 0:
-         * return None
-         */
+        // SRP-6a safety check
+        if (B.mod(N).equals(BigInteger.ZERO)) {
+            throw new IllegalStateException("Invalid SRP server public value: B mod N == 0");
+        }
 
         // Calculate S
         Digest digest = new SHA256Digest();
@@ -149,7 +153,6 @@ public class SrpAuthentication {
         BigInteger S = B.subtract(k.multiply(v)).modPow(a.add(u.multiply(x)), N);
 
         byte[] K = sha256(toUnsigned(S, 256));
-        // BigInteger K2 = SRP6Util.calculateKey(digest, N, S);
 
         // Compute client proof M1 = H(H(N) xor H(g) || H(I) || s || A || B || K)
         byte[] HN = sha256(toUnsigned(N, 256));

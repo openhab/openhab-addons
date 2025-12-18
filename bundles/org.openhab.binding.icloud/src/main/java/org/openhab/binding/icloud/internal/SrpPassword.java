@@ -30,12 +30,14 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public class SrpPassword {
-    public final byte[] passwordHash;
+    private final byte[] passwordHash;
     private byte @Nullable [] salt;
     private @Nullable Integer iterations;
     private @Nullable Integer keyLength;
 
     /**
+     * 
+     * Creates a new {@link SrpPassword} instance from the given raw password.
      * 
      * @param password The unhashed password
      */
@@ -53,11 +55,9 @@ public class SrpPassword {
     }
 
     /**
-     * Set the parameters required for PBKDF2 encoding.
-     * 
-     * @param salt
-     * @param iterations
-     * @param keyLength
+     * @param salt the random salt bytes used as input to the PBKDF2 key derivation
+     * @param iterations the number of PBKDF2 iterations (work factor) to apply
+     * @param keyLength the desired length of the derived key in bytes
      */
     public void setEncryptInfo(byte[] salt, int iterations, int keyLength) {
         this.salt = salt;
@@ -78,7 +78,6 @@ public class SrpPassword {
             throw new IllegalStateException("Encrypt info not set");
         }
         try {
-
             PKCS5S2ParametersGenerator gen = new PKCS5S2ParametersGenerator(new SHA256Digest());
             gen.init(passwordHash, salt, iterations);
             KeyParameter key = (KeyParameter) gen.generateDerivedParameters(keyLength * 8);

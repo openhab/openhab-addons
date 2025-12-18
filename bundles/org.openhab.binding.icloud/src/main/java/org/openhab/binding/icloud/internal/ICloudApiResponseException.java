@@ -32,6 +32,7 @@ public class ICloudApiResponseException extends Exception {
      *
      * @param url URL for which the exception occurred
      * @param statusCode HTTP status code which was reported
+     * @param body Body of the response
      */
     public ICloudApiResponseException(String url, int statusCode, String body) {
         super(String.format("Request %s failed with %s.", url, statusCode));
