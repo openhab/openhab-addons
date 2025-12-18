@@ -174,7 +174,7 @@ public class SrpAuthentication {
         return Objects.requireNonNull(gson.fromJson(jsonResponse, JsonObject.class));
     }
 
-    public static byte[] sha256(byte[] data) throws NoSuchAlgorithmException {
+    private static byte[] sha256(byte[] data) throws NoSuchAlgorithmException {
         MessageDigest md = MessageDigest.getInstance("SHA-256");
         return md.digest(data);
     }
@@ -188,7 +188,7 @@ public class SrpAuthentication {
      * @param length the desired length of the resulting byte array.
      * @return a byte array of the given length representing the unsigned BigInteger.
      */
-    public static byte[] toUnsigned(BigInteger bigInteger, int length) {
+    private static byte[] toUnsigned(BigInteger bigInteger, int length) {
         byte[] raw = bigInteger.toByteArray();
         if (raw.length == length && raw[0] != 0) {
             return raw;
@@ -213,7 +213,7 @@ public class SrpAuthentication {
         return padded;
     }
 
-    public static byte[] concat(byte[]... parts) {
+    private static byte[] concat(byte[]... parts) {
         int total = Arrays.stream(parts).mapToInt(p -> p.length).sum();
         byte[] out = new byte[total];
         int pos = 0;
