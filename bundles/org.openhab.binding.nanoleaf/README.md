@@ -11,7 +11,8 @@ The binding uses the [Nanoleaf OpenAPI](https://forum.nanoleaf.me/docs/openapi),
 
 ## Supported Things
 
-Nanoleaf provides a range of devices, some connected via WiFi while others use the new Thread technology. This binding only supports devices that are connected through WiFi.
+Nanoleaf provides a range of devices, some connected via WiFi while others use the new Thread technology.
+This binding only supports devices that are connected through Wi-Fi.
 
 Currently Nanoleaf's "Light Panels" and "Canvas/Shapes" devices are supported.
 
@@ -167,7 +168,7 @@ A lightpanel Thing has the following channels:
 | Channel             | Type      | Description                                                                                                           | Read Only |
 |---------------------|-----------|-----------------------------------------------------------------------------------------------------------------------|-----------|
 | color               | Color     | Color of the individual light panel                                                                                   | No        |
-| tap                 | Trigger   | [Canvas / Shapes Only] Sends gesture events. SHORT_PRESSED, LONG_PRESSED, and DOUBLE_PRESSED events are supported. | Yes       |
+| tap                 | Trigger   | [Canvas / Shapes Only] Sends gesture events. SHORT_PRESSED, LONG_PRESSED, and DOUBLE_PRESSED events are supported.    | Yes       |
 
 The color channels support full color control with hue, saturation and brightness values.
 For example, brightness of _all_ panels at once can be controlled by defining a dimmer item for the color channel of the _controller thing_.

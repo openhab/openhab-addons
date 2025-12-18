@@ -152,7 +152,7 @@ Bridge neohub:neohub:myhubname "Heatmiser NeoHub" [ hostName="192.168.1.123", po
 
 ```java
 Number:Temperature Upstairs_RoomTemperature "Room Temperature" { channel="neohub:neostat:myhubname:myupstairs:roomTemperature" }
-Number:Temperature Upstairs_TargetTemperature "Target Temperature [%.1f %unit%]" { channel="neohub:neostat:myhubname:myupstairs:targetTemperature" }
+Number:Temperature Upstairs_TargetTemperature "Target Temperature" { channel="neohub:neostat:myhubname:myupstairs:targetTemperature" }
 Number:Temperature Upstairs_FloorTemperature "Floor Temperature" { channel="neohub:neostat:myhubname:myupstairs:floorTemperature" }
 String Upstairs_ThermostatOutputState "Heating State" { channel="neohub:neostat:myhubname:myupstairs:thermostatOutputState" }
 Switch Upstairs_OccupancyModePresent "Occupancy Mode Present" { channel="neohub:neostat:myhubname:myupstairs:myupstairs:occupancyModePresent" }
