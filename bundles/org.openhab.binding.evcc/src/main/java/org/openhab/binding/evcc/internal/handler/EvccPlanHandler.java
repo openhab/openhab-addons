@@ -156,9 +156,8 @@ public class EvccPlanHandler extends EvccBaseThingHandler {
         // Delete last semicolon
         if (!weekDays.isEmpty()) {
             weekDays.setLength(weekDays.length() - 1);
-        } else {
-            state.remove(JSON_KEY_WEEKDAYS);
         }
+
         // Update the weekdays property to a localized string
         state.addProperty(JSON_KEY_WEEKDAYS, weekDays.toString());
     }
@@ -260,7 +259,7 @@ public class EvccPlanHandler extends EvccBaseThingHandler {
                             DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZ"));
                     time = odt.toInstant().toString();
                 } catch (DateTimeParseException ignored) {
-                    ; // time is not null and is not matching the time formats
+                    return false; // time is not null and is not matching the time formats
                 }
             }
         } else {
