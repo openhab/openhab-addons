@@ -41,7 +41,6 @@ public class ICloudApiAuthenticationException extends ICloudApiResponseException
     }
 
     /**
-     * TODO: Enum
      *
      * @return statusCode HTTP status code of failed request.
      */
