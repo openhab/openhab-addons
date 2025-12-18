@@ -41,6 +41,7 @@
 /bundles/org.openhab.binding.bambulab/ @magx2
 /bundles/org.openhab.binding.benqprojector/ @mlobstein
 /bundles/org.openhab.binding.bigassfan/ @mhilbush
+/bundles/org.openhab.binding.bluelink/ @marcusb
 /bundles/org.openhab.binding.bluetooth/ @cdjackson @cpmeister
 /bundles/org.openhab.binding.bluetooth.airthings/ @paulianttila
 /bundles/org.openhab.binding.bluetooth.am43/ @cpmeister
