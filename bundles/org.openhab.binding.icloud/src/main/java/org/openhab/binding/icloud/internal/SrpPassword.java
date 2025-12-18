@@ -23,7 +23,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- *
  * Helper class to take a raw password, and prepare it for use in SRP Authentication.
  * 
  * @author Simon Spielmann - Initial contribution
