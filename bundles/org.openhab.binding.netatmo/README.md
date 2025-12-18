@@ -44,7 +44,7 @@ The Account bridge has the following configuration elements:
 
 | Parameter         | Type   | Required | Description                                                                                                         |
 | ----------------- | ------ | -------- | ------------------------------------------------------------------------------------------------------------------- |
-| clientId          | String | Yes      | Client ID provided for the application you created on <http://dev.netatmo.com/createapp>                           |
+| clientId          | String | Yes      | Client ID provided for the application you created on <http://dev.netatmo.com/createapp>                            |
 | clientSecret      | String | Yes      | Client Secret provided for the application you created                                                              |
 | webHookUrl        | String | No       | Protocol, public IP and port to access openHAB server from internet                                                 |
 | webHookPostfix    | String | No       | String appended to the generated webhook address (should start with "/")                                            |

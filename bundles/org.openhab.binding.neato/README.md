@@ -15,7 +15,8 @@ Supported Thing types
 
 A bridge is required to connect to your Neato cloud account.
 
-All "Connected" type vacuum cleaners should be supported by this binding since they are supported by the Neato API. As of today, it has been verified with Neato Connected and Neato D7 vacuum cleaners.
+All "Connected" type vacuum cleaners should be supported by this binding since they are supported by the Neato API.
+As of today, it has been verified with Neato Connected and Neato D7 vacuum cleaners.
 
 ## Discovery
 

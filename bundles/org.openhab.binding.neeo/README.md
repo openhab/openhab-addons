@@ -70,7 +70,8 @@ When you add the NEEO Brain, the Rooms on the Brain will be auto-discovered and 
 When you add a Room, all Devices should be auto-discovered and placed in the Inbox.
 If you remove any discovered Thing either from the Inbox or from the added Things, simply re-trigger a NEEO binding scan to rediscover it.
 
-If the Brain is both wired and wireless, it will NOT be discovered twice (only once). Which interface is discovered depends on the timing of the beacon discovery message (first one wins).
+If the Brain is both wired and wireless, it will NOT be discovered twice (only once).
+Which interface is discovered depends on the timing of the beacon discovery message (first one wins).
 If you discovered the wired interface first but want to use the wireless (or vice versa), add the Brain and then modify its configuration to the IP address you want to use.
 
 If the Brain is not discovered, here is list of the most common issues:

@@ -6149,7 +6149,7 @@
 	<channel-type id="f1x45-48073" advanced="true">
 		<item-type>Switch</item-type>
 		<label>FLM Cooling</label>
-		<description>FLM Cooling Activated</description>
+		<description>FLM cooling activated</description>
 		<state readOnly="false"></state>
 	</channel-type>
 	<channel-type id="f1x45-48074" advanced="true">

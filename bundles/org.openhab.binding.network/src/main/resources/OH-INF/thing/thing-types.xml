@@ -200,7 +200,7 @@
 			</parameter>
 			<parameter name="maxTimeout" type="integer">
 				<label>Timeouts</label>
-				<description>Number of timeout that can happen before the device is stated as offline.</description>
+				<description>Number of timeouts that can happen before the device is stated as offline.</description>
 				<default>3</default>
 				<advanced>true</advanced>
 			</parameter>

@@ -114,7 +114,7 @@ Unfortunately the Nuki Bridge is not reporting any transition states (e.g. for L
 | 1     | Deactivated         |
 | 2     | Closed              |
 | 3     | Open                |
-| 4     | Door state unknown |
+| 4     | Door state unknown  |
 | 5     | Calibrating         |
 | 16    | Uncalibrated        |
 | 240   | Removed             |

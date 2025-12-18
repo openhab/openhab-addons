@@ -11,7 +11,7 @@ The binding supports the following types of Thing:
 
 | Thing Type           | Description                                                                               |
 |----------------------|-------------------------------------------------------------------------------------------|
-| NeoHub               | The Heatmiser NeoHub bridge used to communicate with NeoStat and NeoPlug devices |
+| NeoHub               | The Heatmiser NeoHub bridge used to communicate with NeoStat and NeoPlug devices          |
 | NeoStat              | Heatmiser Neostat Smart Thermostat                                                        |
 | NeoPlug              | Heatmiser NeoPlug Smart Plug                                                              |
 | NeoContact           | Heatmiser Contact Sensor, wireless door or window contact                                 |
@@ -37,8 +37,8 @@ Before the binding can communicate with the hub, the following Configuration Par
 
 | Configuration Parameter    | Description                                                                                              |
 |----------------------------|----------------------------------------------------------------------------------------------------------|
-| hostName                   | Host name (IP address) of the NeoHub (e.g., 192.168.1.123)                                              |
-| useWebSocket<sup>1)</sup>  | Use secure WebSocket to connect to the NeoHub (e.g., `true`)                                            |
+| hostName                   | Host name (IP address) of the NeoHub (e.g., 192.168.1.123)                                               |
+| useWebSocket<sup>1)</sup>  | Use secure WebSocket to connect to the NeoHub (e.g., `true`)                                             |
 | apiToken<sup>1)</sup>      | API Access Token for secure connection to hub. Create the token in the Heatmiser mobile App              |
 | pollingInterval            | Time (seconds) between polling requests to the NeoHub (Min=4, Max=60, Default=60)                        |
 | socketTimeout              | Time (seconds) to allow for TCP socket connections to the hub to succeed (Min=4, Max=20, Default=5)      |

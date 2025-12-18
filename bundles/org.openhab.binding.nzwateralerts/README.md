@@ -69,5 +69,5 @@ Check with your regional council for further details.
 At present the supported cities were implemented by scraping the web page on the respective website that contains the restriction information.
 
 **No councils have this data in a programmatic format easily accessible to software.**
-Many don't have pages that contain the current alert level and only offer alerts via Twitter or text.
+Many don't have pages that contain the current alert level and only offer alerts via X or text.
 If you can convince your council to always have a page displaying the current alert level (even if none is in effect) then I can attempt to parse the page for inclusion in this Binding.
