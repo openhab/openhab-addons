@@ -49,26 +49,9 @@ public class SrpAuthentication {
 
     private static final BigInteger N = new BigInteger(
             "21766174458617435773191008891802753781907668374255538511144643224689886235383840957210909013086056401571399717235807266581649606472148410291413364152197364477180887395655483738115072677402235101762521901569820740293149529620419333266262073471054548368736039519702486226506248861060256971802984953561121442680157668000761429988222457090413873973970171927093992114751765168063614761119615476233422096442783117971236371647333871414335895773474667308967050807005509320424799678417036867928316761272274230314067548291133582479583061439577559347101961771406173684378522703483495337037655006751328447510550299250924469288819");;
-    // private final static BigInteger N = SRP6StandardGroups.rfc5054_2048.getN();
-    // private final static BigInteger g = SRP6StandardGroups.rfc5054_2048.getG();
     private final static BigInteger g = BigInteger.valueOf(2l);
 
     private String I; // username
-    /*
-     * public static final BigInteger k = computeK();
-     *
-     * public BigInteger A; // client SRP public key
-     * public BigInteger a; // client SRP private ephemeral
-     * public BigInteger B; // server SRP public key
-     * public BigInteger S; // shared secret
-     * public byte[] K; // Apple SRP style session key = H(S)
-     * public byte[] M1; // client proof
-     * public BigInteger u; // scrambling parameter
-     * public BigInteger x; // SRP private key derived from password
-     *
-     * private byte[] s; // server salt
-     * private byte[] M2; // expected accessory server proof
-     */
 
     public SrpAuthentication(String accountName, String passwordRaw, List<Pair<String, String>> sessionHeaders) {
         this.I = accountName;
@@ -183,83 +166,6 @@ public class SrpAuthentication {
                 sessionHeaders);
     }
 
-    /**
-     * Perform SRP authentication
-     */
-    /*
-     * public void authenticate(String authEndpoint, ICloudSession httpClient) throws Exception {
-     * // Salt
-     * byte[] salt = new byte[16];
-     * new Random().nextBytes(salt);
-     *
-     * // Step 1: Initialize SRP client
-     * BigInteger N = new BigInteger(NG_2048_N, 16);
-     * BigInteger g = new BigInteger(NG_2048_G, 16);
-     *
-     * SRP6Client srpClient = new SRP6Client();
-     * srpClient.init(N, g, new SHA256Digest(), new SecureRandom());
-     *
-     * // Generate client public key (A)
-     * BigInteger A = srpClient.generateClientCredentials(salt,
-     * b64Decode(b64Encode(accountName.getBytes(StandardCharsets.UTF_8))),
-     * b64Decode(b64Encode(passwordRaw.getBytes(StandardCharsets.UTF_8))));
-     *
-     * // Prepare initial authentication request
-     * List<Pair<String, String>> initData = new ArrayList<>(
-     * List.of(Pair.of("a", b64Encode(A.toByteArray())), Pair.of("protocols", "s2k, s2k_fo")));
-     *
-     * // POST to signin/init endpoint
-     * String initResponse = httpClient.post(authEndpoint + "/signin/init", JsonUtils.toJson(initData),
-     * sessionHeaders);
-     *
-     * // Parse response
-     * JsonObject initBody = parseJsonResponse(initResponse);
-     *
-     * // check: byte[] salt = b64Decode(initBody.get("salt").getAsString());
-     * byte[] serverPublicKeyBytes = b64Decode(initBody.get("b").getAsString());
-     * String c = initBody.get("c").getAsString();
-     * int iterations = initBody.get("iteration").getAsInt();
-     * int keyLength = 32;
-     *
-     * // Step 2: Process challenge - encode the password
-     * byte[] encodedPassword = encodePassword(salt, iterations, keyLength);
-     *
-     * BigInteger B = new BigInteger(1, serverPublicKeyBytes);
-     *
-     * // Calculate M1 and get session key
-     * byte[] m1 = srpClient.calculateClientProof(accountName, encodedPassword, salt, B);
-     * byte[] sessionKey = srpClient.calculateSessionKey(N, g, new SHA256Digest());
-     *
-     * // Calculate M2 from session key
-     * SHA256Digest sha256Digest = new SHA256Digest();
-     * sha256Digest.update(sessionKey, 0, sessionKey.length);
-     * byte[] m2 = new byte[sha256Digest.getDigestSize()];
-     * sha256Digest.doFinal(m2, 0);
-     *
-     * // Step 3: Send complete authentication
-     * Map<String, Object> completeData = new HashMap<>();
-     * completeData.put("accountName", accountName);
-     * completeData.put("c", c);
-     * completeData.put("m1",
-     *
-     * b64Encode(m1));
-     * completeData.put("m2", b64Encode(m2));
-     * completeData.put("rememberMe", true);
-     * completeData.put("trustTokens", new String[] {});
-     *
-     * try
-     *
-     * {
-     * String completeResponse = httpClient.post(authEndpoint + "/signin/complete", completeData, sessionHeaders);
-     * // Handle response
-     * } catch (PyiCloud2FARequiredException e) {
-     * System.out.println("2FA required to complete authentication.");
-     * throw e;
-     * } catch (PyiCloudAPIResponseException e) {
-     * throw new PyiCloudFailedLoginException("Invalid email/password combination.", e);
-     * }
-     * }
-     */
     /**
      * Parse JSON response using Gson
      */

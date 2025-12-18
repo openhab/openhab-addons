@@ -54,22 +54,6 @@ public class SrpPassword {
         this.keyLength = keyLength;
     }
 
-    /*
-     * public byte[] encode() {
-     * if (salt == null || iterations == null || keyLength == null) {
-     * throw new IllegalStateException("Encrypt info not set");
-     * }
-     * try {
-     * String pseudoPassword = new String(passwordHash, StandardCharsets.ISO_8859_1);
-     * PBEKeySpec spec = new PBEKeySpec(pseudoPassword.toCharArray(), salt, iterations, keyLength * 8);
-     * SecretKeyFactory skf = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
-     * return skf.generateSecret(spec).getEncoded();
-     * } catch (Exception e) {
-     * throw new RuntimeException("Error during PBKDF2 encoding", e);
-     * }
-     * }
-     */
-
     public byte[] encode() {
         byte[] salt = this.salt;
         Integer iterations = this.iterations;
