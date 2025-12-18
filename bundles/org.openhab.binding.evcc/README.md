@@ -50,6 +50,7 @@ Nevertheless, you can add them manually via things file.
 
 The Site Thing represents the overall site data of your evcc instance.
 No configuration parameters are required.
+Renamed property siteTitle -> site-title
 
 ### Thing Battery
 
@@ -70,17 +71,29 @@ Needs the index of the loadpoint as configuration parameter.
 
 The Vehicle Thing represents a vehicle configured in your evcc instance.
 Needs the database id of the vehicle as configuration parameter.
+Renamed property id -> vehicle-id and renamed parameter id -> vehicle-id, you may need to parametrize you thing.
 
 ### Thing Plan
 
 The Plan Thing represents a charging plan for a vehicle configured in your evcc instance.
 Needs the index of the plan and the database id of the vehicle as configuration parameters.
-The index 0 is always the one-time plan, higher indices are repeating plans.
+The index 0 is always the One-time plan, higher indices are repeating plans.
 
 Any changes made to the plan channels will not be sent to evcc automatically, but cached.
 If you want to update the plan, you have to use the update plan channel of the thing to send it to evcc.
 **Updating the plan will only work when setting the update plan channel to state ON**.
+Afterwards, the update plan channel will be automatically reset to state OFF.
 The weekdays will be localized based on the language settings of your openHAB instance.
+
+Here is an example to update a One-time charging plan via DLSRule script:
+
+```DSLRule
+Repeating_charging_plan_1_for_BMW_iX3_Plan_Time.sendCommand("2025-12-19T06:00:00.000Z");
+Repeating_charging_plan_1_for_BMW_iX3_Plan_SoC.sendCommand(85);
+Repeating_charging_plan_1_for_BMW_iX3_Precondition_Time.sendCommand(1800);
+Repeating_charging_plan_1_for_BMW_iX3_Update_Plan.sendCommand("ON");
+```
+
 
 Here is an example to update a repeating charging plan via DLSRule script:
 
@@ -118,7 +131,7 @@ Bridge evcc:server:demo-server "Demo" [scheme="https", host="demo.evcc.io", port
     Thing vehicle demo-vehicle1 "Vehicle - evcc Demo Vehicle 1"[vehicle-id="vehicle_1"]
     ..
     // You can define as many Plan things as you have plans for your vehicle configured
-    Thing plan demo-one-time-plan-for-vehicle1 "One-Time plan for vehicle 1"[index=0, vehicle-id="vehicle_1"]
+    Thing plan demo-one-time-plan-for-vehicle1 "One-time plan for vehicle 1"[index=0, vehicle-id="vehicle_1"]
     Thing plan demo-repeating-plan-1-for-vehicle1 "Repeating plan 1 for vehicle 1"[index=1, vehicle-id="vehicle_1"]..
     ..
 }
