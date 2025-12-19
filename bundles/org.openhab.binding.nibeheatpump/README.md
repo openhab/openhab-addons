@@ -108,10 +108,6 @@ Usage example:
 nibegw -v -d /dev/ttyUSB0 -a 192.168.1.10
 ```
 
-## Binding Configuration
-
-No binding configuration is required.
-
 ## Thing Configuration
 
 Things can be fully configured via the UI.
