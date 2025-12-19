@@ -200,6 +200,8 @@ public class AhaWasteCollectionHandler extends BaseThingHandler {
                 return WasteType.PAPER;
             case AhaWasteCollectionBindingConstants.GENERAL_WASTE:
                 return WasteType.GENERAL_WASTE;
+            case AhaWasteCollectionBindingConstants.CHRISTMAS_TREE:
+                return WasteType.CHRISTMAS_TREES;
             default:
                 throw new IllegalArgumentException("Unknown channel type: " + channelId);
         }
