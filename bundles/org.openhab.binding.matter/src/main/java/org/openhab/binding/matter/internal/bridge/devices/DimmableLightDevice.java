@@ -62,6 +62,7 @@ public class DimmableLightDevice extends BaseDevice {
         PercentType level = Optional.ofNullable(primaryItem.getStateAs(PercentType.class))
                 .orElseGet(() -> new PercentType(0));
         lastOnOffState = level.intValue() > 0 ? OnOffType.ON : OnOffType.OFF;
+        lastLevel = ValueUtils.percentToLevel(level);
         attributeMap.put(LevelControlCluster.CLUSTER_PREFIX + "." + LevelControlCluster.ATTRIBUTE_CURRENT_LEVEL,
                 Math.max(1, ValueUtils.percentToLevel(level)));
         attributeMap.put(OnOffCluster.CLUSTER_PREFIX + "." + OnOffCluster.ATTRIBUTE_ON_OFF, level.intValue() > 0);
@@ -116,8 +117,9 @@ public class DimmableLightDevice extends BaseDevice {
         } else if (state instanceof OnOffType onOffType) {
             states.add(new AttributeState(OnOffCluster.CLUSTER_PREFIX, OnOffCluster.ATTRIBUTE_ON_OFF,
                     onOffType == OnOffType.ON));
+            int level = onOffType == OnOffType.ON ? (lastLevel == 0 ? 1 : lastLevel) : 0;
             states.add(new AttributeState(LevelControlCluster.CLUSTER_PREFIX,
-                    LevelControlCluster.ATTRIBUTE_CURRENT_LEVEL, onOffType == OnOffType.ON ? lastLevel : 0));
+                    LevelControlCluster.ATTRIBUTE_CURRENT_LEVEL, level));
             lastOnOffState = onOffType;
         }
         if (!states.isEmpty()) {
@@ -135,7 +137,7 @@ public class DimmableLightDevice extends BaseDevice {
     }
 
     private void updateLevel(PercentType level) {
-        lastLevel = level.intValue();
+        lastLevel = ValueUtils.percentToLevel(level);
         if (primaryItem instanceof GroupItem groupItem) {
             groupItem.send(level, MATTER_SOURCE);
         } else {
