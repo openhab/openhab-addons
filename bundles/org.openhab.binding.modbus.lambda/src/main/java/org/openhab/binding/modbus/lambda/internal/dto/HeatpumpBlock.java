@@ -42,4 +42,6 @@ public class HeatpumpBlock {
     public int heatpumpRelaisState;
     public long heatpumpVdAE;
     public long heatpumpVdAQ;
+    public long heatpumpVdAEswap;
+    public long heatpumpVdAQswap;
 }

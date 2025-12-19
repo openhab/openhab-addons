@@ -125,6 +125,8 @@ This group contains general operational information about the heat pump itself.
 | heat-pump-relais-state         | Number:Temperature        | true      | Heatpump Relais State for 2nd heating stage                             |
 | heat-pump-vdae                 | Number:Energy             | true      | Accumulated electrical energy consumption of compressor unit            |
 | heat-pump-vdaq                 | Number:Energy             | true      | Accumulated thermal energy output of compressor unit                    |
+| heat-pump-vdae-swap            | Number:Energy             | true      | Accumulated electrical energy consumption of compressor unit (DWord swapped) |
+| heat-pump-vdaq-swap            | Number:Energy             | true      | Accumulated thermal energy output of compressor unit (DWord swapped)         |
 
 ### Boiler Group
 
