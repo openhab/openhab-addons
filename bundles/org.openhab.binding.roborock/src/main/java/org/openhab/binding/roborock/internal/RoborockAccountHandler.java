@@ -215,6 +215,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
 
     private void initAPI() {
         if (disposed) {
+            logger.debug("Handler disposed, aborting API init");
             return;
         }
         RoborockAccountConfiguration localConfig = config;
@@ -308,6 +309,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
 
     private void establishMQTTConnection() {
         if (disposed) {
+            logger.debug("Handler disposed, aborting MQTT connection");
             return;
         }
         if (token.isEmpty() || rriot.r == null || rriot.r.m.isEmpty() || rriot.k.isEmpty() || rriot.s.isEmpty()
@@ -367,6 +369,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
     @Override
     public void connectComplete(boolean reconnect, @Nullable String serverURI) {
         if (disposed) {
+            logger.debug("Handler disposed, ignoring MQTT connectComplete");
             return;
         }
         logger.debug("MQTT connection established. Reconnect: {}, Server URI: {}", reconnect, serverURI);
@@ -389,6 +392,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
     @Override
     public void connectionLost(@Nullable Throwable cause) {
         if (disposed) {
+            logger.debug("Handler disposed, ignoring MQTT connectionLost");
             return;
         }
         // Additional logic can be placed here if specific actions are needed on disconnect
@@ -397,6 +401,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
     @Override
     public void messageArrived(@Nullable String topic, @Nullable MqttMessage message) throws Exception {
         if (disposed) {
+            logger.debug("Handler disposed, ignoring MQTT messageArrived");
             return;
         }
         String localTopic = topic;
@@ -532,6 +537,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
 
     public void onEventStreamFailure(Throwable error) {
         if (disposed) {
+            logger.debug("Handler disposed, ignoring event stream failure");
             return;
         }
         logger.debug("Device connection failed, reconnecting", error);
