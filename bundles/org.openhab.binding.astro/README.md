@@ -28,6 +28,27 @@ Optionally, a refresh `interval` (in seconds) can be defined to also calculate p
 Season calculation can be switched from equinox based calculation to meteorological based (starting on the first day of the given month).
 This is done by setting `useMeteorologicalSeason` to true in the advanced setting of the sun.
 
+## Provided icon set
+
+This binding has its own IconProvider and makes available the following list of icons
+
+| Icon Name                   | Dynamic | Illustration |
+|-----------------------------|---------|--------------|
+| oh:astro:zodiac             |   Yes   | ![Zodiac](doc/images/zodiac.svg) |
+| oh:astro:zodiac-aquarius    |   Yes   | ![Aquarius](doc/images/zodiac-aquarius.svg) |
+| oh:astro:zodiac-aries       |   Yes   | ![Aries](doc/images/zodiac-aries.svg) |
+| oh:astro:zodiac-cancer      |   Yes   | ![Cancer](doc/images/zodiac-cancer.svg) |
+| oh:astro:zodiac-capricorn   |   Yes   | ![Capricorn](doc/images/zodiac-capricorn.svg) |
+| oh:astro:zodiac-gemini      |   Yes   | ![Gemini](doc/images/zodiac-gemini.svg) |
+| oh:astro:zodiac-leo         |   Yes   | ![Leo](doc/images/zodiac-leo.svg) |
+| oh:astro:zodiac-libra       |   Yes   | ![Libra](doc/images/zodiac-libra.svg) |
+| oh:astro:zodiac-pisces      |   Yes   | ![Pisces](doc/images/zodiac-pisces.svg) |
+| oh:astro:zodiac-sagittarius |   Yes   | ![Sagittarius](doc/images/zodiac-sagittarius.svg) |
+| oh:astro:zodiac-scorpio     |   Yes   | ![Scorpio](doc/images/zodiac-scorpio.svg) |
+| oh:astro:zodiac-taurus      |   Yes   | ![Taurus](doc/images/zodiac-taurus.svg) |
+| oh:astro:zodiac-virgo       |   Yes   | ![Virgo](doc/images/zodiac-virgo.svg) |
+
+
 ## Channels
 
 - **thing** `sun`
