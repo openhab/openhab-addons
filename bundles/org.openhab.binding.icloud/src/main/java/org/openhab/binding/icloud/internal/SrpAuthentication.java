@@ -183,7 +183,7 @@ public class SrpAuthentication {
         requestBody.put("m1", b64Encode(M1));
         requestBody.put("m2", b64Encode(M2));
         requestBody.put("rememberMe", true);
-        requestBody.put("trustTokens", new String[] {});
+        requestBody.put("trustTokens", new String[] { httpClient.getTrustToken() });
         String completeResponse = httpClient.post(authEndpoint + "/signin/complete?isRememberMeEnabled=true",
                 JsonUtils.toJson(requestBody), sessionHeaders);
     }
