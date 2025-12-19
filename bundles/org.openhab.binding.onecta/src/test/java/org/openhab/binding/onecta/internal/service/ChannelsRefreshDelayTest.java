@@ -13,7 +13,7 @@
 package org.openhab.binding.onecta.internal.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.openhab.binding.onecta.internal.OnectaWaterTankConstants.*;
+import static org.openhab.binding.onecta.internal.constants.OnectaWaterTankConstants.*;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;

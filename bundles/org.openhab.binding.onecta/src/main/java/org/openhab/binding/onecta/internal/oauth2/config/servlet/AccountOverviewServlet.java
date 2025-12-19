@@ -21,7 +21,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.onecta.internal.OnectaBridgeConstants;
+import org.openhab.binding.onecta.internal.constants.OnectaBridgeConstants;
 import org.openhab.core.config.discovery.inbox.Inbox;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingRegistry;

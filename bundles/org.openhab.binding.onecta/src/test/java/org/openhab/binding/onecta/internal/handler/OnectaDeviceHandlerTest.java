@@ -15,8 +15,8 @@ package org.openhab.binding.onecta.internal.handler;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
-import static org.openhab.binding.onecta.internal.OnectaClimateControlConstants.*;
-import static org.openhab.binding.onecta.internal.OnectaWaterTankConstants.*;
+import static org.openhab.binding.onecta.internal.constants.OnectaClimateControlConstants.*;
+import static org.openhab.binding.onecta.internal.constants.OnectaWaterTankConstants.*;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;

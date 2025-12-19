@@ -13,7 +13,7 @@
 package org.openhab.binding.onecta.internal.handler;
 
 import static org.mockito.Mockito.*;
-import static org.openhab.binding.onecta.internal.OnectaBridgeConstants.*;
+import static org.openhab.binding.onecta.internal.constants.OnectaBridgeConstants.*;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;

@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.onecta.internal.api;
 
-import static org.openhab.binding.onecta.internal.OnectaBridgeConstants.OAUTH2_SERVICE_HANDLE;
+import static org.openhab.binding.onecta.internal.constants.OnectaBridgeConstants.OAUTH2_SERVICE_HANDLE;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;

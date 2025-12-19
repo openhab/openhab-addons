@@ -12,10 +12,10 @@
  */
 package org.openhab.binding.onecta.internal.handler;
 
-import static org.openhab.binding.onecta.internal.OnectaClimateControlConstants.*;
-import static org.openhab.binding.onecta.internal.OnectaClimateControlConstants.CHANNEL_AC_ENERGY_HEATING_CURRENT_DAY;
-import static org.openhab.binding.onecta.internal.OnectaClimateControlConstants.CHANNEL_AC_ENERGY_HEATING_CURRENT_YEAR;
-import static org.openhab.binding.onecta.internal.OnectaWaterTankConstants.*;
+import static org.openhab.binding.onecta.internal.constants.OnectaClimateControlConstants.*;
+import static org.openhab.binding.onecta.internal.constants.OnectaClimateControlConstants.CHANNEL_AC_ENERGY_HEATING_CURRENT_DAY;
+import static org.openhab.binding.onecta.internal.constants.OnectaClimateControlConstants.CHANNEL_AC_ENERGY_HEATING_CURRENT_YEAR;
+import static org.openhab.binding.onecta.internal.constants.OnectaWaterTankConstants.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;

@@ -13,7 +13,7 @@
 package org.openhab.binding.onecta.internal;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.openhab.binding.onecta.internal.OnectaBridgeConstants.*;
+import static org.openhab.binding.onecta.internal.constants.OnectaBridgeConstants.*;
 
 import java.lang.reflect.Field;
 

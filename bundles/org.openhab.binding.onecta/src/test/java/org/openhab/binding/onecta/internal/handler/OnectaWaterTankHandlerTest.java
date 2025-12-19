@@ -15,8 +15,8 @@ package org.openhab.binding.onecta.internal.handler;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
-import static org.openhab.binding.onecta.internal.OnectaClimateControlConstants.CHANNEL_AC_OPERATIONMODE;
-import static org.openhab.binding.onecta.internal.OnectaWaterTankConstants.*;
+import static org.openhab.binding.onecta.internal.constants.OnectaClimateControlConstants.CHANNEL_AC_OPERATIONMODE;
+import static org.openhab.binding.onecta.internal.constants.OnectaWaterTankConstants.*;
 
 import java.lang.reflect.Field;
 import java.util.Map;

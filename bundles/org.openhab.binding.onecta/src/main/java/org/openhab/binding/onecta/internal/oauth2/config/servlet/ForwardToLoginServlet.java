@@ -19,7 +19,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.onecta.internal.OnectaBridgeConstants;
+import org.openhab.binding.onecta.internal.constants.OnectaBridgeConstants;
 import org.openhab.binding.onecta.internal.oauth2.auth.OAuthException;
 import org.openhab.binding.onecta.internal.oauth2.config.OAuthAuthorizationHandler;
 import org.openhab.binding.onecta.internal.oauth2.config.exception.NoOngoingAuthorizationException;

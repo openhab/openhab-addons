@@ -12,8 +12,8 @@
  */
 package org.openhab.binding.onecta.internal.service;
 
-import static org.openhab.binding.onecta.internal.OnectaBridgeConstants.*;
 import static org.openhab.binding.onecta.internal.api.Enums.ManagementPoint;
+import static org.openhab.binding.onecta.internal.constants.OnectaBridgeConstants.*;
 
 import java.util.*;
 import java.util.concurrent.ScheduledFuture;

@@ -15,7 +15,7 @@ package org.openhab.binding.onecta.internal.handler;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
-import static org.openhab.binding.onecta.internal.OnectaGatewayConstants.*;
+import static org.openhab.binding.onecta.internal.constants.OnectaGatewayConstants.*;
 
 import java.lang.reflect.Field;
 import java.util.Map;
