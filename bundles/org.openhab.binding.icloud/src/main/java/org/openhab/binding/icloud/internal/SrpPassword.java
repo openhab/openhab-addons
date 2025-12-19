@@ -21,9 +21,8 @@ import org.bouncycastle.crypto.generators.PKCS5S2ParametersGenerator;
 import org.bouncycastle.crypto.params.KeyParameter;
 
 /**
+ * SrpPassword represents a password for SRP authentication.
  *
- * TODO
- * 
  * @author Simon Spielmann - Initial contribution
  */
 public class SrpPassword {
@@ -32,10 +31,21 @@ public class SrpPassword {
     private Integer iterations;
     private Integer keyLength;
 
+    /**
+     * Constructor for SrpPassword.
+     *
+     * @param password the password as a String
+     */
     public SrpPassword(String password) {
         this.passwordHash = sha256(password);
     }
 
+    /**
+     * Calculates the SHA-256 hash of the input string.
+     *
+     * @param input the input string
+     * @return
+     */
     private byte[] sha256(String input) {
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
@@ -45,28 +55,24 @@ public class SrpPassword {
         }
     }
 
+    /**
+     * Sets the encryption information.
+     *
+     * @param salt The salt
+     * @param iterations Number of iterations
+     * @param keyLength Key length
+     */
     public void setEncryptInfo(byte[] salt, int iterations, int keyLength) {
         this.salt = salt;
         this.iterations = iterations;
         this.keyLength = keyLength;
     }
 
-    /*
-     * public byte[] encode() {
-     * if (salt == null || iterations == null || keyLength == null) {
-     * throw new IllegalStateException("Encrypt info not set");
-     * }
-     * try {
-     * String pseudoPassword = new String(passwordHash, StandardCharsets.ISO_8859_1);
-     * PBEKeySpec spec = new PBEKeySpec(pseudoPassword.toCharArray(), salt, iterations, keyLength * 8);
-     * SecretKeyFactory skf = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
-     * return skf.generateSecret(spec).getEncoded();
-     * } catch (Exception e) {
-     * throw new RuntimeException("Error during PBKDF2 encoding", e);
-     * }
-     * }
+    /**
+     * Encodes the password using PBKDF2 with the provided encryption information.
+     *
+     * @return The encoded password as a byte array
      */
-
     public byte[] encode() {
         if (salt == null || iterations == null || keyLength == null) {
             throw new IllegalStateException("Encrypt info not set");
@@ -80,14 +86,5 @@ public class SrpPassword {
         } catch (Exception e) {
             throw new RuntimeException("Error during PBKDF2 encoding", e);
         }
-    }
-
-    // Helper: Convert byte[] to char[] for PBEKeySpec
-    private char[] toCharArray(byte[] bytes) {
-        char[] chars = new char[bytes.length];
-        for (int i = 0; i < bytes.length; i++) {
-            chars[i] = (char) (bytes[i] & 0xFF);
-        }
-        return chars;
     }
 }

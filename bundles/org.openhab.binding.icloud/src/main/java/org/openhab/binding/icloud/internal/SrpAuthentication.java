@@ -27,66 +27,53 @@ import org.bouncycastle.crypto.CryptoException;
 import org.bouncycastle.crypto.Digest;
 import org.bouncycastle.crypto.agreement.srp.SRP6Util;
 import org.bouncycastle.crypto.digests.SHA256Digest;
-import org.bouncycastle.util.BigIntegers;
 import org.bouncycastle.util.encoders.Base64;
 import org.eclipse.jdt.annotation.NonNull;
 import org.openhab.binding.icloud.internal.utilities.JsonUtils;
 import org.openhab.binding.icloud.internal.utilities.Pair;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
 /**
  *
- * TODO
+ * SrpAuthentication implements the SRP authentication for iCloud.
  *
  * @author Simon Spielmann - Initial contribution
  */
 public class SrpAuthentication {
 
-    private final Logger logger = LoggerFactory.getLogger(SrpAuthentication.class);
-    private final @NonNull String passwordRaw;
+    private final @NonNull String password;
     private final List<Pair<@NonNull String, @NonNull String>> sessionHeaders;
 
+    // N and g values from RFC 5054 - 2048 bit group
     private static final BigInteger N = new BigInteger(
             "21766174458617435773191008891802753781907668374255538511144643224689886235383840957210909013086056401571399717235807266581649606472148410291413364152197364477180887395655483738115072677402235101762521901569820740293149529620419333266262073471054548368736039519702486226506248861060256971802984953561121442680157668000761429988222457090413873973970171927093992114751765168063614761119615476233422096442783117971236371647333871414335895773474667308967050807005509320424799678417036867928316761272274230314067548291133582479583061439577559347101961771406173684378522703483495337037655006751328447510550299250924469288819");;
-    // private final static BigInteger N = SRP6StandardGroups.rfc5054_2048.getN();
-    // private final static BigInteger g = SRP6StandardGroups.rfc5054_2048.getG();
     private final static BigInteger g = BigInteger.valueOf(2l);
 
-    private String I; // username
-    /*
-     * public static final BigInteger k = computeK();
-     *
-     * public BigInteger A; // client SRP public key
-     * public BigInteger a; // client SRP private ephemeral
-     * public BigInteger B; // server SRP public key
-     * public BigInteger S; // shared secret
-     * public byte[] K; // Apple SRP style session key = H(S)
-     * public byte[] M1; // client proof
-     * public BigInteger u; // scrambling parameter
-     * public BigInteger x; // SRP private key derived from password
-     *
-     * private byte[] s; // server salt
-     * private byte[] M2; // expected accessory server proof
-     */
+    // Username
+    private String I;
 
-    public SrpAuthentication(String accountName, String passwordRaw,
+    /**
+     * Implements SRP authentication according to Apple's specifications.
+     *
+     * @param accountName the account name (username)
+     * @param password user password
+     * @param sessionHeaders list of session headers
+     */
+    public SrpAuthentication(String accountName, String password,
             List<Pair<@NonNull String, @NonNull String>> sessionHeaders) {
         this.I = accountName;
-        this.passwordRaw = passwordRaw;
+        this.password = password;
         this.sessionHeaders = sessionHeaders;
     }
 
     /**
-     * Base64 encode
+     * Convert BigInteger to byte array without leading zero byte
+     *
+     * @param data BigInteger to convert
+     * @return byte array representation of BigInteger without leading zero byte
      */
-    private String b64Encode(BigInteger data) {
-        return b64Encode(toByteArray(data));
-    }
-
     private byte[] toByteArray(BigInteger data) {
         byte[] signedBytes = data.toByteArray();
         if (signedBytes[0] == 0x00) {
@@ -100,45 +87,30 @@ public class SrpAuthentication {
     }
 
     /**
-     * Base64 encode
+     * Perform SRP authentication
+     *
+     * @param authEndpoint the authentication endpoint URL
+     * @param httpClient the HTTP client session
      */
-    private String b64Encode(byte[] data) {
-        return Base64.toBase64String(data);
-    }
-
-    /**
-     * Base64 decode
-     */
-    private byte[] b64Decode(String data) {
-        return Base64.decode(data);
-    }
-
-    // https://asecuritysite.com/bouncy/bc_srp6a
     public void auth(String authEndpoint, ICloudSession httpClient) throws IOException, InterruptedException,
             ICloudApiResponseException, CryptoException, NoSuchAlgorithmException {
-        var random = new SecureRandom();
-        SrpPassword srpPassword = new SrpPassword(passwordRaw);
+        SrpPassword srpPassword = new SrpPassword(password);
 
-        // TODO which rfc?
-        // BigInteger N = SRP6StandardGroups.rfc5054_2048.getN();
-        // BigInteger G = SRP6StandardGroups.rfc5054_2048.getG();
+        byte[] clientA = new byte[256];
+        new SecureRandom().nextBytes(clientA);
 
-        byte[] client_a = new byte[256];
-        new SecureRandom().nextBytes(client_a);
-
-        BigInteger a = new BigInteger(1, client_a);
+        BigInteger a = new BigInteger(1, clientA);
         BigInteger A = g.modPow(a, N);
 
         // Prepare initial authentication request
         Map<String, Object> initData = Map.of("a", b64Encode(A), "accountName", I, "protocols",
                 new String[] { "s2k", "s2k_fo" });
 
-        // POST to signin/init endpoint
         String initResponse = httpClient.post(authEndpoint + "/signin/init", JsonUtils.toJson(initData),
                 sessionHeaders);
 
         // Parse response
-        JsonObject initBody = parseJsonResponse(initResponse);
+        JsonObject initBody = parseJson(initResponse);
 
         BigInteger B = new BigInteger(1, b64Decode(initBody.get("b").getAsString()));
         byte[] s = b64Decode(initBody.get("salt").getAsString());
@@ -148,11 +120,10 @@ public class SrpAuthentication {
 
         srpPassword.setEncryptInfo(s, iterations, keyLength);
 
-        /*
-         * # SRP-6a safety check
-         * if (self.B % N) == 0:
-         * return None
-         */
+        // SRP-6a safety check
+        if (B.mod(N).equals(BigInteger.ZERO)) {
+            throw new CryptoException("Invalid server public value B");
+        }
 
         // Calculate S
         Digest digest = new SHA256Digest();
@@ -165,7 +136,6 @@ public class SrpAuthentication {
         BigInteger S = B.subtract(k.multiply(v)).modPow(a.add(u.multiply(x)), N);
 
         byte[] K = sha256(toUnsigned(S, 256));
-        // BigInteger K2 = SRP6Util.calculateKey(digest, N, S);
 
         // Compute client proof M1 = H(H(N) xor H(g) || H(I) || s || A || B || K)
         byte[] HN = sha256(toUnsigned(N, 256));
@@ -184,96 +154,29 @@ public class SrpAuthentication {
         requestBody.put("m2", b64Encode(M2));
         requestBody.put("rememberMe", true);
         requestBody.put("trustTokens", new String[] { httpClient.getTrustToken() });
-        String completeResponse = httpClient.post(authEndpoint + "/signin/complete?isRememberMeEnabled=true",
-                JsonUtils.toJson(requestBody), sessionHeaders);
+        httpClient.post(authEndpoint + "/signin/complete?isRememberMeEnabled=true", JsonUtils.toJson(requestBody),
+                sessionHeaders);
     }
 
-    /**
-     * Perform SRP authentication
-     */
-    /*
-     * public void authenticate(String authEndpoint, ICloudSession httpClient) throws Exception {
-     * // Salt
-     * byte[] salt = new byte[16];
-     * new Random().nextBytes(salt);
-     *
-     * // Step 1: Initialize SRP client
-     * BigInteger N = new BigInteger(NG_2048_N, 16);
-     * BigInteger g = new BigInteger(NG_2048_G, 16);
-     *
-     * SRP6Client srpClient = new SRP6Client();
-     * srpClient.init(N, g, new SHA256Digest(), new SecureRandom());
-     *
-     * // Generate client public key (A)
-     * BigInteger A = srpClient.generateClientCredentials(salt,
-     * b64Decode(b64Encode(accountName.getBytes(StandardCharsets.UTF_8))),
-     * b64Decode(b64Encode(passwordRaw.getBytes(StandardCharsets.UTF_8))));
-     *
-     * // Prepare initial authentication request
-     * List<Pair<@NonNull String, @NonNull String>> initData = new ArrayList<>(
-     * List.of(Pair.of("a", b64Encode(A.toByteArray())), Pair.of("protocols", "s2k, s2k_fo")));
-     *
-     * // POST to signin/init endpoint
-     * String initResponse = httpClient.post(authEndpoint + "/signin/init", JsonUtils.toJson(initData),
-     * sessionHeaders);
-     *
-     * // Parse response
-     * JsonObject initBody = parseJsonResponse(initResponse);
-     *
-     * // check: byte[] salt = b64Decode(initBody.get("salt").getAsString());
-     * byte[] serverPublicKeyBytes = b64Decode(initBody.get("b").getAsString());
-     * String c = initBody.get("c").getAsString();
-     * int iterations = initBody.get("iteration").getAsInt();
-     * int keyLength = 32;
-     *
-     * // Step 2: Process challenge - encode the password
-     * byte[] encodedPassword = encodePassword(salt, iterations, keyLength);
-     *
-     * BigInteger B = new BigInteger(1, serverPublicKeyBytes);
-     *
-     * // Calculate M1 and get session key
-     * byte[] m1 = srpClient.calculateClientProof(accountName, encodedPassword, salt, B);
-     * byte[] sessionKey = srpClient.calculateSessionKey(N, g, new SHA256Digest());
-     *
-     * // Calculate M2 from session key
-     * SHA256Digest sha256Digest = new SHA256Digest();
-     * sha256Digest.update(sessionKey, 0, sessionKey.length);
-     * byte[] m2 = new byte[sha256Digest.getDigestSize()];
-     * sha256Digest.doFinal(m2, 0);
-     *
-     * // Step 3: Send complete authentication
-     * Map<String, Object> completeData = new HashMap<>();
-     * completeData.put("accountName", accountName);
-     * completeData.put("c", c);
-     * completeData.put("m1",
-     *
-     * b64Encode(m1));
-     * completeData.put("m2", b64Encode(m2));
-     * completeData.put("rememberMe", true);
-     * completeData.put("trustTokens", new String[] {});
-     *
-     * try
-     *
-     * {
-     * String completeResponse = httpClient.post(authEndpoint + "/signin/complete", completeData, sessionHeaders);
-     * // Handle response
-     * } catch (PyiCloud2FARequiredException e) {
-     * System.out.println("2FA required to complete authentication.");
-     * throw e;
-     * } catch (PyiCloudAPIResponseException e) {
-     * throw new PyiCloudFailedLoginException("Invalid email/password combination.", e);
-     * }
-     * }
-     */
     /**
      * Parse JSON response using Gson
+     *
+     * @param jsonString the JSON response string
+     * @return the parsed JsonObject
      */
-    private JsonObject parseJsonResponse(String jsonResponse) {
+    private JsonObject parseJson(String jsonString) {
         Gson gson = new Gson();
-        return gson.fromJson(jsonResponse, JsonObject.class);
+        return gson.fromJson(jsonString, JsonObject.class);
     }
 
-    public static byte[] sha256(byte[] data) throws NoSuchAlgorithmException {
+    /**
+     * Computes the SHA-256 hash of the given data.
+     *
+     * @param data the input data.
+     * @return the SHA-256 hash as a byte array.
+     * @throws NoSuchAlgorithmException if SHA-256 algorithm is not available.
+     */
+    private static byte[] sha256(byte[] data) throws NoSuchAlgorithmException {
         MessageDigest md = MessageDigest.getInstance("SHA-256");
         return md.digest(data);
     }
@@ -287,7 +190,7 @@ public class SrpAuthentication {
      * @param length the desired length of the resulting byte array.
      * @return a byte array of the given length representing the unsigned BigInteger.
      */
-    public static byte[] toUnsigned(BigInteger bigInteger, int length) {
+    private static byte[] toUnsigned(BigInteger bigInteger, int length) {
         byte[] raw = bigInteger.toByteArray();
         if (raw.length == length && raw[0] != 0) {
             return raw;
@@ -312,36 +215,13 @@ public class SrpAuthentication {
         return padded;
     }
 
-    private static byte[] getPadded(BigInteger n, int length) {
-        byte[] bs = BigIntegers.asUnsignedByteArray(n);
-        if (bs.length < length) {
-            byte[] tmp = new byte[length];
-            System.arraycopy(bs, 0, tmp, length - bs.length, bs.length);
-            bs = tmp;
-        }
-        return bs;
-    }
-
-    private static BigInteger computeK() {
-        try {
-            byte[] paddedN = toUnsigned(N, 256);
-            byte[] paddedG = toUnsigned(g, 256);
-            byte[] hash = sha256(concat(paddedN, paddedG));
-            return new BigInteger(1, hash);
-        } catch (NoSuchAlgorithmException e) {
-            throw new SecurityException("Failed to compute k", e);
-        }
-    }
-
-    private byte[] sha(Digest digest, byte[] input) {
-        digest.reset();
-        digest.update(input, 0, input.length);
-        byte[] rv = new byte[digest.getDigestSize()];
-        digest.doFinal(rv, 0);
-        return rv;
-    }
-
-    public static byte[] concat(byte[]... parts) {
+    /**
+     * Concatenates multiple byte arrays into a single byte array.
+     *
+     * @param parts the byte arrays to concatenate
+     * @return the concatenated byte array
+     */
+    private static byte[] concat(byte[]... parts) {
         int total = Arrays.stream(parts).mapToInt(p -> p.length).sum();
         byte[] out = new byte[total];
         int pos = 0;
@@ -352,11 +232,41 @@ public class SrpAuthentication {
         return out;
     }
 
+    /**
+     * XORs two byte arrays of the same length.
+     *
+     * @param a first byte array
+     * @param b second byte array
+     * @return the result of XORing the two byte arrays
+     */
     private static byte[] xor(byte[] a, byte[] b) {
         byte[] result = new byte[a.length];
         for (int i = 0; i < a.length; i++) {
             result[i] = (byte) (a[i] ^ b[i]);
         }
         return result;
+    }
+
+    /**
+     * Base64 encode
+     */
+    private String b64Encode(BigInteger data) {
+        return b64Encode(toByteArray(data));
+    }
+
+    /**
+     * Base64 encode
+     *
+     * @param data byte array to encode
+     */
+    private String b64Encode(byte[] data) {
+        return Base64.toBase64String(data);
+    }
+
+    /**
+     * Base64 decode
+     */
+    private byte[] b64Decode(String data) {
+        return Base64.decode(data);
     }
 }
