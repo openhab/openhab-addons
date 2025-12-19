@@ -24,13 +24,14 @@ import com.google.gson.annotations.SerializedName;
  */
 @NonNullByDefault
 public class Sensitivity {
-	private @Nullable Integer sensitivity;
-	private @Nullable @SerializedName("sensitivity_max") Integer sensitivityMax;
-	
-	public @Nullable Integer getSensitivity() {
-		return sensitivity;
-	}
-	public @Nullable Integer getSensitivityMax() {
-		return sensitivityMax;
-	}
+    private @Nullable Integer sensitivity;
+    private @Nullable @SerializedName("sensitivity_max") Integer sensitivityMax;
+
+    public @Nullable Integer getSensitivity() {
+        return sensitivity;
+    }
+
+    public @Nullable Integer getSensitivityMax() {
+        return sensitivityMax;
+    }
 }

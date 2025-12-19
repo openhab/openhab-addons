@@ -1077,7 +1077,7 @@ public class Resource {
         return this;
     }
 
-	public @Nullable Sensitivity getSensitivity() {
-		return sensitivity;
-	}
+    public @Nullable Sensitivity getSensitivity() {
+        return sensitivity;
+    }
 }
