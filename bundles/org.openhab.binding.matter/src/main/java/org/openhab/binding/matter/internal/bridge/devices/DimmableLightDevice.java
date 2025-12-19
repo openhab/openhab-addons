@@ -43,7 +43,7 @@ import org.openhab.core.types.State;
 public class DimmableLightDevice extends BaseDevice {
 
     private State lastOnOffState = OnOffType.OFF;
-    private int lastLevel = 0;
+    private int lastLevel;
 
     public DimmableLightDevice(MetadataRegistry metadataRegistry, MatterBridgeClient client, GenericItem item) {
         super(metadataRegistry, client, item);
