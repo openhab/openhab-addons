@@ -27,7 +27,7 @@ Note: Compatible clones from McLELLAND, Factor, Soundavo, etc. should work as we
 
 **_The following Thing types were implemented via available documentation only and have not been tested. Please open an issue for any bugs found when using these Thing types._**
 
-Monoprice 44519 4 zone variants use the `monoprice4` thing id. Up to 12 zones with 3 linked amps and 6 source inputs are supported.
+Monoprice 44519 4 zone variants use the `monoprice4` Thing id. Up to 12 zones with 3 linked amps and 6 source inputs are supported.
 
 Monoprice 44518 8 zone variants use the `monoprice8` Thing id. Up to 24 zones with 3 linked amps and 6 source inputs are supported.
 
@@ -55,7 +55,7 @@ The Thing has the following configuration parameters (number of sources and zone
 | Port                   | port                 | Communication port (8080 for newer amps with built-in serial over IP)                                                          | TCP port number  |
 | Number of Zones        | numZones             | (Optional) Number of amplifier zones to utilize in the binding (See Supported Things for max number of zones per Thing type)   | 1-18; default 6  |
 | Polling Interval       | pollingInterval      | (Optional) Configures how often (in seconds) to poll the amplifier to check for zone updates                                   | 5-60; default 15 |
-| Ignore Zones           | ignoreZones          | (Optional) A comma separated list of Zone numbers that will ignore the 'All Zone' (except All Off) commands                    | e.g., "1,6,10"     |
+| Ignore Zones           | ignoreZones          | (Optional) A comma separated list of Zone numbers that will ignore the 'All Zone' (except All Off) commands                    | e.g., "1,6,10"   |
 | Initial All Volume     | initialAllVolume     | (Optional) When 'All' zones are activated, the volume will reset to this value to prevent excessive blaring of sound ;)        | 1-30; default 10 |
 | Source 1 Input Label   | inputLabel1          | (Optional) Friendly name for the input source to be displayed in the UI (ie: Chromecast, Radio, CD, etc.) (default "Source 1") | A free text name |
 | Source 2 Input Label   | inputLabel2          | (Optional) Friendly name for the input source to be displayed in the UI (ie: Chromecast, Radio, CD, etc.) (default "Source 2") | A free text name |
@@ -69,7 +69,7 @@ The Thing has the following configuration parameters (number of sources and zone
 
 Some notes:
 
-- On the 10761/44519/DAX66 amp, activating the 'Page All Zones' feature can only be done through the +12v trigger input on the back of the amplifier.
+- On the 10761/DAX66/44519/44518 amplifiers, activating the 'Page All Zones' feature can only be done through the +12v trigger input on the back of the amplifier.
 
 - On Linux, you may get an error stating the serial port cannot be opened when the MonopriceAudio binding tries to load.
 - You can get around this by adding the `openhab` user to the `dialout` group like this: `usermod -a -G dialout openhab`.
@@ -130,6 +130,9 @@ monopriceaudio:amplifier:myamp "Monoprice WHA" [ host="192.168.0.10", port=8080,
 // Monoprice 44519
 monopriceaudio:monoprice4:myamp "Monoprice WHA" [ serialPort="COM5", pollingInterval=15, numZones=4, inputLabel1="Chromecast", inputLabel2="Radio", inputLabel3="CD Player", inputLabel4="Bluetooth Audio", inputLabel5="HTPC", inputLabel6="Phono" ]
 
+// Monoprice 44518
+monopriceaudio:monoprice8:myamp "Monoprice WHA" [ serialPort="COM5", pollingInterval=15, numZones=8, inputLabel1="Chromecast", inputLabel2="Radio", inputLabel3="CD Player", inputLabel4="Bluetooth Audio", inputLabel5="HTPC", inputLabel6="Phono" ]
+
 // Monoprice 31028 or OSD Audio PAM1270
 monopriceaudio:monoprice70:myamp "Monoprice WHA" [ serialPort="COM5", pollingInterval=30, numZones=6, inputLabel1="Source 0 - Bus", inputLabel2="Source 1 - Line" ]
 
@@ -145,7 +148,7 @@ monopriceaudio:xantech:myamp "Xantech WHA" [ serialPort="COM5", pollingInterval=
 ### `monoprice.items` Example
 
 ```java
-// substitute 'amplifier' for the appropriate Thing id if using 44519, 31028, DAX88 or Xantech amplifier
+// substitute 'amplifier' with the appropriate Thing id if using 44519, 44518, 31028, DAX88 or Xantech amplifier
 
 Switch all_allpower "All Zones Power" { channel="monopriceaudio:amplifier:myamp:all#allpower" }
 Number all_source "Source Input [%s]" { channel="monopriceaudio:amplifier:myamp:all#allsource" }

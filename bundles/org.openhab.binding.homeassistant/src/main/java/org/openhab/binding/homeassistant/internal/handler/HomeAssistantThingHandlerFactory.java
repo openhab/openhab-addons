@@ -12,9 +12,6 @@
  */
 package org.openhab.binding.homeassistant.internal.handler;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.List;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -31,7 +28,6 @@ import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
 import org.openhab.core.thing.type.ChannelTypeRegistry;
-import org.openhab.core.thing.type.ThingTypeBuilder;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -70,16 +66,9 @@ public class HomeAssistantThingHandlerFactory extends BaseThingHandlerFactory {
         this.gson = new Gson();
         this.python = python;
 
-        try {
-            // build the thing type
-            ThingTypeBuilder builder = ThingTypeBuilder.instance("homeassistant", "device", "Home Assistant Device");
-            builder.withConfigDescriptionURI(new URI("thing-type:homeassistant:device"))
-                    .withSupportedBridgeTypeUIDs(List.of("mqtt:broker"));
-
-            this.typeProvider.putThingType(builder.build());
-        } catch (URISyntaxException e) {
-            // can't happen
-        }
+        // The base thing type is not dynamic, but at one point it was generated here to get around
+        // cross-binding bridge problems. So clean that up automatically.
+        typeProvider.removeThingType(HomeAssistantBindingConstants.HOMEASSISTANT_DEVICE_THING);
     }
 
     @Override

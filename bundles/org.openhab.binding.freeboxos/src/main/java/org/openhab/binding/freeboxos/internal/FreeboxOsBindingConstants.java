@@ -160,6 +160,7 @@ public class FreeboxOsBindingConstants {
     public static final String OPENVPN_ROUTED = "openvpn-routed";
     public static final String OPENVPN_BRIDGE = "openvpn-bridge";
     public static final String WIREGUARD = "wireguard";
+    public static final String IPSEC = "ipsec";
 
     // Repeater channels
     public static final String LED = "led";
