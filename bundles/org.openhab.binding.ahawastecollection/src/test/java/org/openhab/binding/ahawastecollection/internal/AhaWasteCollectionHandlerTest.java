@@ -112,9 +112,11 @@ public class AhaWasteCollectionHandlerTest {
         final Channel channelPaper = mockChannel(thing.getUID(), AhaWasteCollectionBindingConstants.PAPER);
         final Channel channelLightweightPackaging = mockChannel(thing.getUID(),
                 AhaWasteCollectionBindingConstants.LIGHTWEIGHT_PACKAGING);
+        final Channel channelChristmasTree = mockChannel(thing.getUID(),
+                AhaWasteCollectionBindingConstants.CHRISTMAS_TREE);
 
-        when(thing.getChannels()).thenReturn(
-                Arrays.asList(channelBioWaste, channelGeneralWaste, channelLightweightPackaging, channelPaper));
+        when(thing.getChannels()).thenReturn(Arrays.asList(channelBioWaste, channelGeneralWaste,
+                channelLightweightPackaging, channelPaper, channelChristmasTree));
         return thing;
     }
 
@@ -163,6 +165,9 @@ public class AhaWasteCollectionHandlerTest {
                     getDateTime(AhaCollectionScheduleStub.LIGHTWEIGHT_PACKAGING_DATE));
             verify(callback).stateUpdated(new ChannelUID(thing.getUID(), AhaWasteCollectionBindingConstants.PAPER),
                     getDateTime(AhaCollectionScheduleStub.PAPER_DATE));
+            verify(callback).stateUpdated(
+                    new ChannelUID(thing.getUID(), AhaWasteCollectionBindingConstants.CHRISTMAS_TREE),
+                    getDateTime(AhaCollectionScheduleStub.CHRISTMAS_TREE_DATE));
         } finally {
             handler.dispose();
         }
