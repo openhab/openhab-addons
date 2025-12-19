@@ -13,7 +13,6 @@
 package org.openhab.binding.hue.internal.clip2;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.openhab.binding.hue.internal.HueBindingConstants.CHANNEL_2_MOTION_ENABLED;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -28,7 +27,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.hue.internal.api.dto.clip2.ActionEntry;
 import org.openhab.binding.hue.internal.api.dto.clip2.Alerts;
@@ -959,18 +957,18 @@ class Clip2DtoTest {
         assertEquals(1, list.size());
         Resource item = list.get(0);
         assertEquals(ResourceType.CONVENIENCE_AREA_MOTION, item.getType());
-		Motion motion = item.getMotion();
+        Motion motion = item.getMotion();
         assertNotNull(motion);
         assertFalse(motion.isMotion());
         assertEquals(new DateTimeType("2025-10-20T20:58:23.718Z"), item.getMotionLastUpdatedState());
         assertEquals(OnOffType.OFF, item.getMotionValidState());
-		Sensitivity sensitivity = item.getSensitivity();
+        Sensitivity sensitivity = item.getSensitivity();
         assertNotNull(sensitivity);
         assertEquals(Integer.valueOf(2), sensitivity.getSensitivity());
         assertEquals(Integer.valueOf(4), sensitivity.getSensitivityMax());
         assertEquals(OnOffType.ON, item.getEnabledState());
     }
-    
+
     @Test
     void testSecurityAreaMotion() {
         String json = load(ResourceType.SECURITY_AREA_MOTION.name().toLowerCase());
@@ -981,12 +979,12 @@ class Clip2DtoTest {
         assertEquals(1, list.size());
         Resource item = list.get(0);
         assertEquals(ResourceType.SECURITY_AREA_MOTION, item.getType());
-		Motion motion = item.getMotion();
+        Motion motion = item.getMotion();
         assertNotNull(motion);
         assertFalse(motion.isMotion());
         assertEquals(new DateTimeType("2025-10-20T16:47:14.733Z"), item.getMotionLastUpdatedState());
         assertEquals(OnOffType.OFF, item.getMotionValidState());
-		Sensitivity sensitivity = item.getSensitivity();
+        Sensitivity sensitivity = item.getSensitivity();
         assertNotNull(sensitivity);
         assertEquals(Integer.valueOf(2), sensitivity.getSensitivity());
         assertEquals(Integer.valueOf(4), sensitivity.getSensitivityMax());
