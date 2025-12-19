@@ -123,6 +123,7 @@ public class Resource {
     private @Nullable Sound alarm;
     private @Nullable Sound chime;
     private @Nullable Mute mute;
+    private @Nullable Sensitivity sensitivity;
 
     /**
      * Constructor
@@ -1075,4 +1076,8 @@ public class Resource {
         this.mute = mute;
         return this;
     }
+
+	public @Nullable Sensitivity getSensitivity() {
+		return sensitivity;
+	}
 }

@@ -872,7 +872,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
 
                 /*
                  * This binding creates its dynamic list of channels by a 'subtractive' method i.e. the full set of
-                 * channels is initially created from the thing type xml, and then for any channels where UndfType.NULL
+                 * channels is initially created from the thing type xml, and then for any channels where UndefType.NULL
                  * data is returned, the respective channel is removed from the full list. However in seldom cases
                  * UndfType.NULL may wrongly be returned, so we should log a warning here just in case.
                  */
@@ -973,6 +973,8 @@ public class Clip2ThingHandler extends BaseThingHandler {
 
             case MOTION:
             case CAMERA_MOTION:
+            case CONVENIENCE_AREA_MOTION:
+            case SECURITY_AREA_MOTION:
                 updateState(CHANNEL_2_MOTION, resource.getMotionState(), fullUpdate);
                 updateState(CHANNEL_2_MOTION_LAST_UPDATED, resource.getMotionLastUpdatedState(), fullUpdate);
                 updateState(CHANNEL_2_MOTION_ENABLED, resource.getEnabledState(), fullUpdate);

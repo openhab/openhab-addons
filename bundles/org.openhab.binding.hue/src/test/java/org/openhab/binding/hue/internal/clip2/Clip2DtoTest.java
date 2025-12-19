@@ -13,6 +13,7 @@
 package org.openhab.binding.hue.internal.clip2;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.openhab.binding.hue.internal.HueBindingConstants.CHANNEL_2_MOTION_ENABLED;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -27,6 +28,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.hue.internal.api.dto.clip2.ActionEntry;
 import org.openhab.binding.hue.internal.api.dto.clip2.Alerts;
@@ -47,6 +49,7 @@ import org.openhab.binding.hue.internal.api.dto.clip2.ResourceReference;
 import org.openhab.binding.hue.internal.api.dto.clip2.Resources;
 import org.openhab.binding.hue.internal.api.dto.clip2.Rotation;
 import org.openhab.binding.hue.internal.api.dto.clip2.RotationEvent;
+import org.openhab.binding.hue.internal.api.dto.clip2.Sensitivity;
 import org.openhab.binding.hue.internal.api.dto.clip2.TamperReport;
 import org.openhab.binding.hue.internal.api.dto.clip2.Temperature;
 import org.openhab.binding.hue.internal.api.dto.clip2.TimedEffects;
@@ -97,14 +100,12 @@ class Clip2DtoTest {
     //@formatter:off
             ResourceType.BELL_BUTTON,
             ResourceType.CLIP,
-            ResourceType.CONVENIENCE_AREA_MOTION,
             ResourceType.DEVICE_SOFTWARE_UPDATE,
             ResourceType.GROUPED_LIGHT_LEVEL,
             ResourceType.MATTER,
             ResourceType.MATTER_FABRIC,
             ResourceType.MOTION_AREA_CANDIDATE,
             ResourceType.MOTION_AREA_CONFIGURATION,
-            ResourceType.SECURITY_AREA_MOTION,
             ResourceType.SERVICE_GROUP,
             ResourceType.SPEAKER,
             ResourceType.WIFI_CONNECTIVITY,
@@ -946,5 +947,49 @@ class Clip2DtoTest {
         assertTrue(enabled);
         assertEquals(OnOffType.ON, item.getMotionState());
         assertEquals(new DateTimeType("2024-12-13T11:01:25.156Z"), item.getMotionLastUpdatedState());
+    }
+
+    @Test
+    void testConvenienceAreaMotion() {
+        String json = load(ResourceType.CONVENIENCE_AREA_MOTION.name().toLowerCase());
+        Resources resources = GSON.fromJson(json, Resources.class);
+        assertNotNull(resources);
+        List<Resource> list = resources.getResources();
+        assertNotNull(list);
+        assertEquals(1, list.size());
+        Resource item = list.get(0);
+        assertEquals(ResourceType.CONVENIENCE_AREA_MOTION, item.getType());
+		Motion motion = item.getMotion();
+        assertNotNull(motion);
+        assertFalse(motion.isMotion());
+        assertEquals(new DateTimeType("2025-10-20T20:58:23.718Z"), item.getMotionLastUpdatedState());
+        assertEquals(OnOffType.OFF, item.getMotionValidState());
+		Sensitivity sensitivity = item.getSensitivity();
+        assertNotNull(sensitivity);
+        assertEquals(Integer.valueOf(2), sensitivity.getSensitivity());
+        assertEquals(Integer.valueOf(4), sensitivity.getSensitivityMax());
+        assertEquals(OnOffType.ON, item.getEnabledState());
+    }
+    
+    @Test
+    void testSecurityAreaMotion() {
+        String json = load(ResourceType.SECURITY_AREA_MOTION.name().toLowerCase());
+        Resources resources = GSON.fromJson(json, Resources.class);
+        assertNotNull(resources);
+        List<Resource> list = resources.getResources();
+        assertNotNull(list);
+        assertEquals(1, list.size());
+        Resource item = list.get(0);
+        assertEquals(ResourceType.SECURITY_AREA_MOTION, item.getType());
+		Motion motion = item.getMotion();
+        assertNotNull(motion);
+        assertFalse(motion.isMotion());
+        assertEquals(new DateTimeType("2025-10-20T16:47:14.733Z"), item.getMotionLastUpdatedState());
+        assertEquals(OnOffType.OFF, item.getMotionValidState());
+		Sensitivity sensitivity = item.getSensitivity();
+        assertNotNull(sensitivity);
+        assertEquals(Integer.valueOf(2), sensitivity.getSensitivity());
+        assertEquals(Integer.valueOf(4), sensitivity.getSensitivityMax());
+        assertEquals(OnOffType.ON, item.getEnabledState());
     }
 }
