@@ -128,9 +128,8 @@ public class KNXnetDiscoveryService extends AbstractDiscoveryService {
                         if (filtered(uid)) {
                             continue;
                         }
-                        thingDiscovered(DiscoveryResultBuilder.create(uid)
-                                .withLabel(response.getDevice().getName()).withProperty("serialNumber", serial)
-                                .withProperty("type", "TUNNEL")
+                        thingDiscovered(DiscoveryResultBuilder.create(uid).withLabel(response.getDevice().getName())
+                                .withProperty("serialNumber", serial).withProperty("type", "TUNNEL")
                                 .withProperty("ipAddress",
                                         "" + response.getControlEndpoint().endpoint().getAddress().getHostAddress())
                                 .withProperty("port", "" + response.getControlEndpoint().endpoint().getPort())
