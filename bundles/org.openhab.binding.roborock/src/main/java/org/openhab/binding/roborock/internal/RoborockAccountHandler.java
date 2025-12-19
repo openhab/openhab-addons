@@ -84,6 +84,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
     private final SchedulerTask mqttConnectTask;
     private final RoborockWebTargets webTargets;
     private @Nullable MqttClient mqttClient;
+    private volatile boolean disposed = false;
     private String country = "";
     private String countryCode = "";
     private String token = "";
@@ -296,11 +297,13 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
     }
 
     private synchronized void teardown(boolean scheduleReconnection) {
+        disposed = true;
         initTask.cancel();
         mqttConnectTask.cancel();
         disconnectMqttClient();
 
         if (scheduleReconnection) {
+            disposed = false;
             initTask.submit();
         }
     }
@@ -362,6 +365,9 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
 
     @Override
     public void connectComplete(boolean reconnect, @Nullable String serverURI) {
+        if (disposed) {
+            return;
+        }
         logger.debug("MQTT connection established. Reconnect: {}, Server URI: {}", reconnect, serverURI);
 
         // Subscribe to topics after a successful connection
@@ -518,6 +524,9 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
     }
 
     public void onEventStreamFailure(Throwable error) {
+        if (disposed) {
+            return;
+        }
         logger.debug("Device connection failed, reconnecting", error);
         mqttConnectTask.schedule(60);
     }
