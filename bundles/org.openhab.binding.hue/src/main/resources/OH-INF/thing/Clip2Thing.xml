@@ -205,4 +205,35 @@
 
 	</thing-type>
 
+	<!-- API v2 Motion Aware area thing -->
+	<thing-type id="area">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge-api2"/>
+		</supported-bridge-type-refs>
+
+		<label>Hue Motion Aware Area</label>
+		<description>A 'Motion Aware' group of Hue API v2 lights.</description>
+
+		<channels>
+			<channel id="motion" typeId="system.motion"/>
+			<channel id="motion-last-updated" typeId="last-updated-v2">
+				<label>Motion Last Updated</label>
+				<description>The date and time when the motion value was last updated.</description>
+			</channel>
+			<channel id="motion-enabled" typeId="sensor-enabled">
+				<description>Motion sensor enabled.</description>
+			</channel>
+		</channels>
+
+		<representation-property>resourceId</representation-property>
+
+		<config-description>
+			<parameter name="resourceId" type="text" required="true">
+				<label>Resource ID</label>
+				<description>Unique Resource ID of the area in the Hue bridge</description>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
 </thing:thing-descriptions>

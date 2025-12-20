@@ -526,6 +526,13 @@ public class Clip2ThingHandler extends BaseThingHandler {
         putResource.setId(putResourceId);
         logger.debug("{} -> handleCommand() put resource {}", resourceId, putResource);
 
+        if (CHANNEL_2_MOTION_ENABLED.equals(channelId)) {
+            // fix-up plain MOTION resource type to CAMERA_MOTION, CONVENIENCE_AREA_MOTION or GROUPED_MOTION if needed
+            if (serviceContributorsCache.get(putResourceId) instanceof Resource cached) {
+                putResource.setType(cached.getType());
+            }
+        }
+
         try {
             Resources resources = getBridgeHandler().putResource(putResource);
             if (resources.hasErrors()) {
@@ -916,6 +923,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
         boolean fullUpdate = resource.hasFullState();
         switch (resource.getType()) {
             case BUTTON:
+            case BELL_BUTTON:
                 if (fullUpdate) {
                     addSupportedChannel(CHANNEL_2_BUTTON_LAST_EVENT);
                     addSupportedChannel(CHANNEL_2_BUTTON_LAST_UPDATED);
@@ -974,7 +982,6 @@ public class Clip2ThingHandler extends BaseThingHandler {
             case MOTION:
             case CAMERA_MOTION:
             case CONVENIENCE_AREA_MOTION:
-            case SECURITY_AREA_MOTION:
                 updateState(CHANNEL_2_MOTION, resource.getMotionState(), fullUpdate);
                 updateState(CHANNEL_2_MOTION_LAST_UPDATED, resource.getMotionLastUpdatedState(), fullUpdate);
                 updateState(CHANNEL_2_MOTION_ENABLED, resource.getEnabledState(), fullUpdate);
@@ -1017,6 +1024,13 @@ public class Clip2ThingHandler extends BaseThingHandler {
 
             case SMART_SCENE:
                 updateState(CHANNEL_2_SCENE, resource.getSmartSceneState(), fullUpdate);
+                break;
+
+            case SPEAKER:
+                if (fullUpdate) {
+                    updateAlertChannel(resource);
+                }
+                updateState(CHANNEL_2_ALERT, resource.getAlertState(), fullUpdate);
                 break;
 
             default:
@@ -1428,6 +1442,9 @@ public class Clip2ThingHandler extends BaseThingHandler {
             int sensorCount = 0;
             SemanticTag equipmentTag = null;
 
+            if (thing.getChannel(CHANNEL_2_ALERT) != null) {
+                equipmentTag = Equipment.SPEAKER; // will be overridden if the thing is a light
+            }
             if (Set.of(ResourceType.ROOM, ResourceType.ZONE).contains(thisResource.getType())) {
                 equipmentTag = Equipment.ZONE;
             }
