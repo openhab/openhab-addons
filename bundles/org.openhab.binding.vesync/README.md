@@ -1,6 +1,6 @@
 # VeSync Binding
 
-Its current support is for the Air Purifiers & Humidifer's branded as Levoit which utilise the VeSync app based on the V2 protocol.
+Its current support is for the Air Purifiers & Humidifiers branded as Levoit which utilise the VeSync app based on the V2 protocol.
 
 ## Verified Models
 

@@ -34,7 +34,7 @@ The 'VolvoOnCall API' bridge uses the owner's email address and password in orde
 | Parameter       | Name             | Description                                             | Required |
 |-----------------|------------------|---------------------------------------------------------|----------|
 | vin             | Vin              | Vehicle Identification Number of the car                | yes      |
-| refreshinterval | Refresj Interval | Interval in minutes to refresh the data (default=10)    | yes      |
+| refreshinterval | Refresh Interval | Interval in minutes to refresh the data (default=10)    | yes      |
 
 ## Channels
 

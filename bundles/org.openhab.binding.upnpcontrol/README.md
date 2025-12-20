@@ -1,4 +1,4 @@
-# UpnpControl Binding
+# UPnP Control Binding
 
 This binding acts as a UPnP control point to control UPnP AV media servers and media renderers as defined by the [UPnP Forum](https://openconnectivity.org/developer/specifications/upnp-resources/upnp/).
 It discovers UPnP media servers and renderers in the local network.
@@ -35,11 +35,11 @@ UPnP media servers and media renderers in the network will be discovered automat
 
 ## Thing Configuration
 
-Both the  `upnprenderer` and `upnpserver` thing require a configuration parameter, `udn` (Universal Device Name).
+Both the `upnprenderer` and `upnpserver` things require a configuration parameter, `udn` (Universal Device Name).
 This `udn` uniquely defines the UPnP device.
 It can be retrieved from the thing ID when using auto discovery.
 
-Both also have `refresh` configuration parameter. This parameter defines a polling interval for polling the state of the `upnprenderer` or `upnpserver`.
+Both also have a `refresh` configuration parameter. This parameter defines a polling interval for polling the state of the `upnprenderer` or `upnpserver`.
 The default polling interval is 60s.
 0 turns off polling.
 
@@ -175,7 +175,7 @@ The `upnprenderer` has the following default channels:
 | `trackposition`    | Number:Time | RW          | current position in track during playback or pause |
 | `reltrackposition` | Dimmer      | RW          | current position relative to track duration        |
 
-A numer of `upnprenderer` audio control channels may be dynamically created depending on the specific renderer capabilities.
+A number of `upnprenderer` audio control channels may be dynamically created depending on the specific renderer capabilities.
 Examples of these are:
 
 | Channel Type ID    | Item Type   | Access Mode | Description                                        |
@@ -197,7 +197,7 @@ It is used for normal playback of a sound or stream.
 The second audio sink has `-notify` appended to the renderer id for its name, and has a special behavior.
 This audio sink is used to play notifications.
 When setting the volume parameter in the `playSound` command, the volume of the renderer will only change for the duration of playing the notification.
-The `maxNotificationDuration` configuration parameter of the renderer will limit the notification duration the value of the parameter in seconds.
+The `maxNotificationDuration` configuration parameter of the renderer will limit the notification duration to the value of the parameter in seconds.
 Normal playing will resume after the notification has played or when the maximum notification duration has been reached, whichever happens first.
 Longer sounds or streams will be cut off.
 
@@ -205,18 +205,18 @@ Longer sounds or streams will be cut off.
 
 There are multiple ways to serve content to a renderer for playback.
 
-- Directly provide a URI on the `URI` channel or through `playSound` or `playStream` actions:
+- Directly provide a URI on the `uri` channel or through `playSound` or `playStream` actions:
 
   Playing will start immediately, interrupting currently playing media.
-  No metadata for the media is available, therefore will be provided in the media channels for metadata (e.g. `title`, `album`, ...).
+  No metadata for the media is available; therefore, none will be provided in the media channels for metadata (e.g., `title`, `album`).
 
 - Content served from one or multiple `upnpserver` servers:
 
-  This is done on the `upnpserver` thing with the `upnprenderer` set the the renderer for playback.
+  This is done on the `upnpserver` thing with the `upnprenderer` set to the renderer for playback.
   The media at any point in time in the `upnpserver browse` option list (result from browse, search or restoring a playlist), will be queued to the `upnprenderer` for playback.
   Playback does not start automatically if not yet playing.
   When already playing a queue, the first entry of the new queue will be playing as the next entry.
-  When playing an URI or media provided through an action, playback will immediately switch to the new queue.
+  When playing a URI or media provided through an action, playback will immediately switch to the new queue.
 
   The `upnprenderer` will use that queue until it is replaced by another queue from the same or another `upnpserver`.
   Note that querying the content hierarchy on the `upnpserver` will update the `upnpserver browse` option list each time, and therefore the queue on the `upnprenderer` will be updated each time as long as `upnprenderer` is selected on `upnpserver`.
@@ -308,7 +308,7 @@ BasicUI has a number of limitations that impact the way some of the channels can
 
 - The player control in BasicUI does not support fast forward or rewind.
 
-None of these are limitations when using the main UI.
+None of these are limitations when using the Main UI.
 
 ## Full Example
 
@@ -349,9 +349,9 @@ String Genre     "Genre"            <text>             (MediaRenderer) {channel=
 Number TrackNumber "Track Number"                      (MediaRenderer) {channel="upnpcontrol:upnprenderer:mymediarenderer:tracknumber"}
 Number:Time TrackDuration "Track Duration [%d %unit%]" (MediaRenderer) {channel="upnpcontrol:upnprenderer:mymediarenderer:trackduration"}
 Number:Time TrackPosition "Track Position [%d %unit%]" (MediaRenderer) {channel="upnpcontrol:upnprenderer:mymediarenderer:trackposition"}
-Dimmer RelTrackPosition "Relative Track Position ´[%d %%]" (MediaRenderer) {channel="upnpcontrol:upnprenderer:mymediarenderer:reltrackposition"}
+Dimmer RelTrackPosition "Relative Track Position [%d %%]" (MediaRenderer) {channel="upnpcontrol:upnprenderer:mymediarenderer:reltrackposition"}
 
-String Renderer  "Renderer [%s]"    <text>             (MediaServer)   {channel="upnpcontrol:upnpserver:mymediaserver:title"}
+String Renderer  "Renderer [%s]"    <text>             (MediaServer)   {channel="upnpcontrol:upnpserver:mymediaserver:upnprenderer"}
 String CurrentTitle "Current Entry [%s]" <text>        (MediaServer)   {channel="upnpcontrol:upnpserver:mymediaserver:currenttitle"}
 String Browse    "Browse"                              (MediaServer)   {channel="upnpcontrol:upnpserver:mymediaserver:browse"}
 String Search    "Search"                              (MediaServer)   {channel="upnpcontrol:upnpserver:mymediaserver:search"}
