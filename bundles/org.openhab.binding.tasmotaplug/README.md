@@ -7,7 +7,7 @@ See the [Tasmota Supported Devices Repository](https://templates.blakadder.com/p
 
 ## Supported Things
 
-There is exactly one supported thing type, which represents any supported Tasmota smart plug.
+There is exactly one supported Thing type, which represents any supported Tasmota smart plug.
 It has the `plug` id.
 Multiple Things can be added if more than one plug is to be controlled.
 
@@ -30,7 +30,7 @@ The refresh interval and number of channels can be overridden from the default.
 
 ## Channels
 
-The number of channels depends of on the `numChannels` configuration parameter.
+The number of channels depends on the `numChannels` configuration parameter.
 Channels above the number specified are automatically removed.
 Therefore `numChannels` cannot be changed upward after Thing creation.
 If the number of channels must be increased, delete the Thing and re-create it with the correct number.
