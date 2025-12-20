@@ -96,7 +96,7 @@ Fragment-Host: org.openhab.binding.hue
 	org.openhab.core.thing;version='[5.1.0,5.1.1)',\
 	org.openhab.core.transform;version='[5.1.0,5.1.1)',\
 	biz.aQute.tester.junit-platform;version='[7.1.0,7.1.1)',\
-	org.jupnp;version='[3.0.3,3.0.4)',\
+	org.jupnp;version='[3.0.4,3.0.5)',\
 	jakarta.annotation-api;version='[2.1.1,2.1.2)',\
 	org.openhab.core.semantics;version='[5.1.0,5.1.1)',\
 	org.eclipse.jdt.annotation;version='[2.2.600,2.2.601)',\
