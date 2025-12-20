@@ -109,19 +109,19 @@ public class KNXnetDiscoveryService extends AbstractDiscoveryService {
                     }
 
                     if (services.containsKey(ServiceFamiliesDIB.ServiceFamily.Tunneling)) {
+                        // .withProperty("type", "TUNNEL") was omitted to avoid reconfiguration
                         thingDiscovered(DiscoveryResultBuilder.create(new ThingUID(THING_TYPE_IP_BRIDGE, serial))
                                 .withLabel(response.getDevice().getName()).withProperty("serialNumber", serial)
-                                .withProperty("type", "TUNNEL")
                                 .withProperty("ipAddress",
                                         "" + response.getControlEndpoint().endpoint().getAddress().getHostAddress())
                                 .withProperty("port", "" + response.getControlEndpoint().endpoint().getPort())
                                 .withRepresentationProperty("serialNumber").build());
                     }
                     if (services.containsKey(ServiceFamiliesDIB.ServiceFamily.Routing)) {
+                        // .withProperty("type", "ROUTER") was omitted to avoid reconfiguration
                         thingDiscovered(DiscoveryResultBuilder.create(new ThingUID(THING_TYPE_IP_BRIDGE, serial))
                                 .withLabel(response.getDevice().getName() + " (router mode)")
-                                .withProperty("serialNumber", serial + "-r").withProperty("type", "ROUTER")
-                                .withProperty("ipAddress", "224.0.23.12")
+                                .withProperty("serialNumber", serial + "-r").withProperty("ipAddress", "224.0.23.12")
                                 .withProperty("port", "" + response.getControlEndpoint().endpoint().getPort())
                                 .withRepresentationProperty("serialNumber").build());
                     }
