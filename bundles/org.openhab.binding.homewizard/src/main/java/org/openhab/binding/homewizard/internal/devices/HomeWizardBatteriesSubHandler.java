@@ -62,7 +62,7 @@ public class HomeWizardBatteriesSubHandler {
 
         switch (command.toFullString()) {
             case HomeWizardBindingConstants.BATTERIES_MODE_STANDBY: {
-                mode = HomeWizardBindingConstants.BATTERIES_MODE_ZERO;
+                mode = HomeWizardBindingConstants.BATTERIES_MODE_STANDBY;
                 permissions = "\"permissions\": [],";
                 break;
             }

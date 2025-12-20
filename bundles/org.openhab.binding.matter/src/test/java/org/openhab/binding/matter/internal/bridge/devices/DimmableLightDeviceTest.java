@@ -154,6 +154,7 @@ class DimmableLightDeviceTest {
         dimmerDevice.updateState(dimmerItem, PercentType.ZERO);
         expectedStates.clear();
         expectedStates.add(new AttributeState("onOff", "onOff", false));
+        expectedStates.add(new AttributeState("levelControl", "currentLevel", 0));
         verify(client).setEndpointStates(any(), eq(expectedStates));
     }
 
