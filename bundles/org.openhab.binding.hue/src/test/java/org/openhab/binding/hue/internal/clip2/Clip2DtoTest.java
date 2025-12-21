@@ -102,7 +102,6 @@ class Clip2DtoTest {
             ResourceType.MATTER,
             ResourceType.MATTER_FABRIC,
             ResourceType.MOTION_AREA_CANDIDATE,
-            ResourceType.MOTION_AREA_CONFIGURATION,
             ResourceType.SERVICE_GROUP,
             ResourceType.SPEAKER,
             ResourceType.WIFI_CONNECTIVITY,
