@@ -99,6 +99,16 @@
 			<channel id="color-xy-only" typeId="advanced-color"/>
 			<channel id="dimming-only" typeId="advanced-brightness"/>
 			<channel id="on-off-only" typeId="advanced-power"/>
+			<channel id="alarm-sound" typeId="sound">
+				<label>Alarm Sound</label>
+			</channel>
+			<channel id="alert-sound" typeId="sound">
+				<label>Alert Sound</label>
+			</channel>
+			<channel id="chime-sound" typeId="sound">
+				<label>Chime Sound</label>
+			</channel>
+			<channel id="sound-mute" typeId="sound-mute"/>
 		</channels>
 
 		<properties>
@@ -215,13 +225,29 @@
 		<description>A 'Motion Aware' group of Hue API v2 lights.</description>
 
 		<channels>
-			<channel id="motion" typeId="system.motion"/>
+			<channel id="motion" typeId="system.motion">
+				<label>Convenience Motion</label>
+				<description>State of the convenience motion sensor.</description>
+			</channel>
 			<channel id="motion-last-updated" typeId="last-updated-v2">
-				<label>Motion Last Updated</label>
-				<description>The date and time when the motion value was last updated.</description>
+				<label>Convenience Motion Last Updated</label>
+				<description>The date and time when the convenience motion sensor state was last updated.</description>
 			</channel>
 			<channel id="motion-enabled" typeId="sensor-enabled">
-				<description>Motion sensor enabled.</description>
+				<label>Convenience Motion Enabled</label>
+				<description>Convenience motion sensor enabled.</description>
+			</channel>
+			<channel id="security-motion" typeId="system.motion">
+				<label>Security Motion</label>
+				<description>State of the security motion sensor.</description>
+			</channel>
+			<channel id="security-motion-last-updated" typeId="last-updated-v2">
+				<label>Security Motion Last Updated</label>
+				<description>The date and time when the security motion sensor state was last updated.</description>
+			</channel>
+			<channel id="security-motion-enabled" typeId="sensor-enabled">
+				<label>Security Motion Enabled</label>
+				<description>Security motion sensor enabled.</description>
 			</channel>
 		</channels>
 

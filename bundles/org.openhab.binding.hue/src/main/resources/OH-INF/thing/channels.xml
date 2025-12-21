@@ -352,4 +352,52 @@
 		<label>Automations</label>
 	</channel-group-type>
 
+	<channel-type id="sound">
+		<item-type>String</item-type>
+		<label>Sound</label>
+		<description>The name of the sound clip that the speaker plays.</description>
+		<category>speaker</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
+		<state>
+			<options>
+				<option value="NO_SOUND">NO_SOUND</option>
+				<option value="ALERT">ALERT</option>
+				<option value="BLEEP">BLEEP</option>
+				<option value="BOUNCE">BOUNCE</option>
+				<option value="BRIGHT">BRIGHT</option>
+				<option value="BRIGHT_MODERN">BRIGHT_MODERN</option>
+				<option value="DING_DONG_CLASSIC">DING_DONG_CLASSIC</option>
+				<option value="DING_DONG_MODERN">DING_DONG_MODERN</option>
+				<option value="DING_DONG_XYLO">DING_DONG_XYLO</option>
+				<option value="ECHO">ECHO</option>
+				<option value="FAIRY">FAIRY</option>
+				<option value="GALAXY">GALAXY</option>
+				<option value="GLOW">GLOW</option>
+				<option value="HUE_DEFAULT">HUE_DEFAULT</option>
+				<option value="REVEAL">REVEAL</option>
+				<option value="RISE">RISE</option>
+				<option value="SIREN">SIREN</option>
+				<option value="SONAR">SONAR</option>
+				<option value="SWING">SWING</option>
+				<option value="WELCOME">WELCOME</option>
+				<option value="WESTMINSTER_CLASSIC">WESTMINSTER_CLASSIC</option>
+				<option value="WESTMINSTER_MODERN">WESTMINSTER_MODERN</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="sound-mute">
+		<item-type>Switch</item-type>
+		<label>Mute</label>
+		<description>Mute or unmute the speaker output.</description>
+		<category>speaker</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
+	</channel-type>
+
 </thing:thing-descriptions>

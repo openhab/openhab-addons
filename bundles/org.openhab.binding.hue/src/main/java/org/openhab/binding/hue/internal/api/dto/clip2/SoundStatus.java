@@ -31,21 +31,16 @@ public class SoundStatus {
     private @Nullable String sound;
     private @Nullable @SerializedName("sound_values") List<String> soundValues;
 
-    public @Nullable SoundType getSound() {
+    public @Nullable SoundType getSoundType() {
         String sound = this.sound;
         return Objects.nonNull(sound) ? SoundType.of(sound) : null;
     }
 
-    public List<SoundType> getSoundValues() {
-        List<String> soundValues = this.soundValues;
-        if (Objects.nonNull(soundValues)) {
-            return soundValues.stream().map(SoundType::of).toList();
+    public List<SoundType> getSoundTypes() {
+        List<String> soundTypes = this.soundValues;
+        if (Objects.nonNull(soundTypes)) {
+            return soundTypes.stream().map(SoundType::of).toList();
         }
         return List.of();
-    }
-
-    public SoundStatus setSound(SoundType soundType) {
-        this.sound = soundType.name().toLowerCase();
-        return this;
     }
 }

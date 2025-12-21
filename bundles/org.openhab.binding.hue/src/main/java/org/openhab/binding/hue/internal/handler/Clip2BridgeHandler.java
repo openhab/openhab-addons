@@ -412,7 +412,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
      * Execute an HTTP GET for a resources reference object from the server.
      *
      * @param reference containing the resourceType and (optionally) the resourceId of the resource to get. If the
-     *     resourceId is null then all resources of the given type are returned.
+     *            resourceId is null then all resources of the given type are returned.
      * @return the resource, or null if something fails.
      * @throws ApiException if a communication error occurred.
      * @throws AssetNotLoadedException if one of the assets is not loaded.

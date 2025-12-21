@@ -47,7 +47,6 @@ import org.openhab.binding.hue.internal.api.dto.clip2.ResourceReference;
 import org.openhab.binding.hue.internal.api.dto.clip2.Resources;
 import org.openhab.binding.hue.internal.api.dto.clip2.Rotation;
 import org.openhab.binding.hue.internal.api.dto.clip2.RotationEvent;
-import org.openhab.binding.hue.internal.api.dto.clip2.Sensitivity;
 import org.openhab.binding.hue.internal.api.dto.clip2.TamperReport;
 import org.openhab.binding.hue.internal.api.dto.clip2.Temperature;
 import org.openhab.binding.hue.internal.api.dto.clip2.TimedEffects;
@@ -962,10 +961,6 @@ class Clip2DtoTest {
         assertFalse(motion.isMotion());
         assertEquals(new DateTimeType("2025-10-20T20:58:23.718Z"), item.getMotionLastUpdatedState());
         assertEquals(OnOffType.OFF, item.getMotionValidState());
-        Sensitivity sensitivity = item.getSensitivity();
-        assertNotNull(sensitivity);
-        assertEquals(Integer.valueOf(2), sensitivity.getSensitivity());
-        assertEquals(Integer.valueOf(4), sensitivity.getSensitivityMax());
         assertEquals(OnOffType.ON, item.getEnabledState());
     }
 
@@ -984,10 +979,6 @@ class Clip2DtoTest {
         assertFalse(motion.isMotion());
         assertEquals(new DateTimeType("2025-10-20T16:47:14.733Z"), item.getMotionLastUpdatedState());
         assertEquals(OnOffType.OFF, item.getMotionValidState());
-        Sensitivity sensitivity = item.getSensitivity();
-        assertNotNull(sensitivity);
-        assertEquals(Integer.valueOf(2), sensitivity.getSensitivity());
-        assertEquals(Integer.valueOf(4), sensitivity.getSensitivityMax());
         assertEquals(OnOffType.ON, item.getEnabledState());
     }
 }

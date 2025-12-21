@@ -54,9 +54,11 @@ import org.openhab.binding.hue.internal.api.dto.clip2.enums.ActionType;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.Archetype;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.ContentType;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.EffectType;
+import org.openhab.binding.hue.internal.api.dto.clip2.enums.MuteType;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.ResourceType;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.SceneRecallAction;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.SmartSceneRecallAction;
+import org.openhab.binding.hue.internal.api.dto.clip2.enums.SoundType;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.ZigbeeStatus;
 import org.openhab.binding.hue.internal.api.dto.clip2.helper.Setters;
 import org.openhab.binding.hue.internal.config.Clip2ThingConfig;
@@ -143,6 +145,17 @@ public class Clip2ThingHandler extends BaseThingHandler {
      * to the respective LIGHT resource ID.
      */
     private final Map<ResourceType, String> commandResourceIds = new ConcurrentHashMap<>();
+
+    /**
+     * In the Hue API some resource types extend other base types (e.g. ResourceType.CAMERA_MOTION extends the
+     * ResourceType.MOTION base type). An extended resource type contains the same basic JSON fields as the base
+     * type plus a few extra application specific fields. So when reading data from an incoming extension resource
+     * we can safely "down map" its information to respective OH channels as if the data came from the base type.
+     * So e.g. the data from a ResourceType.CAMERA_MOTION resource can update the CHANNEL_2_MOTION channel state.
+     * By contrast when sending OH Channel commands we must "up map" the base information to the full extended
+     * resource type. This is a map between such base resource types and respective extended resource types.
+     */
+    private final Map<ResourceType, ResourceType> extendedResourceTypes = new ConcurrentHashMap<>();
 
     /**
      * Button devices contain one or more physical buttons, each of which is represented by a BUTTON Resource with its
@@ -278,6 +291,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
         commandResourceIds.clear();
         serviceContributorsCache.clear();
         controlIds.clear();
+        extendedResourceTypes.clear();
     }
 
     /**
@@ -426,7 +440,11 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 break;
 
             case CHANNEL_2_MOTION_ENABLED:
-                putResource = new Resource(ResourceType.MOTION).setEnabled(command);
+                putResource = new Resource(getExtendedResourceType(ResourceType.MOTION)).setEnabled(command);
+                break;
+
+            case CHANNEL_2_SECURITY_MOTION_ENABLED:
+                putResource = new Resource(ResourceType.SECURITY_AREA_MOTION).setEnabled(command);
                 break;
 
             case CHANNEL_2_LIGHT_LEVEL_ENABLED:
@@ -457,6 +475,33 @@ public class Clip2ThingHandler extends BaseThingHandler {
                         }
                         putResourceId = scene.getId();
                     }
+                }
+                break;
+
+            case CHANNEL_2_ALARM_SOUND:
+                if (command instanceof StringType stringCommand) {
+                    putResource = new Resource(ResourceType.SPEAKER)
+                            .setAlarmSoundType(SoundType.valueOf(stringCommand.toString()));
+                }
+                break;
+
+            case CHANNEL_2_ALERT_SOUND:
+                if (command instanceof StringType stringCommand) {
+                    putResource = new Resource(ResourceType.SPEAKER)
+                            .setAlertSoundType(SoundType.valueOf(stringCommand.toString()));
+                }
+                break;
+
+            case CHANNEL_2_CHIME_SOUND:
+                if (command instanceof StringType stringCommand) {
+                    putResource = new Resource(ResourceType.SPEAKER)
+                            .setChimeSoundType(SoundType.valueOf(stringCommand.toString()));
+                }
+                break;
+
+            case CHANNEL_2_SOUND_MUTE:
+                if (command instanceof OnOffType onOff) {
+                    putResource = new Resource(ResourceType.SPEAKER).setMuteType(MuteType.of(OnOffType.ON == onOff));
                 }
                 break;
 
@@ -526,13 +571,6 @@ public class Clip2ThingHandler extends BaseThingHandler {
         putResource.setId(putResourceId);
         logger.debug("{} -> handleCommand() put resource {}", resourceId, putResource);
 
-        if (CHANNEL_2_MOTION_ENABLED.equals(channelId)) {
-            // fix-up plain MOTION resource type to CAMERA_MOTION, CONVENIENCE_AREA_MOTION or GROUPED_MOTION if needed
-            if (serviceContributorsCache.get(putResourceId) instanceof Resource cached) {
-                putResource.setType(cached.getType());
-            }
-        }
-
         try {
             Resources resources = getBridgeHandler().putResource(putResource);
             if (resources.hasErrors()) {
@@ -548,6 +586,13 @@ public class Clip2ThingHandler extends BaseThingHandler {
             }
         } catch (InterruptedException e) {
         }
+    }
+
+    /**
+     * Returns the extended resource type, or base type if none available.
+     */
+    private ResourceType getExtendedResourceType(ResourceType baseType) {
+        return extendedResourceTypes.get(baseType) instanceof ResourceType extendedType ? extendedType : baseType;
     }
 
     private Command translateIncreaseDecreaseCommand(IncreaseDecreaseType command, State currentValue) {
@@ -928,6 +973,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
                     addSupportedChannel(CHANNEL_2_BUTTON_LAST_EVENT);
                     addSupportedChannel(CHANNEL_2_BUTTON_LAST_UPDATED);
                     controlIds.put(resource.getId(), resource.getControlId());
+                    extendedResourceTypes.put(ResourceType.BUTTON, resource.getType());
                 } else {
                     State buttonState = resource.getButtonEventState(controlIds);
                     updateState(CHANNEL_2_BUTTON_LAST_EVENT, buttonState, fullUpdate);
@@ -982,9 +1028,18 @@ public class Clip2ThingHandler extends BaseThingHandler {
             case MOTION:
             case CAMERA_MOTION:
             case CONVENIENCE_AREA_MOTION:
+                if (fullUpdate) {
+                    extendedResourceTypes.put(ResourceType.MOTION, resource.getType());
+                }
                 updateState(CHANNEL_2_MOTION, resource.getMotionState(), fullUpdate);
                 updateState(CHANNEL_2_MOTION_LAST_UPDATED, resource.getMotionLastUpdatedState(), fullUpdate);
                 updateState(CHANNEL_2_MOTION_ENABLED, resource.getEnabledState(), fullUpdate);
+                break;
+
+            case SECURITY_AREA_MOTION:
+                updateState(CHANNEL_2_SECURITY_MOTION, resource.getMotionState(), fullUpdate);
+                updateState(CHANNEL_2_SECURITY_MOTION_LAST_UPDATED, resource.getMotionLastUpdatedState(), fullUpdate);
+                updateState(CHANNEL_2_SECURITY_MOTION_ENABLED, resource.getEnabledState(), fullUpdate);
                 break;
 
             case RELATIVE_ROTARY:
@@ -1027,10 +1082,10 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 break;
 
             case SPEAKER:
-                if (fullUpdate) {
-                    updateAlertChannel(resource);
-                }
-                updateState(CHANNEL_2_ALERT, resource.getAlertState(), fullUpdate);
+                updateState(CHANNEL_2_ALARM_SOUND, resource.getAlarmSoundState(), fullUpdate);
+                updateState(CHANNEL_2_ALERT_SOUND, resource.getAlertSoundState(), fullUpdate);
+                updateState(CHANNEL_2_CHIME_SOUND, resource.getChimeSoundState(), fullUpdate);
+                updateState(CHANNEL_2_SOUND_MUTE, resource.getSoundMuteState(), fullUpdate);
                 break;
 
             default:
@@ -1464,6 +1519,10 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 equipmentTag = Equipment.CONTACT_SENSOR;
             }
             if (thing.getChannel(CHANNEL_2_MOTION) != null) {
+                sensorCount++;
+                equipmentTag = Equipment.MOTION_DETECTOR;
+            }
+            if (thing.getChannel(CHANNEL_2_SECURITY_MOTION) != null) {
                 sensorCount++;
                 equipmentTag = Equipment.MOTION_DETECTOR;
             }

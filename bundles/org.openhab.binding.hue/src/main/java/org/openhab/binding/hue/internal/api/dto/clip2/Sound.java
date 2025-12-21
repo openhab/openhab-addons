@@ -30,12 +30,13 @@ import com.google.gson.annotations.SerializedName;
 public class Sound {
     private @Nullable @SerializedName("sound_values") List<String> soundValues;
     private @Nullable SoundStatus status;
+    private @Nullable String sound;
 
     public @Nullable SoundStatus getStatus() {
         return this.status;
     }
 
-    public List<SoundType> getSoundValues() {
+    public List<SoundType> getSoundTypes() {
         List<String> soundValues = this.soundValues;
         if (Objects.nonNull(soundValues)) {
             return soundValues.stream().map(SoundType::of).toList();
@@ -43,8 +44,13 @@ public class Sound {
         return List.of();
     }
 
-    public Sound setStatus(SoundStatus soundStatus) {
-        this.status = soundStatus;
+    public @Nullable SoundType getSoundType() {
+        SoundStatus status = this.status;
+        return Objects.nonNull(status) ? status.getSoundType() : null;
+    }
+
+    public Sound setSoundType(SoundType soundType) {
+        this.sound = soundType.name().toLowerCase();
         return this;
     }
 }

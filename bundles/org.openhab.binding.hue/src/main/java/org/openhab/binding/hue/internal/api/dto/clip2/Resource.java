@@ -29,11 +29,13 @@ import org.openhab.binding.hue.internal.api.dto.clip2.enums.CategoryType;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.ContactStateType;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.ContentType;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.EffectType;
+import org.openhab.binding.hue.internal.api.dto.clip2.enums.MuteType;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.ResourceType;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.SceneRecallAction;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.SmartSceneRecallAction;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.SmartSceneState;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.SoftwareUpdateStatusType;
+import org.openhab.binding.hue.internal.api.dto.clip2.enums.SoundType;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.TamperStateType;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.ZigbeeStatus;
 import org.openhab.binding.hue.internal.exceptions.DTOPresentButEmptyException;
@@ -123,7 +125,6 @@ public class Resource {
     private @Nullable Sound alarm;
     private @Nullable Sound chime;
     private @Nullable Mute mute;
-    private @Nullable Sensitivity sensitivity;
 
     /**
      * Constructor
@@ -989,8 +990,8 @@ public class Resource {
     /**
      * Get the speaker alarm sound.
      */
-    public @Nullable Sound getAlarm() {
-        return alarm;
+    public State getAlarmSoundState() {
+        return alarm instanceof Sound sound ? StringType.valueOf(sound.getSoundType().name()) : UnDefType.NULL;
     }
 
     /**
@@ -998,26 +999,28 @@ public class Resource {
      * both are represented by the same 'alert' JSON element. If the JSON element contains a 'status' field it is
      * an alert setting, if it contains an 'action' or 'action_values' field it is an alerts setting.
      */
-    public @Nullable Sound getAlert() {
+    public State getAlertSoundState() {
         JsonElement alert = this.alert;
         if (Objects.nonNull(alert) && alert.isJsonObject() && alert.getAsJsonObject().get("status") != null) {
-            return GSON.fromJson(alert, Sound.class);
+            return GSON.fromJson(alert, Sound.class) instanceof Sound sound
+                    ? StringType.valueOf(sound.getSoundType().name())
+                    : UnDefType.NULL;
         }
-        return null;
+        return UnDefType.NULL;
     }
 
     /**
      * Get the speaker chime sound.
      */
-    public @Nullable Sound getChime() {
-        return chime;
+    public State getChimeSoundState() {
+        return chime instanceof Sound sound ? StringType.valueOf(sound.getSoundType().name()) : UnDefType.NULL;
     }
 
     /**
      * Get the speaker mute state.
      */
-    public @Nullable Mute getMute() {
-        return mute;
+    public State getSoundMuteState() {
+        return mute instanceof Mute mute2 ? OnOffType.from(MuteType.MUTE == mute2.getMuteType()) : UnDefType.NULL;
     }
 
     /**
@@ -1047,8 +1050,8 @@ public class Resource {
     /**
      * Set the speaker alarm sound.
      */
-    public Resource setAlarm(@Nullable Sound alarm) {
-        this.alarm = alarm;
+    public Resource setAlarmSoundType(@Nullable SoundType soundType) {
+        alarm = soundType == null ? null : new Sound().setSoundType(soundType);
         return this;
     }
 
@@ -1056,28 +1059,24 @@ public class Resource {
      * Set the speaker alert sound. Note: this method sets the 'alert' JSON element. The 'alert' JSON element is
      * used for both alert and alerts settings, so this method should only be used when setting an alert sound.
      */
-    public Resource setAlert(Sound alert) {
-        this.alert = GSON.toJsonTree(alert);
+    public Resource setAlertSoundType(@Nullable SoundType soundType) {
+        alert = soundType == null ? null : GSON.toJsonTree(new Sound().setSoundType(soundType));
         return this;
     }
 
     /**
      * Set the speaker chime sound.
      */
-    public Resource setChime(@Nullable Sound chime) {
-        this.chime = chime;
+    public Resource setChimeSoundType(@Nullable SoundType soundType) {
+        chime = soundType == null ? null : new Sound().setSoundType(soundType);
         return this;
     }
 
     /**
      * Set the speaker mute state.
      */
-    public Resource setMute(@Nullable Mute mute) {
-        this.mute = mute;
+    public Resource setMuteType(@Nullable MuteType muteType) {
+        mute = muteType == null ? null : new Mute().setMuteType(muteType);
         return this;
-    }
-
-    public @Nullable Sensitivity getSensitivity() {
-        return sensitivity;
     }
 }
