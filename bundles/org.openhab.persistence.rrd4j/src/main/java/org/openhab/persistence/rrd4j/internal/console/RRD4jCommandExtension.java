@@ -17,10 +17,9 @@ import java.nio.file.Path;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Map.Entry;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -114,8 +113,7 @@ public class RRD4jCommandExtension extends AbstractConsoleCommandExtension imple
 
         PersistenceServiceConfiguration config = persistenceServiceConfigurationRegistry
                 .get(RRD4jPersistenceService.SERVICE_ID);
-        Stream<Entry<String, String>> aliases = config != null ? config.getAliases().entrySet().stream()
-                : Stream.empty();
+        Map<String, String> aliases = config == null ? Map.of() : Map.copyOf(config.getAliases());
 
         console.println((checkOnly ? "Checking" : "Cleaning") + " RRD files...");
         int nb = 0;
@@ -128,8 +126,8 @@ public class RRD4jCommandExtension extends AbstractConsoleCommandExtension imple
                 boolean itemFound;
                 try {
                     // Map alias back to item
-                    String item = Objects.requireNonNull(
-                            aliases.filter(e -> name.equals(e.getValue())).findAny().map(e -> e.getKey()).orElse(name));
+                    String item = Objects.requireNonNull(aliases.entrySet().stream()
+                            .filter(e -> name.equals(e.getValue())).findAny().map(e -> e.getKey()).orElse(name));
                     itemRegistry.getItem(item);
                     itemFound = true;
                 } catch (ItemNotFoundException e) {
