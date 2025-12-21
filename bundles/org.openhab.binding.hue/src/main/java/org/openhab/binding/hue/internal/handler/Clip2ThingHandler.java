@@ -1497,8 +1497,8 @@ public class Clip2ThingHandler extends BaseThingHandler {
             int sensorCount = 0;
             SemanticTag equipmentTag = null;
 
-            if (thing.getChannel(CHANNEL_2_ALERT) != null) {
-                equipmentTag = Equipment.SPEAKER; // will be overridden if the thing is a light
+            if (thing.getChannel(CHANNEL_2_CHIME_SOUND) != null) {
+                equipmentTag = Equipment.SPEAKER;
             }
             if (Set.of(ResourceType.ROOM, ResourceType.ZONE).contains(thisResource.getType())) {
                 equipmentTag = Equipment.ZONE;
@@ -1522,10 +1522,6 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 sensorCount++;
                 equipmentTag = Equipment.MOTION_DETECTOR;
             }
-            if (thing.getChannel(CHANNEL_2_SECURITY_MOTION) != null) {
-                sensorCount++;
-                equipmentTag = Equipment.MOTION_DETECTOR;
-            }
             if (thing.getChannel(CHANNEL_2_LIGHT_LEVEL) != null) {
                 sensorCount++;
                 equipmentTag = Equipment.ILLUMINANCE_SENSOR;
@@ -1536,6 +1532,9 @@ public class Clip2ThingHandler extends BaseThingHandler {
             }
             if (sensorCount > 1) {
                 equipmentTag = Equipment.SENSOR;
+            }
+            if (thing.getChannel(CHANNEL_2_SECURITY_MOTION) != null) {
+                equipmentTag = Equipment.MOTION_DETECTOR;
             }
             if (equipmentTag != null) {
                 logger.debug("{} -> updateEquipmentTag({})", resourceId, equipmentTag.getName());
