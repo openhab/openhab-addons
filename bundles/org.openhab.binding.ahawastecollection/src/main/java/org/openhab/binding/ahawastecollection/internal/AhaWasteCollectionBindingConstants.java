@@ -31,7 +31,7 @@ public class AhaWasteCollectionBindingConstants {
 
     // List of all Channel ids
     public static final String GENERAL_WASTE = "generalWaste";
-    public static final String LEIGHTWEIGHT_PACKAGING = "leightweightPackaging";
+    public static final String LIGHTWEIGHT_PACKAGING = "lightweightPackaging";
     public static final String BIOWASTE = "bioWaste";
     public static final String PAPER = "paper";
 }
