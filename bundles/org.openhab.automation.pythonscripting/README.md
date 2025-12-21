@@ -146,8 +146,13 @@ These values are needed during the next step
 
 2. Download graalpy-community and create venv
 
+    ::: tip Choose the correct GraalVM version
+    Ensure that you include the right version of your installed GraalVM in the download command. The version must match the version provided by openHAB.
+    :::
+
     ```shell
     # The downloaded graalpy-community tar.gz must match your operating system (linux, windows or macos), your architecture (amd64, aarch64) and your "GraalVM version" of openHAB
+    # Exemplary code for GraalVM version 25.0.1
     wget -qO- https://github.com/oracle/graalpython/releases/download/graal-25.0.1/graalpy-community-25.0.1-linux-amd64.tar.gz | gunzip | tar xvf -
     cd graalpy-community-25.0.1-linux-amd64/
 
