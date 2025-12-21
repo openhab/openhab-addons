@@ -31,6 +31,11 @@
 				<description>Network address of the KNX/IP gateway</description>
 				<context>network-address</context>
 			</parameter>
+			<parameter name="multicastAddress" type="text">
+				<label>Multicast Address</label>
+				<description>Multicast address of the KNX/IP gateway (only used in ROUTER and SECUREROUTER modes). Only needed if
+					the multicast address is different from the default 224.0.23.12.</description>
+			</parameter>
 			<parameter name="portNumber" type="integer" required="false"> <!-- Only required in TUNNEL mode -->
 				<description>Port number of the KNX/IP gateway</description>
 				<label>Port</label>
