@@ -92,6 +92,14 @@ Additionally, you can configure the Add-on via a config file `/openhab/services/
 #
 #org.openhab.automation.pythonscripting:injectionEnabled = 2
 
+# Python pip modules
+#
+# A comma separated list of Python modules to install
+# Versions may be constrained by separating with an "==" followed by standard
+# python pip version constraint, such as "tzdata==2025.2".
+#
+#org.openhab.automation.pythonscripting:pipModules =
+
 # Enable dependency tracking
 #
 # Dependency tracking allows your scripts to automatically reload when one of its dependencies is updated.
