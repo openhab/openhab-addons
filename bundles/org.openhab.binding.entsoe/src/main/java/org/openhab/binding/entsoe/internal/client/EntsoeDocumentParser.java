@@ -311,20 +311,20 @@ public class EntsoeDocumentParser implements ErrorHandler {
 
     @Override
     public void warning(@Nullable SAXParseException exception) throws SAXException {
-        throwParserExcpetion("Unknown warning", exception);
+        throwParserException("Unknown warning", exception);
     }
 
     @Override
     public void error(@Nullable SAXParseException exception) throws SAXException {
-        throwParserExcpetion("Unknown error", exception);
+        throwParserException("Unknown error", exception);
     }
 
     @Override
     public void fatalError(@Nullable SAXParseException exception) throws SAXException {
-        throwParserExcpetion("Unknown fatal error", exception);
+        throwParserException("Unknown fatal error", exception);
     }
 
-    private void throwParserExcpetion(String message, @Nullable SAXParseException exception) throws SAXException {
+    private void throwParserException(String message, @Nullable SAXParseException exception) throws SAXException {
         if (exception != null) {
             throw exception;
         } else {
