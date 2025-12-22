@@ -54,7 +54,7 @@ public class EntsoeDocumentParser implements ErrorHandler {
     private @Nullable Document document;
 
     public EntsoeDocumentParser() {
-        failureReason = " Parser not initialized with response";
+        failureReason = "Parser not initialized with response";
     }
 
     /**
