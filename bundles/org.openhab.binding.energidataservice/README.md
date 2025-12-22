@@ -872,10 +872,6 @@ items:
 ### Persistence Configuration
 
 ```java
-Strategies {
-    default = everyChange
-}
-
 Items {
     SpotPrice,
     GridTariff,

@@ -144,10 +144,6 @@ public class ICloudSession {
         logger.trace("Result {} {}\nHeaders -----\n{}\nBody -----\n{}\n------\n", url, response.statusCode(),
                 response.headers(), responseBodyAsString);
 
-        if (response.statusCode() >= 300) {
-            throw new ICloudApiResponseException(url, response.statusCode());
-        }
-
         // Store headers to reuse authentication
         this.data.accountCountry = response.headers().firstValue("X-Apple-ID-Account-Country")
                 .orElse(getAccountCountry());
@@ -157,6 +153,12 @@ public class ICloudSession {
         this.data.scnt = response.headers().firstValue("scnt").orElse(getScnt());
 
         this.stateStorage.put(SESSION_DATA_KEY, JsonUtils.toJson(this.data));
+
+        if (ICloudApiAuthenticationException.isAuthError(response.statusCode())) {
+            throw new ICloudApiAuthenticationException(url, response.statusCode(), responseBodyAsString);
+        } else if (response.statusCode() >= 300) {
+            throw new ICloudApiResponseException(url, response.statusCode(), responseBodyAsString);
+        }
 
         return responseBodyAsString;
     }
