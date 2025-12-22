@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.astro.internal.calc;
 
+import static org.openhab.binding.astro.internal.model.Circadian.*;
+
 import java.util.Calendar;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -30,8 +32,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class CircadianCalc {
-    public static final long MIN_COLOR_TEMP = 2500;
-    private static final long MAX_COLOR_TEMP = 5500;
     private static final long DELTA_TEMP = MAX_COLOR_TEMP - MIN_COLOR_TEMP;
     private static final long TWELVE_HOURS_MS = 12 * 60 * 60 * 1000;
 
@@ -40,7 +40,7 @@ public class CircadianCalc {
     public static Circadian calculate(Calendar calendar, Range riseRange, Range setRange, @Nullable Range noonRange) {
         var rise = riseRange.getStart();
         var set = setRange.getStart();
-        var noon = noonRange instanceof Range range ? range.getStart() : null;
+        var noon = noonRange != null ? noonRange.getStart() : null;
 
         // If we have no rise or no set, there's no point to calculate a Circadian Cycle
         if (rise == null || set == null || noon == null) {
@@ -82,12 +82,17 @@ public class CircadianCalc {
         }
 
         double y = 0.0;
-        double a = (y - k) / Math.pow(h - x, 2);
+        long dx = h - x;
+        if (dx == 0L) {
+            logger.debug("Degenerate circadian parabola (h == x), returning default values");
+            return Circadian.DEFAULT;
+        }
+        double a = (y - k) / (dx * dx);
         double percentage = a * Math.pow(now - h, 2) + k;
         double colorTemp = percentage > 0 ? (DELTA_TEMP * percentage / 100) + MIN_COLOR_TEMP : MIN_COLOR_TEMP;
 
         logger.debug("Percentage: {}, ColorTemp: {}", percentage, colorTemp);
 
-        return new Circadian(Math.abs(percentage), colorTemp);
+        return new Circadian(Math.min(100, Math.abs(percentage)), colorTemp);
     }
 }

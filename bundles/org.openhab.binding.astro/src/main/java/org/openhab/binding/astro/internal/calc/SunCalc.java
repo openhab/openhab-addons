@@ -131,13 +131,13 @@ public class SunCalc {
     private boolean isSunUpAllDay(Calendar calendar, double latitude, double longitude, @Nullable Double altitude) {
         Sun sun = new Sun();
         Calendar start = DateTimeUtils.truncateToMidnight(calendar);
+        Calendar cal = (Calendar) start.clone();
         for (int i = 0; i <= 72; i++) {
-            Calendar cal = (Calendar) start.clone();
-            cal.add(Calendar.MINUTE, CURVE_TIME_INTERVAL * i);
             setPositionalInfo(cal, latitude, longitude, altitude, sun);
             if (sun.getPosition().getElevationAsDouble() < SUN_ANGLE) {
                 return false;
             }
+            cal.add(Calendar.MINUTE, CURVE_TIME_INTERVAL);
         }
         return true;
     }

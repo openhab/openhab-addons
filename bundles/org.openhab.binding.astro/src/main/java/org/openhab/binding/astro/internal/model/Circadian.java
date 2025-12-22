@@ -13,7 +13,6 @@
 package org.openhab.binding.astro.internal.model;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.astro.internal.calc.CircadianCalc;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
@@ -26,7 +25,10 @@ import org.openhab.core.library.unit.Units;
 @NonNullByDefault
 public record Circadian(int brightness, int temperature) {
 
-    public static final Circadian DEFAULT = new Circadian(0, CircadianCalc.MIN_COLOR_TEMP);
+    public static final long MIN_COLOR_TEMP = 2500;
+    public static final long MAX_COLOR_TEMP = 5500;
+
+    public static final Circadian DEFAULT = new Circadian(0, MIN_COLOR_TEMP);
 
     public Circadian {
         if (brightness < 0 || brightness > 100) {

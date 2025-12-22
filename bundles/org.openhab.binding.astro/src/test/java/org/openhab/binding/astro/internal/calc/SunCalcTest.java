@@ -476,14 +476,13 @@ public class SunCalcTest {
         assertFalse(cal.get(Calendar.DAY_OF_MONTH) == cal2.get(Calendar.DAY_OF_MONTH));
     }
 
-    @SuppressWarnings("null")
     @Test
     public void testIsSunUpAllDayForBarrowAlaska() throws Exception {
         Method isSunUpAllDay = SunCalc.class.getDeclaredMethod("isSunUpAllDay", Calendar.class, double.class,
                 double.class, Double.class);
         isSunUpAllDay.setAccessible(true);
 
-        // At summer solstice in Barrow, Alaska, sun stay up all day
+        // At summer solstice in Barrow, Alaska, sun stays up all day
         boolean result = (boolean) isSunUpAllDay.invoke(sunCalc, SUMMER_SOLSTICE_BARROW, BARROW_LATITUDE,
                 BARROW_LONGITUDE, BARROW_ALTITUDE);
 
