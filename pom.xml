@@ -72,7 +72,7 @@
     <eea.version>2.4.0</eea.version>
     <jackson.version>2.19.2</jackson.version>
     <jna.version>5.17.0</jna.version>
-    <karaf.version>4.4.8</karaf.version>
+    <karaf.version>4.4.9</karaf.version>
     <mockito.version>5.19.0</mockito.version>
     <netty.version>4.1.126.Final</netty.version>
     <graalvm.version>25.0.1</graalvm.version>
