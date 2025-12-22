@@ -88,7 +88,7 @@ public class AstroIconProvider implements IconProvider {
         if (category.equals(ZODIAC_ICON) && state != null) {
             try {
                 var sign = ZodiacSign.valueOf(state);
-                iconName = iconName.replace(".", "-%s.".formatted(sign.name().toLowerCase()));
+                iconName = iconName.replace(".", "-%s.".formatted(sign.name().toLowerCase(Locale.US)));
             } catch (IllegalArgumentException ignore) {
                 // Invalid state for the icon set, we'll remain on default icon
             }
@@ -103,6 +103,6 @@ public class AstroIconProvider implements IconProvider {
             logger.warn("Unable to load ressource '{}': {}", iconResource.getPath(), e.getMessage());
         }
 
-        return result.isEmpty() ? null : new ByteArrayInputStream(result.getBytes());
+        return result.isEmpty() ? null : new ByteArrayInputStream(result.getBytes(StandardCharsets.UTF_8));
     }
 }

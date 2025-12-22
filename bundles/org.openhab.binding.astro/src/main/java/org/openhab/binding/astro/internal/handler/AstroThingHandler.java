@@ -340,9 +340,7 @@ public abstract class AstroThingHandler extends BaseThingHandler {
     public void schedule(Job job, Instant eventAt) {
         long sleepTime = Instant.now().until(eventAt, ChronoUnit.MILLIS);
         schedule(job, sleepTime);
-        if (logger.isDebugEnabled()) {
-            logger.debug("Scheduled {} in {}ms (at {})", job, sleepTime, eventAt);
-        }
+        logger.debug("Scheduled {} in {}ms (at {})", job, sleepTime, eventAt);
     }
 
     private void tidyScheduledFutures() {

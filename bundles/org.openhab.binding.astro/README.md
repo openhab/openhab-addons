@@ -48,7 +48,6 @@ This binding has its own IconProvider and makes available the following list of 
 | oh:astro:zodiac-taurus      |   Yes   | ![Taurus](doc/images/zodiac-taurus.svg) |
 | oh:astro:zodiac-virgo       |   Yes   | ![Virgo](doc/images/zodiac-virgo.svg) |
 
-
 ## Channels
 
 - **thing** `sun`
