@@ -73,7 +73,7 @@ public abstract class AstroThingHandler extends BaseThingHandler {
 
     /** Logger Instance */
     private final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-    private final SimpleDateFormat isoFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+    private final SimpleDateFormat isoFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.ROOT);
 
     /** Scheduler to schedule jobs */
     private final CronScheduler cronScheduler;
