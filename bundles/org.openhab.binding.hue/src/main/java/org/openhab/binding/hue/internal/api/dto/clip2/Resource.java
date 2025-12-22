@@ -991,7 +991,9 @@ public class Resource {
      * Get the speaker alarm sound.
      */
     public State getAlarmSoundState() {
-        return alarm instanceof Sound sound ? StringType.valueOf(sound.getSoundType().name()) : UnDefType.NULL;
+        return alarm instanceof Sound sound && sound.getSoundType() instanceof SoundType type
+                ? StringType.valueOf(type.name())
+                : UnDefType.NULL;
     }
 
     /**
@@ -1003,8 +1005,8 @@ public class Resource {
         JsonElement alert = this.alert;
         if (Objects.nonNull(alert) && alert.isJsonObject() && alert.getAsJsonObject().get("status") != null) {
             return GSON.fromJson(alert, Sound.class) instanceof Sound sound
-                    ? StringType.valueOf(sound.getSoundType().name())
-                    : UnDefType.NULL;
+                    && sound.getSoundType() instanceof SoundType type ? StringType.valueOf(type.name())
+                            : UnDefType.NULL;
         }
         return UnDefType.NULL;
     }
@@ -1013,14 +1015,18 @@ public class Resource {
      * Get the speaker chime sound.
      */
     public State getChimeSoundState() {
-        return chime instanceof Sound sound ? StringType.valueOf(sound.getSoundType().name()) : UnDefType.NULL;
+        return chime instanceof Sound sound && sound.getSoundType() instanceof SoundType type
+                ? StringType.valueOf(type.name())
+                : UnDefType.NULL;
     }
 
     /**
      * Get the speaker mute state.
      */
     public State getSoundMuteState() {
-        return mute instanceof Mute mute2 ? OnOffType.from(MuteType.MUTE == mute2.getMuteType()) : UnDefType.NULL;
+        return mute instanceof Mute mute2 && mute2.getMuteType() instanceof MuteType type
+                ? OnOffType.from(MuteType.MUTE == type)
+                : UnDefType.NULL;
     }
 
     /**
