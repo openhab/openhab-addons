@@ -78,7 +78,6 @@ public class SrpPassword {
             throw new IllegalStateException("Encrypt info not set");
         }
         try {
-
             PKCS5S2ParametersGenerator gen = new PKCS5S2ParametersGenerator(new SHA256Digest());
             gen.init(passwordHash, salt, iterations);
             KeyParameter key = (KeyParameter) gen.generateDerivedParameters(keyLength * 8);
