@@ -22,7 +22,6 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import javax.measure.Unit;
 import javax.measure.quantity.Temperature;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -62,7 +61,6 @@ import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.ImperialUnits;
 import org.openhab.core.library.unit.SIUnits;
-import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -561,24 +559,6 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
                 logger.debug("Removing unsupported channels for {}: {}", thing.getUID(), joiner.toString());
             }
             updateThing(editThing().withoutChannels(removeList).build());
-        }
-    }
-
-    private void updateAllAPIChannels(HomeApi api) {
-        updateAPIChannels(api.getAPIRateLimit(), TadoBindingConstants.CHANNEL_API_RATE_LIMIT, Units.ONE);
-        updateAPIChannels(api.getAPIRateDuration(), TadoBindingConstants.CHANNEL_API_RATE_DURATION, Units.SECOND);
-        updateAPIChannels(api.getAPIRateRemaining(), TadoBindingConstants.CHANNEL_API_RATE_REMAINING, Units.ONE);
-        updateAPIChannels(api.getAPIRateReset(), TadoBindingConstants.CHANNEL_API_RATE_RESET, Units.SECOND);
-    }
-
-    private void updateAPIChannels(@Nullable Integer value, String channelName, Unit unit) {
-        if (value != null) {
-            if (TadoBindingConstants.CHANNEL_API_RATE_LIMIT.equals(channelName)
-                    || TadoBindingConstants.CHANNEL_API_RATE_REMAINING.equals(channelName)) {
-                updateState(channelName, new DecimalType(value));
-            } else {
-                updateState(channelName, new QuantityType<>(value, unit));
-            }
         }
     }
 }

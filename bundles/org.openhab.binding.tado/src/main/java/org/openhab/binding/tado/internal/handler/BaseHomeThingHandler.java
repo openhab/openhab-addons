@@ -12,9 +12,15 @@
  */
 package org.openhab.binding.tado.internal.handler;
 
+import javax.measure.Unit;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.tado.internal.TadoBindingConstants;
 import org.openhab.binding.tado.swagger.codegen.api.client.HomeApi;
+import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -59,6 +65,24 @@ public abstract class BaseHomeThingHandler extends BaseThingHandler {
         // update without error -> we're back online
         if (getThing().getStatus() == ThingStatus.OFFLINE) {
             updateStatus(ThingStatus.ONLINE);
+        }
+    }
+
+    protected void updateAllAPIChannels(HomeApi api) {
+        updateAPIChannels(api.getAPIRateLimit(), TadoBindingConstants.CHANNEL_API_RATE_LIMIT, Units.ONE);
+        updateAPIChannels(api.getAPIRateDuration(), TadoBindingConstants.CHANNEL_API_RATE_DURATION, Units.SECOND);
+        updateAPIChannels(api.getAPIRateRemaining(), TadoBindingConstants.CHANNEL_API_RATE_REMAINING, Units.ONE);
+        updateAPIChannels(api.getAPIRateReset(), TadoBindingConstants.CHANNEL_API_RATE_RESET, Units.SECOND);
+    }
+
+    private void updateAPIChannels(@Nullable Integer value, String channelName, Unit unit) {
+        if (value != null) {
+            if (TadoBindingConstants.CHANNEL_API_RATE_LIMIT.equals(channelName)
+                    || TadoBindingConstants.CHANNEL_API_RATE_REMAINING.equals(channelName)) {
+                updateState(channelName, new DecimalType(value));
+            } else {
+                updateState(channelName, new QuantityType<>(value, unit));
+            }
         }
     }
 }

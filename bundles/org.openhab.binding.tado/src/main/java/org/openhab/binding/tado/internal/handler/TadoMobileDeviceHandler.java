@@ -16,8 +16,6 @@ import java.io.IOException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import javax.measure.Unit;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.tado.internal.TadoBindingConstants;
@@ -25,10 +23,7 @@ import org.openhab.binding.tado.internal.config.TadoMobileDeviceConfig;
 import org.openhab.binding.tado.swagger.codegen.api.ApiException;
 import org.openhab.binding.tado.swagger.codegen.api.client.HomeApi;
 import org.openhab.binding.tado.swagger.codegen.api.model.MobileDevice;
-import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
-import org.openhab.core.library.types.QuantityType;
-import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -161,24 +156,6 @@ public class TadoMobileDeviceHandler extends BaseHomeThingHandler {
         ScheduledFuture<?> refreshTimer = this.refreshTimer;
         if (refreshTimer != null) {
             refreshTimer.cancel(false);
-        }
-    }
-
-    private void updateAllAPIChannels(HomeApi api) {
-        updateAPIChannels(api.getAPIRateLimit(), TadoBindingConstants.CHANNEL_API_RATE_LIMIT, Units.ONE);
-        updateAPIChannels(api.getAPIRateDuration(), TadoBindingConstants.CHANNEL_API_RATE_DURATION, Units.SECOND);
-        updateAPIChannels(api.getAPIRateRemaining(), TadoBindingConstants.CHANNEL_API_RATE_REMAINING, Units.ONE);
-        updateAPIChannels(api.getAPIRateReset(), TadoBindingConstants.CHANNEL_API_RATE_RESET, Units.SECOND);
-    }
-
-    private void updateAPIChannels(@Nullable Integer value, String channelName, Unit unit) {
-        if (value != null) {
-            if (TadoBindingConstants.CHANNEL_API_RATE_LIMIT.equals(channelName)
-                    || TadoBindingConstants.CHANNEL_API_RATE_REMAINING.equals(channelName)) {
-                updateState(channelName, new DecimalType(value));
-            } else {
-                updateState(channelName, new QuantityType<>(value, unit));
-            }
         }
     }
 }
