@@ -28,7 +28,8 @@ import org.bouncycastle.crypto.Digest;
 import org.bouncycastle.crypto.agreement.srp.SRP6Util;
 import org.bouncycastle.crypto.digests.SHA256Digest;
 import org.bouncycastle.util.encoders.Base64;
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.icloud.internal.utilities.JsonUtils;
 import org.openhab.binding.icloud.internal.utilities.Pair;
 
@@ -41,18 +42,37 @@ import com.google.gson.JsonObject;
  *
  * @author Simon Spielmann - Initial contribution
  */
+@NonNullByDefault
 public class SrpAuthentication {
 
-    private final @NonNull String password;
-    private final List<Pair<@NonNull String, @NonNull String>> sessionHeaders;
+    private final String password;
+    private final List<Pair<String, String>> sessionHeaders;
 
     // N and g values from RFC 5054 - 2048 bit group
     private static final BigInteger N = new BigInteger(
-            "21766174458617435773191008891802753781907668374255538511144643224689886235383840957210909013086056401571399717235807266581649606472148410291413364152197364477180887395655483738115072677402235101762521901569820740293149529620419333266262073471054548368736039519702486226506248861060256971802984953561121442680157668000761429988222457090413873973970171927093992114751765168063614761119615476233422096442783117971236371647333871414335895773474667308967050807005509320424799678417036867928316761272274230314067548291133582479583061439577559347101961771406173684378522703483495337037655006751328447510550299250924469288819");;
-    private final static BigInteger g = BigInteger.valueOf(2l);
+            "2176617445861743577319100889180275378190766837425553851114464322"
+                    + "4689886235383840957210909013086056401571399717235807266581649606"
+                    + "4721484102914133641521973644771808873956554837381150726774022351"
+                    + "0176252190156982074029314952962041933326626207347105454836873603"
+                    + "9519702486226506248861060256971802984953561121442680157668000761"
+                    + "4299882224570904138739739701719270939921147517651680636147611196"
+                    + "1547623342209644278311797123637164733387141433589577347466730896"
+                    + "7050807005509320424799678417036867928316761272274230314067548291"
+                    + "1335824795830614395775593471019617714061736843785227034834953370"
+                    + "37655006751328447510550299250924469288819");
+    private final static BigInteger g = BigInteger.valueOf(2L);
 
     // Username
     private String I;
+
+    private static MessageDigest md;
+    static {
+        try {
+            md = MessageDigest.getInstance("SHA-256");
+        } catch (NoSuchAlgorithmException e) {
+            throw new ExceptionInInitializerError(e);
+        }
+    }
 
     /**
      * Implements SRP authentication according to Apple's specifications.
@@ -61,8 +81,7 @@ public class SrpAuthentication {
      * @param password user password
      * @param sessionHeaders list of session headers
      */
-    public SrpAuthentication(String accountName, String password,
-            List<Pair<@NonNull String, @NonNull String>> sessionHeaders) {
+    public SrpAuthentication(String accountName, String password, List<Pair<String, String>> sessionHeaders) {
         this.I = accountName;
         this.password = password;
         this.sessionHeaders = sessionHeaders;
@@ -74,10 +93,10 @@ public class SrpAuthentication {
      * @param data BigInteger to convert
      * @return byte array representation of BigInteger without leading zero byte
      */
-    private byte[] toByteArray(BigInteger data) {
+    private static byte[] toByteArray(BigInteger data) {
         byte[] signedBytes = data.toByteArray();
         if (signedBytes[0] == 0x00) {
-            // Führendes Null-Byte entfernen
+            // Removing leading zero byte
             byte[] unsignedBytes = new byte[signedBytes.length - 1];
             System.arraycopy(signedBytes, 1, unsignedBytes, 0, unsignedBytes.length);
             return unsignedBytes;
@@ -111,6 +130,10 @@ public class SrpAuthentication {
 
         // Parse response
         JsonObject initBody = parseJson(initResponse);
+
+        if (initBody == null) {
+            throw new ICloudApiResponseException("Failed to parse SRP init response", 520, "");
+        }
 
         BigInteger B = new BigInteger(1, b64Decode(initBody.get("b").getAsString()));
         byte[] s = b64Decode(initBody.get("salt").getAsString());
@@ -164,7 +187,7 @@ public class SrpAuthentication {
      * @param jsonString the JSON response string
      * @return the parsed JsonObject
      */
-    private JsonObject parseJson(String jsonString) {
+    private @Nullable JsonObject parseJson(String jsonString) {
         Gson gson = new Gson();
         return gson.fromJson(jsonString, JsonObject.class);
     }
@@ -176,8 +199,8 @@ public class SrpAuthentication {
      * @return the SHA-256 hash as a byte array.
      * @throws NoSuchAlgorithmException if SHA-256 algorithm is not available.
      */
-    private static byte[] sha256(byte[] data) throws NoSuchAlgorithmException {
-        MessageDigest md = MessageDigest.getInstance("SHA-256");
+    private static byte[] sha256(byte[] data) {
+        md.reset();
         return md.digest(data);
     }
 
@@ -240,6 +263,7 @@ public class SrpAuthentication {
      * @return the result of XORing the two byte arrays
      */
     private static byte[] xor(byte[] a, byte[] b) {
+        assert (a.length == b.length);
         byte[] result = new byte[a.length];
         for (int i = 0; i < a.length; i++) {
             result[i] = (byte) (a[i] ^ b[i]);
@@ -249,8 +273,10 @@ public class SrpAuthentication {
 
     /**
      * Base64 encode
+     *
+     * @param data BigInteger to encode
      */
-    private String b64Encode(BigInteger data) {
+    private static String b64Encode(BigInteger data) {
         return b64Encode(toByteArray(data));
     }
 
@@ -259,14 +285,16 @@ public class SrpAuthentication {
      *
      * @param data byte array to encode
      */
-    private String b64Encode(byte[] data) {
+    private static String b64Encode(byte[] data) {
         return Base64.toBase64String(data);
     }
 
     /**
      * Base64 decode
+     *
+     * @param data string to decode
      */
-    private byte[] b64Decode(String data) {
+    private static byte[] b64Decode(String data) {
         return Base64.decode(data);
     }
 }

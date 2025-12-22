@@ -26,7 +26,7 @@ import org.bouncycastle.crypto.params.KeyParameter;
  * @author Simon Spielmann - Initial contribution
  */
 public class SrpPassword {
-    public final byte[] passwordHash;
+    private final byte[] passwordHash;
     private byte[] salt;
     private Integer iterations;
     private Integer keyLength;
@@ -44,7 +44,7 @@ public class SrpPassword {
      * Calculates the SHA-256 hash of the input string.
      *
      * @param input the input string
-     * @return
+     * @return the SHA-256 hash as a byte array
      */
     private byte[] sha256(String input) {
         try {

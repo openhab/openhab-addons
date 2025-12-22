@@ -32,7 +32,7 @@ public class ICloudApiAuthenticationException extends ICloudApiResponseException
      * @param statusCode HTTP status code which was reported
      */
     public ICloudApiAuthenticationException(String url, int statusCode, String body) {
-        super(String.format("Request %s failed with %s.", url, statusCode), statusCode, body);
+        super(url, statusCode, body);
     }
 
     @Override
@@ -41,7 +41,7 @@ public class ICloudApiAuthenticationException extends ICloudApiResponseException
     }
 
     /**
-     * TODO: Enum
+     * Returns the reason for the authentication error based on the status code.
      *
      * @return statusCode HTTP status code of failed request.
      */
@@ -60,6 +60,12 @@ public class ICloudApiAuthenticationException extends ICloudApiResponseException
         }
     }
 
+    /**
+     * Checks if the given status code is related to an authentication error.
+     *
+     * @param statusCode HTTP status code to check.
+     * @return true if the status code indicates an authentication error, false otherwise.
+     */
     public static boolean isAuthError(int statusCode) {
         return statusCode == 409 || statusCode == 421 || statusCode == 450 || statusCode == 500;
     }

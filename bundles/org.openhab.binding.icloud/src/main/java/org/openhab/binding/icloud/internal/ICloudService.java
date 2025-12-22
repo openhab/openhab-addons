@@ -43,9 +43,6 @@ import com.google.gson.JsonSyntaxException;
 @NonNullByDefault
 public class ICloudService {
 
-    /**
-     *
-     */
     private static final String ICLOUD_CLIENT_ID = "d39ba9916b7251055b22c7f910e2ea796ee65e98b2ddecea8f5dde8d9d1a815d";
 
     private final Logger logger = LoggerFactory.getLogger(ICloudService.class);
@@ -88,11 +85,12 @@ public class ICloudService {
      *
      * @param forceRefresh Force a new authentication
      * @return {@code true} if authentication was successful
+     *
      * @throws IOException if I/O error occurred
      * @throws InterruptedException if request was interrupted
-     * @throws CryptoException
-     * @throws ICloudApiResponseException
-     * @throws NoSuchAlgorithmException
+     * @throws CryptoException if a cryptographic error occurred
+     * @throws ICloudApiResponseException if the request failed (e.g. not OK HTTP return code)
+     * @throws NoSuchAlgorithmException if the requested cryptographic algorithm is not available
      */
     public boolean authenticate(boolean forceRefresh) throws IOException, InterruptedException,
             ICloudApiResponseException, CryptoException, NoSuchAlgorithmException {
@@ -184,8 +182,8 @@ public class ICloudService {
     }
 
     /**
-     * @param pair
-     * @return
+     *
+     * @return List of headers required for authentication requests.
      */
     private List<Pair<String, String>> getAuthHeaders() {
         return new ArrayList<>(List.of(Pair.of("Accept", "application/json, text/javascript"),

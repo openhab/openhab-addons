@@ -154,7 +154,6 @@ public class ICloudSession {
 
         this.stateStorage.put(SESSION_DATA_KEY, JsonUtils.toJson(this.data));
 
-        // TODO Refactor exception handling
         if (ICloudApiAuthenticationException.isAuthError(response.statusCode())) {
             throw new ICloudApiAuthenticationException(url, response.statusCode(), responseBodyAsString);
         } else if (response.statusCode() >= 300) {
