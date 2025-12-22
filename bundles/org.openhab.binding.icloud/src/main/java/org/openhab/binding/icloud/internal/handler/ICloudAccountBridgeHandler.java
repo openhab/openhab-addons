@@ -45,8 +45,6 @@ import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.JsonSyntaxException;
-
 /**
  * Retrieves the data for a given account from iCloud and passes the information to
  * {@link org.openhab.binding.icloud.internal.discovery.ICloudDeviceDiscovery} and to the {@link ICloudDeviceHandler}s.
@@ -404,7 +402,7 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
                             "Status = " + statusCode + ", Response = " + json);
                 }
                 logger.debug("iCloud bridge data refresh complete.");
-            } catch (NumberFormatException | JsonSyntaxException e) {
+            } catch (RuntimeException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "iCloud response invalid: " + e.getMessage());
             }

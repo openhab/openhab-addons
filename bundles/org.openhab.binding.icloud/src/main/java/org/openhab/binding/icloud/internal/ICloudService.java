@@ -13,12 +13,14 @@
 package org.openhab.binding.icloud.internal;
 
 import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import org.bouncycastle.crypto.CryptoException;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.icloud.internal.utilities.JsonUtils;
@@ -27,6 +29,8 @@ import org.openhab.binding.icloud.internal.utilities.Pair;
 import org.openhab.core.storage.Storage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.gson.JsonSyntaxException;
 
 /**
  *
@@ -39,9 +43,6 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class ICloudService {
 
-    /**
-     *
-     */
     private static final String ICLOUD_CLIENT_ID = "d39ba9916b7251055b22c7f910e2ea796ee65e98b2ddecea8f5dde8d9d1a815d";
 
     private final Logger logger = LoggerFactory.getLogger(ICloudService.class);
@@ -84,10 +85,15 @@ public class ICloudService {
      *
      * @param forceRefresh Force a new authentication
      * @return {@code true} if authentication was successful
+     *
      * @throws IOException if I/O error occurred
      * @throws InterruptedException if request was interrupted
+     * @throws CryptoException if a cryptographic error occurred
+     * @throws ICloudApiResponseException if the request failed (e.g. not OK HTTP return code)
+     * @throws NoSuchAlgorithmException if the requested cryptographic algorithm is not available
      */
-    public boolean authenticate(boolean forceRefresh) throws IOException, InterruptedException {
+    public boolean authenticate(boolean forceRefresh) throws IOException, InterruptedException,
+            ICloudApiResponseException, CryptoException, NoSuchAlgorithmException {
         boolean loginSuccessful = false;
         if (this.session.getSessionToken() != null && !forceRefresh) {
             try {
@@ -101,27 +107,31 @@ public class ICloudService {
 
         if (!loginSuccessful) {
             logger.debug("Authenticating as {}...", this.appleId);
-
-            Map<String, Object> requestBody = new HashMap<>();
-            requestBody.put("accountName", this.appleId);
-            requestBody.put("password", this.password);
-            requestBody.put("rememberMe", true);
-            if (session.hasToken()) {
-                requestBody.put("trustTokens", new String[] { this.session.getTrustToken() });
-            } else {
-                requestBody.put("trustTokens", new String[0]);
-            }
-
-            List<Pair<String, String>> headers = getAuthHeaders();
-
             try {
-                this.session.post(AUTH_ENDPOINT + "/signin?isRememberMeEnabled=true", JsonUtils.toJson(requestBody),
-                        headers);
-            } catch (ICloudApiResponseException ex) {
-                return false;
+                SrpAuthentication auth = new SrpAuthentication(appleId, password, getAuthHeaders());
+                auth.auth(AUTH_ENDPOINT, session);
+            } catch (ICloudApiAuthenticationException ex) {
+                if (ex.getStatusCode() == 500) {
+                    logger.debug("Authentication failed.", ex);
+                    return false;
+                } else {
+                    getMfaAuthOptions();
+                }
             }
         }
         return authenticateWithToken();
+    }
+
+    private void getMfaAuthOptions()
+            throws JsonSyntaxException, IOException, InterruptedException, ICloudApiResponseException {
+        List<Pair<String, String>> headers = ListUtil.replaceEntries(getAuthHeaders(),
+                List.of(Pair.of("Accept", "application/json")));
+        addSessionHeaders(headers);
+        @Nullable
+        Map<String, Object> localSessionData = JsonUtils.toMap(session.get(AUTH_ENDPOINT, headers));
+        if (localSessionData != null) {
+            data = localSessionData;
+        }
     }
 
     /**
@@ -172,12 +182,12 @@ public class ICloudService {
     }
 
     /**
-     * @param pair
-     * @return
+     *
+     * @return List of headers required for authentication requests.
      */
     private List<Pair<String, String>> getAuthHeaders() {
-        return new ArrayList<>(List.of(Pair.of("Accept", "*/*"), Pair.of("Content-Type", "application/json"),
-                Pair.of("X-Apple-OAuth-Client-Id", ICLOUD_CLIENT_ID),
+        return new ArrayList<>(List.of(Pair.of("Accept", "application/json, text/javascript"),
+                Pair.of("Content-Type", "application/json"), Pair.of("X-Apple-OAuth-Client-Id", ICLOUD_CLIENT_ID),
                 Pair.of("X-Apple-OAuth-Client-Type", "firstPartyAuth"),
                 Pair.of("X-Apple-OAuth-Redirect-URI", HOME_ENDPOINT),
                 Pair.of("X-Apple-OAuth-Require-Grant-Code", "true"),
