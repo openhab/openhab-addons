@@ -967,13 +967,17 @@ public class Clip2ThingHandler extends BaseThingHandler {
         logger.debug("{} -> updateChannels() from resource {}", resourceId, resource);
         boolean fullUpdate = resource.hasFullState();
         switch (resource.getType()) {
-            case BUTTON:
             case BELL_BUTTON:
+                if (fullUpdate) {
+                    extendedResourceTypes.put(ResourceType.BUTTON, resource.getType());
+                }
+                // fall through for button related channels
+
+            case BUTTON:
                 if (fullUpdate) {
                     addSupportedChannel(CHANNEL_2_BUTTON_LAST_EVENT);
                     addSupportedChannel(CHANNEL_2_BUTTON_LAST_UPDATED);
                     controlIds.put(resource.getId(), resource.getControlId());
-                    extendedResourceTypes.put(ResourceType.BUTTON, resource.getType());
                 } else {
                     State buttonState = resource.getButtonEventState(controlIds);
                     updateState(CHANNEL_2_BUTTON_LAST_EVENT, buttonState, fullUpdate);
@@ -1025,18 +1029,21 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 updateState(CHANNEL_2_LIGHT_LEVEL_ENABLED, resource.getEnabledState(), fullUpdate);
                 break;
 
-            case MOTION:
             case CAMERA_MOTION:
             case CONVENIENCE_AREA_MOTION:
                 if (fullUpdate) {
                     extendedResourceTypes.put(ResourceType.MOTION, resource.getType());
                 }
+                // fall through for motion related channels
+
+            case MOTION:
                 updateState(CHANNEL_2_MOTION, resource.getMotionState(), fullUpdate);
                 updateState(CHANNEL_2_MOTION_LAST_UPDATED, resource.getMotionLastUpdatedState(), fullUpdate);
                 updateState(CHANNEL_2_MOTION_ENABLED, resource.getEnabledState(), fullUpdate);
                 break;
 
             case SECURITY_AREA_MOTION:
+                // note: uses its own special motion channels
                 updateState(CHANNEL_2_SECURITY_MOTION, resource.getMotionState(), fullUpdate);
                 updateState(CHANNEL_2_SECURITY_MOTION_LAST_UPDATED, resource.getMotionLastUpdatedState(), fullUpdate);
                 updateState(CHANNEL_2_SECURITY_MOTION_ENABLED, resource.getEnabledState(), fullUpdate);
