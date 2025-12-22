@@ -127,10 +127,7 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
         OverlayTemplate overlayTemplate = api.showZoneDefaultOverlay(getHomeId(), getZoneId());
         logApiTransaction(overlayTemplate, false);
 
-        updateAPIChannels(api.getAPIRateLimit(), TadoBindingConstants.CHANNEL_API_RATE_LIMIT, Units.ONE);
-        updateAPIChannels(api.getAPIRateDuration(), TadoBindingConstants.CHANNEL_API_RATE_DURATION, Units.SECOND);
-        updateAPIChannels(api.getAPIRateRemaining(), TadoBindingConstants.CHANNEL_API_RATE_REMAINING, Units.ONE);
-        updateAPIChannels(api.getAPIRateReset(), TadoBindingConstants.CHANNEL_API_RATE_RESET, Units.SECOND);
+        updateAllAPIChannels(api);
 
         return terminationConditionTemplateToTerminationCondition(overlayTemplate.getTerminationCondition());
     }
@@ -140,10 +137,7 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
         ZoneState zoneState = api.showZoneState(getHomeId(), getZoneId());
         logApiTransaction(zoneState, false);
 
-        updateAPIChannels(api.getAPIRateLimit(), TadoBindingConstants.CHANNEL_API_RATE_LIMIT, Units.ONE);
-        updateAPIChannels(api.getAPIRateDuration(), TadoBindingConstants.CHANNEL_API_RATE_DURATION, Units.SECOND);
-        updateAPIChannels(api.getAPIRateRemaining(), TadoBindingConstants.CHANNEL_API_RATE_REMAINING, Units.ONE);
-        updateAPIChannels(api.getAPIRateReset(), TadoBindingConstants.CHANNEL_API_RATE_RESET, Units.SECOND);
+        updateAllAPIChannels(api);
 
         return zoneState;
     }
@@ -166,10 +160,7 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
             HomeApi api = getApi();
             Overlay newOverlay = api.updateZoneOverlay(getHomeId(), getZoneId(), overlay);
 
-            updateAPIChannels(api.getAPIRateLimit(), TadoBindingConstants.CHANNEL_API_RATE_LIMIT, Units.ONE);
-            updateAPIChannels(api.getAPIRateDuration(), TadoBindingConstants.CHANNEL_API_RATE_DURATION, Units.SECOND);
-            updateAPIChannels(api.getAPIRateRemaining(), TadoBindingConstants.CHANNEL_API_RATE_REMAINING, Units.ONE);
-            updateAPIChannels(api.getAPIRateReset(), TadoBindingConstants.CHANNEL_API_RATE_RESET, Units.SECOND);
+            updateAllAPIChannels(api);
 
             logApiTransaction(newOverlay, false);
             return newOverlay;
@@ -306,12 +297,7 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
                     return;
                 }
 
-                updateAPIChannels(api.getAPIRateLimit(), TadoBindingConstants.CHANNEL_API_RATE_LIMIT, Units.ONE);
-                updateAPIChannels(api.getAPIRateDuration(), TadoBindingConstants.CHANNEL_API_RATE_DURATION,
-                        Units.SECOND);
-                updateAPIChannels(api.getAPIRateRemaining(), TadoBindingConstants.CHANNEL_API_RATE_REMAINING,
-                        Units.ONE);
-                updateAPIChannels(api.getAPIRateReset(), TadoBindingConstants.CHANNEL_API_RATE_RESET, Units.SECOND);
+                updateAllAPIChannels(api);
 
                 updateProperty(TadoBindingConstants.PROPERTY_ZONE_NAME, zoneDetails.getName());
                 updateProperty(TadoBindingConstants.PROPERTY_ZONE_TYPE, zoneDetails.getType().name());
@@ -578,9 +564,21 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
         }
     }
 
+    private void updateAllAPIChannels(HomeApi api) {
+        updateAPIChannels(api.getAPIRateLimit(), TadoBindingConstants.CHANNEL_API_RATE_LIMIT, Units.ONE);
+        updateAPIChannels(api.getAPIRateDuration(), TadoBindingConstants.CHANNEL_API_RATE_DURATION, Units.SECOND);
+        updateAPIChannels(api.getAPIRateRemaining(), TadoBindingConstants.CHANNEL_API_RATE_REMAINING, Units.ONE);
+        updateAPIChannels(api.getAPIRateReset(), TadoBindingConstants.CHANNEL_API_RATE_RESET, Units.SECOND);
+    }
+
     private void updateAPIChannels(@Nullable Integer value, String channelName, Unit unit) {
         if (value != null) {
-            updateState(channelName, new QuantityType<>(value, unit));
+            if (TadoBindingConstants.CHANNEL_API_RATE_LIMIT.equals(channelName)
+                    || TadoBindingConstants.CHANNEL_API_RATE_REMAINING.equals(channelName)) {
+                updateState(channelName, new DecimalType(value));
+            } else {
+                updateState(channelName, new QuantityType<>(value, unit));
+            }
         }
     }
 }

@@ -40,6 +40,7 @@ import org.openhab.binding.tado.swagger.codegen.api.model.UserHomes;
 import org.openhab.core.auth.client.oauth2.AccessTokenRefreshListener;
 import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
 import org.openhab.core.auth.client.oauth2.OAuthClientService;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
@@ -140,12 +141,7 @@ public class TadoHomeHandler extends BaseBridgeHandler implements AccessTokenRef
                     return;
                 }
 
-                updateAPIChannels(api.getAPIRateLimit(), TadoBindingConstants.CHANNEL_API_RATE_LIMIT, Units.ONE);
-                updateAPIChannels(api.getAPIRateDuration(), TadoBindingConstants.CHANNEL_API_RATE_DURATION,
-                        Units.SECOND);
-                updateAPIChannels(api.getAPIRateRemaining(), TadoBindingConstants.CHANNEL_API_RATE_REMAINING,
-                        Units.ONE);
-                updateAPIChannels(api.getAPIRateReset(), TadoBindingConstants.CHANNEL_API_RATE_RESET, Units.SECOND);
+                updateAllAPIChannels(api);
 
                 List<UserHomes> homes = user.getHomes();
                 if (homes == null || homes.isEmpty()) {
@@ -227,10 +223,7 @@ public class TadoHomeHandler extends BaseBridgeHandler implements AccessTokenRef
             updateState(CHANNEL_HOME_PRESENCE_MODE, OnOffType.from(PresenceState.HOME == homePresence));
             updateState(CHANNEL_HOME_GEOFENCING_ENABLED, OnOffType.from(!homeState.isPresenceLocked()));
 
-            updateAPIChannels(api.getAPIRateLimit(), TadoBindingConstants.CHANNEL_API_RATE_LIMIT, Units.ONE);
-            updateAPIChannels(api.getAPIRateDuration(), TadoBindingConstants.CHANNEL_API_RATE_DURATION, Units.SECOND);
-            updateAPIChannels(api.getAPIRateRemaining(), TadoBindingConstants.CHANNEL_API_RATE_REMAINING, Units.ONE);
-            updateAPIChannels(api.getAPIRateReset(), TadoBindingConstants.CHANNEL_API_RATE_RESET, Units.SECOND);
+            updateAllAPIChannels(api);
 
         } catch (IOException | ApiException e) {
             logger.debug("Error accessing tado server: {}", e.getMessage(), e);
@@ -306,9 +299,21 @@ public class TadoHomeHandler extends BaseBridgeHandler implements AccessTokenRef
         initializeBridgeStatusAndPropertiesIfOffline();
     }
 
+    private void updateAllAPIChannels(HomeApi api) {
+        updateAPIChannels(api.getAPIRateLimit(), TadoBindingConstants.CHANNEL_API_RATE_LIMIT, Units.ONE);
+        updateAPIChannels(api.getAPIRateDuration(), TadoBindingConstants.CHANNEL_API_RATE_DURATION, Units.SECOND);
+        updateAPIChannels(api.getAPIRateRemaining(), TadoBindingConstants.CHANNEL_API_RATE_REMAINING, Units.ONE);
+        updateAPIChannels(api.getAPIRateReset(), TadoBindingConstants.CHANNEL_API_RATE_RESET, Units.SECOND);
+    }
+
     private void updateAPIChannels(@Nullable Integer value, String channelName, Unit unit) {
         if (value != null) {
-            updateState(channelName, new QuantityType<>(value, unit));
+            if (TadoBindingConstants.CHANNEL_API_RATE_LIMIT.equals(channelName)
+                    || TadoBindingConstants.CHANNEL_API_RATE_REMAINING.equals(channelName)) {
+                updateState(channelName, new DecimalType(value));
+            } else {
+                updateState(channelName, new QuantityType<>(value, unit));
+            }
         }
     }
 }
