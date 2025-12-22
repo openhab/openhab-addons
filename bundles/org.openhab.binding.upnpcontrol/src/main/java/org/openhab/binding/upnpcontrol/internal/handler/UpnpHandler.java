@@ -28,7 +28,10 @@ import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.jupnp.UpnpService;
+import org.jupnp.model.action.ActionException;
 import org.jupnp.model.meta.RemoteDevice;
+import org.jupnp.model.types.UDN;
 import org.openhab.binding.upnpcontrol.internal.UpnpChannelName;
 import org.openhab.binding.upnpcontrol.internal.UpnpDynamicCommandDescriptionProvider;
 import org.openhab.binding.upnpcontrol.internal.UpnpDynamicStateDescriptionProvider;
@@ -69,6 +72,8 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
 
     private final Logger logger = LoggerFactory.getLogger(UpnpHandler.class);
 
+    public final static String UNDEFINED_UDN = "undefined";
+
     // UPnP constants
     static final String CONNECTION_MANAGER = "ConnectionManager";
     static final String CONNECTION_ID = "ConnectionID";
@@ -77,6 +82,8 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
     static final Pattern PROTOCOL_PATTERN = Pattern.compile("(?:.*):(?:.*):(.*):(?:.*)");
 
     protected UpnpIOService upnpIOService;
+
+    protected final UpnpService upnpService;
 
     protected volatile @Nullable RemoteDevice device;
 
@@ -92,7 +99,7 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
     protected volatile int rcsId = 0; // UPnP Rendering Control Id
 
     protected UpnpControlBindingConfiguration bindingConfig;
-    protected UpnpControlConfiguration config;
+    protected volatile UpnpControlConfiguration config;
 
     protected final Object invokeActionLock = new Object();
 
@@ -119,9 +126,10 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
 
     public UpnpHandler(Thing thing, UpnpIOService upnpIOService, UpnpControlBindingConfiguration configuration,
             UpnpDynamicStateDescriptionProvider upnpStateDescriptionProvider,
-            UpnpDynamicCommandDescriptionProvider upnpCommandDescriptionProvider) {
+            UpnpDynamicCommandDescriptionProvider upnpCommandDescriptionProvider, UpnpService upnpService) {
         super(thing);
 
+        this.upnpService = upnpService;
         this.upnpIOService = upnpIOService;
         this.bindingConfig = configuration;
 
@@ -135,13 +143,22 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
 
     @Override
     public void initialize() {
-        config = getConfigAs(UpnpControlConfiguration.class);
+        setConfig();
+        String udn = config.udn;
+        if (udn != null && !udn.isBlank()) {
+            device = upnpService.getRegistry().getRemoteDevice(new UDN(udn), false);
+        }
 
         upnpIOService.registerParticipant(this);
 
         UpnpControlUtil.updatePlaylistsList(bindingConfig.path);
         UpnpControlUtil.playlistsSubscribe(this);
     }
+
+    /**
+     * Sets the {@code config} field using the appropriate configuration class
+     */
+    protected abstract void setConfig();
 
     @Override
     public void dispose() {
@@ -187,8 +204,8 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
      * To be called from implementing classes when initializing the device, to start initialization refresh
      */
     protected void initDevice() {
-        String udn = getUDN();
-        if ((udn != null) && !udn.isEmpty()) {
+        String udn = getDeviceUDN();
+        if (!UpnpHandler.UNDEFINED_UDN.equals(udn)) {
             updateStatus(ThingStatus.UNKNOWN);
 
             if (config.refresh == 0) {
@@ -409,6 +426,12 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
         if (status) {
             initJob();
         } else {
+            cancelPollingJob();
+
+            for (String subscription : serviceSubscriptions) {
+                removeSubscription(subscription);
+            }
+
             String msg = String.format("@text/offline.communication-lost [ \"%s\" ]", thing.getLabel());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, msg);
         }
@@ -426,14 +449,28 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
      */
     protected void invokeAction(String serviceId, String actionId, Map<String, String> inputs) {
         upnpScheduler.submit(() -> {
+            RemoteDevice device = getDevice();
+            if (device == null) {
+                logger.warn("Unable to invoke UPnP action {} because device is null", actionId);
+                return;
+            }
             Map<String, @Nullable String> result;
             synchronized (invokeActionLock) {
                 if (logger.isDebugEnabled() && !"GetPositionInfo".equals(actionId)) {
                     // don't log position info refresh every second
-                    logger.debug("UPnP device {} invoke upnp action {} on service {} with inputs {}", thing.getLabel(),
+                    logger.debug("UPnP device {} invoke UPnP action {} on service {} with inputs {}", thing.getLabel(),
                             actionId, serviceId, inputs);
                 }
-                result = upnpIOService.invokeAction(this, serviceId, actionId, inputs);
+                try {
+                    result = upnpIOService.invokeAction(device, null, serviceId, actionId, inputs);
+                } catch (ActionException e) {
+                    logger.debug("Invoking UPnP action {} on {} failed with: {}", actionId,
+                            device.getIdentity().getUdn().getIdentifierString(), e.getMessage());
+                    // This could be caused by many circumstances, it doesn't really tell us if the device is
+                    // online or offline, but we just have to "pick one" to relay the error.
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                    return;
+                }
                 if (logger.isDebugEnabled() && !"GetPositionInfo".equals(actionId)) {
                     // don't log position info refresh every second
                     logger.debug("UPnP device {} invoke upnp action {} on service {} reply {}", thing.getLabel(),
@@ -554,8 +591,21 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
     }
 
     @Override
-    public @Nullable String getUDN() {
-        return config.udn;
+    public String getUDN() {
+        String udn = config.getRootUdn();
+        return udn == null ? UNDEFINED_UDN : udn;
+    }
+
+    /**
+     * {@link #getUDN()} is defined in {@link UpnpIOParticipant}, so it must return the root UDN
+     * if the device is embedded, because only root UDN's can be "discovered". This method will
+     * instead return the UDN of the device, which will be the same as the root UDN on all but
+     * embedded devices.
+     *
+     * @return The device UDN.
+     */
+    public String getDeviceUDN() {
+        return config.udn == null ? UNDEFINED_UDN : config.udn;
     }
 
     protected boolean checkForConnectionIds() {
@@ -590,7 +640,13 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
     protected void addSubscription(String serviceId, int duration) {
         if (upnpIOService.isRegistered(this)) {
             logger.debug("UPnP device {} add upnp subscription on {}", thing.getLabel(), serviceId);
-            upnpIOService.addSubscription(this, serviceId, duration);
+            RemoteDevice device = getDevice();
+            if (device == null) {
+                logger.warn("Failed to subscribe to {} for UPnP device {} because device is null", serviceId,
+                        thing.getLabel());
+                return;
+            }
+            upnpIOService.addSubscription(this, device, serviceId, null, duration);
         }
     }
 
@@ -601,7 +657,13 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
      */
     protected void removeSubscription(String serviceId) {
         if (upnpIOService.isRegistered(this)) {
-            upnpIOService.removeSubscription(this, serviceId);
+            RemoteDevice device = getDevice();
+            if (device == null) {
+                logger.warn("Failed to unsubscribe from {} for UPnP device {} because device is null", serviceId,
+                        thing.getLabel());
+                return;
+            }
+            upnpIOService.removeSubscription(this, device, serviceId, null);
         }
     }
 
@@ -611,12 +673,13 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
         for (String subscription : serviceSubscriptions) {
             addSubscription(subscription, SUBSCRIPTION_DURATION_SECONDS);
         }
-        subscriptionRefreshJob = upnpScheduler.scheduleWithFixedDelay(subscriptionRefresh,
-                SUBSCRIPTION_DURATION_SECONDS / 2, SUBSCRIPTION_DURATION_SECONDS / 2, TimeUnit.SECONDS);
+
+        // subscriptionRefreshJob = upnpScheduler.scheduleWithFixedDelay(subscriptionRefresh,
+        // SUBSCRIPTION_DURATION_SECONDS / 2, SUBSCRIPTION_DURATION_SECONDS / 2, TimeUnit.SECONDS);
 
         // This action should exist on all media devices and return a result, so a good candidate for testing the
         // connection.
-        upnpIOService.addStatusListener(this, CONNECTION_MANAGER, "GetCurrentConnectionIDs", config.refresh);
+        // upnpIOService.addStatusListener(this, CONNECTION_MANAGER, "GetCurrentConnectionIDs", config.refresh);
     }
 
     protected void removeSubscriptions() {

@@ -31,6 +31,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.jupnp.UpnpService;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.openhab.binding.upnpcontrol.internal.config.UpnpControlServerConfiguration;
@@ -134,6 +135,8 @@ public class UpnpServerHandlerTest extends UpnpHandlerTest {
     private @Nullable UpnpRendererHandler rendererHandler;
     @Mock
     private @Nullable Thing rendererThing;
+    @Mock
+    private @Nullable UpnpService upnpService;
 
     @Override
     @BeforeEach
@@ -146,7 +149,7 @@ public class UpnpServerHandlerTest extends UpnpHandlerTest {
         when(thing.getStatus()).thenReturn(ThingStatus.OFFLINE);
 
         // stub upnpIOService methods for initialize
-        Map<String, String> result = new HashMap<>();
+        Map<String, @Nullable String> result = new HashMap<>();
         result.put("Result", BASE_CONTAINER);
         when(upnpIOService.invokeAction(any(), eq("ContentDirectory"), eq("Browse"), anyMap())).thenReturn(result);
 
@@ -171,7 +174,7 @@ public class UpnpServerHandlerTest extends UpnpHandlerTest {
 
         handler = spy(new UpnpServerHandler(requireNonNull(thing), requireNonNull(upnpIOService),
                 requireNonNull(upnpRenderers), requireNonNull(upnpStateDescriptionProvider),
-                requireNonNull(upnpCommandDescriptionProvider), configuration));
+                requireNonNull(upnpCommandDescriptionProvider), configuration, requireNonNull(upnpService)));
 
         initHandler(requireNonNull(handler));
 

@@ -15,6 +15,8 @@ package org.openhab.binding.onkyo.internal.handler;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.onkyo.internal.OnkyoBindingConstants;
 import org.openhab.core.audio.AudioStream;
 import org.openhab.core.io.transport.upnp.UpnpIOParticipant;
@@ -60,11 +62,14 @@ public abstract class OnkyoUpnpHandler extends BaseThingHandler implements UpnpI
         stop();
         removeAllTracksFromQueue();
 
+        String u;
         if (!url.startsWith("x-") && (!url.startsWith("http"))) {
-            url = "x-file-cifs:" + url;
+            u = "x-file-cifs:" + url;
+        } else {
+            u = url;
         }
 
-        setCurrentURI(url, uriMetaDataProcessor.generate(url, audioStream));
+        setCurrentURI(u, uriMetaDataProcessor.generate(u, audioStream));
 
         play();
     }
@@ -73,10 +78,14 @@ public abstract class OnkyoUpnpHandler extends BaseThingHandler implements UpnpI
         Map<String, String> inputs = new HashMap<>();
         inputs.put("InstanceID", "0");
 
-        Map<String, String> result = service.invokeAction(this, "AVTransport", "Stop", inputs);
+        Map<@NonNull String, @Nullable String> result = service.invokeAction(this, "AVTransport", "Stop", inputs);
 
+        String value;
         for (String variable : result.keySet()) {
-            this.onValueReceived(variable, result.get(variable), "AVTransport");
+            value = result.get(variable);
+            if (value != null) {
+                this.onValueReceived(variable, value, "AVTransport");
+            }
         }
     }
 
@@ -84,10 +93,14 @@ public abstract class OnkyoUpnpHandler extends BaseThingHandler implements UpnpI
         Map<String, String> inputs = new HashMap<>();
         inputs.put("InstanceID", "0");
         inputs.put("Speed", "1");
-        Map<String, String> result = service.invokeAction(this, "AVTransport", "Play", inputs);
+        Map<@NonNull String, @Nullable String> result = service.invokeAction(this, "AVTransport", "Play", inputs);
 
+        String value;
         for (String variable : result.keySet()) {
-            this.onValueReceived(variable, result.get(variable), "AVTransport");
+            value = result.get(variable);
+            if (value != null) {
+                this.onValueReceived(variable, value, "AVTransport");
+            }
         }
     }
 
@@ -95,10 +108,15 @@ public abstract class OnkyoUpnpHandler extends BaseThingHandler implements UpnpI
         Map<String, String> inputs = new HashMap<>();
         inputs.put("InstanceID", "0");
 
-        Map<String, String> result = service.invokeAction(this, "AVTransport", "RemoveAllTracksFromQueue", inputs);
+        Map<@NonNull String, @Nullable String> result = service.invokeAction(this, "AVTransport",
+                "RemoveAllTracksFromQueue", inputs);
 
+        String value;
         for (String variable : result.keySet()) {
-            this.onValueReceived(variable, result.get(variable), "AVTransport");
+            value = result.get(variable);
+            if (value != null) {
+                this.onValueReceived(variable, value, "AVTransport");
+            }
         }
     }
 
@@ -114,26 +132,31 @@ public abstract class OnkyoUpnpHandler extends BaseThingHandler implements UpnpI
                 logger.error("Action Invalid Value Format Exception {}", ex.getMessage());
             }
 
-            Map<String, String> result = service.invokeAction(this, "AVTransport", "SetAVTransportURI", inputs);
+            Map<@NonNull String, @Nullable String> result = service.invokeAction(this, "AVTransport",
+                    "SetAVTransportURI", inputs);
 
+            String value;
             for (String variable : result.keySet()) {
-                this.onValueReceived(variable, result.get(variable), "AVTransport");
+                value = result.get(variable);
+                if (value != null) {
+                    this.onValueReceived(variable, value, "AVTransport");
+                }
             }
         }
     }
 
     @Override
-    public String getUDN() {
+    public @NonNull String getUDN() {
         return (String) this.getConfig().get(OnkyoBindingConstants.UDN_PARAMETER);
     }
 
     @Override
-    public void onValueReceived(String variable, String value, String service) {
+    public void onValueReceived(@NonNull String variable, @NonNull String value, @NonNull String service) {
         logger.debug("received variable {} with value {} from service {}", variable, value, service);
     }
 
     @Override
-    public void onServiceSubscribed(String service, boolean succeeded) {
+    public void onServiceSubscribed(@NonNull String service, boolean succeeded) {
     }
 
     @Override
