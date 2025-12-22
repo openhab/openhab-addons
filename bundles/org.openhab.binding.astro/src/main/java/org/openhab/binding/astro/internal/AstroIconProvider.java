@@ -67,7 +67,7 @@ public class AstroIconProvider implements IconProvider {
     @Override
     public Set<IconSet> getIconSets(@Nullable Locale locale) {
         String label = getText("label", DEFAULT_LABEL, locale);
-        String description = getText("decription", DEFAULT_DESCRIPTION, locale);
+        String description = getText("description", DEFAULT_DESCRIPTION, locale);
 
         return Set.of(new IconSet(BINDING_ID, label, description, Set.of(Format.SVG)));
     }
@@ -100,7 +100,7 @@ public class AstroIconProvider implements IconProvider {
         try (InputStream stream = iconResource.openStream()) {
             result = new String(stream.readAllBytes(), StandardCharsets.UTF_8);
         } catch (IOException e) {
-            logger.warn("Unable to load ressource '{}': {}", iconResource.getPath(), e.getMessage());
+            logger.warn("Unable to load resource '{}': {}", iconResource.getPath(), e.getMessage());
         }
 
         return result.isEmpty() ? null : new ByteArrayInputStream(result.getBytes(StandardCharsets.UTF_8));

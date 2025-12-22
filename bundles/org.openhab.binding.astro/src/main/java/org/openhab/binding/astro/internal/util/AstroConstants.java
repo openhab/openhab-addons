@@ -15,7 +15,7 @@ package org.openhab.binding.astro.internal.util;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Common constants used accross the binding
+ * Common constants used across the binding
  *
  * @author Gaël L'hopital - Initial contribution
  */

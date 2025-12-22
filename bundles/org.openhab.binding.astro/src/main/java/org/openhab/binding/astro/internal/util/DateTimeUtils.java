@@ -39,7 +39,7 @@ public class DateTimeUtils {
     public static final double JD_J2000 = 2451545.0; // 2000-01-01 12:00
     public static final double JD_UNIX_EPOCH = 2440587.5; // 1970-01-01 00:00 UTC
     private static final double J1970 = JD_UNIX_EPOCH + 0.5; // 1970-01-01 12:00 UTC (julian solar noon)
-    private static final int JULIAN_CENTURY_DAYS = 36525;
+    private static final int JULIAN_CENTURY_DAYS = 36525; // Length of a Julian Century in days
 
     /** Constructor */
     private DateTimeUtils() {
@@ -378,7 +378,7 @@ public class DateTimeUtils {
     }
 
     public static double toJulianCenturies(double jd) {
-        return (jd - JULIAN_CENTURY_DAYS) / JULIAN_CENTURY_DAYS;
+        return (jd - JD_J2000) / JULIAN_CENTURY_DAYS;
     }
 
     public static Calendar createCalendarForToday(int hour, int minute, TimeZone zone, Locale locale) {
