@@ -132,7 +132,8 @@ public class SunCalc {
         Sun sun = new Sun();
         Calendar start = DateTimeUtils.truncateToMidnight(calendar);
         Calendar cal = (Calendar) start.clone();
-        for (int i = 0; i <= 72; i++) {
+        var numberOfSamples = 24 * 60 / CURVE_TIME_INTERVAL;
+        for (int i = 0; i <= numberOfSamples; i++) {
             setPositionalInfo(cal, latitude, longitude, altitude, sun);
             if (sun.getPosition().getElevationAsDouble() < SUN_ANGLE) {
                 return false;
