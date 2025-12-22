@@ -4,7 +4,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/addon/v1.0.0 https://openhab.org/schemas/addon-1.0.0.xsd">
 
 	<type>transformation</type>
-	<name>MAP transformation</name>
+	<name>MAP Transformation</name>
 	<description>Transforms the input by mapping it to another string.</description>
 	<connection>none</connection>
 
