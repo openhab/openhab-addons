@@ -73,8 +73,7 @@ public class SunHandler extends AstroThingHandler {
 
         sun.getEclipse().setElevations(this, timeZoneProvider);
 
-        CircadianCalc circadianCalc = new CircadianCalc();
-        sun.setCircadian(circadianCalc.calculate(calendar, sun.getRise(), sun.getSet(), sun.getNoon()));
+        sun.setCircadian(CircadianCalc.calculate(calendar, sun.getRise(), sun.getSet(), sun.getNoon()));
 
         this.sun = sun;
 

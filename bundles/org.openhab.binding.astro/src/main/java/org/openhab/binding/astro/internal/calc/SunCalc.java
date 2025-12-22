@@ -130,8 +130,10 @@ public class SunCalc {
      */
     private boolean isSunUpAllDay(Calendar calendar, double latitude, double longitude, @Nullable Double altitude) {
         Sun sun = new Sun();
-        for (Calendar cal = DateTimeUtils.truncateToMidnight(calendar); DateTimeUtils.isSameDay(cal, calendar); cal
-                .add(Calendar.MINUTE, CURVE_TIME_INTERVAL)) {
+        Calendar start = DateTimeUtils.truncateToMidnight(calendar);
+        for (int i = 0; i <= 72; i++) {
+            Calendar cal = (Calendar) start.clone();
+            cal.add(Calendar.MINUTE, CURVE_TIME_INTERVAL * i);
             setPositionalInfo(cal, latitude, longitude, altitude, sun);
             if (sun.getPosition().getElevationAsDouble() < SUN_ANGLE) {
                 return false;
@@ -189,7 +191,6 @@ public class SunCalc {
 
         sun.setNoon(new Range(DateTimeUtils.toCalendar(jtransit, zone, locale),
                 DateTimeUtils.toCalendar(jtransit + JD_ONE_MINUTE_FRACTION, zone, locale)));
-
         sun.setRise(new Range(DateTimeUtils.toCalendar(jrise, zone, locale),
                 DateTimeUtils.toCalendar(jriseend, zone, locale)));
         sun.setSet(new Range(DateTimeUtils.toCalendar(jsetstart, zone, locale),

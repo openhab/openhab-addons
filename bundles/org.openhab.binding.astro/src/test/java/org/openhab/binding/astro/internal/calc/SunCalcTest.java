@@ -478,7 +478,7 @@ public class SunCalcTest {
 
     @SuppressWarnings("null")
     @Test
-    public void testIsSunUpAllDayIsFalseForBarrowAlaska() throws Exception {
+    public void testIsSunUpAllDayForBarrowAlaska() throws Exception {
         Method isSunUpAllDay = SunCalc.class.getDeclaredMethod("isSunUpAllDay", Calendar.class, double.class,
                 double.class, Double.class);
         isSunUpAllDay.setAccessible(true);

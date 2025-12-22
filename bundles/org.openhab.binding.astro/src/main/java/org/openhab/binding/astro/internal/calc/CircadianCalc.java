@@ -30,16 +30,16 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class CircadianCalc {
-    private static final long MIN_COLOR_TEMP = 2500;
+    public static final long MIN_COLOR_TEMP = 2500;
     private static final long MAX_COLOR_TEMP = 5500;
     private static final long DELTA_TEMP = MAX_COLOR_TEMP - MIN_COLOR_TEMP;
     private static final long TWELVE_HOURS_MS = 12 * 60 * 60 * 1000;
 
-    private final Logger logger = LoggerFactory.getLogger(CircadianCalc.class);
+    private static final Logger logger = LoggerFactory.getLogger(CircadianCalc.class);
 
-    public Circadian calculate(Calendar calendar, Range riseRange, Range setRange, @Nullable Range noonRange) {
+    public static Circadian calculate(Calendar calendar, Range riseRange, Range setRange, @Nullable Range noonRange) {
         var rise = riseRange.getStart();
-        var set = riseRange.getStart();
+        var set = setRange.getStart();
         var noon = noonRange instanceof Range range ? range.getStart() : null;
 
         // If we have no rise or no set, there's no point to calculate a Circadian Cycle
@@ -49,7 +49,7 @@ public class CircadianCalc {
         return calculate(calendar, rise, set, noon);
     }
 
-    public Circadian calculate(Calendar calendar, Calendar rise, Calendar set, Calendar noon) {
+    public static Circadian calculate(Calendar calendar, Calendar rise, Calendar set, Calendar noon) {
         // Figure out where we are in time so we know which half of the parabola to calculate.
         // We're generating a different sunset-sunrise parabola for before and after solar midnight,
         // because solar midnight might not be exactly halfway between sunrise and sunset.
