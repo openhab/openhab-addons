@@ -458,6 +458,7 @@ public class SunCalcTest {
 
         return DateTimeUtils.truncateToMinute(result);
     }
+<<<<<<< Upstream, based on main
 
     @Test
     public void testAstroAndMeteoSeasons() {
@@ -494,4 +495,6 @@ public class SunCalcTest {
 
         assertFalse(result);
     }
+=======
+>>>>>>> c98bef7 Refresh SeasonCalc and add icon package
 }

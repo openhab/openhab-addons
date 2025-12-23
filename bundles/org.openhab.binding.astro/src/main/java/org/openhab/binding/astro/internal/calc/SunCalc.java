@@ -272,8 +272,7 @@ public class SunCalc {
 
         sun.setZodiac(ZodiacCalc.calculate(lsun, calendar.toInstant()));
 
-        SeasonCalc seasonCalc = new SeasonCalc();
-        sun.setSeason(seasonCalc.getSeason(calendar, latitude, useMeteorologicalSeason, zone, locale));
+        sun.setSeason(SeasonCalc.calculate(calendar.get(Calendar.YEAR), latitude, useMeteorologicalSeason, zone));
 
         // phase
         for (Entry<SunPhaseName, Range> rangeEntry : sortByValue(sun.getAllRanges()).entrySet()) {
