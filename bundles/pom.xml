@@ -364,6 +364,7 @@
     <module>org.openhab.binding.radiobrowser</module>
     <module>org.openhab.binding.radiothermostat</module>
     <module>org.openhab.binding.regoheatpump</module>
+    <module>org.openhab.binding.remehaheating</module>
     <module>org.openhab.binding.revogi</module>
     <module>org.openhab.binding.remoteopenhab</module>
     <module>org.openhab.binding.renault</module>
