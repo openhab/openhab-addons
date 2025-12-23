@@ -441,21 +441,4 @@ public class SunCalcTest {
 
         return DateTimeUtils.truncateToMinute(result);
     }
-
-    @Test
-    public void testAstroAndMeteoSeasons() {
-        Sun meteoSun = sunCalc.getSunInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE, AMSTERDAM_ALTITUDE,
-                true, TIME_ZONE, Locale.ROOT);
-        Sun equiSun = sunCalc.getSunInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE, AMSTERDAM_ALTITUDE,
-                false, TIME_ZONE, Locale.ROOT);
-
-        Calendar cal = meteoSun.getSeason().getSpring();
-        assertNotNull(cal);
-        Calendar cal2 = equiSun.getSeason().getSpring();
-        assertNotNull(cal2);
-        assertEquals(cal.get(Calendar.MONTH), cal2.get(Calendar.MONTH));
-        assertEquals(cal.get(Calendar.YEAR), cal2.get(Calendar.YEAR));
-        assertEquals(1, cal.get(Calendar.DAY_OF_MONTH));
-        assertFalse(cal.get(Calendar.DAY_OF_MONTH) == cal2.get(Calendar.DAY_OF_MONTH));
-    }
 }

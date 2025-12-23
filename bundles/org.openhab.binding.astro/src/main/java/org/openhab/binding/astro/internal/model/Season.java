@@ -13,16 +13,17 @@
 package org.openhab.binding.astro.internal.model;
 
 import java.time.Duration;
-import java.time.temporal.ChronoUnit;
-import java.util.Calendar;
-import java.util.Locale;
-import java.util.TimeZone;
+import java.time.Instant;
+import java.time.temporal.ChronoField;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 import javax.measure.quantity.Time;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.astro.internal.util.DateTimeUtils;
+import org.openhab.binding.astro.internal.util.MathUtils;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
 
@@ -33,108 +34,78 @@ import org.openhab.core.library.unit.Units;
  */
 @NonNullByDefault
 public class Season {
-    private @Nullable Calendar spring;
-    private @Nullable Calendar summer;
-    private @Nullable Calendar autumn;
-    private @Nullable Calendar winter;
+    private final Map<Hemisphere, List<Integer>> seasonOrder = Map.of(Hemisphere.NORTHERN, List.of(0, 1, 2, 3),
+            Hemisphere.SOUTHERN, List.of(2, 3, 0, 1));
+    private final Hemisphere hemisphere;
+    private final List<Instant> equiSols;
 
-    private @Nullable SeasonName name;
+    public Season(double latitude, Instant... equiSols) {
+        // Expect to receive last of previous year, all from current year, first of next year
+        if (equiSols.length != SeasonName.values().length + 2) {
+            throw new IllegalArgumentException("Incorrect number of seasons provided");
+        }
+        this.hemisphere = Hemisphere.getHemisphere(latitude);
+        this.equiSols = Arrays.stream(equiSols).sorted().toList();
+    }
 
-    private TimeZone timeZone;
-    private Locale locale;
-
-    public Season(TimeZone timeZone, Locale locale) {
-        this.timeZone = timeZone;
-        this.locale = locale;
+    public int getYear() {
+        return equiSols.get(1).get(ChronoField.YEAR);
     }
 
     /**
      * Returns the date of the beginning of spring.
      */
-    @Nullable
-    public Calendar getSpring() {
-        return spring;
-    }
-
-    /**
-     * Sets the date of the beginning of spring.
-     */
-    public void setSpring(@Nullable Calendar spring) {
-        this.spring = spring;
+    public Instant getSpring() {
+        return equiSols.get(Objects.requireNonNull(seasonOrder.get(hemisphere)).get(0) + 1);
     }
 
     /**
      * Returns the date of the beginning of summer.
      */
-    @Nullable
-    public Calendar getSummer() {
-        return summer;
-    }
-
-    /**
-     * Sets the date of the beginning of summer.
-     */
-    public void setSummer(@Nullable Calendar summer) {
-        this.summer = summer;
+    public Instant getSummer() {
+        return equiSols.get(Objects.requireNonNull(seasonOrder.get(hemisphere)).get(1) + 1);
     }
 
     /**
      * Returns the date of the beginning of autumn.
      */
-    @Nullable
-    public Calendar getAutumn() {
-        return autumn;
-    }
-
-    /**
-     * Sets the date of the beginning of autumn.
-     */
-    public void setAutumn(@Nullable Calendar autumn) {
-        this.autumn = autumn;
+    public Instant getAutumn() {
+        return equiSols.get(Objects.requireNonNull(seasonOrder.get(hemisphere)).get(2) + 1);
     }
 
     /**
      * Returns the date of the beginning of winter.
      */
-    @Nullable
-    public Calendar getWinter() {
-        return winter;
-    }
-
-    /**
-     * Returns the date of the beginning of winter.
-     */
-    public void setWinter(@Nullable Calendar winter) {
-        this.winter = winter;
+    public Instant getWinter() {
+        return equiSols.get(Objects.requireNonNull(seasonOrder.get(hemisphere)).get(3) + 1);
     }
 
     /**
      * Returns the current season name.
      */
-    @Nullable
     public SeasonName getName() {
-        return name;
-    }
-
-    /**
-     * Sets the current season name.
-     */
-    public void setName(@Nullable SeasonName name) {
-        this.name = name;
+        var now = Instant.now();
+        for (int i = 0; i < equiSols.size() - 1; i++) {
+            if (equiSols.get(i).isBefore(now) && equiSols.get(i + 1).isAfter(now)) {
+                SeasonName seasonName = SeasonName.values()[(int) MathUtils.mod(i + 3, 4)];
+                return seasonName;
+            }
+        }
+        throw new IllegalArgumentException("This case should not arrive");
     }
 
     /**
      * Returns the next season.
      */
-    public Calendar getNextSeason() {
-        return DateTimeUtils.getNextFromToday(timeZone, locale, spring, summer, autumn, winter);
+    public Instant getNextSeason() {
+        return getNext(Instant.now());
     }
 
     /**
      * Returns the next season name.
      */
     public SeasonName getNextName() {
-        int ordinal = name == null ? 0 : name.ordinal() + 1;
+        int ordinal = getName().ordinal() + 1;
         if (ordinal > 3) {
             ordinal = 0;
         }
@@ -145,10 +116,18 @@ public class Season {
      * Returns the time left for current season
      */
     public QuantityType<Time> getTimeLeft() {
-        final Calendar now = Calendar.getInstance(timeZone, locale);
-        final Calendar next = getNextSeason();
-        final Duration timeLeft = Duration.of(next.getTimeInMillis() - now.getTimeInMillis(), ChronoUnit.MILLIS);
+        var now = Instant.now();
+        var timeLeft = Duration.between(now, getNext(now));
 
         return new QuantityType<>(timeLeft.toDays(), Units.DAY);
+    }
+
+    public Instant getNext(Instant now) {
+        for (Instant equiSol : equiSols) {
+            if (equiSol.isAfter(now)) {
+                return equiSol;
+            }
+        }
+        throw new IllegalArgumentException("This case should not arrive");
     }
 }
