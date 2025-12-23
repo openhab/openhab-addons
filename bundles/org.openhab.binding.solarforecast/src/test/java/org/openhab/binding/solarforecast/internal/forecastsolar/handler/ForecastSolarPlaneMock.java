@@ -38,7 +38,7 @@ public class ForecastSolarPlaneMock extends ForecastSolarPlaneHandler {
     }
 
     public void updateForecast(ForecastSolarObject fso) {
-        super.setForecast(fso);
+        super.updateForecast(fso);
     }
 
     @Override

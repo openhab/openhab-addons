@@ -14,16 +14,14 @@ package org.openhab.binding.solarforecast.internal.forecastsolar.handler;
 
 import static org.openhab.binding.solarforecast.internal.SolarForecastBindingConstants.CHANNEL_CORRECTION_FACTOR;
 
-import java.util.Iterator;
+import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.solarforecast.internal.SolarForecastException;
+import org.openhab.binding.solarforecast.internal.actions.SolarForecastAdjuster;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.PointType;
 import org.openhab.core.thing.Bridge;
-import org.openhab.core.thing.ThingStatus;
-import org.openhab.core.thing.ThingStatusDetail;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,25 +39,20 @@ public class SmartForecastSolarBridgeHandler extends ForecastSolarBridgeHandler 
     }
 
     /**
-     * Hook into the forecast update process with update of correction factor.
+     * Hook into the timeseriesUpdate process and update correction factor channel
      */
     @Override
-    public void forecastUpdate() {
-        super.forecastUpdate();
+    public void updateTimeseries() {
+        super.updateTimeseries();
         double energyProductionSum = 0;
         double forecastProductionSum = 0;
         boolean holdingTimeElapsed = true;
-        for (Iterator<ForecastSolarPlaneHandler> planeIter = planes.iterator(); planeIter.hasNext();) {
-            try {
-                SmartForecastSolarPlaneHandler sfph = (SmartForecastSolarPlaneHandler) planeIter.next();
-                energyProductionSum += sfph.getEnergyProduction();
-                forecastProductionSum += sfph.getForecastProduction();
-                holdingTimeElapsed = holdingTimeElapsed && sfph.isHoldingTimeElapsed();
-            } catch (SolarForecastException sfe) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
-                        "@text/solarforecast.site.status.exception [\"" + sfe.getMessage() + "\"]");
-                return;
-            }
+
+        for (SolarForecastAdjuster adjuster : getAdjusters()) {
+            energyProductionSum += adjuster.getInverterEnergy();
+            forecastProductionSum += adjuster.getForecastEnergy();
+            holdingTimeElapsed = holdingTimeElapsed && adjuster.isHoldingTimeElapsed();
+            logger.trace("factor calculation {}", adjuster.toString());
         }
         double factor = 1;
         if (holdingTimeElapsed) {
@@ -67,10 +60,15 @@ public class SmartForecastSolarBridgeHandler extends ForecastSolarBridgeHandler 
                 factor = energyProductionSum / forecastProductionSum;
             }
         }
-        logger.trace("forecastUpdate Inverter {}, Forecast {} factor {}", energyProductionSum, forecastProductionSum,
-                factor);
-
+        logger.trace("Factor calculation Inverter {}, Forecast {} factor {}", energyProductionSum,
+                forecastProductionSum, factor);
         // calculate new correction factor out of each plane and their production values
         updateState(CHANNEL_CORRECTION_FACTOR, new DecimalType(factor));
+    }
+
+    private List<SolarForecastAdjuster> getAdjusters() {
+        return planes.stream().map(plane -> plane.getSolarForecasts()).flatMap(List::stream)
+                .filter(solarForecast -> solarForecast.getAdjuster().isPresent())
+                .map(solarForecast -> solarForecast.getAdjuster().get()).toList();
     }
 }

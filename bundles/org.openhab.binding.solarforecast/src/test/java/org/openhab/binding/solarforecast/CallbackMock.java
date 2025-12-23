@@ -12,6 +12,10 @@
  */
 package org.openhab.binding.solarforecast;
 
+import static org.junit.jupiter.api.Assertions.*;
+
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -73,6 +77,21 @@ public class CallbackMock implements ThingHandlerCallback {
         return stateList;
     }
 
+    public void waitForStateUpadtes(String cuid, int count) {
+        Instant endWait = Instant.now().plus(5, ChronoUnit.SECONDS);
+        synchronized (this) {
+            while (getStateList(cuid).size() != count && Instant.now().isBefore(endWait)) {
+                try {
+                    wait(500);
+                } catch (InterruptedException e) {
+                    fail(e.getMessage());
+                }
+            }
+            assertEquals(count, getStateList(cuid).size(),
+                    getStateList(cuid).size() + " state updates received instead of " + count);
+        }
+    }
+
     @Override
     public void postCommand(ChannelUID channelUID, Command command) {
     }
@@ -93,17 +112,22 @@ public class CallbackMock implements ThingHandlerCallback {
     @Override
     public void statusUpdated(Thing thing, ThingStatusInfo thingStatus) {
         currentInfo = thingStatus;
+        synchronized (this) {
+            notifyAll();
+        }
     }
 
-    public void waitForOnline() {
-        int count = 0;
-        while (currentInfo.getStatus() != ThingStatus.ONLINE && count < 10) {
-            try {
-                Thread.sleep(500);
-            } catch (InterruptedException e) {
-                // ignore
+    public void waitForStatus(ThingStatus status) {
+        Instant endWait = Instant.now().plus(5, ChronoUnit.SECONDS);
+        synchronized (this) {
+            while (currentInfo.getStatus() != status && Instant.now().isBefore(endWait)) {
+                try {
+                    wait(100);
+                } catch (InterruptedException e) {
+                    fail(e.getMessage());
+                }
             }
-            count++;
+            assertEquals(status, currentInfo.getStatus(), "Thing did not reach expected status " + status);
         }
     }
 

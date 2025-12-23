@@ -28,9 +28,10 @@ import javax.measure.quantity.Energy;
 import javax.measure.quantity.Power;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.openhab.binding.solarforecast.internal.SolarForecastBindingConstants;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.openhab.binding.solarforecast.internal.SolarForecastException;
 import org.openhab.binding.solarforecast.internal.actions.SolarForecastActions;
 import org.openhab.binding.solarforecast.internal.forecastsolar.ForecastSolarObject;
@@ -41,10 +42,7 @@ import org.openhab.binding.solarforecast.internal.solcast.SolcastObject.QueryMod
 import org.openhab.binding.solarforecast.internal.utils.Utils;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
-import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
-import org.openhab.core.thing.ThingStatusDetail;
-import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.TimeSeries;
 
@@ -54,6 +52,7 @@ import org.openhab.core.types.TimeSeries;
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
+@Execution(ExecutionMode.SAME_THREAD)
 class ForecastSolarTest {
     private static final double TOLERANCE = 0.001;
     public static final ZoneId TEST_ZONE = ZoneId.of("Europe/Berlin");
@@ -66,8 +65,8 @@ class ForecastSolarTest {
     public static final String NO_FORECAST_INDICATOR = "No forecast data";
     public static final String DAY_MISSING_INDICATOR = "not available in forecast";
 
-    @BeforeAll
-    static void setFixedTime() {
+    @BeforeEach
+    void setFixedTime() {
         // Instant matching the date of test resources
         String fixedInstant = "2022-07-17T15:00:00Z";
         Clock fixedClock = Clock.fixed(Instant.parse(fixedInstant), TEST_ZONE);
@@ -379,7 +378,7 @@ class ForecastSolarTest {
         ForecastSolarPlaneMock fsPlaneHandler2 = ForecastSolarMockFactory.createPlaneHandler(fsBridgeHandler, "plane2",
                 "src/test/resources/forecastsolar/result.json");
 
-        fsBridgeHandler.forecastUpdate();
+        fsBridgeHandler.updateTimeseries();
 
         CallbackMock cmSite = (CallbackMock) fsBridgeHandler.getCallback();
         CallbackMock cmPlane1 = (CallbackMock) fsPlaneHandler1.getCallback();
@@ -411,13 +410,15 @@ class ForecastSolarTest {
 
     @Test
     void testCommonForecastStartEnd() {
+        String fixedInstant = "2022-07-18T15:00:00Z";
+        Clock fixedClock = Clock.fixed(Instant.parse(fixedInstant), TEST_ZONE);
+        Utils.setClock(fixedClock);
+
         ForecastSolarBridgeMock fsBridgeHandler = ForecastSolarMockFactory.createBridgeHandler();
         ForecastSolarPlaneMock fsPlaneHandler1 = ForecastSolarMockFactory.createPlaneHandler(fsBridgeHandler, "plane1",
                 "src/test/resources/forecastsolar/result.json");
         ForecastSolarPlaneMock fsPlaneHandler2 = ForecastSolarMockFactory.createPlaneHandler(fsBridgeHandler, "plane2",
                 "src/test/resources/forecastsolar/resultNextDay.json");
-
-        fsBridgeHandler.forecastUpdate();
 
         CallbackMock cmSite = (CallbackMock) fsBridgeHandler.getCallback();
         CallbackMock cmPlane1 = (CallbackMock) fsPlaneHandler1.getCallback();
@@ -425,6 +426,12 @@ class ForecastSolarTest {
         assertNotNull(cmSite);
         assertNotNull(cmPlane1);
         assertNotNull(cmPlane2);
+
+        cmPlane1.waitForStatus(ThingStatus.ONLINE);
+        cmPlane2.waitForStatus(ThingStatus.ONLINE);
+        cmSite.waitForStatus(ThingStatus.ONLINE);
+        // force update of timeseries after both planes are online
+        fsBridgeHandler.updateTimeseries();
 
         TimeSeries tsSite = cmSite.getTimeSeries("solarforecast:fs-site:bridge:power-estimate");
         TimeSeries tsPlaneOne = cmPlane1.getTimeSeries("test::plane1:power-estimate");
@@ -471,12 +478,16 @@ class ForecastSolarTest {
 
     @Test
     void testActions() {
+        String fixedInstant = "2022-07-18T15:00:00Z";
+        Clock fixedClock = Clock.fixed(Instant.parse(fixedInstant), TEST_ZONE);
+        Utils.setClock(fixedClock);
+
         ForecastSolarBridgeMock fsBridgeHandler = ForecastSolarMockFactory.createBridgeHandler();
         ForecastSolarMockFactory.createPlaneHandler(fsBridgeHandler, "plane1",
                 "src/test/resources/forecastsolar/result.json");
         ForecastSolarMockFactory.createPlaneHandler(fsBridgeHandler, "plane2",
                 "src/test/resources/forecastsolar/resultNextDay.json");
-        fsBridgeHandler.forecastUpdate();
+        fsBridgeHandler.updateTimeseries();
 
         SolarForecastActions sfa = new SolarForecastActions();
         sfa.setThingHandler(fsBridgeHandler);
@@ -496,7 +507,7 @@ class ForecastSolarTest {
         ForecastSolarPlaneMock fsPlaneHandler2 = ForecastSolarMockFactory.createPlaneHandler(fsBridgeHandler, "plane2",
                 "src/test/resources/forecastsolar/result.json");
 
-        fsBridgeHandler.forecastUpdate();
+        fsBridgeHandler.updateTimeseries();
 
         CallbackMock cmSite = (CallbackMock) fsBridgeHandler.getCallback();
         CallbackMock cmPlane1 = (CallbackMock) fsPlaneHandler1.getCallback();
@@ -524,42 +535,5 @@ class ForecastSolarTest {
                             + ((QuantityType<?>) plane2Entry.state()).doubleValue(),
                     0.1, "Energy Value");
         }
-    }
-
-    @Test
-    void testCalmDown() {
-        ForecastSolarBridgeMock fsbh = ForecastSolarMockFactory.createBridgeHandler();
-        ForecastSolarMockFactory.createPlaneHandler(fsbh, "plane1", "src/test/resources/forecastsolar/result.json");
-        CallbackMock cm = (CallbackMock) fsbh.getCallback();
-        assertNotNull(cm);
-
-        // first update after add plane - 1 state shall be received
-        assertEquals(1, cm.getStateList("solarforecast:fs-site:bridge:power-actual").size(), "First update");
-        assertEquals(ThingStatus.ONLINE, cm.getStatus().getStatus(), "Online");
-        fsbh.handleCommand(
-                new ChannelUID("solarforecast:fs-site:bridge:" + SolarForecastBindingConstants.CHANNEL_ENERGY_ACTUAL),
-                RefreshType.REFRESH);
-        // second update after refresh request - 2 states shall be received
-        assertEquals(2, cm.getStateList("solarforecast:fs-site:bridge:power-actual").size(), "Second update");
-        assertEquals(ThingStatus.ONLINE, cm.getStatus().getStatus(), "Online");
-
-        fsbh.calmDown();
-        fsbh.handleCommand(
-                new ChannelUID("solarforecast:fs-site:bridge:" + SolarForecastBindingConstants.CHANNEL_ENERGY_ACTUAL),
-                RefreshType.REFRESH);
-        // after calm down refresh shall have no effect . still 2 states
-        assertEquals(2, cm.getStateList("solarforecast:fs-site:bridge:power-actual").size(), "Calm update");
-        assertEquals(ThingStatus.OFFLINE, cm.getStatus().getStatus(), "Offline");
-        assertEquals(ThingStatusDetail.COMMUNICATION_ERROR, cm.getStatus().getStatusDetail(), "Offline");
-
-        // forward Clock to get ONLINE again
-        String fixedInstant = "2022-07-17T16:15:00Z";
-        Clock fixedClock = Clock.fixed(Instant.parse(fixedInstant), ZoneId.of("UTC"));
-        Utils.setClock(fixedClock);
-        fsbh.handleCommand(
-                new ChannelUID("solarforecast:fs-site:bridge:" + SolarForecastBindingConstants.CHANNEL_ENERGY_ACTUAL),
-                RefreshType.REFRESH);
-        assertEquals(3, cm.getStateList("solarforecast:fs-site:bridge:power-actual").size(), "Second update");
-        assertEquals(ThingStatus.ONLINE, cm.getStatus().getStatus(), "Online");
     }
 }
