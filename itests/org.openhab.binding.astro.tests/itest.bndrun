@@ -43,16 +43,16 @@ Fragment-Host: org.openhab.binding.astro
 	org.osgi.service.component.annotations;version='[1.5.1,1.5.2)',\
 	com.sun.jna;version='[5.17.0,5.17.1)',\
 	org.ops4j.pax.logging.pax-logging-api;version='[2.3.0,2.3.1)',\
-	org.openhab.binding.astro;version='[5.1.0,5.1.1)',\
-	org.openhab.binding.astro.tests;version='[5.1.0,5.1.1)',\
-	org.openhab.core;version='[5.1.0,5.1.1)',\
-	org.openhab.core.addon;version='[5.1.0,5.1.1)',\
-	org.openhab.core.config.core;version='[5.1.0,5.1.1)',\
-	org.openhab.core.config.discovery;version='[5.1.0,5.1.1)',\
-	org.openhab.core.io.console;version='[5.1.0,5.1.1)',\
-	org.openhab.core.semantics;version='[5.1.0,5.1.1)',\
-	org.openhab.core.thing;version='[5.1.0,5.1.1)',\
-	org.openhab.core.transform;version='[5.1.0,5.1.1)',\
+	org.openhab.binding.astro;version='[5.2.0,5.2.1)',\
+	org.openhab.binding.astro.tests;version='[5.2.0,5.2.1)',\
+	org.openhab.core;version='[5.2.0,5.2.1)',\
+	org.openhab.core.addon;version='[5.2.0,5.2.1)',\
+	org.openhab.core.config.core;version='[5.2.0,5.2.1)',\
+	org.openhab.core.config.discovery;version='[5.2.0,5.2.1)',\
+	org.openhab.core.io.console;version='[5.2.0,5.2.1)',\
+	org.openhab.core.semantics;version='[5.2.0,5.2.1)',\
+	org.openhab.core.thing;version='[5.2.0,5.2.1)',\
+	org.openhab.core.transform;version='[5.2.0,5.2.1)',\
 	biz.aQute.tester.junit-platform;version='[7.1.0,7.1.1)',\
 	ch.qos.logback.classic;version='[1.5.18,1.5.19)',\
 	ch.qos.logback.core;version='[1.5.18,1.5.19)',\
@@ -71,7 +71,7 @@ Fragment-Host: org.openhab.binding.astro
 	org.objectweb.asm.tree;version='[9.6.0,9.6.1)',\
 	org.objectweb.asm.tree.analysis;version='[9.6.0,9.6.1)',\
 	org.objectweb.asm.util;version='[9.6.0,9.6.1)',\
-	org.openhab.core.test;version='[5.1.0,5.1.1)',\
+	org.openhab.core.test;version='[5.2.0,5.2.1)',\
 	org.osgi.service.cm;version='[1.6.1,1.6.2)',\
 	jakarta.annotation-api;version='[2.1.1,2.1.2)'
 

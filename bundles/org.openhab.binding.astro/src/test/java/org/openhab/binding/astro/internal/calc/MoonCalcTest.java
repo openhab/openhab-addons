@@ -22,7 +22,6 @@ import java.util.TimeZone;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.astro.internal.model.Moon;
-import org.openhab.binding.astro.internal.model.ZodiacSign;
 import org.openhab.binding.astro.internal.util.DateTimeUtils;
 
 /***
@@ -120,14 +119,6 @@ public class MoonCalcTest {
         // expected result from haevens-above.com is 11:35
         assertEquals(MoonCalcTest.newCalendar(2019, Calendar.FEBRUARY, 27, 11, 35, TIME_ZONE).getTimeInMillis(),
                 setStart.getTimeInMillis(), ACCURACY_IN_MILLIS);
-    }
-
-    @Test
-    public void testGetMoonInfoForZodiac() {
-        Moon moon = moonCalc.getMoonInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE, TIME_ZONE, Locale.ROOT);
-        moonCalc.setPositionalInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE, moon, TIME_ZONE, Locale.ROOT);
-
-        assertEquals(ZodiacSign.SAGITTARIUS, moon.getZodiac().getSign());
     }
 
     @Test

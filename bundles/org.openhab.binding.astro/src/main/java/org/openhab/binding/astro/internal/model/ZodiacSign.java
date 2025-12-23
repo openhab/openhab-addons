@@ -13,6 +13,7 @@
 package org.openhab.binding.astro.internal.model;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.astro.internal.util.MathUtils;
 
 /**
  * All zodiac signs.
@@ -32,5 +33,9 @@ public enum ZodiacSign {
     SAGITTARIUS,
     CAPRICORN,
     AQUARIUS,
-    PISCES
+    PISCES;
+
+    public static double getRadiansPerSign() {
+        return MathUtils.TWO_PI / ZodiacSign.values().length;
+    }
 }

@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.astro.internal.calc;
+package org.openhab.binding.astro.internal.calc.zodiac;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -22,7 +22,6 @@ import java.util.Optional;
 import java.util.TimeZone;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.astro.internal.model.SunZodiac;
 import org.openhab.binding.astro.internal.model.ZodiacSign;
 import org.openhab.binding.astro.internal.util.DateTimeUtils;
 
@@ -32,13 +31,13 @@ import org.openhab.binding.astro.internal.util.DateTimeUtils;
  * @author Gerhard Riegler - Initial contribution
  */
 @NonNullByDefault
-public class SunZodiacCalc {
+public class OldSunZodiacCalc {
     private Map<Integer, List<SunZodiac>> zodiacsByYear = new HashMap<>();
 
     private final TimeZone zone;
     private final Locale locale;
 
-    public SunZodiacCalc(TimeZone zone, Locale locale) {
+    public OldSunZodiacCalc(TimeZone zone, Locale locale) {
         this.zone = zone;
         this.locale = locale;
     }

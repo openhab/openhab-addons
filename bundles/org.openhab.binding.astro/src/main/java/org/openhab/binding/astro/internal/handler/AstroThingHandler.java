@@ -18,7 +18,9 @@ import static org.openhab.core.types.RefreshType.REFRESH;
 
 import java.lang.invoke.MethodHandles;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
@@ -312,21 +314,33 @@ public abstract class AstroThingHandler extends BaseThingHandler {
     /**
      * Adds the provided {@link Job} to the queue (cannot be {@code null})
      */
-    public void schedule(Job job, Calendar eventAt) {
-        long sleepTime;
+    private void schedule(Job job, long sleepTimeMs) {
         monitor.lock();
         try {
             tidyScheduledFutures();
-            sleepTime = eventAt.getTimeInMillis() - new Date().getTime();
-            ScheduledFuture<?> future = scheduler.schedule(job, sleepTime, TimeUnit.MILLISECONDS);
+            ScheduledFuture<?> future = scheduler.schedule(job, sleepTimeMs, TimeUnit.MILLISECONDS);
             scheduledFutures.add(future);
         } finally {
             monitor.unlock();
         }
+    }
+
+    /**
+     * Adds the provided {@link Job} to the queue (cannot be {@code null})
+     */
+    public void schedule(Job job, Calendar eventAt) {
+        long sleepTime = eventAt.getTimeInMillis() - new Date().getTime();
+        schedule(job, sleepTime);
         if (logger.isDebugEnabled()) {
             final String formattedDate = this.isoFormatter.format(eventAt.getTime());
             logger.debug("Scheduled {} in {}ms (at {})", job, sleepTime, formattedDate);
         }
+    }
+
+    public void schedule(Job job, Instant eventAt) {
+        long sleepTime = Instant.now().until(eventAt, ChronoUnit.MILLIS);
+        schedule(job, sleepTime);
+        logger.debug("Scheduled {} in {}ms (at {})", job, sleepTime, eventAt);
     }
 
     private void tidyScheduledFutures() {
