@@ -17,6 +17,7 @@ import static org.openhab.binding.astro.internal.AstroBindingConstants.*;
 import static org.openhab.binding.astro.internal.util.DateTimeUtils.*;
 
 import java.lang.invoke.MethodHandles;
+import java.time.Instant;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
@@ -56,6 +57,21 @@ public interface Job extends SchedulerRunnable, Runnable {
             if (isSameDay(eventAt, today) && isTimeGreaterEquals(eventAt, today)) {
                 astroHandler.schedule(job, eventAt);
             }
+        } catch (Exception ex) {
+            logger.error("{}", ex.getMessage(), ex);
+        }
+    }
+
+    /**
+     * Schedules the provided {@link Job} instance
+     *
+     * @param astroHandler the {@link AstroThingHandler} instance
+     * @param job the {@link Job} instance to schedule
+     * @param eventAt the {@link Instant} instance denoting scheduled instant
+     */
+    static void schedule(AstroThingHandler astroHandler, Job job, Instant eventAt) {
+        try {
+            astroHandler.schedule(job, eventAt);
         } catch (Exception ex) {
             logger.error("{}", ex.getMessage(), ex);
         }
@@ -167,6 +183,17 @@ public interface Job extends SchedulerRunnable, Runnable {
     static void schedulePublishPlanet(AstroThingHandler astroHandler, Calendar eventAt, TimeZone zone, Locale locale) {
         Job publishJob = new PublishPlanetJob(astroHandler);
         schedule(astroHandler, publishJob, eventAt, zone, locale);
+    }
+
+    /**
+     * Schedules Planet events
+     *
+     * @param astroHandler the {@link AstroThingHandler} instance
+     * @param when the {@link Instant} instance denoting scheduled instant
+     */
+    static void schedulePublishPlanet(AstroThingHandler astroHandler, Instant when) {
+        Job publishJob = new PublishPlanetJob(astroHandler);
+        schedule(astroHandler, publishJob, when);
     }
 
     /**

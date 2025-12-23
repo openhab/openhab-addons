@@ -13,6 +13,7 @@
 package org.openhab.binding.astro.internal.action;
 
 import java.time.ZonedDateTime;
+import java.util.Locale;
 
 import javax.measure.quantity.Angle;
 
@@ -119,7 +120,7 @@ public class AstroActions implements ThingActions {
             AstroThingHandler theHandler = this.handler;
             if (theHandler != null) {
                 if (theHandler instanceof SunHandler sunHandler) {
-                    SunPhaseName phase = SunPhaseName.valueOf(phaseName.toUpperCase());
+                    SunPhaseName phase = SunPhaseName.valueOf(phaseName.toUpperCase(Locale.US));
                     return sunHandler.getEventTime(phase, date != null ? date : ZonedDateTime.now(),
                             moment == null || AstroBindingConstants.EVENT_START.equalsIgnoreCase(moment));
                 } else {

@@ -32,7 +32,7 @@ public class Sun extends RiseSet implements Planet {
 
     private Position position = new Position();
 
-    private @Nullable SunZodiac zodiac;
+    private Zodiac zodiac = Zodiac.NULL;
 
     private Season season = new Season(TimeZone.getDefault(), Locale.getDefault());
 
@@ -41,6 +41,8 @@ public class Sun extends RiseSet implements Planet {
     private Radiation radiation = new Radiation();
 
     private SunPhase phase = new SunPhase();
+
+    private Circadian circadian = Circadian.DEFAULT;
 
     /**
      * Returns the astro dawn range.
@@ -249,15 +251,14 @@ public class Sun extends RiseSet implements Planet {
     /**
      * Returns the zodiac.
      */
-    @Nullable
-    public SunZodiac getZodiac() {
+    public Zodiac getZodiac() {
         return zodiac;
     }
 
     /**
      * Sets the zodiac.
      */
-    public void setZodiac(@Nullable SunZodiac zodiac) {
+    public void setZodiac(Zodiac zodiac) {
         this.zodiac = zodiac;
     }
 
@@ -308,5 +309,13 @@ public class Sun extends RiseSet implements Planet {
      */
     public Map<SunPhaseName, Range> getAllRanges() {
         return ranges;
+    }
+
+    public Circadian getCircadian() {
+        return circadian;
+    }
+
+    public void setCircadian(Circadian circadian) {
+        this.circadian = circadian;
     }
 }

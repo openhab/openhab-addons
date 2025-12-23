@@ -88,6 +88,8 @@ public class LambdaBindingConstants {
     public static final String CHANNEL_HEAT_PUMP_RELAIS_STATE = "heat-pump-relais-state";
     public static final String CHANNEL_HEAT_PUMP_VDAE = "heat-pump-vdae";
     public static final String CHANNEL_HEAT_PUMP_VDAQ = "heat-pump-vdaq";
+    public static final String CHANNEL_HEAT_PUMP_VDAE_SWAP = "heat-pump-vdae-swap";
+    public static final String CHANNEL_HEAT_PUMP_VDAQ_SWAP = "heat-pump-vdaq-swap";
 
     // Boiler
     public static final String CHANNEL_BOILER_ERROR_NUMBER = "boiler-error-number";
