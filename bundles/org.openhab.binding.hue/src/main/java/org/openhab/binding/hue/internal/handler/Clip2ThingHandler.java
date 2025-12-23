@@ -442,7 +442,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 break;
 
             case CHANNEL_2_MOTION_ENABLED:
-                putResource = new Resource(getExtendedResourceType(ResourceType.MOTION));
+                putResource = new Resource(getExtendedResourceType(ResourceType.MOTION)).setEnabled(command);
                 break;
 
             case CHANNEL_2_LIGHT_LEVEL_ENABLED:
