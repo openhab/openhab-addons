@@ -232,6 +232,16 @@ public class TestResponse {
         }
     }
 
+    @Test
+    void testEmptyParser() {
+        EntsoeDocumentParser standardParser = new EntsoeDocumentParser();
+        assertNotNull(standardParser);
+        assertNotNull(standardParser.getFailureReason());
+        EntsoeDocumentParser emptyParser = new EntsoeDocumentParser("");
+        assertNotNull(emptyParser);
+        assertNotNull(emptyParser.getFailureReason());
+    }
+
     private void verifySpotPrice(Map<Instant, SpotPrice> map, String timestamp, double expectedValue) {
         SpotPrice testPrice = map.get(Instant.parse(timestamp));
         assertNotNull(testPrice, "No spot price at " + timestamp);
