@@ -185,6 +185,10 @@ public abstract class AstroThingHandler extends BaseThingHandler {
                 logger.error("Cannot find channel for {}", channelUID);
                 return;
             }
+            if (channel.getKind() == TRIGGER) {
+                // if the channel is a trigger channel, there is no state to publish
+                return;
+            }
             try {
                 AstroChannelConfig config = channel.getConfiguration().as(AstroChannelConfig.class);
                 updateState(channelUID, PropertyUtils.getState(channelUID, config, planet,
