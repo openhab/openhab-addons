@@ -21,12 +21,18 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public enum MoonPhaseName {
-    NEW,
-    WAXING_CRESCENT,
-    FIRST_QUARTER,
-    WAXING_GIBBOUS,
-    FULL,
-    WANING_GIBBOUS,
-    THIRD_QUARTER,
-    WANING_CRESCENT
+    NEW(0),
+    WAXING_CRESCENT(Double.NaN),
+    FIRST_QUARTER(0.25),
+    WAXING_GIBBOUS(Double.NaN),
+    FULL(0.5),
+    WANING_GIBBOUS(Double.NaN),
+    THIRD_QUARTER(0.75), // also called last quarter
+    WANING_CRESCENT(Double.NaN);
+
+    public final double mode;
+
+    MoonPhaseName(double mode) {
+        this.mode = mode;
+    }
 }

@@ -44,10 +44,6 @@ import org.openhab.binding.astro.internal.util.DateTimeUtils;
  */
 @NonNullByDefault
 public class MoonCalc {
-    private static final double NEW_MOON = 0;
-    private static final double FULL_MOON = 0.5;
-    private static final double FIRST_QUARTER = 0.25;
-    private static final double LAST_QUARTER = 0.75;
 
     /**
      * Calculates all moon data at the specified coordinates
@@ -79,12 +75,14 @@ public class MoonCalc {
         moon.setSet(new Range(set, set));
 
         MoonPhase phase = moon.getPhase();
-        phase.setNew(DateTimeUtils.toCalendar(getNextPhase(calendar, julianDateMidnight, NEW_MOON), zone, locale));
-        phase.setFirstQuarter(
-                DateTimeUtils.toCalendar(getNextPhase(calendar, julianDateMidnight, FIRST_QUARTER), zone, locale));
-        phase.setFull(DateTimeUtils.toCalendar(getNextPhase(calendar, julianDateMidnight, FULL_MOON), zone, locale));
-        phase.setThirdQuarter(
-                DateTimeUtils.toCalendar(getNextPhase(calendar, julianDateMidnight, LAST_QUARTER), zone, locale));
+        phase.setNew(
+                DateTimeUtils.toCalendar(getNextPhase(calendar, julianDateMidnight, MoonPhaseName.NEW), zone, locale));
+        phase.setFirstQuarter(DateTimeUtils
+                .toCalendar(getNextPhase(calendar, julianDateMidnight, MoonPhaseName.FIRST_QUARTER), zone, locale));
+        phase.setFull(
+                DateTimeUtils.toCalendar(getNextPhase(calendar, julianDateMidnight, MoonPhaseName.FULL), zone, locale));
+        phase.setThirdQuarter(DateTimeUtils
+                .toCalendar(getNextPhase(calendar, julianDateMidnight, MoonPhaseName.THIRD_QUARTER), zone, locale));
 
         Eclipse eclipse = moon.getEclipse();
         eclipse.getKinds().forEach(eclipseKind -> {
@@ -129,7 +127,7 @@ public class MoonCalc {
     private void setMoonPhase(Calendar calendar, Moon moon, TimeZone zone, Locale locale) {
         MoonPhase phase = moon.getPhase();
         double julianDate = DateTimeUtils.dateToJulianDate(calendar);
-        double parentNewMoon = getPreviousPhase(calendar, julianDate, NEW_MOON);
+        double parentNewMoon = getPreviousPhase(calendar, julianDate, MoonPhaseName.NEW);
         double age = Math.abs(parentNewMoon - julianDate);
         Calendar parentNewMoonCal = DateTimeUtils.toCalendar(parentNewMoon, zone, locale);
         if (parentNewMoonCal == null) {
@@ -259,9 +257,13 @@ public class MoonCalc {
     /**
      * Calculates the moon phase.
      */
-    private double calcMoonPhase(double k, double mode) {
-        double kMod = Math.floor(k) + mode;
+    private double calcMoonPhase(double k, MoonPhaseName phase) {
+        if (Double.isNaN(phase.mode)) {
+            throw new IllegalArgumentException("calcMoonPhase called for unhandled phase: %s".formatted(phase.name()));
+        }
+        double kMod = Math.floor(k) + phase.mode;
         double t = kMod / 1236.85;
+<<<<<<< Upstream, based on main
         double e = varE(t);
         double m = varM(kMod, t);
         double m1 = varM1(kMod, t);
@@ -304,6 +306,53 @@ public class MoonCalc {
             double w = .00306 - .00038 * e * cosDeg(m) + .00026 * cosDeg(m1) - .00002 * cosDeg(m1 - m)
                     + .00002 * cosDeg(m1 + m) + .00002 * cosDeg(2 * f);
             jd += (mode == FIRST_QUARTER) ? w : -w;
+=======
+        double e = var_e(t);
+        double m = var_m(kMod, t);
+        double m1 = var_m1(kMod, t);
+        double f = var_f(kMod, t);
+        double o = var_o(kMod, t);
+        double jd = var_jde(kMod, t);
+        switch (phase) {
+            case NEW:
+                jd += -.4072 * sinDeg(m1) + .17241 * e * sinDeg(m) + .01608 * sinDeg(2 * m1) + .01039 * sinDeg(2 * f)
+                        + .00739 * e * sinDeg(m1 - m) - .00514 * e * sinDeg(m1 + m) + .00208 * e * e * sinDeg(2 * m)
+                        - .00111 * sinDeg(m1 - 2 * f) - .00057 * sinDeg(m1 + 2 * f);
+                jd += .00056 * e * sinDeg(2 * m1 + m) - .00042 * sinDeg(3 * m1) + .00042 * e * sinDeg(m + 2 * f)
+                        + .00038 * e * sinDeg(m - 2 * f) - .00024 * e * sinDeg(2 * m1 - m) - .00017 * sinDeg(o)
+                        - .00007 * sinDeg(m1 + 2 * m) + .00004 * sinDeg(2 * m1 - 2 * f);
+                jd += .00004 * sinDeg(3 * m) + .00003 * sinDeg(m1 + m - 2 * f) + .00003 * sinDeg(2 * m1 + 2 * f)
+                        - .00003 * sinDeg(m1 + m + 2 * f) + .00003 * sinDeg(m1 - m + 2 * f)
+                        - .00002 * sinDeg(m1 - m - 2 * f) - .00002 * sinDeg(3 * m1 + m);
+                jd += .00002 * sinDeg(4 * m1);
+                break;
+            case FULL:
+                jd += -.40614 * sinDeg(m1) + .17302 * e * sinDeg(m) + .01614 * sinDeg(2 * m1) + .01043 * sinDeg(2 * f)
+                        + .00734 * e * sinDeg(m1 - m) - .00515 * e * sinDeg(m1 + m) + .00209 * e * e * sinDeg(2 * m)
+                        - .00111 * sinDeg(m1 - 2 * f) - .00057 * sinDeg(m1 + 2 * f);
+                jd += .00056 * e * sinDeg(2 * m1 + m) - .00042 * sinDeg(3 * m1) + .00042 * e * sinDeg(m + 2 * f)
+                        + .00038 * e * sinDeg(m - 2 * f) - .00024 * e * sinDeg(2 * m1 - m) - .00017 * sinDeg(o)
+                        - .00007 * sinDeg(m1 + 2 * m) + .00004 * sinDeg(2 * m1 - 2 * f);
+                jd += .00004 * sinDeg(3 * m) + .00003 * sinDeg(m1 + m - 2 * f) + .00003 * sinDeg(2 * m1 + 2 * f)
+                        - .00003 * sinDeg(m1 + m + 2 * f) + .00003 * sinDeg(m1 - m + 2 * f)
+                        - .00002 * sinDeg(m1 - m - 2 * f) - .00002 * sinDeg(3 * m1 + m);
+                jd += .00002 * sinDeg(4 * m1);
+                break;
+            default:
+                jd += -.62801 * sinDeg(m1) + .17172 * e * sinDeg(m) - .01183 * e * sinDeg(m1 + m)
+                        + .00862 * sinDeg(2 * m1) + .00804 * sinDeg(2 * f) + .00454 * e * sinDeg(m1 - m)
+                        + .00204 * e * e * sinDeg(2 * m) - .0018 * sinDeg(m1 - 2 * f) - .0007 * sinDeg(m1 + 2 * f);
+                jd += -.0004 * sinDeg(3 * m1) - .00034 * e * sinDeg(2 * m1 - m) + .00032 * e * sinDeg(m + 2 * f)
+                        + .00032 * e * sinDeg(m - 2 * f) - .00028 * e * e * sinDeg(m1 + 2 * m)
+                        + .00027 * e * sinDeg(2 * m1 + m) - .00017 * sinDeg(o);
+                jd += -.00005 * sinDeg(m1 - m - 2 * f) + .00004 * sinDeg(2 * m1 + 2 * f)
+                        - .00004 * sinDeg(m1 + m + 2 * f) + .00004 * sinDeg(m1 - 2 * m)
+                        + .00003 * sinDeg(m1 + m - 2 * f) + .00003 * sinDeg(3 * m) + .00002 * sinDeg(2 * m1 - 2 * f);
+                jd += .00002 * sinDeg(m1 - m + 2 * f) - .00002 * sinDeg(3 * m1 + m);
+                double w = .00306 - .00038 * e * cosDeg(m) + .00026 * cosDeg(m1) - .00002 * cosDeg(m1 - m)
+                        + .00002 * cosDeg(m1 + m) + .00002 * cosDeg(2 * f);
+                jd += MoonPhaseName.FIRST_QUARTER.equals(phase) ? w : -w;
+>>>>>>> 24ede3e Initial commit for Moon phase revamp
         }
         return moonCorrection(jd, t, kMod);
     }
@@ -386,7 +435,7 @@ public class MoonCalc {
      * Calculates the illumination.
      */
     private double getIllumination(double jd) {
-        double t = (jd - 2451545) / 36525;
+        double t = DateTimeUtils.toJulianCenturies(jd);
         double d = 297.8502042 + 445267.11151686 * t - .00163 * t * t + t * t * t / 545868 - t * t * t * t / 113065000;
         double m = 357.5291092 + 35999.0502909 * t - .0001536 * t * t + t * t * t / 24490000;
         double m1 = 134.9634114 + 477198.8676313 * t + .008997 * t * t + t * t * t / 69699 - t * t * t * t / 14712000;
@@ -398,13 +447,13 @@ public class MoonCalc {
     /**
      * Calculates the next moon phase.
      */
-    private double getNextPhase(Calendar cal, double midnightJd, double mode) {
+    private double getNextPhase(Calendar cal, double midnightJd, MoonPhaseName phase) {
         double tz = 0;
         double phaseJd = 0;
         do {
             double k = varK(cal, tz);
             tz += 1;
-            phaseJd = calcMoonPhase(k, mode);
+            phaseJd = calcMoonPhase(k, phase);
         } while (phaseJd <= midnightJd);
         return phaseJd;
     }
@@ -412,13 +461,13 @@ public class MoonCalc {
     /**
      * Calculates the previous moon phase.
      */
-    private double getPreviousPhase(Calendar cal, double jd, double mode) {
+    private double getPreviousPhase(Calendar cal, double jd, MoonPhaseName phase) {
         double tz = 0;
         double phaseJd = 0;
         do {
             double k = varK(cal, tz);
             tz -= 1;
-            phaseJd = calcMoonPhase(k, mode);
+            phaseJd = calcMoonPhase(k, phase);
         } while (phaseJd > jd);
         return phaseJd;
     }
@@ -510,7 +559,7 @@ public class MoonCalc {
      * Calculates the distance from the moon to earth.
      */
     private double getDistance(double jd) {
-        double t = (jd - 2451545) / 36525;
+        double t = DateTimeUtils.toJulianCenturies(jd);
         double d = 297.8502042 + 445267.11151686 * t - .00163 * t * t + t * t * t / 545868 - t * t * t * t / 113065000;
         double m = 357.5291092 + 35999.0502909 * t - .0001536 * t * t + t * t * t / 24490000;
         double m1 = 134.9634114 + 477198.8676313 * t + .008997 * t * t + t * t * t / 69699 - t * t * t * t / 14712000;
@@ -556,7 +605,7 @@ public class MoonCalc {
 
     private double sinAlt(double moonJd, int hour, double lambda, double cphi, double sphi) {
         double jdo = moonJd + hour / 24.0;
-        double t = (jdo - 51544.5) / 36525.0;
+        double t = (jdo - DateTimeUtils.MJD_JD2000) / DateTimeUtils.JULIAN_CENTURY_DAYS;
         double[] decra = calcMoon(t);
         double tau = 15.0 * (localMeanSiderealTime(jdo, lambda) - decra[1]);
         return sphi * sinDeg(decra[0]) + cphi * cosDeg(decra[0]) * cosDeg(tau);
@@ -565,7 +614,7 @@ public class MoonCalc {
     private double localMeanSiderealTime(double moonJd, double lambda) {
         double moonJdo = Math.floor(moonJd);
         double ut = (moonJd - moonJdo) * 24.0;
-        double t = (moonJdo - 51544.5) / 36525.0;
+        double t = (moonJdo - DateTimeUtils.MJD_JD2000) / DateTimeUtils.JULIAN_CENTURY_DAYS;
         double gmst = 6.697374558 + 1.0027379093 * ut + (8640184.812866 + (.093104 - .0000062 * t) * t) * t / 3600.0;
         return 24.0 * frac((gmst - lambda / 15.0) / 24.0);
     }
@@ -675,8 +724,8 @@ public class MoonCalc {
         double lat = Math.toRadians(latitude);
         double lon = Math.toRadians(longitude);
 
-        double gmst = toGMST(julianDate);
-        double lmst = toLMST(gmst, lon) * Math.toRadians(15);
+        double gmst = DateTimeUtils.toGMST(julianDate);
+        double lmst = DateTimeUtils.toLMST(gmst, lon) * Math.toRadians(15);
 
         double d = julianDate - 2447891.5;
         double anomalyMean = Math.toRadians(360) / 365.242191 * d + 4.87650757829735 - 4.935239984568769;
@@ -719,14 +768,6 @@ public class MoonCalc {
         moon.setZodiac(ZodiacCalc.calculate(moonLon, null));
     }
 
-    private double mod2Pi(double x) {
-        return (mod(x, 2. * Math.PI));
-    }
-
-    private double mod(double a, double b) {
-        return (a - Math.floor(a / b) * b);
-    }
-
     /**
      * Transform equatorial coordinates (ra/dec) to horizonal coordinates
      * (azimuth/altitude).
@@ -753,7 +794,7 @@ public class MoonCalc {
      * (ra/dec)
      */
     private double[] ecl2Equ(double lat, double lon, double jd) {
-        double t = (jd - 2451545.0) / 36525.0;
+        double t = DateTimeUtils.toJulianCenturies(jd);
         double eps = Math
                 .toRadians(23. + (26 + 21.45 / 60.) / 60. + t * (-46.815 + t * (-0.0006 + t * 0.00181)) / 3600.);
         double coseps = Math.cos(eps);
@@ -788,24 +829,6 @@ public class MoonCalc {
         double decTopo = Math.asin(z / distanceTopocentric);
 
         return new double[] { raTopo, decTopo };
-    }
-
-    /**
-     * Convert julian date to greenwich mean sidereal time.
-     */
-    private double toGMST(double jd) {
-        double ut = (jd - 0.5 - Math.floor(jd - 0.5)) * 24.;
-        double jdMod = Math.floor(jd - 0.5) + 0.5;
-        double t = (jdMod - 2451545.0) / 36525.0;
-        double t0 = 6.697374558 + t * (2400.051336 + t * 0.000025862);
-        return (mod(t0 + ut * 1.002737909, 24.));
-    }
-
-    /**
-     * Convert greenwich mean sidereal time to local mean sidereal time.
-     */
-    private double toLMST(double gmst, double lon) {
-        return mod(gmst + Math.toDegrees(lon) / 15., 24.);
     }
 
     /**
