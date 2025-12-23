@@ -220,6 +220,7 @@
 		<item-type>String</item-type>
 		<label>Season Name</label>
 		<description>The name of the current season</description>
+		<category>oh:astro:season</category>
 		<tags>
 			<tag>Status</tag>
 			<tag>Info</tag>
@@ -238,6 +239,7 @@
 		<item-type>DateTime</item-type>
 		<label>Spring</label>
 		<description>The beginning of spring</description>
+		<category>calendar</category>
 		<tags>
 			<tag>Calculation</tag>
 			<tag>Timestamp</tag>
@@ -249,6 +251,7 @@
 		<item-type>DateTime</item-type>
 		<label>Summer</label>
 		<description>The beginning of summer</description>
+		<category>calendar</category>
 		<tags>
 			<tag>Calculation</tag>
 			<tag>Timestamp</tag>
@@ -260,6 +263,7 @@
 		<item-type>DateTime</item-type>
 		<label>Autumn</label>
 		<description>The beginning of autumn</description>
+		<category>calendar</category>
 		<tags>
 			<tag>Calculation</tag>
 			<tag>Timestamp</tag>
@@ -271,6 +275,7 @@
 		<item-type>DateTime</item-type>
 		<label>Winter</label>
 		<description>The beginning of winter</description>
+		<category>calendar</category>
 		<tags>
 			<tag>Calculation</tag>
 			<tag>Timestamp</tag>

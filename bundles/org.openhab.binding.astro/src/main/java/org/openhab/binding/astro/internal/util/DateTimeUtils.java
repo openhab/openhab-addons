@@ -40,6 +40,7 @@ public class DateTimeUtils {
     public static final double JD_UNIX_EPOCH = 2440587.5; // 1970-01-01 00:00 UTC
     private static final double J1970 = JD_UNIX_EPOCH + 0.5; // 1970-01-01 12:00 UTC (julian solar noon)
     private static final int JULIAN_CENTURY_DAYS = 36525; // Length of a Julian Century in days
+    private static final double SECONDS_PER_DAY = 60 * 60 * 24;
 
     /** Constructor */
     private DateTimeUtils() {
@@ -411,5 +412,24 @@ public class DateTimeUtils {
             }
         }
         return -1;
+    }
+
+    public static Instant jdToInstant(double jd) {
+        double secondsFromEpoch = (jd - JD_UNIX_EPOCH) * SECONDS_PER_DAY;
+
+        long epochSeconds = (long) Math.floor(secondsFromEpoch);
+        long nanos = Math.round((secondsFromEpoch - epochSeconds) * 1_000_000_000L);
+
+        // correct if rounded is above 1 second
+        if (nanos == 1_000_000_000L) {
+            epochSeconds++;
+            nanos = 0;
+        }
+
+        return Instant.ofEpochSecond(epochSeconds, nanos);
+    }
+
+    public static Instant atMidnightOfFirstMonthDay(Instant instant, TimeZone zone) {
+        return instant.atZone(zone.toZoneId()).withDayOfMonth(1).truncatedTo(ChronoUnit.DAYS).toInstant();
     }
 }

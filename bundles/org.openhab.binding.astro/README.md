@@ -47,6 +47,11 @@ This binding has its own IconProvider and makes available the following list of 
 | oh:astro:zodiac-scorpio     |   Yes   | ![Scorpio](doc/images/zodiac-scorpio.svg) |
 | oh:astro:zodiac-taurus      |   Yes   | ![Taurus](doc/images/zodiac-taurus.svg) |
 | oh:astro:zodiac-virgo       |   Yes   | ![Virgo](doc/images/zodiac-virgo.svg) |
+| oh:astro:season             |   Yes   | ![Season](doc/images/season.svg) |
+| oh:astro:season-autumn      |   Yes   | ![Autumn](doc/images/season-autumn.svg) |
+| oh:astro:season-spring      |   Yes   | ![Spring](doc/images/season-spring.svg) |
+| oh:astro:season-summer      |   Yes   | ![Summer](doc/images/season-summer.svg) |
+| oh:astro:season-winter      |   Yes   | ![Winter](doc/images/season-winter.svg) |
 
 ## Channels
 
