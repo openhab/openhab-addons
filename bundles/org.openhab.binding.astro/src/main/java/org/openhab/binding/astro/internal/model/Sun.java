@@ -42,6 +42,8 @@ public class Sun extends RiseSet implements Planet {
 
     private SunPhase phase = new SunPhase();
 
+    private Circadian circadian = Circadian.DEFAULT;
+
     /**
      * Returns the astro dawn range.
      */
@@ -307,5 +309,13 @@ public class Sun extends RiseSet implements Planet {
      */
     public Map<SunPhaseName, Range> getAllRanges() {
         return ranges;
+    }
+
+    public Circadian getCircadian() {
+        return circadian;
+    }
+
+    public void setCircadian(Circadian circadian) {
+        this.circadian = circadian;
     }
 }

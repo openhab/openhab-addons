@@ -78,6 +78,11 @@ This binding has its own IconProvider and makes available the following list of 
   - **group** `phase`
     - **channel**
       - `name` (String), values: `SUN_RISE, ASTRO_DAWN, NAUTIC_DAWN, CIVIL_DAWN, CIVIL_DUSK, NAUTIC_DUSK, ASTRO_DUSK, SUN_SET, DAYLIGHT, NOON, NIGHT`
+  - **group** `circadian`:  provides automatically calculated values that follow a daily circadian rhythm based on the position of the sun.
+    - **channel**
+      - `brightness` (Dimmer): represents a recommended light brightness level as a percentage. It ranges from **0–100%**, where 0% is fully off and 100% is maximum brightness. The value follows the solar cycle, generally increasing towards **solar noon** and decreasing towards **midnight**.
+      - `temperature` (Number:Temperature): represents a recommended color temperature for white light in **Kelvin**, ranging from **2500 K** (warm white) to **5500 K** (cool white). Around solar noon the value tends towards the higher, cooler temperatures, while during the night and around midnight it shifts towards lower, warmer temperatures.
+
 - **thing** `moon`
   - **group** `rise, set`
     - **channel**
