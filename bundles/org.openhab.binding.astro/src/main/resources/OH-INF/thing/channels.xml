@@ -172,6 +172,7 @@
 		<item-type>String</item-type>
 		<label>Sign</label>
 		<description>The sign of the zodiac</description>
+		<category>oh:astro:zodiac</category>
 		<tags>
 			<tag>Status</tag>
 			<tag>Info</tag>

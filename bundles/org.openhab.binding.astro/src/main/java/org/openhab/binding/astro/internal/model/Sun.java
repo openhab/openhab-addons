@@ -32,7 +32,7 @@ public class Sun extends RiseSet implements Planet {
 
     private Position position = new Position();
 
-    private @Nullable SunZodiac zodiac;
+    private Zodiac zodiac = Zodiac.NULL;
 
     private Season season = new Season(TimeZone.getDefault(), Locale.getDefault());
 
@@ -249,15 +249,14 @@ public class Sun extends RiseSet implements Planet {
     /**
      * Returns the zodiac.
      */
-    @Nullable
-    public SunZodiac getZodiac() {
+    public Zodiac getZodiac() {
         return zodiac;
     }
 
     /**
      * Sets the zodiac.
      */
-    public void setZodiac(@Nullable SunZodiac zodiac) {
+    public void setZodiac(Zodiac zodiac) {
         this.zodiac = zodiac;
     }
 

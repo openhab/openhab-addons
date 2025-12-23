@@ -27,7 +27,7 @@ public class Moon extends RiseSet implements Planet {
     private MoonDistance distance = new MoonDistance();
     private Eclipse eclipse = new Eclipse(EclipseKind.PARTIAL, EclipseKind.TOTAL);
     private Position position = new Position();
-    private Zodiac zodiac = new Zodiac(null);
+    private Zodiac zodiac = Zodiac.NULL;
 
     /**
      * Returns the moon phase.

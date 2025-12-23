@@ -14,6 +14,7 @@ package org.openhab.binding.astro.internal.util;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.time.Instant;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.Locale;
@@ -29,6 +30,7 @@ import org.openhab.binding.astro.internal.model.Season;
  * Test class for {@link DateTimeUtils}.
  *
  * @author Hilbrand Bouwkamp - Initial contribution
+ * @author Gaël L'hopital - Added tests for Instant usage
  */
 public class DateTimeUtilsTest {
 
@@ -85,6 +87,20 @@ public class DateTimeUtilsTest {
     }
 
     @Test
+    void testTruncateInstant() {
+        Instant instant = Instant.parse("2024-03-12T10:15:30.123456Z");
+        assertEquals(Instant.parse("2024-03-12T10:15:30Z"), DateTimeUtils.truncateToSecond(instant));
+        assertEquals(Instant.parse("2024-03-12T10:15:00Z"), DateTimeUtils.truncateToMinute(instant));
+        assertEquals(Instant.parse("2024-03-12T00:00:00Z"), DateTimeUtils.truncateToMidnight(instant));
+    }
+
+    @Test
+    void testEndOfDayDateInstant() {
+        Instant instant = Instant.parse("2024-03-12T10:15:30Z");
+        assertEquals(Instant.parse("2024-03-12T23:59:59.999Z"), DateTimeUtils.endOfDayDate(instant));
+    }
+
+    @Test
     public void testCreateCalendarForToday() {
         Calendar cal = DateTimeUtils.createCalendarForToday(8, 0, TIME_ZONE, Locale.ROOT);
         assertEquals(8, cal.get(Calendar.HOUR_OF_DAY));
@@ -109,6 +125,26 @@ public class DateTimeUtilsTest {
         assertNotSame(JAN_20_2020, DateTimeUtils.adjustTime(JAN_20_2020, 60));
         assertEquals(JAN_20_2020, DateTimeUtils.adjustTime(JAN_20_2020, -1));
         assertSame(JAN_20_2020, DateTimeUtils.adjustTime(JAN_20_2020, -2));
+    }
+
+    @Test
+    public void testAdjustTimeInstant() {
+        Instant instant = Instant.parse("2024-03-12T10:15:30Z");
+        assertEquals(Instant.parse("2024-03-12T01:00:00Z"), DateTimeUtils.adjustTime(instant, 60));
+        assertEquals(Instant.parse("2024-03-12T00:00:00Z"), DateTimeUtils.adjustTime(instant, 0));
+        assertSame(instant, DateTimeUtils.adjustTime(instant, -1));
+    }
+
+    @Test
+    public void testGetAdjustedLatestInstant() {
+        AstroChannelConfig config = new AstroChannelConfig();
+        Instant instant = Instant.parse("2024-03-12T10:15:30Z");
+        config.latest = "02:30";
+        assertEquals(Instant.parse("2024-03-12T02:30:00Z"), DateTimeUtils.getAdjustedLatest(instant, config));
+        config.latest = "00:00";
+        assertSame(instant, DateTimeUtils.getAdjustedLatest(instant, config));
+        config.latest = null;
+        assertSame(instant, DateTimeUtils.getAdjustedLatest(instant, config));
     }
 
     @Test
