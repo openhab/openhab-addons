@@ -42,7 +42,7 @@ public class CircadianCalc {
         var set = setRange.getStart();
         var noon = noonRange != null ? noonRange.getStart() : null;
 
-        // If we have no rise or no set, there's no point to calculate a Circadian Cycle
+        // If we have no rise or no set, there's no point calculating a Circadian Cycle
         if (rise == null || set == null || noon == null) {
             return Circadian.DEFAULT;
         }
