@@ -15,25 +15,16 @@ package org.openhab.binding.linky.internal.dto;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link ReadingType} the type info associate with a meter reading
+ * The {@link Reading} the type info associate with a meter reading
  *
  * @author Gaël L'hopital - Initial contribution
  * @author Laurent Arnal - Rewrite addon to use official dataconect API
  */
 
-public class ReadingType {
-    @SerializedName("flow_direction")
-    public String flowDirection;
+public class Reading {
+    @SerializedName("quality")
+    public String quality;
 
-    @SerializedName("measurement_kind")
-    public String measurementKind;
-
-    @SerializedName("measuring_period")
-    public String measuringPeriod;
-
-    @SerializedName("unit")
-    public String unit;
-
-    @SerializedName("aggregate")
-    public String aggregate;
+    @SerializedName("context")
+    public String context;
 }
