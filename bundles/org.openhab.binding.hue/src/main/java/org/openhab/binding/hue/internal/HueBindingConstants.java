@@ -177,13 +177,13 @@ public class HueBindingConstants {
     public static final String CHANNEL_2_SECURITY_CONTACT_LAST_UPDATED = "security-contact-last-updated";
     public static final String CHANNEL_2_SECURITY_TAMPER = "security-tamper";
     public static final String CHANNEL_2_SECURITY_TAMPER_LAST_UPDATED = "security-tamper-last-updated";
-    public static final String CHANNEL_2_SECURITY_MOTION = "security-motion";
-    public static final String CHANNEL_2_SECURITY_MOTION_LAST_UPDATED = "security-motion-last-updated";
-    public static final String CHANNEL_2_SECURITY_MOTION_ENABLED = "security-motion-enabled";
     public static final String CHANNEL_2_ALARM_SOUND = "alarm-sound";
     public static final String CHANNEL_2_ALERT_SOUND = "alert-sound";
     public static final String CHANNEL_2_CHIME_SOUND = "chime-sound";
     public static final String CHANNEL_2_SOUND_MUTE = "sound-mute";
+    public static final String CHANNEL_2_MOTION_AREA_ENABLED = "motion-area-enabled";
+    public static final String CHANNEL_2_SECURITY_MOTION = "security-motion";
+    public static final String CHANNEL_2_SECURITY_MOTION_LAST_UPDATED = "security-motion-last-updated";
 
     // channel IDs that (optionally) support dynamics
     public static final Set<String> DYNAMIC_CHANNELS = Set.of(CHANNEL_2_BRIGHTNESS, CHANNEL_2_COLOR,

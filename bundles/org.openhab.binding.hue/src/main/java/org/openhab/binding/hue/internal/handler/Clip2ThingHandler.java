@@ -110,7 +110,7 @@ import org.slf4j.LoggerFactory;
 public class Clip2ThingHandler extends BaseThingHandler {
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_DEVICE, THING_TYPE_ROOM,
-            THING_TYPE_ZONE);
+            THING_TYPE_ZONE, THING_TYPE_AREA);
 
     private static final Set<ResourceType> SUPPORTED_SCENE_TYPES = Set.of(ResourceType.SCENE, ResourceType.SMART_SCENE);
 
@@ -224,6 +224,8 @@ public class Clip2ThingHandler extends BaseThingHandler {
             thisResource = new Resource(ResourceType.ROOM);
         } else if (THING_TYPE_ZONE.equals(thingTypeUID)) {
             thisResource = new Resource(ResourceType.ZONE);
+        } else if (THING_TYPE_AREA.equals(thingTypeUID)) {
+            thisResource = new Resource(ResourceType.MOTION_AREA_CONFIGURATION);
         } else {
             throw new IllegalArgumentException("Wrong thing type " + thingTypeUID.getAsString());
         }
@@ -440,11 +442,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 break;
 
             case CHANNEL_2_MOTION_ENABLED:
-                putResource = new Resource(getExtendedResourceType(ResourceType.MOTION)).setEnabled(command);
-                break;
-
-            case CHANNEL_2_SECURITY_MOTION_ENABLED:
-                putResource = new Resource(ResourceType.SECURITY_AREA_MOTION).setEnabled(command);
+                putResource = new Resource(getExtendedResourceType(ResourceType.MOTION));
                 break;
 
             case CHANNEL_2_LIGHT_LEVEL_ENABLED:
@@ -503,6 +501,11 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 if (command instanceof OnOffType onOff) {
                     putResource = new Resource(ResourceType.SPEAKER).setMuteType(MuteType.of(OnOffType.ON == onOff));
                 }
+                break;
+
+            case CHANNEL_2_MOTION_AREA_ENABLED:
+                putResource = new Resource(ResourceType.MOTION_AREA_CONFIGURATION).setEnabled(command);
+                putResourceId = thisResource.getId();
                 break;
 
             case CHANNEL_2_DYNAMICS:
@@ -737,6 +740,9 @@ public class Clip2ThingHandler extends BaseThingHandler {
                     updateProperties(resource);
                     resourceConsumedFlags = updatePropertiesDone ? FLAG_PROPERTIES_UPDATE : 0;
                 }
+            }
+            if (resource.getType() == ResourceType.MOTION_AREA_CONFIGURATION) {
+                resourceConsumedFlags |= updateChannels && updateChannels(resource) ? FLAG_CHANNELS_UPDATE : 0;
             }
             if (!updateDependenciesDone) {
                 resourceConsumedFlags |= FLAG_DEPENDENCIES_UPDATE;
@@ -1030,23 +1036,30 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 break;
 
             case CAMERA_MOTION:
-            case CONVENIENCE_AREA_MOTION:
                 if (fullUpdate) {
                     extendedResourceTypes.put(ResourceType.MOTION, resource.getType());
                 }
-                // fall through for motion related channels
-
-            case MOTION:
                 updateState(CHANNEL_2_MOTION, resource.getMotionState(), fullUpdate);
                 updateState(CHANNEL_2_MOTION_LAST_UPDATED, resource.getMotionLastUpdatedState(), fullUpdate);
                 updateState(CHANNEL_2_MOTION_ENABLED, resource.getEnabledState(), fullUpdate);
                 break;
 
-            case SECURITY_AREA_MOTION:
-                // note: uses its own special motion channels
-                updateState(CHANNEL_2_SECURITY_MOTION, resource.getMotionState(), fullUpdate);
-                updateState(CHANNEL_2_SECURITY_MOTION_LAST_UPDATED, resource.getMotionLastUpdatedState(), fullUpdate);
-                updateState(CHANNEL_2_SECURITY_MOTION_ENABLED, resource.getEnabledState(), fullUpdate);
+            case CONVENIENCE_AREA_MOTION:
+                if (fullUpdate) {
+                    extendedResourceTypes.put(ResourceType.MOTION, resource.getType());
+                }
+                updateState(CHANNEL_2_MOTION, resource.getMotionState(), fullUpdate);
+                updateState(CHANNEL_2_MOTION_LAST_UPDATED, resource.getMotionLastUpdatedState(), fullUpdate);
+                break;
+
+            case MOTION_AREA_CONFIGURATION:
+                updateState(CHANNEL_2_MOTION_AREA_ENABLED, resource.getEnabledState(), fullUpdate);
+                break;
+
+            case MOTION:
+                updateState(CHANNEL_2_MOTION, resource.getMotionState(), fullUpdate);
+                updateState(CHANNEL_2_MOTION_LAST_UPDATED, resource.getMotionLastUpdatedState(), fullUpdate);
+                updateState(CHANNEL_2_MOTION_ENABLED, resource.getEnabledState(), fullUpdate);
                 break;
 
             case RELATIVE_ROTARY:
@@ -1057,6 +1070,11 @@ public class Clip2ThingHandler extends BaseThingHandler {
                     updateState(CHANNEL_2_ROTARY_STEPS, resource.getRotaryStepsState(), fullUpdate);
                 }
                 updateState(CHANNEL_2_ROTARY_STEPS_LAST_UPDATED, resource.getRotaryStepsLastUpdatedState(), fullUpdate);
+                break;
+
+            case SECURITY_AREA_MOTION:
+                updateState(CHANNEL_2_SECURITY_MOTION, resource.getMotionState(), fullUpdate);
+                updateState(CHANNEL_2_SECURITY_MOTION_LAST_UPDATED, resource.getMotionLastUpdatedState(), fullUpdate);
                 break;
 
             case TEMPERATURE:
