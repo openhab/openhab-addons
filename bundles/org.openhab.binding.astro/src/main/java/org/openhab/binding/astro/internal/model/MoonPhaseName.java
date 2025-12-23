@@ -28,6 +28,7 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public enum MoonPhaseName {
+<<<<<<< Upstream, based on main
     NEW(0.0),
     WAXING_CRESCENT(0.125),
     FIRST_QUARTER(0.25),
@@ -56,5 +57,20 @@ public enum MoonPhaseName {
     private static double circularDistance(double a, double b) {
         double d = Math.abs(a - b);
         return Math.min(d, 1.0 - d);
+=======
+    NEW(0),
+    WAXING_CRESCENT(Double.NaN),
+    FIRST_QUARTER(0.25),
+    WAXING_GIBBOUS(Double.NaN),
+    FULL(0.5),
+    WANING_GIBBOUS(Double.NaN),
+    THIRD_QUARTER(0.75), // also called last quarter
+    WANING_CRESCENT(Double.NaN);
+
+    public final double mode;
+
+    MoonPhaseName(double mode) {
+        this.mode = mode;
+>>>>>>> 810a1e9 Initial commit for Moon phase revamp
     }
 }

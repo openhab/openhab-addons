@@ -48,7 +48,13 @@ public class DateTimeUtils {
     public static final int JULIAN_CENTURY_DAYS = 36525; // Length of a Julian Century in days
     public static final double JD_ONE_MINUTE_FRACTION = 1.0 / 60 / 24;
     private static final double J1970 = JD_UNIX_EPOCH + 0.5; // 1970-01-01 12:00 UTC (julian solar noon)
+<<<<<<< Upstream, based on main
+=======
+<<<<<<< Upstream, based on main
+    private static final int JULIAN_CENTURY_DAYS = 36525; // Length of a Julian Century in days
+>>>>>>> 810a1e9 Initial commit for Moon phase revamp
     private static final double SECONDS_PER_DAY = 60 * 60 * 24;
+<<<<<<< Upstream, based on main
     private static final long MILLISECONDS_PER_DAY = 60L * 60L * 24L * 1000L;
 
     /**
@@ -68,6 +74,30 @@ public class DateTimeUtils {
     public static double toLMST(double gmst, double lon) {
         return mod(gmst + Math.toDegrees(lon) / 15., 24.);
     }
+=======
+=======
+    public static final int JULIAN_CENTURY_DAYS = 36525; // Length of a Julian Century in days
+    public static final double MJD_JD2000 = 51544.5;
+
+    /**
+     * Convert julian date to greenwich mean sidereal time.
+     */
+    public static double toGMST(double jd) {
+        double ut = (jd - 0.5 - Math.floor(jd - 0.5)) * 24.;
+        double jdMod = Math.floor(jd - 0.5) + 0.5;
+        double t = toJulianCenturies(jdMod);
+        double t0 = 6.697374558 + t * (2400.051336 + t * 0.000025862);
+        return mod(t0 + ut * 1.002737909, 24.);
+    }
+
+    /**
+     * Convert greenwich mean sidereal time to local mean sidereal time.
+     */
+    public static double toLMST(double gmst, double lon) {
+        return mod(gmst + Math.toDegrees(lon) / 15., 24.);
+    }
+>>>>>>> 11e99dd Initial commit for Moon phase revamp
+>>>>>>> 810a1e9 Initial commit for Moon phase revamp
 
     /** Constructor */
     private DateTimeUtils() {
