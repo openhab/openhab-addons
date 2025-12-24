@@ -30,5 +30,3 @@ pom.xml.versionsBackup
 .vim
 shell.nix
 tags
-
-node_modules/
