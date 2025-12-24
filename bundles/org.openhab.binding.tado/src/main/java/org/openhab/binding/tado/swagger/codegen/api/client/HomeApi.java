@@ -58,12 +58,12 @@ public class HomeApi {
     private OAuthorizerV2 authorizer;
     private final TadoHomeHandler homeHandler;
 
-    private volatile int apiRateLimit = 0;
-    private volatile int apiRateDuration = 0;
-    private volatile int apiRateRemaining = 0;
-    private volatile int apiRateReset = 0;
-
     private void extractRateLimitInfo(ContentResponse response) {
+        int apiRateLimit = -1;
+        int apiRateDuration = -1;
+        int apiRateRemaining = -1;
+        int apiRateReset = -1;
+
         HttpFields headersfields = response.getHeaders();
 
         String rateLimitPolicyValueString = headersfields.get("RateLimit-Policy");
@@ -143,10 +143,10 @@ public class HomeApi {
         }
 
         int statusCode = response.getStatus();
+        extractRateLimitInfo(response);
         if (statusCode >= HttpStatus.BAD_REQUEST_400) {
             throw new ApiException(response, "Operation deleteZoneOverlay failed with error " + statusCode);
         }
-        // There's no point in extracting the API values, if there is no return
     }
 
     public HomeState homeState(Long homeId) throws IOException, ApiException {
@@ -262,10 +262,7 @@ public class HomeApi {
 
         Type returnType = new TypeToken<List<Zone>>() {
         }.getType();
-
-        // This method isn't called from classes in which `updateState()` is implemented. There's therefore no point in
-        // returning API values.
-
+        extractRateLimitInfo(response);
         return gson.fromJson(response.getContentAsString(), returnType);
     }
 
@@ -384,7 +381,6 @@ public class HomeApi {
 
         Type returnType = new TypeToken<GenericZoneCapabilities>() {
         }.getType();
-
         extractRateLimitInfo(response);
         return gson.fromJson(response.getContentAsString(), returnType);
     }
@@ -477,10 +473,7 @@ public class HomeApi {
 
         Type returnType = new TypeToken<Zone>() {
         }.getType();
-
-        // Since this method is only called in one method, in which it is followed by a call to
-        // `showZoneCapabilities()`, it's wasteful to extract the API data here.
-
+        extractRateLimitInfo(response);
         return gson.fromJson(response.getContentAsString(), returnType);
     }
 
@@ -612,10 +605,10 @@ public class HomeApi {
         }
 
         int statusCode = response.getStatus();
+        extractRateLimitInfo(response);
         if (statusCode >= HttpStatus.BAD_REQUEST_400) {
             throw new ApiException(response, "Operation updatePresenceLock failed with error " + statusCode);
         }
-        // There's no point in extracting the API values, if there is no return
     }
 
     public Overlay updateZoneOverlay(Long homeId, Long zoneId, Overlay json) throws IOException, ApiException {

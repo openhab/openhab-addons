@@ -53,6 +53,7 @@ import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
+import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -302,11 +303,15 @@ public class TadoHomeHandler extends BaseBridgeHandler implements AccessTokenRef
     }
 
     private void updateAPIChannels(int value, String channelName, Unit unit) {
-        if (TadoBindingConstants.CHANNEL_API_RATE_LIMIT.equals(channelName)
-                || TadoBindingConstants.CHANNEL_API_RATE_REMAINING.equals(channelName)) {
-            updateState(channelName, new DecimalType(value));
+        if (value > -1) {
+            if (TadoBindingConstants.CHANNEL_API_RATE_LIMIT.equals(channelName)
+                    || TadoBindingConstants.CHANNEL_API_RATE_REMAINING.equals(channelName)) {
+                updateState(channelName, new DecimalType(value));
+            } else {
+                updateState(channelName, new QuantityType<>(value, unit));
+            }
         } else {
-            updateState(channelName, new QuantityType<>(value, unit));
+            updateState(channelName, UnDefType.UNDEF);
         }
     }
 }
