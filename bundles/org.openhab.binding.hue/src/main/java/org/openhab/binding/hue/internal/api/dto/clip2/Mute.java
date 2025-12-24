@@ -23,14 +23,14 @@ import org.openhab.binding.hue.internal.api.dto.clip2.enums.MuteType;
  */
 @NonNullByDefault
 public class Mute {
-    private @Nullable MuteType mute;
+    private @Nullable String mute;
 
     public @Nullable MuteType getMuteType() {
-        return this.mute;
+        return mute instanceof String m ? MuteType.of(m) : null;
     }
 
     public Mute setMuteType(MuteType muteType) {
-        this.mute = muteType;
+        mute = muteType.name().toLowerCase();
         return this;
     }
 }

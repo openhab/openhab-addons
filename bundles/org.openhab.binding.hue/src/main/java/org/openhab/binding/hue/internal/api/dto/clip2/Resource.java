@@ -59,6 +59,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+import com.google.gson.JsonSyntaxException;
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -991,8 +992,7 @@ public class Resource {
      * Get the speaker alarm sound.
      */
     public State getAlarmSoundState() {
-        return alarm instanceof Sound sound && sound.getSoundType() instanceof SoundType type
-                ? StringType.valueOf(type.name())
+        return alarm instanceof Sound s && s.getSoundType() instanceof SoundType st ? StringType.valueOf(st.name())
                 : UnDefType.NULL;
     }
 
@@ -1004,9 +1004,13 @@ public class Resource {
     public State getAlertSoundState() {
         JsonElement alert = this.alert;
         if (Objects.nonNull(alert) && alert.isJsonObject() && alert.getAsJsonObject().get("status") != null) {
-            return GSON.fromJson(alert, Sound.class) instanceof Sound sound
-                    && sound.getSoundType() instanceof SoundType type ? StringType.valueOf(type.name())
-                            : UnDefType.NULL;
+            try {
+                return GSON.fromJson(alert, Sound.class) instanceof Sound s && s.getSoundType() instanceof SoundType st
+                        ? StringType.valueOf(st.name())
+                        : UnDefType.NULL;
+            } catch (JsonSyntaxException e) {
+                // fall through
+            }
         }
         return UnDefType.NULL;
     }
@@ -1015,8 +1019,7 @@ public class Resource {
      * Get the speaker chime sound.
      */
     public State getChimeSoundState() {
-        return chime instanceof Sound sound && sound.getSoundType() instanceof SoundType type
-                ? StringType.valueOf(type.name())
+        return chime instanceof Sound s && s.getSoundType() instanceof SoundType st ? StringType.valueOf(st.name())
                 : UnDefType.NULL;
     }
 
@@ -1024,8 +1027,7 @@ public class Resource {
      * Get the speaker mute state.
      */
     public State getSoundMuteState() {
-        return mute instanceof Mute mute2 && mute2.getMuteType() instanceof MuteType type
-                ? OnOffType.from(MuteType.MUTE == type)
+        return mute instanceof Mute m && m.getMuteType() instanceof MuteType mt ? OnOffType.from(MuteType.MUTE == mt)
                 : UnDefType.NULL;
     }
 
