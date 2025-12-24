@@ -1027,7 +1027,7 @@ public class Resource {
      * Get the speaker mute state.
      */
     public State getSoundMuteState() {
-        return mute instanceof Mute m && m.getMuteType() instanceof MuteType mt ? OnOffType.from(MuteType.MUTE == mt)
+        return mute instanceof Mute m && m.getMuteType() instanceof MuteType mt ? OnOffType.from(mt == MuteType.MUTE)
                 : UnDefType.NULL;
     }
 

@@ -479,27 +479,28 @@ public class Clip2ThingHandler extends BaseThingHandler {
             case CHANNEL_2_ALARM_SOUND:
                 if (command instanceof StringType stringCommand) {
                     putResource = new Resource(ResourceType.SPEAKER)
-                            .setAlarmSoundType(SoundType.valueOf(stringCommand.toString()));
+                            .setAlarmSoundType(SoundType.of(stringCommand.toString()));
                 }
                 break;
 
             case CHANNEL_2_ALERT_SOUND:
                 if (command instanceof StringType stringCommand) {
                     putResource = new Resource(ResourceType.SPEAKER)
-                            .setAlertSoundType(SoundType.valueOf(stringCommand.toString()));
+                            .setAlertSoundType(SoundType.of(stringCommand.toString()));
                 }
                 break;
 
             case CHANNEL_2_CHIME_SOUND:
                 if (command instanceof StringType stringCommand) {
                     putResource = new Resource(ResourceType.SPEAKER)
-                            .setChimeSoundType(SoundType.valueOf(stringCommand.toString()));
+                            .setChimeSoundType(SoundType.of(stringCommand.toString()));
                 }
                 break;
 
             case CHANNEL_2_SOUND_MUTE:
                 if (command instanceof OnOffType onOff) {
-                    putResource = new Resource(ResourceType.SPEAKER).setMuteType(MuteType.of(OnOffType.ON == onOff));
+                    putResource = new Resource(ResourceType.SPEAKER)
+                            .setMuteType(MuteType.of(OnOffType.ON.equals(onOff)));
                 }
                 break;
 
