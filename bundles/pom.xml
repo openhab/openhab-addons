@@ -812,7 +812,7 @@
               <!-- Lint markdown only within the current module -->
               <workingDirectory>${project.basedir}</workingDirectory>
               <installDirectory>${maven.multiModuleProjectDirectory}/target/.mvn/node</installDirectory>
-              <arguments>exec --yes markdownlint-cli2 -- "**/*.md" "!**/target/**" "!**/node_modules/**" --config "${maven.multiModuleProjectDirectory}/.github/.markdownlint.yaml"</arguments>
+              <arguments>exec --yes markdownlint-cli2 -- **/*.md !**/target/** !**/node_modules/** --config ${maven.multiModuleProjectDirectory}/.github/.markdownlint.yaml</arguments>
             </configuration>
           </execution>
         </executions>
