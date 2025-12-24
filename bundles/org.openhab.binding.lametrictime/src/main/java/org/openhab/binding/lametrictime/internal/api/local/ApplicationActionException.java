@@ -25,7 +25,6 @@ public class ApplicationActionException extends LaMetricTimeException {
     private static final long serialVersionUID = 1L;
 
     public ApplicationActionException() {
-        super();
     }
 
     public ApplicationActionException(String message) {

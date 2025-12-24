@@ -58,7 +58,7 @@ public class ApplicationLauncherCluster extends BaseCluster {
     /**
      * This indicates a global identifier for an Application given a catalog.
      */
-    public class ApplicationStruct {
+    public static class ApplicationStruct {
         /**
          * This field shall indicate the CSA-issued vendor ID for the catalog. The DIAL registry shall use value 0x0000.
          * Content App Platform providers will have their own catalog vendor ID (set to their own Vendor ID) and will
@@ -81,7 +81,7 @@ public class ApplicationLauncherCluster extends BaseCluster {
     /**
      * This specifies an app along with its corresponding endpoint.
      */
-    public class ApplicationEPStruct {
+    public static class ApplicationEPStruct {
         public ApplicationStruct application; // ApplicationStruct
         public Integer endpoint; // endpoint-no
 
@@ -100,8 +100,8 @@ public class ApplicationLauncherCluster extends BaseCluster {
         DOWNLOADING(4, "Downloading"),
         INSTALLING(5, "Installing");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private StatusEnum(Integer value, String label) {
             this.value = value;

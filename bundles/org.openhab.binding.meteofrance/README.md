@@ -28,14 +28,14 @@ Inside the API Portal, create an application on "Bulletin Vigilance" and generat
 
 ## Thing Configuration
 
-The `vigilance` thing has these configuration parameters:
+The `vigilance` Thing has these configuration parameters:
 
 | Parameter  | Description                                                             |
 |------------|-------------------------------------------------------------------------|
 | department | Code of the department (two digits).                                    |
 | refresh    | Refresh interval in minutes. Optional, the default value is 60 minutes. |
 
-The `rain-forecast` thing has this configuration parameters:
+The `rain-forecast` Thing has this configuration parameters:
 
 | Parameter | Description                                                  |
 |-----------|--------------------------------------------------------------|

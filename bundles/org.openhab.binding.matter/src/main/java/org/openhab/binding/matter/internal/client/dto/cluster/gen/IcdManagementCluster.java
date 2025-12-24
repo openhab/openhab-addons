@@ -126,7 +126,7 @@ public class IcdManagementCluster extends BaseCluster {
     public Integer maximumCheckInBackoff; // 9 uint32 R V
 
     // Structs
-    public class MonitoringRegistrationStruct {
+    public static class MonitoringRegistrationStruct {
         /**
          * This field shall indicate the NodeID of the Node to which Check-In messages will be sent when the
          * MonitoredSubject is not subscribed.
@@ -172,8 +172,8 @@ public class IcdManagementCluster extends BaseCluster {
         PERMANENT(0, "Permanent"),
         EPHEMERAL(1, "Ephemeral");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private ClientTypeEnum(Integer value, String label) {
             this.value = value;
@@ -195,8 +195,8 @@ public class IcdManagementCluster extends BaseCluster {
         SIT(0, "Sit"),
         LIT(1, "Lit");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private OperatingModeEnum(Integer value, String label) {
             this.value = value;

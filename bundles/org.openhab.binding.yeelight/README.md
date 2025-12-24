@@ -77,4 +77,4 @@ end
 
 Note that `set_power` is the command, then a separator `;` must be used. `\"on\",\"smooth\",2000` are the parameters.
 
-Full list of commands can be found [here](https://www.yeelight.com/download/Yeelight_Inter-Operation_Spec.pdf).
+The full list of commands can be found in the [Yeelight Inter-Operation Specification PDF](https://www.yeelight.com/download/Yeelight_Inter-Operation_Spec.pdf).

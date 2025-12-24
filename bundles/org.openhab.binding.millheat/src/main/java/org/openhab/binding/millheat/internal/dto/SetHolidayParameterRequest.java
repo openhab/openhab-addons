@@ -61,7 +61,6 @@ public class SetHolidayParameterRequest implements AbstractRequest {
         public Long homeId;
 
         public HomeID(Long homeId) {
-            super();
             this.homeId = homeId;
         }
     }

@@ -26,12 +26,10 @@ public class VenstarRuntimeData {
     private List<VenstarRuntime> runtimes;
 
     public VenstarRuntimeData() {
-        super();
         runtimes = List.of();
     }
 
     public VenstarRuntimeData(List<VenstarRuntime> runtimes) {
-        super();
         this.runtimes = runtimes;
     }
 

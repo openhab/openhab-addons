@@ -92,7 +92,6 @@ public class NeeoSensorNotification {
         private final Object sensorValue;
 
         public SensorNotificationData(String sensorEventKey, Object sensorValue) {
-            super();
             this.sensorEventKey = sensorEventKey;
             this.sensorValue = sensorValue;
         }

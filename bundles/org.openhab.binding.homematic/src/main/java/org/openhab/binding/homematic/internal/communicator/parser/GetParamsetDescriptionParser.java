@@ -13,6 +13,7 @@
 package org.openhab.binding.homematic.internal.communicator.parser;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.openhab.binding.homematic.internal.model.HmChannel;
@@ -53,11 +54,30 @@ public class GetParamsetDescriptionParser extends CommonRpcParser<Object[], Void
 
             HmDatapoint dp = assembleDatapoint(datapointName, toString(dpMeta.get("UNIT")),
                     toString(dpMeta.get("TYPE")), toOptionList(dpMeta.get("VALUE_LIST")), dpMeta.get("MIN"),
-                    dpMeta.get("MAX"), toInteger(dpMeta.get("OPERATIONS")), dpMeta.get("DEFAULT"), paramsetType,
-                    isHmIpDevice);
+                    dpMeta.get("MAX"), toInteger(dpMeta.get("OPERATIONS")), dpMeta.get("DEFAULT"),
+                    toSpecialValues(dpMeta.get("SPECIAL")), paramsetType, isHmIpDevice);
             channel.addDatapoint(dp);
         }
 
+        return null;
+    }
+
+    private Map<String, Number> toSpecialValues(Object specialValues) {
+        if (specialValues != null && specialValues instanceof Object[] array) {
+            Map<String, Number> result = new HashMap<>();
+            for (int i = 0; i < array.length; i++) {
+                if (array[i] instanceof Map itemMap) {
+                    String id = (String) itemMap.get("ID");
+                    Object value = itemMap.get("VALUE");
+                    if (id != null && value instanceof Number number) {
+                        result.put(id, number);
+                    }
+                }
+            }
+            if (!result.isEmpty()) {
+                return result;
+            }
+        }
         return null;
     }
 }

@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.homematic.internal.model;
 
+import java.util.Map;
+
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.homematic.internal.misc.MiscUtils;
 
@@ -32,6 +34,7 @@ public class HmDatapoint implements Cloneable {
     private HmParamsetType paramsetType;
     private Number minValue;
     private Number maxValue;
+    private Map<String, Number> specialValues;
     private String[] options;
     private boolean readOnly;
     private boolean readable;
@@ -301,6 +304,17 @@ public class HmDatapoint implements Cloneable {
      */
     public void setDefaultValue(Object defaultValue) {
         this.defaultValue = defaultValue;
+    }
+
+    /**
+     * Sets map of values with special meaning
+     */
+    public void setSpecialValues(Map<String, Number> specialValues) {
+        this.specialValues = specialValues;
+    }
+
+    public Map<String, Number> getSpecialValues() {
+        return specialValues;
     }
 
     /**

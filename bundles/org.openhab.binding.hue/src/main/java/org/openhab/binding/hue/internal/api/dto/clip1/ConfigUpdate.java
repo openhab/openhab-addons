@@ -29,7 +29,6 @@ public class ConfigUpdate {
     public final ArrayList<Command> commands = new ArrayList<>();
 
     public ConfigUpdate() {
-        super();
     }
 
     public boolean isEmpty() {

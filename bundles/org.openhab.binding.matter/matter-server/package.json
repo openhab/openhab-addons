@@ -38,9 +38,9 @@
         "webpack-cli": "^5.1.4"
     },
     "dependencies": {
-        "@matter/main": "v0.15.1",
-        "@matter/node": "v0.15.1",
-        "@project-chip/matter.js": "v0.15.1",
+        "@matter/main": "v0.15.6",
+        "@matter/node": "v0.15.6",
+        "@project-chip/matter.js": "v0.15.6",
         "uuid": "^9.0.1",
         "ws": "^8.18.0",
         "yargs": "^17.7.2"

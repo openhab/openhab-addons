@@ -43,6 +43,8 @@ public class UdpMessage {
     private Zone zone3;
     @SerializedName("zone4")
     private Zone zone4;
+    @SerializedName("tuner")
+    private Tuner tuner;
     @SerializedName("netusb")
     private NetUSB netusb;
     @SerializedName("dist")
@@ -62,6 +64,10 @@ public class UdpMessage {
 
     public Zone getZone4() {
         return zone4;
+    }
+
+    public Tuner getTuner() {
+        return tuner;
     }
 
     public NetUSB getNetUSB() {
@@ -144,6 +150,21 @@ public class UdpMessage {
 
         public int getPlayTime() {
             return playTime;
+        }
+    }
+
+    public class Tuner {
+        @SerializedName("play_info_updated")
+        private String playInfoUpdated;
+        @SerializedName("preset_info_updated")
+        private String presetInfoUpdated;
+
+        public String getPresetInfoUpdated() {
+            return presetInfoUpdated;
+        }
+
+        public String getPlayInfoUpdated() {
+            return playInfoUpdated;
         }
     }
 

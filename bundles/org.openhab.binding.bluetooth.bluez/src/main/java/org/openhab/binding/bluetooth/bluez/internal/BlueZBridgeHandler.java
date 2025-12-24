@@ -66,6 +66,8 @@ public class BlueZBridgeHandler extends AbstractBluetoothBridgeHandler<BlueZBlue
     // Our BT address
     private @Nullable BluetoothAddress adapterAddress;
 
+    private boolean lazyScan;
+
     private @Nullable ScheduledFuture<?> discoveryJob;
 
     private final DeviceManagerFactory deviceManagerFactory;
@@ -94,6 +96,7 @@ public class BlueZBridgeHandler extends AbstractBluetoothBridgeHandler<BlueZBlue
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "address not set");
             return;
         }
+        this.lazyScan = configuration.lazyScan;
 
         logger.debug("Creating BlueZ adapter with address '{}'", adapterAddress);
         updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "Initializing");
@@ -175,6 +178,8 @@ public class BlueZBridgeHandler extends AbstractBluetoothBridgeHandler<BlueZBlue
                         "Bluez DeviceManager not available yet.");
                 return;
             }
+
+            deviceManager.setLazyScan(this.lazyScan);
 
             BluetoothAdapter localAdapter = prepareAdapter(deviceManager);
             if (localAdapter == null) {

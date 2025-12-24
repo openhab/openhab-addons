@@ -7,7 +7,7 @@ Transforms the input by mapping it to another string.
 The mapping is performed based on "key=value" pairs.
 When the input matches a `key` in the mapping table, the corresponding `value` is given as the output of the transformation.
 
-The format of the mapping table is documented [here](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Properties.html#load(java.io.Reader)).
+The format of the mapping table is documented in the [Java Properties.load() documentation](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Properties.html#load(java.io.Reader)).
 
 A default value can be provided if no matching entry is found by using "=value" syntax.
 Defining this default value using `_source_` would then return the non transformed input string.

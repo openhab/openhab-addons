@@ -53,7 +53,7 @@ public class CommissionerControlCluster extends BaseCluster {
      * the Commissioner Control Cluster. Clients SHOULD send the CommissionNode command immediately upon receiving a
      * CommissioningRequestResult event.
      */
-    public class CommissioningRequestResult {
+    public static class CommissioningRequestResult {
         public BigInteger requestId; // uint64
         public BigInteger clientNodeID; // node-id
         public Integer statusCode; // status

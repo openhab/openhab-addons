@@ -41,7 +41,6 @@ public class D2_14_30 extends _VLDMessage {
             "OUT_OF_RANGE", "RESERVED1", "RESERVED2", "ERROR" };
 
     public D2_14_30() {
-        super();
     }
 
     public D2_14_30(ERP1Message packet) {

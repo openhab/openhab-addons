@@ -21,9 +21,11 @@ import org.openhab.binding.nikohomecontrol.internal.handler.NikoHomeControlActio
 import org.openhab.binding.nikohomecontrol.internal.handler.NikoHomeControlAlarmHandler;
 import org.openhab.binding.nikohomecontrol.internal.handler.NikoHomeControlBridgeHandler1;
 import org.openhab.binding.nikohomecontrol.internal.handler.NikoHomeControlBridgeHandler2;
+import org.openhab.binding.nikohomecontrol.internal.handler.NikoHomeControlCarChargerHandler;
 import org.openhab.binding.nikohomecontrol.internal.handler.NikoHomeControlMeterHandler;
 import org.openhab.binding.nikohomecontrol.internal.handler.NikoHomeControlThermostatHandler;
 import org.openhab.core.i18n.TimeZoneProvider;
+import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.net.NetworkAddressService;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
@@ -40,6 +42,7 @@ import org.osgi.service.component.annotations.Reference;
  * handlers.
  *
  * @author Mark Herwege - Initial Contribution
+ * @author Mark Herwege - Add car chargers
  */
 
 @NonNullByDefault
@@ -48,13 +51,14 @@ public class NikoHomeControlHandlerFactory extends BaseThingHandlerFactory {
 
     private final NetworkAddressService networkAddressService;
     private final TimeZoneProvider timeZoneProvider;
+    private final HttpClientFactory httpClientFactory;
 
     @Activate
     public NikoHomeControlHandlerFactory(final @Reference NetworkAddressService networkAddressService,
-            final @Reference TimeZoneProvider timeZoneProvider) {
-        super();
+            final @Reference TimeZoneProvider timeZoneProvider, final @Reference HttpClientFactory httpClientFactory) {
         this.networkAddressService = networkAddressService;
         this.timeZoneProvider = timeZoneProvider;
+        this.httpClientFactory = httpClientFactory;
     }
 
     @Override
@@ -66,7 +70,8 @@ public class NikoHomeControlHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         if (BRIDGE_THING_TYPES_UIDS.contains(thing.getThingTypeUID())) {
             if (BRIDGEII_THING_TYPE.equals(thing.getThingTypeUID())) {
-                return new NikoHomeControlBridgeHandler2((Bridge) thing, networkAddressService, timeZoneProvider);
+                return new NikoHomeControlBridgeHandler2((Bridge) thing, networkAddressService, timeZoneProvider,
+                        httpClientFactory);
             } else {
                 return new NikoHomeControlBridgeHandler1((Bridge) thing, networkAddressService, timeZoneProvider);
             }
@@ -80,6 +85,8 @@ public class NikoHomeControlHandlerFactory extends BaseThingHandlerFactory {
             return new NikoHomeControlAccessHandler(thing);
         } else if (ALARM_THING_TYPES_UIDS.contains(thing.getThingTypeUID())) {
             return new NikoHomeControlAlarmHandler(thing);
+        } else if (CAR_CHARGER_THING_TYPES_UIDS.contains(thing.getThingTypeUID())) {
+            return new NikoHomeControlCarChargerHandler(thing);
         }
 
         return null;

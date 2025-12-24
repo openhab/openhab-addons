@@ -68,7 +68,6 @@ public class Data {
      */
     public Data(Double temp, String color, String state, Double tempMin, Double tempMax, String name, Boolean alert,
             Boolean show) {
-        super();
         this.temp = temp;
         this.color = color;
         this.state = state;

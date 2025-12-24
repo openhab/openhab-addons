@@ -62,7 +62,7 @@ public {{#if id}}{{else}}abstract {{/if}}class {{asUpperCamelCase name}}Cluster 
     * {{details}}
     */
 {{/if}}
-     public class {{asUpperCamelCase name}} {
+     public static class {{asUpperCamelCase name}} {
 {{#each children}}
 {{#if details}}
         /**
@@ -97,8 +97,8 @@ public {{#if id}}{{else}}abstract {{/if}}class {{asUpperCamelCase name}}Cluster 
         {{asEnumField name}}({{id}}, "{{asSpacedTitleCase name}}"){{#unless (isLastElement @index ../children.length)}},{{else}};{{/unless}}
 {{/each}}
 {{/if}}
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
         private {{asUpperCamelCase name}}(Integer value, String label){
             this.value = value;
             this.label = label;

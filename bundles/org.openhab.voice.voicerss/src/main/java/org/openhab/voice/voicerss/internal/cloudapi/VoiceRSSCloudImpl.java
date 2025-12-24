@@ -15,7 +15,7 @@ package org.openhab.voice.voicerss.internal.cloudapi;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
-import java.net.URL;
+import java.net.URI;
 import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -223,7 +223,7 @@ public class VoiceRSSCloudImpl implements VoiceRSSCloudAPI {
         if (logging) {
             LoggerFactory.getLogger(VoiceRSSCloudImpl.class).debug("Call {}", url.replace(apiKey, "***"));
         }
-        URLConnection connection = new URL(url).openConnection();
+        URLConnection connection = URI.create(url).toURL().openConnection();
 
         // we will check return codes. The service will ALWAYS return a HTTP
         // 200, but for error messages, it will return a text/plain format and

@@ -33,7 +33,7 @@ public enum CleanMode {
     CUSTOM_AREA,
     @SerializedName("singleRoom")
     SINGLE_ROOM,
-    @SerializedName("sceneClean")
+    @SerializedName(value = "sceneClean", alternate = { "qcClean" })
     SCENE_CLEAN,
     @SerializedName("pause")
     PAUSE,
@@ -41,8 +41,8 @@ public enum CleanMode {
     STOP,
     @SerializedName(value = "going", alternate = { "goCharging" })
     RETURNING,
-    @SerializedName("autoEmpty")
-    AUTO_EMPTY,
+    @SerializedName(value = "autoEmpty", alternate = { "emptying" })
+    EMPTYING,
     @SerializedName("washing")
     WASHING,
     @SerializedName(value = "drying", alternate = { "spin-dry" })
@@ -56,6 +56,6 @@ public enum CleanMode {
     }
 
     public boolean isIdle() {
-        return this == IDLE || this == DRYING || this == WASHING || this == AUTO_EMPTY;
+        return this == IDLE || this == DRYING || this == WASHING || this == EMPTYING;
     }
 }

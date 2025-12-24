@@ -22,7 +22,6 @@ public class RFXComMessageTooLongException extends RFXComException {
     private static final long serialVersionUID = -3352067410289719335L;
 
     public RFXComMessageTooLongException() {
-        super();
     }
 
     public RFXComMessageTooLongException(String message) {

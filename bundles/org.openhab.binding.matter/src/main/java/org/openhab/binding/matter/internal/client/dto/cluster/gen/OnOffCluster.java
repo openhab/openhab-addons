@@ -90,8 +90,8 @@ public class OnOffCluster extends BaseCluster {
         ON(1, "On"),
         TOGGLE(2, "Toggle");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private StartUpOnOffEnum(Integer value, String label) {
             this.value = value;
@@ -113,8 +113,8 @@ public class OnOffCluster extends BaseCluster {
         DELAYED_ALL_OFF(0, "Delayed All Off"),
         DYING_LIGHT(1, "Dying Light");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private EffectIdentifierEnum(Integer value, String label) {
             this.value = value;
@@ -137,8 +137,8 @@ public class OnOffCluster extends BaseCluster {
         NO_FADE(1, "No Fade"),
         DELAYED_OFF_SLOW_FADE(2, "Delayed Off Slow Fade");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private DelayedAllOffEffectVariantEnum(Integer value, String label) {
             this.value = value;
@@ -159,8 +159,8 @@ public class OnOffCluster extends BaseCluster {
     public enum DyingLightEffectVariantEnum implements MatterEnum {
         DYING_LIGHT_FADE_OFF(0, "Dying Light Fade Off");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private DyingLightEffectVariantEnum(Integer value, String label) {
             this.value = value;

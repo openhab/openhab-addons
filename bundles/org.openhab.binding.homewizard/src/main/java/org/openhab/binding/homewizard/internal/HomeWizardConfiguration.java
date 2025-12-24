@@ -43,4 +43,8 @@ public class HomeWizardConfiguration {
      * Bearer token for API v2
      */
     public String bearerToken = "";
+
+    public Boolean isUsingApiVersion2() {
+        return apiVersion == 2;
+    }
 }

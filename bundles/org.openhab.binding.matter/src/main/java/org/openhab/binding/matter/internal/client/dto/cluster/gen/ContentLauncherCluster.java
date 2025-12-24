@@ -54,7 +54,7 @@ public class ContentLauncherCluster extends BaseCluster {
     /**
      * This object defines additional name&#x3D;value pairs that can be used for identifying content.
      */
-    public class AdditionalInfoStruct {
+    public static class AdditionalInfoStruct {
         /**
          * This field shall indicate the name of external id, ex. &quot;musicbrainz&quot;.
          */
@@ -73,7 +73,7 @@ public class ContentLauncherCluster extends BaseCluster {
     /**
      * This object defines inputs to a search for content for display or playback.
      */
-    public class ParameterStruct {
+    public static class ParameterStruct {
         /**
          * This field shall indicate the entity type.
          */
@@ -97,7 +97,7 @@ public class ContentLauncherCluster extends BaseCluster {
     /**
      * This object defines inputs to a search for content for display or playback.
      */
-    public class ContentSearchStruct {
+    public static class ContentSearchStruct {
         /**
          * This field shall indicate the list of parameters comprising the search. If multiple parameters are provided,
          * the search parameters shall be joined with &#x27;AND&#x27; logic. e.g. action movies with Tom Cruise will be
@@ -113,7 +113,7 @@ public class ContentLauncherCluster extends BaseCluster {
     /**
      * This object defines dimension which can be used for defining Size of background images.
      */
-    public class DimensionStruct {
+    public static class DimensionStruct {
         /**
          * This field shall indicate the width using the metric defined in Metric
          */
@@ -138,7 +138,7 @@ public class ContentLauncherCluster extends BaseCluster {
      * This object defines style information which can be used by content providers to change the Media Player’s style
      * related properties.
      */
-    public class StyleInformationStruct {
+    public static class StyleInformationStruct {
         /**
          * This field shall indicate the URL of image used for Styling different Video Player sections like Logo,
          * Watermark etc. The syntax of this field shall follow the syntax as specified in RFC 1738 and shall use the
@@ -170,7 +170,7 @@ public class ContentLauncherCluster extends BaseCluster {
      * This object defines Branding Information which can be provided by the client in order to customize the skin of
      * the Video Player during playback.
      */
-    public class BrandingInformationStruct {
+    public static class BrandingInformationStruct {
         /**
          * This field shall indicate name of the provider for the given content.
          */
@@ -215,7 +215,7 @@ public class ContentLauncherCluster extends BaseCluster {
      * PlaybackPreferencesStruct defines the preferences sent by the client to the receiver in the ContentLauncher
      * LaunchURL or LaunchContent commands.
      */
-    public class PlaybackPreferencesStruct {
+    public static class PlaybackPreferencesStruct {
         /**
          * This field shall indicate the preferred position (in milliseconds) in the media to launch playback from. In
          * case the position falls in the middle of a frame, the server shall set the position to the beginning of that
@@ -249,7 +249,7 @@ public class ContentLauncherCluster extends BaseCluster {
     /**
      * This structure defines Text/Audio Track preferences.
      */
-    public class TrackPreferenceStruct {
+    public static class TrackPreferenceStruct {
         /**
          * This field shall contain one of the standard Tags for Identifying Languages RFC 5646, which identifies the
          * primary language used in the Track.
@@ -286,8 +286,8 @@ public class ContentLauncherCluster extends BaseCluster {
         TEXT_TRACK_NOT_AVAILABLE(3, "Text Track Not Available"),
         AUDIO_TRACK_NOT_AVAILABLE(4, "Audio Track Not Available");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private StatusEnum(Integer value, String label) {
             this.value = value;
@@ -324,8 +324,8 @@ public class ContentLauncherCluster extends BaseCluster {
         EPISODE(15, "Episode"),
         ANY(16, "Any");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private ParameterEnum(Integer value, String label) {
             this.value = value;
@@ -347,8 +347,8 @@ public class ContentLauncherCluster extends BaseCluster {
         PIXELS(0, "Pixels"),
         PERCENTAGE(1, "Percentage");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private MetricTypeEnum(Integer value, String label) {
             this.value = value;

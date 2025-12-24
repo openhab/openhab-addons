@@ -87,6 +87,8 @@ public class SolarmanChannelManager {
             baseChannelConfig.rule = item.getRule();
         }
 
+        baseChannelConfig.readOnly = !Boolean.FALSE.equals(item.getIsReadOnly());
+
         baseChannelConfig.registers = convertRegisters(item.getRegisters());
         baseChannelConfig.uom = item.getUom();
 

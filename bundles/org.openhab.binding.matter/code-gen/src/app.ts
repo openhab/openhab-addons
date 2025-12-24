@@ -11,6 +11,7 @@ import {
     Matter,
     MatterModel,
 } from "@matter/main/model";
+import * as MatterNode from "@matter/node";
 import "@matter/model/resources";
 import fs from "fs";
 import handlebars from "handlebars";
@@ -510,6 +511,9 @@ const clusterRegistrySource = fs.readFileSync("src/templates/cluster-registry.ja
 const clusterRegistryTemplate = handlebars.compile(clusterRegistrySource);
 const clusterConstantsSource = fs.readFileSync("src/templates/cluster-constants.java.hbs", "utf8");
 const clusterConstantsTemplate = handlebars.compile(clusterConstantsSource);
+const semanticTagsSource = fs.readFileSync("src/templates/semantic-tags-class.java.hbs", "utf8");
+const semanticTagsTemplate = handlebars.compile(semanticTagsSource);
+
 
 // Generate Java code
 
@@ -627,3 +631,39 @@ fs.writeFileSync(`out/ClusterRegistry.java`, clusterRegistryClass);
 
 const clusterConstantsClass = clusterConstantsTemplate({ clusters: concreteClusters });
 fs.writeFileSync(`out/ClusterConstants.java`, clusterConstantsClass);
+
+// Build namespace → tags structure expected by the template
+const namespaces = Object.entries(MatterNode)
+    .filter(([name]) => name.endsWith("Tag"))
+    .map(([rawName, tagDefs]: [string, any]) => {
+        // Derive a clean namespace identifier (e.g. "Area" from "AreaNamespaceTag")
+        let namespace = rawName;
+        if (namespace.endsWith("NamespaceTag")) {
+            namespace = namespace.substring(0, namespace.length - "NamespaceTag".length);
+        } else if (namespace.endsWith("Tag")) {
+            namespace = namespace.substring(0, namespace.length - "Tag".length);
+        }
+
+        // Convert the tag definition object into an array understood by the template
+        const tagEntries = Object.entries(tagDefs).map(([tagName, info]: [string, any]) => ({
+            name: tagName,
+            id: info.tag,
+            label: info.label,
+        }));
+
+        // All tags in a namespace share the same namespaceId, so read it from the first tag
+        const firstTagKey = Object.keys(tagDefs)[0];
+        const namespaceId = firstTagKey ? tagDefs[firstTagKey].namespaceId : undefined;
+
+        return {
+            namespace,
+            id: namespaceId,
+            tags: tagEntries,
+        };
+    });
+
+// Generate NamespaceTags.java using the prepared structure
+const semanticTagsClass = semanticTagsTemplate({ namespaces });
+fs.writeFileSync(`out/SemanticTags.java`, semanticTagsClass);
+
+

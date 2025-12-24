@@ -18,6 +18,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.openhab.binding.matter.internal.bridge.devices.BaseDevice.MATTER_SOURCE;
 
 import java.util.AbstractMap;
 import java.util.LinkedHashMap;
@@ -32,7 +33,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.openhab.binding.matter.internal.bridge.MatterBridgeClient;
-import org.openhab.binding.matter.internal.bridge.devices.GenericDevice.MatterDeviceOptions;
+import org.openhab.binding.matter.internal.bridge.devices.BaseDevice.MatterDeviceOptions;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.WindowCoveringCluster;
 import org.openhab.core.items.Metadata;
 import org.openhab.core.items.MetadataKey;
@@ -72,7 +73,7 @@ class WindowCoveringDeviceTest {
     @NonNullByDefault({})
     private Metadata metadata;
     @NonNullByDefault({})
-    private WindowCoveringDevice device;
+    private WindowCoveringDevice shutterDevice;
     @NonNullByDefault({})
     private WindowCoveringDevice dimmerDevice;
     @NonNullByDefault({})
@@ -95,21 +96,26 @@ class WindowCoveringDeviceTest {
         switchItem = Mockito.spy(new SwitchItem("testSwitch"));
         stringItem = Mockito.spy(new StringItem("testString"));
 
-        device = new WindowCoveringDevice(metadataRegistry, client, rollershutterItem);
+        shutterDevice = new WindowCoveringDevice(metadataRegistry, client, rollershutterItem);
         dimmerDevice = new WindowCoveringDevice(metadataRegistry, client, dimmerItem);
         switchDevice = new WindowCoveringDevice(metadataRegistry, client, switchItem);
         stringDevice = new WindowCoveringDevice(metadataRegistry, client, stringItem);
+
+        // activate so fully initialized, the "shutterDevice" will be activated by a test
+        dimmerDevice.activate();
+        switchDevice.activate();
+        stringDevice.activate();
     }
 
     @Test
     void testDeviceType() {
-        assertEquals("WindowCovering", device.deviceType());
+        assertEquals("WindowCovering", shutterDevice.deviceType());
     }
 
     @Test
     void testHandleMatterEventPosition() {
-        device.handleMatterEvent("windowCovering", "targetPositionLiftPercent100ths", 5000.0);
-        verify(rollershutterItem).send(new PercentType(50));
+        shutterDevice.handleMatterEvent("windowCovering", "targetPositionLiftPercent100ths", 5000.0);
+        verify(rollershutterItem).send(new PercentType(50), MATTER_SOURCE);
     }
 
     @Test
@@ -117,14 +123,14 @@ class WindowCoveringDeviceTest {
         AbstractMap<String, Object> stoppedStatus = new LinkedHashMap<String, Object>();
         stoppedStatus.put("global", WindowCoveringCluster.MovementStatus.STOPPED.getValue());
 
-        device.handleMatterEvent("windowCovering", "operationalStatus", stoppedStatus);
-        verify(rollershutterItem).send(StopMoveType.STOP);
+        shutterDevice.handleMatterEvent("windowCovering", "operationalStatus", stoppedStatus);
+        verify(rollershutterItem).send(StopMoveType.STOP, MATTER_SOURCE);
     }
 
     @Test
     void testUpdateState() throws InterruptedException {
         rollershutterItem.setState(new PercentType(50));
-        device.updateState(rollershutterItem, rollershutterItem.getState());
+        shutterDevice.updateState(rollershutterItem, rollershutterItem.getState());
         Thread.sleep(1100); // Wait for timer
         verify(client).setEndpointState(any(), eq("windowCovering"), eq("currentPositionLiftPercent100ths"), eq(5000));
     }
@@ -132,7 +138,7 @@ class WindowCoveringDeviceTest {
     @Test
     void testActivate() {
         rollershutterItem.setState(new PercentType(50));
-        MatterDeviceOptions options = device.activate();
+        MatterDeviceOptions options = shutterDevice.activate();
 
         Map<String, Object> coveringMap = options.clusters.get("windowCovering");
         assertNotNull(coveringMap);
@@ -143,58 +149,57 @@ class WindowCoveringDeviceTest {
     void testHandleMatterEventWithDimmer() {
         // Test 50% position
         dimmerDevice.handleMatterEvent("windowCovering", "targetPositionLiftPercent100ths", 5000.0);
-        verify(dimmerItem).send(new PercentType(50));
+        verify(dimmerItem).send(new PercentType(50), MATTER_SOURCE);
 
         // Test fully open
         dimmerDevice.handleMatterEvent("windowCovering", "targetPositionLiftPercent100ths", 0.0);
-        verify(dimmerItem).send(new PercentType(0));
+        verify(dimmerItem).send(new PercentType(0), MATTER_SOURCE);
 
         // Test fully closed
         dimmerDevice.handleMatterEvent("windowCovering", "targetPositionLiftPercent100ths", 10000.0);
-        verify(dimmerItem).send(new PercentType(100));
+        verify(dimmerItem).send(new PercentType(100), MATTER_SOURCE);
     }
 
     @Test
     void testHandleMatterEventWithRollershutter() {
         // Test fully closed
-        device.handleMatterEvent("windowCovering", "targetPositionLiftPercent100ths", 10000.0);
-        verify(rollershutterItem).send(UpDownType.DOWN);
+        shutterDevice.handleMatterEvent("windowCovering", "targetPositionLiftPercent100ths", 10000.0);
+        verify(rollershutterItem).send(UpDownType.DOWN, MATTER_SOURCE);
 
         // Test fully open
-        device.handleMatterEvent("windowCovering", "targetPositionLiftPercent100ths", 0.0);
-        verify(rollershutterItem).send(UpDownType.UP);
+        shutterDevice.handleMatterEvent("windowCovering", "targetPositionLiftPercent100ths", 0.0);
+        verify(rollershutterItem).send(UpDownType.UP, MATTER_SOURCE);
 
         // Test 50% position
-        device.handleMatterEvent("windowCovering", "targetPositionLiftPercent100ths", 5000.0);
-        verify(rollershutterItem).send(new PercentType(50));
+        shutterDevice.handleMatterEvent("windowCovering", "targetPositionLiftPercent100ths", 5000.0);
+        verify(rollershutterItem).send(new PercentType(50), MATTER_SOURCE);
     }
 
     @Test
     void testHandleMatterEventWithSwitch() {
         // Test fully closed
         switchDevice.handleMatterEvent("windowCovering", "targetPositionLiftPercent100ths", 10000.0);
-        verify(switchItem).send(OnOffType.ON);
+        verify(switchItem).send(OnOffType.ON, MATTER_SOURCE);
 
         // Test fully open
         switchDevice.handleMatterEvent("windowCovering", "targetPositionLiftPercent100ths", 0.0);
-        verify(switchItem).send(OnOffType.OFF);
+        verify(switchItem).send(OnOffType.OFF, MATTER_SOURCE);
     }
 
     @Test
     void testHandleMatterEventWithString() {
         // Test fully open
         stringDevice.handleMatterEvent("windowCovering", "targetPositionLiftPercent100ths", 0.0);
-        verify(stringItem).send(new StringType("UP"));
+        verify(stringItem).send(new StringType("UP"), MATTER_SOURCE);
 
         // Test fully closed
         stringDevice.handleMatterEvent("windowCovering", "targetPositionLiftPercent100ths", 10000.0);
-        verify(stringItem).send(new StringType("DOWN"));
+        verify(stringItem).send(new StringType("DOWN"), MATTER_SOURCE);
     }
 
     @Test
     void testUpdateStateWithDimmer() throws InterruptedException {
         dimmerItem.setState(new PercentType(50));
-        dimmerDevice.updateState(dimmerItem, dimmerItem.getState());
         Thread.sleep(1100); // Wait for timer
         verify(client).setEndpointState(any(), eq("windowCovering"), eq("currentPositionLiftPercent100ths"), eq(5000));
     }
@@ -202,12 +207,10 @@ class WindowCoveringDeviceTest {
     @Test
     void testUpdateStateWithSwitch() throws InterruptedException {
         switchItem.setState(OnOffType.ON);
-        switchDevice.updateState(switchItem, switchItem.getState());
         Thread.sleep(1100); // Wait for timer
         verify(client).setEndpointState(any(), eq("windowCovering"), eq("currentPositionLiftPercent100ths"), eq(10000));
 
         switchItem.setState(OnOffType.OFF);
-        switchDevice.updateState(switchItem, switchItem.getState());
         Thread.sleep(1100); // Wait for timer
         verify(client).setEndpointState(any(), eq("windowCovering"), eq("currentPositionLiftPercent100ths"), eq(0));
     }
@@ -215,12 +218,10 @@ class WindowCoveringDeviceTest {
     @Test
     void testUpdateStateWithString() throws InterruptedException {
         stringItem.setState(new StringType("UP"));
-        stringDevice.updateState(stringItem, stringItem.getState());
         Thread.sleep(1100); // Wait for timer
         verify(client).setEndpointState(any(), eq("windowCovering"), eq("currentPositionLiftPercent100ths"), eq(0));
 
         stringItem.setState(new StringType("DOWN"));
-        stringDevice.updateState(stringItem, stringItem.getState());
         Thread.sleep(1100); // Wait for timer
         verify(client).setEndpointState(any(), eq("windowCovering"), eq("currentPositionLiftPercent100ths"), eq(10000));
     }
@@ -238,22 +239,20 @@ class WindowCoveringDeviceTest {
         SwitchItem invertedSwitchItem = Mockito.spy(new SwitchItem("testInvertedSwitch"));
         WindowCoveringDevice invertedSwitchDevice = new WindowCoveringDevice(metadataRegistry, client,
                 invertedSwitchItem);
-
+        invertedSwitchDevice.activate();
         // Test fully closed (100%) - should result in OFF for inverted switch
         invertedSwitchDevice.handleMatterEvent("windowCovering", "targetPositionLiftPercent100ths", 10000.0);
-        verify(invertedSwitchItem).send(OnOffType.OFF);
+        verify(invertedSwitchItem).send(OnOffType.OFF, MATTER_SOURCE);
 
         // Test fully open (0%) - should result in ON for inverted switch
         invertedSwitchDevice.handleMatterEvent("windowCovering", "targetPositionLiftPercent100ths", 0.0);
-        verify(invertedSwitchItem).send(OnOffType.ON);
+        verify(invertedSwitchItem).send(OnOffType.ON, MATTER_SOURCE);
 
         // Test state updates from switch to position
-        invertedSwitchItem.setState(OnOffType.ON);
-        invertedSwitchDevice.updateState(invertedSwitchItem, invertedSwitchItem.getState());
+        invertedSwitchDevice.updateState(invertedSwitchItem, OnOffType.ON);
         verify(client).setEndpointState(any(), eq("windowCovering"), eq("currentPositionLiftPercent100ths"), eq(0));
 
-        invertedSwitchItem.setState(OnOffType.OFF);
-        invertedSwitchDevice.updateState(invertedSwitchItem, invertedSwitchItem.getState());
+        invertedSwitchDevice.updateState(invertedSwitchItem, OnOffType.OFF);
         verify(client).setEndpointState(any(), eq("windowCovering"), eq("currentPositionLiftPercent100ths"), eq(10000));
 
         invertedSwitchDevice.dispose();
@@ -263,25 +262,23 @@ class WindowCoveringDeviceTest {
     void testSwitchItemWithNormalLogic() {
         // Test fully closed (100%) - should result in ON for normal switch
         switchDevice.handleMatterEvent("windowCovering", "targetPositionLiftPercent100ths", 10000.0);
-        verify(switchItem).send(OnOffType.ON);
+        verify(switchItem).send(OnOffType.ON, MATTER_SOURCE);
 
         // Test fully open (0%) - should result in OFF for normal switch
         switchDevice.handleMatterEvent("windowCovering", "targetPositionLiftPercent100ths", 0.0);
-        verify(switchItem).send(OnOffType.OFF);
+        verify(switchItem).send(OnOffType.OFF, MATTER_SOURCE);
 
         // Test state updates from switch to position
-        switchItem.setState(OnOffType.ON);
-        switchDevice.updateState(switchItem, switchItem.getState());
+        switchDevice.updateState(switchItem, OnOffType.ON);
         verify(client).setEndpointState(any(), eq("windowCovering"), eq("currentPositionLiftPercent100ths"), eq(10000));
 
-        switchItem.setState(OnOffType.OFF);
-        switchDevice.updateState(switchItem, switchItem.getState());
+        switchDevice.updateState(switchItem, OnOffType.OFF);
         verify(client).setEndpointState(any(), eq("windowCovering"), eq("currentPositionLiftPercent100ths"), eq(0));
     }
 
     @AfterEach
     void tearDown() {
-        device.dispose();
+        shutterDevice.dispose();
         dimmerDevice.dispose();
         switchDevice.dispose();
         stringDevice.dispose();

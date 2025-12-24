@@ -227,7 +227,7 @@ public class ColorControlConverter extends GenericConverter<ColorControlCluster>
                 EnhancedColorModeEnum newColorMode = lastColorMode;
                 if (message.value instanceof ColorControlCluster.ColorModeEnum colorMode) {
                     try {
-                        newColorMode = MatterEnum.fromValue(EnhancedColorModeEnum.class, colorMode.value);
+                        newColorMode = MatterEnum.fromValue(EnhancedColorModeEnum.class, colorMode.getValue());
                     } catch (IllegalArgumentException e) {
                         logger.debug("Unknown color mode: {}", numberValue);
                     }
@@ -288,7 +288,7 @@ public class ColorControlConverter extends GenericConverter<ColorControlCluster>
         }
         lastHSB = new HSBType(lastHSB.getHue(), lastHSB.getSaturation(), ValueUtils.levelToPercent(brightness));
         lastColorMode = Optional.ofNullable(initializingCluster.enhancedColorMode).orElseGet(
-                () -> MatterEnum.fromValue(EnhancedColorModeEnum.class, initializingCluster.colorMode.value));
+                () -> MatterEnum.fromValue(EnhancedColorModeEnum.class, initializingCluster.colorMode.getValue()));
         lastOnOff = onOff;
         lastX = initializingCluster.currentX != null ? initializingCluster.currentX : 0;
         lastY = initializingCluster.currentY != null ? initializingCluster.currentY : 0;

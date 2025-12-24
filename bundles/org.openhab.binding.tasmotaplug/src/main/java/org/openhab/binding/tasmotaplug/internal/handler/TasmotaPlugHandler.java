@@ -27,6 +27,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.tasmotaplug.dto.TasmotaDTO;
 import org.openhab.binding.tasmotaplug.dto.TasmotaDTO.Energy;
 import org.openhab.binding.tasmotaplug.internal.TasmotaPlugConfiguration;
@@ -57,6 +58,8 @@ import com.google.gson.JsonSyntaxException;
  */
 @NonNullByDefault
 public class TasmotaPlugHandler extends BaseThingHandler {
+    private static final long REQUEST_TIMEOUT_MS = 5000;
+
     private static final String PASSWORD_REGEX = "&password=(.*)&";
     private static final String PASSWORD_MASK = "&password=xxxx&";
 
@@ -113,6 +116,7 @@ public class TasmotaPlugHandler extends BaseThingHandler {
 
             channelsToRemove.forEach(channel -> {
                 channels.removeIf(c -> (c.getUID().getId().equals(POWER + channel)));
+                channels.removeIf(c -> (c.getUID().getId().equals(PULSE_TIME + channel)));
             });
             updateThing(editThing().withChannels(channels).build());
         }
@@ -134,14 +138,24 @@ public class TasmotaPlugHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        // gets the tasmota command from the channel id to command map
+        final String tasmotaChannel = COMMAND_MAP.get(channelUID.getId());
+
+        if (tasmotaChannel == null) {
+            logger.debug("Unsupported channelId: {}", channelUID.getId());
+            return;
+        }
+
         if (channelUID.getId().contains(POWER)) {
             if (command instanceof OnOffType) {
-                getCommand(channelUID.getId(), command.toString());
+                getCommand(tasmotaChannel, command.toString());
             } else {
                 updateChannelState(channelUID.getId());
             }
+        } else if (channelUID.getId().contains(PULSE_TIME) && command instanceof DecimalType decimalCommand) {
+            getCommand(tasmotaChannel, String.valueOf(decimalCommand.intValue()));
         } else {
-            logger.debug("Unsupported command: {}", command.toString());
+            logger.debug("Unsupported command: {} for channel: {}", command.toString(), channelUID.getId());
         }
     }
 
@@ -165,7 +179,7 @@ public class TasmotaPlugHandler extends BaseThingHandler {
     }
 
     private void updateChannelState(String channelId) {
-        final String plugState = getCommand(channelId, null);
+        final String plugState = getCommand(COMMAND_MAP.getOrDefault(channelId, ""), null);
         if (plugState.contains(ON)) {
             updateState(channelId, OnOffType.ON);
         } else if (plugState.contains(OFF)) {
@@ -225,20 +239,13 @@ public class TasmotaPlugHandler extends BaseThingHandler {
         }
     }
 
-    private String getCommand(String commmand, @Nullable String commandArg) {
-        final String tasmotaCommand;
-        if (STATUS.equals(commmand)) {
-            tasmotaCommand = commmand;
-        } else {
-            // uppercase the first character of the channel id
-            tasmotaCommand = commmand.substring(0, 1).toUpperCase() + commmand.substring(1);
-        }
-
+    private String getCommand(String command, @Nullable String commandArg) {
         String url;
+
         if (isAuth) {
-            url = String.format(CMD_URI_AUTH, user, pass, tasmotaCommand);
+            url = String.format(CMD_URI_AUTH, user, pass, command);
         } else {
-            url = String.format(CMD_URI, tasmotaCommand);
+            url = String.format(CMD_URI, command);
         }
 
         if (commandArg != null) {
@@ -247,7 +254,8 @@ public class TasmotaPlugHandler extends BaseThingHandler {
 
         try {
             logger.trace("Sending GET request to {}{}", plugHost, maskPassword(url));
-            ContentResponse contentResponse = httpClient.GET(plugHost + url);
+            ContentResponse contentResponse = httpClient.newRequest(plugHost + url).method(HttpMethod.GET)
+                    .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS).send();
             logger.trace("Response: {}", contentResponse.getContentAsString());
 
             if (contentResponse.getStatus() != OK_200) {

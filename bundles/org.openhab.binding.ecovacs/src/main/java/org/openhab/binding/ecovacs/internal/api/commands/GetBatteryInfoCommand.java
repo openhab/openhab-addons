@@ -29,7 +29,6 @@ import com.google.gson.Gson;
 @NonNullByDefault
 public class GetBatteryInfoCommand extends IotDeviceCommand<Integer> {
     public GetBatteryInfoCommand() {
-        super();
     }
 
     @Override

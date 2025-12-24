@@ -23,6 +23,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.mqtt.discovery.AbstractMQTTDiscovery;
 import org.openhab.binding.mqtt.discovery.MQTTTopicDiscoveryService;
 import org.openhab.binding.mqtt.ruuvigateway.internal.RuuviGatewayBindingConstants;
+import org.openhab.binding.mqtt.ruuvigateway.internal.parser.GatewayPayloadParser;
+import org.openhab.binding.mqtt.ruuvigateway.internal.parser.GatewayPayloadParser.GatewayPayload;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.io.transport.mqtt.MqttBrokerConnection;
@@ -31,6 +33,8 @@ import org.openhab.core.thing.ThingUID;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link RuuviGatewayDiscoveryService} is responsible for finding Ruuvi Tag Sensors
@@ -43,6 +47,7 @@ import org.osgi.service.component.annotations.Reference;
 @NonNullByDefault
 public class RuuviGatewayDiscoveryService extends AbstractMQTTDiscovery {
     protected final MQTTTopicDiscoveryService discoveryService;
+    private static final Logger LOGGER = LoggerFactory.getLogger(RuuviGatewayDiscoveryService.class);
 
     private static final Predicate<String> HEX_PATTERN_CHECKER = Pattern
             .compile("^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$").asMatchPredicate();
@@ -69,13 +74,14 @@ public class RuuviGatewayDiscoveryService extends AbstractMQTTDiscovery {
             {
                 String tagMacAddress = cutTopic.substring(index + 1);
                 if (looksLikeMac(tagMacAddress)) {
-                    publishDevice(connectionBridge, connection, topic, tagMacAddress);
+                    publishDevice(connectionBridge, connection, topic, tagMacAddress, payload);
                 }
             }
         }
     }
 
-    void publishDevice(ThingUID connectionBridge, MqttBrokerConnection connection, String topic, String tagMacAddress) {
+    void publishDevice(ThingUID connectionBridge, MqttBrokerConnection connection, String topic, String tagMacAddress,
+            byte[] payload) {
         Map<String, Object> properties = new HashMap<>();
         String thingID = tagMacAddress.toLowerCase().replaceAll("[:-]", "");
         String normalizedTagID = normalizedTagID(tagMacAddress);
@@ -83,12 +89,24 @@ public class RuuviGatewayDiscoveryService extends AbstractMQTTDiscovery {
         properties.put(RuuviGatewayBindingConstants.PROPERTY_TAG_ID, normalizedTagID);
         properties.put(Thing.PROPERTY_VENDOR, "Ruuvi Innovations Ltd (Oy)");
 
+        // Detect device type from the payload
+        String deviceType = "Beacon";
+        try {
+            GatewayPayload gatewayPayload = GatewayPayloadParser.parse(payload);
+            Integer dataFormat = gatewayPayload.measurement.getDataFormat();
+            if (dataFormat != null) {
+                deviceType = isRuuviAirFormat(dataFormat) ? "Air" : "Tag";
+            }
+        } catch (Exception e) {
+            LOGGER.trace("Could not parse payload to detect device type: {}", e.getMessage());
+        }
+
         // Discovered things are identified with their topic name, in case of having pathological case
         // where we find multiple tags with same mac address (e.g. ruuvi/gw1/mac1 and ruuvi/gw2/mac1)
         thingDiscovered(DiscoveryResultBuilder.create(new ThingUID(THING_TYPE_BEACON, connectionBridge, thingID))
                 .withProperties(properties)
                 .withRepresentationProperty(RuuviGatewayBindingConstants.CONFIGURATION_PROPERTY_TOPIC)
-                .withBridge(connectionBridge).withLabel("MQTT Ruuvi Tag " + normalizedTagID).build());
+                .withBridge(connectionBridge).withLabel("MQTT Ruuvi " + deviceType + " " + normalizedTagID).build());
     }
 
     @Override
@@ -105,5 +123,10 @@ public class RuuviGatewayDiscoveryService extends AbstractMQTTDiscovery {
         return nondelimited.subSequence(0, 2) + ":" + nondelimited.subSequence(2, 4) + ":"
                 + nondelimited.subSequence(4, 6) + ":" + nondelimited.subSequence(6, 8) + ":"
                 + nondelimited.subSequence(8, 10) + ":" + nondelimited.subSequence(10, 12);
+    }
+
+    private static boolean isRuuviAirFormat(Integer dataFormat) {
+        // Ruuvi Air formats: 6 (BT 4.1) and E1 (BT 5.0+)
+        return dataFormat == 6 || dataFormat == 0xE1;
     }
 }

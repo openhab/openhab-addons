@@ -36,7 +36,7 @@ import com.google.gson.JsonSyntaxException;
 @NonNullByDefault
 public class ApiBridge {
     private static final Gson GSON = new Gson();
-    private static final String URL = "http://api.waqi.info/feed/%query%/?token=%apiKey%";
+    private static final String URL = "https://api.waqi.info/feed/%query%/?token=%apiKey%";
     private static final int REQUEST_TIMEOUT_MS = (int) TimeUnit.SECONDS.toMillis(30);
 
     private final Logger logger = LoggerFactory.getLogger(ApiBridge.class);
@@ -53,8 +53,8 @@ public class ApiBridge {
      * @throws AirQualityException
      */
     private String buildRequestURL(String key, int stationId, String location) {
-        String geoStr = stationId != 0 ? String.format("@%d", stationId)
-                : String.format("geo:%s",
+        String geoStr = stationId != 0 ? "@%d".formatted(stationId)
+                : "geo:%s".formatted(
                         location.replace(" ", "").replace(",", ";").replace("\"", "").replace("'", "").trim());
 
         return URL.replace("%apiKey%", key).replace("%query%", geoStr);

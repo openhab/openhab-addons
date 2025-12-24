@@ -357,7 +357,7 @@ public class DynamoDBPersistenceService implements QueryablePersistenceService {
     public Iterable<HistoricItem> query(FilterCriteria filter, @Nullable String alias) {
         logIfManyQueuedTasks();
         Instant start = Instant.now();
-        String filterDescription = filterToString(filter);
+        String filterDescription = filter.toString();
         logger.trace("Got a query with filter {}", filterDescription);
         DynamoDbEnhancedAsyncClient localClient = client;
         DynamoDBTableNameResolver localTableNameResolver = tableNameResolver;
@@ -674,13 +674,5 @@ public class DynamoDBPersistenceService implements QueryablePersistenceService {
                         localExecutor.getQueue().size());
             }
         }
-    }
-
-    private String filterToString(FilterCriteria filter) {
-        return String.format(
-                "FilterCriteria@%s(item=%s, pageNumber=%d, pageSize=%d, time=[%s, %s, %s], state=[%s, %s of %s] )",
-                System.identityHashCode(filter), filter.getItemName(), filter.getPageNumber(), filter.getPageSize(),
-                filter.getBeginDate(), filter.getEndDate(), filter.getOrdering(), filter.getOperator(),
-                filter.getState(), filter.getState() == null ? "null" : filter.getState().getClass().getSimpleName());
     }
 }

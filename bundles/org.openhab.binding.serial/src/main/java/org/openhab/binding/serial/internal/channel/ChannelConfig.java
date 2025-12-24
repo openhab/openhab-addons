@@ -21,6 +21,7 @@ import org.eclipse.jdt.annotation.Nullable;
  * Class describing the channel user configuration
  *
  * @author Mike Major - Initial contribution
+ * @author Roland Tapken - Added refreshValue and refreshInterval
  */
 @NonNullByDefault
 public class ChannelConfig {
@@ -73,4 +74,19 @@ public class ChannelConfig {
      * Decrease value
      */
     public @Nullable String decreaseValue;
+
+    /**
+     * Command for refesh command
+     */
+    public @Nullable String refreshValue;
+
+    /**
+     * Automatic refresh interval.
+     *
+     * This value is only required if the peer has to send the “Refresh Value”
+     * command regularly in order to return the current properties. It is not
+     * required if the peer automatically forwards changed values to its
+     * clients.
+     */
+    public int refreshInterval = 0;
 }

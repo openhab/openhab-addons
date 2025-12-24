@@ -111,15 +111,15 @@ class DebuggingGraalScriptEngine<T extends ScriptEngine & Invocable & AutoClosea
 
         String identifier = "stack";
         if (fileName != null) {
-            identifier = fileName.toString().replaceAll("^.*[/\\\\]", "");
+            identifier = "file." + fileName.toString().replaceAll("^.*[/\\\\]", "");
         } else if (ruleUID != null) {
-            identifier = ruleUID.toString();
+            identifier = "rule." + ruleUID;
         } else if (ohEngineIdentifier != null
                 && ohEngineIdentifier.toString().startsWith(OPENHAB_TRANSFORMATION_SCRIPT)) {
             identifier = ohEngineIdentifier.toString().replaceAll(OPENHAB_TRANSFORMATION_SCRIPT, "transformation.");
         }
 
-        logger = LoggerFactory.getLogger("org.openhab.automation.script.javascript." + identifier);
+        logger = LoggerFactory.getLogger("org.openhab.automation.jsscripting." + identifier);
     }
 
     @Override

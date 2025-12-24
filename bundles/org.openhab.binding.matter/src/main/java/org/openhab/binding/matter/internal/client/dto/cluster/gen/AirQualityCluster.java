@@ -54,8 +54,8 @@ public class AirQualityCluster extends BaseCluster {
         VERY_POOR(5, "Very Poor"),
         EXTREMELY_POOR(6, "Extremely Poor");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private AirQualityEnum(Integer value, String label) {
             this.value = value;

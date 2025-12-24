@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.mail.internal.action;
 
-import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -107,7 +106,7 @@ public class SendMailActions implements ThingActions {
             } else {
                 return handler.sendMail(builder.build());
             }
-        } catch (AddressException | MalformedURLException | EmailException e) {
+        } catch (AddressException | IllegalArgumentException | EmailException e) {
             logger.warn("Could not send mail: {}", e.getMessage());
             return false;
         }
@@ -198,7 +197,7 @@ public class SendMailActions implements ThingActions {
             } else {
                 return handler.sendMail(builder.build());
             }
-        } catch (AddressException | MalformedURLException | EmailException e) {
+        } catch (AddressException | IllegalArgumentException | EmailException e) {
             logger.warn("Could not send mail: {}", e.getMessage());
             return false;
         }

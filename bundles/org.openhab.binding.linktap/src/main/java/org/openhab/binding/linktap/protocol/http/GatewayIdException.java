@@ -32,7 +32,6 @@ public class GatewayIdException extends I18Exception {
     // case RET_DEVICE_NOT_FOUND:
 
     public GatewayIdException() {
-        super();
     }
 
     public GatewayIdException(final String message) {

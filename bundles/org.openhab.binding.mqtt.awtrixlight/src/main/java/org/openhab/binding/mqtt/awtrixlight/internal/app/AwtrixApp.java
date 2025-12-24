@@ -12,14 +12,37 @@
  */
 package org.openhab.binding.mqtt.awtrixlight.internal.app;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mqtt.awtrixlight.internal.Helper;
+
+import com.google.gson.annotations.SerializedName;
+
+/**
+ * The {@link TextSegment} is the representation of a text segment in an App.
+ *
+ * @author Thomas Lauterbach - Initial contribution
+ */
+@NonNullByDefault
+class TextSegment {
+    @SerializedName("t")
+    public final String text;
+
+    @SerializedName("c")
+    public final String color;
+
+    public TextSegment(String text, String color) {
+        this.text = text;
+        this.color = color;
+    }
+}
 
 /**
  * The {@link AwtrixApp} is the representation of the current app configuration and provides a method to create a config
@@ -29,6 +52,8 @@ import org.openhab.binding.mqtt.awtrixlight.internal.Helper;
  */
 @NonNullByDefault
 public class AwtrixApp {
+
+    private static final int CLOSING_TAG_LENGTH = 7; // 7 = "</font>".length()
 
     public static final String DEFAULT_TEXT = "New Awtrix App";
     public static final int DEFAULT_TEXTCASE = 0;
@@ -87,6 +112,9 @@ public class AwtrixApp {
 
     // effectSettings properties
     private Map<String, Object> effectSettings;
+
+    private static final java.util.regex.Pattern TEXT_COLOR_PATTERN = java.util.regex.Pattern
+            .compile("color=\"#([0-9A-Fa-f]{6})\"");
 
     public AwtrixApp() {
         this.effectSettings = new HashMap<String, Object>();
@@ -362,7 +390,12 @@ public class AwtrixApp {
 
     public Map<String, Object> getAppParams() {
         Map<String, Object> fields = new HashMap<String, Object>();
-        fields.put("text", this.text);
+        if (textHasColorTags(this.text)) {
+            fields.put("text", this.parseTextSegments());
+        } else {
+            fields.put("text", this.text);
+        }
+        fields.putAll(getTextEffectConfig());
         fields.put("textCase", this.textCase);
         fields.put("topText", this.topText);
         fields.put("textOffset", this.textOffset);
@@ -371,7 +404,6 @@ public class AwtrixApp {
         fields.put("lifetimeMode", this.lifetimeMode);
         fields.put("overlay", this.overlay);
         fields.putAll(getColorConfig());
-        fields.putAll(getTextEffectConfig());
         fields.putAll(getBackgroundConfig());
         fields.putAll(getIconConfig());
         fields.put("duration", this.duration);
@@ -498,7 +530,7 @@ public class AwtrixApp {
             }
         } else {
             // Here we have a gradient array. Use it unless it's not a valid gradient
-            if (this.gradient[0] != null && this.gradient[0].length == 3 && this.gradient[1] != null
+            if (!this.rainbow && this.gradient[0] != null && this.gradient[0].length == 3 && this.gradient[1] != null
                     && this.gradient[1].length == 3) {
                 fields.put("gradient", this.gradient);
             } else {
@@ -506,24 +538,125 @@ public class AwtrixApp {
                 if (this.color.length == 3) {
                     fields.put("color", this.color);
                 } else if (this.gradient[0] != null && this.gradient[0].length == 3) {
-                    fields.put("color", this.gradient);
+                    fields.put("color", this.gradient[0]);
                 } else if (this.gradient[1] != null && this.gradient[1].length == 3) {
-                    fields.put("color", this.gradient);
+                    fields.put("color", this.gradient[1]);
                 }
             }
         }
         return fields;
     }
 
+    private boolean textHasColorTags(String text) {
+        if (text.isEmpty()) {
+            return false;
+        }
+        // Check for the basic structure and use regex to validate color format
+        // We need both opening and closing tags, and at least one valid color attribute
+        return text.contains("<font") && text.contains("</font>") && TEXT_COLOR_PATTERN.matcher(text).find();
+    }
+
+    private static String rgbToHex(int[] rgb) {
+        // Ensure values are in 0-255 range
+        int r = Math.min(255, Math.max(0, rgb[0]));
+        int g = Math.min(255, Math.max(0, rgb[1]));
+        int b = Math.min(255, Math.max(0, rgb[2]));
+
+        // Format as 6-digit hex string, padding with zeros if needed
+        return String.format("%02x%02x%02x", r, g, b);
+    }
+
+    private List<TextSegment> parseTextSegments() {
+        List<TextSegment> segments = new ArrayList<>();
+        if (this.text.isEmpty()) {
+            return segments;
+        }
+
+        String remaining = this.text;
+        String defaultColor = rgbToHex(this.color);
+
+        while (true) {
+            int startTag = remaining.indexOf("<font");
+            if (startTag < 0) {
+                // No more tags, add remaining text
+                if (!remaining.isEmpty()) {
+                    segments.add(new TextSegment(remaining, defaultColor));
+                }
+                break;
+            }
+
+            // Add text before the tag
+            if (startTag > 0) {
+                segments.add(new TextSegment(remaining.substring(0, startTag), defaultColor));
+            }
+
+            // Find the end of the opening tag
+            int endTag = remaining.indexOf(">", startTag);
+            if (endTag < 0) {
+                // Malformed tag, add everything and stop
+                segments.add(new TextSegment(remaining, defaultColor));
+                break;
+            }
+
+            // Extract color from tag (or use default)
+            String tag = remaining.substring(startTag, endTag + 1);
+            String color = extractColor(tag);
+            if (color == null) {
+                color = defaultColor;
+            }
+
+            // Find the closing tag
+            int closeTag = remaining.indexOf("</font>", endTag);
+            if (closeTag < 0) {
+                // No closing tag, add rest with color and stop
+                segments.add(new TextSegment(remaining.substring(endTag + 1), color));
+                break;
+            }
+
+            // Add text between tags
+            segments.add(new TextSegment(remaining.substring(endTag + 1, closeTag), color));
+
+            // Move past the closing tag
+            remaining = remaining.substring(closeTag + CLOSING_TAG_LENGTH);
+        }
+
+        return segments;
+    }
+
+    @Nullable
+    private String extractColor(String tag) {
+        java.util.regex.Matcher matcher = TEXT_COLOR_PATTERN.matcher(tag);
+        if (matcher.find()) {
+            // Group 1 contains the hex color value (without the #)
+            return matcher.group(1).toLowerCase();
+        }
+        return null;
+    }
+
     private Map<String, Object> getTextEffectConfig() {
         Map<String, Object> fields = new HashMap<String, Object>();
-        if (Arrays.equals(this.color, DEFAULT_COLOR) && Arrays.equals(this.gradient, DEFAULT_GRADIENT)) {
+        // Rainbow makes no sense when the text has color tags so ignore in this case
+        if (textHasColorTags(this.text)) {
             if (this.blinkText > 0) {
                 fields.put("blinkText", this.blinkText);
             } else if (this.fadeText > 0) {
                 fields.put("fadeText", this.fadeText);
-            } else if (this.rainbow) {
+            }
+        } else {
+            // Rainbow overrides gradients, blink and fade because for a user a switch
+            // is much easier to use to override these effects than the other way round.
+            // This way you can easily switch rainbow on and off and fall back to the
+            // gradient, blink or fade effects without setting these to the default
+            // values.
+            if (this.rainbow) {
                 fields.put("rainbow", this.rainbow);
+            } else if (Arrays.equals(this.gradient, DEFAULT_GRADIENT)) {
+                // Gradient overrides the fade and blink effects. Blink overrides fade
+                if (this.blinkText > 0) {
+                    fields.put("blinkText", this.blinkText);
+                } else if (this.fadeText > 0) {
+                    fields.put("fadeText", this.fadeText);
+                }
             }
         }
         return fields;

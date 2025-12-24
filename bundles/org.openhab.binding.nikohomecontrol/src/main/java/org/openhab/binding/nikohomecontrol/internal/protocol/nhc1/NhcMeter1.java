@@ -35,6 +35,9 @@ public class NhcMeter1 extends NhcMeter {
 
     private final String meterType;
 
+    protected volatile double reading;
+    protected volatile double dayReading;
+
     NhcMeter1(String id, String name, MeterType meterType, @Nullable String location, String type,
             @Nullable LocalDateTime referenceDate, NikoHomeControlCommunication nhcComm,
             ScheduledExecutorService scheduler) {
@@ -48,5 +51,39 @@ public class NhcMeter1 extends NhcMeter {
      */
     public String getMeterType() {
         return meterType;
+    }
+
+    @Override
+    public double getReading() {
+        // For energy, readings are in W per 10 min, convert to kWh
+        // For water and gas, readings are in 0.1 dm^3, convert to m^3
+        return ((type == MeterType.ENERGY) || (type == MeterType.ENERGY_LIVE)) ? (reading / 6000.0)
+                : (reading / 10000.0);
+    }
+
+    @Override
+    public double getDayReading() {
+        // For energy, readings are in W per 10 min, convert to kWh
+        // For water and gas, readings are in 0.1 dm^3, convert to m^3
+        return ((type == MeterType.ENERGY) || (type == MeterType.ENERGY_LIVE)) ? (dayReading / 6000.0)
+                : (dayReading / 10000.0);
+    }
+
+    @Override
+    public double getReadingRaw() {
+        return reading;
+    }
+
+    @Override
+    public double getDayReadingRaw() {
+        return dayReading;
+    }
+
+    @Override
+    public void setReading(double reading, double dayReading, LocalDateTime lastReading) {
+        this.reading = reading;
+        this.dayReading = dayReading;
+        this.lastReadingUTC = lastReading;
+        updateReadingState();
     }
 }

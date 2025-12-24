@@ -67,12 +67,12 @@ import org.openhab.core.util.HexUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import tuwien.auto.calimero.GroupAddress;
-import tuwien.auto.calimero.IndividualAddress;
-import tuwien.auto.calimero.KNXException;
-import tuwien.auto.calimero.KNXFormatException;
-import tuwien.auto.calimero.datapoint.CommandDP;
-import tuwien.auto.calimero.datapoint.Datapoint;
+import io.calimero.GroupAddress;
+import io.calimero.IndividualAddress;
+import io.calimero.KNXException;
+import io.calimero.KNXFormatException;
+import io.calimero.datapoint.CommandDP;
+import io.calimero.datapoint.Datapoint;
 
 /**
  * The {@link DeviceThingHandler} is responsible for handling commands and state updates sent to and received from the

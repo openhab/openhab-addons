@@ -25,7 +25,6 @@ public class DaliException extends Exception {
     private static final long serialVersionUID = 1L;
 
     public DaliException() {
-        super();
     }
 
     public DaliException(String message) {

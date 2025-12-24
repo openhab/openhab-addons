@@ -25,7 +25,10 @@ import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.folding.internal.discovery.FoldingDiscoveryProxy;
+import org.openhab.binding.folding.internal.dto.SlotInfo;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
@@ -48,17 +51,16 @@ import com.google.gson.stream.JsonReader;
  *
  * @author Marius Bjørnstad - Initial contribution
  */
+@NonNullByDefault
 public class FoldingClientHandler extends BaseBridgeHandler {
 
     private Logger logger = LoggerFactory.getLogger(FoldingClientHandler.class);
 
-    private ScheduledFuture<?> refreshJob;
-
+    private @Nullable ScheduledFuture<?> refreshJob;
     private boolean initializing = true;
-
-    private Socket activeSocket;
-    private BufferedReader socketReader;
-    private Gson gson;
+    private @Nullable Socket activeSocket;
+    private @Nullable BufferedReader socketReader;
+    private final Gson gson;
 
     private volatile int idRefresh = 0;
 
@@ -109,8 +111,10 @@ public class FoldingClientHandler extends BaseBridgeHandler {
 
     @Override
     public synchronized void dispose() {
+        ScheduledFuture<?> refreshJob = this.refreshJob;
         if (refreshJob != null) {
             refreshJob.cancel(true);
+            this.refreshJob = null;
         }
         closeSocket();
     }
@@ -160,14 +164,18 @@ public class FoldingClientHandler extends BaseBridgeHandler {
     }
 
     void closeSocket() {
+        Socket activeSocket = this.activeSocket;
         if (activeSocket != null && activeSocket.isConnected()) {
             try {
-                socketReader.close();
+                BufferedReader socketReader = this.socketReader;
+                if (socketReader != null) {
+                    socketReader.close();
+                }
             } catch (IOException e) {
             }
         }
-        socketReader = null;
-        activeSocket = null;
+        this.socketReader = null;
+        this.activeSocket = null;
     }
 
     private void disconnected() {
@@ -175,7 +183,7 @@ public class FoldingClientHandler extends BaseBridgeHandler {
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
     }
 
-    private synchronized Socket getSocket() throws IOException {
+    private synchronized @Nullable Socket getSocket() throws IOException {
         if (activeSocket == null) {
             String cfgHost = (String) getThing().getConfiguration().get("host");
             BigDecimal cfgPort = (BigDecimal) getThing().getConfiguration().get("port");
@@ -188,10 +196,10 @@ public class FoldingClientHandler extends BaseBridgeHandler {
             activeSocket = new Socket();
             activeSocket.connect(new InetSocketAddress(cfgHost, cfgPort.intValue()), 2000);
             socketReader = new BufferedReader(new InputStreamReader(activeSocket.getInputStream()));
-            readUntilPrompt(activeSocket); // Discard initial banner message
+            readUntilPrompt(); // Discard initial banner message
             if (password != null) {
                 activeSocket.getOutputStream().write(("auth \"" + password + "\"\r\n").getBytes());
-                if (readUntilPrompt(activeSocket).startsWith("OK")) {
+                if (readUntilPrompt().startsWith("OK")) {
                     updateStatus(ThingStatus.ONLINE);
                 } else {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Incorrect password");
@@ -203,7 +211,7 @@ public class FoldingClientHandler extends BaseBridgeHandler {
         return activeSocket;
     }
 
-    private synchronized String readUntilPrompt(Socket s) throws IOException {
+    private synchronized String readUntilPrompt() throws IOException {
         boolean havePrompt1 = false;
         StringBuilder response = new StringBuilder();
         try {
@@ -229,7 +237,7 @@ public class FoldingClientHandler extends BaseBridgeHandler {
         try {
             Socket s = getSocket();
             s.getOutputStream().write((command + "\r\n").getBytes());
-            readUntilPrompt(s);
+            readUntilPrompt();
         } catch (IOException e) {
             disconnected();
             throw e;

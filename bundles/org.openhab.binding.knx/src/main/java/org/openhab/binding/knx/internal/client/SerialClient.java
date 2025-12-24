@@ -27,13 +27,13 @@ import org.openhab.core.thing.ThingUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import tuwien.auto.calimero.Connection.BlockingMode;
-import tuwien.auto.calimero.KNXException;
-import tuwien.auto.calimero.link.KNXNetworkLink;
-import tuwien.auto.calimero.link.KNXNetworkLinkFT12;
-import tuwien.auto.calimero.link.medium.TPSettings;
-import tuwien.auto.calimero.secure.Security;
-import tuwien.auto.calimero.serial.FT12Connection;
+import io.calimero.Connection.BlockingMode;
+import io.calimero.KNXException;
+import io.calimero.link.KNXNetworkLink;
+import io.calimero.link.KNXNetworkLinkFT12;
+import io.calimero.link.medium.TPSettings;
+import io.calimero.secure.Security;
+import io.calimero.serial.FT12Connection;
 
 /**
  * Serial specific {@link AbstractKNXClient} implementation.
@@ -44,7 +44,7 @@ import tuwien.auto.calimero.serial.FT12Connection;
 @NonNullByDefault
 public class SerialClient extends AbstractKNXClient {
 
-    private static final String CALIMERO_ERROR_CANNOT_OPEN_PORT = "failed to open serial port";
+    private static final String CALIMERO_ERROR_CANNOT_OPEN_PORT = "opening device ";
 
     private final Logger logger = LoggerFactory.getLogger(SerialClient.class);
 

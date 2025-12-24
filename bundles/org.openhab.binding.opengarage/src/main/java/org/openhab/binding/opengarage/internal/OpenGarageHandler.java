@@ -42,6 +42,8 @@ import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.Gson;
+
 /**
  * The {@link OpenGarageHandler} is responsible for handling commands, which are
  * sent to one of the channels.
@@ -65,6 +67,7 @@ public class OpenGarageHandler extends BaseThingHandler {
     private String lastTransitionText;
 
     private OpenGarageConfiguration config = new OpenGarageConfiguration();
+    private Gson gson = new Gson();
 
     public OpenGarageHandler(Thing thing) {
         super(thing);
@@ -134,10 +137,11 @@ public class OpenGarageHandler extends BaseThingHandler {
     private synchronized void poll() {
         try {
             logger.debug("Polling for state");
-            ControllerVariables controllerVariables = webTargets.getControllerVariables();
-            long lastTransitionAgoSecs = Duration.between(lastTransition, Instant.now()).getSeconds();
-            boolean inTransition = lastTransitionAgoSecs < this.config.doorTransitionTimeSeconds;
+            String response = webTargets.getControllerVariables();
+            ControllerVariables controllerVariables = gson.fromJson(response, ControllerVariables.class);
             if (controllerVariables != null) {
+                long lastTransitionAgoSecs = Duration.between(lastTransition, Instant.now()).getSeconds();
+                boolean inTransition = lastTransitionAgoSecs < this.config.doorTransitionTimeSeconds;
                 updateStatus(ThingStatus.ONLINE);
                 updateState(OpenGarageBindingConstants.CHANNEL_OG_DISTANCE,
                         new QuantityType<>(controllerVariables.dist, MetricPrefix.CENTI(SIUnits.METRE)));

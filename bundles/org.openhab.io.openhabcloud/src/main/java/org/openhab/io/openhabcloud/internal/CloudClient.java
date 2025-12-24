@@ -45,6 +45,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.openhab.core.OpenHAB;
 import org.openhab.core.common.ThreadPoolManager;
+import org.openhab.core.events.AbstractEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -207,7 +208,7 @@ public class CloudClient {
             options.callFactory = okHttpBuilder.build();
             options.webSocketFactory = okHttpBuilder.build();
             socket = IO.socket(baseURL, options);
-            URL parsed = new URL(baseURL);
+            URL parsed = URI.create(baseURL).toURL();
             protocol = parsed.getProtocol();
         } catch (URISyntaxException e) {
             logger.error("Error creating Socket.IO: {}", e.getMessage());
@@ -426,6 +427,21 @@ public class CloudClient {
             logger.debug("Query {}", requestQueryJson.toString());
             // Create URI builder with base request URI of openHAB and path from request
             String newPath = URIUtil.addPaths(localBaseUrl, requestPath);
+
+            String source = null;
+            if (requestHeadersJson.has("x-openhab-source")) {
+                source = requestHeadersJson.getString("x-openhab-source");
+            }
+            if (source == null && requestQueryJson.has("source")) {
+                source = requestQueryJson.getString("source");
+            }
+            String userId = null;
+            if (data.has("userId")) {
+                userId = data.getString("userId");
+            }
+            requestHeadersJson.put("x-openhab-source",
+                    AbstractEvent.buildDelegatedSource(source, CloudService.CLOUD_EVENT_SOURCE, userId));
+
             Iterator<String> queryIterator = requestQueryJson.keys();
             // Add query parameters to URI builder, if any
             newPath += "?";
@@ -572,7 +588,8 @@ public class CloudClient {
             try {
                 logger.debug("Received command {} for item {}.", data.getString("command"), itemName);
                 if (this.listener != null) {
-                    this.listener.sendCommand(itemName, data.getString("command"));
+                    this.listener.sendCommand(itemName, data.getString("command"), data.getString("source"),
+                            data.getString("userId"));
                 }
             } catch (JSONException e) {
                 logger.debug("{}", e.getMessage());

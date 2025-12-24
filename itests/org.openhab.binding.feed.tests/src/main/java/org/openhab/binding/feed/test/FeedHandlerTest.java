@@ -116,7 +116,6 @@ public class FeedHandlerTest extends JavaOSGiTest {
         int httpStatus;
 
         public FeedServiceMock(String feedContentFile) {
-            super();
             try {
                 setFeedContent(feedContentFile);
             } catch (IOException e) {

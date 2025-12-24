@@ -58,7 +58,6 @@ public class GenericEEP extends EEP {
                     RewindFastforwardType.class, StringListType.class, StringType.class, UpDownType.class));
 
     public GenericEEP() {
-        super();
     }
 
     public GenericEEP(ERP1Message packet) {

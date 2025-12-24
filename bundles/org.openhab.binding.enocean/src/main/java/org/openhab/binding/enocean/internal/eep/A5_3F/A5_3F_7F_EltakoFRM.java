@@ -42,7 +42,6 @@ public class A5_3F_7F_EltakoFRM extends _4BSMessage {
     static final int BOTTOM = 0x00;
 
     public A5_3F_7F_EltakoFRM() {
-        super();
     }
 
     public A5_3F_7F_EltakoFRM(ERP1Message packet) {

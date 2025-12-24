@@ -24,7 +24,6 @@ public class AvrConnectionException extends RuntimeException {
     private static final long serialVersionUID = -7970958467980752003L;
 
     public AvrConnectionException() {
-        super();
     }
 
     public AvrConnectionException(String message) {

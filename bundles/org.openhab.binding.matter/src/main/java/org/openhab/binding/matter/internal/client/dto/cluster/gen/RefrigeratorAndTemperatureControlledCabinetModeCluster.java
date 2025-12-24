@@ -81,7 +81,7 @@ public class RefrigeratorAndTemperatureControlledCabinetModeCluster extends Base
     /**
      * A Mode Tag is meant to be interpreted by the client for the purpose the cluster serves.
      */
-    public class ModeTagStruct {
+    public static class ModeTagStruct {
         /**
          * If the MfgCode field exists, the Value field shall be in the manufacturer-specific value range (see Section
          * 1.10.8, “Mode Namespace”).
@@ -107,7 +107,7 @@ public class RefrigeratorAndTemperatureControlledCabinetModeCluster extends Base
     /**
      * This is a struct representing a possible mode of the server.
      */
-    public class ModeOptionStruct {
+    public static class ModeOptionStruct {
         /**
          * This field shall indicate readable text that describes the mode option, so that a client can provide it to
          * the user to indicate what this option means. This field is meant to be readable and understandable by the
@@ -158,8 +158,8 @@ public class RefrigeratorAndTemperatureControlledCabinetModeCluster extends Base
         GENERIC_FAILURE(2, "Generic Failure"),
         INVALID_IN_MODE(3, "Invalid In Mode");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private ModeChangeStatus(Integer value, String label) {
             this.value = value;
@@ -191,8 +191,8 @@ public class RefrigeratorAndTemperatureControlledCabinetModeCluster extends Base
         RAPID_COOL(16384, "Rapid Cool"),
         RAPID_FREEZE(16385, "Rapid Freeze");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private ModeTag(Integer value, String label) {
             this.value = value;

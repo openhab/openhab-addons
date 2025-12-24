@@ -46,7 +46,7 @@ class DeviceRegistryTest {
 
     @Test
     void createOnOffLightDevice() {
-        GenericDevice device = DeviceRegistry.createDevice("OnOffLight", metadataRegistry, client, item);
+        BaseDevice device = DeviceRegistry.createDevice("OnOffLight", metadataRegistry, client, item);
 
         assertNotNull(device);
         assertTrue(device instanceof OnOffLightDevice);
@@ -54,7 +54,7 @@ class DeviceRegistryTest {
 
     @Test
     void createThermostatDevice() {
-        GenericDevice device = DeviceRegistry.createDevice("Thermostat", metadataRegistry, client, item);
+        BaseDevice device = DeviceRegistry.createDevice("Thermostat", metadataRegistry, client, item);
 
         assertNotNull(device);
         assertTrue(device instanceof ThermostatDevice);
@@ -62,7 +62,7 @@ class DeviceRegistryTest {
 
     @Test
     void createInvalidDeviceType() {
-        GenericDevice device = DeviceRegistry.createDevice("InvalidDeviceType", metadataRegistry, client, item);
+        BaseDevice device = DeviceRegistry.createDevice("InvalidDeviceType", metadataRegistry, client, item);
 
         assertNull(device);
     }
@@ -73,7 +73,7 @@ class DeviceRegistryTest {
                 "DoorLock", "TemperatureSensor", "HumiditySensor", "OccupancySensor", "ContactSensor", "ColorLight" };
 
         for (String deviceType : deviceTypes) {
-            GenericDevice device = DeviceRegistry.createDevice(deviceType, metadataRegistry, client, item);
+            BaseDevice device = DeviceRegistry.createDevice(deviceType, metadataRegistry, client, item);
             assertNotNull(device, "Device creation failed for type: " + deviceType);
         }
     }

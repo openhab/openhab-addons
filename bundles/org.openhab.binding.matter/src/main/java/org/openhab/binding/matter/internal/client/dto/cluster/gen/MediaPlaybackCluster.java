@@ -141,7 +141,7 @@ public class MediaPlaybackCluster extends BaseCluster {
      * If supported, this event shall be generated when there is a change in any of the supported attributes of the
      * Media Playback cluster.
      */
-    public class StateChanged {
+    public static class StateChanged {
         /**
          * This field shall indicate the updated playback state as defined by the CurrentState attribute, and has the
          * same constraint as that attribute.
@@ -209,7 +209,7 @@ public class MediaPlaybackCluster extends BaseCluster {
     /**
      * This structure defines a playback position within a media stream being played.
      */
-    public class PlaybackPositionStruct {
+    public static class PlaybackPositionStruct {
         /**
          * This field shall indicate the time when the position was last updated.
          */
@@ -233,7 +233,7 @@ public class MediaPlaybackCluster extends BaseCluster {
     /**
      * This structure defines a uniquely identifiable Text Track or Audio Track.
      */
-    public class TrackStruct {
+    public static class TrackStruct {
         /**
          * This field shall indicate the Identifier for the Track which is unique within the Track catalog. The Track
          * catalog contains all the Text/Audio tracks corresponding to the main media content.
@@ -253,7 +253,7 @@ public class MediaPlaybackCluster extends BaseCluster {
     /**
      * This structure includes the attributes associated with a Text/Audio Track
      */
-    public class TrackAttributesStruct {
+    public static class TrackAttributesStruct {
         /**
          * The value is a String containing one of the standard Tags for Identifying Languages RFC 5646, which
          * identifies the primary language used in the Track.
@@ -285,8 +285,8 @@ public class MediaPlaybackCluster extends BaseCluster {
         NOT_PLAYING(2, "Not Playing"),
         BUFFERING(3, "Buffering");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private PlaybackStateEnum(Integer value, String label) {
             this.value = value;
@@ -312,8 +312,8 @@ public class MediaPlaybackCluster extends BaseCluster {
         SPEED_OUT_OF_RANGE(4, "Speed Out Of Range"),
         SEEK_OUT_OF_RANGE(5, "Seek Out Of Range");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private StatusEnum(Integer value, String label) {
             this.value = value;
@@ -351,8 +351,8 @@ public class MediaPlaybackCluster extends BaseCluster {
         EMERGENCY(16, "Emergency"),
         KARAOKE(17, "Karaoke");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private CharacteristicEnum(Integer value, String label) {
             this.value = value;

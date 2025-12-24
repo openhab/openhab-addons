@@ -949,7 +949,6 @@ public class SystemInfoOSGiTest extends JavaOSGiTest {
         String hostname;
 
         SystemInfoDiscoveryServiceMock(String hostname) {
-            super();
             this.hostname = hostname;
         }
 

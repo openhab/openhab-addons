@@ -31,7 +31,6 @@ import com.google.gson.Gson;
 @NonNullByDefault
 public class GetErrorCommand extends IotDeviceCommand<Optional<Integer>> {
     public GetErrorCommand() {
-        super();
     }
 
     @Override

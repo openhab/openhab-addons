@@ -24,7 +24,6 @@ public class ContentItemNotPresetableException extends NoPresetFoundException {
     private static final long serialVersionUID = 1L;
 
     public ContentItemNotPresetableException() {
-        super();
     }
 
     public ContentItemNotPresetableException(String message) {

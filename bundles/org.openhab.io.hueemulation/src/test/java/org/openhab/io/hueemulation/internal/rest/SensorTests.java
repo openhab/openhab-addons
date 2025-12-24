@@ -14,7 +14,7 @@ package org.openhab.io.hueemulation.internal.rest;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
@@ -38,6 +38,7 @@ import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.types.State;
 import org.openhab.io.hueemulation.internal.ConfigStore;
+import org.openhab.io.hueemulation.internal.dto.HueSensorEntry;
 import org.openhab.io.hueemulation.internal.rest.mocks.DummyItemRegistry;
 
 /**
@@ -94,23 +95,27 @@ public class SensorTests {
 
     @Test
     public void renameSensor() throws Exception {
-        assertThat(cs.ds.sensors.get("switch1").name, is("name1"));
+        HueSensorEntry sensorEntry = cs.ds.sensors.get("switch1");
+        assertNotNull(sensorEntry);
+        assertThat(sensorEntry.name, is("name1"));
 
         String body = "{'name':'name2'}";
         ContentResponse response = commonSetup.sendPut("/testuser/sensors/switch1", body);
-        assertEquals(200, response.getStatus());
+        assertThat(response.getStatus(), is(200));
 
         body = response.getContentAsString();
 
         assertThat(body, containsString("success"));
         assertThat(body, containsString("name"));
-        assertThat(cs.ds.sensors.get("switch1").name, is("name2"));
+        sensorEntry = cs.ds.sensors.get("switch1");
+        assertNotNull(sensorEntry);
+        assertThat(sensorEntry.name, is("name2"));
     }
 
     @Test
     public void allAndSingleSensor() throws Exception {
         ContentResponse response = commonSetup.sendGet("/testuser/sensors");
-        assertEquals(200, response.getStatus());
+        assertThat(response.getStatus(), is(200));
 
         String body = response.getContentAsString();
 
@@ -120,7 +125,7 @@ public class SensorTests {
 
         // Single light access test
         response = commonSetup.sendGet("/testuser/sensors/switch1");
-        assertEquals(200, response.getStatus());
+        assertThat(response.getStatus(), is(200));
         body = response.getContentAsString();
         assertThat(body, containsString("CLIPGenericFlag"));
     }

@@ -31,7 +31,6 @@ public class LinkTapException extends I18Exception {
     protected String i18Key = "";
 
     public LinkTapException() {
-        super();
     }
 
     public LinkTapException(final String message) {

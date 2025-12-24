@@ -25,7 +25,6 @@ public class SurePetcareApiException extends Exception {
     private static final long serialVersionUID = -7851429815604230535L;
 
     public SurePetcareApiException() {
-        super();
     }
 
     public SurePetcareApiException(String message) {

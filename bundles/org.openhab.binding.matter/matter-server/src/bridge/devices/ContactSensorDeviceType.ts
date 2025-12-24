@@ -1,15 +1,15 @@
 import { Endpoint } from "@matter/node";
 import { ContactSensorDevice } from "@matter/node/devices/contact-sensor";
-import { GenericDeviceType } from "./GenericDeviceType"; // Adjust the path as needed
+import { BaseDeviceType } from "./BaseDeviceType"; // Adjust the path as needed
 
-export class ContactSensorDeviceType extends GenericDeviceType {
+export class ContactSensorDeviceType extends BaseDeviceType {
     override createEndpoint(clusterValues: Record<string, any>) {
         const defaults = {
             booleanState: {
                 stateValue: false,
             },
         };
-        const endpoint = new Endpoint(ContactSensorDevice.with(...this.defaultClusterServers()), {
+        const endpoint = new Endpoint(ContactSensorDevice.with(...this.baseClusterServers), {
             ...this.endPointDefaults(),
             ...clusterValues,
         });

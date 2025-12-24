@@ -24,7 +24,6 @@ public class NoStoredMusicPresetFoundException extends NoPresetFoundException {
     private static final long serialVersionUID = 1L;
 
     public NoStoredMusicPresetFoundException() {
-        super();
     }
 
     public NoStoredMusicPresetFoundException(String message) {

@@ -30,7 +30,6 @@ import com.google.gson.Gson;
 @NonNullByDefault
 public class GetSuctionPowerCommand extends IotDeviceCommand<SuctionPower> {
     public GetSuctionPowerCommand() {
-        super();
     }
 
     @Override

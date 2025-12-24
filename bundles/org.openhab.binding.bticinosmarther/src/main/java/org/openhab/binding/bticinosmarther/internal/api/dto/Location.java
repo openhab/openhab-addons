@@ -44,7 +44,6 @@ public class Location {
      *            the notification subscription endpoint to use, may be {@code null}
      */
     private Location(Plant plant, @Nullable Subscription subscription) {
-        super();
         this.plantId = plant.getId();
         this.name = plant.getName();
         if (subscription != null) {

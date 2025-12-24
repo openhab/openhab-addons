@@ -31,11 +31,9 @@ public class VeSyncAuthenticatedRequest extends VeSyncRequest {
     public String token;
 
     public VeSyncAuthenticatedRequest() {
-        super();
     }
 
     public VeSyncAuthenticatedRequest(final VeSyncUserSession user) throws AuthenticationException {
-        super();
         if (user == null) {
             throw new AuthenticationException("User is not logged in");
         }

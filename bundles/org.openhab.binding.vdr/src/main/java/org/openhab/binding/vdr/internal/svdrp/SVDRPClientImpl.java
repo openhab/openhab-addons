@@ -48,13 +48,11 @@ public class SVDRPClientImpl implements SVDRPClient {
     private @Nullable BufferedReader in = null;
 
     public SVDRPClientImpl(String host, int port) {
-        super();
         this.host = host;
         this.port = port;
     }
 
     public SVDRPClientImpl(String host, int port, String charset) {
-        super();
         this.host = host;
         this.port = port;
         this.charset = charset;

@@ -12,9 +12,15 @@
  */
 package org.openhab.binding.astro.internal.util;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.Calendar;
+import java.util.Locale;
+import java.util.TimeZone;
 import java.util.regex.Pattern;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.astro.internal.config.AstroChannelConfig;
 import org.openhab.binding.astro.internal.model.Range;
 import org.slf4j.Logger;
@@ -25,12 +31,15 @@ import org.slf4j.LoggerFactory;
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public class DateTimeUtils {
     private static final Logger LOGGER = LoggerFactory.getLogger(DateTimeUtils.class);
     private static final Pattern HHMM_PATTERN = Pattern.compile("^([0-1][0-9]|2[0-3])(:[0-5][0-9])$");
 
-    private static final double J1970 = 2440588.0;
-    private static final double MILLISECONDS_PER_DAY = 1000 * 60 * 60 * 24;
+    public static final double JD_J2000 = 2451545.0; // 2000-01-01 12:00
+    public static final double JD_UNIX_EPOCH = 2440587.5; // 1970-01-01 00:00 UTC
+    private static final double J1970 = JD_UNIX_EPOCH + 0.5; // 1970-01-01 12:00 UTC (julian solar noon)
+    private static final int JULIAN_CENTURY_DAYS = 36525; // Length of a Julian Century in days
 
     /** Constructor */
     private DateTimeUtils() {
@@ -47,12 +56,26 @@ public class DateTimeUtils {
     }
 
     /**
+     * Truncates the time from the instant object.
+     */
+    public static Instant truncateToSecond(Instant instant) {
+        return instant.truncatedTo(ChronoUnit.SECONDS);
+    }
+
+    /**
      * Truncates the time from the calendar object.
      */
-    private static Calendar truncateToMinute(Calendar calendar) {
+    public static Calendar truncateToMinute(Calendar calendar) {
         Calendar cal = truncateToSecond(calendar);
         cal.set(Calendar.SECOND, 0);
         return cal;
+    }
+
+    /**
+     * Truncates the time from the instant object.
+     */
+    public static Instant truncateToMinute(Instant instant) {
+        return instant.truncatedTo(ChronoUnit.MINUTES);
     }
 
     /**
@@ -66,17 +89,25 @@ public class DateTimeUtils {
     }
 
     /**
+     * Truncates the time from the instant object.
+     */
+    public static Instant truncateToMidnight(Instant instant) {
+        return instant.truncatedTo(ChronoUnit.DAYS);
+    }
+
+    /**
      * Creates a Range object within the specified months and days. The start
      * time is midnight, the end time is end of the day.
      */
-    public static Range getRange(int startYear, int startMonth, int startDay, int endYear, int endMonth, int endDay) {
-        Calendar start = Calendar.getInstance();
+    public static Range getRange(int startYear, int startMonth, int startDay, int endYear, int endMonth, int endDay,
+            TimeZone zone, Locale locale) {
+        Calendar end = Calendar.getInstance(zone, locale);
+        Calendar start = (Calendar) end.clone();
         start.set(Calendar.YEAR, startYear);
         start.set(Calendar.MONTH, startMonth);
         start.set(Calendar.DAY_OF_MONTH, startDay);
         start = truncateToMidnight(start);
 
-        Calendar end = Calendar.getInstance();
         end.set(Calendar.YEAR, endYear);
         end.set(Calendar.MONTH, endMonth);
         end.set(Calendar.DAY_OF_MONTH, endDay);
@@ -91,25 +122,22 @@ public class DateTimeUtils {
     /**
      * Returns a calendar object from a julian date.
      */
-    public static Calendar toCalendar(double julianDate) {
+    @Nullable
+    public static Calendar toCalendar(double julianDate, TimeZone zone, Locale locale) {
         if (Double.compare(julianDate, Double.NaN) == 0 || julianDate == 0) {
             return null;
         }
-        long millis = (long) ((julianDate + 0.5 - J1970) * MILLISECONDS_PER_DAY);
-        Calendar cal = Calendar.getInstance();
+        long millis = (long) ((julianDate + 0.5 - J1970) * AstroConstants.MILLISECONDS_PER_DAY);
+        Calendar cal = Calendar.getInstance(zone, locale);
         cal.setTimeInMillis(millis);
-        int second = cal.get(Calendar.SECOND);
-        if (second > 30) {
-            cal.add(Calendar.MINUTE, 1);
-        }
-        return truncateToMinute(cal);
+        return cal;
     }
 
     /**
      * Returns the julian date from the calendar object.
      */
     public static double dateToJulianDate(Calendar calendar) {
-        return calendar.getTimeInMillis() / MILLISECONDS_PER_DAY - 0.5 + J1970;
+        return calendar.getTimeInMillis() / AstroConstants.MILLISECONDS_PER_DAY - 0.5 + J1970;
     }
 
     /**
@@ -130,6 +158,13 @@ public class DateTimeUtils {
     }
 
     /**
+     * Returns the end of day from the instant object.
+     */
+    public static Instant endOfDayDate(Instant instant) {
+        return truncateToMidnight(instant).plus(1, ChronoUnit.DAYS).minusMillis(1);
+    }
+
+    /**
      * Returns the year of the calendar object as a decimal value.
      */
     public static double getDecimalYear(Calendar calendar) {
@@ -140,6 +175,7 @@ public class DateTimeUtils {
     /**
      * Converts the time (hour.minute) to a calendar object.
      */
+    @Nullable
     public static Calendar timeToCalendar(Calendar calendar, double time) {
         if (time < 0.0) {
             return null;
@@ -147,12 +183,13 @@ public class DateTimeUtils {
         Calendar cal = (Calendar) calendar.clone();
         int hour = 0;
         int minute = 0;
-        if (time == 24.0) {
-            cal.add(Calendar.DAY_OF_MONTH, 1);
-        } else {
-            hour = (int) time;
-            minute = (int) ((time * 100) - (hour * 100));
+        int days = (int) time / 24;
+        double remains = time % 24;
+        if (days != 0) {
+            cal.add(Calendar.DAY_OF_MONTH, days);
         }
+        hour = (int) remains;
+        minute = (int) ((remains * 100) - (hour * 100));
         cal.set(Calendar.HOUR_OF_DAY, hour);
         cal.set(Calendar.MINUTE, minute);
         return truncateToMinute(cal);
@@ -161,7 +198,7 @@ public class DateTimeUtils {
     /**
      * Returns true, if two calendar objects are on the same day ignoring time.
      */
-    public static boolean isSameDay(Calendar cal1, Calendar cal2) {
+    public static boolean isSameDay(@Nullable Calendar cal1, @Nullable Calendar cal2) {
         return cal1 != null && cal2 != null && cal1.get(Calendar.ERA) == cal2.get(Calendar.ERA)
                 && cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR)
                 && cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR);
@@ -170,10 +207,13 @@ public class DateTimeUtils {
     /**
      * Returns the next Calendar from today.
      */
-    public static Calendar getNextFromToday(Calendar... calendars) {
-        return getNext(Calendar.getInstance(), calendars);
+    public static Calendar getNextFromToday(TimeZone zone, Locale locale, Calendar... calendars) {
+        Calendar now = Calendar.getInstance(zone, locale);
+        Calendar result = getNext(now, calendars);
+        return result == null ? now : result;
     }
 
+    @Nullable
     static Calendar getNext(Calendar now, Calendar... calendars) {
         Calendar next = null;
         Calendar firstSeasonOfYear = null;
@@ -185,7 +225,7 @@ public class DateTimeUtils {
                 next = calendar;
             }
         }
-        if (next == null) {
+        if (next == null && firstSeasonOfYear != null) {
             final Calendar nextYearSeason = (Calendar) firstSeasonOfYear.clone();
 
             nextYearSeason.add(Calendar.YEAR, 1);
@@ -205,11 +245,27 @@ public class DateTimeUtils {
     }
 
     public static Calendar getAdjustedEarliest(Calendar cal, AstroChannelConfig config) {
-        return adjustTime(cal, getMinutesFromTime(config.earliest));
+        int minutes = getMinutesFromTime(config.earliest);
+        // MainUI sets earliest to 00:00 if unconfigured, which is why zero must be treated as such
+        return minutes > 0 ? adjustTime(cal, minutes) : cal;
+    }
+
+    public static Instant getAdjustedEarliest(Instant instant, AstroChannelConfig config) {
+        int minutes = getMinutesFromTime(config.earliest);
+        // MainUI sets earliest to 00:00 if unconfigured, which is why zero must be treated as such
+        return minutes > 0 ? adjustTime(instant, minutes) : instant;
     }
 
     public static Calendar getAdjustedLatest(Calendar cal, AstroChannelConfig config) {
-        return adjustTime(cal, getMinutesFromTime(config.latest));
+        int minutes = getMinutesFromTime(config.latest);
+        // MainUI sets latest to 00:00 if unconfigured, which is why zero must be treated as such
+        return minutes > 0 ? adjustTime(cal, minutes) : cal;
+    }
+
+    public static Instant getAdjustedLatest(Instant instant, AstroChannelConfig config) {
+        int minutes = getMinutesFromTime(config.latest);
+        // MainUI sets latest to 00:00 if unconfigured, which is why zero must be treated as such
+        return minutes > 0 ? adjustTime(instant, minutes) : instant;
     }
 
     /**
@@ -218,26 +274,95 @@ public class DateTimeUtils {
     public static Calendar applyConfig(Calendar cal, AstroChannelConfig config) {
         Calendar cCal = cal;
         if (config.offset != 0) {
-            Calendar cOffset = Calendar.getInstance();
-            cOffset.setTime(cCal.getTime());
-            cOffset.add(Calendar.MINUTE, config.offset);
-            cCal = cOffset;
+            cCal = (Calendar) cal.clone();
+            cCal.add(Calendar.MINUTE, config.offset);
         }
 
-        Calendar cEarliest = getAdjustedEarliest(cCal, config);
-        if (cCal.before(cEarliest)) {
-            return cEarliest;
+        int minutes = getMinutesFromTime(config.earliest);
+        Calendar threshold, actual;
+        // MainUI sets earliest to 00:00 if unconfigured, which is why zero must be treated as such
+        if (minutes > 0) {
+            if ((threshold = truncateToMidnight(cal)).equals(actual = truncateToMidnight(cCal))) {
+                // Same day
+                Calendar cEarliest = getAdjustedEarliest(cCal, config);
+                if (cCal.before(cEarliest)) {
+                    return cEarliest;
+                }
+            } else {
+                // Previous or next day
+                if (actual.before(threshold)) {
+                    return getAdjustedEarliest(threshold, config);
+                }
+            }
         }
-        Calendar cLatest = getAdjustedLatest(cCal, config);
-        if (cCal.after(cLatest)) {
-            return cLatest;
+        minutes = getMinutesFromTime(config.latest);
+        // MainUI sets latest to 00:00 if unconfigured, which is why zero must be treated as such
+        if (minutes > 0) {
+            if ((threshold = endOfDayDate(cal)).equals(actual = endOfDayDate(cCal))) {
+                // Same day
+                Calendar cLatest = getAdjustedLatest(cCal, config);
+                if (cCal.after(cLatest)) {
+                    return cLatest;
+                }
+            } else {
+                // Previous or next day
+                if (actual.after(threshold)) {
+                    return getAdjustedLatest(threshold, config);
+                }
+            }
         }
 
         return cCal;
     }
 
-    private static Calendar adjustTime(Calendar cal, int minutes) {
+    /**
+     * Applies the config to the given calendar.
+     */
+    public static Instant applyConfig(Instant cal, AstroChannelConfig config) {
+        Instant cCal = cal;
+        if (config.offset != 0) {
+            cCal = cCal.plus(config.offset, ChronoUnit.MINUTES);
+        }
+
+        int minutes = getMinutesFromTime(config.earliest);
+        Instant threshold, actual;
+        // MainUI sets earliest to 00:00 if unconfigured, which is why zero must be treated as such
         if (minutes > 0) {
+            if ((threshold = truncateToMidnight(cal)).equals(actual = truncateToMidnight(cCal))) {
+                // Same day
+                Instant cEarliest = getAdjustedEarliest(cCal, config);
+                if (cCal.isBefore(cEarliest)) {
+                    return cEarliest;
+                }
+            } else {
+                // Previous or next day
+                if (actual.isBefore(threshold)) {
+                    return getAdjustedEarliest(threshold, config);
+                }
+            }
+        }
+        minutes = getMinutesFromTime(config.latest);
+        // MainUI sets latest to 00:00 if unconfigured, which is why zero must be treated as such
+        if (minutes > 0) {
+            if ((threshold = endOfDayDate(cal)).equals(actual = endOfDayDate(cCal))) {
+                // Same day
+                Instant cLatest = getAdjustedLatest(cCal, config);
+                if (cCal.isAfter(cLatest)) {
+                    return cLatest;
+                }
+            } else {
+                // Previous or next day
+                if (actual.isAfter(threshold)) {
+                    return getAdjustedLatest(threshold, config);
+                }
+            }
+        }
+
+        return cCal;
+    }
+
+    static Calendar adjustTime(Calendar cal, int minutes) {
+        if (minutes >= 0) {
             Calendar cTime = truncateToMidnight(cal);
             cTime.add(Calendar.MINUTE, minutes);
             return cTime;
@@ -245,17 +370,30 @@ public class DateTimeUtils {
         return cal;
     }
 
-    public static Calendar createCalendarForToday(int hour, int minute) {
-        return DateTimeUtils.adjustTime(Calendar.getInstance(), hour * 60 + minute);
+    static Instant adjustTime(Instant instant, int minutes) {
+        if (minutes >= 0) {
+            return truncateToMidnight(instant).plus(minutes, ChronoUnit.MINUTES);
+        }
+        return instant;
+    }
+
+    public static double toJulianCenturies(double jd) {
+        return (jd - JD_J2000) / JULIAN_CENTURY_DAYS;
+    }
+
+    public static Calendar createCalendarForToday(int hour, int minute, TimeZone zone, Locale locale) {
+        return DateTimeUtils.adjustTime(Calendar.getInstance(zone, locale), hour * 60 + minute);
     }
 
     /**
-     * Parses a HH:MM string and returns the minutes.
+     * Parses a HH:MM string and returns hours and minutes in minutes.
+     *
+     * @return The number of minutes from midnight, or {@code -1} if the string couldn't be parsed.
      */
-    private static int getMinutesFromTime(String configTime) {
+    static int getMinutesFromTime(@Nullable String configTime) {
         if (configTime != null) {
             String time = configTime.trim();
-            if (!time.isEmpty()) {
+            if (!time.isBlank()) {
                 try {
                     if (!HHMM_PATTERN.matcher(time).matches()) {
                         throw new NumberFormatException();
@@ -270,9 +408,8 @@ public class DateTimeUtils {
                             "Can not parse astro channel configuration '{}' to hour and minutes, use pattern hh:mm, ignoring!",
                             time);
                 }
-
             }
         }
-        return 0;
+        return -1;
     }
 }

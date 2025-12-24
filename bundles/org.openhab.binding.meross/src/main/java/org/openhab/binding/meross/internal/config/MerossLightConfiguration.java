@@ -13,6 +13,7 @@
 package org.openhab.binding.meross.internal.config;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * The {@link MerossLightConfiguration} class contains fields mapping bulb and plug configuration parameters.
@@ -21,6 +22,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 
 @NonNullByDefault
-public class MerossLightConfiguration {
-    public String lightName = "";
+public class MerossLightConfiguration extends MerossDeviceConfiguration {
+    @Deprecated
+    public @Nullable String lightName; // Deprecated, kept for backward compatibility
 }

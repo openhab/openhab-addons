@@ -31,7 +31,13 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class LatencyParser {
 
-    private static final Pattern LATENCY_PATTERN = Pattern.compile(".*time=(.*) ?(u|m)s.*");
+    private static final Pattern LATENCY_PATTERN = Pattern.compile(".*time(?:=|<)(.*) ?(u|m)s.*");
+    private static final Pattern THOMAS_HABERT_ARPING_PATTERN = Pattern
+            .compile("^[\\w ]+from[\\w:()\\.= ]+?time=([0-9,\\.]+)\\s?(m|u)sec$");
+    private static final Pattern IPUTILS_ARPING_PATTERN = Pattern
+            .compile("^Unicast[\\w ]+from[\\w:()\\.= \\[\\]]+?\\s*([0-9,\\.]+)\\s?(m|u)s$");
+    private static final Pattern ELI_FULKERSON_ARP_PING_PATTERN = Pattern
+            .compile("^Reply that[\\w:\\. ]+?\\sin\\s([0-9,\\.]+)\\s?(m|u)s$");
     private final Logger logger = LoggerFactory.getLogger(LatencyParser.class);
 
     // This is how the input looks like on Mac and Linux:
@@ -56,21 +62,40 @@ public class LatencyParser {
      * Examine a single ping or arping command output line and try to extract the latency value if it is contained.
      *
      * @param inputLine Single output line of the ping or arping command.
+     * @param type the syntax to expect. Use {@code null} for generic ping syntax.
      * @return Latency value provided by the ping or arping command. <code>null</code> if the provided line did not
      *         contain a latency value which matches the known patterns.
      */
-    public @Nullable Duration parseLatency(String inputLine) {
-        logger.debug("Parsing latency from input {}", inputLine);
+    public @Nullable Duration parseLatency(String inputLine, @Nullable ArpPingUtilEnum type) {
+        logger.trace("Parsing latency from input \"{}\"", inputLine);
 
-        Matcher m = LATENCY_PATTERN.matcher(inputLine);
+        Pattern pattern;
+        if (type == null) {
+            pattern = LATENCY_PATTERN;
+        } else {
+            switch (type) {
+                case ELI_FULKERSON_ARP_PING_FOR_WINDOWS:
+                    pattern = ELI_FULKERSON_ARP_PING_PATTERN;
+                    break;
+                case IPUTILS_ARPING:
+                    pattern = IPUTILS_ARPING_PATTERN;
+                    break;
+                case THOMAS_HABERT_ARPING:
+                case THOMAS_HABERT_ARPING_WITHOUT_TIMEOUT:
+                    pattern = THOMAS_HABERT_ARPING_PATTERN;
+                    break;
+                default:
+                    pattern = LATENCY_PATTERN;
+                    break;
+            }
+        }
+        Matcher m = pattern.matcher(inputLine);
         if (m.find() && m.groupCount() >= 2) {
             if ("u".equals(m.group(2))) {
                 return microsToDuration(Double.parseDouble(m.group(1).replace(",", ".")));
             }
             return millisToDuration(Double.parseDouble(m.group(1).replace(",", ".")));
         }
-
-        logger.debug("Did not find a latency value");
         return null;
     }
 }

@@ -63,7 +63,6 @@ import org.osgi.service.component.annotations.ConfigurationPolicy;
 import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.event.Event;
-import org.osgi.service.event.EventAdmin;
 import org.osgi.service.event.EventConstants;
 import org.osgi.service.event.EventHandler;
 import org.osgi.service.http.HttpService;
@@ -179,14 +178,16 @@ public class UpnpServer extends HttpServlet implements Consumer<HueEmulationConf
      */
     @Activate
     protected void activate() {
-        InputStream resourceAsStream = getClass().getClassLoader().getResourceAsStream("discovery.xml");
-        if (resourceAsStream == null) {
-            logger.warn("Could not start Hue Emulation service: discovery.xml not found");
-            return;
-        }
-        try (InputStreamReader r = new InputStreamReader(resourceAsStream, StandardCharsets.UTF_8);
-                BufferedReader br = new BufferedReader(r)) {
-            xmlDoc = br.lines().collect(Collectors.joining("\n"));
+        try (InputStream resourceAsStream = UpnpServer.class.getResourceAsStream("/discovery.xml")) {
+            if (resourceAsStream == null) {
+                logger.warn("Could not start Hue Emulation service: discovery.xml not found");
+                return;
+            }
+
+            try (BufferedReader br = new BufferedReader(
+                    new InputStreamReader(resourceAsStream, StandardCharsets.UTF_8))) {
+                xmlDoc = br.lines().collect(Collectors.joining("\n"));
+            }
         } catch (IOException e) {
             logger.warn("Could not start Hue Emulation UPNP server: {}", e.getMessage(), e);
             return;
@@ -293,21 +294,18 @@ public class UpnpServer extends HttpServlet implements Consumer<HueEmulationConf
 
     /**
      * Create and return new runtime configuration based on {@link ConfigStore}s current configuration.
-     * Return null if the configuration has not changed compared to {@link #config}.
      *
      * @throws IllegalStateException If the {@link ConfigStore}s IP is invalid this exception is thrown.
      */
-    protected @Nullable HueEmulationConfigWithRuntime createConfiguration(
+    protected HueEmulationConfigWithRuntime createConfiguration(
             @Nullable HueEmulationConfigWithRuntime ignoredParameter) throws IllegalStateException {
-        HueEmulationConfigWithRuntime r;
         try {
-            r = new HueEmulationConfigWithRuntime(this, cs.getConfig(), cs.ds.config.ipaddress, MULTI_ADDR_IPV4,
+            return new HueEmulationConfigWithRuntime(this, cs.getConfig(), cs.ds.config.ipaddress, MULTI_ADDR_IPV4,
                     MULTI_ADDR_IPV6);
         } catch (UnknownHostException e) {
             logger.warn("The picked default IP address is not valid: {}", e.getMessage());
             throw new IllegalStateException(e);
         }
-        return r;
     }
 
     /**
@@ -317,7 +315,7 @@ public class UpnpServer extends HttpServlet implements Consumer<HueEmulationConf
     protected @Nullable HueEmulationConfigWithRuntime applyConfiguration(
             @Nullable HueEmulationConfigWithRuntime newRuntimeConfig) {
         if (newRuntimeConfig == null) {
-            return null;// Config hasn't changed
+            return null; // Config hasn't changed
         }
         config.dispose();
         this.config = newRuntimeConfig;
@@ -328,7 +326,7 @@ public class UpnpServer extends HttpServlet implements Consumer<HueEmulationConf
     /**
      * We have a hard dependency on the {@link ConfigStore} and that it has initialized the Hue DataStore config
      * completely. That initialization happens asynchronously and therefore we cannot rely on OSGi activate/modified
-     * state changes. Instead the {@link EventAdmin} is used and we listen for the
+     * state changes. Instead the {@link org.osgi.service.event.EventAdmin} is used and we listen for the
      * {@link ConfigStore#EVENT_ADDRESS_CHANGED} event that is fired as soon as the config is ready.
      * <p>
      * To be really sure that we are called here, this is also issued by the main service after it has received the
@@ -349,8 +347,12 @@ public class UpnpServer extends HttpServlet implements Consumer<HueEmulationConf
         }
         configChangeFuture = root.thenApply(this::createConfiguration)
                 .thenApplyAsync(this::performAddressTest, executor).thenApply(this::applyConfiguration)
-                .thenCompose(c -> c.startNow())
-                .whenComplete((HueEmulationConfigWithRuntime config, @Nullable Throwable e) -> {
+                .thenCompose(c -> {
+                    if (c == null) {
+                        return CompletableFuture.completedFuture(null);
+                    }
+                    return c.startNow();
+                }).whenComplete((HueEmulationConfigWithRuntime config, @Nullable Throwable e) -> {
                     if (e != null) {
                         logger.warn("Upnp server: Address test failed", e);
                     }
@@ -446,14 +448,14 @@ public class UpnpServer extends HttpServlet implements Consumer<HueEmulationConf
                 return;
             }
 
-            if (hasIPv4) {
+            if (hasIPv4 && channelV4 != null) {
                 channelV4.configureBlocking(false);
                 channelV4.register(selector, SelectionKey.OP_READ, new ClientRecord());
                 try (DatagramSocket sendSocket = new DatagramSocket(new InetSocketAddress(config.address, 0))) {
                     sendUPNPDatagrams(sendSocket, MULTI_ADDR_IPV4, UPNP_PORT);
                 }
             }
-            if (hasIPv6) {
+            if (hasIPv6 && channelV6 != null) {
                 channelV6.configureBlocking(false);
                 channelV6.register(selector, SelectionKey.OP_READ, new ClientRecord());
                 try (DatagramSocket sendSocket = new DatagramSocket()) {

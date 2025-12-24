@@ -91,7 +91,6 @@ public class UserManagement extends DefaultAbstractManagedProvider<HueUserAuthWi
     /**
      * Checks if the username exists in the whitelist
      */
-    @SuppressWarnings("null")
     public boolean authorizeUser(String userName) {
         HueUserAuth userAuth = cs.ds.config.whitelist.get(userName);
 
@@ -127,7 +126,6 @@ public class UserManagement extends DefaultAbstractManagedProvider<HueUserAuthWi
         add(hueUserAuth);
     }
 
-    @SuppressWarnings("null")
     private synchronized void removeUser(String apiKey) {
         HueUserAuth userAuth = cs.ds.config.whitelist.remove(apiKey);
         if (userAuth != null) {
@@ -161,8 +159,12 @@ public class UserManagement extends DefaultAbstractManagedProvider<HueUserAuthWi
                     "link button not pressed");
         }
 
-        final HueCreateUser userRequest;
-        userRequest = cs.gson.fromJson(body, HueCreateUser.class);
+        final HueCreateUser userRequest = cs.gson.fromJson(body, HueCreateUser.class);
+
+        if (userRequest == null) {
+            return NetworkUtils.singleError(cs.gson, uri, HueResponse.INVALID_JSON, "Empty body");
+        }
+
         if (userRequest.devicetype.isEmpty()) {
             return NetworkUtils.singleError(cs.gson, uri, HueResponse.INVALID_JSON,
                     "Invalid request: No devicetype set");

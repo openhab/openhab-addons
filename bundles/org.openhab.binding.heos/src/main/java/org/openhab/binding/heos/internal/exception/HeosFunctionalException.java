@@ -24,6 +24,8 @@ import org.openhab.binding.heos.internal.json.dto.HeosErrorCode;
  */
 @NonNullByDefault
 public class HeosFunctionalException extends IOException {
+    private static final long serialVersionUID = 1L;
+
     private final HeosErrorCode code;
 
     public HeosFunctionalException(HeosErrorCode code) {

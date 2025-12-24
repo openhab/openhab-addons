@@ -346,10 +346,16 @@ public final class EcovacsApiImpl implements EcovacsApi {
         return responseObj.records;
     }
 
-    public byte[] downloadCleanMapImage(String url, boolean useSigning)
+    public Optional<byte[]> downloadCleanMapImage(Device device, String url, boolean useSigning)
             throws EcovacsApiException, InterruptedException {
         Request request = useSigning ? createSignedAppRequest(url) : httpClient.newRequest(url).method(HttpMethod.GET);
-        return executeRequest(request).getContent();
+        ContentResponse response = executeRequest(request);
+        if ("application/json".equals(response.getMediaType())) {
+            logger.warn("{}: Could not download map image {}: {}", device.getName(), url,
+                    response.getContentAsString());
+            return Optional.empty();
+        }
+        return Optional.of(response.getContent());
     }
 
     private PortalAuthRequestParameter createAuthData() {

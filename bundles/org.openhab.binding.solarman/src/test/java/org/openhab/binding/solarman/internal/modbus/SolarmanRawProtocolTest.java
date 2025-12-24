@@ -45,8 +45,8 @@ class SolarmanRawProtocolTest {
     private SolarmanRawProtocol solarmanRawProtocol = new SolarmanRawProtocol(loggerConfiguration);
 
     @Test
-    void testbuildSolarmanRawFrame() {
-        byte[] requestFrame = solarmanRawProtocol.buildSolarmanRawFrame((byte) 0x03, 0x0063, 0x006D);
+    void testbuildSolarmanRawReadFrame() {
+        byte[] requestFrame = solarmanRawProtocol.buildSolarmanRawReadFrame((byte) 0x03, 0x0063, 11);
         byte[] expectedFrame = { (byte) 0x03, (byte) 0xE8, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x08,
                 (byte) 0x01, (byte) 0x03, (byte) 0x00, (byte) 0x63, (byte) 0x00, (byte) 0x0B, (byte) 0xF4,
                 (byte) 0x13 };

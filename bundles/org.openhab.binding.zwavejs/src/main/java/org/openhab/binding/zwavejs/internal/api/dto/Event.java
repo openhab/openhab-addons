@@ -21,6 +21,8 @@ public class Event {
     public int nodeId;
     public Args args;
     public Node node;
+    public int ccId;
+    public int endpointIndex;
 
     enum Source {
         driver,

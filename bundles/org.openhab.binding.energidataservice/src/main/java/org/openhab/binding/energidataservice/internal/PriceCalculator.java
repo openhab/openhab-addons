@@ -16,18 +16,20 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.Duration;
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.NavigableMap;
+import java.util.concurrent.ConcurrentSkipListMap;
 
 import javax.measure.quantity.Energy;
 import javax.measure.quantity.Power;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.energidataservice.internal.exception.MissingPriceException;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
@@ -49,10 +51,10 @@ public class PriceCalculator {
 
     private final Logger logger = LoggerFactory.getLogger(PriceCalculator.class);
 
-    private final Map<Instant, BigDecimal> priceMap;
+    private final NavigableMap<Instant, BigDecimal> priceMap;
 
     public PriceCalculator(Map<Instant, BigDecimal> priceMap) {
-        this.priceMap = priceMap;
+        this.priceMap = new ConcurrentSkipListMap<>(priceMap);
     }
 
     /**
@@ -134,10 +136,11 @@ public class PriceCalculator {
         BigDecimal highestPrice = BigDecimal.ZERO;
         Instant cheapestStart = Instant.MIN;
         Instant mostExpensiveStart = Instant.MIN;
+        Duration resolution = determineResolution();
 
         while (calculationEnd.compareTo(latestEnd) <= 0) {
             BigDecimal currentPrice = BigDecimal.ZERO;
-            Duration minDurationUntilNextHour = Duration.ofHours(1);
+            Duration minDurationUntilNextPrice = resolution;
             Instant atomStart = calculationStart;
 
             Iterator<Duration> durationIterator = durationPhases.iterator();
@@ -147,13 +150,13 @@ public class PriceCalculator {
                 QuantityType<Power> atomConsumption = consumptionIterator.next();
 
                 Instant atomEnd = atomStart.plus(atomDuration);
-                Instant hourStart = atomStart.truncatedTo(ChronoUnit.HOURS);
-                Instant hourEnd = hourStart.plus(1, ChronoUnit.HOURS);
+                Instant priceStart = truncateTo(atomStart, resolution);
+                Instant priceEnd = priceStart.plus(resolution);
 
-                // Get next intersection with hourly rate change.
-                Duration durationUntilNextHour = Duration.between(atomStart, hourEnd);
-                if (durationUntilNextHour.compareTo(minDurationUntilNextHour) < 0) {
-                    minDurationUntilNextHour = durationUntilNextHour;
+                // Get next intersection with rate change.
+                Duration durationUntilNextPrice = Duration.between(atomStart, priceEnd);
+                if (durationUntilNextPrice.compareTo(minDurationUntilNextPrice) < 0) {
+                    minDurationUntilNextPrice = durationUntilNextPrice;
                 }
 
                 BigDecimal atomPrice = calculatePrice(atomStart, atomEnd, atomConsumption);
@@ -170,8 +173,8 @@ public class PriceCalculator {
                 mostExpensiveStart = calculationStart;
             }
 
-            // Now fast forward to next hourly rate intersection.
-            calculationStart = calculationStart.plus(minDurationUntilNextHour);
+            // Now fast forward to next price interval intersection.
+            calculationStart = calculationStart.plus(minDurationUntilNextPrice);
             calculationEnd = calculationStart.plus(totalDuration);
         }
 
@@ -198,28 +201,29 @@ public class PriceCalculator {
         if (quantityInWatt == null) {
             throw new IllegalArgumentException("Invalid unit " + power.getUnit() + ", expected power unit");
         }
-        BigDecimal watt = new BigDecimal(quantityInWatt.intValue());
+        BigDecimal watt = quantityInWatt.toBigDecimal();
         if (watt.equals(BigDecimal.ZERO)) {
             return BigDecimal.ZERO;
         }
 
+        Duration resolution = determineResolution();
         Instant current = start;
         BigDecimal result = BigDecimal.ZERO;
         while (current.isBefore(end)) {
-            Instant hourStart = current.truncatedTo(ChronoUnit.HOURS);
-            Instant hourEnd = hourStart.plus(1, ChronoUnit.HOURS);
+            Instant priceStart = truncateTo(current, resolution);
+            Instant priceEnd = priceStart.plus(resolution);
 
-            BigDecimal currentPrice = priceMap.get(hourStart);
+            BigDecimal currentPrice = get(current);
             if (currentPrice == null) {
-                throw new MissingPriceException("Price missing at " + hourStart.toString());
+                throw new MissingPriceException("Price missing at " + priceStart.toString());
             }
 
-            Instant currentStart = hourStart;
-            if (start.isAfter(hourStart)) {
+            Instant currentStart = priceStart;
+            if (start.isAfter(priceStart)) {
                 currentStart = start;
             }
-            Instant currentEnd = hourEnd;
-            if (end.isBefore(hourEnd)) {
+            Instant currentEnd = priceEnd;
+            if (end.isBefore(priceEnd)) {
                 currentEnd = end;
             }
 
@@ -230,9 +234,68 @@ public class PriceCalculator {
             result = result.add(contribution);
             logger.trace("Period {}-{}: {} @ {}", currentStart, currentEnd, contribution, currentPrice);
 
-            current = hourEnd;
+            current = priceEnd;
         }
 
         return result;
+    }
+
+    private @Nullable BigDecimal get(Instant time) {
+        Map.Entry<Instant, BigDecimal> entry = priceMap.floorEntry(time);
+        if (entry == null) {
+            return null;
+        }
+
+        Instant validUntil = getValidUntil(entry.getKey());
+        if (validUntil != null && time.isBefore(validUntil)) {
+            return entry.getValue();
+        }
+
+        return null;
+    }
+
+    private @Nullable Instant getValidUntil(Instant current) {
+        Instant next = getPriceMapHigherKey(current);
+        if (next != null) {
+            return next;
+        }
+
+        Instant previous = getPriceMapLowerKey(current);
+        if (previous != null) {
+            return current.plus(Duration.between(previous, current));
+        }
+
+        return null;
+    }
+
+    private @Nullable Instant getPriceMapHigherKey(Instant current) {
+        return priceMap.higherKey(current);
+    }
+
+    private @Nullable Instant getPriceMapLowerKey(Instant current) {
+        return priceMap.lowerKey(current);
+    }
+
+    private Instant getPriceMapFirstKey() {
+        return priceMap.firstKey();
+    }
+
+    private Duration determineResolution() {
+        if (priceMap.size() < 2) {
+            throw new IllegalStateException("Cannot determine price resolution (only one price point available)");
+        }
+
+        Instant first = getPriceMapFirstKey();
+        Instant second = getPriceMapHigherKey(first);
+        if (second == null) {
+            throw new IllegalStateException("Cannot determine price resolution (only one price point available)");
+        }
+        return Duration.between(first, second);
+    }
+
+    private static Instant truncateTo(Instant instant, Duration resolution) {
+        long resolutionSeconds = resolution.getSeconds();
+        long truncatedSeconds = (instant.getEpochSecond() / resolutionSeconds) * resolutionSeconds;
+        return Instant.ofEpochSecond(truncatedSeconds);
     }
 }

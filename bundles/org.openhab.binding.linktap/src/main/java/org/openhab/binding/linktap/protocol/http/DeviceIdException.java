@@ -32,7 +32,6 @@ public class DeviceIdException extends I18Exception {
     // case RET_DEVICE_NOT_FOUND:
 
     public DeviceIdException() {
-        super();
     }
 
     public DeviceIdException(final String message) {

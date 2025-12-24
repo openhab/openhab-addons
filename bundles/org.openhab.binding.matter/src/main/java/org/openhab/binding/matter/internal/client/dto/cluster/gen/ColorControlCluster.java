@@ -366,8 +366,8 @@ public class ColorControlCluster extends BaseCluster {
         INACTIVE(0, "Inactive"),
         ACTIVE(1, "Active");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private ColorLoopActive(Integer value, String label) {
             this.value = value;
@@ -392,8 +392,8 @@ public class ColorControlCluster extends BaseCluster {
         OPTICAL_LUMINANCE_MONITORING_AND_FEEDBACK(3, "Optical Luminance Monitoring And Feedback"),
         OPTICAL_COLOR_MONITORING_AND_FEEDBACK(4, "Optical Color Monitoring And Feedback");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private DriftCompensationEnum(Integer value, String label) {
             this.value = value;
@@ -416,8 +416,8 @@ public class ColorControlCluster extends BaseCluster {
         CURRENT_X_AND_CURRENT_Y(1, "Current X And Current Y"),
         COLOR_TEMPERATURE_MIREDS(2, "Color Temperature Mireds");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private ColorModeEnum(Integer value, String label) {
             this.value = value;
@@ -441,8 +441,8 @@ public class ColorControlCluster extends BaseCluster {
         COLOR_TEMPERATURE_MIREDS(2, "Color Temperature Mireds"),
         ENHANCED_CURRENT_HUE_AND_CURRENT_SATURATION(3, "Enhanced Current Hue And Current Saturation");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private EnhancedColorModeEnum(Integer value, String label) {
             this.value = value;
@@ -466,8 +466,8 @@ public class ColorControlCluster extends BaseCluster {
         UP(2, "Up"),
         DOWN(3, "Down");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private DirectionEnum(Integer value, String label) {
             this.value = value;
@@ -490,8 +490,8 @@ public class ColorControlCluster extends BaseCluster {
         UP(1, "Up"),
         DOWN(3, "Down");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private MoveModeEnum(Integer value, String label) {
             this.value = value;
@@ -513,8 +513,8 @@ public class ColorControlCluster extends BaseCluster {
         UP(1, "Up"),
         DOWN(3, "Down");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private StepModeEnum(Integer value, String label) {
             this.value = value;
@@ -537,8 +537,8 @@ public class ColorControlCluster extends BaseCluster {
         ACTIVATE_FROM_COLOR_LOOP_START_ENHANCED_HUE(1, "Activate From Color Loop Start Enhanced Hue"),
         ACTIVATE_FROM_ENHANCED_CURRENT_HUE(2, "Activate From Enhanced Current Hue");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private ColorLoopActionEnum(Integer value, String label) {
             this.value = value;
@@ -560,8 +560,8 @@ public class ColorControlCluster extends BaseCluster {
         DECREMENT(0, "Decrement"),
         INCREMENT(1, "Increment");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private ColorLoopDirectionEnum(Integer value, String label) {
             this.value = value;

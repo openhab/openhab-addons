@@ -37,7 +37,6 @@ import org.openhab.core.types.UnDefType;
 public class F6_02_01 extends F6_02 {
 
     public F6_02_01() {
-        super();
     }
 
     public F6_02_01(ERP1Message packet) {

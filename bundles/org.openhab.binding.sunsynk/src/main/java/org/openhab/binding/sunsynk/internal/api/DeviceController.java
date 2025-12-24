@@ -18,6 +18,8 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
 
@@ -31,6 +33,7 @@ import org.openhab.binding.sunsynk.internal.api.dto.APIdata;
 import org.openhab.binding.sunsynk.internal.api.dto.Battery;
 import org.openhab.binding.sunsynk.internal.api.dto.Daytemps;
 import org.openhab.binding.sunsynk.internal.api.dto.Grid;
+import org.openhab.binding.sunsynk.internal.api.dto.PlantSummary;
 import org.openhab.binding.sunsynk.internal.api.dto.RealTimeInData;
 import org.openhab.binding.sunsynk.internal.api.dto.Settings;
 import org.openhab.binding.sunsynk.internal.api.exception.SunSynkDeviceControllerException;
@@ -47,7 +50,9 @@ import com.google.gson.JsonSyntaxException;
 /**
  * The {@link DeviceController} class defines methods that control
  * communication with the inverter.
- *
+ * It collects data from Sun Synk Connect for the various data objects defined in the dto package.
+ * It also sends commands to the inverter via Sun Synk Connect to change settings.
+ * 
  * @author Lee Charlton - Initial contribution
  */
 
@@ -59,12 +64,30 @@ public class DeviceController {
     private static final String BEARER_TYPE = "Bearer ";
     private String sn = "";
     private String alias = "";
+    private String plantId = "";
+    private String plantName = "";
     private Settings batterySettings = new Settings();
     private Battery realTimeBattery = new Battery();
     private Grid grid = new Grid();
     private Daytemps inverterDayTemperatures = new Daytemps();
     private RealTimeInData realTimeDataIn = new RealTimeInData();
+    public static final int COMMONSETTINGS = 1 << 0;
+    public static final int GRIDREALTIME = 1 << 1;
+    public static final int BATTERYREALTIME = 1 << 2;
+    public static final int INVERTERDAYTEMPS = 1 << 3;
+    public static final int REALTIMEIN = 1 << 4;
+    public static final int PLANTSUMMARY = 1 << 5;
+    public static final Map<String, Integer> STATUSMAP = new HashMap<>();
+    static {
+        STATUSMAP.put("CommonSettings", COMMONSETTINGS);
+        STATUSMAP.put("GridRealTime", GRIDREALTIME);
+        STATUSMAP.put("BatteryRealTime", BATTERYREALTIME);
+        STATUSMAP.put("InverterDayTemps", INVERTERDAYTEMPS);
+        STATUSMAP.put("RealTimeIn", REALTIMEIN);
+        STATUSMAP.put("PlantSummary", PLANTSUMMARY);
+    }
     public Settings tempInverterChargeSettings = new Settings(); // Holds modified battery settings.
+    public PlantSummary plantSummary = new PlantSummary();
 
     public DeviceController() {
     }
@@ -78,6 +101,8 @@ public class DeviceController {
     public DeviceController(SunSynkInverterConfig config) {
         this.sn = config.getSerialnumber();
         this.alias = config.getAlias();
+        this.plantId = config.getPlantId();
+        this.plantName = config.getPlantName();
     }
 
     /**
@@ -92,28 +117,33 @@ public class DeviceController {
      * @see Battery
      * @see Daytemps
      * @see RealTimeInData
+     * @see PlantSummary
+     * @return successFlags bitmask of successful data retrievals
      */
-    public void sendGetState(boolean batterySettingsUpdate)
+    public int sendGetState(boolean batterySettingsUpdate)
             throws SunSynkGetStatusException, JsonSyntaxException, SunSynkDeviceControllerException {
+        int successFlags = 0;
         logger.debug("Will get STATE for Inverter {} serial {}", this.alias, this.sn);
+        successFlags = 0; // tracks the number of good responses
         try {
             if (!batterySettingsUpdate) { // normally get settings to track changes made by other UIs
-                getCommonSettings(); // battery charge settings
+                successFlags = successFlags | getCommonSettings(); // battery charge settings
             }
-            getGridRealTime(); // grid status
-            getBatteryRealTime(); // battery status
-            getInverterACDCTemperatures(); // get Inverter temperatures
-            getRealTimeIn(); // Used for solar power now
+            successFlags = successFlags | getGridRealTime(); // grid status
+            successFlags = successFlags | getBatteryRealTime(); // battery status
+            successFlags = successFlags | getInverterACDCTemperatures(); // get Inverter temperatures
+            successFlags = successFlags | getRealTimeIn(); // used for solar power now
+            successFlags = successFlags | getSummary(); // used for plant totals
         } catch (IOException e) {
-            String message = Objects.requireNonNullElse(e.getMessage(), "unkown error message");
-            logger.debug("Failed to send to Inverter API: {} ", message);
-            int found = message.indexOf("Authentication challenge without WWW-Authenticate header");
+            String message = Objects.requireNonNullElse(e.getMessage(), "unknown error message.");
+            logger.debug("Failed to send to Inverter API: {}.", message);
+            int found = message.indexOf("Authentication challenge without WWW-Authenticate header.");
             if (found > -1) {
-                throw new SunSynkGetStatusException("Authentication token failed", e);
+                throw new SunSynkGetStatusException("Authentication token failed.", e);
             }
-            throw new SunSynkGetStatusException("Unknown athentication fail", e);
+            throw new SunSynkGetStatusException("Unknown authentication fail.", e);
         }
-        logger.debug("Successfully got and parsed new data for Inverter {} serial {}", this.alias, this.sn);
+        return successFlags;
     }
 
     public Settings getBatteryChargeSettings() {
@@ -136,83 +166,147 @@ public class DeviceController {
         return this.realTimeDataIn;
     }
 
+    public PlantSummary getPlantSummary() {
+        return this.plantSummary;
+    }
+
     @SuppressWarnings("unused")
-    private void getCommonSettings() throws IOException, JsonSyntaxException, SunSynkDeviceControllerException {
+    private int getCommonSettings() throws IOException, JsonSyntaxException, SunSynkDeviceControllerException {
+        int resultAPI = 0;
         logger.debug("Trying Common Settings");
-        String response = apiGetMethod(makeURL("api/v1/common/setting/" + this.sn + "/read"),
-                APIdata.staticAccessToken);
+        String response = apiGetMethod(makeURL("common/setting/" + this.sn + "/read", ""), APIdata.staticAccessToken);
+        logger.trace("Common Settings: {}", response);
         Gson gson = new Gson();
         @Nullable
         Settings settings = gson.fromJson(response, Settings.class);
         if (settings == null) {
-            throw new SunSynkDeviceControllerException("Could not retrieve battery charge settings");
+            throw new SunSynkDeviceControllerException("Could not retrieve battery charge settings.");
         }
-        this.batterySettings = settings;
-        this.batterySettings.buildLists();
+        if (settings.getCode() != 0) {
+            logger.debug("Failed to get common settings: {}.", settings.getMsg());
+        } else {
+            this.batterySettings = settings;
+            this.batterySettings.buildLists();
+            resultAPI = COMMONSETTINGS;
+        }
+        return resultAPI;
     }
 
     @SuppressWarnings("unused")
-    private void getGridRealTime() throws IOException, JsonSyntaxException, SunSynkDeviceControllerException {
+    private int getGridRealTime() throws IOException, JsonSyntaxException, SunSynkDeviceControllerException {
+        int resultAPI = 0;
         logger.debug("Trying Grid Real Time Settings");
-        String response = apiGetMethod(makeURL("api/v1/inverter/grid/" + this.sn + "/realtime?sn=") + this.sn,
+        String response = apiGetMethod(makeURL("inverter/grid/" + this.sn + "/realtime", "sn=" + this.sn),
                 APIdata.staticAccessToken);
+        logger.trace("Grid Real Time Settings: {}", response);
         Gson gson = new Gson();
         @Nullable
         Grid grid = gson.fromJson(response, Grid.class);
         if (grid == null) {
-            throw new SunSynkDeviceControllerException("Could not retrieve grid state");
+            throw new SunSynkDeviceControllerException("Could not retrieve grid state.");
         }
-        this.grid = grid;
-        this.grid.sumVIP();
+        if (grid.getCode() != 0) {
+            logger.debug("Failed to get grid real time values: {}.", grid.getMsg());
+        } else {
+            this.grid = grid;
+            this.grid.sumVIP();
+            resultAPI = GRIDREALTIME;
+        }
+        return resultAPI;
     }
 
     @SuppressWarnings("unused")
-    private void getBatteryRealTime() throws IOException, JsonSyntaxException, SunSynkDeviceControllerException {
+    private int getBatteryRealTime() throws IOException, JsonSyntaxException, SunSynkDeviceControllerException {
+        int resultAPI = 0;
         logger.debug("Trying Battery Real Time Settings");
-        String response = apiGetMethod(
-                makeURL("api/v1/inverter/battery/" + this.sn + "/realtime?sn=" + this.sn + "&lan"),
+        String response = apiGetMethod(makeURL("inverter/battery/" + this.sn + "/realtime", "sn=" + this.sn + "&lan"),
                 APIdata.staticAccessToken);
+        logger.trace("Battery Real Time Settings: {}", response);
         Gson gson = new Gson();
         @Nullable
         Battery battery = gson.fromJson(response, Battery.class);
         if (battery == null) {
-            throw new SunSynkDeviceControllerException("Could not retrieve battery state");
+            throw new SunSynkDeviceControllerException("Could not retrieve battery state.");
         }
-        this.realTimeBattery = battery;
+        if (battery.getCode() != 0) {
+            logger.debug("Failed to get battery real time values: {}.", battery.getMsg());
+        } else {
+            this.realTimeBattery = battery;
+            resultAPI = BATTERYREALTIME;
+        }
+        return resultAPI;
     }
 
     @SuppressWarnings("unused")
-    private void getInverterACDCTemperatures()
+    private int getInverterACDCTemperatures()
             throws IOException, JsonSyntaxException, SunSynkDeviceControllerException {
+        int resultAPI = 0;
         logger.debug("Trying Temperature History");
         String date = getAPIFormatDate();
         String response = apiGetMethod(
-                makeURL("api/v1/inverter/" + this.sn + "/output/day?lan=en&date=" + date + "&column=dc_temp,igbt_temp"),
+                makeURL("inverter/" + this.sn + "/output/day", "lan=en&date=" + date + "&column=dc_temp,igbt_temp"),
                 APIdata.staticAccessToken);
+        logger.trace("Temperature History: {}", response);
         Gson gson = new Gson();
         @Nullable
         Daytemps daytemps = gson.fromJson(response, Daytemps.class);
         if (daytemps == null) {
-            throw new SunSynkDeviceControllerException("Could not retrieve device temperatures");
+            throw new SunSynkDeviceControllerException("Could not retrieve inverter temperatures.");
         }
-        this.inverterDayTemperatures = daytemps;
-        this.inverterDayTemperatures.getLastValue();
+        if (daytemps.getCode() != 0) {
+            logger.debug("Failed to get inverter temperatures: {}.", daytemps.getMsg());
+        } else {
+            this.inverterDayTemperatures = daytemps;
+            this.inverterDayTemperatures.getLastValue();
+            resultAPI = INVERTERDAYTEMPS;
+        }
+        return resultAPI;
     }
 
     @SuppressWarnings("unused")
-    private void getRealTimeIn() throws IOException, JsonSyntaxException, SunSynkDeviceControllerException { // Get URL
-                                                                                                             // Respnse
+    private int getRealTimeIn() throws IOException, JsonSyntaxException, SunSynkDeviceControllerException { // Get URL
+                                                                                                            // response
+        int resultAPI = 0;
         logger.debug("Trying Real Time Solar");
-        String response = apiGetMethod(makeURL("api/v1/inverter/" + this.sn + "/realtime/input"),
+        String response = apiGetMethod(makeURL("inverter/" + this.sn + "/realtime/input", ""),
                 APIdata.staticAccessToken);
+        logger.trace("Real Time Solar Response: {}", response);
         Gson gson = new Gson();
         @Nullable
         RealTimeInData realTimeInData = gson.fromJson(response, RealTimeInData.class);
         if (realTimeInData == null) {
-            throw new SunSynkDeviceControllerException("Could not retrieve solar state");
+            throw new SunSynkDeviceControllerException("Could not retrieve solar state.");
         }
-        this.realTimeDataIn = realTimeInData;
-        this.realTimeDataIn.sumPVIV();
+        if (realTimeInData.getCode() != 0) {
+            logger.debug("Failed to get solar realtime values: {}.", realTimeInData.getMsg());
+        } else {
+            this.realTimeDataIn = realTimeInData;
+            this.realTimeDataIn.stringEval();
+            resultAPI = REALTIMEIN;
+        }
+        return resultAPI;
+    }
+
+    @SuppressWarnings("unused")
+    private int getSummary() throws IOException, JsonSyntaxException, SunSynkDeviceControllerException {
+        int resultAPI = 0;
+        logger.debug("Trying Plant Summary");
+        String response = apiGetMethod(makeURL("plant/" + this.plantId + "/realtime", "id=" + this.plantId),
+                APIdata.staticAccessToken);
+        logger.trace("Plant Summary Response: {}", response);
+        Gson gson = new Gson();
+        @Nullable
+        PlantSummary summary = gson.fromJson(response, PlantSummary.class);
+        if (summary == null) {
+            throw new SunSynkDeviceControllerException("Could not retrieve plant summary.");
+        }
+        if (summary.getCode() != 0) {
+            logger.debug("Failed to get plant summary values for plant {} : {} .", this.plantName, summary.getMsg());
+        } else {
+            this.plantSummary = summary;
+            resultAPI = PLANTSUMMARY;
+        }
+        return resultAPI;
     }
 
     /**
@@ -228,18 +322,17 @@ public class DeviceController {
     }
 
     private void sendCommandToSunSynk(String body) throws SunSynkSendCommandException {
-        String path = "api/v1/common/setting/" + this.sn + "/set";
-
         try {
-            apiPostMethod(makeURL(path), body, APIdata.staticAccessToken);
+            logger.debug("Trying to send commands to inverter: {}", this.sn);
+            apiPostMethod(makeURL("common/setting/" + this.sn + "/set", ""), body, APIdata.staticAccessToken);
         } catch (IOException e) {
-            String message = Objects.requireNonNullElse(e.getMessage(), "unkown error message");
+            String message = Objects.requireNonNullElse(e.getMessage(), "unknown error message");
             logger.debug("Failed to send to Inverter API: {} ", message);
             int found = message.indexOf("Authentication challenge without WWW-Authenticate header");
             if (found > -1) {
                 throw new SunSynkSendCommandException("Authentication token failed", e);
             }
-            throw new SunSynkSendCommandException("Unknown athentication fail", e);
+            throw new SunSynkSendCommandException("Unknown authentication fail", e);
         }
         logger.debug("Sent command: to inverter {}.", this.sn);
     }
@@ -261,8 +354,12 @@ public class DeviceController {
                 TIMEOUT_IN_MS);
     }
 
-    private String makeURL(String path) {
-        return "https://api.sunsynk.net" + "/" + path;
+    private String makeURL(String endPoint, String queryParameters) {
+        String query = "?";
+        if ("".equals(queryParameters)) {
+            query = "";
+        }
+        return "https://api.sunsynk.net/api/v1/" + endPoint + query + queryParameters;
     }
 
     private String getAPIFormatDate() {

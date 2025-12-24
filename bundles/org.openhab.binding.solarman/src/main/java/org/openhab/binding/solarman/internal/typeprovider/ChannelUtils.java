@@ -59,6 +59,10 @@ public class ChannelUtils {
             uom = "UNKN";
         }
 
+        if (item.hasLookup() || Boolean.TRUE.equals(item.getIsstr())) {
+            return CoreItemFactory.STRING;
+        }
+
         return switch (rule) {
             case 5, 6, 7, 9 -> CoreItemFactory.STRING;
             case 8 -> CoreItemFactory.DATETIME;

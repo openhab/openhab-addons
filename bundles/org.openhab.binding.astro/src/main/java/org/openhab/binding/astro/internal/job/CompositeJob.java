@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.astro.internal.handler.AstroThingHandler;
 
 /**
  * {@link CompositeJob} comprises multiple {@link Job}s to be executed in order
@@ -31,18 +32,18 @@ public final class CompositeJob extends AbstractJob {
     /**
      * Constructor
      *
-     * @param thingUID thing UID
+     * @param handler thing thing handler
      * @param jobs the jobs to execute
      * @throws IllegalArgumentException
      *             if {@code jobs} is {@code null} or empty
      */
-    public CompositeJob(String thingUID, List<Job> jobs) {
-        super(thingUID);
+    public CompositeJob(AstroThingHandler handler, List<Job> jobs) {
+        super(handler);
 
-        this.jobs = jobs;
+        this.jobs = List.copyOf(jobs);
 
-        boolean notMatched = jobs.stream().anyMatch(j -> !j.getThingUID().equals(thingUID));
-        checkArgument(!notMatched, "The jobs must associate the same thing UID");
+        boolean notMatched = jobs.stream().anyMatch(j -> !j.getHandler().equals(handler));
+        checkArgument(!notMatched, "The jobs must associate the same thing handler");
     }
 
     @Override
@@ -50,8 +51,9 @@ public final class CompositeJob extends AbstractJob {
         jobs.forEach(j -> {
             try {
                 j.run();
-            } catch (RuntimeException ex) {
-                LOGGER.warn("Job execution failed.", ex);
+            } catch (Exception e) {
+                logger.warn("Job execution of \"{}\" failed: {}", j, e.getMessage());
+                logger.trace("", e);
             }
         });
     }

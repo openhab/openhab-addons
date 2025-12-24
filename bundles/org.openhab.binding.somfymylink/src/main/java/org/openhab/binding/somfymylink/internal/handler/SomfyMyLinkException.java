@@ -25,7 +25,6 @@ public class SomfyMyLinkException extends RuntimeException {
     private static final long serialVersionUID = 1L;
 
     public SomfyMyLinkException() {
-        super();
     }
 
     public SomfyMyLinkException(String message) {

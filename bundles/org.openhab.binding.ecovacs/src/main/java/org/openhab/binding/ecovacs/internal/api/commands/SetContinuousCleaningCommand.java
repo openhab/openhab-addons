@@ -29,7 +29,6 @@ public class SetContinuousCleaningCommand extends AbstractNoResponseCommand {
     private final boolean enabled;
 
     public SetContinuousCleaningCommand(boolean enabled) {
-        super();
         this.enabled = enabled;
     }
 

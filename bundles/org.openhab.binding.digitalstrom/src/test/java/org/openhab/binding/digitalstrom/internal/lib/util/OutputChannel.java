@@ -24,7 +24,6 @@ import org.openhab.binding.digitalstrom.internal.lib.structure.devices.devicepar
 @NonNullByDefault
 public class OutputChannel {
     public OutputChannel(OutputChannelEnum outputChannel) {
-        super();
         this.channelID = outputChannel.getChannelId();
         this.name = outputChannel.getName();
         this.id = outputChannel.getName();

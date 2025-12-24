@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="sedif"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="meter">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="gateway"/>
+		</supported-bridge-type-refs>
+
+		<label>Meter</label>
+		<description>
+			Provides your water consumption data.
+			If you don't use autodiscovery, you will need to get your
+			contractName from this Sedif web site, and eventually your meterId if you have multiple meter on the same account.
+			See the documentation about where to find this informations.
+		</description>
+		<semantic-equipment-tag>WaterMeter</semantic-equipment-tag>
+
+		<channel-groups>
+			<channel-group typeId="base" id="base"/>
+
+			<channel-group typeId="daily-consumption" id="daily-consumption"/>
+			<channel-group typeId="weekly-consumption" id="weekly-consumption"/>
+			<channel-group typeId="monthly-consumption" id="monthly-consumption"/>
+			<channel-group typeId="yearly-consumption" id="yearly-consumption"/>
+		</channel-groups>
+
+		<config-description>
+			<parameter name="contractId" type="text" required="true">
+				<label>Contract Id</label>
+				<description>Your Contract Id</description>
+			</parameter>
+			<parameter name="meterId" type="text" required="false">
+				<label>Meter Id</label>
+				<description>Your Meter Id</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+</thing:thing-descriptions>

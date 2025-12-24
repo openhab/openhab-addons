@@ -1,8 +1,7 @@
 // Include this first to auto-register Crypto, Network and Time Node.js implementations
 import { Environment, Logger, StorageContext } from "@matter/general";
-import { ControllerStore } from "@matter/node";
 import { NodeId } from "@matter/types";
-import { CommissioningController } from "@project-chip/matter.js";
+import { CommissioningController, ControllerStore } from "@project-chip/matter.js";
 import { Endpoint, NodeStates, PairedNode } from "@project-chip/matter.js/device";
 import { WebSocketSession } from "../app";
 import { EventType, NodeState } from "../MessageTypes";
@@ -67,7 +66,7 @@ export class ControllerNode {
         });
         await this.commissioningController.initializeControllerStore();
 
-        const controllerStore = this.environment.get(ControllerStore);
+        const controllerStore = this.commissioningController.env.get(ControllerStore);
         // TODO: Implement resetStorage
         // if (resetStorage) {
         //     await controllerStore.erase();
@@ -307,7 +306,7 @@ export class ControllerNode {
     }
 
     /**
-     * Serializes a node and returns the json string
+     * Serializes a node and returns the json object
      * @param node
      * @param endpointId Optional endpointId to serialize. If omitted, the root endpoint will be serialized.
      * @returns

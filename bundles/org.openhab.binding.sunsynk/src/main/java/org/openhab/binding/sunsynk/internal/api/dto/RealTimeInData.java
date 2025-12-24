@@ -22,7 +22,7 @@ import com.google.gson.annotations.SerializedName;
 /**
  * The {@link RealTimeInData} is the internal class for inverter real time information
  * from a Sun Synk Connect Account.
- * Use for solar status.
+ * Use for solar string status.
  * 
  * @author Lee Charlton - Initial contribution
  */
@@ -33,7 +33,12 @@ public class RealTimeInData {
     private String msg = "";
     private boolean success;
     private Data data = new Data();
-    private double solarPower;
+    private double stringPower1;
+    private double stringPower2;
+    private double stringCurrent1;
+    private double stringCurrent2;
+    private double stringVoltage1;
+    private double stringVoltage2;
 
     @SuppressWarnings("unused")
     class Data {
@@ -52,7 +57,7 @@ public class RealTimeInData {
         private int pvNo;
         private double vpv;
         private double ipv;
-        private double ppv; // sum for all power
+        private double ppv;
         private double todayPv;
         private String sn = "";
         private String time = "";
@@ -61,29 +66,58 @@ public class RealTimeInData {
     public RealTimeInData() {
     }
 
-    class MPPTIV { // Empty; no solar panels
-    }
-
-    public double getetoday() {
-        return this.data.etoday;
-    }
-
-    public double getetotal() {
-        return this.data.etotal;
+    class MPPTIV { // Empty; no mini inverters
     }
 
     public String toString() {
-        return "Content [code=" + code + ", msg=" + msg + "sucess=" + success + ", data=" + data + "]";
+        return "Content [code=" + code + ", msg=" + msg + "success=" + success + ", data=" + data + "]";
     }
 
-    public void sumPVIV() {
-        double solarPower = 0.0;
+    public void stringEval() {
         for (PVIV x : this.data.pvIV) {
-            this.solarPower = solarPower + x.ppv;
+            if (x.pvNo == 1) {
+                this.stringPower1 = x.ppv;
+                this.stringCurrent1 = x.ipv;
+                this.stringVoltage1 = x.vpv;
+            }
+            if (x.pvNo == 2) {
+                this.stringPower2 = x.ppv;
+                this.stringCurrent2 = x.ipv;
+                this.stringVoltage2 = x.vpv;
+            }
+
         }
     }
 
-    public double getPVIV() {
-        return this.solarPower;
+    public int getCode() {
+        return this.code;
+    }
+
+    public String getMsg() {
+        return this.msg;
+    }
+
+    public double getString1Power() {
+        return this.stringPower1;
+    }
+
+    public double getString2Power() {
+        return this.stringPower2;
+    }
+
+    public double getString1Current() {
+        return this.stringCurrent1;
+    }
+
+    public double getString2Current() {
+        return this.stringCurrent2;
+    }
+
+    public double getString1Voltage() {
+        return this.stringVoltage1;
+    }
+
+    public double getString2Voltage() {
+        return this.stringVoltage2;
     }
 }

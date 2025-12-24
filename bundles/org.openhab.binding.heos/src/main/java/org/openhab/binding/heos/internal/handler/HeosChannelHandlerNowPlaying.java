@@ -62,7 +62,6 @@ public class HeosChannelHandlerNowPlaying extends BaseHeosChannelHandler {
     private void handleCommand(Command command, String id) throws IOException, ReadException {
         if (command instanceof RefreshType) {
             // TODO consider caching this somehow, this method is triggered from a lot of channels for the same player
-            @Nullable
             Media payload = getApi().getNowPlayingMedia(id).payload;
             if (payload != null) {
                 eventListener.playerMediaChangeEvent(id, payload);

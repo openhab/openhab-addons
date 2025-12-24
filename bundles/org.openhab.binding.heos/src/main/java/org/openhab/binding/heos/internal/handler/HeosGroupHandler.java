@@ -72,11 +72,9 @@ public class HeosGroupHandler extends HeosThingBaseHandler {
         // Only commands from the UNGROUP channel are passed through
         // to activate the group if it is offline
         if (gid != null || CH_ID_UNGROUP.equals(channelUID.getId())) {
-            @Nullable
             HeosChannelHandler channelHandler = getHeosChannelHandler(channelUID);
             if (channelHandler != null) {
                 try {
-                    @Nullable
                     String id = getMaybeId(channelUID, command);
                     channelHandler.handleGroupCommand(command, id, thing.getUID(), this);
                     handleSuccess();
@@ -87,8 +85,7 @@ public class HeosGroupHandler extends HeosThingBaseHandler {
         }
     }
 
-    @Nullable
-    private String getMaybeId(ChannelUID channelUID, Command command) throws HeosNotFoundException {
+    private @Nullable String getMaybeId(ChannelUID channelUID, Command command) throws HeosNotFoundException {
         if (isCreateGroupRequest(channelUID, command)) {
             return null;
         } else {
@@ -125,7 +122,6 @@ public class HeosGroupHandler extends HeosThingBaseHandler {
 
     @Override
     public String getId() throws HeosNotFoundException {
-        @Nullable
         String localGroupId = this.gid;
         if (localGroupId == null) {
             throw new HeosNotFoundException();
@@ -159,11 +155,8 @@ public class HeosGroupHandler extends HeosThingBaseHandler {
             return;
         }
 
-        @Nullable
         String localGid = this.gid;
-        @Nullable
         String eventGroupId = eventObject.getAttribute(HeosCommunicationAttribute.GROUP_ID);
-        @Nullable
         String eventPlayerId = eventObject.getAttribute(HeosCommunicationAttribute.PLAYER_ID);
         if (localGid == null || !(localGid.equals(eventGroupId) || localGid.equals(eventPlayerId))) {
             return;
@@ -185,7 +178,6 @@ public class HeosGroupHandler extends HeosThingBaseHandler {
             return;
         }
 
-        @Nullable
         String localGid = this.gid;
         if (localGid == null || !localGid.equals(responseObject.getAttribute(HeosCommunicationAttribute.GROUP_ID))) {
             return;
@@ -246,7 +238,6 @@ public class HeosGroupHandler extends HeosThingBaseHandler {
     }
 
     private void delayedInitialize() {
-        @Nullable
         HeosBridgeHandler bridgeHandler = this.bridgeHandler;
 
         if (bridgeHandler == null) {
@@ -262,7 +253,6 @@ public class HeosGroupHandler extends HeosThingBaseHandler {
         bridgeHandler.addGroupHandlerInformation(this);
         // Checks if there is a group online with the same group member hash.
         // If not setting the group offline.
-        @Nullable
         String groupId = bridgeHandler.getActualGID(HeosGroup.calculateGroupMemberHash(configuration.members));
         if (groupId == null) {
             blockInitialization = false;
@@ -272,7 +262,6 @@ public class HeosGroupHandler extends HeosThingBaseHandler {
                 refreshPlayState(groupId);
 
                 HeosResponseObject<Group> response = getApiConnection().getGroupInfo(groupId);
-                @Nullable
                 Group group = response.payload;
                 if (group == null) {
                     throw new IllegalStateException("Invalid group response received");

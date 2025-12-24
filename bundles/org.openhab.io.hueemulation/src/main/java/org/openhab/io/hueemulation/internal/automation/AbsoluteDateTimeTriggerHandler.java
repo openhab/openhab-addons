@@ -21,6 +21,8 @@ import java.time.temporal.ChronoField;
 import java.time.temporal.TemporalAccessor;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.automation.ModuleHandlerCallback;
 import org.openhab.core.automation.Trigger;
 import org.openhab.core.automation.handler.BaseTriggerModuleHandler;
@@ -40,6 +42,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author David Graeff - Initial contribution
  */
+@NonNullByDefault
 public class AbsoluteDateTimeTriggerHandler extends BaseTriggerModuleHandler implements SchedulerRunnable {
 
     private final Logger logger = LoggerFactory.getLogger(AbsoluteDateTimeTriggerHandler.class);
@@ -52,13 +55,14 @@ public class AbsoluteDateTimeTriggerHandler extends BaseTriggerModuleHandler imp
     public static final String CFG_TIME = "time";
     public static final String CFG_TIME_RND = "randomizeTime";
 
-    private final Scheduler scheduler;
-    private final Instant dateTime;
-    private ScheduledCompletableFuture<?> schedule;
     private static final String DATE_FORMAT = "yyyy-MM-dd";
     private static final String TIME_FORMAT = "HH:mm:ss";
     private static final String DATETIME_FORMAT = DATE_FORMAT + " " + TIME_FORMAT;
+
+    private final Scheduler scheduler;
+    private final Instant dateTime;
     private final DateTimeFormatter dateTimeformatter;
+    private @Nullable ScheduledCompletableFuture<?> schedule;
 
     public AbsoluteDateTimeTriggerHandler(Trigger module, Scheduler scheduler) {
         super(module);
@@ -99,15 +103,19 @@ public class AbsoluteDateTimeTriggerHandler extends BaseTriggerModuleHandler imp
     @Override
     public synchronized void dispose() {
         super.dispose();
+        ScheduledCompletableFuture<?> schedule = this.schedule;
         if (schedule != null) {
             schedule.cancel(true);
-            logger.debug("cancelled job for trigger '{}'.", module.getId());
+            this.schedule = null;
+            logger.debug("Cancelled job for trigger '{}'.", module.getId());
         }
     }
 
     @Override
     public void run() {
-        ((TriggerHandlerCallback) callback).triggered(module, Map.of());
+        if (callback instanceof TriggerHandlerCallback triggerHandlerCallback) {
+            triggerHandlerCallback.triggered(module, Map.of());
+        }
         schedule = null;
     }
 }

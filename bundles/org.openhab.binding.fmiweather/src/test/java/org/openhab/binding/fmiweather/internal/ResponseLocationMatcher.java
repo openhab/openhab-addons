@@ -47,7 +47,6 @@ public class ResponseLocationMatcher extends TypeSafeMatcher<Location> {
 
     public ResponseLocationMatcher(String name, String id, @Nullable BigDecimal latitude,
             @Nullable BigDecimal longitude) {
-        super();
         this.name = name;
         this.id = id;
         this.latitude = latitude;

@@ -59,8 +59,9 @@ public class AstroDiscoveryService extends AbstractDiscoveryService {
 
     private final LocationProvider locationProvider;
 
+    // All access must be guarded by "this"
     private @Nullable ScheduledFuture<?> astroDiscoveryJob;
-    private @Nullable PointType previousLocation;
+    private volatile @Nullable PointType previousLocation;
 
     @Activate
     public AstroDiscoveryService(final @Reference LocationProvider locationProvider,
@@ -85,7 +86,7 @@ public class AstroDiscoveryService extends AbstractDiscoveryService {
     }
 
     @Override
-    protected void startBackgroundDiscovery() {
+    protected synchronized void startBackgroundDiscovery() {
         if (astroDiscoveryJob == null) {
             astroDiscoveryJob = scheduler.scheduleWithFixedDelay(() -> {
                 PointType currentLocation = locationProvider.getLocation();
@@ -103,11 +104,13 @@ public class AstroDiscoveryService extends AbstractDiscoveryService {
     @Override
     protected void stopBackgroundDiscovery() {
         logger.debug("Stopping Astro device background discovery");
-        ScheduledFuture<?> discoveryJob = astroDiscoveryJob;
-        if (discoveryJob != null) {
-            discoveryJob.cancel(true);
+        synchronized (this) {
+            ScheduledFuture<?> discoveryJob = astroDiscoveryJob;
+            if (discoveryJob != null) {
+                discoveryJob.cancel(true);
+            }
+            astroDiscoveryJob = null;
         }
-        astroDiscoveryJob = null;
     }
 
     public void createResults(PointType location) {

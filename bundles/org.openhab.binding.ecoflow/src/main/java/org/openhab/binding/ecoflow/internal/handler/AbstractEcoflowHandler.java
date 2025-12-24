@@ -54,14 +54,12 @@ abstract class AbstractEcoflowHandler extends BaseThingHandler {
     protected final Logger logger = LoggerFactory.getLogger(AbstractEcoflowHandler.class);
 
     private final SchedulerTask initTask;
-    private final String mqttParamObjectName;
     protected String serialNumber = "<unset>";
     private final Map<String, ChannelMapping> mappingsByListId = new HashMap<>();
     private final Map<String, Map<String, ChannelMapping>> mappingsByMqttId = new HashMap<>();
 
-    protected AbstractEcoflowHandler(Thing thing, List<ChannelMapping> mappings, String mqttParamObjectName) {
+    protected AbstractEcoflowHandler(Thing thing, List<ChannelMapping> mappings) {
         super(thing);
-        this.mqttParamObjectName = mqttParamObjectName;
         initTask = new SchedulerTask(scheduler, logger, "Init", this::initDevice);
 
         for (ChannelMapping mapping : mappings) {
@@ -160,7 +158,11 @@ abstract class AbstractEcoflowHandler extends BaseThingHandler {
 
     public void handleQuotaMessage(JsonObject payload) {
         logger.trace("{}: Got MQTT message for quota: {}", serialNumber, payload);
-        JsonObject params = payload.getAsJsonObject(mqttParamObjectName);
+        JsonObject params = payload.getAsJsonObject("params");
+        if (params == null) {
+            logger.warn("{}: No parameters in quota message payload: {}", serialNumber, payload);
+            return;
+        }
         extractGroupKeyFromMqttMessage(payload) //
                 .flatMap(groupKey -> Optional.ofNullable(mappingsByMqttId.get(groupKey))) //
                 .ifPresent(mappings -> updateStatesFromJson(params, mappings));

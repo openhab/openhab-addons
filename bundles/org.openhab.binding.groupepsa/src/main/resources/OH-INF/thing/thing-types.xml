@@ -26,7 +26,7 @@
 			</parameter>
 			<parameter name="userName" type="text" required="true">
 				<label>User Name</label>
-				<description>The user name for the mypeugot/mycitroen/myds/myopel/myvauxhall website or app</description>
+				<description>The user name for the mypeugeot/mycitroen/myds/myopel/myvauxhall website or app</description>
 			</parameter>
 			<parameter name="password" type="text" required="true">
 				<context>password</context>
@@ -41,14 +41,14 @@
 				<advanced>true</advanced>
 				<default>07364655-93cb-4194-8158-6b035ac2c24c</default>
 				<label>Client ID</label>
-				<description>The client ID for API access: can normally left at the default value. (see:
+				<description>The client ID for API access: can normally be left at the default value. (see:
 					https://developer.groupe-psa.io/webapi/b2c/quickstart/connect/#article)</description>
 			</parameter>
 			<parameter name="clientSecret" type="text" required="true">
 				<advanced>true</advanced>
 				<default>F2kK7lC5kF5qN7tM0wT8kE3cW1dP0wC5pI6vC0sQ5iP5cN8cJ8</default>
 				<label>Client Secret</label>
-				<description>The client secret for API access: can normally left at the default value. (see:
+				<description>The client secret for API access: can normally be left at the default value. (see:
 					https://developer.groupe-psa.io/webapi/b2c/quickstart/connect/#article)</description>
 			</parameter>
 		</config-description>

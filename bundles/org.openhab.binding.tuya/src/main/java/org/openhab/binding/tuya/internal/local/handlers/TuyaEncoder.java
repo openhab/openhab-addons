@@ -27,13 +27,13 @@ import static org.openhab.binding.tuya.internal.local.TuyaDevice.*;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.jose4j.base64url.Base64;
 import org.openhab.binding.tuya.internal.local.CommandType;
 import org.openhab.binding.tuya.internal.local.MessageWrapper;
 import org.openhab.binding.tuya.internal.local.ProtocolVersion;
@@ -88,7 +88,7 @@ public class TuyaEncoder extends MessageToByteEncoder<MessageWrapper<?>> {
         if (msg.content == null || msg.content instanceof Map<?, ?>) {
             Map<String, Object> content = (Map<String, Object>) msg.content;
             Map<String, Object> payload = new HashMap<>();
-            if (msg.commandType == REQ_DEVINFO) {
+            if (msg.commandType == REQ_DEVINFO || msg.commandType == DP_REFRESH) {
                 if (content != null) {
                     payload.putAll(content);
                 }
@@ -112,15 +112,20 @@ public class TuyaEncoder extends MessageToByteEncoder<MessageWrapper<?>> {
                 }
             }
 
-            logger.debug("{}{}: Sending {}, payload {}", deviceId,
-                    Objects.requireNonNullElse(ctx.channel().remoteAddress(), ""), msg.commandType, payload);
+            if (msg.commandType != REQ_DEVINFO && msg.commandType != HEART_BEAT) {
+                logger.debug("{}{}: Sending {}, payload {}", deviceId,
+                        Objects.requireNonNullElse(ctx.channel().remoteAddress(), ""), msg.commandType, payload);
+            } else {
+                logger.trace("{}{}: Sending {}, payload {}", deviceId,
+                        Objects.requireNonNullElse(ctx.channel().remoteAddress(), ""), msg.commandType, payload);
+            }
 
             String json = gson.toJson(payload);
             payloadBytes = json.getBytes(StandardCharsets.UTF_8);
         } else if (msg.content instanceof byte[] contentBytes) {
             if (logger.isDebugEnabled()) {
-                logger.debug("{}{}: Sending payload {}", deviceId,
-                        Objects.requireNonNullElse(ctx.channel().remoteAddress(), ""),
+                logger.debug("{}{}: Sending {}, payload {}", deviceId,
+                        Objects.requireNonNullElse(ctx.channel().remoteAddress(), ""), msg.commandType,
                         HexUtils.bytesToHex(contentBytes));
             }
             payloadBytes = contentBytes.clone();
@@ -169,7 +174,7 @@ public class TuyaEncoder extends MessageToByteEncoder<MessageWrapper<?>> {
             if (encryptedPayload == null) {
                 return Optional.empty();
             }
-            String payloadStr = Base64.encode(encryptedPayload);
+            String payloadStr = Base64.getEncoder().encodeToString(encryptedPayload);
             String hash = CryptoUtil
                     .md5("data=" + payloadStr + "||lpv=" + protocol.getString() + "||" + new String(deviceKey));
 

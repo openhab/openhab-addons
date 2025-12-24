@@ -18,6 +18,8 @@ import static org.openhab.binding.fsinternetradio.internal.FSInternetRadioBindin
 import java.math.BigDecimal;
 import java.util.concurrent.ScheduledFuture;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.fsinternetradio.internal.radio.FrontierSiliconRadio;
 import org.openhab.core.library.types.DecimalType;
@@ -45,20 +47,27 @@ import org.slf4j.LoggerFactory;
  * @author Mihaela Memova - removed the unused boolean parameter, changed the check for the PIN
  * @author Svilen Valkanov - changed handler initialization
  */
+@NonNullByDefault
 public class FSInternetRadioHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(FSInternetRadioHandler.class);
 
+    @Nullable
     FrontierSiliconRadio radio;
     private final HttpClient httpClient;
 
     /** Job that runs {@link #updateRunnable}. */
-    private ScheduledFuture<?> updateJob;
+    private @Nullable ScheduledFuture<?> updateJob;
 
     /** Runnable for job {@link #updateJob} for periodic refresh. */
     private final Runnable updateRunnable = new Runnable() {
         @Override
         public void run() {
+            FrontierSiliconRadio radio = FSInternetRadioHandler.this.radio;
+            if (radio == null) {
+                logger.warn("Radio is not initialized, cannot update channels.");
+                return;
+            }
             if (!radio.isLoggedIn()) {
                 // radio is not set, so set all channels to 'undefined'
                 for (Channel channel : getThing().getChannels()) {
@@ -167,15 +176,17 @@ public class FSInternetRadioHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
+        ScheduledFuture<?> updateJob = this.updateJob;
         if (updateJob != null) {
             updateJob.cancel(true);
         }
-        updateJob = null;
+        this.updateJob = null;
         radio = null;
     }
 
     @Override
     public void handleCommand(final ChannelUID channelUID, final Command command) {
+        FrontierSiliconRadio radio = this.radio;
         if (!radio.isLoggedIn()) {
             // connection to radio is not initialized, log ignored command and set status, if it is not already offline
             logger.debug("Ignoring command {} = {} because device is offline.", channelUID.getId(), command);

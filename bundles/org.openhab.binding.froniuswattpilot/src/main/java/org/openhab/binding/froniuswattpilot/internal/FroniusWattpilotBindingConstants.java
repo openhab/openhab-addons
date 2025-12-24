@@ -43,6 +43,9 @@ public class FroniusWattpilotBindingConstants {
     public static final String CHANNEL_CHARGING_MODE = "charging-mode";
     public static final String CHANNEL_CHARGING_CURRENT = "charging-current";
     public static final String CHANNEL_PV_SURPLUS_THRESHOLD = "pv-surplus-threshold";
+    public static final String CHANNEL_PV_SURPLUS_SOC = "pv-surplus-soc";
+    public static final String CHANNEL_BOOST_ENABLED = "boost-enabled";
+    public static final String CHANNEL_BOOST_SOC = "boost-soc";
 
     // Wattpilot status channels
     public static final String CHANNEL_CHARGING_STATE = "charging-state";

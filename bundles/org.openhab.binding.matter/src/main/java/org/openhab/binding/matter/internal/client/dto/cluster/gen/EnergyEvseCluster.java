@@ -232,7 +232,7 @@ public class EnergyEvseCluster extends BaseCluster {
     /**
      * This event shall be generated when the EV is plugged in.
      */
-    public class EvConnected {
+    public static class EvConnected {
         /**
          * This is the new session ID created after the vehicle is plugged in.
          */
@@ -247,7 +247,7 @@ public class EnergyEvseCluster extends BaseCluster {
      * This event shall be generated when the EV is unplugged or not detected (having been previously plugged in). When
      * the vehicle is unplugged then the session is ended.
      */
-    public class EvNotDetected {
+    public static class EvNotDetected {
         /**
          * This field shall indicate the current value of the SessionID attribute.
          */
@@ -290,7 +290,7 @@ public class EnergyEvseCluster extends BaseCluster {
      * between charging and discharging under the control of the PowerAdjustment feature of the Device Energy Management
      * cluster of the associated Device Energy Management device.
      */
-    public class EnergyTransferStarted {
+    public static class EnergyTransferStarted {
         /**
          * This field shall indicate the value of the SessionID attribute at the time the event was generated.
          */
@@ -327,7 +327,7 @@ public class EnergyEvseCluster extends BaseCluster {
      * between charging and discharging under the control of the PowerAdjustment feature of the Device Energy Management
      * cluster of the associated Device Energy Management device.
      */
-    public class EnergyTransferStopped {
+    public static class EnergyTransferStopped {
         /**
          * This field shall indicate the value of the SessionID attribute prior to the energy transfer stopping.
          */
@@ -370,7 +370,7 @@ public class EnergyEvseCluster extends BaseCluster {
      * EVSE device shall set the FaultState attribute to NoError and the SupplyState attribute shall be set back to its
      * previous state.
      */
-    public class Fault {
+    public static class Fault {
         /**
          * This field shall indicate the value of the SessionID attribute prior to the Fault State being changed. A
          * value of null indicates no sessions have occurred before the fault occurred.
@@ -402,7 +402,7 @@ public class EnergyEvseCluster extends BaseCluster {
      * This event shall be generated when a RFID card has been read. This allows a controller to register the card ID
      * and use this to authenticate and start the charging session.
      */
-    public class Rfid {
+    public static class Rfid {
         /**
          * The UID field (ISO 14443A UID) is either 4, 7 or 10 bytes.
          */
@@ -423,7 +423,7 @@ public class EnergyEvseCluster extends BaseCluster {
      * ChargingTime (s) &#x3D; (3600 x RequiredEnergy (wH)) / Power (W)
      * To compute the charging time: Charging StartTime &#x3D; TargetTimeMinutesPastMidnight - ChargingTime
      */
-    public class ChargingTargetStruct {
+    public static class ChargingTargetStruct {
         /**
          * This field shall indicate the desired charging completion time of the associated day. The time will be
          * represented by a 16 bits unsigned integer to designate the minutes since midnight. For example, 6am will be
@@ -488,7 +488,7 @@ public class EnergyEvseCluster extends BaseCluster {
     /**
      * This represents a set of user specified charging targets for an EV for a set of specified days.
      */
-    public class ChargingTargetScheduleStruct {
+    public static class ChargingTargetScheduleStruct {
         /**
          * This field shall indicate the days of the week that the charging targets SHOULD be associated to. This field
          * is a bitmap and therefore the associated targets could be applied to multiple days.
@@ -516,8 +516,8 @@ public class EnergyEvseCluster extends BaseCluster {
         SESSION_ENDING(5, "Session Ending"),
         FAULT(6, "Fault");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private StateEnum(Integer value, String label) {
             this.value = value;
@@ -543,8 +543,8 @@ public class EnergyEvseCluster extends BaseCluster {
         DISABLED_DIAGNOSTICS(4, "Disabled Diagnostics"),
         ENABLED(5, "Enabled");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private SupplyStateEnum(Integer value, String label) {
             this.value = value;
@@ -581,8 +581,8 @@ public class EnergyEvseCluster extends BaseCluster {
         OVER_TEMPERATURE(15, "Over Temperature"),
         OTHER(255, "Other");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private FaultStateEnum(Integer value, String label) {
             this.value = value;
@@ -605,8 +605,8 @@ public class EnergyEvseCluster extends BaseCluster {
         EVSE_STOPPED(1, "Evse Stopped"),
         OTHER(2, "Other");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private EnergyTransferStoppedReasonEnum(Integer value, String label) {
             this.value = value;

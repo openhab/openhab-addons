@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.astro.internal.model;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * All moon phases.
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public enum MoonPhaseName {
     NEW,
     WAXING_CRESCENT,

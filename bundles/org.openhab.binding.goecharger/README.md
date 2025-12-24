@@ -56,7 +56,7 @@ Currently available channels are:
 | transaction              | Number                   | 0 if no card, otherwise card ID                               | 2 (r/w)          |
 | allowCharging            | Switch                   | If `ON` charging is allowed                                   | 1 (r/w), 2 (r)   |
 | cableCurrent             | Number:ElectricCurrent   | Specifies the max current that can be charged with that cable | 1 (r), 2 (r)     |
-| temperature              | Number:Temperature       | Temperature of the curciuit board of the go-e Charger         | 1 (r), 2 (r)     |
+| temperature              | Number:Temperature       | Temperature of the circuit board of the go-e Charger          | 1 (r), 2 (r)     |
 | temperatureType2Port     | Number:Temperature       | Temperature of the type 2 port of the go-e Charger            | 2 (r)            |
 | firmware                 | String                   | Firmware Version                                              | 1 (r), 2 (r)     |
 | accessConfiguration      | String                   | Access configuration, for example OPEN, RFID ...              | 1 (r/w)          |

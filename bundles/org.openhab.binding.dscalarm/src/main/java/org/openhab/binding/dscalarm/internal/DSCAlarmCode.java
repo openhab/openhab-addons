@@ -164,6 +164,8 @@ public enum DSCAlarmCode {
     HomeAutomationTrouble("831", "Home Automation Trouble", "831: Escort 5580 module trouble."),
     HomeAutomationTroubleRestore("832", "Home Automation Trouble Restore",
             "832: Escort 5580 module trouble has been restored."),
+    WirelessSensorLowBatteryRestore("833", "Wireless Sensor Low Battery Restore",
+            "833: The wireless sensor zone low battery state has restored"),
     TroubleLEDOn("840", "Trouble LED ON", "840: The trouble LED on a keypad is ON."),
     TroubleLEDOff("841", "Trouble LED OFF", "841: The trouble LED on a keypad is OFF."),
     FireTroubleAlarm("842", "Fire Trouble Alarm", "842: Fire trouble alarm."),

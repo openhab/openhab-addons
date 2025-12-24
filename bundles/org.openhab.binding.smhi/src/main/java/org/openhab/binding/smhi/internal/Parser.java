@@ -17,9 +17,7 @@ import java.time.ZonedDateTime;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
-import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -40,54 +38,62 @@ public class Parser {
      * Parse a json string received from Smhi containing forecasts.
      *
      * @param json A json string
-     * @return A {@link TimeSeries} object
+     * @return A {@link SmhiTimeSeries} object
      */
-    public static TimeSeries parseTimeSeries(String json) {
-        ZonedDateTime referenceTime;
+    public static SmhiTimeSeries parseTimeSeries(String json) {
         JsonObject object = JsonParser.parseString(json).getAsJsonObject();
 
-        referenceTime = parseApprovedTime(json);
+        ZonedDateTime createdTime = parseTime(object, "createdTime");
+        ZonedDateTime referenceTime = parseTime(object, "referenceTime");
         JsonArray timeSeries = object.get("timeSeries").getAsJsonArray();
 
         List<Forecast> forecasts = StreamSupport.stream(timeSeries.spliterator(), false)
-                .map(element -> parseForecast(element.getAsJsonObject())).sorted(Comparator.naturalOrder())
-                .collect(Collectors.toList());
+                .map(element -> parseForecast(element.getAsJsonObject())).sorted(Comparator.naturalOrder()).toList();
 
-        return new TimeSeries(referenceTime, forecasts);
+        return new SmhiTimeSeries(createdTime, referenceTime, forecasts);
     }
 
     /**
-     * Parse a json string containing the approved time and reference time of the latest forecast
+     * Parse a json string containing a timestamp
      *
-     * @param json A json string
-     * @return {@link ZonedDateTime} of the reference time
+     * @param obj A {@link JsonObject} containing a timestamp for one of its keys
+     * @param key The json key to get the time from
+     * @return {@link ZonedDateTime} representation of the requested value
      */
-    public static ZonedDateTime parseApprovedTime(String json) {
+    private static ZonedDateTime parseTime(JsonObject obj, String key) {
+        return ZonedDateTime.parse(obj.get(key).getAsString());
+    }
+
+    /**
+     * Parse json object from the createdtime endpoint
+     *
+     * @param json A {@link String} repreenting the json
+     * @return {@link ZonedDateTime} of the created time
+     */
+    public static ZonedDateTime parseCreatedTime(String json) {
         JsonObject timeObj = JsonParser.parseString(json).getAsJsonObject();
 
-        return ZonedDateTime.parse(timeObj.get("referenceTime").getAsString());
+        return parseTime(timeObj, "createdTime");
     }
 
     /**
      * Parse a single forecast, i.e. a forecast for a specific time.
      *
-     * @param object
-     * @return
+     * @param object A {@link JsonObject} for a single forecast entry
+     * @return A {@link Forecast} object
      */
     private static Forecast parseForecast(JsonObject object) {
-        ZonedDateTime validTime = ZonedDateTime.parse(object.get("validTime").getAsString());
+        ZonedDateTime time = parseTime(object, "time");
+        ZonedDateTime intervalStartTime = parseTime(object, "intervalParametersStartTime");
         Map<String, BigDecimal> parameters = new HashMap<>();
 
-        JsonArray parameterArray = object.get("parameters").getAsJsonArray();
+        JsonObject data = object.get("data").getAsJsonObject();
 
-        parameterArray.forEach(element -> {
-            JsonObject parameterObj = element.getAsJsonObject();
-            String name = parameterObj.get("name").getAsString().toLowerCase(Locale.ROOT);
-            BigDecimal value = parameterObj.get("values").getAsJsonArray().get(0).getAsBigDecimal();
-
-            parameters.put(name, value);
+        data.asMap().forEach((name, value) -> {
+            BigDecimal v = value.getAsBigDecimal();
+            parameters.put(name, v);
         });
 
-        return new Forecast(validTime, parameters);
+        return new Forecast(time, intervalStartTime, parameters);
     }
 }

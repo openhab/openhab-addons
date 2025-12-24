@@ -77,7 +77,6 @@ public class EnvisalinkBridgeDiscovery {
         logger.debug("Performing discovery on {} ip addresses", addressesToScan.size());
         for (InetAddress inetAddress : addressesToScan) {
             try (Socket socket = new Socket()) {
-
                 socket.setReuseAddress(true);
                 socket.setReceiveBufferSize(32);
                 socket.connect(new InetSocketAddress(inetAddress.getHostAddress(), ENVISALINK_BRIDGE_PORT),

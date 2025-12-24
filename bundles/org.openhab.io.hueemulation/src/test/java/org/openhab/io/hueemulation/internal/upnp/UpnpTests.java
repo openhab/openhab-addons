@@ -14,7 +14,6 @@ package org.openhab.io.hueemulation.internal.upnp;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 
 import java.io.IOException;
@@ -104,7 +103,7 @@ public class UpnpTests {
     @Test
     public void descriptionWithoutAddress() throws Exception {
         ContentResponse response = commonSetup.client.newRequest(descriptionPath).send();
-        assertEquals(404, response.getStatus());
+        assertThat(response.getStatus(), is(404));
     }
 
     @Test
@@ -114,7 +113,7 @@ public class UpnpTests {
         r = subject.performAddressTest(r);
         subject.applyConfiguration(r);
         ContentResponse response = commonSetup.client.newRequest(descriptionPath).send();
-        assertEquals(200, response.getStatus());
+        assertThat(response.getStatus(), is(200));
         String body = response.getContentAsString();
         assertThat(body, is(subject.xmlDocWithAddress));
 

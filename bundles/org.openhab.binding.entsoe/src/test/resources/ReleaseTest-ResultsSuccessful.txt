@@ -1,0 +1,45 @@
+EE Estonia : {0=PT15M}
+SE1 Swedish Elspot Area 1 : {0=PT15M}
+SE2 Swedish Elspot Area 2 : {0=PT15M}
+SE3 Swedish Elspot Area 3 : {0=PT15M}
+SE4 Swedish Elspot Area 4 : {0=PT15M}
+NO5 Norwegian Area Elspot Area 5 : {0=PT15M}
+IT-CENTRE_NORTH Italy Centre-North : {0=PT15M}
+IT-CENTRE_SOUTH Italy Centre-South : {0=PT15M}
+IT-NORTH Italy North : {0=PT15M}
+IT-SARDINIA Italy Sardinia : {0=PT15M}
+IT-SICILY Italy Sicily : {0=PT15M}
+IT-SOUTH Italy South : {0=PT15M}
+DE_LU Germany_Luxemburg : {1=PT15M, 2=PT15M}
+IT-SACO_AC Italy Saco_AC : {0=PT15M}
+IT-SACODC Italy Saco_DC : {0=PT15M}
+UA-IPS Ukraine IPS : {0=PT60M}
+IT-CALABRIA Italy Calabria : {0=PT15M}
+AT Austria : {1=PT15M, 2=PT15M}
+BE Belgium : {0=PT15M}
+BG Bulgaria : {0=PT15M}
+CH Switzerland : {0=PT60M}
+ME Montenegro : {0=PT60M}
+CZ Czech Republic : {0=PT15M}
+DK1 Denmark DK1 : {0=PT15M}
+DK2 Denmark DK2 : {0=PT15M}
+ES Spain : {0=PT15M, 1=PT15M, 2=PT15M, 3=PT15M}
+FI Finland : {0=PT15M}
+FR France : {0=PT15M}
+GR Greece : {0=PT15M}
+HR Croatia : {0=PT15M}
+HU Hungary : {0=PT15M}
+LT Lithuania : {0=PT15M}
+LV Latvia : {0=PT15M}
+MK FYROM : {0=PT60M}
+NL Netherlands : {0=PT15M}
+NO1 Norwegian Area Elspot Area 1 : {0=PT15M}
+NO2 Norwegian Area Elspot Area 2 : {0=PT15M}
+NO3 Norwegian Area Elspot Area 3 : {0=PT15M}
+NO4 Norwegian Area Elspot Area 4 : {0=PT15M}
+PL Poland : {0=PT15M}
+PT Portugal : {0=PT15M}
+RO Romania : {0=PT15M}
+SI Slovenia : {0=PT15M}
+SK Slovak Republic : {0=PT15M}
+NO_NO2NSL Virtual Bidding Zone NO2NSL : {0=PT60M}

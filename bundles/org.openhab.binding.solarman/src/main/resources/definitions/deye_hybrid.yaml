@@ -597,6 +597,7 @@ parameters:
       uom: ""
       scale: 1
       rule: 9
+      isReadOnly: false
       registers: [0x00FA]
       icon: 'mdi:timelapse'
 
@@ -606,6 +607,7 @@ parameters:
       uom: ""
       scale: 1
       rule: 9
+      isReadOnly: false
       registers: [0x00FB]
       icon: "mdi:timelapse"
       
@@ -615,6 +617,7 @@ parameters:
       uom: ""
       scale: 1
       rule: 9
+      isReadOnly: false
       registers: [0x00FC]
       icon: 'mdi:timelapse'
 
@@ -624,6 +627,7 @@ parameters:
       uom: ""
       scale: 1
       rule: 9
+      isReadOnly: false
       registers: [0x00FD]
       icon: 'mdi:timelapse'
 
@@ -633,6 +637,7 @@ parameters:
       uom: ""
       scale: 1
       rule: 9
+      isReadOnly: false
       registers: [0x00FE]
       icon: "mdi:timelapse"
 
@@ -642,120 +647,133 @@ parameters:
       uom: ""
       scale: 1
       rule: 9
+      isReadOnly: false
       registers: [0x00FF]
       icon: 'mdi:timelapse'
 
     - name: "Time of Use Power 1"
-      class: ""
-      state_class: ""
-      uom: ""
+      class: "power"
+      state_class: "measurement"
+      uom: "W"
       scale: 1
       rule: 1
+      isReadOnly: false
       registers: [0x0100]
       icon: "mdi:lightning-bolt-outline"
 
     - name: "Time of Use Power 2"
-      class: ""
-      state_class: ""
-      uom: ""
+      class: "power"
+      state_class: "measurement"
+      uom: "W"
       scale: 1
       rule: 1
+      isReadOnly: false
       registers: [0x0101]
       icon: 'mdi:lightning-bolt-outline'
 
     - name: "Time of Use Power 3"
-      class: ""
-      state_class: ""
-      uom: ""
+      class: "power"
+      state_class: "measurement"
+      uom: "W"
       scale: 1
       rule: 1
+      isReadOnly: false
       registers: [0x0102]
       icon: 'mdi:lightning-bolt-outline'
 
     - name: "Time of Use Power 4"
-      class: ""
-      state_class: ""
-      uom: ""
+      class: "power"
+      state_class: "measurement"
+      uom: "W"
       scale: 1
       rule: 1
+      isReadOnly: false
       registers: [0x0103]
       icon: 'mdi:lightning-bolt-outline'
 
     - name: "Time of Use Power 5"
-      class: ""
-      state_class: ""
-      uom: ""
+      class: "power"
+      state_class: "measurement"
+      uom: "W"
       scale: 1
       rule: 1
+      isReadOnly: false
       registers: [0x0104]
       icon: 'mdi:lightning-bolt-outline'
 
     - name: "Time of Use Power 6"
-      class: ""
-      state_class: ""
-      uom: ""
+      class: "power"
+      state_class: "measurement"
+      uom: "W"
       scale: 1
       rule: 1
+      isReadOnly: false
       registers: [0x0105]
       icon: 'mdi:lightning-bolt-outline'
 
     - name: "Time of Use SOC 1"
-      class: ""
-      state_class: ""
-      uom: ""
+      class: "battery"
+      state_class: "measurement"
+      uom: "%"
       scale: 1
       rule: 1
+      isReadOnly: false
       registers: [0x010C]
       icon: 'mdi:battery'
 
     - name: "Time of Use SOC 2"
-      class: ""
-      state_class: ""
-      uom: ""
+      class: "battery"
+      state_class: "measurement"
+      uom: "%"
       scale: 1
       rule: 1
+      isReadOnly: false
       registers: [0x010D]
       icon: 'mdi:battery'
 
     - name: "Time of Use SOC 3"
-      class: ""
-      state_class: ""
-      uom: ""
+      class: "battery"
+      state_class: "measurement"
+      uom: "%"
       scale: 1
       rule: 1
+      isReadOnly: false
       registers: [0x010E]
       icon: 'mdi:battery'
 
     - name: "Time of Use SOC 4"
-      class: ""
-      state_class: ""
-      uom: ""
+      class: "battery"
+      state_class: "measurement"
+      uom: "%"
       scale: 1
       rule: 1
+      isReadOnly: false
       registers: [0x010F]
       icon: 'mdi:battery'
 
     - name: "Time of Use SOC 5"
-      class: ""
-      state_class: ""
-      uom: ""
+      class: "battery"
+      state_class: "measurement"
+      uom: "%"
       scale: 1
       rule: 1
+      isReadOnly: false
       registers: [0x0110]
       icon: 'mdi:battery'
 
     - name: "Time of Use SOC 6"
-      class: ""
-      state_class: ""
-      uom: ""
+      class: "battery"
+      state_class: "measurement"
+      uom: "%"
       scale: 1
       rule: 1
+      isReadOnly: false
       registers: [0x0111]
       icon: 'mdi:battery'
 
     - name: "Time of Use Enable 1"
       class: ""
-      state_class: ""
+      state_class: "measurement"
       uom: ""
       scale: 1
       rule: 1

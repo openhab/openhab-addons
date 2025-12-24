@@ -133,6 +133,8 @@ public class SonosAudioSink extends AudioSinkSync {
             StreamServed streamServed;
             try {
                 streamServed = audioHTTPServer.serve(audioStream, 10, true);
+                logger.debug("Audio stream accessible through HTTP served at {} for Sonos playback",
+                        streamServed.url());
             } catch (IOException e) {
                 try {
                     audioStream.close();

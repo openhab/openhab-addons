@@ -32,6 +32,7 @@
 					<option value="deye_4mppt">DEYE Microinverter with 4 MPPT Trackers (deye_4mppt)</option>
 					<option value="deye_hybrid">Generic DEYE/Sunsynk/SolArk Hybrid inverters (deye_hybrid)</option>
 					<option value="deye_sg04lp3">DEYE/Sunsynk/SolArk Hybrid 8/12K-SG04LP3 (deye_sg04lp3)</option>
+					<option value="deye_sg01hp3">DEYE/Sunsynk/SolArk Hybrid 30K-SG01HP3 (deye_sg01hp3)</option>
 					<option value="deye_string">Generic DEYE/Sunsynk/SolArk String inverters (deye_string)</option>
 					<option value="kstar_hybrid">KSTAR Hybrid Inverter (kstar_hybrid)</option>
 					<option value="sofar_g3hyd">SOFAR Hybrid Three-Phase Inverter (sofar_g3hyd)</option>

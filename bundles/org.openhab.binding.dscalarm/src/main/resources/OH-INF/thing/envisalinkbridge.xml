@@ -6,7 +6,7 @@
 
 	<bridge-type id="envisalink">
 		<label>EyezOn Envisalink</label>
-		<description>This bridge represents the EyezOn Envlisalink 3/2D
+		<description>This bridge represents the EyezOn Envlisalink 4/3/2D
 			Ethernet interface.</description>
 		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
 
@@ -25,13 +25,13 @@
 			<parameter name="ipAddress" type="text" required="true">
 				<context>network-address</context>
 				<label>IP Address</label>
-				<description>The IP address of the EyezOn Envlisalink 3/2D Ethernet
+				<description>The IP address of the EyezOn Envlisalink 4/3/2D Ethernet
 					interface.</description>
 			</parameter>
 
 			<parameter name="port" type="integer" required="false">
 				<label>Port</label>
-				<description>The TCP port to the EyezOn Envlisalink 3/2D Ethernet
+				<description>The TCP port to the EyezOn Envlisalink 4/3/2D Ethernet
 					interface.</description>
 				<default>4025</default>
 			</parameter>
@@ -39,7 +39,7 @@
 			<parameter name="password" type="text" required="false">
 				<context>password</context>
 				<label>Password</label>
-				<description>The Password to login to the EyezOn Envlisalink 3/2D
+				<description>The Password to login to the EyezOn Envlisalink 4/3/2D
 					Ethernet interface.</description>
 				<default>user</default>
 			</parameter>

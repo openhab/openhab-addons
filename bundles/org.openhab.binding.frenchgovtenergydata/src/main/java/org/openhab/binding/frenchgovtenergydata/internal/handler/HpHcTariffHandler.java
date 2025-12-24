@@ -31,8 +31,8 @@ import org.openhab.core.thing.Thing;
  */
 @NonNullByDefault
 public class HpHcTariffHandler extends TariffHandler<HpHcTariff> {
-    private static final String EMPTY_LINE = ";;;;;;;;";
     private static final String DATASET_ID = "f7303b3a-93c7-4242-813d-84919034c416";
+    private static final String EMPTY_LINE = ";".repeat(HpHcTariff.LEN_CONTROL - 1);
 
     public HpHcTariffHandler(Thing thing) {
         super(thing, DATASET_ID);

@@ -247,7 +247,6 @@ public class VeSyncRequestManagedDeviceBypassV2 extends VeSyncAuthenticatedReque
     }
 
     public VeSyncRequestManagedDeviceBypassV2() {
-        super();
         method = "bypassV2";
     }
 }

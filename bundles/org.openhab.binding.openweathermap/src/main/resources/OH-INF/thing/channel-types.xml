@@ -760,25 +760,25 @@
 	</channel-type>
 
 	<channel-type id="cloudiness">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Cloudiness</label>
 		<description>Current cloudiness.</description>
 		<category>Sun_Clouds</category>
 		<tags>
 			<tag>Measurement</tag>
 		</tags>
-		<state readOnly="true" min="0" max="100" pattern="%d %unit%"/>
+		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="forecasted-cloudiness">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Forecasted Cloudiness</label>
 		<description>Forecasted cloudiness.</description>
 		<category>Sun_Clouds</category>
 		<tags>
 			<tag>Forecast</tag>
 		</tags>
-		<state readOnly="true" min="0" max="100" pattern="%d %unit%"/>
+		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="rain">
@@ -1068,7 +1068,7 @@
 	</channel-type>
 
 	<channel-type id="precip-probability">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Precipitation Probability</label>
 		<description>Forecasted precipitation probability.</description>
 		<category>Rain</category>

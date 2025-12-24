@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.avmfritz.internal.dto.templates;
 
-import java.util.Collections;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -40,7 +39,7 @@ public class TemplateListModel {
 
     public List<TemplateModel> getTemplates() {
         if (templates == null) {
-            templates = Collections.emptyList();
+            templates = List.of();
         }
         return templates;
     }

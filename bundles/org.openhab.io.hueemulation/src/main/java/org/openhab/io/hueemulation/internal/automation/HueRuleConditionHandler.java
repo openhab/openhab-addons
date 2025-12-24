@@ -16,8 +16,6 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoField;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
 import java.util.regex.Matcher;
@@ -72,7 +70,6 @@ public class HueRuleConditionHandler extends BaseModuleHandler<Condition> implem
     // weekdays range from Monday to Sunday (1-7). The first entry is not used
     private final boolean[] weekDaysAllowed = { false, false, false, false, false, false, false, false };
 
-    @SuppressWarnings({ "null", "unused" })
     public HueRuleConditionHandler(Condition module, HueDataStore ds) {
         super(module);
         config = module.getConfiguration().as(HueRuleEntry.Condition.class);
@@ -103,10 +100,6 @@ public class HueRuleConditionHandler extends BaseModuleHandler<Condition> implem
             // Item not used
             itemUID = "";
         } else {
-            throw new IllegalStateException("Can only handle groups and lights");
-        }
-
-        if (itemUID == null) {
             throw new IllegalStateException("Can only handle groups and lights");
         }
 
@@ -174,7 +167,6 @@ public class HueRuleConditionHandler extends BaseModuleHandler<Condition> implem
 
                 // Monday = 64, Tuesday = 32, Wednesday = 16, Thursday = 8, Friday = 4, Saturday = 2, Sunday = 1
                 int weekdaysBinaryEncoded = Integer.valueOf(m.group(1));
-                List<String> cronWeekdays = new ArrayList<>();
                 for (int bin = 64, c = 1; bin > 0; bin /= 2, c += 1) {
                     if (weekdaysBinaryEncoded / bin == 1) {
                         weekdaysBinaryEncoded = weekdaysBinaryEncoded % bin;

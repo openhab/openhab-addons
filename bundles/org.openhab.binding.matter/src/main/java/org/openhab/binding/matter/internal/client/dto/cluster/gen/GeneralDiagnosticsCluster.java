@@ -122,7 +122,7 @@ public class GeneralDiagnosticsCluster extends BaseCluster {
      * The HardwareFaultChange Event shall indicate a change in the set of hardware faults currently detected by the
      * Node.
      */
-    public class HardwareFaultChange {
+    public static class HardwareFaultChange {
         /**
          * This field shall represent the set of faults currently detected, as per HardwareFaultEnum.
          */
@@ -141,7 +141,7 @@ public class GeneralDiagnosticsCluster extends BaseCluster {
     /**
      * The RadioFaultChange Event shall indicate a change in the set of radio faults currently detected by the Node.
      */
-    public class RadioFaultChange {
+    public static class RadioFaultChange {
         /**
          * This field shall represent the set of faults currently detected, as per RadioFaultEnum.
          */
@@ -160,7 +160,7 @@ public class GeneralDiagnosticsCluster extends BaseCluster {
     /**
      * The NetworkFaultChange Event shall indicate a change in the set of network faults currently detected by the Node.
      */
-    public class NetworkFaultChange {
+    public static class NetworkFaultChange {
         /**
          * This field shall represent the set of faults currently detected, as per NetworkFaultEnum.
          */
@@ -179,7 +179,7 @@ public class GeneralDiagnosticsCluster extends BaseCluster {
     /**
      * The BootReason Event shall indicate the reason that caused the device to start-up.
      */
-    public class BootReason {
+    public static class BootReason {
         /**
          * This field shall contain the reason for this BootReason event.
          */
@@ -194,7 +194,7 @@ public class GeneralDiagnosticsCluster extends BaseCluster {
      * This structure describes a network interface supported by the Node, as provided in the NetworkInterfaces
      * attribute.
      */
-    public class NetworkInterface {
+    public static class NetworkInterface {
         /**
          * This field shall indicate a human-readable (displayable) name for the network interface, that is different
          * from all other interfaces.
@@ -266,8 +266,8 @@ public class GeneralDiagnosticsCluster extends BaseCluster {
         NON_VOLATILE_MEMORY_ERROR(9, "Non Volatile Memory Error"),
         TAMPER_DETECTED(10, "Tamper Detected");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private HardwareFaultEnum(Integer value, String label) {
             this.value = value;
@@ -294,8 +294,8 @@ public class GeneralDiagnosticsCluster extends BaseCluster {
         BLE_FAULT(5, "Ble Fault"),
         ETHERNET_FAULT(6, "Ethernet Fault");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private RadioFaultEnum(Integer value, String label) {
             this.value = value;
@@ -319,8 +319,8 @@ public class GeneralDiagnosticsCluster extends BaseCluster {
         NETWORK_JAMMED(2, "Network Jammed"),
         CONNECTION_FAILED(3, "Connection Failed");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private NetworkFaultEnum(Integer value, String label) {
             this.value = value;
@@ -345,8 +345,8 @@ public class GeneralDiagnosticsCluster extends BaseCluster {
         CELLULAR(3, "Cellular"),
         THREAD(4, "Thread");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private InterfaceTypeEnum(Integer value, String label) {
             this.value = value;
@@ -373,8 +373,8 @@ public class GeneralDiagnosticsCluster extends BaseCluster {
         SOFTWARE_UPDATE_COMPLETED(5, "Software Update Completed"),
         SOFTWARE_RESET(6, "Software Reset");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private BootReasonEnum(Integer value, String label) {
             this.value = value;

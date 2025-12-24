@@ -21,7 +21,7 @@ import java.util.OptionalInt;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.modbus.e3dc.internal.E3DCWallboxConfiguration;
+import org.openhab.binding.modbus.e3dc.internal.config.E3DCWallboxConfiguration;
 import org.openhab.binding.modbus.e3dc.internal.dto.DataConverter;
 import org.openhab.binding.modbus.e3dc.internal.dto.WallboxArray;
 import org.openhab.binding.modbus.e3dc.internal.dto.WallboxBlock;

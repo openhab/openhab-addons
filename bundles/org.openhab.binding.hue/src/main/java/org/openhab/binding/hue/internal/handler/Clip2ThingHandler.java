@@ -133,7 +133,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
      * A map of service Resources whose state contributes to the overall state of this thing. It is a map between the
      * resource ID (string) and a Resource object containing the last known state. e.g. a DEVICE thing may support a
      * LIGHT service whose Resource contributes to its overall state, or a ROOM or ZONE thing may support a
-     * GROUPED_LIGHT service whose Resource contributes to the its overall state.
+     * GROUPED_LIGHT service whose Resource contributes to its overall state.
      */
     private final Map<String, Resource> serviceContributorsCache = new ConcurrentHashMap<>();
 
@@ -288,9 +288,9 @@ public class Clip2ThingHandler extends BaseThingHandler {
     private Clip2BridgeHandler getBridgeHandler() throws AssetNotLoadedException {
         Bridge bridge = getBridge();
         if (Objects.nonNull(bridge)) {
-            BridgeHandler handler = bridge.getHandler();
-            if (handler instanceof Clip2BridgeHandler) {
-                return (Clip2BridgeHandler) handler;
+            BridgeHandler bridgeHandler = bridge.getHandler();
+            if (bridgeHandler instanceof Clip2BridgeHandler clip2BridgeHandler) {
+                return clip2BridgeHandler;
             }
         }
         throw new AssetNotLoadedException("Bridge handler missing");
@@ -383,10 +383,9 @@ public class Clip2ThingHandler extends BaseThingHandler {
 
             case CHANNEL_2_COLOR:
                 putResource = new Resource(lightResourceType);
-                if (command instanceof HSBType) {
-                    HSBType color = ((HSBType) command);
-                    putResource = Setters.setColorXy(putResource, color, cache);
-                    command = color.getBrightness();
+                if (command instanceof HSBType colorCommand) {
+                    putResource = Setters.setColorXy(putResource, colorCommand, cache);
+                    command = colorCommand.getBrightness();
                 }
                 // NB fall through for handling of brightness and switch related commands !!
 
@@ -395,12 +394,11 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 if (command instanceof IncreaseDecreaseType increaseDecreaseCommand && Objects.nonNull(cache)) {
                     command = translateIncreaseDecreaseCommand(increaseDecreaseCommand, cache.getBrightnessState());
                 }
-                if (command instanceof PercentType) {
-                    PercentType brightness = (PercentType) command;
-                    putResource = Setters.setDimming(putResource, brightness, cache);
+                if (command instanceof PercentType brightnessCommand) {
+                    putResource = Setters.setDimming(putResource, brightnessCommand, cache);
                     Double minDimLevel = Objects.nonNull(cache) ? cache.getMinimumDimmingLevel() : null;
                     minDimLevel = Objects.nonNull(minDimLevel) ? minDimLevel : Dimming.DEFAULT_MINIMUM_DIMMIMG_LEVEL;
-                    command = OnOffType.from(brightness.doubleValue() >= minDimLevel);
+                    command = OnOffType.from(brightnessCommand.doubleValue() >= minDimLevel);
                 }
                 // NB fall through for handling of switch related commands !!
 
@@ -440,8 +438,8 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 break;
 
             case CHANNEL_2_SCENE:
-                if (command instanceof StringType) {
-                    Resource scene = sceneResourceEntries.get(((StringType) command).toString());
+                if (command instanceof StringType stringCommand) {
+                    Resource scene = sceneResourceEntries.get(stringCommand.toString());
                     if (Objects.nonNull(scene)) {
                         ResourceType putResourceType = scene.getType();
                         putResource = new Resource(putResourceType);
@@ -464,8 +462,8 @@ public class Clip2ThingHandler extends BaseThingHandler {
 
             case CHANNEL_2_DYNAMICS:
                 Duration clearAfter = Duration.ZERO;
-                if (command instanceof QuantityType<?>) {
-                    QuantityType<?> durationMs = ((QuantityType<?>) command).toUnit(MetricPrefix.MILLI(Units.SECOND));
+                if (command instanceof QuantityType<?> quantityCommand) {
+                    QuantityType<?> durationMs = quantityCommand.toUnit(MetricPrefix.MILLI(Units.SECOND));
                     if (Objects.nonNull(durationMs) && durationMs.longValue() > 0) {
                         Duration duration = Duration.ofMillis(durationMs.longValue());
                         dynamicsDuration = duration;
@@ -635,8 +633,8 @@ public class Clip2ThingHandler extends BaseThingHandler {
         Bridge bridge = getBridge();
         if (Objects.nonNull(bridge)) {
             BridgeHandler bridgeHandler = bridge.getHandler();
-            if (bridgeHandler instanceof Clip2BridgeHandler) {
-                ((Clip2BridgeHandler) bridgeHandler).childInitialized();
+            if (bridgeHandler instanceof Clip2BridgeHandler clip2BridgeHandler) {
+                clip2BridgeHandler.childInitialized();
             }
         }
     }
@@ -790,7 +788,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
         Alerts alerts = resource.getAlerts();
         if (Objects.nonNull(alerts)) {
             List<StateOption> stateOptions = alerts.getActionValues().stream().map(action -> action.name())
-                    .map(actionId -> new StateOption(actionId, actionId)).collect(Collectors.toList());
+                    .map(actionId -> new StateOption(actionId, actionId)).toList();
             if (!stateOptions.isEmpty()) {
                 stateDescriptionProvider.setStateOptions(new ChannelUID(thing.getUID(), CHANNEL_2_ALERT), stateOptions);
                 logger.debug("{} -> updateAlerts() found {} associated alerts", resourceId, stateOptions.size());
@@ -891,8 +889,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
 
                 // get list of unused channels
                 List<Channel> unusedChannels = thing.getChannels().stream()
-                        .filter(channel -> !supportedChannelIdSet.contains(channel.getUID().getId()))
-                        .collect(Collectors.toList());
+                        .filter(channel -> !supportedChannelIdSet.contains(channel.getUID().getId())).toList();
 
                 // remove any unused channels
                 if (!unusedChannels.isEmpty()) {
@@ -929,8 +926,8 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 }
                 // Update channel from timestamp if last button pressed.
                 State buttonLastUpdatedState = resource.getButtonLastUpdatedState();
-                if (buttonLastUpdatedState instanceof DateTimeType) {
-                    Instant buttonLastUpdatedInstant = ((DateTimeType) buttonLastUpdatedState).getInstant();
+                if (buttonLastUpdatedState instanceof DateTimeType dateTimeState) {
+                    Instant buttonLastUpdatedInstant = dateTimeState.getInstant();
                     if (buttonLastUpdatedInstant.isAfter(buttonGroupLastUpdated)) {
                         updateState(CHANNEL_2_BUTTON_LAST_UPDATED, buttonLastUpdatedState, fullUpdate);
                         buttonGroupLastUpdated = buttonLastUpdatedInstant;
@@ -1106,7 +1103,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 .map(effect -> {
                     String effectName = EffectType.of(effect).name();
                     return new StateOption(effectName, effectName);
-                }).distinct().collect(Collectors.toList());
+                }).distinct().toList();
         if (!stateOptions.isEmpty()) {
             stateDescriptionProvider.setStateOptions(new ChannelUID(thing.getUID(), CHANNEL_2_EFFECT), stateOptions);
             logger.debug("{} -> updateEffects() found {} effects", resourceId, stateOptions.size());
@@ -1263,7 +1260,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
      */
     private void updateSceneChannelStateDescription() {
         stateDescriptionProvider.setStateOptions(new ChannelUID(thing.getUID(), CHANNEL_2_SCENE),
-                sceneResourceEntries.keySet().stream().map(n -> new StateOption(n, n)).collect(Collectors.toList()));
+                sceneResourceEntries.keySet().stream().map(n -> new StateOption(n, n)).toList());
     }
 
     /**
@@ -1372,8 +1369,8 @@ public class Clip2ThingHandler extends BaseThingHandler {
                     break;
 
                 case TRIGGER:
-                    if (state instanceof DecimalType) {
-                        triggerChannel(channelID, String.valueOf(((DecimalType) state).intValue()));
+                    if (state instanceof DecimalType decimalState) {
+                        triggerChannel(channelID, String.valueOf(decimalState.intValue()));
                     }
             }
         }
@@ -1409,7 +1406,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 legacyLinkedChannelUIDs.addAll(legacyThing.getChannels().stream().map(Channel::getUID)
                         .filter(uid -> REPLICATE_CHANNEL_ID_MAP.containsKey(uid.getId())
                                 && itemChannelLinkRegistry.isLinked(uid))
-                        .collect(Collectors.toList()));
+                        .toList());
 
                 Map<String, String> newProperties = new HashMap<>(properties);
                 newProperties.remove(PROPERTY_LEGACY_THING_UID);

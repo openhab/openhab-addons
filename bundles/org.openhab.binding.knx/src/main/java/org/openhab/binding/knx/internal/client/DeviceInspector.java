@@ -15,6 +15,7 @@ package org.openhab.binding.knx.internal.client;
 import static org.openhab.binding.knx.internal.KNXBindingConstants.*;
 import static org.openhab.binding.knx.internal.handler.DeviceConstants.*;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HexFormat;
@@ -26,13 +27,13 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import tuwien.auto.calimero.DeviceDescriptor;
-import tuwien.auto.calimero.DeviceDescriptor.DD0;
-import tuwien.auto.calimero.DeviceDescriptor.DD2;
-import tuwien.auto.calimero.GroupAddress;
-import tuwien.auto.calimero.IndividualAddress;
-import tuwien.auto.calimero.KNXIllegalArgumentException;
-import tuwien.auto.calimero.mgmt.PropertyAccess.PID;
+import io.calimero.DeviceDescriptor;
+import io.calimero.DeviceDescriptor.DD0;
+import io.calimero.DeviceDescriptor.DD2;
+import io.calimero.GroupAddress;
+import io.calimero.IndividualAddress;
+import io.calimero.KNXIllegalArgumentException;
+import io.calimero.mgmt.PropertyAccess.PID;
 
 /**
  * Client dedicated to read device specific information using the {@link DeviceInfoClient}.
@@ -190,8 +191,8 @@ public class DeviceInspector {
             if (orderInfo != null) {
                 final String hexString = toHex(orderInfo, "");
                 if (!"ffffffffffffffffffff".equals(hexString) && !"00000000000000000000".equals(hexString)) {
-                    String result = new String(orderInfo);
-                    result = result.trim();
+                    // according to spec, ISO-8859-1 encoding
+                    String result = new String(orderInfo, StandardCharsets.ISO_8859_1).trim();
                     if (result.isEmpty()) {
                         result = "0x" + hexString;
                     } else {
@@ -220,7 +221,8 @@ public class DeviceInspector {
                                 false, OPERATION_TIMEOUT);
                         if (toUnsigned(data) != 0) {
                             if (data != null) {
-                                buf.append(new String(data));
+                                // according to spec, ISO-8859-1 encoding
+                                buf.append(new String(data, StandardCharsets.ISO_8859_1));
                             }
                         } else {
                             break;

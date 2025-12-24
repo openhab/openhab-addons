@@ -1,0 +1,432 @@
+{
+    "data": {
+        "endpoints": {
+            "items": [
+                {
+                    "endpointId": "amzn1.alexa.endpoint.b5bfbc93-0794-42df-a679-cc7861d11e12",
+                    "id": "amzn1.alexa.endpoint.b5bfbc93-0794-42df-a679-cc7861d11e12",
+                    "friendlyName": "Leos Echo Dot",
+                    "displayCategories": {
+                        "primary": {
+                            "value": "ALEXA_VOICE_ENABLED"
+                        }
+                    },
+                    "legacyIdentifiers": {
+                        "dmsIdentifier": {
+                            "deviceType": {
+                                "type": "PLAIN",
+                                "value": {
+                                    "text": "A1RABVCI4QCIKC"
+                                }
+                            },
+                            "deviceSerialNumber": {
+                                "type": "PLAIN",
+                                "value": {
+                                    "text": "G090XG0901040Q8N"
+                                }
+                            }
+                        }
+                    },
+                    "legacyAppliance": {
+                        "applianceId": "AAA_SonarCloudService_b72d99bf-bf6c-3381-aaff-9a8a40b7eeab",
+                        "applianceTypes": [
+                            "ALEXA_VOICE_ENABLED"
+                        ],
+                        "endpointTypeId": "",
+                        "friendlyName": "Leos Echo Dot",
+                        "friendlyDescription": "Amazon smart device",
+                        "manufacturerName": "Amazon",
+                        "connectedVia": "Leos Echo Dot",
+                        "modelName": "",
+                        "entityId": "b5bfbc93-0794-42df-a679-cc7861d11e12",
+                        "actions": [],
+                        "mergedApplianceIds": [
+                            "AlexaBridge_G090XG0901040Q8N@A1RABVCI4QCIKC_G090XG0901040Q8N",
+                            "AAA_SonarCloudService_b72d99bf-bf6c-3381-aaff-9a8a40b7eeab"
+                        ],
+                        "capabilities": [
+                            {
+                                "capabilityType": "AVSInterfaceCapability",
+                                "type": "AlexaInterface",
+                                "version": "3",
+                                "properties": {
+                                    "supported": [
+                                        {
+                                            "name": "overallMode"
+                                        },
+                                        {
+                                            "name": "babyCryDetectionState"
+                                        },
+                                        {
+                                            "name": "carbonMonoxideSirenDetectionState"
+                                        },
+                                        {
+                                            "name": "snoreDetectionState"
+                                        },
+                                        {
+                                            "name": "waterSoundsDetectionState"
+                                        },
+                                        {
+                                            "name": "smokeAlarmDetectionState"
+                                        },
+                                        {
+                                            "name": "glassBreakDetectionState"
+                                        },
+                                        {
+                                            "name": "detectionModes"
+                                        },
+                                        {
+                                            "name": "runningWaterDetectionState"
+                                        },
+                                        {
+                                            "name": "coughDetectionState"
+                                        },
+                                        {
+                                            "name": "dogBarkDetectionState"
+                                        },
+                                        {
+                                            "name": "humanPresenceDetectionState"
+                                        },
+                                        {
+                                            "name": "smokeSirenDetectionState"
+                                        },
+                                        {
+                                            "name": "beepingApplianceDetectionState"
+                                        }
+                                    ],
+                                    "proactivelyReported": true,
+                                    "retrievable": true,
+                                    "readOnly": false
+                                },
+                                "configuration": {},
+                                "interfaceName": "Alexa.AcousticEventSensor"
+                            },
+                            {
+                                "type": "AlexaInterface",
+                                "version": "1.0",
+                                "properties": {
+                                    "supported": [
+                                        {
+                                            "name": "proactiveDetection"
+                                        }
+                                    ],
+                                    "proactivelyReported": false,
+                                    "retrievable": false
+                                },
+                                "capabilityType": "AlexaEndpointCapabilityInstance",
+                                "interfaceName": "Alexa.EndpointDetector"
+                            },
+                            {
+                                "capabilityType": "AVSInterfaceCapability",
+                                "type": "AlexaInterface",
+                                "version": "1.17",
+                                "properties": {
+                                    "supported": [
+                                        {
+                                            "name": "supportedFeatures"
+                                        },
+                                        {
+                                            "name": "LocalEngineState"
+                                        }
+                                    ],
+                                    "proactivelyReported": true,
+                                    "retrievable": true,
+                                    "readOnly": false
+                                },
+                                "interfaceName": "Alexa.LocalExecutionFlow"
+                            },
+                            {
+                                "type": "AlexaInterface",
+                                "version": "1.0",
+                                "configurations": {
+                                    "applicationProtocols": [
+                                        {
+                                            "type": "BLE_MESH",
+                                            "maxVersion": "1.0",
+                                            "commissioneeTypes": {
+                                                "displayCategories": [
+                                                    "FAN",
+                                                    "LIGHT",
+                                                    "OTHER",
+                                                    "REMOTE",
+                                                    "SMARTPLUG"
+                                                ]
+                                            }
+                                        },
+                                        {
+                                            "type": "OTHER",
+                                            "name": "LAP",
+                                            "maxVersion": "1.0",
+                                            "commissioneeTypes": {
+                                                "displayCategories": [
+                                                    "LIGHT",
+                                                    "SMARTPLUG",
+                                                    "SWITCH"
+                                                ]
+                                            }
+                                        },
+                                        {
+                                            "type": "MATTER",
+                                            "maxVersion": "1.3",
+                                            "transportProtocols": [
+                                                {
+                                                    "type": "WI-FI",
+                                                    "maxVersion": "5.0"
+                                                }
+                                            ],
+                                            "commissioneeTypes": {
+                                                "displayCategories": [
+                                                    "AIR_CONDITIONER",
+                                                    "AIR_PURIFIER",
+                                                    "AIR_QUALITY_MONITOR",
+                                                    "CARBON_MONOXIDE_SENSOR",
+                                                    "CONTACT_SENSOR",
+                                                    "COOLING_CABINET",
+                                                    "DISHWASHER",
+                                                    "FAN",
+                                                    "FREEZER",
+                                                    "HUB",
+                                                    "HUMIDITY_SENSOR",
+                                                    "INTERIOR_BLIND",
+                                                    "LIGHT",
+                                                    "LIGHT_SENSOR",
+                                                    "MOTION_SENSOR",
+                                                    "OTHER",
+                                                    "REFRIGERATOR",
+                                                    "REMOTE",
+                                                    "SMARTLOCK",
+                                                    "SMARTPLUG",
+                                                    "SMOKE_SENSOR",
+                                                    "SWITCH",
+                                                    "TEMPERATURE_SENSOR",
+                                                    "THERMOSTAT",
+                                                    "VACUUM_CLEANER"
+                                                ],
+                                                "deviceTypes": [
+                                                    "10",
+                                                    "14",
+                                                    "15",
+                                                    "19",
+                                                    "21",
+                                                    "22",
+                                                    "43",
+                                                    "44",
+                                                    "45",
+                                                    "112",
+                                                    "113",
+                                                    "114",
+                                                    "116",
+                                                    "117",
+                                                    "118",
+                                                    "256",
+                                                    "257",
+                                                    "262",
+                                                    "263",
+                                                    "266",
+                                                    "267",
+                                                    "268",
+                                                    "269",
+                                                    "514",
+                                                    "769",
+                                                    "770",
+                                                    "775"
+                                                ]
+                                            }
+                                        },
+                                        {
+                                            "type": "OTHER",
+                                            "name": "PHILIPS_BLE",
+                                            "maxVersion": "5.0",
+                                            "transportProtocols": [
+                                                {
+                                                    "type": "BLE",
+                                                    "maxVersion": "5.0"
+                                                }
+                                            ],
+                                            "commissioneeTypes": {
+                                                "displayCategories": [
+                                                    "LIGHT",
+                                                    "SMARTPLUG"
+                                                ]
+                                            }
+                                        },
+                                        {
+                                            "type": "PHILIPS_HUE",
+                                            "maxVersion": "1.0",
+                                            "transportProtocols": [
+                                                {
+                                                    "type": "WI-FI",
+                                                    "maxVersion": "5.0"
+                                                }
+                                            ],
+                                            "commissioneeTypes": {
+                                                "displayCategories": [
+                                                    "LIGHT"
+                                                ]
+                                            }
+                                        },
+                                        {
+                                            "type": "WEMO",
+                                            "maxVersion": "1.0",
+                                            "transportProtocols": [
+                                                {
+                                                    "type": "WI-FI",
+                                                    "maxVersion": "5.0"
+                                                }
+                                            ],
+                                            "commissioneeTypes": {
+                                                "displayCategories": [
+                                                    "SMARTPLUG",
+                                                    "SWITCH"
+                                                ]
+                                            }
+                                        },
+                                        {
+                                            "type": "IPP",
+                                            "maxVersion": "2.1",
+                                            "transportProtocols": [
+                                                {
+                                                    "type": "WI-FI",
+                                                    "maxVersion": "5.0"
+                                                }
+                                            ],
+                                            "commissioneeTypes": {
+                                                "displayCategories": [
+                                                    "PRINTER"
+                                                ]
+                                            }
+                                        }
+                                    ]
+                                },
+                                "capabilityType": "AlexaEndpointCapabilityInstance",
+                                "interfaceName": "Alexa.DeviceDiscovery.Hub"
+                            },
+                            {
+                                "type": "AlexaInterface",
+                                "version": "3.1",
+                                "properties": {
+                                    "supported": [
+                                        {
+                                            "name": "enablement"
+                                        },
+                                        {
+                                            "name": "illuminance"
+                                        }
+                                    ],
+                                    "proactivelyReported": true,
+                                    "retrievable": true
+                                },
+                                "capabilityType": "AlexaEndpointCapabilityInstance",
+                                "interfaceName": "Alexa.LightSensor"
+                            }
+                        ],
+                        "applianceNetworkState": {
+                            "reachability": "REACHABLE",
+                            "lastSeenAt": 1755420019855,
+                            "createdAt": 1755294328906,
+                            "lastSeenDiscoverySessionId": {
+                                "value": "5f458a21-d841-419b-8571-3535cb1232e8"
+                            }
+                        },
+                        "version": "0",
+                        "isEnabled": true,
+                        "customerDefinedDeviceType": "",
+                        "customerPreference": null,
+                        "alexaDeviceIdentifierList": [
+                            {
+                                "dmsDeviceSerialNumber": "G090XG0901040Q8N",
+                                "dmsDeviceTypeId": "A1RABVCI4QCIKC"
+                            }
+                        ],
+                        "aliases": [],
+                        "driverIdentity": {
+                            "namespace": "AAA",
+                            "identifier": "SonarCloudService"
+                        },
+                        "additionalApplianceDetails": {
+                            "additionalApplianceDetails": {}
+                        },
+                        "isConsentRequired": false,
+                        "applianceKey": "b5bfbc93-0794-42df-a679-cc7861d11e12",
+                        "appliancePairs": [
+                            "AlexaBridge_G090XG0901040Q8N@A1RABVCI4QCIKC_G090XG0901040Q8N",
+                            "AAA_SonarCloudService_b72d99bf-bf6c-3381-aaff-9a8a40b7eeab"
+                        ],
+                        "deduplicatedPairs": [
+                            {
+                                "applianceId": "AAA_SonarCloudService_b72d99bf-bf6c-3381-aaff-9a8a40b7eeab",
+                                "entityId": "b5bfbc93-0794-42df-a679-cc7861d11e12"
+                            },
+                            {
+                                "applianceId": "AlexaBridge_G090XG0901040Q8N@A1RABVCI4QCIKC_G090XG0901040Q8N",
+                                "entityId": "b5bfbc93-0794-42df-a679-cc7861d11e12"
+                            }
+                        ],
+                        "entityPairs": [
+                            "b5bfbc93-0794-42df-a679-cc7861d11e12"
+                        ],
+                        "deduplicatedAliasesByEntityId": {},
+                        "relations": [
+                            {
+                                "relatedEntityType": "PARENT",
+                                "relationshipEntity": {
+                                    "destination": {
+                                        "id": "G090XG0901040Q8N",
+                                        "entityType": "DMS_ENDPOINT",
+                                        "metadata": ""
+                                    },
+                                    "relationshipType": "IsComponentOf"
+                                }
+                            },
+                            {
+                                "relatedEntityType": "PARENT",
+                                "relationshipEntity": {
+                                    "destination": {
+                                        "id": "G090XG0901040Q8N",
+                                        "entityType": "DMS_ENDPOINT",
+                                        "metadata": ""
+                                    },
+                                    "relationshipType": "IsComponentOf"
+                                }
+                            }
+                        ]
+                    },
+                    "serialNumber": {
+                        "value": {
+                            "text": "G090XG0901040Q8N"
+                        }
+                    },
+                    "enablement": "ENABLED",
+                    "model": {
+                        "value": {
+                            "text": "Echo Dot (3rd generation)"
+                        }
+                    },
+                    "manufacturer": {
+                        "value": {
+                            "text": "Amazon"
+                        }
+                    },
+                    "features": [
+                        {
+                            "name": "speaker",
+                            "operations": null
+                        },
+                        {
+                            "name": "connectivity",
+                            "operations": null
+                        },
+                        {
+                            "name": "bluetooth",
+                            "operations": null
+                        }
+                    ]
+                }
+            ]
+        }
+    },
+    "extensions": {
+        "requestID": "1PPWV08RGFWVFSPWSPH0",
+        "duration": 58
+    }
+}

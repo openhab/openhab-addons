@@ -41,8 +41,8 @@ public class ContentAppObserverCluster extends BaseCluster {
         SUCCESS(0, "Success"),
         UNEXPECTED_DATA(1, "Unexpected Data");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private StatusEnum(Integer value, String label) {
             this.value = value;

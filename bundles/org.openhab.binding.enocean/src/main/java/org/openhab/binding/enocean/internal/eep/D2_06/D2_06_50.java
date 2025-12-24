@@ -35,7 +35,6 @@ import org.openhab.core.types.UnDefType;
 public class D2_06_50 extends _VLDMessage {
 
     public D2_06_50() {
-        super();
     }
 
     public D2_06_50(ERP1Message packet) {

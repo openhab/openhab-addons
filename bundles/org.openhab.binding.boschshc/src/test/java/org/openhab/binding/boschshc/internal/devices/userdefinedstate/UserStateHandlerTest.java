@@ -29,9 +29,11 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.ArgumentCaptor;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.openhab.binding.boschshc.internal.devices.AbstractBoschSHCHandlerTest;
 import org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants;
 import org.openhab.binding.boschshc.internal.exceptions.BoschSHCException;
@@ -49,6 +51,7 @@ import org.openhab.core.thing.ThingTypeUID;
  * @author Patrick Gell - Initial contribution
  */
 @NonNullByDefault
+@ExtendWith(MockitoExtension.class)
 class UserStateHandlerTest extends AbstractBoschSHCHandlerTest<UserStateHandler> {
 
     private final Configuration config = new Configuration(Map.of("id", UUID.randomUUID().toString()));

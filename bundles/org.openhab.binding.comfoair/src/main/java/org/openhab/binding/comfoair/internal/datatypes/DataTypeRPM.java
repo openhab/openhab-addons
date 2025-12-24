@@ -64,7 +64,7 @@ public class DataTypeRPM implements ComfoAirDataType {
         float rpm;
 
         if (value instanceof QuantityType<?> qt) {
-            QuantityType<?> qtRpm = ((QuantityType<?>) value).toUnit(Units.RPM);
+            QuantityType<?> qtRpm = qt.toUnit(Units.RPM);
 
             if (qtRpm != null) {
                 rpm = qtRpm.floatValue();

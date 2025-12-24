@@ -20,6 +20,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -64,6 +65,18 @@ public class SatelDeviceDiscoveryService extends AbstractDiscoveryService {
     public SatelDeviceDiscoveryService(SatelBridgeHandler bridgeHandler,
             Function<ThingTypeUID, ThingType> thingTypeProvider) {
         super(SUPPORTED_THING_TYPES, 60, false);
+        this.bridgeHandler = bridgeHandler;
+        this.thingTypeProvider = thingTypeProvider;
+    }
+
+    /**
+     * Constructor for tests only.
+     *
+     * @param scheduler the {@link ScheduledExecutorService} to use during testing.
+     */
+    SatelDeviceDiscoveryService(ScheduledExecutorService scheduler, SatelBridgeHandler bridgeHandler,
+            Function<ThingTypeUID, ThingType> thingTypeProvider) {
+        super(scheduler, SUPPORTED_THING_TYPES, 60, false, null, null);
         this.bridgeHandler = bridgeHandler;
         this.thingTypeProvider = thingTypeProvider;
     }

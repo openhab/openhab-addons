@@ -42,8 +42,8 @@ public class DiagnosticLogsCluster extends BaseCluster {
         NETWORK_DIAG(1, "Network Diag"),
         CRASH_LOGS(2, "Crash Logs");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private IntentEnum(Integer value, String label) {
             this.value = value;
@@ -68,8 +68,8 @@ public class DiagnosticLogsCluster extends BaseCluster {
         BUSY(3, "Busy"),
         DENIED(4, "Denied");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private StatusEnum(Integer value, String label) {
             this.value = value;
@@ -91,8 +91,8 @@ public class DiagnosticLogsCluster extends BaseCluster {
         RESPONSE_PAYLOAD(0, "Response Payload"),
         BDX(1, "Bdx");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private TransferProtocolEnum(Integer value, String label) {
             this.value = value;

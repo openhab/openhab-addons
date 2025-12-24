@@ -122,7 +122,7 @@
 
 			<channel id="inverter-power" typeId="system.electric-power">
 				<label>Inverter Power</label>
-				<description>AC power the inverter (total).</description>
+				<description>AC power from the inverter (total).</description>
 			</channel>
 			<channel id="inverter-power-r" typeId="system.electric-power">
 				<label>Inverter Power (#R)</label>
@@ -579,8 +579,8 @@
 
 		<config-description>
 			<parameter name="deviceId" type="text" required="true">
-				<label>Device Id</label>
-				<description>Id (serial number) of the inverter.</description>
+				<label>Device ID</label>
+				<description>ID (serial number) of the inverter.</description>
 			</parameter>
 		</config-description>
 

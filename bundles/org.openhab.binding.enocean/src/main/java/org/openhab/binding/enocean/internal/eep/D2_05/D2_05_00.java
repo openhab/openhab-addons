@@ -53,7 +53,6 @@ public class D2_05_00 extends _VLDMessage {
     protected static final byte UP = 0x00; // 0%
 
     public D2_05_00() {
-        super();
     }
 
     public D2_05_00(ERP1Message packet) {

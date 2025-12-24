@@ -12,9 +12,7 @@
  */
 package org.openhab.binding.sagercaster.internal;
 
-import static org.openhab.binding.sagercaster.internal.SagerCasterBindingConstants.THING_TYPE_SAGERCASTER;
-
-import java.util.Set;
+import static org.openhab.binding.sagercaster.internal.SagerCasterBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -38,13 +36,12 @@ import org.osgi.service.component.annotations.Reference;
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.sagercaster")
 @NonNullByDefault
 public class SagerCasterHandlerFactory extends BaseThingHandlerFactory {
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_SAGERCASTER);
     private final WindDirectionStateDescriptionProvider stateDescriptionProvider;
     private final SagerWeatherCaster sagerWeatherCaster;
 
     @Activate
-    public SagerCasterHandlerFactory(@Reference SagerWeatherCaster sagerWeatherCaster,
-            @Reference WindDirectionStateDescriptionProvider provider) {
+    public SagerCasterHandlerFactory(final @Reference SagerWeatherCaster sagerWeatherCaster,
+            final @Reference WindDirectionStateDescriptionProvider provider) {
         this.stateDescriptionProvider = provider;
         this.sagerWeatherCaster = sagerWeatherCaster;
     }

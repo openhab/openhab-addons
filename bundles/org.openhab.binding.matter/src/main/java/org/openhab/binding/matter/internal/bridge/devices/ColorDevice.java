@@ -43,7 +43,7 @@ import org.openhab.core.util.ColorUtil;
  * @author Dan Cunningham - Initial contribution
  */
 @NonNullByDefault
-public class ColorDevice extends GenericDevice {
+public class ColorDevice extends BaseDevice {
     // how long to wait (max) for the device to turn on before updating the HSB values
     private static final int ONOFF_DELAY_MILLIS = 500;
     // the onFuture is used to wait for the device to turn on before updating the HSB values
@@ -155,7 +155,7 @@ public class ColorDevice extends GenericDevice {
     private void updateBrightness(PercentType brightness) {
         if (primaryItem instanceof ColorItem colorItem) {
             lastB = brightness;
-            colorItem.send(brightness);
+            colorItem.send(brightness, MATTER_SOURCE);
         }
     }
 
@@ -176,7 +176,7 @@ public class ColorDevice extends GenericDevice {
                     }
                 });
             }
-            colorItem.send(OnOffType.from(onOff));
+            colorItem.send(OnOffType.from(onOff), MATTER_SOURCE);
         }
     }
 
@@ -212,7 +212,7 @@ public class ColorDevice extends GenericDevice {
             if (b.intValue() == 0) {
                 b = new PercentType(100);
             }
-            colorItem.send(new HSBType(h, s, b));
+            colorItem.send(new HSBType(h, s, b), MATTER_SOURCE);
         }
         this.lastH = null;
         this.lastS = null;

@@ -13,13 +13,13 @@
 package org.openhab.binding.heos.internal.discovery;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.heos.internal.handler.HeosBridgeHandler;
 
 /**
  * The {@link HeosPlayerDiscoveryListener } is an Event Listener
  * for the HEOS network. Handler which wants the get informed
  * if the player or groups within the HEOS network have changed has to
- * implement this class and register itself at the {@link HeosBridgeHandler}
+ * implement this class and register itself at the
+ * {@link org.openhab.binding.heos.internal.handler.HeosBridgeHandler}
  *
  * @author Johannes Einig - Initial contribution
  */

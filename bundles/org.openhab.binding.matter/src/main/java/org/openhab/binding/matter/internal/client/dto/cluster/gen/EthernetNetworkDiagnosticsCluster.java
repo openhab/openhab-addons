@@ -105,8 +105,8 @@ public class EthernetNetworkDiagnosticsCluster extends BaseCluster {
         RATE200G(8, "Rate 200 G"),
         RATE400G(9, "Rate 400 G");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private PHYRateEnum(Integer value, String label) {
             this.value = value;

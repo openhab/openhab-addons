@@ -170,7 +170,7 @@ Thing zoneminder:monitor:2 "Monitor 2" (zoneminder:server:server) [ monitorId="2
 // Server
 String ZmServer_ImageMonitorId "Image Monitor Id [%s]" { channel="zoneminder:server:server:imageMonitorId" }
 String ZmServer_ImageUrl "Image Url [%s]" { channel="zoneminder:server:server:imageUrl" }
-String ZmServer_VideoMonitorId "Video Monitor Id [%s]" { channel="zm:server:server:videoMonitorId" }
+String ZmServer_VideoMonitorId "Video Monitor Id [%s]" { channel="zoneminder:server:server:videoMonitorId" }
 String ZmServer_VideoUrl "Video Url [%s]" { channel="zoneminder:server:server:videoUrl" }
 String ZmServer_RunState "Run State [%s]" { channel="zoneminder:server:server:runState" }
 

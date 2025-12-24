@@ -142,7 +142,7 @@ public class DynamoDBQueryUtils {
                 return null;
             }
         });
-        if (filter.getOperator() != null && filter.getState() != null) {
+        if (filter.getState() != null) {
             // Convert filter's state to DynamoDBItem in order get suitable string representation for the state
             Expression.Builder stateFilterExpressionBuilder = Expression.builder()
                     .expression(String.format("#attr %s :value", operatorAsString(filter.getOperator())));
@@ -213,23 +213,10 @@ public class DynamoDBQueryUtils {
      * @return string representation corresponding to the given the Operator
      */
     private static String operatorAsString(Operator op) {
-        switch (op) {
-            case EQ:
-                return "=";
-            case NEQ:
-                return "<>";
-            case LT:
-                return "<";
-            case LTE:
-                return "<=";
-            case GT:
-                return ">";
-            case GTE:
-                return ">=";
-
-            default:
-                throw new IllegalStateException("Unknown operator " + op);
+        if (op == Operator.NEQ) {
+            return "<>";
         }
+        return op.getSymbol();
     }
 
     private static <T> void acceptAsDTO(Item item, boolean legacy, DynamoDBItemVisitor<T> visitor) {

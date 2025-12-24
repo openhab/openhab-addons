@@ -27,7 +27,6 @@ import com.google.gson.JsonObject;
 @NonNullByDefault
 public class GoChargingCommand extends AbstractNoResponseCommand {
     public GoChargingCommand() {
-        super();
     }
 
     @Override
