@@ -366,15 +366,16 @@ Switch myChannelActivityStatus {
 
 ## Time-weighted Average Profile
 
-This profile collects all state updates within the configured duration and delivers one time-weighted average value afterwards.
-It's useful to reduce high frequent data which goes finally into your persistence database, like data from 
+This profile aggregates all state updates within the configured duration and outputs a single time-weighted average value at the end of that period.
+It is useful for reducing high frequency data before it reaches your persistence database, such as measurements from:
 
 - inverters
 - smart meters 
 - power plugs with electric measurement
 
-Profile is only applicable to number channels with or without unit metadata.
-The average is built for all state updates from handler to item, neither commands nor updates towards an item from rules or UI are affected.
+This profile is only applicable to numeric channels, with or without unit metadata.
+The average is calculated solely from state updates sent from the handler to the item.
+Commands and item updates originating from rules or the UI are not affected.
 Check the semantics of the channel if this profile fits. 
 E.g. a channel providing _power measurement_ values is a valid candidate to build averages.
 A channel providing a status or accumulated value like _total energy production today_ is not a good candidate.
@@ -395,5 +396,4 @@ This will break the steady time frame but reports rapid changes e.g. for power c
 Number:Power SmartmeterPower {
   channel="mybinding:mything:mychannel" [ profile="basic-profiles:time-weighted-average", duration="1m" ]
 }
-
 ```
