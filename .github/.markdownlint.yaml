@@ -2,7 +2,7 @@
 
 default: true
 
-# Expect dash usage for unorderd lists
+# Expect dash usage for unordered lists
 MD004:
   style: dash
 
@@ -28,7 +28,7 @@ MD033: false
 MD046:
   style: fenced
 
-# Emphasiszis in underscore
+# Emphasis in underscore
 MD049:
   style: underscore
 
