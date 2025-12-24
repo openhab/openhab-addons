@@ -8,7 +8,6 @@
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="fs-site"/>
 		</supported-bridge-type-refs>
-
 		<label>Forecast Solar Plane</label>
 		<description>PV Plane attached to forecast solar public subscription site</description>
 		<semantic-equipment-tag>SolarPanel</semantic-equipment-tag>

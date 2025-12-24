@@ -134,7 +134,7 @@
 			</parameter>
 			<parameter name="eolPattern" type="text">
 				<advanced>true</advanced>
-				<label>EOL pattern</label>
+				<label>EOL Pattern</label>
 				<description>Only for Charset = HEX: 'End of line' pattern as regular expression. For example, "0D 10" matches \r\n,
 					"\\bFF" matches 0xFF. Please note that the matched pattern will be part of the result string.</description>
 			</parameter>
@@ -176,7 +176,7 @@
 			</parameter>
 			<parameter name="eolPattern" type="text">
 				<advanced>true</advanced>
-				<label>EOL pattern</label>
+				<label>EOL Pattern</label>
 				<description>Only for Charset = HEX: 'End of line' pattern as regular expression. For example, "0D 10" matches \r\n,
 					"\\bFF" matches 0xFF. Please note that the matched pattern will be part of the result string.</description>
 			</parameter>
@@ -195,7 +195,7 @@
 
 		<config-description>
 			<parameter name="patternMatch" type="text" required="true">
-				<label>Patern Match</label>
+				<label>Pattern Match</label>
 				<context>pattern-match</context>
 				<description>Regular expression used to identify device from received data (must match the whole line)</description>
 			</parameter>

@@ -15,7 +15,7 @@ Any home automation system based on the OverKiz API is potentially supported.
 - gateways (gateway status)
 - gates (control gate, get state)
 - roller shutters (UP, DOWN, STOP control of a roller shutter). IO Homecontrol devices are allowed to set exact position of a shutter (0-100%)
-- blinds (UP, DOWN, STOP control of a blind). IO Homecontrol devices are allowed to set exact position of a blinds (0-100%) as well as orientation of slats (0-100%)
+- blinds (UP, DOWN, STOP control of a blind). IO Homecontrol devices are allowed to set exact position of a blind (0-100%) as well as orientation of slats (0-100%)
 - screens (UP, DOWN, STOP control of a screen). IO Homecontrol devices are allowed to set exact position of a screen (0-100%)
 - garage doors (UP, DOWN, STOP control of a garage door). IO Homecontrol devices are allowed to set exact position of a garage door (0-100%)
 - awnings (UP, DOWN, STOP control of an awning). IO Homecontrol devices are allowed to set exact position of an awning (0-100%)
@@ -53,11 +53,11 @@ Both Somfy Tahoma and Somfy Connexoon gateways have been confirmed working in th
 
 To start a discovery, just
 
-- Add a new bridge thing.
+- Add a new bridge Thing.
 - Configure the bridge selecting your cloud portal (<www.tahomalink.com> by default) and setting your email (login) and password to the cloud portal.
 
 If the supplied credentials are correct, the automatic discovery can be used to scan and detect your devices which will appear in your Inbox.
-If you are missing some device, check the debug log during the discovery and create an issue with the information about an unsupported thing from the log.
+If you are missing some device, check the debug log during the discovery and create an issue with the information about an unsupported Thing from the log.
 
 ## Thing Configuration
 
@@ -95,7 +95,7 @@ The gateway support for the developer mode is limited as well, so far Connexoon 
 |------------|--------------|-------------------|------------------------------|
 | Device URL | url          | Required          | The identifier of the device |
 
-To retrieve the url parameter or gateway id, just add the automatically discovered device from your inbox and copy its values from thing edit page. (the url parameter is visible on edit page only)
+To retrieve the url parameter or gateway id, just add the automatically discovered device from your inbox and copy its values from Thing edit page. (the url parameter is visible on edit page only)
 Please see the example below.
 
 ## Channels
@@ -117,7 +117,7 @@ Please see the example below.
 | up/down venetian blind                                                             | tilt                            | tilt of the blind's slats, it can have value -5 to 5 (negative or positive tilt). Works even for RTS blinds                                                                                                                       |
 | adjustable slats roller shutter                                                    | rocker                          | used for setting the rocker position of the roller shutter, the only position allowing the slats control                                                                                                                          |
 | bioclimatic pergola                                                                | slats                           | slats state (open/closed)                                                                                                                                                                                                         |
-| bioclimatic pergola                                                                | pergola_command                 | used for controlling biclimatic pergola (closeSlats, openSlats, stop)                                                                                                                                                             |
+| bioclimatic pergola                                                                | pergola_command                 | used for controlling bioclimatic pergola (closeSlats, openSlats, stop)                                                                                                                                                            |
 | action group                                                                       | execute_action                  | switch which reacts to ON command and triggers the predefined Tahoma action                                                                                                                                                       |
 | onoff, light                                                                       | switch                          | reacts to standard ON/OFF commands                                                                                                                                                                                                |
 | dimmer light                                                                       | light_intensity                 | sets/gets intensity of the dimmer light or ON/OFF                                                                                                                                                                                 |
@@ -224,7 +224,7 @@ You can list all the scenarios IDs with the following console command: `somfytah
 
 All things which have a RSSI (received signal strength indication) state, expose a channel "rssi".
 
-When a roller shutter-like thing receives STOP command, there are two possible behaviours
+When a roller shutter-like Thing receives STOP command, there are two possible behaviours
 
 - when the roller shutter is idle then MY command is interpreted (the roller shutter/exterior screen/awning goes to your favourite position)
 - when the roller shutter is moving then STOP command is interpreted (the roller shutter/exterior screen/awning stops)
@@ -267,7 +267,7 @@ Bridge somfytahoma:bridge:237dbae7 "Somfy Tahoma Bridge" [ email="my@email.com",
 }
 ```
 
-Awnings, garage doors, screens, blinds, and windows things have the same notation as roller shutters. Just use "awning", "garagedoor", "screen", "blind" or "window" instead of "rolleshutter" in thing definition.
+Awnings, garage doors, screens, blinds, and windows things have the same notation as roller shutters. Just use "awning", "garagedoor", "screen", "blind" or "window" instead of "rolleshutter" in Thing definition.
 
 .items file
 
@@ -361,11 +361,11 @@ Slider item=HeatingLevel
 ## Alexa compatibility
 
 This binding is compatible with the official Alexa Smart Home Skill.
-Since Rolleshutter items are unsupported, only Dimmer with control channel can be used.
+Since Rollershutter items are unsupported, only Dimmer with control channel can be used.
 Syntax in .item file is as follows:
 
 ```java
 Dimmer RollerShutterLivingD "Roller shutter living [%.1f]"  [ "Lighting" ] {channel="somfytahoma:rollershutter:237dbae7:87bf0403-a45d-4037-b874-28f4ece30004:control"}
 ```
 
-Alexa can set the roller shutter (awning, blind, ...) to a specific position as well as send ON (interpretted as UP) and OFF commands (interpretted as DOWN).
+Alexa can set the roller shutter (awning, blind, ...) to a specific position as well as send ON (interpreted as UP) and OFF commands (interpreted as DOWN).

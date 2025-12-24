@@ -24,7 +24,7 @@ There is no auto discovery
 
 ### `somfy-device` Thing Configuration
 
-There is no thing configuration for the `somfy-device` things.
+There is no Thing configuration for the `somfy-device` things.
 
 ## Channels
 

@@ -1,17 +1,17 @@
 # SolarEdge Binding
 
-The SolarEdge binding is used to get live data from from SolarEdge inverters via the central web api. This binding should in general be compatible with all inverter models that upload data to the solaredge portal.
+The SolarEdge binding retrieves live data from SolarEdge inverters via the central web API. This binding should in general be compatible with all inverter models that upload data to the SolarEdge portal.
 Only read access is supported.
 
 ## Supported Things
 
-This binding provides only one thing type: "generic" which is the inverter itself.
-As the name suggests it is generic which means it applies to all available inverters.
-Create one inverter thing per physical inverter installation available in your home(s).
-Additional stuff like batteries is automatically supported.
-Inverters which have a meter attached allow more detailed measuring.
-Either a SolarEdge modbus meter or a S0 meter (export or consumption meter) can be used.
-While on the one hand the S0 meter is the cheaper solution the solaredge meter on the other hand can be used as combined import+export meter and therefore allows even more detailed measurements.
+This binding provides only one Thing type: "generic," which is the inverter itself.
+As the name suggests, it is generic, which means it applies to all available inverters.
+Create one inverter Thing per physical inverter installation available in your home(s).
+Additional components such as batteries are automatically supported.
+Inverters that have a meter attached allow more detailed measurements.
+Either a SolarEdge Modbus meter or an S0 meter (export or consumption meter) can be used.
+While the S0 meter is the cheaper solution, the SolarEdge meter can be used as a combined import and export meter and therefore allows even more detailed measurements.
 For more details please see here:
 
 - [SolarEdge meter](https://www.solaredge.com/products/pv-monitoring/accessories/css-wattnode-modbus-meter)
@@ -24,49 +24,49 @@ Auto-Discovery is not supported, as access requires authentication.
 
 ## Thing Configuration
 
-The following configuration parameters are available for this thing:
+The following configuration parameters are available for this Thing:
 
 - **tokenOrApiKey** (required)
-Either the [official API Key](https://www.youtube.com/watch?v=iR26nmL5bXg) for using the public API or when using the inofficial private API: a token which can be retrieved from browser's cookie store when logged into the SolarEdge website.
+Either the [official API key](https://www.youtube.com/watch?v=iR26nmL5bXg) for using the public API, or when using the unofficial private API: a token that can be retrieved from your browser cookie store when logged into the SolarEdge website.
 It is called "SPRING_SECURITY_REMEMBER_ME_COOKIE".
 When using this token, see also `usePrivateApi` and `meterInstalled`.
-E.g. for Firefox, use the built-in [Storage Inspector](https://developer.mozilla.org/en-US/docs/Tools/Storage_Inspector) to retrieve the token.
+For Firefox, use the built-in [Storage Inspector](https://developer.mozilla.org/en-US/docs/Tools/Storage_Inspector) to retrieve the token.
 
 - **solarId** (required)<br>
-Id of your inverter at SolarEdge (can be found in the URL after successful login: <https://monitoring.solaredge.com/solaredge-web/p/site/> **&lt;solarId&gt;** /#/dashboard)
+ID of your inverter at SolarEdge (can be found in the URL after successful login: <https://monitoring.solaredge.com/solaredge-web/p/site/> **&lt;solarId&gt;** /#/dashboard)
 
 - **usePrivateApi** (optional)<br>
-can be set to true to use the private API.
-Private API has no limit regarding query frequency but is less stable.
-Private API will only gather live data if a meter is available.
-The official public API has a limit of 300 queries per day but should be much more reliable/stable.
-Set this to true when using token retrieved from browser in `tokenOrApiKey`.
-See also `meterInstalled`. (default = false)
+Can be set to true to use the private API.
+The private API has no limit regarding query frequency but is less stable.
+The private API will only gather live data if a meter is available.
+The official public API has a limit of 300 queries per day but should be more reliable and stable.
+Set this to true when using a token retrieved from the browser in `tokenOrApiKey`.
+See also `meterInstalled`. (Default: false)
 
 - **meterInstalled** (optional)<br>
-can be set to true for setups that contain a meter which is connected to the inverter.
+Can be set to true for setups that contain a meter that is connected to the inverter.
 A meter allows more detailed data retrieval.
-This must be set to true when using token retrieved from browser in `tokenOrApiKey`.
-This can be set either to true or false when using the API key. (default = false)
+This must be set to true when using a token retrieved from the browser in `tokenOrApiKey`.
+This can be set either to true or false when using the API key. (Default: false)
 
 - **liveDataPollingInterval** (optional)<br>
-interval (minutes) in which live data values are retrieved from Solaredge.
-Setting less than 10 minutes is only allowed when using private API. (default = 10)
+Interval (minutes) in which live data values are retrieved from SolarEdge.
+Setting less than 10 minutes is only allowed when using the private API. (Default: 10)
 
 - **aggregateDataPollingInterval** (optional)<br>
-  interval (minutes) in which aggregate data values are retrieved from Solaredge.
-  Setting less than 60 is only allowed when using private API. (default = 60)
+Interval (minutes) in which aggregate data values are retrieved from SolarEdge.
+Setting less than 60 minutes is only allowed when using the private API. (Default: 60)
 
 ## Channels
 
-Available channels depend on the specific setup e.g. if a meter and/or a battery is present.
+Available channels depend on the specific setup, e.g., if a meter and/or a battery is present.
 All numeric channels use the [UoM feature](https://openhab.org/blog/2018/02/22/units-of-measurement.html).
-This means you can easily change the desired unit e.g. MWh instead of kWh just in your item definition.
-Following channels are currently available:
+This means you can easily change the desired unit (e.g., MWh instead of kWh) just in your item definition.
+The following channels are currently available:
 
 | Channel Type ID                               | Item Type            | Description                                      | Remark                                           |
 | --------------------------------------------- | -------------------- | ------------------------------------------------ | ------------------------------------------------ |
-| live#production                               | Number:Power         | Current PV production                            | general available                                |
+| live#production                               | Number:Power         | Current PV production                            | generally available                              |
 | live#pv_status                                | String               | Current PV status                                | requires meter attached and 'meterInstalled' set |
 | live#consumption                              | Number:Power         | Current power consumption                        | requires meter attached and 'meterInstalled' set |
 | live#load_status                              | String               | Current load status                              | requires meter attached and 'meterInstalled' set |
@@ -82,28 +82,28 @@ Following channels are currently available:
 | aggregate_day#production                      | Number:Energy        | Day Aggregate PV production                      | general available                                |
 | aggregate_day#consumption                     | Number:Energy        | Day Aggregate power consumption                  | requires meter attached and 'meterInstalled' set |
 | aggregate_day#selfConsumptionForConsumption   | Number:Energy        | Day Aggregate self consumption (incl battery)    | requires meter attached and 'meterInstalled' set |
-| aggregate_day#selfConsumptionCoverage         | Number:Dimensionless | Day Coverage of consumption by self production   | requires meter attached and 'meterInstalled' set |
+| aggregate_day#selfConsumptionCoverage         | Number:Dimensionless | Day coverage of consumption by self‑production   | requires meter attached and 'meterInstalled' set |
 | aggregate_day#batterySelfConsumption          | Number:Energy        | Day Aggregate self consumption from battery      | requires battery and private API activated       |
 | aggregate_day#import                          | Number:Energy        | Day Aggregate import from grid                   | requires meter attached and 'meterInstalled' set |
 | aggregate_day#export                          | Number:Energy        | Day Aggregate export to grid                     | requires meter attached and 'meterInstalled' set |
 | aggregate_week#production                     | Number:Energy        | Week Aggregate PV production                     | requires meter attached and 'meterInstalled' set |
 | aggregate_week#consumption                    | Number:Energy        | Week Aggregate power consumption                 | requires meter attached and 'meterInstalled' set |
 | aggregate_week#selfConsumptionForConsumption  | Number:Energy        | Week Aggregate self consumption (incl battery)   | requires meter attached and 'meterInstalled' set |
-| aggregate_week#selfConsumptionCoverage        | Number:Dimensionless | Week Coverage of consumption by self production  | requires meter attached and 'meterInstalled' set |
+| aggregate_week#selfConsumptionCoverage        | Number:Dimensionless | Week coverage of consumption by self‑production  | requires meter attached and 'meterInstalled' set |
 | aggregate_week#batterySelfConsumption         | Number:Energy        | Week Aggregate self consumption from battery     | requires battery and private API activated       |
 | aggregate_week#import                         | Number:Energy        | Week Aggregate import from grid                  | requires meter attached and 'meterInstalled' set |
 | aggregate_week#export                         | Number:Energy        | Week Aggregate export to grid                    | requires meter attached and 'meterInstalled' set |
 | aggregate_month#production                    | Number:Energy        | Month Aggregate PV production                    | general available                                |
 | aggregate_month#consumption                   | Number:Energy        | Month Aggregate power consumption                | requires meter attached and 'meterInstalled' set |
 | aggregate_month#selfConsumptionForConsumption | Number:Energy        | Month Aggregate self consumption (incl battery)  | requires meter attached and 'meterInstalled' set |
-| aggregate_month#selfConsumptionCoverage       | Number:Dimensionless | Month Coverage of consumption by self production | requires meter attached and 'meterInstalled' set |
+| aggregate_month#selfConsumptionCoverage       | Number:Dimensionless | Month coverage of consumption by self‑production | requires meter attached and 'meterInstalled' set |
 | aggregate_month#batterySelfConsumption        | Number:Energy        | Month Aggregate self consumption from battery    | requires battery and private API activated       |
 | aggregate_month#import                        | Number:Energy        | Month Aggregate import from grid                 | requires meter attached and 'meterInstalled' set |
 | aggregate_month#export                        | Number:Energy        | Month Aggregate export to grid                   | requires meter attached and 'meterInstalled' set |
 | aggregate_year#production                     | Number:Energy        | Year Aggregate PV production                     | general available                                |
 | aggregate_year#consumption                    | Number:Energy        | Year Aggregate power consumption                 | requires meter attached and 'meterInstalled' set |
 | aggregate_year#selfConsumptionForConsumption  | Number:Energy        | Year Aggregate self consumption (incl battery)   | requires meter attached and 'meterInstalled' set |
-| aggregate_year#selfConsumptionCoverage        | Number:Dimensionless | Year Coverage of consumption by self production  | requires meter attached and 'meterInstalled' set |
+| aggregate_year#selfConsumptionCoverage        | Number:Dimensionless | Year coverage of consumption by self‑production  | requires meter attached and 'meterInstalled' set |
 | aggregate_year#batterySelfConsumption         | Number:Energy        | Year Aggregate self consumption from battery     | requires battery and private API activated       |
 | aggregate_year#import                         | Number:Energy        | Year Aggregate import from grid                  | requires meter attached and 'meterInstalled' set |
 | aggregate_year#export                         | Number:Energy        | Year Aggregate export to grid                    | requires meter attached and 'meterInstalled' set |
@@ -112,25 +112,25 @@ Following channels are currently available:
 
 ### Thing
 
-- minimum configuration
+- Minimum configuration
 
 ```java
 solaredge:generic:se2200 [ tokenOrApiKey="...", solarId="..."]
 ```
 
-- with pollingIntervals
+- With polling intervals
 
 ```java
 solaredge:generic:se2200[ tokenOrApiKey="...", solarId="...", liveDataPollingInterval=..., aggregateDataPollingInterval=... ]
 ```
 
-- maximum version
+- Full configuration
 
 ```java
 solaredge:generic:se2200     [ tokenOrApiKey="secret", solarId="4711", meterInstalled=true, usePrivateApi=true, liveDataPollingInterval=15, aggregateDataPollingInterval=60 ]
 ```
 
-- multiple inverters
+- Multiple inverters
 
 ```java
 solaredge:generic:home1 [ tokenOrApiKey="...", solarId="..."]
