@@ -35,3 +35,6 @@ MD049:
 # Strong in asterisk
 MD050:
   style: asterisk
+
+MD060: false
+ 

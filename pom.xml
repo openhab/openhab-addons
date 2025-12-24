@@ -658,11 +658,6 @@ Import-Package: \\
         <groupId>com.diffplug.spotless</groupId>
         <artifactId>spotless-maven-plugin</artifactId>
       </plugin>
-
-      <plugin>
-        <groupId>com.github.eirslett</groupId>
-        <artifactId>frontend-maven-plugin</artifactId>
-      </plugin>
     </plugins>
     <extensions>
       <extension>
@@ -865,65 +860,6 @@ Import-Package: \\
         <oh.java.version>17</oh.java.version>
         <maven.compiler.release>${oh.java.version}</maven.compiler.release>
       </properties>
-    </profile>
-
-    <profile>
-      <id>check-markdown</id>
-      <activation>
-        <file>
-          <exists>README.md</exists>
-        </file>
-      </activation>
-      <build>
-        <plugins>
-
-          <plugin>
-            <groupId>com.github.eirslett</groupId>
-            <artifactId>frontend-maven-plugin</artifactId>
-            <version>1.15.1</version>
-            <executions>
-              <!-- Install Node.js and npm -->
-              <execution>
-                <id>install-node-and-npm-markdownlint</id>
-                <goals>
-                  <goal>install-node-and-npm</goal>
-                </goals>
-                <configuration>
-                  <nodeVersion>v20.11.0</nodeVersion>
-                  <npmVersion>10.2.5</npmVersion>
-                  <installDirectory>${project.build.directory}</installDirectory>
-                </configuration>
-              </execution>
-
-              <!-- Install markdownlint-cli -->
-              <execution>
-                <id>npm-install-markdownlint</id>
-                <goals>
-                  <goal>npm</goal>
-                </goals>
-                <configuration>
-                  <workingDirectory>${project.build.directory}</workingDirectory>
-                  <arguments>install markdownlint-cli@0.45.0 --no-save</arguments>
-                </configuration>
-              </execution>
-
-              <!-- Run markdownlint during verify -->
-              <execution>
-                <id>run-markdownlint</id>
-                <goals>
-                  <goal>npm</goal>
-                </goals>
-                <phase>verify</phase>
-                <configuration>
-                  <workingDirectory>${project.build.directory}</workingDirectory>
-                  <arguments>exec --loglevel=info -- markdownlint -c ${basedirRoot}/.github/markdownlint.yaml ../*.md ../doc/**/*.md</arguments>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-
-        </plugins>
-      </build>
     </profile>
 
   </profiles>
