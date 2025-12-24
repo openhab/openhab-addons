@@ -602,7 +602,7 @@ A note on semantic tags:
 - If used, you can not mix different semantic namespaces as seen in the example above where `switches` is the base namespace being used for all tags.
 - These are provided by the Matter spec, but its up to clients (like Apple, Alexa, Google....) to interpret these tags (or not).
 - Each ecosystem will likely differ in its use of these tags.
-- They are provided here for maximum flexiblity but are not guarenteed to have any affect.  
+- They are provided here for maximum flexibility but are not guarenteed to have any affect.  
 
 </details>
 
