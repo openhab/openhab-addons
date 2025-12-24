@@ -15,9 +15,9 @@ package org.openhab.binding.solarforecast.internal.forecastsolar.handler;
 import static org.openhab.binding.solarforecast.internal.SolarForecastBindingConstants.CHANNEL_CORRECTION_FACTOR;
 
 import java.util.Iterator;
-import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.solarforecast.internal.SolarForecastException;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.PointType;
@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
 public class SmartForecastSolarBridgeHandler extends ForecastSolarBridgeHandler {
     private final Logger logger = LoggerFactory.getLogger(SmartForecastSolarBridgeHandler.class);
 
-    public SmartForecastSolarBridgeHandler(Bridge bridge, Optional<PointType> location) {
+    public SmartForecastSolarBridgeHandler(Bridge bridge, @Nullable PointType location) {
         super(bridge, location);
     }
 
@@ -44,14 +44,14 @@ public class SmartForecastSolarBridgeHandler extends ForecastSolarBridgeHandler 
      * Hook into the forecast update process with update of correction factor.
      */
     @Override
-    public synchronized void forecastUpdate() {
+    public void forecastUpdate() {
         super.forecastUpdate();
         double energyProductionSum = 0;
         double forecastProductionSum = 0;
         boolean holdingTimeElapsed = true;
-        for (Iterator<ForecastSolarPlaneHandler> iterator = planes.iterator(); iterator.hasNext();) {
+        for (Iterator<ForecastSolarPlaneHandler> planeIter = planes.iterator(); planeIter.hasNext();) {
             try {
-                SmartForecastSolarPlaneHandler sfph = (SmartForecastSolarPlaneHandler) iterator.next();
+                SmartForecastSolarPlaneHandler sfph = (SmartForecastSolarPlaneHandler) planeIter.next();
                 energyProductionSum += sfph.getEnergyProduction();
                 forecastProductionSum += sfph.getForecastProduction();
                 holdingTimeElapsed = holdingTimeElapsed && sfph.isHoldingTimeElapsed();

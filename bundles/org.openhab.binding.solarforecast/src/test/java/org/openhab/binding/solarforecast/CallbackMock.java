@@ -52,7 +52,7 @@ public class CallbackMock implements ThingHandlerCallback {
     Bridge bridge;
     Map<String, TimeSeries> seriesMap = new HashMap<>();
     Map<String, List<State>> stateMap = new HashMap<>();
-    ThingStatusInfo currentInfo = new ThingStatusInfo(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, null);
+    volatile ThingStatusInfo currentInfo = new ThingStatusInfo(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, null);
 
     @Override
     public void stateUpdated(ChannelUID channelUID, State state) {
@@ -93,6 +93,18 @@ public class CallbackMock implements ThingHandlerCallback {
     @Override
     public void statusUpdated(Thing thing, ThingStatusInfo thingStatus) {
         currentInfo = thingStatus;
+    }
+
+    public void waitForOnline() {
+        int count = 0;
+        while (currentInfo.getStatus() != ThingStatus.ONLINE && count < 10) {
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                // ignore
+            }
+            count++;
+        }
     }
 
     public ThingStatusInfo getStatus() {

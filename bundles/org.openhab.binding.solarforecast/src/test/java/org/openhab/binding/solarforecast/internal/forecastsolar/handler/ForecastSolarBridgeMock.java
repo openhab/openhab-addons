@@ -12,33 +12,23 @@
  */
 package org.openhab.binding.solarforecast.internal.forecastsolar.handler;
 
-import static org.mockito.Mockito.mock;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.HttpClient;
-import org.openhab.binding.solarforecast.CallbackMock;
-import org.openhab.binding.solarforecast.internal.forecastsolar.ForecastSolarObject;
 import org.openhab.core.config.core.Configuration;
-import org.openhab.core.thing.Thing;
+import org.openhab.core.library.types.PointType;
+import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
 
 /**
- * The {@link ForecastSolarPlaneMock} mocks Plane Handler for solar.forecast
+ * The {@link ForecastSolarBridgeMock} mocks bridge handler for solar.forecast
  *
  * @author Bernd Weymann - Initial contribution
- * @author Bernd Weymann - Constructor correction
  */
 @NonNullByDefault
-public class ForecastSolarPlaneMock extends ForecastSolarPlaneHandler {
+public class ForecastSolarBridgeMock extends ForecastSolarBridgeHandler {
 
-    public ForecastSolarPlaneMock(Thing thing, CallbackMock cm) {
-        super(thing, mock(HttpClient.class));
-        super.setCallback(cm);
-    }
-
-    public void updateForecast(ForecastSolarObject fso) {
-        super.setForecast(fso);
+    public ForecastSolarBridgeMock(Bridge bridge, PointType location) {
+        super(bridge, location);
     }
 
     @Override
@@ -47,11 +37,12 @@ public class ForecastSolarPlaneMock extends ForecastSolarPlaneHandler {
     }
 
     @Override
-    public void updateConfiguration(Configuration config) {
-        super.updateConfiguration(config);
+    public void forecastUpdate() {
+        super.forecastUpdate();
     }
 
-    public String getURL() {
-        return super.buildUrl();
+    @Override
+    public void updateConfiguration(Configuration config) {
+        super.updateConfiguration(config);
     }
 }
