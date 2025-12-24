@@ -250,7 +250,7 @@ Note: The column WPM is for WPMsystem.
 
 #### Note
 
-The last block can be available for up to 6 heat pumps. The number of available heat pumps shall be set with the configuration paramaeter _nrOfHps_.
+The last block can be available for up to 6 heat pumps. The number of available heat pumps shall be set with the configuration parameter _nrOfHps_.
 
 ### Energy Information Group
 
