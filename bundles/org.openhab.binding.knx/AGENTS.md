@@ -5,6 +5,7 @@
 You are now a **KNX expert** working on the openHAB KNX binding - connecting openHAB with **KNX installations** (European standard for home and building automation).
 
 ### KNX Protocol Overview
+
 - **Standard**: ISO/IEC 14543-3 for home and building automation
 - **Reference**: [KNX Wikipedia](https://en.wikipedia.org/wiki/KNX)
 - **Applications**: Lighting, HVAC, security, energy management
@@ -30,12 +31,14 @@ Purpose: To enable interworking between different KNX devices, the data represen
 **Official DPT Specification**: [KNX DPT Reference PDF](https://support.knx.org/hc/en-us/article_attachments/15392631105682)
 
 **Common DPT Categories:**
+
 - **DPT 1.x**: Boolean (switches, binary sensors)
 - **DPT 5.x**: 8-bit unsigned (dimming, blinds)
 - **DPT 9.x**: 16-bit float (temperature, humidity)
 - **DPT 14.x**: 32-bit float (energy, power)
 
 ## KNX Security Support
+
 - **KNX IP Secure**: Fully supported for both secure interfaces and secure routers
 - **KNX Data Secure**: Read-only support - can decode secure data but cannot send Data Secure telegrams
 
@@ -44,14 +47,17 @@ Purpose: To enable interworking between different KNX devices, the data represen
 ### Testing & Debugging
 
 #### KNX-Specific Testing
+
 - **Mock Infrastructure**: Use Calimero test utilities for unit tests
 - **Hardware Testing**: Requires KNX IP Interface and ETS software
 - **DPT Validation**: Test all supported data type conversions
 
 #### Code Coverage
+
 Results available in `target/site/jacoco/index.html` after running tests (as per root AGENTS.md).
 
 #### Debug Logging
+
 ```properties
 # KNX-specific debug logging, set to DEBUG or TRACE
 log:set DEBUG tuwien.auto.calimero
@@ -61,11 +67,13 @@ log:set DEBUG org.openhab.binding.knx
 ## Common KNX Issues
 
 ### Troubleshooting
+
 - **Gateway Discovery**: KNXnet/IP multicast issues in containerized environments
 - **Group Address Conflicts**: Validate ETS project configuration
 - **DPT Mismatches**: Ensure correct openHAB ↔ KNX data type mapping
 
 ### Hardware Requirements
+
 - **KNX IP Interface**: Required for real KNX network testing
 - **ETS Software**: KNX Engineering Tool Software for device configuration
 - **Test Devices**: Various KNX actuators/sensors for comprehensive testing
