@@ -13,10 +13,10 @@
 		<channels>
 			<channel typeId="homePresence" id="homePresence"/>
 			<channel typeId="geofencingEnabled" id="geofencingEnabled"/>
-			<channel typeId="APIRateLimit" id="APIRateLimit"/>
-			<channel typeId="APIRateDuration" id="APIRateDuration"/>
-			<channel typeId="APIRateRemaining" id="APIRateRemaining"/>
-			<channel typeId="APIRateReset" id="APIRateReset"/>
+			<channel typeId="apiRateLimit" id="apiRateLimit"/>
+			<channel typeId="apiRateDuration" id="apiRateDuration"/>
+			<channel typeId="apiRateRemaining" id="apiRateRemaining"/>
+			<channel typeId="apiRateReset" id="apiRateReset"/>
 		</channels>
 
 		<properties>
@@ -32,7 +32,7 @@
 
 			<parameter name="tadoApiUrl" type="text" required="true">
 				<label>API Base URL</label>
-				<description>he base URL used for all API requests. Can be changed to use a proxy.</description>
+				<description>The base URL used for all API requests. Can be changed to use a proxy.</description>
 				<default>https://my.tado.com/api/v2</default>
 				<advanced>true</advanced>
 			</parameter>
@@ -85,10 +85,6 @@
 				<label>Battery Low Alarm</label>
 				<description>ON if one or more devices in the zone have a low battery</description>
 			</channel>
-			<channel typeId="APIRateLimit" id="APIRateLimit"/>
-			<channel typeId="APIRateDuration" id="APIRateDuration"/>
-			<channel typeId="APIRateRemaining" id="APIRateRemaining"/>
-			<channel typeId="APIRateReset" id="APIRateReset"/>
 		</channels>
 
 		<properties>
@@ -134,10 +130,6 @@
 
 		<channels>
 			<channel typeId="atHome" id="atHome"/>
-			<channel typeId="APIRateLimit" id="APIRateLimit"/>
-			<channel typeId="APIRateDuration" id="APIRateDuration"/>
-			<channel typeId="APIRateRemaining" id="APIRateRemaining"/>
-			<channel typeId="APIRateReset" id="APIRateReset"/>
 		</channels>
 
 		<properties>
@@ -428,7 +420,7 @@
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 
-	<channel-type id="APIRateDuration" advanced="true">
+	<channel-type id="apiRateDuration" advanced="true">
 		<item-type>Number:Time</item-type>
 		<label>API Max Duration</label>
 		<description>Duration in which the API count rises until maximum</description>
@@ -440,7 +432,7 @@
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
-	<channel-type id="APIRateRemaining" advanced="true">
+	<channel-type id="apiRateRemaining" advanced="true">
 		<item-type>Number</item-type>
 		<label>API Calls remaining</label>
 		<description>Number of API calls remaining before the maximum is reached</description>
@@ -450,7 +442,7 @@
 		<state readOnly="true" pattern="%d"/>
 	</channel-type>
 
-	<channel-type id="APIRateLimit" advanced="true">
+	<channel-type id="apiRateLimit" advanced="true">
 		<item-type>Number</item-type>
 		<label>API Max</label>
 		<description>Maximum API calls allowed per specified duration</description>
@@ -460,7 +452,7 @@
 		<state readOnly="true" pattern="%d"/>
 	</channel-type>
 
-	<channel-type id="APIRateReset" advanced="true">
+	<channel-type id="apiRateReset" advanced="true">
 		<item-type>Number:Time</item-type>
 		<label>Time until API count resets</label>
 		<description>Time until the API count resets</description>

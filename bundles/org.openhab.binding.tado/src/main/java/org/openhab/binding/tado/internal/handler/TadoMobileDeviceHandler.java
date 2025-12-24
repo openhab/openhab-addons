@@ -21,7 +21,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.tado.internal.TadoBindingConstants;
 import org.openhab.binding.tado.internal.config.TadoMobileDeviceConfig;
 import org.openhab.binding.tado.swagger.codegen.api.ApiException;
-import org.openhab.binding.tado.swagger.codegen.api.client.HomeApi;
 import org.openhab.binding.tado.swagger.codegen.api.model.MobileDevice;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.Bridge;
@@ -82,11 +81,8 @@ public class TadoMobileDeviceHandler extends BaseHomeThingHandler {
     public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
         if (bridgeStatusInfo.getStatus() == ThingStatus.ONLINE) {
             try {
-                HomeApi api = getApi();
                 MobileDevice device = getMobileDevice();
                 updateProperty(TadoBindingConstants.PROPERTY_MOBILE_DEVICE_NAME, device.getName());
-
-                updateAllAPIChannels(api);
 
                 if (!device.getSettings().isGeoTrackingEnabled()) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
@@ -113,9 +109,6 @@ public class TadoMobileDeviceHandler extends BaseHomeThingHandler {
             MobileDevice device = getMobileDevice();
             updateState(TadoBindingConstants.CHANNEL_MOBILE_DEVICE_AT_HOME,
                     OnOffType.from(device.getLocation().isAtHome()));
-            HomeApi api = getApi();
-            updateAllAPIChannels(api);
-
         } catch (IOException | ApiException e) {
             logger.debug("Status update of mobile device with id {} failed: {}", configuration.id, e.getMessage());
         }

@@ -27,6 +27,7 @@ import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
+import org.openhab.binding.tado.internal.handler.TadoHomeHandler;
 import org.openhab.binding.tado.swagger.codegen.api.ApiException;
 import org.openhab.binding.tado.swagger.codegen.api.model.GenericZoneCapabilities;
 import org.openhab.binding.tado.swagger.codegen.api.model.HomeInfo;
@@ -55,27 +56,12 @@ public class HomeApi {
 
     private Gson gson;
     private OAuthorizerV2 authorizer;
+    private final TadoHomeHandler homeHandler;
 
-    private volatile int APIRateLimit = 0;
-    private volatile int APIRateDuration = 0;
-    private volatile int APIRateRemaining = 0;
-    private volatile int APIRateReset = 0;
-
-    public int getAPIRateLimit() {
-        return APIRateLimit;
-    }
-
-    public int getAPIRateDuration() {
-        return APIRateDuration;
-    }
-
-    public int getAPIRateRemaining() {
-        return APIRateRemaining;
-    }
-
-    public int getAPIRateReset() {
-        return APIRateReset;
-    }
+    private volatile int apiRateLimit = 0;
+    private volatile int apiRateDuration = 0;
+    private volatile int apiRateRemaining = 0;
+    private volatile int apiRateReset = 0;
 
     private void extractRateLimitInfo(ContentResponse response) {
         HttpFields headersfields = response.getHeaders();
@@ -85,9 +71,9 @@ public class HomeApi {
             String[] rateLimitPolicyValues = rateLimitPolicyValueString.split(";");
             for (String value : rateLimitPolicyValues) {
                 if (value.startsWith("q=")) {
-                    APIRateLimit = safeParseInt(value.substring(2));
+                    apiRateLimit = safeParseInt(value.substring(2));
                 } else if (value.startsWith("w=")) {
-                    APIRateDuration = safeParseInt(value.substring(2));
+                    apiRateDuration = safeParseInt(value.substring(2));
                 }
             }
         }
@@ -97,12 +83,13 @@ public class HomeApi {
             String[] rateLimitValues = rateLimitValueString.split(";");
             for (String value : rateLimitValues) {
                 if (value.startsWith("r=")) {
-                    APIRateRemaining = safeParseInt(value.substring(2));
+                    apiRateRemaining = safeParseInt(value.substring(2));
                 } else if (value.startsWith("w=")) { // some providers use 'w' as window/reset seconds
-                    APIRateReset = safeParseInt(value.substring(2));
+                    apiRateReset = safeParseInt(value.substring(2));
                 }
             }
         }
+        homeHandler.updateRateLimitInfo(apiRateLimit, apiRateDuration, apiRateRemaining, apiRateReset);
     }
 
     private static int safeParseInt(String s) {
@@ -113,10 +100,11 @@ public class HomeApi {
         }
     }
 
-    public HomeApi(Gson gson, OAuthorizerV2 authorizer, String baseUrl) {
+    public HomeApi(Gson gson, OAuthorizerV2 authorizer, String baseUrl, TadoHomeHandler homeHandler) {
         this.gson = gson;
         this.authorizer = authorizer;
         this.baseUrl = baseUrl;
+        this.homeHandler = homeHandler;
     }
 
     public void deleteZoneOverlay(Long homeId, Long zoneId) throws IOException, ApiException {

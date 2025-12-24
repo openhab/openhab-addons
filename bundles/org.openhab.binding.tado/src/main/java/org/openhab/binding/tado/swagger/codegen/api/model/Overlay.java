@@ -22,7 +22,6 @@ import com.google.gson.annotations.SerializedName;
  * @author Andrew Fiddian-Green - Initial contribution
  */
 public class Overlay {
-
     @SerializedName("setting")
     private GenericZoneSetting setting = null;
 

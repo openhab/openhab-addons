@@ -22,7 +22,6 @@ import com.google.gson.annotations.SerializedName;
  * @author Andrew Fiddian-Green - Initial contribution
  */
 public class ZoneState {
-
     @SerializedName("tadoMode")
     private TadoMode tadoMode = null;
 

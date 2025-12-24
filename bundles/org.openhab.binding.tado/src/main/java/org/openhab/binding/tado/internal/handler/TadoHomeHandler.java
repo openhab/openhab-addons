@@ -107,7 +107,7 @@ public class TadoHomeHandler extends BaseBridgeHandler implements AccessTokenRef
 
         OAuthClientService oAuthClientService = tadoHandlerFactory.subscribeOAuthClientService(this, user);
         oAuthClientService.addAccessTokenRefreshListener(this);
-        this.api = new HomeApiFactory().create(oAuthClientService, configuration.tadoApiUrl);
+        this.api = new HomeApiFactory().create(oAuthClientService, configuration.tadoApiUrl, this);
         this.oAuthClientService = oAuthClientService;
         logger.trace("initialize() api v2 created");
         confPendingText = CONF_PENDING_OAUTH_CREDS.formatted(TadoAuthenticationServlet.PATH,
@@ -140,8 +140,6 @@ public class TadoHomeHandler extends BaseBridgeHandler implements AccessTokenRef
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, confPendingText);
                     return;
                 }
-
-                updateAllAPIChannels(api);
 
                 List<UserHomes> homes = user.getHomes();
                 if (homes == null || homes.isEmpty()) {
@@ -222,9 +220,6 @@ public class TadoHomeHandler extends BaseBridgeHandler implements AccessTokenRef
             cachedHomePresence.setHomePresence(homePresence);
             updateState(CHANNEL_HOME_PRESENCE_MODE, OnOffType.from(PresenceState.HOME == homePresence));
             updateState(CHANNEL_HOME_GEOFENCING_ENABLED, OnOffType.from(!homeState.isPresenceLocked()));
-
-            updateAllAPIChannels(api);
-
         } catch (IOException | ApiException e) {
             logger.debug("Error accessing tado server: {}", e.getMessage(), e);
         }
@@ -299,21 +294,19 @@ public class TadoHomeHandler extends BaseBridgeHandler implements AccessTokenRef
         initializeBridgeStatusAndPropertiesIfOffline();
     }
 
-    private void updateAllAPIChannels(HomeApi api) {
-        updateAPIChannels(api.getAPIRateLimit(), TadoBindingConstants.CHANNEL_API_RATE_LIMIT, Units.ONE);
-        updateAPIChannels(api.getAPIRateDuration(), TadoBindingConstants.CHANNEL_API_RATE_DURATION, Units.SECOND);
-        updateAPIChannels(api.getAPIRateRemaining(), TadoBindingConstants.CHANNEL_API_RATE_REMAINING, Units.ONE);
-        updateAPIChannels(api.getAPIRateReset(), TadoBindingConstants.CHANNEL_API_RATE_RESET, Units.SECOND);
+    public void updateRateLimitInfo(int apiRateLimit, int apiRateDuration, int apiRateRemaining, int apiRateReset) {
+        updateAPIChannels(apiRateLimit, TadoBindingConstants.CHANNEL_API_RATE_LIMIT, Units.ONE);
+        updateAPIChannels(apiRateDuration, TadoBindingConstants.CHANNEL_API_RATE_DURATION, Units.SECOND);
+        updateAPIChannels(apiRateRemaining, TadoBindingConstants.CHANNEL_API_RATE_REMAINING, Units.ONE);
+        updateAPIChannels(apiRateReset, TadoBindingConstants.CHANNEL_API_RATE_RESET, Units.SECOND);
     }
 
-    private void updateAPIChannels(@Nullable Integer value, String channelName, Unit unit) {
-        if (value != null) {
-            if (TadoBindingConstants.CHANNEL_API_RATE_LIMIT.equals(channelName)
-                    || TadoBindingConstants.CHANNEL_API_RATE_REMAINING.equals(channelName)) {
-                updateState(channelName, new DecimalType(value));
-            } else {
-                updateState(channelName, new QuantityType<>(value, unit));
-            }
+    private void updateAPIChannels(int value, String channelName, Unit unit) {
+        if (TadoBindingConstants.CHANNEL_API_RATE_LIMIT.equals(channelName)
+                || TadoBindingConstants.CHANNEL_API_RATE_REMAINING.equals(channelName)) {
+            updateState(channelName, new DecimalType(value));
+        } else {
+            updateState(channelName, new QuantityType<>(value, unit));
         }
     }
 }

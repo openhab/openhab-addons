@@ -40,7 +40,6 @@ import org.openhab.binding.tado.internal.api.TadoApiTypeUtils;
 import org.openhab.binding.tado.internal.config.TadoZoneConfig;
 import org.openhab.binding.tado.swagger.codegen.api.ApiException;
 import org.openhab.binding.tado.swagger.codegen.api.GsonBuilderFactory;
-import org.openhab.binding.tado.swagger.codegen.api.client.HomeApi;
 import org.openhab.binding.tado.swagger.codegen.api.model.ACFanLevel;
 import org.openhab.binding.tado.swagger.codegen.api.model.ACHorizontalSwing;
 import org.openhab.binding.tado.swagger.codegen.api.model.ACVerticalSwing;
@@ -121,22 +120,14 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
     }
 
     public OverlayTerminationCondition getDefaultTerminationCondition() throws IOException, ApiException {
-        HomeApi api = getApi();
-        OverlayTemplate overlayTemplate = api.showZoneDefaultOverlay(getHomeId(), getZoneId());
+        OverlayTemplate overlayTemplate = getApi().showZoneDefaultOverlay(getHomeId(), getZoneId());
         logApiTransaction(overlayTemplate, false);
-
-        updateAllAPIChannels(api);
-
         return terminationConditionTemplateToTerminationCondition(overlayTemplate.getTerminationCondition());
     }
 
     public ZoneState getZoneState() throws IOException, ApiException {
-        HomeApi api = getApi();
-        ZoneState zoneState = api.showZoneState(getHomeId(), getZoneId());
+        ZoneState zoneState = getApi().showZoneState(getHomeId(), getZoneId());
         logApiTransaction(zoneState, false);
-
-        updateAllAPIChannels(api);
-
         return zoneState;
     }
 
@@ -155,11 +146,7 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
     public Overlay setOverlay(Overlay overlay) throws IOException, ApiException {
         try {
             logApiTransaction(overlay, true);
-            HomeApi api = getApi();
-            Overlay newOverlay = api.updateZoneOverlay(getHomeId(), getZoneId(), overlay);
-
-            updateAllAPIChannels(api);
-
+            Overlay newOverlay = getApi().updateZoneOverlay(getHomeId(), getZoneId(), overlay);
             logApiTransaction(newOverlay, false);
             return newOverlay;
         } catch (ApiException e) {
@@ -285,8 +272,8 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
             try {
                 Zone zoneDetails = getApi().showZoneDetails(getHomeId(), getZoneId());
                 logApiTransaction(zoneDetails, false);
-                HomeApi api = getApi();
-                GenericZoneCapabilities capabilities = api.showZoneCapabilities(getHomeId(), getZoneId());
+
+                GenericZoneCapabilities capabilities = getApi().showZoneCapabilities(getHomeId(), getZoneId());
                 logApiTransaction(capabilities, false);
 
                 if (zoneDetails == null || capabilities == null) {
@@ -294,8 +281,6 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
                             "Can not access zone " + getZoneId() + " of home " + getHomeId());
                     return;
                 }
-
-                updateAllAPIChannels(api);
 
                 updateProperty(TadoBindingConstants.PROPERTY_ZONE_NAME, zoneDetails.getName());
                 updateProperty(TadoBindingConstants.PROPERTY_ZONE_TYPE, zoneDetails.getType().name());
