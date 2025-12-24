@@ -293,6 +293,16 @@
 		</channels>
 	</channel-group-type>
 
+	<!-- Circadian cycle -->
+	<channel-group-type id="circadian">
+		<label>Circadian Cycle</label>
+		<description>Circadian cycle computed values</description>
+		<channels>
+			<channel id="brightness" typeId="system.brightness"/>
+			<channel id="temperature" typeId="system.color-temperature-abs"/>
+		</channels>
+	</channel-group-type>
+
 	<channel-type id="total">
 		<item-type>DateTime</item-type>
 		<label>Total Eclipse</label>

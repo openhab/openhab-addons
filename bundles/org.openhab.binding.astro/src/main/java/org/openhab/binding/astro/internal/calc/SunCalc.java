@@ -65,7 +65,6 @@ public class SunCalc {
     private static final double H1 = Math.toRadians(-6.0); // nautical twilight angle
     private static final double H2 = Math.toRadians(-12.0); // astronomical twilight angle
     private static final double H3 = Math.toRadians(-18.0); // darkness angle
-    private static final double MINUTES_PER_DAY = 60 * 24;
     private static final int CURVE_TIME_INTERVAL = 20; // 20 minutes
     private static final double JD_ONE_MINUTE_FRACTION = 1.0 / 60 / 24;
 
@@ -130,9 +129,11 @@ public class SunCalc {
      * Returns true, if the sun is up all day (no rise and set).
      */
     private boolean isSunUpAllDay(Calendar calendar, double latitude, double longitude, @Nullable Double altitude) {
-        Calendar cal = DateTimeUtils.truncateToMidnight(calendar);
         Sun sun = new Sun();
-        for (int minutes = 0; minutes <= MINUTES_PER_DAY; minutes += CURVE_TIME_INTERVAL) {
+        Calendar start = DateTimeUtils.truncateToMidnight(calendar);
+        Calendar cal = (Calendar) start.clone();
+        var numberOfSamples = 24 * 60 / CURVE_TIME_INTERVAL;
+        for (int i = 0; i <= numberOfSamples; i++) {
             setPositionalInfo(cal, latitude, longitude, altitude, sun);
             if (sun.getPosition().getElevationAsDouble() < SUN_ANGLE) {
                 return false;
