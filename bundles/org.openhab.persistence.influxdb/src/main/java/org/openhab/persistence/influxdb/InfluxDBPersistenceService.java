@@ -244,10 +244,7 @@ public class InfluxDBPersistenceService implements ModifiablePersistenceService 
             return List.of();
         }
         if (serviceActivated && checkConnection()) {
-            logger.trace(
-                    "Query-Filter: itemname: {}, ordering: {}, state: {},  operator: {}, getBeginDate: {}, getEndDate: {}, getPageSize: {}, getPageNumber: {}",
-                    itemName, filter.getOrdering().toString(), filter.getState(), filter.getOperator(),
-                    filter.getBeginDate(), filter.getEndDate(), filter.getPageSize(), filter.getPageNumber());
+            logger.trace("Query-Filter: {}", filter);
 
             List<InfluxDBRepository.InfluxRow> results = influxDBRepository.query(filter,
                     configuration.getRetentionPolicy(), alias);

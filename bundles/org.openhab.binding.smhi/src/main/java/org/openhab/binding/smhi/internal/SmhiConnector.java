@@ -52,9 +52,9 @@ public class SmhiConnector {
      * 
      * @return A {@link ZonedDateTime} with the time of the latest forecast.
      */
-    public ZonedDateTime getReferenceTime() throws SmhiException {
+    public ZonedDateTime getCreatedTime() throws SmhiException {
         logger.debug("Fetching reference time");
-        Request req = httpClient.newRequest(APPROVED_TIME_URL);
+        Request req = httpClient.newRequest(CREATED_TIME_URL);
         req.accept(ACCEPT);
         ContentResponse resp;
         try {
@@ -64,7 +64,7 @@ public class SmhiConnector {
         }
         logger.debug("Received response with status {} - {}", resp.getStatus(), resp.getReason());
         if (resp.getStatus() == 200) {
-            return Parser.parseApprovedTime(resp.getContentAsString());
+            return Parser.parseCreatedTime(resp.getContentAsString());
         } else {
             throw new SmhiException(resp.getReason());
         }
@@ -75,9 +75,9 @@ public class SmhiConnector {
      * 
      * @param lat Latitude
      * @param lon Longitude
-     * @return A {@link TimeSeries} object containing the published forecasts.
+     * @return A {@link SmhiTimeSeries} object containing the published forecasts.
      */
-    public TimeSeries getForecast(double lat, double lon) throws SmhiException, PointOutOfBoundsException {
+    public SmhiTimeSeries getForecast(double lat, double lon) throws SmhiException, PointOutOfBoundsException {
         logger.debug("Fetching new forecast");
         String url = String.format(Locale.ROOT, POINT_FORECAST_URL, lon, lat);
         Request req = httpClient.newRequest(url);

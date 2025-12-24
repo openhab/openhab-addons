@@ -75,7 +75,7 @@ public class ActionsCluster extends BaseCluster {
      * • one when the transition starts (NewState&#x3D;Active)
      * • one when the transition completed (NewState&#x3D;Inactive)
      */
-    public class StateChanged {
+    public static class StateChanged {
         /**
          * This field shall be set to the ActionID of the action which has changed state.
          */
@@ -114,7 +114,7 @@ public class ActionsCluster extends BaseCluster {
      * interrupts the transition
      * • StateChanged (InvokeID&#x3D;2, NewState&#x3D;Inactive) upon the execution of the action for the second command
      */
-    public class ActionFailed {
+    public static class ActionFailed {
         /**
          * This field shall be set to the ActionID of the action which encountered an error.
          */
@@ -144,7 +144,7 @@ public class ActionsCluster extends BaseCluster {
     /**
      * This data type holds the details of a single action, and contains the data fields below.
      */
-    public class ActionStruct {
+    public static class ActionStruct {
         /**
          * This field shall provide an unique identifier used to identify an action.
          */
@@ -192,7 +192,7 @@ public class ActionsCluster extends BaseCluster {
      * This data type holds the details of a single endpoint list, which relates to a set of endpoints that have some
      * logical relation, and contains the data fields below.
      */
-    public class EndpointListStruct {
+    public static class EndpointListStruct {
         /**
          * This field shall provide an unique identifier used to identify the endpoint list.
          */
@@ -231,8 +231,8 @@ public class ActionsCluster extends BaseCluster {
         NOTIFICATION(5, "Notification"),
         ALARM(6, "Alarm");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private ActionTypeEnum(Integer value, String label) {
             this.value = value;
@@ -259,8 +259,8 @@ public class ActionsCluster extends BaseCluster {
         PAUSED(2, "Paused"),
         DISABLED(3, "Disabled");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private ActionStateEnum(Integer value, String label) {
             this.value = value;
@@ -282,8 +282,8 @@ public class ActionsCluster extends BaseCluster {
         UNKNOWN(0, "Unknown"),
         INTERRUPTED(1, "Interrupted");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private ActionErrorEnum(Integer value, String label) {
             this.value = value;
@@ -310,8 +310,8 @@ public class ActionsCluster extends BaseCluster {
         ROOM(1, "Room"),
         ZONE(2, "Zone");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private EndpointListTypeEnum(Integer value, String label) {
             this.value = value;

@@ -5,8 +5,8 @@ Enables the user to show the latest departure times for specific street car stop
 
 ## Supported Things
 
-Every street car stop is represented by one thing.
-Each thing contains channels for the information referred to the next n trains.
+Every street car stop is represented by one Thing.
+Each Thing contains channels for the information referred to the next n trains.
 This includes the name of the train, the final destination and the estimated time available (eta).
 
 ## Thing Configuration
@@ -20,7 +20,7 @@ export QUERY="gottesauer"
 curl https://www.kvv.de/tunnelEfaDirect.php?action=XSLT_STOPFINDER_REQUEST&name_sf=${QUERY}&outputFormat=JSON&type_sf=any
 ```
 
-The exact `id` may be extracted from the JSON-encoded reponse. E.g.
+The exact `id` may be extracted from the JSON-encoded response. E.g.,
 
 ```json
 "points": [

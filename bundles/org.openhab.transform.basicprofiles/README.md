@@ -8,7 +8,7 @@ This bundle provides a list of useful Profiles:
 | [Generic Toggle Switch Profile](#generic-toggle-switch-profile) | Toggles a Switch Item when an event is triggered                                             |
 | [Debounce (Counting) Profile](#debounce-counting-profile)       | Counts and skip a number of State changes                                                    |
 | [Debounce (Time) Profile](#debounce-time-profile)               | Reduces the frequency of commands/state updates                                              |
-| [Invert / Negate Profile](#invert--negate-profile)              | Inverts or negate a Command / State                                                          |
+| [Invert / Negate Profile](#invert-negate-profile)               | Inverts or negate a Command / State                                                          |
 | [Round Profile](#round-profile)                                 | Reduces the number of decimal places from input data                                         |
 | [Threshold Profile](#threshold-profile)                         | Translates numeric input data to `ON` or `OFF` based on a threshold value                    |
 | [Time Range Command Profile](#time-range-command-profile)       | An enhanced implementation of a follow profile which converts `OnOffType` to a `PercentType` |
@@ -323,7 +323,7 @@ Number:Dimensionless Humidity {
 
 // To actually perform a $DELTA_PERCENT check against a Percent Quantity data, specify it explicitly
 Number:Dimensionless Humidity {
-  channel="mybinding:mything:humidity" [ profile="basic-profiles:state-filter", conditions="$DELTA_PERCENT > 5%" ]
+  channel="mybinding:mything:humidity" [ profile="basic-profiles:state-filter", conditions="$DELTA_PERCENT > 5" ]
 }
 ```
 

@@ -35,13 +35,12 @@ public class MqttAsyncClientWrapperEx extends MqttAsyncClientWrapper {
     private final MqttBrokerConnectionEx connection;
 
     public MqttAsyncClientWrapperEx(MqttBrokerConnectionEx connection) {
-        super();
         this.connection = connection;
     }
 
     @Override
     public CompletableFuture<?> connect(@Nullable MqttWillAndTestament lwt, int keepAliveInterval,
-            @Nullable String username, @Nullable String password) {
+            @Nullable String username, @Nullable String password, @Nullable Boolean cleanStart) {
         if (!connection.connectTimeout) {
             connection.getCallback().onConnected(null);
             connection.connectionStateOverwrite = MqttConnectionState.CONNECTED;

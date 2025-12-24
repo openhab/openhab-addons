@@ -1,0 +1,44 @@
+{
+	"vepUpdates": {
+		"updates": {
+			"UNIT_TEST_VIN": {
+				"vin": "UNIT_TEST_VIN",
+				"emitTimestamp": "1755879201",
+				"attributes": {
+					"chargePrograms": {
+						"timestamp": "1755879199",
+						"changed": true,
+						"timestampInMs": "1755879199649",
+						"chargeProgramsValue": {
+							"chargeProgramParameters": [
+								{
+									"maxSoc": 90
+								},
+								{
+									"chargeprogram": "INSTANT_CHARGE_PROGRAM",
+									"maxSoc": 100
+								},
+								{
+									"chargeprogram": "HOME_CHARGE_PROGRAM",
+									"maxSoc": 90
+								},
+								{
+									"chargeprogram": "WORK_CHARGE_PROGRAM",
+									"maxSoc": 80
+								}
+							]
+						}
+					},
+					"vtime": {
+						"timestamp": "1755879199",
+						"changed": true,
+						"intValue": "1755886399",
+						"timestampInMs": "1755879199000"
+					}
+				},
+				"emitTimestampInMs": "1755879201386"
+			}
+		},
+		"sequenceNumber": 5
+	}
+}

@@ -274,7 +274,7 @@ public class PowerSourceCluster extends BaseCluster {
      * The WiredFaultChange Event shall be generated when the set of wired faults currently detected by the Node on this
      * wired power source changes. This event shall correspond to a change in value of ActiveWiredFaults.
      */
-    public class WiredFaultChange {
+    public static class WiredFaultChange {
         /**
          * This field shall represent the set of faults currently detected, as per ActiveWiredFaults.
          */
@@ -294,7 +294,7 @@ public class PowerSourceCluster extends BaseCluster {
      * The BatFaultChange Event shall be generated when the set of battery faults currently detected by the Node on this
      * battery power source changes. This event shall correspond to a change in value of ActiveBatFaults.
      */
-    public class BatFaultChange {
+    public static class BatFaultChange {
         /**
          * This field shall represent the set of faults currently detected, as per ActiveBatFaults.
          */
@@ -314,7 +314,7 @@ public class PowerSourceCluster extends BaseCluster {
      * The BatChargeFaultChange Event shall be generated when the set of charge faults currently detected by the Node on
      * this battery power source changes. This event shall correspond to a change in value of ActiveBatChargeFaults.
      */
-    public class BatChargeFaultChange {
+    public static class BatChargeFaultChange {
         /**
          * This field shall represent the set of faults currently detected, as per ActiveBatChargeFaults.
          */
@@ -337,8 +337,8 @@ public class PowerSourceCluster extends BaseCluster {
         OVER_VOLTAGE(1, "Over Voltage"),
         UNDER_VOLTAGE(2, "Under Voltage");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private WiredFaultEnum(Integer value, String label) {
             this.value = value;
@@ -361,8 +361,8 @@ public class PowerSourceCluster extends BaseCluster {
         OVER_TEMP(1, "Over Temp"),
         UNDER_TEMP(2, "Under Temp");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private BatFaultEnum(Integer value, String label) {
             this.value = value;
@@ -393,8 +393,8 @@ public class PowerSourceCluster extends BaseCluster {
         CHARGER_UNDER_VOLTAGE(9, "Charger Under Voltage"),
         SAFETY_TIMEOUT(10, "Safety Timeout");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private BatChargeFaultEnum(Integer value, String label) {
             this.value = value;
@@ -418,8 +418,8 @@ public class PowerSourceCluster extends BaseCluster {
         STANDBY(2, "Standby"),
         UNAVAILABLE(3, "Unavailable");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private PowerSourceStatusEnum(Integer value, String label) {
             this.value = value;
@@ -441,8 +441,8 @@ public class PowerSourceCluster extends BaseCluster {
         AC(0, "Ac"),
         DC(1, "Dc");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private WiredCurrentTypeEnum(Integer value, String label) {
             this.value = value;
@@ -465,8 +465,8 @@ public class PowerSourceCluster extends BaseCluster {
         WARNING(1, "Warning"),
         CRITICAL(2, "Critical");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private BatChargeLevelEnum(Integer value, String label) {
             this.value = value;
@@ -490,8 +490,8 @@ public class PowerSourceCluster extends BaseCluster {
         USER_REPLACEABLE(2, "User Replaceable"),
         FACTORY_REPLACEABLE(3, "Factory Replaceable");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private BatReplaceabilityEnum(Integer value, String label) {
             this.value = value;
@@ -592,8 +592,8 @@ public class PowerSourceCluster extends BaseCluster {
         V26650(79, "26650"),
         V32600(80, "32600");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private BatCommonDesignationEnum(Integer value, String label) {
             this.value = value;
@@ -646,8 +646,8 @@ public class PowerSourceCluster extends BaseCluster {
         ZINC_BROMIDE(31, "Zinc Bromide"),
         ZINC_CERIUM(32, "Zinc Cerium");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private BatApprovedChemistryEnum(Integer value, String label) {
             this.value = value;
@@ -671,8 +671,8 @@ public class PowerSourceCluster extends BaseCluster {
         IS_AT_FULL_CHARGE(2, "Is At Full Charge"),
         IS_NOT_CHARGING(3, "Is Not Charging");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private BatChargeStateEnum(Integer value, String label) {
             this.value = value;

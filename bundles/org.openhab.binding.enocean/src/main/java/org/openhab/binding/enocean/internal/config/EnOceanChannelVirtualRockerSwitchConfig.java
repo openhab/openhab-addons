@@ -24,7 +24,6 @@ public class EnOceanChannelVirtualRockerSwitchConfig extends EnOceanChannelRocke
     public Integer duration;
 
     public EnOceanChannelVirtualRockerSwitchConfig() {
-        super();
         duration = 350;
     }
 }

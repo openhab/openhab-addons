@@ -16,11 +16,12 @@ import static org.openhab.binding.heos.internal.HeosBindingConstants.*;
 import static org.openhab.binding.heos.internal.handler.FutureUtil.cancel;
 import static org.openhab.binding.heos.internal.json.dto.HeosCommandGroup.*;
 import static org.openhab.binding.heos.internal.json.dto.HeosCommunicationAttribute.*;
-import static org.openhab.binding.heos.internal.resources.HeosConstants.*;
 import static org.openhab.core.thing.ThingStatus.*;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
@@ -100,9 +101,7 @@ public abstract class HeosThingBaseHandler extends BaseThingHandler implements H
 
     @Override
     public void initialize() {
-        @Nullable
         Bridge bridge = getBridge();
-        @Nullable
         HeosBridgeHandler localBridgeHandler;
         if (bridge != null) {
             localBridgeHandler = (HeosBridgeHandler) bridge.getHandler();
@@ -147,7 +146,6 @@ public abstract class HeosThingBaseHandler extends BaseThingHandler implements H
     }
 
     public HeosFacade getApiConnection() throws HeosNotConnectedException {
-        @Nullable
         HeosBridgeHandler localBridge = bridgeHandler;
         if (localBridge != null) {
             return localBridge.getApiConnection();
@@ -171,7 +169,6 @@ public abstract class HeosThingBaseHandler extends BaseThingHandler implements H
 
     @Nullable
     HeosChannelHandler getHeosChannelHandler(ChannelUID channelUID) {
-        @Nullable
         HeosChannelHandlerFactory localChannelHandlerFactory = this.channelHandlerFactory;
         return localChannelHandlerFactory != null ? localChannelHandlerFactory.getChannelHandler(channelUID, this, null)
                 : null;
@@ -251,9 +248,9 @@ public abstract class HeosThingBaseHandler extends BaseThingHandler implements H
      */
     public void playURL(String urlStr) throws IOException, ReadException {
         try {
-            URL url = new URL(urlStr);
+            URL url = new URI(urlStr).toURL();
             getApiConnection().playURL(getId(), url);
-        } catch (MalformedURLException e) {
+        } catch (URISyntaxException e) {
             logger.debug("Command '{}' is not a proper URL. Error: {}", urlStr, e.getMessage());
         }
     }
@@ -269,7 +266,6 @@ public abstract class HeosThingBaseHandler extends BaseThingHandler implements H
     protected void handleThingStateUpdate(HeosEventObject eventObject) {
         updateStatus(ONLINE, ThingStatusDetail.NONE, "Receiving events");
 
-        @Nullable
         HeosEvent command = eventObject.command;
 
         if (command == null) {
@@ -284,7 +280,6 @@ public abstract class HeosThingBaseHandler extends BaseThingHandler implements H
 
             case PLAYER_VOLUME_CHANGED:
             case GROUP_VOLUME_CHANGED:
-                @Nullable
                 String level = eventObject.getAttribute(LEVEL);
                 if (level != null) {
                     notificationVolume = level;
@@ -298,9 +293,7 @@ public abstract class HeosThingBaseHandler extends BaseThingHandler implements H
                 break;
 
             case PLAYER_NOW_PLAYING_PROGRESS:
-                @Nullable
                 Long position = eventObject.getNumericAttribute(CURRENT_POSITION);
-                @Nullable
                 Long duration = eventObject.getNumericAttribute(DURATION);
                 if (position != null && duration != null) {
                     updateState(CH_ID_CUR_POS, quantityFromMilliSeconds(position));
@@ -352,7 +345,6 @@ public abstract class HeosThingBaseHandler extends BaseThingHandler implements H
     protected <T> void handleThingStateUpdate(HeosResponseObject<T> responseObject) throws HeosFunctionalException {
         handleResponseError(responseObject);
 
-        @Nullable
         HeosCommandTuple cmd = responseObject.heosCommand;
 
         if (cmd == null) {
@@ -371,7 +363,6 @@ public abstract class HeosThingBaseHandler extends BaseThingHandler implements H
                     break;
 
                 case GET_VOLUME:
-                    @Nullable
                     String level = responseObject.getAttribute(LEVEL);
                     if (level != null) {
                         notificationVolume = level;
@@ -399,12 +390,15 @@ public abstract class HeosThingBaseHandler extends BaseThingHandler implements H
                         handlePlayerInfo(player);
                     }
                     break;
+
+                default:
+                    logger.trace("Unhandled command {} for command group {}", cmd.command, cmd.commandGroup);
+                    break;
             }
         }
     }
 
     private <T> void handleResponseError(HeosResponseObject<T> responseObject) throws HeosFunctionalException {
-        @Nullable
         HeosError error = responseObject.getError();
         if (error != null) {
             throw new HeosFunctionalException(error.code);
@@ -412,7 +406,6 @@ public abstract class HeosThingBaseHandler extends BaseThingHandler implements H
     }
 
     private void handleRepeatMode(HeosObject eventObject) {
-        @Nullable
         String repeatMode = eventObject.getAttribute(REPEAT);
         if (repeatMode == null) {
             updateState(CH_ID_REPEAT_MODE, UnDefType.NULL);
@@ -435,7 +428,6 @@ public abstract class HeosThingBaseHandler extends BaseThingHandler implements H
     }
 
     private void playerStateChanged(HeosObject eventObject) {
-        @Nullable
         String attribute = eventObject.getAttribute(STATE);
         if (attribute == null) {
             updateState(CH_ID_CONTROL, UnDefType.NULL);
@@ -491,13 +483,13 @@ public abstract class HeosThingBaseHandler extends BaseThingHandler implements H
         String imageUrl = info.imageUrl;
         if (imageUrl != null && !imageUrl.isBlank()) {
             try {
-                URL url = new URL(imageUrl); // checks if String is proper URL
+                URL url = new URI(imageUrl).toURL(); // checks if String is proper URL
                 RawType cover = HttpUtil.downloadImage(url.toString());
                 if (cover != null) {
                     updateState(CH_ID_COVER, cover);
                     return;
                 }
-            } catch (MalformedURLException e) {
+            } catch (URISyntaxException | MalformedURLException e) {
                 logger.debug("Cover can't be loaded. No proper URL: {}", imageUrl, e);
             }
         }
@@ -513,8 +505,9 @@ public abstract class HeosThingBaseHandler extends BaseThingHandler implements H
     }
 
     private void handleSourceId(Media info) {
-        if (info.sourceId == INPUT_SID && info.mediaId != null) {
-            String inputName = info.mediaId.substring(info.mediaId.indexOf("/") + 1);
+        String mediaId = info.mediaId;
+        if (info.sourceId == INPUT_SID && mediaId != null) {
+            String inputName = mediaId.substring(mediaId.indexOf("/") + 1);
             updateState(CH_ID_INPUTS, StringType.valueOf(inputName));
             updateState(CH_ID_TYPE, StringType.valueOf(info.station));
         } else {

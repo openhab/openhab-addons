@@ -23,6 +23,7 @@ import org.openhab.binding.matter.internal.client.dto.cluster.gen.BaseCluster;
 import org.openhab.binding.matter.internal.client.dto.ws.AttributeChangedMessage;
 import org.openhab.binding.matter.internal.client.dto.ws.EventTriggeredMessage;
 import org.openhab.binding.matter.internal.handler.MatterBaseThingHandler;
+import org.openhab.core.config.core.Configuration;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelGroupUID;
 import org.openhab.core.thing.ChannelUID;
@@ -82,6 +83,16 @@ public abstract class GenericConverter<T extends BaseCluster> implements Attribu
      */
     public void pollCluster() {
         // add polling logic here in subclasses
+    }
+
+    /**
+     * This method is designed to be optionally overridden in subclasses when a cluster needs to handle configuration
+     * updates from the Thing configuration.
+     * 
+     * @param config The updated configuration
+     */
+    public void handleConfigurationUpdate(Configuration config) {
+        // add configuration update handling logic here in subclasses
     }
 
     @Override

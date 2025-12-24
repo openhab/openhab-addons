@@ -12,6 +12,8 @@
  */
 package org.openhab.io.hueemulation.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The pure item type is not enough to decide how we expose an item.
  * We need to consider the assigned tags and category as well. This
@@ -19,6 +21,7 @@ package org.openhab.io.hueemulation.internal;
  *
  * @author David Graeff - Initial contribution
  */
+@NonNullByDefault
 public enum DeviceType {
     SwitchType,
     WhiteType,

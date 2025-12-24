@@ -25,7 +25,6 @@ public class ApplicationNotFoundException extends LaMetricTimeException {
     private static final long serialVersionUID = 1L;
 
     public ApplicationNotFoundException() {
-        super();
     }
 
     public ApplicationNotFoundException(String message) {

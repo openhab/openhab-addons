@@ -61,7 +61,6 @@ public abstract class D2_01 extends _VLDMessage {
     protected static final byte STATUS_DIMMING_100 = 0x64;
 
     public D2_01() {
-        super();
     }
 
     public D2_01(ERP1Message packet) {

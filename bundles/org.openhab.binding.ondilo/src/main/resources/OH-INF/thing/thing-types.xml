@@ -189,7 +189,7 @@
 		<tags>
 			<tag>Measurement</tag>
 		</tags>
-		<state readOnly="true" pattern="%.1f %unit%"/>
+		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="orp-trend" advanced="true">
 		<item-type unitHint="mV">Number:ElectricPotential</item-type>
@@ -198,7 +198,7 @@
 		<tags>
 			<tag>Measurement</tag>
 		</tags>
-		<state readOnly="true" pattern="Δ %+.1f %unit%"/>
+		<state readOnly="true" pattern="Δ %+.0f %unit%"/>
 	</channel-type>
 	<channel-type id="salt">
 		<item-type unitHint="mg/l">Number:Density</item-type>

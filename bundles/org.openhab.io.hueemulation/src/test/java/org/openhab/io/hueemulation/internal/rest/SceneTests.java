@@ -18,6 +18,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -101,7 +102,6 @@ public class SceneTests {
         commonSetup.dispose();
     }
 
-    @SuppressWarnings("null")
     @Test
     public void addUpdateRemoveSceneToRegistry() {
         Rule rule = RuleBuilder.create("demo1").withTags("scene") //
@@ -110,7 +110,11 @@ public class SceneTests {
         ruleRegistry.add(rule);
 
         HueSceneEntry sceneEntry = cs.ds.scenes.get("demo1");
-        assertThat(sceneEntry.lights.get(0), CoreMatchers.is("switch1"));
+        assertNotNull(sceneEntry);
+        List<String> lights = sceneEntry.lights;
+        assertNotNull(lights);
+        String light = lights.get(0);
+        assertThat(light, CoreMatchers.is("switch1"));
 
         // Update
         rule = RuleBuilder.create("demo1").withTags("scene") //
@@ -118,7 +122,11 @@ public class SceneTests {
         ruleRegistry.update(rule);
 
         sceneEntry = cs.ds.scenes.get("demo1");
-        assertThat(sceneEntry.lights.get(0), CoreMatchers.is("white1"));
+        assertNotNull(sceneEntry);
+        lights = sceneEntry.lights;
+        assertNotNull(lights);
+        light = lights.get(0);
+        assertThat(light, CoreMatchers.is("white1"));
 
         // Remove
 
@@ -127,40 +135,45 @@ public class SceneTests {
         assertThat(sceneEntry, CoreMatchers.nullValue());
     }
 
-    @SuppressWarnings("null")
     @Test
     public void addGetRemoveSceneViaRest() throws Exception {
         // 1. Create
         String body = "{ 'name':'Cozy dinner', 'recycle':false, 'lights':['switch1','white1'], 'type':'LightScene'}";
         ContentResponse response = commonSetup.sendPost("/testuser/scenes", body);
-        assertEquals(200, response.getStatus());
+        assertThat(response.getStatus(), is(200));
         assertThat(response.getContentAsString(), containsString("success"));
 
         // 1.1 Check for scene entry
         Entry<String, HueSceneEntry> entry = cs.ds.scenes.entrySet().stream().findAny().get();
+        assertNotNull(entry);
         assertThat(entry.getValue().name, is("Cozy dinner"));
-        assertThat(entry.getValue().lights.get(0), is("switch1"));
-        assertThat(entry.getValue().lights.get(1), is("white1"));
+        List<String> lights = entry.getValue().lights;
+        assertNotNull(lights);
+        String light = lights.get(0);
+        assertThat(light, is("switch1"));
+        light = lights.get(1);
+        assertThat(light, is("white1"));
 
         // 1.2 Check for rule
         Rule rule = ruleRegistry.get(entry.getKey());
+        assertNotNull(rule);
         assertThat(rule.getName(), is("Cozy dinner"));
         assertThat(rule.getActions().get(0).getId(), is("switch1"));
         assertThat(rule.getActions().get(1).getId(), is("white1"));
 
         // 2. Get
         response = commonSetup.sendGet("/testuser/scenes/" + entry.getKey());
-        assertEquals(200, response.getStatus());
+        assertThat(response.getStatus(), is(200));
         HueSceneEntry fromJson = new Gson().fromJson(response.getContentAsString(), HueSceneEntry.class);
+        assertNotNull(fromJson);
         assertThat(fromJson.name, is(entry.getValue().name));
 
         // 3. Remove
         response = commonSetup.sendDelete("/testuser/scenes/" + entry.getKey());
-        assertEquals(200, response.getStatus());
+        assertThat(response.getStatus(), is(200));
         assertTrue(cs.ds.scenes.isEmpty());
     }
 
-    @SuppressWarnings("null")
     @Test
     public void updateSceneViaRest() throws Exception {
         Rule rule = RuleBuilder.create("demo1").withTags("scene").withName("Some name") //
@@ -171,12 +184,16 @@ public class SceneTests {
         // 3. Modify (just the name)
         String body = "{ 'name':'A new name'}";
         ContentResponse response = commonSetup.sendPut("/testuser/scenes/demo1", body);
-        assertEquals(200, response.getStatus());
+        assertThat(response.getStatus(), is(200));
         assertThat(response.getContentAsString(), containsString("name"));
 
         Entry<String, HueSceneEntry> sceneEntry = cs.ds.scenes.entrySet().stream().findAny().get();
+        assertNotNull(sceneEntry);
         assertThat(sceneEntry.getValue().name, is("A new name"));
-        assertThat(sceneEntry.getValue().lights.get(0), is("switch1")); // nothing else should have changed
+        List<String> lights = sceneEntry.getValue().lights;
+        assertNotNull(lights);
+        String light = lights.get(0);
+        assertThat(light, is("switch1")); // nothing else should have changed
 
         // 3. Modify (just the lights)
         rule = RuleBuilder.create("demo1").withTags("scene").withName("Some name") //
@@ -190,22 +207,30 @@ public class SceneTests {
         // Without store lights
         body = "{ 'lights':['white1']}";
         response = commonSetup.sendPut("/testuser/scenes/demo1", body);
-        assertEquals(200, response.getStatus());
+        assertThat(response.getStatus(), is(200));
         assertThat(response.getContentAsString(), containsString("lights"));
 
         sceneEntry = cs.ds.scenes.entrySet().stream().findAny().get();
+        assertNotNull(sceneEntry);
         assertThat(sceneEntry.getValue().name, is("Some name")); // should not have changed
         assertThat(sceneEntry.getKey(), is(uid));
-        assertThat(sceneEntry.getValue().lights.get(0), is("switch1")); // storelightstate not set, lights not changed
+        lights = sceneEntry.getValue().lights;
+        assertNotNull(lights);
+        light = lights.get(0);
+        assertThat(light, is("switch1")); // storelightstate not set, lights not changed
 
         // With store lights
         body = "{ 'lights':['white1'], 'storelightstate':true }";
         response = commonSetup.sendPut("/testuser/scenes/demo1", body);
-        assertEquals(200, response.getStatus());
+        assertThat(response.getStatus(), is(200));
         assertThat(response.getContentAsString(), containsString("lights"));
 
         sceneEntry = cs.ds.scenes.entrySet().stream().findAny().get();
-        assertThat(sceneEntry.getValue().lights.get(0), is("white1"));
+        assertNotNull(sceneEntry);
+        lights = sceneEntry.getValue().lights;
+        assertNotNull(lights);
+        light = lights.get(0);
+        assertThat(light, is("white1"));
     }
 
     @Test
@@ -219,6 +244,7 @@ public class SceneTests {
         Type type = new TypeToken<Map<String, HueSceneEntry>>() {
         }.getType();
         Map<String, HueSceneEntry> fromJson = new Gson().fromJson(response.getContentAsString(), type);
+        assertNotNull(fromJson);
         assertTrue(fromJson.containsKey("demo1"));
     }
 }

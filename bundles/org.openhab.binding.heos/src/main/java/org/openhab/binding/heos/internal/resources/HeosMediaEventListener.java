@@ -15,16 +15,16 @@ package org.openhab.binding.heos.internal.resources;
 import java.util.EventListener;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.heos.internal.api.HeosEventController;
-import org.openhab.binding.heos.internal.handler.HeosBridgeHandler;
 import org.openhab.binding.heos.internal.json.payload.Media;
 
 /**
  * The {@link HeosMediaEventListener } is a dedicated Event Listener
  * for the HEOS media events. Handler which wants the get informed
- * by an HEOS media event via the {@link HeosEventController} has to
- * implement this class and register itself either at the
- * {@link HeosEventController} or at {@link HeosBridgeHandler}
+ * by an HEOS media event via the
+ * {@link org.openhab.binding.heos.internal.api.HeosEventController}
+ * has to implement this class and register itself either at the
+ * {@link org.openhab.binding.heos.internal.api.HeosEventController} or at
+ * {@link org.openhab.binding.heos.internal.handler.HeosBridgeHandler}
  *
  * @author Martin van Wingerden - Initial contribution
  */

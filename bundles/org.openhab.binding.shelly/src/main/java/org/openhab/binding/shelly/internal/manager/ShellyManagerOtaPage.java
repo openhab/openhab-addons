@@ -87,8 +87,9 @@ public class ShellyManagerOtaPage extends ShellyManagerPage {
             ShellyDeviceProfile profile = th.getProfile();
             String deviceType = getDeviceType(properties);
 
+            String mode = getString(profile.device.mode);
             String uri = !url.isEmpty() && connection.equals(CONNECTION_TYPE_CUSTOM) ? url
-                    : getFirmwareUrl(config.deviceIp, deviceType, profile.device.mode, version,
+                    : getFirmwareUrl(config.deviceIp, deviceType, mode, version,
                             connection.equals(CONNECTION_TYPE_LOCAL));
             if (connection.equalsIgnoreCase(CONNECTION_TYPE_INTERNET)) {
                 // If target
@@ -101,8 +102,7 @@ public class ShellyManagerOtaPage extends ShellyManagerPage {
                 }
             } else if (connection.equalsIgnoreCase(CONNECTION_TYPE_LOCAL)) {
                 // redirect to local server -> http://<oh-ip>:<oh-port>/shelly/manager/ota?deviceType=xxx&version=xxx
-                String modeParm = !profile.device.mode.isEmpty() ? "&" + URLPARM_DEVMODE + "=" + profile.device.mode
-                        : "";
+                String modeParm = !mode.isEmpty() ? "&" + URLPARM_DEVMODE + "=" + mode : "";
                 url = URLPARM_URL + "=http://" + localIp + ":" + localPort + SHELLY_MGR_OTA_URI + urlEncode(
                         "?" + URLPARM_DEVTYPE + "=" + deviceType + modeParm + "&" + URLPARM_VERSION + "=" + version);
             } else if (connection.equalsIgnoreCase(CONNECTION_TYPE_CUSTOM)) {

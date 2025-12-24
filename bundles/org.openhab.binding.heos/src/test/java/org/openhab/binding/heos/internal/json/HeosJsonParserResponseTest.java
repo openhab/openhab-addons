@@ -21,6 +21,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.heos.internal.json.dto.HeosCommand;
 import org.openhab.binding.heos.internal.json.dto.HeosCommandGroup;
+import org.openhab.binding.heos.internal.json.dto.HeosCommandTuple;
+import org.openhab.binding.heos.internal.json.dto.HeosError;
 import org.openhab.binding.heos.internal.json.dto.HeosErrorCode;
 import org.openhab.binding.heos.internal.json.dto.HeosResponseObject;
 import org.openhab.binding.heos.internal.json.payload.BrowseResult;
@@ -42,13 +44,15 @@ public class HeosJsonParserResponseTest {
     private final HeosJsonParser subject = new HeosJsonParser();
 
     @Test
-    public void sign_in() {
+    public void signIn() {
         HeosResponseObject<Void> response = subject.parseResponse(
                 "{\"heos\": {\"command\": \"system/sign_in\", \"result\": \"success\", \"message\": \"signed_in&un=test@example.org\"}}",
                 Void.class);
 
-        assertEquals(HeosCommandGroup.SYSTEM, response.heosCommand.commandGroup);
-        assertEquals(HeosCommand.SIGN_IN, response.heosCommand.command);
+        HeosCommandTuple heosCommand = response.heosCommand;
+        assertNotNull(heosCommand);
+        assertEquals(HeosCommandGroup.SYSTEM, heosCommand.commandGroup);
+        assertEquals(HeosCommand.SIGN_IN, heosCommand.command);
         assertTrue(response.result);
 
         assertEquals("test@example.org", response.getAttribute(USERNAME));
@@ -56,38 +60,46 @@ public class HeosJsonParserResponseTest {
     }
 
     @Test
-    public void sign_in_under_process() {
+    public void signInUnderProcess() {
         HeosResponseObject<Void> response = subject.parseResponse(
                 "{\"heos\": {\"command\": \"system/sign_in\", \"message\": \"command under process\"}}", Void.class);
 
-        assertEquals(HeosCommandGroup.SYSTEM, response.heosCommand.commandGroup);
-        assertEquals(HeosCommand.SIGN_IN, response.heosCommand.command);
+        HeosCommandTuple heosCommand = response.heosCommand;
+        assertNotNull(heosCommand);
+        assertEquals(HeosCommandGroup.SYSTEM, heosCommand.commandGroup);
+        assertEquals(HeosCommand.SIGN_IN, heosCommand.command);
         assertFalse(response.result);
         assertFalse(response.isFinished());
     }
 
     @Test
-    public void sign_in_failed() {
+    public void signInFailed() {
         HeosResponseObject<Void> response = subject.parseResponse(
                 "{\"heos\": {\"command\": \"system/sign_in\", \"message\": \"eid=10&text=User not found\"}}",
                 Void.class);
 
-        assertEquals(HeosCommandGroup.SYSTEM, response.heosCommand.commandGroup);
-        assertEquals(HeosCommand.SIGN_IN, response.heosCommand.command);
+        HeosCommandTuple heosCommand = response.heosCommand;
+        assertNotNull(heosCommand);
+        assertEquals(HeosCommandGroup.SYSTEM, heosCommand.commandGroup);
+        assertEquals(HeosCommand.SIGN_IN, heosCommand.command);
         assertFalse(response.result);
         assertTrue(response.isFinished());
 
-        assertEquals(HeosErrorCode.USER_NOT_FOUND, response.getError().code);
+        HeosError error = response.getError();
+        assertNotNull(error);
+        assertEquals(HeosErrorCode.USER_NOT_FOUND, error.code);
     }
 
     @Test
-    public void get_mute() {
+    public void getMute() {
         HeosResponseObject<Void> response = subject.parseResponse(
                 "{\"heos\": {\"command\": \"player/get_mute\", \"result\": \"success\", \"message\": \"pid=1958912779&state=on\"}}",
                 Void.class);
 
-        assertEquals(HeosCommandGroup.PLAYER, response.heosCommand.commandGroup);
-        assertEquals(HeosCommand.GET_MUTE, response.heosCommand.command);
+        HeosCommandTuple heosCommand = response.heosCommand;
+        assertNotNull(heosCommand);
+        assertEquals(HeosCommandGroup.PLAYER, heosCommand.commandGroup);
+        assertEquals(HeosCommand.GET_MUTE, heosCommand.command);
         assertTrue(response.result);
 
         assertEquals(Long.valueOf(1958912779), response.getNumericAttribute(PLAYER_ID));
@@ -95,26 +107,32 @@ public class HeosJsonParserResponseTest {
     }
 
     @Test
-    public void get_mute_error() {
+    public void getMuteError() {
         HeosResponseObject<Void> response = subject.parseResponse(
                 "{\"heos\": {\"command\": \"player/get_mute\", \"result\": \"fail\", \"message\": \"eid=2&text=ID Not Valid&pid=null\"}}",
                 Void.class);
 
-        assertEquals(HeosCommandGroup.PLAYER, response.heosCommand.commandGroup);
-        assertEquals(HeosCommand.GET_MUTE, response.heosCommand.command);
+        HeosCommandTuple heosCommand = response.heosCommand;
+        assertNotNull(heosCommand);
+        assertEquals(HeosCommandGroup.PLAYER, heosCommand.commandGroup);
+        assertEquals(HeosCommand.GET_MUTE, heosCommand.command);
         assertFalse(response.result);
 
-        assertEquals(HeosErrorCode.INVALID_ID, response.getError().code);
+        HeosError error = response.getError();
+        assertNotNull(error);
+        assertEquals(HeosErrorCode.INVALID_ID, error.code);
     }
 
     @Test
-    public void browse_browse_under_process() {
+    public void browseBrowseUnderProcess() {
         HeosResponseObject<Void> response = subject.parseResponse(
                 "{\"heos\": {\"command\": \"browse/browse\", \"result\": \"success\", \"message\": \"command under process&sid=1025\"}}",
                 Void.class);
 
-        assertEquals(HeosCommandGroup.BROWSE, response.heosCommand.commandGroup);
-        assertEquals(HeosCommand.BROWSE, response.heosCommand.command);
+        HeosCommandTuple heosCommand = response.heosCommand;
+        assertNotNull(heosCommand);
+        assertEquals(HeosCommandGroup.BROWSE, heosCommand.commandGroup);
+        assertEquals(HeosCommand.BROWSE, heosCommand.command);
         assertTrue(response.result);
 
         assertEquals(Long.valueOf(1025), response.getNumericAttribute(SOURCE_ID));
@@ -122,21 +140,25 @@ public class HeosJsonParserResponseTest {
     }
 
     @Test
-    public void incorrect_level() {
+    public void incorrectLevel() {
         HeosResponseObject<Void> response = subject.parseResponse(
                 "{\"heos\": {\"command\": \"player/set_volume\", \"result\": \"fail\", \"message\": \"eid=9&text=Parameter out of range&pid=-831584083&level=OFF\"}}",
                 Void.class);
 
-        assertEquals(HeosCommandGroup.PLAYER, response.heosCommand.commandGroup);
-        assertEquals(HeosCommand.SET_VOLUME, response.heosCommand.command);
+        HeosCommandTuple heosCommand = response.heosCommand;
+        assertNotNull(heosCommand);
+        assertEquals(HeosCommandGroup.PLAYER, heosCommand.commandGroup);
+        assertEquals(HeosCommand.SET_VOLUME, heosCommand.command);
         assertFalse(response.result);
 
-        assertEquals(HeosErrorCode.PARAMETER_OUT_OF_RANGE, response.getError().code);
-        assertEquals("#9: Parameter out of range", response.getError().code.toString());
+        HeosError error = response.getError();
+        assertNotNull(error);
+        assertEquals(HeosErrorCode.PARAMETER_OUT_OF_RANGE, error.code);
+        assertEquals("#9: Parameter out of range", error.code.toString());
     }
 
     @Test
-    public void get_players() {
+    public void getPlayers() {
         HeosResponseObject<Player[]> response = subject.parseResponse(
                 """
                         {"heos": {"command": "player/get_players", "result": "success", "message": ""}, "payload": [\
@@ -145,12 +167,17 @@ public class HeosJsonParserResponseTest {
                         """,
                 Player[].class);
 
-        assertEquals(HeosCommandGroup.PLAYER, response.heosCommand.commandGroup);
-        assertEquals(HeosCommand.GET_PLAYERS, response.heosCommand.command);
+        HeosCommandTuple heosCommand = response.heosCommand;
+        assertNotNull(heosCommand);
+        assertEquals(HeosCommandGroup.PLAYER, heosCommand.commandGroup);
+        assertEquals(HeosCommand.GET_PLAYERS, heosCommand.command);
         assertTrue(response.result);
 
-        assertEquals(2, response.payload.length);
-        Player player0 = response.payload[0];
+        Player[] payload = response.payload;
+        assertNotNull(payload);
+        assertEquals(2, payload.length);
+
+        Player player0 = payload[0];
 
         assertEquals("Kantoor HEOS 3", player0.name);
         assertEquals(-831584083, player0.playerId);
@@ -161,7 +188,7 @@ public class HeosJsonParserResponseTest {
         assertEquals(0, player0.lineout);
         assertEquals("ACNG9180110887", player0.serial);
 
-        Player player1 = response.payload[1];
+        Player player1 = payload[1];
 
         assertEquals("HEOS Bar", player1.name);
         assertEquals(1958912779, player1.playerId);
@@ -174,27 +201,31 @@ public class HeosJsonParserResponseTest {
     }
 
     @Test
-    public void get_player_info() {
+    public void getPlayerInfo() {
         HeosResponseObject<Player> response = subject.parseResponse(
                 "{\"heos\": {\"command\": \"player/get_player_info\", \"result\": \"success\", \"message\": \"pid=1958912779\"}, \"payload\": {\"name\": \"HEOS Bar\", \"pid\": 1958912779, \"model\": \"HEOS Bar\", \"version\": \"1.520.200\", \"ip\": \"192.168.1.195\", \"network\": \"wired\", \"lineout\": 0, \"serial\": \"ADAG9180917029\"}}",
                 Player.class);
 
-        assertEquals(HeosCommandGroup.PLAYER, response.heosCommand.commandGroup);
-        assertEquals(HeosCommand.GET_PLAYER_INFO, response.heosCommand.command);
+        HeosCommandTuple heosCommand = response.heosCommand;
+        assertNotNull(heosCommand);
+        assertEquals(HeosCommandGroup.PLAYER, heosCommand.commandGroup);
+        assertEquals(HeosCommand.GET_PLAYER_INFO, heosCommand.command);
         assertTrue(response.result);
 
-        assertEquals("HEOS Bar", response.payload.name);
-        assertEquals(1958912779, response.payload.playerId);
-        assertEquals("HEOS Bar", response.payload.model);
-        assertEquals("1.520.200", response.payload.version);
-        assertEquals("192.168.1.195", response.payload.ip);
-        assertEquals("wired", response.payload.network);
-        assertEquals(0, response.payload.lineout);
-        assertEquals("ADAG9180917029", response.payload.serial);
+        Player payload = response.payload;
+        assertNotNull(payload);
+        assertEquals("HEOS Bar", payload.name);
+        assertEquals(1958912779, payload.playerId);
+        assertEquals("HEOS Bar", payload.model);
+        assertEquals("1.520.200", payload.version);
+        assertEquals("192.168.1.195", payload.ip);
+        assertEquals("wired", payload.network);
+        assertEquals(0, payload.lineout);
+        assertEquals("ADAG9180917029", payload.serial);
     }
 
     @Test
-    public void get_now_playing_media() {
+    public void getNowPlayingMedia() {
         HeosResponseObject<Media> response = subject.parseResponse(
                 """
                         {"heos": {"command": "player/get_now_playing_media", "result": "success", "message": "pid=1958912779"}, "payload": \
@@ -202,29 +233,33 @@ public class HeosJsonParserResponseTest {
                         """,
                 Media.class);
 
-        assertEquals(HeosCommandGroup.PLAYER, response.heosCommand.commandGroup);
-        assertEquals(HeosCommand.GET_NOW_PLAYING_MEDIA, response.heosCommand.command);
+        HeosCommandTuple heosCommand = response.heosCommand;
+        assertNotNull(heosCommand);
+        assertEquals(HeosCommandGroup.PLAYER, heosCommand.commandGroup);
+        assertEquals(HeosCommand.GET_NOW_PLAYING_MEDIA, heosCommand.command);
         assertTrue(response.result);
 
         assertEquals(Long.valueOf(1958912779), response.getNumericAttribute(PLAYER_ID));
 
-        assertEquals("song", response.payload.type);
-        assertEquals("Solo (feat. Demi Lovato)", response.payload.song);
-        assertEquals("What Is Love? (Deluxe)", response.payload.album);
-        assertEquals("Clean Bandit", response.payload.artist);
+        Media payload = response.payload;
+        assertNotNull(payload);
+        assertEquals("song", payload.type);
+        assertEquals("Solo (feat. Demi Lovato)", payload.song);
+        assertEquals("What Is Love? (Deluxe)", payload.album);
+        assertEquals("Clean Bandit", payload.artist);
         assertEquals(
                 "http://192.168.1.230:8015//m-browsableMediaUri/getImageFromTag/mnt/326C72A3E307501E47DE2B0F47D90EB8/Clean%20Bandit/What%20Is%20Love_%20(Deluxe)/03%20Solo%20(feat.%20Demi%20Lovato).m4a",
-                response.payload.imageUrl);
-        assertEquals("", response.payload.albumId);
+                payload.imageUrl);
+        assertEquals("", payload.albumId);
         assertEquals(
                 "http://192.168.1.230:8015/m-1c176905-f6c7-d168-dc35-86b4735c5976/Clean+Bandit/What+Is+Love_+(Deluxe)/03+Solo+(feat.+Demi+Lovato).m4a",
-                response.payload.mediaId);
-        assertEquals(1, response.payload.queueId);
-        assertEquals(1024, response.payload.sourceId);
+                payload.mediaId);
+        assertEquals(1, payload.queueId);
+        assertEquals(1024, payload.sourceId);
     }
 
     @Test
-    public void browse_playlist() {
+    public void browsePlaylist() {
         HeosResponseObject<BrowseResult[]> response = subject.parseResponse(
                 """
                         {"heos": {"command": "browse/browse", "result": "success", "message": "sid=1025&returned=6&count=6"}, "payload": [\
@@ -237,15 +272,19 @@ public class HeosJsonParserResponseTest {
                         """,
                 BrowseResult[].class);
 
-        assertEquals(HeosCommandGroup.BROWSE, response.heosCommand.commandGroup);
-        assertEquals(HeosCommand.BROWSE, response.heosCommand.command);
+        HeosCommandTuple heosCommand = response.heosCommand;
+        assertNotNull(heosCommand);
+        assertEquals(HeosCommandGroup.BROWSE, heosCommand.commandGroup);
+        assertEquals(HeosCommand.BROWSE, heosCommand.command);
         assertTrue(response.result);
 
         assertEquals(Long.valueOf(1025), response.getNumericAttribute(SOURCE_ID));
         assertEquals(Long.valueOf(6), response.getNumericAttribute(RETURNED));
         assertEquals(Long.valueOf(6), response.getNumericAttribute(COUNT));
 
-        BrowseResult result = response.payload[5];
+        BrowseResult[] payload = response.payload;
+        assertNotNull(payload);
+        BrowseResult result = payload[5];
 
         assertEquals(YesNoEnum.YES, result.container);
         assertEquals(BrowseResultType.PLAYLIST, result.type);
@@ -256,7 +295,7 @@ public class HeosJsonParserResponseTest {
     }
 
     @Test
-    public void browse_favorites() {
+    public void browseFavorites() {
         HeosResponseObject<BrowseResult[]> response = subject.parseResponse(
                 """
                         {"heos": {"command": "browse/browse", "result": "success", "message": "sid=1028&returned=3&count=3"}, "payload": [\
@@ -267,15 +306,19 @@ public class HeosJsonParserResponseTest {
                         """,
                 BrowseResult[].class);
 
-        assertEquals(HeosCommandGroup.BROWSE, response.heosCommand.commandGroup);
-        assertEquals(HeosCommand.BROWSE, response.heosCommand.command);
+        HeosCommandTuple heosCommand = response.heosCommand;
+        assertNotNull(heosCommand);
+        assertEquals(HeosCommandGroup.BROWSE, heosCommand.commandGroup);
+        assertEquals(HeosCommand.BROWSE, heosCommand.command);
         assertTrue(response.result);
 
         assertEquals(Long.valueOf(1028), response.getNumericAttribute(SOURCE_ID));
         assertEquals(Long.valueOf(3), response.getNumericAttribute(RETURNED));
         assertEquals(Long.valueOf(3), response.getNumericAttribute(COUNT));
 
-        BrowseResult result = response.payload[0];
+        BrowseResult[] payload = response.payload;
+        assertNotNull(payload);
+        BrowseResult result = payload[0];
 
         assertEquals(YesNoEnum.NO, result.container);
         assertEquals("s6707", result.mediaId);
@@ -288,7 +331,7 @@ public class HeosJsonParserResponseTest {
     }
 
     @Test
-    public void get_groups() {
+    public void getGroups() {
         HeosResponseObject<Group[]> response = subject.parseResponse(
                 """
                         {"heos": {"command": "group/get_groups", "result": "success", "message": ""}, "payload": [ \
@@ -297,11 +340,15 @@ public class HeosJsonParserResponseTest {
                         """,
                 Group[].class);
 
-        assertEquals(HeosCommandGroup.GROUP, response.heosCommand.commandGroup);
-        assertEquals(HeosCommand.GET_GROUPS, response.heosCommand.command);
+        HeosCommandTuple heosCommand = response.heosCommand;
+        assertNotNull(heosCommand);
+        assertEquals(HeosCommandGroup.GROUP, heosCommand.commandGroup);
+        assertEquals(HeosCommand.GET_GROUPS, heosCommand.command);
         assertTrue(response.result);
 
-        Group group = response.payload[0];
+        Group[] payload = response.payload;
+        assertNotNull(payload);
+        Group group = payload[0];
 
         assertEquals("Group 1", group.name);
         assertEquals("214243242", group.id);

@@ -129,8 +129,7 @@ public class Delta2Handler extends AbstractEcoflowHandler {
             new ChannelMapping("pd", "XT150Watts2", CHANNEL_ID_MAX_EXTRA_BATTERY2_POWER, 1, Units.WATT));
 
     public Delta2Handler(Thing thing, boolean isDelta2Max) {
-        super(thing, isDelta2Max ? Stream.concat(MAPPINGS.stream(), MAX_ONLY_MAPPINGS.stream()).toList() : MAPPINGS,
-                "params");
+        super(thing, isDelta2Max ? Stream.concat(MAPPINGS.stream(), MAX_ONLY_MAPPINGS.stream()).toList() : MAPPINGS);
     }
 
     @Override

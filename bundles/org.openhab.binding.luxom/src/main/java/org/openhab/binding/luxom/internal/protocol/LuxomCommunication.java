@@ -54,7 +54,6 @@ public class LuxomCommunication {
     private volatile boolean stillListeningToEvents;
 
     public LuxomCommunication(LuxomBridgeHandler luxomBridgeHandler) {
-        super();
         bridgeHandler = luxomBridgeHandler;
     }
 

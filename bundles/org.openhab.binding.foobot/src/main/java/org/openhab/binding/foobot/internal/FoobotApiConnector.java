@@ -32,8 +32,8 @@ import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.http.HttpField;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpStatus;
-import org.openhab.binding.foobot.internal.json.FoobotDevice;
-import org.openhab.binding.foobot.internal.json.FoobotJsonData;
+import org.openhab.binding.foobot.internal.dto.FoobotDevice;
+import org.openhab.binding.foobot.internal.dto.FoobotJsonData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

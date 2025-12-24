@@ -13,6 +13,7 @@
 package org.openhab.io.openhabcloud.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * This interface provides callbacks from CloudClient
@@ -29,6 +30,8 @@ public interface CloudClientListener {
      *
      * @param item the {@link String} containing item name
      * @param command the {@link String} containing a command
+     * @param source the {@link String} containing the source of the command
+     * @param userId the {@link String} containing the cloud user ID
      */
-    void sendCommand(String item, String command);
+    void sendCommand(String item, String command, @Nullable String source, @Nullable String userId);
 }

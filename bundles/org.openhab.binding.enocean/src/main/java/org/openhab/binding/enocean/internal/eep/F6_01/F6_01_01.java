@@ -27,7 +27,6 @@ import org.openhab.core.thing.CommonTriggerEvents;
 public class F6_01_01 extends _RPSMessage {
 
     public F6_01_01() {
-        super();
     }
 
     public F6_01_01(ERP1Message packet) {

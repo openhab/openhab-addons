@@ -13,7 +13,8 @@
 package org.openhab.binding.heos.internal.handler;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -65,9 +66,9 @@ public class HeosChannelHandlerPlayURL extends BaseHeosChannelHandler {
             return;
         }
         try {
-            URL url = new URL(command.toString());
+            URL url = new URI(command.toString()).toURL();
             getApi().playURL(id, url);
-        } catch (MalformedURLException e) {
+        } catch (URISyntaxException e) {
             logger.debug("Command '{}' is not a proper URL. Error: {}", command.toString(), e.getMessage());
         }
     }

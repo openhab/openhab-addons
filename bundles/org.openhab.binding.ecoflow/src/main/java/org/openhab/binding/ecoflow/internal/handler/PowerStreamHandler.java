@@ -81,7 +81,7 @@ public class PowerStreamHandler extends AbstractEcoflowHandler {
             new ChannelMapping("20_1", "pv2CtrlMpptOffFlag", CHANNEL_ID_PV2_MPPT_ACTIVE, INV_SWITCH_CONVERTER));
 
     public PowerStreamHandler(Thing thing) {
-        super(thing, MAPPINGS, "param");
+        super(thing, MAPPINGS);
     }
 
     @Override

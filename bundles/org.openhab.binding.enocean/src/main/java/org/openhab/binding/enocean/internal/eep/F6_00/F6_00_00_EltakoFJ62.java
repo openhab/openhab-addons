@@ -42,7 +42,6 @@ public class F6_00_00_EltakoFJ62 extends _RPSMessage {
     static final byte CLOSED = 0x50;
 
     public F6_00_00_EltakoFJ62() {
-        super();
     }
 
     public F6_00_00_EltakoFJ62(ERP1Message packet) {

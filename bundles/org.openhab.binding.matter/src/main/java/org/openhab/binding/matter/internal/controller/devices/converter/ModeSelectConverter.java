@@ -59,8 +59,8 @@ public class ModeSelectConverter extends GenericConverter<ModeSelectCluster> {
         initializingCluster.supportedModes
                 .forEach(mode -> modeOptions.add(new StateOption(mode.mode.toString(), mode.label)));
 
-        StateDescription stateDescriptionMode = StateDescriptionFragmentBuilder.create().withPattern("%d")
-                .withOptions(modeOptions).build().toStateDescription();
+        StateDescription stateDescriptionMode = StateDescriptionFragmentBuilder.create().withOptions(modeOptions)
+                .build().toStateDescription();
 
         return Collections.singletonMap(channel, stateDescriptionMode);
     }

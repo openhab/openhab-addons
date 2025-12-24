@@ -32,13 +32,11 @@ public class VenstarInfoData {
     private int tempunits;
 
     public VenstarInfoData() {
-        super();
     }
 
     public VenstarInfoData(double cooltemp, double heattemp, VenstarSystemState state, VenstarSystemMode mode,
             VenstarAwayMode away, VenstarFanMode fan, VenstarFanState fanstate, VenstarScheduleMode schedule,
             VenstarSchedulePart schedulepart) {
-        super();
         this.cooltemp = cooltemp;
         this.heattemp = heattemp;
         this.state = state;

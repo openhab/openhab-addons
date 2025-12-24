@@ -124,7 +124,7 @@ class ThermostatConverterTest extends BaseMatterConverterTest {
         message.value = ThermostatCluster.SystemModeEnum.HEAT;
         converter.onEvent(message);
         verify(mockHandler, times(1)).updateState(eq(1), eq("thermostat-systemmode"),
-                eq(new DecimalType(ThermostatCluster.SystemModeEnum.HEAT.value)));
+                eq(new DecimalType(ThermostatCluster.SystemModeEnum.HEAT.getValue())));
     }
 
     @Test
@@ -139,7 +139,7 @@ class ThermostatConverterTest extends BaseMatterConverterTest {
         verify(mockHandler, times(1)).updateState(eq(1), eq("thermostat-localtemperature"),
                 eq(new QuantityType<>(20.0, SIUnits.CELSIUS)));
         verify(mockHandler, times(1)).updateState(eq(1), eq("thermostat-systemmode"),
-                eq(new DecimalType(mockCluster.systemMode.value)));
+                eq(new DecimalType(mockCluster.systemMode.getValue())));
         verify(mockHandler, times(1)).updateState(eq(1), eq("thermostat-occupiedheating"),
                 eq(new QuantityType<>(22.0, SIUnits.CELSIUS)));
         verify(mockHandler, times(1)).updateState(eq(1), eq("thermostat-occupiedcooling"),

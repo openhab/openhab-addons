@@ -44,7 +44,6 @@ public class A5_3F_7F_EltakoFSB extends _4BSMessage {
     static final byte DOWN = 0x50;
 
     public A5_3F_7F_EltakoFSB() {
-        super();
     }
 
     public A5_3F_7F_EltakoFSB(ERP1Message packet) {

@@ -14,12 +14,15 @@ package org.openhab.binding.opengarage.internal;
 
 import java.io.IOException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Exception for when an unexpected response is received from the OpenGarage controller.
  *
  * @author Paul Smedley - Initial contribution
  *
  */
+@NonNullByDefault
 public class OpenGarageCommunicationException extends IOException {
     private static final long serialVersionUID = 529232811860854017L;
 

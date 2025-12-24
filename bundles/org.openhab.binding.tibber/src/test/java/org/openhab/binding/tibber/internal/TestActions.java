@@ -115,12 +115,12 @@ public class TestActions {
         Map<String, Object> params = Map.of("earliestStart", start, "power", 1000, "duration", "1h 3m");
         String result = actions.bestPricePeriod(params);
         JsonObject resultJson = (JsonObject) JsonParser.parseString(result);
-        assertEquals("2025-05-18T12:00:00Z", resultJson.get("cheapestStart").getAsString(), "Cheapest Start");
-        assertEquals("2025-05-19T18:00:00Z", resultJson.get("mostExpensiveStart").getAsString(),
+        assertEquals("2025-05-18T11:00:00Z", resultJson.get("cheapestStart").getAsString(), "Cheapest Start");
+        assertEquals("2025-05-19T17:57:00Z", resultJson.get("mostExpensiveStart").getAsString(),
                 "Most Expensive Start");
-        assertEquals(0.177494, resultJson.get("lowestPrice").getAsDouble(), 0.0001, "Cheapest Price");
-        assertEquals(0.477745, resultJson.get("highestPrice").getAsDouble(), 0.0001, "Most Expensive Price");
-        assertEquals(0.294061, resultJson.get("averagePrice").getAsDouble(), 0.0001, "Average Price");
+        assertEquals(0.1997, resultJson.get("lowestPrice").getAsDouble(), 0.0001, "Cheapest Price");
+        assertEquals(0.4771, resultJson.get("highestPrice").getAsDouble(), 0.0001, "Most Expensive Price");
+        assertEquals(0.3111, resultJson.get("averagePrice").getAsDouble(), 0.0001, "Average Price");
     }
 
     @Test
@@ -135,12 +135,12 @@ public class TestActions {
             Map<String, Object> params = Map.of("earliestStart", actions.priceInfoStart(), "curve", curve);
             String result = actions.bestPricePeriod(params);
             JsonObject resultJson = (JsonObject) JsonParser.parseString(result);
-            assertEquals("2025-05-18T12:00:00Z", resultJson.get("cheapestStart").getAsString(), "Cheapest Start");
+            assertEquals("2025-05-18T11:00:00Z", resultJson.get("cheapestStart").getAsString(), "Cheapest Start");
             assertEquals("2025-05-19T18:00:00Z", resultJson.get("mostExpensiveStart").getAsString(),
                     "Most Expensive Start");
-            assertEquals(0.055333, resultJson.get("lowestPrice").getAsDouble(), 0.0001, "Cheapest Price");
-            assertEquals(0.150617, resultJson.get("highestPrice").getAsDouble(), 0.0001, "Most Expensive Price");
-            assertEquals(0.091364, resultJson.get("averagePrice").getAsDouble(), 0.0001, "Average Price");
+            assertEquals(0.0623, resultJson.get("lowestPrice").getAsDouble(), 0.0001, "Cheapest Price");
+            assertEquals(0.1496, resultJson.get("highestPrice").getAsDouble(), 0.0001, "Most Expensive Price");
+            assertEquals(0.0968, resultJson.get("averagePrice").getAsDouble(), 0.0001, "Average Price");
         } catch (IOException e) {
             fail("Error reading file " + fileName);
         }
@@ -155,24 +155,29 @@ public class TestActions {
         Map<String, Object> params = Map.of("earliestStart", start, "power", 1000, "duration", "8h 15m");
         String result = actions.bestPriceSchedule(params);
         JsonObject resultJson = (JsonObject) JsonParser.parseString(result);
-        assertEquals(2, resultJson.get("size").getAsInt(), "Number of schedules");
-        assertEquals(1.507325, resultJson.get("cost").getAsDouble(), 0.0001, "Price");
+        assertEquals(3, resultJson.get("size").getAsInt(), "Number of schedules");
+        assertEquals(1.804425, resultJson.get("cost").getAsDouble(), 0.0001, "Price");
         JsonArray scheduleArray = resultJson.get("schedule").getAsJsonArray();
         assertNotNull(scheduleArray);
-        assertEquals(1.2658, scheduleArray.get(0).getAsJsonObject().get("cost").getAsDouble(), 0.0001,
+        assertEquals(1.0423, scheduleArray.get(0).getAsJsonObject().get("cost").getAsDouble(), 0.0001,
                 "Cost Element 1");
-        assertEquals(0.241525, scheduleArray.get(1).getAsJsonObject().get("cost").getAsDouble(), 0.0001,
+        assertEquals(0.6952, scheduleArray.get(1).getAsJsonObject().get("cost").getAsDouble(), 0.0001,
                 "Cost Element 2");
-        assertEquals(25200, scheduleArray.get(0).getAsJsonObject().get("duration").getAsInt(), "Duration Element 1");
-        assertEquals(4500, scheduleArray.get(1).getAsJsonObject().get("duration").getAsInt(), "Duration Element 2");
-        assertEquals("2025-05-18T08:00:00Z", scheduleArray.get(0).getAsJsonObject().get("start").getAsString(),
+        assertEquals(18000, scheduleArray.get(0).getAsJsonObject().get("duration").getAsInt(), "Duration Element 1");
+        assertEquals(10800, scheduleArray.get(1).getAsJsonObject().get("duration").getAsInt(), "Duration Element 2");
+        assertEquals(900, scheduleArray.get(2).getAsJsonObject().get("duration").getAsInt(), "Duration Element 3");
+        assertEquals("2025-05-18T09:00:00Z", scheduleArray.get(0).getAsJsonObject().get("start").getAsString(),
                 "Start Element 1");
-        assertEquals("2025-05-19T11:00:00Z", scheduleArray.get(1).getAsJsonObject().get("start").getAsString(),
+        assertEquals("2025-05-19T10:00:00Z", scheduleArray.get(1).getAsJsonObject().get("start").getAsString(),
                 "Start Element 2");
-        assertEquals("2025-05-18T15:00:00Z", scheduleArray.get(0).getAsJsonObject().get("stop").getAsString(),
+        assertEquals("2025-05-19T09:00:00Z", scheduleArray.get(2).getAsJsonObject().get("start").getAsString(),
+                "Start Element 3");
+        assertEquals("2025-05-18T14:00:00Z", scheduleArray.get(0).getAsJsonObject().get("stop").getAsString(),
                 "Stop Element 1");
-        assertEquals("2025-05-19T12:15:00Z", scheduleArray.get(1).getAsJsonObject().get("stop").getAsString(),
+        assertEquals("2025-05-19T13:00:00Z", scheduleArray.get(1).getAsJsonObject().get("stop").getAsString(),
                 "Stop Element 2");
+        assertEquals("2025-05-19T09:15:00Z", scheduleArray.get(2).getAsJsonObject().get("stop").getAsString(),
+                "Stop Element 3");
     }
 
     @Test

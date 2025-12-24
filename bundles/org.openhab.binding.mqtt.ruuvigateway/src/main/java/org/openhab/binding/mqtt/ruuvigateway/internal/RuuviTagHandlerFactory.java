@@ -16,7 +16,7 @@ import static org.openhab.binding.mqtt.ruuvigateway.internal.RuuviGatewayBinding
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.mqtt.ruuvigateway.internal.handler.RuuviTagHandler;
+import org.openhab.binding.mqtt.ruuvigateway.internal.handler.RuuviHandler;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
@@ -43,7 +43,7 @@ public class RuuviTagHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
-            return new RuuviTagHandler(thing, RUUVI_GATEWAY_SUBSCRIBE_TIMEOUT_MS);
+            return new RuuviHandler(thing, RUUVI_GATEWAY_SUBSCRIBE_TIMEOUT_MS);
         }
         return null;
     }

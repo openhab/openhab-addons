@@ -21,6 +21,7 @@ import org.openhab.binding.avmfritz.internal.handler.AVMFritzButtonHandler;
 import org.openhab.binding.avmfritz.internal.handler.AVMFritzColorLightDeviceHandler;
 import org.openhab.binding.avmfritz.internal.handler.AVMFritzHeatingDeviceHandler;
 import org.openhab.binding.avmfritz.internal.handler.AVMFritzHeatingGroupHandler;
+import org.openhab.binding.avmfritz.internal.handler.AVMFritzPowerMeterDeviceHandler;
 import org.openhab.binding.avmfritz.internal.handler.BoxHandler;
 import org.openhab.binding.avmfritz.internal.handler.DeviceHandler;
 import org.openhab.binding.avmfritz.internal.handler.GroupHandler;
@@ -83,6 +84,8 @@ public class AVMFritzHandlerFactory extends BaseThingHandlerFactory {
             return new AVMFritzButtonHandler(thing);
         } else if (SUPPORTED_HEATING_THING_TYPES.contains(thingTypeUID)) {
             return new AVMFritzHeatingDeviceHandler(thing);
+        } else if (SUPPORTED_POWER_METER_THING_TYPES.contains(thingTypeUID)) {
+            return new AVMFritzPowerMeterDeviceHandler(thing);
         } else if (SUPPORTED_DEVICE_THING_TYPES_UIDS.contains(thingTypeUID)) {
             return new DeviceHandler(thing);
         } else if (GROUP_HEATING_THING_TYPE.equals(thingTypeUID)) {

@@ -39,24 +39,25 @@ The `inverterType` parameter governs what registers the binding will read from t
 
 Possible values:
 
-| Inverter Type        | Inverters supported                               | Notes                                                            |
-|----------------------|---------------------------------------------------|------------------------------------------------------------------|
-| deye_hybrid          | DEYE/Sunsynk/SolArk Hybrid inverters              | used when no lookup specified                                    |
-| deye_sg04lp3         | DEYE/Sunsynk/SolArk Hybrid 8/12K-SG04LP3          | e.g. 12K-SG04LP3-EU                                              |
-| deye_string          | DEYE/Sunsynk/SolArk String inverters              | e.g. SUN-4/5/6/7/8/10/12K-G03 Plus                               |
-| deye_2mppt           | DEYE Microinverter with 2 MPPT Trackers           | e.g. SUN600G3-EU-230 / SUN800G3-EU-230 / SUN1000G3-EU-230        |
-| deye_4mppt           | DEYE Microinverter with 4 MPPT Trackers           | e.g. SUN1300G3-EU-230 / SUN1600G3-EU-230 / SUN2000G3-EU-230      |
-| sofar_lsw3           | SOFAR Inverters                                   |                                                                  |
-| sofar_g3hyd          | SOFAR Hybrid Three-Phase inverter                 | HYD 6000 or rebranded (three-phase), ex. ZCS Azzurro 3PH HYD-ZSS |
-| sofar_hyd3k-6k-es    | SOFAR Hybrid Single-Phase inverter                | HYD 6000 or rebranded (single-phase), ex. ZCS Azzurro HYD-ZSS    |
-| solis_hybrid         | SOLIS Hybrid inverter                             |                                                                  |
-| solid_1p8k-5g        | SOLIS 1P8K-5G                                     |                                                                  |
-| solis_3p-4g          | SOLIS Three-Phase Inverter 4G Series              |                                                                  |
-| solis_s6-gr1p        | SOLIS Single-Phase Inverter S6-GR1P               |                                                                  |
-| hyd-zss-hp-3k-6k     | ZCS Azzurro Hybrid HP 3K-6K inverters             | Rebranded Sofar models                                           |
-| kstar_hybrid         | KSTAR Hybrid inverters                            |                                                                  |
-| sofar_wifikit        | SOFAR WiFi Kit                                    |                                                                  |
-| zcs_azzurro-ktl-v3   | ZCS Azzurro KTL-V3 inverters                      | ZCS Azzurro 3.3/4.4/5.5/6.6 KTL-V3 (rebranded Sofar KTLX-G3)     |
+| Inverter Type      | Inverters supported                                | Notes                                                            |
+|--------------------|----------------------------------------------------|------------------------------------------------------------------|
+| deye_hybrid        | DEYE/Sunsynk/SolArk Hybrid inverters               | used when no lookup specified                                    |
+| deye_sg04lp3       | DEYE/Sunsynk/SolArk Hybrid 8/12K-SG04LP3           | e.g. 12K-SG04LP3-EU                                              |
+| deye_sg01hp3       | DEYE/Sunsynk/SolArk Hybrid HighVoltage 30K-SG01HP3 | e.g. 30K-SG01HP3-EU                                              |
+| deye_string        | DEYE/Sunsynk/SolArk String inverters               | e.g. SUN-4/5/6/7/8/10/12K-G03 Plus                               |
+| deye_2mppt         | DEYE Microinverter with 2 MPPT Trackers            | e.g. SUN600G3-EU-230 / SUN800G3-EU-230 / SUN1000G3-EU-230        |
+| deye_4mppt         | DEYE Microinverter with 4 MPPT Trackers            | e.g. SUN1300G3-EU-230 / SUN1600G3-EU-230 / SUN2000G3-EU-230      |
+| sofar_lsw3         | SOFAR Inverters                                    |                                                                  |
+| sofar_g3hyd        | SOFAR Hybrid Three-Phase inverter                  | HYD 6000 or rebranded (three-phase), ex. ZCS Azzurro 3PH HYD-ZSS |
+| sofar_hyd3k-6k-es  | SOFAR Hybrid Single-Phase inverter                 | HYD 6000 or rebranded (single-phase), ex. ZCS Azzurro HYD-ZSS    |
+| solis_hybrid       | SOLIS Hybrid inverter                              |                                                                  |
+| solid_1p8k-5g      | SOLIS 1P8K-5G                                      |                                                                  |
+| solis_3p-4g        | SOLIS Three-Phase Inverter 4G Series               |                                                                  |
+| solis_s6-gr1p      | SOLIS Single-Phase Inverter S6-GR1P                |                                                                  |
+| hyd-zss-hp-3k-6k   | ZCS Azzurro Hybrid HP 3K-6K inverters              | Rebranded Sofar models                                           |
+| kstar_hybrid       | KSTAR Hybrid inverters                             |                                                                  |
+| sofar_wifikit      | SOFAR WiFi Kit                                     |                                                                  |
+| zcs_azzurro-ktl-v3 | ZCS Azzurro KTL-V3 inverters                       | ZCS Azzurro 3.3/4.4/5.5/6.6 KTL-V3 (rebranded Sofar KTLX-G3)     |
 
 The `additionalRequests` allows the user to specify additional address ranges to be polled. The format of the value is `mb_functioncode1:start1-end1, mb_functioncode2:start2-end2,...`
 For example `"0x03:0x27D-0x27E"` will issue an additional read for Holding Registers between `0x27D` and `0x27E`.
@@ -70,7 +71,7 @@ Thing solarman:logger:local [ hostname="x.x.x.x", inverterType="deye_sg04lp3", s
 }
 ```
 
-**Please note** As of this writing inverter types besides the `deye_sg04lp3` were not tested to work.
+**Please note** As of this writing inverter types besides the `deye_sg04lp3` and `deye_sg01hp3` were not tested to work.
 If you have one of those inverters and it works, please drop me a message, if it doesn't work, please open an issue and I'll try to fix it.
 
 ## Channels
@@ -79,69 +80,106 @@ The list of channels is not static, it is generated dynamically based on the inv
 
 This is the list you get for the `deye_sg04lp3` inverter type:
 
-| Channel                                  | Type   | Read/Write   | Description                                           |
-|------------------------------------------|--------|--------------|-------------------------------------------------------|
-| alert-alert                              | Number | R            | Alert \[0x0229,0x022A,0x022B,0x022C,0x022D,0x022E\]   |
-| battery-battery-current                  | Number | R            | Battery Current \[0x024F\]                            |
-| battery-battery-power                    | Number | R            | Battery Power \[0x024E\]                              |
-| battery-battery-soc                      | Number | R            | Battery SOC \[0x024C\]                                |
-| battery-battery-temperature              | Number | R            | Battery Temperature \[0x024A\]                        |
-| battery-battery-voltage                  | Number | R            | Battery Voltage \[0x024B\]                            |
-| battery-daily-battery-charge             | Number | R            | Daily Battery Charge \[0x0202\]                       |
-| battery-daily-battery-discharge          | Number | R            | Daily Battery Discharge \[0x0203\]                    |
-| battery-total-battery-charge             | Number | R            | Total Battery Charge \[0x0204,0x0205\]                |
-| battery-total-battery-discharge          | Number | R            | Total Battery Discharge \[0x0206,0x0207\]             |
-| battery-battery-absorption-v             | Number | R            | Battery Absorption V \[0x0064\]                       |
-| battery-battery-empty-v                  | Number | R            | Battery Empty V \[0x0066\]                            |
-| battery-battery-equalization-v           | Number | R            | Battery Equalization V \[0x0063\]                     |
-| battery-battery-float-v                  | Number | R            | Battery Float V \[0x0065\]                            |
-| battery-battery-capacity                 | Number | R            | Battery Capacity \[0x0066\]                           |
-| battery-battery-max-a-charge             | Number | R            | Battery Max A Charge \[0x006C\]                       |
-| battery-battery-max-a-discharge          | Number | R            | Battery Max A Discharge \[0x006D\]                    |
-| grid-daily-energy-bought                 | Number | R            | Daily Energy Bought \[0x0208\]                        |
-| grid-daily-energy-sold                   | Number | R            | Daily Energy Sold \[0x0209\]                          |
-| grid-external-ct-l1-power                | Number | R            | External CT L1 Power \[0x0268\]                       |
-| grid-external-ct-l2-power                | Number | R            | External CT L2 Power \[0x0269\]                       |
-| grid-external-ct-l3-power                | Number | R            | External CT L3 Power \[0x026A\]                       |
-| grid-grid-voltage-l1                     | Number | R            | Grid Voltage L1 \[0x0256\]                            |
-| grid-grid-voltage-l2                     | Number | R            | Grid Voltage L2 \[0x0257\]                            |
-| grid-grid-voltage-l3                     | Number | R            | Grid Voltage L3 \[0x0258\]                            |
-| grid-internal-ct-l1-power                | Number | R            | Internal CT L1 Power \[0x025C\]                       |
-| grid-internal-ct-l2-power                | Number | R            | Internal CT L2 Power \[0x025D\]                       |
-| grid-internal-ct-l3-power                | Number | R            | Internal CT L3 Power \[0x025E\]                       |
-| grid-total-energy-bought                 | Number | R            | Total Energy Bought \[0x020A,0x020B\]                 |
-| grid-total-energy-sold                   | Number | R            | Total Energy Sold \[0x020C,0x020D\]                   |
-| grid-total-grid-power                    | Number | R            | Total Grid Power \[0x0271\]                           |
-| grid-total-grid-production               | Number | R            | Total Grid Production \[0x020C,0x020D\]               |
-| inverter-ac-temperature                  | Number | R            | AC Temperature \[0x021D\]                             |
-| inverter-communication-board-version-no- | Number | R            | Communication Board Version No \[0x0011\]             |
-| inverter-control-board-version-no-       | Number | R            | Control Board Version No \[0x000D\]                   |
-| inverter-current-l1                      | Number | R            | Current L1 \[0x0276\]                                 |
-| inverter-current-l2                      | Number | R            | Current L2 \[0x0277\]                                 |
-| inverter-current-l3                      | Number | R            | Current L3 \[0x0278\]                                 |
-| inverter-dc-temperature                  | Number | R            | DC Temperature \[0x021C\]                             |
-| inverter-frequency                       | Number | R            | Inverter Frequency \[0x27E\]                          |
-| inverter-inverter-id                     | String | R            | Inverter ID \[0x0003,0x0004,0x0005,0x0006,0x0007\]    |
-| inverter-inverter-l1-power               | Number | R            | Inverter L1 Power \[0x0279\]                          |
-| inverter-inverter-l2-power               | Number | R            | Inverter L2 Power \[0x027A\]                          |
-| inverter-inverter-l3-power               | Number | R            | Inverter L3 Power \[0x027B\]                          |
-| solar-daily-production                   | Number | R            | Daily Production \[0x0211\]                           |
-| solar-pv1-current                        | Number | R            | PV1 Current \[0x02A5\]                                |
-| solar-pv1-power                          | Number | R            | PV1 Power \[0x02A0\]                                  |
-| solar-pv1-voltage                        | Number | R            | PV1 Voltage \[0x02A4\]                                |
-| solar-pv2-current                        | Number | R            | PV2 Current \[0x02A7\]                                |
-| solar-pv2-power                          | Number | R            | PV2 Power \[0x02A1\]                                  |
-| solar-pv2-voltage                        | Number | R            | PV2 Voltage \[0x02A6\]                                |
-| solar-total-production                   | Number | R            | Total Production \[0x0216,0x0217\]                    |
-| upload-daily-load-consumption            | Number | R            | Daily Load Consumption \[0x020E\]                     |
-| upload-load-l1-power                     | Number | R            | Load L1 Power \[0x028A\]                              |
-| upload-load-l2-power                     | Number | R            | Load L2 Power \[0x028B\]                              |
-| upload-load-l3-power                     | Number | R            | Load L3 Power \[0x028C\]                              |
-| upload-load-voltage-l1                   | Number | R            | Load Voltage L1 \[0x0284\]                            |
-| upload-load-voltage-l2                   | Number | R            | Load Voltage L2 \[0x0285\]                            |
-| upload-load-voltage-l3                   | Number | R            | Load Voltage L3 \[0x0286\]                            |
-| upload-total-load-consumption            | Number | R            | Total Load Consumption \[0x020F,0x0210\]              |
-| upload-total-load-power                  | Number | R            | Total Load Power \[0x028D\]                           |
+| Channel                                  | Type   | Read/Write | Description                                                                                                                              |
+|------------------------------------------|--------|------------|------------------------------------------------------------------------------------------------------------------------------------------|
+| alert-alert                              | Number | R          | Alert \[0x0229,0x022A,0x022B,0x022C,0x022D,0x022E\]                                                                                      |
+| battery-battery-current                  | Number | R          | Battery Current \[0x024F\]                                                                                                               |
+| battery-battery-power                    | Number | R          | Battery Power \[0x024E\]                                                                                                                 |
+| battery-battery-soc                      | Number | R          | Battery SOC \[0x024C\]                                                                                                                   |
+| battery-battery-temperature              | Number | R          | Battery Temperature \[0x024A\]                                                                                                           |
+| battery-battery-voltage                  | Number | R          | Battery Voltage \[0x024B\]                                                                                                               |
+| battery-daily-battery-charge             | Number | R          | Daily Battery Charge \[0x0202\]                                                                                                          |
+| battery-daily-battery-discharge          | Number | R          | Daily Battery Discharge \[0x0203\]                                                                                                       |
+| battery-total-battery-charge             | Number | R          | Total Battery Charge \[0x0204,0x0205\]                                                                                                   |
+| battery-total-battery-discharge          | Number | R          | Total Battery Discharge \[0x0206,0x0207\]                                                                                                |
+| battery-battery-absorption-v             | Number | R          | Battery Absorption V \[0x0064\]                                                                                                          |
+| battery-battery-empty-v                  | Number | R          | Battery Empty V \[0x0066\]                                                                                                               |
+| battery-battery-equalization-v           | Number | R          | Battery Equalization V \[0x0063\]                                                                                                        |
+| battery-battery-float-v                  | Number | R          | Battery Float V \[0x0065\]                                                                                                               |
+| battery-battery-capacity                 | Number | R          | Battery Capacity \[0x0066\]                                                                                                              |
+| battery-battery-max-a-charge             | Number | R          | Battery Max A Charge \[0x006C\]                                                                                                          |
+| battery-battery-max-a-discharge          | Number | R          | Battery Max A Discharge \[0x006D\]                                                                                                       |
+| grid-daily-energy-bought                 | Number | R          | Daily Energy Bought \[0x0208\]                                                                                                           |
+| grid-daily-energy-sold                   | Number | R          | Daily Energy Sold \[0x0209\]                                                                                                             |
+| grid-external-ct-l1-power                | Number | R          | External CT L1 Power \[0x0268\]                                                                                                          |
+| grid-external-ct-l2-power                | Number | R          | External CT L2 Power \[0x0269\]                                                                                                          |
+| grid-external-ct-l3-power                | Number | R          | External CT L3 Power \[0x026A\]                                                                                                          |
+| grid-grid-voltage-l1                     | Number | R          | Grid Voltage L1 \[0x0256\]                                                                                                               |
+| grid-grid-voltage-l2                     | Number | R          | Grid Voltage L2 \[0x0257\]                                                                                                               |
+| grid-grid-voltage-l3                     | Number | R          | Grid Voltage L3 \[0x0258\]                                                                                                               |
+| grid-internal-ct-l1-power                | Number | R          | Internal CT L1 Power \[0x025C\]                                                                                                          |
+| grid-internal-ct-l2-power                | Number | R          | Internal CT L2 Power \[0x025D\]                                                                                                          |
+| grid-internal-ct-l3-power                | Number | R          | Internal CT L3 Power \[0x025E\]                                                                                                          |
+| grid-total-energy-bought                 | Number | R          | Total Energy Bought \[0x020A,0x020B\]                                                                                                    |
+| grid-total-energy-sold                   | Number | R          | Total Energy Sold \[0x020C,0x020D\]                                                                                                      |
+| grid-total-grid-power                    | Number | R          | Total Grid Power \[0x0271\]                                                                                                              |
+| grid-total-grid-production               | Number | R          | Total Grid Production \[0x020C,0x020D\]                                                                                                  |
+| inverter-ac-temperature                  | Number | R          | AC Temperature \[0x021D\]                                                                                                                |
+| inverter-communication-board-version-no- | Number | R          | Communication Board Version No \[0x0011\]                                                                                                |
+| inverter-control-board-version-no-       | Number | R          | Control Board Version No \[0x000D\]                                                                                                      |
+| inverter-current-l1                      | Number | R          | Current L1 \[0x0276\]                                                                                                                    |
+| inverter-current-l2                      | Number | R          | Current L2 \[0x0277\]                                                                                                                    |
+| inverter-current-l3                      | Number | R          | Current L3 \[0x0278\]                                                                                                                    |
+| inverter-dc-temperature                  | Number | R          | DC Temperature \[0x021C\]                                                                                                                |
+| inverter-frequency                       | Number | R          | Inverter Frequency \[0x27E\]                                                                                                             |
+| inverter-inverter-id                     | String | R          | Inverter ID \[0x0003,0x0004,0x0005,0x0006,0x0007\]                                                                                       |
+| inverter-inverter-l1-power               | Number | R          | Inverter L1 Power \[0x0279\]                                                                                                             |
+| inverter-inverter-l2-power               | Number | R          | Inverter L2 Power \[0x027A\]                                                                                                             |
+| inverter-inverter-l3-power               | Number | R          | Inverter L3 Power \[0x027B\]                                                                                                             |
+| solar-daily-production                   | Number | R          | Daily Production \[0x0211\]                                                                                                              |
+| solar-pv1-current                        | Number | R          | PV1 Current \[0x02A5\]                                                                                                                   |
+| solar-pv1-power                          | Number | R          | PV1 Power \[0x02A0\]                                                                                                                     |
+| solar-pv1-voltage                        | Number | R          | PV1 Voltage \[0x02A4\]                                                                                                                   |
+| solar-pv2-current                        | Number | R          | PV2 Current \[0x02A7\]                                                                                                                   |
+| solar-pv2-power                          | Number | R          | PV2 Power \[0x02A1\]                                                                                                                     |
+| solar-pv2-voltage                        | Number | R          | PV2 Voltage \[0x02A6\]                                                                                                                   |
+| solar-total-production                   | Number | R          | Total Production \[0x0216,0x0217\]                                                                                                       |
+| upload-daily-load-consumption            | Number | R          | Daily Load Consumption \[0x020E\]                                                                                                        |
+| upload-load-l1-power                     | Number | R          | Load L1 Power \[0x028A\]                                                                                                                 |
+| upload-load-l2-power                     | Number | R          | Load L2 Power \[0x028B\]                                                                                                                 |
+| upload-load-l3-power                     | Number | R          | Load L3 Power \[0x028C\]                                                                                                                 |
+| upload-load-voltage-l1                   | Number | R          | Load Voltage L1 \[0x0284\]                                                                                                               |
+| upload-load-voltage-l2                   | Number | R          | Load Voltage L2 \[0x0285\]                                                                                                               |
+| upload-load-voltage-l3                   | Number | R          | Load Voltage L3 \[0x0286\]                                                                                                               |
+| upload-total-load-consumption            | Number | R          | Total Load Consumption \[0x020F,0x0210\]                                                                                                 |
+| upload-total-load-power                  | Number | R          | Total Load Power \[0x028D\]                                                                                                              |
+| tou-time-1                               | String | R/W        | Time Of Use Time Period 1 \[0x0094\] (time in format `HH:mm`)                                                                            |
+| tou-time-2                               | String | R/W        | Time Of Use Time Period 2 \[0x0095\] (time in format `HH:mm`)                                                                            |
+| tou-time-3                               | String | R/W        | Time Of Use Time Period 3 \[0x0096\] (time in format `HH:mm`)                                                                            |
+| tou-time-4                               | String | R/W        | Time Of Use Time Period 4 \[0x0097\] (time in format `HH:mm`)                                                                            |
+| tou-time-5                               | String | R/W        | Time Of Use Time Period 5 \[0x0098\] (time in format `HH:mm`)                                                                            |
+| tou-time-6                               | String | R/W        | Time Of Use Time Period 6 \[0x0099\] (time in format `HH:mm`)                                                                            |
+| tou-power-1                              | Number | R/W        | Time Of Use Power 1 \[0x009A\]                                                                                                           |
+| tou-power-2                              | Number | R/W        | Time Of Use Power 2 \[0x009B\]                                                                                                           |
+| tou-power-3                              | Number | R/W        | Time Of Use Power 3 \[0x009C\]                                                                                                           |
+| tou-power-4                              | Number | R/W        | Time Of Use Power 4 \[0x009D\]                                                                                                           |
+| tou-power-5                              | Number | R/W        | Time Of Use Power 5 \[0x009E\]                                                                                                           |
+| tou-power-6                              | Number | R/W        | Time Of Use Power 6 \[0x009F\]                                                                                                           |
+| tou-battery-soc-1                        | Number | R/W        | Time Of Use Battery SOC 1 \[0x00A6\]                                                                                                     |
+| tou-battery-soc-2                        | Number | R/W        | Time Of Use Battery SOC 2 \[0x00A7\]                                                                                                     |
+| tou-battery-soc-3                        | Number | R/W        | Time Of Use Battery SOC 3 \[0x00A8\]                                                                                                     |
+| tou-battery-soc-4                        | Number | R/W        | Time Of Use Battery SOC 4 \[0x00A9\]                                                                                                     |
+| tou-battery-soc-5                        | Number | R/W        | Time Of Use Battery SOC 5 \[0x00AA\]                                                                                                     |
+| tou-battery-soc-6                        | Number | R/W        | Time Of Use Battery SOC 6 \[0x00AB\]                                                                                                     |
+| tou-charge-enable-1                      | String | R/W        | Time Of Use Charge Enable 1 \[0x00AC\] (one of `Charge disabled`, `Grid charge`, `Generator charge` or `Grid charge + Generator charge`) |
+| tou-charge-enable-2                      | String | R/W        | Time Of Use Charge Enable 2 \[0x00AD\] (one of `Charge disabled`, `Grid charge`, `Generator charge` or `Grid charge + Generator charge`) |
+| tou-charge-enable-3                      | String | R/W        | Time Of Use Charge Enable 3 \[0x00AE\] (one of `Charge disabled`, `Grid charge`, `Generator charge` or `Grid charge + Generator charge`) |
+| tou-charge-enable-4                      | String | R/W        | Time Of Use Charge Enable 4 \[0x00AF\] (one of `Charge disabled`, `Grid charge`, `Generator charge` or `Grid charge + Generator charge`) |
+| tou-charge-enable-5                      | String | R/W        | Time Of Use Charge Enable 5 \[0x00B0\] (one of `Charge disabled`, `Grid charge`, `Generator charge` or `Grid charge + Generator charge`) |
+| tou-charge-enable-6                      | String | R/W        | Time Of Use Charge Enable 6 \[0x00B1\] (one of `Charge disabled`, `Grid charge`, `Generator charge` or `Grid charge + Generator charge`) |
+
+## Writable Channels
+
+If you want to write into registers of the invertor you need to directly define your channels as writable, because by default channels are counted as read-only. For example, `deye_sg04lp3` and `deye_sg01hp3` have a full set of writable channels connected to `Time Of Use` functionality, but if you want to add custom writable channels you need to define it like this:
+
+```java
+Thing solarman:logger:local [ hostname="x.x.x.x", inverterType="deye_sg04lp3", serialNumber="1234567890", additionalRequests="0x03:0x00A6-0x00A8" ] {
+        Channels:
+            Type number : tou-battery-soc-1 [scale="1", uom="%", rule="1", registers="0x00A6", readOnly="false"]
+}
+```
+
+Note the **readOnly="false"** part here, which will make channel accept commands and write data to invertor register. 
 
 ## Full Example
 
@@ -230,6 +268,31 @@ Number:ElectricPotential  PV1_Voltage                     "PV1 Voltage [%d V]"  
 Number:Power              PV2_Power                       "PV2 Power [%d W]"                     (solarman)  {channel="solarman:logger:local:solar-pv2-power", unit="W"}
 Number:ElectricCurrent    PV2_Current                     "PV2 Current [%.1f A]"                 (solarman)  {channel="solarman:logger:local:solar-pv2-current", unit="A"}
 Number:ElectricPotential  PV2_Voltage                     "PV2 Voltage [%d V]"                   (solarman)  {channel="solarman:logger:local:solar-pv2-voltage", unit="V"}
+
+String                    ToU_1_Time                      "ToU 1 Time [%s]"                      (solarman)  {channel="solarman:logger:local:time-of-use-tou-time-1", unit=""}
+Number:Dimensionless      ToU_1_Battery_SOC               "ToU 1 Battery SOC [%d %%]"            (solarman)  {channel="solarman:logger:local:time-of-use-tou-battery-soc-1", unit="%"}
+Number:Power              ToU_1_Power                     "ToU 1 Power [%d W]"                   (solarman)  {channel="solarman:logger:local:time-of-use-tou-power-1", unit="W"}
+String                    ToU_1_Chare_Enable              "ToU 1 Charge Enable [%s]"             (solarman)  {channel="solarman:logger:local:time-of-use-tou-charge-enable-1", unit=""}
+String                    ToU_2_Time                      "ToU 2 Time [%s]"                      (solarman)  {channel="solarman:logger:local:time-of-use-tou-time-2", unit=""}
+Number:Dimensionless      ToU_2_Battery_SOC               "ToU 2 Battery SOC [%d %%]"            (solarman)  {channel="solarman:logger:local:time-of-use-tou-battery-soc-2", unit="%"}
+Number:Power              ToU_2_Power                     "ToU 2 Power [%d W]"                   (solarman)  {channel="solarman:logger:local:time-of-use-tou-power-2", unit="W"}
+String                    ToU_2_Chare_Enable              "ToU 2 Charge Enable [%s]"             (solarman)  {channel="solarman:logger:local:time-of-use-tou-charge-enable-2", unit=""}
+String                    ToU_3_Time                      "ToU 3 Time [%s]"                      (solarman)  {channel="solarman:logger:local:time-of-use-tou-time-3", unit=""}
+Number:Dimensionless      ToU_3_Battery_SOC               "ToU 3 Battery SOC [%d %%]"            (solarman)  {channel="solarman:logger:local:time-of-use-tou-battery-soc-3", unit="%"}
+Number:Power              ToU_3_Power                     "ToU 3 Power [%d W]"                   (solarman)  {channel="solarman:logger:local:time-of-use-tou-power-3", unit="W"}
+String                    ToU_3_Chare_Enable              "ToU 3 Charge Enable [%s]"             (solarman)  {channel="solarman:logger:local:time-of-use-tou-charge-enable-3", unit=""}
+String                    ToU_4_Time                      "ToU 4 Time [%s]"                      (solarman)  {channel="solarman:logger:local:time-of-use-tou-time-4", unit=""}
+Number:Dimensionless      ToU_4_Battery_SOC               "ToU 4 Battery SOC [%d %%]"            (solarman)  {channel="solarman:logger:local:time-of-use-tou-battery-soc-4", unit="%"}
+Number:Power              ToU_4_Power                     "ToU 4 Power [%d W]"                   (solarman)  {channel="solarman:logger:local:time-of-use-tou-power-4", unit="W"}
+String                    ToU_4_Chare_Enable              "ToU 4 Charge Enable [%s]"             (solarman)  {channel="solarman:logger:local:time-of-use-tou-charge-enable-4", unit=""}
+String                    ToU_5_Time                      "ToU 5 Time [%s]"                      (solarman)  {channel="solarman:logger:local:time-of-use-tou-time-5", unit=""}
+Number:Dimensionless      ToU_5_Battery_SOC               "ToU 5 Battery SOC [%d %%]"            (solarman)  {channel="solarman:logger:local:time-of-use-tou-battery-soc-5", unit="%"}
+Number:Power              ToU_5_Power                     "ToU 5 Power [%d W]"                   (solarman)  {channel="solarman:logger:local:time-of-use-tou-power-5", unit="W"}
+String                    ToU_5_Chare_Enable              "ToU 5 Charge Enable [%s]"             (solarman)  {channel="solarman:logger:local:time-of-use-tou-charge-enable-5", unit=""}
+String                    ToU_6_Time                      "ToU 6 Time [%s]"                      (solarman)  {channel="solarman:logger:local:time-of-use-tou-time-6", unit=""}
+Number:Dimensionless      ToU_6_Battery_SOC               "ToU 6 Battery SOC [%d %%]"            (solarman)  {channel="solarman:logger:local:time-of-use-tou-battery-soc-6", unit="%"}
+Number:Power              ToU_6_Power                     "ToU 6 Power [%d W]"                   (solarman)  {channel="solarman:logger:local:time-of-use-tou-power-6", unit="W"}
+String                    ToU_6_Chare_Enable              "ToU 6 Charge Enable [%s]"             (solarman)  {channel="solarman:logger:local:time-of-use-tou-charge-enable-6", unit=""}
 
 Number:Frequency          Inverter_Frequency              "Inverter Frequency [%.2f Hz]"         (solarman)  {channel="solarman:logger:local:inverter-frequency", unit="Hz"}
 ```

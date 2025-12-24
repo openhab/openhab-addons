@@ -1,22 +1,23 @@
 # GridBox Binding
 
-The [Viessmann GridBox](https://www.viessmann.de/de/produkte/energiemanagement/gridbox.html) is a energy management device which gathers information about produced and consumed electrical power from compatible energy meters, photovoltaic inverters, batteries, heat pumps, EV charging stations etc. and steers the connected components to increase the self consumption rate and efficiency of the system.
+The [Viessmann GridBox](https://www.viessmann.de/de/produkte/energiemanagement/gridbox.html) is an energy management device which gathers information about produced and consumed electrical power from compatible energy meters, photovoltaic inverters, batteries, heat pumps, EV charging stations, etc., and steers the connected components to increase the self-consumption rate and efficiency of the system.
 
-The Viessmann GridBox is a variety of the [gridX Gateway](https://de.gridx.ai/edge-services) and uses the gridX Xenon cloud service to upload the fetched data and deliver the data to the GridBox app and web service.
-The measured data (energy production, consumptions, etc.) cannot be accessed locally. However, thanks to the pioneer work in the [unl0ck/viessmann-gridbox-connector](https://github.com/unl0ck/viessmann-gridbox-connector) repository, we can retrieve the data from the gridX cloud service using Rest-API calls.
+The Viessmann GridBox is a variant of the [gridX Gateway](https://de.gridx.ai/edge-services) and uses the gridX Xenon cloud service to upload the fetched data and deliver the data to the GridBox app and web service.
+The measured data (energy production, consumption, etc.) cannot be accessed locally.
+However, thanks to the pioneer work in the [unl0ck/viessmann-gridbox-connector](https://github.com/unl0ck/viessmann-gridbox-connector) repository, we can retrieve the data from the gridX cloud service using REST API calls.
 The API is documented [at gridx.ai](https://developer.gridx.ai/reference/).
 
 This binding polls the "live data" API endpoint to gather the available data from the GridBox.
 It creates a GridBox thing with the channels representing the data points of the live data API call.
 
 For connection to the cloud service, account E-Mail and password used to connect to the [GridBox web service](https://mygridbox.viessmann.com/login) are required.
-Authentication is handled by a OAuth call generating a ID Token which is required as a bearer token for subsequent calls to the gridX API.
+Authentication is handled by an OAuth call generating an ID token which is required as a bearer token for subsequent calls to the gridX API.
 
 At the moment, only one API-"system" per account is supported by this binding.
 A "system" is the representation of a GridBox together with its connected appliances (PV inverter, heat pump etc.).
 The binding will use the first system ID retrieved by a call to the <https://api.gridx.de/systems> API.
 
-Also, only the live data API endpoint is supported by the binding as it is the most interesting for openHAB use cases.
+Also, only the live data API endpoint is supported by the binding, as it is the most interesting for openHAB use cases.
 There is another API endpoint for fetching aggregated measurement data which could be added in the future.
 Only the Viessmann GridBox variant is supported, other variants would need adaptions to the OAuth mechanism.
 
@@ -31,7 +32,7 @@ The following thing can be created with the binding:
 
 ## Discovery
 
-No support for auto discovery at the moment.
+No support for auto-discovery at the moment.
 
 ## Thing Configuration
 
@@ -43,7 +44,7 @@ The following configuration parameters are available on the GridBox thing:
 |-----------------|---------|---------------------------------------------------|---------|----------|----------|
 | email           | text    | E-Mail address used to log in to the GridBox API  | N/A     | yes      | no       |
 | password        | text    | Password to access the GridBox API                | N/A     | yes      | no       |
-| refreshInterval | integer | Interval the device is polled in sec.             | 60      | no       | yes      |
+| refreshInterval | integer | Interval the device is polled in seconds.         | 60      | no       | yes      |
 
 ## Channels
 
@@ -64,7 +65,7 @@ The following channels are supplied by the GridBox thing (descriptions taken fro
 | direct-consumption-heater     | Number    | R           | Power/energy consumed by the heater through production directly.                                                                                                    |
 | direct-consumption-household  | Number    | R           | Power/energy consumed by the household through production directly.                                                                                                 |
 | direct-consumption-rate       | Number    | R           | Ratio of direct consumption vs production (0.0-1.0).                                                                                                                |
-| ev-charging-station-power     | Number    | R           | Measured power used to charge/discharge via EV station, positive values indicate charging, negatives discharging.                                                   |
+| ev-charging-station-power     | Number    | R           | Measured power used to charge/discharge via EV station; positive values indicate charging, negative values indicate discharging.                                    |
 | heat-pump-power               | Number    | R           | Aggregated measured power/energy for heat pumps.                                                                                                                    |
 | photovoltaic-production       | Number    | R           | Photovoltaic is the measured power/energy in front of the photovoltaic systems.                                                                                     |
 | production                    | Number    | R           | Sum of all energy producing appliances (e.g. PV).                                                                                                                   |
@@ -72,7 +73,7 @@ The following channels are supplied by the GridBox thing (descriptions taken fro
 | self-consumption-rate         | Number    | R           | Ratio of self consumption vs production (0.0-1.0).                                                                                                                  |
 | self-sufficiency-rate         | Number    | R           | Ratio of produced energy vs total consumed energy (0.0-1.0).                                                                                                        |
 | self-supply                   | Number    | R           | Power/energy consumed through storage and production.                                                                                                               |
-| total-consumption             | Number    | R           | Adjusted power/energy of the system including heatpumps and EV charging stations.                                                                                   |
+| total-consumption             | Number    | R           | Adjusted power/energy of the system including heat pumps and EV charging stations.                                                                                  |
 
 ## Full Example
 

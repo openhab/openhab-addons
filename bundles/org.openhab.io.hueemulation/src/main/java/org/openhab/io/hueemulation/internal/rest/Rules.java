@@ -292,6 +292,10 @@ public class Rules implements RegistryChangeListener<Rule> {
 
         final HueRuleEntry changeRequest = cs.gson.fromJson(body, HueRuleEntry.class);
 
+        if (changeRequest == null) {
+            return NetworkUtils.singleError(cs.gson, uri, HueResponse.INVALID_JSON, "Empty body");
+        }
+
         Rule rule = ruleRegistry.remove(id);
         if (rule == null) {
             return NetworkUtils.singleError(cs.gson, uri, HueResponse.NOT_AVAILABLE, "Rule does not exist!");
@@ -333,7 +337,6 @@ public class Rules implements RegistryChangeListener<Rule> {
         ));
     }
 
-    @SuppressWarnings({ "null" })
     @POST
     @Path("{username}/rules")
     @Operation(summary = "Create a new rule", responses = { @ApiResponse(responseCode = "200", description = "OK") })
@@ -353,10 +356,7 @@ public class Rules implements RegistryChangeListener<Rule> {
         String uid = UUID.randomUUID().toString();
         RuleBuilder builder = RuleBuilder.create(uid).withName(newRuleData.name);
 
-        String description = newRuleData.description;
-        if (description != null) {
-            builder.withDescription(description);
-        }
+        builder.withDescription(newRuleData.description);
 
         try {
             builder.withActions(createActions(uid, newRuleData.actions, Collections.emptyList(), username));

@@ -28,7 +28,6 @@ public abstract class _SIGMessage extends EEP {
     public static final byte MID_ENERGY_STATUS = 0x06;
 
     public _SIGMessage() {
-        super();
     }
 
     public _SIGMessage(ERP1Message packet) {

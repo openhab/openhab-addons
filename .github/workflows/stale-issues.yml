@@ -13,7 +13,7 @@ jobs:
       issues: write
     steps:
       - name: Stale issues check
-        uses: actions/stale@v9
+        uses: actions/stale@v10
         with:
           days-before-issue-stale: 60
           days-before-issue-close: 180

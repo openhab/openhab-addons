@@ -240,7 +240,7 @@ public class BasicInformationCluster extends BaseCluster {
      * The StartUp event SHOULD be the first Data Model event recorded by the Node after it completes a boot or reboot
      * process.
      */
-    public class StartUp {
+    public static class StartUp {
         /**
          * This field shall be set to the same value as the one available in the SoftwareVersion attribute.
          */
@@ -257,7 +257,7 @@ public class BasicInformationCluster extends BaseCluster {
      * SHOULD be delivered urgently to current subscribers on a best-effort basis. Any subsequent incoming interactions
      * to the Node may be dropped until the completion of a future boot or reboot process.
      */
-    public class ShutDown {
+    public static class ShutDown {
         public ShutDown() {
         }
     }
@@ -271,7 +271,7 @@ public class BasicInformationCluster extends BaseCluster {
      * Upon receipt of Leave Event on a subscription, the receiving Node may update other nodes in the fabric by
      * removing related bindings, access control list entries and other data referencing the leaving Node.
      */
-    public class Leave {
+    public static class Leave {
         /**
          * This field shall contain the local Fabric Index of the fabric which the node is about to leave.
          */
@@ -287,7 +287,7 @@ public class BasicInformationCluster extends BaseCluster {
      * This event (when supported) shall be generated when there is a change in the Reachable attribute.
      * Its main use case is in the derived Bridged Device Basic Information cluster.
      */
-    public class ReachableChanged {
+    public static class ReachableChanged {
         /**
          * This field shall indicate the value of the Reachable attribute after it was changed.
          */
@@ -301,7 +301,7 @@ public class BasicInformationCluster extends BaseCluster {
     /**
      * This structure provides a description of the product’s appearance.
      */
-    public class ProductAppearanceStruct {
+    public static class ProductAppearanceStruct {
         /**
          * This field shall indicate the visible finish of the product.
          */
@@ -322,7 +322,7 @@ public class BasicInformationCluster extends BaseCluster {
      * This structure provides constant values related to overall global capabilities of this Node, that are not
      * cluster-specific.
      */
-    public class CapabilityMinimaStruct {
+    public static class CapabilityMinimaStruct {
         /**
          * This field shall indicate the actual minimum number of concurrent CASE sessions that are supported per
          * fabric.
@@ -355,8 +355,8 @@ public class BasicInformationCluster extends BaseCluster {
         RUGGED(4, "Rugged"),
         FABRIC(5, "Fabric");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private ProductFinishEnum(Integer value, String label) {
             this.value = value;
@@ -400,8 +400,8 @@ public class BasicInformationCluster extends BaseCluster {
         SILVER(19, "Silver"),
         GOLD(20, "Gold");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private ColorEnum(Integer value, String label) {
             this.value = value;

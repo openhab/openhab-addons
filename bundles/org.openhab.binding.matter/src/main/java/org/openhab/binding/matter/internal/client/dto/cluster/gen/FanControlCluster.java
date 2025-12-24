@@ -143,8 +143,8 @@ public class FanControlCluster extends BaseCluster {
         INCREASE(0, "Increase"),
         DECREASE(1, "Decrease");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private StepDirectionEnum(Integer value, String label) {
             this.value = value;
@@ -166,8 +166,8 @@ public class FanControlCluster extends BaseCluster {
         FORWARD(0, "Forward"),
         REVERSE(1, "Reverse");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private AirflowDirectionEnum(Integer value, String label) {
             this.value = value;
@@ -194,8 +194,8 @@ public class FanControlCluster extends BaseCluster {
         AUTO(5, "Auto"),
         SMART(6, "Smart");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private FanModeEnum(Integer value, String label) {
             this.value = value;
@@ -221,8 +221,8 @@ public class FanControlCluster extends BaseCluster {
         OFF_HIGH_AUTO(4, "Off High Auto"),
         OFF_HIGH(5, "Off High");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private FanModeSequenceEnum(Integer value, String label) {
             this.value = value;

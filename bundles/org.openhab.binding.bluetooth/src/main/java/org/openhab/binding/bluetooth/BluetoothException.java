@@ -27,7 +27,6 @@ public class BluetoothException extends Exception {
     private static final long serialVersionUID = -2557298438595050148L;
 
     public BluetoothException() {
-        super();
     }
 
     public BluetoothException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {

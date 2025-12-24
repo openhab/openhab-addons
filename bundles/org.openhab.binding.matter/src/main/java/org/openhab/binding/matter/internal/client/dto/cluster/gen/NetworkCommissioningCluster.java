@@ -149,7 +149,7 @@ public class NetworkCommissioningCluster extends BaseCluster {
     /**
      * NetworkInfoStruct struct describes an existing network configuration, as provided in the Networks attribute.
      */
-    public class NetworkInfoStruct {
+    public static class NetworkInfoStruct {
         /**
          * Every network is uniquely identified (for purposes of commissioning) by a NetworkID mapping to the following
          * technology-specific properties:
@@ -184,7 +184,7 @@ public class NetworkCommissioningCluster extends BaseCluster {
     /**
      * WiFiInterfaceScanResultStruct represents a single Wi-Fi network scan result.
      */
-    public class WiFiInterfaceScanResultStruct {
+    public static class WiFiInterfaceScanResultStruct {
         public WiFiSecurityBitmap security; // WiFiSecurityBitmap
         public OctetString ssid; // octstr
         public OctetString bssid; // octstr
@@ -213,7 +213,7 @@ public class NetworkCommissioningCluster extends BaseCluster {
     /**
      * ThreadInterfaceScanResultStruct represents a single Thread network scan result.
      */
-    public class ThreadInterfaceScanResultStruct {
+    public static class ThreadInterfaceScanResultStruct {
         public Integer panId; // uint16
         public BigInteger extendedPanId; // uint64
         public String networkName; // string
@@ -252,8 +252,8 @@ public class NetworkCommissioningCluster extends BaseCluster {
         V60G(4, "60 G"),
         V1G(5, "1 G");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private WiFiBandEnum(Integer value, String label) {
             this.value = value;
@@ -286,8 +286,8 @@ public class NetworkCommissioningCluster extends BaseCluster {
         IP_BIND_FAILED(11, "Ip Bind Failed"),
         UNKNOWN_ERROR(12, "Unknown Error");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private NetworkCommissioningStatusEnum(Integer value, String label) {
             this.value = value;

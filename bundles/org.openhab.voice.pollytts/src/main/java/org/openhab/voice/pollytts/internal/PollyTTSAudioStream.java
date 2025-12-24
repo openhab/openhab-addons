@@ -35,7 +35,6 @@ public class PollyTTSAudioStream extends AudioStream {
     public AudioFormat audioFormat;
 
     public PollyTTSAudioStream(InputStream innerInputStream, AudioFormat audioFormat) {
-        super();
         this.innerInputStream = innerInputStream;
         this.audioFormat = audioFormat;
     }

@@ -144,7 +144,6 @@ public class HeosSystem {
         eventSendCommand.stopInputListener(HeosCommands.registerChangeEventOff());
         eventSendCommand.disconnect();
         sendCommand.disconnect();
-        @Nullable
         ExecutorService executor = this.singleThreadExecutor;
         if (executor != null && executor.isShutdown()) {
             executor.shutdownNow();

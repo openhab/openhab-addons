@@ -72,6 +72,14 @@ public class Daytemps {
         // do nothing leave dc_ and ac_ temperature values as they are.
     }
 
+    public int getCode() {
+        return this.code;
+    }
+
+    public String getMsg() {
+        return this.msg;
+    }
+
     public String toString() {
         return "Content [code=" + code + ", msg=" + msg + "sucess=" + success + ", data=" + data + "]";
     }

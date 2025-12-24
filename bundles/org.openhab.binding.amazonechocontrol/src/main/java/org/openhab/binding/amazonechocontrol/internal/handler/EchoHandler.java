@@ -144,14 +144,11 @@ public class EchoHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        Bridge bridge = this.getBridge();
-        if (bridge != null) {
-            account = (AccountHandler) bridge.getHandler();
-        }
-        if (account == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED, "Bridge handler not found.");
-        } else {
+        if (this.getBridge() instanceof Bridge bridge && bridge.getHandler() instanceof AccountHandler handler) {
+            account = handler;
             updateStatus(ThingStatus.UNKNOWN);
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED, "Bridge handler not found.");
         }
 
         lastCustomerHistoryRecordTimestamp = System.currentTimeMillis();
@@ -175,13 +172,17 @@ public class EchoHandler extends BaseThingHandler {
     @Override
     public void dispose() {
         stopCurrentNotification();
+        stopUpdateStateJob();
+        stopProgressTimer();
+    }
+
+    private void stopUpdateStateJob() {
         ScheduledFuture<?> updateStateJob = this.updateStateJob;
         this.updateStateJob = null;
         if (updateStateJob != null) {
             this.disableUpdate = false;
             updateStateJob.cancel(false);
         }
-        stopProgressTimer();
     }
 
     private void stopProgressTimer() {
@@ -201,8 +202,7 @@ public class EchoHandler extends BaseThingHandler {
     }
 
     public String getSerialNumber() {
-        String id = (String) getConfig().get(DEVICE_PROPERTY_SERIAL_NUMBER);
-        return id != null ? id : "";
+        return Objects.requireNonNullElse((String) getConfig().get(DEVICE_PROPERTY_SERIAL_NUMBER), "");
     }
 
     @Override
@@ -588,9 +588,9 @@ public class EchoHandler extends BaseThingHandler {
                 this.updateStateJob = scheduler.schedule(doRefresh, waitForUpdate, TimeUnit.MILLISECONDS);
             }
         } catch (ConnectionException e) {
-            logger.info("Failed to handle command '{}' to '{}'", command, channelUID);
+            logger.warn("Failed to handle command '{}' to '{}': {}", command, channelUID, e.getMessage(), e);
         } catch (RuntimeException e) {
-            logger.warn("RuntimeException in handle command", e);
+            logger.warn("RuntimeException in handle command for channel '{}': {}", channelUID, e.getMessage(), e);
         }
     }
 
@@ -648,7 +648,7 @@ public class EchoHandler extends BaseThingHandler {
                 }
             }
         } catch (ConnectionException e) {
-            logger.warn("Failed to update notification state");
+            logger.warn("Failed to update notification state: {}", e.getMessage(), e);
         }
         if (stopCurrentNotification) {
             stopCurrentNotification();
@@ -861,7 +861,7 @@ public class EchoHandler extends BaseThingHandler {
                 PlayerStateTO playerState = connection.getPlayerState(device);
                 updateMediaPlayerState(playerState.playerInfo, connection.isSequenceNodeQueueRunning(), 1000);
             } catch (ConnectionException e) {
-                // ignored
+                logger.debug("Failed to update player state: {}", e.getMessage(), e);
             }
 
             // handle bluetooth
@@ -1003,7 +1003,8 @@ public class EchoHandler extends BaseThingHandler {
                     PlayerStateTO playerState = connection.getPlayerState(device);
                     updateMediaPlayerState(playerState.playerInfo, connection.isSequenceNodeQueueRunning(), 1000);
                 }
-            } catch (ConnectionException ignored) {
+            } catch (ConnectionException e) {
+                logger.debug("Failed to refresh audio player state: {}", e.getMessage(), e);
             }
         });
     }

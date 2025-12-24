@@ -32,7 +32,6 @@ public class VeSyncLoginCredentials extends VeSyncRequest {
     public String devToken = "";
 
     public VeSyncLoginCredentials() {
-        super();
         userType = "1";
         method = "login";
     }

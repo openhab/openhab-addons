@@ -39,6 +39,7 @@ import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingUID;
+import org.openhab.core.util.SameThreadExecutorService;
 
 import com.google.gson.Gson;
 
@@ -56,7 +57,7 @@ public class VehicleDiscoveryTest {
         String content = FileReader.fileToString("responses/vehicles.json");
         List<Vehicle> vehicleList = Arrays.asList(new Gson().fromJson(content, Vehicle[].class));
 
-        VehicleDiscovery vehicleDiscovery = new VehicleDiscovery();
+        VehicleDiscovery vehicleDiscovery = new VehicleDiscovery(new SameThreadExecutorService());
 
         MyBMWBridgeHandler bridgeHandler = mock(MyBMWBridgeHandler.class);
 

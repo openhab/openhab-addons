@@ -13,22 +13,38 @@
 package org.openhab.binding.meross.internal.factory;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.meross.internal.command.Command;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.meross.internal.command.MerossCommand;
 import org.openhab.binding.meross.internal.command.TogglexCommand;
+import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.types.Command;
+import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
 
 /**
  * The {@link TypeFactory} class is responsible for switching among different togglex modes
  *
  * @author Giovanni Fabiani - Initial contribution
+ * @author Mark Herwege - Add state update
  */
 @NonNullByDefault
 public class TogglexFactory extends ModeFactory {
     @Override
-    public Command commandMode(String mode) {
-        return switch (mode) {
-            case "ON" -> new TogglexCommand.TurnOn();
-            case "OFF" -> new TogglexCommand.TurnOff();
-            default -> throw new IllegalStateException("Unexpected value: " + mode);
+    public MerossCommand commandMode(Command command, @Nullable Integer deviceChannel) {
+        int channel = deviceChannel != null ? deviceChannel : 0;
+        return switch (command) {
+            case OnOffType.ON -> new TogglexCommand.TurnOn(channel);
+            case OnOffType.OFF -> new TogglexCommand.TurnOff(channel);
+            default -> throw new IllegalStateException("Unexpected value: " + command.toString());
+        };
+    }
+
+    @Override
+    public State state(int merossState) {
+        return switch (merossState) {
+            case 0 -> OnOffType.OFF;
+            case 1 -> OnOffType.ON;
+            default -> UnDefType.UNDEF;
         };
     }
 }

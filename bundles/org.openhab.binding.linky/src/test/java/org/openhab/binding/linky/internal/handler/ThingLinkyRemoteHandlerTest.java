@@ -28,6 +28,7 @@ import org.openhab.binding.linky.internal.dto.IntervalReading;
 import org.openhab.binding.linky.internal.dto.MeterReading;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TimeZoneProvider;
+import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.thing.Thing;
 
 /**
@@ -48,6 +49,9 @@ public class ThingLinkyRemoteHandlerTest {
 
     @Mock
     TimeZoneProvider tzProvider;
+
+    @Mock
+    TranslationProvider translationProvider;
 
     @Mock
     LinkyThingRemoteConfiguration config;
@@ -71,7 +75,7 @@ public class ThingLinkyRemoteHandlerTest {
 
     @Test
     public void testBase() {
-        handler = new ThingLinkyRemoteHandler(thing, localProvider, tzProvider);
+        handler = new ThingLinkyRemoteHandler(thing, localProvider, tzProvider, translationProvider);
 
         MeterReading mr = getMeterReadingAfterChecks(handler, null);
         assertEquals(mr, null);
@@ -79,7 +83,7 @@ public class ThingLinkyRemoteHandlerTest {
 
     @Test
     public void testValidRange1() {
-        handler = new ThingLinkyRemoteHandler(thing, localProvider, tzProvider);
+        handler = new ThingLinkyRemoteHandler(thing, localProvider, tzProvider, translationProvider);
 
         MeterReading mr = new MeterReading();
         mr.baseValue = new IntervalReading[75];
@@ -129,7 +133,7 @@ public class ThingLinkyRemoteHandlerTest {
 
     @Test
     public void testValidRange2() {
-        handler = new ThingLinkyRemoteHandler(thing, localProvider, tzProvider);
+        handler = new ThingLinkyRemoteHandler(thing, localProvider, tzProvider, translationProvider);
 
         MeterReading mr = new MeterReading();
         mr.baseValue = new IntervalReading[128];
@@ -195,7 +199,7 @@ public class ThingLinkyRemoteHandlerTest {
 
     @Test
     public void testValidRange3() {
-        handler = new ThingLinkyRemoteHandler(thing, localProvider, tzProvider);
+        handler = new ThingLinkyRemoteHandler(thing, localProvider, tzProvider, translationProvider);
 
         MeterReading mr = new MeterReading();
         mr.baseValue = new IntervalReading[716];
@@ -280,7 +284,7 @@ public class ThingLinkyRemoteHandlerTest {
 
     @Test
     public void testValidRange4() {
-        handler = new ThingLinkyRemoteHandler(thing, localProvider, tzProvider);
+        handler = new ThingLinkyRemoteHandler(thing, localProvider, tzProvider, translationProvider);
 
         MeterReading mr = new MeterReading();
         mr.baseValue = new IntervalReading[35];

@@ -24,6 +24,6 @@ public class FeneconConfiguration {
 
     public String hostname = "";
     public String password = "user";
-    public int port = 8084;
+    public int port = 80;
     public int refreshInterval = 30;
 }

@@ -101,7 +101,7 @@ public class TadoHomeHandler extends BaseBridgeHandler implements AccessTokenRef
 
         OAuthClientService oAuthClientService = tadoHandlerFactory.subscribeOAuthClientService(this, user);
         oAuthClientService.addAccessTokenRefreshListener(this);
-        this.api = new HomeApiFactory().create(oAuthClientService);
+        this.api = new HomeApiFactory().create(oAuthClientService, configuration.tadoApiUrl);
         this.oAuthClientService = oAuthClientService;
         logger.trace("initialize() api v2 created");
         confPendingText = CONF_PENDING_OAUTH_CREDS.formatted(TadoAuthenticationServlet.PATH,

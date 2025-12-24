@@ -27,7 +27,6 @@ public class DeviceUnknownException extends Exception {
     private static final long serialVersionUID = -7786425642285150557L;
 
     public DeviceUnknownException() {
-        super();
     }
 
     public DeviceUnknownException(final String message) {

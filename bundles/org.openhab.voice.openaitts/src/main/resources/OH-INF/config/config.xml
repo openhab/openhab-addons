@@ -30,11 +30,18 @@
 			<required>true</required>
 			<description>ID of the model to use.</description>
 			<options>
-				<option value="tts-1">tts-1</option>
-				<option value="tts-1-hd">tts-1-hd</option>
+				<option value="tts-1">Standard TTS (fast)</option>
+				<option value="tts-1-hd">High-quality TTS</option>
+				<option value="gpt-4o-mini-tts">GPT-4o mini TTS</option>
 			</options>
 			<limitToOptions>false</limitToOptions>
-			<default>tts-1</default>
+			<default>gpt-4o-mini-tts</default>
+		</parameter>
+		<parameter name="instructions" type="text" groupName="tts">
+			<label>Instructions</label>
+			<description>Control the voice of your generated audio with additional instructions. Does not work with tts-1 or
+				tts-1-hd</description>
+			<default></default>
 		</parameter>
 		<parameter name="speed" type="decimal" min="0.25" max="4" groupName="tts">
 			<label>Speed</label>

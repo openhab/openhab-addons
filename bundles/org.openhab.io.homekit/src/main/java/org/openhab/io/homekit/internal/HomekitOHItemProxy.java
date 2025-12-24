@@ -14,6 +14,7 @@ package org.openhab.io.homekit.internal;
 
 import static org.openhab.io.homekit.internal.HomekitCommandType.*;
 import static org.openhab.io.homekit.internal.HomekitDimmerMode.*;
+import static org.openhab.io.homekit.internal.HomekitTaggedItem.HOMEKIT_SOURCE;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -110,9 +111,9 @@ public class HomekitOHItemProxy {
                             && ((brightness == null) || (brightness.intValue() == 100)))) {
                 logger.trace("send OnOff command for item {} with value {}", item, on);
                 if (item instanceof GroupItem groupItem) {
-                    groupItem.send(on);
+                    groupItem.send(on, HOMEKIT_SOURCE);
                 } else {
-                    ((DimmerItem) item).send(on);
+                    ((DimmerItem) item).send(on, HOMEKIT_SOURCE);
                 }
             }
         }
@@ -134,9 +135,9 @@ public class HomekitOHItemProxy {
                 if (item instanceof ColorItem colorItem) {
                     sendHSBCommand(colorItem, hue, saturation, brightness);
                 } else if (item instanceof GroupItem groupItem) {
-                    groupItem.send(brightness);
+                    groupItem.send(brightness, HOMEKIT_SOURCE);
                 } else {
-                    ((DimmerItem) item).send(brightness);
+                    ((DimmerItem) item).send(brightness, HOMEKIT_SOURCE);
                 }
             }
         }
@@ -152,9 +153,9 @@ public class HomekitOHItemProxy {
         final PercentType targetBrightness = brightness != null ? brightness : currentState.getBrightness();
         final HSBType command = new HSBType(targetHue, targetSaturation, targetBrightness);
         if (item instanceof GroupItem groupItem) {
-            groupItem.send(command);
+            groupItem.send(command, HOMEKIT_SOURCE);
         } else {
-            ((ColorItem) item).send(command);
+            ((ColorItem) item).send(command, HOMEKIT_SOURCE);
         }
         logger.trace("send HSB command for item {} with following values hue={} saturation={} brightness={}", item,
                 targetHue, targetSaturation, targetBrightness);

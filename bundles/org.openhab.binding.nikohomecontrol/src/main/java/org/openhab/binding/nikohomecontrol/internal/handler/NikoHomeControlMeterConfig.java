@@ -23,5 +23,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class NikoHomeControlMeterConfig {
     public String meterId = "";
     public int refresh = 10;
+    public String startDate = "";
     public boolean invert = false;
 }

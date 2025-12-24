@@ -11,6 +11,13 @@
 		<category>Price</category>
 		<state readOnly="true" pattern="%.3f %unit%"></state>
 	</channel-type>
+	<channel-type id="advanced-price" advanced="true">
+		<item-type>Number:EnergyPrice</item-type>
+		<label>Current Total Price</label>
+		<description>Total Price + Tax</description>
+		<category>Price</category>
+		<state readOnly="true" pattern="%.3f %unit%"></state>
+	</channel-type>
 	<channel-type id="price-level">
 		<item-type>Number</item-type>
 		<label>Price Level</label>
@@ -82,5 +89,15 @@
 			<tag>Current</tag>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"></state>
+	</channel-type>
+	<channel-type id="event">
+		<kind>trigger</kind>
+		<label>Event</label>
+		<description>Event triggered</description>
+		<event>
+			<options>
+				<option value="DAY_AHEAD_AVAILABLE">Day-ahead prices are available</option>
+			</options>
+		</event>
 	</channel-type>
 </thing:thing-descriptions>

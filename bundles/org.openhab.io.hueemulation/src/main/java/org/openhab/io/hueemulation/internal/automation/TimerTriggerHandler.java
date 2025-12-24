@@ -115,7 +115,9 @@ public class TimerTriggerHandler extends BaseTriggerModuleHandler implements Cal
 
     @Override
     public Duration call() {
-        ((TriggerHandlerCallback) callback).triggered(module, Map.of());
+        if (callback instanceof TriggerHandlerCallback triggerHandlerCallback) {
+            triggerHandlerCallback.triggered(module, Map.of());
+        }
         config.repeat -= 1;
         if (config.repeat == 0) {
             schedule = null;

@@ -149,6 +149,9 @@ public class SurePetcareDiscoveryService extends AbstractThingHandlerDiscoverySe
             case PET_FEEDER:
                 typeUID = THING_TYPE_FEEDER_DEVICE;
                 break;
+            case PET_WATER:
+                typeUID = THING_TYPE_WATER_DEVICE;
+                break;
             case UNKNOWN:
             default:
                 return;

@@ -4,6 +4,300 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
+	<channel-type id="air_pressure_at_mean_sea_level">
+		<item-type>Number:Pressure</item-type>
+		<label>Air Pressure</label>
+		<description>Air pressure in hPa</description>
+		<tags>
+			<tag>Forecast</tag>
+			<tag>Pressure</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="air_temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature</label>
+		<description>Temperature</description>
+		<tags>
+			<tag>Forecast</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="temperature_max">
+		<item-type>Number:Temperature</item-type>
+		<label>Max Temperature</label>
+		<description>Highest temperature of the day</description>
+		<tags>
+			<tag>Forecast</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="temperature_min">
+		<item-type>Number:Temperature</item-type>
+		<label>Min Temperature</label>
+		<description>Lowest temperature of the day</description>
+		<tags>
+			<tag>Forecast</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="visibility_in_air" advanced="true">
+		<item-type unitHint="km">Number:Length</item-type>
+		<label>Visibility</label>
+		<description>Horizontal visibility</description>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="wind_from_direction">
+		<item-type>Number:Angle</item-type>
+		<label>Wind Direction</label>
+		<description>Wind direction</description>
+		<tags>
+			<tag>Forecast</tag>
+			<tag>Wind</tag>
+		</tags>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+	<channel-type id="wind_speed">
+		<item-type unitHint="m/s">Number:Speed</item-type>
+		<label>Wind Speed</label>
+		<description>Wind speed</description>
+		<tags>
+			<tag>Forecast</tag>
+			<tag>Wind</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="wind_speed_max">
+		<item-type unitHint="m/s">Number:Speed</item-type>
+		<label>Max Wind Speed</label>
+		<description>Highest wind speed of the day</description>
+		<tags>
+			<tag>Forecast</tag>
+			<tag>Wind</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="wind_speed_min">
+		<item-type unitHint="m/s">Number:Speed</item-type>
+		<label>Min Wind Speed</label>
+		<description>Lowest wind speed of the day</description>
+		<tags>
+			<tag>Forecast</tag>
+			<tag>Wind</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="relative_humidity">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>Relative Humidity</label>
+		<description>Relative humidity in percent</description>
+		<tags>
+			<tag>Forecast</tag>
+			<tag>Humidity</tag>
+		</tags>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+	<channel-type id="thunderstorm_probability" advanced="true">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>Thunder Probability</label>
+		<description>Probability of thunder in percent</description>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+	<channel-type id="cloud_base_altitude" advanced="true">
+		<item-type>Number:Length</item-type>
+		<label>Cloud base altitude</label>
+		<description>Altitude of the cloud cover base</description>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+	<channel-type id="cloud_top_altitude" advanced="true">
+		<item-type>Number:Length</item-type>
+		<label>Cloud top altitude</label>
+		<description>Altitude of the cloud cover top</description>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+	<channel-type id="cloud_area_fraction">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>Total Cloud Cover</label>
+		<description>Mean value of total cloud cover in percent</description>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="low_type_cloud_area_fraction" advanced="true">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>Low Level Cloud Cover</label>
+		<description>Mean value of low level cloud cover (0-2500 m) in percent</description>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="medium_type_cloud_area_fraction" advanced="true">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>Medium Level Cloud Cover</label>
+		<description>Mean value of medium level cloud cover (2500-6000 m) in percent</description>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="high_type_cloud_area_fraction" advanced="true">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>High Level Cloud Cover</label>
+		<description>Mean value of high level cloud cover (> 6000 m) in percent</description>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="wind_speed_of_gust">
+		<item-type unitHint="m/s">Number:Speed</item-type>
+		<label>Wind Gust Speed</label>
+		<description>Wind gust speed</description>
+		<tags>
+			<tag>Forecast</tag>
+			<tag>Wind</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="precipitation_amount_min">
+		<item-type unitHint="mm/h">Number:Speed</item-type>
+		<label>Minimum Precipitation</label>
+		<description>Minimum precipitation intensity</description>
+		<tags>
+			<tag>Forecast</tag>
+			<tag>Rain</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="precipitation_amount_max">
+		<item-type unitHint="mm/h">Number:Speed</item-type>
+		<label>Maximum Precipitation</label>
+		<description>Maximum precipitation intensity</description>
+		<tags>
+			<tag>Forecast</tag>
+			<tag>Rain</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="precipitation_amount_total">
+		<item-type unitHint="mm">Number:Length</item-type>
+		<label>Total Precipitation</label>
+		<description>Total amount of precipitation during the day</description>
+		<tags>
+			<tag>Forecast</tag>
+			<tag>Rain</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="precipitation_amount_mean" advanced="true">
+		<item-type unitHint="mm/h">Number:Speed</item-type>
+		<label>Mean Precipitation</label>
+		<description>Mean precipitation intensity</description>
+		<tags>
+			<tag>Forecast</tag>
+			<tag>Rain</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="precipitation_amount_median" advanced="true">
+		<item-type unitHint="mm/h">Number:Speed</item-type>
+		<label>Median Precipitation</label>
+		<description>Median precipitation intensity</description>
+		<tags>
+			<tag>Forecast</tag>
+			<tag>Rain</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="probability_of_precipitation">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>Precipitation Probability</label>
+		<description>Probability of Precipitation</description>
+		<tags>
+			<tag>Forecast</tag>
+			<tag>Precipitation</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="predominant_precipitation_type_at_surface">
+		<item-type>Number</item-type>
+		<label>Precipitation Type</label>
+		<description>Type of precipitation</description>
+		<tags>
+			<tag>Forecast</tag>
+			<tag>Precipitation</tag>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="-1">Missing data</option>
+				<option value="0">No precipitation</option>
+				<option value="1">Rain</option>
+				<option value="2">Thunderstorm</option>
+				<option value="3">Freezing rain</option>
+				<option value="4">Mixed/ice</option>
+				<option value="5">Snow</option>
+				<option value="6">Wet snow</option>
+				<option value="7">Mixture of rain and snow</option>
+				<option value="8">Ice pellets</option>
+				<option value="9">Graupel</option>
+				<option value="10">Hail</option>
+				<option value="11">Drizzle</option>
+				<option value="12">Freezing drizzle</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="precipitation_frozen_part" advanced="true">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>Frozen Precipitation</label>
+		<description>Percent of precipitation in frozen form</description>
+		<tags>
+			<tag>Forecast</tag>
+			<tag>Precipitation</tag>
+		</tags>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+	<channel-type id="probability_of_frozen_precipitation" advanced="true">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>Probability of frozen precipitation</label>
+		<description>Probability that the precipitation is in frozen form</description>
+		<tags>
+			<tag>Forecast</tag>
+			<tag>Precipitation</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="symbol_code">
+		<item-type>Number</item-type>
+		<label>Weather Condition</label>
+		<description>Short description of the weather conditions</description>
+		<state readOnly="true">
+			<options>
+				<option value="-1">Missing data</option>
+				<option value="1">Clear sky</option>
+				<option value="2">Nearly clear sky</option>
+				<option value="3">Variable cloudiness</option>
+				<option value="4">Halfclear sky</option>
+				<option value="5">Cloudy sky</option>
+				<option value="6">Overcast</option>
+				<option value="7">Fog</option>
+				<option value="8">Light rain showers</option>
+				<option value="9">Moderate rain showers</option>
+				<option value="10">Heavy rain showers</option>
+				<option value="11">Thunderstorm</option>
+				<option value="12">Light sleet showers</option>
+				<option value="13">Moderate sleet showers</option>
+				<option value="14">Heavy sleet showers</option>
+				<option value="15">Light snow showers</option>
+				<option value="16">Moderate snow showers</option>
+				<option value="17">Heavy snow showers</option>
+				<option value="18">Light rain</option>
+				<option value="19">Moderate rain</option>
+				<option value="20">Heavy rain</option>
+				<option value="21">Thunder</option>
+				<option value="22">Light sleet</option>
+				<option value="23">Moderate sleet</option>
+				<option value="24">Heavy sleet</option>
+				<option value="25">Light snowfall</option>
+				<option value="26">Moderate snowfall</option>
+				<option value="27">Heavy snowfall</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<!-- TODO: Remove for 6.0 release -->
 	<channel-type id="msl">
 		<item-type>Number:Pressure</item-type>
 		<label>Air Pressure</label>
@@ -192,6 +486,7 @@
 		</tags>
 		<state readOnly="true">
 			<options>
+				<option value="-1">Missing data</option>
 				<option value="0">No precipitation</option>
 				<option value="1">Snow</option>
 				<option value="2">Snow and rain</option>
@@ -214,6 +509,7 @@
 		<description>Short description of the weather conditions</description>
 		<state readOnly="true">
 			<options>
+				<option value="-1">Missing data</option>
 				<option value="1">Clear sky</option>
 				<option value="2">Nearly clear sky</option>
 				<option value="3">Variable cloudiness</option>
@@ -244,11 +540,36 @@
 			</options>
 		</state>
 	</channel-type>
+	<!-- TODO: end -->
 
 	<channel-group-type id="hourlyForecast">
 		<label>Hourly Forecast</label>
 		<description>Hourly forecast for the specified offset</description>
 		<channels>
+			<channel id="air_temperature" typeId="air_temperature"/>
+			<channel id="wind_from_direction" typeId="wind_from_direction"/>
+			<channel id="wind_speed" typeId="wind_speed"/>
+			<channel id="wind_speed_of_gust" typeId="wind_speed_of_gust"/>
+			<channel id="precipitation_amount_min" typeId="precipitation_amount_min"/>
+			<channel id="precipitation_amount_max" typeId="precipitation_amount_max"/>
+			<channel id="probability_of_precipitation" typeId="probability_of_precipitation"/>
+			<channel id="predominant_precipitation_type_at_surface" typeId="predominant_precipitation_type_at_surface"/>
+			<channel id="air_pressure_at_mean_sea_level" typeId="air_pressure_at_mean_sea_level"/>
+			<channel id="relative_humidity" typeId="relative_humidity"/>
+			<channel id="cloud_base_altitude" typeId="cloud_base_altitude"/>
+			<channel id="cloud_top_altitude" typeId="cloud_top_altitude"/>
+			<channel id="cloud_area_fraction" typeId="cloud_area_fraction"/>
+			<channel id="symbol_code" typeId="symbol_code"/>
+			<channel id="visibility_in_air" typeId="visibility_in_air"/>
+			<channel id="thunderstorm_probability" typeId="thunderstorm_probability"/>
+			<channel id="precipitation_frozen_part" typeId="precipitation_frozen_part"/>
+			<channel id="probability_of_frozen_precipitation" typeId="probability_of_frozen_precipitation"/>
+			<channel id="low_type_cloud_area_fraction" typeId="low_type_cloud_area_fraction"/>
+			<channel id="medium_type_cloud_area_fraction" typeId="medium_type_cloud_area_fraction"/>
+			<channel id="high_type_cloud_area_fraction" typeId="high_type_cloud_area_fraction"/>
+			<channel id="precipitation_amount_mean" typeId="precipitation_amount_mean"/>
+			<channel id="precipitation_amount_median" typeId="precipitation_amount_median"/>
+			<!-- TODO: Remove for 6.0 release -->
 			<channel id="t" typeId="t"/>
 			<channel id="wd" typeId="wd"/>
 			<channel id="ws" typeId="ws"/>
@@ -268,6 +589,7 @@
 			<channel id="hcc_mean" typeId="hcc_mean"/>
 			<channel id="pmean" typeId="pmean"/>
 			<channel id="pmedian" typeId="pmedian"/>
+			<!-- TODO: end -->
 		</channels>
 	</channel-group-type>
 
@@ -275,6 +597,35 @@
 		<label>Daily Forecast</label>
 		<description>Forecast at noon for the specified offset</description>
 		<channels>
+			<channel id="air_temperature" typeId="air_temperature"/>
+			<channel id="temperature_max" typeId="temperature_max"/>
+			<channel id="temperature_min" typeId="temperature_min"/>
+			<channel id="wind_from_direction" typeId="wind_from_direction"/>
+			<channel id="wind_speed" typeId="wind_speed"/>
+			<channel id="wind_speed_max" typeId="wind_speed_max"/>
+			<channel id="wind_speed_min" typeId="wind_speed_min"/>
+			<channel id="wind_speed_of_gust" typeId="wind_speed_of_gust"/>
+			<channel id="precipitation_amount_min" typeId="precipitation_amount_min"/>
+			<channel id="precipitation_amount_max" typeId="precipitation_amount_max"/>
+			<channel id="precipitation_amount_total" typeId="precipitation_amount_total"/>
+			<channel id="probability_of_precipitation" typeId="probability_of_precipitation"/>
+			<channel id="predominant_precipitation_type_at_surface" typeId="predominant_precipitation_type_at_surface"/>
+			<channel id="air_pressure_at_mean_sea_level" typeId="air_pressure_at_mean_sea_level"/>
+			<channel id="relative_humidity" typeId="relative_humidity"/>
+			<channel id="cloud_base_altitude" typeId="cloud_base_altitude"/>
+			<channel id="cloud_top_altitude" typeId="cloud_top_altitude"/>
+			<channel id="cloud_area_fraction" typeId="cloud_area_fraction"/>
+			<channel id="symbol_code" typeId="symbol_code"/>
+			<channel id="visibility_in_air" typeId="visibility_in_air"/>
+			<channel id="thunderstorm_probability" typeId="thunderstorm_probability"/>
+			<channel id="precipitation_frozen_part" typeId="precipitation_frozen_part"/>
+			<channel id="probability_of_frozen_precipitation" typeId="probability_of_frozen_precipitation"/>
+			<channel id="low_type_cloud_area_fraction" typeId="low_type_cloud_area_fraction"/>
+			<channel id="medium_type_cloud_area_fraction" typeId="medium_type_cloud_area_fraction"/>
+			<channel id="high_type_cloud_area_fraction" typeId="high_type_cloud_area_fraction"/>
+			<channel id="precipitation_amount_mean" typeId="precipitation_amount_mean"/>
+			<channel id="precipitation_amount_median" typeId="precipitation_amount_median"/>
+			<!-- TODO: Remove for 6.0 release -->
 			<channel id="t" typeId="t"/>
 			<channel id="tmax" typeId="tmax"/>
 			<channel id="tmin" typeId="tmin"/>
@@ -299,6 +650,7 @@
 			<channel id="hcc_mean" typeId="hcc_mean"/>
 			<channel id="pmean" typeId="pmean"/>
 			<channel id="pmedian" typeId="pmedian"/>
+			<!-- TODO: end -->
 		</channels>
 	</channel-group-type>
 

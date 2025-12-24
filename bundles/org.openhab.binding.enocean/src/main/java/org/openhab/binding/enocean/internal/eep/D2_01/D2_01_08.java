@@ -23,7 +23,6 @@ import org.openhab.binding.enocean.internal.messages.ERP1Message;
 public class D2_01_08 extends D2_01 {
 
     public D2_01_08() {
-        super();
     }
 
     public D2_01_08(ERP1Message packet) {

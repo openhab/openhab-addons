@@ -69,7 +69,7 @@ public class AirQualityDiscoveryService extends AbstractThingHandlerDiscoverySer
         if (provider != null) {
             PointType location = provider.getLocation();
             AirQualityBridgeHandler bridge = this.thingHandler;
-            if (location == null || bridge == null) {
+            if (location == null) {
                 logger.info("openHAB server location is not defined, will not provide any discovery results");
                 return;
             }

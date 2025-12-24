@@ -81,7 +81,7 @@ public class RvcRunModeCluster extends BaseCluster {
     /**
      * A Mode Tag is meant to be interpreted by the client for the purpose the cluster serves.
      */
-    public class ModeTagStruct {
+    public static class ModeTagStruct {
         /**
          * If the MfgCode field exists, the Value field shall be in the manufacturer-specific value range (see Section
          * 1.10.8, “Mode Namespace”).
@@ -107,7 +107,7 @@ public class RvcRunModeCluster extends BaseCluster {
     /**
      * This is a struct representing a possible mode of the server.
      */
-    public class ModeOptionStruct {
+    public static class ModeOptionStruct {
         /**
          * This field shall indicate readable text that describes the mode option, so that a client can provide it to
          * the user to indicate what this option means. This field is meant to be readable and understandable by the
@@ -162,8 +162,8 @@ public class RvcRunModeCluster extends BaseCluster {
         MOP_CLEANING_PAD_MISSING(71, "Mop Cleaning Pad Missing"),
         BATTERY_LOW(72, "Battery Low");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private ModeChangeStatus(Integer value, String label) {
             this.value = value;
@@ -196,8 +196,8 @@ public class RvcRunModeCluster extends BaseCluster {
         CLEANING(16385, "Cleaning"),
         MAPPING(16386, "Mapping");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private ModeTag(Integer value, String label) {
             this.value = value;

@@ -16,6 +16,7 @@ package org.openhab.binding.modbus.stiebeleltron.internal.dto;
  * Dto class for the Energy Block
  *
  * @author Paul Frank - Initial contribution
+ * @author Thomas Burri - Extending by values for NHZ of a WPM compatible heat pump
  *
  */
 public class EnergyBlock {
@@ -33,4 +34,26 @@ public class EnergyBlock {
     public int consumptionWaterToday;
     public int consumptionWaterTotalLow;
     public int consumptionWaterTotalHigh;
+
+    public int productionNhzHeatingTotalLow;
+    public int productionNhzHeatingTotalHigh;
+
+    public int productionNhzHotwaterTotalLow;
+    public int productionNhzHotwaterTotalHigh;
+
+    @Override
+    public String toString() {
+        return "EnergyBlock {\n" + "  productionHeatToday=" + productionHeatToday + "\n,  productionHeatTotalLow="
+                + productionHeatTotalLow + "\n,  productionHeatTotalHigh=" + productionHeatTotalHigh
+                + "\n,  productionWaterToday=" + productionWaterToday + "\n,  productionWaterTotalLow="
+                + productionWaterTotalLow + "\n,  productionWaterTotalHigh=" + productionWaterTotalHigh
+                + "\n,  consumptionHeatToday=" + consumptionHeatToday + "\n,  consumptionHeatTotalLow="
+                + consumptionHeatTotalLow + "\n,  consumptionHeatTotalHigh=" + consumptionHeatTotalHigh
+                + "\n,  consumptionWaterToday=" + consumptionWaterToday + "\n,  consumptionWaterTotalLow="
+                + consumptionWaterTotalLow + "\n,  consumptionWaterTotalHigh=" + consumptionWaterTotalHigh
+                + "\n,  productionNhzHeatingTotalLow=" + productionNhzHeatingTotalLow
+                + "\n,  productionNhzHeatingTotalHigh=" + productionNhzHeatingTotalHigh
+                + "\n,  productionNhzHotwaterTotalLow=" + productionNhzHotwaterTotalLow
+                + "\n,  productionNhzHotwaterTotalHigh=" + productionNhzHotwaterTotalHigh + "\n}";
+    }
 }

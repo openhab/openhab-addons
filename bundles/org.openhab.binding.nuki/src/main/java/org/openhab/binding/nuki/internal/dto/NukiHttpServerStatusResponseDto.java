@@ -24,7 +24,6 @@ public class NukiHttpServerStatusResponseDto {
     private String status;
 
     public NukiHttpServerStatusResponseDto(String status) {
-        super();
         this.status = status;
     }
 

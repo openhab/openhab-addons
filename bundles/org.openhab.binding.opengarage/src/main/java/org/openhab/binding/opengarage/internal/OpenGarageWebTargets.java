@@ -14,7 +14,7 @@ package org.openhab.binding.opengarage.internal;
 
 import java.io.IOException;
 
-import org.openhab.binding.opengarage.internal.api.ControllerVariables;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.opengarage.internal.api.Enums.OpenGarageCommand;
 import org.openhab.core.io.net.http.HttpUtil;
 import org.slf4j.Logger;
@@ -26,8 +26,9 @@ import org.slf4j.LoggerFactory;
  * @author Paul Smedley - Initial Contribution
  *
  */
+@NonNullByDefault
 public class OpenGarageWebTargets {
-    public static int DEFAULT_TIMEOUT_MS = 30000;
+    public static final int DEFAULT_TIMEOUT_MS = 30000;
 
     private String getControllerVariablesUri;
     private String changeControllerVariablesUri;
@@ -41,9 +42,8 @@ public class OpenGarageWebTargets {
         this.changeControllerVariablesUri = baseUri + "cc?dkey=" + password;
     }
 
-    public ControllerVariables getControllerVariables() throws OpenGarageCommunicationException {
-        String response = invoke(getControllerVariablesUri);
-        return ControllerVariables.parse(response);
+    public String getControllerVariables() throws OpenGarageCommunicationException {
+        return invoke(getControllerVariablesUri);
     }
 
     public void setControllerVariables(OpenGarageCommand request) throws OpenGarageCommunicationException {

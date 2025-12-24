@@ -13,7 +13,6 @@
 package org.openhab.binding.astro.internal.job;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.astro.internal.AstroHandlerFactory;
 import org.openhab.binding.astro.internal.handler.AstroThingHandler;
 
 /**
@@ -28,26 +27,27 @@ public final class PositionalJob extends AbstractJob {
     /**
      * Constructor
      *
-     * @param thingUID thing UID
+     * @param handler the thing handler
      * @throws IllegalArgumentException
      *             if the provided argument is {@code null}
      */
-    public PositionalJob(String thingUID) {
-        super(thingUID);
+    public PositionalJob(AstroThingHandler handler) {
+        super(handler);
     }
 
     @Override
     public void run() {
-        AstroThingHandler astroHandler = AstroHandlerFactory.getHandler(getThingUID());
-        if (astroHandler != null) {
-            astroHandler.publishPositionalInfo();
-        } else {
-            LOGGER.trace("AstroThingHandler is null");
+        try {
+            handler.publishPositionalInfo();
+        } catch (Exception e) {
+            logger.warn("The publishing of positional info for \"{}\" failed: {}", handler.getThing().getUID(),
+                    e.getMessage());
+            logger.trace("", e);
         }
     }
 
     @Override
     public String toString() {
-        return "Positional job " + getThingUID();
+        return "Positional job " + handler.getThing().getUID();
     }
 }

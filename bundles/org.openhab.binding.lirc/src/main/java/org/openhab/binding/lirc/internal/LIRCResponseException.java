@@ -25,7 +25,6 @@ public class LIRCResponseException extends Exception {
      * Constructor. Creates new instance of LIRCResponseException
      */
     public LIRCResponseException() {
-        super();
     }
 
     /**

@@ -29,7 +29,7 @@ import org.openhab.binding.ahawastecollection.internal.CollectionDate.WasteType;
 public final class AhaCollectionScheduleStub implements AhaCollectionSchedule {
 
     public static final Date GENERAL_WASTE_DATE = new GregorianCalendar(2021, 2, 19).getTime();
-    public static final Date LEIGHTWEIGHT_PACKAGING_DATE = new GregorianCalendar(2021, 2, 20).getTime();
+    public static final Date LIGHTWEIGHT_PACKAGING_DATE = new GregorianCalendar(2021, 2, 20).getTime();
     public static final Date BIO_WASTE_DATE = new GregorianCalendar(2021, 2, 21).getTime();
     public static final Date PAPER_DATE = new GregorianCalendar(2021, 2, 22).getTime();
 
@@ -39,7 +39,7 @@ public final class AhaCollectionScheduleStub implements AhaCollectionSchedule {
         result.put(WasteType.GENERAL_WASTE,
                 new CollectionDate(WasteType.GENERAL_WASTE, Arrays.asList(GENERAL_WASTE_DATE)));
         result.put(WasteType.LIGHT_PACKAGES,
-                new CollectionDate(WasteType.GENERAL_WASTE, Arrays.asList(LEIGHTWEIGHT_PACKAGING_DATE)));
+                new CollectionDate(WasteType.GENERAL_WASTE, Arrays.asList(LIGHTWEIGHT_PACKAGING_DATE)));
         result.put(WasteType.BIO_WASTE, new CollectionDate(WasteType.GENERAL_WASTE, Arrays.asList(BIO_WASTE_DATE)));
         result.put(WasteType.PAPER, new CollectionDate(WasteType.GENERAL_WASTE, Arrays.asList(PAPER_DATE)));
         return result;

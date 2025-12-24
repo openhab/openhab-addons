@@ -69,11 +69,9 @@ public class PentairControllerSchedule {
     public int days;
 
     public PentairControllerSchedule() {
-        super();
     }
 
     public PentairControllerSchedule(PentairStandardPacket p) {
-        super();
         parsePacket(p);
     }
 

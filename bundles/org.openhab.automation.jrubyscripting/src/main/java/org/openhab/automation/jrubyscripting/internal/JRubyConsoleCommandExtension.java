@@ -410,14 +410,14 @@ public class JRubyConsoleCommandExtension extends AbstractConsoleCommandExtensio
     }
 
     private synchronized void gem(Console console, String[] args) {
-        final String GEM = """
+        final String gem = """
                 require "rubygems/gem_runner"
                 Gem::GemRunner.new.run ARGV
                     """;
 
         executeWithPlainJRuby(console, engine -> {
             engine.put(ScriptEngine.ARGV, args);
-            engine.eval(GEM);
+            engine.eval(gem);
             return null;
         });
     }

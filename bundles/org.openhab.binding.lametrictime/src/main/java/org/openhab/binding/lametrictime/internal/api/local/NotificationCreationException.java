@@ -25,7 +25,6 @@ public class NotificationCreationException extends LaMetricTimeException {
     private static final long serialVersionUID = 1L;
 
     public NotificationCreationException() {
-        super();
     }
 
     public NotificationCreationException(String message) {

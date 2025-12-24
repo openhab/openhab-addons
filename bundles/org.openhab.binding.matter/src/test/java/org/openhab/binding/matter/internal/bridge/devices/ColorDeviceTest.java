@@ -19,6 +19,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.openhab.binding.matter.internal.bridge.devices.BaseDevice.MATTER_SOURCE;
 
 import java.util.List;
 import java.util.Map;
@@ -33,7 +34,7 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.openhab.binding.matter.internal.bridge.AttributeState;
 import org.openhab.binding.matter.internal.bridge.MatterBridgeClient;
-import org.openhab.binding.matter.internal.bridge.devices.GenericDevice.MatterDeviceOptions;
+import org.openhab.binding.matter.internal.bridge.devices.BaseDevice.MatterDeviceOptions;
 import org.openhab.core.items.Metadata;
 import org.openhab.core.items.MetadataKey;
 import org.openhab.core.items.MetadataRegistry;
@@ -89,29 +90,30 @@ class ColorDeviceTest {
     @Test
     void testHandleMatterEventOnOff() {
         device.handleMatterEvent("onOff", "onOff", true);
-        verify(colorItem).send(OnOffType.ON);
+        verify(colorItem).send(OnOffType.ON, MATTER_SOURCE);
 
         device.handleMatterEvent("onOff", "onOff", false);
-        verify(colorItem).send(OnOffType.OFF);
+        verify(colorItem).send(OnOffType.OFF, MATTER_SOURCE);
     }
 
     @Test
     void testHandleMatterEventColor() {
         // Turn device on first and wait for future completion
         device.handleMatterEvent("onOff", "onOff", true);
-        verify(colorItem).send(OnOffType.ON);
+        verify(colorItem).send(OnOffType.ON, MATTER_SOURCE);
         device.updateState(colorItem, initialHSBState);
 
         device.handleMatterEvent("colorControl", "currentHue", Double.valueOf(127));
         device.handleMatterEvent("colorControl", "currentSaturation", Double.valueOf(127));
 
-        verify(colorItem).send(new HSBType(new DecimalType(180), new PercentType(50), new PercentType(50)));
+        verify(colorItem).send(new HSBType(new DecimalType(180), new PercentType(50), new PercentType(50)),
+                MATTER_SOURCE);
     }
 
     @Test
     void testHandleMatterEventLevel() {
         device.handleMatterEvent("levelControl", "currentLevel", Double.valueOf(127));
-        verify(colorItem).send(new PercentType(50));
+        verify(colorItem).send(new PercentType(50), MATTER_SOURCE);
     }
 
     @Test

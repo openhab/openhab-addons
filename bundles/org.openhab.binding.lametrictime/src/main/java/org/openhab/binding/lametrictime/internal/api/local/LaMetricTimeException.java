@@ -28,7 +28,6 @@ public class LaMetricTimeException extends Exception {
     private static final long serialVersionUID = 1L;
 
     public LaMetricTimeException() {
-        super();
     }
 
     public LaMetricTimeException(String message) {

@@ -95,6 +95,7 @@ public class DSCAlarmBindingConstants {
     public static final String ZONE_TAMPER = "zone_tamper";
     public static final String ZONE_FAULT = "zone_fault";
     public static final String ZONE_TRIPPED = "zone_tripped";
+    public static final String ZONE_BATTERY_LOW = "zone_battery_low";
 
     public static final String KEYPAD_READY_LED = "keypad_ready_led";
     public static final String KEYPAD_ARMED_LED = "keypad_armed_led";

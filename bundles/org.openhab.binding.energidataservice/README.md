@@ -8,15 +8,6 @@ This can be used to plan energy consumption, for example to calculate the cheape
 
 All channels are available for thing type `service`.
 
-## Binding Configuration
-
-This advanced configuration option can be used if the transition to the Day-Ahead Prices dataset is postponed.
-For the latest updates, please refer to the [Energi Data Service news](https://energidataservice.dk/news).
-
-| Name                   | Type    | Description                                                            | Default    | Required |
-| ---------------------- | ------- | ---------------------------------------------------------------------- | ---------- | -------- |
-| dayAheadTransitionDate | text    | The date when the addon switches to using the Day-Ahead Prices dataset | 2025-09-30 | no       |
-
 ## Thing Configuration
 
 ### `service` Thing Configuration
@@ -756,6 +747,10 @@ price_dict = {
 
 ### Thing Configuration
 
+:::: tabs
+
+::: tab DSL
+
 ```java
 Thing energidataservice:service:energidataservice "Energi Data Service" [ priceArea="DK1", currencyCode="DKK", gridCompanyGLN="5790001089030" ] {
     Channels:
@@ -763,7 +758,36 @@ Thing energidataservice:service:energidataservice "Energi Data Service" [ priceA
 }
 ```
 
+:::
+
+::: tab YAML
+
+```yaml
+version: 1
+things:
+  energidataservice:service:energidataservice:
+    label: Energi Data Service
+    config:
+      priceArea: DK1
+      currencyCode: DKK
+      gridCompanyGLN: 5790001089030
+    channels:
+      electricity#grid-tariff:
+        itemType: Number
+        config:
+          chargeTypeCodes: "CD,CD R"
+          start: StartOfYear
+```
+
+:::
+
+::::
+
 ### Item Configuration
+
+:::: tabs
+
+::: tab DSL
 
 ```java
 Group:Number:EnergyPrice:SUM TotalPrice "Total Price" <price>
@@ -774,13 +798,80 @@ Number:EnergyPrice TransmissionGridTariff "Transmission Grid Tariff" <price> (To
 Number:EnergyPrice ElectricityTax "Electricity Tax" <price> (TotalPrice) { channel="energidataservice:service:energidataservice:electricity#electricity-tax" [profile="transform:VAT"] }
 ```
 
+:::
+
+::: tab YAML
+
+```yaml
+version: 1
+items:
+  TotalPrice:
+    type: Group
+    group:
+      type: Number
+      dimension: EnergyPrice
+      function: SUM
+    label: Total Price
+    icon: price
+  SpotPrice:
+    type: Number
+    dimension: EnergyPrice
+    label: Spot Price
+    icon: price
+    groups:
+      - TotalPrice
+    channels:
+      energidataservice:service:energidataservice:electricity#spot-price:
+        profile: transform:VAT
+  GridTariff:
+    type: Number
+    dimension: EnergyPrice
+    label: Grid Tariff
+    icon: price
+    groups:
+      - TotalPrice
+    channels:
+      energidataservice:service:energidataservice:electricity#grid-tariff:
+        profile: transform:VAT
+  SystemTariff:
+    type: Number
+    dimension: EnergyPrice
+    label: System Tariff
+    icon: price
+    groups:
+      - TotalPrice
+    channels:
+      energidataservice:service:energidataservice:electricity#system-tariff:
+        profile: transform:VAT
+  TransmissionGridTariff:
+    type: Number
+    dimension: EnergyPrice
+    label: Transmission Grid Tariff
+    icon: price
+    groups:
+      - TotalPrice
+    channels:
+      energidataservice:service:energidataservice:electricity#transmission-grid-tariff:
+        profile: transform:VAT
+  ElectricityTax:
+    type: Number
+    dimension: EnergyPrice
+    label: Electricity Tax
+    icon: price
+    groups:
+      - TotalPrice
+    channels:
+      energidataservice:service:energidataservice:electricity#electricity-tax:
+        profile: transform:VAT
+```
+
+:::
+
+::::
+
 ### Persistence Configuration
 
 ```java
-Strategies {
-    default = everyChange
-}
-
 Items {
     SpotPrice,
     GridTariff,

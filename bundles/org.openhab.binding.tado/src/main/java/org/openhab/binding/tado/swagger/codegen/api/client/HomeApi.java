@@ -49,15 +49,16 @@ import com.google.gson.reflect.TypeToken;
 public class HomeApi {
     private static final HttpClient CLIENT = new HttpClient(new SslContextFactory.Client());
 
-    private String baseUrl = "https://my.tado.com/api/v2";
+    private String baseUrl;
     private int timeout = 5000;
 
     private Gson gson;
     private OAuthorizerV2 authorizer;
 
-    public HomeApi(Gson gson, OAuthorizerV2 authorizer) {
+    public HomeApi(Gson gson, OAuthorizerV2 authorizer, String baseUrl) {
         this.gson = gson;
         this.authorizer = authorizer;
+        this.baseUrl = baseUrl;
     }
 
     public void deleteZoneOverlay(Long homeId, Long zoneId) throws IOException, ApiException {

@@ -187,12 +187,13 @@ public class LifxLightHandler extends BaseThingHandler {
             State colorTemperatureState = UnDefType.UNDEF;
             State colorTemperatureAbsoluteState = UnDefType.UNDEF;
             TemperatureRange temperatureRange = features.getTemperatureRange();
-            if (temperatureRange.getRange() > 0) {
+            int range = temperatureRange.getRange();
+            if (range > 0) {
                 stateDescriptionProvider.setMinMaxKelvin(new ChannelUID(thing.getUID(), CHANNEL_ABS_TEMPERATURE),
                         temperatureRange.getMinimum(), temperatureRange.getMaximum());
                 colorTemperatureState = kelvinToPercentType(updateColor.getKelvin(), temperatureRange);
                 colorTemperatureAbsoluteState = QuantityType.valueOf(updateColor.getKelvin(), Units.KELVIN);
-            } else {
+            } else if (range < 0) {
                 logger.warn("Thing {} invalid color temperature range {} .. {}", thing.getUID(),
                         temperatureRange.getMinimum(), temperatureRange.getMaximum());
             }

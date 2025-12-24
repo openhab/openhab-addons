@@ -17,7 +17,6 @@ import static org.openhab.binding.energidataservice.internal.EnergiDataServiceBi
 import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.Instant;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -84,7 +83,6 @@ public class ElectricityPriceProvider extends AbstractProvider<ElectricityPriceL
     private @Nullable ScheduledFuture<?> refreshFuture;
     private @Nullable ScheduledFuture<?> priceUpdateFuture;
     private RetryStrategy retryPolicy = RetryPolicyFactory.initial();
-    private LocalDate dayAheadTransitionDate = DAY_AHEAD_TRANSITION_DATE;
 
     @Activate
     public ElectricityPriceProvider(final @Reference Scheduler scheduler,
@@ -104,14 +102,6 @@ public class ElectricityPriceProvider extends AbstractProvider<ElectricityPriceL
     @Deactivate
     public void deactivate() {
         stopJobs();
-    }
-
-    public void setDayAheadTransitionDate(LocalDate transitionDate) {
-        dayAheadTransitionDate = transitionDate;
-    }
-
-    public LocalDate getDayAheadTransitionDate() {
-        return dayAheadTransitionDate;
     }
 
     public void subscribe(ElectricityPriceListener listener, Subscription subscription) {
@@ -412,8 +402,8 @@ public class ElectricityPriceProvider extends AbstractProvider<ElectricityPriceL
     }
 
     private Dataset getDayAheadDataset() {
-        return Instant.now()
-                .isBefore(dayAheadTransitionDate.atTime(DAILY_REFRESH_TIME_CET).atZone(NORD_POOL_TIMEZONE).toInstant())
+        return Instant.now().isBefore(
+                DAY_AHEAD_TRANSITION_DATE.atTime(DAILY_REFRESH_TIME_CET).atZone(NORD_POOL_TIMEZONE).toInstant())
                         ? Dataset.SpotPrices
                         : Dataset.DayAheadPrices;
     }

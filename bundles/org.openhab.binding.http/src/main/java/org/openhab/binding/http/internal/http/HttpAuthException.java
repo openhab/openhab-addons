@@ -24,7 +24,6 @@ public class HttpAuthException extends Exception {
     private static final long serialVersionUID = 1L;
 
     public HttpAuthException() {
-        super();
     }
 
     public HttpAuthException(String message) {

@@ -15,6 +15,7 @@ package org.openhab.binding.energidataservice.internal.api.dto;
 import java.math.BigDecimal;
 import java.time.Instant;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
@@ -26,7 +27,7 @@ import com.google.gson.annotations.SerializedName;
  * @author Jacob Laursen - Initial contribution
  */
 @NonNullByDefault
-public record DayAheadPriceRecord(@SerializedName("TimeUTC") Instant time,
+public record DayAheadPriceRecord(@SerializedName("TimeUTC") @NonNull Instant time,
         @Nullable @SerializedName("DayAheadPriceDKK") BigDecimal dayAheadPriceDKK,
         @Nullable @SerializedName("DayAheadPriceEUR") BigDecimal dayAheadPriceEUR) implements SpotPriceRecord {
 

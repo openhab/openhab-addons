@@ -60,7 +60,7 @@ public class MailBuilderTest {
 
     @Test
     public void illegalURLThrowsException() {
-        assertThrows(MalformedURLException.class,
+        assertThrows(IllegalArgumentException.class,
                 () -> new MailBuilder("TEST_EMAIL").withURLAttachment("foo bar.zinga"));
     }
 

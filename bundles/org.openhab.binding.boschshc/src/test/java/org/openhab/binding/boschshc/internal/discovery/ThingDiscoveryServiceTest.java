@@ -46,6 +46,7 @@ import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ThingUID;
+import org.openhab.core.util.SameThreadExecutorService;
 
 /**
  * Unit tests for {@link ThingDiscoveryService}.
@@ -65,7 +66,7 @@ class ThingDiscoveryServiceTest {
 
     @BeforeEach
     void beforeEach() {
-        fixture = new ThingDiscoveryService();
+        fixture = new ThingDiscoveryService(new SameThreadExecutorService());
         fixture.addDiscoveryListener(discoveryListener);
         fixture.setThingHandler(bridgeHandler);
     }

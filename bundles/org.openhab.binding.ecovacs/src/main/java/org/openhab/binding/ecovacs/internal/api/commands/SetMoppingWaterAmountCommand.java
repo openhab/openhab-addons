@@ -30,7 +30,6 @@ public class SetMoppingWaterAmountCommand extends AbstractNoResponseCommand {
     private final int level;
 
     public SetMoppingWaterAmountCommand(MoppingWaterAmount amount) {
-        super();
         this.level = amount.toApiValue();
     }
 

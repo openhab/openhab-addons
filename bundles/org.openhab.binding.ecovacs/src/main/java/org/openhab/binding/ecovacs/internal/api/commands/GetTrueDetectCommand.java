@@ -27,7 +27,6 @@ import com.google.gson.Gson;
 @NonNullByDefault
 public class GetTrueDetectCommand extends IotDeviceCommand<Boolean> {
     public GetTrueDetectCommand() {
-        super();
     }
 
     @Override

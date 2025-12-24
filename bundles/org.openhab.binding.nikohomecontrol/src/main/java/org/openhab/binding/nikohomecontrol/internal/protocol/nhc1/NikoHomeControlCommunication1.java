@@ -29,7 +29,6 @@ import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
@@ -563,7 +562,7 @@ public class NikoHomeControlCommunication1 extends NikoHomeControlCommunication 
                 logger.debug("name not found in action {}", action);
                 continue;
             }
-            String type = Optional.ofNullable(action.get("type")).orElse("");
+            String type = action.getOrDefault("type", "");
             ActionType actionType = ActionType.GENERIC;
             switch (type) {
                 case "0":
@@ -804,13 +803,13 @@ public class NikoHomeControlCommunication1 extends NikoHomeControlCommunication 
                 dayReading = data.stream().skip(beforeDayStart).mapToInt(Integer::parseInt).sum();
             } else {
                 int value = data.stream().skip(1).mapToInt(Integer::parseInt).sum();
-                reading = meter.getReadingInt() + value;
+                reading = (int) meter.getReadingRaw() + value;
                 logger.trace("adding {} to meter {} reading, new reading {}", value, id, reading);
                 if (dayChange) {
                     dayReading = data.stream().skip(1 + beforeDayStart).mapToInt(Integer::parseInt).sum();
                     logger.trace("meter {} day reading, it's a new day, new reading {}", id, dayReading);
                 } else {
-                    dayReading = meter.getDayReadingInt() + value;
+                    dayReading = (int) meter.getDayReadingRaw() + value;
                     logger.trace("adding {} to meter {} day reading, new reading {}", value, id, dayReading);
                 }
             }
@@ -886,7 +885,7 @@ public class NikoHomeControlCommunication1 extends NikoHomeControlCommunication 
             logger.debug("event live power channel {} with v {}", channel, v);
             NhcMeter e = getMeters().get(channel);
             if (e != null) {
-                e.setPower(v);
+                e.setPower(Double.valueOf(v));
             }
         } catch (IllegalArgumentException e) {
             // do nothing
@@ -945,7 +944,7 @@ public class NikoHomeControlCommunication1 extends NikoHomeControlCommunication 
     }
 
     @Override
-    public void executeMeter(String meterId) {
+    public void executeMeter(String meterId, String startDate) {
         NhcMeter meter = getMeters().get(meterId);
         if (meter == null) {
             return;
@@ -987,7 +986,13 @@ public class NikoHomeControlCommunication1 extends NikoHomeControlCommunication 
                 LocalDateTime start = meter.getLastReading();
                 if (start == null) {
                     meterReadingInit = true;
-                    start = meter.getReferenceDate();
+                    try {
+                        start = LocalDateTime.parse(startDate);
+                    } catch (DateTimeParseException e) {
+                        start = meter.getReferenceDate();
+                        logger.debug("not able to parse meter start date {}, default to reference date {}", startDate,
+                                start);
+                    }
                     if (start == null) {
                         logger.debug("error getting meter data, no meter reference date available");
                         return;

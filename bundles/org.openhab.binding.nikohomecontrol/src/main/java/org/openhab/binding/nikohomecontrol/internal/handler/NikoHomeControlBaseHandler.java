@@ -52,9 +52,10 @@ public abstract class NikoHomeControlBaseHandler extends BaseThingHandler implem
 
     @Override
     public void dispose() {
+        Future<?> commStartThread = this.commStartThread;
         if (commStartThread != null) {
             commStartThread.cancel(true);
-            commStartThread = null;
+            this.commStartThread = null;
         }
         super.dispose();
     }
@@ -141,6 +142,7 @@ public abstract class NikoHomeControlBaseHandler extends BaseThingHandler implem
         ThingStatus bridgeStatus = bridgeStatusInfo.getStatus();
         if (ThingStatus.ONLINE.equals(bridgeStatus)) {
             if (!initialized) {
+                Future<?> commStartThread = this.commStartThread;
                 if (commStartThread != null) {
                     commStartThread.cancel(true);
                 }

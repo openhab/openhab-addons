@@ -30,7 +30,6 @@ import com.google.gson.Gson;
 @NonNullByDefault
 public class GetChargeStateCommand extends IotDeviceCommand<ChargeMode> {
     public GetChargeStateCommand() {
-        super();
     }
 
     @Override

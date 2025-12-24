@@ -13,7 +13,6 @@
 package org.openhab.binding.heos.internal.configuration;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * Configuration wrapper for bridge configuration
@@ -32,12 +31,12 @@ public class BridgeConfiguration {
     /**
      * Username for login to the HEOS account.
      */
-    public @Nullable String username;
+    public String username = "";
 
     /**
      * Password for login to the HEOS account
      */
-    public @Nullable String password;
+    public String password = "";
 
     /**
      * The time in seconds for the HEOS Heartbeat (default = 60 s)

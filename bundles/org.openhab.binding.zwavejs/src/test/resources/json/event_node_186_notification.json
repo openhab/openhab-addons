@@ -1,0 +1,19 @@
+{
+    "type": "event",
+    "event": {
+        "source": "node",
+        "event": "notification",
+        "nodeId": 186,
+        "endpointIndex": 0,
+        "ccId": 113,
+        "args": {
+            "type": 6,
+            "event": 5,
+            "label": "Access Control",
+            "eventLabel": "Keypad lock operation",
+            "parameters": {
+                "userId": 1
+            }
+        }
+    }
+}

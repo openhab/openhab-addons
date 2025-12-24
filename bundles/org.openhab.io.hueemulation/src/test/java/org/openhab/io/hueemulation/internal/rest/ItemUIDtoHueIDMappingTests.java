@@ -14,6 +14,7 @@ package org.openhab.io.hueemulation.internal.rest;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.mock;
 
 import java.io.IOException;
@@ -91,6 +92,7 @@ public class ItemUIDtoHueIDMappingTests {
         assertThat(hueID, CoreMatchers.is("2"));
 
         HueLightEntry device = cs.ds.lights.get(hueID);
+        assertNotNull(device);
         assertThat(device.item, is(item));
         assertThat(device.state, is(instanceOf(HueStatePlug.class)));
 
@@ -111,6 +113,7 @@ public class ItemUIDtoHueIDMappingTests {
         assertThat(hueID, CoreMatchers.is("10"));
 
         HueLightEntry device = cs.ds.lights.get(hueID);
+        assertNotNull(device);
         assertThat(device.item, is(item));
         assertThat(device.state, is(instanceOf(HueStatePlug.class)));
 
@@ -131,6 +134,7 @@ public class ItemUIDtoHueIDMappingTests {
         assertThat(hueID, CoreMatchers.is("255"));
 
         HueLightEntry device = cs.ds.lights.get(hueID);
+        assertNotNull(device);
         assertThat(device.item, is(item));
         assertThat(device.state, is(instanceOf(HueStatePlug.class)));
         assertThat(device.uniqueid, CoreMatchers.is("00:00:ff:00:00:ff:00:00-ff"));
@@ -144,6 +148,7 @@ public class ItemUIDtoHueIDMappingTests {
         assertThat(hueID, CoreMatchers.is("256000"));
 
         device = cs.ds.lights.get(hueID);
+        assertNotNull(device);
         assertThat(device.item, is(item));
         assertThat(device.state, is(instanceOf(HueStatePlug.class)));
         assertThat(device.uniqueid, CoreMatchers.is("03:e8:00:03:e8:00:03:e8-00"));

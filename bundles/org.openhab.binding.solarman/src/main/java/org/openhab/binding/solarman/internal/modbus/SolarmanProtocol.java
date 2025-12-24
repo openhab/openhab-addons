@@ -22,7 +22,12 @@ import org.openhab.binding.solarman.internal.modbus.exception.SolarmanException;
  */
 @NonNullByDefault
 public interface SolarmanProtocol {
+    byte DEFAULT_SLAVE_ID = 0x01;
+    byte WRITE_REGISTERS_FUNCTION_CODE = 0x10;
 
     Map<Integer, byte[]> readRegisters(SolarmanLoggerConnection solarmanLoggerConnection, byte mbFunctionCode,
             int firstReg, int lastReg) throws SolarmanException;
+
+    boolean writeRegisters(SolarmanLoggerConnection solarmanLoggerConnection, int register, byte[] data)
+            throws SolarmanException;
 }

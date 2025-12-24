@@ -62,4 +62,30 @@ public class PrinterActions implements ThingActions {
     public static void refreshChannels(@Nullable ThingActions actions) {
         ((PrinterActions) requireNonNull(actions)).refreshChannels();
     }
+
+    @RuleAction(label = "@text/action.requestLoginCode.label", description = "@text/action.requestLoginCode.description")
+    public void requestLoginCode(
+            @ActionInput(name = "username", label = "@text/action.requestLoginCode.username", description = "@text/action.requestLoginCode.username.description") String username,
+            @ActionInput(name = "password", label = "@text/action.requestLoginCode.password", description = "@text/action.requestLoginCode.password.description") String password)
+            throws BambuApiException {
+        requireNonNull(handler).requestLoginCode(username, password);
+    }
+
+    public static void requestLoginCode(@Nullable ThingActions actions, String username, String password)
+            throws BambuApiException {
+        ((PrinterActions) requireNonNull(actions)).requestLoginCode(username, password);
+    }
+
+    @RuleAction(label = "@text/action.requestAccessCode.label", description = "@text/action.requestAccessCode.description")
+    public String requestAccessCode(
+            @ActionInput(name = "username", label = "@text/action.requestAccessCode.username", description = "@text/action.requestAccessCode.username.description") String username,
+            @ActionInput(name = "code", label = "@text/action.requestAccessCode.code", description = "@text/action.requestAccessCode.code.description") String code)
+            throws BambuApiException {
+        return requireNonNull(handler).requestAccessCode(username, code);
+    }
+
+    public static String requestAccessCode(@Nullable ThingActions actions, String username, String code)
+            throws BambuApiException {
+        return ((PrinterActions) requireNonNull(actions)).requestAccessCode(username, code);
+    }
 }

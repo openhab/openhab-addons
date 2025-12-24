@@ -28,7 +28,6 @@ public class WolfSmartsetCloudException extends Exception {
     private static final Long serialVersionUID = -1280858607995252321L;
 
     public WolfSmartsetCloudException() {
-        super();
     }
 
     public WolfSmartsetCloudException(@Nullable String message) {

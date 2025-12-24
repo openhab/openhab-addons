@@ -299,7 +299,7 @@ public class ZWaveJSClient implements WebSocketListener {
             }
         } catch (Exception e) {
             if (logger.isDebugEnabled()) {
-                logger.debug("Error invoking event listener on websockettext: {}", e.toString());
+                logger.debug("Error invoking event listener on websockettext: {}", e.toString(), e);
             } else {
                 logger.warn("Error invoking event listener on websockettext");
             }

@@ -21,6 +21,7 @@ import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.matter.internal.client.MatterRequestException;
 import org.openhab.binding.matter.internal.client.MatterWebsocketClient;
 import org.openhab.binding.matter.internal.client.MatterWebsocketService;
 import org.openhab.binding.matter.internal.client.dto.PairingCodes;
@@ -29,6 +30,8 @@ import org.openhab.binding.matter.internal.client.dto.cluster.gen.BaseCluster;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.OperationalCredentialsCluster;
 import org.openhab.binding.matter.internal.client.dto.ws.ActiveSessionInformation;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 import com.google.gson.reflect.TypeToken;
@@ -93,6 +96,20 @@ public class MatterControllerClient extends MatterWebsocketClient {
         CompletableFuture<JsonElement> future = sendMessage("nodes", "requestAllData", new Object[] { nodeId });
         return future.thenAccept(obj -> {
             // Do nothing, just to complete the future
+        });
+    }
+
+    /**
+     * Request all cluster attribute data for all nodes for debugging purposes
+     * 
+     * @return a future that completes when the data is requested
+     * @throws MatterRequestException if the request fails
+     */
+    public CompletableFuture<String> getAllDataForAllNodes() {
+        CompletableFuture<JsonElement> future = sendMessage("nodes", "getAllDataForAllNodes", new Object[0]);
+        return future.thenApply(jsonElement -> {
+            Gson gson = new GsonBuilder().setPrettyPrinting().create();
+            return gson.toJson(jsonElement);
         });
     }
 

@@ -31,7 +31,6 @@ import com.google.gson.Gson;
 @NonNullByDefault
 public class GetNetworkInfoCommand extends IotDeviceCommand<NetworkInfo> {
     public GetNetworkInfoCommand() {
-        super();
     }
 
     @Override

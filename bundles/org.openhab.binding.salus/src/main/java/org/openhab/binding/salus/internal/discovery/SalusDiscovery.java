@@ -17,6 +17,7 @@ import static org.openhab.binding.salus.internal.SalusBindingConstants.SalusDevi
 
 import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.ScheduledExecutorService;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.salus.internal.handler.CloudApi;
@@ -42,6 +43,18 @@ public class SalusDiscovery extends AbstractDiscoveryService {
 
     public SalusDiscovery(CloudApi cloudApi, ThingUID bridgeUid) throws IllegalArgumentException {
         super(SUPPORTED_THING_TYPES_UIDS, 10, true);
+        this.cloudApi = cloudApi;
+        this.bridgeUid = bridgeUid;
+    }
+
+    /**
+     * Constructor for tests only.
+     *
+     * @param scheduler the {@link ScheduledExecutorService} to use during testing.
+     */
+    SalusDiscovery(ScheduledExecutorService scheduler, CloudApi cloudApi, ThingUID bridgeUid)
+            throws IllegalArgumentException {
+        super(scheduler, SUPPORTED_THING_TYPES_UIDS, 10, true, null, null);
         this.cloudApi = cloudApi;
         this.bridgeUid = bridgeUid;
     }

@@ -51,7 +51,6 @@ public class A5_38_08_Dimming extends _4BSMessage {
     static final byte SWITCH_100_PERCENT = 0x64;
 
     public A5_38_08_Dimming() {
-        super();
     }
 
     public A5_38_08_Dimming(ERP1Message packet) {

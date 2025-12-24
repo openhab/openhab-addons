@@ -78,11 +78,8 @@ public class PLCLogoBridgeConfiguration {
      * @return Configured local TSAP of Siemens LOGO!
      */
     public @Nullable Integer getLocalTSAP() {
-        Integer result = null;
-        if (localTSAP.startsWith("0x")) {
-            result = Integer.decode(localTSAP);
-        }
-        return result;
+        final var tsap = localTSAP;
+        return (tsap.startsWith("0x") ? Integer.decode(tsap) : null);
     }
 
     /**
@@ -100,11 +97,8 @@ public class PLCLogoBridgeConfiguration {
      * @return Configured local TSAP of Siemens LOGO!
      */
     public @Nullable Integer getRemoteTSAP() {
-        Integer result = null;
-        if (remoteTSAP.startsWith("0x")) {
-            result = Integer.decode(remoteTSAP);
-        }
-        return result;
+        final var tsap = remoteTSAP;
+        return (tsap.startsWith("0x") ? Integer.decode(tsap) : null);
     }
 
     /**

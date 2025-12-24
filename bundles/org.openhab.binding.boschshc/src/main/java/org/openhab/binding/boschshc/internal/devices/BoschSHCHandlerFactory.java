@@ -29,6 +29,7 @@ import org.openhab.binding.boschshc.internal.devices.lightcontrol.LightControl2H
 import org.openhab.binding.boschshc.internal.devices.lightcontrol.LightControlHandler;
 import org.openhab.binding.boschshc.internal.devices.motiondetector.MotionDetectorHandler;
 import org.openhab.binding.boschshc.internal.devices.plug.PlugHandler;
+import org.openhab.binding.boschshc.internal.devices.presence.PresenceSimulationHandler;
 import org.openhab.binding.boschshc.internal.devices.relay.RelayHandler;
 import org.openhab.binding.boschshc.internal.devices.shuttercontrol.ShutterControl2Handler;
 import org.openhab.binding.boschshc.internal.devices.shuttercontrol.ShutterControlHandler;
@@ -104,7 +105,8 @@ public class BoschSHCHandlerFactory extends BaseThingHandlerFactory {
             new ThingTypeHandlerMapping(THING_TYPE_LIGHT_CONTROL_2, LightControl2Handler::new),
             new ThingTypeHandlerMapping(THING_TYPE_DIMMER, DimmerHandler::new),
             new ThingTypeHandlerMapping(THING_TYPE_WATER_DETECTOR, WaterLeakageSensorHandler::new),
-            new ThingTypeHandlerMapping(THING_TYPE_RELAY, RelayHandler::new));
+            new ThingTypeHandlerMapping(THING_TYPE_RELAY, RelayHandler::new),
+            new ThingTypeHandlerMapping(THING_TYPE_PRESENCE_SIMULATION, PresenceSimulationHandler::new));
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {

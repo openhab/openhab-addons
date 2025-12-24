@@ -34,9 +34,6 @@ public class DeviceModel extends AVMFritzBaseModel {
     private HumidityModel humidity;
     private AlertModel alert;
 
-    @XmlElement(name = "levelcontrol")
-    private LevelControlModel levelControlModel;
-
     @XmlElement(name = "colorcontrol")
     private ColorControlModel colorControlModel;
 
@@ -69,14 +66,6 @@ public class DeviceModel extends AVMFritzBaseModel {
         this.alert = alertModel;
     }
 
-    public LevelControlModel getLevelControlModel() {
-        return levelControlModel;
-    }
-
-    public void setLevelControlModel(LevelControlModel levelControlModel) {
-        this.levelControlModel = levelControlModel;
-    }
-
     public ColorControlModel getColorControlModel() {
         return colorControlModel;
     }
@@ -104,8 +93,8 @@ public class DeviceModel extends AVMFritzBaseModel {
     @Override
     public String toString() {
         return new StringBuilder(super.toString()).append(temperature).append(",").append(humidity).append(",")
-                .append(alert).append(",").append(levelControlModel).append(",").append(colorControlModel).append(",")
-                .append(getButtons()).append(",").append(etsiunitinfo).append("]").toString();
+                .append(alert).append(",").append(colorControlModel).append(",").append(getButtons()).append(",")
+                .append(etsiunitinfo).append("]").toString();
     }
 
     @XmlAccessorType(XmlAccessType.FIELD)

@@ -21,6 +21,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -69,6 +70,15 @@ public class TradfriDiscoveryService extends AbstractThingHandlerDiscoveryServic
 
     public TradfriDiscoveryService() {
         super(TradfriGatewayHandler.class, SUPPORTED_DEVICE_TYPES_UIDS, 10, true);
+    }
+
+    /**
+     * Constructor for tests only.
+     *
+     * @param scheduler the {@link ScheduledExecutorService} to use during testing.
+     */
+    TradfriDiscoveryService(ScheduledExecutorService scheduler) {
+        super(scheduler, TradfriGatewayHandler.class, SUPPORTED_DEVICE_TYPES_UIDS, 10, true, null, null);
     }
 
     @Override

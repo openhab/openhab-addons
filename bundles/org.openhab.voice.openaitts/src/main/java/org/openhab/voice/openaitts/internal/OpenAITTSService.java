@@ -68,7 +68,8 @@ public class OpenAITTSService extends AbstractCachedTTSService {
     private OpenAITTSConfiguration config = new OpenAITTSConfiguration();
     private final HttpClient httpClient;
     private final Gson gson = new Gson();
-    private static final Set<Voice> VOICES = Stream.of("nova", "alloy", "echo", "fable", "onyx", "shimmer")
+    private static final Set<Voice> VOICES = Stream
+            .of("nova", "alloy", "ash", "ballad", "coral", "sage", "echo", "fable", "onyx", "shimmer", "verse")
             .map(OpenAITTSVoice::new).collect(Collectors.toSet());
 
     @Activate
@@ -125,7 +126,13 @@ public class OpenAITTSService extends AbstractCachedTTSService {
         content.addProperty("voice", voice.getLabel().toLowerCase());
         content.addProperty("speed", config.speed);
 
+        if (!"tts-1".equals(config.model) && !"tts-1-hd".equals(config.model) && !config.instructions.isEmpty()) {
+            content.addProperty("instructions", config.instructions);
+        }
+
         String queryJson = gson.toJson(content);
+
+        logger.trace("Send query: {}", queryJson);
 
         try {
             ContentResponse response = httpClient.newRequest(config.apiUrl).method(HttpMethod.POST)
@@ -136,8 +143,7 @@ public class OpenAITTSService extends AbstractCachedTTSService {
             if (response.getStatus() == HttpStatus.OK_200) {
                 return new ByteArrayAudioStream(response.getContent(), requestedFormat);
             } else {
-                logger.error("Request resulted in HTTP {} with message: {}", response.getStatus(),
-                        response.getReason());
+                logger.error("Request failed with status {}: {}", response.getStatus(), response.getContentAsString());
                 throw new TTSException("Failed to generate audio data");
             }
         } catch (InterruptedException | TimeoutException | ExecutionException e) {

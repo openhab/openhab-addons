@@ -118,7 +118,7 @@ public class AmberElectricHandler extends BaseThingHandler {
     }
 
     private void poll() {
-        if (isEstimate == true) {
+        if (isEstimate) {
             try {
                 logger.debug("CurrentPrice is estimated, polling for state");
                 pollStatus();
@@ -246,7 +246,7 @@ public class AmberElectricHandler extends BaseThingHandler {
                 }
             }
             // Only update TimeSeries once price has been confirmed
-            if (isEstimate == false) {
+            if (!isEstimate) {
                 sendTimeSeries(AmberElectricBindingConstants.CHANNEL_ELECTRICITY_PRICE, elecTimeSeries);
                 sendTimeSeries(AmberElectricBindingConstants.CHANNEL_FEED_IN_PRICE, feedInTimeSeries);
             }

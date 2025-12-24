@@ -47,14 +47,14 @@ The `s3bucket` thing has the following configuration options:
 
 The `azureblob` thing has the following configuration options:
 
-| Parameter          | Name                      | Description                                             | Required | Default value |
-|--------------------|---------------------------|---------------------------------------------------------|----------|---------------|
-| azureAccountName   | Azure Account Name        | Name of the A zure account where the conaner located    | yes      | n/a           |
-| azureContainerName | Azure Blob Container Name | Name of the Azure container to be watched               | yes      | n/a           |
-| contanerPath       | Container Path            | Container path (folder) to be monitored                 | no       | ""            |
-| pollIntervalAzure  | Polling Interval          | Interval for polling Azure contaner changes, in seconds | yes      | 60            |
-| azureAnonymous     | Anonymous Connection      | Connect anonymously (works for public containers)       | no       | false         |
-| azureAccessKey     | Azure Access              | Access Key for Azure storage account                    | no       | ""            |
+| Parameter          | Name                      | Description                                               | Required | Default value |
+|--------------------|---------------------------|-----------------------------------------------------------|----------|---------------|
+| azureAccountName   | Azure Account Name        | Name of the Azure account where the container located     | yes      | n/a           |
+| azureContainerName | Azure Blob Container Name | Name of the Azure container to be watched                 | yes      | n/a           |
+| containerPath      | Container Path            | Container path (folder) to be monitored                   | no       | ""            |
+| pollIntervalAzure  | Polling Interval          | Interval for polling Azure container changes, in seconds  | yes      | 60            |
+| azureAnonymous     | Anonymous Connection      | Connect anonymously (works for public containers)         | no       | false         |
+| azureAccessKey     | Azure Access              | Access Key for Azure storage account                      | no       | ""            |
 
 ## Events
 

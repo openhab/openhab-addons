@@ -17,7 +17,6 @@ import static javax.xml.bind.DatatypeConverter.printHexBinary;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Map;
-import java.util.Optional;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
@@ -105,7 +104,9 @@ public class LoginManager extends RestManager {
     }
 
     private final Mac mac;
-    private Optional<Authorization> authorize = Optional.empty();
+
+    // All access must be guarded by "this"
+    private @Nullable Authorization authorize;
 
     public LoginManager(FreeboxOsSession session) throws FreeboxException {
         super(session, LoginManager.Permission.NONE, session.getUriBuilder().path(PATH));
@@ -136,16 +137,18 @@ public class LoginManager extends RestManager {
         post(LOGOUT);
     }
 
-    public String checkGrantStatus() throws FreeboxException {
-        if (authorize.isEmpty()) {
-            authorize = Optional.of(post(new AuthorizeData(APP_ID, BUNDLE), AuthResponse.class, AUTHORIZE_ACTION));
+    public synchronized String checkGrantStatus() throws FreeboxException {
+        Authorization authorize = this.authorize;
+        if (authorize == null) {
+            authorize = post(new AuthorizeData(APP_ID, BUNDLE), AuthResponse.class, AUTHORIZE_ACTION);
+            this.authorize = authorize;
         }
 
-        return switch (getSingle(AuthStatus.class, AUTHORIZE_ACTION, authorize.get().trackId).status()) {
+        return switch (getSingle(AuthStatus.class, AUTHORIZE_ACTION, authorize.trackId).status()) {
             case PENDING -> "";
             case GRANTED -> {
-                String appToken = authorize.get().appToken;
-                authorize = Optional.empty();
+                String appToken = authorize.appToken;
+                this.authorize = null;
                 yield appToken;
             }
             case TIMEOUT -> throw new FreeboxException("Unable to grant session, delay expired");

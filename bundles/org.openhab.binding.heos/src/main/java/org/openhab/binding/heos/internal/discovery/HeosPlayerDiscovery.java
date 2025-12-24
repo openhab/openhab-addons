@@ -18,6 +18,7 @@ import static org.openhab.binding.heos.internal.handler.FutureUtil.cancel;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -189,9 +190,10 @@ public class HeosPlayerDiscovery extends AbstractDiscoveryService implements Heo
 
     private <K, V> Map<K, V> findRemovedEntries(Map<K, V> mapNew, Map<K, V> mapOld) {
         Map<K, V> removedItems = new HashMap<>();
-        for (K key : mapOld.keySet()) {
+        for (Entry<K, V> entry : mapOld.entrySet()) {
+            K key = entry.getKey();
             if (!mapNew.containsKey(key)) {
-                removedItems.put(key, mapOld.get(key));
+                removedItems.put(key, entry.getValue());
             }
         }
         return removedItems;

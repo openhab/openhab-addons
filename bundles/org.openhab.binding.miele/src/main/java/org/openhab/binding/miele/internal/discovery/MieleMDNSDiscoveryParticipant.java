@@ -12,10 +12,7 @@
  */
 package org.openhab.binding.miele.internal.discovery;
 
-import java.io.IOException;
 import java.net.InetAddress;
-import java.net.Socket;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -116,26 +113,8 @@ public class MieleMDNSDiscoveryParticipant implements MDNSDiscoveryParticipant {
             return null;
         }
 
-        String ipAddress = addresses[0].getHostAddress();
-        Map<String, Object> properties = new HashMap<>(2);
-        properties.put(MieleBindingConstants.HOST, ipAddress);
-
-        Socket socket = null;
-        try {
-            socket = new Socket(addresses[0], 80);
-            InetAddress ourAddress = socket.getLocalAddress();
-            String interfaceIpAddress = ourAddress.getHostAddress();
-            socket.close();
-
-            properties.put(MieleBindingConstants.INTERFACE, interfaceIpAddress);
-            logger.debug("Discovered Miele@home gateway with IP address {} and interface IP address {}", ipAddress,
-                    interfaceIpAddress);
-        } catch (IOException e) {
-            logger.warn("An exception occurred while connecting to the Miele Gateway: '{}'", e.getMessage());
-            return null;
-        }
-
-        return DiscoveryResultBuilder.create(uid).withProperties(properties)
+        return DiscoveryResultBuilder.create(uid)
+                .withProperty(MieleBindingConstants.HOST, addresses[0].getHostAddress())
                 .withRepresentationProperty(MieleBindingConstants.HOST).withLabel("@text/discovery.xgw3000.label")
                 .build();
     }

@@ -58,7 +58,6 @@ public abstract class SinopeDataRequest extends SinopeRequest {
      * @param appData the app data
      */
     public SinopeDataRequest(byte[] seq, byte[] dstDeviceId, SinopeAppData appData) {
-        super();
         this.seq = seq;
         this.requestType = 0;
         this.res1 = 0;

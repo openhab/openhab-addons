@@ -48,8 +48,8 @@ public class UnitLocalizationCluster extends BaseCluster {
         CELSIUS(1, "Celsius"),
         KELVIN(2, "Kelvin");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private TempUnitEnum(Integer value, String label) {
             this.value = value;

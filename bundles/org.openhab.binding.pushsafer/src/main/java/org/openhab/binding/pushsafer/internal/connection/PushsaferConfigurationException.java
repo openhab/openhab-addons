@@ -29,7 +29,6 @@ public class PushsaferConfigurationException extends IllegalArgumentException {
      * Constructs a new exception with null as its detail message.
      */
     public PushsaferConfigurationException() {
-        super();
     }
 
     /**

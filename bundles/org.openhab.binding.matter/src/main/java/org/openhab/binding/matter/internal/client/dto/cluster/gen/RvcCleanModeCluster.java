@@ -81,7 +81,7 @@ public class RvcCleanModeCluster extends BaseCluster {
     /**
      * A Mode Tag is meant to be interpreted by the client for the purpose the cluster serves.
      */
-    public class ModeTagStruct {
+    public static class ModeTagStruct {
         /**
          * If the MfgCode field exists, the Value field shall be in the manufacturer-specific value range (see Section
          * 1.10.8, “Mode Namespace”).
@@ -107,7 +107,7 @@ public class RvcCleanModeCluster extends BaseCluster {
     /**
      * This is a struct representing a possible mode of the server.
      */
-    public class ModeOptionStruct {
+    public static class ModeOptionStruct {
         /**
          * This field shall indicate readable text that describes the mode option, so that a client can provide it to
          * the user to indicate what this option means. This field is meant to be readable and understandable by the
@@ -155,8 +155,8 @@ public class RvcCleanModeCluster extends BaseCluster {
     public enum ModeChangeStatus implements MatterEnum {
         CLEANING_IN_PROGRESS(64, "Cleaning In Progress");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private ModeChangeStatus(Integer value, String label) {
             this.value = value;
@@ -189,8 +189,8 @@ public class RvcCleanModeCluster extends BaseCluster {
         VACUUM(16385, "Vacuum"),
         MOP(16386, "Mop");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private ModeTag(Integer value, String label) {
             this.value = value;

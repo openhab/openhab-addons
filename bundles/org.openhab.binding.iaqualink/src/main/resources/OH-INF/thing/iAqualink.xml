@@ -62,7 +62,7 @@
 			</channel>
 			<channel id="pool_heater" typeId="equipment-switch">
 				<label>Pool Heater Switch</label>
-				<description>Pool heater Switch</description>
+				<description>Pool heater switch</description>
 			</channel>
 			<channel id="solar_heater_status" typeId="equipment-heater">
 				<label>Solar Heater Status</label>
@@ -107,7 +107,7 @@
 			<parameter name="serialId" type="text" required="false">
 				<label>Serial Number</label>
 				<description>Optionally specify the serial number of the controller which can be found on the iAquaLink Owner's
-					Center. This is only useful if you have more then one controller (pool) associated with your account. Leave blank
+					Center. This is only useful if you have more than one controller (pool) associated with your account. Leave blank
 					to have the first controller used.
 				</description>
 			</parameter>
@@ -134,7 +134,7 @@
 	<channel-type id="system_type" advanced="true">
 		<item-type>String</item-type>
 		<label>System Type</label>
-		<description> System Type</description>
+		<description>System Type</description>
 		<state readOnly="true"/>
 
 	</channel-type>

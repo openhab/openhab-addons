@@ -42,6 +42,7 @@ public class E3DCBindingConstants {
 
     // Channels for Power Block
     public static final String PV_POWER_SUPPLY_CHANNEL = "pv-power-supply";
+    public static final String PV_POWER_PERFORMANCE_RATIO_CHANNEL = "pv-perf-ratio";
     public static final String BATTERY_POWER_SUPPLY_CHANNEL = "battery-power-supply";
     public static final String BATTERY_POWER_CONSUMPTION = "battery-power-consumption";
     public static final String HOUSEHOLD_POWER_CONSUMPTION_CHANNEL = "household-power-consumption";
@@ -81,6 +82,9 @@ public class E3DCBindingConstants {
     public static final String STRING3_DC_VOLTAGE_CHANNEL = "string3-dc-voltage";
     public static final String STRING3_DC_CURRENT_CHANNEL = "string3-dc-current";
     public static final String STRING3_DC_OUTPUT_CHANNEL = "string3-dc-output";
+    public static final String STRING1_PERFORMANCE_RATIO_CHANNEL = "string1-perf-ratio";
+    public static final String STRING2_PERFORMANCE_RATIO_CHANNEL = "string2-perf-ratio";
+    public static final String STRING3_PERFORMANCE_RATIO_CHANNEL = "string3-perf-ratio";
 
     // Channels for Emergency Status
     public static final String EMERGENCY_POWER_STATUS = "emergency-power-status";

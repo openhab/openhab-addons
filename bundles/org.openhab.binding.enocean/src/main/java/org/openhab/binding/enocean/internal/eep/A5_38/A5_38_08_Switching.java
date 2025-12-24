@@ -37,7 +37,6 @@ public class A5_38_08_Switching extends _4BSMessage {
     static final byte SWITCH_ON = 0x01;
 
     public A5_38_08_Switching() {
-        super();
     }
 
     public A5_38_08_Switching(ERP1Message packet) {

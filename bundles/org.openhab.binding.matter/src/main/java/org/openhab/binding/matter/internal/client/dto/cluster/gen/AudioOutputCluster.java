@@ -53,7 +53,7 @@ public class AudioOutputCluster extends BaseCluster {
     /**
      * This contains information about an output.
      */
-    public class OutputInfoStruct {
+    public static class OutputInfoStruct {
         /**
          * This field shall indicate the unique index into the list of outputs.
          */
@@ -87,8 +87,8 @@ public class AudioOutputCluster extends BaseCluster {
         INTERNAL(4, "Internal"),
         OTHER(5, "Other");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private OutputTypeEnum(Integer value, String label) {
             this.value = value;

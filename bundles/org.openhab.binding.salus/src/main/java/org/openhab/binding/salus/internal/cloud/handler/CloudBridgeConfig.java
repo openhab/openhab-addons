@@ -22,7 +22,6 @@ import org.openhab.binding.salus.internal.handler.AbstractBridgeConfig;
 public class CloudBridgeConfig extends AbstractBridgeConfig {
 
     public CloudBridgeConfig() {
-        super();
     }
 
     public CloudBridgeConfig(String username, String password, String url, long refreshInterval,

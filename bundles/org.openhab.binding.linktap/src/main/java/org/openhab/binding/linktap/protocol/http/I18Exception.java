@@ -32,7 +32,6 @@ public abstract class I18Exception extends Exception {
     protected String i18Key = "";
 
     public I18Exception() {
-        super();
     }
 
     public I18Exception(final String message) {

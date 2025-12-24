@@ -1,8 +1,8 @@
 # Public Transport Switzerland Binding
 
-Connects to the "Swiss public transport API" to provide real-time public transport information. [Link to the API](https://transport.opendata.ch/)
+Connects to the "Swiss public transport API" to provide real-time public transport information. See the [Swiss Public Transport API Documentation website](https://transport.opendata.ch/).
 
-For example, here is a station board in HABPanel. (Download [here](https://github.com/StefanieJaeger/HABPanel-departure-board))
+For example, here is a station board in HABPanel. (Download the [HABPanel Departure Board Example from GitHub](https://github.com/StefanieJaeger/HABPanel-departure-board))
 
 ![Departure board in HABPanel](doc/departure_board_habpanel.png)
 
@@ -22,8 +22,8 @@ Upcoming departures for a single station. This is what you would usually see dis
 #### UI based Configuration
 
 `station` is the station name for which to display departures.
-The name has to be one that is used by the swiss federal railways.
-Please consult their [website](https://sbb.ch/en).
+The name has to be one that is used by the Swiss Federal Railways.
+Please consult the [SBB official website](https://sbb.ch/en).
 
 #### Textual configuration
 

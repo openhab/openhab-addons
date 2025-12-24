@@ -38,17 +38,34 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class HueTlsTrustManagerProvider implements TlsTrustManagerProvider {
 
-    private static final String PEM_FILENAME = "huebridge_cacert.pem";
+    private static final String PEM_CACERT_V1_FILENAME = "huebridge_cacert.pem";
+    private static final String PEM_CACERT_V2_FILENAME = "huebridge_cacert_v2.pem";
     private final String hostname;
     private final boolean useSelfSignedCertificate;
+    private final boolean isBridgeV3orHigher;
 
     private final Logger logger = LoggerFactory.getLogger(HueTlsTrustManagerProvider.class);
 
-    private @Nullable PEMTrustManager trustManager;
+    private @Nullable X509ExtendedTrustManager trustManager;
 
-    public HueTlsTrustManagerProvider(String hostname, boolean useSelfSignedCertificate) {
+    /**
+     * Creates a new instance of {@link HueTlsTrustManagerProvider}.
+     *
+     * See the documentation for more details about 'Signify private CA Certificates V1 and V2 for Hue Bridges'.
+     *
+     * @see <a href=
+     *      "https://developers.meethue.com/develop/application-design-guidance/using-https/">https://developers.meethue.com/develop/application-design-guidance/using-https/</a>
+     *
+     * @param hostname the hostname of the Hue Bridge
+     * @param useSelfSignedCertificate true, to use the self-signed certificate downloaded from the Hue Bridge;
+     *            false, to use the Signify private CA Certificate V1 or V2 for Hue Bridges from resources
+     * @param isBridgeV3orHigher true, to use the 'Signify private CA Certificate V2 for Hue Bridges';
+     *            false, to use the 'Signify private CA Certificate V1 for Hue Bridges'
+     */
+    public HueTlsTrustManagerProvider(String hostname, boolean useSelfSignedCertificate, boolean isBridgeV3orHigher) {
         this.hostname = hostname;
         this.useSelfSignedCertificate = useSelfSignedCertificate;
+        this.isBridgeV3orHigher = isBridgeV3orHigher;
     }
 
     @Override
@@ -58,18 +75,25 @@ public class HueTlsTrustManagerProvider implements TlsTrustManagerProvider {
 
     @Override
     public X509ExtendedTrustManager getTrustManager() {
-        PEMTrustManager localTrustManager = getPEMTrustManager();
+        X509ExtendedTrustManager localTrustManager = getPEMTrustManager();
         if (localTrustManager == null) {
             logger.error("Cannot get the PEM certificate - returning a TrustAllTrustManager");
         }
         return localTrustManager != null ? localTrustManager : TrustAllTrustManager.getInstance();
     }
 
-    public @Nullable PEMTrustManager getPEMTrustManager() {
-        PEMTrustManager localTrustManager = trustManager;
+    public @Nullable X509ExtendedTrustManager getPEMTrustManager() {
+        X509ExtendedTrustManager localTrustManager = trustManager;
         if (localTrustManager != null) {
             return localTrustManager;
         }
+
+        // TODO V3 bridges currently don't provide the full certificate chain (missing intermediate certificate)
+        if (isBridgeV3orHigher) {
+            logger.error("Hue V3 Bridge has incomplete PEM certificate chains - defaulting to a TrustAllTrustManager");
+            return TrustAllTrustManager.getInstance();
+        }
+
         try {
             if (useSelfSignedCertificate) {
                 logger.trace("Use self-signed certificate downloaded from Hue Bridge.");
@@ -77,8 +101,9 @@ public class HueTlsTrustManagerProvider implements TlsTrustManagerProvider {
                 localTrustManager = PEMTrustManager.getInstanceFromServer("https://" + getHostName());
             } else {
                 logger.trace("Use Signify private CA Certificate for Hue Bridges from resources.");
-                // use Signify private CA Certificate for Hue Bridges from resources
-                localTrustManager = getInstanceFromResource(PEM_FILENAME);
+                // use Signify private CA Certificate V1 or V2 for Hue Bridges from resources
+                localTrustManager = getInstanceFromResource(
+                        isBridgeV3orHigher ? PEM_CACERT_V2_FILENAME : PEM_CACERT_V1_FILENAME);
             }
             this.trustManager = localTrustManager;
         } catch (CertificateException | MalformedURLException e) {

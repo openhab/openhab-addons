@@ -39,11 +39,14 @@ import org.osgi.service.component.annotations.Component;
 public class HeosDynamicStateDescriptionProvider extends BaseDynamicStateDescriptionProvider {
 
     String getValueByLabel(ChannelUID channelUID, String input) {
-        Optional<String> optionalValueByLabel = channelOptionsMap.get(channelUID).stream()
-                .filter(o -> input.equals(o.getLabel())).map(StateOption::getValue).findFirst();
+        List<StateOption> options = channelOptionsMap.get(channelUID);
+        if (options == null) {
+            return input;
+        }
 
         // if no match was found we assume that it already was a value and not a label
-        return Objects.requireNonNull(optionalValueByLabel.orElse(input));
+        return Objects.requireNonNull(options.stream().filter(o -> input.equals(o.getLabel()))
+                .map(StateOption::getValue).findFirst().orElse(input));
     }
 
     public void setFavorites(ChannelUID channelUID, List<BrowseResult> favorites) {
@@ -64,7 +67,6 @@ public class HeosDynamicStateDescriptionProvider extends BaseDynamicStateDescrip
 
     private Optional<StateOption> getStateOption(Function<BrowseResult, @Nullable String> function,
             BrowseResult browseResult) {
-        @Nullable
         String identifier = function.apply(browseResult);
         if (identifier != null) {
             return Optional.of(new StateOption(identifier, browseResult.name));

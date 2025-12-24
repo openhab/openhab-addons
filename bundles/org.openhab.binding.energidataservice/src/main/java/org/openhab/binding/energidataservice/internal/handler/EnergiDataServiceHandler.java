@@ -445,7 +445,7 @@ public class EnergiDataServiceHandler extends BaseThingHandler
             Currency currency = config.getCurrency();
             boolean isDKK = CURRENCY_DKK.equals(currency);
             TimeSeries spotPriceTimeSeries = new TimeSeries(REPLACE);
-            LocalDate dayAheadFirstDate = electricityPriceProvider.getDayAheadTransitionDate().plusDays(1);
+            LocalDate dayAheadFirstDate = DAY_AHEAD_TRANSITION_DATE.plusDays(1);
 
             if (startDate.isBefore(dayAheadFirstDate)) {
                 ElspotpriceRecord[] spotPriceRecords = apiController.getSpotPrices(config.priceArea, currency,

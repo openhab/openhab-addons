@@ -13,6 +13,7 @@
 package org.openhab.binding.nikohomecontrol.internal.protocol;
 
 import java.time.LocalDateTime;
+import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -29,6 +30,7 @@ import org.slf4j.LoggerFactory;
  * representing a Niko Home Control meter and has methods to receive meter usage information.
  *
  * @author Mark Herwege - Initial Contribution
+ * @author Mark Herwege - Add home digital meter power readings
  */
 @NonNullByDefault
 public abstract class NhcMeter {
@@ -44,12 +46,13 @@ public abstract class NhcMeter {
     protected @Nullable String location;
 
     // This can be null as long as we do not receive power readings
-    protected volatile @Nullable Integer power;
-    protected volatile int reading;
-    protected volatile int dayReading;
+    protected volatile @Nullable Double power;
+    protected volatile @Nullable Double powerFromGrid;
+    protected volatile @Nullable Double powerToGrid;
+    protected volatile @Nullable Double peakPowerFromGrid;
     protected volatile @Nullable LocalDateTime lastReadingUTC;
 
-    private @Nullable NhcMeterEvent eventHandler;
+    protected @Nullable NhcMeterEvent eventHandler;
 
     private ScheduledExecutorService scheduler;
     private volatile @Nullable ScheduledFuture<?> restartTimer;
@@ -75,10 +78,26 @@ public abstract class NhcMeter {
      */
     protected void updatePowerState() {
         NhcMeterEvent handler = eventHandler;
-        Integer value = getPower();
-        if ((handler != null) && (value != null)) {
-            logger.debug("update power channel for {} with {}", id, value);
-            handler.meterPowerEvent(value);
+        Double power = getPower();
+        Double powerFromGrid = getPowerFromGrid();
+        Double powerToGrid = getPowerToGrid();
+        if ((handler != null) && (power != null)) {
+            logger.debug("update power channels for {} with {}, {}, {}", id, power, powerFromGrid, powerToGrid);
+            handler.meterPowerEvent(power, powerFromGrid, powerToGrid);
+        }
+    }
+
+    /**
+     * Update power value of the meter without touching the meter definition (id, name) and without changing the
+     * ThingHandler callback.
+     *
+     */
+    protected void updatePeakPowerFromGridState() {
+        NhcMeterEvent handler = eventHandler;
+        Double value = getPeakPowerFromGrid();
+        if (handler != null && value != null) {
+            logger.debug("update peakPowerFromGrid channel for {} with {}", id, value);
+            handler.meterPeakPowerFromGridEvent(value);
         }
     }
 
@@ -183,51 +202,103 @@ public abstract class NhcMeter {
      * @return the power in W (positive for consumption, negative for production), return null if no reading received
      *         yet
      */
-    public @Nullable Integer getPower() {
+    public @Nullable Double getPower() {
         return power;
+    }
+
+    /**
+     * @return the power consumed from the grid in W, return null if no reading received yet
+     */
+    public @Nullable Double getPowerFromGrid() {
+        return powerFromGrid;
+    }
+
+    /**
+     * @return the power in W (positive for consumption, negative for production), return null if no reading received
+     *         yet
+     */
+    public @Nullable Double getPowerToGrid() {
+        return powerToGrid;
     }
 
     /**
      * @param power the power to set in W (positive for consumption, negative for production), null if an empty reading
      *            was received
      */
-    public void setPower(@Nullable Integer power) {
+    public void setPower(@Nullable Double power) {
+        setPower(power, null, null);
+    }
+
+    /**
+     * @param power the power to set in W (positive for consumption, negative for production), null if an empty reading
+     *            was received
+     * @param powerFromGrid power consumed from the grid
+     * @param powerToGrid power sent to the grid
+     */
+    public void setPower(@Nullable Double power, @Nullable Double powerFromGrid, @Nullable Double powerToGrid) {
         this.power = power;
+        this.powerFromGrid = powerFromGrid;
+        this.powerToGrid = powerToGrid;
         updatePowerState();
+    }
+
+    /**
+     * @return the peak power for the current month in W
+     */
+    public @Nullable Double getPeakPowerFromGrid() {
+        return peakPowerFromGrid;
+    }
+
+    /**
+     * @param peakPowerFromGrid the power to set in W
+     */
+    public void setPeakPowerFromGrid(@Nullable Double peakPowerFromGrid) {
+        if (peakPowerFromGrid != null) {
+            this.peakPowerFromGrid = peakPowerFromGrid;
+            updatePeakPowerFromGridState();
+        }
     }
 
     /**
      * @return the meter reading in the base unit (m^3 for gas and water, kWh for energy)
      */
     public double getReading() {
-        // For energy, readings are in W per 10 min, convert to kWh
-        // For water and gas, readings are in 0.1 dm^3, convert to m^3
-        return ((type == MeterType.ENERGY) || (type == MeterType.ENERGY_LIVE)) ? (reading / 6000.0)
-                : (reading / 10000.0);
+        return 0;
+    }
+
+    /**
+     * @return the meter readings in the base unit (m^3 for gas and water, kWh for energy)
+     */
+    public Map<String, Double> getReadings() {
+        return Map.of();
     }
 
     /**
      * @return reading without conversion, as provided by NHC
      */
-    public int getReadingInt() {
-        return reading;
+    public double getReadingRaw() {
+        return 0;
     }
 
     /**
      * @return the meter reading for the current day in the base unit (m^3 for gas and water, kWh for energy)
      */
     public double getDayReading() {
-        // For energy, readings are in W per 10 min, convert to kWh
-        // For water and gas, readings are in 0.1 dm^3, convert to m^3
-        return ((type == MeterType.ENERGY) || (type == MeterType.ENERGY_LIVE)) ? (dayReading / 6000.0)
-                : (dayReading / 10000.0);
+        return 0;
+    }
+
+    /**
+     * @return the meter readings for the current day in the base unit (m^3 for gas and water, kWh for energy)
+     */
+    public Map<String, Double> getDayReadings() {
+        return Map.of();
     }
 
     /**
      * @return day reading without conversion, as provided by NHC
      */
-    public int getDayReadingInt() {
-        return dayReading;
+    public double getDayReadingRaw() {
+        return 0;
     }
 
     /**
@@ -242,11 +313,15 @@ public abstract class NhcMeter {
      * @param dayReading the day meter reading
      * @param lastReading the last meter reading time in UTC zone
      */
-    public void setReading(int reading, int dayReading, LocalDateTime lastReading) {
-        this.reading = reading;
-        this.dayReading = dayReading;
-        this.lastReadingUTC = lastReading;
-        updateReadingState();
+    public void setReading(double reading, double dayReading, LocalDateTime lastReading) {
+    }
+
+    /**
+     * @param readings the meter readings
+     * @param dayReadings the day meter readings
+     * @param lastReading the last meter reading time in UTC zone
+     */
+    public void setReadings(Map<String, Double> readings, Map<String, Double> dayReadings, LocalDateTime lastReading) {
     }
 
     /**
@@ -280,13 +355,13 @@ public abstract class NhcMeter {
      *
      * @param refresh interval between meter queries in minutes
      */
-    public void startMeter(int refresh) {
+    public void startMeter(int refresh, String startDate) {
         stopMeter();
         int firstRefreshDelay = 10 + r.nextInt(90);
         logger.debug("schedule meter data refresh for {} every {} minutes, first refresh in {}s", id, refresh,
                 firstRefreshDelay);
         readingSchedule = scheduler.scheduleWithFixedDelay(() -> {
-            nhcComm.executeMeter(id);
+            nhcComm.executeMeter(id, startDate);
         }, firstRefreshDelay, refresh * 60, TimeUnit.SECONDS);
     }
 

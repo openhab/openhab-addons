@@ -166,6 +166,6 @@ public class EnergyCapability extends RestCapability<EnergyApi> {
             ZonedDateTime now = ZonedDateTime.now().plus(setPointDefaultDuration);
             now = now.withZoneSameInstant(cap.zoneId);
             return now.toEpochSecond();
-        }).orElse(-1l);
+        }).orElseGet(() -> -1L);
     }
 }

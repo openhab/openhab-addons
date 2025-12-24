@@ -20,7 +20,6 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -98,7 +97,7 @@ public class BoschIndegoHandler extends BaseThingHandler implements Authorizatio
     private @Nullable ScheduledFuture<?> statePollFuture;
     private @Nullable ScheduledFuture<?> cuttingTimePollFuture;
     private @Nullable ScheduledFuture<?> cuttingTimeFuture;
-    private Optional<Integer> previousStateCode = Optional.empty();
+    private @Nullable Integer previousStateCode;
     private @Nullable RawType cachedMap;
     private Instant cachedMapTimestamp = Instant.MIN;
     private Instant operatingDataTimestamp = Instant.MIN;
@@ -144,7 +143,7 @@ public class BoschIndegoHandler extends BaseThingHandler implements Authorizatio
         controller = new IndegoDeviceController(httpClient, authorizationProvider, config.serialNumber);
 
         updateStatus(ThingStatus.UNKNOWN);
-        previousStateCode = Optional.empty();
+        previousStateCode = null;
         rescheduleStatePoll(0, stateInactiveRefreshIntervalSeconds, false);
         this.cuttingTimePollFuture = scheduler.scheduleWithFixedDelay(this::refreshCuttingTimesWithExceptionHandling, 0,
                 config.cuttingTimeRefresh, TimeUnit.MINUTES);
@@ -346,8 +345,9 @@ public class BoschIndegoHandler extends BaseThingHandler implements Authorizatio
 
         int previousState;
         DeviceStatus previousDeviceStatus;
-        if (previousStateCode.isPresent()) {
-            previousState = previousStateCode.get();
+        Integer previousStateCode = this.previousStateCode;
+        if (previousStateCode != null) {
+            previousState = previousStateCode;
             previousDeviceStatus = DeviceStatus.fromCode(previousState);
             if (state.state != previousState
                     && ((!previousDeviceStatus.isDocked() && deviceStatus.isDocked()) || deviceStatus.isCompleted())) {
@@ -360,7 +360,7 @@ public class BoschIndegoHandler extends BaseThingHandler implements Authorizatio
             previousState = state.state;
             previousDeviceStatus = DeviceStatus.fromCode(previousState);
         }
-        previousStateCode = Optional.of(state.state);
+        this.previousStateCode = state.state;
 
         refreshOperatingDataConditionally(
                 previousDeviceStatus.isCharging() || deviceStatus.isCharging() || deviceStatus.isActive());

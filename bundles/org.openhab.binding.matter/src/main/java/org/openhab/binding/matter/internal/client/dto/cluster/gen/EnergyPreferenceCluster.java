@@ -98,7 +98,7 @@ public class EnergyPreferenceCluster extends BaseCluster {
     /**
      * This represents a step along a scale of preferences.
      */
-    public class BalanceStruct {
+    public static class BalanceStruct {
         /**
          * This field shall indicate the relative value of this step.
          */
@@ -122,8 +122,8 @@ public class EnergyPreferenceCluster extends BaseCluster {
         EFFICIENCY(2, "Efficiency"),
         WATER_CONSUMPTION(3, "Water Consumption");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private EnergyPriorityEnum(Integer value, String label) {
             this.value = value;

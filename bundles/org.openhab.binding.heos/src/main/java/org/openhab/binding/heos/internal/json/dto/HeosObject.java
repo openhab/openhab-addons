@@ -41,7 +41,6 @@ public abstract class HeosObject {
     }
 
     public @Nullable Long getNumericAttribute(HeosCommunicationAttribute attributeName) {
-        @Nullable
         String attribute = attributes.get(attributeName.getLabel());
 
         if (attribute == null) {

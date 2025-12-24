@@ -29,7 +29,6 @@ public class MiIoCryptoException extends Exception {
     private static final long serialVersionUID = -1280858607995252320L;
 
     public MiIoCryptoException() {
-        super();
     }
 
     public MiIoCryptoException(@Nullable String message) {

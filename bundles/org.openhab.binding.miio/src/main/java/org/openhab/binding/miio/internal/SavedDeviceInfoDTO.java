@@ -33,7 +33,6 @@ public class SavedDeviceInfoDTO {
     private String deviceId;
 
     public SavedDeviceInfoDTO(int lastId, String deviceId) {
-        super();
         this.lastId = lastId;
         this.deviceId = deviceId;
     }

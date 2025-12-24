@@ -10,6 +10,11 @@
 			<description>EMail address for MercedesMe account</description>
 			<context>email</context>
 		</parameter>
+		<parameter name="password" type="text" required="true">
+			<label>Password</label>
+			<description>Password for MercedesMe account</description>
+			<context>password</context>
+		</parameter>
 		<parameter name="region" type="text" required="true">
 			<label>Region</label>
 			<options>
@@ -18,11 +23,6 @@
 				<option value="AP">Asia-Pacific</option>
 				<option value="CN">China</option>
 			</options>
-		</parameter>
-		<parameter name="refreshToken" type="text" required="true">
-			<label>Refresh Token</label>
-			<description>Refresh Token from MB Token Requester app</description>
-			<default>"takeover previous token"</default>
 		</parameter>
 		<parameter name="pin" type="text" required="false">
 			<label>PIN</label>

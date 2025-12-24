@@ -12,12 +12,21 @@
  */
 package org.openhab.binding.network.internal;
 
+import static org.openhab.binding.network.internal.NetworkBindingConstants.*;
+
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.SynchronousQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.network.internal.handler.NetworkHandler;
 import org.openhab.binding.network.internal.handler.SpeedTestHandler;
+import org.openhab.core.common.NamedThreadFactory;
+import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
@@ -39,15 +48,19 @@ import org.slf4j.LoggerFactory;
  * @author David Graeff - Initial contribution
  */
 @NonNullByDefault
-@Component(service = ThingHandlerFactory.class, configurationPid = "binding.network")
+@Component(service = ThingHandlerFactory.class, configurationPid = BINDING_CONFIGURATION_PID)
 public class NetworkHandlerFactory extends BaseThingHandlerFactory {
     final NetworkBindingConfiguration configuration = new NetworkBindingConfiguration();
-
+    private static final String NETWORK_HANDLER_THREADPOOL_NAME = "networkBinding";
+    private static final String NETWORK_RESOLVER_THREADPOOL_NAME = "binding-network-resolver";
     private final Logger logger = LoggerFactory.getLogger(NetworkHandlerFactory.class);
+    private final ScheduledExecutorService executor = ThreadPoolManager
+            .getScheduledPool(NETWORK_HANDLER_THREADPOOL_NAME);
+    private volatile @Nullable ExecutorService resolver;
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
-        return NetworkBindingConstants.SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
+        return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
     }
 
     // The activate component call is used to access the bindings configuration
@@ -55,12 +68,24 @@ public class NetworkHandlerFactory extends BaseThingHandlerFactory {
     protected void activate(ComponentContext componentContext, Map<String, Object> config) {
         super.activate(componentContext);
         modified(config);
+        ExecutorService resolver = this.resolver;
+        if (resolver != null) {
+            // This should not happen
+            resolver.shutdownNow();
+        }
+        this.resolver = new ThreadPoolExecutor(1, Integer.MAX_VALUE, 20L, TimeUnit.SECONDS,
+                new SynchronousQueue<Runnable>(), new NamedThreadFactory(NETWORK_RESOLVER_THREADPOOL_NAME));
     }
 
     @Override
     @Deactivate
     protected void deactivate(ComponentContext componentContext) {
         super.deactivate(componentContext);
+        ExecutorService resolver = this.resolver;
+        if (resolver != null) {
+            resolver.shutdownNow();
+            this.resolver = null;
+        }
     }
 
     @Modified
@@ -74,14 +99,20 @@ public class NetworkHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
+        ExecutorService resolver = this.resolver;
+        if (resolver == null) {
+            // This should be impossible
+            logger.error("Failed to create handler for Thing \"{}\" - handler factory hasn't been activated",
+                    thing.getUID());
+            return null;
+        }
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (thingTypeUID.equals(NetworkBindingConstants.PING_DEVICE)
-                || thingTypeUID.equals(NetworkBindingConstants.BACKWARDS_COMPATIBLE_DEVICE)) {
-            return new NetworkHandler(thing, false, configuration);
-        } else if (thingTypeUID.equals(NetworkBindingConstants.SERVICE_DEVICE)) {
-            return new NetworkHandler(thing, true, configuration);
-        } else if (thingTypeUID.equals(NetworkBindingConstants.SPEEDTEST_DEVICE)) {
+        if (thingTypeUID.equals(PING_DEVICE) || thingTypeUID.equals(BACKWARDS_COMPATIBLE_DEVICE)) {
+            return new NetworkHandler(thing, executor, resolver, false, configuration);
+        } else if (thingTypeUID.equals(SERVICE_DEVICE)) {
+            return new NetworkHandler(thing, executor, resolver, true, configuration);
+        } else if (thingTypeUID.equals(SPEEDTEST_DEVICE)) {
             return new SpeedTestHandler(thing);
         }
         return null;

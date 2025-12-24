@@ -73,8 +73,8 @@ public class IlluminanceMeasurementCluster extends BaseCluster {
         PHOTODIODE(0, "Photodiode"),
         CMOS(1, "Cmos");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private LightSensorTypeEnum(Integer value, String label) {
             this.value = value;

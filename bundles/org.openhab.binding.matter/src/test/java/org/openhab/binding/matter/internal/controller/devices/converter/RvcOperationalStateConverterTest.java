@@ -87,6 +87,6 @@ class RvcOperationalStateConverterTest extends BaseMatterConverterTest {
     void testInitState() {
         converter.initState();
         verify(mockHandler, times(1)).updateState(eq(1), eq("rvcoperationalstate-state"),
-                eq(new DecimalType(RvcOperationalStateCluster.OperationalStateEnum.ERROR.value)));
+                eq(new DecimalType(RvcOperationalStateCluster.OperationalStateEnum.ERROR.getValue())));
     }
 }
