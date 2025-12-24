@@ -143,8 +143,8 @@ Trigger channels (for rules):
 |----------------------------|---------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------|
 | motion-start               | none                                                                                                                                  | Motion started                          |
 | motion-update              | none                                                                                                                                  | Motion updated (debounced update event) |
-| smart-audio-detect-start   | `alrmSmoke`, `alrmCmonx`, `alrmSiren`, `alrmBabyCry`, `alrmSpeak`, `alrmBark`, `alrmBurglar`, `alrmCarHorn`, `alrmGlassBreak`, `none` | Smart audio detection started           |
-| smart-audio-detect-update  | `alrmSmoke`, `alrmCmonx`, `alrmSiren`, `alrmBabyCry`, `alrmSpeak`, `alrmBark`, `alrmBurglar`, `alrmCarHorn`, `alrmGlassBreak`, `none` | Smart audio detection updated           |
+| smart-detect-audio-start   | `alrmSmoke`, `alrmCmonx`, `alrmSiren`, `alrmBabyCry`, `alrmSpeak`, `alrmBark`, `alrmBurglar`, `alrmCarHorn`, `alrmGlassBreak`, `none` | Smart audio detection started           |
+| smart-detect-audio-update  | `alrmSmoke`, `alrmCmonx`, `alrmSiren`, `alrmBabyCry`, `alrmSpeak`, `alrmBark`, `alrmBurglar`, `alrmCarHorn`, `alrmGlassBreak`, `none` | Smart audio detection updated           |
 | smart-detect-zone-start    | `person`, `vehicle`, `package`, `licensePlate`, `face`, `animal`, `none`                                                              | Zone smart detection started            |
 | smart-detect-zone-update   | `person`, `vehicle`, `package`, `licensePlate`, `face`, `animal`, `none`                                                              | Zone smart detection updated            |
 | smart-detect-line-start    | `person`, `vehicle`, `package`, `licensePlate`, `face`, `animal`, `none`                                                              | Line smart detection started            |
