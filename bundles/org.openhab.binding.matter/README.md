@@ -576,16 +576,16 @@ The following attributes can be set on the Fan Mode item or the Group item to se
 
 A `ModeSelect` device exposes a device which responds to user defined selectable modes.
 This can be used to model items which may not conform to other devices types.
- 
+
 `ModeSelect` items (or groups) must provide a mapping of Matter modes to openHAB state values via the metadata option `modes`.  The format is a comma-separated list where each entry follows:
 
-```
+```text
 <stateValue>:<label>[:<semanticTag>[:<semanticTag>...]]
 ```
 
-* `stateValue`  – the exact openHAB state string you will send/receive (e.g. `off`, `auto`, `heat`, '0').
-* `label`       – human-readable label presented to Matter clients.
-* `semanticTag` – optional semantic hint in `namespace.tag` form (see the [Semantic Tags](#semantic-tags) appendix for valid values).
+- `stateValue`  – the exact openHAB state string you will send/receive (e.g. `off`, `auto`, `heat`, '0').
+- `label`       – human-readable label presented to Matter clients.
+- `semanticTag` – optional semantic hint in `namespace.tag` form (see the [Semantic Tags](#semantic-tags) appendix for valid values).
 
 At least one mode must be supplied.
 
@@ -601,7 +601,7 @@ A note on semantic tags:
 
 - If used, you can not mix different semantic namespaces as seen in the example above where `switches` is the base namespace being used for all tags.
 - These are provided by the Matter spec, but its up to clients (like Apple, Alexa, Google....) to interpret these tags (or not).
-- Each ecosystem will likely differ in its use of these tags. 
+- Each ecosystem will likely differ in its use of these tags.
 - They are provided here for maximum flexiblity but are not guarenteed to have any affect.  
 
 </details>

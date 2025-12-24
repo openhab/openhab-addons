@@ -11,7 +11,7 @@ About the ISG plus (only German, French and Italian)
 <https://www.stiebel-eltron.ch/de/home/produkte-loesungen/erneuerbare_energien/regelung_energiemanagement/isg-plus/isg-plus.html>
 SG Ready (Smart Grid) functions only supported with ISG plus version.
 
-Note about the new ISG version "*ISG connect*": it is unknown, if this binding supports it.
+Note about the new ISG version "_ISG connect_": it is unknown, if this binding supports it.
 
 ## Supported Things
 
@@ -23,11 +23,11 @@ Note, that the things will show up under the Modbus binding.
 | Stiebel Eltron Heat Pump                  | heatpump                      | A Stiebel Eltron Heat Pump connected through modbus to an ISG                                                       |
 | Stiebel Eltron Heat Pump (WPM compatible) | stiebeleltron-heatpump-allwpm | A Stiebel Eltron Heat Pump (WPM compatible) Thing with extended function support connected through Modbus to an ISG |
 
-The first Thing *Stiebel Eltron Heat Pump* and its channel IDs have been kept for compatibility reasons.
-It's recommended to switch to the second Thing *Stiebel Eltron Heat Pump (WPM compatible)* as it supports the retrieval of much more information from a compatible heat pump controller (WPM).
+The first Thing _Stiebel Eltron Heat Pump_ and its channel IDs have been kept for compatibility reasons.
+It's recommended to switch to the second Thing _Stiebel Eltron Heat Pump (WPM compatible)_ as it supports the retrieval of much more information from a compatible heat pump controller (WPM).
 Supported controllers are WPMsystem, WPM3 and WPM3i.
-If the SG  Ready (Smart Grid Ready) polling is enabled using configuration parameter *pollSgReady*, the controller id is retrieved and visible in the appropriate channel.
-If the id is known, it can be set in the configuration parameter *wpmControllerId*.
+If the SG  Ready (Smart Grid Ready) polling is enabled using configuration parameter _pollSgReady_, the controller id is retrieved and visible in the appropriate channel.
+If the id is known, it can be set in the configuration parameter _wpmControllerId_.
 The binding functions without the correct controller id as it checks the retrieved values and sets unavailable channels fix to NULL.
 
 ## Discovery
@@ -51,7 +51,6 @@ The following configuration parameters are valid for the `stiebeleltron-heatpump
 | refresh   | integer | no       | 5                  | Poll interval in seconds. Increase this if you encounter connection errors |
 | maxTries  | integer | no       | 3                  | Number of retries before giving up reading from this Thing                 |
 
-
 | Parameter       | Type    | Required | Default if omitted | Description                                                                          |
 | --------------- | ------- | -------- | ------------------ | ------------------------------------------------------------------------------------ |
 | allowResetCmds  | boolean | no       | false              | Flag to enable execution of supported reset commands (use with care; see note below) |
@@ -70,13 +69,13 @@ Bridge modbus:tcp:bridge [ host="10.0.0.2", port=502, id=1 ] {
 ## Channels
 
 Channels are grouped into channel groups.
-The heat pump Thing *Stiebel Eltron Heat Pump (WPM compatible)* supports more channels dependant on the available heat pump type.
+The heat pump Thing _Stiebel Eltron Heat Pump (WPM compatible)_ supports more channels dependant on the available heat pump type.
 
 ### System State Groups
 
 This groups contain general state information about the heat pump.
 
-#### Channels supported by the legacy Thing *Stiebel Eltron Heat Pump*
+#### Channels supported by the legacy Thing _Stiebel Eltron Heat Pump_
 
 | Channel ID       | Item Type | Read only | Description                                                   |
 | ---------------- | --------- | --------- | ------------------------------------------------------------- |
@@ -128,7 +127,7 @@ Note: The column WPM is for WPMsystem.
 
 This group contains system paramters of the heat pump.
 
-#### Channels supported by Thing *Stiebel Eltron Heat Pump*
+#### Channels supported by Thing _Stiebel Eltron Heat Pump_
 
 | Channel ID                  | Item Type          | Read only | Description                                                                                      |
 | --------------------------- | ------------------ | --------- | ------------------------------------------------------------------------------------------------ |
@@ -178,7 +177,7 @@ Channel 'restart-isg': The binding only accepts command 1 - command 2 (service k
 
 This group contains general operational information about the device.
 
-#### Channels supported by Thing *Stiebel Eltron Heat Pump*
+#### Channels supported by Thing _Stiebel Eltron Heat Pump_
 
 | Channel ID                 | Item Type            | Read only | Description                                           |
 | -------------------------- | -------------------- | --------- | ----------------------------------------------------- |
@@ -251,13 +250,13 @@ Note: The column WPM is for WPMsystem.
 
 #### Note
 
-The last block can be available for up to 6 heat pumps. The number of available heat pumps shall be set with the configuration paramaeter *nrOfHps*.
+The last block can be available for up to 6 heat pumps. The number of available heat pumps shall be set with the configuration paramaeter _nrOfHps_.
 
 ### Energy Information Group
 
 This group contains information about the energy consumption and delivery of the heat pump.
 
-#### Channels supported by things *Stiebel Eltron Heat Pump*
+#### Channels supported by things _Stiebel Eltron Heat Pump_
 
 | Channel ID                         | Item Type     | Read only | Description                                            |
 | -----------------------------------| ------------- | --------- | -------------------------------------------------------|
@@ -316,11 +315,11 @@ Note: The column WPM is for WPMsystem.
 
 #### Note
 
-The last block can be available for up to 6 heat pumps. The number of available heat pumps shall be set with the configuration paramaeter *nrOfHps*.
+The last block can be available for up to 6 heat pumps. The number of available heat pumps shall be set with the configuration paramaeter _nrOfHps_.
 
 ### SG Ready - Energy Management Settings
 
-The following channels are only available for the thing *Stiebel Eltron Heat Pump (WPM compatible)*
+The following channels are only available for the thing _Stiebel Eltron Heat Pump (WPM compatible)_
 
 | Channel ID             | Item Type | Read only | Description            |
 | -----------------------| ----------| --------- | -----------------------|
@@ -329,14 +328,14 @@ The following channels are only available for the thing *Stiebel Eltron Heat Pum
 
 ### SG Ready - Energy Management System Information
 
-The following channels are only available for the thing *Stiebel Eltron Heat Pump (WPM compatible)*
+The following channels are only available for the thing _Stiebel Eltron Heat Pump (WPM compatible)_
 
 | Channel ID                         | Item Type | Read only | Description                        |
 | ---------------------------------- | ----------| --------- | -----------------------------------|
 | sg-ready-operating-state           | Number    | true      | SG Ready Operating State           |
 | sg-ready-controller-identification | Number    | true      | SG Ready Controller Identification |
 
-## Full Example for the Thing *Stiebel Eltron Heat Pump*
+## Full Example for the Thing _Stiebel Eltron Heat Pump_
 
 ### Thing Configuration
 
@@ -446,7 +445,7 @@ Bridge modbus:tcp:bridge "Stiebel Modbus TCP"[ host="hostname|ip", port=502, id=
 Thing modbus:stiebeleltron-heatpump-allwpm:stiebelEltronWpmComp "Stiebel Eltron Heat Pump (WPM compatible)" (modbus:tcp:bridge) @"Room" [ ]
 ```
 
-### Item Configuration *Stiebel Eltron Heat Pump (WPM compatible)*
+### Item Configuration _Stiebel Eltron Heat Pump (WPM compatible)_
 
 ```java
 Contact                   stiebel_eltron_heat_pump_allwpm_hc1_pump_active                            "HC1 Pump Active"                                <pump>        { channel="modbus:stiebeleltron-heatpump-allwpm:stiebelEltronWpmComp:systemStateAllWpm#hc1-pump-active" }
