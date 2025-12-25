@@ -182,7 +182,7 @@ public class RoborockWebTargets {
         String payload = "?username=" + URLEncoder.encode(email, StandardCharsets.UTF_8) + "&verifycode=" + twofa
                 + "&verifycodetype=AUTH_EMAIL_CODE";
 
-        return invoke(baseUri + GET_TOKEN_PATH + payload, HttpMethod.POST);
+        return invoke(baseUri + CODE_LOGIN + payload, HttpMethod.POST);
     }
 
     /**
