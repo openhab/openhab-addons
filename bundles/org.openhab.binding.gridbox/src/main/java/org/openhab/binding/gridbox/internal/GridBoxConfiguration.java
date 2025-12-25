@@ -31,6 +31,8 @@ public class GridBoxConfiguration {
 
     public int refreshInterval = 5;
 
+    public boolean eOnClientType = true;
+
     @Nullable
     public String systemId;
 
