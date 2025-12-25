@@ -113,7 +113,7 @@ public class TimeweightedAverageStateProfile implements StateProfile {
             // nothing to do, stateUnit stays empty
             logger.debug("Profile initialized for {} with DecimalType", itemName);
         } else {
-            logger.error("Time-weighted average profile not applicable for {} with class {}", itemName,
+            logger.warn("Time-weighted average profile not applicable for {} with class {}", itemName,
                     first.getClass());
         }
     }
