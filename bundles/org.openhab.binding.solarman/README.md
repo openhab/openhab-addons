@@ -179,7 +179,7 @@ Thing solarman:logger:local [ hostname="x.x.x.x", inverterType="deye_sg04lp3", s
 }
 ```
 
-Note the **readOnly="false"** part here, which will make channel accept commands and write data to invertor register. 
+Note the **readOnly="false"** part here, which will make channel accept commands and write data to invertor register.
 
 ## Full Example
 
