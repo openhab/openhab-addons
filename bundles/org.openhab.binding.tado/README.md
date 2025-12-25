@@ -42,14 +42,15 @@ Once the `home` thing is online, the binding will discover all its respective zo
 
 ### Channels
 
-| Name                | Type        | Description                                                         | Read/Write |
-| ------------------- | ----------- | ------------------------------------------------------------------- | ---------- |
-| `homePresence`      | Switch      | Current presence value of the tado home; `ON` = HOME / `OFF` = AWAY | RW         |
-| `geofencingEnabled` | Switch      | Selects if automatic geofencing is enabled or disabled              | RW         |
-| `apiRateRemaining`  | Number      | Number of API calls remaining before the maximum is reached         | R          |
-| `apiRateLimit`      | Number      | Maximum API calls allowed per specified duration                    | R          |
-| `apiRateDuration`   | Number:Time | Duration in which the API count rises until maximum                 | R          |
-| `apiRateReset`      | Number:Time | Duration before the API count resets                                | R          |
+| Name                | Type        | Description                                                                | Read/Write |
+| ------------------- | ----------- | -------------------------------------------------------------------------- | ---------- |
+| `homePresence`      | Switch      | Current presence value of the tado home; `ON` = HOME / `OFF` = AWAY        | RW         |
+| `geofencingEnabled` | Switch      | Selects if automatic geofencing is enabled or disabled                     | RW         |
+| `apiRateRemaining`  | Number      | Number of API calls remaining before the maximum is reached                | R          |
+| `apiRateLimit`      | Number      | Maximum API calls allowed per specified duration                           | R          |
+| `apiRateDuration`   | Number:Time | Duration in which the API count rises until maximum                        | R          |
+| `apiRateReset`      | Number:Time | Duration before the API count resets (only when the API limit is breached) | R          |
+
 
 ## `zone` Thing
 
