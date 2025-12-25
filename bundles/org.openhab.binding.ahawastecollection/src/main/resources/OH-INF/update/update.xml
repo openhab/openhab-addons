@@ -10,6 +10,12 @@
 				<typeId>ahawastecollection:collectionDateLightweightPackaging</typeId>
 			</add-channel>
 		</instruction-set>
+
+		<instruction-set targetVersion="2">
+			<add-channel id="christmasTree">
+				<typeId>ahawastecollection:collectionDateChristmasTree</typeId>
+			</add-channel>
+		</instruction-set>
 	</thing-type>
 
 </update:update-descriptions>

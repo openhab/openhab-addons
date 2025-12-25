@@ -34,4 +34,5 @@ public class AhaWasteCollectionBindingConstants {
     public static final String LIGHTWEIGHT_PACKAGING = "lightweightPackaging";
     public static final String BIOWASTE = "bioWaste";
     public static final String PAPER = "paper";
+    public static final String CHRISTMAS_TREE = "christmasTree";
 }
