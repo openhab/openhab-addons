@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="jellyfin"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<thing-type id="client">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="server"/>
+		</supported-bridge-type-refs>
+		<label>Jellyfin Client</label>
+		<description>Represents a running Jellyfin client connected to a server</description>
+		<channels>
+			<channel id="send-notification" typeId="send-notification-channel"/>
+			<channel id="media-control" typeId="system.media-control"/>
+			<channel id="playing-item-id" typeId="playing-item-id-channel"/>
+			<channel id="playing-item-name" typeId="playing-item-name-channel"/>
+			<channel id="playing-item-series-name" typeId="playing-item-series-name-channel"/>
+			<channel id="playing-item-season-name" typeId="playing-item-season-name-channel"/>
+			<channel id="playing-item-season" typeId="playing-item-season-channel"/>
+			<channel id="playing-item-episode" typeId="playing-item-episode-channel"/>
+			<channel id="playing-item-genres" typeId="playing-item-genres-channel"/>
+			<channel id="playing-item-type" typeId="playing-item-type-channel"/>
+			<channel id="playing-item-percentage" typeId="playing-item-percentage-channel"/>
+			<channel id="playing-item-second" typeId="playing-item-second-channel"/>
+			<channel id="playing-item-total-seconds" typeId="playing-item-total-seconds-channel"/>
+			<channel id="play-by-terms" typeId="play-by-terms-channel"/>
+			<channel id="play-next-by-terms" typeId="play-next-by-terms-channel"/>
+			<channel id="play-last-by-terms" typeId="play-last-by-terms-channel"/>
+			<channel id="browse-by-terms" typeId="browse-by-terms-channel"/>
+			<channel id="play-by-id" typeId="play-by-id-channel"/>
+			<channel id="play-next-by-id" typeId="play-next-by-id-channel"/>
+			<channel id="play-last-by-id" typeId="play-last-by-id-channel"/>
+			<channel id="browse-by-id" typeId="browse-by-id-channel"/>
+			<channel id="media-stop" typeId="media-stop-channel"/>
+			<channel id="media-shuffle" typeId="media-shuffle-channel"/>
+			<channel id="media-repeat" typeId="media-repeat-channel"/>
+			<channel id="media-quality" typeId="media-quality-channel"/>
+			<channel id="media-audio-track" typeId="media-audio-track-channel"/>
+			<channel id="media-subtitle" typeId="media-subtitle-channel"/>
+		</channels>
+		<config-description>
+		</config-description>
+	</thing-type>
+</thing:thing-descriptions>
