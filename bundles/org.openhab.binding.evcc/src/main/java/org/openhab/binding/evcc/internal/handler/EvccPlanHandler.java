@@ -199,7 +199,7 @@ public class EvccPlanHandler extends EvccBaseThingHandler {
 
     private void updatePlan() {
         boolean successful;
-        if (index != 0 && (index - 1) >= 0 && (index - 1) < cachedRepeatingPlans.size()) {
+        if (index > 0 && (index - 1) < cachedRepeatingPlans.size()) {
             successful = updateRepeatingPlan();
         } else {
             successful = updateOneTimePlan();
@@ -242,7 +242,11 @@ public class EvccPlanHandler extends EvccBaseThingHandler {
                 }
             }
         }
-        plan.add(JSON_KEY_TIME, plan.get(JSON_KEY_REPEATING_TIME));
+        JsonElement repeatingTimeElement = plan.get(JSON_KEY_REPEATING_TIME);
+        if (repeatingTimeElement == null || repeatingTimeElement.isJsonNull()) {
+            return false;
+        }
+        plan.add(JSON_KEY_TIME, repeatingTimeElement);
         plan.remove(JSON_KEY_REPEATING_TIME);
         payload.set(index - 1, plan);
         return sendCommand(endpoint, payload);

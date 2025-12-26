@@ -21,13 +21,11 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
 import java.util.Collection;
-import java.util.Locale;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.mockito.MockedStatic;
 import org.openhab.binding.evcc.internal.handler.EvccBatteryHandlerTest;
 import org.openhab.binding.evcc.internal.handler.EvccBridgeHandler;
 import org.openhab.core.config.discovery.DiscoveryResult;
@@ -37,7 +35,6 @@ import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ThingUID;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.FrameworkUtil;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -53,12 +50,12 @@ import com.google.gson.JsonParser;
 public class PlanDiscoveryMapperTest {
 
     private static JsonObject exampleResponse = new JsonObject();
-    private EvccBridgeHandler bridgeHandler = mock(EvccBridgeHandler.class);
-    private Bridge bridge = mock(Bridge.class);
-    private LocaleProvider lp = mock(LocaleProvider.class);
-    private TranslationProvider tp = mock(TranslationProvider.class);
-    private Bundle bundle = mock(Bundle.class);
-    private BundleContext ctx = mock(BundleContext.class);
+    private final EvccBridgeHandler bridgeHandler = mock(EvccBridgeHandler.class);
+    private final Bridge bridge = mock(Bridge.class);
+    private final LocaleProvider lp = mock(LocaleProvider.class);
+    private final TranslationProvider tp = mock(TranslationProvider.class);
+    private final Bundle bundle = mock(Bundle.class);
+    private final BundleContext ctx = mock(BundleContext.class);
 
     @BeforeAll
     static void setUpOnce() {
@@ -83,26 +80,18 @@ public class PlanDiscoveryMapperTest {
 
         when(bridgeHandler.getThing()).thenReturn(bridge);
         when(bridge.getUID()).thenReturn(new ThingUID("evcc:server:dummy"));
-        when(lp.getLocale()).thenReturn(Locale.ENGLISH);
-        when(bridgeHandler.getLocaleProvider()).thenReturn(lp);
-        when(bridgeHandler.getI18nProvider()).thenReturn(tp);
         when(bundle.getBundleContext()).thenReturn(ctx);
 
-        try (MockedStatic<FrameworkUtil> fw = mockStatic(FrameworkUtil.class)) {
-            fw.when(() -> FrameworkUtil.getBundle(EvccBridgeHandler.class)).thenReturn(bundle);
+        PlanDiscoveryMapper mapper = new PlanDiscoveryMapper(ctx, tp, lp);
+        Collection<DiscoveryResult> results = mapper.discoverFromVehicle(vehicle, "vehicle_2", "My Car", bridgeHandler);
 
-            PlanDiscoveryMapper mapper = new PlanDiscoveryMapper();
-            Collection<DiscoveryResult> results = mapper.discoverFromVehicle(vehicle, "vehicle_2", "My Car",
-                    bridgeHandler);
-
-            assertEquals(1, results.size());
-            DiscoveryResult r = results.iterator().next();
-            Map<String, Object> props = r.getProperties();
-            assertEquals("0", props.get(PROPERTY_INDEX));
-            assertEquals("vehicle_2", props.get(PROPERTY_VEHICLE_ID));
-            assertTrue(props.containsKey(PROPERTY_ID));
-            assertEquals(THING_TYPE_PLAN, r.getThingTypeUID());
-        }
+        assertEquals(1, results.size());
+        DiscoveryResult r = results.iterator().next();
+        Map<String, Object> props = r.getProperties();
+        assertEquals("0", props.get(PROPERTY_INDEX));
+        assertEquals("vehicle_2", props.get(PROPERTY_VEHICLE_ID));
+        assertTrue(props.containsKey(PROPERTY_ID));
+        assertEquals(THING_TYPE_PLAN, r.getThingTypeUID());
     }
 
     @Test
@@ -120,28 +109,20 @@ public class PlanDiscoveryMapperTest {
 
         when(bridgeHandler.getThing()).thenReturn(bridge);
         when(bridge.getUID()).thenReturn(new ThingUID("evcc:server:dummy"));
-        when(lp.getLocale()).thenReturn(Locale.ENGLISH);
-        when(bridgeHandler.getLocaleProvider()).thenReturn(lp);
-        when(bridgeHandler.getI18nProvider()).thenReturn(tp);
         when(bundle.getBundleContext()).thenReturn(ctx);
 
-        try (MockedStatic<FrameworkUtil> fw = mockStatic(FrameworkUtil.class)) {
-            fw.when(() -> FrameworkUtil.getBundle(EvccBridgeHandler.class)).thenReturn(bundle);
+        PlanDiscoveryMapper mapper = new PlanDiscoveryMapper(ctx, tp, lp);
+        Collection<DiscoveryResult> results = mapper.discoverFromVehicle(vehicle, "vehicle_1", "My Car", bridgeHandler);
 
-            PlanDiscoveryMapper mapper = new PlanDiscoveryMapper();
-            Collection<DiscoveryResult> results = mapper.discoverFromVehicle(vehicle, "vehicle_1", "My Car",
-                    bridgeHandler);
-
-            assertEquals(2, results.size());
-            // indices should be 1..N (because 0 is one-time)
-            for (DiscoveryResult r : results) {
-                Map<String, Object> props = r.getProperties();
-                assertTrue(props.get(PROPERTY_INDEX).equals("1") || props.get(PROPERTY_INDEX).equals("2"));
-                assertEquals("vehicle_1", props.get(PROPERTY_VEHICLE_ID));
-                assertTrue(props.containsKey(PROPERTY_ID));
-                // UID must be of thing type "plan"
-                assertEquals(THING_TYPE_PLAN, r.getThingTypeUID());
-            }
+        assertEquals(2, results.size());
+        // indices should be 1..N (because 0 is one-time)
+        for (DiscoveryResult r : results) {
+            Map<String, Object> props = r.getProperties();
+            assertTrue(props.get(PROPERTY_INDEX).equals("1") || props.get(PROPERTY_INDEX).equals("2"));
+            assertEquals("vehicle_1", props.get(PROPERTY_VEHICLE_ID));
+            assertTrue(props.containsKey(PROPERTY_ID));
+            // UID must be of thing type "plan"
+            assertEquals(THING_TYPE_PLAN, r.getThingTypeUID());
         }
     }
 }
