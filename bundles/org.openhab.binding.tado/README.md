@@ -51,7 +51,6 @@ Once the `home` thing is online, the binding will discover all its respective zo
 | `apiRateDuration`   | Number:Time | Duration in which the API count rises until maximum                        | R          |
 | `apiRateReset`      | Number:Time | Duration before the API count resets (only when the API limit is breached) | R          |
 
-
 ## `zone` Thing
 
 A _zone_ is an area/room of your home.
