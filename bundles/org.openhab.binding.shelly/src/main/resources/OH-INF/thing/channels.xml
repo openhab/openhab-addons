@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="shelly"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-type id="sensorRain">
+		<item-type>Switch</item-type>
+		<label>@text/channel-type.shelly.sensorRain.label</label>
+		<description>@text/channel-type.shelly.sensorRain.description</description>
+		<category>rain</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Rain</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f %unit%">
+		</state>
+	</channel-type>
+
+	<channel-type id="sensorWindSpeed">
+		<item-type>Number:Speed</item-type>
+		<label>@text/channel-type.shelly.sensorWindSpeed.label</label>
+		<description>@text/channel-type.shelly.sensorWindSpeed.description</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Speed</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f %unit%">
+		</state>
+	</channel-type>
+
+	<channel-type id="sensorWindDirection">
+		<item-type>Number:Angle</item-type>
+		<label>@text/channel-type.shelly.sensorWindDirection.label</label>
+		<description>@text/channel-type.shelly.sensorWindDirection.description</description>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f %unit%">
+		</state>
+	</channel-type>
+
+	<channel-type id="sensorGustSpeed">
+		<item-type>Number:Speed</item-type>
+		<label>@text/channel-type.shelly.sensorGustSpeed.label</label>
+		<description>@text/channel-type.shelly.sensorGustSpeed.description</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Speed</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f %unit%">
+		</state>
+	</channel-type>
+
+	<channel-type id="sensorUvIndex">
+		<item-type>Number</item-type>
+		<label>@text/channel-type.shelly.sensorUvIndex.label</label>
+		<description>@text/channel-type.shelly.sensorUvIndex.description</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Ultraviolet</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f %unit%">
+		</state>
+	</channel-type>
+
+	<channel-type id="sensorPressure">
+		<item-type>Number:Pressure</item-type>
+		<label>@text/channel-type.shelly.sensorPressure.label</label>
+		<description>@text/channel-type.shelly.sensorPressure.description</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Pressure</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f %unit%">
+		</state>
+	</channel-type>
+
+	<channel-type id="sensorDewPoint">
+		<item-type>Number:Temperature</item-type>
+		<label>@text/channel-type.shelly.sensorDewPoint.label</label>
+		<description>@text/channel-type.shelly.sensorDewPoint.description</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f %unit%">
+		</state>
+	</channel-type>
+
+	<channel-type id="sensorPrecipitation">
+		<item-type>Number:Length</item-type>
+		<label>@text/channel-type.shelly.sensorPrecipitation.label</label>
+		<description>@text/channel-type.shelly.sensorPrecipitation.description</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Rain</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f %unit%">
+		</state>
+	</channel-type>
+
+</thing:thing-descriptions>
