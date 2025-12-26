@@ -18,7 +18,7 @@ import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 import static org.openhab.binding.bluelink.internal.MockApiData.ENROLLMENT_RESPONSE;
-import static org.openhab.binding.bluelink.internal.MockApiData.TOKEN_RESPONSE;
+import static org.openhab.binding.bluelink.internal.MockApiData.TOKEN_RESPONSE_US;
 
 import java.time.ZoneId;
 import java.util.Locale;
@@ -38,7 +38,7 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import org.openhab.binding.bluelink.internal.MockApiData;
 import org.openhab.binding.bluelink.internal.api.BluelinkApiException;
-import org.openhab.binding.bluelink.internal.dto.VehicleInfo;
+import org.openhab.binding.bluelink.internal.model.IVehicle;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TimeZoneProvider;
@@ -77,8 +77,8 @@ class BluelinkAccountHandlerTest extends JavaTest {
     static void setUpHttpServer() throws Exception {
         WIREMOCK_SERVER.start();
         WireMock.configureFor("localhost", WIREMOCK_SERVER.port());
-        stubFor(post(urlEqualTo("/v2/ac/oauth/token")).willReturn(
-                aResponse().withStatus(200).withHeader("Content-Type", "application/json").withBody(TOKEN_RESPONSE)));
+        stubFor(post(urlEqualTo("/v2/ac/oauth/token")).willReturn(aResponse().withStatus(200)
+                .withHeader("Content-Type", "application/json").withBody(TOKEN_RESPONSE_US)));
         stubFor(get(urlPathMatching("/ac/v2/enrollment/details/.*")).willReturn(aResponse().withStatus(200)
                 .withHeader("Content-Type", "application/json").withBody(ENROLLMENT_RESPONSE)));
 
@@ -117,11 +117,10 @@ class BluelinkAccountHandlerTest extends JavaTest {
                 throw new IllegalStateException(e);
             }
         });
-        final VehicleInfo vehicle = handler.getVehicles().getFirst();
+        final var vehicle = handler.getVehicles().getFirst();
         assertNotNull(vehicle);
-        assertEquals("IONIQ 6", vehicle.modelCode());
-        assertEquals("E", vehicle.evStatus());
-        assertEquals("2", vehicle.vehicleGeneration());
+        assertEquals("IONIQ 6", vehicle.model());
+        assertEquals(IVehicle.EngineType.EV, vehicle.engineType());
         assertTrue(vehicle.isElectric());
     }
 }
