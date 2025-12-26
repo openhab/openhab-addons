@@ -21,7 +21,7 @@
 				<label>Index</label>
 				<description>The plan index: 0 for one-time plan, 1...N for repeating plans for your vehicle in the evcc setup</description>
 			</parameter>
-			<parameter name="vehicle-id" type="text">
+			<parameter name="vehicleId" type="text">
 				<label>Vehicle ID</label>
 				<description>The ID of the vehicle in your evcc setup (database ID)</description>
 			</parameter>
@@ -32,8 +32,8 @@
 		<label>Trigger Plan Update</label>
 		<description>The binding will send an API request to update the plan</description>
 		<tags>
-			<tag>Control</tag>
 			<tag>Switch</tag>
+			<tag>Mode</tag>
 		</tags>
 	</channel-type>
 	<channel-type id="plan-soc">
@@ -76,9 +76,6 @@
 		<item-type>String</item-type>
 		<label>Plan Timezone</label>
 		<description>Timezone for the Plan (only in repeating plans)</description>
-		<tags>
-			<tag>Setpoint</tag>
-		</tags>
 	</channel-type>
 	<channel-type id="plan-repeating-time">
 		<item-type>String</item-type>
@@ -90,8 +87,8 @@
 		<label>Active</label>
 		<description>Indicates whether the repeating plan is active</description>
 		<tags>
-			<tag>Setpoint</tag>
 			<tag>Control</tag>
+			<tag>Enabled</tag>
 		</tags>
 		<state>
 			<options>
