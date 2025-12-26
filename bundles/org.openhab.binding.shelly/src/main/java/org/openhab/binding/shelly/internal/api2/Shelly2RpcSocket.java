@@ -385,8 +385,8 @@ public class Shelly2RpcSocket implements WriteCallback {
                             getString(message.src), receivedMessage);
                 }
             }
-        } catch (ShellyApiException | IllegalArgumentException e) {
-            logger.debug("{}: Unable to process Rpc message ({}): {}", thingName, e.getMessage(), receivedMessage);
+        } catch (ShellyApiException | RuntimeException e) {
+            logger.debug("{}: Unable to process Rpc message ({}): {}", thingName, e.getMessage(), receivedMessage, e);
         }
     }
 

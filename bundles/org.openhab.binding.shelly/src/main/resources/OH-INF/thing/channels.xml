@@ -52,17 +52,6 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="sensorGustDirection">
-		<item-type>Number:Angle</item-type>
-		<label>@text/channel-type.shelly.sensorGustDirection.label</label>
-		<description>@text/channel-type.shelly.sensorGustDirection.description</description>
-		<tags>
-			<tag>Measurement</tag>
-		</tags>
-		<state readOnly="true" pattern="%.1f %unit%">
-		</state>
-	</channel-type>
-
 	<channel-type id="sensorUvIndex">
 		<item-type>Number</item-type>
 		<label>@text/channel-type.shelly.sensorUvIndex.label</label>
