@@ -330,6 +330,8 @@ public class MatterBindingConstants {
 
     public static final String THING_ACTION_LABEL_OTBR_PUSH_DATASET = "@text/thing-action.otbr.pushDataset.label";
     public static final String THING_ACTION_DESC_OTBR_PUSH_DATASET = "@text/thing-action.otbr.pushDataset.description";
+    public static final String THING_ACTION_LABEL_OTBR_PUSH_DATASET_PUSH_AS_ACTIVE = "@text/thing-action.otbr.pushDataset.pushAsActive.label";
+    public static final String THING_ACTION_DESC_OTBR_PUSH_DATASET_PUSH_AS_ACTIVE = "@text/thing-action.otbr.pushDataset.pushAsActive.description";
     public static final String THING_ACTION_LABEL_OTBR_PUSH_DATASET_RESULT = "@text/thing-action.otbr.pushDataset.result.label";
     public static final String THING_ACTION_LABEL_OTBR_PUSH_DATASET_DELAY = "@text/thing-action.otbr.pushDataset.delay.label";
     public static final String THING_ACTION_DESC_OTBR_PUSH_DATASET_DELAY = "@text/thing-action.otbr.pushDataset.delay.description";
