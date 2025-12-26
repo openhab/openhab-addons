@@ -10,15 +10,12 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.bluelink.internal.dto;
-
-import com.google.gson.annotations.SerializedName;
+package org.openhab.binding.bluelink.internal.dto.us.bluelink;
 
 /**
- * Token response from the Bluelink authentication API.
+ * Door lock/unlock command request for the Bluelink API.
  *
  * @author Marcus Better - Initial contribution
  */
-public record TokenResponse(@SerializedName("access_token") String accessToken,
-        @SerializedName("refresh_token") String refreshToken, @SerializedName("expires_in") String expiresIn) {
+public record DoorCommandRequest(String userName, String vin) {
 }

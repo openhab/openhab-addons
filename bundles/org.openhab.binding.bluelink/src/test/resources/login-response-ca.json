@@ -1,0 +1,9 @@
+{
+  "result": {
+    "token": {
+      "accessToken": "test-access-token",
+      "refreshToken": "test-refresh-token",
+      "expireIn": "3600"
+    }
+  }
+}

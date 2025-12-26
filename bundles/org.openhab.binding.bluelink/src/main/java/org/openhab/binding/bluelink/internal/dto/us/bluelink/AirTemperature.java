@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.bluelink.internal.dto;
+package org.openhab.binding.bluelink.internal.dto.us.bluelink;
 
 import static org.openhab.core.library.unit.ImperialUnits.FAHRENHEIT;
 import static org.openhab.core.library.unit.SIUnits.CELSIUS;
@@ -18,17 +18,18 @@ import static org.openhab.core.library.unit.SIUnits.CELSIUS;
 import javax.measure.quantity.Temperature;
 
 import org.eclipse.jdt.annotation.NonNull;
+import org.openhab.binding.bluelink.internal.dto.TemperatureValue;
+import org.openhab.binding.bluelink.internal.model.IVehicle;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 
 /**
  * Air temperature value for the Bluelink API.
- * Unit values: 0 = Celsius, 1 = Fahrenheit.
  *
  * @author Marcus Better - Initial contribution
  */
-public record AirTemperature(String value, int unit) {
+public record AirTemperature(@Override String value, @Override int unit) implements TemperatureValue {
 
     private static final int UNIT_CELSIUS = 0;
     private static final int UNIT_FAHRENHEIT = 1;
@@ -36,28 +37,29 @@ public record AirTemperature(String value, int unit) {
     private static final QuantityType<@NonNull Temperature> LO_TEMP = new QuantityType<>(62, FAHRENHEIT);
     private static final QuantityType<@NonNull Temperature> HI_TEMP = new QuantityType<>(82, FAHRENHEIT);
 
-    private static AirTemperature ofCelsius(final int value) {
+    private static AirTemperature ofCelsius(final double value) {
         return new AirTemperature(String.valueOf(value), UNIT_CELSIUS);
     }
 
-    private static AirTemperature ofFahrenheit(final int value) {
+    private static AirTemperature ofFahrenheit(final double value) {
         return new AirTemperature(String.valueOf(value), UNIT_FAHRENHEIT);
     }
 
     public static AirTemperature of(final @NonNull QuantityType<@NonNull Temperature> temp) {
         if (CELSIUS.equals(temp.getUnit())) {
-            return ofCelsius(temp.intValue());
+            return ofCelsius(temp.doubleValue());
         } else {
             final var tempF = temp.toUnit(FAHRENHEIT);
             if (tempF != null) {
-                return ofFahrenheit(tempF.intValue());
+                return ofFahrenheit(tempF.doubleValue());
             } else {
                 throw new IllegalArgumentException("cannot convert temperature");
             }
         }
     }
 
-    public State getTemperature() {
+    @Override
+    public State getTemperature(final @NonNull IVehicle vehicle) {
         final String value = this.value;
         try {
             return switch (value) {

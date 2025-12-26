@@ -44,6 +44,11 @@ public class BluelinkAccountConfiguration {
     public @Nullable String region;
 
     /**
+     * Vehicle brand (HYUNDAI, KIA, or GENESIS). Required for Canada region.
+     */
+    public @Nullable String brand;
+
+    /**
      * API base URL (for unit test use).
      */
     public @Nullable String apiBaseUrl;

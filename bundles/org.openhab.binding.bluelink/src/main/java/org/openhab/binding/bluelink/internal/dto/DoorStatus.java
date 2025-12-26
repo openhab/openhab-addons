@@ -13,9 +13,7 @@
 package org.openhab.binding.bluelink.internal.dto;
 
 /**
- * Login request for the Bluelink API.
- *
  * @author Marcus Better - Initial contribution
  */
-public record LoginRequest(String username, String password) {
+public record DoorStatus(int frontLeft, int frontRight, int backLeft, int backRight) {
 }

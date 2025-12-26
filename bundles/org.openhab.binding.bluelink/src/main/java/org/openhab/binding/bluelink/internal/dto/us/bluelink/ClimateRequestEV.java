@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.bluelink.internal.dto;
+package org.openhab.binding.bluelink.internal.dto.us.bluelink;
 
 import javax.measure.quantity.Temperature;
 
@@ -22,10 +22,10 @@ import org.openhab.core.library.types.QuantityType;
  *
  * @author Marcus Better - Initial contribution
  */
-public record ClimateRequestEv(int airCtrl, AirTemperature airTemp, boolean defrost, int heating1) {
+public record ClimateRequestEV(int airCtrl, AirTemperature airTemp, boolean defrost, int heating1) {
 
-    public static ClimateRequestEv create(final @NonNull QuantityType<@NonNull Temperature> temperature,
+    public static ClimateRequestEV create(final @NonNull QuantityType<@NonNull Temperature> temperature,
             final boolean heat, final boolean defrost) {
-        return new ClimateRequestEv(1, AirTemperature.of(temperature), defrost, heat ? 1 : 0);
+        return new ClimateRequestEV(1, AirTemperature.of(temperature), defrost, heat ? 1 : 0);
     }
 }
