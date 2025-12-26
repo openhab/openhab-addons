@@ -44,6 +44,11 @@ public class TadoBindingConstants {
     public static final String CHANNEL_HOME_PRESENCE_MODE = "homePresence";
     public static final String CHANNEL_HOME_GEOFENCING_ENABLED = "geofencingEnabled";
 
+    public static final String CHANNEL_API_RATE_LIMIT = "apiRateLimit";
+    public static final String CHANNEL_API_RATE_DURATION = "apiRateDuration";
+    public static final String CHANNEL_API_RATE_REMAINING = "apiRateRemaining";
+    public static final String CHANNEL_API_RATE_RESET = "apiRateReset";
+
     public static final String CHANNEL_ZONE_CURRENT_TEMPERATURE = "currentTemperature";
     public static final String CHANNEL_ZONE_HUMIDITY = "humidity";
 

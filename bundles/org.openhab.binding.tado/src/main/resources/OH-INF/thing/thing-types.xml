@@ -13,6 +13,10 @@
 		<channels>
 			<channel typeId="homePresence" id="homePresence"/>
 			<channel typeId="geofencingEnabled" id="geofencingEnabled"/>
+			<channel typeId="apiRateLimit" id="apiRateLimit"/>
+			<channel typeId="apiRateDuration" id="apiRateDuration"/>
+			<channel typeId="apiRateRemaining" id="apiRateRemaining"/>
+			<channel typeId="apiRateReset" id="apiRateReset"/>
 		</channels>
 
 		<properties>
@@ -28,7 +32,7 @@
 
 			<parameter name="tadoApiUrl" type="text" required="true">
 				<label>API Base URL</label>
-				<description>he base URL used for all API requests. Can be changed to use a proxy.</description>
+				<description>The base URL used for all API requests. Can be changed to use a proxy.</description>
 				<default>https://my.tado.com/api/v2</default>
 				<advanced>true</advanced>
 			</parameter>
@@ -414,6 +418,50 @@
 			<tag>Duration</tag>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="apiRateDuration" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>API Max Duration</label>
+		<description>Duration in which the API count rises until maximum</description>
+		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Duration</tag>
+		</tags>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="apiRateRemaining" advanced="true">
+		<item-type>Number</item-type>
+		<label>API Calls remaining</label>
+		<description>Number of API calls remaining before the maximum is reached</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true" pattern="%d"/>
+	</channel-type>
+
+	<channel-type id="apiRateLimit" advanced="true">
+		<item-type>Number</item-type>
+		<label>API Max</label>
+		<description>Maximum API calls allowed per specified duration</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true" pattern="%d"/>
+	</channel-type>
+
+	<channel-type id="apiRateReset" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Time until API count resets</label>
+		<description>Time until the API count resets</description>
+		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Duration</tag>
+		</tags>
+		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
 </thing:thing-descriptions>
