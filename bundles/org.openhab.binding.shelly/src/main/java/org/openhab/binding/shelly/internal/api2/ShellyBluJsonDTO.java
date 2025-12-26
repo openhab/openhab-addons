@@ -80,8 +80,8 @@ public class ShellyBluJsonDTO {
         public Double[] rotations;
         @SerializedName("Dimmer") // BLU Remote
         public Shelly2NotifyBluEventDimmer dimmer;
-        @SerializedName("Rain") // WS90
-        public Double rain;
+        @SerializedName("Moisture") // WS90
+        public Double moisture;
         @SerializedName("Speed") // WS90
         public Double[] speeds;
         @SerializedName("UVIndex") // WS90

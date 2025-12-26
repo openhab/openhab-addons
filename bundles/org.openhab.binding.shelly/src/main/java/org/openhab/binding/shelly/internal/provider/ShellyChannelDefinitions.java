@@ -90,7 +90,7 @@ public class ShellyChannelDefinitions {
     public static final String ITEMT_PERCENT = "Number:Dimensionless";
     public static final String ITEMT_INTENSITY = "Number:Intensity";
     public static final String ITEMT_PRESSURE = "Number:Pressure";
-    public static final String ITEMT_LENGTH = "Number:Lenhgth";
+    public static final String ITEMT_LENGTH = "Number:Length";
 
     // shortcuts to avoid line breaks (make code more readable)
     private static final String CHGR_DEVST = CHANNEL_GROUP_DEV_STATUS;
@@ -356,7 +356,7 @@ public class ShellyChannelDefinitions {
         addChannel(thing, add, profile.settings.sleepTime != null, CHGR_SENSOR, CHANNEL_SENSOR_SLEEPTIME);
 
         // If device has more than 1 meter the channel accumulatedWatts receives the accumulated value
-        boolean accuChannel = profile.is3EM
+        boolean accuChannel = profile.is3EM || profile.isEM50
                 || (profile.hasRelays && profile.numMeters > 1 && !profile.isRoller && !profile.isRGBW2);
         addChannel(thing, add, accuChannel, CHGR_DEVST, CHANNEL_DEVST_ACCUWATTS);
         addChannel(thing, add, accuChannel, CHGR_DEVST, CHANNEL_DEVST_ACCUTOTAL);

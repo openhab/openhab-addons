@@ -277,8 +277,8 @@ public class ShellyBluApi extends Shelly2ApiRpc {
                         if (e.blu.distance != null) {
                             sensorData.distance = e.blu.distance;
                         }
-                        if (e.blu.rain != null) {
-                            sensorData.rain = e.blu.rain > 0;
+                        if (e.blu.moisture != null) {
+                            sensorData.rain = e.blu.moisture > 0;
                         }
                         if (e.blu.speeds != null) {
                             sensorData.windSpeed = e.blu.speeds[0];
