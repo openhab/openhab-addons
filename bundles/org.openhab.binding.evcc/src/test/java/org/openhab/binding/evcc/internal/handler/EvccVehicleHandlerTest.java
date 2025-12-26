@@ -15,6 +15,8 @@ package org.openhab.binding.evcc.internal.handler;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.when;
+import static org.openhab.binding.evcc.internal.EvccBindingConstants.PROPERTY_INDEX;
+import static org.openhab.binding.evcc.internal.EvccBindingConstants.PROPERTY_VEHICLE_ID;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -79,11 +81,11 @@ public class EvccVehicleHandlerTest extends AbstractThingHandlerTestClass<EvccVe
     @BeforeEach
     public void setup() {
         when(thing.getUID()).thenReturn(new ThingUID("test:thing:uid"));
-        when(thing.getProperties()).thenReturn(Map.of("vehicle-id", "vehicle_1", "type", "vehicle"));
+        when(thing.getProperties()).thenReturn(Map.of(PROPERTY_VEHICLE_ID, "vehicle_1", "type", "vehicle"));
         when(thing.getChannels()).thenReturn(new ArrayList<>());
         Configuration configuration = mock(Configuration.class);
-        when(configuration.get("index")).thenReturn("0");
-        when(configuration.get("vehicle-id")).thenReturn("vehicle_1");
+        when(configuration.get(PROPERTY_INDEX)).thenReturn("0");
+        when(configuration.get(PROPERTY_VEHICLE_ID)).thenReturn("vehicle_1");
         when(thing.getConfiguration()).thenReturn(configuration);
         handler = spy(createHandler());
         EvccBridgeHandler bridgeHandler = mock(EvccBridgeHandler.class);
