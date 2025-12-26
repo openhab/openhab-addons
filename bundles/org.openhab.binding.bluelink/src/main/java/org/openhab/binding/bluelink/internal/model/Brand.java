@@ -10,17 +10,19 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.bluelink.internal.api;
+package org.openhab.binding.bluelink.internal.model;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Supported API regions.
+ * Supported vehicle brands.
  *
  * @author Marcus Better - Initial contribution
  */
 @NonNullByDefault
-public enum Region {
-    US,
-    CA
+public enum Brand {
+    UNKNOWN,
+    HYUNDAI,
+    KIA,
+    GENESIS
 }

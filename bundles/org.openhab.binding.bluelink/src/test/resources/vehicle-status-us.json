@@ -6,8 +6,8 @@
     "airCtrlOn": false,
     "airTemp": {
       "hvacTempType": 1,
-      "unit": 0,
-      "value": "LO"
+      "unit": 1,
+      "value": "70"
     },
     "battery": {
       "batSignalReferenceValue": {

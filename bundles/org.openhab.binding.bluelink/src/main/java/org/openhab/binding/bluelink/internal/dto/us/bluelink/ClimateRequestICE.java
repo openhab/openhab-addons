@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.bluelink.internal.dto;
+package org.openhab.binding.bluelink.internal.dto.us.bluelink;
 
 import javax.measure.quantity.Temperature;
 
@@ -24,7 +24,7 @@ import com.google.gson.annotations.SerializedName;
  *
  * @author Marcus Better - Initial contribution
  */
-public record ClimateRequestIce(int airCtrl, AirTemperature airTemp, boolean defrost, int heating1, int igniOnDuration,
+public record ClimateRequestICE(int airCtrl, AirTemperature airTemp, boolean defrost, int heating1, int igniOnDuration,
         SeatHeaterVentInfo seatHeaterVentInfo, @SerializedName("Ims") int ims, String username, String vin) {
 
     public record SeatHeaterVentInfo(@SerializedName("drvSeatHeatState") int driverSeat,
@@ -34,9 +34,9 @@ public record ClimateRequestIce(int airCtrl, AirTemperature airTemp, boolean def
         public static final SeatHeaterVentInfo OFF = new SeatHeaterVentInfo(0, 0, 0, 0);
     }
 
-    public static ClimateRequestIce create(final @NonNull QuantityType<@NonNull Temperature> temperature,
+    public static ClimateRequestICE create(final @NonNull QuantityType<@NonNull Temperature> temperature,
             final boolean heat, final boolean defrost, final String username, final String vin) {
-        return new ClimateRequestIce(1, AirTemperature.of(temperature), defrost, heat ? 1 : 0, 10,
+        return new ClimateRequestICE(1, AirTemperature.of(temperature), defrost, heat ? 1 : 0, 10,
                 SeatHeaterVentInfo.OFF, 0, username, vin);
     }
 }

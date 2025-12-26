@@ -10,17 +10,15 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.bluelink.internal.api;
-
-import org.eclipse.jdt.annotation.NonNullByDefault;
+package org.openhab.binding.bluelink.internal.dto;
 
 /**
- * Supported API regions.
- *
  * @author Marcus Better - Initial contribution
  */
-@NonNullByDefault
-public enum Region {
-    US,
-    CA
+public interface Token {
+    String accessToken();
+
+    String refreshToken();
+
+    String expiresIn();
 }

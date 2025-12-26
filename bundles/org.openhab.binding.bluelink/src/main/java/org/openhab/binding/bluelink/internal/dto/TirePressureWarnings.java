@@ -13,9 +13,16 @@
 package org.openhab.binding.bluelink.internal.dto;
 
 /**
- * Door lock/unlock command request for the Bluelink API.
- *
  * @author Marcus Better - Initial contribution
  */
-public record DoorCommandRequest(String userName, String vin) {
+public interface TirePressureWarnings {
+    int all();
+
+    int frontLeft();
+
+    int frontRight();
+
+    int rearLeft();
+
+    int rearRight();
 }

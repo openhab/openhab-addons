@@ -10,17 +10,19 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.bluelink.internal.api;
+package org.openhab.binding.bluelink.internal.dto;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.NonNull;
+import org.openhab.binding.bluelink.internal.model.IVehicle;
+import org.openhab.core.types.State;
 
 /**
- * Supported API regions.
- *
  * @author Marcus Better - Initial contribution
  */
-@NonNullByDefault
-public enum Region {
-    US,
-    CA
+public interface TemperatureValue {
+    String value();
+
+    int unit();
+
+    State getTemperature(@NonNull IVehicle vehicle);
 }

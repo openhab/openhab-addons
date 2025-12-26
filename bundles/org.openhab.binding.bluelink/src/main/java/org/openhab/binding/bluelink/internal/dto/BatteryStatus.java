@@ -12,20 +12,12 @@
  */
 package org.openhab.binding.bluelink.internal.dto;
 
-import java.util.List;
-
 import com.google.gson.annotations.SerializedName;
 
 /**
- * Charge limits request for the Bluelink API.
+ * 12V battery status.
  *
  * @author Marcus Better - Initial contribution
  */
-public record ChargeLimitsRequest(@SerializedName("targetSOClist") List<TargetSOC> targetSOCList) {
-
-    public static final int PLUG_TYPE_DC = 0;
-    public static final int PLUG_TYPE_AC = 1;
-
-    public record TargetSOC(int plugType, @SerializedName("targetSOClevel") int targetSOCLevel) {
-    }
+public record BatteryStatus(@SerializedName("batSoc") int stateOfCharge) {
 }
