@@ -154,6 +154,11 @@
 			</options>
 		</state>
 	</channel-type>
+	<channel-type id="deviceAddonFirmware" advanced="true">
+		<item-type>String</item-type>
+		<label>@text/channel-type.shelly.deviceAddonFirmware.label</label>
+		<description>@text/channel-type.shelly.deviceAddonFirmware.description</description>
+	</channel-type>
 
 	<channel-type id="deviceFirmware" advanced="true">
 		<item-type>String</item-type>
