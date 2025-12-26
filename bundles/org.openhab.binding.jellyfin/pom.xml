@@ -1,4 +1,6 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
 
@@ -7,106 +9,60 @@
     <artifactId>org.openhab.addons.reactor.bundles</artifactId>
     <version>5.1.1-SNAPSHOT</version>
   </parent>
+
   <artifactId>org.openhab.binding.jellyfin</artifactId>
 
   <name>openHAB Add-ons :: Bundles :: Jellyfin Binding</name>
+
   <properties>
-    <bnd.importpackage>!android.*,!com.android.*,!kotlin.internal.jdk7,!kotlin.internal.jdk8,!kotlin.reflect.*,!okhttp3.*,!okio.*</bnd.importpackage>
-    <jellyfin.sdk>1.4.7</jellyfin.sdk>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    <jackson.version>2.19.0</jackson.version>
   </properties>
+
   <dependencies>
     <dependency>
-      <groupId>org.jellyfin.sdk</groupId>
-      <artifactId>jellyfin-core-jvm</artifactId>
-      <version>${jellyfin.sdk}</version>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-annotations</artifactId>
+      <version>${jackson.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.jellyfin.sdk</groupId>
-      <artifactId>jellyfin-api-jvm</artifactId>
-      <version>${jellyfin.sdk}</version>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-core</artifactId>
+      <version>${jackson.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.jellyfin.sdk</groupId>
-      <artifactId>jellyfin-model-jvm</artifactId>
-      <version>${jellyfin.sdk}</version>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+      <version>${jackson.version}</version>
     </dependency>
     <dependency>
-      <groupId>io.ktor</groupId>
-      <artifactId>ktor-client-core-jvm</artifactId>
-      <version>1.6.8</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>io.ktor</groupId>
-      <artifactId>ktor-client-cio-jvm</artifactId>
-      <version>1.6.8</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>io.ktor</groupId>
-      <artifactId>ktor-http-jvm</artifactId>
-      <version>1.6.8</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>io.ktor</groupId>
-      <artifactId>ktor-http-cio-jvm</artifactId>
-      <version>1.6.8</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>io.ktor</groupId>
-      <artifactId>ktor-network-jvm</artifactId>
-      <version>1.6.8</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>io.ktor</groupId>
-      <artifactId>ktor-utils-jvm</artifactId>
-      <version>1.6.8</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>io.ktor</groupId>
-      <artifactId>ktor-io-jvm</artifactId>
-      <version>1.6.8</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>io.ktor</groupId>
-      <artifactId>ktor-network-tls-jvm</artifactId>
-      <version>1.6.8</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.jetbrains.kotlin</groupId>
-      <artifactId>kotlin-stdlib</artifactId>
-      <version>${kotlin.version}</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.jetbrains.kotlinx</groupId>
-      <artifactId>kotlinx-coroutines-core-jvm</artifactId>
-      <version>1.8.0</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.jetbrains.kotlinx</groupId>
-      <artifactId>kotlinx-serialization-core-jvm</artifactId>
-      <version>1.6.3</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.jetbrains.kotlinx</groupId>
-      <artifactId>kotlinx-serialization-json-jvm</artifactId>
-      <version>1.6.3</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>io.github.microutils</groupId>
-      <artifactId>kotlin-logging-jvm</artifactId>
-      <version>3.0.5</version>
-      <scope>compile</scope>
+      <groupId>com.fasterxml.jackson.datatype</groupId>
+      <artifactId>jackson-datatype-jsr310</artifactId>
+      <version>${jackson.version}</version>
     </dependency>
   </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <configuration>
+          <instructions>
+            <Embed-Dependency>jackson-annotations,
+              jackson-core,
+              jackson-databind,
+              jackson-datatype-jsr310</Embed-Dependency>
+            <Embed-Transitive>false</Embed-Transitive>
+            <Import-Package>!com.fasterxml.jackson.*,
+              *</Import-Package>
+            <Export-Package>!com.fasterxml.jackson.*,
+              org.openhab.binding.jellyfin.*</Export-Package>
+          </instructions>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
 </project>

@@ -8,4 +8,26 @@
 	<description>This is the binding for Jellyfin the free software media system.</description>
 	<connection>local</connection>
 
+	<config-description>
+		<parameter-group name="discovery">
+			<label>Discovery</label>
+			<description>Finetune Jellyfin-Server discovery parameters.</description>
+		</parameter-group>
+
+		<parameter name="discoveryPort" type="integer" min="0" max="65535" required="true" groupName="discovery">
+			<label>Port</label>
+			<advanced>true</advanced>
+			<description>Port used to query servers on local network(s)</description>
+			<default>7359</default>
+		</parameter>
+		<parameter name="discoveryTimeout" type="integer" min="500" max="5000" required="true" unit="ms"
+			groupName="discovery">
+			<label>Timeout</label>
+			<advanced>true</advanced>
+			<description>Maximum amount of time to wait for a response</description>
+			<default>2000</default>
+		</parameter>
+
+	</config-description>
+
 </addon:addon>
