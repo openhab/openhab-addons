@@ -240,13 +240,12 @@ public class ShellyChannelDefinitions {
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_VALVE, "sensorValve", ITEMT_STRING))
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_RAINST, "sensorRain", ITEMT_SWITCH))
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_WINDSP, "sensorWindSpeed", ITEMT_SPEED))
-                .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_WINDDIR, "sensorWindDirection", ITEMT_SPEED))
+                .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_WINDDIR, "sensorWindDirection", ITEMT_ANGLE))
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_GUSTSP, "sensorGustSpeed", ITEMT_SPEED))
-                .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_GUSTDIR, "sensorGustDirection", ITEMT_SPEED))
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_UV, "sensorUvIndex", ITEMT_INTENSITY))
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_PRESSURE, "sensorPressure", ITEMT_PRESSURE))
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_DEWPOINT, "sensorDewPoint", ITEMT_TEMP))
-                .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_PRECIPIATION, "sensorPrecipitation",
+                .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_PRECIPITATION, "sensorPrecipitation",
                         ITEMT_LENGTH))
 
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_ALARM_STATE, "alarmState", ITEMT_STRING))
@@ -652,13 +651,11 @@ public class ShellyChannelDefinitions {
         addChannel(thing, newChannels, ws90 || sdata.windDirection != null, CHANNEL_GROUP_SENSOR,
                 CHANNEL_SENSOR_WINDDIR);
         addChannel(thing, newChannels, ws90 || sdata.gustSpeed != null, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_GUSTSP);
-        addChannel(thing, newChannels, ws90 || sdata.gustDirection != null, CHANNEL_GROUP_SENSOR,
-                CHANNEL_SENSOR_GUSTDIR);
         addChannel(thing, newChannels, ws90 || sdata.uvIndex != null, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_UV);
         addChannel(thing, newChannels, ws90 || sdata.pressure != null, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_PRESSURE);
         addChannel(thing, newChannels, ws90 || sdata.dewPoint != null, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_DEWPOINT);
         addChannel(thing, newChannels, ws90 || sdata.precipitation != null, CHANNEL_GROUP_SENSOR,
-                CHANNEL_SENSOR_PRECIPIATION);
+                CHANNEL_SENSOR_PRECIPITATION);
 
         // Battery
         if (ws90 || sdata.bat != null) {

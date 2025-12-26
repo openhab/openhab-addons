@@ -134,11 +134,10 @@ public class ShellyBindingConstants {
     public static final String CHANNEL_SENSOR_WINDSP = "windSpeed"; // BLU Weather
     public static final String CHANNEL_SENSOR_WINDDIR = "windDirection"; // BLU Weather
     public static final String CHANNEL_SENSOR_GUSTSP = "gustSpeed"; // BLU Weather
-    public static final String CHANNEL_SENSOR_GUSTDIR = "gustDirection"; // BLU Weather
     public static final String CHANNEL_SENSOR_UV = "uvIndex"; // BLU Weather
     public static final String CHANNEL_SENSOR_PRESSURE = "pressurre"; // BLU Weather
     public static final String CHANNEL_SENSOR_DEWPOINT = "dewPoint"; // BLU Weather
-    public static final String CHANNEL_SENSOR_PRECIPIATION = "precipitation"; // BLU Weather
+    public static final String CHANNEL_SENSOR_PRECIPITATION = "precipitation"; // BLU Weather
 
     // TRV
     public static final String CHANNEL_CONTROL_SETTEMP = "targetTemp";

@@ -31,7 +31,7 @@ let uint32 = 6;
 let int32 = 7;
 
 let BTH_DIMMERSTEPS_INDEX = 0x3c;   // Dimmer (Wheel) Steps object ID
-let FORCE_ARRAY_VALUES = ["Temperature", "Button", "Rotation", "Speed", "Direction"];
+let FORCE_ARRAY_VALUES = ["Temperature", "Button", "Rotation", "Speed"];
 
 // BTHome object definitions: id => {name, type, optional scale factor}
 // https://bthome.io/format/

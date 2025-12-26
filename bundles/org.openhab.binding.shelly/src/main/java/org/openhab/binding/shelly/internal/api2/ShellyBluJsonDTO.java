@@ -93,7 +93,7 @@ public class ShellyBluJsonDTO {
         @SerializedName("Precipitation") // WS90
         public Double precipitation;
         @SerializedName("Direction") // WS90
-        public Double[] directions;
+        public Double direction;
 
         @SerializedName("Firmware32")
         public Long firmware32;

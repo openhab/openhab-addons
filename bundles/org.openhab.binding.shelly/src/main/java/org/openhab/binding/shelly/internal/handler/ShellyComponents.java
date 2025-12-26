@@ -21,7 +21,6 @@ import java.util.List;
 import javax.measure.MetricPrefix;
 import javax.measure.Unit;
 import javax.measure.quantity.Pressure;
-import javax.measure.quantity.Volume;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -556,19 +555,14 @@ public class ShellyComponents {
                 updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_GUSTSP,
                         toQuantityType(getDouble(sdata.gustSpeed), DIGITS_SPEED, Units.METRE_PER_SECOND));
             }
-            if (sdata.gustDirection != null) {
-                updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_GUSTDIR,
-                        toQuantityType(getDouble(sdata.gustDirection), DIGITS_NONE, Units.DEGREE_ANGLE));
-            }
             if (sdata.pressure != null) {
                 Unit<Pressure> hpa = MetricPrefix.HECTO(SIUnits.PASCAL).asType(Pressure.class);
                 updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_PRESSURE,
                         new QuantityType<>(sdata.pressure, hpa));
             }
             if (sdata.precipitation != null) {
-                Unit<Volume> cubicMillimeterUnit = MetricPrefix.MILLI(SIUnits.METRE).pow(3).asType(Volume.class);
-                updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_PRECIPIATION,
-                        new QuantityType<>(sdata.precipitation, cubicMillimeterUnit));
+                updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_PRECIPITATION,
+                        toQuantityType(getDouble(sdata.precipitation), DIGITS_NONE, MetricPrefix.MILLI(SIUnits.METRE)));
             }
             if (sdata.dewPoint != null) {
                 updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_DEWPOINT,

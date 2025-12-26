@@ -282,15 +282,12 @@ public class ShellyBluApi extends Shelly2ApiRpc {
                         }
                         if (e.blu.speeds != null) {
                             sensorData.windSpeed = e.blu.speeds[0];
-                            if (e.blu.speeds.length > 0) {
+                            if (e.blu.speeds.length >= 2) {
                                 sensorData.gustSpeed = e.blu.speeds[1];
                             }
                         }
-                        if (e.blu.directions != null) {
-                            sensorData.windDirection = e.blu.directions[0];
-                            if (e.blu.speeds.length > 0) {
-                                sensorData.gustDirection = e.blu.directions[1];
-                            }
+                        if (e.blu.direction != null) {
+                            sensorData.windDirection = e.blu.direction;
                         }
                         if (e.blu.uvIndex != null) {
                             sensorData.uvIndex = e.blu.uvIndex;

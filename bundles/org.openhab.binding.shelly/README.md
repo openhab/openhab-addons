@@ -1897,7 +1897,6 @@ See notes on discovery of Shelly BLU devices above.
 |         | windSpeed     | Number   | yes       | Wind speed in m/s                                                                   |
 |         | windDirection | Number   | yes       | Wind direction in degrees                                                           |
 |         | gustSpeed     | Number   | yes       | Gust speed in m/s                                                                   |
-|         | gustDirection | Number   | yes       | Gust direction in degrees                                                           |
 |         | pressure      | Number   | yes       | Atmospheric pressure in hPA                                                         |
 |         | humidity      | Number   | yes       | Relative humidity in %                                                              |
 |         | temperature   | Number   | yes       | Temperature in degrees (Celsius)                                                    |
