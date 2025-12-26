@@ -34,6 +34,51 @@ public class MatterBindingConstants {
     public static final String CHANNEL_ID_AIRQUALITY_AIRQUALITY = "airquality-airquality";
     public static final ChannelTypeUID CHANNEL_AIRQUALITY_AIRQUALITY = new ChannelTypeUID(BINDING_ID,
             CHANNEL_ID_AIRQUALITY_AIRQUALITY);
+    public static final String CHANNEL_ID_CARBONDIOXIDECONCENTRATIONMEASUREMENT_MEASUREDVALUE = "carbondioxideconcentrationmeasurement-measuredvalue";
+    public static final ChannelTypeUID CHANNEL_CARBONDIOXIDECONCENTRATIONMEASUREMENT_MEASUREDVALUE = new ChannelTypeUID(
+            BINDING_ID, CHANNEL_ID_CARBONDIOXIDECONCENTRATIONMEASUREMENT_MEASUREDVALUE);
+    public static final String CHANNEL_ID_CARBONMONOXIDECONCENTRATIONMEASUREMENT_MEASUREDVALUE = "carbonmonoxideconcentrationmeasurement-measuredvalue";
+    public static final ChannelTypeUID CHANNEL_CARBONMONOXIDECONCENTRATIONMEASUREMENT_MEASUREDVALUE = new ChannelTypeUID(
+            BINDING_ID, CHANNEL_ID_CARBONMONOXIDECONCENTRATIONMEASUREMENT_MEASUREDVALUE);
+    public static final String CHANNEL_ID_SMOKECOALARM_EXPRESSEDSTATE = "smokecoalarm-expressedstate";
+    public static final ChannelTypeUID CHANNEL_SMOKECOALARM_EXPRESSEDSTATE = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_ID_SMOKECOALARM_EXPRESSEDSTATE);
+    public static final String CHANNEL_ID_SMOKECOALARM_SMOKESTATE = "smokecoalarm-smokestate";
+    public static final ChannelTypeUID CHANNEL_SMOKECOALARM_SMOKESTATE = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_ID_SMOKECOALARM_SMOKESTATE);
+    public static final String CHANNEL_ID_SMOKECOALARM_COSTATE = "smokecoalarm-costate";
+    public static final ChannelTypeUID CHANNEL_SMOKECOALARM_COSTATE = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_ID_SMOKECOALARM_COSTATE);
+    public static final String CHANNEL_ID_SMOKECOALARM_BATTERYALERT = "smokecoalarm-batteryalert";
+    public static final ChannelTypeUID CHANNEL_SMOKECOALARM_BATTERYALERT = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_ID_SMOKECOALARM_BATTERYALERT);
+    public static final String CHANNEL_ID_SMOKECOALARM_DEVICEMUTED = "smokecoalarm-devicemuted";
+    public static final ChannelTypeUID CHANNEL_SMOKECOALARM_DEVICEMUTED = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_ID_SMOKECOALARM_DEVICEMUTED);
+    public static final String CHANNEL_ID_SMOKECOALARM_TESTINPROGRESS = "smokecoalarm-testinprogress";
+    public static final ChannelTypeUID CHANNEL_SMOKECOALARM_TESTINPROGRESS = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_ID_SMOKECOALARM_TESTINPROGRESS);
+    public static final String CHANNEL_ID_SMOKECOALARM_HARDWAREFAULT = "smokecoalarm-hardwarefault";
+    public static final ChannelTypeUID CHANNEL_SMOKECOALARM_HARDWAREFAULT = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_ID_SMOKECOALARM_HARDWAREFAULT);
+    public static final String CHANNEL_ID_SMOKECOALARM_ENDOFSERVICE = "smokecoalarm-endofservice";
+    public static final ChannelTypeUID CHANNEL_SMOKECOALARM_ENDOFSERVICE = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_ID_SMOKECOALARM_ENDOFSERVICE);
+    public static final String CHANNEL_ID_SMOKECOALARM_INTERCONNECTSMOKE = "smokecoalarm-interconnectsmoke";
+    public static final ChannelTypeUID CHANNEL_SMOKECOALARM_INTERCONNECTSMOKE = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_ID_SMOKECOALARM_INTERCONNECTSMOKE);
+    public static final String CHANNEL_ID_SMOKECOALARM_INTERCONNECTCO = "smokecoalarm-interconnectco";
+    public static final ChannelTypeUID CHANNEL_SMOKECOALARM_INTERCONNECTCO = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_ID_SMOKECOALARM_INTERCONNECTCO);
+    public static final String CHANNEL_ID_SMOKECOALARM_CONTAMINATIONSTATE = "smokecoalarm-contaminationstate";
+    public static final ChannelTypeUID CHANNEL_SMOKECOALARM_CONTAMINATIONSTATE = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_ID_SMOKECOALARM_CONTAMINATIONSTATE);
+    public static final String CHANNEL_ID_SMOKECOALARM_SMOKESENSITIVITY = "smokecoalarm-smokesensitivity";
+    public static final ChannelTypeUID CHANNEL_SMOKECOALARM_SMOKESENSITIVITY = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_ID_SMOKECOALARM_SMOKESENSITIVITY);
+    public static final String CHANNEL_ID_SMOKECOALARM_EXPIRYDATE = "smokecoalarm-expirydate";
+    public static final ChannelTypeUID CHANNEL_SMOKECOALARM_EXPIRYDATE = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_ID_SMOKECOALARM_EXPIRYDATE);
     public static final String CHANNEL_ID_ONOFF_ONOFF = "onoffcontrol-onoff";
     public static final ChannelTypeUID CHANNEL_ONOFF_ONOFF = new ChannelTypeUID(BINDING_ID, CHANNEL_ID_ONOFF_ONOFF);
     public static final String CHANNEL_ID_LEVEL_LEVEL = "levelcontrol-level";
