@@ -27,6 +27,7 @@ import org.eclipse.jdt.annotation.Nullable;
 public enum Archetype {
     // device archetypes
     BRIDGE_V2,
+    BRIDGE_V3,
     UNKNOWN_ARCHETYPE,
     CLASSIC_BULB,
     SULTAN_BULB,

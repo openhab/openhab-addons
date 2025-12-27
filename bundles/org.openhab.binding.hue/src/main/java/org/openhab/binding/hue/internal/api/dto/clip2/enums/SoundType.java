@@ -16,7 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * Enum for 'sound' resources.
+ * Enum for sound type resources.
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */

@@ -97,14 +97,11 @@ class Clip2DtoTest {
     //@formatter:off
             ResourceType.BELL_BUTTON,
             ResourceType.CLIP,
-            ResourceType.CONVENIENCE_AREA_MOTION,
             ResourceType.DEVICE_SOFTWARE_UPDATE,
             ResourceType.GROUPED_LIGHT_LEVEL,
             ResourceType.MATTER,
             ResourceType.MATTER_FABRIC,
             ResourceType.MOTION_AREA_CANDIDATE,
-            ResourceType.MOTION_AREA_CONFIGURATION,
-            ResourceType.SECURITY_AREA_MOTION,
             ResourceType.SERVICE_GROUP,
             ResourceType.SPEAKER,
             ResourceType.WIFI_CONNECTIVITY,
@@ -144,6 +141,21 @@ class Clip2DtoTest {
         assertNotNull(button);
         assertEquals(new DecimalType(2003),
                 item.getButtonEventState(Map.of("00000000-0000-0000-0000-000000000001", 2)));
+        assertEquals(new DateTimeType("2023-09-17T18:51:36.959+0000"), item.getButtonLastUpdatedState());
+    }
+
+    @Test
+    void testBellButton() {
+        String json = load(ResourceType.BELL_BUTTON.name().toLowerCase());
+        Resources resources = GSON.fromJson(json, Resources.class);
+        assertNotNull(resources);
+        List<Resource> list = resources.getResources();
+        assertNotNull(list);
+        assertEquals(1, list.size());
+        Resource item = list.get(0);
+        assertEquals(ResourceType.BELL_BUTTON, item.getType());
+        Button button = item.getButton();
+        assertNotNull(button);
         assertEquals(new DateTimeType("2023-09-17T18:51:36.959+0000"), item.getButtonLastUpdatedState());
     }
 
@@ -946,5 +958,61 @@ class Clip2DtoTest {
         assertTrue(enabled);
         assertEquals(OnOffType.ON, item.getMotionState());
         assertEquals(new DateTimeType("2024-12-13T11:01:25.156Z"), item.getMotionLastUpdatedState());
+    }
+
+    @Test
+    void testConvenienceAreaMotion() {
+        String json = load(ResourceType.CONVENIENCE_AREA_MOTION.name().toLowerCase());
+        Resources resources = GSON.fromJson(json, Resources.class);
+        assertNotNull(resources);
+        List<Resource> list = resources.getResources();
+        assertNotNull(list);
+        assertEquals(1, list.size());
+        Resource item = list.get(0);
+        assertEquals(ResourceType.CONVENIENCE_AREA_MOTION, item.getType());
+        Motion motion = item.getMotion();
+        assertNotNull(motion);
+        assertFalse(motion.isMotion());
+        assertEquals(new DateTimeType("2025-10-20T20:58:23.718Z"), item.getMotionLastUpdatedState());
+        assertEquals(OnOffType.OFF, item.getMotionValidState());
+        assertEquals(OnOffType.ON, item.getEnabledState());
+    }
+
+    @Test
+    void testSecurityAreaMotion() {
+        String json = load(ResourceType.SECURITY_AREA_MOTION.name().toLowerCase());
+        Resources resources = GSON.fromJson(json, Resources.class);
+        assertNotNull(resources);
+        List<Resource> list = resources.getResources();
+        assertNotNull(list);
+        assertEquals(1, list.size());
+        Resource item = list.get(0);
+        assertEquals(ResourceType.SECURITY_AREA_MOTION, item.getType());
+        Motion motion = item.getMotion();
+        assertNotNull(motion);
+        assertFalse(motion.isMotion());
+        assertEquals(new DateTimeType("2025-10-20T16:47:14.733Z"), item.getMotionLastUpdatedState());
+        assertEquals(OnOffType.OFF, item.getMotionValidState());
+        assertEquals(OnOffType.ON, item.getEnabledState());
+    }
+
+    @Test
+    void testMotionAreaConfiguration() {
+        String json = load(ResourceType.MOTION_AREA_CONFIGURATION.name().toLowerCase());
+        Resources resources = GSON.fromJson(json, Resources.class);
+        assertNotNull(resources);
+        List<Resource> list = resources.getResources();
+        assertNotNull(list);
+        assertEquals(1, list.size());
+        Resource item = list.get(0);
+        assertEquals(ResourceType.MOTION_AREA_CONFIGURATION, item.getType());
+        List<ResourceReference> serviceReferences = item.getServiceReferences();
+        assertEquals(2, serviceReferences.size());
+        ResourceReference resourceReference = serviceReferences.stream()
+                .filter(sr -> sr.getType() == ResourceType.CONVENIENCE_AREA_MOTION).findFirst().orElse(null);
+        assertNotNull(resourceReference);
+        resourceReference = serviceReferences.stream().filter(sr -> sr.getType() == ResourceType.SECURITY_AREA_MOTION)
+                .findFirst().orElse(null);
+        assertNotNull(resourceReference);
     }
 }

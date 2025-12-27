@@ -57,6 +57,9 @@ public class Clip2ThingDiscoveryService extends AbstractThingHandlerDiscoverySer
     private static final int DISCOVERY_TIMEOUT_SECONDS = 20;
     private static final int DISCOVERY_INTERVAL_SECONDS = 600;
 
+    private static final Set<Archetype> IGNORED_DEVICES = Set.of(Archetype.UNKNOWN_ARCHETYPE, Archetype.BRIDGE_V2,
+            Archetype.BRIDGE_V3);
+
     /**
      * Map of resource types and respective thing types that shall be discovered.
      */
@@ -64,12 +67,13 @@ public class Clip2ThingDiscoveryService extends AbstractThingHandlerDiscoverySer
             ResourceType.DEVICE, THING_TYPE_DEVICE, //
             ResourceType.ROOM, THING_TYPE_ROOM, //
             ResourceType.ZONE, THING_TYPE_ZONE, //
-            ResourceType.BRIDGE_HOME, THING_TYPE_ZONE);
+            ResourceType.BRIDGE_HOME, THING_TYPE_ZONE, //
+            ResourceType.MOTION_AREA_CONFIGURATION, THING_TYPE_AREA);
 
     private @Nullable ScheduledFuture<?> discoveryTask;
 
     public Clip2ThingDiscoveryService() {
-        super(Clip2BridgeHandler.class, Set.of(THING_TYPE_DEVICE, THING_TYPE_ROOM, THING_TYPE_ZONE),
+        super(Clip2BridgeHandler.class, Set.of(THING_TYPE_DEVICE, THING_TYPE_ROOM, THING_TYPE_ZONE, THING_TYPE_AREA),
                 DISCOVERY_TIMEOUT_SECONDS, true);
     }
 
@@ -99,8 +103,8 @@ public class Clip2ThingDiscoveryService extends AbstractThingHandlerDiscoverySer
                             .getResources()) {
 
                         MetaData metaData = resource.getMetaData();
-                        if (Objects.nonNull(metaData) && (metaData.getArchetype() == Archetype.BRIDGE_V2)) {
-                            // the bridge device is handled by a bridge thing handler
+                        if (Objects.nonNull(metaData) && IGNORED_DEVICES.contains(metaData.getArchetype())) {
+                            // bridge device handled by bridge thing handler; other unknown devices ignored
                             continue;
                         }
 

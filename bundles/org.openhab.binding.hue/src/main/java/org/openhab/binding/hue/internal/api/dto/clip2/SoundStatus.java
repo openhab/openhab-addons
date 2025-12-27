@@ -13,7 +13,6 @@
 package org.openhab.binding.hue.internal.api.dto.clip2;
 
 import java.util.List;
-import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -31,21 +30,11 @@ public class SoundStatus {
     private @Nullable String sound;
     private @Nullable @SerializedName("sound_values") List<String> soundValues;
 
-    public @Nullable SoundType getSound() {
-        String sound = this.sound;
-        return Objects.nonNull(sound) ? SoundType.of(sound) : null;
+    public @Nullable SoundType getSoundType() {
+        return sound instanceof String s ? SoundType.of(s) : null;
     }
 
-    public List<SoundType> getSoundValues() {
-        List<String> soundValues = this.soundValues;
-        if (Objects.nonNull(soundValues)) {
-            return soundValues.stream().map(SoundType::of).toList();
-        }
-        return List.of();
-    }
-
-    public SoundStatus setSound(SoundType soundType) {
-        this.sound = soundType.name().toLowerCase();
-        return this;
+    public List<SoundType> getSoundTypes() {
+        return soundValues instanceof List<String> list ? list.stream().map(SoundType::of).toList() : List.of();
     }
 }

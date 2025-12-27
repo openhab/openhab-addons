@@ -103,6 +103,8 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
     private static final ResourceReference SMART_SCENE = new ResourceReference().setType(ResourceType.SMART_SCENE);
     private static final ResourceReference SCRIPT = new ResourceReference().setType(ResourceType.BEHAVIOR_SCRIPT);
     private static final ResourceReference BEHAVIOR = new ResourceReference().setType(ResourceType.BEHAVIOR_INSTANCE);
+    private static final ResourceReference AREA = new ResourceReference()
+            .setType(ResourceType.MOTION_AREA_CONFIGURATION);
 
     private static final String AUTOMATION_CHANNEL_LABEL_KEY = "dynamic-channel.automation-enable.label";
     private static final String AUTOMATION_CHANNEL_DESCRIPTION_KEY = "dynamic-channel.automation-enable.description";
@@ -111,7 +113,8 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
      * List of resource references that need to be mass down loaded.
      * NOTE: the SCENE resources must be mass down loaded first!
      */
-    private static final List<ResourceReference> MASS_DOWNLOAD_RESOURCE_REFERENCES = List.of(SCENE, DEVICE, ROOM, ZONE);
+    private static final List<ResourceReference> MASS_DOWNLOAD_RESOURCE_REFERENCES = List.of(SCENE, DEVICE, ROOM, ZONE,
+            AREA);
 
     private final Logger logger = LoggerFactory.getLogger(Clip2BridgeHandler.class);
 
