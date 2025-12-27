@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.hyperion.internal.protocol.ng;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * The {@link ComponentState} is a POJO for a component state in the Hyperion.ng server.
  *
@@ -21,7 +23,7 @@ public class ComponentState {
 
     private String component;
     private boolean state;
-    @com.google.gson.annotations.SerializedName("instance")
+    @SerializedName("instance")
     private Object instance = null;
 
     public void setComponent(String component) {
@@ -40,10 +42,18 @@ public class ComponentState {
         return state;
     }
 
-    @SuppressWarnings("unchecked")
     public java.util.List<Integer> getInstanceList() {
-        if (instance instanceof java.util.List) {
-            return (java.util.List<Integer>) instance;
+        if (instance instanceof java.util.List<?> list) {
+            java.util.List<Integer> intList = new java.util.ArrayList<>(list.size());
+            for (Object element : list) {
+                if (element instanceof Number number) {
+                    intList.add(number.intValue());
+                } else {
+                    // Instance list contains a non-numeric element; treat as invalid
+                    return null;
+                }
+            }
+            return intList;
         }
         return null;
     }

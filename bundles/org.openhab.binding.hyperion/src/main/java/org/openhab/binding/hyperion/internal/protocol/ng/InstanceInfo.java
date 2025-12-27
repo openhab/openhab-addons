@@ -15,7 +15,7 @@ package org.openhab.binding.hyperion.internal.protocol.ng;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link Hyperion} is a POJO for a Hyperion information in the Hyperion.ng server.
+ * The {@link InstanceInfo} is a POJO for a Hyperion information in the Hyperion.ng server.
  *
  * @author Ole Morten Rønning - Issue 13072
  */
