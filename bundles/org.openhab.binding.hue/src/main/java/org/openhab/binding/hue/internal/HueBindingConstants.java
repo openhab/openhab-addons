@@ -180,7 +180,9 @@ public class HueBindingConstants {
     public static final String CHANNEL_2_ALARM_SOUND = "alarm-sound";
     public static final String CHANNEL_2_ALERT_SOUND = "alert-sound";
     public static final String CHANNEL_2_CHIME_SOUND = "chime-sound";
-    public static final String CHANNEL_2_SOUND_MUTE = "sound-mute";
+    public static final String CHANNEL_2_MUTE = "mute";
+    public static final String CHANNEL_2_VOLUME = "volume";
+    public static final String CHANNEL_2_DURATION = "duration";
     public static final String CHANNEL_2_MOTION_AREA_ENABLED = "motion-area-enabled";
     public static final String CHANNEL_2_SECURITY_MOTION = "security-motion";
     public static final String CHANNEL_2_SECURITY_MOTION_LAST_UPDATED = "security-motion-last-updated";

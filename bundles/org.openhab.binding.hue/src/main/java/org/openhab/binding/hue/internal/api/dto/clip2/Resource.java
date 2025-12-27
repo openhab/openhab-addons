@@ -26,6 +26,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.ActionType;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.ButtonEventType;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.CategoryType;
+import org.openhab.binding.hue.internal.api.dto.clip2.enums.ChimeType;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.ContactStateType;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.ContentType;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.EffectType;
@@ -989,37 +990,37 @@ public class Resource {
     }
 
     /**
-     * Get the speaker alarm sound.
+     * Get the speaker sound state for the given chime type.
      */
-    public State getAlarmSoundState() {
-        return alarm instanceof Sound s && s.getSoundType() instanceof SoundType st ? StringType.valueOf(st.name())
-                : UnDefType.NULL;
-    }
-
-    /**
-     * Get the speaker alert sound. We need to disambiguate between an alert setting and an alerts setting, because
-     * both are represented by the same 'alert' JSON element. If the JSON element contains a 'status' field it is
-     * an alert setting, if it contains an 'action' or 'action_values' field it is an alerts setting.
-     */
-    public State getAlertSoundState() {
-        JsonElement alert = this.alert;
-        if (Objects.nonNull(alert) && alert.isJsonObject() && alert.getAsJsonObject().get("status") != null) {
-            try {
-                return GSON.fromJson(alert, Sound.class) instanceof Sound s && s.getSoundType() instanceof SoundType st
-                        ? StringType.valueOf(st.name())
-                        : UnDefType.NULL;
-            } catch (JsonSyntaxException e) {
-                // fall through
-            }
+    public State getSoundState(ChimeType chimeType) {
+        Sound sound;
+        switch (chimeType) {
+            case ALARM:
+                sound = alarm;
+                break;
+            case CHIME:
+                sound = chime;
+                break;
+            case ALERT:
+                /*
+                 * We need to disambiguate between an alert setting and an alerts setting, because both are represented
+                 * by the same 'alert' JSON element. If the JSON element contains a 'status' field it is an alert
+                 * setting, if it contains an 'action' or 'action_values' field it is an alerts setting.
+                 */
+                JsonElement alert = this.alert;
+                if (Objects.nonNull(alert) && alert.isJsonObject() && alert.getAsJsonObject().get("status") != null) {
+                    try {
+                        sound = GSON.fromJson(alert, Sound.class);
+                        break;
+                    } catch (JsonSyntaxException e) {
+                        // fall through
+                    }
+                }
+            default:
+                sound = null;
         }
-        return UnDefType.NULL;
-    }
-
-    /**
-     * Get the speaker chime sound.
-     */
-    public State getChimeSoundState() {
-        return chime instanceof Sound s && s.getSoundType() instanceof SoundType st ? StringType.valueOf(st.name())
+        return sound != null && sound.getSoundType() instanceof SoundType soundType
+                ? StringType.valueOf(soundType.name())
                 : UnDefType.NULL;
     }
 
@@ -1056,27 +1057,23 @@ public class Resource {
     }
 
     /**
-     * Set the speaker alarm sound.
+     * Set the speaker sound type, volume and duration for the given chime type.
      */
-    public Resource setAlarmSoundType(@Nullable SoundType soundType) {
-        alarm = soundType == null ? null : new Sound().setSoundType(soundType);
-        return this;
-    }
-
-    /**
-     * Set the speaker alert sound. Note: this method sets the 'alert' JSON element. The 'alert' JSON element is
-     * used for both alert and alerts settings, so this method should only be used when setting an alert sound.
-     */
-    public Resource setAlertSoundType(@Nullable SoundType soundType) {
-        alert = soundType == null ? null : GSON.toJsonTree(new Sound().setSoundType(soundType));
-        return this;
-    }
-
-    /**
-     * Set the speaker chime sound.
-     */
-    public Resource setChimeSoundType(@Nullable SoundType soundType) {
-        chime = soundType == null ? null : new Sound().setSoundType(soundType);
+    public Resource setSound(ChimeType chimeType, @Nullable SoundType soundType, @Nullable PercentType volume,
+            @Nullable QuantityType<?> duration) {
+        Sound newSound = soundType != null ? new Sound().setSoundType(soundType).setVolume(volume).setDuration(duration)
+                : null;
+        switch (chimeType) {
+            case ALARM:
+                alarm = newSound;
+                break;
+            case ALERT:
+                alert = GSON.toJsonTree(newSound);
+                break;
+            case CHIME:
+                chime = newSound;
+                break;
+        }
         return this;
     }
 

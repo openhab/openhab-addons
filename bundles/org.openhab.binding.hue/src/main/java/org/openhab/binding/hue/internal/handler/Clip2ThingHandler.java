@@ -52,6 +52,7 @@ import org.openhab.binding.hue.internal.api.dto.clip2.Resources;
 import org.openhab.binding.hue.internal.api.dto.clip2.TimedEffects;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.ActionType;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.Archetype;
+import org.openhab.binding.hue.internal.api.dto.clip2.enums.ChimeType;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.ContentType;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.EffectType;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.MuteType;
@@ -64,6 +65,7 @@ import org.openhab.binding.hue.internal.api.dto.clip2.helper.Setters;
 import org.openhab.binding.hue.internal.config.Clip2ThingConfig;
 import org.openhab.binding.hue.internal.exceptions.ApiException;
 import org.openhab.binding.hue.internal.exceptions.AssetNotLoadedException;
+import org.openhab.core.items.Item;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
@@ -370,6 +372,9 @@ public class Clip2ThingHandler extends BaseThingHandler {
         String channelId = channelUID.getId();
         Resource cache = getCachedResource(lightResourceType);
 
+        ChimeType chimeType = null;
+        QuantityType<?> alarmDuration = null;
+
         switch (channelId) {
             case CHANNEL_2_ALERT:
                 putResource = Setters.setAlert(new Resource(lightResourceType), command, cache);
@@ -477,27 +482,30 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 break;
 
             case CHANNEL_2_ALARM_SOUND:
-                if (command instanceof StringType stringCommand) {
-                    putResource = new Resource(ResourceType.SPEAKER)
-                            .setAlarmSoundType(SoundType.of(stringCommand.toString()));
-                }
-                break;
+                chimeType = ChimeType.ALARM;
+                alarmDuration = thing.getChannel(CHANNEL_2_DURATION) instanceof Channel channel2
+                        && getItemState(channel2.getUID(), QuantityType.class) instanceof QuantityType<?> quantity
+                                ? quantity
+                                : null;
+                // fall through
 
             case CHANNEL_2_ALERT_SOUND:
-                if (command instanceof StringType stringCommand) {
-                    putResource = new Resource(ResourceType.SPEAKER)
-                            .setAlertSoundType(SoundType.of(stringCommand.toString()));
-                }
-                break;
+                chimeType = chimeType != null ? chimeType : ChimeType.ALERT;
+                // fall through
 
             case CHANNEL_2_CHIME_SOUND:
                 if (command instanceof StringType stringCommand) {
-                    putResource = new Resource(ResourceType.SPEAKER)
-                            .setChimeSoundType(SoundType.of(stringCommand.toString()));
+                    chimeType = chimeType != null ? chimeType : ChimeType.CHIME;
+                    SoundType soundType = SoundType.of(stringCommand.toString());
+                    PercentType volume = thing.getChannel(CHANNEL_2_VOLUME) instanceof Channel chan
+                            && getItemState(chan.getUID(), PercentType.class) instanceof PercentType level ? level
+                                    : null;
+                    putResource = new Resource(ResourceType.SPEAKER).setSound(chimeType, soundType, volume,
+                            alarmDuration);
                 }
                 break;
 
-            case CHANNEL_2_SOUND_MUTE:
+            case CHANNEL_2_MUTE:
                 if (command instanceof OnOffType onOff) {
                     putResource = new Resource(ResourceType.SPEAKER)
                             .setMuteType(MuteType.of(OnOffType.ON.equals(onOff)));
@@ -536,7 +544,9 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 return;
         }
 
-        if (putResource == null) {
+        if (putResource == null)
+
+        {
             if (logger.isDebugEnabled()) {
                 logger.debug("{} -> handleCommand() command:{} not supported on channelUID:{}", resourceId, command,
                         channelUID);
@@ -590,6 +600,18 @@ public class Clip2ThingHandler extends BaseThingHandler {
             }
         } catch (InterruptedException e) {
         }
+    }
+
+    /**
+     * Get the state of the first linked item of the given type for the given channel UID.
+     *
+     * @param channelUID the channel UID.
+     * @param type the expected state type.
+     * @return the state, or null if not found.
+     */
+    private <T extends State> @Nullable T getItemState(ChannelUID channelUID, Class<T> type) {
+        return itemChannelLinkRegistry.getLinkedItems(channelUID).stream().map(Item::getState).filter(type::isInstance)
+                .map(type::cast).findFirst().orElse(null);
     }
 
     /**
@@ -1108,10 +1130,14 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 break;
 
             case SPEAKER:
-                updateState(CHANNEL_2_ALARM_SOUND, resource.getAlarmSoundState(), fullUpdate);
-                updateState(CHANNEL_2_ALERT_SOUND, resource.getAlertSoundState(), fullUpdate);
-                updateState(CHANNEL_2_CHIME_SOUND, resource.getChimeSoundState(), fullUpdate);
-                updateState(CHANNEL_2_SOUND_MUTE, resource.getSoundMuteState(), fullUpdate);
+                if (fullUpdate) {
+                    addSupportedChannel(CHANNEL_2_VOLUME);
+                    addSupportedChannel(CHANNEL_2_DURATION);
+                }
+                updateState(CHANNEL_2_ALARM_SOUND, resource.getSoundState(ChimeType.ALARM), fullUpdate);
+                updateState(CHANNEL_2_ALERT_SOUND, resource.getSoundState(ChimeType.ALERT), fullUpdate);
+                updateState(CHANNEL_2_CHIME_SOUND, resource.getSoundState(ChimeType.CHIME), fullUpdate);
+                updateState(CHANNEL_2_MUTE, resource.getSoundMuteState(), fullUpdate);
                 break;
 
             default:

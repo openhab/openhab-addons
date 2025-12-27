@@ -108,7 +108,9 @@
 			<channel id="chime-sound" typeId="sound">
 				<label>Chime Sound</label>
 			</channel>
-			<channel id="sound-mute" typeId="sound-mute"/>
+			<channel id="mute" typeId="system.mute"/>
+			<channel id="volume" typeId="system.volume"/>
+			<channel id="duration" typeId="duration"/>
 		</channels>
 
 		<properties>
