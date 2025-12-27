@@ -1,18 +1,18 @@
 # pilight Binding
 
-The pilight binding allows openHAB to communicate with a [pilight](https://www.pilight.org/) instance running pilight
-version 6.0 or greater.
+The pilight binding allows openHAB to communicate with a [pilight](https://www.pilight.org/) instance running pilight version 6.0 or greater.
 
-> pilight is a free open source full fledge domotica solution that runs on a Raspberry Pi, HummingBoard, BananaPi,
-> Radxa, but also on *BSD and various linuxes (tested on Arch, Ubuntu and Debian). It's open source and freely available
-> for anyone. pilight works with a great deal of devices and is frequency independent. Therefor, it can control devices
-> working at 315Mhz, 433Mhz, 868Mhz etc. Support for these devices are dependent on community, because we as developers
-> don't own them all.
+> pilight is a free, open-source, full-fledged domotica solution that runs on a Raspberry Pi, HummingBoard, BananaPi,
+> Radxa, but also on *BSD and various Linux distributions (tested on Arch, Ubuntu, and Debian).
+> It's open source and freely available for anyone.
+> pilight works with a great deal of devices and is frequency independent.
+> Therefore, it can control devices working at 315MHz, 433MHz, 868MHz, etc.
+> Support for these devices is dependent on the community, because we as developers don't own them all.
 
-pilight is a cheap way to control 'Click On Click Off' devices. It started as an application for the Raspberry Pi (using
-the GPIO interface) but it's also possible now to connect it to any other PC using an Arduino Nano. You will need a
-cheap 433Mhz transceiver in both cases. See the [Pilight manual](https://manual.pilight.org/electronics/wiring.html) for
-more information.
+pilight is a cheap way to control 'Click On Click Off' devices.
+It started as an application for the Raspberry Pi (using the GPIO interface), but it's also possible now to connect it to any other PC using an Arduino Nano.
+You will need a cheap 433MHz transceiver in both cases.
+See the [Pilight manual](https://manual.pilight.org/electronics/wiring.html) for more information.
 
 ## Supported Things
 
@@ -37,11 +37,10 @@ The `bridge` requires the following configuration parameters:
 |----------------------|---------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------|
 | IP Address           | ipAddress           | Host name or IP address of the pilight daemon                                                                                                                                           | yes      |
 | Port                 | port                | Port number on which the pilight daemon is listening. Default: 5000                                                                                                                     | yes      |
-| Delay                | delay               | Delay (in millisecond) between consecutive commands. Recommended value without band pass filter: 1000. Recommended value with band pass filter: somewhere between 200-500. Default: 500 | no       |
+| Delay                | delay               | Delay (in milliseconds) between consecutive commands. Recommended value without band-pass filter: 1000. Recommended value with band-pass filter: somewhere between 200-500. Default: 500 | no       |
 | Background Discovery | backgroundDiscovery | Whether pilight devices for this Bridge should automatically be discovered. Default: true                                                                                               | no       |
 
-Important: you must explicitly configure the port in the pilight daemon config or otherwise a random port will be used
-and the binding will not be able to connect.
+Important: You must explicitly configure the port in the pilight daemon config; otherwise, a random port will be used and the binding will not be able to connect.
 
 ### `contact`, `dimmer`, `switch`, `generic` Things
 
@@ -53,7 +52,7 @@ These things have all one required parameter:
 
 ## Channels
 
-The `bridge` thing has no channels.
+The `bridge` Thing has no channels.
 
 The `contact`, `dimmer` and `switch` things all have one channel:
 
@@ -63,25 +62,20 @@ The `contact`, `dimmer` and `switch` things all have one channel:
 | `dimmer`  | dimlevel | Dimmer  | Dim level of the dimmer |
 | `switch`  | state    | Switch  | State of the switch     |
 
-The `generic` thing has no fixed channels, so you have to add them manually. Currently, only String and Number channels
-are supported.
+The `generic` Thing has no fixed channels, so you have to add them manually.
+Currently, only String and Number channels are supported.
 
 ## Auto Discovery
 
 ### Bridge Auto Discovery
 
-The pilight daemon implements a SSDP interface, which can be used to search for running pilight daemon instances by
-sending a SSDP request via multicast udp (this mechanism may only work if
-the [standalone mode](https://manual.pilight.org/configuration/settings.html#standalone) in the pilight daemon is
-disabled. After loading the binding this bridge discovery is automatically run and scheduled to scan for bridges every
-10 minutes.
+The pilight daemon implements an SSDP interface, which can be used to search for running pilight daemon instances by sending an SSDP request via multicast UDP (this mechanism may only work if the [standalone mode](https://manual.pilight.org/configuration/settings.html#standalone) in the pilight daemon is disabled).
+After loading the binding, this bridge discovery is automatically run and scheduled to scan for bridges every 10 minutes.
 
 ### Device Auto Discovery
 
-After a `bridge` thing has been configured in openHAB, it automatically establishes a connection between pilight daemon
-and openHAB. As soon as the bridge is connected, the devices configured in the pilight daemon are automatically found
-via autodiscovery in background (or via a manually triggered discovery) and are displayed in the inbox to easily create
-things from them.
+After a `bridge` Thing has been configured in openHAB, it automatically establishes a connection between the pilight daemon and openHAB.
+As soon as the bridge is connected, the devices configured in the pilight daemon are automatically found via autodiscovery in the background (or via a manually triggered discovery) and are displayed in the inbox to easily create things from them.
 
 ## Full Example
 
