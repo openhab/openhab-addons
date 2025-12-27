@@ -157,7 +157,7 @@ public class MatterOTBRActions implements ThingActions {
         if (delay == null) {
             delay = 30000L;
         }
-        if (Boolean.FALSE.equals(pushAsActive) && Boolean.TRUE.equals(generatePendingTime)) {
+        if (!Boolean.TRUE.equals(pushAsActive) && !Boolean.FALSE.equals(generatePendingTime)) {
             // default to generating a new pending timestamp
             tds.setPendingTimestamp(ThreadTimestamp.now(false));
         }
