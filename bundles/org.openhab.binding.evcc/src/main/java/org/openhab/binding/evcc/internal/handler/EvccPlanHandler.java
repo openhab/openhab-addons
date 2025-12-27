@@ -66,9 +66,11 @@ public class EvccPlanHandler extends EvccBaseThingHandler {
     private JsonObject cachedOneTimePlan = new JsonObject();
     private final Map<Integer, String> localizedDayOfWeekMap = new HashMap<>();
     private final Map<String, Integer> localizedReverseMap = new HashMap<>();
+    private final ZoneId localZone;
 
-    public EvccPlanHandler(Thing thing, ChannelTypeRegistry channelTypeRegistry) {
+    public EvccPlanHandler(Thing thing, ChannelTypeRegistry channelTypeRegistry, ZoneId zoneId) {
         super(thing, channelTypeRegistry);
+        localZone = zoneId; // necessary for testing
         index = Integer.parseInt(getPropertyOrConfigValue(PROPERTY_INDEX));
         vehicleID = getPropertyOrConfigValue(PROPERTY_VEHICLE_ID);
         type = PROPERTY_TYPE_PLAN;
@@ -321,13 +323,12 @@ public class EvccPlanHandler extends EvccBaseThingHandler {
         LocalTime lt = LocalTime.parse(time, DateTimeFormatter.ofPattern("HH:mm"));
         ZoneId evccZone = ZoneId.of(tz);
         ZonedDateTime evccTime = lt.atDate(LocalDate.now()).atZone(evccZone);
-        return evccTime.withZoneSameInstant(ZoneId.systemDefault());
+        return evccTime.withZoneSameInstant(localZone);
     }
 
     private String convertLocalTimeToEvcc(ZonedDateTime localTime, String tz) {
         LocalTime lt = localTime.toLocalTime();
-        ZonedDateTime evccTime = lt.atDate(LocalDate.now()).atZone(ZoneId.systemDefault())
-                .withZoneSameInstant(ZoneId.of(tz));
+        ZonedDateTime evccTime = lt.atDate(LocalDate.now()).atZone(localZone).withZoneSameInstant(ZoneId.of(tz));
         return evccTime.toLocalTime().format(DateTimeFormatter.ofPattern("HH:mm"));
     }
 

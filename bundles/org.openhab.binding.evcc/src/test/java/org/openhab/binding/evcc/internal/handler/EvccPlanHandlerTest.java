@@ -21,6 +21,7 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 import static org.openhab.binding.evcc.internal.EvccBindingConstants.*;
 
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Locale;
 import java.util.Map;
@@ -65,7 +66,7 @@ public class EvccPlanHandlerTest extends AbstractThingHandlerTestClass<EvccPlanH
 
     @Override
     protected EvccPlanHandler createHandler() {
-        return new EvccPlanHandler(thing, channelTypeRegistry) {
+        return new EvccPlanHandler(thing, channelTypeRegistry, ZoneId.of("Europe/Berlin")) {
 
             @Override
             protected void updateStatus(ThingStatus status, ThingStatusDetail detail) {
