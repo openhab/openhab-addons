@@ -1,0 +1,32 @@
+{
+    "errors": [],
+    "data": [
+        {
+            "id": "00000000-0000-0000-0000-000000000001",
+            "id_v1": "/sensors/76",
+            "owner": {
+                "rid": "00000000-0000-0000-0000-000000000000",
+                "rtype": "device"
+            },
+            "metadata": {
+                "control_id": 2
+            },
+            "button": {
+                "last_event": "long_release",
+                "button_report": {
+                    "updated": "2023-09-17T18:51:36.959Z",
+                    "event": "long_release"
+                },
+                "repeat_interval": 800,
+                "event_values": [
+                    "initial_press",
+                    "repeat",
+                    "short_release",
+                    "long_release",
+                    "long_press"
+                ]
+            },
+            "type": "bell_button"
+        }
+    ]
+}

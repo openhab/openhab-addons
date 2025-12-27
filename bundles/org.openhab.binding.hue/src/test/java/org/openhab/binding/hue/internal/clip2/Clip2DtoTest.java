@@ -145,6 +145,21 @@ class Clip2DtoTest {
     }
 
     @Test
+    void testBellButton() {
+        String json = load(ResourceType.BELL_BUTTON.name().toLowerCase());
+        Resources resources = GSON.fromJson(json, Resources.class);
+        assertNotNull(resources);
+        List<Resource> list = resources.getResources();
+        assertNotNull(list);
+        assertEquals(1, list.size());
+        Resource item = list.get(0);
+        assertEquals(ResourceType.BELL_BUTTON, item.getType());
+        Button button = item.getButton();
+        assertNotNull(button);
+        assertEquals(new DateTimeType("2023-09-17T18:51:36.959+0000"), item.getButtonLastUpdatedState());
+    }
+
+    @Test
     void testButtonDeprecated() {
         String json = load(ResourceType.BUTTON.name().toLowerCase() + "_deprecated");
         Resources resources = GSON.fromJson(json, Resources.class);
@@ -979,5 +994,25 @@ class Clip2DtoTest {
         assertEquals(new DateTimeType("2025-10-20T16:47:14.733Z"), item.getMotionLastUpdatedState());
         assertEquals(OnOffType.OFF, item.getMotionValidState());
         assertEquals(OnOffType.ON, item.getEnabledState());
+    }
+
+    @Test
+    void testMotionAreaConfiguration() {
+        String json = load(ResourceType.MOTION_AREA_CONFIGURATION.name().toLowerCase());
+        Resources resources = GSON.fromJson(json, Resources.class);
+        assertNotNull(resources);
+        List<Resource> list = resources.getResources();
+        assertNotNull(list);
+        assertEquals(1, list.size());
+        Resource item = list.get(0);
+        assertEquals(ResourceType.MOTION_AREA_CONFIGURATION, item.getType());
+        List<ResourceReference> serviceReferences = item.getServiceReferences();
+        assertEquals(2, serviceReferences.size());
+        ResourceReference resourceReference = serviceReferences.stream()
+                .filter(sr -> sr.getType() == ResourceType.CONVENIENCE_AREA_MOTION).findFirst().orElse(null);
+        assertNotNull(resourceReference);
+        resourceReference = serviceReferences.stream().filter(sr -> sr.getType() == ResourceType.SECURITY_AREA_MOTION)
+                .findFirst().orElse(null);
+        assertNotNull(resourceReference);
     }
 }

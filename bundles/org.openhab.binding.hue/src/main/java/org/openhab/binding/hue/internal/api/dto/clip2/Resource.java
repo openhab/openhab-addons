@@ -1007,8 +1007,8 @@ public class Resource {
                  * by the same 'alert' JSON element. If the JSON element contains a 'status' field it is an alert
                  * setting, if it contains an 'action' or 'action_values' field it is an alerts setting.
                  */
-                JsonElement alert = this.alert;
-                if (Objects.nonNull(alert) && alert.isJsonObject() && alert.getAsJsonObject().get("status") != null) {
+                if (alert instanceof JsonElement alert && alert.isJsonObject()
+                        && alert.getAsJsonObject().get("status") != null) {
                     try {
                         sound = GSON.fromJson(alert, Sound.class);
                         break;
@@ -1016,6 +1016,7 @@ public class Resource {
                         // fall through
                     }
                 }
+                // fall through
             default:
                 sound = null;
         }
