@@ -83,7 +83,7 @@
 			<tag>Setpoint</tag>
 			<tag>Temperature</tag>
 		</tags>
-		<state min="7" max="30" step="1" pattern="%d °C" readOnly="false"/>
+		<state min="7" max="30" step="1" pattern="%d %unit%" readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="comfort-temperature-channel-type">
@@ -95,7 +95,7 @@
 			<tag>Setpoint</tag>
 			<tag>Temperature</tag>
 		</tags>
-		<state min="7" max="30" step="1" pattern="%d °C" readOnly="false"/>
+		<state min="7" max="30" step="1" pattern="%d %unit%" readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="temperature-channel-type">
@@ -107,7 +107,7 @@
 			<tag>Measurement</tag>
 			<tag>Temperature</tag>
 		</tags>
-		<state pattern="%.3f °C" readOnly="true"/>
+		<state pattern="%.3f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="activeWeekProfileName-channel-type">
