@@ -223,8 +223,6 @@ List of all possible channels
 | Number   | Time              | Evcc_Plan_Precondition                           | Precondition Time [%s]                    | evcc:battery:demo-server:demo-battery:plan-precondition                           |
 | DateTime | –                 | Evcc_Plan_Time                                   | Plan Time [%s]                            | evcc:battery:demo-server:demo-battery:plan-time                                   |
 | String   | –                 | Evcc_Plan_Weekdays                               | Plan Weekdays [%s]                        | evcc:battery:demo-server:demo-battery:plan-weekdays                               |
-| String   | –                 | Evcc_Plan_Tz                                     | Plan Timezone [%s]                        | evcc:battery:demo-server:demo-battery:plan-tz                                     |
-| String   | –                 | Evcc_Plan_Repeating_Time                         | Plan Time [%s]                            | evcc:battery:demo-server:demo-battery:plan-repeating-time                         |
 | Switch   | –                 | Evcc_Plan_Active                                 | Active [%s]                               | evcc:battery:demo-server:demo-battery:plan-active                                 |
 
 #### PV
