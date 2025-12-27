@@ -151,14 +151,14 @@ public class HyperionNgHandler extends BaseThingHandler {
             if (instancesObj != null) {
                 String instancesStr = instancesObj.toString();
                 String[] parts = instancesStr.split(",");
-                for (String p : parts) {
+                for (String part : parts) {
                     try {
-                        String t = p.trim();
-                        if (!t.isEmpty()) {
-                            instanceIndices.add(Integer.parseInt(t));
+                        String trimmedPart = part.trim();
+                        if (!trimmedPart.isEmpty()) {
+                            instanceIndices.add(Integer.parseInt(trimmedPart));
                         }
                     } catch (NumberFormatException e) {
-                        logger.debug("Ignoring invalid instance id '{}': {}", p, e.getMessage());
+                        logger.debug("Ignoring invalid instance id '{}': {}", part, e.getMessage());
                     }
                 }
             }
@@ -244,7 +244,7 @@ public class HyperionNgHandler extends BaseThingHandler {
                     }
                 }
             } catch (Exception e) {
-                // ignore if serverinfo doesn't include instance info
+                logger.debug("Ignoring instance info from serverinfo due to exception; treating as no instances", e);
             }
 
             // update colors/effects
@@ -454,7 +454,7 @@ public class HyperionNgHandler extends BaseThingHandler {
                     break;
             }
 
-            boolean state = command == OnOffType.ON ? true : false;
+            boolean state = command == OnOffType.ON;
             componentState.setState(state);
 
             // determine which instances to target: user-configured `instanceIndices` take
@@ -491,7 +491,7 @@ public class HyperionNgHandler extends BaseThingHandler {
         if (command instanceof OnOffType) {
             ComponentState componentState = new ComponentState();
             componentState.setComponent(COMPONENTS_ALL);
-            boolean state = command == OnOffType.ON ? true : false;
+            boolean state = command == OnOffType.ON;
             componentState.setState(state);
             // determine which instances to target: user-configured `instanceIndices` take
             // precedence; otherwise fall back to available instances reported by server
@@ -499,20 +499,14 @@ public class HyperionNgHandler extends BaseThingHandler {
                     : availableInstanceIndices;
 
             if (!targetInstances.isEmpty()) {
-                if (COMPONENTS_ALL.equals(componentState.getComponent())) {
-                    for (Integer idx : targetInstances) {
-                        ComponentState perInstanceState = new ComponentState();
-                        perInstanceState.setComponent(componentState.getComponent());
-                        perInstanceState.setState(componentState.getState());
-                        ComponentStateCommand perInstanceCommand = new ComponentStateCommand(perInstanceState);
-                        // set top-level instance as an array (server expects arrays for `instance`)
-                        perInstanceCommand.setInstance(java.util.Collections.singletonList(idx));
-                        sendCommand(perInstanceCommand);
-                    }
-                } else {
-                    ComponentStateCommand stateCommand = new ComponentStateCommand(componentState);
-                    stateCommand.setInstance(targetInstances);
-                    sendCommand(stateCommand);
+                for (Integer idx : targetInstances) {
+                    ComponentState perInstanceState = new ComponentState();
+                    perInstanceState.setComponent(componentState.getComponent());
+                    perInstanceState.setState(componentState.getState());
+                    ComponentStateCommand perInstanceCommand = new ComponentStateCommand(perInstanceState);
+                    // set top-level instance as an array (server expects arrays for `instance`)
+                    perInstanceCommand.setInstance(java.util.Collections.singletonList(idx));
+                    sendCommand(perInstanceCommand);
                 }
             } else {
                 ComponentStateCommand stateCommand = new ComponentStateCommand(componentState);

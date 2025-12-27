@@ -52,10 +52,17 @@ public class ComponentStateCommand extends HyperionCommand {
         this.instance = instanceList;
     }
 
-    @SuppressWarnings("unchecked")
     public java.util.List<Integer> getInstanceList() {
-        if (instance instanceof java.util.List) {
-            return (java.util.List<Integer>) instance;
+        if (instance instanceof java.util.List<?> list) {
+            java.util.List<Integer> result = new java.util.ArrayList<>(list.size());
+            for (Object element : list) {
+                if (element instanceof Number number) {
+                    result.add(number.intValue());
+                } else {
+                    return null;
+                }
+            }
+            return result;
         }
         return null;
     }
