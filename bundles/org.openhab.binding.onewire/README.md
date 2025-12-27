@@ -33,9 +33,9 @@ Please note that:
 - All things need a bridge.
 - The sensor id parameter supports only the dotted format, including the family id (e.g. `28.7AA256050000`).
 DS2409 MicroLAN couplers (hubs) are supported by adding their id and the branch (`main` or `aux`) in a directory-like format in front of the sensor id (e.g. `1F.EDC601000000/main/28.945042000000`).
-- Refresh time is the minimum time in seconds between two checks of that thing.
+- Refresh time is the minimum time in seconds between two checks of that Thing.
 It defaults to 300s for analog channels and 10s for digital channels.
-- Some thing channels need additional configuration, please see below in the channels section.
+- Some Thing channels need additional configuration, please see below in the channels section.
 
 ### OWFS Bridge (`owserver`)
 
@@ -52,7 +52,7 @@ Bridges of type `owserver` are extensible with channels of type `owfs-number` an
 
 ### Generic (`basic`)
 
-The `basic` thing supports iButton-like chips (DS1420, DS2401/DS1990A), temperature sensors (DS18B20, DS18S20, DS1822), digital i/o chips (DS2405, DS2406, DS2408, DS2413) and counter chips (DS2423).
+The `basic` Thing supports iButton-like chips (DS1420, DS2401/DS1990A), temperature sensors (DS18B20, DS18S20, DS1822), digital i/o chips (DS2405, DS2406, DS2408, DS2413) and counter chips (DS2423).
 
 It has two parameters: sensor id `id` and refresh time `refresh`.
 
@@ -61,10 +61,10 @@ Depending on the chip, either `present`, `temperature`, `digitalX` or `counterX`
 
 ### Multisensor (`ms-tx`)
 
-The multisensor is build around the DS2438 or DS1923 chipset.
+The multisensor is built around the DS2438 or DS1923 chipset.
 It always provides a `temperature` channel.
 
-Depnding on the actual sensor, additional channels (`current`, `humidity`, `light`, `voltage`, `supplyvoltage`) are added.
+Depending on the actual sensor, additional channels (`current`, `humidity`, `light`, `voltage`, `supplyvoltage`) are added.
 If the voltage input of the DS2438 is connected to a humidity sensor, several common types are supported (see below).
 
 It has three parameters: sensor id `id`, refresh time `refresh` and `manualsensor` (advanced option).
@@ -99,12 +99,12 @@ The `temperature` channel is of type `temperature` if the internal sensor is use
 The last parameter is the `lightsensor` option to configure if an ambient light sensor is attached.
 It defaults to `false`.
 In that mode, a `current`  channel is provided.
-If set to `true`, a `light` channel is added to the thing.
+If set to `true`, a `light` channel is added to the Thing.
 The correct formula for the ambient light is automatically determined from the sensor version.
 
 ### Embedded Data System Environmental sensors (`edsenv`)
 
-This thing supports EDS0064, EDS0065, EDS0066 or EDS0067 sensors.
+This Thing supports EDS0064, EDS0065, EDS0066 or EDS0067 sensors.
 It has two parameters: sensor id `id` and refresh time `refresh`.
 
 All things have a `temperature` channel.
@@ -112,10 +112,10 @@ Additional channels (`light`, `pressure`, `humidity`, `dewpoint`, `abshumidity`)
 
 ### Brain4Home BAE091x (`bae091x`)
 
-Currently this thing only supports BAE0910 sensors.
+Currently this Thing only supports BAE0910 sensors.
 All functional pins of this sensor have multiple functions which can be configured individually.
 For detailed information of each mode, please see the official documentation.
-Each pin has the can be configured as `disabled`.
+Each pin can be configured as `disabled`.
 The necessary channels are automatically added.
 
 Pin 1 (`pin1`) has only one function `counter` (channel `counter`).
@@ -168,7 +168,7 @@ In `inverted` mode `ON` is logic low and `OFF` is logic high.
 ### Humidity (`humidity`, `humidityconf`, `abshumidity`, `dewpoint`)
 
 Depending on the sensor, a `humidity` or `humidityconf` channel may be added.
-This is only relevant for DS2438-based sensors of thing-type `ms-tx`.
+This is only relevant for DS2438-based sensors of Thing-type `ms-tx`.
 `humidityconf`-type channels have the `humiditytype` parameter.
 Possible options are `/humidity` for HIH-3610 sensors, `/HIH4000/humidity` for HIH-4000 sensors, `/HTM1735/humidity` for HTM-1735 sensors and `/DATANAB/humidity` for sensors from Datanab.
 
@@ -186,13 +186,13 @@ It defaults to 300s.
 
 ### Temperature (`temperature`, `temperature-por`, `temperature-por-res`)
 
-There are three temperature channel types: `temperature`, `temperature-por`and `temperature-por-res`.
-The correct channel-type is selected automatically by the thing handler depending on the sensor type.
+There are three temperature channel types: `temperature`, `temperature-por` and `temperature-por-res`.
+The correct channel-type is selected automatically by the Thing handler depending on the sensor type.
 
 If the channel-type is `temperature`, there is nothing else to configure.
 
 Some sensors (e.g. DS18x20) report 85 °C as Power-On-Reset value.
-In some installations this leads to errorneous temperature readings.
+In some installations this leads to erroneous temperature readings.
 If the `ignorepor` parameter is set to `true` 85 °C values will be filtered.
 The default is `false` as correct reading of 85 °C will otherwise be filtered, too.
 Please note that the parameter value must not be set in quotation marks (see example below).
@@ -221,7 +221,7 @@ The duty cycle can be set from 0-100%.
 ### BAE PIO (`bae-pio`)
 
 The PIO channel (programmable I/O channel) has two configuration options: `mode` and `pulldevice`.
-The `mode`can be set to `input`or `output`.
+The `mode` can be set to `input` or `output`.
 The default is `input`.
 
 The `pulldevice` is only relevant for  `input` mode.
@@ -230,7 +230,7 @@ The default is disabled.
 
 ## Full Example
 
-**Attention: Adding channels with UIDs different from the ones mentioned in the thing description will not work and may cause problems.
+**Attention: Adding channels with UIDs different from the ones mentioned in the Thing description will not work and may cause problems.
 Please use the pre-defined channel names only.**
 
 This is the configuration for a OneWire network consisting of an owserver as bridge (`onewire:owserver:mybridge`) as well as a temperature sensor, a BMS and a 2-port Digital I/O as things (`onewire:basic:mybridge:mysensor`, `onewire:bms:mybridge:mybms`, `onewire:basic:mybridge:mydio`).
