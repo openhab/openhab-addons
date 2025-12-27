@@ -157,11 +157,9 @@ public class MatterOTBRActions implements ThingActions {
         if (delay == null) {
             delay = 30000L;
         }
-        if (Boolean.FALSE.equals(pushAsActive)) {
+        if (Boolean.FALSE.equals(pushAsActive) && Boolean.TRUE.equals(generatePendingTime)) {
             // default to generating a new pending timestamp
-            if (generatePendingTime == null || generatePendingTime.booleanValue()) {
-                tds.setPendingTimestamp(ThreadTimestamp.now(false));
-            }
+            tds.setPendingTimestamp(ThreadTimestamp.now(false));
         }
         ThreadTimestamp ts = Objects
                 .requireNonNull(tds.getActiveTimestampObject().orElse(new ThreadTimestamp(1, 0, false)));
@@ -173,7 +171,7 @@ public class MatterOTBRActions implements ThingActions {
         String dataset = tds.toHex();
         logger.debug("New dataset hex: {}", dataset);
         try {
-            if (Boolean.FALSE.equals(pushAsActive)) {
+            if (Boolean.TRUE.equals(pushAsActive)) {
                 converter.setActiveDataset(dataset).get();
             } else {
                 converter.setPendingDataset(dataset).get();
