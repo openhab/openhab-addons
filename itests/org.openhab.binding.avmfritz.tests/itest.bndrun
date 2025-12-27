@@ -48,7 +48,7 @@ Fragment-Host: org.openhab.binding.avmfritz
 	ch.qos.logback.classic;version='[1.5.18,1.5.19)',\
 	ch.qos.logback.core;version='[1.5.18,1.5.19)',\
 	org.osgi.service.component.annotations;version='[1.5.1,1.5.2)',\
-	com.sun.jna;version='[5.17.0,5.17.1)',\
+	com.sun.jna;version='[5.18.1,5.18.2)',\
 	org.apache.aries.spifly.dynamic.bundle;version='[1.3.7,1.3.8)',\
 	org.eclipse.jetty.alpn.client;version='[9.4.57,9.4.58)',\
 	org.eclipse.jetty.client;version='[9.4.57,9.4.58)',\
@@ -67,7 +67,7 @@ Fragment-Host: org.openhab.binding.avmfritz
 	org.eclipse.jetty.websocket.client;version='[9.4.57,9.4.58)',\
 	org.eclipse.jetty.websocket.common;version='[9.4.57,9.4.58)',\
 	org.eclipse.jetty.xml;version='[9.4.57,9.4.58)',\
-	org.objectweb.asm;version='[9.8.0,9.8.1)',\
+	org.objectweb.asm;version='[9.9.0,9.9.1)',\
 	org.objectweb.asm.commons;version='[9.6.0,9.6.1)',\
 	org.objectweb.asm.tree;version='[9.6.0,9.6.1)',\
 	org.objectweb.asm.tree.analysis;version='[9.6.0,9.6.1)',\
