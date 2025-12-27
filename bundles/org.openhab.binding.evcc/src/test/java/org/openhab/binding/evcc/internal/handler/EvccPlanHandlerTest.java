@@ -192,20 +192,20 @@ public class EvccPlanHandlerTest extends AbstractThingHandlerTestClass<EvccPlanH
 
         // Provide new values via handleCommand (pending commands)
         ChannelUID socCh = new ChannelUID(thing.getUID(), CHANNEL_PLAN_SOC);
-        ChannelUID rtCh = new ChannelUID(thing.getUID(), "plan-repeating-time");
+        ChannelUID timeCh = new ChannelUID(thing.getUID(), "plan-time");
         ChannelUID wdCh = new ChannelUID(thing.getUID(), "plan-weekdays");
-        ChannelUID precCh = new ChannelUID(thing.getUID(), CHANNEL_PLAN_PRECONDITION);
+        ChannelUID preCCh = new ChannelUID(thing.getUID(), CHANNEL_PLAN_PRECONDITION);
         ChannelUID updateCh = new ChannelUID(thing.getUID(), CHANNEL_SEND_UPDATE);
 
         State socState = new StringType("85 %");
-        State rtState = new StringType("09:00");
+        State timeState = new StringType("2025-12-20T09:00:00.000+0100");
         State wdState = new StringType("Monday;Wednesday;Sunday"); // Sunday maps to 0
         State precState = new StringType("1800 s");
 
         handler.handleCommand(socCh, (Command) socState);
-        handler.handleCommand(rtCh, (Command) rtState);
+        handler.handleCommand(timeCh, (Command) timeState);
         handler.handleCommand(wdCh, (Command) wdState);
-        handler.handleCommand(precCh, (Command) precState);
+        handler.handleCommand(preCCh, (Command) precState);
 
         // Trigger update
         handler.handleCommand(updateCh, org.openhab.core.library.types.OnOffType.ON);
@@ -217,7 +217,7 @@ public class EvccPlanHandlerTest extends AbstractThingHandlerTestClass<EvccPlanH
 
         // repeatingTime should be moved to time in payload
         assertTrue(plan.has("time"));
-        assertEquals("09:00", plan.get("time").getAsString());
+        assertEquals("08:00", plan.get("time").getAsString());
         assertFalse(plan.has("repeatingTime"));
 
         // weekdays should be numeric array [1,3,0]

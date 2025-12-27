@@ -15,7 +15,11 @@ package org.openhab.binding.evcc.internal.handler;
 import static org.openhab.binding.evcc.internal.EvccBindingConstants.*;
 
 import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.OffsetDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.DateTimeParseException;
@@ -132,9 +136,11 @@ public class EvccPlanHandler extends EvccBaseThingHandler {
                 }
                 // Get the corresponding repeating plan
                 state = state.getAsJsonArray(JSON_KEY_REPEATING_PLANS).get(index - 1).getAsJsonObject();
-                if (state.has(JSON_KEY_TIME)) {
-                    state.add(JSON_KEY_REPEATING_TIME, state.get(JSON_KEY_TIME));
-                    state.remove(JSON_KEY_TIME);
+                if (state.has(JSON_KEY_TIME) && state.has(JSON_KEY_TZ)) {
+                    String time = state.get(JSON_KEY_TIME).getAsString();
+                    String tz = state.get(JSON_KEY_TZ).getAsString();
+                    ZonedDateTime zdt = convertEvccTimeToLocal(time, tz);
+                    state.addProperty(JSON_KEY_TIME, zdt.toString());
                 }
                 if (state.has(JSON_KEY_WEEKDAYS)) {
                     parseWeekdaysResponse(state);
@@ -238,16 +244,32 @@ public class EvccPlanHandler extends EvccBaseThingHandler {
                             plan.add(key, new JsonPrimitive(false));
                         }
                     }
+                    case JSON_KEY_TIME -> {
+                        JsonElement tzElement = plan.get(JSON_KEY_TZ);
+                        if (tzElement == null || tzElement.isJsonNull()) {
+                            return false;
+                        }
+                        try {
+                            ZonedDateTime.parse(value);
+                        } catch (DateTimeParseException ignored) {
+                            try {
+                                OffsetDateTime odt = OffsetDateTime.parse(value,
+                                        DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZ"));
+                                value = odt.toInstant().toString();
+
+                            } catch (DateTimeParseException e) {
+                                return false;
+                            }
+                        }
+                        String tz = tzElement.getAsString();
+                        ZonedDateTime evccTime = ZonedDateTime.parse(value);
+                        String time = convertLocalTimeToEvcc(evccTime, tz);
+                        plan.add(key, new JsonPrimitive(time));
+                    }
                     default -> plan.add(key, new JsonPrimitive(value));
                 }
             }
         }
-        JsonElement repeatingTimeElement = plan.get(JSON_KEY_REPEATING_TIME);
-        if (repeatingTimeElement == null || repeatingTimeElement.isJsonNull()) {
-            return false;
-        }
-        plan.add(JSON_KEY_TIME, repeatingTimeElement);
-        plan.remove(JSON_KEY_REPEATING_TIME);
         payload.set(index - 1, plan);
         return sendCommand(endpoint, payload);
     }
@@ -293,6 +315,20 @@ public class EvccPlanHandler extends EvccBaseThingHandler {
             }
         }
         return values;
+    }
+
+    private ZonedDateTime convertEvccTimeToLocal(String time, String tz) {
+        LocalTime lt = LocalTime.parse(time, DateTimeFormatter.ofPattern("HH:mm"));
+        ZoneId evccZone = ZoneId.of(tz);
+        ZonedDateTime evccTime = lt.atDate(LocalDate.now()).atZone(evccZone);
+        return evccTime.withZoneSameInstant(ZoneId.systemDefault());
+    }
+
+    private String convertLocalTimeToEvcc(ZonedDateTime localTime, String tz) {
+        LocalTime lt = localTime.toLocalTime();
+        ZonedDateTime evccTime = lt.atDate(LocalDate.now()).atZone(ZoneId.systemDefault())
+                .withZoneSameInstant(ZoneId.of(tz));
+        return evccTime.toLocalTime().format(DateTimeFormatter.ofPattern("HH:mm"));
     }
 
     private static final class TimeFormatValidator {
