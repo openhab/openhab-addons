@@ -72,16 +72,6 @@
 			<tag>Channel</tag>
 		</tags>
 	</channel-type>
-	<channel-type id="plan-tz">
-		<item-type>String</item-type>
-		<label>Plan Timezone</label>
-		<description>Timezone for the Plan (only in repeating plans)</description>
-	</channel-type>
-	<channel-type id="plan-repeating-time">
-		<item-type>String</item-type>
-		<label>Plan Time</label>
-		<description>Scheduled departure time (hh:mm)</description>
-	</channel-type>
 	<channel-type id="plan-active">
 		<item-type>Switch</item-type>
 		<label>Active</label>
