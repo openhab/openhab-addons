@@ -14,12 +14,15 @@ package org.openhab.binding.evcc.internal;
 
 import static org.openhab.binding.evcc.internal.EvccBindingConstants.*;
 
+import java.time.ZoneId;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.evcc.internal.handler.EvccBatteryHandler;
 import org.openhab.binding.evcc.internal.handler.EvccBridgeHandler;
 import org.openhab.binding.evcc.internal.handler.EvccHeatingHandler;
 import org.openhab.binding.evcc.internal.handler.EvccLoadpointHandler;
+import org.openhab.binding.evcc.internal.handler.EvccPlanHandler;
 import org.openhab.binding.evcc.internal.handler.EvccPvHandler;
 import org.openhab.binding.evcc.internal.handler.EvccSiteHandler;
 import org.openhab.binding.evcc.internal.handler.EvccStatisticsHandler;
@@ -90,6 +93,8 @@ public class EvccHandlerFactory extends BaseThingHandlerFactory {
             handler = new EvccPvHandler(thing, channelTypeRegistry);
         } else if (THING_TYPE_STATISTICS.equals(type)) {
             handler = new EvccStatisticsHandler(thing, channelTypeRegistry);
+        } else if (THING_TYPE_PLAN.equals(type)) {
+            handler = new EvccPlanHandler(thing, channelTypeRegistry, ZoneId.systemDefault());
         }
         return handler;
     }

@@ -28,6 +28,7 @@ import org.openhab.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 
 /**
@@ -46,12 +47,7 @@ public class EvccVehicleHandler extends EvccBaseThingHandler {
 
     public EvccVehicleHandler(Thing thing, ChannelTypeRegistry channelTypeRegistry) {
         super(thing, channelTypeRegistry);
-        Object id = thing.getConfiguration().get(PROPERTY_ID);
-        if (id instanceof String s) {
-            vehicleId = s;
-        } else {
-            vehicleId = thing.getProperties().getOrDefault(PROPERTY_ID, "");
-        }
+        vehicleId = getPropertyOrConfigValue(PROPERTY_VEHICLE_ID);
         type = PROPERTY_TYPE_VEHICLE;
     }
 
@@ -65,7 +61,7 @@ public class EvccVehicleHandler extends EvccBaseThingHandler {
             }
             String url = endpoint + "/" + vehicleId + "/" + datapoint + "/" + value;
             logger.debug("Sending command to this url: {}", url);
-            if (sendCommand(url)) {
+            if (sendCommand(url, JsonNull.INSTANCE)) {
                 updateState(channelUID, state);
             }
         } else {
@@ -83,7 +79,7 @@ public class EvccVehicleHandler extends EvccBaseThingHandler {
     public void initialize() {
         super.initialize();
         Optional.ofNullable(bridgeHandler).ifPresent(handler -> {
-            endpoint = handler.getBaseURL() + API_PATH_VEHICLES;
+            endpoint = String.join("/", handler.getBaseURL(), API_PATH_VEHICLES);
             JsonObject stateOpt = handler.getCachedEvccState().deepCopy();
             if (stateOpt.isEmpty()) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
