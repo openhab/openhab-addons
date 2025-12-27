@@ -83,6 +83,11 @@ public class EvccPlanHandler extends EvccBaseThingHandler {
     public void initialize() {
         super.initialize();
         Optional.ofNullable(bridgeHandler).ifPresent(handler -> {
+            JsonObject stateOpt = handler.getCachedEvccState().deepCopy();
+            if (stateOpt.isEmpty()) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                return;
+            }
             buildLocalizedMaps(handler);
             endpoint = String.join("/", handler.getBaseURL(), API_PATH_VEHICLES, vehicleID);
             if (index == 0) {
@@ -93,11 +98,6 @@ public class EvccPlanHandler extends EvccBaseThingHandler {
             handler.register(this);
             updateStatus(ThingStatus.ONLINE);
             isInitialized = true;
-            JsonObject stateOpt = handler.getCachedEvccState().deepCopy();
-            if (stateOpt.isEmpty()) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
-                return;
-            }
             prepareApiResponseForChannelStateUpdate(stateOpt);
         });
     }
