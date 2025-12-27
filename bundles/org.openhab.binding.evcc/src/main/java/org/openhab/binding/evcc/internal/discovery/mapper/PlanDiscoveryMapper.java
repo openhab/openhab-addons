@@ -24,7 +24,6 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.evcc.internal.EvccBindingConstants;
-import org.openhab.binding.evcc.internal.discovery.Utils;
 import org.openhab.binding.evcc.internal.handler.EvccBridgeHandler;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
@@ -110,8 +109,7 @@ public class PlanDiscoveryMapper implements EvccDiscoveryMapper {
 
     private DiscoveryResult createPlanDiscoveryResult(String label, String planID, int index, String vehicleID,
             EvccBridgeHandler bridgeHandler) {
-        ThingUID uid = new ThingUID(EvccBindingConstants.THING_TYPE_PLAN, bridgeHandler.getThing().getUID(),
-                Utils.sanitizeName(planID));
+        ThingUID uid = new ThingUID(EvccBindingConstants.THING_TYPE_PLAN, bridgeHandler.getThing().getUID(), planID);
         return DiscoveryResultBuilder.create(uid).withLabel(label).withBridge(bridgeHandler.getThing().getUID())
                 .withProperty(PROPERTY_ID, planID).withProperty(PROPERTY_VEHICLE_ID, vehicleID)
                 .withProperty(PROPERTY_INDEX, String.valueOf(index)).withRepresentationProperty(PROPERTY_ID).build();
@@ -120,6 +118,7 @@ public class PlanDiscoveryMapper implements EvccDiscoveryMapper {
     private String createIdString(String id, int index) throws NoSuchAlgorithmException {
         MessageDigest md = MessageDigest.getInstance("SHA-256");
         byte[] digest = md.digest((id + "Plan" + index).getBytes(StandardCharsets.UTF_8));
+        // Use first 10 hex chars of the SHA to generate a stable, compact plan ID
         return HexUtils.bytesToHex(digest).substring(0, 10);
     }
 }
