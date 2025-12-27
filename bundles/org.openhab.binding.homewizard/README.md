@@ -153,7 +153,6 @@ For DSMR5 meters this is generally once per second, for older versions the frequ
 | total_liter               | Number:Volume             | Total water usage in cubic meters.                                                     | v1           |
 | active_liter              | Number:VolumetricFlowRate | The active water usage in liters per minute.                                           | v1           |
 
-
 ## Full Example
 
 ### `homewizard.things` Example

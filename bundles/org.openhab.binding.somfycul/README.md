@@ -95,7 +95,6 @@ sitemap home label="Home" {
 }
 ```
 
-
 ### Clone Somfy RTS Remote to `somfy-device`
 
 To clone an existing Somfy RTS Remote as a `somfy-device`, have your Somfy RTS remote ready and properly programmed to control your rollershutter. You'll need to have your `somfy-device` `items` set to `Switch` type and use the `program` channel. 

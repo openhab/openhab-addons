@@ -190,8 +190,8 @@ Number Lux_Sensor "Light Level [%.0f lux]" <sun> { channel="sbus:lux-sensor:mybr
 9-in-1 sensors are multi-function sensors that combine motion detection, light level measurement, and dry contact monitoring in a single physical unit. To configure a 9-in-1 sensor in openHAB, you need to create **three separate things** that all reference the same physical sensor:
 
 1. **contact-sensor** (type: `02ca`) - For dry contact channels
-2. **motion-sensor** - For motion detection
-3. **lux-sensor** - For light level sensing
+1. **motion-sensor** - For motion detection
+1. **lux-sensor** - For light level sensing
 
 All three things must use the **same subnet ID and unit ID** to represent the same physical sensor.
 
@@ -226,8 +226,8 @@ Thing lux-sensor sensor_lux [ id=85, refresh=0 ] {
 
 The `contact-sensor` thing type supports two different sensor types via the `type` parameter:
 
-- **`012c`** (default): 012C dry contact sensors 
-- **`02ca`**: 02CA multi-sensor dry contacts 
+- **`012c`** (default): 012C dry contact sensors
+- **`02ca`**: 02CA multi-sensor dry contacts
 
 Choose the appropriate type based on your hardware.
 
@@ -247,6 +247,7 @@ This is useful for:
 ### Color Control and On/Off Functionality
 
 The Color item type in openHAB inherently supports both color selection and on/off functionality:
+
 - The color picker controls hue and saturation
 - The brightness component (0-100%) functions as the on/off control
   - When brightness is 0%, the light is OFF

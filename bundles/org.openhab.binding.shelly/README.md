@@ -1808,8 +1808,7 @@ See notes on discovery of Shelly BLU devices above.
 |         | lowBattery    | Switch   | yes       | Low battery alert (< 20%)                                                           |
 | device  | gatewayDevice | String   | yes       | Shelly forwarded last status update (BLU gateway), could vary from packet to packet |
 
-
-### Shelly BLU Door/Window Sensor (thing-type: shellybludw)
+## Shelly BLU Door/Window Sensor (thing-type: shellybludw)
 
 See notes on discovery of Shelly BLU devices above.
 
@@ -1884,7 +1883,6 @@ See notes on discovery of Shelly BLU devices above.
 | battery | batteryLevel  | Number   | yes       | Battery Level in %                                                                  |
 |         | lowBattery    | Switch   | yes       | Low battery alert (< 20%)                                                           |
 | device  | gatewayDevice | String   | yes       | Shelly forwarded last status update (BLU gateway), could vary from packet to packet |
-
 
 
 ## Shelly Wall Displays
