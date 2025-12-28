@@ -133,48 +133,48 @@ The binding will send value 200 for maximum volume to the receiver.
 
 The Onkyo AVR supports the following channels (some channels are model-specific):
 
-| Channel Type ID           | Item Type | Description                                                                                                     |
-| ------------------------- | --------- | --------------------------------------------------------------------------------------------------------------- |
-| zone1#power               | Switch    | Power on/off your device                                                                                        |
-| zone1#mute                | Switch    | Mute/unmute zone 1                                                                                              |
-| zone1#input               | Number    | The input for zone 1                                                                                            |
-| zone1#volume              | Dimmer    | Volume of zone 1                                                                                                |
-| zone2#power               | Switch    | Power on/off zone 2                                                                                             |
-| zone2#mute                | Switch    | Mute/unmute zone 2                                                                                              |
-| zone2#input               | Number    | The input for zone 2                                                                                            |
-| zone2#volume              | Dimmer    | Volume of zone 2                                                                                                |
-| zone3#power               | Switch    | Power on/off zone 3                                                                                             |
-| zone3#mute                | Switch    | Mute/unmute zone 3                                                                                              |
-| zone3#input               | Number    | The input for zone 3                                                                                            |
-| zone3#volume              | Dimmer    | Volume of zone 3                                                                                                |
+| Channel Type ID           | Item Type | Description                                                                                                            |
+|---------------------------|-----------|------------------------------------------------------------------------------------------------------------------------|
+| zone1#power               | Switch    | Power on/off your device                                                                                               |
+| zone1#mute                | Switch    | Mute/unmute zone 1                                                                                                     |
+| zone1#input               | Number    | The input for zone 1                                                                                                   |
+| zone1#volume              | Dimmer    | Volume of zone 1                                                                                                       |
+| zone2#power               | Switch    | Power on/off zone 2                                                                                                    |
+| zone2#mute                | Switch    | Mute/unmute zone 2                                                                                                     |
+| zone2#input               | Number    | The input for zone 2                                                                                                   |
+| zone2#volume              | Dimmer    | Volume of zone 2                                                                                                       |
+| zone3#power               | Switch    | Power on/off zone 3                                                                                                    |
+| zone3#mute                | Switch    | Mute/unmute zone 3                                                                                                     |
+| zone3#input               | Number    | The input for zone 3                                                                                                   |
+| zone3#volume              | Dimmer    | Volume of zone 3                                                                                                       |
 | player#control            | Player    | Control the Zone Player, e.g., play/pause/next/previous/fast-forward/rewind (available if playing from Network or USB) |
-| player#title              | String    | Title of the current song (available if playing from Network or USB)                                            |
-| player#album              | String    | Album name of the current song (available if playing from Network or USB)                                       |
-| player#artist             | String    | Artist name of the current song (available if playing from Network or USB)                                      |
-| player#currentPlayingTime | String    | Current playing time of the current song (available if playing from Network or USB)                             |
-| player#listenmode         | Number    | Current listening mode e.g. Stereo, 5.1ch Surround, ...                                                         |
-| player#audysseyeq         | Number    | Current Audyssey EQ mode (e.g., Off, Movie, Music)                                                               |
-| player#audioinfo          | String    | Current audio info (Refresh timer must be configured for updates)                                               |
-| player#playuri            | String    | Plays the URI provided to the channel                                                                           |
-| player#albumArt           | Image     | Image of the current album art of the current song                                                              |
-| player#albumArtUrl        | String    | URL to the current album art of the current song                                                                |
-| netmenu#title             | String    | Title of the current NET service                                                                                |
-| netmenu#control           | String    | Control the USB/Net Menu, e.g. Up/Down/Select/Back/PageUp/PageDown/Select&lsqb0-9&rsqb                          |
-| netmenu#selection         | Number    | The number of the currently selected USB/Net Menu entry (0-9)                                                   |
-| netmenu#item0             | String    | The text of USB/Net Menu entry 0                                                                                |
-| netmenu#item1             | String    | The text of USB/Net Menu entry 1                                                                                |
-| netmenu#item2             | String    | The text of USB/Net Menu entry 2                                                                                |
-| netmenu#item3             | String    | The text of USB/Net Menu entry 3                                                                                |
-| netmenu#item4             | String    | The text of USB/Net Menu entry 4                                                                                |
-| netmenu#item5             | String    | The text of USB/Net Menu entry 5                                                                                |
-| netmenu#item6             | String    | The text of USB/Net Menu entry 6                                                                                |
-| netmenu#item7             | String    | The text of USB/Net Menu entry 7                                                                                |
-| netmenu#item8             | String    | The text of USB/Net Menu entry 8                                                                                |
-| netmenu#item9             | String    | The text of USB/Net Menu entry 9                                                                                |
-| information#audioIn       | String    | Details of the input audio format                                                                               |
-| information#audioOut      | String    | Details of the output audio format                                                                              |
-| information#videoIn       | String    | Details of the input video format                                                                               |
-| information#videoOut      | String    | Details of the output video format                                                                              |
+| player#title              | String    | Title of the current song (available if playing from Network or USB)                                                   |
+| player#album              | String    | Album name of the current song (available if playing from Network or USB)                                              |
+| player#artist             | String    | Artist name of the current song (available if playing from Network or USB)                                             |
+| player#currentPlayingTime | String    | Current playing time of the current song (available if playing from Network or USB)                                    |
+| player#listenmode         | Number    | Current listening mode e.g. Stereo, 5.1ch Surround, ...                                                                |
+| player#audysseyeq         | Number    | Current Audyssey EQ mode (e.g., Off, Movie, Music)                                                                     |
+| player#audioinfo          | String    | Current audio info (Refresh timer must be configured for updates)                                                      |
+| player#playuri            | String    | Plays the URI provided to the channel                                                                                  |
+| player#albumArt           | Image     | Image of the current album art of the current song                                                                     |
+| player#albumArtUrl        | String    | URL to the current album art of the current song                                                                       |
+| netmenu#title             | String    | Title of the current NET service                                                                                       |
+| netmenu#control           | String    | Control the USB/Net Menu, e.g. Up/Down/Select/Back/PageUp/PageDown/Select&lsqb0-9&rsqb                                 |
+| netmenu#selection         | Number    | The number of the currently selected USB/Net Menu entry (0-9)                                                          |
+| netmenu#item0             | String    | The text of USB/Net Menu entry 0                                                                                       |
+| netmenu#item1             | String    | The text of USB/Net Menu entry 1                                                                                       |
+| netmenu#item2             | String    | The text of USB/Net Menu entry 2                                                                                       |
+| netmenu#item3             | String    | The text of USB/Net Menu entry 3                                                                                       |
+| netmenu#item4             | String    | The text of USB/Net Menu entry 4                                                                                       |
+| netmenu#item5             | String    | The text of USB/Net Menu entry 5                                                                                       |
+| netmenu#item6             | String    | The text of USB/Net Menu entry 6                                                                                       |
+| netmenu#item7             | String    | The text of USB/Net Menu entry 7                                                                                       |
+| netmenu#item8             | String    | The text of USB/Net Menu entry 8                                                                                       |
+| netmenu#item9             | String    | The text of USB/Net Menu entry 9                                                                                       |
+| information#audioIn       | String    | Details of the input audio format                                                                                      |
+| information#audioOut      | String    | Details of the output audio format                                                                                     |
+| information#videoIn       | String    | Details of the input video format                                                                                      |
+| information#videoOut      | String    | Details of the output video format                                                                                     |
 
 ## Rule Actions
 

@@ -46,8 +46,7 @@
 			</parameter>
 			<parameter name="doorTransitionTimeSeconds" type="integer" unit="s">
 				<label>Door Transition Time</label>
-				<description>Specifies number of seconds that it takes for the garage door to fully open / close, including the
-					time
+				<description>Specifies number of seconds that it takes for the garage door to fully open / close, including the time
 					it takes for OpenGarage to emit beeps. Round up.</description>
 				<default>17</default>
 			</parameter>
