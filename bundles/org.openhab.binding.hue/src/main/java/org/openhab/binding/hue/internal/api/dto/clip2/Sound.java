@@ -16,7 +16,7 @@ import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.hue.internal.api.dto.clip2.enums.SoundType;
+import org.openhab.binding.hue.internal.api.dto.clip2.enums.SoundValue;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
@@ -41,12 +41,12 @@ public class Sound {
         return status;
     }
 
-    public List<SoundType> getSoundTypes() {
-        return soundValues instanceof List<String> list ? list.stream().map(SoundType::of).toList() : List.of();
+    public List<SoundValue> getSoundValues() {
+        return status instanceof SoundStatus status ? status.getSoundValues() : List.of();
     }
 
-    public @Nullable SoundType getSoundType() {
-        return status instanceof SoundStatus s ? s.getSoundType() : null;
+    public @Nullable SoundValue getSoundValue() {
+        return status instanceof SoundStatus s ? s.getSoundValue() : null;
     }
 
     public Sound setDuration(@Nullable QuantityType<?> duration) {
@@ -61,8 +61,8 @@ public class Sound {
         return this;
     }
 
-    public Sound setSoundType(SoundType soundType) {
-        sound = soundType.name().toLowerCase();
+    public Sound setSoundValue(SoundValue soundValue) {
+        sound = soundValue.name().toLowerCase();
         return this;
     }
 }

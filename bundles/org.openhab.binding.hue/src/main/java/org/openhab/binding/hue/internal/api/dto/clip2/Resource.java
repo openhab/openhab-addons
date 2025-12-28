@@ -36,7 +36,7 @@ import org.openhab.binding.hue.internal.api.dto.clip2.enums.SceneRecallAction;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.SmartSceneRecallAction;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.SmartSceneState;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.SoftwareUpdateStatusType;
-import org.openhab.binding.hue.internal.api.dto.clip2.enums.SoundType;
+import org.openhab.binding.hue.internal.api.dto.clip2.enums.SoundValue;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.TamperStateType;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.ZigbeeStatus;
 import org.openhab.binding.hue.internal.exceptions.DTOPresentButEmptyException;
@@ -990,17 +990,14 @@ public class Resource {
     }
 
     /**
-     * Get the speaker sound state for the given chime type.
+     * Get the speaker sound field for the given chime type.
      */
-    public State getSoundState(ChimeType chimeType) {
-        Sound sound;
+    public @Nullable Sound getSound(ChimeType chimeType) {
         switch (chimeType) {
             case ALARM:
-                sound = alarm;
-                break;
+                return alarm;
             case CHIME:
-                sound = chime;
-                break;
+                return chime;
             case ALERT:
                 /*
                  * We need to disambiguate between an alert setting and an alerts setting, because both are represented
@@ -1010,17 +1007,23 @@ public class Resource {
                 if (alert instanceof JsonElement alert && alert.isJsonObject()
                         && alert.getAsJsonObject().get("status") != null) {
                     try {
-                        sound = GSON.fromJson(alert, Sound.class);
-                        break;
+                        return GSON.fromJson(alert, Sound.class);
                     } catch (JsonSyntaxException e) {
                         // fall through
                     }
                 }
                 // fall through
             default:
-                sound = null;
+                // fall through
         }
-        return sound != null && sound.getSoundType() instanceof SoundType soundType
+        return null;
+    }
+
+    /**
+     * Get the speaker sound state for the given chime type.
+     */
+    public State getSoundState(ChimeType chimeType) {
+        return getSound(chimeType) instanceof Sound sound && sound.getSoundValue() instanceof SoundValue soundType
                 ? StringType.valueOf(soundType.name())
                 : UnDefType.NULL;
     }
@@ -1060,9 +1063,10 @@ public class Resource {
     /**
      * Set the speaker sound type, volume and duration for the given chime type.
      */
-    public Resource setSound(ChimeType chimeType, @Nullable SoundType soundType, @Nullable PercentType volume,
+    public Resource setSound(ChimeType chimeType, @Nullable SoundValue soundType, @Nullable PercentType volume,
             @Nullable QuantityType<?> duration) {
-        Sound newSound = soundType != null ? new Sound().setSoundType(soundType).setVolume(volume).setDuration(duration)
+        Sound newSound = soundType != null
+                ? new Sound().setSoundValue(soundType).setVolume(volume).setDuration(duration)
                 : null;
         switch (chimeType) {
             case ALARM:

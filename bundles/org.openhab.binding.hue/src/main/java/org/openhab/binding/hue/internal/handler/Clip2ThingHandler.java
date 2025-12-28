@@ -59,7 +59,7 @@ import org.openhab.binding.hue.internal.api.dto.clip2.enums.MuteType;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.ResourceType;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.SceneRecallAction;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.SmartSceneRecallAction;
-import org.openhab.binding.hue.internal.api.dto.clip2.enums.SoundType;
+import org.openhab.binding.hue.internal.api.dto.clip2.enums.SoundValue;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.ZigbeeStatus;
 import org.openhab.binding.hue.internal.api.dto.clip2.helper.Setters;
 import org.openhab.binding.hue.internal.config.Clip2ThingConfig;
@@ -496,7 +496,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
             case CHANNEL_2_CHIME_SOUND:
                 if (command instanceof StringType stringCommand) {
                     chimeType = chimeType != null ? chimeType : ChimeType.CHIME;
-                    SoundType soundType = SoundType.of(stringCommand.toString());
+                    SoundValue soundType = SoundValue.of(stringCommand.toString());
                     PercentType volume = thing.getChannel(CHANNEL_2_VOLUME) instanceof Channel chan
                             && getItemState(chan.getUID(), PercentType.class) instanceof PercentType level ? level
                                     : null;

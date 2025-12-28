@@ -47,6 +47,7 @@ import org.openhab.binding.hue.internal.api.dto.clip2.ResourceReference;
 import org.openhab.binding.hue.internal.api.dto.clip2.Resources;
 import org.openhab.binding.hue.internal.api.dto.clip2.Rotation;
 import org.openhab.binding.hue.internal.api.dto.clip2.RotationEvent;
+import org.openhab.binding.hue.internal.api.dto.clip2.Sound;
 import org.openhab.binding.hue.internal.api.dto.clip2.TamperReport;
 import org.openhab.binding.hue.internal.api.dto.clip2.Temperature;
 import org.openhab.binding.hue.internal.api.dto.clip2.TimedEffects;
@@ -54,10 +55,12 @@ import org.openhab.binding.hue.internal.api.dto.clip2.enums.ActionType;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.Archetype;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.BatteryStateType;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.ButtonEventType;
+import org.openhab.binding.hue.internal.api.dto.clip2.enums.ChimeType;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.DirectionType;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.EffectType;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.ResourceType;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.RotationEventType;
+import org.openhab.binding.hue.internal.api.dto.clip2.enums.SoundValue;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.ZigbeeStatus;
 import org.openhab.binding.hue.internal.api.dto.clip2.helper.Setters;
 import org.openhab.binding.hue.internal.api.serialization.InstantDeserializer;
@@ -95,7 +98,6 @@ class Clip2DtoTest {
     // Resource types which do not yet have a test JSON payload available
     public static final Set<ResourceType> RESOURCES_WITH_NO_JSON_TEST_CASE_YET = EnumSet.of(
     //@formatter:off
-            ResourceType.BELL_BUTTON,
             ResourceType.CLIP,
             ResourceType.DEVICE_SOFTWARE_UPDATE,
             ResourceType.GROUPED_LIGHT_LEVEL,
@@ -103,7 +105,6 @@ class Clip2DtoTest {
             ResourceType.MATTER_FABRIC,
             ResourceType.MOTION_AREA_CANDIDATE,
             ResourceType.SERVICE_GROUP,
-            ResourceType.SPEAKER,
             ResourceType.WIFI_CONNECTIVITY,
             ResourceType.ZIGBEE_DEVICE_DISCOVERY
     //@formatter:on
@@ -1014,5 +1015,31 @@ class Clip2DtoTest {
         resourceReference = serviceReferences.stream().filter(sr -> sr.getType() == ResourceType.SECURITY_AREA_MOTION)
                 .findFirst().orElse(null);
         assertNotNull(resourceReference);
+    }
+
+    @Test
+    void testSpeaker() {
+        String json = load(ResourceType.SPEAKER.name().toLowerCase());
+        Resources resources = GSON.fromJson(json, Resources.class);
+        assertNotNull(resources);
+        List<Resource> list = resources.getResources();
+        assertNotNull(list);
+        assertEquals(1, list.size());
+        Resource item = list.get(0);
+        assertEquals(ResourceType.SPEAKER, item.getType());
+        State state = item.getSoundMuteState();
+        assertEquals(OnOffType.OFF, state);
+        state = item.getSoundState(ChimeType.ALARM);
+        assertEquals(new StringType("NO_SOUND"), state);
+        state = item.getSoundState(ChimeType.ALERT);
+        assertEquals(new StringType("NO_SOUND"), state);
+        state = item.getSoundState(ChimeType.CHIME);
+        assertEquals(new StringType("NO_SOUND"), state);
+        Sound sound = item.getSound(ChimeType.CHIME);
+        assertNotNull(sound);
+        assertEquals(SoundValue.NO_SOUND, sound.getSoundValue());
+        List<SoundValue> soundTypes = sound.getSoundValues();
+        assertNotNull(soundTypes);
+        assertEquals(20, soundTypes.size());
     }
 }

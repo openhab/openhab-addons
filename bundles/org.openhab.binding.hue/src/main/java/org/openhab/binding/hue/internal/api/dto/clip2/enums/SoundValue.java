@@ -16,12 +16,12 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * Enum for sound type resources.
+ * Enum for sound value resources.
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
 @NonNullByDefault
-public enum SoundType {
+public enum SoundValue {
     NO_SOUND,
     ALERT,
     BLEEP,
@@ -45,7 +45,7 @@ public enum SoundType {
     WESTMINSTER_CLASSIC,
     WESTMINSTER_MODERN;
 
-    public static SoundType of(@Nullable String value) {
+    public static SoundValue of(@Nullable String value) {
         if (value != null) {
             try {
                 return valueOf(value.toUpperCase());

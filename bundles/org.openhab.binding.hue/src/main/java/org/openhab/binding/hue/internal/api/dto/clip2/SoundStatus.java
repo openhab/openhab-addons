@@ -16,7 +16,7 @@ import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.hue.internal.api.dto.clip2.enums.SoundType;
+import org.openhab.binding.hue.internal.api.dto.clip2.enums.SoundValue;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -30,11 +30,11 @@ public class SoundStatus {
     private @Nullable String sound;
     private @Nullable @SerializedName("sound_values") List<String> soundValues;
 
-    public @Nullable SoundType getSoundType() {
-        return sound instanceof String s ? SoundType.of(s) : null;
+    public @Nullable SoundValue getSoundValue() {
+        return sound instanceof String s ? SoundValue.of(s) : null;
     }
 
-    public List<SoundType> getSoundTypes() {
-        return soundValues instanceof List<String> list ? list.stream().map(SoundType::of).toList() : List.of();
+    public List<SoundValue> getSoundValues() {
+        return soundValues instanceof List<String> list ? list.stream().map(SoundValue::of).toList() : List.of();
     }
 }
