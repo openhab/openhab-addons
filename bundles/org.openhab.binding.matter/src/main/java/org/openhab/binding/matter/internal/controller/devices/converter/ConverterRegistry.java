@@ -21,6 +21,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.AirQualityCluster;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.BaseCluster;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.BooleanStateCluster;
+import org.openhab.binding.matter.internal.client.dto.cluster.gen.CarbonDioxideConcentrationMeasurementCluster;
+import org.openhab.binding.matter.internal.client.dto.cluster.gen.CarbonMonoxideConcentrationMeasurementCluster;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.ColorControlCluster;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.DoorLockCluster;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.ElectricalEnergyMeasurementCluster;
@@ -33,6 +35,7 @@ import org.openhab.binding.matter.internal.client.dto.cluster.gen.OccupancySensi
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.OnOffCluster;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.PowerSourceCluster;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.RelativeHumidityMeasurementCluster;
+import org.openhab.binding.matter.internal.client.dto.cluster.gen.SmokeCoAlarmCluster;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.SwitchCluster;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.TemperatureMeasurementCluster;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.ThermostatCluster;
@@ -73,6 +76,11 @@ public class ConverterRegistry {
                 WiFiNetworkDiagnosticsConverter.class);
         ConverterRegistry.registerConverter(DoorLockCluster.CLUSTER_ID, DoorLockConverter.class);
         ConverterRegistry.registerConverter(AirQualityCluster.CLUSTER_ID, AirQualityConverter.class);
+        ConverterRegistry.registerConverter(CarbonDioxideConcentrationMeasurementCluster.CLUSTER_ID,
+                CarbonDioxideConcentrationMeasurementConverter.class);
+        ConverterRegistry.registerConverter(CarbonMonoxideConcentrationMeasurementCluster.CLUSTER_ID,
+                CarbonMonoxideConcentrationMeasurementConverter.class);
+        ConverterRegistry.registerConverter(SmokeCoAlarmCluster.CLUSTER_ID, SmokeCoAlarmConverter.class);
         ConverterRegistry.registerConverter(ElectricalPowerMeasurementCluster.CLUSTER_ID,
                 ElectricalPowerMeasurementConverter.class);
         ConverterRegistry.registerConverter(ElectricalEnergyMeasurementCluster.CLUSTER_ID,

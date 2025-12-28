@@ -94,7 +94,7 @@ Import-Package: \
 	io.netty.transport;version='[4.1.126,4.1.127)',\
 	io.netty.transport-native-unix-common;version='[4.1.126,4.1.127)',\
 	org.osgi.service.component.annotations;version='[1.5.1,1.5.2)',\
-	com.sun.jna;version='[5.17.0,5.17.1)',\
+	com.sun.jna;version='[5.18.1,5.18.2)',\
 	org.apache.aries.spifly.dynamic.bundle;version='[1.3.7,1.3.8)',\
 	org.eclipse.jetty.http;version='[9.4.57,9.4.58)',\
 	org.eclipse.jetty.io;version='[9.4.57,9.4.58)',\
@@ -103,7 +103,7 @@ Import-Package: \
 	org.eclipse.jetty.servlet;version='[9.4.57,9.4.58)',\
 	org.eclipse.jetty.util;version='[9.4.57,9.4.58)',\
 	org.eclipse.jetty.util.ajax;version='[9.4.57,9.4.58)',\
-	org.objectweb.asm;version='[9.8.0,9.8.1)',\
+	org.objectweb.asm;version='[9.9.0,9.9.1)',\
 	org.objectweb.asm.commons;version='[9.6.0,9.6.1)',\
 	org.objectweb.asm.tree;version='[9.6.0,9.6.1)',\
 	org.objectweb.asm.tree.analysis;version='[9.6.0,9.6.1)',\
@@ -125,10 +125,9 @@ Import-Package: \
 	biz.aQute.tester.junit-platform;version='[7.1.0,7.1.1)',\
 	jakarta.annotation-api;version='[2.1.1,2.1.2)',\
 	jakarta.inject.jakarta.inject-api;version='[1.0.5,1.0.6)',\
-	bcpkix;version='[1.81.0,1.81.1)',\
-	bcprov;version='[1.81.0,1.81.1)',\
-	bcutil;version='[1.81.0,1.81.1)',\
-	org.graalvm.llvm.llvm-api;version='[25.0.1,25.0.2)',\
+	bcpkix;version='[1.83.0,1.83.1)',\
+	bcprov;version='[1.83.0,1.83.1)',\
+	bcutil;version='[1.83.0,1.83.1)',\
 	org.graalvm.polyglot.polyglot;version='[25.0.1,25.0.2)',\
 	org.graalvm.python.python-embedding;version='[25.0.1,25.0.2)',\
 	org.graalvm.regex.regex;version='[25.0.1,25.0.2)',\
@@ -143,9 +142,9 @@ Import-Package: \
 	org.graalvm.truffle.truffle-compiler;version='[25.0.1,25.0.2)',\
 	org.graalvm.truffle.truffle-nfi;version='[25.0.1,25.0.2)',\
 	org.graalvm.truffle.truffle-runtime;version='[25.0.1,25.0.2)',\
-	com.fasterxml.jackson.core.jackson-annotations;version='[2.19.2,2.19.3)',\
-	com.fasterxml.jackson.core.jackson-core;version='[2.19.2,2.19.3)',\
-	com.fasterxml.jackson.core.jackson-databind;version='[2.19.2,2.19.3)',\
+	com.fasterxml.jackson.core.jackson-annotations;version='[2.20.0,2.20.1)',\
+	com.fasterxml.jackson.core.jackson-core;version='[2.20.1,2.20.2)',\
+	com.fasterxml.jackson.core.jackson-databind;version='[2.20.1,2.20.2)',\
 	jakarta.ws.rs-api;version='[2.1.6,2.1.7)',\
 	org.graalvm.python.python-language;version='[25.0.1,25.0.2)',\
 	org.graalvm.python.python-resources;version='[25.0.1,25.0.2)',\
