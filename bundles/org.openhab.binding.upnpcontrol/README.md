@@ -162,7 +162,7 @@ The `upnprenderer` has the following default channels:
 | `favoriteselect`   | String      | W           | play favorite from list of saved favorites         |
 | `favorite`         | String      | RW          | set name for existing of new favorite              |
 | `favoriteaction`   | String      | W           | `SAVE` or `DELETE` `favorite`                      |
-| `playlistselect`   | String      | W           | play playlist from list of saved playlists        |
+| `playlistselect`   | String      | W           | play playlist from list of saved playlists         |
 | `title`            | String      | R           | media title                                        |
 | `album`            | String      | R           | media album                                        |
 | `albumart`         | Image       | R           | image for media album                              |

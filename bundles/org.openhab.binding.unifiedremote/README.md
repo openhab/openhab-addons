@@ -22,10 +22,10 @@ The only supported Thing is the Unified Remote Server, which requires the hostna
 
 ## Channels
 
-| Channel     | Type   | Description                                                                                                                                                                                                                                           |
-|-------------|--------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| mouse-move  | String | Relative mouse movement in pixels. Expects a JSON array of two numbers [x, y], e.g., "[10,10]".                                                                                                                                                |
-| send-key    | String | Send a server key command. Supported keys: LEFT_CLICK, RIGHT_CLICK, LOCK, UNLOCK, SLEEP, SHUTDOWN, RESTART, LOGOFF, PLAY/PAUSE, NEXT, PREVIOUS, STOP, VOLUME_MUTE, VOLUME_UP, VOLUME_DOWN, BRIGHTNESS_UP, BRIGHTNESS_DOWN, MONITOR_OFF, MONITOR_ON, ESCAPE, SPACE, BACK, LWIN, CONTROL, TAB, MENU, RETURN, UP, DOWN, LEFT, RIGHT |
+| Channel    | Type   | Description                                                                                                                                                                                                                                                                                                                      |
+|------------|--------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| mouse-move | String | Relative mouse movement in pixels. Expects a JSON array of two numbers [x, y], e.g., "[10,10]".                                                                                                                                                                                                                                  |
+| send-key   | String | Send a server key command. Supported keys: LEFT_CLICK, RIGHT_CLICK, LOCK, UNLOCK, SLEEP, SHUTDOWN, RESTART, LOGOFF, PLAY/PAUSE, NEXT, PREVIOUS, STOP, VOLUME_MUTE, VOLUME_UP, VOLUME_DOWN, BRIGHTNESS_UP, BRIGHTNESS_DOWN, MONITOR_OFF, MONITOR_ON, ESCAPE, SPACE, BACK, LWIN, CONTROL, TAB, MENU, RETURN, UP, DOWN, LEFT, RIGHT |
 
 ## Full Example
 
