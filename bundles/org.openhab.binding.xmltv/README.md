@@ -25,26 +25,26 @@ Once the XMLTV file bridge is created, you can add all known channels by scannin
 
 ## Binding Configuration
 
-| Configuration Parameter | Required | Description                                    | Default |
-|-------------------------|----------|------------------------------------------------|---------|
+| Configuration Parameter | Required | Description                                     | Default |
+|-------------------------|----------|-------------------------------------------------|---------|
 | filePath                | Yes      | Full path (including filename) to an XMLTV file |         |
 | refresh                 | No       | XMLTV file reload interval (hours)              | 24 h    |
-| encoding                | Yes      | XMLTV file encoding                              | UTF-8   |
+| encoding                | Yes      | XMLTV file encoding                             | UTF-8   |
 
 ## Thing Configuration
 
-| Configuration Parameter | Required | Description                                          | Default |
-|-------------------------|----------|------------------------------------------------------|---------|
-| channelId               | Yes      | ID of the channel as presented in the XMLTV file     |         |
-| offset                  | No       | Offset applied to program times (minutes; +/-)       | 0       |
-| refresh                 | No       | Refresh interval (seconds)                           | 60      |
+| Configuration Parameter | Required | Description                                      | Default |
+|-------------------------|----------|--------------------------------------------------|---------|
+| channelId               | Yes      | ID of the channel as presented in the XMLTV file |         |
+| offset                  | No       | Offset applied to program times (minutes; +/-)   | 0       |
+| refresh                 | No       | Refresh interval (seconds)                       | 60      |
 
 ## Channels
 
-| Channel Type ID | Item Type | Description              |
-|-----------------|-----------|--------------------------|
-| iconUrl         | String    | Channel icon URL         |
-| icon            | Image     | Icon of the channel      |
+| Channel Type ID | Item Type | Description         |
+|-----------------|-----------|---------------------|
+| iconUrl         | String    | Channel icon URL    |
+| icon            | Image     | Icon of the channel |
 
 ### Current program (currentprog) channel group
 
@@ -62,15 +62,15 @@ Once the XMLTV file bridge is created, you can add all known channels by scannin
 
 ### Next program (nextprog) channel group
 
-| Channel Type ID | Item Type  | Description                        |
-|-----------------|------------|------------------------------------|
-| progStart       | DateTime   | Program start time                 |
-| timeLeft        | Number:Time| Time left before program start     |
-| progEnd         | DateTime   | Program end time                   |
-| progTitle       | String     | Program title                      |
-| progCategory    | String     | Program category                   |
-| progIconUrl     | String     | URL to an image of the program     |
-| icon            | Image      | Icon of the program                |
+| Channel Type ID | Item Type   | Description                    |
+|-----------------|-------------|--------------------------------|
+| progStart       | DateTime    | Program start time             |
+| timeLeft        | Number:Time | Time left before program start |
+| progEnd         | DateTime    | Program end time               |
+| progTitle       | String      | Program title                  |
+| progCategory    | String      | Program category               |
+| progIconUrl     | String      | URL to an image of the program |
+| icon            | Image       | Icon of the program            |
 
 ## Full Example
 

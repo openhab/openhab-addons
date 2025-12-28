@@ -31,8 +31,8 @@ Bridge xmppclient:xmppBridge:xmpp "XMPP Client" [ host="xmpp.example.com", port=
 | username     | Username           | The XMPP username (left part of JID)                               | true     | -                     |
 | domain       | Domain             | The XMPP domain name (right part of JID)                           | true     | -                     |
 | password     | Password           | The XMPP user password                                             | true     | -                     |
-| host         | Server Hostname/IP | The IP address or hostname of the XMPP server                       | false    | as "domain" parameter |
-| port         | XMPP Server Port   | Port for the XMPP server                                            | false    | 5222                  |
+| host         | Server Hostname/IP | The IP address or hostname of the XMPP server                      | false    | as "domain" parameter |
+| port         | XMPP Server Port   | Port for the XMPP server                                           | false    | 5222                  |
 | securityMode | Security Mode      | Sets the TLS security mode: `required`, `ifpossible` or `disabled` | false    | `required`            |
 
 ## Channels
@@ -41,9 +41,9 @@ You can add `publishTrigger` channels to the bridge to react to incoming message
 
 **publishTrigger** parameters:
 
-| Name      | Label               | Description                                                                                                                                                                                                                                        | Required |
-|-----------|---------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------|
-| payload   | Payload condition   | An optional condition on the value                                                                                                                                                                                                                 | false    |
+| Name      | Label               | Description                                                                                                                                                                                                                           | Required |
+|-----------|---------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------|
+| payload   | Payload condition   | An optional condition on the value                                                                                                                                                                                                    | false    |
 | separator | Separator character | The trigger payload usually contains only the received text. If you define a separator character (e.g., `#`), the sender UID and received text will both be included in the payload. For example: `pavel@example.com#My Message Text` | false    |
 
 ## Example Rules

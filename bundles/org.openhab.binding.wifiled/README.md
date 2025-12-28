@@ -39,7 +39,7 @@ You can choose between two drivers with different functionality:
 | Driver  | Supports Color Fading | Supports Programs | Polls LED State |
 |---------|:---------------------:|:-----------------:|:---------------:|
 | CLASSIC |                       |         ✓         |        ✓        |
-| FADING  |            ✓          |                   |                 |
+| FADING  |           ✓           |                   |                 |
 
 While the CLASSIC driver lets you choose and run device-internal programs (e.g., alternating blue),
 all normal operations (e.g. turn on or off, switch color, etc.) are performed immediately and

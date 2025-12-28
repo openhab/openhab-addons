@@ -28,28 +28,28 @@ The binding has no configuration options; all configuration is done at the Thing
 
 The bridge only has one configuration parameter:
 
-| Parameter | Description                                                              |
-|-----------|------------------------------------------------------------------------- |
-| apikey    | API key to access the Weather Underground service. Mandatory.            |
+| Parameter | Description                                                   |
+|-----------|---------------------------------------------------------------|
+| apikey    | API key to access the Weather Underground service. Mandatory. |
 
 The Thing has a few configuration parameters:
 
-| Parameter | Description                                                              |
-|-----------|------------------------------------------------------------------------- |
-| location  | Location to be considered by the Weather Underground service. Mandatory. |
+| Parameter | Description                                                                                                                  |
+|-----------|------------------------------------------------------------------------------------------------------------------------------|
+| location  | Location to be considered by the Weather Underground service. Mandatory.                                                     |
 | language  | Language to be used by the Weather Underground service. Optional, the default is to use the language from the system locale. |
-| refresh   | Refresh interval in minutes. Optional, the default value is 30 minutes and the minimum value is 5 minutes.  |
+| refresh   | Refresh interval in minutes. Optional, the default value is 30 minutes and the minimum value is 5 minutes.                   |
 
 For the location parameter, different syntaxes are possible:
 
-| Syntax                  | Example           |
-|-------------------------|-------------------|
-| US state/city           | CA/San_Francisco |
-| US zipcode              | 60290            |
-| country/city            | Australia/Sydney |
-| latitude,longitude      | 37.8,-122.4      |
-| airport code            | KJFK             |
-| PWS id                  | pws:KCASANFR70   |
+| Syntax             | Example          |
+|--------------------|------------------|
+| US state/city      | CA/San_Francisco |
+| US zipcode         | 60290            |
+| country/city       | Australia/Sydney |
+| latitude,longitude | 37.8,-122.4      |
+| airport code       | KJFK             |
+| PWS id             | pws:KCASANFR70   |
 
 It can happen that the service is not able to determine the station to use, for example when you select as the location a city in which several stations are registered. In this case, the Thing configuration will fail because the service will not return the data expected by the binding. The best solution in this case is to use latitude and longitude; the service will automatically select a station based on this position.
 
@@ -59,47 +59,47 @@ For the language parameter, Weather Underground uses a special set of language c
 
 The weather information that is retrieved is available as these channels:
 
-| Channel Group ID | Channel ID | Item Type            | Description                     |
-|------------------|------------|----------------------|---------------------------------|
-| Current          | location             | String               | Weather observation location |
-| Current          | stationId            | String               | Weather station identifier |
-| Current          | observationTime      | DateTime             | Observation date and time |
-| Current          | conditions           | String               | Weather conditions |
-| Current          | temperature          | Number:Temperature   | Temperature |
-| Current          | relativeHumidity     | Number:Dimensionless | Relative humidity |
-| Current          | windDirection        | String               | Wind direction (cardinal) |
-| Current          | windDirectionDegrees | Number:Angle         | Wind direction as an angle |
-| Current          | windSpeed            | Number:Speed         | Wind speed |
-| Current          | windGust             | Number:Speed         | Wind gust |
-| Current          | pressure             | Number:Pressure      | Pressure |
-| Current          | pressureTrend        | String               | Pressure trend ("up", "stable" or "down") |
-| Current          | dewPoint             | Number:Temperature   | Dew Point temperature |
-| Current          | heatIndex            | Number:Temperature   | Heat Index |
-| Current          | windChill            | Number:Temperature   | Wind chill temperature |
-| Current          | feelingTemperature   | Number:Temperature   | Feeling temperature |
-| Current          | visibility           | Number:Length        | Visibility |
-| Current          | solarRadiation       | Number:Intensity     | Solar radiation |
-| Current          | UVIndex              | Number               | UV index |
-| Current          | precipitationDay     | Number:Length        | Rain fall during the day |
-| Current          | precipitationHour    | Number:Length        | Rain fall during the last hour |
-| Current          | icon                 | Image                | Icon representing the weather current conditions |
-| Current          | iconKey              | String               | Key used in the icon URL |
-| forecastToday forecastTomorrow forecastDay2 ... forecastDay9 | forecastTime                | DateTime             | Forecast date and time |
-| forecastToday forecastTomorrow forecastDay2 ... forecastDay9 | conditions                  | String               | Weather forecast conditions |
-| forecastToday forecastTomorrow forecastDay2 ... forecastDay9 | minTemperature              | Number:Temperature   | Minimum temperature |
-| forecastToday forecastTomorrow forecastDay2 ... forecastDay9 | maxTemperature              | Number:Temperature   | Maximum temperature |
-| forecastToday forecastTomorrow forecastDay2 ... forecastDay9 | relativeHumidity            | Number:Dimensionless | Relative humidity |
-| forecastToday forecastTomorrow forecastDay2 ... forecastDay9 | probaPrecipitation          | Number:Dimensionless | Probability of precipitation |
-| forecastToday forecastTomorrow forecastDay2 ... forecastDay9 | precipitationDay            | Number:Length        | Rainfall |
-| forecastToday forecastTomorrow forecastDay2 ... forecastDay9 | snow                        | Number:Length        | Snowfall |
-| forecastToday forecastTomorrow forecastDay2 ... forecastDay9 | maxWindDirection            | String               | Maximum wind direction |
-| forecastToday forecastTomorrow forecastDay2 ... forecastDay9 | maxWindDirectionDegrees     | Number:Angle         | Maximum wind direction as an angle |
-| forecastToday forecastTomorrow forecastDay2 ... forecastDay9 | maxWindSpeed                | Number:Speed         | Maximum wind speed |
-| forecastToday forecastTomorrow forecastDay2 ... forecastDay9 | averageWindDirection        | String               | Average wind direction |
-| forecastToday forecastTomorrow forecastDay2 ... forecastDay9 | averageWindDirectionDegrees | Number:Angle         | Average wind direction as an angle |
-| forecastToday forecastTomorrow forecastDay2 ... forecastDay9 | averageWindSpeed            | Number:Speed         | Average wind speed |
+| Channel Group ID                                             | Channel ID                  | Item Type            | Description                                       |
+|--------------------------------------------------------------|-----------------------------|----------------------|---------------------------------------------------|
+| Current                                                      | location                    | String               | Weather observation location                      |
+| Current                                                      | stationId                   | String               | Weather station identifier                        |
+| Current                                                      | observationTime             | DateTime             | Observation date and time                         |
+| Current                                                      | conditions                  | String               | Weather conditions                                |
+| Current                                                      | temperature                 | Number:Temperature   | Temperature                                       |
+| Current                                                      | relativeHumidity            | Number:Dimensionless | Relative humidity                                 |
+| Current                                                      | windDirection               | String               | Wind direction (cardinal)                         |
+| Current                                                      | windDirectionDegrees        | Number:Angle         | Wind direction as an angle                        |
+| Current                                                      | windSpeed                   | Number:Speed         | Wind speed                                        |
+| Current                                                      | windGust                    | Number:Speed         | Wind gust                                         |
+| Current                                                      | pressure                    | Number:Pressure      | Pressure                                          |
+| Current                                                      | pressureTrend               | String               | Pressure trend ("up", "stable" or "down")         |
+| Current                                                      | dewPoint                    | Number:Temperature   | Dew Point temperature                             |
+| Current                                                      | heatIndex                   | Number:Temperature   | Heat Index                                        |
+| Current                                                      | windChill                   | Number:Temperature   | Wind chill temperature                            |
+| Current                                                      | feelingTemperature          | Number:Temperature   | Feeling temperature                               |
+| Current                                                      | visibility                  | Number:Length        | Visibility                                        |
+| Current                                                      | solarRadiation              | Number:Intensity     | Solar radiation                                   |
+| Current                                                      | UVIndex                     | Number               | UV index                                          |
+| Current                                                      | precipitationDay            | Number:Length        | Rain fall during the day                          |
+| Current                                                      | precipitationHour           | Number:Length        | Rain fall during the last hour                    |
+| Current                                                      | icon                        | Image                | Icon representing the weather current conditions  |
+| Current                                                      | iconKey                     | String               | Key used in the icon URL                          |
+| forecastToday forecastTomorrow forecastDay2 ... forecastDay9 | forecastTime                | DateTime             | Forecast date and time                            |
+| forecastToday forecastTomorrow forecastDay2 ... forecastDay9 | conditions                  | String               | Weather forecast conditions                       |
+| forecastToday forecastTomorrow forecastDay2 ... forecastDay9 | minTemperature              | Number:Temperature   | Minimum temperature                               |
+| forecastToday forecastTomorrow forecastDay2 ... forecastDay9 | maxTemperature              | Number:Temperature   | Maximum temperature                               |
+| forecastToday forecastTomorrow forecastDay2 ... forecastDay9 | relativeHumidity            | Number:Dimensionless | Relative humidity                                 |
+| forecastToday forecastTomorrow forecastDay2 ... forecastDay9 | probaPrecipitation          | Number:Dimensionless | Probability of precipitation                      |
+| forecastToday forecastTomorrow forecastDay2 ... forecastDay9 | precipitationDay            | Number:Length        | Rainfall                                          |
+| forecastToday forecastTomorrow forecastDay2 ... forecastDay9 | snow                        | Number:Length        | Snowfall                                          |
+| forecastToday forecastTomorrow forecastDay2 ... forecastDay9 | maxWindDirection            | String               | Maximum wind direction                            |
+| forecastToday forecastTomorrow forecastDay2 ... forecastDay9 | maxWindDirectionDegrees     | Number:Angle         | Maximum wind direction as an angle                |
+| forecastToday forecastTomorrow forecastDay2 ... forecastDay9 | maxWindSpeed                | Number:Speed         | Maximum wind speed                                |
+| forecastToday forecastTomorrow forecastDay2 ... forecastDay9 | averageWindDirection        | String               | Average wind direction                            |
+| forecastToday forecastTomorrow forecastDay2 ... forecastDay9 | averageWindDirectionDegrees | Number:Angle         | Average wind direction as an angle                |
+| forecastToday forecastTomorrow forecastDay2 ... forecastDay9 | averageWindSpeed            | Number:Speed         | Average wind speed                                |
 | forecastToday forecastTomorrow forecastDay2 ... forecastDay9 | icon                        | Image                | Icon representing the weather forecast conditions |
-| forecastToday forecastTomorrow forecastDay2 ... forecastDay9 | iconKey                     | String               | Key used in the icon URL |
+| forecastToday forecastTomorrow forecastDay2 ... forecastDay9 | iconKey                     | String               | Key used in the icon URL                          |
 
 ## Full Example
 

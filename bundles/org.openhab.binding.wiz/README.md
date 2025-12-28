@@ -53,13 +53,13 @@ After discovery or setup, the binding automatically searches for and re-matches 
 
 Thing parameters:
 
-| Parameter ID      | Parameter Type | Mandatory | Description                                                                                                                                                                                                                                                                                   | Default |
-|-------------------|----------------|-----------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------|
-| macAddress        | text           | true      | The MAC address of the bulb                                                                                                                                                                                                                                                                   |         |
-| ipAddress         | text           | true      | The IP of the bulb                                                                                                                                                                                                                                                                            |         |
-| updateInterval    | integer        | false     | Update time interval in seconds to request the status of the bulb.                                                                                                                                                                                                                            | 60      |
-| useHeartBeats     | boolean        | false     | Whether to register for continuous 5s heartbeats                                                                                                                                                                                                                                             | false   |
-| reconnectInterval | integer        | false     | Interval in minutes between attempts to reconnect with a bulb that is no longer responding to status queries. When the bulb first connects to the network, it should send out a firstBeat message allowing openHAB to immediately detect it. This is only a backup to re-find the bulb.       | 15      |
+| Parameter ID      | Parameter Type | Mandatory | Description                                                                                                                                                                                                                                                                             | Default |
+|-------------------|----------------|-----------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------|
+| macAddress        | text           | true      | The MAC address of the bulb                                                                                                                                                                                                                                                             |         |
+| ipAddress         | text           | true      | The IP of the bulb                                                                                                                                                                                                                                                                      |         |
+| updateInterval    | integer        | false     | Update time interval in seconds to request the status of the bulb.                                                                                                                                                                                                                      | 60      |
+| useHeartBeats     | boolean        | false     | Whether to register for continuous 5s heartbeats                                                                                                                                                                                                                                        | false   |
+| reconnectInterval | integer        | false     | Interval in minutes between attempts to reconnect with a bulb that is no longer responding to status queries. When the bulb first connects to the network, it should send out a firstBeat message allowing openHAB to immediately detect it. This is only a backup to re-find the bulb. | 15      |
 
 Example Thing:
 
@@ -71,21 +71,21 @@ Thing wiz:color-bulb:lamp "My Lamp" @ "Living Room" [ macAddress="accf23343cxx",
 
 The binding supports the following channels. If a device is only a light or only a fan, the channels won't be in a group.
 
-| Channel ID             | Item Type            | Description                                           | Access |
-|------------------------|----------------------|-------------------------------------------------------|--------|
-| light#color            | Color                | State, intensity, and color of the LEDs               | R/W    |
-| light#temperature      | Dimmer               | Color temperature of the bulb                         | R/W    |
-| light#temperature-abs  | Number:Temperature   | Color temperature of the bulb in Kelvin               | R/W    |
-| light#brightness       | Dimmer               | The brightness of the bulb                            | R/W    |
-| light#mode             | Number               | Preset light mode to run                              | R/W    |
-| light#speed            | Dimmer               | Speed of color/intensity changes in dynamic modes     | R/W    |
-| fan#state              | Switch               | Whether the fan is on or off                          | R/W    |
-| fan#speed              | Number               | Speed of the fan, in arbitrary steps                  | R/W    |
-| fan#reverse            | Switch               | Whether the fan direction is reversed                 | R/W    |
-| fan#mode               | Number               | Special fan modes (e.g., Breeze)                      | R/W    |
-| device#last-update     | DateTime             | The last time an update was received from the device  | R      |
-| device#signal-strength | Number:Dimensionless | Quality of the device's Wi‑Fi connection (%)          | R      |
-| device#rssi            | Number:Power         | Wi‑Fi received signal strength indicator (dBm)        | R      |
+| Channel ID             | Item Type            | Description                                          | Access |
+|------------------------|----------------------|------------------------------------------------------|--------|
+| light#color            | Color                | State, intensity, and color of the LEDs              | R/W    |
+| light#temperature      | Dimmer               | Color temperature of the bulb                        | R/W    |
+| light#temperature-abs  | Number:Temperature   | Color temperature of the bulb in Kelvin              | R/W    |
+| light#brightness       | Dimmer               | The brightness of the bulb                           | R/W    |
+| light#mode             | Number               | Preset light mode to run                             | R/W    |
+| light#speed            | Dimmer               | Speed of color/intensity changes in dynamic modes    | R/W    |
+| fan#state              | Switch               | Whether the fan is on or off                         | R/W    |
+| fan#speed              | Number               | Speed of the fan, in arbitrary steps                 | R/W    |
+| fan#reverse            | Switch               | Whether the fan direction is reversed                | R/W    |
+| fan#mode               | Number               | Special fan modes (e.g., Breeze)                     | R/W    |
+| device#last-update     | DateTime             | The last time an update was received from the device | R      |
+| device#signal-strength | Number:Dimensionless | Quality of the device's Wi‑Fi connection (%)         | R      |
+| device#rssi            | Number:Power         | Wi‑Fi received signal strength indicator (dBm)       | R      |
 
 ## Light Modes
 
@@ -93,15 +93,15 @@ The binding supports the following light modes:
 
 | ID | Scene Name    |
 |----|---------------|
-|  1 | Ocean         |
-|  2 | Romance       |
-|  3 | Sunset        |
-|  4 | Party         |
-|  5 | Fireplace     |
-|  6 | Cozy White    |
-|  7 | Forest        |
-|  8 | Pastel Colors |
-|  9 | Wakeup        |
+| 1  | Ocean         |
+| 2  | Romance       |
+| 3  | Sunset        |
+| 4  | Party         |
+| 5  | Fireplace     |
+| 6  | Cozy White    |
+| 7  | Forest        |
+| 8  | Pastel Colors |
+| 9  | Wakeup        |
 | 10 | Bed Time      |
 | 11 | Warm White    |
 | 12 | Daylight      |

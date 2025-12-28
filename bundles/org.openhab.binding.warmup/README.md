@@ -29,13 +29,13 @@ The binding’s API implementation is derived from the implementations at <https
 
 The Warmup binding supports the following Thing types:
 
-| Bridge         | Label             | Description                                                                             |
-|----------------|-------------------|-----------------------------------------------------------------------------------------|
-| `my-warmup`    | My Warmup Account | The account credentials for my.warmup.com, which acts as an API to the Warmup device(s) |
+| Bridge      | Label             | Description                                                                             |
+|-------------|-------------------|-----------------------------------------------------------------------------------------|
+| `my-warmup` | My Warmup Account | The account credentials for my.warmup.com, which acts as an API to the Warmup device(s) |
 
-| Thing    | Label | Description                                                                                     |
-|----------|-------|-------------------------------------------------------------------------------------------------|
-| `room`   | Room  | A room containing an individual Warmup Wi‑Fi–connected device that controls a heating circuit. |
+| Thing  | Label | Description                                                                                    |
+|--------|-------|------------------------------------------------------------------------------------------------|
+| `room` | Room  | A room containing an individual Warmup Wi‑Fi–connected device that controls a heating circuit. |
 
 **Room**
 The device is optimised for controlling underfloor heating (electric or hydronic), although it can also control central heating circuits.
@@ -67,18 +67,18 @@ Rooms are configured automatically with a serial number upon discovery, or can b
 
 ## Channels
 
-| channel             | type               | description                                                                                                                                  | read-only |
-|---------------------|--------------------|----------------------------------------------------------------------------------------------------------------------------------------------|-----------|
-| currentTemperature  | Number:Temperature | Currently reported temperature                                                                                                               | true      |
-| targetTemperature   | Number:Temperature | Target temperature                                                                                                                           | false     |
-| overrideRemaining   | Number:Time        | Remaining duration of the configured override                                                                                                | true      |
-| fixedTemperature    | Number:Temperature | Target temperature for fixed mode                                                                                                            | false     |
-| energyToday         | Number:Energy      | Today's current energy consumption                                                                                                           | true      |
-| runMode             | String             | Current operating mode of the thermostat; options listed below                                                                               | false     |
-| frostProtectionMode | Switch             | Toggles between the "Frost Protection" run mode and the previously active run mode (typically Fixed or Schedule)                            | false     |
-| airTemperature      | Number:Temperature | Currently reported air temperature at the device                                                                                             | true      |
-| floor1Temperature   | Number:Temperature | Currently reported temperature from floor probe 1 on the device                                                                              | true      |
-| floor2Temperature   | Number:Temperature | Currently reported temperature from floor probe 2 on the device                                                                              | true      |
+| channel             | type               | description                                                                                                      | read-only |
+|---------------------|--------------------|------------------------------------------------------------------------------------------------------------------|-----------|
+| currentTemperature  | Number:Temperature | Currently reported temperature                                                                                   | true      |
+| targetTemperature   | Number:Temperature | Target temperature                                                                                               | false     |
+| overrideRemaining   | Number:Time        | Remaining duration of the configured override                                                                    | true      |
+| fixedTemperature    | Number:Temperature | Target temperature for fixed mode                                                                                | false     |
+| energyToday         | Number:Energy      | Today's current energy consumption                                                                               | true      |
+| runMode             | String             | Current operating mode of the thermostat; options listed below                                                   | false     |
+| frostProtectionMode | Switch             | Toggles between the "Frost Protection" run mode and the previously active run mode (typically Fixed or Schedule) | false     |
+| airTemperature      | Number:Temperature | Currently reported air temperature at the device                                                                 | true      |
+| floor1Temperature   | Number:Temperature | Currently reported temperature from floor probe 1 on the device                                                  | true      |
+| floor2Temperature   | Number:Temperature | Currently reported temperature from floor probe 2 on the device                                                  | true      |
 
 ### Run Mode Statuses
 

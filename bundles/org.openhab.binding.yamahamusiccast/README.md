@@ -35,48 +35,48 @@ Auto-discovery via UPnP is supported for Yamaha devices that advertise as MediaR
 
 ## Thing Configuration
 
-| Parameter          | Type    | Description                                              | Advanced | Required |
-|--------------------|---------|----------------------------------------------------------|----------|----------|
-| host               | String  | IP address of the Yamaha model (AVR, etc.)               | false    | true     |
-| syncVolume         | Boolean | Sync volume across linked models (default: false)        | false    | false    |
+| Parameter          | Type    | Description                                               | Advanced | Required |
+|--------------------|---------|-----------------------------------------------------------|----------|----------|
+| host               | String  | IP address of the Yamaha model (AVR, etc.)                | false    | true     |
+| syncVolume         | Boolean | Sync volume across linked models (default: false)         | false    | false    |
 | defaultAfterMCLink | String  | Default input value for the client when MC Link is broken | false    | false    |
-| volumeDbMin        | Number  | Lowest volume in dB                                      | true     | false    |
-| volumeDbMax        | Number  | Highest volume in dB                                     | true     | false    |
+| volumeDbMin        | Number  | Lowest volume in dB                                       | true     | false    |
+| volumeDbMax        | Number  | Highest volume in dB                                      | true     | false    |
 
 Default value for _defaultAfterMCLink_ is _NET RADIO_ (as _net_radio_) since most models have this on board.
 You can also use _RADIO / TUNER_ (as _tuner_).
 
 ## Channels
 
-| channel        | type                 | description                                                          |
-|----------------|----------------------|----------------------------------------------------------------------|
-| power          | Switch               | Power ON/OFF                                                         |
-| mute           | Switch               | Mute ON/OFF                                                          |
-| volume         | Dimmer               | Volume in % (scaled to the model's maximum volume)                   |
-| volumeAbs      | Number               | Volume as an absolute value                                          |
-| volumeDB       | Number:Dimensionless | Volume in decibels (dB); availability depends on device              |
-| input          | String               | See the list below                                                   |
-| soundProgram   | String               | See the list below                                                   |
-| selectPreset   | String               | Select Net Radio/USB preset (fetched from the model)                 |
-| selectPresetDAB | String               | Select DAB tuner preset (fetched from Model)                        |
-| selectPresetFM  | String               | Select FM tuner preset (fetched from Model)                         |
-| sleep          | Number               | Fixed values for sleep: 0/30/60/90/120 minutes                       |
-| recallScene    | Number               | Select a scene (8 default scenes are provided)                       |
-| player         | Player               | PLAY/PAUSE/NEXT/PREVIOUS/REWIND/FASTFORWARD                          |
-| artist         | String               | Artist                                                               |
-| track          | String               | Track                                                                |
-| album          | String               | Album                                                                |
-| albumArt       | Image                | Album art                                                            |
-| repeat         | String               | Toggle repeat: Off, One, All                                         |
-| shuffle        | String               | Toggle shuffle: Off, On, Songs, Albums                               |
-| playTime       | Number:Time          | Play time of the current selection: radio, song, track, ...          |
-| totalTime      | String               | Total time of the current selection: radio, song, track, ...         |
-| mclinkStatus   | String               | Choose your MusicCast server or set to Standalone, Server, or Client |
+| channel         | type                 | description                                                          |
+|-----------------|----------------------|----------------------------------------------------------------------|
+| power           | Switch               | Power ON/OFF                                                         |
+| mute            | Switch               | Mute ON/OFF                                                          |
+| volume          | Dimmer               | Volume in % (scaled to the model's maximum volume)                   |
+| volumeAbs       | Number               | Volume as an absolute value                                          |
+| volumeDB        | Number:Dimensionless | Volume in decibels (dB); availability depends on device              |
+| input           | String               | See the list below                                                   |
+| soundProgram    | String               | See the list below                                                   |
+| selectPreset    | String               | Select Net Radio/USB preset (fetched from the model)                 |
+| selectPresetDAB | String               | Select DAB tuner preset (fetched from Model)                         |
+| selectPresetFM  | String               | Select FM tuner preset (fetched from Model)                          |
+| sleep           | Number               | Fixed values for sleep: 0/30/60/90/120 minutes                       |
+| recallScene     | Number               | Select a scene (8 default scenes are provided)                       |
+| player          | Player               | PLAY/PAUSE/NEXT/PREVIOUS/REWIND/FASTFORWARD                          |
+| artist          | String               | Artist                                                               |
+| track           | String               | Track                                                                |
+| album           | String               | Album                                                                |
+| albumArt        | Image                | Album art                                                            |
+| repeat          | String               | Toggle repeat: Off, One, All                                         |
+| shuffle         | String               | Toggle shuffle: Off, On, Songs, Albums                               |
+| playTime        | Number:Time          | Play time of the current selection: radio, song, track, ...          |
+| totalTime       | String               | Total time of the current selection: radio, song, track, ...         |
+| mclinkStatus    | String               | Choose your MusicCast server or set to Standalone, Server, or Client |
 
-| Zones                | description                                          |
-|----------------------|------------------------------------------------------|
-| zone1-4              | Zones 1 to 4 to control Power, Volume, etc.          |
-| playerControls       | Separate zone for Play, Pause, etc.                  |
+| Zones          | description                                 |
+|----------------|---------------------------------------------|
+| zone1-4        | Zones 1 to 4 to control Power, Volume, etc. |
+| playerControls | Separate zone for Play, Pause, etc.         |
 
 ## Input List
 

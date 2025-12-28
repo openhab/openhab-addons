@@ -12,13 +12,13 @@ The X (formerly known as Twitter) binding lets your home post messages (up to 28
 
 The X account Thing requires you to create an app in the X Developer Portal and obtain API keys/tokens.
 
-|   Property        | Default | Required | Description                        |
-|-------------------|---------|:--------:|-----------------------------------|
-| consumerKey       |         |   Yes    | Consumer API Key                  |
-| consumerSecret    |         |   Yes    | Consumer API Secret               |
-| accessToken       |         |   Yes    | Access Token                      |
-| accessTokenSecret |         |   Yes    | Access Token Secret               |
-| refresh           | 30      |   No     | Refresh interval in minutes       |
+| Property          | Default | Required | Description                 |
+|-------------------|---------|:--------:|-----------------------------|
+| consumerKey       |         |   Yes    | Consumer API Key            |
+| consumerSecret    |         |   Yes    | Consumer API Secret         |
+| accessToken       |         |   Yes    | Access Token                |
+| accessTokenSecret |         |   Yes    | Access Token Secret         |
+| refresh           | 30      |    No    | Refresh interval in minutes |
 
 ## Channels
 

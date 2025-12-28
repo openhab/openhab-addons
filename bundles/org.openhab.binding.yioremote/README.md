@@ -14,10 +14,10 @@ The following are the configurations available to each of the bridges/things:
 
 ### YIO Dock
 
-| Name        | Type   | Required | Default | Description                                         |
-| ----------- | ------ | -------- | ------- | --------------------------------------------------- |
-| host        | string | Yes      | (None)  | Host/IP address or host name of the YIO Dock        |
-| accessToken | string | Yes      | 0       | Authentication token (default: 0)                   |
+| Name        | Type   | Required | Default | Description                                  |
+|-------------|--------|----------|---------|----------------------------------------------|
+| host        | string | Yes      | (None)  | Host/IP address or host name of the YIO Dock |
+| accessToken | string | Yes      | 0       | Authentication token (default: 0)            |
 
 ## Channels
 
@@ -25,10 +25,10 @@ The following are the configurations available to each of the bridges/things:
 
 The YIO Dock has the following channels:
 
-| Channel        | Input/Output | Item Type | Description                                                                                                                                                        |
-| -------------- | ------------ | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| receiverswitch | Input        | Switch    | Enable/disable the IR receiver diode/function                                                                                                                      |
-| status         | Output       | String    | Status of the YIO Dock. If the receiver is on, the recognized IR code is displayed; otherwise the send status of the last IR code is displayed.                   |
+| Channel        | Input/Output | Item Type | Description                                                                                                                                     |
+|----------------|--------------|-----------|-------------------------------------------------------------------------------------------------------------------------------------------------|
+| receiverswitch | Input        | Switch    | Enable/disable the IR receiver diode/function                                                                                                   |
+| status         | Output       | String    | Status of the YIO Dock. If the receiver is on, the recognized IR code is displayed; otherwise the send status of the last IR code is displayed. |
 
 # Actions
 

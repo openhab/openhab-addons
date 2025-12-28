@@ -34,33 +34,33 @@ Bridge yamahareceiver:yamahaAV:ReceiverID "Yamaha Receiver Bridge Name" [host="a
 
 Configuration parameters for Bridge `yamahaAV`:
 
-| Parameter         | Required | Default            | Description                                                                                                                                         |
-|-------------------|----------|--------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------|
-| `host`            | yes      | N/A                | The IP address of the AVR to control                                                                                                                |
-| `port`            | no       | 80                 | The API port of the AVR to control                                                                                                                  |
-| `refreshInterval` | no       | 60                 | Refresh interval in seconds                                                                                                                         |
-| `albumUrl`        | no       | embedded image URL | When the album image is not provided by the Yamaha input source, you can specify a default image URL to use                                         |
+| Parameter         | Required | Default            | Description                                                                                                                                          |
+|-------------------|----------|--------------------|------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `host`            | yes      | N/A                | The IP address of the AVR to control                                                                                                                 |
+| `port`            | no       | 80                 | The API port of the AVR to control                                                                                                                   |
+| `refreshInterval` | no       | 60                 | Refresh interval in seconds                                                                                                                          |
+| `albumUrl`        | no       | embedded image URL | When the album image is not provided by the Yamaha input source, you can specify a default image URL to use                                          |
 | `inputMapping`    | no       | "" (empty string)  | Some Yamaha models return different input values on status update than required in the change input commands; see [below](#input-values) for details |
 
 Configuration parameters for Thing `zone`:
 
-| Parameter                    | Required | Default | Description                                                                 |
-|------------------------------|----------|---------|-----------------------------------------------------------------------------|
+| Parameter                    | Required | Default | Description                                                                |
+|------------------------------|----------|---------|----------------------------------------------------------------------------|
 | `zone`                       | yes      | /       | The zone can be Main_Zone, Zone_2, Zone_3, Zone_4 depending on your device |
-| `volumeRelativeChangeFactor` | no       | 2       | Relative volume change in %                                                 |
-| `volumeDbMin`                | no       | -80     | Lowest volume in dB                                                         |
-| `volumeDbMax`                | no       | 12      | Highest volume in dB                                                        |
+| `volumeRelativeChangeFactor` | no       | 2       | Relative volume change in %                                                |
+| `volumeDbMin`                | no       | -80     | Lowest volume in dB                                                        |
+| `volumeDbMax`                | no       | 12      | Highest volume in dB                                                       |
 
 ## Channels
 
 The implemented channels for the `yamahaAV` bridge are:
 
-| Channel             | openHAB Type | Comment                                                                                                                                                                                                     |
-|---------------------|--------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `power`             | `Switch`     | Switches the AVR on or off. Your receiver must be in network standby for this to work.                                                                                                                      |
-| `party_mode`        | `Switch`     | Switches party mode on or off. May not be supported on all models.                                                                                                                                          |
-| `party_mode_mute`   | `Switch`     | Switches mute on or off when in party mode. Write only (state updates are not available). Applicable only when party mode is on. May not be supported on all models.                                        |
-| `party_mode_volume` | `Dimmer`     | Increase or decrease volume when in party mode. Write only (state updates are not available). INCREASE/DECREASE commands only. Applicable only when party mode is on. May not be supported on all models.    |
+| Channel             | openHAB Type | Comment                                                                                                                                                                                                   |
+|---------------------|--------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `power`             | `Switch`     | Switches the AVR on or off. Your receiver must be in network standby for this to work.                                                                                                                    |
+| `party_mode`        | `Switch`     | Switches party mode on or off. May not be supported on all models.                                                                                                                                        |
+| `party_mode_mute`   | `Switch`     | Switches mute on or off when in party mode. Write only (state updates are not available). Applicable only when party mode is on. May not be supported on all models.                                      |
+| `party_mode_volume` | `Dimmer`     | Increase or decrease volume when in party mode. Write only (state updates are not available). INCREASE/DECREASE commands only. Applicable only when party mode is on. May not be supported on all models. |
 
 The implemented channels for a `zone` Thing are grouped in three groups. These are the zones supported: `Main_Zone`, `Zone_2`, `Zone_3`, `Zone_4`.
 
@@ -78,7 +78,7 @@ Zone control channels are:
 | `zone_channels#dialogueLevel`                 | `Number`     | Sets the receiver's dialogue level. May not be supported on all models.                                                                                                                                                                                                                                                                                                                                                                 |
 | `zone_channels#hdmi1Out`                      | `Switch`     | Switches the HDMI1 output on or off (channel is placed in Main_Zone but is effectively a system parameter). May not be supported on all models.                                                                                                                                                                                                                                                                                         |
 | `zone_channels#hdmi2Out`                      | `Switch`     | Switches the HDMI2 output on or off (channel is placed in Main_Zone but is effectively a system parameter). May not be supported on all models.                                                                                                                                                                                                                                                                                         |
-| `playback_channels#preset`                    | `Number`     | Set a preset. Not supported by `Spotify` input. For `NET RADIO` input there is no way to get the current preset (tested on RX-S601D, RX-V3900), so the preset is write only. For RX-V3900 the presets are alphanumeric `A1`, `A2`, `B1`, `B2`, so you need to use numbers greater than 100 to represent these presets as follows: 101, 102, 201, 202.                                                                                     |
+| `playback_channels#preset`                    | `Number`     | Set a preset. Not supported by `Spotify` input. For `NET RADIO` input there is no way to get the current preset (tested on RX-S601D, RX-V3900), so the preset is write only. For RX-V3900 the presets are alphanumeric `A1`, `A2`, `B1`, `B2`, so you need to use numbers greater than 100 to represent these presets as follows: 101, 102, 201, 202.                                                                                   |
 | `playback_channels#playback`                  | `String`     | Set a play mode or get the current play mode. Supported values: `Previous`, `Play`, `Pause`, `Stop`, `Next`. Applies to inputs that support playback (`Spotify`, `SERVER`, `NET RADIO`, `Bluetooth`). Note that some values may not be supported for certain input type and AVR model combinations. For `Spotify` and `Bluetooth` all values work, but for `NET RADIO` input only `Play` and `Stop` are supported (tested on RX-S601D). |
 | `playback_channels#playback_station`          | `String`     | Get the currently played station (radio). Applies to `TUNER` and `NET RADIO` inputs only.                                                                                                                                                                                                                                                                                                                                               |
 | `playback_channels#playback_artist`           | `String`     | Get the currently played artist.                                                                                                                                                                                                                                                                                                                                                                                                        |

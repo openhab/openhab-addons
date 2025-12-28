@@ -23,22 +23,22 @@ Wolf systems are connected with official gateways (Wolf Link Home or Wolf Link P
 
 The account Thing holds the credentials to connect to the wolf-smartset online portal.
 
-| Parameter       | Type    | Defaut | Description                                                         |
-|-----------------|---------|----------|---------------------------------------------------------------------|
-| username | text | | username to authenticate to <www.wolf-smartset.de> |
-| password | text  | | password to authenticate to <www.wolf-smartset.de> |
-| refreshIntervalStructure | integer | 10 | Specifies the refresh interval to refresh the Structure in minutes |
-| refreshIntervalValues | integer | 15 | Specifies time in seconds to refresh values |
-| discoveryEnabled | boolean | true | disable the Thing discovery |
+| Parameter                | Type    | Defaut | Description                                                        |
+|--------------------------|---------|--------|--------------------------------------------------------------------|
+| username                 | text    |        | username to authenticate to <www.wolf-smartset.de>                 |
+| password                 | text    |        | password to authenticate to <www.wolf-smartset.de>                 |
+| refreshIntervalStructure | integer | 10     | Specifies the refresh interval to refresh the Structure in minutes |
+| refreshIntervalValues    | integer | 15     | Specifies time in seconds to refresh values                        |
+| discoveryEnabled         | boolean | true   | disable the Thing discovery                                        |
 
 ### System (bridge)
 
 The system Thing represents one wolf system connected via a WOLF Link home or a WOLF Link pro to the wolf-smartset online portal.
 You have access to your own or to shared systems.
 
-| Parameter       | Type    | Defaut | Description                                                         |
-|-----------------|---------|----------|---------------------------------------------------------------------|
-| systemId | integer | | System ID assigned to the system by WolfSmartset |
+| Parameter | Type    | Defaut | Description                                      |
+|-----------|---------|--------|--------------------------------------------------|
+| systemId  | integer |        | System ID assigned to the system by WolfSmartset |
 
 ### Unit
 
@@ -46,26 +46,26 @@ A system is divided into different units.
 In the wolf-smartset portal, the system has an "Expert" section, each submenu item within the "Expert" section has multiple tabs.
 Each of these tabs is treated as one unit.
 
-| Parameter       | Type    | Defaut | Description                                                         |
-|-----------------|---------|----------|---------------------------------------------------------------------|
-| unitId | integer | | The BundleId assigned to the unit by WolfSmartset |
+| Parameter | Type    | Defaut | Description                                       |
+|-----------|---------|--------|---------------------------------------------------|
+| unitId    | integer |        | The BundleId assigned to the unit by WolfSmartset |
 
 ## Tested WOLF-Devices
 
-| WOLF Equipment    | openHAB Version | Used gateway  |
-|-------------------|-----------------|---------------|
-| CSZ (CGB and SM1) | 3.1             | WOLF Link Pro |
-| CGB-2             | 3.1             | WOLF Link home|
+| WOLF Equipment    | openHAB Version | Used gateway   |
+|-------------------|-----------------|----------------|
+| CSZ (CGB and SM1) | 3.1             | WOLF Link Pro  |
+| CGB-2             | 3.1             | WOLF Link home |
 
 ## Channels
 
-| channel  | type   | description                  |
-|----------|--------|------------------------------|
-| number  | Number | a generic number  |
-| contact  | Contact | a generic contact  |
-| temperature  | Number:Temperature | a generic temperature  |
-| string  | String | a generic String  |
-| datetime  | DateTime | a generic DateTime  |
+| channel     | type               | description           |
+|-------------|--------------------|-----------------------|
+| number      | Number             | a generic number      |
+| contact     | Contact            | a generic contact     |
+| temperature | Number:Temperature | a generic temperature |
+| string      | String             | a generic String      |
+| datetime    | DateTime           | a generic DateTime    |
 
 ## Full Example
 
@@ -119,29 +119,29 @@ All devices able to be connected to <www.wolf-smartset.de>
 
 [Wolf Product Documentation](https://oxomi.com/service/json/catalog/pdf?portal=2024876&catalog=10406695)
 
-| Heating system                            | WOLF Link home        | WOLF Link pro      |
-|-------------------------------------------|-----------------------|--------------------|
-| Gas condensing boiler CGB-2, CGW-2, CGS-2 | ✅ | ✅ |
-| Oil condensing boiler TOB | ✅ | ✅ |
-| MGK-2 gas condensing boiler | ✅ | ✅ |
-| split air/water heat pump BWL-1S | ✅ | ✅ |
-| Oil condensing boiler COB |  | ✅ |
-| gas condensing boiler MGK |   | ✅ |
-| Gas condensing boilers CGB, CGW, CGS, FGB |   | ✅ |
-| Gas condensing boilers CGG-2, CGU-2 |   | ✅ |
-| Boiler controls R2, R3, R21 |   | ✅ |
-| Monobloc heat pumps BWW-1, BWL-1, BWS-1 |   | ✅ |
-| mixer module MM, MM-2 | ⬜ | ✅ |
-| cascade module KM, KM-2 | ⬜ | ✅ |
-| solar modules SM1, SM1-2, SM-2, SM2-2 | ⬜ | ✅ |
-| Comfort apartment ventilation CWL Excellent | ⬜ | ✅ |
-| Air handling units KG Top, CKL Pool``*`` |   | ✅ |
-| Air handling units CKL, CFL, CRL``*`` |   | ✅ |
-| Combined heat and power units | | ✅ |
+| Heating system                              | WOLF Link home | WOLF Link pro |
+|---------------------------------------------|----------------|---------------|
+| Gas condensing boiler CGB-2, CGW-2, CGS-2   | Y              | Y             |
+| Oil condensing boiler TOB                   | Y              | Y             |
+| MGK-2 gas condensing boiler                 | Y              | Y             |
+| split air/water heat pump BWL-1S            | Y              | Y             |
+| Oil condensing boiler COB                   |                | Y             |
+| gas condensing boiler MGK                   |                | Y             |
+| Gas condensing boilers CGB, CGW, CGS, FGB   |                | Y             |
+| Gas condensing boilers CGG-2, CGU-2         |                | Y             |
+| Boiler controls R2, R3, R21                 |                | Y             |
+| Monobloc heat pumps BWW-1, BWL-1, BWS-1     |                | Y             |
+| mixer module MM, MM-2                       | O              | Y             |
+| cascade module KM, KM-2                     | O              | Y             |
+| solar modules SM1, SM1-2, SM-2, SM2-2       | O              | Y             |
+| Comfort apartment ventilation CWL Excellent | O              | Y             |
+| Air handling units KG Top, CKL Pool``*``    |                | Y             |
+| Air handling units CKL, CFL, CRL``*``       |                | Y             |
+| Combined heat and power units               |                | Y             |
 
 Note:
 
-⬜ possible in connection with a WOLF Link home compatible heater,
+O) possible in connection with a WOLF Link home compatible heater,
 full functionality only for devices with current software version.
 
 ``*`` Modbus interface required in the device,

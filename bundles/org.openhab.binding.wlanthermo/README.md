@@ -79,10 +79,10 @@ All channels are read only!
 
 #### The device itself provides the following channels
 
-| channel  | type                 | description                   |
-|----------|----------------------|-------------------------------|
-| cpu_load | Number:Dimensionless | CPU Load in %                 |
-| cpu_temp | Number:Temperature   | CPU Temperature               |
+| channel  | type                 | description     |
+|----------|----------------------|-----------------|
+| cpu_load | Number:Dimensionless | CPU Load in %   |
+| cpu_temp | Number:Temperature   | CPU Temperature |
 
 #### The following channels apply for all 10 probes of the WlanThermo Mini
 
