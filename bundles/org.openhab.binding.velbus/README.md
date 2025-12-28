@@ -61,7 +61,7 @@ xidel -e \
 | vmb6in        | 6-channel input module                                                                     |
 | vmb6pb-20     | 6-button interface module                                                                  |
 | vmb6pbn       | Push-button interface module for Niko 4- or 6-fold push-button                             |
-| vmb7in        | 7-channel input module (potential-free + pulse)                                             |
+| vmb7in        | 7-channel input module (potential-free + pulse)                                            |
 | vmb8dc-20     | 8-channel 0 to 10 V dimmer control module                                                  |
 | vmb8ir        | Infrared remote control receiver module                                                    |
 | vmb8pb        | 8-Channel Push Button module                                                               |
@@ -299,16 +299,16 @@ Thing velbus:vmbdali:1:01 [VL1="CH1,CH2,CH3,CH4", VL2="A4,A5,A6"]
 
 ### Bridges `bridge`, `networkbridge`
 
-| Supported channels groups | Supported channels                                                                                                                                                                                                 | Supported command types                                                 | Remarks                       |
-|---------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |-------------------------------------------------------------------------|-------------------------------|
-| `bridgeClockAlarm`        | `clockAlarm1Enabled`, `clockAlarm2Enabled`                                                                                                                                                                         | OnOff                                                                   |                               |
-| `bridgeClockAlarm`        | `clockAlarm1WakeupHour`, `clockAlarm1WakeupMinute`, `clockAlarm1BedtimeHour`, `clockAlarm1BedtimeMinute`, `clockAlarm2WakeupHour`, `clockAlarm2WakeupMinute`, `clockAlarm2BedtimeHour`, `clockAlarm2BedtimeMinute` | Number                                                                  |                               |
+| Supported channels groups | Supported channels                                                                                                                                                                                                 | Supported command types | Remarks |
+|---------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------|---------|
+| `bridgeClockAlarm`        | `clockAlarm1Enabled`, `clockAlarm2Enabled`                                                                                                                                                                         | OnOff                   |         |
+| `bridgeClockAlarm`        | `clockAlarm1WakeupHour`, `clockAlarm1WakeupMinute`, `clockAlarm1BedtimeHour`, `clockAlarm1BedtimeMinute`, `clockAlarm2WakeupHour`, `clockAlarm2WakeupMinute`, `clockAlarm2BedtimeHour`, `clockAlarm2BedtimeMinute` | Number                  |         |
 
 ### Modules `vmb1bl`, `vmb1bls`
 
-| Supported channels groups | Supported channels | Supported command types      | Remarks |
-|---------------------------|--------------------|------------------------------|---------|
-|                           | `CH1`              | UpDown, StopMove, Percent    |         |
+| Supported channels groups | Supported channels | Supported command types   | Remarks |
+|---------------------------|--------------------|---------------------------|---------|
+|                           | `CH1`              | UpDown, StopMove, Percent |         |
 
 ### Modules `vmb1dm`, `vmb1led`, `vmbdme`, `vmbdmi`, `vmbdmir`
 
@@ -324,9 +324,9 @@ Thing velbus:vmbdali:1:01 [VL1="CH1,CH2,CH3,CH4", VL2="A4,A5,A6"]
 
 ### Module `vmb4ry`
 
-| Supported channels groups | Supported channels | Supported command types      | Remarks |
-|---------------------------|--------------------|------------------------------|---------|
-|                           | `CH1` ... `CH4`    | OnOff                        |         |
+| Supported channels groups | Supported channels | Supported command types | Remarks |
+|---------------------------|--------------------|-------------------------|---------|
+|                           | `CH1` ... `CH4`    | OnOff                   |         |
 
 ### Modules `vmb1ryno`, `vmb1rynos`, `vmb4ryld`, `vmb4ryld-10`, `vmb4ryno`, `vmb4ryno-10`
 
@@ -350,10 +350,10 @@ Thing velbus:vmbdali:1:01 [VL1="CH1,CH2,CH3,CH4", VL2="A4,A5,A6"]
 
 ### Module `vmb1ts`
 
-| Supported channels groups | Supported channels                                                                                                                                                                                                                                                                                                                                                               | Supported command types      | Remarks                           |
-|---------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------|-----------------------------------|
-| `thermostat`              | `currentTemperatureSetpoint`, `heatingModeComfortTemperatureSetpoint`, `heatingModeDayTemperatureSetpoint`, `heatingModeNightTemperatureSetpoint`, `heatingModeAntiFrostTemperatureSetpoint`, `coolingModeComfortTemperatureSetpoint`, `coolingModeDayTemperatureSetpoint`, `coolingModeNightTemperatureSetpoint`, `coolingModeSafeTemperatureSetpoint`, `operatingMode`, `mode` | Number                       | Min = -55, Max = 63.5, Step = 0.5 |
-| `thermostat`              | `heater`, `boost`, `pump`, `cooler`, `alarm1`, `alarm2`, `alarm3`, `alarm4`                                                                                                                                                                                                                                                                                                      | Pressed, Released            | Trigger                           |
+| Supported channels groups | Supported channels                                                                                                                                                                                                                                                                                                                                                               | Supported command types | Remarks                           |
+|---------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------|-----------------------------------|
+| `thermostat`              | `currentTemperatureSetpoint`, `heatingModeComfortTemperatureSetpoint`, `heatingModeDayTemperatureSetpoint`, `heatingModeNightTemperatureSetpoint`, `heatingModeAntiFrostTemperatureSetpoint`, `coolingModeComfortTemperatureSetpoint`, `coolingModeDayTemperatureSetpoint`, `coolingModeNightTemperatureSetpoint`, `coolingModeSafeTemperatureSetpoint`, `operatingMode`, `mode` | Number                  | Min = -55, Max = 63.5, Step = 0.5 |
+| `thermostat`              | `heater`, `boost`, `pump`, `cooler`, `alarm1`, `alarm2`, `alarm3`, `alarm4`                                                                                                                                                                                                                                                                                                      | Pressed, Released       | Trigger                           |
 
 ### Modules `vmb2bl`, `vmb2ble`, `vmb2ble-10`
 
@@ -385,7 +385,7 @@ Thing velbus:vmbdali:1:01 [VL1="CH1,CH2,CH3,CH4", VL2="A4,A5,A6"]
 ### Modules `vmb2pbn`, `vmb6pbn`, `vmb8pb`, `vmb8pbu`, `vmbrfr8s`, `vmbvp1`, `vmb6pb-20`
 
 | Supported channels groups | Supported channels                                                                                                                                                                                                 | Supported command types                                                 | Remarks                       |
-|---------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |-------------------------------------------------------------------------|-------------------------------|
+|---------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------|-------------------------------|
 | `button`                  | `CH1` ... `CH8`                                                                                                                                                                                                    | Pressed, Long_Pressed                                                   |                               |
 | `input`                   | `CH1` ... `CH8`                                                                                                                                                                                                    | Pressed, Released, Long_Pressed                                         | Trigger                       |
 | `feedback`                | `CH1` ... `CH8`                                                                                                                                                                                                    | Clear_LED, Set_LED, Slow_Blink_LED, Fast_Blink_LED, Very_Fast_Blink_LED | Steer the button LED feedback |
@@ -559,7 +559,7 @@ Thing velbus:vmbdali:1:01 [VL1="CH1,CH2,CH3,CH4", VL2="A4,A5,A6"]
 ### Module `vmbmeteo`
 
 | Supported channels groups | Supported channels                                                                                                                                                                                                 | Supported command types         | Remarks                       |
-|---------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |---------------------------------|-------------------------------|
+|---------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------|-------------------------------|
 | `input`                   | `CH1` ... `CH8`                                                                                                                                                                                                    | Pressed, Released, Long_Pressed | Trigger                       |
 | `weatherStation`          | `temperature`, `rainfall`, `illuminance`, `windspeed`                                                                                                                                                              | Number                          | Steer the button LED feedback |
 | `clockAlarm`              | `clockAlarm1Enabled`, `clockAlarm2Enabled`                                                                                                                                                                         | OnOff                           |                               |
@@ -567,16 +567,16 @@ Thing velbus:vmbdali:1:01 [VL1="CH1,CH2,CH3,CH4", VL2="A4,A5,A6"]
 
 ### Modules `vmbpirc`, `vmbpirm`, `vmbpir-20`
 
-| Supported channels groups | Supported channels                                                                                                                                                                                                 | Supported command types         | Remarks                       |
-|---------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |---------------------------------|-------------------------------|
-| `input`                   | `CH1` ... `CH7`                                                                                                                                                                                                    | Pressed, Released, Long_Pressed | Trigger                       |
-| `clockAlarm`              | `clockAlarm1Enabled`, `clockAlarm2Enabled`                                                                                                                                                                         | OnOff                           |                               |
-| `clockAlarm`              | `clockAlarm1WakeupHour`, `clockAlarm1WakeupMinute`, `clockAlarm1BedtimeHour`, `clockAlarm1BedtimeMinute`, `clockAlarm2WakeupHour`, `clockAlarm2WakeupMinute`, `clockAlarm2BedtimeHour`, `clockAlarm2BedtimeMinute` | Number                          |                               |
+| Supported channels groups | Supported channels                                                                                                                                                                                                 | Supported command types         | Remarks |
+|---------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------|---------|
+| `input`                   | `CH1` ... `CH7`                                                                                                                                                                                                    | Pressed, Released, Long_Pressed | Trigger |
+| `clockAlarm`              | `clockAlarm1Enabled`, `clockAlarm2Enabled`                                                                                                                                                                         | OnOff                           |         |
+| `clockAlarm`              | `clockAlarm1WakeupHour`, `clockAlarm1WakeupMinute`, `clockAlarm1BedtimeHour`, `clockAlarm1BedtimeMinute`, `clockAlarm2WakeupHour`, `clockAlarm2WakeupMinute`, `clockAlarm2BedtimeHour`, `clockAlarm2BedtimeMinute` | Number                          |         |
 
 ### Modules `vmbdali`, `vmbdali-20`
 
 | Supported channels groups | Supported channels                                                                                                                                                                                                 | Supported command types                                                 | Remarks                                                                                      |
-|---------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |-------------------------------------------------------------------------|----------------------------------------------------------------------------------------------|
+|---------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------|----------------------------------------------------------------------------------------------|
 | `input`                   | `CH1` ... `CH81`                                                                                                                                                                                                   | Pressed, Released, Long_Pressed                                         | Trigger                                                                                      |
 | `feedback`                | `CH1` ... `CH81`                                                                                                                                                                                                   | Clear_LED, Set_LED, Slow_Blink_LED, Fast_Blink_LED, Very_Fast_Blink_LED | Steer the button LED feedback                                                                |
 | `color`                   | `CH1` ... `CH81`                                                                                                                                                                                                   | hsbColor                                                                | CH1 ... CH64 = A1 ... A64 / CH65 ... CH80 = G1 ... G16 / CH81 = Broadcast                    |
@@ -599,11 +599,11 @@ Thing velbus:vmbdali:1:01 [VL1="CH1,CH2,CH3,CH4", VL2="A4,A5,A6"]
 
 ### Module `vmb8dc-20`
 
-| Supported channels groups | Supported channels     | Supported command types         | Remarks           |
-|---------------------------|------------------------|---------------------------------|-------------------|
-| `brightness`              | `CH1` ... `CH8`        | Percent                         |                   |
-| `fade-mode`               | `CH1` ... `CH8`        | Direct, Fade_Rate, Fade_Time    |                   |
-| `scene`                   | `CH1` ... `CH8`        | Number                          | Min = 1, Max = 15 |
+| Supported channels groups | Supported channels | Supported command types      | Remarks           |
+|---------------------------|--------------------|------------------------------|-------------------|
+| `brightness`              | `CH1` ... `CH8`    | Percent                      |                   |
+| `fade-mode`               | `CH1` ... `CH8`    | Direct, Fade_Rate, Fade_Time |                   |
+| `scene`                   | `CH1` ... `CH8`    | Number                       | Min = 1, Max = 15 |
 
 ### Module `vmb2dc-20`
 
@@ -613,27 +613,7 @@ Thing velbus:vmbdali:1:01 [VL1="CH1,CH2,CH3,CH4", VL2="A4,A5,A6"]
 | `fade-mode`               | `CH1` ... `CH2`        | Direct, Fade_Rate, Fade_Time    |                   |
 | `scene`                   | `CH1` ... `CH2`        | Number                          | Min = 1, Max = 15 |
 
-### Modules `vmbpsumngr-20`
-
-| Supported channels groups | Supported channels  | Supported command types         | Remarks |
-|---------------------------|---------------------|---------------------------------|---------|
-| `input`                   | `CH1` ... `CH16`    | Pressed, Released               | Trigger |
-
-### Modules `vmbsig`
-
-| Supported channels groups | Supported channels  | Supported command types         | Remarks |
-|---------------------------|---------------------|---------------------------------|---------|
-|                           | N/A                 |                                 |         |
-
-### Modules `vmbsig-20`, `vmbsig-21`
-
-| Supported channels groups | Supported channels  | Supported command types         | Remarks |
-|---------------------------|---------------------|---------------------------------|---------|
-|                           | `status`            | Status                          | Trigger |
-
-The trigger channels can be used as a trigger to rules. 
-The event message can be `PRESSED`, `RELEASED` or `LONG_PRESSED` for an input.
-The event message can be `UNKNOWN`, `NORMAL`, `BUS_ERROR`, `LOW_POWER` or `HIGH_POWER` for a status.
+The trigger channels can be used as a trigger to rules. The event message can be `PRESSED`, `RELEASED` or `LONG_PRESSED`.
 
 To remove the state of the Item in the Sitemap for a `button` channel.
 Go to the Items list, select the Item, add a State Description Metadata, and set the Pattern value to a blank space.
