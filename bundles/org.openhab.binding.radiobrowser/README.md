@@ -9,12 +9,12 @@ With this binding you can use their database of more than 45,000 stations to app
 
 ### `radio` Thing Configuration
 
-| Name          | Type    | Description                                                                                | Default  | Required | Advanced |
-|---------------|---------|--------------------------------------------------------------------------------------------|----------|----------|----------|
-| filters       | text    | Allows you to specify your own filters from the advanced search of the API.          | See below | yes     | no       |
-| clicks        | boolean | Helps to support the server recommend good results.                                        | true     | yes      | yes      |
-| languageCount | integer | If you want fewer languages to be shown as a filter, you can raise this or create your own. | 14       | yes      | yes      |
-| recentLimit   | integer | Limit the number of stations in the recent channel list. 0 disables the feature.        | 5        | yes      | no       |
+| Name          | Type    | Description                                                                                 | Default   | Required | Advanced |
+|---------------|---------|---------------------------------------------------------------------------------------------|-----------|----------|----------|
+| filters       | text    | Allows you to specify your own filters from the advanced search of the API.                 | See below | yes      | no       |
+| clicks        | boolean | Helps to support the server recommend good results.                                         | true      | yes      | yes      |
+| languageCount | integer | If you want fewer languages to be shown as a filter, you can raise this or create your own. | 14        | yes      | yes      |
+| recentLimit   | integer | Limit the number of stations in the recent channel list. 0 disables the feature.            | 5         | yes      | no       |
 
 ## Filters Configuration
 
@@ -40,17 +40,17 @@ If in doubt, you can use the [Event Monitor in the Developer Sidebar](https://ww
 
 ## Channels
 
-| Channel   | Type   | Read/Write | Description                                                                                                 |
-|-----------|--------|------------|-------------------------------------------------------------------------------------------------------------|
-| country   | String | RW         | This allows you to only find stations in ALL or a country of your choice.                                   |
-| state     | String | RW         | When a country is selected, this will auto populate with states that are in your country.                   |
-| language  | String | RW         | You can limit the stations to only be in your language, or you can also use Metadata to set your own list.  |
-| genre     | String | RW         | A list of common genres to help you find a station you like. State Options Metadata allows you to change this. |
-| station   | String | RW         | These are the search results back from the database that match your filter settings.                        |
-| stream    | String | RW         | This is the URL for the selected station.                                                                   |
-| name      | String | RW         | This is the name of the selected station.                                                                   |
-| icon      | String | RW         | This is the icon for the selected station if available in their database.                                   |
-| recent    | String | RW         | Records the last stations you selected to make them easier to find. A config allows this list to be longer. |
+| Channel  | Type   | Read/Write | Description                                                                                                    |
+|----------|--------|------------|----------------------------------------------------------------------------------------------------------------|
+| country  | String | RW         | This allows you to only find stations in ALL or a country of your choice.                                      |
+| state    | String | RW         | When a country is selected, this will auto populate with states that are in your country.                      |
+| language | String | RW         | You can limit the stations to only be in your language, or you can also use Metadata to set your own list.     |
+| genre    | String | RW         | A list of common genres to help you find a station you like. State Options Metadata allows you to change this. |
+| station  | String | RW         | These are the search results back from the database that match your filter settings.                           |
+| stream   | String | RW         | This is the URL for the selected station.                                                                      |
+| name     | String | RW         | This is the name of the selected station.                                                                      |
+| icon     | String | RW         | This is the icon for the selected station if available in their database.                                      |
+| recent   | String | RW         | Records the last stations you selected to make them easier to find. A config allows this list to be longer.    |
 
 ## Using the Stream URL
 

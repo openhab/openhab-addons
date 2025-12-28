@@ -93,51 +93,51 @@ All settings are through Thing configuration parameters.
 
 The Thing requires the following configuration parameters:
 
-| Parameter Label         | Parameter ID     | Description                                           | Accepted values |
-|-------------------------|------------------|-------------------------------------------------------|-----------------|
-| Serial Port             | serialPort       | Serial port to use for connecting to the Rotel device | |
-| Baud Rate               | baudRate         | Baud rate to use for connecting to the Rotel device   | 19200, 38400    |
-| Address                 | host             | Host name or IP address of the Rotel device (IP connection) or the machine connected to the Rotel device (serial over IP) | |
-| Port                    | port             | Communication port (IP or serial over IP). For IP connection to the Rotel device, keep the default port (9590) | |
-| Protocol Version        | Protocol         | Choose one of the two protocol versions (depends on your device firmware). Default is ASCII_V2 | ASCII_V1 or ASCII_V2 |
-| Input Label CD          | inputLabelCd     | Label setup for the source CD                         | |
-| Input Label Tuner       | inputLabelTuner  | Label setup for the source Tuner                      | |
-| Input Label Tape        | inputLabelTape   | Label setup for the source Tape                       | |
-| Input Label USB         | inputLabelUsb    | Label setup for the source USB                        | |
-| Input Label Video 1     | inputLabelVideo1 | Label setup for the source Video 1                    | |
-| Input Label Video 2     | inputLabelVideo2 | Label setup for the source Video 2                    | |
-| Input Label Video 3     | inputLabelVideo3 | Label setup for the source Video 3                    | |
-| Input Label Video 4     | inputLabelVideo4 | Label setup for the source Video 4                    | |
-| Input Label Video 5     | inputLabelVideo5 | Label setup for the source Video 5                    | |
-| Input Label Video 6     | inputLabelVideo6 | Label setup for the source Video 6                    | |
-| Input Label Multi Input | inputLabelMulti  | Label setup for the source Multi Input                | |
+| Parameter Label         | Parameter ID     | Description                                                                                                               | Accepted values      |
+|-------------------------|------------------|---------------------------------------------------------------------------------------------------------------------------|----------------------|
+| Serial Port             | serialPort       | Serial port to use for connecting to the Rotel device                                                                     |                      |
+| Baud Rate               | baudRate         | Baud rate to use for connecting to the Rotel device                                                                       | 19200, 38400         |
+| Address                 | host             | Host name or IP address of the Rotel device (IP connection) or the machine connected to the Rotel device (serial over IP) |                      |
+| Port                    | port             | Communication port (IP or serial over IP). For IP connection to the Rotel device, keep the default port (9590)            |                      |
+| Protocol Version        | Protocol         | Choose one of the two protocol versions (depends on your device firmware). Default is ASCII_V2                            | ASCII_V1 or ASCII_V2 |
+| Input Label CD          | inputLabelCd     | Label setup for the source CD                                                                                             |                      |
+| Input Label Tuner       | inputLabelTuner  | Label setup for the source Tuner                                                                                          |                      |
+| Input Label Tape        | inputLabelTape   | Label setup for the source Tape                                                                                           |                      |
+| Input Label USB         | inputLabelUsb    | Label setup for the source USB                                                                                            |                      |
+| Input Label Video 1     | inputLabelVideo1 | Label setup for the source Video 1                                                                                        |                      |
+| Input Label Video 2     | inputLabelVideo2 | Label setup for the source Video 2                                                                                        |                      |
+| Input Label Video 3     | inputLabelVideo3 | Label setup for the source Video 3                                                                                        |                      |
+| Input Label Video 4     | inputLabelVideo4 | Label setup for the source Video 4                                                                                        |                      |
+| Input Label Video 5     | inputLabelVideo5 | Label setup for the source Video 5                                                                                        |                      |
+| Input Label Video 6     | inputLabelVideo6 | Label setup for the source Video 6                                                                                        |                      |
+| Input Label Multi Input | inputLabelMulti  | Label setup for the source Multi Input                                                                                    |                      |
 
 All things have the following parameters: serialPort, host and port.
 Some have additional parameters listed in the next table:
 
-| Thing Type | Parameters available in addition to serialPort, host and port   |
-|------------|-----------------------------------------------------------------|
-| ra1572     | protocol (ASCII_V2 by default); as of firmware V2.65, select V2 |
-| ra1592     | protocol (ASCII_V2 by default); as of firmware V1.53, select V2 |
-| rc1572     | protocol (ASCII_V2 by default); as of firmware V2.65, select V2 |
-| rc1590     | protocol (ASCII_V2 by default); as of firmware V1.40, select V2 |
-| rcd1572    | protocol (ASCII_V2 by default); as of firmware V2.33, select V2 |
-| rsp1066    | inputLabelVideo1, inputLabelVideo2, inputLabelVideo3, inputLabelVideo4, inputLabelVideo5 |
-| rsp1068    | inputLabelCd, inputLabelTuner, inputLabelTape, inputLabelVideo1, inputLabelVideo2, inputLabelVideo3, inputLabelVideo4, inputLabelVideo5 |
-| rsp1069    | inputLabelCd, inputLabelTuner, inputLabelTape, inputLabelVideo1, inputLabelVideo2, inputLabelVideo3, inputLabelVideo4, inputLabelVideo5 |
-| rsp1098    | inputLabelCd, inputLabelTuner, inputLabelTape, inputLabelVideo1, inputLabelVideo2, inputLabelVideo3, inputLabelVideo4, inputLabelVideo5 |
-| rsp1570    | inputLabelCd, inputLabelTuner, inputLabelTape, inputLabelVideo1, inputLabelVideo2, inputLabelVideo3, inputLabelVideo4, inputLabelVideo5, inputLabelMulti |
+| Thing Type | Parameters available in addition to serialPort, host and port                                                                                                             |
+|------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| ra1572     | protocol (ASCII_V2 by default); as of firmware V2.65, select V2                                                                                                           |
+| ra1592     | protocol (ASCII_V2 by default); as of firmware V1.53, select V2                                                                                                           |
+| rc1572     | protocol (ASCII_V2 by default); as of firmware V2.65, select V2                                                                                                           |
+| rc1590     | protocol (ASCII_V2 by default); as of firmware V1.40, select V2                                                                                                           |
+| rcd1572    | protocol (ASCII_V2 by default); as of firmware V2.33, select V2                                                                                                           |
+| rsp1066    | inputLabelVideo1, inputLabelVideo2, inputLabelVideo3, inputLabelVideo4, inputLabelVideo5                                                                                  |
+| rsp1068    | inputLabelCd, inputLabelTuner, inputLabelTape, inputLabelVideo1, inputLabelVideo2, inputLabelVideo3, inputLabelVideo4, inputLabelVideo5                                   |
+| rsp1069    | inputLabelCd, inputLabelTuner, inputLabelTape, inputLabelVideo1, inputLabelVideo2, inputLabelVideo3, inputLabelVideo4, inputLabelVideo5                                   |
+| rsp1098    | inputLabelCd, inputLabelTuner, inputLabelTape, inputLabelVideo1, inputLabelVideo2, inputLabelVideo3, inputLabelVideo4, inputLabelVideo5                                   |
+| rsp1570    | inputLabelCd, inputLabelTuner, inputLabelTape, inputLabelVideo1, inputLabelVideo2, inputLabelVideo3, inputLabelVideo4, inputLabelVideo5, inputLabelMulti                  |
 | rsp1572    | inputLabelCd, inputLabelTuner, inputLabelUsb, inputLabelVideo1, inputLabelVideo2, inputLabelVideo3, inputLabelVideo4, inputLabelVideo5, inputLabelVideo6, inputLabelMulti |
-| rsx1055    | inputLabelVideo1, inputLabelVideo2, inputLabelVideo3, inputLabelVideo4, inputLabelVideo5 |
-| rsx1056    | inputLabelCd, inputLabelTuner, inputLabelTape, inputLabelVideo1, inputLabelVideo2, inputLabelVideo3, inputLabelVideo4, inputLabelVideo5 |
-| rsx1057    | inputLabelCd, inputLabelTuner, inputLabelTape, inputLabelVideo1, inputLabelVideo2, inputLabelVideo3, inputLabelVideo4, inputLabelVideo5 |
-| rsx1058    | inputLabelCd, inputLabelTuner, inputLabelTape, inputLabelVideo1, inputLabelVideo2, inputLabelVideo3, inputLabelVideo4, inputLabelVideo5 |
-| rsx1065    | inputLabelVideo1, inputLabelVideo2, inputLabelVideo3, inputLabelVideo4, inputLabelVideo5 |
-| rsx1067    | inputLabelCd, inputLabelTuner, inputLabelTape, inputLabelVideo1, inputLabelVideo2, inputLabelVideo3, inputLabelVideo4, inputLabelVideo5 |
-| rsx1550    | inputLabelCd, inputLabelTuner, inputLabelTape, inputLabelVideo1, inputLabelVideo2, inputLabelVideo3, inputLabelVideo4, inputLabelVideo5, inputLabelMulti |
-| rsx1560    | inputLabelCd, inputLabelTuner, inputLabelTape, inputLabelVideo1, inputLabelVideo2, inputLabelVideo3, inputLabelVideo4, inputLabelVideo5, inputLabelMulti |
+| rsx1055    | inputLabelVideo1, inputLabelVideo2, inputLabelVideo3, inputLabelVideo4, inputLabelVideo5                                                                                  |
+| rsx1056    | inputLabelCd, inputLabelTuner, inputLabelTape, inputLabelVideo1, inputLabelVideo2, inputLabelVideo3, inputLabelVideo4, inputLabelVideo5                                   |
+| rsx1057    | inputLabelCd, inputLabelTuner, inputLabelTape, inputLabelVideo1, inputLabelVideo2, inputLabelVideo3, inputLabelVideo4, inputLabelVideo5                                   |
+| rsx1058    | inputLabelCd, inputLabelTuner, inputLabelTape, inputLabelVideo1, inputLabelVideo2, inputLabelVideo3, inputLabelVideo4, inputLabelVideo5                                   |
+| rsx1065    | inputLabelVideo1, inputLabelVideo2, inputLabelVideo3, inputLabelVideo4, inputLabelVideo5                                                                                  |
+| rsx1067    | inputLabelCd, inputLabelTuner, inputLabelTape, inputLabelVideo1, inputLabelVideo2, inputLabelVideo3, inputLabelVideo4, inputLabelVideo5                                   |
+| rsx1550    | inputLabelCd, inputLabelTuner, inputLabelTape, inputLabelVideo1, inputLabelVideo2, inputLabelVideo3, inputLabelVideo4, inputLabelVideo5, inputLabelMulti                  |
+| rsx1560    | inputLabelCd, inputLabelTuner, inputLabelTape, inputLabelVideo1, inputLabelVideo2, inputLabelVideo3, inputLabelVideo4, inputLabelVideo5, inputLabelMulti                  |
 | rsx1562    | inputLabelCd, inputLabelTuner, inputLabelUsb, inputLabelVideo1, inputLabelVideo2, inputLabelVideo3, inputLabelVideo4, inputLabelVideo5, inputLabelVideo6, inputLabelMulti |
-| rx1052     | baudRate, inputLabelVideo1, inputLabelVideo2, inputLabelVideo3, inputLabelVideo4 |
+| rx1052     | baudRate, inputLabelVideo1, inputLabelVideo2, inputLabelVideo3, inputLabelVideo4                                                                                          |
 
 Some notes:
 
@@ -153,30 +153,30 @@ Some notes:
 
 The following channels are available:
 
-| Channel ID   | Label               | Item Type | Description                           | Possible values (depends on model) |
-|--------------|---------------------|-----------|---------------------------------------|------------------------------------|
-| power, mainZone#power, allZones#power, zone2#power, zone3#power, zone4#power | Power               | Switch    | Power ON/OFF the equipment or the zone | ON, OFF                            |
-| source, mainZone#source, zone1#source, zone2#source, zone3#source, zone4#source | Source Input        | String    | Select the source input               | CD, TUNER, TAPE, VIDEO1, VIDEO2, VIDEO3, VIDEO4, VIDEO5, VIDEO6, VIDEO7, VIDEO8, USB, PCUSB, MULTI, PHONO, BLUETOOTH, AUX, AUX1, AUX2, AUX1_COAX, AUX1_OPTICAL, COAX1, COAX2, COAX3, OPTICAL1, OPTICAL2, OPTICAL3, XLR, RCD, FM, DAB, PLAYFI, IRADIO, NETWORK, INPUTA, INPUTB, INPUTC, INPUTD |
-| mainZone#recordSource | Record Source       | String    | Select the source to be recorded      | CD, TUNER, TAPE, VIDEO1, VIDEO2, VIDEO3, VIDEO4, VIDEO5, VIDEO6, USB, PHONO, MAIN |
-| dsp, mainZone#dsp | DSP Mode            | String    | Select the DSP mode                   | NONE, STEREO3, STEREO5, STEREO7, STEREO9, STEREO11, MUSIC1, MUSIC2, MUSIC3, MUSIC4, PROLOGIC, PLIICINEMA, PLIIMUSIC, PLIIGAME, PLIIXCINEMA, PLIIXMUSIC, PLIIXGAME, PLIIZ, NEO6MUSIC, NEO6CINEMA, ATMOS, NEURALX, BYPASS |
-| mainZone#volumeUpDown, zone2#volumeUpDown | Volume              | Number    | Increase or decrease the volume       | INCREASE, DECREASE, value |
-| volume, mainZone#volume, zone1#volume, zone2#volume, zone3#volume, zone4#volume | Volume              | Dimmer    | Adjust the volume                     | value between 0 and 100 |
-| mute, mainZone#mute, zone1#mute, zone2#mute, zone3#mute, zone4#mute | Mute                | Switch    | Mute/unmute the sound                 | ON, OFF                            |
-| bass, mainZone#bass, zone1#bass, zone2#bass, zone3#bass, zone4#bass | Bass Adjustment           | Number    | Adjust the bass                                          | INCREASE, DECREASE, value          |
-| treble, mainZone#treble, zone1#treble, zone2#treble, zone3#treble, zone4#treble | Treble Adjustment     | Number    | Adjust the treble                                        | INCREASE, DECREASE, value          |
-| playControl    | Playback Control               | Player    | Control the playback                                     | PLAY, PAUSE, NEXT, PREVIOUS        |
-| track          | Current Track                  | Number    | The current CD track number                              |                                    |
-| random         | Random Mode                    | Switch    | The current random mode                                  |                                    |
-| repeat         | Repeat Mode                    | String    | The current repeat mode                                  | TRACK, DISC, OFF                   |
-| radioPreset    | Radio Preset                   | Number    | Select a radio preset                                    | INCREASE, DECREASE, value between 1 and 30 |
-| mainZone#line1 | Front Panel Line 1             | String    | The first line displayed on the device front panel       |                                    |
-| mainZone#line2 | Front Panel Line 2             | String    | The second line displayed on the device front panel      |                                    |
-| frequency, zone1#frequency, zone2#frequency, zone3#frequency, zone4#frequency | Current Frequency              | Number    | The current frequency (in kHz) for digital source input  |                                    |
-| brightness, allZones#brightness | Front Panel Display Brightness | Dimmer    | The backlight brightness level (in %) of the device front panel |                             |
-| tcbypass       | Tone Control Bypass            | Switch    | The user's bass-/treble-settings are bypassed            | ON, OFF                            |
-| balance, zone1#balance, zone2#balance, zone3#balance, zone4#balance | Stereo Balance Adjustment      | Number    | Adjust the balance                                       | INCREASE, DECREASE, value          |
-| speakera       | Speaker-A Adjustment           | Switch    | Turn on/off the speaker group A                          | ON, OFF                            |
-| speakerb       | Speaker-B Adjustment           | Switch    | Turn on/off the speaker group B                          | ON, OFF                            |
+| Channel ID                                                                      | Label                          | Item Type | Description                                                     | Possible values (depends on model)                                                                                                                                                                                                                                                            |
+|---------------------------------------------------------------------------------|--------------------------------|-----------|-----------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| power, mainZone#power, allZones#power, zone2#power, zone3#power, zone4#power    | Power                          | Switch    | Power ON/OFF the equipment or the zone                          | ON, OFF                                                                                                                                                                                                                                                                                       |
+| source, mainZone#source, zone1#source, zone2#source, zone3#source, zone4#source | Source Input                   | String    | Select the source input                                         | CD, TUNER, TAPE, VIDEO1, VIDEO2, VIDEO3, VIDEO4, VIDEO5, VIDEO6, VIDEO7, VIDEO8, USB, PCUSB, MULTI, PHONO, BLUETOOTH, AUX, AUX1, AUX2, AUX1_COAX, AUX1_OPTICAL, COAX1, COAX2, COAX3, OPTICAL1, OPTICAL2, OPTICAL3, XLR, RCD, FM, DAB, PLAYFI, IRADIO, NETWORK, INPUTA, INPUTB, INPUTC, INPUTD |
+| mainZone#recordSource                                                           | Record Source                  | String    | Select the source to be recorded                                | CD, TUNER, TAPE, VIDEO1, VIDEO2, VIDEO3, VIDEO4, VIDEO5, VIDEO6, USB, PHONO, MAIN                                                                                                                                                                                                             |
+| dsp, mainZone#dsp                                                               | DSP Mode                       | String    | Select the DSP mode                                             | NONE, STEREO3, STEREO5, STEREO7, STEREO9, STEREO11, MUSIC1, MUSIC2, MUSIC3, MUSIC4, PROLOGIC, PLIICINEMA, PLIIMUSIC, PLIIGAME, PLIIXCINEMA, PLIIXMUSIC, PLIIXGAME, PLIIZ, NEO6MUSIC, NEO6CINEMA, ATMOS, NEURALX, BYPASS                                                                       |
+| mainZone#volumeUpDown, zone2#volumeUpDown                                       | Volume                         | Number    | Increase or decrease the volume                                 | INCREASE, DECREASE, value                                                                                                                                                                                                                                                                     |
+| volume, mainZone#volume, zone1#volume, zone2#volume, zone3#volume, zone4#volume | Volume                         | Dimmer    | Adjust the volume                                               | value between 0 and 100                                                                                                                                                                                                                                                                       |
+| mute, mainZone#mute, zone1#mute, zone2#mute, zone3#mute, zone4#mute             | Mute                           | Switch    | Mute/unmute the sound                                           | ON, OFF                                                                                                                                                                                                                                                                                       |
+| bass, mainZone#bass, zone1#bass, zone2#bass, zone3#bass, zone4#bass             | Bass Adjustment                | Number    | Adjust the bass                                                 | INCREASE, DECREASE, value                                                                                                                                                                                                                                                                     |
+| treble, mainZone#treble, zone1#treble, zone2#treble, zone3#treble, zone4#treble | Treble Adjustment              | Number    | Adjust the treble                                               | INCREASE, DECREASE, value                                                                                                                                                                                                                                                                     |
+| playControl                                                                     | Playback Control               | Player    | Control the playback                                            | PLAY, PAUSE, NEXT, PREVIOUS                                                                                                                                                                                                                                                                   |
+| track                                                                           | Current Track                  | Number    | The current CD track number                                     |                                                                                                                                                                                                                                                                                               |
+| random                                                                          | Random Mode                    | Switch    | The current random mode                                         |                                                                                                                                                                                                                                                                                               |
+| repeat                                                                          | Repeat Mode                    | String    | The current repeat mode                                         | TRACK, DISC, OFF                                                                                                                                                                                                                                                                              |
+| radioPreset                                                                     | Radio Preset                   | Number    | Select a radio preset                                           | INCREASE, DECREASE, value between 1 and 30                                                                                                                                                                                                                                                    |
+| mainZone#line1                                                                  | Front Panel Line 1             | String    | The first line displayed on the device front panel              |                                                                                                                                                                                                                                                                                               |
+| mainZone#line2                                                                  | Front Panel Line 2             | String    | The second line displayed on the device front panel             |                                                                                                                                                                                                                                                                                               |
+| frequency, zone1#frequency, zone2#frequency, zone3#frequency, zone4#frequency   | Current Frequency              | Number    | The current frequency (in kHz) for digital source input         |                                                                                                                                                                                                                                                                                               |
+| brightness, allZones#brightness                                                 | Front Panel Display Brightness | Dimmer    | The backlight brightness level (in %) of the device front panel |                                                                                                                                                                                                                                                                                               |
+| tcbypass                                                                        | Tone Control Bypass            | Switch    | The user's bass-/treble-settings are bypassed                   | ON, OFF                                                                                                                                                                                                                                                                                       |
+| balance, zone1#balance, zone2#balance, zone3#balance, zone4#balance             | Stereo Balance Adjustment      | Number    | Adjust the balance                                              | INCREASE, DECREASE, value                                                                                                                                                                                                                                                                     |
+| speakera                                                                        | Speaker-A Adjustment           | Switch    | Turn on/off the speaker group A                                 | ON, OFF                                                                                                                                                                                                                                                                                       |
+| speakerb                                                                        | Speaker-B Adjustment           | Switch    | Turn on/off the speaker group B                                 | ON, OFF                                                                                                                                                                                                                                                                                       |
 
 Here are the list of channels available for each Thing type:
 

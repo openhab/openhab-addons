@@ -473,6 +473,6 @@ Frame label="Group Pet/Cats items" {
 
 ## Troubleshooting
 
-| Problem                                     | Solution                                                                            |
-|---------------------------------------------|-------------------------------------------------------------------------------------|
-| Bridge cannot connect to Sure Petcare API    | Check if you can log in to the Sure Petcare app with the given username/password.    |
+| Problem                                   | Solution                                                                          |
+|-------------------------------------------|-----------------------------------------------------------------------------------|
+| Bridge cannot connect to Sure Petcare API | Check if you can log in to the Sure Petcare app with the given username/password. |

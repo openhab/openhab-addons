@@ -32,29 +32,29 @@ _note_ If openHAB is deployed in a Docker container, you must set the `network_m
 
 The Sbus Bridge has the following configuration parameters:
 
-| Name    | Type    | Description                                          | Default | Required | Advanced  |
-|:--------|:--------|:-----------------------------------------------------|:-------:|:--------:|:---------:|
-| host    | text    | IP address for Sbus communication (typically broadcast). | N/A     | yes      | no        |
-| port    | integer | UDP port number                                      | 6000    | no       | no        |
-| timeout | integer | Response timeout in milliseconds.                     | 3000    | no       | yes       |
+| Name    | Type    | Description                                              | Default | Required | Advanced |
+|---------|---------|----------------------------------------------------------|---------|----------|----------|
+| host    | text    | IP address for Sbus communication (typically broadcast). | N/A     | yes      | no       |
+| port    | integer | UDP port number                                          | 6000    | no       | no       |
+| timeout | integer | Response timeout in milliseconds.                        | 3000    | no       | yes      |
 
 ### Thing Configuration
 
 Most Thing types share the same basic configuration parameters:
 
-| Name    | Type    | Description                                          | Default | Required | Advanced  |
-|:--------|:--------|:-----------------------------------------------------|:-------:|:--------:|:---------:|
-| subnetId| integer | Subnet ID.                                            | 1       | yes      | no        |
-| id      | integer | Unit ID.                                              | N/A     | yes      | no        |
-| refresh | integer | Refresh interval in seconds (0 = listen-only mode).   | 30      | no       | yes       |
+| Name     | Type    | Description                                         | Default | Required | Advanced |
+|----------|---------|-----------------------------------------------------|---------|----------|----------|
+| subnetId | integer | Subnet ID.                                          | 1       | yes      | no       |
+| id       | integer | Unit ID.                                            | N/A     | yes      | no       |
+| refresh  | integer | Refresh interval in seconds (0 = listen-only mode). | 30      | no       | yes      |
 
 **Contact Sensor Additional Configuration:**
 
 The `contact-sensor` Thing type has an additional `type` parameter:
 
-| Name    | Type    | Description                                          | Default | Required | Advanced  |
-|:--------|:--------|:-----------------------------------------------------|:-------:|:--------:|:---------:|
-| type    | text    | Sensor type: `012c` (dry contact) or `02ca` (multi-sensor). | 012c    | no       | no        |
+| Name | Type | Description                                                 | Default | Required | Advanced |
+|------|------|-------------------------------------------------------------|---------|----------|----------|
+| type | text | Sensor type: `012c` (dry contact) or `02ca` (multi-sensor). | 012c    | no       | no       |
 
 **Listen-Only Mode:** Setting `refresh=0` enables listen-only mode where the binding only processes broadcast messages without actively polling. This is useful for sensors that automatically broadcast their status updates.
 
@@ -62,49 +62,49 @@ The `contact-sensor` Thing type has an additional `type` parameter:
 
 ### RGBW Controller Channels
 
-| Channel | Type   | Read/Write | Description                                                |
-|:--------|:-------|:----------:|:-----------------------------------------------------------|
-| color   | Color  | RW         | HSB color picker that controls RGBW components (0-100%). Can be configured to disable the white channel.|
-| switch  | Switch | RW         | On/Off control for the RGBW output with optional timer.     |
+| Channel | Type   | Read/Write | Description                                                                                              |
+|---------|--------|------------|----------------------------------------------------------------------------------------------------------|
+| color   | Color  | RW         | HSB color picker that controls RGBW components (0-100%). Can be configured to disable the white channel. |
+| switch  | Switch | RW         | On/Off control for the RGBW output with optional timer.                                                  |
 
 The color channel of RGBW controllers supports these additional parameters:
 
-| Parameter   | Type    | Description                                          | Default | Required | Advanced  |
-|:------------|:--------|:-----------------------------------------------------|:-------:|:--------:|:---------:|
-| channelNumber | integer | The physical channel number.                        | N/A     | yes      | no        |
-| enableWhite | boolean | Controls the white component support for RGB palette. | true    | no       | yes       |
+| Parameter     | Type    | Description                                           | Default | Required | Advanced |
+|---------------|---------|-------------------------------------------------------|---------|----------|----------|
+| channelNumber | integer | The physical channel number.                          | N/A     | yes      | no       |
+| enableWhite   | boolean | Controls the white component support for RGB palette. | true    | no       | yes      |
 
 ### Temperature Sensor Channels
 
-| Channel     | Type                | Read/Write | Description                    |
-|:------------|:--------------------|:----------:|:-------------------------------|
-| temperature | Number:Temperature  | R          | Current temperature reading. Can be configured to use Celsius (default) or Fahrenheit units.    |
+| Channel     | Type               | Read/Write | Description                                                                                  |
+|-------------|--------------------|------------|----------------------------------------------------------------------------------------------|
+| temperature | Number:Temperature | R          | Current temperature reading. Can be configured to use Celsius (default) or Fahrenheit units. |
 
 ### Switch Controller Channels
 
-| Channel | Type           | Read/Write | Description                                               |
-|:--------|:---------------|:----------:|:----------------------------------------------------------|
-| switch  | Switch         | RW         | Basic ON/OFF state control.                                |
-| dimmer  | Dimmer         | RW         | ON/OFF state with timer transition.                        |
-| paired  | Rollershutter  | RW         | UP/DOWN/STOP control for two paired channels (e.g., rollershutters).|
+| Channel | Type          | Read/Write | Description                                                          |
+|---------|---------------|------------|----------------------------------------------------------------------|
+| switch  | Switch        | RW         | Basic ON/OFF state control.                                          |
+| dimmer  | Dimmer        | RW         | ON/OFF state with timer transition.                                  |
+| paired  | Rollershutter | RW         | UP/DOWN/STOP control for two paired channels (e.g., rollershutters). |
 
 ### Contact Sensor Channels
 
-| Channel | Type    | Read/Write | Description                                               |
-|:--------|:--------|:----------:|:----------------------------------------------------------|
-| contact | Contact | R          | Contact state (OPEN/CLOSED).                               |
+| Channel | Type    | Read/Write | Description                  |
+|---------|---------|------------|------------------------------|
+| contact | Contact | R          | Contact state (OPEN/CLOSED). |
 
 ### Motion Sensor Channels
 
-| Channel | Type    | Read/Write | Description                                               |
-|:--------|:--------|:----------:|:----------------------------------------------------------|
-| motion  | Switch  | R          | Motion detection state (ON=motion detected, OFF=no motion).|
+| Channel | Type   | Read/Write | Description                                                 |
+|---------|--------|------------|-------------------------------------------------------------|
+| motion  | Switch | R          | Motion detection state (ON=motion detected, OFF=no motion). |
 
 ### Lux Sensor Channels
 
-| Channel | Type    | Read/Write | Description                                               |
-|:--------|:--------|:----------:|:----------------------------------------------------------|
-| lux     | Number  | R          | Light level in LUX units.                                  |
+| Channel | Type   | Read/Write | Description               |
+|---------|--------|------------|---------------------------|
+| lux     | Number | R          | Light level in LUX units. |
 
 **Note:** All sensor channels require a `channelNumber` parameter to specify the physical channel number.
 

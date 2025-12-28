@@ -38,16 +38,16 @@ The binding discovers all devices (partitions, zones) defined in the system, but
 
 You can configure the following settings for this bridge:
 
-| Name          | Required | Description                                                                                                                                                                                                                                                                  |
-| ------------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| host          | yes      | Host name or IP address of ETHM-1 module.                                                                                                                                                                                                                                   |
-| port          | no       | TCP port for the integration protocol, defaults to 7094.                                                                                                                                                                                                                     |
-| timeout       | no       | Timeout value in milliseconds for connect, read and write operations, defaults to 5000 (5secs).                                                                                                                                                                              |
-| refresh       | no       | Polling interval in milliseconds, defaults to 5000 (5secs). As of version 2.03 ETHM-1 Plus firmware the module disconnects after 25 seconds of inactivity. Setting this parameter to value greater than 25000 will cause inability to correctly communicate with the module. |
-| userCode      | no       | Security code of the user in behalf of all operations will be executed. If empty, only read operations are allowed.                                                                                                                                                          |
-| encryptionKey | no       | Encryption key used to encrypt data sent and received. If empty, communication is not encrypted.                                                                                                                                                                             |
-| encoding      | no       | Encoding for all the texts received from the module.                                                                                                                                                                                                                         |
-| extCommands   | no       | Check this option to enable extended commands, supported by ETHM-1 Plus and newer versions of ETHM-1. Enabled by default, turn off in case of communication timeouts.                                                                                                        |
+| Name          | Required | Description                                                                                                                                                           |
+|---------------|----------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| host          | yes      | Host name or IP address of ETHM-1 module.                                                                                                                             |
+| port          | no       | TCP port for the integration protocol, defaults to 7094.                                                                                                              |
+| timeout       | no       | Timeout value in milliseconds for connect, read and write operations, defaults to 5000 (5secs).                                                                       |
+| refresh       | no       | Polling interval in milliseconds, defaults to 5000 (5secs). Max 25000ms to avoid module disconnection (ETHM-1 Plus firmware v2.03+).                                  |
+| userCode      | no       | Security code of the user in behalf of all operations will be executed. If empty, only read operations are allowed.                                                   |
+| encryptionKey | no       | Encryption key used to encrypt data sent and received. If empty, communication is not encrypted.                                                                      |
+| encoding      | no       | Encoding for all the texts received from the module.                                                                                                                  |
+| extCommands   | no       | Check this option to enable extended commands, supported by ETHM-1 Plus and newer versions of ETHM-1. Enabled by default, turn off in case of communication timeouts. |
 
 Example:
 
@@ -239,10 +239,10 @@ Thing atd-100 KitchenTemp [ id=10, refresh=30 ]
 
 ### system
 
-| Name        | Type     | Description                                                                                                                        |
-| ----------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------- |
-| date_time   | DateTime | Date and time on the alarm system.                                                                                                |
-| troubles    | Switch   | Active when the system has troubles (trouble LED is blinking on a panel).                                                         |
+| Name            | Type     | Description                                                                                                                        |
+|-----------------|----------|------------------------------------------------------------------------------------------------------------------------------------|
+| date_time       | DateTime | Date and time on the alarm system.                                                                                                 |
+| troubles        | Switch   | Active when the system has troubles (trouble LED is blinking on a panel).                                                          |
 | troubles_memory | Switch   | Memorized state of system troubles.                                                                                                |
 | service_mode    | Switch   | Active when the system is in service mode.                                                                                         |
 | acu100_present  | Switch   | Active when there is an ACU-100 module installed in the system.                                                                    |
@@ -255,8 +255,8 @@ Thing atd-100 KitchenTemp [ id=10, refresh=30 ]
 These channels and the Thing will be removed in the future release of the binding. Please use `readEvent` rule action instead.
 
 | Name        | Type     | Description                                                                            |
-| ----------- | -------- | -------------------------------------------------------------------------------------- |
-| index       | Number   | Index of the current record in the event log. Send '-1' to get most recent record.    |
+|-------------|----------|----------------------------------------------------------------------------------------|
+| index       | Number   | Index of the current record in the event log. Send '-1' to get most recent record.     |
 | prev_index  | Number   | Index of the previous record in the event log. Use this value to iterate over the log. |
 | timestamp   | DateTime | Date and time when the event happened.                                                 |
 | description | String   | Textual description of the event.                                                      |
@@ -264,10 +264,10 @@ These channels and the Thing will be removed in the future release of the bindin
 
 ### atd-100
 
-| Name          | Type               | Description                                               |
-| ------------- | ------------------ | --------------------------------------------------------- |
-| temperature   | Number:Temperature | Current temperature in the zone.                          |
-| device_lobatt | Switch             | Indicates low battery level in the wireless device.       |
+| Name          | Type               | Description                                                |
+|---------------|--------------------|------------------------------------------------------------|
+| temperature   | Number:Temperature | Current temperature in the zone.                           |
+| device_lobatt | Switch             | Indicates low battery level in the wireless device.        |
 | device_nocomm | Switch             | Indicates communication troubles with the wireless device. |
 
 ## Rule Actions

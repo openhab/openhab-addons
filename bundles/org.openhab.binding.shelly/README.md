@@ -307,16 +307,16 @@ Values 1-4 are selecting the corresponding favorite id in the Shelly App, 0 mean
 
 The binding sets the following Thing status depending on the device status:
 
-| Status                | Description                                                                                                                  |
-| --------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
-| INITIALIZING          | This is the default status while initializing the Thing. Once the initialization is triggered the Thing switches to Status ONLINE.CONFIGURATION_PENDING. |
-| UNKNOWN               | Indicates that the status is currently unknown, which must not show a problem. Once the device is reachable and was initialized the Thing switches to status ONLINE. |
-| CONFIGURATION_PENDING | The Thing has been initialized, but device initialization is in progress or pending (e.g. waiting for device wake-up).       |
-| ONLINE                | ONLINE indicates that the device can be accessed and is responding properly. Once initialized battery powered devices also stay ONLINE when in sleep mode. The binding has an integrated watchdog timer supervising the device, see below. The Thing switches to status OFFLINE when some type of communication error occurs.        |
-| OFFLINE               | Communication with the device failed. Check the Thing status in the UI and openHAB's log for an indication of the error.     |
+| Status                | Description                                                                                                                                                                                                                  |
+|-----------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| INITIALIZING          | This is the default status while initializing the Thing. Once the initialization is triggered the Thing switches to Status ONLINE.CONFIGURATION_PENDING.                                                                     |
+| UNKNOWN               | Indicates that the status is currently unknown, which must not show a problem. Once the device is reachable and was initialized the Thing switches to status ONLINE.                                                         |
+| CONFIGURATION_PENDING | Device initialization in progress or pending (e.g., waiting for device wake-up).                                                                                                                                             |
+| ONLINE                | Device is accessible and responding. Battery-powered devices stay ONLINE while in sleep mode. An integrated watchdog timer supervises the device. Switches to OFFLINE on communication errors.                               |
+| OFFLINE               | Communication with the device failed. Check Thing status and openHAB logs for error details.                                                                                                                                 |
 | COMMUNICATION_ERROR   | Communication with the device has reported an error, check detailed status. If the problem persists make sure to have stable WiFi, set the correct password etc. Try restarting OH or deleting and re-discovering the Thing. |
-| FIRMWARE_UPDATING     | Device firmware is updating, just wait. The device should come back to ONLINE within 2 minutes.                              |
-| DUTY_CYCLE            | The device is re-initializing and reported a restart event, e.g. after a firmware update or manual reboot.                   |
+| FIRMWARE_UPDATING     | Device firmware is updating, just wait. The device should come back to ONLINE within 2 minutes.                                                                                                                              |
+| DUTY_CYCLE            | The device is re-initializing and reported a restart event, e.g. after a firmware update or manual reboot.                                                                                                                   |
 
 `Note:`
 For more details see  [Thing Concept](https://www.openhab.org/docs/concepts/things.html#status-details) in openHAB documentation.
@@ -1808,7 +1808,7 @@ See notes on discovery of Shelly BLU devices above.
 |         | lowBattery    | Switch   | yes       | Low battery alert (< 20%)                                                           |
 | device  | gatewayDevice | String   | yes       | Shelly forwarded last status update (BLU gateway), could vary from packet to packet |
 
-## Shelly BLU Door/Window Sensor (thing-type: shellybludw)
+### Shelly BLU Door/Window Sensor (thing-type: shellybludw)
 
 See notes on discovery of Shelly BLU devices above.
 
@@ -1839,15 +1839,15 @@ See notes on discovery of Shelly BLU devices above.
 
 See notes on discovery of Shelly BLU devices above.
 
-| Group   | Channel       | Type     | read-only | Description                                             |
-| ------- | ------------- | -------- | --------- | ------------------------------------------------------- |
-| sensors | temperature   | Number   | yes       | Temperature, unit is reported by tempUnit               |
-|         | humidity      | Number   | yes       | Relative humidity in %                                  |
-|         | eventCount    | Number   | yes       | Counter gets incremented every time the device issues a button event.               |
-|         | button        | Trigger  | yes       | Event trigger with payload, see SHORT_PRESSED or LONG_PRESSED                       |
-|         | lastUpdate    | DateTime | yes       | Timestamp of the last update (any sensor value changed) |
-| battery | batteryLevel  | Number   | yes       | Battery Level in %                                      |
-|         | lowBattery    | Switch   | yes       | Low battery alert (< 20%)                               |
+| Group   | Channel      | Type     | read-only | Description                                                           |
+|---------|--------------|----------|-----------|-----------------------------------------------------------------------|
+| sensors | temperature  | Number   | yes       | Temperature, unit is reported by tempUnit                             |
+|         | humidity     | Number   | yes       | Relative humidity in %                                                |
+|         | eventCount   | Number   | yes       | Counter gets incremented every time the device issues a button event. |
+|         | button       | Trigger  | yes       | Event trigger with payload, see SHORT_PRESSED or LONG_PRESSED         |
+|         | lastUpdate   | DateTime | yes       | Timestamp of the last update (any sensor value changed)               |
+| battery | batteryLevel | Number   | yes       | Battery Level in %                                                    |
+|         | lowBattery   | Switch   | yes       | Low battery alert (< 20%)                                             |
 
 ### Shelly BLU Distance(thing-type: shellybludistance)
 
@@ -1883,7 +1883,6 @@ See notes on discovery of Shelly BLU devices above.
 | battery | batteryLevel  | Number   | yes       | Battery Level in %                                                                  |
 |         | lowBattery    | Switch   | yes       | Low battery alert (< 20%)                                                           |
 | device  | gatewayDevice | String   | yes       | Shelly forwarded last status update (BLU gateway), could vary from packet to packet |
-
 
 ## Shelly Wall Displays
 

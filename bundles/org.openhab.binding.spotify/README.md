@@ -47,11 +47,11 @@ You can force reinitialization by authorizing on the `/connectspotify` page, eve
 
 The following configuration options are available on the Spotify player bridge:
 
-| Parameter     | Description                                                                                                                                                     |
-| ------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Parameter     | Description                                                                                                                                             |
+|---------------|---------------------------------------------------------------------------------------------------------------------------------------------------------|
 | clientId      | The Client ID provided by Spotify when you add a new application for openHAB to your Spotify account. Go to <https://developer.spotify.com/> (required) |
-| clientSecret  | The Client Secret provided by Spotify when you add a new application for openHAB to your Spotify account. (required)                                  |
-| refreshPeriod | This is the frequency of the polling requests to the Spotify Connect Web API in seconds.                                                                        |
+| clientSecret  | The Client Secret provided by Spotify when you add a new application for openHAB to your Spotify account. (required)                                    |
+| refreshPeriod | This is the frequency of the polling requests to the Spotify Connect Web API in seconds.                                                                |
 
 The following configuration option is available on the Spotify device:
 
@@ -119,8 +119,8 @@ The `playlists` channel has 2 parameters:
 
 The `albumImage` and `albumImageUrl` channels have 1 parameter:
 
-| Parameter  | Description                                                                                     |
-| ---------- | ----------------------------------------------------------------------------------------------- |
+| Parameter  | Description                                                                                    |
+|------------|------------------------------------------------------------------------------------------------|
 | imageIndex | Index in the list to select the image size to show. 0 = large (default), 1 = medium, 2 = small |
 
 Note: The `devices` and `playlists` channels are Selection channels.
@@ -128,26 +128,26 @@ They are dynamically populated by the binding with user-specific devices and pla
 
 **Advanced Channels:**
 
-| Channel Type ID | Item Type | Read/Write | Description                                                 |
-| --------------- | --------- | ---------- | ----------------------------------------------------------- |
+| Channel Type ID | Item Type | Read/Write | Description                                                      |
+|-----------------|-----------|------------|------------------------------------------------------------------|
 | accessToken     | String    | Read-only  | The current access token used in communication with the Web API. |
 | deviceId        | String    | Read-write | The Spotify Connect device ID.                                   |
-| trackId         | String    | Read-only  | Track ID of the currently playing track.                    |
-| trackHref       | String    | Read-only  | Track URL of the currently playing track.                   |
-| trackUri        | String    | Read-only  | Track URI of the currently playing track.                   |
-| trackType       | String    | Read-only  | Type of the currently playing track.                        |
-| trackNumber     | String    | Read-only  | Number of the track on the album/record.                    |
-| trackDiscNumber | String    | Read-only  | Disc Number of the track on the album/record.               |
-| trackPopularity | Number    | Read-only  | Currently playing track popularity.                         |
-| trackExplicit   | Switch    | Read-only  | Whether or not the track has explicit lyrics.               |
-| albumId         | String    | Read-only  | Album ID of the currently playing track.                    |
-| albumUri        | String    | Read-only  | Album URI of the currently playing track.                   |
-| albumHref       | String    | Read-only  | Album URL of the currently playing track.                   |
-| albumType       | String    | Read-only  | Album Type of the currently playing track.                  |
-| artistId        | String    | Read-only  | Artist Id of the currently playing track.                   |
-| artistUri       | String    | Read-only  | Artist URI of the currently playing track.                  |
-| artistHref      | String    | Read-only  | Artist URL of the currently playing track.                  |
-| artistType      | String    | Read-only  | Artist Type of the currently playing track.                 |
+| trackId         | String    | Read-only  | Track ID of the currently playing track.                         |
+| trackHref       | String    | Read-only  | Track URL of the currently playing track.                        |
+| trackUri        | String    | Read-only  | Track URI of the currently playing track.                        |
+| trackType       | String    | Read-only  | Type of the currently playing track.                             |
+| trackNumber     | String    | Read-only  | Number of the track on the album/record.                         |
+| trackDiscNumber | String    | Read-only  | Disc Number of the track on the album/record.                    |
+| trackPopularity | Number    | Read-only  | Currently playing track popularity.                              |
+| trackExplicit   | Switch    | Read-only  | Whether or not the track has explicit lyrics.                    |
+| albumId         | String    | Read-only  | Album ID of the currently playing track.                         |
+| albumUri        | String    | Read-only  | Album URI of the currently playing track.                        |
+| albumHref       | String    | Read-only  | Album URL of the currently playing track.                        |
+| albumType       | String    | Read-only  | Album Type of the currently playing track.                       |
+| artistId        | String    | Read-only  | Artist Id of the currently playing track.                        |
+| artistUri       | String    | Read-only  | Artist URI of the currently playing track.                       |
+| artistHref      | String    | Read-only  | Artist URL of the currently playing track.                       |
+| artistType      | String    | Read-only  | Artist Type of the currently playing track.                      |
 
 ### Devices
 
@@ -159,11 +159,11 @@ Assigning a playlist to the _trackPlay_ channel of the bridge will start playing
 **Common Channels:**
 
 | Channel Type ID | Item Type | Read/Write | Description                                                     |
-| --------------- | --------- | ---------- | --------------------------------------------------------------- |
+|-----------------|-----------|------------|-----------------------------------------------------------------|
 | trackPlay       | String    | Write-only | Update to play a track, playlist, artist. Activates the device. |
 | deviceName      | String    | Read-only  | Name of the device.                                             |
 | deviceVolume    | Dimmer    | Read-write | Volume setting for the device.                                  |
-| devicePlayer    | Player    | Read-write | Player control of the device.                                    |
+| devicePlayer    | Player    | Read-write | Player control of the device.                                   |
 | deviceShuffle   | Switch    | Read-write | Turn on/off shuffle play.                                       |
 
 **Advanced Channels:**

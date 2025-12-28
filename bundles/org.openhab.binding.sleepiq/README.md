@@ -71,33 +71,33 @@ Bridge sleepiq:cloud:1 [ username="mail@example.com", password="password", polli
 
 All channels within this group are read-only, except for the sleepNumber and privacyMode channels.
 
-| Channel ID                        | Item Type      | Description  |
-|-----------------------------------|----------------|---------------------------------------------------------------------------------------------------------------------|
-| inBed                             | Switch         | The presence of a person or object on the chamber  |
-| sleepNumber                       | Number         | The Sleep Number setting of the chamber. Set the sleep number of the chamber by sending a command to the sleepNumber channel with a value between 5 and 100. The value must be a multiple of 5  |
-| sleepGoalMinutes                  | Number:Time    | The person's sleep goal in minutes |
-| pressure                          | Number         | The current pressure inside the chamber |
-| privacyMode                       | Switch         | Enable or disable privacy mode |
-| lastLink                          | String         | The amount of time that has passed since a connection was made from the chamber to the cloud service (D d HH:MM:SS) |
-| alertId                           | Number         | Identifier for an alert condition with the chamber |
-| alertDetailedMessage              | String         | A detailed message describing an alert condition with the chamber |
-| todaySleepIQ                      | Number         | The Sleep IQ score for the current day |
-| todayAverageHeartRate             | Number         | The average heart rate for the current day |
-| todayAverageRespirationRate       | Number         | The average respiration rate for the current day |
-| todayMessage                      | String         | A description of the sleep quality for the current day |
-| todaySleepDurationSeconds         | Number:Time    | The duration of sleep for the current day |
-| todaySleepInBedSeconds            | Number:Time    | The duration of time in bed for the current day |
-| todaySleepOutOfBedSeconds         | Number:Time    | The duration of time out of bed for the current day |
-| todaySleepRestfulSeconds          | Number:Time    | The duration of restful sleep for the current day |
-| todaySleepRestlessSeconds         | Number:Time    | The duration of restless sleep for the current day |
-| monthlySleepIQ                    | Number         | The average Sleep IQ score for the current month |
-| monthlyAverageHeartRate           | Number         | The average heart rate for the current month |
-| monthlyAverageRespirationRate     | Number         | The average respiration rate for the current month |
-| foundationPreset                  | Number         | Sets the head and foot position to one of the 6 available presets (1-6) (foundation required) |
-| foundationPositionHead            | Dimmer         | Sets the head position (foundation required) |
-| foundationPositionFoot            | Dimmer         | Sets the foot position (foundation required) |
-| nightStandOutlet                  | Switch         | Turn on/off the night stand outlet (foundation required) |
-| underBedLight                     | Switch         | Turn on/off the under bed light (foundation required) |
+| Channel ID                    | Item Type   | Description                                                                                                  |
+|-------------------------------|-------------|--------------------------------------------------------------------------------------------------------------|
+| inBed                         | Switch      | Presence of a person or object on the chamber                                                                |
+| sleepNumber                   | Number      | Sleep Number setting of the chamber. Set by sending a command with a value between 5 and 100 (multiple of 5) |
+| sleepGoalMinutes              | Number:Time | Sleep goal in minutes                                                                                        |
+| pressure                      | Number      | Current pressure inside the chamber                                                                          |
+| privacyMode                   | Switch      | Enable or disable privacy mode                                                                               |
+| lastLink                      | String      | Time since last connection to the cloud service (D d HH:MM:SS)                                               |
+| alertId                       | Number      | Identifier for an alert condition with the chamber                                                           |
+| alertDetailedMessage          | String      | A detailed message describing an alert condition with the chamber                                            |
+| todaySleepIQ                  | Number      | The Sleep IQ score for the current day                                                                       |
+| todayAverageHeartRate         | Number      | The average heart rate for the current day                                                                   |
+| todayAverageRespirationRate   | Number      | The average respiration rate for the current day                                                             |
+| todayMessage                  | String      | A description of the sleep quality for the current day                                                       |
+| todaySleepDurationSeconds     | Number:Time | The duration of sleep for the current day                                                                    |
+| todaySleepInBedSeconds        | Number:Time | The duration of time in bed for the current day                                                              |
+| todaySleepOutOfBedSeconds     | Number:Time | The duration of time out of bed for the current day                                                          |
+| todaySleepRestfulSeconds      | Number:Time | The duration of restful sleep for the current day                                                            |
+| todaySleepRestlessSeconds     | Number:Time | The duration of restless sleep for the current day                                                           |
+| monthlySleepIQ                | Number      | The average Sleep IQ score for the current month                                                             |
+| monthlyAverageHeartRate       | Number      | The average heart rate for the current month                                                                 |
+| monthlyAverageRespirationRate | Number      | The average respiration rate for the current month                                                           |
+| foundationPreset              | Number      | Sets the head and foot position to one of the 6 available presets (1-6) (foundation required)                |
+| foundationPositionHead        | Dimmer      | Sets the head position (foundation required)                                                                 |
+| foundationPositionFoot        | Dimmer      | Sets the foot position (foundation required)                                                                 |
+| nightStandOutlet              | Switch      | Turn on/off the night stand outlet (foundation required)                                                     |
+| underBedLight                 | Switch      | Turn on/off the under bed light (foundation required)                                                        |
 
 ## Items
 

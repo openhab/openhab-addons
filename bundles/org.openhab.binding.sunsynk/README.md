@@ -70,10 +70,10 @@ The SunSynk Account requires the user e‑mail address and password used to log 
 
 ### `sunsynk:account` Bridge Thing Configuration
 
-| Name            | Type    | Description                                     | Default | Required | Advanced |
-|-----------------|---------|-------------------------------------------------|---------|----------|----------|
-| email           | text    | E‑mail address used to log in to Sun Synk Connect | N/A     | yes      | no       |
-| password        | text    | Password to access the Sun Synk Connect account | N/A     | yes      | no       |
+| Name     | Type | Description                                       | Default | Required | Advanced |
+|----------|------|---------------------------------------------------|---------|----------|----------|
+| email    | text | E‑mail address used to log in to Sun Synk Connect | N/A     | yes      | no       |
+| password | text | Password to access the Sun Synk Connect account   | N/A     | yes      | no       |
 
 ### `sunsynk:inverter:` Thing Configuration
 
@@ -90,64 +90,64 @@ The SunSynk Account requires the user e‑mail address and password used to log 
 The SunSynk Account has no channels.
 The SunSynk Inverter has the following channels.
 
-| Channel                        | Type                    | R/W | Description                       | Advanced |
-|--------------------------------|-------------------------|-----|-----------------------------------|----------|
-|battery-soc                     |Number:Dimensionless     | R   | Inverter battery % charged        | no       |
-|battery-grid-voltage            |Number:ElectricPotential | R   | Battery dc electric-voltage       | no       |
-|battery-grid-current            |Number:ElectricCurrent   | R   | Battery dc electric-current       | no       |
-|battery-grid-power              |Number:Power             | R   | Battery dc electric-power         | no       |
-|inverter-ac-temperature         |Number:Temperature       | R   | Inverter ac temperature           | no       |
-|inverter-dc-temperature         |Number:Temperature       | R   | Inverter dc temperature           | no       |
-|inverter-grid-power             |Number:Power             | R   | Grid ac electric-power            | no       |
-|inverter-grid-voltage           |Number:ElectricPotential | R   | Grid ac electric-voltage          | no       |
-|inverter-grid-current           |Number:ElectricCurrent   | R   | Grid ac electric-current          | no       |
-|inverter-grid-frequency         |Number:Frequency         | R   | Grid frequency                    | no       |
-|inverter-rated-ac-output        |Number:Power             | R   | Inverter energy capacity          | no       |
-|inverter-solar-energy-today     |Number:Energy            | R   | Solar energy generated today      | no       |
-|inverter-solar-energy-month     |Number:Energy            | R   | Solar energy generated this month | no       |
-|inverter-solar-energy-year      |Number:Energy            | R   | Solar energy generated this year  | no       |
-|inverter-solar-efficiency       |Number:Dimensionless     | R   | Solar production efficiency       | no       |
-|inverter-solar-ac-power         |Number:Power             | R   | Solar power being generated       | no       |
-|inverter-solar-energy-total     |Number:Energy            | R   | Solar energy generated to date    | no       |
-|inverter-solar-string-voltage-1 |Number:ElectricPotential | R   | String 1 Solar Voltage            | no       |
-|inverter-solar-string-voltage-2 |Number:ElectricPotential | R   | String 2 Solar Voltage            | no       |
-|inverter-solar-string-current-1 |Number:ElectricCurrent   | R   | String 1 Solar Current            | no       |
-|inverter-solar-string-current-2 |Number:ElectricCurrent   | R   | String 2 Solar Current            | no       |
-|inverter-solar-string-power-1   |Number:Power             | R   | String 1 Solar Power              | no       |
-|inverter-solar-string-power-2   |Number:Power             | R   | String 2 Solar Power              | no       |
-|interval-1-grid-charge          |Switch                   | R/W | Interval 1 grid charge on/off     | yes      |
-|interval-1-grid-time            |DateTime                 | R/W | Interval 1 start grid charge time | yes      |
-|interval-1-grid-capacity        |Number:Dimensionless     | R/W | Interval 1 battery charge target  | yes      |
-|interval-1-grid-power-limit     |Number:Power             | R/W | Interval 1 charge power limit     | yes      |
-|interval-2-grid-charge          |Switch                   | R/W | Interval 2 grid charge on/off     | yes      |
-|interval-2-grid-time            |DateTime                 | R/W | Interval 2 start grid charge time | yes      |
-|interval-2-grid-capacity        |Number:Dimensionless     | R/W | Interval 2 battery charge target  | yes      |
-|interval-2-grid-power-limit     |Number:Power             | R/W | Interval 2 charge power limit     | yes      |
-|interval-3-grid-charge          |Switch                   | R/W | Interval 3 grid charge on/off     | yes      |
-|interval-3-grid-time            |DateTime                 | R/W | Interval 3 start grid charge time | yes      |
-|interval-3-grid-capacity        |Number:Dimensionless     | R/W | Interval 3 battery charge target  | yes      |
-|interval-3-grid-power-limit     |Number:Power             | R/W | Interval 3 charge power limit     | yes      |
-|interval-4-grid-charge          |Switch                   | R/W | Interval 4 grid charge on/off     | yes      |
-|interval-4-grid-time            |DateTime                 | R/W | Interval 4 start grid charge time | yes      |
-|interval-4-grid-capacity        |Number:Dimensionless     | R/W | Interval 4 battery charge target  | yes      |
-|interval-4-grid-power-limit     |Number:Power             | R/W | Interval 4 charge power limit     | yes      |
-|interval-5-grid-charge          |Switch                   | R/W | Interval 5 grid charge on/off     | yes      |
-|interval-5-grid-time            |DateTime                 | R/W | Interval 5 start grid charge time | yes      |
-|interval-5-grid-capacity        |Number:Dimensionless     | R/W | Interval 5 battery charge target  | yes      |
-|interval-5-grid-power-limit     |Number:Power             | R/W | Interval 5 charge power limit     | yes      |
-|interval-6-grid-charge          |Switch                   | R/W | Interval 6 grid charge on/off     | yes      |
-|interval-6-grid-time            |DateTime                 | R/W | Interval 6 start grid charge time | yes      |
-|interval-6-grid-capacity        |Number:Dimensionless     | R/W | Interval 6 battery charge target  | yes      |
-|interval-6-grid-power-limit     |Number:Power             | R/W | Interval 6 charge power limit     | yes      |
-|interval-1-gen-charge           |Switch                   | R/W | Interval 1 generator charge on/off | yes      |
-|interval-2-gen-charge           |Switch                   | R/W | Interval 2 generator charge on/off | yes      |
-|interval-3-gen-charge           |Switch                   | R/W | Interval 3 generator charge on/off | yes      |
-|interval-4-gen-charge           |Switch                   | R/W | Interval 4 generator charge on/off | yes      |
-|interval-5-gen-charge           |Switch                   | R/W | Interval 5 generator charge on/off | yes      |
-|interval-6-gen-charge           |Switch                   | R/W | Interval 6 generator charge on/off | yes      |
-|inverter-control-timer          |Switch                   | R/W | Inverter control timer on/off     | yes      |
-|inverter-control-work-mode      |String                   | R/W | Inverter work mode 0, 1 or 2      | yes      |
-|inverter-control-energy-pattern |String                   | R/W | Inverter energy pattern 0 or 1    | yes      |
+| Channel                         | Type                     | R/W | Description                        | Advanced |
+|---------------------------------|--------------------------|-----|------------------------------------|----------|
+| battery-soc                     | Number:Dimensionless     | R   | Inverter battery % charged         | no       |
+| battery-grid-voltage            | Number:ElectricPotential | R   | Battery dc electric-voltage        | no       |
+| battery-grid-current            | Number:ElectricCurrent   | R   | Battery dc electric-current        | no       |
+| battery-grid-power              | Number:Power             | R   | Battery dc electric-power          | no       |
+| inverter-ac-temperature         | Number:Temperature       | R   | Inverter ac temperature            | no       |
+| inverter-dc-temperature         | Number:Temperature       | R   | Inverter dc temperature            | no       |
+| inverter-grid-power             | Number:Power             | R   | Grid ac electric-power             | no       |
+| inverter-grid-voltage           | Number:ElectricPotential | R   | Grid ac electric-voltage           | no       |
+| inverter-grid-current           | Number:ElectricCurrent   | R   | Grid ac electric-current           | no       |
+| inverter-grid-frequency         | Number:Frequency         | R   | Grid frequency                     | no       |
+| inverter-rated-ac-output        | Number:Power             | R   | Inverter energy capacity           | no       |
+| inverter-solar-energy-today     | Number:Energy            | R   | Solar energy generated today       | no       |
+| inverter-solar-energy-month     | Number:Energy            | R   | Solar energy generated this month  | no       |
+| inverter-solar-energy-year      | Number:Energy            | R   | Solar energy generated this year   | no       |
+| inverter-solar-efficiency       | Number:Dimensionless     | R   | Solar production efficiency        | no       |
+| inverter-solar-ac-power         | Number:Power             | R   | Solar power being generated        | no       |
+| inverter-solar-energy-total     | Number:Energy            | R   | Solar energy generated to date     | no       |
+| inverter-solar-string-voltage-1 | Number:ElectricPotential | R   | String 1 Solar Voltage             | no       |
+| inverter-solar-string-voltage-2 | Number:ElectricPotential | R   | String 2 Solar Voltage             | no       |
+| inverter-solar-string-current-1 | Number:ElectricCurrent   | R   | String 1 Solar Current             | no       |
+| inverter-solar-string-current-2 | Number:ElectricCurrent   | R   | String 2 Solar Current             | no       |
+| inverter-solar-string-power-1   | Number:Power             | R   | String 1 Solar Power               | no       |
+| inverter-solar-string-power-2   | Number:Power             | R   | String 2 Solar Power               | no       |
+| interval-1-grid-charge          | Switch                   | R/W | Interval 1 grid charge on/off      | yes      |
+| interval-1-grid-time            | DateTime                 | R/W | Interval 1 start grid charge time  | yes      |
+| interval-1-grid-capacity        | Number:Dimensionless     | R/W | Interval 1 battery charge target   | yes      |
+| interval-1-grid-power-limit     | Number:Power             | R/W | Interval 1 charge power limit      | yes      |
+| interval-2-grid-charge          | Switch                   | R/W | Interval 2 grid charge on/off      | yes      |
+| interval-2-grid-time            | DateTime                 | R/W | Interval 2 start grid charge time  | yes      |
+| interval-2-grid-capacity        | Number:Dimensionless     | R/W | Interval 2 battery charge target   | yes      |
+| interval-2-grid-power-limit     | Number:Power             | R/W | Interval 2 charge power limit      | yes      |
+| interval-3-grid-charge          | Switch                   | R/W | Interval 3 grid charge on/off      | yes      |
+| interval-3-grid-time            | DateTime                 | R/W | Interval 3 start grid charge time  | yes      |
+| interval-3-grid-capacity        | Number:Dimensionless     | R/W | Interval 3 battery charge target   | yes      |
+| interval-3-grid-power-limit     | Number:Power             | R/W | Interval 3 charge power limit      | yes      |
+| interval-4-grid-charge          | Switch                   | R/W | Interval 4 grid charge on/off      | yes      |
+| interval-4-grid-time            | DateTime                 | R/W | Interval 4 start grid charge time  | yes      |
+| interval-4-grid-capacity        | Number:Dimensionless     | R/W | Interval 4 battery charge target   | yes      |
+| interval-4-grid-power-limit     | Number:Power             | R/W | Interval 4 charge power limit      | yes      |
+| interval-5-grid-charge          | Switch                   | R/W | Interval 5 grid charge on/off      | yes      |
+| interval-5-grid-time            | DateTime                 | R/W | Interval 5 start grid charge time  | yes      |
+| interval-5-grid-capacity        | Number:Dimensionless     | R/W | Interval 5 battery charge target   | yes      |
+| interval-5-grid-power-limit     | Number:Power             | R/W | Interval 5 charge power limit      | yes      |
+| interval-6-grid-charge          | Switch                   | R/W | Interval 6 grid charge on/off      | yes      |
+| interval-6-grid-time            | DateTime                 | R/W | Interval 6 start grid charge time  | yes      |
+| interval-6-grid-capacity        | Number:Dimensionless     | R/W | Interval 6 battery charge target   | yes      |
+| interval-6-grid-power-limit     | Number:Power             | R/W | Interval 6 charge power limit      | yes      |
+| interval-1-gen-charge           | Switch                   | R/W | Interval 1 generator charge on/off | yes      |
+| interval-2-gen-charge           | Switch                   | R/W | Interval 2 generator charge on/off | yes      |
+| interval-3-gen-charge           | Switch                   | R/W | Interval 3 generator charge on/off | yes      |
+| interval-4-gen-charge           | Switch                   | R/W | Interval 4 generator charge on/off | yes      |
+| interval-5-gen-charge           | Switch                   | R/W | Interval 5 generator charge on/off | yes      |
+| interval-6-gen-charge           | Switch                   | R/W | Interval 6 generator charge on/off | yes      |
+| inverter-control-timer          | Switch                   | R/W | Inverter control timer on/off      | yes      |
+| inverter-control-work-mode      | String                   | R/W | Inverter work mode 0, 1 or 2       | yes      |
+| inverter-control-energy-pattern | String                   | R/W | Inverter energy pattern 0 or 1     | yes      |
 
 ### Full Example
 

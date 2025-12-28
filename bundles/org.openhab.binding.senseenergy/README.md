@@ -126,12 +126,12 @@ The monitor channels are organized into multiple groups.
 Each proxy device has several channels that can be used to notify Sense of the current power usage for the device.
 These can either attached to an openHAB item, or, can be used with the system:follow profile to follow the state of another channel (see example).
 
-| Channel               | id                | Type                       | Read/Write | Description |
-|----------             |--------           |--------                    |--------    |--------------- |
-| Power Level           | proxy-device-power     | Number:Power               | W          | Sets a specific absolute real-time power usage for the device. |
-| Device Switch         | proxy-device-switch    | Switch                     | W          | Sets the power level to either the ON or OFF defined in the powerLevels parameter. |
-| Device Dimmer         | proxy-device-dimmer    | Dimmer                     | W          | Sets the power level to an interpolated value based on the powerLevels parameter. |
-| Device State          | proxy-device-state     | String                     | W          | Sets the power level to the state sepecifice in the powerLevels parameter. |
+| Channel       | id                  | Type         | Read/Write | Description                                                                        |
+|---------------|---------------------|--------------|------------|------------------------------------------------------------------------------------|
+| Power Level   | proxy-device-power  | Number:Power | W          | Sets a specific absolute real-time power usage for the device.                     |
+| Device Switch | proxy-device-switch | Switch       | W          | Sets the power level to either the ON or OFF defined in the powerLevels parameter. |
+| Device Dimmer | proxy-device-dimmer | Dimmer       | W          | Sets the power level to an interpolated value based on the powerLevels parameter.  |
+| Device State  | proxy-device-state  | String       | W          | Sets the power level to the state sepecifice in the powerLevels parameter.         |
 
 ## Full Example
 

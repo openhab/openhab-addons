@@ -36,20 +36,20 @@ The binding has no configuration options, all configuration is done at Thing lev
 
 The `server` Thing has the following configuration parameters:
 
-| Parameter             | Required | Description                                                                                               |
-|-----------------------|----------|-----------------------------------------------------------------------------------------------------------|
-| host                  | yes      | The host name or IP address of the remote openHAB server.                                                 |
-| useHttps              | no       | Set to true if you want to use HTTPS to communicate with the remote openHAB server. Default is false.     |
-| port                  | yes      | The HTTP port to use to communicate with the remote openHAB server. Default is 8080.                      |
-| trustedCertificate    | no       | Set to true if you want to use HTTPS even without a valid SSL certificate provided by your remote server. |
-| restPath              | yes      | The subpath of the REST API on the remote openHAB server. Default is "/rest/"                             |
-| token                 | no       | The token to use when the remote openHAB server is setup to require authorization to run its REST API.    |
-| username              | no       | The username to use when the remote openHAB server is setup to require basic authorization to run its REST API. |
-| password              | no       | The password to use when the remote openHAB server is setup to require basic authorization to run its REST API. |
-| authenticateAnyway    | no       | Set it to true in case you want to pass authentication information even when the communicate with the remote openHAB server is not secured (only HTTP). This is of course not recommended especially if your connection is over the Internet. Default is false. |
-| accessibilityInterval | no       | Minutes between checking the remote server accessibility. 0 to disable the check. Default is 3.           |
-| aliveInterval         | no       | Number of last minutes to consider when monitoring the receipt of events from the remote server. If an event is received during this interval, the remote server is considered alive and its accessibility will not be verified. Use 0 to disable this feature. Default is 5. |
-| restartIfNoActivity   | no       | Set it to true if you want to restart the connection (SSE) to the remote server when no events are received in the monitored interval. It is not necessary if the goal is to properly handle a short network outage (few seconds). This can be useful if you want to deal with a long network outage. Do not enable it if you remote server does not send events during the monitored interval under normal conditions, it will cause frequent restart of the connection and potential loss of events. Default is false. |
+| Parameter             | Required | Description                                                                                                  |
+|-----------------------|----------|--------------------------------------------------------------------------------------------------------------|
+| host                  | yes      | Host name or IP address of the remote openHAB server.                                                        |
+| useHttps              | no       | Use HTTPS for communication. Default: false.                                                                 |
+| port                  | yes      | HTTP port for remote server. Default: 8080.                                                                  |
+| trustedCertificate    | no       | Accept HTTPS without valid SSL certificate.                                                                  |
+| restPath              | yes      | REST API subpath on remote server. Default: "/rest/"                                                         |
+| token                 | no       | Authorization token for remote server REST API.                                                              |
+| username              | no       | Username for basic authorization to remote server REST API.                                                  |
+| password              | no       | Password for basic authorization to remote server REST API.                                                  |
+| authenticateAnyway    | no       | Pass authentication over unsecured HTTP (not recommended). Default: false.                                   |
+| accessibilityInterval | no       | Minutes between remote server accessibility checks. 0 to disable. Default: 3.                                |
+| aliveInterval         | no       | Minutes to monitor event receipts. Server considered alive if event received. 0 to disable. Default: 5.      |
+| restartIfNoActivity   | no       | Restart SSE connection if no events received in monitored interval. Useful for long outages. Default: false. |
 
 Please note that even though the default configuration is based on insecure communication over HTTP, it is recommended to adjust the configuration to be based on secure communication over HTTPS.
 This is of course essential if your connection to the remote openHAB server is over the Internet.

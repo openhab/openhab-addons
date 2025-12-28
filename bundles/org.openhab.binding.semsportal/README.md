@@ -52,8 +52,8 @@ Bridge semsportal:portal:myPortal [ username="my@username.com", password="MyPass
 The Portal(Bridge) has no channels.
 The Power Station Thing has the following channels:
 
-| channel       | type          | description                                                                                                |
-| ------------- | ------------- | ---------------------------------------------------------------------------------------------------------- |
+| channel       | type          | description                                                                                                 |
+|---------------|---------------|-------------------------------------------------------------------------------------------------------------|
 | lastUpdate    | DateTime      | Last time the powerStation sent information to the portal.                                                  |
 | currentOutput | Number:Power  | The current output of the powerStation in Watt.                                                             |
 | todayTotal    | Number:Energy | Todays total generation of the station in kWh.                                                              |
@@ -67,17 +67,17 @@ The Power Station Thing has the following channels:
 The Power Station Thing has no configuration parameters when auto discovered.
 When using Thing files you need to provide the station UUID.
 
-| Parameter   | Required? | Description                                                                      |
-| ----------- | :-------: | -------------------------------------------------------------------------------- |
-| stationUUID |     X     | UUID of the station. Can be found on the SEMS portal URL (see description above). |
+| Parameter   | Required? | Description                                                                       |
+|-------------|-----------|-----------------------------------------------------------------------------------|
+| stationUUID | X         | UUID of the station. Can be found on the SEMS portal URL (see description above). |
 
 The Bridge has the following configuration parameters:
 
 | Parameter | Required? | Description                                                                                           |
-| --------- | :-------: | ----------------------------------------------------------------------------------------------------- |
-| username  |     X     | Account name (email address) at the SEMS portal. Account must have been used at least once to log in. |
-| password  |     X     | Password of the SEMS portal.                                                                           |
-| interval  |           | Number of minutes between two updates. Between 1 and 60 minutes, defaults to 5 minutes.                |
+|-----------|-----------|-------------------------------------------------------------------------------------------------------|
+| username  | X         | Account name (email address) at the SEMS portal. Account must have been used at least once to log in. |
+| password  | X         | Password of the SEMS portal.                                                                          |
+| interval  |           | Number of minutes between two updates. Between 1 and 60 minutes, defaults to 5 minutes.               |
 
 ## Credits
 

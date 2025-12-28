@@ -16,19 +16,19 @@ Basic operation does not require any special configuration.
 
 The binding has the following configuration options, which can be set for "binding:samsungtv":
 
-| Parameter              | Name                      | Description                                                   | Required  |
-|------------------------|---------------------------|---------------------------------------------------------------|-----------|
-| hostName               | Host Name                 | Network address of the Samsung TV                             | yes       |
-| port                   | TCP Port                  | TCP port of the Samsung TV                                    | no        |
-| macAddress             | MAC Address               | MAC Address of the Samsung TV                                 | no        |
-| refreshInterval        | Refresh Interval          | States how often a refresh shall occur in milliseconds        | no        |
-| protocol               | Remote Control Protocol   | The type of remote control protocol                           | yes       |
-| webSocketToken         | Websocket Token           | Security token for secure websocket connection                | no        |
-| subscription           | Subscribe to UPNP         | Reduces polling on UPNP devices, default false                | no        |
-| orientationKey         | Orientation Key           | Key press to send to rotate auto-rotation mount               | no        |
-| smartThingsApiKey      | Smartthings PAT           | Smartthings Personal Access Token                             | no        |
-| smartThingsDeviceId    | Smartthings Device ID     | Smartthings Device ID for this TV                             | no        |
-| smartThingsSubscription| Smartthings Subscription | Reduces polling on Smartthings channels, default true         | no        |
+| Parameter               | Name                     | Description                                            | Required |
+|-------------------------|--------------------------|--------------------------------------------------------|----------|
+| hostName                | Host Name                | Network address of the Samsung TV                      | yes      |
+| port                    | TCP Port                 | TCP port of the Samsung TV                             | no       |
+| macAddress              | MAC Address              | MAC Address of the Samsung TV                          | no       |
+| refreshInterval         | Refresh Interval         | States how often a refresh shall occur in milliseconds | no       |
+| protocol                | Remote Control Protocol  | The type of remote control protocol                    | yes      |
+| webSocketToken          | Websocket Token          | Security token for secure websocket connection         | no       |
+| subscription            | Subscribe to UPNP        | Reduces polling on UPNP devices, default false         | no       |
+| orientationKey          | Orientation Key          | Key press to send to rotate auto-rotation mount        | no       |
+| smartThingsApiKey       | Smartthings PAT          | Smartthings Personal Access Token                      | no       |
+| smartThingsDeviceId     | Smartthings Device ID    | Smartthings Device ID for this TV                      | no       |
+| smartThingsSubscription | Smartthings Subscription | Reduces polling on Smartthings channels, default true  | no       |
 
 ## Thing Configuration
 
@@ -67,32 +67,32 @@ For >2019 TV's, there is an app workaround, see [App Discovery](#app-discovery) 
 
 TVs support the following channels:
 
-| Channel Type ID     | Item Type| Access Mode| Description                                                                                             |
-|---------------------|----------|------------|---------------------------------------------------------------------------------------------------------|
-| volume              | Dimmer   | RW         | Volume level of the TV.                                                                                 |
-| mute                | Switch   | RW         | Mute state of the TV.                                                                                   |
-| brightness          | Dimmer   | RW         | Brightness of the TV picture.                                                                           |
-| contrast            | Dimmer   | RW         | Contrast of the TV picture.                                                                             |
-| sharpness           | Dimmer   | RW         | Sharpness of the TV picture.                                                                            |
-| colorTemperature    | Number   | RW         | Color temperature of the TV picture. Minimum value is 0 and maximum 4.                                  |
-| sourceName          | String   | RW         | Name of the current source (eg HDMI1).                                                                  |
-| sourceId            | Number   | RW         | Id of the current source.                                                                               |
-| channel             | Number   | RW         | Selected TV channel number.                                                                             |
-| programTitle        | String   | R          | Program title of the current channel.                                                                   |
-| channelName         | String   | R          | Name of the current TV channel.                                                                         |
-| url                 | String   | W          | Start TV web browser and go the given web page.                                                         |
-| stopBrowser         | Switch   | W          | Stop TV's web browser and go back to TV mode.                                                           |
-| keyCode             | String   | W          | The key code channel emulates the infrared remote controller and allows to send virtual button presses. |
-| sourceApp           | String   | RW         | Currently active App.                                                                                   |
-| power               | Switch   | RW         | TV power. Some of the Samsung TV models doesn't allow to set Power ON remotely.                         |
-| artMode             | Switch   | RW         | TV art mode for Samsung The Frame TV's.                                                                 |
-| setArtMode          | Switch   | W          | Manual input for setting internal ArtMode tracking for Samsung The Frame TV's >2021.                    |
-| artImage            | Image    | RW         | The currently selected art (thumbnail)                                                                  |
-| artLabel            | String   | RW         | The currently selected art (label) - can also set the current art                                       |
-| artJson             | String   | RW         | Send/receive commands from the TV art websocket Channel                                                 |
-| artBrightness       | Dimmer   | RW         | ArtMode Brightness                                                                                      |
-| artColorTemperature | Number   | RW         | ArtMode Color temperature Minimum value is -5 and maximum 5                                            |
-| artOrientation      | Switch   | RW         | TV orientation, Landscape (OFF) or Portrait (ON)                                                        |
+| Channel Type ID     | Item Type | Access Mode | Description                                                                                             |
+|---------------------|-----------|-------------|---------------------------------------------------------------------------------------------------------|
+| volume              | Dimmer    | RW          | Volume level of the TV.                                                                                 |
+| mute                | Switch    | RW          | Mute state of the TV.                                                                                   |
+| brightness          | Dimmer    | RW          | Brightness of the TV picture.                                                                           |
+| contrast            | Dimmer    | RW          | Contrast of the TV picture.                                                                             |
+| sharpness           | Dimmer    | RW          | Sharpness of the TV picture.                                                                            |
+| colorTemperature    | Number    | RW          | Color temperature of the TV picture. Minimum value is 0 and maximum 4.                                  |
+| sourceName          | String    | RW          | Name of the current source (eg HDMI1).                                                                  |
+| sourceId            | Number    | RW          | Id of the current source.                                                                               |
+| channel             | Number    | RW          | Selected TV channel number.                                                                             |
+| programTitle        | String    | R           | Program title of the current channel.                                                                   |
+| channelName         | String    | R           | Name of the current TV channel.                                                                         |
+| url                 | String    | W           | Start TV web browser and go the given web page.                                                         |
+| stopBrowser         | Switch    | W           | Stop TV's web browser and go back to TV mode.                                                           |
+| keyCode             | String    | W           | The key code channel emulates the infrared remote controller and allows to send virtual button presses. |
+| sourceApp           | String    | RW          | Currently active App.                                                                                   |
+| power               | Switch    | RW          | TV power. Some of the Samsung TV models doesn't allow to set Power ON remotely.                         |
+| artMode             | Switch    | RW          | TV art mode for Samsung The Frame TV's.                                                                 |
+| setArtMode          | Switch    | W           | Manual input for setting internal ArtMode tracking for Samsung The Frame TV's >2021.                    |
+| artImage            | Image     | RW          | The currently selected art (thumbnail)                                                                  |
+| artLabel            | String    | RW          | The currently selected art (label) - can also set the current art                                       |
+| artJson             | String    | RW          | Send/receive commands from the TV art websocket Channel                                                 |
+| artBrightness       | Dimmer    | RW          | ArtMode Brightness                                                                                      |
+| artColorTemperature | Number    | RW          | ArtMode Color temperature Minimum value is -5 and maximum 5                                             |
+| artOrientation      | Switch    | RW          | TV orientation, Landscape (OFF) or Portrait (ON)                                                        |
 
 **NOTE:** channels: brightness, contrast, sharpness, colorTemperature don't work on newer TV's.<br>
 **NOTE:** channels: sourceName, sourceId, programTitle, channelName and stopBrowser may need additional configuration.

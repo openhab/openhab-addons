@@ -110,43 +110,43 @@ If a device with this index does not exist, the binding displays an error messag
 The table shows more detailed information about each channel type.
 The binding introduces the following channels:
 
-| Channel ID         | Channel Description                                              | Supported item type | Default priority | Advanced |
-|--------------------|------------------------------------------------------------------|---------------------|------------------|----------|
-| load               | CPU Load (total or by process) in %                              | Number:Dimensionless| High             | False    |
-| load1              | Load for the last 1 minute                                       | Number              | Medium           | True     |
-| load5              | Load for the last 5 minutes                                      | Number              | Medium           | True     |
-| load15             | Load for the last 15 minutes                                     | Number              | Medium           | True     |
-| threads            | Number of threads currently running or for the process           | Number              | Medium           | True     |
-| maxfreq            | CPU maximum frequency                                            | Number:Frequency    | Low              | True     |
-| freq               | Logical processor frequency                                      | Number:Frequency    | High             | True     |
-| path               | The full path of the process                                     | String              | Low              | False    |
-| uptime             | System uptime (time after start) in minutes                      | Number:Time         | Medium           | True     |
-| name               | Name of the device or process                                    | String              | Low              | False    |
-| available          | Available size                                                   | Number:DataAmount   | High             | False    |
-| used               | Used size                                                        | Number:DataAmount   | High             | False    |
-| total              | Total size                                                       | Number:DataAmount   | Low              | False    |
-| availablePercent   | Available size in %                                              | Number:Dimensionless| High             | False    |
-| usedPercent        | Used size in %                                                   | Number:Dimensionless| High             | False    |
-| model              | The model of the device                                          | String              | Low              | True     |
-| serial             | The serial number of the device                                  | String              | Low              | True     |
-| description        | Description of the device                                        | String              | Low              | True     |
-| type               | Storage type                                                     | String              | Low              | True     |
-| cpuTemp            | CPU Temperature in degrees Celsius                               | Number:Temperature  | High             | True     |
-| cpuVoltage         | CPU Voltage                                                      | Number:ElectricPotential| Medium       | True     |
-| fanSpeed           | Fan speed in rpm                                                 | Number              | Medium           | True     |
-| remainingTime      | Remaining time in minutes                                        | Number:Time         | Medium           | False    |
-| remainingCapacity  | Remaining capacity in %                                          | Number:Dimensionless| Medium           | False    |
-| information        | Product, manufacturer, SN, width and height of the display in cm | String              | Low              | True     |
-| ip                 | Host IP address of the network                                   | String              | Low              | False    |
-| mac                | MAC address                                                      | String              | Low              | True     |
-| networkName        | The name of the network                                          | String              | Low              | False    |
-| networkDisplayName | The display name of the network                                  | String              | Low              | False    |
-| packetsSent        | Number of packets sent                                           | Number              | Medium           | True     |
-| packetsReceived    | Number of packets received                                       | Number              | Medium           | True     |
-| dataSent           | Volume of data sent                                              | Number:DataAmount   | Medium           | True     |
-| dataReceived       | Volume of data received                                          | Number:DataAmount   | Medium           | True     |
-| availableHeap      | How much space is available in the currently committed heap      | Number:DataAmount   | Medium           | True     |
-| usedHeapPercent    | How much of the MAX heap size is actually used in %              | Number:Dimensionless| Medium           | False    |
+| Channel ID         | Channel Description                                              | Supported item type      | Default priority | Advanced |
+|--------------------|------------------------------------------------------------------|--------------------------|------------------|----------|
+| load               | CPU Load (total or by process) in %                              | Number:Dimensionless     | High             | False    |
+| load1              | Load for the last 1 minute                                       | Number                   | Medium           | True     |
+| load5              | Load for the last 5 minutes                                      | Number                   | Medium           | True     |
+| load15             | Load for the last 15 minutes                                     | Number                   | Medium           | True     |
+| threads            | Number of threads currently running or for the process           | Number                   | Medium           | True     |
+| maxfreq            | CPU maximum frequency                                            | Number:Frequency         | Low              | True     |
+| freq               | Logical processor frequency                                      | Number:Frequency         | High             | True     |
+| path               | The full path of the process                                     | String                   | Low              | False    |
+| uptime             | System uptime (time after start) in minutes                      | Number:Time              | Medium           | True     |
+| name               | Name of the device or process                                    | String                   | Low              | False    |
+| available          | Available size                                                   | Number:DataAmount        | High             | False    |
+| used               | Used size                                                        | Number:DataAmount        | High             | False    |
+| total              | Total size                                                       | Number:DataAmount        | Low              | False    |
+| availablePercent   | Available size in %                                              | Number:Dimensionless     | High             | False    |
+| usedPercent        | Used size in %                                                   | Number:Dimensionless     | High             | False    |
+| model              | The model of the device                                          | String                   | Low              | True     |
+| serial             | The serial number of the device                                  | String                   | Low              | True     |
+| description        | Description of the device                                        | String                   | Low              | True     |
+| type               | Storage type                                                     | String                   | Low              | True     |
+| cpuTemp            | CPU Temperature in degrees Celsius                               | Number:Temperature       | High             | True     |
+| cpuVoltage         | CPU Voltage                                                      | Number:ElectricPotential | Medium           | True     |
+| fanSpeed           | Fan speed in rpm                                                 | Number                   | Medium           | True     |
+| remainingTime      | Remaining time in minutes                                        | Number:Time              | Medium           | False    |
+| remainingCapacity  | Remaining capacity in %                                          | Number:Dimensionless     | Medium           | False    |
+| information        | Product, manufacturer, SN, width and height of the display in cm | String                   | Low              | True     |
+| ip                 | Host IP address of the network                                   | String                   | Low              | False    |
+| mac                | MAC address                                                      | String                   | Low              | True     |
+| networkName        | The name of the network                                          | String                   | Low              | False    |
+| networkDisplayName | The display name of the network                                  | String                   | Low              | False    |
+| packetsSent        | Number of packets sent                                           | Number                   | Medium           | True     |
+| packetsReceived    | Number of packets received                                       | Number                   | Medium           | True     |
+| dataSent           | Volume of data sent                                              | Number:DataAmount        | Medium           | True     |
+| dataReceived       | Volume of data received                                          | Number:DataAmount        | Medium           | True     |
+| availableHeap      | How much space is available in the currently committed heap      | Number:DataAmount        | Medium           | True     |
+| usedHeapPercent    | How much of the MAX heap size is actually used in %              | Number:Dimensionless     | Medium           | False    |
 
 ## Channel Configuration
 

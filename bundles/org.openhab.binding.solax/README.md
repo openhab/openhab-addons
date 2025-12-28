@@ -154,11 +154,11 @@ If you're missing a channel this means that it's not supported for your inverter
 
 ### Cloud Connect Inverter Configuration
 
-| Parameter         | Description                                                                                                                                        |
-|-------------------|----------------------------------------------------------------------------------------------------------------------------------------------------|
-| refreshInterval   | Defines the refresh interval when the binding polls from from the Solax cloud (in seconds). Optional parameter(min=9, max=600). Default is 30 seconds. Be advised that the cloud API is limited to max 10 calls per minute and 10000 calls per day.                                                                                                              |
-| password          | The registration number, shown in the Solax Cloud web portal. Mandatory parameter.                                                                 |
-| token             | Token for accessing the Solax Cloud API. Can be obtained via Service -> API on the Solax cloud web portal. Mandatory parameter.                    |
+| Parameter       | Description                                                                                                                                                                                                                                         |
+|-----------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| refreshInterval | Defines the refresh interval when the binding polls from from the Solax cloud (in seconds). Optional parameter(min=9, max=600). Default is 30 seconds. Be advised that the cloud API is limited to max 10 calls per minute and 10000 calls per day. |
+| password        | The registration number, shown in the Solax Cloud web portal. Mandatory parameter.                                                                                                                                                                  |
+| token           | Token for accessing the Solax Cloud API. Can be obtained via Service -> API on the Solax cloud web portal. Mandatory parameter.                                                                                                                     |
 
 ### Cloud Connect Channels
 

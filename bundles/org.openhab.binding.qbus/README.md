@@ -55,17 +55,17 @@ Bridge qbus:bridge:CTD001122 [ addr="localhost", sn="001122", port=8447, serverC
 
 ## Things Configuration
 
-| Thing Type ID         | Channel Name  | Read Only | Description                                             |
-|-----------------------|---------------|-----------|---------------------------------------------------------|
+| Thing Type ID         | Channel Name  | Read Only | Description                                              |
+|-----------------------|---------------|-----------|----------------------------------------------------------|
 | `onOff`               | switch        | No        | This is the channel for bistabiel, timers, and intervals |
-| `dimmer`              | brightness    | No        | This is the channel for dimmers 1&2 buttons and CLC     |
-| `scene`               | switch        | No        | This is the channel for scenes                          |
-| `co2`                 | co2           | Yes       | This is the channel for CO2 sensors                     |
-| `rollershutter`       | rollershutter | No        | This is the channel for rollershutters                  |
-| `rollershutter_slats` | rollershutter | No        | This is the channel for rollershutters with slats       |
-| `thermostat`          | setpoint      | No        | This is the channel for thermostat setpoint             |
-| `thermostat`          | measured      | Yes       | This is the channel for thermostat current temperature  |
-| `thermostat`          | mode          | No        | This is the channel for thermostat mode                 |
+| `dimmer`              | brightness    | No        | This is the channel for dimmers 1&2 buttons and CLC      |
+| `scene`               | switch        | No        | This is the channel for scenes                           |
+| `co2`                 | co2           | Yes       | This is the channel for CO2 sensors                      |
+| `rollershutter`       | rollershutter | No        | This is the channel for rollershutters                   |
+| `rollershutter_slats` | rollershutter | No        | This is the channel for rollershutters with slats        |
+| `thermostat`          | setpoint      | No        | This is the channel for thermostat setpoint              |
+| `thermostat`          | measured      | Yes       | This is the channel for thermostat current temperature   |
+| `thermostat`          | mode          | No        | This is the channel for thermostat mode                  |
 
 ## Full Example
 

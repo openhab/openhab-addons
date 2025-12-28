@@ -24,27 +24,27 @@ Discovery is not supported, the seneye monitor must be configured manually.
 The following settings must be configured in order to make the seneye binding work:
 
 | Setting       |                                                                                |
-| ------------- | ------------------------------------------------------------------------------ |
+|---------------|--------------------------------------------------------------------------------|
 | aquarium_name | The name of the aquarium, as specified in [seneye.me](https://www.seneye.me/). |
 |               | Useful to distinguish multiple seneye installations.                           |
-| username      | Your login name for [seneye.me](https://www.seneye.me/).                        |
-| password      | Your password for [seneye.me](https://www.seneye.me/).                          |
+| username      | Your login name for [seneye.me](https://www.seneye.me/).                       |
+| password      | Your password for [seneye.me](https://www.seneye.me/).                         |
 | poll_time     | How often (in minutes) the seneye account should be checked.                   |
 
 ## Channels
 
 The following channels are supported:
 
-| Channel Type ID | Item Type | Description                                                     |
-| --------------- | --------- | --------------------------------------------------------------- |
+| Channel Type ID | Item Type | Description                                                      |
+|-----------------|-----------|------------------------------------------------------------------|
 | temperature     | String    | The water temperature.                                           |
 | ph              | String    | The PH level of the water.                                       |
 | nh3             | String    | The level of Ammonia (NH3) in the water.                         |
 | nh4             | String    | The level of Ammonium (NH4) in the water.                        |
-| O2              | String    | The level of oxygen in the water.                               |
-| lux             | String    | The lux level of your aquarium lighting, if available.          |
-| par             | String    | The par level of your aquarium lighting, if available.          |
-| kelvin          | String    | The kelvin level of your aquarium lighting, if available.       |
+| O2              | String    | The level of oxygen in the water.                                |
+| lux             | String    | The lux level of your aquarium lighting, if available.           |
+| par             | String    | The par level of your aquarium lighting, if available.           |
+| kelvin          | String    | The kelvin level of your aquarium lighting, if available.        |
 | lastreading     | DateTime  | The moment when the last readings are received from the monitor. |
 | slideexpires    | DateTime  | The moment when the current slide will expire.                   |
 | wrongslide      | String    | The Slide is not valid (normally expired).                       |
