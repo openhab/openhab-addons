@@ -39,7 +39,7 @@ The `serial-pim` takes the following configuration parameters:
 
 ### Generic device
 
-The `generic` thing type supports most UPB devices such as dimmers, light switches,
+The `generic` Thing type supports most UPB devices such as dimmers, light switches,
 and appliance modules. It has the following configuration parameters:
 
 | Parameter                | Description                                    | Config   | Default        |

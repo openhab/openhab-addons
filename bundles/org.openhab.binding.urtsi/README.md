@@ -8,7 +8,7 @@ The binding supports RS‑232 communication.
 
 ## Supported Things
 
-There are two supported things:
+There are two supported Things:
 
 - URTSI II device: Bridge
 - RTS device (e.g., roller shutter): Thing

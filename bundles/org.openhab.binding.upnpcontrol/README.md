@@ -16,7 +16,7 @@ Each discovered renderer will also be registered as an openHAB audio sink.
 
 ## Supported Things
 
-Two thing types are supported, a server thing, `upnpserver`, and a renderer thing, `upnprenderer`.
+Two Thing types are supported, a server Thing, `upnpserver`, and a renderer Thing, `upnprenderer`.
 
 The binding has been tested with the AV Media Server and AV Media Renderer from [Intel Developer Tools](https://www.meshcommander.com/upnptools) for UPnP Technology.
 A second test set included a [TVersity Media Server](http://tversity.com/).
@@ -35,9 +35,9 @@ UPnP media servers and media renderers in the network will be discovered automat
 
 ## Thing Configuration
 
-Both the `upnprenderer` and `upnpserver` things require a configuration parameter, `udn` (Universal Device Name).
+Both the `upnprenderer` and `upnpserver` Things require a configuration parameter, `udn` (Universal Device Name).
 This `udn` uniquely defines the UPnP device.
-It can be retrieved from the thing ID when using auto discovery.
+It can be retrieved from the Thing ID when using auto discovery.
 
 Both also have a `refresh` configuration parameter. This parameter defines a polling interval for polling the state of the `upnprenderer` or `upnpserver`.
 The default polling interval is 60s.
@@ -107,7 +107,7 @@ The `upnpserver` has the following channels (item type and access mode indicated
   Search criteria are defined in UPnP search criteria format.
   Examples: `dc:title contains "song"`, `dc:creator contains "SpringSteen"`, `unp:class = "object.item.audioItem"`, `upnp:album contains "Born in"`.
 
-  The search, by default, starts at the value of the `currentid` and searches down from there unless the `searchfromroot` thing configuration parameter is set to `true`.
+  The search, by default, starts at the value of the `currentid` and searches down from there unless the `searchfromroot` Thing configuration parameter is set to `true`.
   The result (media and containers) will be available in the `browse` command option list.
   The `currentid` channel will be put to the id of the top container where the search started.
 
@@ -142,7 +142,7 @@ The `upnpserver` has the following channels (item type and access mode indicated
 
   - `DELETE`: delete `playlist` from disk and remove from `playlistselect` command option list.
 
-A number of convenience channels replicate the basic control channels from the `upnprenderer` thing for the currently selected renderer on the `upnprenderer` channel.
+A number of convenience channels replicate the basic control channels from the `upnprenderer` Thing for the currently selected renderer on the `upnprenderer` channel.
 These channels are `volume`, `mute` and `control`.
 
 ### `upnprenderer`
@@ -212,7 +212,7 @@ There are multiple ways to serve content to a renderer for playback.
 
 - Content served from one or multiple `upnpserver` servers:
 
-  This is done on the `upnpserver` thing with the `upnprenderer` set to the renderer for playback.
+  This is done on the `upnpserver` Thing with the `upnprenderer` set to the renderer for playback.
   The media at any point in time in the `upnpserver browse` option list (result from browse, search or restoring a playlist), will be queued to the `upnprenderer` for playback.
   Playback does not start automatically if not yet playing.
   When already playing a queue, the first entry of the new queue will be playing as the next entry.
@@ -257,8 +257,8 @@ Playing the server queue will resume after playing the favorite.
 
 Playlists provide a way to define lists of server content for playback.
 
-A new playlist can be created on a server thing from the selection in the `upnpserver browse` selection list.
-When restoring a playlist on the server, the media in the playlist from the `upnpserver` thing used for restoring, will be put in the `upnpserver browse` selection list.
+A new playlist can be created on a server Thing from the selection in the `upnpserver browse` selection list.
+When restoring a playlist on the server, the media in the playlist from the `upnpserver` Thing used for restoring, will be put in the `upnpserver browse` selection list.
 
 The current selection of media playable on the currently selected renderer will automatically be stored as a playlist with name `current`.
 
