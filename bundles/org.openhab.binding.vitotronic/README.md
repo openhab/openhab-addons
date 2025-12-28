@@ -15,7 +15,7 @@ The adapter itself is not a part of the binding.
 
 ## Supported Things
 
-For easy use, the main things of a heating system are already defined in this binding:
+For easy use, the main Things of a heating system are already defined in this binding:
 
 - heating (Vitotronic core system)
 - pelletburner (Pellet Fireplace, works for wood also)
@@ -25,13 +25,13 @@ For easy use, the main things of a heating system are already defined in this bi
 - circuit (Heating circuit controls the flow between the heating system and the radiators in the rooms)
 - solar (Solar water heating (SWH): Convert sunlight into energy for water heating)
 
-For advanced use, 3 basic things of a heating system are also defined.
+For advanced use, 3 basic Things of a heating system are also defined.
 
 - temperaturesensor (Single temperature sensor)
 - pump (Single pump)
 - valve (Single valve)
 
-Note: The mapping of things and channels to the heating system addresses must be done in the adapter.
+Note: The mapping of Things and channels to the heating system addresses must be done in the adapter.
 
 ## Discovery
 
@@ -40,7 +40,7 @@ For automatic detection the adapter and **openHAB** must be on the same LAN.
 If the bridge isn't on the same LAN, you will need to add manually.
 In this case the `IP-Address` and the `adapterID` is required.
 After the `vitotronic:bridge` is ONLINE, start a second discovery.
-It discovers all things, and places them in the inbox.
+It discovers all Things, and places them in the inbox.
 
 ## Binding Configuration
 

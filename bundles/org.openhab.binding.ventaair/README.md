@@ -20,7 +20,7 @@ After confirming this request, the user can link its items to receive data or co
 
 ## Thing Configuration
 
-There are three mandatory configuration parameters for a thing: `ipAddress`, `macAddress` and `deviceType`.
+There are three mandatory configuration parameters for a Thing: `ipAddress`, `macAddress` and `deviceType`.
 
 | parameter  | required | description |
 |----------|------------|-------------------------------------------|

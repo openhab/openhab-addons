@@ -14,7 +14,7 @@ Air Humidifier Classic 200S (Same as 300S without the nightlight from initial ch
 
 ## Supported Things
 
-This binding supports the follow thing types:
+This binding supports the follow Thing types:
 
 | Thing          | Thing Type | Thing Type UID | Discovery | Description                                                           |
 |----------------|------------|----------------|-----------|-----------------------------------------------------------------------|

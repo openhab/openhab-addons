@@ -160,7 +160,7 @@ Bridge velbus:networkbridge:1 "Velbus Network Bridge - Loopback" @ "Control" [ a
 ### Real-time Clock Synchronization
 
 Optionally, the openHAB Velbus binding can synchronize the real-time clock, date and daylight saving status of the Velbus modules.
-This is achieved by setting the Time Update Interval (in minutes) on the bridge thing. For example:
+This is achieved by setting the Time Update Interval (in minutes) on the bridge Thing. For example:
 
 ```java
 Bridge velbus:bridge:1 [ port="COM1", timeUpdateInterval="360" ]
@@ -202,8 +202,8 @@ Discovered modules can be found in the inbox.
 
   - `<thingType>` is the type of the Velbus module. Refer to the [Supported Things](#supported-things) table for valid `<thingType>` values;
   - `<thingId>` is the hexadecimal address of the Velbus module;
-  - `"Label"` is an optional label for the thing;
-  - `@ "Location"` is an optional specification of the location of the thing;
+  - `"Label"` is an optional label for the Thing;
+  - `@ "Location"` is an optional specification of the location of the Thing;
   - The `CHx="..."` properties are optional and can be used to specify names of the module channels.
 
 Individual module `Thing`’s channels can be linked to openHAB items via channel names like `velbus:vmb4ryld:1:0A:CH1`. Here, from left to right, the channel name consists of the binding name, module type (`<thingType> = vmb4ryld`), bridge id (`1`), module’s hexadecimal address (`<thingId> = 0A`), and channel within the module (`CH1`).
@@ -239,7 +239,7 @@ xidel -e 'fn:filter(//config-description, function($cfg) { $cfg/parameter/@name 
 | cut -d':' -f3
 ```
 
-From there you want to filter out all things in `thing-types` that have these values as their
+From there you want to filter out all Things in `thing-types` that have these values as their
 `config-description-ref`. For example for `refresh`, using results from the previous command to
 fill in `$refs`:
 
@@ -276,7 +276,7 @@ xidel -e 'let $refs := (
 | `refresh`                 | `vmb1ts`, `vmb4an`, `vmb7in`, `vmbel1`, `vmbel2`, `vmbel4`, `vmbelpir`, `vmbgp1`, `vmbgp1-2`, `vmbgp2`, `vmbgp2-2`, `vmbgp4`, `vmbgp4-2`, `vmbgp4pir`, `vmbgp4pir-2`, `vmbmeteo`, `vmbpiro`, `vmbpiro-10`, `vmbpiro-20`, `vmb8in-20` | Refresh interval for sensors or counters (in seconds), default 300. If set to 0 or left empty, no refresh will be scheduled. |
 | `mode`                    | `vmb4ledpwm-20`                                                                                                                                                                                                                      | The mode used by the dimmer module (4DIM, RGB, RGBW)                                                                         |
 
-The `vmbdali` and `vmbdali-20` things have 16 virtual light channels.
+The `vmbdali` and `vmbdali-20` Things have 16 virtual light channels.
 A virtual light combines 3 or 4 VMBDALI module channels into an openHAB channel to control RGB or RGBW lights.
 This is because an RGBW DALI light is configured on the VMBDALI module with 4 channels (Red channel, Green channel, Blue channel, White channel).
 The channels of the virtual light can be identified by a module channel `CH1` ... `CH64` or a DALI address `A0` ... `A63`.

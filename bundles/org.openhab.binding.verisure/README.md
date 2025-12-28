@@ -6,7 +6,7 @@ This binding uses a rest API used by the [Verisure My Pages webpage](https://myp
 
 ## Supported Things
 
-This binding supports the following thing types:
+This binding supports the following Thing types:
 
 - Bridge
 - Alarm
@@ -34,11 +34,11 @@ You must also configure pin-code(s) to be able to lock/unlock the SmartLock(s) a
 
 ## Discovery
 
-After the configuration of the Verisure Bridge all of the available Sensors, Alarms, SmartPlugs, SmartLocks, Climate and Mice Detection devices will be discovered and placed as things in the inbox.
+After the configuration of the Verisure Bridge all of the available Sensors, Alarms, SmartPlugs, SmartLocks, Climate and Mice Detection devices will be discovered and placed as Things in the inbox.
 
 ## Thing Configuration
 
-Only the bridge require manual configuration. The devices and sensors can be added by hand, or you can let the discovery mechanism automatically find all of your Verisure things.
+Only the bridge require manual configuration. The devices and sensors can be added by hand, or you can let the discovery mechanism automatically find all of your Verisure Things.
 
 ## Enable Debugging
 
@@ -360,7 +360,7 @@ The following channels are supported:
 ## Trigger Events
 
 To be able to get trigger events you need an active Event Log thing, you can either get it via auto-detection or create your own in a things-file.
-The following trigger events are defined per thing type:
+The following trigger events are defined per Thing type:
 
 | Event Type        | Thing Type    | Description                                                |
 |-------------------|---------------|------------------------------------------------------------|

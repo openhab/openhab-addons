@@ -184,7 +184,7 @@ Example 1a: If Thing has been created using autodiscovery
 ```java
  val actions = getActions("volvooncall","volvooncall:vehicle:thingId")
  if(null === actions) {
-        logInfo("actions", "Actions not found, check thing ID")
+        logInfo("actions", "Actions not found, check Thing ID")
         return
  } else {
         actions.openCarCommand()
@@ -196,7 +196,7 @@ Example 1b: If Thing has been created using script
 ```java
  val actions = getActions("volvooncall","volvooncall:vehicle:bridgeId:thingId")
  if(null === actions) {
-        logInfo("actions", "Actions not found, check thing ID")
+        logInfo("actions", "Actions not found, check Thing ID")
         return
  } else {
         actions.openCarCommand()

@@ -5,7 +5,7 @@ It has been tested so far with Vallox 350 MV and 510 MV.
 
 ## Supported Things
 
-There is one thing type (`valloxmv`) supporting the connection via the web interface of the Vallox MV.
+There is one Thing type (`valloxmv`) supporting the connection via the web interface of the Vallox MV.
 There is no support for earlier Modbus-connected devices.
 
 ## Discovery
@@ -14,7 +14,7 @@ This binding does not support discovery; you must provide the IP address.
 
 ## Thing Configuration
 
-The thing needs the IP/hostname of the web interface and how often values should be updated.
+The Thing needs the IP/hostname of the web interface and how often values should be updated.
 The minimum update interval is 15 seconds to avoid polling again before results have been evaluated.
 
 | Config                | Description                                           | Type  | Default |

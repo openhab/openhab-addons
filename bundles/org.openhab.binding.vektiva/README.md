@@ -4,7 +4,7 @@ This binding allows control of [Vektiva](https://vektiva.com) products.
 
 ## Supported Things
 
-The only supported thing is [SMARWI](https://vektiva.com/en/about-smarwi/how-it-works).
+The only supported Thing is [SMARWI](https://vektiva.com/en/about-smarwi/how-it-works).
 
 ## Discovery
 
@@ -12,7 +12,7 @@ Automatic discovery is currently not supported by the Vektiva API.
 
 ## SMARWI Configuration
 
-To manually add a SMARWI thing, enter the device’s local IP address (or hostname).
+To manually add a SMARWI Thing, enter the device’s local IP address (or hostname).
 To change the polling frequency for availability and status, adjust the advanced parameter `refreshInterval` (seconds).
 If your device runs firmware 203.2.4 or newer, you can enable WebSockets for faster updates by setting `useWebSockets` to true.
 
@@ -22,7 +22,7 @@ The exposed channels are:
 
 | Name    | Type           | Description |
 | ------- |:--------------:|:-----------:|
-| control | Rollershutter  | Reacts to standard roller shutter commands (UP/DOWN/STOP). Percentage position is supported (you can partially open the window), but the thing state is only open/closed. |
+| control | Rollershutter  | Reacts to standard roller shutter commands (UP/DOWN/STOP). Percentage position is supported (you can partially open the window), but the Thing state is only open/closed. |
 | status  | String         | Window status (Stopped, Moving, Not ready, Blocked) |
 
 ## Full Example

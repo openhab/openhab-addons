@@ -6,7 +6,7 @@ The binding is based on VDR's own SVDRP (Simple VDR Protocol) connectivity. It s
 
 ## Supported Things
 
-The binding provides only one thing type: `vdr`. You can create one thing for each VDR instance in your home.
+The binding provides only one Thing type: `vdr`. You can create one Thing for each VDR instance in your home.
 
 ## Thing Configuration
 
@@ -21,7 +21,7 @@ Please check VDR documentation if you are unsure about this.
 | port                    | 6419             |   Yes    | SVDRP port of the VDR instance                                |
 | refresh                 | 30               |   No     | Interval in seconds the data from the VDR instance is refreshed |
 
-A typical thing configuration would look like this:
+A typical Thing configuration would look like this:
 
 ```java
 Thing vdr:vdr:livingRoom "VDR" @ "LivingRoom"    [ host="192.168.0.51", port=6419, refresh=30 ]
