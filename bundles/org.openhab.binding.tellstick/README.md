@@ -154,10 +154,10 @@ Actuators (dimmer/switch) support the following channels:
 Sensors (sensor) support the following channels:
 
 | Channel Type ID | Item Type            | Description                                                 |
-|-----------------|---------------------|-------------------------------------------------------------|
-| humidity        | Number:Dimensionless| This channel reports the current humidity in percentage.    |
-| temperature     | Number:Temperature  | This channel reports the current temperature.               |
-| timestamp       | DateTime            | This channel reports the last time this sensor was updated. |
+|-----------------|----------------------|-------------------------------------------------------------|
+| humidity        | Number:Dimensionless | This channel reports the current humidity in percentage.    |
+| temperature     | Number:Temperature   | This channel reports the current temperature.               |
+| timestamp       | DateTime             | This channel reports the last time this sensor was updated. |
 
 PowerSensors ([powersensor]) support the following channels:
 
