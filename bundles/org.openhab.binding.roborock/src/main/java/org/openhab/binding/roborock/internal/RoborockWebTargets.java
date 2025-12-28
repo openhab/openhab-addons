@@ -149,6 +149,22 @@ public class RoborockWebTargets {
      * @throws RoborockException If authentication fails.
      */
     @Nullable
+    public String requestCode(String baseUri, String email) throws RoborockException {
+        String encodedEmail = URLEncoder.encode(email, StandardCharsets.UTF_8);
+        String payload = "?username=" + encodedEmail + "&type=auth";
+        return invoke(baseUri + REQUEST_CODE_V1 + payload, HttpMethod.POST, "application/json", "header_clientlang",
+                "en");
+    }
+
+    /**
+     * Requests a 2FA code based on the user's email.
+     *
+     * @param baseUri The base URI for API calls.
+     * @param email The user's email.
+     * @return A String containing the response.
+     * @throws RoborockException If authentication fails.
+     */
+    @Nullable
     public String requestCodeV4(String baseUri, String email) throws RoborockException {
         String encodedEmail = URLEncoder.encode(email, StandardCharsets.UTF_8);
         String payload = "?email=" + encodedEmail + "&type=login&platform=";
