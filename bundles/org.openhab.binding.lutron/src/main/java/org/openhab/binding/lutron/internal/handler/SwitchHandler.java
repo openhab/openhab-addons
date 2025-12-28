@@ -98,7 +98,7 @@ public class SwitchHandler extends LutronHandler {
             if (getThing().getStatus() == ThingStatus.UNKNOWN) {
                 updateStatus(ThingStatus.ONLINE);
             }
-            postCommand(CHANNEL_SWITCH, OnOffType.from(level.compareTo(BigDecimal.ZERO) != 0));
+            updateState(CHANNEL_SWITCH, OnOffType.from(level.compareTo(BigDecimal.ZERO) != 0));
         }
     }
 

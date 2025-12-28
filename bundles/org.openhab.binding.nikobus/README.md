@@ -12,7 +12,7 @@ More specifically, it allows openHAB to:
 - request the status of switch channels on a Nikobus switch module,
 - change the status of dimmer channels on a Nikobus dimmer module,
 - request the status of dimmer channels on a Nikobus dimmer module,
-- send commands to the Nikobus roller shutter module.
+- send commands to the Nikobus rollershutter module.
 
 This binding works with at least the following hardware:
 
@@ -137,15 +137,15 @@ Defines a `rollershutter-module` with address `4C6C`.
 | output-5  | Rollershutter | Output 5     |
 | output-6  | Rollershutter | Output 6     |
 
-In case rollershutters are moving in the oposite direction when sending `UP` or `DOWN` commands, there is a `reverse` parameter, which can be set to `true` in this case to reverse the rollershutter's direction. Defaults to `false`.
+In case rollershutters are moving in the opposite direction when sending `UP` or `DOWN` commands, there is a `reverse` parameter, which can be set to `true` to reverse the rollershutter's direction. Defaults to `false`.
 
 ##### Estimating Position
 
-Nikobus rollershuter module does not provide information about rollershutter's position. In order to bridge this gap, an optional parameter `duration` can be set per channel, describing the amount of time needed by a rollershutter to get from open to closed state (or vice-versa).
+Nikobus rollershutter module does not provide information about a rollershutter's position. In order to bridge this gap, an optional parameter `duration` can be set per channel, describing the amount of time needed by a rollershutter to get from open to closed state (or vice versa).
 
-Binding uses this information to interpolate rollershutter’s position. On startup binding will assume completely open rollershutters but opening/closing a rollershutter once should bring it back in sync.
+The binding uses this information to interpolate a rollershutter’s position. On startup, the binding will assume completely open rollershutters, but opening or closing a rollershutter once should bring it back in sync.
 
-After `duration` seconds elapsed, binding will set module's output back to neutral (OFF) state after additional number of seconds, as specified by the `delay` parameter. If not specified, it defaults to 5 seconds.
+After `duration` seconds have elapsed, the binding will set the module's output back to the neutral (OFF) state after an additional number of seconds, as specified by the `delay` parameter. If not specified, it defaults to 5 seconds.
 
 Example:
 
@@ -155,13 +155,13 @@ binding will automatically switch Nikobus rollershutter module’s output to OFF
 
 `30s + 5s = 35s`
 
-**Note:** Please ensure all Nikobus Push Buttons manipulating rollershutters have `impactedModules` set so binding is notified about changes.
+**Note:** Please ensure all Nikobus push buttons that manipulate rollershutters have `impactedModules` set so the binding is notified about changes.
 
 ### Buttons
 
 Once an openHAB item has been configured as a Nikobus button, it will receive a status update to ON when the physical button is pressed.
 When an item receives the ON command from openHAB, it will send a simulated button press to the Nikobus.
-This means one could also define virtual buttons in openHAB with non-existing addresses (e.g., `000001`) and use those in the programming of Nikobus installation.
+This means one could also define virtual buttons in openHAB with non-existing addresses (e.g., `000001`) and use those in the programming of the Nikobus installation.
 
 To configure an item for a button in openHAB with address `28092A`, use the following format:
 
@@ -174,8 +174,8 @@ Otherwise a channel which was switched on by a button, may be switched off again
 
 In order to keep an up to date state of the channels in openHAB, button configurations can be extended to include detail on which channel groups the button press affects.
 
-When configured, the status of the channel groups to which the button is linked, will be queried every time the button is pressed.
-Every status query takes between ~300 ms, so to get the best performance, only add the affected channel groups in the configuration, which has the following format:
+When configured, the status of the channel groups to which the button is linked will be queried every time the button is pressed.
+Every status query takes roughly 300 ms, so for best performance, only add the affected channel groups in the configuration, which has the following format:
 
 ```java
 Thing push-button <id> [ address = "<address>", impactedModules = "<moduleType>:<moduleId>:<channelGroup>, <moduleType>:<moduleId>:<channelGroup>, ..." ]
@@ -198,29 +198,29 @@ In addition to the status requests triggered by button presses, there is also a 
 
 #### Push Button Trigger Channels
 
-Beside receiving a status update (ON) when a physical Nikobus push button is pressed (and kept pressed), additional triggers can be added and configured to determine how press&hold of a physical push button should generate trigger events. Two types of trigger channels are supported:
+Besides receiving a status update (ON) when a physical Nikobus push button is pressed (and held), additional triggers can be added and configured to determine how pressing and holding a physical push button should generate trigger events. Two types of trigger channels are supported:
 
 - filter trigger and
 - button trigger.
 
 ##### Filter Trigger
 
-- `command` - command to be send,
+- `command` - command to be sent,
 - `delay` - a required delay in milliseconds defining how much time must a button be pressed before an initial trigger event is fired,
 - `period` - optional time in milliseconds between successive triggers.
 
 Examples:
 
-- `command = PRESSED, delay = 0, period = <empty>` - triggers `PRESSED` event immediatelly when Nikobus button is pressed and is not triggered anymore while holding down the button,
+- `command = PRESSED, delay = 0, period = <empty>` - triggers a `PRESSED` event immediately when the Nikobus button is pressed and is not triggered anymore while holding down the button,
 - `command = INCREMENT, delay = 1000, period = 500` - triggers initial `INCREMENT` event after 1 second and then every half a second while holding down the button.
 
 ##### Button Trigger
 
-`threshold` - a required long-press threshold in miliseconds. Defines how long must a button be pressed before a long press event is triggered - pressing&holding a Nikobus push-button for `threshold` or more miliseconds will trigger long press event, otherwise a short press event will be triggered.
+`threshold` - a required long-press threshold in milliseconds. Defines how long a button must be pressed before a long-press event is triggered — pressing and holding a Nikobus push-button for `threshold` or more milliseconds will trigger a long-press event; otherwise, a short-press event will be triggered.
 
 ## Discovery
 
-Pressing a physical Nikobus push-button will generate a new inbox entry with an exception of buttons already discovered or setup.
+Pressing a physical Nikobus push-button will generate a new inbox entry, with the exception of buttons already discovered or set up.
 
 Nikobus push buttons have the following format in inbox:
 
