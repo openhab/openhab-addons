@@ -110,7 +110,7 @@ Configuration parameters are:
   - if the BUS/SCS gateway is configured to accept connections from the openHAB computer IP address, no password should be required
   - in all other cases, a password must be configured. This includes gateways that have been discovered and added from Inbox: without a password configured they will remain OFFLINE
 - `discoveryByActivation`: discover BUS devices when they are activated also when a device scan hasn't been started from Inbox (`boolean`, _optional_, default: `false`). See [Discovery by Activation](#discovery-by-activation).
-- `dateTimeSynch`: synchronise date and time of slave elements on the BUS using openHAB timestamp (`boolean`, _optional_, default: `false`). Set this parameter to `true` to send time-date synchronisation commands on the BUS when the timestamp received from the gateway differs by more than 1 minute from that of openHAB. Useful if the BUS gateway is not synchronised with Internet time servers and with daylight saving time changes.
+- `dateTimeSynch`: synchronize date and time of slave elements on the BUS using openHAB timestamp (`boolean`, _optional_, default: `false`). Set this parameter to `true` to send time-date synchronization commands on the BUS when the timestamp received from the gateway differs by more than 1 minute from that of openHAB. Useful if the BUS gateway is not synchronized with Internet time servers and with daylight saving time changes.
 
 Alternatively the MyHOME - BUS/SCS Gateway Thing can be configured using the `.things` file, see `openwebnet.things` example [below](#full-example).
 

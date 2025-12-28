@@ -1,6 +1,7 @@
 # OneBusAway Binding
 
-[OneBusAway](https://onebusaway.org/) is an open source, real-time, transit-information service. This binding lets you get events based on transit arrivals and departures, so you can create rules to do something based on that data.
+[OneBusAway](https://onebusaway.org/) is an open source, real-time, transit-information service.
+This binding lets you get events based on transit arrivals and departures, so you can create rules to do something based on that data.
 
 ## Preparation
 

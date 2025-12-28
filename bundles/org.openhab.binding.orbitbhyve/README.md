@@ -15,7 +15,8 @@ To start the discovery you need to create a bridge Thing and enter valid credent
 ## Thing Configuration
 
 The bridge Thing requires manual configuration. You must enter valid credentials to your Orbit B-hyve account, and you can also set the refresh time in seconds for polling data from the Orbit cloud.
-There is no user configuration for sprinkler things. Sprinklers have an _id_ configuration property identifying the device; it is populated when the bridge auto-discovers sprinklers.
+There is no user configuration for sprinkler things.
+Sprinklers have an _id_ configuration parameter identifying the device; it is populated when the bridge auto-discovers sprinklers.
 
 ## Channels
 
