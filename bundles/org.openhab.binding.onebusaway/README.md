@@ -45,7 +45,7 @@ The Route Thing supports the following channels:
 | arrival          | state        | DateTime  | The arrival time of a Route at a Stop.                                                                   |
 | departure        | state        | DateTime  | The departure time of a Route at a Stop.                                                                 |
 | update           | state        | DateTime  | The last time this data was updated (per the data provider, not the last time openHAB updated the data). |
-| routeEvent       | trigger      | —         | Triggered when a Route arrives or departs a Stop (event values: `ARRIVAL`, `DEPARTURE`).                  |
+| routeEvent       | trigger      | —         | Triggered when a Route arrives or departs a Stop (event values: `ARRIVAL`, `DEPARTURE`).                 |
 
 ### Channel Configurations
 
