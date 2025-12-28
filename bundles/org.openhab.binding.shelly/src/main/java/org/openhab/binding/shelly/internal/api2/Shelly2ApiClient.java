@@ -75,6 +75,7 @@ import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceS
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2DeviceStatusVoltage;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2RGBWStatus;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2InputStatus;
+import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatusLora;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RelayStatus;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RpcBaseMessage;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2StatusEm1;
@@ -248,6 +249,7 @@ public class Shelly2ApiClient extends ShellyHttpClient {
         updated |= updateRollerStatus(0, status, result.cover0, channelUpdate);
         updated |= updateDimmerStatus(0, status, result.light0, channelUpdate);
         updated |= updateRGBWStatus(0, status, result.rgbw0, channelUpdate);
+        updated |= updateLoraStatus(0, status, result.lora100, channelUpdate);
         if (channelUpdate) {
             updated |= ShellyComponents.updateMeters(getThing(), status);
         }
@@ -801,6 +803,17 @@ public class Shelly2ApiClient extends ShellyHttpClient {
 
         status.lights.set(value.id, ds);
         return channelUpdate ? ShellyComponents.updateRGBW(getThing(), status) : false;
+    }
+
+    private boolean updateLoraStatus(int id, ShellySettingsStatus status, @Nullable Shelly2DeviceStatusLora value,
+            boolean channelUpdate) throws ShellyApiException {
+        if (value == null) {
+            return false;
+        }
+        if (value.id == null) {
+            value.id = id;
+        }
+        return getProfile().settings.loraDetected ? ShellyComponents.updateLoraStatus(getThing(), value) : false;
     }
 
     protected @Nullable Integer getDuration(@Nullable Double timerStartedAt, @Nullable Double timerDuration) {
