@@ -52,14 +52,14 @@ In order for the Pentair controller to receive commands from this binding, you m
 
 This binding supports the following Thing types:
 
-| ThingType UID   | Thing Type | Description                             |
-| --------------- | :--------: | --------------------------------------- |
-| ip_bridge       |   Bridge   | A TCP network RS-485 bridge device.     |
-| serial_bridge   |   Bridge   | A USB or serial RS-485 device.          |
-| controller      |   Thing    | Pentair EasyTouch, SunTouch, or IntelliTouch pool controller. |
-| intelliflo      |   Thing    | Pentair IntelliFlo variable speed pump. |
-| intellichlor    |   Thing    | Pentair IntelliChlor chlorinator.       |
-| intellichem     |   Thing    | Pentair IntelliChem.                    |
+| ThingType UID | Thing Type | Description                                                   |
+|---------------|------------|---------------------------------------------------------------|
+| ip_bridge     | Bridge     | A TCP network RS-485 bridge device.                           |
+| serial_bridge | Bridge     | A USB or serial RS-485 device.                                |
+| controller    | Thing      | Pentair EasyTouch, SunTouch, or IntelliTouch pool controller. |
+| intelliflo    | Thing      | Pentair IntelliFlo variable speed pump.                       |
+| intellichlor  | Thing      | Pentair IntelliChlor chlorinator.                             |
+| intellichem   | Thing      | Pentair IntelliChem.                                          |
 
 ## Binding Configuration
 
@@ -71,15 +71,15 @@ A Bridge item must first be configured to gain access to the Pentair bus.
 This can be done via the interactive setup pages in openHAB or manually through a .thing configuration file.
 The following table shows the parameters for each Bridge.
 
-| Thing         | Configuration Parameters                                     |
-| ------------- | ------------------------------------------------------------ |
-| ip_bridge     | address - IP address for the RS-485 adapter - Required.      |
-|               | port - TCP port for the RS-485 adapter - Not Required - default = 10000. |
-|               | id - ID to use when communicating on Pentair control bus - default = 34. |
-| serial_bridge | serialPort - Serial port for the RS-485 bridge - Required.  |
-|               | baud - Baud rate of the RS-485 bridge - Not Required - default = 9600. |
+| Thing         | Configuration Parameters                                                                                                    |
+|---------------|-----------------------------------------------------------------------------------------------------------------------------|
+| ip_bridge     | address - IP address for the RS-485 adapter - Required.                                                                     |
+|               | port - TCP port for the RS-485 adapter - Not Required - default = 10000.                                                    |
+|               | id - ID to use when communicating on Pentair control bus - default = 34.                                                    |
+| serial_bridge | serialPort - Serial port for the RS-485 bridge - Required.                                                                  |
+|               | baud - Baud rate of the RS-485 bridge - Not Required - default = 9600.                                                      |
 |               | pollPeriod - Period of time in minutes between the poll command being sent to the RS-485 bridge - Not Required - default=1. |
-|               | id - ID to use when communicating on Pentair control bus - default = 34. |
+|               | id - ID to use when communicating on Pentair control bus - default = 34.                                                    |
 
 ```java
 Bridge pentair:ip_bridge:1 [ address="192.168.1.202", port=10001 ] {
@@ -114,26 +114,26 @@ Feature availability is dependent on the hardware and firmware versions of your 
 This configuration setting will instruct the binding to automatically update the controller's clock every 24 hours with the value from the openHAB server.
 This is useful to keep the pool system clock set correct and automatically adjust for daylight savings time.
 
-| Channel Group                     | Channel           | Type               |     | Description  |
-| :------------------------------:  | :-------:         | :----:             | :-: | :--------------: |
-| pool, spa, aux[1-8], feature[1-8] | switch            | Switch             | RW  | Indicates the particulcar circuit or feature is on or off.  |
-| "                                 | name              | String             | R   | Name of circuit |
-| "                                 | feature           | String             | R   | Feature of ciruit |
-| poolheat, spaheat                 | setpoint          | Number:Temperature | RW  | Temperature setpoint |
-| "                                 | temperature       | Number:Temperature | R   | Current water temperature.  Note, the temperature is only valid while in either pool or spa mode. |
-| "                                 | heatmode          | String             | R   | Heat mode configured.  Values: NONE, HEATER, SOLARPREFERRED, SOLAR |
-| schedule[1-9]                     | schedule          | String             | RW  | Summary string of schedule.  |
-| "                                 | type              | String             | RW  | Type of schedule.  Note, to actually write the program to the controller, this channel must be written to with the same value 2 times within 5s. Values: NONE, NORMAL, EGGTIMER, ONCE ONLY |
-| "                                 | start             | Number:Time        | RW  | Time of day to start schedule expressed in minutes.  |
-| "                                 | end               | Number:Time        | RW  | Time of day to end schedule expressed in minutes. In the case of EGG TIMER, this shoud be the duration. |
-| "                                 | circuit           | Number             | RW  | Circuit/Feature the schedule will control. |
-| "                                 | days              | String             | RW  | The days the schedule will run.  S=Sunday, M=Monday, T=Tuesday, W=Wednesday, R=Thursday, F=Friday, Y=Saturday |
-| status                            | lightmode         | String             | RW  | Light mode. Values: OFF, ON, COLORSYNC, COLORSWIM, COLORSET, PARTY, ROMANCE, CARIBBEAN, AMERICAN, SUNSET, ROYAL, BLUE, GREEN, RED, WHITE, MAGENTA |
-| "                                 | solartemperature  | Number:Temperature | R   | Solar temperature sensor reading. |
-| "                                 | airtemperature    | Number:Temperature | R   | Air temperature sensor reading. |
-| "                                 | servicemode       | Switch             | R   | Indicates whether controller is in service mode. |
-| "                                 | solaron           | Switch             | R   | Indicates whether solar heat is on. |
-| "                                 | heateron          | Switch             | R   | Indicates whether heater is on. |
+| Channel Group                     | Channel          | Type               |    | Description                                                                                                                                       |
+|-----------------------------------|------------------|--------------------|----|---------------------------------------------------------------------------------------------------------------------------------------------------|
+| pool, spa, aux[1-8], feature[1-8] | switch           | Switch             | RW | Indicates the particulcar circuit or feature is on or off.                                                                                        |
+| "                                 | name             | String             | R  | Name of circuit                                                                                                                                   |
+| "                                 | feature          | String             | R  | Feature of ciruit                                                                                                                                 |
+| poolheat, spaheat                 | setpoint         | Number:Temperature | RW | Temperature setpoint                                                                                                                              |
+| "                                 | temperature      | Number:Temperature | R  | Current water temperature.  Note, the temperature is only valid while in either pool or spa mode.                                                 |
+| "                                 | heatmode         | String             | R  | Heat mode configured.  Values: NONE, HEATER, SOLARPREFERRED, SOLAR                                                                                |
+| schedule[1-9]                     | schedule         | String             | RW | Summary string of schedule.                                                                                                                       |
+| "                                 | type             | String             | RW | Type of schedule. To write to controller, send same value twice within 5s. Values: NONE, NORMAL, EGGTIMER, ONCE ONLY                              |
+| "                                 | start            | Number:Time        | RW | Time of day to start schedule expressed in minutes.                                                                                               |
+| "                                 | end              | Number:Time        | RW | Time of day to end schedule expressed in minutes. In the case of EGG TIMER, this shoud be the duration.                                           |
+| "                                 | circuit          | Number             | RW | Circuit/Feature the schedule will control.                                                                                                        |
+| "                                 | days             | String             | RW | The days the schedule will run.  S=Sunday, M=Monday, T=Tuesday, W=Wednesday, R=Thursday, F=Friday, Y=Saturday                                     |
+| status                            | lightmode        | String             | RW | Light mode. Values: OFF, ON, COLORSYNC, COLORSWIM, COLORSET, PARTY, ROMANCE, CARIBBEAN, AMERICAN, SUNSET, ROYAL, BLUE, GREEN, RED, WHITE, MAGENTA |
+| "                                 | solartemperature | Number:Temperature | R  | Solar temperature sensor reading.                                                                                                                 |
+| "                                 | airtemperature   | Number:Temperature | R  | Air temperature sensor reading.                                                                                                                   |
+| "                                 | servicemode      | Switch             | R  | Indicates whether controller is in service mode.                                                                                                  |
+| "                                 | solaron          | Switch             | R  | Indicates whether solar heat is on.                                                                                                               |
+| "                                 | heateron         | Switch             | R  | Indicates whether heater is on.                                                                                                                   |
 
 #### Working with schedules
 
@@ -145,19 +145,19 @@ To prevent erroneous writes to the schedules though, one must write to the `type
 
 Represents an Intellichlor module connected in your system.  Currently, the values here are readonly.
 
-| Channel              | Type                       |     | Description |
-| :------------------: | :----:                     | :-: | :---------- |
-| saltOutput           | Number:Dimensionless       | R   | Current salt output %. |
-| salinity             | Number:Dimensionless       | R   | Salinity (ppm). |
-| ok                   | Switch                     | R   | System is operating normally. |
-| lowFlow              | Switch                     | R   | Water flow rate is low. |
-| lowSalt              | Switch                     | R   | Low salt level. |
-| veryLowSalt          | Switch                     | R   | Very low salt level. |
-| highCurrent          | Switch                     | R   | High current level. |
-| cleanCell            | Switch                     | R   | Clean cell. |
-| lowVoltage           | Switch                     | R   | Low voltage. |
-| lowWaterTemp         | Switch                     | R   | Water temperature is too low for chlorine generation. |
-| commError            | Switch                     | R   | Communication error. |
+| Channel      | Type                 |   | Description                                           |
+|--------------|----------------------|---|-------------------------------------------------------|
+| saltOutput   | Number:Dimensionless | R | Current salt output %.                                |
+| salinity     | Number:Dimensionless | R | Salinity (ppm).                                       |
+| ok           | Switch               | R | System is operating normally.                         |
+| lowFlow      | Switch               | R | Water flow rate is low.                               |
+| lowSalt      | Switch               | R | Low salt level.                                       |
+| veryLowSalt  | Switch               | R | Very low salt level.                                  |
+| highCurrent  | Switch               | R | High current level.                                   |
+| cleanCell    | Switch               | R | Clean cell.                                           |
+| lowVoltage   | Switch               | R | Low voltage.                                          |
+| lowWaterTemp | Switch               | R | Water temperature is too low for chlorine generation. |
+| commError    | Switch               | R | Communication error.                                  |
 
 ### Thing: IntelliFlo
 
@@ -165,15 +165,15 @@ Represents and interfaces to an Intelliflo pump.
 When a controller is active in the system all pump values are read only since the pump can only have one master at a time.
 If no controller is present or the controller is in service mode, the pump can be controlled directly from OpenHab.
 
-| Channel              | Type                       |     | Description |
-| :------------------: | :----:                     | :-: | :---------- |
-| run                  | Switch                     | RW  | Indicates whether the pump is running. |
-| rpm                  | Number                     | RW  | Pump RPM |
-| gpm                  | Number:VolumetricFlowRate  | R   | Pump GPM (only valid for VF pumps) |
-| power                | Number:Power               | R   | Pump power (Watt) |
-| status1              | Number                     | R   | Pump status1. (not reversed engineered) |
-| status2              | Number                     | R   | Pump status2. (not reversed engineered) |
-| runProgram           | Number                     | RW  | Run program (0 to stop, # to run) |
+| Channel    | Type                      |    | Description                             |
+|------------|---------------------------|----|-----------------------------------------|
+| run        | Switch                    | RW | Indicates whether the pump is running.  |
+| rpm        | Number                    | RW | Pump RPM                                |
+| gpm        | Number:VolumetricFlowRate | R  | Pump GPM (only valid for VF pumps)      |
+| power      | Number:Power              | R  | Pump power (Watt)                       |
+| status1    | Number                    | R  | Pump status1. (not reversed engineered) |
+| status2    | Number                    | R  | Pump status2. (not reversed engineered) |
+| runProgram | Number                    | RW | Run program (0 to stop, # to run)       |
 
 ### Thing: IntelliChem
 
@@ -181,37 +181,37 @@ Represents and interfaces to an IntelliChem unit.
 This is for monitoring of values only and IntelliChem cannot be directly controlled through this binding.
 Note: This has limited testing since I don't own an IntelliChem
 
-| Channel                       | Type                   |     | Description |
-| :------------------:          | :----:                 | :-: | :---------- |
-| phReading                     | Number                 | R   | Current PH reading. |
-| orpReading                    | Number                 | R   | Current Oxidation Reduction Potential (ORP) reading. |
-| phSetPoint                    | Number                 | R   | Current PH set point. |
-| orpSetPoint                   | Number                 | R   | Oxidation Reduction Potential (ORP) set point. |
-| tank1Level                    | Number                 | R   | Tank 1 level (1-7). |
-| tank2Level                    | Number                 | R   | Tank 2 level (1-7). |
-| calciumHardness               | Number:Dimensionless   | R   | Calcium hardness PPM (mg/L). |
-| cyaReading                    | Number                 | R   | Cyanuric acid reading. |
-| alkalinity                    | Number                 | R   | Alkalinity reading. |
-| phDoserType                   | String                 | R   | The doser type for PH (None, CO2, Acid). |
-| orpDOserType                  | String                 | R   | The doser type for ORP (None, ORP). |
-| phDoserStatus                 | Switch                 | R   | Whether the chemical is currently dosing. |
-| orpDoserStatus                | Switch                 | R   | Whether the chemical is currently dosing. |
-| phDoseTime                    | Number:Time            | R   | The time a particular chemical has been dosing. |
-| orpdoseTime                   | Number:Time            | R   | The time a particular chemical has been dosing. |
-| lsi                           | Number                 | R   | Langelier Saturation Index. |
-| saltLevel                     | Number:Dimensionless   | R   | Current salt content reading of the water (PPM). |
-| temperature                   | Number:Temperature     | R   | Current temperature. |
-| alarmWaterFlow                | Switch                 | R   | Water flow alarm (on = no water flow). |
-| alarmPh                       | Switch                 | R   | PH alarm reported. |
-| alarmOrp                      | Switch                 | R   | ORP alarm reported. |
-| alarmPhTank                   | Switch                 | R   | PH tank alarm reported. |
-| alarmOrpTank                  | Switch                 | R   | ORP tank alarm reported. |
-| alarmProbeFault               | Switch                 | R   | Probe fault alarm reported. |
-| warningPhLockout              | Switch                 | R   | Unit is in PH Lockout. |
-| warningPhDailyLimitReached    | Switch                 | R   | Daily limit of PH dosing has been reached. |
-| warningOrpDailyLimitReached   | Switch                 | R   | Daily limit of ORP dosing has been reached. |
-| warningInvalidSetup           | Switch                 | R   | Invalid setup for the unit. |
-| warningChlorinatorCommError   | Switch                 | R   | Error in communicating with the Chlorinator. |
+| Channel                     | Type                 |   | Description                                          |
+|-----------------------------|----------------------|---|------------------------------------------------------|
+| phReading                   | Number               | R | Current PH reading.                                  |
+| orpReading                  | Number               | R | Current Oxidation Reduction Potential (ORP) reading. |
+| phSetPoint                  | Number               | R | Current PH set point.                                |
+| orpSetPoint                 | Number               | R | Oxidation Reduction Potential (ORP) set point.       |
+| tank1Level                  | Number               | R | Tank 1 level (1-7).                                  |
+| tank2Level                  | Number               | R | Tank 2 level (1-7).                                  |
+| calciumHardness             | Number:Dimensionless | R | Calcium hardness PPM (mg/L).                         |
+| cyaReading                  | Number               | R | Cyanuric acid reading.                               |
+| alkalinity                  | Number               | R | Alkalinity reading.                                  |
+| phDoserType                 | String               | R | The doser type for PH (None, CO2, Acid).             |
+| orpDOserType                | String               | R | The doser type for ORP (None, ORP).                  |
+| phDoserStatus               | Switch               | R | Whether the chemical is currently dosing.            |
+| orpDoserStatus              | Switch               | R | Whether the chemical is currently dosing.            |
+| phDoseTime                  | Number:Time          | R | The time a particular chemical has been dosing.      |
+| orpdoseTime                 | Number:Time          | R | The time a particular chemical has been dosing.      |
+| lsi                         | Number               | R | Langelier Saturation Index.                          |
+| saltLevel                   | Number:Dimensionless | R | Current salt content reading of the water (PPM).     |
+| temperature                 | Number:Temperature   | R | Current temperature.                                 |
+| alarmWaterFlow              | Switch               | R | Water flow alarm (on = no water flow).               |
+| alarmPh                     | Switch               | R | PH alarm reported.                                   |
+| alarmOrp                    | Switch               | R | ORP alarm reported.                                  |
+| alarmPhTank                 | Switch               | R | PH tank alarm reported.                              |
+| alarmOrpTank                | Switch               | R | ORP tank alarm reported.                             |
+| alarmProbeFault             | Switch               | R | Probe fault alarm reported.                          |
+| warningPhLockout            | Switch               | R | Unit is in PH Lockout.                               |
+| warningPhDailyLimitReached  | Switch               | R | Daily limit of PH dosing has been reached.           |
+| warningOrpDailyLimitReached | Switch               | R | Daily limit of ORP dosing has been reached.          |
+| warningInvalidSetup         | Switch               | R | Invalid setup for the unit.                          |
+| warningChlorinatorCommError | Switch               | R | Error in communicating with the Chlorinator.         |
 
 ## Example setup
 
