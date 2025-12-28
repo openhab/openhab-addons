@@ -280,19 +280,17 @@ public class EvccPlanHandler extends EvccBaseThingHandler {
         Map<String, String> values = getCachedValues(cachedOneTimePlan);
         String soc = values.get(JSON_KEY_SOC);
         String time = values.get(JSON_KEY_TIME);
-        if (time != null) {
-            if (!TimeFormatValidator.isExactTimeFormat(time)) {
-                try {
-                    OffsetDateTime odt = OffsetDateTime.parse(time,
-                            DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZ"));
-                    time = odt.toInstant().toString();
-                } catch (DateTimeParseException ignored) {
-                    return false; // time is not null and is not matching the time formats
-                }
-            }
-        } else {
-            // Should never happen, but you'll never know
+        if (time == null || soc == null) {
             return false;
+        }
+        if (!TimeFormatValidator.isExactTimeFormat(time)) {
+            try {
+                OffsetDateTime odt = OffsetDateTime.parse(time,
+                        DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZ"));
+                time = odt.toInstant().toString();
+            } catch (DateTimeParseException ignored) {
+                return false; // time is not null and is not matching the time formats
+            }
         }
         String precondition = values.get(JSON_KEY_PRECONDITION);
         String url = String.join("/", endpoint, soc, time);
@@ -345,7 +343,7 @@ public class EvccPlanHandler extends EvccBaseThingHandler {
             try {
                 EXACT_TIME_FMT.parse(input);
                 return true;
-            } catch (Exception ex) {
+            } catch (DateTimeParseException ex) {
                 return false;
             }
         }

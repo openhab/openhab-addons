@@ -9,6 +9,7 @@
 		</supported-bridge-type-refs>
 		<label>Loadpoint</label>
 		<description>A loadpoint configured in your evcc instance</description>
+		<semantic-equipment-tag>EVSE</semantic-equipment-tag>
 		<representation-property>index</representation-property>
 		<config-description>
 			<parameter name="index" type="integer">
