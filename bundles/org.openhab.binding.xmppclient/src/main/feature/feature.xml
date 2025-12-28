@@ -15,7 +15,7 @@
 		<bundle dependency="true">mvn:org.jxmpp/jxmpp-util-cache/1.1.0</bundle>
 		<bundle dependency="true">mvn:org.openhab.osgiify/org.hsluv.hsluv/0.2</bundle>
 		<bundle dependency="true">mvn:org.minidns/minidns-core/1.1.1</bundle>
-		<bundle dependency="true">mvn:org.bouncycastle/bcprov-jdk18on/1.73</bundle>
+		<bundle dependency="true">mvn:org.bouncycastle/bcprov-jdk18on/1.83</bundle>
 		<bundle dependency="true">mvn:org.openhab.osgiify/org.igniterealtime.smack.smack-core/4.5.0-beta6</bundle>
 		<bundle dependency="true">mvn:org.igniterealtime.smack/smack-sasl-javax/4.5.0-beta6</bundle>
 		<!-- FIXME: implicit dependencies required at runtime but not automatically installed, this is a workaround -->

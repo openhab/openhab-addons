@@ -11,7 +11,7 @@
 
   <groupId>org.openhab.addons</groupId>
   <artifactId>org.openhab.addons.reactor</artifactId>
-  <version>5.1.0-SNAPSHOT</version>
+  <version>5.2.0-SNAPSHOT</version>
 
   <packaging>pom</packaging>
 
@@ -66,13 +66,14 @@
     <oh.java.version>21</oh.java.version>
     <maven.compiler.release>${oh.java.version}</maven.compiler.release>
 
-    <ohc.version>5.1.0-SNAPSHOT</ohc.version>
+    <ohc.version>5.2.0-SNAPSHOT</ohc.version>
     <bnd.version>7.1.0</bnd.version>
     <commons.net.version>3.9.0</commons.net.version>
     <eea.version>2.4.0</eea.version>
-    <jackson.version>2.19.2</jackson.version>
-    <jna.version>5.17.0</jna.version>
-    <karaf.version>4.4.8</karaf.version>
+    <jackson.annotations.version>2.20</jackson.annotations.version>
+    <jackson.version>2.20.1</jackson.version>
+    <jna.version>5.18.1</jna.version>
+    <karaf.version>4.4.9</karaf.version>
     <mockito.version>5.19.0</mockito.version>
     <netty.version>4.1.126.Final</netty.version>
     <graalvm.version>25.0.1</graalvm.version>

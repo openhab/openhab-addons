@@ -10,12 +10,14 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.astro.internal.model;
+package org.openhab.binding.astro.internal.calc.zodiac;
 
 import java.util.Calendar;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.astro.internal.model.Range;
+import org.openhab.binding.astro.internal.model.ZodiacSign;
 
 /**
  * Extends the zodiac with a date range.
@@ -23,14 +25,16 @@ import org.eclipse.jdt.annotation.Nullable;
  * @author Gerhard Riegler - Initial contribution
  */
 @NonNullByDefault
-public class SunZodiac extends Zodiac {
+public class SunZodiac {
+    private final @Nullable ZodiacSign sign;
+
     private Range range;
 
     /**
      * Creates a Zodiac with a sign and a range.
      */
     public SunZodiac(ZodiacSign sign, Range range) {
-        super(sign);
+        this.sign = sign;
         this.range = range;
     }
 
@@ -48,6 +52,11 @@ public class SunZodiac extends Zodiac {
     @Nullable
     public Calendar getEnd() {
         return range.getEnd();
+    }
+
+    @Nullable
+    public ZodiacSign getSign() {
+        return sign;
     }
 
     /**

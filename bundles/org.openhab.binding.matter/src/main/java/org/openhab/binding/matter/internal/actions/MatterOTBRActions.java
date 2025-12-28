@@ -139,6 +139,8 @@ public class MatterOTBRActions implements ThingActions {
     @RuleAction(label = MatterBindingConstants.THING_ACTION_LABEL_OTBR_PUSH_DATASET, description = MatterBindingConstants.THING_ACTION_DESC_OTBR_PUSH_DATASET)
     public @ActionOutputs({
             @ActionOutput(name = "result", label = MatterBindingConstants.THING_ACTION_LABEL_OTBR_PUSH_DATASET_RESULT, type = "java.lang.String") }) String pushOperationalDataSetHex(
+                    @ActionInput(name = "pushAsActive", label = MatterBindingConstants.THING_ACTION_LABEL_OTBR_PUSH_DATASET_PUSH_AS_ACTIVE, description = MatterBindingConstants.THING_ACTION_DESC_OTBR_PUSH_DATASET_PUSH_AS_ACTIVE, defaultValue = "false", required = true) @Nullable Boolean pushAsActive,
+
                     @ActionInput(name = "delay", label = MatterBindingConstants.THING_ACTION_LABEL_OTBR_PUSH_DATASET_DELAY, description = MatterBindingConstants.THING_ACTION_DESC_OTBR_PUSH_DATASET_DELAY, defaultValue = "30000", required = true) @Nullable Long delay,
                     @ActionInput(name = "generatePendingTime", label = MatterBindingConstants.THING_ACTION_LABEL_OTBR_PUSH_DATASET_GENERATE_TIME, description = MatterBindingConstants.THING_ACTION_DESC_OTBR_PUSH_DATASET_GENERATE_TIME, defaultValue = "true", required = true) @Nullable Boolean generatePendingTime,
                     @ActionInput(name = "incrementActiveTime", label = MatterBindingConstants.THING_ACTION_LABEL_OTBR_PUSH_DATASET_INCREMENT_TIME, description = MatterBindingConstants.THING_ACTION_DESC_OTBR_PUSH_DATASET_INCREMENT_TIME, defaultValue = "1", required = true) @Nullable Integer incrementActiveTime) {
@@ -155,8 +157,8 @@ public class MatterOTBRActions implements ThingActions {
         if (delay == null) {
             delay = 30000L;
         }
-        // default to generating a new pending timestamp
-        if (generatePendingTime == null || generatePendingTime.booleanValue()) {
+        if (!Boolean.TRUE.equals(pushAsActive) && !Boolean.FALSE.equals(generatePendingTime)) {
+            // default to generating a new pending timestamp
             tds.setPendingTimestamp(ThreadTimestamp.now(false));
         }
         ThreadTimestamp ts = Objects
@@ -169,7 +171,11 @@ public class MatterOTBRActions implements ThingActions {
         String dataset = tds.toHex();
         logger.debug("New dataset hex: {}", dataset);
         try {
-            converter.setPendingDataset(dataset).get();
+            if (Boolean.TRUE.equals(pushAsActive)) {
+                converter.setActiveDataset(dataset).get();
+            } else {
+                converter.setPendingDataset(dataset).get();
+            }
             return translationService.getTranslation(MatterBindingConstants.THING_ACTION_RESULT_SUCCESS) + ": "
                     + tds.toJson();
         } catch (Exception e) {

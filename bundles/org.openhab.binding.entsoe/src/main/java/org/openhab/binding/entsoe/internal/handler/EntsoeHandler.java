@@ -67,7 +67,7 @@ public class EntsoeHandler extends BaseThingHandler {
     private final CronScheduler cron;
 
     private EntsoeConfiguration config = new EntsoeConfiguration();
-    private EntsoeDocumentParser parser = new EntsoeDocumentParser("");
+    private EntsoeDocumentParser parser = new EntsoeDocumentParser();
     private TreeMap<Instant, SpotPrice> priceMap = new TreeMap<>();
     private @Nullable ScheduledCompletableFuture<?> cronDaily;
     private @Nullable ScheduledFuture<?> retryJob;

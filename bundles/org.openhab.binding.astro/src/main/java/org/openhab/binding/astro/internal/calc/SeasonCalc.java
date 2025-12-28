@@ -21,6 +21,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.astro.internal.model.Season;
 import org.openhab.binding.astro.internal.model.SeasonName;
 import org.openhab.binding.astro.internal.util.DateTimeUtils;
+import org.openhab.binding.astro.internal.util.MathUtils;
 
 /**
  * Calculates the seasons of the year.
@@ -159,9 +160,9 @@ public class SeasonCalc {
     @Nullable
     private Calendar calcEquiSol(int season, int year, TimeZone zone, Locale locale) {
         double estimate = calcInitial(season, year);
-        double t = (estimate - 2451545.0) / 36525;
+        double t = DateTimeUtils.toJulianCenturies(estimate);
         double w = 35999.373 * t - 2.47;
-        double dl = 1 + 0.0334 * cosDeg(w) + 0.0007 * cosDeg(2 * w);
+        double dl = 1 + 0.0334 * MathUtils.cosDeg(w) + 0.0007 * MathUtils.cosDeg(2 * w);
         double s = periodic24(t);
         double julianDate = estimate + ((0.00001 * s) / dl);
         return DateTimeUtils.toCalendar(julianDate, zone, locale);
@@ -204,15 +205,8 @@ public class SeasonCalc {
 
         double result = 0;
         for (int i = 0; i < 24; i++) {
-            result += a[i] * cosDeg(b[i] + (c[i] * T));
+            result += a[i] * MathUtils.cosDeg(b[i] + (c[i] * T));
         }
         return result;
-    }
-
-    /**
-     * Cosinus of a degree value.
-     */
-    private double cosDeg(double deg) {
-        return Math.cos(deg * Math.PI / 180);
     }
 }

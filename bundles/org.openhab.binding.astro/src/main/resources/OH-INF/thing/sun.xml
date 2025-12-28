@@ -70,7 +70,12 @@
 			<channel-group id="season" typeId="season"/>
 			<channel-group id="eclipse" typeId="sunEclipse"/>
 			<channel-group id="phase" typeId="sunPhase"/>
+			<channel-group id="circadian" typeId="circadian"/>
 		</channel-groups>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<representation-property>geolocation</representation-property>
 

@@ -16,6 +16,7 @@ import static org.openhab.binding.astro.internal.AstroBindingConstants.*;
 import static org.openhab.binding.astro.internal.job.Job.*;
 import static org.openhab.binding.astro.internal.model.SunPhaseName.*;
 
+import java.time.Instant;
 import java.util.Calendar;
 import java.util.Locale;
 import java.util.TimeZone;
@@ -26,7 +27,6 @@ import org.openhab.binding.astro.internal.model.Eclipse;
 import org.openhab.binding.astro.internal.model.Planet;
 import org.openhab.binding.astro.internal.model.Range;
 import org.openhab.binding.astro.internal.model.Sun;
-import org.openhab.binding.astro.internal.model.SunZodiac;
 
 /**
  * Daily scheduled jobs For Sun planet
@@ -124,15 +124,13 @@ public final class DailyJobSun extends AbstractJob {
             });
 
             // schedule republish jobs
-            SunZodiac sunZodiac;
-            Calendar cal = (sunZodiac = sun.getZodiac()) == null ? null : sunZodiac.getEnd();
-            if (cal != null) {
-                schedulePublishPlanet(handler, cal, zone, locale);
+            if (sun.getZodiac().getEnd() instanceof Instant when) {
+                schedulePublishPlanet(handler, when);
             }
             schedulePublishPlanet(handler, sun.getSeason().getNextSeason(), zone, locale);
 
             // schedule phase jobs
-            cal = sun.getRise().getStart();
+            Calendar cal = sun.getRise().getStart();
             if (cal != null) {
                 scheduleSunPhase(handler, SUN_RISE, cal, zone, locale);
             }

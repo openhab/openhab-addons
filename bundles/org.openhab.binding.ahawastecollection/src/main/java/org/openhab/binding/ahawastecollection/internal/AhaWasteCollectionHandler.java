@@ -194,7 +194,7 @@ public class AhaWasteCollectionHandler extends BaseThingHandler {
         switch (channelId) {
             case AhaWasteCollectionBindingConstants.BIOWASTE:
                 return WasteType.BIO_WASTE;
-            case AhaWasteCollectionBindingConstants.LEIGHTWEIGHT_PACKAGING:
+            case AhaWasteCollectionBindingConstants.LIGHTWEIGHT_PACKAGING:
                 return WasteType.LIGHT_PACKAGES;
             case AhaWasteCollectionBindingConstants.PAPER:
                 return WasteType.PAPER;
