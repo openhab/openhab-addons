@@ -15,7 +15,7 @@
   <name>openHAB Add-ons :: Bundles :: Bosch Smart Home Binding</name>
 
   <properties>
-    <bouncycastle.version>1.81</bouncycastle.version>
+    <bouncycastle.version>1.83</bouncycastle.version>
   </properties>
 
   <dependencies>
