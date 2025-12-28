@@ -15,10 +15,14 @@ Configuration is correct when the `/sys/bus/w1/devices` folder is present and co
 ## Thing Configuration
 
 The sensors are visible in the system as folders containing files with sensor data.
-By default, all OneWire GPIO devices are stored in `/sys/bus/w1/devices/DEVICE_ID_FOLDER`, and the temperature value is available in the file `w1_slave`. The Thing needs the full path to the `w1_slave` file.
+By default, all OneWire GPIO devices are stored in `/sys/bus/w1/devices/DEVICE_ID_FOLDER`, and the temperature value is available in the file `w1_slave`.
+The Thing needs the full path to the `w1_slave` file.
 Note the values in sysfs are in Celsius.
 
-The optional `precision` parameter lets you lower the precision of the sensor value, e.g., precision `1` shows one digit after the decimal point, precision `2` shows two digits. Rounding is applied (e.g., 20.534 °C with precision 1 becomes 20.5 °C; 20.555 °C with the same precision becomes 20.6 °C). Allowed values are from 0 to 3. The default is 3 (maximum precision).
+The optional `precision` parameter lets you lower the precision of the sensor value, e.g., precision `1` shows one digit after the decimal point, precision `2` shows two digits.
+Rounding is applied (e.g., 20.534 °C with precision 1 becomes 20.5 °C; 20.555 °C with the same precision becomes 20.6 °C).
+Allowed values are from 0 to 3.
+The default is 3 (maximum precision).
 
 In the Thing file, this looks e.g. like
 

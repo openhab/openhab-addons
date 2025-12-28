@@ -63,7 +63,7 @@ Example using default interval:
 | tds                       | Number:Density           | false    | R      | Total dissolved solids in the pool (chlor pools only)  |
 | tds-trend                 | Number:Density           | true     | R      | Change in TDS since last measure                       |
 | battery                   | Number:Dimensionless     | false    | R      | Battery level of the device                            |
-| rssi                      | Number                    | false    | R      | Signal strength (RSSI)                                 |
+| rssi                      | Number                   | false    | R      | Signal strength (RSSI)                                 |
 | value-time                | DateTime                 | true     | R      | Timestamp of the set of measures                       |
 
 ### Recommendations Channels

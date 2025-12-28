@@ -5,7 +5,7 @@ The binding supports the Limex IQ and Limex Pro water softeners and requires the
 
 ## Supported Things
 
-- **serial** - A water softener connected to the openHAB host by means of a serial port
+- **serial** - A water softener connected to the openHAB host by means of a serial port.
 - **network** - A water softener that can be reached through a TCP proxy. See Known Issues below for when to use this configuration.
 
 ## Thing Configuration
