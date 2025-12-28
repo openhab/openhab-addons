@@ -20,10 +20,10 @@ If your device runs firmware 203.2.4 or newer, you can enable WebSockets for fas
 
 The exposed channels are:
 
-| Name    | Type           | Description |
-| ------- |:--------------:|:-----------:|
-| control | Rollershutter  | Reacts to standard roller shutter commands (UP/DOWN/STOP). Percentage position is supported (you can partially open the window), but the Thing state is only open/closed. |
-| status  | String         | Window status (Stopped, Moving, Not ready, Blocked) |
+| Name    | Type          | Description                                                                                                                                                               |
+|---------|---------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| control | Rollershutter | Reacts to standard roller shutter commands (UP/DOWN/STOP). Percentage position is supported (you can partially open the window), but the Thing state is only open/closed. |
+| status  | String        | Window status (Stopped, Moving, Not ready, Blocked)                                                                                                                       |
 
 ## Full Example
 

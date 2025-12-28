@@ -15,11 +15,11 @@ Please note that until VDR version 1.7.15 the standard SVDRP port was 2001 and a
 The VDR configuration file `svdrphosts.conf` needs to allow SVDRP access from the host where the openHAB instance is running.
 Please check VDR documentation if you are unsure about this.
 
-| Configuration Parameter | Default          | Required | Description                                                  |
-|-------------------------|------------------|:--------:|--------------------------------------------------------------|
-| host                    |                  |   Yes    | Hostname or IP address of the VDR instance                    |
-| port                    | 6419             |   Yes    | SVDRP port of the VDR instance                                |
-| refresh                 | 30               |   No     | Interval in seconds the data from the VDR instance is refreshed |
+| Configuration Parameter | Default | Required | Description                                                     |
+|-------------------------|---------|:--------:|-----------------------------------------------------------------|
+| host                    |         |   Yes    | Hostname or IP address of the VDR instance                      |
+| port                    | 6419    |   Yes    | SVDRP port of the VDR instance                                  |
+| refresh                 | 30      |    No    | Interval in seconds the data from the VDR instance is refreshed |
 
 A typical Thing configuration would look like this:
 
