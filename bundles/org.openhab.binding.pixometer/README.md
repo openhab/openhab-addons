@@ -19,10 +19,10 @@ The different meter types are broadly similar at their core but are implemented 
 
 ### Account (bridge)
 
-| Parameter | Description                                   | Required | Default Value | Comment |
-| --------- | --------------------------------------------- | -------- | ------------- | ------- |
-| user      |                                               | Yes      | -             |         |
-| password  |                                               | Yes      | -             |         |
+| Parameter | Description                                       | Required | Default Value | Comment |
+|-----------|---------------------------------------------------|----------|---------------|---------|
+| user      |                                                   | Yes      | -             |         |
+| password  |                                                   | Yes      | -             |         |
 | refresh   | Sets the refresh interval. Minimum is 60 minutes. | Yes      | 240           |         |
 
 ### Meter Things

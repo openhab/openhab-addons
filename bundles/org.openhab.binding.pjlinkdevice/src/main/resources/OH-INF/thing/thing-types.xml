@@ -95,7 +95,7 @@
 	<channel-type id="input">
 		<item-type>String</item-type>
 		<label>Input</label>
-		<description>Select the input source.</description>
+		<description>Set the input source.</description>
 	</channel-type>
 
 	<channel-type id="audioMute">
