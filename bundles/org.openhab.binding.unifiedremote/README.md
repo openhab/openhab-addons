@@ -10,7 +10,7 @@ Discovery works on the default discovery UDP port 9511.
 
 ## Thing Configuration
 
-The only supported thing is the Unified Remote Server, which requires the hostname to be correctly configured to work.
+The only supported Thing is the Unified Remote Server, which requires the hostname to be correctly configured to work.
 
 | ThingTypeID | Description               |
 |-------------|---------------------------|

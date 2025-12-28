@@ -15,12 +15,12 @@ This binding integrates with [Ubiquiti UniFi Networks](https://www.ubnt.com/prod
 
 ## Discovery
 
-The binding supports discovery of things connected to a UniFi controller (bridge).
-To discover things, start the discovery process manually.
+The binding supports discovery of Things connected to a UniFi controller (bridge).
+To discover Things, start the discovery process manually.
 
 ## Binding Configuration
 
-The binding has no global configuration options; all configuration is done at the bridge and thing levels.
+The binding has no global configuration options; all configuration is done at the bridge and Thing levels.
 
 ## Bridge Configuration
 
@@ -41,7 +41,7 @@ The following table describes the Bridge configuration parameters:
 
 ## Thing Configuration
 
-You must define a UniFi Controller (bridge) before defining UniFi things for this binding to work.
+You must define a UniFi Controller (Bridge) before defining UniFi Things for this binding to work.
 
 ### `site`
 
@@ -69,7 +69,7 @@ The following table describes the `wirelessClient` & `wiredClient` configuration
 | site         | The site where the client should be found                    | Optional | -       |
 | considerHome | The interval in seconds to consider the client as home       | Optional | 180     |
 
-Here's some additional notes regarding the thing configuration parameters:
+Here's some additional notes regarding the Thing configuration parameters:
 
 #### `cid`
 
@@ -274,7 +274,7 @@ The `network` information that is retrieved is available as these channels:
 
 ## Rule Actions
 
-As an alternative to using the `guestVoucher` and `guestVouchersGenerate` channels on the `site` thing, it is possible to use rule actions on the thing to generate, revoke and list guest vouchers.
+As an alternative to using the `guestVoucher` and `guestVouchersGenerate` channels on the `site` Thing, it is possible to use rule actions on the Thing to generate, revoke and list guest vouchers.
 The following actions are available:
 
 - `boolean success = generateVoucher(Integer expire, Integer users, Integer upLimit, Integer downLimit, Integer dataQuota)`
@@ -284,7 +284,7 @@ The following actions are available:
 - `boolean success = revokeAllVouchers()`
 - `String vouchers = listVouchers()`
 
-Since there is a separate rule action instance for each `site` thing, this needs to be retrieved through `getActions(scope, thingUID)`.
+Since there is a separate rule action instance for each `site` Thing, this needs to be retrieved through `getActions(scope, thingUID)`.
 The first parameter always has to be `unifi` and the second is the full Thing UID of the site that should be used.
 Once this action instance is retrieved, you can invoke the action method on it.
 
@@ -400,7 +400,7 @@ sitemap unifi label="UniFi Binding"
 }
 ```
 
-### `rule actions` for `site` thing
+### `rule actions` for `site` Thing
 
 ```java
 val uniFiActions = getActions("unifi","unifi:site:home:mysite")
