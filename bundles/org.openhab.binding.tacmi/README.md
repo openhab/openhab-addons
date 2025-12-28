@@ -103,9 +103,9 @@ Also when the API Page is updated, the channels are also updated during the next
 
 The channels have a parameter allowing to configure their update behavior:
 
-| Parameter Label         | Parameter ID | Description                                                                                                   | Accepted values        |
-|-------------------------|--------------|-----------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------|
-| Update Policy           | updatePolicy | Update policy for this channel. Default means "On-Fetch" for read-only channels and "On-Change" for channels that can be modified.  | 0 (Default), 1 (On-Fetch), 2 (On-Change)   |
+| Parameter Label | Parameter ID | Description                                                                                                                        | Accepted values                          |
+|-----------------|--------------|------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------|
+| Update Policy   | updatePolicy | Update policy for this channel. Default means "On-Fetch" for read-only channels and "On-Change" for channels that can be modified. | 0 (Default), 1 (On-Fetch), 2 (On-Change) |
 
 The behavior in detail:
 
@@ -286,11 +286,11 @@ Once configured, the exposed items should show up as channels.
 
 The _TA C.M.I. JSON API Connection_ has to be manually configured.
 
-| Parameter Label   | Parameter ID | Description                                                                     | Accepted values               |
-| ----------------- | ------------ | ------------------------------------------------------------------------------- | ----------------------------- |
-| C.M.I. IP Address | host         | Host name or IP address of the C.M.I.                                           | Any String                    |
-| User name         | username     | User name for authentication on the C.M.I.                                      | Any String                    |
-| Password          | password     | Password for authentication on the C.M.I.                                       | Any String                    |
-| Node Id           | nodeId       | The node ID of the device you want to monitor  (C.M.I. &rarr; CAN-Bus)             | An Integer that is not 0      |
-| API-Parameters    | params       | The params to query. E.g. I,O,Sg (See the [API documentation](https://wiki.ta.co.at/C.M.I._JSON-API) for details) <br/> Possible options are: Inputs (I), Outputs (O), General (Sg), Logging Analog (La), Logging Digital (Ld)     | Any String                    |
-| Poll Interval     | pollInterval | Poll interval in seconds. The documentation suggests 60s, but less is possible. | An integer between 10 and 900 |
+| Parameter Label   | Parameter ID | Description                                                                                                                                                                                          | Accepted values               |
+|-------------------|--------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------|
+| C.M.I. IP Address | host         | Host name or IP address of the C.M.I.                                                                                                                                                                | Any String                    |
+| User name         | username     | User name for authentication on the C.M.I.                                                                                                                                                           | Any String                    |
+| Password          | password     | Password for authentication on the C.M.I.                                                                                                                                                            | Any String                    |
+| Node Id           | nodeId       | The node ID of the device you want to monitor  (C.M.I. &rarr; CAN-Bus)                                                                                                                               | An Integer that is not 0      |
+| API-Parameters    | params       | Parameters to query (I, O, Sg, La, Ld). See [API documentation](https://wiki.ta.co.at/C.M.I._JSON-API) for details: Inputs (I), Outputs (O), General (Sg), Logging Analog (La), Logging Digital (Ld) | Any String                    |
+| Poll Interval     | pollInterval | Poll interval in seconds. The documentation suggests 60s, but less is possible.                                                                                                                      | An integer between 10 and 900 |

@@ -6,27 +6,27 @@ This binding adds support to control Tapo (Copyright © TP-Link Corporation Limi
 
 The following Tapo-Devices are supported. For precise channel-description look at `channels-table` below
 
-| DeviceType                         | ThingType   | Description                                  |
-|------------------------------------|-------------|----------------------------------------------|
-| SmartPlug (Wi-Fi)                  | P100        | Smart Socket                                 |
-|                                    | P105        | Smart Mini Socket                            |
-| EnergyMonitoring SmartPlug (Wi-Fi) | P110        | Energy Monitoring Smart Socket               |
-|                                    | P115        | Energy Monitoring Mini Smart Socket          |
-| Power Strip (Wi-Fi)                | P300        | Smart Wi-Fi Power Strip - 3 sockets          |
-| Dimmable SmartBulb (Wi-Fi)         | L510        | Dimmable White-Light Smart-Bulb (E27)        |
-|                                    | L610        | Dimmable White-Light Smart-Spot (GU10)       |
-| MultiColor SmartBulb (Wi-Fi)       | L530        | Multicolor Smart-Bulb (E27)                  |
-|                                    | L630        | Multicolor Smart-Spot (GU10)                 |
-| MultiColor LightStrip (Wi-Fi)      | L900        | Multicolor RGB Dimmable LightStrip (5m)      |
-|                                    | L920        | Multicolor RGB-IC ColorZone LightStrip (5m)  |
-|                                    | L930        | Multicolor RGBW-IC 50-Zone LightStrip (5m)   |
-| Smart Hub (Wi-Fi / RF)             | H100        | Smart Hub with Chime to control Child Devices|
-| Smart Contact Sensor (RF)          | T110        | Window/Door Smart Contact Sensor             |
-| Smart Temperature Sensor (RF)      | T310        | Temperature and Humidity Sensor              |
-|                                    | T315        | Temperature and Humidity Sensor with Display |
-| Smart Switch (RF)                  | S210        | Wall switch with 1 contact                   |
-| Smart Switch (RF)                  | S220        | Wall switch with 2 contacts                  |
-| Smart Light Switch (Wi-Fi)         | HS200       | Wall switch with 1 contact                   |
+| DeviceType                         | ThingType | Description                                   |
+|------------------------------------|-----------|-----------------------------------------------|
+| SmartPlug (Wi-Fi)                  | P100      | Smart Socket                                  |
+|                                    | P105      | Smart Mini Socket                             |
+| EnergyMonitoring SmartPlug (Wi-Fi) | P110      | Energy Monitoring Smart Socket                |
+|                                    | P115      | Energy Monitoring Mini Smart Socket           |
+| Power Strip (Wi-Fi)                | P300      | Smart Wi-Fi Power Strip - 3 sockets           |
+| Dimmable SmartBulb (Wi-Fi)         | L510      | Dimmable White-Light Smart-Bulb (E27)         |
+|                                    | L610      | Dimmable White-Light Smart-Spot (GU10)        |
+| MultiColor SmartBulb (Wi-Fi)       | L530      | Multicolor Smart-Bulb (E27)                   |
+|                                    | L630      | Multicolor Smart-Spot (GU10)                  |
+| MultiColor LightStrip (Wi-Fi)      | L900      | Multicolor RGB Dimmable LightStrip (5m)       |
+|                                    | L920      | Multicolor RGB-IC ColorZone LightStrip (5m)   |
+|                                    | L930      | Multicolor RGBW-IC 50-Zone LightStrip (5m)    |
+| Smart Hub (Wi-Fi / RF)             | H100      | Smart Hub with Chime to control Child Devices |
+| Smart Contact Sensor (RF)          | T110      | Window/Door Smart Contact Sensor              |
+| Smart Temperature Sensor (RF)      | T310      | Temperature and Humidity Sensor               |
+|                                    | T315      | Temperature and Humidity Sensor with Display  |
+| Smart Switch (RF)                  | S210      | Wall switch with 1 contact                    |
+| Smart Switch (RF)                  | S220      | Wall switch with 2 contacts                   |
+| Smart Light Switch (Wi-Fi)         | HS200     | Wall switch with 1 contact                    |
 
 ## Prerequisites
 
@@ -65,7 +65,7 @@ The Thing has the following configuration parameters:
 |------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | username               | Username (email) of your Tapo Cloud                                                                                                                        |
 | password               | Password of your Tapo Cloud                                                                                                                                |
-| cloudDiscovery         | Use Cloud Discovery Service to get all in Tapo App registered devices. Includes device name. IP address and encryption have to be set manually            |
+| cloudDiscovery         | Use Cloud Discovery Service to get all in Tapo App registered devices. Includes device name. IP address and encryption have to be set manually             |
 | udpDiscovery           | Use UDP Discovery Service to discover online devices in the local network. Includes encryption and IP address. Results will be merged with cloud discovery |
 | onlyLocalOnlineDevices | [advanced] Uses Cloud and UDP Discovery to get more information but will only discover online devices via UDP                                              |
 | broadcastAddress       | [advanced] Set broadcast address to your local subnet  if you have problems with default address                                                           |

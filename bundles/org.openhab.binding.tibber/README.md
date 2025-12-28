@@ -5,17 +5,17 @@ If you have Tibber Pulse hardware, you can also use the [live group](#live-group
 
 ## Supported Things
 
-| Type      | ID        | Description               |
-|-----------|-----------|---------------------------|
-| Thing     | tibberapi | Connection to Tibber API  |
+| Type  | ID        | Description              |
+|-------|-----------|--------------------------|
+| Thing | tibberapi | Connection to Tibber API |
 
 ## Thing Configuration
 
-| Name          | Type      | Description                           | Default   | Required  |
-|---------------|-----------|---------------------------------------|-----------|-----------|
-| token         | text      | Tibber Personal Token                 | N/A       | yes       |
-| homeid        | text      | Tibber Home ID                        | N/A       | yes       |
-| updateHour    | integer   | Local hour when spot prices are updated | 13      | yes       |
+| Name       | Type    | Description                             | Default | Required |
+|------------|---------|-----------------------------------------|---------|----------|
+| token      | text    | Tibber Personal Token                   | N/A     | yes      |
+| homeid     | text    | Tibber Home ID                          | N/A     | yes      |
+| updateHour | integer | Local hour when spot prices are updated | 13      | yes      |
 
 Note: The Tibber token is retrieved from your Tibber account:
 [Tibber Account](https://developer.tibber.com/settings/accesstoken)
@@ -49,13 +49,13 @@ If you have multiple Home IDs/Pulse devices, create separate Things for each Hom
 Current and forecast Tibber price information.
 All values are read-only.
 
-| Channel ID        | Type                 | Description                                | Time Series  |
-|-------------------|----------------------|--------------------------------------------|--------------|
-| total             | Number:EnergyPrice   | Total price including energy and taxes     | yes          |
-| spot              | Number:EnergyPrice   | Spot prices for energy today and tomorrow  | yes          |
-| tax               | Number:EnergyPrice   | Taxes and additional expenses              | yes          |
-| level             | Number               | Price levels for today and tomorrow        | yes          |
-| average           | Number:EnergyPrice   | Average price from last 24 hours           | yes          |
+| Channel ID | Type               | Description                               | Time Series |
+|------------|--------------------|-------------------------------------------|-------------|
+| total      | Number:EnergyPrice | Total price including energy and taxes    | yes         |
+| spot       | Number:EnergyPrice | Spot prices for energy today and tomorrow | yes         |
+| tax        | Number:EnergyPrice | Taxes and additional expenses             | yes         |
+| level      | Number             | Price levels for today and tomorrow       | yes         |
+| average    | Number:EnergyPrice | Average price from last 24 hours          | yes         |
 
 Channel `spot-price` is _deprecated_ and will be removed in the next major update.
 It's still available as an advanced channel.
@@ -83,46 +83,46 @@ The items connected to the above channels need to be stored in, e.g., [InfluxDB]
 
 Channel `event` can trigger the following events:
 
-| Event                | Description                    |
-|----------------------|--------------------------------|
-| DAY_AHEAD_AVAILABLE  | Day-ahead prices are available |
+| Event               | Description                    |
+|---------------------|--------------------------------|
+| DAY_AHEAD_AVAILABLE | Day-ahead prices are available |
 
 ### `live` group
 
 Live information from Tibber Pulse.
 All values are read-only.
 
-| Channel ID                 | Type                     | Description                                                                      |
-|----------------------------|--------------------------|----------------------------------------------------------------------------------|
-| consumption                | Number:Power             | Consumption at the moment in watts                                               |
-| minimum-consumption        | Number:Power             | Minimum power consumption since midnight in watts                                |
-| peak-consumption           | Number:Power             | Peak power consumption since midnight in watts                                   |
-| average-consumption        | Number:Power             | Average power consumption since midnight in watts                                |
-| production                 | Number:Power             | Net power production at the moment in watts                                      |
-| minimum-production         | Number:Power             | Minimum net power production since midnight in watts                             |
-| peak-production            | Number:Power             | Maximum net power production since midnight in watts                             |
-| power-balance              | Number:Power             | Current power consumption (as positive value) and production (as negative value) |
-| voltage1                   | Number:ElectricPotential | Electric potential on phase 1                                                    |
-| voltage2                   | Number:ElectricPotential | Electric potential on phase 2                                                    |
-| voltage3                   | Number:ElectricPotential | Electric potential on phase 3                                                    |
-| current1                   | Number:ElectricCurrent   | Electric current on phase 1                                                      |
-| current2                   | Number:ElectricCurrent   | Electric current on phase 2                                                      |
-| current3                   | Number:ElectricCurrent   | Electric current on phase 3                                                      |
+| Channel ID          | Type                     | Description                                                                      |
+|---------------------|--------------------------|----------------------------------------------------------------------------------|
+| consumption         | Number:Power             | Consumption at the moment in watts                                               |
+| minimum-consumption | Number:Power             | Minimum power consumption since midnight in watts                                |
+| peak-consumption    | Number:Power             | Peak power consumption since midnight in watts                                   |
+| average-consumption | Number:Power             | Average power consumption since midnight in watts                                |
+| production          | Number:Power             | Net power production at the moment in watts                                      |
+| minimum-production  | Number:Power             | Minimum net power production since midnight in watts                             |
+| peak-production     | Number:Power             | Maximum net power production since midnight in watts                             |
+| power-balance       | Number:Power             | Current power consumption (as positive value) and production (as negative value) |
+| voltage1            | Number:ElectricPotential | Electric potential on phase 1                                                    |
+| voltage2            | Number:ElectricPotential | Electric potential on phase 2                                                    |
+| voltage3            | Number:ElectricPotential | Electric potential on phase 3                                                    |
+| current1            | Number:ElectricCurrent   | Electric current on phase 1                                                      |
+| current2            | Number:ElectricCurrent   | Electric current on phase 2                                                      |
+| current3            | Number:ElectricCurrent   | Electric current on phase 3                                                      |
 
 ### `statistics` group
 
 Statistical information about total, daily, and last-hour energy consumption and production.
 All values are read-only.
 
-| Channel ID            | Type                      | Description                                                   |
-|-----------------------|---------------------------|---------------------------------------------------------------|
-| total-consumption     | Number:Energy             | Total energy consumption measured by Tibber Pulse meter       |
-| daily-consumption     | Number:Energy             | Energy consumed since midnight in kilowatt-hours              |
-| daily-cost            | Number:Currency           | Accumulated cost since midnight                               |
-| last-hour-consumption | Number:Energy             | Energy consumed since last hour shift in kilowatt-hours       |
-| total-production      | Number:Energy             | Total energy production measured by Tibber Pulse meter        |
-| daily-production      | Number:Energy             | Net energy produced since midnight in kilowatt-hours          |
-| last-hour-production  | Number:Energy             | Net energy produced since last hour shift in kilowatt-hours   |
+| Channel ID            | Type            | Description                                                 |
+|-----------------------|-----------------|-------------------------------------------------------------|
+| total-consumption     | Number:Energy   | Total energy consumption measured by Tibber Pulse meter     |
+| daily-consumption     | Number:Energy   | Energy consumed since midnight in kilowatt-hours            |
+| daily-cost            | Number:Currency | Accumulated cost since midnight                             |
+| last-hour-consumption | Number:Energy   | Energy consumed since last hour shift in kilowatt-hours     |
+| total-production      | Number:Energy   | Total energy production measured by Tibber Pulse meter      |
+| daily-production      | Number:Energy   | Net energy produced since midnight in kilowatt-hours        |
+| last-hour-production  | Number:Energy   | Net energy produced since last hour shift in kilowatt-hours |
 
 ## Thing Actions
 
@@ -158,11 +158,11 @@ Use [persistence extensions](https://www.openhab.org/docs/configuration/persiste
 
 #### Parameters
 
-| Name          | Type      | Description                           | Default           | Required  |
-|---------------|-----------|---------------------------------------|-------------------|-----------|
-| earliestStart | Instant   | Earliest start time                   | now               | no        |
-| latestEnd     | Instant   | Latest end time                       | `priceInfoEnd`    | no        |
-| ascending     | boolean   | Price sorting order                   | true              | no        |
+| Name          | Type    | Description         | Default        | Required |
+|---------------|---------|---------------------|----------------|----------|
+| earliestStart | Instant | Earliest start time | now            | no       |
+| latestEnd     | Instant | Latest end time     | `priceInfoEnd` | no       |
+| ascending     | boolean | Price sorting order | true           | no       |
 
 #### Example
 
@@ -201,18 +201,18 @@ end
 
 JSON-encoded `String` result with keys
 
-| Key           | Type      | Description                           |
-|---------------|-----------|---------------------------------------|
-| size          | int       | Size of price list                    |
-| priceList     | JSON array | Array of `priceInfo` entries         |
+| Key       | Type       | Description                  |
+|-----------|------------|------------------------------|
+| size      | int        | Size of price list           |
+| priceList | JSON array | Array of `priceInfo` entries |
 
 JSON Object `priceInfo`
 
-| Key           | Type      | Description                           |
-|---------------|-----------|---------------------------------------|
-| startsAt      | String    | String encoded Instant                |
-| duration      | int       | Price duration in seconds             |
-| price         | double    | Price in your currency                |
+| Key      | Type   | Description               |
+|----------|--------|---------------------------|
+| startsAt | String | String encoded Instant    |
+| duration | int    | Price duration in seconds |
+| price    | double | Price in your currency    |
 
 #### Example
 
@@ -255,13 +255,13 @@ For use cases like a dishwasher or laundry.
 
 #### Parameters
 
-| Name          | Type      | Description                                   | Default           | Required  |
-|---------------|-----------|-----------------------------------------------|-------------------|-----------|
-| earliestStart | Instant   | Earliest start time                           | now               | no        |
-| latestStop    | Instant   | Latest end time                               | `priceInfoEnd`    | no        |
-| power         | int       | Power in watts                                | N/A               | no        |
-| duration      | String    | Duration as String with units `h`,`m` or `s`  | N/A               | true      |
-| curve         | JsonArray | Array with `curveEntry` elements              | N/A               | no        |
+| Name          | Type      | Description                                  | Default        | Required |
+|---------------|-----------|----------------------------------------------|----------------|----------|
+| earliestStart | Instant   | Earliest start time                          | now            | no       |
+| latestStop    | Instant   | Latest end time                              | `priceInfoEnd` | no       |
+| power         | int       | Power in watts                               | N/A            | no       |
+| duration      | String    | Duration as String with units `h`,`m` or `s` | N/A            | true     |
+| curve         | JsonArray | Array with `curveEntry` elements             | N/A            | no       |
 
 Provide either
 
@@ -270,11 +270,11 @@ Provide either
 
 JSON Object `curveEntry`
 
-| Key           | Type      | Description                           |
-|---------------|-----------|---------------------------------------|
-| timestamp     | String    | String encoded Instant                |
-| power         | int       | Power in watts                        |
-| duration      | int       | Duration in seconds                   |
+| Key       | Type   | Description            |
+|-----------|--------|------------------------|
+| timestamp | String | String encoded Instant |
+| power     | int    | Power in watts         |
+| duration  | int    | Duration in seconds    |
 
 #### Example
 
@@ -325,13 +325,13 @@ Console output:
 
 JSON-encoded `String` result with keys
 
-| Key                   | Type      | Description                           |
-|-----------------------|-----------|---------------------------------------|
-| cheapestStart         | String    | Timestamp of cheapest start           |
-| lowestPrice           | double    | Price of the cheapest period          |
-| mostExpensiveStart    | String    | Timestamp of most expensive start     |
-| highestPrice          | double    | Price of the most expensive period    |
-| averagePrice          | double    | Average price within the period       |
+| Key                | Type   | Description                        |
+|--------------------|--------|------------------------------------|
+| cheapestStart      | String | Timestamp of cheapest start        |
+| lowestPrice        | double | Price of the cheapest period       |
+| mostExpensiveStart | String | Timestamp of most expensive start  |
+| highestPrice       | double | Price of the most expensive period |
+| averagePrice       | double | Average price within the period    |
 
 #### Result Example
 
@@ -352,12 +352,12 @@ For use cases like a battery electric vehicle or a heat pump.
 
 #### Parameters
 
-| Name          | Type      | Description                               | Default          | Required  |
-|---------------|-----------|-------------------------------------------|-------------------|-----------|
-| earliestStart | Instant   | Earliest start time                       | now               | no        |
-| latestStop    | Instant   | Latest end time                           | `priceInfoEnd`    | no        |
-| power         | int       | Needed power                              | N/A               | no        |
-| duration      | int       | Duration in seconds or String (8h 15m)    | N/A               | yes       |
+| Name          | Type    | Description                            | Default        | Required |
+|---------------|---------|----------------------------------------|----------------|----------|
+| earliestStart | Instant | Earliest start time                    | now            | no       |
+| latestStop    | Instant | Latest end time                        | `priceInfoEnd` | no       |
+| power         | int     | Needed power                           | N/A            | no       |
+| duration      | int     | Duration in seconds or String (8h 15m) | N/A            | yes      |
 
 #### Example
 
@@ -402,19 +402,19 @@ Console output
 
 JSON encoded `String` result with keys
 
-| Key           | Type      | Description                           |
-|---------------|-----------|---------------------------------------|
-| size          | int       | Number of schedules                   |
-| schedule      | JSON array | Array of `scheduleEntry` elements    |
+| Key      | Type       | Description                       |
+|----------|------------|-----------------------------------|
+| size     | int        | Number of schedules               |
+| schedule | JSON array | Array of `scheduleEntry` elements |
 
 JSON Object `scheduleEntry`
 
-| Key           | Type      | Description                           |
-|---------------|-----------|---------------------------------------|
-| start         | String    | Start time (Instant as string)        |
-| stop          | String    | Stop time (Instant as string)         |
-| duration      | int       | Duration in seconds                   |
-| cost          | double    | Cost in your currency                 |
+| Key      | Type   | Description                    |
+|----------|--------|--------------------------------|
+| start    | String | Start time (Instant as string) |
+| stop     | String | Stop time (Instant as string)  |
+| duration | int    | Duration in seconds            |
+| cost     | double | Cost in your currency          |
 
 
 
