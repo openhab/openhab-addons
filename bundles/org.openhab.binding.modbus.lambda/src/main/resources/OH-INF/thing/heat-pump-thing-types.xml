@@ -58,12 +58,12 @@
 			<channel id="heat-pump-qp-heating" typeId="heat-pump-qp-heating"/>
 			<channel id="heat-pump-fi-power-consumption" typeId="heat-pump-fi-power-consumption"/>
 			<channel id="heat-pump-cop" typeId="heat-pump-cop"/>
-			<channel id="heatpump-request-password" typeId="heatpump-request-password-channel"/>
-			<channel id="heatpump-request-type" typeId="heatpump-request-type-channel"/>
+			<channel id="heat-pump-request-password" typeId="heat-pump-request-password-channel"/>
+			<channel id="heat-pump-request-type" typeId="heat-pump-request-type-channel"/>
 			<channel id="heat-pump-request-t-flow" typeId="heat-pump-request-t-flow"/>
 			<channel id="heat-pump-request-t-return" typeId="heat-pump-request-t-return"/>
 			<channel id="heat-pump-request-heat-sink" typeId="heat-pump-request-heat-sink"/>
-			<channel id="heatpump-relais-state" typeId="heatpump-relais-state-channel"/>
+			<channel id="heat-pump-relais-state" typeId="heat-pump-relais-state-channel"/>
 			<channel id="heat-pump-vdae" typeId="heat-pump-vdae"/>
 			<channel id="heat-pump-vdaq" typeId="heat-pump-vdaq"/>
 			<channel id="heat-pump-vdae-swap" typeId="heat-pump-vdae-swap"/>
@@ -207,13 +207,13 @@
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="heatpump-request-password-channel">
+	<channel-type id="heat-pump-request-password-channel">
 		<item-type>Number</item-type>
 		<label>Requested Password</label>
 		<state readOnly="false"/>
 	</channel-type>
 
-	<channel-type id="heatpump-request-type-channel">
+	<channel-type id="heat-pump-request-type-channel">
 		<item-type>Number</item-type>
 		<label>Requested Type</label>
 		<state readOnly="false">
@@ -245,7 +245,7 @@
 		<state readOnly="false"/>
 	</channel-type>
 
-	<channel-type id="heatpump-relais-state-channel">
+	<channel-type id="heat-pump-relais-state-channel">
 		<item-type>Number</item-type>
 		<label>Relais State</label>
 		<state readOnly="true">
