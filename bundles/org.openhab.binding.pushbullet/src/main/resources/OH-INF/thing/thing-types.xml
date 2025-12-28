@@ -6,7 +6,7 @@
 
 	<thing-type id="bot">
 		<label>Pushbullet Bot</label>
-		<description>Bot to send messages with</description>
+		<description>Bot to send messages with.</description>
 
 		<properties>
 			<property name="thingTypeVersion">1</property>

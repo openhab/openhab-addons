@@ -51,7 +51,7 @@
 
 	<channel-type id="UsableLevel">
 		<item-type>Number:Volume</item-type>
-		<label>Usable Level in liters</label>
+		<label>Usable Level</label>
 		<description>The usable level in liters</description>
 		<tags>
 			<tag>Measurement</tag>

@@ -36,7 +36,7 @@ Thing prowl:broker:mybroker "Prowl Broker" [ apiKey="000000000000000000000000000
 
 Once you’ve created the broker Thing with a valid API key, you can use the Prowl service in rules.
 First, create an instance of the broker before any call or at the top of the rules file (replace mybroker with your Thing ID).
-Then call the pushNotification method, which requires two parameters: event and description.
+Then call the `pushNotification` method, which requires two parameters: event and description.
 An optional third parameter, priority, represents the message priority (very low) -2, -1, 0, 1, 2 (emergency). The default priority is 0.
 
 ```java

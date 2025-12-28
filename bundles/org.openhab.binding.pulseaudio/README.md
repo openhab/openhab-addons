@@ -6,7 +6,8 @@ This binding integrates PulseAudio devices.
 
 The PulseAudio Bridge is required as a bridge for accessing any other PulseAudio devices.
 
-You need a running PulseAudio server with the **module-cli-protocol-tcp** module loaded and accessible by the server that runs your openHAB instance. The following PulseAudio devices are supported:
+You need a running PulseAudio server with the **module-cli-protocol-tcp** module loaded and accessible by the server that runs your openHAB instance.
+The following PulseAudio devices are supported:
 
 - Sink
 - Source
@@ -20,7 +21,9 @@ The PulseAudio Bridge is discovered through mDNS on the local network.
 
 ## Binding Configuration (optional)
 
-The PulseAudio binding can be customized to handle different devices. Sink and Source support is enabled by default and requires no further action. To enable another device type, or disable Sink/Source, change the corresponding binding property.
+The PulseAudio binding can be customized to handle different devices.
+Sink and Source support is enabled by default and requires no further action.
+To enable another device type, or disable Sink/Source, change the corresponding binding property.
 
 - **sink:** Allow the binding to parse sink devices from the PulseAudio server
 - **source:** Allow the binding to parse source devices from the PulseAudio server
@@ -48,7 +51,8 @@ To determine the correct value to use, you can use the command-line utility `pac
 pactl -s <ip-address|hostname> list sinks | grep "name:"
 ```
 
-If you need to narrow the identification of a device (if name or description are not consistent or sufficient), you can use the `additionalFilters` parameter (optional/advanced), in the form of one or several (separator `###`) regular expressions, each matching a property value of the PulseAudio device. You can use every property listed with `pactl`.
+If you need to narrow the identification of a device (if name or description are not consistent or sufficient), you can use the `additionalFilters` parameter (optional/advanced), in the form of one or several (separator `###`) regular expressions, each matching a property value of the PulseAudio device.
+You can use every property listed with `pactl`.
 
 ## Channels
 
@@ -85,7 +89,8 @@ This requires the **module-simple-protocol-tcp** module to be present on the ser
 Source Things can register themselves as an audio source in openHAB.
 WAV input format, rate, and channels can be configured on the Thing (defaults to pcm_signed, 16000, 1).
 Use the appropriate parameter in the source Thing to enable this (activateSimpleProtocolSource).
-This requires the **module-simple-protocol-tcp** module to be present on the target PulseAudio server. The binding will try to load this module on the PulseAudio server if needed.
+This requires the **module-simple-protocol-tcp** module to be present on the target PulseAudio server.
+The binding will try to load this module on the PulseAudio server if needed.
 
 ### Thing Configuration
 

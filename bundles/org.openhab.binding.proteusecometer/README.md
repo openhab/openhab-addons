@@ -15,7 +15,7 @@ The binding has been tested with this EcoMeter sensor only.
 
 ## Discovery
 
-No autodiscovery is implemented yet.
+Auto-discovery is currently not supported.
 
 ## Thing Configuration
 

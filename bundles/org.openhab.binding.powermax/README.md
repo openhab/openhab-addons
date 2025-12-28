@@ -141,7 +141,7 @@ The command `download_setup` will trigger a new download of the panel setup.
 
 Example command: `openhab:powermax powermax:serial:home info_setup`.
 
-## Notes and limitations
+## Notes and Limitations
 
 - For Powerlink mode to work, the enrollment procedure must be followed.
   If you don't enroll Powerlink on the PowerMax, the binding will operate in Standard mode; if enrolled, it will operate in Powerlink mode.

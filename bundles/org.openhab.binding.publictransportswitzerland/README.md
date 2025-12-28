@@ -19,7 +19,7 @@ Upcoming departures for a single station (as displayed on a station departure bo
 | departures#n   | String | A dynamic channel for each upcoming departure                                                |
 | tsv (advanced) | String | A TSV containing the fields:<br />`identifier, departureTime, destination, track, delay`     |
 
-#### UI-based configuration
+#### UI-based Configuration
 
 `station` is the station name for which to display departures.
 The name must match the Swiss Federal Railways (SBB) naming.

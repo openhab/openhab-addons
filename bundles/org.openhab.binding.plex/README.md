@@ -24,7 +24,8 @@ This binding supports two Things.
 ## Discovery
 
 For auto-discovery to work correctly, first configure and add the `PLEX Server` Thing.
-Next, play something on the desired player. The player appears in auto-discovery only while media is playing.
+Next, play something on the desired player.
+The player appears in auto-discovery only while media is playing.
 
 ## Thing Configuration
 
@@ -49,11 +50,13 @@ To find the PLEX token, follow the instructions from the PLEX support site:
 
 ### `PLEX Player` Thing Configuration
 
-You can add multiple PLEX players. You can either find the player via auto-discovery or add it manually.
+You can add multiple PLEX players.
+You can either find the player via auto-discovery or add it manually.
 
 #### Autodiscovery
 
-Turn on the player you want to add and play some media on it. Navigate to `/settings/things/add/plex` and start auto-discovery.
+Turn on the player you want to add and play some media on it.
+Navigate to `/settings/things/add/plex` and start auto-discovery.
 When found, add the player.
 
 #### Add a player manually

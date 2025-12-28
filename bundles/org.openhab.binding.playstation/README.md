@@ -30,7 +30,8 @@ Settings -> System Settings -> Connect PS Vita System Using Network.
 | outboundIP        |         |    No    | Use this if your PS4 is not on the normal openHAB network.                 |
 | ipPort            | 997     |    No    | The port to probe the PS4 on, no need to change normally.                  |
 
-If you want to control your PS4, the first Thing you need is your user credentials. This is a 64-character hex string that is most easily obtained by using PS4-waker (<https://github.com/dhleong/ps4-waker>).
+If you want to control your PS4, the first thing you need is your user credentials.
+This is a 64-character hex string that is most easily obtained by using PS4-waker (<https://github.com/dhleong/ps4-waker>).
 To run PS4-waker, you will need Node.js installed (for example: <https://nodejs.org/en/download/>).
 Enter "npx ps4-waker --help" in the command prompt. Agree to install by entering "y".
 After that send "npx ps4-waker --check". You will get asked to connect the "PS4 Second screen" Android app to the running clone.
@@ -126,4 +127,5 @@ sitemap demo label="Main Menu"
 
 ## Caveats and Limitations
 
-I tried my hardest to figure out how to turn on the PS3 through Wake-on-LAN, but it looks like Sony never got it to work properly. The only way I've seen it turn on is via Wi‑Fi, but if you connect your PS3 to your router via Wi‑Fi and enable Wake‑on‑LAN, it can turn itself on randomly.
+I tried my hardest to figure out how to turn on the PS3 through Wake-on-LAN, but it looks like Sony never got it to work properly.
+The only way I've seen it turn on is via Wi‑Fi, but if you connect your PS3 to your router via Wi‑Fi and enable Wake‑on‑LAN, it can turn itself on randomly.

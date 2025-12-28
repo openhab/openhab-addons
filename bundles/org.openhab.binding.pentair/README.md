@@ -105,7 +105,8 @@ Bridge pentair:serial_bridge:1 [ serialPort="/dev/ttyUSB0" ] {
 
 ### Thing: Controller
 
-Represents and interfaces with a Pentair pool controller in the system. This binding should work for both IntelliTouch and EasyTouch systems.
+Represents and interfaces with a Pentair pool controller in the system.
+This binding should work for both IntelliTouch and EasyTouch systems.
 Feature availability is dependent on the hardware and firmware versions of your specific controller.
 
 #### Synchronize Time
