@@ -29,7 +29,8 @@ The player appears in auto-discovery only while media is playing.
 
 ## Thing Configuration
 
-Configure the PLEX Server first. The host name of the PLEX server is mandatory, and either the PLEX token (recommended) or the username/password of the PLEX server (not recommended).
+Configure the PLEX Server first.
+The host name of the PLEX server is mandatory, and either the PLEX token (recommended) or the username/password of the PLEX server (not recommended).
 
 To find the PLEX token, follow the instructions from the PLEX support site:
 
