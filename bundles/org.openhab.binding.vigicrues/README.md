@@ -5,7 +5,7 @@ These data are made public through OpenDataSoft website.
 
 ## Supported Things
 
-There is exactly one supported thing type, which represents a river level measurement station.
+There is exactly one supported Thing type, which represents a river level measurement station.
 It is identified by the `id`.
 
 To get your station id:
@@ -33,7 +33,7 @@ The binding has no configuration options, all configuration is done at Thing lev
 
 ## Thing Configuration
 
-The thing has a few configuration parameters:
+The Thing has a few configuration parameters:
 
 | Parameter | Description                                                             |
 |-----------|-------------------------------------------------------------------------|
@@ -42,7 +42,7 @@ The thing has a few configuration parameters:
 
 ## Channels
 
-Once created, at first initialization, the thing will discover its capabilities (available data) using the webservices apis.
+Once created, at first initialization, the Thing will discover its capabilities (available data) using the webservices apis.
 Channels will be presented depending upon actual available data.
 
 The VigiCrues information that retrieved are made available with these channels:
