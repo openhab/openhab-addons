@@ -26,11 +26,11 @@ The binding implementation of this protocol is largely inspired by the [Vera plu
 
 This binding supports the following Thing types:
 
-| Thing  | Thing Type | Description                                                                       |
+| Thing  | Thing Type | Description                                                                      |
 |--------|------------|----------------------------------------------------------------------------------|
 | ip     | Bridge     | The IP connection to the alarm system.                                           |
 | serial | Bridge     | The serial connection to the alarm system.                                       |
-| x10    | Thing      | An X10 device.                                                                     |
+| x10    | Thing      | An X10 device.                                                                   |
 | zone   | Thing      | A zone representing a physical device such as a door, window or a motion sensor. |
 
 ## Discovery
@@ -50,32 +50,32 @@ All settings are provided through Thing configuration parameters.
 
 The IP bridge Thing requires the following configuration parameters:
 
-| Parameter Label     | Parameter ID      | Description                                                         | Required | Default |
-|---------------------|-------------------|---------------------------------------------------------------------|----------|---------|
-| IP address          | ip                | The IP address to use for connecting to the Ethernet interface of the alarm system                    | true     |         |
-| TCP port            | tcpPort           | The TCP port to use for connecting to the Ethernet interface of the alarm system. | true     |         |
-| Motion reset delay  | motionOffDelay    | The delay, in minutes, to reset a motion detection                  | false    | 3       |
-| Allow arming        | allowArming       | Enable or disable arming the alarm system from openHAB.             | false    | false   |
-| Allow disarming     | allowDisarming    | Enable or disable disarming the alarm system from openHAB.          | false    | false   |
-| PIN code            | pinCode           | The PIN code to use for arming/disarming the alarm system from openHAB. Not required unless Powerlink mode cannot be used | false    |         |
-| Force standard mode | forceStandardMode | Force standard mode rather than trying to use Powerlink mode         | false    | false   |
-| Panel type          | panelType         | The panel type (only required when forcing standard mode)            | false    | PowerMaxPro |
-| Sync time           | autoSyncTime      | Automatically sync time at openHAB startup                           | false    | true    |
+| Parameter Label     | Parameter ID      | Description                                                                                                               | Required | Default     |
+|---------------------|-------------------|---------------------------------------------------------------------------------------------------------------------------|----------|-------------|
+| IP address          | ip                | The IP address to use for connecting to the Ethernet interface of the alarm system                                        | true     |             |
+| TCP port            | tcpPort           | The TCP port to use for connecting to the Ethernet interface of the alarm system.                                         | true     |             |
+| Motion reset delay  | motionOffDelay    | The delay, in minutes, to reset a motion detection                                                                        | false    | 3           |
+| Allow arming        | allowArming       | Enable or disable arming the alarm system from openHAB.                                                                   | false    | false       |
+| Allow disarming     | allowDisarming    | Enable or disable disarming the alarm system from openHAB.                                                                | false    | false       |
+| PIN code            | pinCode           | The PIN code to use for arming/disarming the alarm system from openHAB. Not required unless Powerlink mode cannot be used | false    |             |
+| Force standard mode | forceStandardMode | Force standard mode rather than trying to use Powerlink mode                                                              | false    | false       |
+| Panel type          | panelType         | The panel type (only required when forcing standard mode)                                                                 | false    | PowerMaxPro |
+| Sync time           | autoSyncTime      | Automatically sync time at openHAB startup                                                                                | false    | true        |
 
 ### Serial connection
 
 The serial bridge Thing requires the following configuration parameters:
 
-| Parameter Label     | Parameter ID      | Description                                                         | Required | Default |
-|---------------------|-------------------|---------------------------------------------------------------------|----------|---------|
-| Serial port         | serialPort        | The serial port used to connect to the alarm system (e.g., COM1 for Windows; /dev/ttyS0 or /dev/ttyUSB0 for Linux) | true     |         |
-| Motion reset delay  | motionOffDelay    | The delay in minutes to reset a motion detection.                   | false    | 3       |
-| Allow arming        | allowArming       | Enable or disable arming the alarm system from openHAB.             | false    | false   |
-| Allow disarming     | allowDisarming    | Enable or disable disarming the alarm system from openHAB.          | false    | false   |
-| PIN code            | pinCode           | The PIN code to use for arming/disarming the alarm system from openHAB. Not required except when Powerlink mode cannot be used. | false    |         |
-| Force standard mode | forceStandardMode | Force the standard mode rather than trying using the Powerlink mode.| false    | false   |
-| Panel type          | panelType         | Define the panel type. Only required when forcing the standard mode.| false    | PowerMaxPro |
-| Sync time           | autoSyncTime      | Automatic sync time at openHAB startup.                             | false    | true    |
+| Parameter Label     | Parameter ID      | Description                                                                                                                     | Required | Default     |
+|---------------------|-------------------|---------------------------------------------------------------------------------------------------------------------------------|----------|-------------|
+| Serial port         | serialPort        | The serial port used to connect to the alarm system (e.g., COM1 for Windows; /dev/ttyS0 or /dev/ttyUSB0 for Linux)              | true     |             |
+| Motion reset delay  | motionOffDelay    | The delay in minutes to reset a motion detection.                                                                               | false    | 3           |
+| Allow arming        | allowArming       | Enable or disable arming the alarm system from openHAB.                                                                         | false    | false       |
+| Allow disarming     | allowDisarming    | Enable or disable disarming the alarm system from openHAB.                                                                      | false    | false       |
+| PIN code            | pinCode           | The PIN code to use for arming/disarming the alarm system from openHAB. Not required except when Powerlink mode cannot be used. | false    |             |
+| Force standard mode | forceStandardMode | Force the standard mode rather than trying using the Powerlink mode.                                                            | false    | false       |
+| Panel type          | panelType         | Define the panel type. Only required when forcing the standard mode.                                                            | false    | PowerMaxPro |
+| Sync time           | autoSyncTime      | Automatic sync time at openHAB startup.                                                                                         | false    | true        |
 
 Notes:
 
@@ -104,27 +104,27 @@ The zone Thing requires the following configuration parameters:
 
 The following channels are available:
 
-| Thing Types | Channel Type ID              | Item Type | Access Mode | Description                                           |
-|-------------|------------------------------|-----------|-------------|-------------------------------------------------------|
-| ip / serial | system_status                | String    | R           | A short status summary of the system                  |
-| ip / serial | system_armed                 | Switch    | RW          | Whether or not the system is armed                    |
+| Thing Types | Channel Type ID              | Item Type | Access Mode | Description                                                                                              |
+|-------------|------------------------------|-----------|-------------|----------------------------------------------------------------------------------------------------------|
+| ip / serial | system_status                | String    | R           | A short status summary of the system                                                                     |
+| ip / serial | system_armed                 | Switch    | RW          | Whether or not the system is armed                                                                       |
 | ip / serial | arm_mode                     | String    | RW          | System arm mode (accepted values: Disarmed, Stay, Armed, StayInstant, ArmedInstant, Night, NightInstant) |
-| ip / serial | alarm_active                 | Switch    | R           | Whether or not an alarm is active                     |
-| ip / serial | ready                        | Switch    | R           | Whether or not the system is ready for arming         |
-| ip / serial | with_zones_bypassed          | Switch    | R           | Whether or not at least one zone is bypassed          |
-| ip / serial | trouble                      | Switch    | R           | Whether or not a trouble is detected                  |
-| ip / serial | alert_in_memory              | Switch    | R           | Whether or not an alert is saved in system memory     |
-| ip / serial | pgm_status                   | Switch    | RW          | PGM status                                            |
-| ip / serial | mode                         | String    | R           | System current mode (Standard, Powerlink or Download) |
-| ip / serial | event_log_1 ... event_log_10 | String    | R           | Event log entry (1 is the most recent)                |
-| ip / serial | update_event_logs            | Switch    | W           | Switch command to update the event logs               |
-| ip / serial | download_setup               | Switch    | W           | Switch command to download the setup                  |
-| x10         | x10_status                   | String    | RW          | X10 device status (accepted values: OFF, ON, DIM and BRIGHT) |
-| zone        | tripped                      | Contact   | R           | Whether or not the zone is tripped                    |
-| zone        | armed                        | Switch    | R           | Whether or not the zone is armed                      |
-| zone        | last_trip                    | DateTime  | R           | Timestamp when the zone was last tripped              |
-| zone        | low_battery                  | Switch    | R           | Whether or not the sensor battery is low              |
-| zone        | bypassed                     | Switch    | RW          | Whether or not the zone is bypassed                   |
+| ip / serial | alarm_active                 | Switch    | R           | Whether or not an alarm is active                                                                        |
+| ip / serial | ready                        | Switch    | R           | Whether or not the system is ready for arming                                                            |
+| ip / serial | with_zones_bypassed          | Switch    | R           | Whether or not at least one zone is bypassed                                                             |
+| ip / serial | trouble                      | Switch    | R           | Whether or not a trouble is detected                                                                     |
+| ip / serial | alert_in_memory              | Switch    | R           | Whether or not an alert is saved in system memory                                                        |
+| ip / serial | pgm_status                   | Switch    | RW          | PGM status                                                                                               |
+| ip / serial | mode                         | String    | R           | System current mode (Standard, Powerlink or Download)                                                    |
+| ip / serial | event_log_1 ... event_log_10 | String    | R           | Event log entry (1 is the most recent)                                                                   |
+| ip / serial | update_event_logs            | Switch    | W           | Switch command to update the event logs                                                                  |
+| ip / serial | download_setup               | Switch    | W           | Switch command to download the setup                                                                     |
+| x10         | x10_status                   | String    | RW          | X10 device status (accepted values: OFF, ON, DIM and BRIGHT)                                             |
+| zone        | tripped                      | Contact   | R           | Whether or not the zone is tripped                                                                       |
+| zone        | armed                        | Switch    | R           | Whether or not the zone is armed                                                                         |
+| zone        | last_trip                    | DateTime  | R           | Timestamp when the zone was last tripped                                                                 |
+| zone        | low_battery                  | Switch    | R           | Whether or not the sensor battery is low                                                                 |
+| zone        | bypassed                     | Switch    | RW          | Whether or not the zone is bypassed                                                                      |
 
 ## Console Commands
 

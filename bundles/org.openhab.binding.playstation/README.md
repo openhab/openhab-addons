@@ -18,17 +18,17 @@ Settings -> System Settings -> Connect PS Vita System Using Network.
 
 **playstation4** parameters:
 
-| Property            | Default | Required | Description                                                              |
-|---------------------|---------|:--------:|--------------------------------------------------------------------------|
-| ipAddress           |         | Yes      | The IP address of the PlayStation 4                                      |
-| userCredential      |         | Yes      | A key used for authentication, obtained via PS4-waker.                   |
-| pairingCode         |         | Yes      | This is shown on the PlayStation 4 during pairing, only needed once.     |
-| passCode            |         | (Yes)    | If you use a code to log in to your user on the PS4, set this.           |
-| connectionTimeout   |  60     | No       | How long the connection to the PS4 is kept open (in seconds).            |
-| autoConnect         |  false  | No       | Whether a connection should be established to the PS4 when it's turned on. |
-| artworkSize         |  320    | No       | Width and height of downloaded artwork.                                  |
-| outboundIP          |         | No       | Use this if your PS4 is not on the normal openHAB network.               |
-| ipPort              |  997    | No       | The port to probe the PS4 on, no need to change normally.                |
+| Property          | Default | Required | Description                                                                |
+|-------------------|---------|:--------:|----------------------------------------------------------------------------|
+| ipAddress         |         |   Yes    | The IP address of the PlayStation 4                                        |
+| userCredential    |         |   Yes    | A key used for authentication, obtained via PS4-waker.                     |
+| pairingCode       |         |   Yes    | This is shown on the PlayStation 4 during pairing, only needed once.       |
+| passCode          |         |  (Yes)   | If you use a code to log in to your user on the PS4, set this.             |
+| connectionTimeout | 60      |    No    | How long the connection to the PS4 is kept open (in seconds).              |
+| autoConnect       | false   |    No    | Whether a connection should be established to the PS4 when it's turned on. |
+| artworkSize       | 320     |    No    | Width and height of downloaded artwork.                                    |
+| outboundIP        |         |    No    | Use this if your PS4 is not on the normal openHAB network.                 |
+| ipPort            | 997     |    No    | The port to probe the PS4 on, no need to change normally.                  |
 
 If you want to control your PS4, the first Thing you need is your user credentials. This is a 64-character hex string that is most easily obtained by using PS4-waker (<https://github.com/dhleong/ps4-waker>).
 To run PS4-waker, you will need Node.js installed (for example: <https://nodejs.org/en/download/>).

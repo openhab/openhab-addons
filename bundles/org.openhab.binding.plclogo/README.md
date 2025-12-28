@@ -30,15 +30,15 @@ Every Siemens LOGO! PLC is configured as bridge:
 Bridge plclogo:device:<DeviceId> [ address="<ip>", family="<0BA7/0BA8>", localTSAP="0x<number>", remoteTSAP="0x<number>", refresh=<number> ]
 ```
 
-| Parameter  | Type    | Required   | Default   | Description                                                      |
-| ---------- | :-----: | :--------: | :-------: | ---------------------------------------------------------------- |
-| address    | String  | Yes        |           | IP address of the LOGO! PLC.                                     |
-| family     | String  | Yes        |           | LOGO! family to communicate with. Can be `0BA7` or `0BA8` now.   |
-| localTSAP  | String  | Yes        |           | TSAP (as hex) is used by the local instance. Check configuration |
-|            |         |            |           | in LOGO!Soft Comfort. Common used value is `0x3000`.             |
-| remoteTSAP | String  | Yes        |           | TSAP (as hex) of the remote LOGO! PLC, as configured by          |
-|            |         |            |           | LOGO!Soft Comfort. Common used value is `0x2000`.                |
-| refresh    | Integer | No         | 100ms     | Polling interval (in milliseconds) used to query the LOGO!.  |
+| Parameter  |  Type   | Required | Default | Description                                                      |
+|------------|:-------:|:--------:|:-------:|------------------------------------------------------------------|
+| address    | String  |   Yes    |         | IP address of the LOGO! PLC.                                     |
+| family     | String  |   Yes    |         | LOGO! family to communicate with. Can be `0BA7` or `0BA8` now.   |
+| localTSAP  | String  |   Yes    |         | TSAP (as hex) is used by the local instance. Check configuration |
+|            |         |          |         | in LOGO!Soft Comfort. Common used value is `0x3000`.             |
+| remoteTSAP | String  |   Yes    |         | TSAP (as hex) of the remote LOGO! PLC, as configured by          |
+|            |         |          |         | LOGO!Soft Comfort. Common used value is `0x2000`.                |
+| refresh    | Integer |    No    |  100ms  | Polling interval (in milliseconds) used to query the LOGO!.      |
 
 Be sure not to use the same values for localTSAP and remoteTSAP if you configure more than one LOGO!
 
@@ -54,10 +54,10 @@ The configuration pattern for digital things is:
 Thing digital <ThingId> "Label" @ "Location" [ kind="<kind>", force=<true/false> ]
 ```
 
-| Parameter | Type    | Required   | Default   | Description                                                  |
-| --------- | :-----: | :--------: | :-------: | ------------------------------------------------------------ |
-| kind      | String  | Yes        |           | Blocks kind                                                  |
-| force     | Boolean | No         | false     | Send current value to openHAB, independent of whether changed or not |
+| Parameter |  Type   | Required | Default | Description                                                          |
+|-----------|:-------:|:--------:|:-------:|----------------------------------------------------------------------|
+| kind      | String  |   Yes    |         | Blocks kind                                                          |
+| force     | Boolean |    No    |  false  | Send current value to openHAB, independent of whether changed or not |
 
 The following block kinds are allowed for digital things:
 
@@ -77,11 +77,11 @@ The configuration pattern for analog things is:
 Thing analog <ThingId>  "Label" @ "Location" [ kind="<kind>", threshold=<number>, force=<true/false> ]
 ```
 
-| Parameter | Type    | Required   | Default   | Description                                                   |
-| --------- | :-----: | :--------: | :-------: | ------------------------------------------------------------- |
-| kind      | String  | Yes        |           | Blocks kind                                                   |
-| threshold | Integer | No         | 0         | Send current value to openHAB if changed by more than threshold |
-| force     | Boolean | No         | false     | Send current value to openHAB, independent of whether changed or not  |
+| Parameter |  Type   | Required | Default | Description                                                          |
+|-----------|:-------:|:--------:|:-------:|----------------------------------------------------------------------|
+| kind      | String  |   Yes    |         | Blocks kind                                                          |
+| threshold | Integer |    No    |    0    | Send current value to openHAB if changed by more than threshold      |
+| force     | Boolean |    No    |  false  | Send current value to openHAB, independent of whether changed or not |
 
 The following block kinds are allowed for analog things:
 

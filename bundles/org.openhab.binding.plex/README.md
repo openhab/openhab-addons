@@ -38,14 +38,14 @@ To find the PLEX token, follow the instructions from the PLEX support site:
 
 ### `PLEX Server` Thing Configuration
 
-| Name        | Type    | Description                                                                                                                                                                                               | Default | Required | Advanced |
-|-------------|---------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------|----------|---------|
-| host        | text    | PLEX host name or IP address                                                                                                                                                                              | N/A     | yes      | no      |
-| portNumber  | integer | Port Number (leave blank if PLEX installed on default port)                                                                                                                                               | 32400   | no       | no      |
-| refreshRate | integer | Interval in seconds at which PLEX server status is polled                                                                                                                                                 | 5       | no       | no      |
-| username    | text    | If you're using Plex Home you need to supply the username and password of your Plex account here. If you don't want to enter your credentials you can also directly set your account token below instead. | N/A     | no       | no      |
-| password    | text    | If you're using Plex Home you need to supply the username and password of your Plex account here. If you don't want to enter your credentials you can also directly set your account token below instead. | N/A     | no       | no      |
-| token       | text    | The authentication token when username/password is left blank                                                                                                                                             | N/A     | no       | no      |
+| Name        | Type    | Description                                                                                     | Default | Required | Advanced |
+|-------------|---------|-------------------------------------------------------------------------------------------------|---------|----------|----------|
+| host        | text    | PLEX host name or IP address                                                                    | N/A     | yes      | no       |
+| portNumber  | integer | Port Number (leave blank if PLEX installed on default port)                                     | 32400   | no       | no       |
+| refreshRate | integer | Interval in seconds at which PLEX server status is polled                                       | 5       | no       | no       |
+| username    | text    | When using Plex Home, the username of your Plex account is required if the token is left blank. | N/A     | no       | no       |
+| password    | text    | When using Plex Home, the password of your Plex account is required if the token is left blank. | N/A     | no       | no       |
+| token       | text    | The authentication token when username/password is left blank                                   | N/A     | no       | no       |
 
 ### `PLEX Player` Thing Configuration
 
@@ -89,9 +89,9 @@ It will display the following XML file.
 
 Find the `Device` block of the player you want to add and set the `clientIdentifier` as the `playerID`.
 
-| Name        | Type    | Description                                                                                | Default | Required | Advanced |
-|-------------|---------|--------------------------------------------------------------------------------------------|---------|----------|---------|
-| playerID    | text    | The unique identifier of the player. `clientIdentifier` from [https://plex.tv/devices.xml] | N/A     | yes      | no      |
+| Name     | Type | Description                                                                                | Default | Required | Advanced |
+|----------|------|--------------------------------------------------------------------------------------------|---------|----------|----------|
+| playerID | text | The unique identifier of the player. `clientIdentifier` from [https://plex.tv/devices.xml] | N/A     | yes      | no       |
 
 ## Channels
 
@@ -118,7 +118,7 @@ The PLEX Player supports the following channels:
 | ratingKey            | String   | RO         | The unique key in the Plex library identifying the media that is playing                                         |
 | parentRatingKey      | String   | RO         | The unique key in the Plex library identifying the parent (TV show season or album) of the media that is playing |
 | grandparentRatingKey | String   | RO         | The unique key in the Plex library identifying the grandparent (TV show) of the media that is playing            |
-| user                 | String   | RO         | The user name                                                                                                  |
+| user                 | String   | RO         | The user name                                                                                                    |
 
 ## Full Example
 
