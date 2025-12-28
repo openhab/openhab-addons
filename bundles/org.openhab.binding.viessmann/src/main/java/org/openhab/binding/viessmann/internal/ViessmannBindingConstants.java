@@ -81,8 +81,8 @@ public class ViessmannBindingConstants {
             entry("ampere", Units.AMPERE.toString()), //
             entry("milliAmpere", MetricPrefix.MILLI(Units.AMPERE).toString()), //
             entry("revolutionsPerSecond", Units.HERTZ.toString()), //
-            entry("kiloJoule",MetricPrefix.KILO(Units.JOULE).toString()));
-            
+            entry("kiloJoule", MetricPrefix.KILO(Units.JOULE).toString()));
+
     public static final Map<String, String> SUB_CHANNEL_TYPE_MAP = Map.of( //
             "cubicMeter", "volume", //
             "gas-kilowattHour", "gas-energy", //
