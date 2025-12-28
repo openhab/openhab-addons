@@ -18,8 +18,10 @@ import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.security.SecureRandom;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -67,6 +69,7 @@ import org.openhab.core.thing.type.ChannelType;
 import org.openhab.core.thing.type.ChannelTypeRegistry;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
+import org.openhab.core.types.StateOption;
 import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -94,6 +97,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     RoborockAccountHandler bridgeHandler;
     private final SchedulerTask initTask;
     private final SchedulerTask pollTask;
+    private final RoborockStateDescriptionOptionProvider stateDescriptionProvider;
     private String token = "";
     private Rooms[] homeRooms = new Rooms[0];
     private String rrHomeId = "";
@@ -121,9 +125,11 @@ public class RoborockVacuumHandler extends BaseThingHandler {
                     RobotCapabilities.MOP_DRYING, RobotCapabilities.MOP_DRYING_REMAINING_TIME,
                     RobotCapabilities.DOCK_STATE_ID, RobotCapabilities.CLEAN_PERCENT).collect(Collectors.toSet()));
 
-    public RoborockVacuumHandler(Thing thing, ChannelTypeRegistry channelTypeRegistry) {
+    public RoborockVacuumHandler(Thing thing, ChannelTypeRegistry channelTypeRegistry,
+            RoborockStateDescriptionOptionProvider stateDescriptionProvider) {
         super(thing);
         this.channelTypeRegistry = channelTypeRegistry;
+        this.stateDescriptionProvider = stateDescriptionProvider;
         initTask = new SchedulerTask(scheduler, logger, "Init", this::initDevice);
         pollTask = new SchedulerTask(scheduler, logger, "Poll", this::pollData);
         new java.security.SecureRandom().nextBytes(nonce);
@@ -379,6 +385,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
 
             if (supportsRoutines) {
                 String routinesResponse = localBridgeHandler.getRoutines(config.duid);
+                List<StateOption> options = new ArrayList<>();
                 if (routinesResponse != null && !routinesResponse.isEmpty()
                         && JsonParser.parseString(routinesResponse).getAsJsonObject().get("result").isJsonArray()
                         && JsonParser.parseString(routinesResponse).getAsJsonObject().get("result").getAsJsonArray()
@@ -392,8 +399,12 @@ public class RoborockVacuumHandler extends BaseThingHandler {
                         JsonObject routinesJsonObject = routinesArray.get(i).getAsJsonObject();
                         routines.put(routinesJsonObject.get("id").getAsString(),
                                 routinesJsonObject.get("name").getAsString());
+                        options.add(new StateOption(routinesJsonObject.get("id").getAsString(),
+                                routinesJsonObject.get("name").getAsString()));
                     }
                     updateState(CHANNEL_ROUTINES, new StringType(gson.toJson(routines)));
+                    stateDescriptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), CHANNEL_ROUTINE),
+                            options);
                 } else {
                     logger.debug("Routines not supported for device {}", config.duid);
                     supportsRoutines = false;
