@@ -674,11 +674,10 @@ public class LinkPlayHandler extends BaseThingHandler implements LinkPlayUpnpDev
                 commands.backUpQueue(savedQueueContext).get();
                 final String notifyListName = "Notification";
                 final String notifyPlaylistXml = UpnpXMLParser.createSimplePlayListXml(url, notifyListName);
-                commands.deleteQueue(notifyListName).get();
-                Thread.sleep(100);
-                commands.createQueue(notifyPlaylistXml).get();
-                Thread.sleep(100);
-                getPlayListQueue();
+                // Delete queue, verify deletion, create new queue, verify creation
+                commands.deleteQueue(notifyListName).thenCompose(v -> verifyQueueDeleted(notifyListName))
+                        .thenCompose(v -> commands.createQueue(notifyPlaylistXml))
+                        .thenCompose(v -> verifyQueueCreated(notifyListName)).thenRun(() -> getPlayListQueue()).get();
                 // Listen for UPnP AVTransport events to determine when the notification playback has started or stopped
                 final UpnpValueListener listener = (variable, value, service) -> {
                     if (SERVICE_AV_TRANSPORT.equals(service) && value != null) {
@@ -696,8 +695,7 @@ public class LinkPlayHandler extends BaseThingHandler implements LinkPlayUpnpDev
                                             started.get());
                                     if (started.get()) {
                                         try {
-                                            commands.replaceQueue(savedQueueContext).get();
-                                            Thread.sleep(200);
+                                            // Calculate the last play index before async operations
                                             int lastPlayIndex = 1;
                                             if (UpnpXMLParser.getPlayListFromBrowseQueueResponse(
                                                     savedQueueContext) instanceof PlayList savedPlayList
@@ -705,8 +703,14 @@ public class LinkPlayHandler extends BaseThingHandler implements LinkPlayUpnpDev
                                                             .getListInfo() instanceof PlayListInfo playListInfo) {
                                                 lastPlayIndex = playListInfo.getLastPlayIndex();
                                             }
-                                            commands.playQueueWithIndex(queueName, String.valueOf(lastPlayIndex)).get();
-                                            commands.deleteQueue(notifyListName).get();
+                                            final int playIndex = lastPlayIndex;
+
+                                            // Replace queue, verify replacement, then resume playback
+                                            commands.replaceQueue(savedQueueContext)
+                                                    .thenCompose(v -> verifyQueueReplaced(queueName))
+                                                    .thenCompose(v -> commands.playQueueWithIndex(queueName,
+                                                            String.valueOf(playIndex)))
+                                                    .thenCompose(v -> commands.deleteQueue(notifyListName)).get();
                                         } catch (ExecutionException | InterruptedException e) {
                                             logger.error("{}: Error while removing notification track: {}", udn,
                                                     e.getMessage(), e);
@@ -1714,5 +1718,70 @@ public class LinkPlayHandler extends BaseThingHandler implements LinkPlayUpnpDev
             job.cancel(true);
         }
         job = null;
+    }
+
+    /**
+     * Verifies that a queue has been deleted by attempting to browse it.
+     *
+     * @param queueName the name of the queue to verify deletion
+     * @return CompletableFuture that completes when queue is verified deleted
+     */
+    @SuppressWarnings("null")
+    private CompletableFuture<Void> verifyQueueDeleted(String queueName) {
+        return commands.browseQueue(queueName).handle((result, throwable) -> {
+            // Queue is deleted if browseQueue fails or returns null/empty QueueContext
+            if (throwable != null || result == null || result.get("QueueContext") == null
+                    || result.get("QueueContext").isEmpty()) {
+                logger.debug("{}: Queue '{}' verified deleted", udn, queueName);
+                return null;
+            } else {
+                logger.warn("{}: Queue '{}' still exists after deletion attempt", udn, queueName);
+                throw new IllegalStateException("Queue '" + queueName + "' still exists after deletion");
+            }
+        });
+    }
+
+    /**
+     * Verifies that a queue has been created by attempting to browse it.
+     *
+     * @param queueName the name of the queue to verify creation
+     * @return CompletableFuture that completes when queue is verified created
+     */
+    @SuppressWarnings("null")
+    private CompletableFuture<Void> verifyQueueCreated(String queueName) {
+        return commands.browseQueue(queueName).thenApply(result -> {
+            // Queue is created if browseQueue succeeds and returns non-empty QueueContext
+            if (result != null && result.get("QueueContext") != null && !result.get("QueueContext").isEmpty()) {
+                logger.debug("{}: Queue '{}' verified created", udn, queueName);
+                return null;
+            } else {
+                logger.warn("{}: Queue '{}' not found after creation attempt", udn, queueName);
+                throw new IllegalStateException("Queue '" + queueName + "' not created");
+            }
+        });
+    }
+
+    /**
+     * Verifies that a queue has been replaced by browsing the default queue.
+     *
+     * @param expectedQueueName the expected queue name after replacement
+     * @return CompletableFuture that completes when queue is verified replaced
+     */
+    @SuppressWarnings("null")
+    private CompletableFuture<Void> verifyQueueReplaced(String expectedQueueName) {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                PlayQueue playQueue = getPlayListQueue();
+                if (playQueue != null && expectedQueueName.equals(playQueue.getCurrentPlayListName())) {
+                    logger.debug("{}: Queue replaced to '{}' verified", udn, expectedQueueName);
+                    return null;
+                } else {
+                    logger.warn("{}: Queue not replaced to '{}' as expected", udn, expectedQueueName);
+                    throw new IllegalStateException("Queue not replaced to '" + expectedQueueName + "'");
+                }
+            } catch (Exception e) {
+                throw new IllegalStateException("Failed to verify queue replacement", e);
+            }
+        }, scheduler);
     }
 }

@@ -75,7 +75,7 @@ Displays information about the currently playing track.
 | track-title        | String       | R          | Current track title                                  |
 | track-artist       | String       | R          | Current track artist                                 |
 | track-album        | String       | R          | Current track album                                  |
-| track-uri          | String       | R          | Current track uri                                  |
+| track-uri          | String       | R          | Current track uri                                    |
 | album-art-url      | String       | R          | URL of the current album artwork                     |
 | album-art          | Image        | R          | Album artwork image                                  |
 | sample-rate        | Number       | R          | Sample rate of the playing track (Hz)                |
@@ -86,12 +86,12 @@ Displays information about the currently playing track.
 
 Manages input sources and connections.
 
-| Channel ID             | Item Type | Read/Write | Description                                       |
-|------------------------|-----------|------------|---------------------------------------------------|
-| source                 | String    | RW         | Active input source (wifi, bluetooth, line-in, optical, udisk, HDMI) |
-| bluetooth-connected    | Switch    | R          | Indicates if a Bluetooth device is connected      |
-| bluetooth-paired-device| String    | R          | MAC address of the paired Bluetooth device        |
-| line-in-active         | Switch    | R          | True when line-in source is selected              |
+| Channel ID              | Item Type | Read/Write | Description                                                          |
+|-------------------------|-----------|------------|----------------------------------------------------------------------|
+| source                  | String    | RW         | Active input source (wifi, bluetooth, line-in, optical, udisk, HDMI) |
+| bluetooth-connected     | Switch    | R          | Indicates if a Bluetooth device is connected                         |
+| bluetooth-paired-device | String    | R          | MAC address of the paired Bluetooth device                           |
+| line-in-active          | Switch    | R          | True when line-in source is selected                                 |
 
 ### Equalizer & Output Channel Group
 
@@ -348,7 +348,7 @@ When a leader leaves/ungroups, the entire group is disbanded.
 When devices are in a group:
 
 1. **Playback Control**: Only the leader's playback controls are active. Member devices mirror the leader's state.
-2. **Synchronized Channels**: The following channels are automatically synchronized from leader to all members:
+1. **Synchronized Channels**: The following channels are automatically synchronized from leader to all members:
    - `playback#control` - Player control commands
    - `playback#state` - Playback state (PLAYING, PAUSED, etc.)
    - `playback#position` - Track position
@@ -362,8 +362,7 @@ When devices are in a group:
    - `metadata#sample-rate` - Sample rate
    - `metadata#bit-depth` - Bit depth
    - `metadata#bit-rate` - Bit rate
-
-3. **Independent Channels**: Each device maintains its own settings for:
+1. **Independent Channels**: Each device maintains its own settings for:
    - Individual volume (`playback#volume`)
    - Individual mute (`playback#mute`)
    - Device settings (LED, touch controls, etc.)

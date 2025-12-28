@@ -68,16 +68,16 @@ public class UpnpXMLParser {
         RenderingControlEventHandler handler = new RenderingControlEventHandler();
         try {
             SAXParserFactory factory = SAXParserFactory.newInstance();
-            SAXParser saxParser = factory.newSAXParser();
             factory.setFeature("http://xml.org/sax/features/external-general-entities", false);
-            saxParser.getXMLReader().setFeature("http://xml.org/sax/features/external-general-entities", false);
             factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+            SAXParser saxParser = factory.newSAXParser();
+            saxParser.getXMLReader().setFeature("http://xml.org/sax/features/external-general-entities", false);
             saxParser.parse(new InputSource(new StringReader(xml)), handler);
         } catch (IOException e) {
             // This should never happen - we're not performing I/O!
-            LOGGER.error("Could not parse Rendering Control from string '{}'", xml);
+            LOGGER.debug("Could not parse Rendering Control from XML");
         } catch (SAXException | ParserConfigurationException s) {
-            LOGGER.error("Could not parse Rendering Control from string '{}'", xml);
+            LOGGER.debug("Could not parse Rendering Control from XML");
         }
         return handler.getChanges();
     }
@@ -127,16 +127,16 @@ public class UpnpXMLParser {
         AVTransportEventHandler handler = new AVTransportEventHandler();
         try {
             SAXParserFactory factory = SAXParserFactory.newInstance();
-            SAXParser saxParser = factory.newSAXParser();
             factory.setFeature("http://xml.org/sax/features/external-general-entities", false);
-            saxParser.getXMLReader().setFeature("http://xml.org/sax/features/external-general-entities", false);
             factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+            SAXParser saxParser = factory.newSAXParser();
+            saxParser.getXMLReader().setFeature("http://xml.org/sax/features/external-general-entities", false);
             saxParser.parse(new InputSource(new StringReader(xml)), handler);
         } catch (IOException e) {
             // This should never happen - we're not performing I/O!
-            LOGGER.error("Could not parse AV Transport from string '{}'", xml, e);
+            LOGGER.debug("Could not parse AV Transport from XML", e);
         } catch (SAXException | ParserConfigurationException s) {
-            LOGGER.debug("Could not parse AV Transport from string '{}'", xml, s);
+            LOGGER.debug("Could not parse AV Transport from XML", s);
         }
         return handler.getChanges();
     }
@@ -174,16 +174,16 @@ public class UpnpXMLParser {
         EntryHandler handler = new EntryHandler();
         try {
             SAXParserFactory factory = SAXParserFactory.newInstance();
-            SAXParser saxParser = factory.newSAXParser();
             factory.setFeature("http://xml.org/sax/features/external-general-entities", false);
-            saxParser.getXMLReader().setFeature("http://xml.org/sax/features/external-general-entities", false);
             factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+            SAXParser saxParser = factory.newSAXParser();
+            saxParser.getXMLReader().setFeature("http://xml.org/sax/features/external-general-entities", false);
             saxParser.parse(new InputSource(new StringReader(xml)), handler);
         } catch (IOException e) {
             // This should never happen - we're not performing I/O!
-            LOGGER.error("Could not parse Entries from string '{}'", xml, e);
+            LOGGER.debug("Could not parse Entries from XML", e);
         } catch (SAXException | ParserConfigurationException s) {
-            LOGGER.debug("Could not parse Entries from string '{}'", xml, s);
+            LOGGER.debug("Could not parse Entries from XML", s);
         }
         return handler.getEntries();
     }
@@ -562,17 +562,17 @@ public class UpnpXMLParser {
         PlayQueueHandler handler = new PlayQueueHandler(playlistRawXml);
         try {
             SAXParserFactory factory = SAXParserFactory.newInstance();
-            SAXParser saxParser = factory.newSAXParser();
             factory.setFeature("http://xml.org/sax/features/external-general-entities", false);
-            saxParser.getXMLReader().setFeature("http://xml.org/sax/features/external-general-entities", false);
             factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+            SAXParser saxParser = factory.newSAXParser();
+            saxParser.getXMLReader().setFeature("http://xml.org/sax/features/external-general-entities", false);
             saxParser.parse(new InputSource(new StringReader(xml)), handler);
         } catch (IOException e) {
             // This should never happen - we're not performing I/O!
-            LOGGER.error("Could not parse PlayQueue from string '{}'", xml, e);
+            LOGGER.debug("Could not parse PlayQueue from XML", e);
             return null;
         } catch (SAXException | ParserConfigurationException s) {
-            LOGGER.debug("Could not parse PlayQueue from string '{}'", xml, s);
+            LOGGER.debug("Could not parse PlayQueue from XML", s);
             return null;
         }
         return handler.getPlayQueue();
@@ -887,17 +887,17 @@ public class UpnpXMLParser {
         BrowseQueueResponseHandler handler = new BrowseQueueResponseHandler();
         try {
             SAXParserFactory factory = SAXParserFactory.newInstance();
-            SAXParser saxParser = factory.newSAXParser();
             factory.setFeature("http://xml.org/sax/features/external-general-entities", false);
-            saxParser.getXMLReader().setFeature("http://xml.org/sax/features/external-general-entities", false);
             factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+            SAXParser saxParser = factory.newSAXParser();
+            saxParser.getXMLReader().setFeature("http://xml.org/sax/features/external-general-entities", false);
             saxParser.parse(new InputSource(new StringReader(xml)), handler);
         } catch (IOException e) {
             // This should never happen - we're not performing I/O!
-            LOGGER.error("Could not parse BrowseQueueResponse from string '{}'", xml, e);
+            LOGGER.error("Could not parse BrowseQueueResponse from XML", e);
             return null;
         } catch (SAXException | ParserConfigurationException s) {
-            LOGGER.debug("Could not parse BrowseQueueResponse from string '{}'", xml, s);
+            LOGGER.debug("Could not parse BrowseQueueResponse from XML", s);
             return null;
         }
 

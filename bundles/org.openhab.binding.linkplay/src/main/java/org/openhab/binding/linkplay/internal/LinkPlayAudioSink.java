@@ -89,6 +89,7 @@ public class LinkPlayAudioSink extends AudioSinkSync {
             try {
                 handler.setVolume(volume);
             } catch (InterruptedException | ExecutionException | TimeoutException e) {
+                Thread.currentThread().interrupt();
                 throw new IOException("Error while setting volume: " + e.getMessage(), e);
             }
         }
@@ -160,6 +161,7 @@ public class LinkPlayAudioSink extends AudioSinkSync {
             try {
                 playMedia(url).get();
             } catch (InterruptedException | ExecutionException e) {
+                Thread.currentThread().interrupt();
                 logger.debug("Error while playing notification: {}", e.getMessage(), e);
             }
         } else {
