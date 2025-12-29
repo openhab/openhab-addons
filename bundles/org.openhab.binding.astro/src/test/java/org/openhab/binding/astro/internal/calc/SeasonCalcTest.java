@@ -27,21 +27,16 @@ import org.openhab.binding.astro.internal.model.Season;
 import org.openhab.binding.astro.internal.model.Sun;
 import org.openhab.binding.astro.internal.util.DateTimeUtils;
 
-/***
- * Specific unit tests to check if {@link SunCalc} generates correct data for
- * Amsterdam city on 27 February 2019. In particular the following cases are
+/**
+ * Unit tests for {@code SeasonCalc}, verifying calculation of seasons for
+ * different locations and dates. In particular the following cases are
  * covered:
- * <ul>
- * <li>checks if generated data are the same (with some accuracy) as produced by
- * haevens-above.com</li>
- * <li>checks if the generated {@link Sun#getAllRanges()} are consistent with
- * each other</li>
- * </ul>
+ *
+ * season determination for locations in different hemispheres (e.g. Amsterdam vs Sydney)
+ * distinguishing between meteorological and astronomical seasons
+ * consistency of calculated season data across representative dates
  *
  * @author Witold Markowski - Initial contribution
- * @see <a href="https://github.com/openhab/openhab-addons/issues/5006">[astro]
- *      Sun Phase returns UNDEF</a>
- * @see <a href="https://www.heavens-above.com/sun.aspx">Heavens Above Sun</a>
  */
 public class SeasonCalcTest {
     private static final TimeZone AMSTERDAM_TZ = TimeZone.getTimeZone("Europe/Amsterdam");
@@ -86,7 +81,8 @@ public class SeasonCalcTest {
      *            the calendar.
      * @param zone
      *            the given time zone.
-     * @return
+     * @return a {@link Calendar} representing the specified date and time in the
+     *         given time zone, truncated to the nearest minute.
      */
     private static Calendar newCalendar(int year, int month, int dayOfMonth, int hourOfDay, int minute, TimeZone zone) {
         Calendar result = new GregorianCalendar(zone, Locale.ROOT);

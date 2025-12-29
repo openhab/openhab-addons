@@ -45,7 +45,7 @@ public class Season {
 
     private record LocalSeason(SeasonName name, Instant startsOn, Instant endsOn, int year) {
         boolean contains(Instant when) {
-            return startsOn.isBefore(when) && endsOn.isAfter(when);
+            return !startsOn.isAfter(when) && endsOn.isAfter(when);
         }
     }
 

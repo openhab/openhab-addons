@@ -168,4 +168,30 @@ public class DateTimeUtilsTest {
 
         return result;
     }
+
+    @Test
+    public void testJdToInstant() {
+        // Test with Unix Epoch (1970-01-01T00:00:00Z) corresponding to JD 2440587.5
+        Instant expectedEpoch = Instant.EPOCH;
+        Instant actualEpoch = DateTimeUtils.jdToInstant(2440587.5);
+        assertEquals(expectedEpoch, actualEpoch, "Julian Day 2440587.5 should match Unix Epoch");
+
+        // same with J2000.0 (2000-01-01T12:00:00Z) toward JD 2451545.0
+        Instant expectedJ2000 = Instant.parse("2000-01-01T12:00:00Z");
+        Instant actualJ2000 = DateTimeUtils.jdToInstant(2451545.0);
+        assertEquals(expectedJ2000, actualJ2000, "Julian Day 2451545.0 should match J2000.0");
+    }
+
+    @Test
+    public void testAtMidnightOfFirstMonthDay() {
+        Instant initialInstant = Instant.parse("2024-05-15T14:30:45.123Z");
+
+        // UTC
+        Instant expectedUtc = Instant.parse("2024-05-01T00:00:00Z");
+        assertEquals(expectedUtc, DateTimeUtils.atMidnightOfFirstMonthDay(initialInstant, TimeZone.getTimeZone("UTC")));
+
+        // Europe/Amsterdam (UTC+2 in May). Local midnight is 22:00 UTC on the previous day.
+        Instant expectedAmsterdam = Instant.parse("2024-04-30T22:00:00Z");
+        assertEquals(expectedAmsterdam, DateTimeUtils.atMidnightOfFirstMonthDay(initialInstant, TIME_ZONE));
+    }
 }
