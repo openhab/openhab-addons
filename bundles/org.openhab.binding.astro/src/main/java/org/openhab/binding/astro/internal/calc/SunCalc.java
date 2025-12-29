@@ -30,6 +30,7 @@ import org.openhab.binding.astro.internal.model.EclipseType;
 import org.openhab.binding.astro.internal.model.Position;
 import org.openhab.binding.astro.internal.model.Radiation;
 import org.openhab.binding.astro.internal.model.Range;
+import org.openhab.binding.astro.internal.model.Season;
 import org.openhab.binding.astro.internal.model.Sun;
 import org.openhab.binding.astro.internal.model.SunPhaseName;
 import org.openhab.binding.astro.internal.util.DateTimeUtils;
@@ -272,8 +273,11 @@ public class SunCalc {
 
         sun.setZodiac(ZodiacCalc.calculate(lsun, calendar.toInstant()));
 
-        SeasonCalc seasonCalc = new SeasonCalc();
-        sun.setSeason(seasonCalc.getSeason(calendar, latitude, useMeteorologicalSeason, zone, locale));
+        Season season = sun.getSeason();
+        var year = calendar.get(Calendar.YEAR);
+        if (season == null || season.getYear() != year) {
+            sun.setSeason(SeasonCalc.calculate(year, latitude, useMeteorologicalSeason, zone));
+        }
 
         // phase
         for (Entry<SunPhaseName, Range> rangeEntry : sortByValue(sun.getAllRanges()).entrySet()) {

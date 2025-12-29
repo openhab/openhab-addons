@@ -50,12 +50,12 @@
 				<description>The time to wait before a reconnect occurs after socket timeout. Value is in seconds</description>
 				<default>30</default>
 			</parameter>
-			<parameter name="maxZones" type="integer" unit="s">
+			<parameter name="maxZones" type="integer">
 				<label>Max Zones</label>
 				<description>Maximum number of configured zones to check (from zone 1 to maxZones)</description>
 				<default>0</default>
 			</parameter>
-			<parameter name="maxPartitions" type="integer" unit="s">
+			<parameter name="maxPartitions" type="integer">
 				<label>Max Partitions</label>
 				<description>Maximum number of configured partitions to check (from partition 1 to maxPartitions)</description>
 				<default>0</default>
