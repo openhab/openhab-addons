@@ -1,18 +1,18 @@
 # Oceanic Binding
 
-This binding integrates the Oceanic water softener and management system (<www.oceanic.be>, but also distributed by Syr in Germany (<www.syr.de>)).
-The binding supports the Limex IQ and Limex Pro water softeners and require the optional CAN-Serial gateway has to be installed
+This binding integrates the Oceanic water softener and management system (<www.oceanic.be>, also distributed by Syr in Germany at <www.syr.de>).
+The binding supports the Limex IQ and Limex Pro water softeners and requires the optional CAN-Serial gateway to be installed.
 
 ## Supported Things
 
-- **serial** - A water softener connected to the openHAB host by means of a serial port
-- **network** - A water softener that can be reached through a TCP proxy. See Known Issues below as when to use this kind of configuration
+- **serial** - A water softener connected to the openHAB host by means of a serial port.
+- **network** - A water softener that can be reached through a TCP proxy. See Known Issues below for when to use this configuration.
 
 ## Thing Configuration
 
-The **serial** Thing configuration requires the name of the serial port that is used to connect openHAB with the Oceanic unit, and the interval period in seconds to poll the Oceanic unit
+The **serial** Thing configuration requires the name of the serial port used to connect openHAB with the Oceanic unit, and the interval period in seconds to poll the Oceanic unit.
 
-The **network** Thing configuration requires the hostname or ip address of the proxy, the TCP port number to connect to, and the interval period in seconds to poll the Oceanic unit
+The **network** Thing configuration requires the hostname or IP address of the proxy, the TCP port number to connect to, and the interval period in seconds to poll the Oceanic unit.
 
 ## Channels
 
@@ -88,7 +88,7 @@ The Oceanic binding makes use of the nrjavaserial library, and unfortunately jav
 
 Although some work is being done to improve things (<https://github.com/eclipse/smarthome/issues/4465>), the best thing is to avoid serial ports as much as possible, as some issues (<https://github.com/NeuronRobotics/nrjavaserial/issues/96>) are not resolved.
 
-For example, On Ubuntu 17.10 nrjavaserial seems to return only HEX 00 characters through the InputStream of the SerialPort.
+For example, on Ubuntu 17.10 nrjavaserial seems to return only HEX 00 characters through the InputStream of the SerialPort.
 
 Within the Oceanic binding two routes are provided:
 
@@ -98,7 +98,7 @@ Within the Oceanic binding two routes are provided:
     /usr/bin/socat -v TCP-LISTEN:9000 /dev/ttyUSB0,raw,echo=0
     ```
 
-    In the above example, the name of the host running socat, and the TCP port number 9000, will be part of the **network** Thing configuration
+    In the above example, the name of the host running socat and the TCP port number 9000 will be part of the **network** Thing configuration.
 1. Connect to the Oceanic softener over a serial port on the openHAB host and use `socat` to pipe the data from that serial port to a pseudo tty, which has to be manipulated in a CommPortIdentifier.PORT_RAW manner.
 
     ```shell
@@ -120,7 +120,7 @@ Restart=always
 RestartSec=10
 ```
 
-However, in order to fix permissions at the OS level, one has to issue following commands in order to make /dev/ttyS1 accessible by the 'openhab' system user (that is used to start up the openHAB runtime), and to make the tty both readable and writable.
+However, to fix permissions at the OS level, issue the following commands to make /dev/ttyS1 accessible by the 'openhab' system user (used to start the openHAB runtime), and to make the tty both readable and writable.
 
 ```shell
 sudo useradd  -G dialout openhab

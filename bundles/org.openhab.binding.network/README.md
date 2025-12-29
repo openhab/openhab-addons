@@ -13,7 +13,7 @@ The binding has the following configuration options:
 - **allowDHCPlisten:**  If devices leave and reenter a network, they usually request their last IPv4 address by using DHCP requests. By listening for those messages, the status update can be more "real-time" without having to wait for the next refresh cycle. Default is true.
 - **arpPingToolPath:** If the ARP ping tool is not called `arping` and cannot be found in the PATH environment variable, the absolute path can be configured here. Default is `arping`.
 - **cacheDeviceStateTimeInMS:** The result of a device presence detection is cached for a small amount of time. Set this time here in milliseconds. Be aware that no new pings will be issued within this time frame, even if explicitly requested. Default is 2000.
-- **preferResponseTimeAsLatency:** If enabled, an attempt will be made to extract the latency from the output of the ping command. If no such latency value is found in the ping command output, the time to execute the ping command is used as fallback latency. If disabled, the time to execute the ping command is always used as latency value. This is disabled by default to be backwards-compatible and to not break statistics and monitoring which existed before this feature.
+- **preferResponseTimeAsLatency:** If enabled, an attempt will be made to extract the latency from the output of the ping command. If no such latency value is found in the ping command output, the time to execute the ping command is used as a fallback latency. If disabled, the time to execute the ping command is always used as the latency value. This is disabled by default to be backwards-compatible and to not break statistics and monitoring which existed before this feature.
 - **numberOfDiscoveryThreads:** Specifies the number of threads to be used during the discovery process. Increasing this value may speed up the discovery of devices on large networks but could also increase the load on the system. Default is `100`.
 
 Create a `<openHAB-conf>/services/network.cfg` file and use the above options like this:
@@ -35,7 +35,7 @@ binding.network:numberOfDiscoveryThreads=100
 ## Discovery
 
 Auto discovery can be used to scan the local network for **pingdevice** things by sending a ping to every IP on the network.
-Some network tools will identify this as a network intruder alarm, therefore automatic background discovery is disabled and a manual scan needs to be issued.
+Some network tools will identify this as a network intruder alarm; therefore, automatic background discovery is disabled and a manual scan needs to be issued.
 
 Please note: things discovered by the network binding will be provided with a time to live (TTL) and will automatically disappear from the Inbox after 10 minutes.
 
@@ -56,10 +56,10 @@ Use the following options for a **network:pingdevice**:
 - **timeout:** How long the ping will wait for an answer, in milliseconds. Default: `5000` (5 seconds).
 - **refreshInterval:** How often the device will be checked, in milliseconds. Default: `60000` (one minute).
 - **useIOSWakeUp:** When set to true, an additional port knock is performed before a ping. Default: `true`.
-- **useArpPing:** When set to true if the presence detection is allowed to use arp ping.
+- **useArpPing:** When set to true, the presence detection is allowed to use ARP ping.
   This can speed up presence detection, but may lead to inaccurate ping latency measurements.
   Switch off if you want to use this for ping latency monitoring. Default: `true`.
-- **useIcmpPing:** When set to true if the presence detection is allowed to use icmp ping.
+- **useIcmpPing:** When set to true, the presence detection is allowed to use ICMP ping.
   When also using arp ping, the latency measurements will not be comparable.
   Switch off if you rather want to use arp ping latency monitoring. Default: `true`.
 - **networkInterfaceNames:** The network interface names used for communicating with the device.
@@ -74,10 +74,9 @@ Use the following options for a **network:speedtest**:
 
 - **refreshInterval:** Interval between each test execution, in minutes. Default: `20`.
 - **uploadSize:** Size of the file to be uploaded in bytes. Default: `1000000`.
-- **url:** URL of the speed test server.
-- **fileName:** Name of the file to download from test server.
+- **url:** URL of the speed test server.- **fileName:** Name of the file to download from test server.
 - **initialDelay:** Delay (in minutes) before starting the first speed test (can help avoid flooding your server at startup). Default: `5`.
-- **maxTimeout:** Number of timeout events that can happend (reset when successful) before setting the thing offline. Default: `3`.
+- **maxTimeout:** Number of timeout events that can happen (reset when successful) before setting the Thing offline. Default: `3`.
 
 ## Presence detection - Configure target device
 
@@ -93,14 +92,13 @@ Windows 10 must be configured to allow "Echo Request for ICMPv4" so that it can 
 
 Because mobile devices put themselves in a deep sleep mode after some inactivity, they do not react to normal ICMP pings.
 Configure ARP ping to realize presence detection for those devices.
-This only works if the devices have Wi-Fi enabled, have been configured to use the Wi-Fi network, and have the option "Disable Wi-Fi in standby" disabled (default).
-Use DHCP listen for an almost immediate presence detection for phones and tablets when they (re)join the home Wi-Fi network.
+This only works if the devices have Wi-Fi enabled, have been configured to use the Wi-Fi network, and have the option "Disable Wi-Fi in standby" disabled (default).Use DHCP listen for an almost immediate presence detection for phones and tablets when they (re)join the home Wi-Fi network.
 
 ### iPhones, iPads
 
 Apple iOS devices are usually in a deep sleep mode and do not respond to ARP pings under all conditions, but to Bonjour service discovery messages (UDP port 5353).
-Therefore, first a Bonjour message is sent, before the ARP presence detection is performed.
-This is default behaviour of the binding, when needed this can be changed with the config parameter `useIOSWakeUp`.
+Therefore, first a Bonjour message is sent before the ARP presence detection is performed.
+This is default behaviour of the binding; when needed, this can be changed with the config parameter `useIOSWakeUp`.
 
 ### Use open TCP ports
 
@@ -126,7 +124,7 @@ Nmap done: 1 IP address (1 host up) scanned in 106.17 seconds
 
 In this example, there are four suitable ports to use.
 The port 554 (Windows network file sharing service) is open on most Windows PCs and Windows compatible Linux systems.
-Port 1025 (MS RPC) is open on XBox systems. Port 548 (Apple Filing Protocol (AFP)) is open on macOS systems.
+Port 1025 (MS RPC) is open on Xbox systems. Port 548 (Apple Filing Protocol (AFP)) is open on macOS systems.
 
 Please don't forget to open the required ports in the system's firewall setup.
 
@@ -170,13 +168,13 @@ iptables -A PREROUTING -t mangle -p udp ! -s 127.0.0.1 --dport 67 -j TEE --gatew
 iptables -A OUTPUT -t nat -p udp -s 127.0.0.1/32 --dport 67 -j DNAT --to 127.0.0.1:6767
 ```
 
-Above iptables solutions to check _dhcp_state_ are not working when openHAB is started in Docker. Use another workaround
+Above iptables solutions to check _dhcp_state_ are not working when openHAB is started in Docker. Use another workaround:
 
 ```shell
 iptables -I PREROUTING -t nat -p udp --src 0.0.0.0 --dport 67 -j DNAT --to 0.0.0.0:6767
 ```
 
-To verify PREROUTING list use below command
+To verify PREROUTING list, use the following command:
 
 ```shell
 iptables -L -n -t nat
@@ -186,11 +184,11 @@ iptables -L -n -t nat
 
 Things support the following channels:
 
-| Channel Type ID | Item Type   | Description                                                                               |
-|-----------------|-------------|-------------------------------------------------------------------------------------------|
-| online          | Switch      | This channel indicates whether a device is online                                         |
-| lastseen        | DateTime    | The last seen date/time of the device in question. May be 1. Jan 1970 if no time is known |
-| latency         | Number:Time | This channel indicates the ping latency. May be 0 if no time is known                     |
+| Channel Type ID | Item Type   | Description                                                                                   |
+|-----------------|-------------|-----------------------------------------------------------------------------------------------|
+| online          | Switch      | This channel indicates whether a device is online                                             |
+| lastseen        | DateTime    | The last seen date/time of the device in question. May be January 1, 1970 if no time is known |
+| latency         | Number:Time | This channel indicates the ping latency. May be 0 if no time is known                         |
 
 ## Examples
 
@@ -260,7 +258,7 @@ sitemap demo label="Main Menu"
 
 ## Rule Actions
 
-A Wake-on-LAN action is supported by this binding for the `pingdevice` and `servicedevice` thing types.
+A Wake-on-LAN action is supported by this binding for the `pingdevice` and `servicedevice` Thing types.
 In classic rules this action is accessible as shown in the example below:
 
 ```java
