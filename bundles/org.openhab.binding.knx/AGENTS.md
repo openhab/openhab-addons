@@ -58,7 +58,7 @@ Results available in `target/site/jacoco/index.html` after running tests (as per
 
 #### Debug Logging
 
-```properties
+```shell
 # KNX-specific debug logging, set to DEBUG or TRACE
 log:set DEBUG tuwien.auto.calimero
 log:set DEBUG org.openhab.binding.knx
