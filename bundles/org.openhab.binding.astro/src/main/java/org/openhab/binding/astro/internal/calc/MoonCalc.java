@@ -129,10 +129,14 @@ public class MoonCalc {
 
         MoonPhase phase = moon.getPhase();
 <<<<<<< Upstream, based on main
+<<<<<<< Upstream, based on main
         double julianDateMidnight = DateTimeUtils.midnightDateToJulianDate(calendar);
         phase.remarkablePhases().forEach(mp -> phase.setPhase(mp,
                 DateTimeUtils.toCalendar(getPhase(julianDateMidnight, mp, true), zone, locale)));
 =======
+=======
+        double julianDateMidnight = DateTimeUtils.midnightDateToJulianDate(calendar);
+>>>>>>> 8e3d1a7 Adds moon-day icon set. Rebased.
         phase.setNew(
                 DateTimeUtils.toCalendar(getNextPhase(calendar, julianDateMidnight, MoonPhaseName.NEW), zone, locale));
         phase.setFirstQuarter(DateTimeUtils
@@ -150,8 +154,22 @@ public class MoonCalc {
                     .map(eclipse -> eclipse.withPosition(getMoonPosition(eclipse.when(), latitude, longitude)))));
         }
 
+<<<<<<< Upstream, based on moon_distance
         Set.of(DistanceType.APOGEE, DistanceType.PERIGEE)
                 .forEach(type -> moon.setDistance(type, MoonDistanceCalc.get(type, julianDate)));
+=======
+        double decimalYear = DateTimeUtils.getDecimalYear(calendar);
+        double julianDate = DateTimeUtils.dateToJulianDate(calendar);
+        MoonDistance apogee = moon.getApogee();
+        double apogeeJd = getApogee(julianDate, decimalYear);
+        apogee.setDate(DateTimeUtils.toCalendar(apogeeJd, zone, locale));
+        apogee.setDistance(getDistance(apogeeJd));
+
+        MoonDistance perigee = moon.getPerigee();
+        double perigeeJd = getPerigee(julianDate, decimalYear);
+        perigee.setDate(DateTimeUtils.toCalendar(perigeeJd, zone, locale));
+        perigee.setDistance(getDistance(perigeeJd));
+>>>>>>> 62adad6 Adds moon-day icon set. Rebased.
 
         return moon;
     }

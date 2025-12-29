@@ -84,10 +84,21 @@ public class AstroIconProvider implements IconProvider {
 =======
     private static final String MOON_PHASE_SET = "moon_phase";
     private static final String MOON_ECLIPSE_SET = "moon_eclipse";
+<<<<<<< Upstream, based on main
     private static final Set<String> ICON_SET = Set.of(ZODIAC_SET, MOON_PHASE_SET, MOON_ECLIPSE_SET);
 >>>>>>> 11e99dd Initial commit for Moon phase revamp
+<<<<<<< Upstream, based on main
 >>>>>>> 0e1ea37 Initial commit for Moon phase revamp
+<<<<<<< Upstream, based on main
 >>>>>>> 810a1e9 Initial commit for Moon phase revamp
+=======
+=======
+=======
+    private static final String MOON_DAY_SET = "moon_day";
+    private static final Set<String> ICON_SET = Set.of(ZODIAC_SET, MOON_PHASE_SET, MOON_ECLIPSE_SET, MOON_DAY_SET);
+>>>>>>> 8573003 Adds moon-day icon set. Rebased.
+>>>>>>> cbf0ca8 Adds moon-day icon set. Rebased.
+>>>>>>> 8e3d1a7 Adds moon-day icon set. Rebased.
 
     private final Logger logger = LoggerFactory.getLogger(AstroIconProvider.class);
     private final TranslationProvider i18nProvider;
@@ -183,6 +194,7 @@ public class AstroIconProvider implements IconProvider {
 >>>>>>> 11e99dd Initial commit for Moon phase revamp
             try {
 <<<<<<< Upstream, based on main
+<<<<<<< Upstream, based on main
                 Enum<?> stateEnum = switch (category) {
                     case ZODIAC_SET -> ZodiacSign.valueOf(state);
                     case SEASON_SET -> SeasonName.valueOf(state);
@@ -196,9 +208,16 @@ public class AstroIconProvider implements IconProvider {
                     case ZODIAC_SET -> ZodiacSign.valueOf(state);
                     case MOON_PHASE_SET -> MoonPhaseName.valueOf(state);
                     case MOON_ECLIPSE_SET -> EclipseKind.valueOf(state);
+=======
+                String iconState = switch (category) {
+                    case ZODIAC_SET -> ZodiacSign.valueOf(state).name().toLowerCase(Locale.US);
+                    case MOON_PHASE_SET -> MoonPhaseName.valueOf(state).name().toLowerCase(Locale.US);
+                    case MOON_ECLIPSE_SET -> EclipseKind.valueOf(state).name().toLowerCase(Locale.US);
+                    case MOON_DAY_SET -> state;
+>>>>>>> 8573003 Adds moon-day icon set. Rebased.
                     default -> throw new IllegalArgumentException("Unexpected icon category: %s".formatted(category));
                 };
-                iconName = iconName.replace(".", "-%s.".formatted(iconState.name().toLowerCase(Locale.US)));
+                iconName = iconName.replace(".", "-%s.".formatted(iconState));
             } catch (IllegalArgumentException e) {
                 logger.info("Error getting dynamic icon: {}", e.getMessage());
 >>>>>>> 11e99dd Initial commit for Moon phase revamp

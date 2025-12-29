@@ -480,7 +480,11 @@
 	<channel-type id="age">
 		<item-type unitHint="d">Number:Time</item-type>
 		<label>Moon Age</label>
+<<<<<<< Upstream, based on main
 		<description>The age of the moon</description>
+=======
+		<description>The age of the moon in days</description>
+>>>>>>> 8e3d1a7 Adds moon-day icon set. Rebased.
 		<category>oh:astro:moon_day</category>
 		<tags>
 			<tag>Calculation</tag>
