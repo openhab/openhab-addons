@@ -226,6 +226,8 @@ public class ChannelFactoryTest {
         assertThat("10".matches(validationExpr), is(true));
         assertThat("20".matches(validationExpr), is(true));
         assertThat("0".matches(validationExpr), is(true));
+        assertThat("x".matches(validationExpr), is(false));
+        assertThat("1.2.3".matches(validationExpr), is(false));
     }
 
     @Test
