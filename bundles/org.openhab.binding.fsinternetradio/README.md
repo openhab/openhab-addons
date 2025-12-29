@@ -1,6 +1,6 @@
 # FS Internet Radio Binding
 
-This binding integrates internet radios based on the [Frontier Silicon chipset](https://www.frontier-silicon.com/).
+This binding integrates internet radios based on the [Frontier Silicon chipset](https://www.frontiersmart.com/).
 
 ## Supported Things
 
