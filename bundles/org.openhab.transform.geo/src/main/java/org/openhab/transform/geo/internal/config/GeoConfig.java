@@ -23,5 +23,5 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class GeoConfig {
     public String language = "";
-    public String resolveDuration = "1m";
+    public String resolveDuration = "5m";
 }

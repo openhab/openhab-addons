@@ -19,7 +19,6 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.Locale;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -40,7 +39,6 @@ import org.openhab.core.thing.profiles.ProfileTypeUID;
 import org.openhab.core.thing.profiles.StateProfile;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
-import org.openhab.core.types.UnDefType;
 import org.openhab.core.util.DurationUtils;
 import org.openhab.transform.geo.internal.config.GeoConfig;
 import org.slf4j.Logger;
@@ -59,7 +57,7 @@ public class GeoProfile implements StateProfile {
     private final HttpClient httpClient;
 
     private final ScheduledExecutorService scheduler;
-    private State lastState = UnDefType.UNDEF;
+    private ReverseGeocoding lastState;
     private Instant lastResolveTime = Instant.MIN;
     private Duration resolveDuration;
     private String language;
@@ -84,6 +82,7 @@ public class GeoProfile implements StateProfile {
             logger.warn("Could not parse duration '{}', using default of 1 minute.", configuration.resolveDuration);
         }
         logger.debug("GeoProfile created with language: {} and resolve duration: {}", language, resolveDuration);
+        lastState = new ReverseGeocoding(PointType.valueOf("0,0"), language, httpClient);
     }
 
     @Override
@@ -93,21 +92,37 @@ public class GeoProfile implements StateProfile {
 
     @Override
     public void onStateUpdateFromItem(State state) {
-        store(state);
+        processState(state);
     }
 
     @Override
     public void onStateUpdateFromHandler(State state) {
-        store(state);
+        processState(state);
     }
 
-    private void store(State state) {
-        if (state instanceof PointType) {
+    /**
+     * Processes the incoming state and schedules reverse geocoding according to configured duration
+     *
+     * @param location to be resolved
+     */
+    private void processState(State location) {
+        if (location instanceof PointType point) {
             synchronized (this) {
-                lastState = state;
+                lastState = new ReverseGeocoding(point, language, httpClient);
+                Instant now = Instant.now();
+                Instant nextResolveTime = lastResolveTime.plus(resolveDuration);
                 if (resolverJob == null) {
-                    resolverJob = scheduler.schedule(this::resolveState, resolveDuration.getSeconds(),
-                            TimeUnit.SECONDS);
+                    // no job running so let's check last resolve timestamp
+                    if (now.isAfter(nextResolveTime)) {
+                        // resolve duration passed, do immediate resolve
+                        logger.trace("Resolve now.");
+                        resolverJob = scheduler.schedule(this::resolveState, 0, TimeUnit.SECONDS);
+                    } else {
+                        // schedule resolving for the future
+                        long delaySeconds = Duration.between(now, nextResolveTime).toSeconds();
+                        logger.trace("Resolve in {} seconds.", delaySeconds);
+                        resolverJob = scheduler.schedule(this::resolveState, delaySeconds, TimeUnit.SECONDS);
+                    }
                 } else {
                     logger.trace("Resolve job already scheduled, skipping new scheduling.");
                 }
@@ -116,48 +131,21 @@ public class GeoProfile implements StateProfile {
     }
 
     /**
-     * Checks if the resolve duration has passed and triggers the resolve process
-     *
-     * @param state
+     * Callback function of the resolverJob to perform reverse geocoding on the last stored state
      */
     private void resolveState() {
-        State localLastState;
+        ReverseGeocoding localLastState;
         synchronized (this) {
             localLastState = lastState;
+            lastResolveTime = Instant.now();
             resolverJob = null;
         }
-        if (localLastState instanceof PointType point) {
-            doResolve(point);
-        }
-    }
-
-    /**
-     * Performs the reverse geo coding HTTP request
-     *
-     * @param point the PointType containing latitude and longitude
-     */
-    private String doResolve(PointType point) {
-        try {
-            ContentResponse response = httpClient
-                    .newRequest(String.format(Locale.US, REVERSE_URL, point.getLatitude().doubleValue(),
-                            point.getLongitude().doubleValue()))
-                    .header("Accept-Language", language).header("User-Agent", "openHAB Geo Transformation Service")
-                    .timeout(10, TimeUnit.SECONDS).send();
-            if (response.getStatus() == HttpStatus.OK_200) {
-                String jsonResponse = response.getContentAsString();
-                logger.info("Reverse geo coding response: {}", jsonResponse);
-                String address = ReverseGeocoding.decode(jsonResponse);
-                callback.sendUpdate(new StringType(address));
-                return address;
-            } else {
-                String errorMessage = "HTTP error: " + response.getStatus();
-                logger.debug(errorMessage);
-                return errorMessage;
-            }
-        } catch (InterruptedException | TimeoutException | ExecutionException e) {
-            String errorMessage = e.getMessage();
-            logger.debug(errorMessage);
-            return errorMessage != null ? errorMessage : "Unknown error during HTTP request";
+        // do reverse geocoding and double check for success before sending update
+        localLastState.doResolve();
+        if (localLastState.isResolved()) {
+            callback.sendUpdate(StringType.valueOf(localLastState.getAddress()));
+        } else {
+            logger.debug("Could not resolve address for location: {}", localLastState.toString());
         }
     }
 

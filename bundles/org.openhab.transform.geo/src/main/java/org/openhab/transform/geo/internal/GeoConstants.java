@@ -43,7 +43,7 @@ public class GeoConstants {
     public static final List<String> ROAD_KEYS = List.of("road");
     public static final List<String> HOUSE_NUMBER_KEYS = List.of("house_number", "house_name");
     public static final List<String> ZIP_CODE_KEYS = List.of("postcode");
-    public static final List<String> CITY_KEYS = List.of("city", "town", "village", "municipality");
+    public static final List<String> CITY_KEYS = List.of("municipality", "city", "town", "village");
     public static final List<String> DISTRICT_KEYS = List.of("city_district", "district", "borough", "suburb",
             "subdivision");
 }

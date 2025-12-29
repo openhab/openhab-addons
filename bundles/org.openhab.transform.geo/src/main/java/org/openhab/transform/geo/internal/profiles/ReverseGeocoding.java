@@ -15,10 +15,20 @@ package org.openhab.transform.geo.internal.profiles;
 import static org.openhab.transform.geo.internal.GeoConstants.*;
 
 import java.util.List;
+import java.util.Locale;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.http.HttpStatus;
 import org.json.JSONObject;
 import org.openhab.core.library.types.PointType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Reverse Geocoding of JSON String
@@ -27,15 +37,61 @@ import org.openhab.core.library.types.PointType;
  */
 @NonNullByDefault
 public class ReverseGeocoding {
+    private final Logger logger = LoggerFactory.getLogger(ReverseGeocoding.class);
+
+    private HttpClient httpClient;
+    private String language;
     private boolean resolved = false;
     private PointType location;
+    private @Nullable String address;
+
+    public ReverseGeocoding(PointType location, String language, HttpClient httpClient) {
+        this.location = location;
+        this.language = language;
+        this.httpClient = httpClient;
+    }
 
     public boolean isResolved() {
         return resolved;
     }
 
-    public ReverseGeocoding(PointType location) {
-        this.location = location;
+    public String getAddress() {
+        String localAddress = address;
+        if (localAddress != null) {
+            return localAddress;
+        }
+        return "unknown";
+    }
+
+    /**
+     * Performs the reverse geo coding HTTP request
+     *
+     * @param point the PointType containing latitude and longitude
+     */
+    public void doResolve() {
+        try {
+            ContentResponse response = httpClient
+                    .newRequest(String.format(Locale.US, REVERSE_URL, location.getLatitude().doubleValue(),
+                            location.getLongitude().doubleValue()))
+                    .header("Accept-Language", language).header("User-Agent", "openHAB Geo Transformation Service")
+                    .timeout(10, TimeUnit.SECONDS).send();
+            int statusResponse = response.getStatus();
+            String jsonResponse = response.getContentAsString();
+            if (statusResponse == HttpStatus.OK_200) {
+                address = ReverseGeocoding.decode(jsonResponse);
+                resolved = true;
+            } else {
+                logger.debug("Decoding of location {} failed with status {} and response: {}", location.toFullString(),
+                        statusResponse, jsonResponse);
+            }
+        } catch (InterruptedException | TimeoutException | ExecutionException e) {
+            logger.debug("Decoding of location {} failed with exception {}", location.toFullString(), e.getMessage());
+        }
+    }
+
+    @Override
+    public String toString() {
+        return location.toFullString();
     }
 
     public static String decode(String jsonResponse) {
