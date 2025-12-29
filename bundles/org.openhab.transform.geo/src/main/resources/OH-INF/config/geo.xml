@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="profile:transform:geo-coding">
+		<parameter name="language" type="text" required="false">
+			<label>Language</label>
+			<description>Preferred language of the result</description>
+		</parameter>
+		<parameter name="resolveDuration" type="text" required="false">
+			<label>Resolve Duration</label>
+			<description>Duration time between reverse geo coding</description>
+		</parameter>
+	</config-description>
+</config-description:config-descriptions>
