@@ -14,7 +14,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
+  build0:
     strategy:
       fail-fast: false
       matrix:
@@ -67,7 +67,307 @@ jobs:
 
       - name: Build
         id: build
-        run: './.github/scripts/maven-build'
+        run: './.github/scripts/maven-build clean verify -B -T 1.5C -U -P-chunk1,-chunk2,-chunk3'
+        env:
+          CHANGED_FILES: ${{ steps.files.outputs.all }}
+          MAVEN_OPTS: >-
+            -Xmx2g
+            -Dmaven.wagon.http.retryHandler.count=5
+            -Dmaven.wagon.httpconnectionManager.ttlSeconds=25
+            -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
+
+      - name: Upload Build Log
+        if: ${{ always() && ((steps.build.outcome == 'success') || (steps.build.outcome == 'failure')) }}
+        uses: actions/upload-artifact@v6
+        with:
+          name: build-log-java-${{ matrix.java }}-${{ matrix.os }}
+          path: build.log
+
+      - name: Upload SAT Summary Report
+        if: ${{ always() && ((steps.build.outcome == 'success') || (steps.build.outcome == 'failure')) }}
+        uses: actions/upload-artifact@v6
+        with:
+          name: sat-summary-report
+          path: target/summary_report.html
+
+      - name: Report SAT Errors as Annotations
+        if: ${{ matrix.java == '21' && always() && ((steps.build.outcome == 'success') || (steps.build.outcome == 'failure')) }}
+        uses: ghys/checkstyle-github-action@main
+        with:
+          title: CheckStyle Violations
+          path: '**/checkstyle-result.xml'
+          mode: inline
+
+      # this will identify modifications to files under source control during the workflow run;
+      # untracked files will be included as well!
+      - name: Verify Changed Files
+        id: verify-changed-files
+        run: |
+          set -o pipefail
+          changed_files=$(echo -n "$(git diff --name-only HEAD && git ls-files --others --exclude-standard)"|tr '\n' ' ')
+          echo "changed_files=$changed_files" >> $GITHUB_OUTPUT
+
+      - name: Fail on Changed Files
+        if: steps.verify-changed-files.outputs.changed_files != ''
+        env:
+          CHANGED_FILES: ${{ steps.verify-changed-files.outputs.changed_files }}
+        run: |
+          echo "::error::Files have changed: $CHANGED_FILES"
+          exit 1
+  build1:
+    strategy:
+      fail-fast: false
+      matrix:
+        java: [ '21' ]
+        os: [ 'ubuntu-24.04' ]
+    name: Build (Java ${{ matrix.java }}, ${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    # typical duration is ~70min, set twice the amount as limit (default is 6h)
+    timeout-minutes: 140
+    steps:
+      - name: Checkout
+        if: github.head_ref == ''
+        uses: actions/checkout@v6
+
+      - name: Checkout merge
+        if: github.head_ref != ''
+        uses: actions/checkout@v6
+        with:
+          ref: refs/pull/${{github.event.pull_request.number}}/merge
+
+      - name: Set up Cache
+        uses: actions/cache@v5
+        with:
+          path: |
+            ~/.m2/repository
+            !~/.m2/repository/org/openhab
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+
+      - name: Set up Java ${{ matrix.java }}
+        uses: actions/setup-java@v5
+        with:
+          distribution: 'temurin'
+          java-version: ${{ matrix.java }}
+
+      - name: Register Problem Matchers
+        if: ${{ matrix.java == '21' }}
+        id: problem_matchers
+        run: |
+          echo "::add-matcher::.github/openhab-compile-problems.json"
+
+      # pinning to SHA to mitigate possible supply chain attacks
+      - name: Get Changed Files
+        if: github.head_ref != ''
+        id: files
+        uses: Ana06/get-changed-files@25f79e676e7ea1868813e21465014798211fad8c # v2.3.0
+        with:
+          format: 'csv'
+
+      - name: Build
+        id: build
+        run: './.github/scripts/maven-build clean verify -B -T 1.5C -U -P-chunk0,-chunk2,-chunk3'
+        env:
+          CHANGED_FILES: ${{ steps.files.outputs.all }}
+          MAVEN_OPTS: >-
+            -Xmx2g
+            -Dmaven.wagon.http.retryHandler.count=5
+            -Dmaven.wagon.httpconnectionManager.ttlSeconds=25
+            -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
+
+      - name: Upload Build Log
+        if: ${{ always() && ((steps.build.outcome == 'success') || (steps.build.outcome == 'failure')) }}
+        uses: actions/upload-artifact@v6
+        with:
+          name: build-log-java-${{ matrix.java }}-${{ matrix.os }}
+          path: build.log
+
+      - name: Upload SAT Summary Report
+        if: ${{ always() && ((steps.build.outcome == 'success') || (steps.build.outcome == 'failure')) }}
+        uses: actions/upload-artifact@v6
+        with:
+          name: sat-summary-report
+          path: target/summary_report.html
+
+      - name: Report SAT Errors as Annotations
+        if: ${{ matrix.java == '21' && always() && ((steps.build.outcome == 'success') || (steps.build.outcome == 'failure')) }}
+        uses: ghys/checkstyle-github-action@main
+        with:
+          title: CheckStyle Violations
+          path: '**/checkstyle-result.xml'
+          mode: inline
+
+      # this will identify modifications to files under source control during the workflow run;
+      # untracked files will be included as well!
+      - name: Verify Changed Files
+        id: verify-changed-files
+        run: |
+          set -o pipefail
+          changed_files=$(echo -n "$(git diff --name-only HEAD && git ls-files --others --exclude-standard)"|tr '\n' ' ')
+          echo "changed_files=$changed_files" >> $GITHUB_OUTPUT
+
+      - name: Fail on Changed Files
+        if: steps.verify-changed-files.outputs.changed_files != ''
+        env:
+          CHANGED_FILES: ${{ steps.verify-changed-files.outputs.changed_files }}
+        run: |
+          echo "::error::Files have changed: $CHANGED_FILES"
+          exit 1
+  build2:
+    strategy:
+      fail-fast: false
+      matrix:
+        java: [ '21' ]
+        os: [ 'ubuntu-24.04' ]
+    name: Build (Java ${{ matrix.java }}, ${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    # typical duration is ~70min, set twice the amount as limit (default is 6h)
+    timeout-minutes: 140
+    steps:
+      - name: Checkout
+        if: github.head_ref == ''
+        uses: actions/checkout@v6
+
+      - name: Checkout merge
+        if: github.head_ref != ''
+        uses: actions/checkout@v6
+        with:
+          ref: refs/pull/${{github.event.pull_request.number}}/merge
+
+      - name: Set up Cache
+        uses: actions/cache@v5
+        with:
+          path: |
+            ~/.m2/repository
+            !~/.m2/repository/org/openhab
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+
+      - name: Set up Java ${{ matrix.java }}
+        uses: actions/setup-java@v5
+        with:
+          distribution: 'temurin'
+          java-version: ${{ matrix.java }}
+
+      - name: Register Problem Matchers
+        if: ${{ matrix.java == '21' }}
+        id: problem_matchers
+        run: |
+          echo "::add-matcher::.github/openhab-compile-problems.json"
+
+      # pinning to SHA to mitigate possible supply chain attacks
+      - name: Get Changed Files
+        if: github.head_ref != ''
+        id: files
+        uses: Ana06/get-changed-files@25f79e676e7ea1868813e21465014798211fad8c # v2.3.0
+        with:
+          format: 'csv'
+
+      - name: Build
+        id: build
+        run: './.github/scripts/maven-build clean verify -B -T 1.5C -U -P-chunk0,-chunk1,-chunk3'
+        env:
+          CHANGED_FILES: ${{ steps.files.outputs.all }}
+          MAVEN_OPTS: >-
+            -Xmx2g
+            -Dmaven.wagon.http.retryHandler.count=5
+            -Dmaven.wagon.httpconnectionManager.ttlSeconds=25
+            -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
+
+      - name: Upload Build Log
+        if: ${{ always() && ((steps.build.outcome == 'success') || (steps.build.outcome == 'failure')) }}
+        uses: actions/upload-artifact@v6
+        with:
+          name: build-log-java-${{ matrix.java }}-${{ matrix.os }}
+          path: build.log
+
+      - name: Upload SAT Summary Report
+        if: ${{ always() && ((steps.build.outcome == 'success') || (steps.build.outcome == 'failure')) }}
+        uses: actions/upload-artifact@v6
+        with:
+          name: sat-summary-report
+          path: target/summary_report.html
+
+      - name: Report SAT Errors as Annotations
+        if: ${{ matrix.java == '21' && always() && ((steps.build.outcome == 'success') || (steps.build.outcome == 'failure')) }}
+        uses: ghys/checkstyle-github-action@main
+        with:
+          title: CheckStyle Violations
+          path: '**/checkstyle-result.xml'
+          mode: inline
+
+      # this will identify modifications to files under source control during the workflow run;
+      # untracked files will be included as well!
+      - name: Verify Changed Files
+        id: verify-changed-files
+        run: |
+          set -o pipefail
+          changed_files=$(echo -n "$(git diff --name-only HEAD && git ls-files --others --exclude-standard)"|tr '\n' ' ')
+          echo "changed_files=$changed_files" >> $GITHUB_OUTPUT
+
+      - name: Fail on Changed Files
+        if: steps.verify-changed-files.outputs.changed_files != ''
+        env:
+          CHANGED_FILES: ${{ steps.verify-changed-files.outputs.changed_files }}
+        run: |
+          echo "::error::Files have changed: $CHANGED_FILES"
+          exit 1
+  build3:
+    strategy:
+      fail-fast: false
+      matrix:
+        java: [ '21' ]
+        os: [ 'ubuntu-24.04' ]
+    name: Build (Java ${{ matrix.java }}, ${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    # typical duration is ~70min, set twice the amount as limit (default is 6h)
+    timeout-minutes: 140
+    steps:
+      - name: Checkout
+        if: github.head_ref == ''
+        uses: actions/checkout@v6
+
+      - name: Checkout merge
+        if: github.head_ref != ''
+        uses: actions/checkout@v6
+        with:
+          ref: refs/pull/${{github.event.pull_request.number}}/merge
+
+      - name: Set up Cache
+        uses: actions/cache@v5
+        with:
+          path: |
+            ~/.m2/repository
+            !~/.m2/repository/org/openhab
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+
+      - name: Set up Java ${{ matrix.java }}
+        uses: actions/setup-java@v5
+        with:
+          distribution: 'temurin'
+          java-version: ${{ matrix.java }}
+
+      - name: Register Problem Matchers
+        if: ${{ matrix.java == '21' }}
+        id: problem_matchers
+        run: |
+          echo "::add-matcher::.github/openhab-compile-problems.json"
+
+      # pinning to SHA to mitigate possible supply chain attacks
+      - name: Get Changed Files
+        if: github.head_ref != ''
+        id: files
+        uses: Ana06/get-changed-files@25f79e676e7ea1868813e21465014798211fad8c # v2.3.0
+        with:
+          format: 'csv'
+
+      - name: Build
+        id: build
+        run: './.github/scripts/maven-build clean verify -B -T 1.5C -U -P-chunk0,-chunk1,-chunk2'
         env:
           CHANGED_FILES: ${{ steps.files.outputs.all }}
           MAVEN_OPTS: >-
