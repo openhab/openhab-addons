@@ -13,14 +13,19 @@
 package org.openhab.transform.geo.internal;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
+import static org.openhab.transform.geo.internal.GeoConstants.*;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.client.HttpClient;
+import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.openhab.core.library.types.PointType;
+import org.openhab.transform.geo.internal.config.GeoConfig;
 import org.openhab.transform.geo.internal.profiles.Geocoding;
 import org.openhab.transform.geo.internal.profiles.ReverseGeocoding;
 
@@ -33,14 +38,31 @@ import org.openhab.transform.geo.internal.profiles.ReverseGeocoding;
 class GeocodingTest {
 
     @Test
-    void testReverse() {
+    void testReverseAddressFormat() {
+        ReverseGeocoding toObserve = new ReverseGeocoding(mock(PointType.class), new GeoConfig(),
+                mock(HttpClient.class));
         String fileContent = readFile("src/test/resources/geo-reverse-result.json");
         String expectedResult = "Am Friedrichshain 22, 10407 Berlin Pankow";
-        assertEquals(expectedResult, ReverseGeocoding.decode(fileContent));
+        assertEquals(expectedResult, toObserve.decode(fileContent));
 
         fileContent = readFile("src/test/resources/geo-reverse-result-no-road.json");
         expectedResult = "10407 Berlin Pankow";
-        assertEquals(expectedResult, ReverseGeocoding.decode(fileContent));
+        assertEquals(expectedResult, toObserve.decode(fileContent));
+    }
+
+    @Test
+    void testReverseJsonFormat() {
+        GeoConfig configuration = new GeoConfig();
+        configuration.format = JSON_FORMAT;
+
+        ReverseGeocoding toObserve = new ReverseGeocoding(mock(PointType.class), configuration, mock(HttpClient.class));
+        String fileContent = readFile("src/test/resources/geo-reverse-result.json");
+        String expectedResult = (new JSONObject(fileContent)).getJSONObject(ADDRESS_FORMAT).toString();
+        assertEquals(expectedResult, toObserve.decode(fileContent));
+
+        fileContent = readFile("src/test/resources/geo-reverse-result-no-road.json");
+        expectedResult = (new JSONObject(fileContent)).getJSONObject(ADDRESS_FORMAT).toString();
+        assertEquals(expectedResult, toObserve.decode(fileContent));
     }
 
     @Test

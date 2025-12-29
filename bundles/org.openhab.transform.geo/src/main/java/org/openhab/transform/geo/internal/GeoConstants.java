@@ -39,6 +39,9 @@ public class GeoConstants {
     public static final String LATITUDE_KEY = "lat";
     public static final String LONGITUDE_KEY = "lon";
 
+    public static final String ADDRESS_FORMAT = "address";
+    public static final String JSON_FORMAT = "json";
+
     // see https://nominatim.org/release-docs/latest/api/Output/#addressdetails
     public static final List<String> ROAD_KEYS = List.of("road");
     public static final List<String> HOUSE_NUMBER_KEYS = List.of("house_number", "house_name");

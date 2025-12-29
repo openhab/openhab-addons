@@ -27,6 +27,7 @@ import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.http.HttpStatus;
 import org.json.JSONObject;
 import org.openhab.core.library.types.PointType;
+import org.openhab.transform.geo.internal.config.GeoConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,14 +41,14 @@ public class ReverseGeocoding {
     private final Logger logger = LoggerFactory.getLogger(ReverseGeocoding.class);
 
     private HttpClient httpClient;
-    private String language;
+    private GeoConfig config;
     private boolean resolved = false;
     private PointType location;
     private @Nullable String address;
 
-    public ReverseGeocoding(PointType location, String language, HttpClient httpClient) {
+    public ReverseGeocoding(PointType location, GeoConfig config, HttpClient httpClient) {
         this.location = location;
-        this.language = language;
+        this.config = config;
         this.httpClient = httpClient;
     }
 
@@ -73,12 +74,12 @@ public class ReverseGeocoding {
             ContentResponse response = httpClient
                     .newRequest(String.format(Locale.US, REVERSE_URL, location.getLatitude().doubleValue(),
                             location.getLongitude().doubleValue()))
-                    .header("Accept-Language", language).header("User-Agent", "openHAB Geo Transformation Service")
-                    .timeout(10, TimeUnit.SECONDS).send();
+                    .header("Accept-Language", config.language)
+                    .header("User-Agent", "openHAB Geo Transformation Service").timeout(10, TimeUnit.SECONDS).send();
             int statusResponse = response.getStatus();
             String jsonResponse = response.getContentAsString();
             if (statusResponse == HttpStatus.OK_200) {
-                address = ReverseGeocoding.decode(jsonResponse);
+                address = decode(jsonResponse);
                 resolved = true;
             } else {
                 logger.debug("Decoding of location {} failed with status {} and response: {}", location.toFullString(),
@@ -94,10 +95,28 @@ public class ReverseGeocoding {
         return location.toFullString();
     }
 
-    public static String decode(String jsonResponse) {
+    public String decode(String jsonResponse) {
         JSONObject jsonObject = new JSONObject(jsonResponse);
-        if (jsonObject.has("address")) {
-            JSONObject address = jsonObject.getJSONObject("address");
+        switch (config.format) {
+            case ADDRESS_FORMAT:
+                return decodeAddress(jsonObject);
+            case JSON_FORMAT:
+                return decodeJson(jsonObject);
+            default:
+                return decodeJson(jsonObject);
+        }
+    }
+
+    /**
+     * Decode address from JSON object with pattern street, housenumber, zipcode, city and district.
+     * Some fields may be missing depending on the location.
+     *
+     * @param jsonObject to be decoded
+     * @return human readable address string
+     */
+    private String decodeAddress(JSONObject jsonObject) {
+        if (jsonObject.has(ADDRESS_FORMAT)) {
+            JSONObject address = jsonObject.getJSONObject(ADDRESS_FORMAT);
             String street = (get(address, ROAD_KEYS) + " " + get(address, HOUSE_NUMBER_KEYS)).strip();
             String city = (get(address, ZIP_CODE_KEYS) + " " + get(address, CITY_KEYS) + " "
                     + get(address, DISTRICT_KEYS)).strip();
@@ -109,12 +128,25 @@ public class ReverseGeocoding {
         return "";
     }
 
-    private static String get(JSONObject jsonObject, List<String> keys) {
+    private String get(JSONObject jsonObject, List<String> keys) {
         for (String key : keys) {
             if (jsonObject.has(key)) {
                 return jsonObject.getString(key);
             }
         }
         return "";
+    }
+
+    /**
+     * Decode JSON object. If address is available return only the address part. Else return full JSON string.
+     *
+     * @param jsonObject to be decoded
+     * @return JSON formatted string
+     */
+    private String decodeJson(JSONObject jsonObject) {
+        if (jsonObject.has(ADDRESS_FORMAT)) {
+            return jsonObject.getJSONObject(ADDRESS_FORMAT).toString();
+        }
+        return jsonObject.toString();
     }
 }

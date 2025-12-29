@@ -12,6 +12,8 @@
  */
 package org.openhab.transform.geo.internal.config;
 
+import static org.openhab.transform.geo.internal.GeoConstants.ADDRESS_FORMAT;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
@@ -22,6 +24,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class GeoConfig {
+    public String format = ADDRESS_FORMAT;
     public String language = "";
     public String resolveDuration = "5m";
 }

@@ -82,7 +82,7 @@ public class GeoProfile implements StateProfile {
             logger.warn("Could not parse duration '{}', using default of 1 minute.", configuration.resolveDuration);
         }
         logger.debug("GeoProfile created with language: {} and resolve duration: {}", language, resolveDuration);
-        lastState = new ReverseGeocoding(PointType.valueOf("0,0"), language, httpClient);
+        lastState = new ReverseGeocoding(PointType.valueOf("0,0"), configuration, httpClient);
     }
 
     @Override
@@ -108,7 +108,7 @@ public class GeoProfile implements StateProfile {
     private void processState(State location) {
         if (location instanceof PointType point) {
             synchronized (this) {
-                lastState = new ReverseGeocoding(point, language, httpClient);
+                lastState = new ReverseGeocoding(point, configuration, httpClient);
                 Instant now = Instant.now();
                 Instant nextResolveTime = lastResolveTime.plus(resolveDuration);
                 if (resolverJob == null) {
