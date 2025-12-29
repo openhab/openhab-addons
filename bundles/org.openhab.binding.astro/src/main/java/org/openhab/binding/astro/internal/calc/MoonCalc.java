@@ -641,7 +641,7 @@ public class MoonCalc {
 
     private double sinAlt(double moonJd, int hour, double lambda, double cphi, double sphi) {
         double jdo = moonJd + hour / 24.0;
-        double t = (jdo - DateTimeUtils.MJD_JD2000) / DateTimeUtils.JULIAN_CENTURY_DAYS;
+        double t = DateTimeUtils.toJulianCenturies(jdo);
         double[] decra = calcMoon(t);
         double tau = 15.0 * (localMeanSiderealTime(jdo, lambda) - decra[1]);
         return sphi * sinDeg(decra[0]) + cphi * cosDeg(decra[0]) * cosDeg(tau);
@@ -650,7 +650,7 @@ public class MoonCalc {
     private double localMeanSiderealTime(double moonJd, double lambda) {
         double moonJdo = Math.floor(moonJd);
         double ut = (moonJd - moonJdo) * 24.0;
-        double t = (moonJdo - DateTimeUtils.MJD_JD2000) / DateTimeUtils.JULIAN_CENTURY_DAYS;
+        double t = DateTimeUtils.toJulianCenturies(moonJdo);
         double gmst = 6.697374558 + 1.0027379093 * ut + (8640184.812866 + (.093104 - .0000062 * t) * t) * t / 3600.0;
         return 24.0 * frac((gmst - lambda / 15.0) / 24.0);
     }
