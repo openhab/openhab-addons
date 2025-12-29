@@ -26,6 +26,7 @@ import org.openhab.binding.astro.internal.handler.AstroThingHandler;
 import org.openhab.binding.astro.internal.model.Eclipse;
 import org.openhab.binding.astro.internal.model.Planet;
 import org.openhab.binding.astro.internal.model.Range;
+import org.openhab.binding.astro.internal.model.Season;
 import org.openhab.binding.astro.internal.model.Sun;
 
 /**
@@ -127,7 +128,10 @@ public final class DailyJobSun extends AbstractJob {
             if (sun.getZodiac().getEnd() instanceof Instant when) {
                 schedulePublishPlanet(handler, when);
             }
-            schedulePublishPlanet(handler, sun.getSeason().getNextSeason());
+
+            if (sun.getSeason() instanceof Season season) {
+                schedulePublishPlanet(handler, season.getNextSeason());
+            }
 
             // schedule phase jobs
             Calendar cal = sun.getRise().getStart();

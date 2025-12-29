@@ -14,16 +14,19 @@ package org.openhab.binding.astro.internal.model;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.time.temporal.ChronoField;
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Objects;
+import java.util.TimeZone;
 
 import javax.measure.quantity.Time;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.astro.internal.util.MathUtils;
+import org.openhab.binding.astro.internal.util.DateTimeUtils;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
 
@@ -34,82 +37,99 @@ import org.openhab.core.library.unit.Units;
  */
 @NonNullByDefault
 public class Season {
-    private final Map<Hemisphere, List<Integer>> seasonOrder = Map.of(Hemisphere.NORTHERN, List.of(0, 1, 2, 3),
-            Hemisphere.SOUTHERN, List.of(2, 3, 0, 1));
-    private final Hemisphere hemisphere;
-    private final List<Instant> equiSols;
+    private static final Map<Hemisphere, List<SeasonName>> SEASON_ORDER = Map.of(Hemisphere.NORTHERN,
+            List.of(SeasonName.WINTER, SeasonName.SPRING, SeasonName.SUMMER, SeasonName.AUTUMN, SeasonName.WINTER,
+                    SeasonName.SPRING),
+            Hemisphere.SOUTHERN, List.of(SeasonName.SUMMER, SeasonName.AUTUMN, SeasonName.WINTER, SeasonName.SPRING,
+                    SeasonName.SUMMER, SeasonName.AUTUMN));
 
-    public Season(double latitude, Instant... equiSols) {
+    private record LocalSeason(SeasonName name, Instant startsOn, Instant endsOn, int year) {
+        boolean contains(Instant when) {
+            return startsOn.isBefore(when) && endsOn.isAfter(when);
+        }
+    }
+
+    private final List<LocalSeason> seasons = new ArrayList<>(5);
+    private final int year;
+
+    public Season(double latitude, boolean useMeteorologicalSeason, TimeZone zone, Instant... equiSols) {
         // Expect to receive last of previous year, all from current year, first of next year
         if (equiSols.length != SeasonName.values().length + 2) {
             throw new IllegalArgumentException("Incorrect number of seasons provided");
         }
-        this.hemisphere = Hemisphere.getHemisphere(latitude);
-        this.equiSols = Arrays.stream(equiSols).sorted().toList();
+        var hemisphere = Hemisphere.getHemisphere(latitude);
+        List<Instant> moments = Arrays.stream(equiSols).sorted()
+                .map(i -> useMeteorologicalSeason ? DateTimeUtils.atMidnightOfFirstMonthDay(i, zone) : i).toList();
+        for (int i = 0; i < moments.size() - 1; i++) {
+            var current = moments.get(i);
+            var next = moments.get(i + 1);
+            var seasonName = Objects.requireNonNull(SEASON_ORDER.get(hemisphere)).get(i);
+            ZonedDateTime zonedDateTime = current.atZone(zone.toZoneId());
+            seasons.add(new LocalSeason(seasonName, current, next, zonedDateTime.getYear()));
+        }
+        year = seasons.stream().mapToInt(LocalSeason::year).max().orElseThrow(NoSuchElementException::new);
     }
 
     public int getYear() {
-        return equiSols.get(1).get(ChronoField.YEAR);
+        return year;
+    }
+
+    private Instant getSeasonStart(SeasonName season) {
+        return seasons.stream().filter(s -> s.name.equals(season) && s.year == year).map(s -> s.startsOn).findFirst()
+                .orElseThrow(NoSuchElementException::new);
     }
 
     /**
      * Returns the date of the beginning of spring.
      */
     public Instant getSpring() {
-        return equiSols.get(Objects.requireNonNull(seasonOrder.get(hemisphere)).get(0) + 1);
+        return getSeasonStart(SeasonName.SPRING);
     }
 
     /**
      * Returns the date of the beginning of summer.
      */
     public Instant getSummer() {
-        return equiSols.get(Objects.requireNonNull(seasonOrder.get(hemisphere)).get(1) + 1);
+        return getSeasonStart(SeasonName.SUMMER);
     }
 
     /**
      * Returns the date of the beginning of autumn.
      */
     public Instant getAutumn() {
-        return equiSols.get(Objects.requireNonNull(seasonOrder.get(hemisphere)).get(2) + 1);
+        return getSeasonStart(SeasonName.AUTUMN);
     }
 
     /**
      * Returns the date of the beginning of winter.
      */
     public Instant getWinter() {
-        return equiSols.get(Objects.requireNonNull(seasonOrder.get(hemisphere)).get(3) + 1);
+        return getSeasonStart(SeasonName.WINTER);
+    }
+
+    private LocalSeason getSeason(Instant when) {
+        return seasons.stream().filter(s -> s.contains(when)).findFirst().orElseThrow(NoSuchElementException::new);
     }
 
     /**
      * Returns the current season name.
      */
     public SeasonName getName() {
-        var now = Instant.now();
-        for (int i = 0; i < equiSols.size() - 1; i++) {
-            if (equiSols.get(i).isBefore(now) && equiSols.get(i + 1).isAfter(now)) {
-                SeasonName seasonName = SeasonName.values()[(int) MathUtils.mod(i + 3, 4)];
-                return seasonName;
-            }
-        }
-        throw new IllegalArgumentException("This case should not arrive");
+        return getSeason(Instant.now()).name;
     }
 
     /**
      * Returns the next season.
      */
     public Instant getNextSeason() {
-        return getNext(Instant.now());
+        return getSeason(Instant.now()).endsOn;
     }
 
     /**
      * Returns the next season name.
      */
     public SeasonName getNextName() {
-        int ordinal = getName().ordinal() + 1;
-        if (ordinal > 3) {
-            ordinal = 0;
-        }
-        return SeasonName.values()[ordinal];
+        return getSeason(Instant.now()).name.next();
     }
 
     /**
@@ -117,17 +137,12 @@ public class Season {
      */
     public QuantityType<Time> getTimeLeft() {
         var now = Instant.now();
-        var timeLeft = Duration.between(now, getNext(now));
+        var timeLeft = Duration.between(now, getSeason(now).endsOn);
 
         return new QuantityType<>(timeLeft.toDays(), Units.DAY);
     }
 
-    public Instant getNext(Instant now) {
-        for (Instant equiSol : equiSols) {
-            if (equiSol.isAfter(now)) {
-                return equiSol;
-            }
-        }
-        throw new IllegalArgumentException("This case should not arrive");
+    public Instant getNext(Instant when) {
+        return getSeason(when).endsOn;
     }
 }

@@ -111,9 +111,13 @@ public class SeasonCalcTest {
         Sun equiSun = sunCalc.getSunInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE, AMSTERDAM_ALTITUDE,
                 false, AMSTERDAM_TZ, Locale.ROOT);
 
-        ZonedDateTime cal = meteoSun.getSeason().getSpring().atZone(AMSTERDAM_TZ.toZoneId());
+        var season = meteoSun.getSeason();
+        assertNotNull(season);
+        ZonedDateTime cal = season.getSpring().atZone(AMSTERDAM_TZ.toZoneId());
         assertNotNull(cal);
-        ZonedDateTime cal2 = equiSun.getSeason().getSpring().atZone(AMSTERDAM_TZ.toZoneId());
+        var season2 = equiSun.getSeason();
+        assertNotNull(season2);
+        ZonedDateTime cal2 = season2.getSpring().atZone(AMSTERDAM_TZ.toZoneId());
         assertNotNull(cal2);
         assertEquals(cal.getMonth(), cal2.getMonth());
         assertEquals(cal.getYear(), cal2.getYear());
@@ -134,12 +138,12 @@ public class SeasonCalcTest {
 
     @Test
     public void testGetSeasonSydney() {
-        final Season season = SeasonCalc.calculate(2020, SYDNEY_LATITUDE, true, AMSTERDAM_TZ);
+        final Season season = SeasonCalc.calculate(2020, SYDNEY_LATITUDE, true, SYDNEY_TZ);
 
         assertNextSeason(season.getAutumn(), 2020, JAN_20_2020, season, SYDNEY_TZ);
         assertNextSeason(season.getWinter(), 2020, MAY_20_2020, season, SYDNEY_TZ);
         assertNextSeason(season.getSummer(), 2020, SEPT_20_2020, season, SYDNEY_TZ);
-        assertNextSeason(SeasonCalc.calculate(2021, SYDNEY_LATITUDE, true, AMSTERDAM_TZ).getAutumn(), 2021, DEC_10_2020,
+        assertNextSeason(SeasonCalc.calculate(2021, SYDNEY_LATITUDE, true, SYDNEY_TZ).getAutumn(), 2021, DEC_10_2020,
                 season, SYDNEY_TZ);
     }
 }

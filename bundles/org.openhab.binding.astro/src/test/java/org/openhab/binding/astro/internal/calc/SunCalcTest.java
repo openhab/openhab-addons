@@ -14,7 +14,6 @@ package org.openhab.binding.astro.internal.calc;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.lang.reflect.Method;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.Locale;
@@ -53,14 +52,6 @@ public class SunCalcTest {
     private static final double AMSTERDAM_LONGITUDE = 4.8978293;
     private static final double AMSTERDAM_ALTITUDE = 0.0;
     private static final int ACCURACY_IN_MILLIS = 3 * 60 * 1000;
-    private static final TimeZone BARROW_TIME_ZONE = TimeZone.getTimeZone("America/Anchorage");
-    private static final double BARROW_LATITUDE = 71.2906;
-    private static final double BARROW_LONGITUDE = -156.7886;
-    private static final double BARROW_ALTITUDE = 0.0;
-    private static final Calendar SUMMER_SOLSTICE_AMSTERDAM = SunCalcTest.newCalendar(2024, Calendar.JUNE, 21, 12, 0,
-            AMSTERDAM_TIME_ZONE);
-    private static final Calendar SUMMER_SOLSTICE_BARROW = SunCalcTest.newCalendar(2024, Calendar.JUNE, 21, 12, 0,
-            BARROW_TIME_ZONE);
 
     private SunCalc sunCalc;
 
@@ -458,43 +449,4 @@ public class SunCalcTest {
 
         return DateTimeUtils.truncateToMinute(result);
     }
-<<<<<<< Upstream, based on main
-
-    @Test
-    public void testAstroAndMeteoSeasons() {
-        Sun meteoSun = sunCalc.getSunInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE, AMSTERDAM_ALTITUDE,
-                true, AMSTERDAM_TIME_ZONE, Locale.ROOT);
-        Sun equiSun = sunCalc.getSunInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE, AMSTERDAM_ALTITUDE,
-                false, AMSTERDAM_TIME_ZONE, Locale.ROOT);
-
-        Calendar cal = meteoSun.getSeason().getSpring();
-        assertNotNull(cal);
-        Calendar cal2 = equiSun.getSeason().getSpring();
-        assertNotNull(cal2);
-        assertEquals(cal.get(Calendar.MONTH), cal2.get(Calendar.MONTH));
-        assertEquals(cal.get(Calendar.YEAR), cal2.get(Calendar.YEAR));
-        assertEquals(1, cal.get(Calendar.DAY_OF_MONTH));
-        assertFalse(cal.get(Calendar.DAY_OF_MONTH) == cal2.get(Calendar.DAY_OF_MONTH));
-    }
-
-    @Test
-    public void testIsSunUpAllDayForBarrowAlaska() throws Exception {
-        Method isSunUpAllDay = SunCalc.class.getDeclaredMethod("isSunUpAllDay", Calendar.class, double.class,
-                double.class, Double.class);
-        isSunUpAllDay.setAccessible(true);
-
-        // At summer solstice in Barrow, Alaska, sun stays up all day
-        boolean result = (boolean) isSunUpAllDay.invoke(sunCalc, SUMMER_SOLSTICE_BARROW, BARROW_LATITUDE,
-                BARROW_LONGITUDE, BARROW_ALTITUDE);
-
-        assertTrue(result);
-
-        // It's not the case in Amsterdam
-        result = (boolean) isSunUpAllDay.invoke(sunCalc, SUMMER_SOLSTICE_AMSTERDAM, AMSTERDAM_LATITUDE,
-                AMSTERDAM_LONGITUDE, AMSTERDAM_ALTITUDE);
-
-        assertFalse(result);
-    }
-=======
->>>>>>> c98bef7 Refresh SeasonCalc and add icon package
 }

@@ -41,26 +41,21 @@ public class SeasonCalc {
      * Returns the seasons of the year of the specified calendar.
      */
     public static Season calculate(int year, double latitude, boolean useMeteorologicalSeason, TimeZone zone) {
-        return new Season(latitude, calcEquiSol(3, year - 1, useMeteorologicalSeason, zone),
-                calcEquiSol(0, year, useMeteorologicalSeason, zone),
-                calcEquiSol(1, year, useMeteorologicalSeason, zone),
-                calcEquiSol(2, year, useMeteorologicalSeason, zone),
-                calcEquiSol(3, year, useMeteorologicalSeason, zone),
-                calcEquiSol(0, year + 1, useMeteorologicalSeason, zone));
+        return new Season(latitude, useMeteorologicalSeason, zone, calcEquiSol(3, year - 1), calcEquiSol(0, year),
+                calcEquiSol(1, year), calcEquiSol(2, year), calcEquiSol(3, year), calcEquiSol(0, year + 1));
     }
 
     /**
      * Calculates the date of the season.
      */
-    private static Instant calcEquiSol(int season, int year, boolean useMeteorologicalSeason, TimeZone zone) {
+    private static Instant calcEquiSol(int season, int year) {
         double estimate = calcInitial(season, year);
         double t = DateTimeUtils.toJulianCenturies(estimate);
         double w = 35999.373 * t - 2.47;
         double dl = 1 + 0.0334 * MathUtils.cosDeg(w) + 0.0007 * MathUtils.cosDeg(2 * w);
         double s = periodic24(t);
         double julianDate = estimate + ((0.00001 * s) / dl);
-        Instant result = DateTimeUtils.jdToInstant(julianDate);
-        return useMeteorologicalSeason ? DateTimeUtils.atMidnightOfFirstMonthDay(result, zone) : result;
+        return DateTimeUtils.jdToInstant(julianDate);
     }
 
     /**
