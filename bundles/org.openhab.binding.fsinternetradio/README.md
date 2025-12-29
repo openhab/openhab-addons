@@ -6,23 +6,23 @@ This binding integrates internet radios based on the [Frontier Silicon chipset](
 
 Successfully tested are internet radios:
 
-- [Hama IR100, IR110](https://de.hama.com/00054823/hama-internetradio-ir110)
-- [Hama DIR3100](https://www.conrad.com/p/hama-dir3100-internet-desk-radio-dab-fm-aux-internet-radio-usb-spotify-black-1233624)
-- [Medion MD87180, MD86988, MD86955, MD87528](http://internetradio.medion.com/)
-- [Silvercrest SMRS18A1, SMRS30A1, SMRS35A1, SIRD 14 C2, SIRD 14 D1](https://www.silvercrest-multiroom.de/en/products/stereo-internet-radio/)
-- [Roberts Stream 83i and 93i](https://www.robertsradio.com/uk/products/radio/smart-radio/)
-- [Auna Connect 150, Auna KR200, Auna Connect CD](https://www.auna.de/Radios/Internetradios/)
-- [TechniSat DIGITRADIO 350 IR and 850](https://www.technisat.com/en_XX/DAB+-Radios-with-Internetradio/352-10996/)
-- [TechniSat VIOLA 2 C IR](https://www.technisat.com/de_DE/VIOLA-2-C-IR/352-10996-22713/?article=0010/3933)
-- [TTMicro AS Pinell Supersound](https://www.ttmicro.no/radio)
-- [Revo SuperConnect](https://revo.co.uk/products/)
-- [Sangean WFR-28C](https://sg.sangean.com.tw/products/product_category.asp?cid=2)
-- [Roku SoundBridge M1001](https://soundbridge.roku.com/soundbridge/index.php)
-- [Dual IR 3a](https://www.dual.de/produkte/digitalradio/radio-station-ir-3a/)
-- [Teufel 3sixty](https://www.teufel.de/stereo/radio-3sixty-p16568.html)
-- [Ruark R5](https://www.ruarkaudio.com/products/r5-high-fidelity-music-system)
+- Hama IR100, IR110
+- Hama DIR3100
+- Medion MD87180, MD86988, MD86955, MD87528
+- Silvercrest SMRS18A1, SMRS30A1, SMRS35A1, SIRD 14 C2, SIRD 14 D1
+- Roberts Stream 83i and 93i
+- Auna Connect 150, Auna KR200, Auna Connect CD
+- TechniSat DIGITRADIO 350 IR and 850
+- TechniSat VIOLA 2 C IR
+- TTMicro AS Pinell Supersound
+- Revo SuperConnect
+- Sangean WFR-28C
+- Roku SoundBridge M1001
+- Dual IR 3a
+- Teufel 3sixty
+- Ruark R5
 
-But in principle, all internet radios based on the [Frontier Silicon chipset](https://www.frontier-silicon.com/) should be supported because they share the same API.
+But in principle, all internet radios based on the [Frontier Silicon chipset](https://www.frontiersmart.com/) should be supported because they share the same API.
 So it is very likely that other internet radio models of the same manufacturers do also work.
 
 ## Community
