@@ -210,7 +210,7 @@ public class ChannelFactoryTest {
         String testChannelWithDecimalScale = """
                 {"category":"Hot water","parameterId":"61503","parameterName":"Extra hot water","parameterUnit":"h","writable":true,"timestamp":"2025-11-24T08:15:21+00:00","value":0,"strVal":"0h","smartHomeCategories":[],"minValue":0,"maxValue":20,"stepValue":1,"enumValues":[],"scaleValue":"0.5","zoneId":null}
                 """;
-        JsonObject json = gson.fromJson(testChannelWithDecimalScale, JsonObject.class);
+        JsonObject json = Objects.requireNonNull(gson.fromJson(testChannelWithDecimalScale, JsonObject.class));
         var channel = channelFactory.createChannel(TEST_THING_UID, json);
 
         assertNotNull(channel);
@@ -235,7 +235,7 @@ public class ChannelFactoryTest {
         String testChannelWithIntegerScale = """
                 {"category":"Test","parameterId":"12345","parameterName":"Test Parameter","parameterUnit":"","writable":true,"timestamp":"2025-11-24T08:15:21+00:00","value":0,"strVal":"0","smartHomeCategories":[],"minValue":0,"maxValue":100,"stepValue":1,"enumValues":[],"scaleValue":"1","zoneId":null}
                 """;
-        JsonObject json = gson.fromJson(testChannelWithIntegerScale, JsonObject.class);
+        JsonObject json = Objects.requireNonNull(gson.fromJson(testChannelWithIntegerScale, JsonObject.class));
         var channel = channelFactory.createChannel(TEST_THING_UID, json);
 
         assertNotNull(channel);
