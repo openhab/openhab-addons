@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.transform.geocoding.internal.profiles;
+package org.openhab.transform.geocoding.internal.osm;
 
 import static org.openhab.transform.geocoding.internal.GeoConstants.*;
 
@@ -27,7 +27,7 @@ import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.http.HttpStatus;
 import org.json.JSONObject;
 import org.openhab.core.library.types.PointType;
-import org.openhab.transform.geocoding.internal.config.GeoConfig;
+import org.openhab.transform.geocoding.internal.config.OSMGeoConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,16 +37,16 @@ import org.slf4j.LoggerFactory;
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
-public class ReverseGeocoding {
-    private final Logger logger = LoggerFactory.getLogger(ReverseGeocoding.class);
+public class OSMReverseGeocoding {
+    private final Logger logger = LoggerFactory.getLogger(OSMReverseGeocoding.class);
 
     private HttpClient httpClient;
-    private GeoConfig config;
+    private OSMGeoConfig config;
     private boolean resolved = false;
     private PointType location;
     private @Nullable String address;
 
-    public ReverseGeocoding(PointType location, GeoConfig config, HttpClient httpClient) {
+    public OSMReverseGeocoding(PointType location, OSMGeoConfig config, HttpClient httpClient) {
         this.location = location;
         this.config = config;
         this.httpClient = httpClient;
@@ -98,8 +98,10 @@ public class ReverseGeocoding {
     public String decode(String jsonResponse) {
         JSONObject jsonObject = new JSONObject(jsonResponse);
         switch (config.format) {
-            case ADDRESS_FORMAT:
-                return decodeAddress(jsonObject);
+            case ROW_ADDRESS_FORMAT:
+                return decodeRowAddress(jsonObject);
+            case US_ADDRESS_FORMAT:
+                return decodeUsAddress(jsonObject);
             case JSON_FORMAT:
                 return decodeJson(jsonObject);
             default:
@@ -108,18 +110,39 @@ public class ReverseGeocoding {
     }
 
     /**
-     * Decode address from JSON object with pattern street, housenumber, zipcode, city and district.
+     * Decode address from JSON object with pattern street, housen-umber, zip-code, city and district.
      * Some fields may be missing depending on the location.
      *
      * @param jsonObject to be decoded
      * @return human readable address string
      */
-    private String decodeAddress(JSONObject jsonObject) {
-        if (jsonObject.has(ADDRESS_FORMAT)) {
-            JSONObject address = jsonObject.getJSONObject(ADDRESS_FORMAT);
+    private String decodeRowAddress(JSONObject jsonObject) {
+        if (jsonObject.has(ADDRESS_KEY)) {
+            JSONObject address = jsonObject.getJSONObject(ADDRESS_KEY);
             String street = (get(address, ROAD_KEYS) + " " + get(address, HOUSE_NUMBER_KEYS)).strip();
             String city = (get(address, ZIP_CODE_KEYS) + " " + get(address, CITY_KEYS) + " "
                     + get(address, DISTRICT_KEYS)).strip();
+            if (!street.isBlank()) {
+                street += ", ";
+            }
+            return street + city;
+        }
+        return "";
+    }
+
+    /**
+     * Decode address from JSON object with pattern house-number, street, city, district and zip-code
+     * Some fields may be missing depending on the location.
+     *
+     * @param jsonObject to be decoded
+     * @return human readable address string
+     */
+    private String decodeUsAddress(JSONObject jsonObject) {
+        if (jsonObject.has(ADDRESS_KEY)) {
+            JSONObject address = jsonObject.getJSONObject(ADDRESS_KEY);
+            String street = (get(address, HOUSE_NUMBER_KEYS) + " " + get(address, ROAD_KEYS)).strip();
+            String city = (get(address, CITY_KEYS) + " " + get(address, DISTRICT_KEYS) + " "
+                    + get(address, ZIP_CODE_KEYS)).strip();
             if (!street.isBlank()) {
                 street += ", ";
             }
@@ -144,8 +167,8 @@ public class ReverseGeocoding {
      * @return JSON formatted string
      */
     private String decodeJson(JSONObject jsonObject) {
-        if (jsonObject.has(ADDRESS_FORMAT)) {
-            return jsonObject.getJSONObject(ADDRESS_FORMAT).toString();
+        if (jsonObject.has(ADDRESS_KEY)) {
+            return jsonObject.getJSONObject(ADDRESS_KEY).toString();
         }
         return jsonObject.toString();
     }

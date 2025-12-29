@@ -40,7 +40,9 @@ import org.openhab.core.thing.profiles.StateProfile;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 import org.openhab.core.util.DurationUtils;
-import org.openhab.transform.geocoding.internal.config.GeoConfig;
+import org.openhab.transform.geocoding.internal.config.OSMGeoConfig;
+import org.openhab.transform.geocoding.internal.osm.OSMGeocoding;
+import org.openhab.transform.geocoding.internal.osm.OSMReverseGeocoding;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,11 +55,11 @@ import org.slf4j.LoggerFactory;
 public class OSMGeoProfile implements StateProfile {
     private final Logger logger = LoggerFactory.getLogger(OSMGeoProfile.class);
     private final ProfileCallback callback;
-    private final GeoConfig configuration;
+    private final OSMGeoConfig configuration;
     private final HttpClient httpClient;
 
     private final ScheduledExecutorService scheduler;
-    private ReverseGeocoding lastState;
+    private OSMReverseGeocoding lastState;
     private Instant lastResolveTime = Instant.MIN;
     private Duration resolveDuration;
     private String language;
@@ -69,7 +71,7 @@ public class OSMGeoProfile implements StateProfile {
         this.httpClient = client;
         this.scheduler = context.getExecutorService();
 
-        this.configuration = context.getConfiguration().as(GeoConfig.class);
+        this.configuration = context.getConfiguration().as(OSMGeoConfig.class);
         if (!configuration.language.isBlank()) {
             language = configuration.language;
         } else {
@@ -77,12 +79,17 @@ public class OSMGeoProfile implements StateProfile {
         }
         try {
             resolveDuration = DurationUtils.parse(configuration.resolveDuration);
+            // ensure minimal duration of 1 minute
+            if (resolveDuration.getSeconds() < 60) {
+                resolveDuration = Duration.ofMinutes(1);
+            }
         } catch (IllegalArgumentException e) {
-            resolveDuration = Duration.ofMinutes(1);
+            // fallback to default duration of 5 minutes
+            resolveDuration = Duration.ofMinutes(5);
             logger.warn("Could not parse duration '{}', using default of 1 minute.", configuration.resolveDuration);
         }
         logger.debug("GeoProfile created with language: {} and resolve duration: {}", language, resolveDuration);
-        lastState = new ReverseGeocoding(PointType.valueOf("0,0"), configuration, httpClient);
+        lastState = new OSMReverseGeocoding(PointType.valueOf("0,0"), configuration, httpClient);
     }
 
     @Override
@@ -108,7 +115,7 @@ public class OSMGeoProfile implements StateProfile {
     private void processState(State location) {
         if (location instanceof PointType point) {
             synchronized (this) {
-                lastState = new ReverseGeocoding(point, configuration, httpClient);
+                lastState = new OSMReverseGeocoding(point, configuration, httpClient);
                 Instant now = Instant.now();
                 Instant nextResolveTime = lastResolveTime.plus(resolveDuration);
                 if (resolverJob == null) {
@@ -134,7 +141,7 @@ public class OSMGeoProfile implements StateProfile {
      * Callback function of the resolverJob to perform reverse geocoding on the last stored state
      */
     private void resolveState() {
-        ReverseGeocoding localLastState;
+        OSMReverseGeocoding localLastState;
         synchronized (this) {
             localLastState = lastState;
             lastResolveTime = Instant.now();
@@ -168,7 +175,7 @@ public class OSMGeoProfile implements StateProfile {
                         .timeout(10, TimeUnit.SECONDS).send();
                 if (response.getStatus() == HttpStatus.OK_200) {
                     String jsonResponse = response.getContentAsString();
-                    PointType gpsCoordinates = Geocoding.parse(jsonResponse);
+                    PointType gpsCoordinates = OSMGeocoding.parse(jsonResponse);
                     if (gpsCoordinates != null) {
                         callback.sendCommand(gpsCoordinates);
                     } else {

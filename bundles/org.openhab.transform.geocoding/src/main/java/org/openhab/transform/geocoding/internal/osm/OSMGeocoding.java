@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.transform.geocoding.internal.profiles;
+package org.openhab.transform.geocoding.internal.osm;
 
 import static org.openhab.transform.geocoding.internal.GeoConstants.*;
 
@@ -26,7 +26,7 @@ import org.openhab.core.library.types.PointType;
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
-public class Geocoding {
+public class OSMGeocoding {
 
     public static @Nullable PointType parse(String jsonResponse) {
         JSONArray searchResults = new JSONArray(jsonResponse);

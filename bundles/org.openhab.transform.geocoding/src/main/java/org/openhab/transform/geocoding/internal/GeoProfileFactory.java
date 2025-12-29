@@ -55,7 +55,7 @@ public class GeoProfileFactory implements ProfileFactory, ProfileTypeProvider {
 
     @Override
     public Collection<ProfileType> getProfileTypes(@Nullable Locale locale) {
-        return List.of(ProfileTypeBuilder.newState(PROFILE_TYPE_UID, "Geo Coding")
+        return List.of(ProfileTypeBuilder.newState(PROFILE_TYPE_UID, "OpenStreetMap Geo Coding")
                 .withSupportedItemTypes(CoreItemFactory.STRING)
                 .withSupportedItemTypesOfChannel(CoreItemFactory.LOCATION).build());
     }
@@ -63,7 +63,8 @@ public class GeoProfileFactory implements ProfileFactory, ProfileTypeProvider {
     @Override
     public @Nullable Profile createProfile(ProfileTypeUID profileTypeUID, ProfileCallback profileCallback,
             ProfileContext profileContext) {
-        return new OSMGeoProfile(profileCallback, profileContext, httpClientFactory.getCommonHttpClient(), localeProvider);
+        return new OSMGeoProfile(profileCallback, profileContext, httpClientFactory.getCommonHttpClient(),
+                localeProvider);
     }
 
     @Override

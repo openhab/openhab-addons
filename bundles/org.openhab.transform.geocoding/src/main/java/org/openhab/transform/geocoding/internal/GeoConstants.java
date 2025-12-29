@@ -36,10 +36,12 @@ public class GeoConstants {
     public static final String SEARCH_URL = BASE_URL + "search?q=%s&format=jsonv2";
     public static final String REVERSE_URL = BASE_URL + "reverse?lat=%.7f&lon=%.7f&format=jsonv2";
 
+    public static final String ADDRESS_KEY = "address";
     public static final String LATITUDE_KEY = "lat";
     public static final String LONGITUDE_KEY = "lon";
 
-    public static final String ADDRESS_FORMAT = "address";
+    public static final String ROW_ADDRESS_FORMAT = "row_address";
+    public static final String US_ADDRESS_FORMAT = "us_address";
     public static final String JSON_FORMAT = "json";
 
     // see https://nominatim.org/release-docs/latest/api/Output/#addressdetails

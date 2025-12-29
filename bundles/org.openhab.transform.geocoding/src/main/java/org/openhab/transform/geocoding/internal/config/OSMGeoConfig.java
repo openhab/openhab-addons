@@ -12,19 +12,19 @@
  */
 package org.openhab.transform.geocoding.internal.config;
 
-import static org.openhab.transform.geocoding.internal.GeoConstants.ADDRESS_FORMAT;
+import static org.openhab.transform.geocoding.internal.GeoConstants.ROW_ADDRESS_FORMAT;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link GeoConfig} class contains the parameters to configure geo encoding and decoding
+ * The {@link OSMGeoConfig} class contains the parameters to configure geo encoding and decoding
  *
  * @author Bernd Weymann - initial contribution
  *
  */
 @NonNullByDefault
-public class GeoConfig {
-    public String format = ADDRESS_FORMAT;
+public class OSMGeoConfig {
+    public String format = ROW_ADDRESS_FORMAT;
     public String language = "";
     public String resolveDuration = "5m";
 }

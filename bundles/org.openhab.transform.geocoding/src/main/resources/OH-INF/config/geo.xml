@@ -7,17 +7,17 @@
 	<config-description uri="profile:transform:geo-coding">
 		<parameter name="resolveDuration" type="text" required="false">
 			<label>Resolve Duration</label>
-			<description>Duration time between reverse geo coding</description>
+			<description>Duration time between reverse geo coding. Minimum of 1m will be set!</description>
 			<default>5m</default>
 		</parameter>
 		<parameter name="format" type="text" required="false">
-			<label>Format</label>
-			<description>Format String is displayed</description>
-			<advanced>true</advanced>
+			<label>Address Format</label>
+			<description>Country specific address formatting</description>
 			<limitToOptions>true</limitToOptions>
-			<default>address</default>
+			<default>row_address</default>
 			<options>
-				<option value="address">Address</option>
+				<option value="row_address">Rest of World Address</option>
+				<option value="us_address">US/UK Address</option>
 				<option value="json">JSON</option>
 			</options>
 		</parameter>
