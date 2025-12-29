@@ -202,4 +202,53 @@ public class ChannelFactoryTest {
             }
         });
     }
+
+    @Test
+    public void testValidationExpressionWithDecimalScaleValue() {
+        var gson = new Gson();
+        // Test case from the issue: channel 61503 with scaleValue 0.5 should allow decimal values
+        String testChannelWithDecimalScale = """
+                {"category":"Hot water","parameterId":"61503","parameterName":"Extra hot water","parameterUnit":"h","writable":true,"timestamp":"2025-11-24T08:15:21+00:00","value":0,"strVal":"0h","smartHomeCategories":[],"minValue":0,"maxValue":20,"stepValue":1,"enumValues":[],"scaleValue":"0.5","zoneId":null}
+                """;
+        JsonObject json = gson.fromJson(testChannelWithDecimalScale, JsonObject.class);
+        var channel = channelFactory.createChannel(TEST_THING_UID, json);
+
+        assertNotNull(channel);
+        assertThat(channel.getUID().getId(), is("61503"));
+
+        // Verify validation expression allows decimals
+        String validationExpr = channel.getProperties().get(PARAMETER_NAME_VALIDATION_REGEXP);
+        assertNotNull(validationExpr);
+
+        // Test that the validation expression accepts decimal values like 0.5, 1.5, etc.
+        assertThat("0.5".matches(validationExpr), is(true));
+        assertThat("1.5".matches(validationExpr), is(true));
+        assertThat("10".matches(validationExpr), is(true));
+        assertThat("20".matches(validationExpr), is(true));
+        assertThat("0".matches(validationExpr), is(true));
+    }
+
+    @Test
+    public void testValidationExpressionWithIntegerScaleValue() {
+        var gson = new Gson();
+        // Test with integer scaleValue - should only allow integers
+        String testChannelWithIntegerScale = """
+                {"category":"Test","parameterId":"12345","parameterName":"Test Parameter","parameterUnit":"","writable":true,"timestamp":"2025-11-24T08:15:21+00:00","value":0,"strVal":"0","smartHomeCategories":[],"minValue":0,"maxValue":100,"stepValue":1,"enumValues":[],"scaleValue":"1","zoneId":null}
+                """;
+        JsonObject json = gson.fromJson(testChannelWithIntegerScale, JsonObject.class);
+        var channel = channelFactory.createChannel(TEST_THING_UID, json);
+
+        assertNotNull(channel);
+
+        // Verify validation expression only allows integers
+        String validationExpr = channel.getProperties().get(PARAMETER_NAME_VALIDATION_REGEXP);
+        assertNotNull(validationExpr);
+
+        // Test that the validation expression accepts integers but not decimals
+        assertThat("0".matches(validationExpr), is(true));
+        assertThat("10".matches(validationExpr), is(true));
+        assertThat("100".matches(validationExpr), is(true));
+        assertThat("0.5".matches(validationExpr), is(false));
+        assertThat("1.5".matches(validationExpr), is(false));
+    }
 }
