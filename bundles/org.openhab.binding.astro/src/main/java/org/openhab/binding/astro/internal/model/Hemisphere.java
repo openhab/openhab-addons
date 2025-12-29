@@ -15,19 +15,16 @@ package org.openhab.binding.astro.internal.model;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * All season names.
+ * Earth hemispheres
  *
- * @author Gerhard Riegler - Initial contribution
+ * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-public enum SeasonName {
-    SPRING,
-    SUMMER,
-    AUTUMN,
-    WINTER;
+public enum Hemisphere {
+    NORTHERN,
+    SOUTHERN;
 
-    public SeasonName next() {
-        SeasonName[] values = values();
-        return values[(this.ordinal() + 1) % values.length];
+    public static Hemisphere getHemisphere(double latitude) {
+        return latitude < 0.0 ? SOUTHERN : NORTHERN;
     }
 }
