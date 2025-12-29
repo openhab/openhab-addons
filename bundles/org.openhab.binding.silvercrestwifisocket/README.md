@@ -1,4 +1,4 @@
-# Silvercrest WiFi Plug Binding
+# Silvercrest Wi-Fi Plug Binding
 
 This binding integrates the Silvercrest WiFi Socket SWS-A1 sold by Lidl and the EasyHome WiFi Socket DIS-124 sold by Aldi.
 

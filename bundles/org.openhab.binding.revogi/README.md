@@ -1,7 +1,7 @@
 # Revogi Binding
 
 This binding is written to control Revogi devices.
-The first thThinging implemented is the [Revogi Smart Power Strip](https://www.revogi.com/smart-power/smart-power-strip-eu/#section6).
+The first Thing implemented is the [Revogi Smart Power Strip](https://www.revogi.com/smart-power/smart-power-strip-eu/#section6).
 The device has 6 power plugs that can be switched independently, or all together.
 It also provides information like power consumption and electric current for each plug.
 

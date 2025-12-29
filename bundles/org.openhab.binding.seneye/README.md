@@ -7,7 +7,7 @@ This binding integrates the [Seneye aquarium monitoring system](https://www.sene
 The seneye monitor monitors what is happening inside your aquarium to ensure that the aquatic life remains healthy.
 The monitor allows you to continuously track the changes in the water parameters, alerting you to the problems before they affect the fish.
 
-At least one Seneye monitor is required ([Home / pond or reef](https://www.seneye.com/devices/compare)) and the measure results must be synchronized to the seneye cloud by using a seneye web server (see [shop](https://www.seneye.com/store), there is one for wifi and one for a wired network).
+At least one Seneye monitor is required ([Home / pond or reef](https://www.seneye.com/devices/compare)) and the measure results must be synchronized to the seneye cloud by using a seneye web server (see [shop](https://www.seneye.com/store), there is one for Wi-Fi and one for a wired network).
 Each monitor is represented by one seneye Thing.
 
 ## Supported Things

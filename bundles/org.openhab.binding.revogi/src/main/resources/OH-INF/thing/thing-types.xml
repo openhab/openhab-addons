@@ -7,7 +7,7 @@
 	<!-- SmartStrip Thing Type -->
 	<thing-type id="smartstrip">
 		<label>SmartStrip</label>
-		<description>A thing to control the Revogi SmartStrip</description>
+		<description>A Thing to control the Revogi SmartStrip</description>
 		<category>PowerOutlet</category>
 		<semantic-equipment-tag>PowerOutlet</semantic-equipment-tag>
 

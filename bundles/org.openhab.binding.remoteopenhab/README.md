@@ -72,7 +72,7 @@ Setting the `buildTriggerChannels` parameter to false is for the main following 
 
 ## Thing Status
 
-The status of any `thing` thThinging is a mapping of the remote Thing status.
+The status of any `thing` Thing is a mapping of the remote Thing status.
 A mapping is done only when the `server` bridge is ONLINE (meaning the local server is connected to the remote server).
 Please note that every remote status other than UNKNOWN, ONLINE and OFFLINE will then be considered as OFFLINE on the local server.
 
@@ -103,12 +103,12 @@ Example of connection to a remote server in the local network:
 
 ```java
 Bridge remoteopenhab:server:oh2 "OH2 server" [ host="192.168.0.100", port=8443, useHttps=true, trustedCertificate=true ] {
-    Thing Thing tv "TV living room" [ thingUID="lgwebos:WebOSTV:tv" ]
-    Thing Thing astroSun "Astro sun" [ thingUID="astro:sun:local", buildTriggerChannels=false ] {
+    Thing thing tv "TV living room" [ thingUID="lgwebos:WebOSTV:tv" ]
+    Thing thing astroSun "Astro sun" [ thingUID="astro:sun:local", buildTriggerChannels=false ] {
         Channels:
             Type trigger : nightEvent "Night Event" [ channelUID="astro:sun:local:night#event" ]
     }
-    Thing Thing astroMoon "Astro moon" [ thingUID="astro:moon:local" ]
+    Thing thing astroMoon "Astro moon" [ thingUID="astro:moon:local" ]
 }
 ```
 

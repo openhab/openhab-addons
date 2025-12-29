@@ -6,8 +6,8 @@
 
 	<!-- Socket Thing Type -->
 	<thing-type id="wifiSocket">
-		<label>Silvercrest WiFi Socket</label>
-		<description>Supports Silvercrest WiFi Socket SWS-A1.</description>
+		<label>Silvercrest Wi-Fi Socket</label>
+		<description>Supports Silvercrest Wi-Fi Socket SWS-A1.</description>
 		<semantic-equipment-tag>PowerOutlet</semantic-equipment-tag>
 		<channels>
 			<channel id="switch" typeId="switch"/>
@@ -43,7 +43,7 @@
 	<channel-type id="switch">
 		<item-type>Switch</item-type>
 		<label>Socket Switch</label>
-		<description>Silvercrest WiFi socket switch to turn on or off.</description>
+		<description>Silvercrest Wi-Fi socket switch to turn on or off.</description>
 		<tags>
 			<tag>Switch</tag>
 			<tag>Power</tag>

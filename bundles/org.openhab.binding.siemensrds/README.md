@@ -10,7 +10,7 @@ The binding supports two types of Thing as follows:
 
 | Thing Type           | Description                                                                                                              |
 | -------------------- | ------------------------------------------------------------------------------------------------------------------------ |
-| Climatix IC Account  | User account on the Siemens Climatix IC cloud server (bridge) to connect with respective Smart Thermostat Things below. |
+| Climatix IC Account  | User account on the Siemens Climatix IC cloud server (bridge) to connect with respective Smart Thermostat Things below.  |
 | RDS Smart Thermostat | Siemens RDS model Smart Thermostat devices                                                                               |
 
 ## Discovery

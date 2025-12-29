@@ -13,7 +13,6 @@ Right now, only the thermostat devices (3000W and 4000W) (TH1120RF) are supporte
 ## Discovery
 
 The Sinopé Gateway (bridge) discovery is not supported for now.
-It will be added in a future release.
 The Sinopé device discovery is implemented.
 
 ## Prerequisites

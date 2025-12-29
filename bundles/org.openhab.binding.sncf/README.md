@@ -51,7 +51,7 @@ The Thing will auto-update depending on the timestamp of the earliest event dete
 
 ## Channels
 
-The Station thThinging holds two groups of channels (arrivals and departures) containing these channels:
+The Station Thing holds two groups of channels (arrivals and departures) containing these channels:
 
 | Channel ID | Item Type | Description                                 |
 | ---------- | --------- | ------------------------------------------- |

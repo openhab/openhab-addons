@@ -493,7 +493,7 @@
 			<tag>Control</tag>
 			<tag>Level</tag>
 		</tags>
-		<state min="0" max="100" step="1" readOnly="false" pattern="%.0f %%%"></state>
+		<state min="0" max="100" step="1" readOnly="false" pattern="%.0f %%"></state>
 	</channel-type>
 
 	<channel-type id="sensorValve">

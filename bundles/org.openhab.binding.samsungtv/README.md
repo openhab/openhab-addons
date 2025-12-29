@@ -8,7 +8,8 @@ There is one Thing per TV.
 
 ## Discovery
 
-The TV's are discovered through UPnP protocol in the local network and all devices are put in the Inbox. The TV must be ON for this to work.
+The TV's are discovered through UPnP protocol in the local network and all devices are put in the Inbox.
+The TV must be ON for this to work.
 
 ## Binding Configuration
 
@@ -52,7 +53,9 @@ If your TV supports _websocketsecure_, you **MUST** use it, otherwise the `keyCo
 In order for the binding to control your TV, you will be asked to accept the remote connection (from openHAB) on your TV. You have 30 seconds to accept the connection. If you fail to accept it, then most channels will not work.
 Once you have accepted the connection, the returned token is stored in the binding, so you don't have to repeat this every time openHAB is restarted.
 
-If the connection has been refused, or you don't have your TV configured to allow remote connections, the binding will not work. If you are having problems, check the settings on your TV. Sometimes a family member denies the popup (because they don't know what it is), and after that nothing will work.
+If the connection has been refused, or you don't have your TV configured to allow remote connections, the binding will not work.
+If you are having problems, check the settings on your TV.
+Sometimes a family member denies the popup (because they don't know what it is), and after that nothing will work.
 You can set the connection to `Allow` on the TV, or delete the openHAB entry, and try the connection again.
 
 The binding will try to automatically discover the correct protocol for your TV, so **don't change it** unless you know it is wrong.
@@ -176,7 +179,8 @@ To determine the ON/ART/OFF state of your TV, you have to read both `power` and 
 
 ### setArtMode
 
-**NOTE:** Samsung added back the art API in Firmware 1622 to >2021 Frame TV's. If you have this version of firmware or higher, don't use the `setArtMode` channel, as it is not necessary.
+**NOTE:** Samsung added back the art API in Firmware 1622 to >2021 Frame TV's.
+If you have this version of firmware or higher, don't use the `setArtMode` channel, as it is not necessary.
 
 `setArtMode` is a Switch channel. Since Samsung removed the art api in 2022, the TV has no way of knowing if it is in art mode or playing a TV source. This switch is to allow you to manually tell the TV what mode it is in.
 
@@ -187,11 +191,14 @@ This input allows you to set the internal art mode state from an external source
 
 ### artImage
 
-`artImage` is an Image channel that receives a thumbnail of the art that would be displayed in artMode (even if the TV is on). It receives images only (you can't send a command to it due to openHAB limitations).
+`artImage` is an Image channel that receives a thumbnail of the art that would be displayed in artMode (even if the TV is on).
+It receives images only (you can't send a command to it due to openHAB limitations).
 
 ### artLabel
 
-`artLabel` is a String channel that receives the _internal_ label of the artwork displayed. This will be something like `MY_0010` or `SAM-0123`. `MY` means it's art you uploaded, `SAM` means it's from the Samsung art gallery.
+`artLabel` is a String channel that receives the _internal_ label of the artwork displayed.
+This will be something like `MY_0010` or `SAM-0123`.
+`MY` means it's art you uploaded, `SAM` means it's from the Samsung art gallery.
 You have to figure out what the label actually represents.
 
 You can send commands to the channel. It accepts, Strings, string representations of a `Rawtype` image and `RawType` Images. If you send a String, such as `MY-0013`, it will display that art on the TV. If the TV is ON, playing live TV, then the Tv will switch to artMode.
@@ -312,7 +319,8 @@ Setpoint item=TV_ArtColorTemperature minValue=-5 maxValue=5 step=1 visibility=[T
 ### artOrientation
 
 `artOrientation` is a Switch channel, it reports the current orientation of the TV, OFF for Landscape, and ON for Portrait. This channel is polled. If you send an ON or OFF command to this channel, then the binding will send a long (4s) press of the key defined in the configuration for orientationKey.<br>
-For 2023- TV's, `orientationKey` should be KEY_MULTI_VIEW (default). For 2024+ TV's, this should be KEY_HOME.
+For 2023- TV's, `orientationKey` should be KEY_MULTI_VIEW (default).
+For 2024+ TV's, this should be KEY_HOME.
 
 ```java
 Switch item=TV_ArtOrientation mappings=[OFF="Landscape", ON="Portrait"]
@@ -413,7 +421,10 @@ Values are confirmed to work on UE50MU6179.
 
 To discover all installed apps names, you can enable the DEBUG log output from the binding to see a list of apps that have been discovered as installed. This list is displayed once, shortly after the TV is turned On.
 
-If you have a TV >2019, then the list of apps will not be discovered. Instead, a default list of known appID's is built into the binding, these cover most common apps. The binding will attempt to discover these apps, and, if you are lucky, your app will be found and you have nothing further to do. It is possible that new apps have been added, or are specific to your country that are not in the built-in list, in which case you can add these apps manually.
+If you have a TV >2019, then the list of apps will not be discovered.
+Instead, a default list of known appID's is built into the binding, these cover most common apps.
+The binding will attempt to discover these apps, and, if you are lucky, your app will be found and you have nothing further to do.
+It is possible that new apps have been added, or are specific to your country that are not in the built-in list, in which case you can add these apps manually.
 
 #### Adding apps manually
 
@@ -652,7 +663,7 @@ With your **TV OFF** (ie totally off)
 
 ### What you should see
 
-You may see some messages (this is a good Thing, it means you are receiving UPnP traffic).
+You may see some messages (this is a good thing, it means you are receiving UPnP traffic).
 
 Now turn your TV ON (with the remote control).
 
