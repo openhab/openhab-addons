@@ -89,8 +89,16 @@ This binding has its own IconProvider and makes available the following list of 
 | oh:astro:moon_eclipse               |   Yes   | ![Moon Eclipse](doc/images/moon_eclipse.svg) |
 | oh:astro:moon_eclipse-total         |   Yes   | ![Total Moon Eclipse](doc/images/moon_eclipse-total.svg) |
 | oh:astro:moon_eclipse-partial       |   Yes   | ![Partial Moon Eclipse](doc/images/moon_eclipse-partial.svg) |
+<<<<<<< Upstream, based on main
 >>>>>>> 11e99dd Initial commit for Moon phase revamp
+<<<<<<< Upstream, based on main
 >>>>>>> 0e1ea37 Initial commit for Moon phase revamp
+=======
+=======
+| oh:astro:moon_day                   |   Yes   | ![Moon Age](doc/images/moon_day.svg) |
+
+>>>>>>> 8573003 Adds moon-day icon set. Rebased.
+>>>>>>> cbf0ca8 Adds moon-day icon set. Rebased.
 
 ## Channels
 

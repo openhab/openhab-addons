@@ -481,6 +481,7 @@
 		<item-type>Number:Time</item-type>
 		<label>Moon Age</label>
 		<description>The age of the moon in days</description>
+		<category>oh:astro:moon_day</category>
 		<tags>
 			<tag>Calculation</tag>
 			<tag>Duration</tag>

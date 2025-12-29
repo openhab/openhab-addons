@@ -82,9 +82,6 @@ public class MoonCalc {
     public Moon getMoonInfo(Calendar calendar, double latitude, double longitude, TimeZone zone, Locale locale) {
         Moon moon = new Moon();
 
-        double julianDate = DateTimeUtils.dateToJulianDate(calendar);
-        double julianDateMidnight = DateTimeUtils.midnightDateToJulianDate(calendar);
-
         double[] riseSet = getRiseSet(calendar, latitude, longitude);
         Calendar rise = DateTimeUtils.timeToCalendar(calendar, riseSet[0]);
         Calendar set = DateTimeUtils.timeToCalendar(calendar, riseSet[1]);
@@ -106,6 +103,7 @@ public class MoonCalc {
         moon.setSet(new Range(set, set));
 
         MoonPhase phase = moon.getPhase();
+        double julianDateMidnight = DateTimeUtils.midnightDateToJulianDate(calendar);
         phase.setNew(
                 DateTimeUtils.toCalendar(getNextPhase(calendar, julianDateMidnight, MoonPhaseName.NEW), zone, locale));
         phase.setFirstQuarter(DateTimeUtils
@@ -124,8 +122,22 @@ public class MoonCalc {
             }
         });
 
+<<<<<<< Upstream, based on moon_distance
         Set.of(DistanceType.APOGEE, DistanceType.PERIGEE)
                 .forEach(type -> moon.setDistance(type, MoonDistanceCalc.get(type, julianDate)));
+=======
+        double decimalYear = DateTimeUtils.getDecimalYear(calendar);
+        double julianDate = DateTimeUtils.dateToJulianDate(calendar);
+        MoonDistance apogee = moon.getApogee();
+        double apogeeJd = getApogee(julianDate, decimalYear);
+        apogee.setDate(DateTimeUtils.toCalendar(apogeeJd, zone, locale));
+        apogee.setDistance(getDistance(apogeeJd));
+
+        MoonDistance perigee = moon.getPerigee();
+        double perigeeJd = getPerigee(julianDate, decimalYear);
+        perigee.setDate(DateTimeUtils.toCalendar(perigeeJd, zone, locale));
+        perigee.setDistance(getDistance(perigeeJd));
+>>>>>>> 62adad6 Adds moon-day icon set. Rebased.
 
         return moon;
     }
