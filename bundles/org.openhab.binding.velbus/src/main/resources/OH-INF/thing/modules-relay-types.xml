@@ -141,6 +141,29 @@
 		<config-description-ref uri="thing-type:velbus:5channelDevice"/>
 	</thing-type>
 
+	<thing-type id="vmb4ryld-20">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+			<bridge-type-ref id="networkbridge"/>
+		</supported-bridge-type-refs>
+
+		<label>VMB4RYLD-20</label>
+		<description>4-channel relay module with voltage outputs</description>
+		<semantic-equipment-tag>PowerOutlet</semantic-equipment-tag>
+		<channels>
+			<channel id="CH1" typeId="switch"/>
+			<channel id="CH2" typeId="switch"/>
+			<channel id="CH3" typeId="switch"/>
+			<channel id="CH4" typeId="switch"/>
+			<channel id="CH5" typeId="switch"/>
+			<channel id="CH6" typeId="switch"/>
+			<channel id="CH7" typeId="switch"/>
+			<channel id="CH8" typeId="switch"/>
+		</channels>
+
+		<config-description-ref uri="thing-type:velbus:8channelDevice"/>
+	</thing-type>
+
 	<thing-type id="vmb4ryno">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="bridge"/>
@@ -179,6 +202,29 @@
 		</channels>
 
 		<config-description-ref uri="thing-type:velbus:5channelDevice"/>
+	</thing-type>
+
+	<thing-type id="vmb4ryno-20">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+			<bridge-type-ref id="networkbridge"/>
+		</supported-bridge-type-refs>
+
+		<label>VMB4RYNO-20</label>
+		<description>4-channel relay module with potential-free contacts</description>
+		<semantic-equipment-tag>PowerOutlet</semantic-equipment-tag>
+		<channels>
+			<channel id="CH1" typeId="switch"/>
+			<channel id="CH2" typeId="switch"/>
+			<channel id="CH3" typeId="switch"/>
+			<channel id="CH4" typeId="switch"/>
+			<channel id="CH5" typeId="switch"/>
+			<channel id="CH6" typeId="switch"/>
+			<channel id="CH7" typeId="switch"/>
+			<channel id="CH8" typeId="switch"/>
+		</channels>
+
+		<config-description-ref uri="thing-type:velbus:8channelDevice"/>
 	</thing-type>
 
 </thing:thing-descriptions>

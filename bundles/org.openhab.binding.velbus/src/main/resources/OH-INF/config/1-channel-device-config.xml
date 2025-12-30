@@ -17,6 +17,19 @@
 		</parameter>
 	</config-description>
 
+	<config-description uri="thing-type:velbus:1channelStatusDevice">
+		<parameter name="address" type="text" required="true">
+			<label>Address</label>
+			<description>The velbus address of the device</description>
+		</parameter>
+		<parameter name="status" type="text">
+			<label>Status channel Name</label>
+			<description>The name of the channel.</description>
+			<default>Status</default>
+			<advanced>true</advanced>
+		</parameter>
+	</config-description>
+
 	<config-description uri="thing-type:velbus:1channelDeviceWithDimspeed">
 		<parameter name="address" type="text" required="true">
 			<label>Address</label>
