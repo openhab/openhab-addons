@@ -49,6 +49,7 @@ import org.openhab.binding.hue.internal.api.dto.clip2.ProductData;
 import org.openhab.binding.hue.internal.api.dto.clip2.Resource;
 import org.openhab.binding.hue.internal.api.dto.clip2.ResourceReference;
 import org.openhab.binding.hue.internal.api.dto.clip2.Resources;
+import org.openhab.binding.hue.internal.api.dto.clip2.Sound;
 import org.openhab.binding.hue.internal.api.dto.clip2.TimedEffects;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.ActionType;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.Archetype;
@@ -1133,6 +1134,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 if (fullUpdate) {
                     addSupportedChannel(CHANNEL_2_VOLUME);
                     addSupportedChannel(CHANNEL_2_DURATION);
+                    updateSoundChannelOptions(resource);
                 }
                 updateState(CHANNEL_2_ALARM_SOUND, resource.getSoundState(ChimeType.ALARM), fullUpdate);
                 updateState(CHANNEL_2_ALERT_SOUND, resource.getSoundState(ChimeType.ALERT), fullUpdate);
@@ -1463,6 +1465,27 @@ public class Clip2ThingHandler extends BaseThingHandler {
             ResourceReference reference = new ResourceReference();
             for (var entry : serviceContributorsCache.entrySet()) {
                 updateResource(reference.setId(entry.getKey()).setType(entry.getValue().getType()));
+            }
+        }
+    }
+
+    /**
+     * Process the incoming Resource to initialize the state options of sound channels. Determines the available sound
+     * values for each chime type and stores them as respective state options for that channel.
+     *
+     * @param resource a Resource possibly with Alarm, Alert, or Chime elements.
+     */
+    private void updateSoundChannelOptions(Resource resource) {
+        for (ChimeType chimeType : ChimeType.values()) {
+            if (resource.getSound(chimeType) instanceof Sound sound
+                    && sound.getSoundValues() instanceof List<SoundValue> soundValues && !soundValues.isEmpty()) {
+                String channelID = switch (chimeType) {
+                    case ALARM -> CHANNEL_2_ALARM_SOUND;
+                    case ALERT -> CHANNEL_2_ALERT_SOUND;
+                    case CHIME -> CHANNEL_2_CHIME_SOUND;
+                };
+                stateDescriptionProvider.setStateOptions(new ChannelUID(thing.getUID(), channelID),
+                        soundValues.stream().map(v -> new StateOption(v.name(), v.name())).toList());
             }
         }
     }
