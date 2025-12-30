@@ -41,13 +41,11 @@ public class DateTimeUtils {
 
     public static final double JD_J2000 = 2451545.0; // 2000-01-01 12:00
     public static final double JD_UNIX_EPOCH = 2440587.5; // 1970-01-01 00:00 UTC
-    private static final double J1970 = JD_UNIX_EPOCH + 0.5; // 1970-01-01 12:00 UTC (julian solar noon)
-<<<<<<< Upstream, based on main
-    private static final int JULIAN_CENTURY_DAYS = 36525; // Length of a Julian Century in days
-    private static final double SECONDS_PER_DAY = 60 * 60 * 24;
-=======
-    public static final int JULIAN_CENTURY_DAYS = 36525; // Length of a Julian Century in days
     public static final double MJD_JD2000 = 51544.5;
+
+    private static final double J1970 = JD_UNIX_EPOCH + 0.5; // 1970-01-01 12:00 UTC (julian solar noon)
+    private static final double SECONDS_PER_DAY = 60 * 60 * 24;
+    private static final int JULIAN_CENTURY_DAYS = 36525; // Length of a Julian Century in days
 
     /**
      * Convert julian date to greenwich mean sidereal time.
@@ -66,7 +64,6 @@ public class DateTimeUtils {
     public static double toLMST(double gmst, double lon) {
         return mod(gmst + Math.toDegrees(lon) / 15., 24.);
     }
->>>>>>> 11e99dd Initial commit for Moon phase revamp
 
     /** Constructor */
     private DateTimeUtils() {

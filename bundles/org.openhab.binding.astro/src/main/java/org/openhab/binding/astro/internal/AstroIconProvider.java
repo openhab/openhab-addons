@@ -25,15 +25,18 @@ import java.util.Set;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 <<<<<<< Upstream, based on main
+<<<<<<< Upstream, based on main
 import org.openhab.binding.astro.internal.model.EclipseKind;
 =======
 <<<<<<< Upstream, based on main
 >>>>>>> 0e1ea37 Initial commit for Moon phase revamp
 import org.openhab.binding.astro.internal.model.SeasonName;
 =======
+=======
+>>>>>>> a0ec0ce Resolved conflicting files Adds moon-day icon set. Rebased.
 import org.openhab.binding.astro.internal.model.EclipseKind;
 import org.openhab.binding.astro.internal.model.MoonPhaseName;
->>>>>>> 11e99dd Initial commit for Moon phase revamp
+import org.openhab.binding.astro.internal.model.SeasonName;
 import org.openhab.binding.astro.internal.model.ZodiacSign;
 import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.ui.icon.IconProvider;
@@ -57,6 +60,7 @@ import org.slf4j.LoggerFactory;
 public class AstroIconProvider implements IconProvider {
     private static final String DEFAULT_LABEL = "Astro Icons";
     private static final String DEFAULT_DESCRIPTION = "Icons provided for the Astro Binding";
+<<<<<<< Upstream, based on main
     private static final String ZODIAC_SET = "zodiac";
 <<<<<<< Upstream, based on main
     private static final String SEASON_SET = "season";
@@ -75,10 +79,21 @@ public class AstroIconProvider implements IconProvider {
 >>>>>>> 0e1ea37 Initial commit for Moon phase revamp
 =======
 =======
+=======
+>>>>>>> a0ec0ce Resolved conflicting files Adds moon-day icon set. Rebased.
     private static final String MOON_DAY_SET = "moon_day";
+<<<<<<< Upstream, based on main
     private static final Set<String> ICON_SET = Set.of(ZODIAC_SET, MOON_PHASE_SET, MOON_ECLIPSE_SET, MOON_DAY_SET);
 >>>>>>> 8573003 Adds moon-day icon set. Rebased.
 >>>>>>> cbf0ca8 Adds moon-day icon set. Rebased.
+=======
+    private static final String MOON_ECLIPSE_SET = "moon_eclipse";
+    private static final String MOON_PHASE_SET = "moon_phase";
+    private static final String SEASON_SET = "season";
+    private static final String ZODIAC_SET = "zodiac";
+    private static final Set<String> ICON_SETS = Set.of(MOON_DAY_SET, MOON_ECLIPSE_SET, MOON_PHASE_SET, SEASON_SET,
+            ZODIAC_SET);
+>>>>>>> a0ec0ce Resolved conflicting files Adds moon-day icon set. Rebased.
 
     private final Logger logger = LoggerFactory.getLogger(AstroIconProvider.class);
     private final TranslationProvider i18nProvider;
@@ -110,11 +125,7 @@ public class AstroIconProvider implements IconProvider {
 
     @Override
     public @Nullable Integer hasIcon(String category, String iconSetId, Format format) {
-<<<<<<< Upstream, based on main
         return Format.SVG.equals(format) && iconSetId.equals(BINDING_ID) && ICON_SETS.contains(category) ? 0 : null;
-=======
-        return Format.SVG.equals(format) && iconSetId.equals(BINDING_ID) && ICON_SET.contains(category) ? 0 : null;
->>>>>>> 11e99dd Initial commit for Moon phase revamp
     }
 
     @Override
@@ -124,12 +135,13 @@ public class AstroIconProvider implements IconProvider {
 =======
         String iconName = "icon/%s.svg".formatted(category);
 <<<<<<< Upstream, based on main
+<<<<<<< Upstream, based on main
 >>>>>>> 24ede3e Initial commit for Moon phase revamp
-        if (ICON_SETS.contains(category) && state != null) {
 =======
-        if (ICON_SET.contains(category) && state != null) {
->>>>>>> 11e99dd Initial commit for Moon phase revamp
+>>>>>>> 8c08c02 Resolved conflicting files Adds moon-day icon set. Rebased.
+        if (ICON_SETS.contains(category) && state != null) {
             try {
+<<<<<<< Upstream, based on main
 <<<<<<< Upstream, based on main
 <<<<<<< Upstream, based on main
                 Enum<?> stateEnum = switch (category) {
@@ -146,20 +158,20 @@ public class AstroIconProvider implements IconProvider {
                     case MOON_PHASE_SET -> MoonPhaseName.valueOf(state);
                     case MOON_ECLIPSE_SET -> EclipseKind.valueOf(state);
 =======
+=======
+>>>>>>> a0ec0ce Resolved conflicting files Adds moon-day icon set. Rebased.
                 String iconState = switch (category) {
+                    case SEASON_SET -> SeasonName.valueOf(state).name().toLowerCase(Locale.US);
                     case ZODIAC_SET -> ZodiacSign.valueOf(state).name().toLowerCase(Locale.US);
                     case MOON_PHASE_SET -> MoonPhaseName.valueOf(state).name().toLowerCase(Locale.US);
                     case MOON_ECLIPSE_SET -> EclipseKind.valueOf(state).name().toLowerCase(Locale.US);
                     case MOON_DAY_SET -> state;
->>>>>>> 8573003 Adds moon-day icon set. Rebased.
-                    default -> throw new IllegalArgumentException("Unexpected icon category: %s".formatted(category));
+                    default -> throw new IllegalArgumentException("Category of icon not found: %s".formatted(category));
                 };
                 iconName = iconName.replace(".", "-%s.".formatted(iconState));
             } catch (IllegalArgumentException e) {
-                logger.info("Error getting dynamic icon: {}", e.getMessage());
->>>>>>> 11e99dd Initial commit for Moon phase revamp
                 // Invalid state for the icon set, we'll remain on default icon
-                logger.warn("Error retrieving icon name '{}' - using default: {}", state, e.getMessage());
+                logger.warn("Error retrieving icon for state '{}' - using default. Error: {}", state, e.getMessage());
             }
         }
 
