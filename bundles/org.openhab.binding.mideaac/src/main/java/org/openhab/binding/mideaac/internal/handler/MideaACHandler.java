@@ -15,12 +15,7 @@ package org.openhab.binding.mideaac.internal.handler;
 import static org.openhab.binding.mideaac.internal.MideaACBindingConstants.*;
 
 import java.io.IOException;
-import java.math.BigDecimal;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -29,21 +24,18 @@ import javax.measure.quantity.Temperature;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
-import org.openhab.binding.mideaac.internal.MideaACConfiguration;
-import org.openhab.binding.mideaac.internal.cloud.Cloud;
-import org.openhab.binding.mideaac.internal.cloud.CloudProvider;
-import org.openhab.binding.mideaac.internal.connection.CommandHelper;
-import org.openhab.binding.mideaac.internal.connection.ConnectionManager;
+import org.openhab.binding.mideaac.internal.callbacks.ACCallback;
 import org.openhab.binding.mideaac.internal.connection.exception.MideaAuthenticationException;
 import org.openhab.binding.mideaac.internal.connection.exception.MideaConnectionException;
 import org.openhab.binding.mideaac.internal.connection.exception.MideaException;
-import org.openhab.binding.mideaac.internal.discovery.DiscoveryHandler;
-import org.openhab.binding.mideaac.internal.discovery.MideaACDiscoveryService;
-import org.openhab.binding.mideaac.internal.handler.capabilities.CapabilitiesResponse;
-import org.openhab.binding.mideaac.internal.handler.capabilities.CapabilityParser;
-import org.openhab.binding.mideaac.internal.security.TokenKey;
-import org.openhab.core.config.core.Configuration;
-import org.openhab.core.config.discovery.DiscoveryResult;
+import org.openhab.binding.mideaac.internal.devices.ac.ACCommandHelper;
+import org.openhab.binding.mideaac.internal.devices.ac.ACCommandSet;
+import org.openhab.binding.mideaac.internal.devices.ac.EnergyResponse;
+import org.openhab.binding.mideaac.internal.devices.ac.HumidityResponse;
+import org.openhab.binding.mideaac.internal.devices.ac.Response;
+import org.openhab.binding.mideaac.internal.devices.ac.TemperatureResponse;
+import org.openhab.binding.mideaac.internal.devices.capabilities.CapabilitiesResponse;
+import org.openhab.binding.mideaac.internal.devices.capabilities.CapabilityParser;
 import org.openhab.core.i18n.UnitProvider;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -51,15 +43,11 @@ import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.ImperialUnits;
 import org.openhab.core.library.unit.SIUnits;
-import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
-import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
-import org.openhab.core.types.RefreshType;
-import org.openhab.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -71,53 +59,14 @@ import org.slf4j.LoggerFactory;
  * @author Justan Oldman - Last Response added
  * @author Bob Eckhoff - Longer Polls, OH developer guidelines added other messages
  * @author Leo Siepel - Refactored class, improved separation of concerns
+ * @author Bob Eckhoff - Energy scheduling, humidity via energy poll added, separated AC
+ *         and Dehumidifier handlers
  */
 @NonNullByDefault
-public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler, Callback {
+public class MideaACHandler extends AbstractMideaHandler implements ACCallback {
     private final Logger logger = LoggerFactory.getLogger(MideaACHandler.class);
     private final boolean imperialUnits;
-    private final HttpClient httpClient;
-
-    private MideaACConfiguration config = new MideaACConfiguration();
-    private Map<String, String> properties = new HashMap<>();
-    // Default parameters are the same as in the MideaACConfiguration class
-    private ConnectionManager connectionManager = new ConnectionManager("", 6444, 4, "", "", "", "", "", "", 0, false);
-    private ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(3);
-    private @Nullable ScheduledFuture<?> scheduledTask;
-    private @Nullable ScheduledFuture<?> scheduledKeyTokenUpdate;
     private @Nullable ScheduledFuture<?> scheduledEnergyUpdate;
-
-    private final Callback callbackLambda = new Callback() {
-        @Override
-        public void updateChannels(Response response) {
-            MideaACHandler.this.updateChannels(response);
-        }
-
-        @Override
-        public void updateChannels(CapabilitiesResponse capabilitiesResponse) {
-            MideaACHandler.this.updateChannels(capabilitiesResponse);
-        }
-
-        @Override
-        public void updateChannels(EnergyResponse energyUpdate) {
-            MideaACHandler.this.updateChannels(energyUpdate);
-        }
-
-        @Override
-        public void updateHumidityFromEnergy(EnergyResponse energyUpdate) {
-            MideaACHandler.this.updateHumidityFromEnergy(energyUpdate);
-        }
-
-        @Override
-        public void updateChannels(HumidityResponse humidityResponse) {
-            MideaACHandler.this.updateChannels(humidityResponse);
-        }
-
-        @Override
-        public void updateChannels(TemperatureResponse temperatureResponse) {
-            MideaACHandler.this.updateChannels(temperatureResponse);
-        }
-    };
 
     /**
      * Initial creation of the Midea AC Handler
@@ -127,254 +76,21 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
      * @param httpClient http Client
      */
     public MideaACHandler(Thing thing, UnitProvider unitProvider, HttpClient httpClient) {
-        super(thing);
+        super(thing, unitProvider, httpClient);
         this.thing = thing;
         this.imperialUnits = unitProvider.getMeasurementSystem() instanceof ImperialUnits;
-        this.httpClient = httpClient;
-    }
-
-    /**
-     * This method handles the AC Channels that can be set (non-read only)
-     * The command set is formed using the previous command to only
-     * change the item requested and leave the others the same.
-     * The command set which is then sent to the device via the connectionManager.
-     * For a Refresh both regular and energy polls are triggerred.
-     */
-    @Override
-    public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.debug("Handling channelUID {} with command {}", channelUID.getId(), command.toString());
-        ConnectionManager connectionManager = this.connectionManager;
-
-        if (command instanceof RefreshType) {
-            try {
-                connectionManager.getStatus(callbackLambda);
-                // Read only Energy and Humidity channels not updated with routine poll
-                CommandSet energyUpdate = new CommandSet();
-                energyUpdate.energyPoll();
-                connectionManager.sendCommand(energyUpdate, this);
-                CommandSet humidityUpdate = new CommandSet();
-                humidityUpdate.humidityPoll();
-                connectionManager.sendCommand(humidityUpdate, this);
-            } catch (MideaAuthenticationException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
-            } catch (MideaConnectionException | MideaException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            } catch (IOException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            }
-            return;
-        }
-        try {
-            Response lastresponse = connectionManager.getLastResponse();
-            if (channelUID.getId().equals(CHANNEL_POWER)) {
-                connectionManager.sendCommand(CommandHelper.handlePower(command, lastresponse), callbackLambda);
-            } else if (channelUID.getId().equals(CHANNEL_OPERATIONAL_MODE)) {
-                connectionManager.sendCommand(CommandHelper.handleOperationalMode(command, lastresponse),
-                        callbackLambda);
-            } else if (channelUID.getId().equals(CHANNEL_TARGET_TEMPERATURE)) {
-                connectionManager.sendCommand(CommandHelper.handleTargetTemperature(command, lastresponse),
-                        callbackLambda);
-            } else if (channelUID.getId().equals(CHANNEL_FAN_SPEED)) {
-                connectionManager.sendCommand(CommandHelper.handleFanSpeed(command, lastresponse, config.version),
-                        callbackLambda);
-            } else if (channelUID.getId().equals(CHANNEL_ECO_MODE)) {
-                connectionManager.sendCommand(CommandHelper.handleEcoMode(command, lastresponse), callbackLambda);
-            } else if (channelUID.getId().equals(CHANNEL_TURBO_MODE)) {
-                connectionManager.sendCommand(CommandHelper.handleTurboMode(command, lastresponse), callbackLambda);
-            } else if (channelUID.getId().equals(CHANNEL_SWING_MODE)) {
-                connectionManager.sendCommand(CommandHelper.handleSwingMode(command, lastresponse, config.version),
-                        callbackLambda);
-            } else if (channelUID.getId().equals(CHANNEL_SCREEN_DISPLAY)) {
-                connectionManager.sendCommand(CommandHelper.handleScreenDisplay(command, lastresponse), callbackLambda);
-            } else if (channelUID.getId().equals(CHANNEL_TEMPERATURE_UNIT)) {
-                connectionManager.sendCommand(CommandHelper.handleTempUnit(command, lastresponse), callbackLambda);
-            } else if (channelUID.getId().equals(CHANNEL_SLEEP_FUNCTION)) {
-                connectionManager.sendCommand(CommandHelper.handleSleepFunction(command, lastresponse), callbackLambda);
-            } else if (channelUID.getId().equals(CHANNEL_ON_TIMER)) {
-                connectionManager.sendCommand(CommandHelper.handleOnTimer(command, lastresponse), callbackLambda);
-            } else if (channelUID.getId().equals(CHANNEL_OFF_TIMER)) {
-                connectionManager.sendCommand(CommandHelper.handleOffTimer(command, lastresponse), callbackLambda);
-            } else if (channelUID.getId().equals(CHANNEL_MAXIMUM_HUMIDITY)) {
-                connectionManager.sendCommand(CommandHelper.handleMaximumHumidity(command, lastresponse),
-                        callbackLambda);
-            }
-        } catch (MideaConnectionException | MideaAuthenticationException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-        } catch (MideaException | IOException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-        }
-    }
-
-    /**
-     * Initializes the handler by performing the following steps:
-     * <ol>
-     * <li>Retrieves the configuration for the handler.</li>
-     * <li>Ensures the discovery or configuration is valid. If not, starts the discovery process and exits early.</li>
-     * <li>Ensures the token and key for V3 devices are available. If not, starts the retrieval process and exits
-     * early.</li>
-     * <li>Updates the thing's status to {@link ThingStatus#UNKNOWN}.</li>
-     * <li>Initializes the connection manager using the configuration.</li>
-     * <li>Requests device capabilities if they are missing.</li>
-     * <li>Starts any necessary schedulers for the handler.</li>
-     * </ol>
-     */
-    @Override
-    public void initialize() {
-        config = getConfigAs(MideaACConfiguration.class);
-
-        // 1) Ensure discovery/config is valid or start discovery and exit early
-        if (!ensureConfigOrStartDiscovery()) {
-            return;
-        }
-
-        // 2) Ensure token/key for V3 devices or start retrieval and exit early
-        if (!ensureTokenKeyOrStartRetrieval()) {
-            return;
-        }
-
-        updateStatus(ThingStatus.UNKNOWN);
-
-        initConnectionManagerFromConfig();
-
-        requestCapabilitiesIfMissing();
-
-        startSchedulers();
-    }
-
-    /**
-     * Ensure we have all configuration needed to reach the device. If incomplete
-     * but discoverable,
-     * trigger discovery asynchronously and return false to stop current
-     * initialization.
-     */
-    private boolean ensureConfigOrStartDiscovery() {
-        if (config.isValid()) {
-            logger.debug("Discovery parameters are valid for {}", thing.getUID());
-            return true;
-        }
-
-        if (!config.isDiscoveryPossible()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.configuration_error_invalid_discovery");
-            return false;
-        }
-
-        MideaACDiscoveryService discoveryService = new MideaACDiscoveryService();
-
-        // Kick off discovery asynchronously and end this initialization thread.
-
-        scheduler.execute(() -> {
-            try {
-                // Keep thing OFFLINE with message about attempting discovery.
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "@text/offline.configuration_pending_discovery");
-                discoveryService.discoverThing(config.ipAddress, this);
-            } catch (Exception e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "@text/offline.communication_error_discovery");
-            }
-        });
-
-        return false;
-    }
-
-    /**
-     * Ensure token/key are available for V3 devices. If retrievable from cloud,
-     * trigger async
-     * retrieval and return false to stop current initialization.
-     */
-    private boolean ensureTokenKeyOrStartRetrieval() {
-        if (config.version != 3 || config.isV3ConfigValid()) {
-            logger.debug("Valid token and key for V.3 device {}", thing.getUID());
-            return true;
-        }
-
-        if (!config.isTokenKeyObtainable()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.configuration_error_invalid_token");
-            return false;
-        }
-
-        scheduler.execute(() -> {
-            try {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "@text/offline.configuration_pending_token");
-                CloudProvider cloudProvider = CloudProvider.getCloudProvider(config.cloud);
-                getTokenKeyCloud(cloudProvider);
-            } catch (Exception e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "@text/offline.communication_error_token");
-            }
-        });
-
-        return false;
-    }
-
-    /** Initialize the connection manager from the current configuration. */
-    private void initConnectionManagerFromConfig() {
-        connectionManager = new org.openhab.binding.mideaac.internal.connection.ConnectionManager(config.ipAddress,
-                config.ipPort, config.timeout, config.key, config.token, config.cloud, config.email, config.password,
-                config.deviceId, config.version, config.promptTone);
     }
 
     /**
      * Send capabilities command(s) if we don't yet have them stored in properties.
      */
-    private void requestCapabilitiesIfMissing() {
-        if (properties.containsKey("modeFanOnly")) {
-            return;
-        }
-
-        scheduler.execute(() -> {
-            try {
-                CommandSet initializationCommand = new CommandSet();
-                initializationCommand.getCapabilities();
-                this.connectionManager.sendCommand(initializationCommand, this);
-
-                // Check if additional capabilities are available and fetch them if so
-                CapabilityParser parser = new CapabilityParser();
-                logger.debug("additional capabilities {}", parser.hasAdditionalCapabilities());
-                if (parser.hasAdditionalCapabilities()) {
-                    scheduler.schedule(() -> {
-                        try {
-                            CommandSet additionalCommand = new CommandSet();
-                            additionalCommand.getAdditionalCapabilities();
-                            this.connectionManager.sendCommand(additionalCommand, this);
-                        } catch (Exception e) {
-                            logger.debug("AC additional capabilities not returned {}", e.getMessage());
-                        }
-                    }, 2, TimeUnit.SECONDS);
-                }
-            } catch (Exception e) {
-                // Will not affect AC device readiness, just log the issue
-                logger.debug("AC capabilities not returned {}", e.getMessage());
-            }
-        });
+    @Override
+    public void initialize() {
+        super.initialize(); // common plumbing
+        startEnergyScheduler(); // AC-specific
     }
 
-    /**
-     * Start routine, token refresh and energy schedulers according to
-     * configuration.
-     */
-    private void startSchedulers() {
-        // Routine polling
-        if (scheduledTask == null) {
-            scheduledTask = scheduler.scheduleWithFixedDelay(this::pollJob, 2, config.pollingTime, TimeUnit.SECONDS);
-            logger.debug("Scheduled task started, Poll Time {} seconds", config.pollingTime);
-        } else {
-            logger.debug("Scheduler already running");
-        }
-
-        // Token/key update
-        if (config.keyTokenUpdate != 0 && scheduledKeyTokenUpdate == null) {
-            scheduledKeyTokenUpdate = scheduler.scheduleWithFixedDelay(
-                    () -> getTokenKeyCloud(CloudProvider.getCloudProvider(config.cloud)), config.keyTokenUpdate,
-                    config.keyTokenUpdate, TimeUnit.HOURS);
-            logger.debug("Token Key Update Scheduler started, update interval {} hours", config.keyTokenUpdate);
-        } else {
-            logger.debug("Token Key Scheduler already running or disabled");
-        }
-
+    private void startEnergyScheduler() {
         // Energy polling
         if (config.energyPoll != 0 && scheduledEnergyUpdate == null) {
             scheduledEnergyUpdate = scheduler.scheduleWithFixedDelay(this::energyUpdate, 1, config.energyPoll,
@@ -386,59 +102,148 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
     }
 
     private void energyUpdate() {
-        ConnectionManager connectionManager = this.connectionManager;
-
         try {
-            CommandSet energyUpdate = new CommandSet();
+            ACCommandSet energyUpdate = new ACCommandSet();
             energyUpdate.energyPoll();
             connectionManager.sendCommand(energyUpdate, this);
+        } catch (Exception e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+        }
+    }
+
+    @Override
+    protected void refreshDeviceState() {
+        try {
+            connectionManager.getStatus(this);
         } catch (MideaAuthenticationException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
-        } catch (MideaConnectionException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-        } catch (MideaException e) {
+        } catch (MideaConnectionException | MideaException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
+        return;
     }
 
-    private void pollJob() {
-        ConnectionManager connectionManager = this.connectionManager;
+    @Override
+    protected void refreshDeviceStateAll() {
+        try {
+            connectionManager.getStatus(this);
+            humidityUpdate();
+            energyUpdate();
+        } catch (MideaAuthenticationException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+        } catch (MideaConnectionException | MideaException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+        } catch (IOException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+        }
+        return;
+    }
+
+    private void humidityUpdate() {
+        try {
+            ACCommandSet humidityUpdate = new ACCommandSet();
+            humidityUpdate.humidityPoll();
+            connectionManager.sendCommand(humidityUpdate, this);
+        } catch (Exception e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+        }
+    }
+
+    /**
+     * This method handles the AC Channels that can be set (non-read only)
+     * The command set is formed using the previous command to only
+     * change the item requested and leave the others the same.
+     * The command set which is then sent to the device via the connectionManager.
+     * For a Refresh both regular and energy and humidity polls are triggerred.
+     */
+    @Override
+    protected void handleDeviceCommand(ChannelUID channelUID, Command command) {
+        logger.debug("Handling channelUID {} with command {}", channelUID.getId(), command.toString());
 
         try {
-            connectionManager.getStatus(callbackLambda);
-            // If we reach here, the device is online.
-            updateStatus(ThingStatus.ONLINE);
-        } catch (MideaAuthenticationException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
-        } catch (MideaConnectionException e) {
+            Response lastresponse = connectionManager.getLastResponse();
+            if (channelUID.getId().equals(CHANNEL_POWER)) {
+                connectionManager.sendCommand(ACCommandHelper.handlePower(command, lastresponse), this);
+            } else if (channelUID.getId().equals(CHANNEL_OPERATIONAL_MODE)) {
+                connectionManager.sendCommand(ACCommandHelper.handleOperationalMode(command, lastresponse), this);
+            } else if (channelUID.getId().equals(CHANNEL_TARGET_TEMPERATURE)) {
+                connectionManager.sendCommand(ACCommandHelper.handleTargetTemperature(command, lastresponse), this);
+            } else if (channelUID.getId().equals(CHANNEL_FAN_SPEED)) {
+                connectionManager.sendCommand(ACCommandHelper.handleFanSpeed(command, lastresponse, config.version),
+                        this);
+            } else if (channelUID.getId().equals(CHANNEL_ECO_MODE)) {
+                connectionManager.sendCommand(ACCommandHelper.handleEcoMode(command, lastresponse), this);
+            } else if (channelUID.getId().equals(CHANNEL_TURBO_MODE)) {
+                connectionManager.sendCommand(ACCommandHelper.handleTurboMode(command, lastresponse), this);
+            } else if (channelUID.getId().equals(CHANNEL_SWING_MODE)) {
+                connectionManager.sendCommand(ACCommandHelper.handleSwingMode(command, lastresponse, config.version),
+                        this);
+            } else if (channelUID.getId().equals(CHANNEL_SCREEN_DISPLAY)) {
+                connectionManager.sendCommand(ACCommandHelper.handleScreenDisplay(command, lastresponse), this);
+            } else if (channelUID.getId().equals(CHANNEL_TEMPERATURE_UNIT)) {
+                connectionManager.sendCommand(ACCommandHelper.handleTempUnit(command, lastresponse), this);
+            } else if (channelUID.getId().equals(CHANNEL_SLEEP_FUNCTION)) {
+                connectionManager.sendCommand(ACCommandHelper.handleSleepFunction(command, lastresponse), this);
+            } else if (channelUID.getId().equals(CHANNEL_ON_TIMER)) {
+                connectionManager.sendCommand(ACCommandHelper.handleOnTimer(command, lastresponse), this);
+            } else if (channelUID.getId().equals(CHANNEL_OFF_TIMER)) {
+                connectionManager.sendCommand(ACCommandHelper.handleOffTimer(command, lastresponse), this);
+            } else if (channelUID.getId().equals(CHANNEL_MAXIMUM_HUMIDITY)) {
+                connectionManager.sendCommand(ACCommandHelper.handleMaximumHumidity(command, lastresponse), this);
+            }
+        } catch (MideaConnectionException | MideaAuthenticationException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-        } catch (MideaException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-        } catch (IOException e) {
+        } catch (MideaException | IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 
-    private void updateChannel(String channelName, State state) {
-        if (ThingStatus.OFFLINE.equals(getThing().getStatus())) {
+    /**
+     * Send capabilities command(s) if we don't yet have them stored in properties.
+     */
+    @Override
+    protected void requestCapabilitiesIfMissing() {
+        if (properties.containsKey("modeFanOnly")) {
             return;
         }
-        Channel channel = thing.getChannel(channelName);
-        if (channel != null && isLinked(channel.getUID())) {
-            updateState(channel.getUID(), state);
-        }
+
+        scheduler.execute(() -> {
+            try {
+                ACCommandSet initializationCommand = new ACCommandSet();
+                initializationCommand.getCapabilities();
+                this.connectionManager.sendCommand(initializationCommand, this);
+
+                // Check if additional capabilities are available and fetch them if so
+                CapabilityParser parser = new CapabilityParser();
+                logger.debug("additional capabilities {}", parser.hasAdditionalCapabilities());
+                if (parser.hasAdditionalCapabilities()) {
+                    scheduler.schedule(() -> {
+                        try {
+                            ACCommandSet additionalCommand = new ACCommandSet();
+                            additionalCommand.getAdditionalCapabilities();
+                            this.connectionManager.sendCommand(additionalCommand, this);
+                        } catch (Exception ex) {
+                            logger.debug("AC additional capabilities not returned {}", ex.getMessage());
+                        }
+                    }, 2, TimeUnit.SECONDS);
+                }
+            } catch (Exception ex) {
+                // Will not affect AC device readiness, just log the issue
+                logger.debug("AC capabilities not returned {}", ex.getMessage());
+            }
+        });
     }
 
     @Override
     public void updateChannels(Response response) {
         updateChannel(CHANNEL_POWER, OnOffType.from(response.getPowerState()));
-        updateChannel(CHANNEL_APPLIANCE_ERROR, OnOffType.from(response.getApplianceError()));
-        updateChannel(CHANNEL_OPERATIONAL_MODE, new StringType(response.getOperationalMode().toString()));
         updateChannel(CHANNEL_FAN_SPEED, new StringType(response.getFanSpeed().toString()));
         updateChannel(CHANNEL_ON_TIMER, new StringType(response.getOnTimer().toChannel()));
         updateChannel(CHANNEL_OFF_TIMER, new StringType(response.getOffTimer().toChannel()));
+        updateChannel(CHANNEL_APPLIANCE_ERROR, OnOffType.from(response.getApplianceError()));
+        updateChannel(CHANNEL_OPERATIONAL_MODE, new StringType(response.getOperationalMode().toString()));
         updateChannel(CHANNEL_SWING_MODE, new StringType(response.getSwingMode().toString()));
         updateChannel(CHANNEL_AUXILIARY_HEAT, OnOffType.from(response.getAuxHeat()));
         updateChannel(CHANNEL_ECO_MODE, OnOffType.from(response.getEcoMode()));
@@ -567,89 +372,6 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
         updateChannel(CHANNEL_OUTDOOR_TEMPERATURE, outdoorTemperature);
     }
 
-    @Override
-    public void discovered(DiscoveryResult discoveryResult) {
-        logger.debug("Discovered {}", thing.getUID());
-        Map<String, Object> discoveryProps = discoveryResult.getProperties();
-        Configuration configuration = editConfiguration();
-
-        Object propertyDeviceId = Objects.requireNonNull(discoveryProps.get(CONFIG_DEVICEID));
-        configuration.put(CONFIG_DEVICEID, propertyDeviceId.toString());
-
-        Object propertyIpPort = Objects.requireNonNull(discoveryProps.get(CONFIG_IP_PORT));
-        configuration.put(CONFIG_IP_PORT, propertyIpPort.toString());
-
-        Object propertyVersion = Objects.requireNonNull(discoveryProps.get(CONFIG_VERSION));
-        BigDecimal bigDecimalVersion = new BigDecimal((String) propertyVersion);
-        logger.trace("Property Version in Handler {}", bigDecimalVersion.intValue());
-        configuration.put(CONFIG_VERSION, bigDecimalVersion.intValue());
-
-        updateConfiguration(configuration);
-
-        properties = editProperties();
-
-        Object propertySN = Objects.requireNonNull(discoveryProps.get(PROPERTY_SN));
-        properties.put(PROPERTY_SN, propertySN.toString());
-
-        Object propertySSID = Objects.requireNonNull(discoveryProps.get(PROPERTY_SSID));
-        properties.put(PROPERTY_SSID, propertySSID.toString());
-
-        Object propertyType = Objects.requireNonNull(discoveryProps.get(PROPERTY_TYPE));
-        properties.put(PROPERTY_TYPE, propertyType.toString());
-
-        updateProperties(properties);
-        initialize();
-    }
-
-    /**
-     * Gets the token and key from the Cloud
-     * 
-     * @param cloudProvider Cloud Provider account
-     */
-    public void getTokenKeyCloud(CloudProvider cloudProvider) {
-        if (scheduledTask != null) {
-            stopScheduler();
-        }
-        logger.debug("Retrieving Token and/or Key from cloud");
-        Cloud cloud = new Cloud(config.email, config.password, cloudProvider, httpClient);
-        if (cloud.login()) {
-            TokenKey tk = cloud.getToken(config.deviceId);
-            Configuration configuration = editConfiguration();
-
-            configuration.put(CONFIG_TOKEN, tk.token());
-            configuration.put(CONFIG_KEY, tk.key());
-            updateConfiguration(configuration);
-
-            logger.trace("Token: {}", tk.token());
-            logger.trace("Key: {}", tk.key());
-            logger.debug("Token and Key obtained from cloud, saving, back to initialize");
-            initialize();
-        } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.configuration_error_invalid_token ");
-        }
-    }
-
-    private void stopScheduler() {
-        ScheduledFuture<?> localScheduledTask = this.scheduledTask;
-
-        if (localScheduledTask != null && !localScheduledTask.isCancelled()) {
-            localScheduledTask.cancel(true);
-            logger.debug("Scheduled task cancelled.");
-            scheduledTask = null;
-        }
-    }
-
-    private void stopTokenKeyUpdate() {
-        ScheduledFuture<?> localScheduledTask = this.scheduledKeyTokenUpdate;
-
-        if (localScheduledTask != null && !localScheduledTask.isCancelled()) {
-            localScheduledTask.cancel(true);
-            logger.debug("Scheduled Key Token Update cancelled.");
-            scheduledKeyTokenUpdate = null;
-        }
-    }
-
     private void stopEnergyUpdate() {
         ScheduledFuture<?> localScheduledTask = this.scheduledEnergyUpdate;
 
@@ -662,9 +384,7 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
 
     @Override
     public void dispose() {
-        stopScheduler();
-        stopTokenKeyUpdate();
-        stopEnergyUpdate();
-        connectionManager.dispose(true);
+        super.dispose(); // stop common schedulers + connection manager
+        stopEnergyUpdate(); // AC-specific
     }
 }

@@ -24,6 +24,7 @@ import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.Locale;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -31,8 +32,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mideaac.internal.Utils;
 import org.openhab.binding.mideaac.internal.cloud.CloudProvider;
-import org.openhab.binding.mideaac.internal.handler.CommandBase;
-import org.openhab.binding.mideaac.internal.handler.capabilities.CapabilityParser;
+import org.openhab.binding.mideaac.internal.devices.CommandBase;
+import org.openhab.binding.mideaac.internal.devices.capabilities.CapabilityParser;
 import org.openhab.binding.mideaac.internal.security.Security;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
@@ -57,7 +58,9 @@ public class MideaACDiscoveryService extends AbstractDiscoveryService {
     private static int discoveryTimeoutSeconds = 10;
     private final int receiveJobTimeout = 20000;
     private final int udpPacketTimeout = receiveJobTimeout - 50;
-    private final String mideaacNamePrefix = "MideaAC";
+    private final String acNamePrefix = "Air_Conditioner";
+    private final String a1NamePrefix = "Dehumidifier";
+
     /**
      * UDP port1 to send command.
      */
@@ -93,13 +96,13 @@ public class MideaACDiscoveryService extends AbstractDiscoveryService {
 
     @Override
     protected void startScan() {
-        logger.debug("Start scan for Midea AC devices.");
+        logger.debug("Start scan for Midea devices.");
         discoverThings();
     }
 
     @Override
     protected void stopScan() {
-        logger.debug("Stop scan for Midea AC devices.");
+        logger.debug("Stop scan for Midea devices.");
         closeDiscoverSocket();
         super.stopScan();
     }
@@ -315,11 +318,21 @@ public class MideaACDiscoveryService extends AbstractDiscoveryService {
             mSmartType = mSmartSSID.split("_")[1];
             logger.debug("Type: '{}'", mSmartType);
 
-            String thingName = createThingName(packet.getAddress().getAddress(), mSmartId);
-            ThingUID thingUID = new ThingUID(THING_TYPE_MIDEAAC, thingName.toLowerCase());
+            String thingName = createThingName(packet.getAddress().getAddress(),
+                    "ac".equalsIgnoreCase(mSmartType) ? acNamePrefix
+                            : "a1".equalsIgnoreCase(mSmartType) ? a1NamePrefix : "Midea_Device");
+            // choose thing type based on discovered device type/version or default to AC
+            ThingUID thingUID;
+            if ("ac".equalsIgnoreCase(mSmartType)) {
+                thingUID = new ThingUID(THING_TYPE_AC, thingName.toLowerCase(Locale.ROOT));
+            } else if ("a1".equalsIgnoreCase(mSmartType)) {
+                thingUID = new ThingUID(THING_TYPE_DEHUMIDIFIER, thingName.toLowerCase(Locale.ROOT));
+            } else {
+                thingUID = new ThingUID(THING_TYPE_AC, thingName.toLowerCase(Locale.ROOT));
+            }
 
             return DiscoveryResultBuilder.create(thingUID).withLabel(thingName)
-                    .withRepresentationProperty(CONFIG_IP_ADDRESS).withThingType(THING_TYPE_MIDEAAC)
+                    .withRepresentationProperty(CONFIG_IP_ADDRESS)
                     .withProperties(collectProperties(ipAddress, mSmartVersion, mSmartId, mSmartPort, mSmartSN,
                             mSmartSSID, mSmartType, new TreeMap<>(), // Placeholder for capabilities
                             new TreeMap<>())) // Placeholder for numericCapabilities
@@ -329,7 +342,7 @@ public class MideaACDiscoveryService extends AbstractDiscoveryService {
             return null;
         } else {
             logger.debug(
-                    "Midea AC device was detected, but the retrieved data is incomplete or not supported. Device not registered");
+                    "Midea device was detected, but the retrieved data is incomplete or not supported. Device not registered");
             return null;
         }
     }
@@ -339,8 +352,8 @@ public class MideaACDiscoveryService extends AbstractDiscoveryService {
      * 
      * @return the name for the device
      */
-    private String createThingName(final byte[] byteIP, String id) {
-        return mideaacNamePrefix + "-" + Byte.toUnsignedInt(byteIP[3]) + "-" + id;
+    private String createThingName(final byte[] byteIP, String mideaNamePrefix) {
+        return mideaNamePrefix + "-" + Byte.toUnsignedInt(byteIP[3]);
     }
 
     /**
@@ -353,7 +366,9 @@ public class MideaACDiscoveryService extends AbstractDiscoveryService {
      * @param port Port of the device
      * @param sn Serial number of the device
      * @param ssid Serial id converted with StandardCharsets.UTF_8
-     * @param type Type of device (ac)
+     * @param type Type of device (ac) or (a1) humidifier
+     * @param numericCapabilities Map of numeric capabilities
+     * @param capabilities Map of boolean capabilities
      * @return Map with properties
      */
     private Map<String, Object> collectProperties(String ipAddress, String version, String id, String port, String sn,
@@ -365,10 +380,10 @@ public class MideaACDiscoveryService extends AbstractDiscoveryService {
         properties.put(CONFIG_IP_ADDRESS, ipAddress);
         properties.put(CONFIG_IP_PORT, port);
         properties.put(CONFIG_DEVICEID, id);
+        properties.put(CONFIG_DEVICE_TYPE, type);
         properties.put(CONFIG_VERSION, version);
         properties.put(PROPERTY_SN, sn);
         properties.put(PROPERTY_SSID, ssid);
-        properties.put(PROPERTY_TYPE, type);
 
         // Default empty maps for boolean and numeric capabilities
         if (capabilities != null) {
