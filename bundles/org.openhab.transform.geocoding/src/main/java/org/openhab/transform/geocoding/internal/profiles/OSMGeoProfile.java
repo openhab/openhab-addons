@@ -12,24 +12,17 @@
  */
 package org.openhab.transform.geocoding.internal.profiles;
 
-import static org.openhab.transform.geocoding.internal.GeoConstants.*;
+import static org.openhab.transform.geocoding.internal.OSMGeoConstants.PROFILE_TYPE_UID;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.library.types.PointType;
 import org.openhab.core.library.types.StringType;
@@ -75,7 +68,7 @@ public class OSMGeoProfile implements StateProfile {
         if (!configuration.language.isBlank()) {
             language = configuration.language;
         } else {
-            language = locale.getLocale().getDisplayLanguage() + "-" + locale.getLocale().getCountry();
+            language = locale.getLocale().getLanguage() + "-" + locale.getLocale().getCountry();
         }
         try {
             resolveDuration = DurationUtils.parse(configuration.resolveDuration);
@@ -99,7 +92,7 @@ public class OSMGeoProfile implements StateProfile {
 
     @Override
     public void onStateUpdateFromItem(State state) {
-        processState(state);
+        // no operation
     }
 
     @Override
@@ -123,12 +116,12 @@ public class OSMGeoProfile implements StateProfile {
                     if (now.isAfter(nextResolveTime)) {
                         // resolve duration passed, do immediate resolve
                         logger.trace("Resolve now.");
-                        resolverJob = scheduler.schedule(this::resolveState, 0, TimeUnit.SECONDS);
+                        resolverJob = scheduler.schedule(this::doResolve, 0, TimeUnit.SECONDS);
                     } else {
                         // schedule resolving for the future
                         long delaySeconds = Duration.between(now, nextResolveTime).toSeconds();
                         logger.trace("Resolve in {} seconds.", delaySeconds);
-                        resolverJob = scheduler.schedule(this::resolveState, delaySeconds, TimeUnit.SECONDS);
+                        resolverJob = scheduler.schedule(this::doResolve, delaySeconds, TimeUnit.SECONDS);
                     }
                 } else {
                     logger.trace("Resolve job already scheduled, skipping new scheduling.");
@@ -140,7 +133,7 @@ public class OSMGeoProfile implements StateProfile {
     /**
      * Callback function of the resolverJob to perform reverse geocoding on the last stored state
      */
-    private void resolveState() {
+    private void doResolve() {
         OSMReverseGeocoding localLastState;
         synchronized (this) {
             localLastState = lastState;
@@ -148,7 +141,7 @@ public class OSMGeoProfile implements StateProfile {
             resolverJob = null;
         }
         // do reverse geocoding and double check for success before sending update
-        localLastState.doResolve();
+        localLastState.resolve();
         if (localLastState.isResolved()) {
             callback.sendUpdate(StringType.valueOf(localLastState.getAddress()));
         } else {
@@ -163,31 +156,23 @@ public class OSMGeoProfile implements StateProfile {
 
     @Override
     public void onCommandFromHandler(Command command) {
-        search(command);
+        // no operation
     }
 
+    /**
+     * Perform search for the given command string and take the first relevant result as geo coordinates
+     *
+     * @param command string with the search query
+     */
     private void search(Command command) {
         if (command instanceof StringType string) {
-            try {
-                String searchString = URLEncoder.encode(string.toString(), StandardCharsets.UTF_8.toString());
-                ContentResponse response = httpClient.newRequest(String.format(SEARCH_URL, searchString))
-                        .header("Accept-Language", language).header("User-Agent", "openHAB Geo Transformation Service")
-                        .timeout(10, TimeUnit.SECONDS).send();
-                if (response.getStatus() == HttpStatus.OK_200) {
-                    String jsonResponse = response.getContentAsString();
-                    PointType gpsCoordinates = OSMGeocoding.parse(jsonResponse);
-                    if (gpsCoordinates != null) {
-                        callback.sendCommand(gpsCoordinates);
-                    } else {
-                        logger.debug("Geo search doesn't provide coordinates {}", jsonResponse);
-                    }
-                } else {
-                    String errorMessage = "HTTP error: " + response.getStatus();
-                    logger.debug("Geo search error {}", errorMessage);
-                }
-            } catch (InterruptedException | TimeoutException | ExecutionException | UnsupportedEncodingException e) {
-                String errorMessage = e.getMessage();
-                logger.debug("Geo search exception {}", errorMessage);
+            OSMGeocoding geoSearch = new OSMGeocoding(string.toString(), httpClient);
+            PointType geoCoordinates = geoSearch.resolve();
+            if (geoCoordinates != null) {
+                logger.trace("Send {} for {}", geoCoordinates.toFullString(), command.toFullString());
+                callback.sendCommand(geoCoordinates);
+            } else {
+                logger.debug("Geo search could not resolve coordinates for command {}", command.toFullString());
             }
         } else {
             logger.trace("No possible geo search for command {}", command.toFullString());

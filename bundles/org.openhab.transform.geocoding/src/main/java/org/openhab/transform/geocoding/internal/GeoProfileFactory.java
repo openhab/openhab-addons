@@ -12,7 +12,7 @@
  */
 package org.openhab.transform.geocoding.internal;
 
-import static org.openhab.transform.geocoding.internal.GeoConstants.PROFILE_TYPE_UID;
+import static org.openhab.transform.geocoding.internal.OSMGeoConstants.PROFILE_TYPE_UID;
 
 import java.util.Collection;
 import java.util.List;
@@ -37,7 +37,7 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 /**
- * {@link GeoProfileFactory} Factory to create the profile
+ * {@link GeoProfileFactory} is a factory for OpenStreetMap (OSM) geo coding profile
  *
  * @author Bernd Weymann - Initial contribution
  */

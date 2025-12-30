@@ -4,7 +4,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/addon/v1.0.0 https://openhab.org/schemas/addon-1.0.0.xsd">
 
 	<type>transformation</type>
-	<name>Geo Coding</name>
+	<name>Geocoding</name>
 	<description>Converting geo coordinates into human readable addresses and vice versa.</description>
 	<connection>cloud</connection>
 

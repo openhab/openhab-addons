@@ -14,7 +14,7 @@ package org.openhab.transform.geocoding.internal;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
-import static org.openhab.transform.geocoding.internal.GeoConstants.*;
+import static org.openhab.transform.geocoding.internal.OSMGeoConstants.*;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -43,11 +43,11 @@ class OSMGeocodingTest {
                 mock(HttpClient.class));
         String fileContent = readFile("src/test/resources/geo-reverse-result.json");
         String expectedResult = "Am Friedrichshain 22, 10407 Berlin Pankow";
-        assertEquals(expectedResult, toObserve.decode(fileContent));
+        assertEquals(expectedResult, toObserve.format(fileContent));
 
         fileContent = readFile("src/test/resources/geo-reverse-result-no-road.json");
         expectedResult = "10407 Berlin Pankow";
-        assertEquals(expectedResult, toObserve.decode(fileContent));
+        assertEquals(expectedResult, toObserve.format(fileContent));
     }
 
     @Test
@@ -59,18 +59,31 @@ class OSMGeocodingTest {
                 mock(HttpClient.class));
         String fileContent = readFile("src/test/resources/geo-reverse-result.json");
         String expectedResult = (new JSONObject(fileContent)).getJSONObject(ADDRESS_KEY).toString();
-        assertEquals(expectedResult, toObserve.decode(fileContent));
+        assertEquals(expectedResult, toObserve.format(fileContent));
 
         fileContent = readFile("src/test/resources/geo-reverse-result-no-road.json");
         expectedResult = (new JSONObject(fileContent)).getJSONObject(ADDRESS_KEY).toString();
-        assertEquals(expectedResult, toObserve.decode(fileContent));
+        assertEquals(expectedResult, toObserve.format(fileContent));
+    }
+
+    @Test
+    void testReverseUSFormat() {
+        OSMGeoConfig configuration = new OSMGeoConfig();
+        configuration.format = US_ADDRESS_FORMAT;
+
+        OSMReverseGeocoding toObserve = new OSMReverseGeocoding(mock(PointType.class), configuration,
+                mock(HttpClient.class));
+        String fileContent = readFile("src/test/resources/geo-reverse-nyc.json");
+        String expectedResult = "6 West 23rd Street, City of New York Manhattan 10010";
+        assertEquals(expectedResult, toObserve.format(fileContent));
     }
 
     @Test
     void testGeocoding() {
+        OSMGeocoding toObserve = new OSMGeocoding("Not necessary", mock(HttpClient.class));
         String fileContent = readFile("src/test/resources/geo-search-result.json");
         String expectedResult = "52.5252949,13.3706843";
-        PointType computedResult = OSMGeocoding.parse(fileContent);
+        PointType computedResult = toObserve.parse(fileContent);
         assertNotNull(computedResult);
         assertEquals(expectedResult, computedResult.toFullString());
     }

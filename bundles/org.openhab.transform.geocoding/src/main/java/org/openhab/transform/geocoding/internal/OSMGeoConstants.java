@@ -19,17 +19,16 @@ import org.openhab.core.thing.profiles.ProfileTypeUID;
 import org.openhab.core.transform.TransformationService;
 
 /**
- * The {@link GeoConstants} class to define transform constants
- * used across the whole binding.
+ * The {@link OSMGeoConstants} defines fields used for OpenStreetMap geocoding / reverse geocoding
  *
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
-public class GeoConstants {
+public class OSMGeoConstants {
 
     // Profile Type UID
     public static final ProfileTypeUID PROFILE_TYPE_UID = new ProfileTypeUID(
-            TransformationService.TRANSFORM_PROFILE_SCOPE, "geo-coding");
+            TransformationService.TRANSFORM_PROFILE_SCOPE, "geocoding");
 
     // URLs
     public static final String BASE_URL = "https://nominatim.openstreetmap.org/";
@@ -43,6 +42,7 @@ public class GeoConstants {
     public static final String ROW_ADDRESS_FORMAT = "row_address";
     public static final String US_ADDRESS_FORMAT = "us_address";
     public static final String JSON_FORMAT = "json";
+    public static final String RAW_FORMAT = "raw";
 
     // see https://nominatim.org/release-docs/latest/api/Output/#addressdetails
     public static final List<String> ROAD_KEYS = List.of("road");

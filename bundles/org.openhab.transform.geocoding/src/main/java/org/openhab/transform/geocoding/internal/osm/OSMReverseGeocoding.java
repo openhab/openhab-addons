@@ -12,7 +12,7 @@
  */
 package org.openhab.transform.geocoding.internal.osm;
 
-import static org.openhab.transform.geocoding.internal.GeoConstants.*;
+import static org.openhab.transform.geocoding.internal.OSMGeoConstants.*;
 
 import java.util.List;
 import java.util.Locale;
@@ -32,7 +32,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Reverse Geocoding of JSON String
+ * Reverse geocoding of a given location using OpenStreetMap (OSM) Nominatim API service
  *
  * @author Bernd Weymann - Initial contribution
  */
@@ -69,7 +69,11 @@ public class OSMReverseGeocoding {
      *
      * @param point the PointType containing latitude and longitude
      */
-    public void doResolve() {
+    public void resolve() {
+        if (resolved) {
+            logger.trace("Location {} is already resolved {}", location.toFullString(), getAddress());
+            return;
+        }
         try {
             ContentResponse response = httpClient
                     .newRequest(String.format(Locale.US, REVERSE_URL, location.getLatitude().doubleValue(),
@@ -79,7 +83,7 @@ public class OSMReverseGeocoding {
             int statusResponse = response.getStatus();
             String jsonResponse = response.getContentAsString();
             if (statusResponse == HttpStatus.OK_200) {
-                address = decode(jsonResponse);
+                address = format(jsonResponse);
                 resolved = true;
             } else {
                 logger.debug("Decoding of location {} failed with status {} and response: {}", location.toFullString(),
@@ -95,58 +99,37 @@ public class OSMReverseGeocoding {
         return location.toFullString();
     }
 
-    public String decode(String jsonResponse) {
+    public String format(String jsonResponse) {
         JSONObject jsonObject = new JSONObject(jsonResponse);
+        String resolvedAddress;
         switch (config.format) {
             case ROW_ADDRESS_FORMAT:
-                return decodeRowAddress(jsonObject);
+                resolvedAddress = decodeAddress(jsonObject, ROAD_KEYS, HOUSE_NUMBER_KEYS, ZIP_CODE_KEYS, CITY_KEYS,
+                        DISTRICT_KEYS);
+                return resolvedAddress.isBlank() ? decodeJson(jsonObject) : resolvedAddress;
             case US_ADDRESS_FORMAT:
-                return decodeUsAddress(jsonObject);
+                resolvedAddress = decodeAddress(jsonObject, HOUSE_NUMBER_KEYS, ROAD_KEYS, CITY_KEYS, DISTRICT_KEYS,
+                        ZIP_CODE_KEYS);
+                return resolvedAddress.isBlank() ? decodeJson(jsonObject) : resolvedAddress;
             case JSON_FORMAT:
                 return decodeJson(jsonObject);
+            case RAW_FORMAT:
+                return jsonObject.toString();
             default:
                 return decodeJson(jsonObject);
         }
     }
 
-    /**
-     * Decode address from JSON object with pattern street, housen-umber, zip-code, city and district.
-     * Some fields may be missing depending on the location.
-     *
-     * @param jsonObject to be decoded
-     * @return human readable address string
-     */
-    private String decodeRowAddress(JSONObject jsonObject) {
+    private String decodeAddress(JSONObject jsonObject, List<String> streetPart1, List<String> streetPart2,
+            List<String>... cityKeys) {
         if (jsonObject.has(ADDRESS_KEY)) {
             JSONObject address = jsonObject.getJSONObject(ADDRESS_KEY);
-            String street = (get(address, ROAD_KEYS) + " " + get(address, HOUSE_NUMBER_KEYS)).strip();
-            String city = (get(address, ZIP_CODE_KEYS) + " " + get(address, CITY_KEYS) + " "
-                    + get(address, DISTRICT_KEYS)).strip();
-            if (!street.isBlank()) {
-                street += ", ";
+            String street = (get(address, streetPart1) + " " + get(address, streetPart2)).strip();
+            StringBuilder fullAddress = new StringBuilder(street.isBlank() ? "" : street + ", ");
+            for (List<String> keys : cityKeys) {
+                fullAddress.append(get(address, keys)).append(" ");
             }
-            return street + city;
-        }
-        return "";
-    }
-
-    /**
-     * Decode address from JSON object with pattern house-number, street, city, district and zip-code
-     * Some fields may be missing depending on the location.
-     *
-     * @param jsonObject to be decoded
-     * @return human readable address string
-     */
-    private String decodeUsAddress(JSONObject jsonObject) {
-        if (jsonObject.has(ADDRESS_KEY)) {
-            JSONObject address = jsonObject.getJSONObject(ADDRESS_KEY);
-            String street = (get(address, HOUSE_NUMBER_KEYS) + " " + get(address, ROAD_KEYS)).strip();
-            String city = (get(address, CITY_KEYS) + " " + get(address, DISTRICT_KEYS) + " "
-                    + get(address, ZIP_CODE_KEYS)).strip();
-            if (!street.isBlank()) {
-                street += ", ";
-            }
-            return street + city;
+            return fullAddress.toString().strip();
         }
         return "";
     }

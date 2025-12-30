@@ -4,10 +4,10 @@
 	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
 
-	<config-description uri="profile:transform:geo-coding">
+	<config-description uri="profile:transform:geocoding">
 		<parameter name="resolveDuration" type="text" required="false">
 			<label>Resolve Duration</label>
-			<description>Duration time between reverse geo coding. Minimum of 1m will be set!</description>
+			<description>Duration between reverse geocoding executions. Minimum: 1 minute</description>
 			<default>5m</default>
 		</parameter>
 		<parameter name="format" type="text" required="false">
@@ -16,14 +16,14 @@
 			<limitToOptions>true</limitToOptions>
 			<default>row_address</default>
 			<options>
-				<option value="row_address">Rest of World Address</option>
-				<option value="us_address">US/UK Address</option>
-				<option value="json">JSON</option>
+				<option value="row_address">Rest of World Address Format</option>
+				<option value="us_address">US/UK Address Format</option>
+				<option value="json">JSON encoded</option>
 			</options>
 		</parameter>
 		<parameter name="language" type="text" required="false">
-			<label>Language</label>
-			<description>Preferred language of the result</description>
+			<label>Language (override)</label>
+			<description>Preferred language of the result. Only necessary if openHAB locale settings shall be overwritten</description>
 			<advanced>true</advanced>
 		</parameter>
 	</config-description>

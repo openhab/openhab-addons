@@ -1,44 +1,51 @@
 # Geocoding Profile Transformation Service
 
-**Note**
-This isn't an _instant_ transformation profile!
-It's using OpenStreetMap API service to convert geo coordinates into an address an vice versa!
-This takes time and it cannot be performed with e.g. secondly updates.
-Minimum required time is 1 minute.
+Geocoding transformation service using [Nominatim API for OpenStreetMap](https://nominatim.org/release-docs/latest/) to resolve
 
-## Rationale
-Several bindings / services are providing location based channels like
+- geo coordinates into a human readable string ([reverse geocoding](https://nominatim.org/release-docs/latest/api/Reverse/))   
+- an address string into geo coordinates ([geocoding](https://nominatim.org/release-docs/latest/api/Search/)) 
 
-- MercedesMe, Volvo (Vehicles)
-- torque2mqtt (Vehicles)
-- gps trackers
-- e-bikes
+## Reverse Geocoding
 
-Transfomration can be used to translate
-- geo coordinates into a human readable string (reverse geocoding)   
-- an address string into geo coordinates (geocoding) if channel is writeable
-
+The reverse geocoding is applied when the channel updates the `Location` with latitude and longitude geo coordinates.
+These will be resolved into a human readable address.
  
-## Revesre Geocoding
-
-Translates geo coordinate state updates into human readable string.
-Based on the location values are present or not.
-While driving on the highway address information is limited while parking at your home location should be more precise.
-
 ## Geocoding
 
-Translates a string into geo coordinates. 
-Be very precise on the search string.
-If the search is ambigious it may be translated into wrong geo coordinates.
+Geocding is applied if you send a string command towards the item.
+The API is translating this search string into geo coordinates which are send via the channel towards the handler.
+Of course this makes only sense if the channel is declared as writable.
+Formulate your string command as precise as possible to avoid ambiguous results.
+E.g. _Springfield US_ command will deliver multiple results and only one is chosen for the transformation. 
 
 ## Configuration
 
-Uses open streetmap API - decoding takes time
+| Configuration Parameter | Type | Description                                                                                      |
+|-------------------------|------|--------------------------------------------------------------------------------------------------|
+| `format`                | text | Country specific address formatting                                                              |
+| `resolveDuration`       | text | Duration between reverse geocoding executions. Minimum: 1 minute                                 |
+| `language`              | text | Preferred language of the result. Only necessary if openHAB locale settings shall be overwritten |
 
-duration - minimum time between reverse geocoding resolving
+Select preferred display `format` for reverse geocoding.
+Options:
+
+- `row_address`: `street` `house-number`, `postcode` `city` `district`
+- `us_address`: `house-number` `street`, `city` `district` `postcode`
+- `json`: unformatted JSON response
+
+Note that [address fields](https://nominatim.org/release-docs/latest/api/Output/#addressdetails) may be missing e.g. for rural areas. 
+Default format is `row_address`.
+
+The `resolveDuration` defines the minimum time between two reverse geocoding transformations.
+An external API is called to resolve the geo coordinates and it shall not be queried too frequent.
+Channel updates within the duration are omitted.
+After the configured duration expired the last received location will be transformed. 
+Minimum configurable duration is 1 minute.
+Default is 5 minutes (`5m`).
+
+The API calls are performed with your openHAB locale settings.
+This can be overwritten with `language` configuration parameter using [Java Locale format](https://www.oracle.com/java/technologies/javase/jdk21-suported-locales.html).
 
 ```java
-String <itemName> { channel="<channelUID>"[profile="transform:GEO">]}
+String <itemName> { channel="<locationChannelUID>"[profile="transform:geocoding",format="us_address",resolveDuration="10m",language="en-US"]}
 ```
-
-https://nominatim.org/release-docs/latest/api/Output/

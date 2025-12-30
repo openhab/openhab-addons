@@ -12,7 +12,7 @@
 
   <artifactId>org.openhab.transform.geocoding</artifactId>
 
-  <name>openHAB Add-ons :: Bundles :: Transformation Service :: Geo</name>
+  <name>openHAB Add-ons :: Bundles :: Transformation Service :: Geocoding</name>
 
   <dependencies>
     <!-- version needs to match with other projects like org.openhab.io.openhabcloud.pom.xml -->

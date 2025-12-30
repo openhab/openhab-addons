@@ -12,12 +12,12 @@
  */
 package org.openhab.transform.geocoding.internal.config;
 
-import static org.openhab.transform.geocoding.internal.GeoConstants.ROW_ADDRESS_FORMAT;
+import static org.openhab.transform.geocoding.internal.OSMGeoConstants.ROW_ADDRESS_FORMAT;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link OSMGeoConfig} class contains the parameters to configure geo encoding and decoding
+ * The {@link OSMGeoConfig} class contains the configuration parameters for OSM geocoding/reverse geocoding
  *
  * @author Bernd Weymann - initial contribution
  *
@@ -25,6 +25,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class OSMGeoConfig {
     public String format = ROW_ADDRESS_FORMAT;
-    public String language = "";
     public String resolveDuration = "5m";
+    public String language = "";
 }
