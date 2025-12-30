@@ -477,6 +477,7 @@
 /bundles/org.openhab.transform.basicprofiles/ @cweitkamp @J-N-K
 /bundles/org.openhab.transform.bin2json/ @paulianttila
 /bundles/org.openhab.transform.exec/ @openhab/add-ons-maintainers
+/bundles/org.openhab.transform.geocoding/ @weymann
 /bundles/org.openhab.transform.jinja/ @jochen314
 /bundles/org.openhab.transform.jsonpath/ @clinique
 /bundles/org.openhab.transform.map/ @openhab/add-ons-maintainers

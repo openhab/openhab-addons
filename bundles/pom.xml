@@ -36,6 +36,7 @@
     <module>org.openhab.transform.basicprofiles</module>
     <module>org.openhab.transform.bin2json</module>
     <module>org.openhab.transform.exec</module>
+    <module>org.openhab.transform.geocoding</module>
     <module>org.openhab.transform.jinja</module>
     <module>org.openhab.transform.jsonpath</module>
     <module>org.openhab.transform.map</module>
