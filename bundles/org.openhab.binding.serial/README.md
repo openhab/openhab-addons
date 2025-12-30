@@ -18,9 +18,9 @@ A Serial Bridge thing (`serialBridge`) represents a single serial port.
 The bridge supports a String channel which is set to the currently received data from the serial port.
 Sending a command to this channel sends the command as a string to the serial port.
 
-To communicate with protocols requiring binary data it is possible to select a special 'HEX' charset. 
-This results into all binary data being converted into space-separacted hexadecimal strings that can be parsed using regular expressions. 
-In this mode, the input data is also expected to be encoded as hexadecimal characters. 
+To communicate with protocols requiring binary data it is possible to select a special 'HEX' charset.
+This results into all binary data being converted into space-separacted hexadecimal strings that can be parsed using regular expressions.
+In this mode, the input data is also expected to be encoded as hexadecimal characters.
 
 The bridge also supports a String channel which encodes the received data as the string representation of a RawType to handle data that is
 not supported by the REST interface.
