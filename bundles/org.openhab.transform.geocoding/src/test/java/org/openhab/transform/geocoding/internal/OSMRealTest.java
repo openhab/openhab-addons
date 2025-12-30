@@ -13,7 +13,7 @@
 package org.openhab.transform.geocoding.internal;
 
 import static org.junit.jupiter.api.Assertions.fail;
-import static org.openhab.transform.geocoding.internal.OSMGeoConstants.*;
+import static org.openhab.transform.geocoding.internal.OSMGeoConstants.ROW_ADDRESS_FORMAT;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
@@ -24,7 +24,7 @@ import org.openhab.transform.geocoding.internal.osm.OSMGeocoding;
 import org.openhab.transform.geocoding.internal.osm.OSMReverseGeocoding;
 
 /**
- * Testing with real API calls towards from OpenStreetMap
+ * Testing with real API calls to Nominatim/OpenStreetMap
  *
  * @author Bernd Weymann - Initial contribution
  */
@@ -38,7 +38,6 @@ class OSMRealTest {
         OSMGeoConfig osmConfig = new OSMGeoConfig();
         osmConfig.language = "de-DE";
         osmConfig.format = ROW_ADDRESS_FORMAT;
-        osmConfig.format = RAW_FORMAT;
         OSMReverseGeocoding toObserve = new OSMReverseGeocoding(PointType.valueOf(coordinates), osmConfig, httpClient);
         toObserve.resolve();
     }

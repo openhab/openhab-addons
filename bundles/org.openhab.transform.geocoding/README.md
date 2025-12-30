@@ -9,6 +9,14 @@ Geocoding transformation service using [Nominatim API for OpenStreetMap](https:/
 - geo coordinates into a human readable string ([reverse geocoding](https://nominatim.org/release-docs/latest/api/Reverse/))   
 - an address string into geo coordinates ([geocoding](https://nominatim.org/release-docs/latest/api/Search/)) 
 
+**You must respect the** [Nominatim Usage Policy](https://operations.osmfoundation.org/policies/nominatim/)!
+You need to estimate your call frequency towards the _Nominatim_ service.
+For reverse geocoding the configuration parameter `resolveDuration` with minimum resolve time of 1 minute shall fulfill the throttling requirements.
+For geocoding there's no throttling.
+Each user needs to respect the maximum allowed frequency of 1 call per second.
+The required `User-Agent` is provided by this transformation service. 
+Thanks to [Nominatim](https://nominatim.org) and [OpenStreetMap](https://www.openstreetmap.org/) to provide this free service!
+ 
 ### Reverse Geocoding
 
 The reverse geocoding is applied when the channel updates the `Location` with latitude and longitude geo coordinates.
@@ -16,7 +24,7 @@ These will be resolved into a human readable address.
  
 ### Geocoding
 
-Geocding is applied if you send a string command towards the item.
+Geocoding  is applied if you send a string command towards the item.
 The API is translating this search string into geo coordinates which are send via the channel towards the handler.
 Of course this makes only sense if the channel is declared as writable.
 Formulate your string command as precise as possible to avoid ambiguous results.

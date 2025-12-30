@@ -56,7 +56,7 @@ public class OSMGeocoding {
      */
     public @Nullable PointType resolve() {
         try {
-            String encodedSearch = URLEncoder.encode(searchString.toString(), StandardCharsets.UTF_8.toString());
+            String encodedSearch = URLEncoder.encode(searchString, StandardCharsets.UTF_8.toString());
             ContentResponse response = httpClient.newRequest(String.format(SEARCH_URL, encodedSearch))
                     .header("User-Agent", "openHAB Geo Transformation Service").timeout(10, TimeUnit.SECONDS).send();
             int statusResponse = response.getStatus();
@@ -80,7 +80,7 @@ public class OSMGeocoding {
 
     public @Nullable PointType parse(String jsonResponse) {
         JSONArray searchResults = new JSONArray(jsonResponse);
-        logger.debug("Geo search found {} results}", searchResults.length());
+        logger.debug("Geo search found {} results", searchResults.length());
         if (searchResults.length() > 0) {
             JSONObject firstResult = searchResults.getJSONObject(0);
             if (firstResult.has(LATITUDE_KEY) && firstResult.has(LONGITUDE_KEY)) {

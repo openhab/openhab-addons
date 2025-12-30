@@ -79,7 +79,8 @@ public class OSMGeoProfile implements StateProfile {
         } catch (IllegalArgumentException e) {
             // fallback to default duration of 5 minutes
             resolveDuration = Duration.ofMinutes(5);
-            logger.warn("Could not parse duration '{}', using default of 1 minute.", configuration.resolveDuration);
+            logger.warn("Could not parse duration '{}', using default duration {}", configuration.resolveDuration,
+                    resolveDuration);
         }
         logger.debug("GeoProfile created with language: {} and resolve duration: {}", language, resolveDuration);
         lastState = new OSMReverseGeocoding(PointType.valueOf("0,0"), configuration, httpClient);
