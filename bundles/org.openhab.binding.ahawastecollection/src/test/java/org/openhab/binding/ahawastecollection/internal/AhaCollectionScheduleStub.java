@@ -32,6 +32,7 @@ public final class AhaCollectionScheduleStub implements AhaCollectionSchedule {
     public static final Date LIGHTWEIGHT_PACKAGING_DATE = new GregorianCalendar(2021, 2, 20).getTime();
     public static final Date BIO_WASTE_DATE = new GregorianCalendar(2021, 2, 21).getTime();
     public static final Date PAPER_DATE = new GregorianCalendar(2021, 2, 22).getTime();
+    public static final Date CHRISTMAS_TREE_DATE = new GregorianCalendar(2022, 1, 6).getTime();
 
     @Override
     public Map<WasteType, CollectionDate> getCollectionDates() throws IOException {
@@ -42,6 +43,8 @@ public final class AhaCollectionScheduleStub implements AhaCollectionSchedule {
                 new CollectionDate(WasteType.GENERAL_WASTE, Arrays.asList(LIGHTWEIGHT_PACKAGING_DATE)));
         result.put(WasteType.BIO_WASTE, new CollectionDate(WasteType.GENERAL_WASTE, Arrays.asList(BIO_WASTE_DATE)));
         result.put(WasteType.PAPER, new CollectionDate(WasteType.GENERAL_WASTE, Arrays.asList(PAPER_DATE)));
+        result.put(WasteType.CHRISTMAS_TREES,
+                new CollectionDate(WasteType.CHRISTMAS_TREES, Arrays.asList(CHRISTMAS_TREE_DATE)));
         return result;
     }
 }
