@@ -21,16 +21,16 @@ The Pi-hole Binding allows you to monitor Pi-hole statistics and control its fun
 
 ### `server` Thing Configuration
 
-| Name            | Type    | Description                                                                                | Default | Required | Advanced |
-|-----------------|---------|--------------------------------------------------------------------------------------------|---------|----------|----------|
-| hostname        | text    | URL (hostname or IP address) of the pihole web server                                      | N/A     | yes      | no       |
-| token           | text    | Token to access the device. To generate token, go to `settings` > `API` > `Show API token` | N/A     | yes      | no       |
-| refreshInterval | integer | Interval the device is polled in sec                                                       | 600     | no       | yes      |
+| Name            | Type    | Description                                                                                                                                                                                  | Default | Required | Advanced |
+| --------------- | ------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------- | -------- | -------- |
+| hostname        | text    | URL (hostname or IP address) of the pihole web server                                                                                                                                        | N/A     | yes      | no       |
+| token           | text    | Token to access the device. To generate token, go to `settings` > `Web Interface - API Settings` > `Expert` > `Configure app password` > Copy the `app password` > `Enable new app password` | N/A     | yes      | no       |
+| refreshInterval | integer | Interval the device is polled in sec                                                                                                                                                         | 600     | no       | yes      |
 
 ## Channels
 
 | Channel                 | Type                 | Read/Write | Description                                                |
-|-------------------------|----------------------|------------|------------------------------------------------------------|
+| ----------------------- | -------------------- | ---------- | ---------------------------------------------------------- |
 | domains-being-blocked   | Number               | RO         | The total number of domains currently being blocked.       |
 | dns-queries-today       | Number               | RO         | The count of DNS queries made today.                       |
 | ads-blocked-today       | Number               | RO         | The number of ads blocked today.                           |
