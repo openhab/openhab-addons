@@ -26,7 +26,6 @@ import java.util.TimeZone;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.astro.internal.model.Eclipse;
-import org.openhab.binding.astro.internal.model.EclipseType;
 import org.openhab.binding.astro.internal.model.Position;
 import org.openhab.binding.astro.internal.model.Range;
 import org.openhab.binding.astro.internal.model.Season;
@@ -226,10 +225,9 @@ public class SunCalc {
 
         // eclipse
         Eclipse eclipse = sun.getEclipse();
-        MoonCalc mc = new MoonCalc();
-
+        EclipseCalc seCalc = new SunEclipseCalc();
         eclipse.getKinds().forEach(eclipseKind -> {
-            double jdate = mc.getEclipse(calendar, EclipseType.SUN, j, eclipseKind);
+            double jdate = seCalc.calculate(calendar, j, eclipseKind);
             Calendar eclipseDate = DateTimeUtils.toCalendar(jdate, zone, locale);
             if (eclipseDate != null) {
                 eclipse.set(eclipseKind, eclipseDate, new Position());

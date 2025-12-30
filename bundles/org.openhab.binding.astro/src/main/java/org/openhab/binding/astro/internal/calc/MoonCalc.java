@@ -40,13 +40,12 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 <<<<<<< Upstream, based on main
 import org.openhab.binding.astro.internal.model.DistanceType;
 import org.openhab.binding.astro.internal.model.Eclipse;
-import org.openhab.binding.astro.internal.model.EclipseKind;
-import org.openhab.binding.astro.internal.model.EclipseType;
 import org.openhab.binding.astro.internal.model.Moon;
 import org.openhab.binding.astro.internal.model.MoonPhase;
 import org.openhab.binding.astro.internal.model.MoonPhaseName;
 import org.openhab.binding.astro.internal.model.Position;
 import org.openhab.binding.astro.internal.model.Range;
+<<<<<<< Upstream, based on main
 =======
 import org.openhab.binding.astro.internal.model.*;
 >>>>>>> f56c745 Review Moon Distance and factorization of MoonCalc
@@ -61,7 +60,11 @@ import org.openhab.binding.astro.internal.model.MoonPhaseName;
 import org.openhab.binding.astro.internal.model.Position;
 import org.openhab.binding.astro.internal.model.Range;
 >>>>>>> 3188e3a Correcting import.
+=======
+import org.openhab.binding.astro.internal.util.AstroConstants;
+>>>>>>> 62dfe71 Start refactoring Eclipse for sun and moon
 import org.openhab.binding.astro.internal.util.DateTimeUtils;
+import org.openhab.binding.astro.internal.util.MathUtils;
 
 /**
  * Calculates the phase, eclipse, rise, set, distance, illumination and age of
@@ -74,7 +77,25 @@ import org.openhab.binding.astro.internal.util.DateTimeUtils;
  *           zodiac based on http://lexikon.astronomie.info/java/sunmoon/
  */
 @NonNullByDefault
-public class MoonCalc {
+public class MoonCalc extends AstroCalc {
+    private static final double SYNODIC_MONTH = 29.530588853;
+    private static final double YEARLY_CYCLES = AstroConstants.TROPICAL_YEAR_DAYS / SYNODIC_MONTH;
+    private static final int[] KD = new int[] { 0, 2, 2, 0, 0, 0, 2, 2, 2, 2, 0, 1, 0, 2, 0, 0, 4, 0, 4, 2, 2, 1, 1, 2,
+            2, 4, 2, 0, 2, 2, 1, 2, 0, 0, 2, 2, 2, 4, 0, 3, 2, 4, 0, 2, 2, 2, 4, 0, 4, 1, 2, 0, 1, 3, 4, 2, 0, 1, 2,
+            2 };
+    private static final int[] KM = new int[] { 0, 0, 0, 0, 1, 0, 0, -1, 0, -1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1,
+            -1, 0, 0, 0, 1, 0, -1, 0, -2, 1, 2, -2, 0, 0, -1, 0, 0, 1, -1, 2, 2, 1, -1, 0, 0, -1, 0, 1, 0, 1, 0, 0, -1,
+            2, 1, 0, 0 };
+    private static final int[] KM1 = new int[] { 1, -1, 0, 2, 0, 0, -2, -1, 1, 0, -1, 0, 1, 0, 1, 1, -1, 3, -2, -1, 0,
+            -1, 0, 1, 2, 0, -3, -2, -1, -2, 1, 0, 2, 0, -1, 1, 0, -1, 2, -1, 1, -2, -1, -1, -2, 0, 1, 4, 0, -2, 0, 2, 1,
+            -2, -3, 2, 1, -1, 3, -1 };
+    private static final int[] KF = new int[] { 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, -2, 2, -2, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, -2, 2, 0, 2, 0, 0, 0, 0, 0, 0, -2, 0, 0, 0, 0, -2, -2, 0, 0, 0, 0, 0, 0,
+            0, -2 };
+    private static final int[] KR = new int[] { -20905355, -3699111, -2955968, -569925, 48888, -3149, 246158, -152138,
+            -170733, -204586, -129620, 108743, 104755, 10321, 0, 79661, -34782, -23210, -21636, 24208, 30824, -8379,
+            -16675, -12831, -10445, -11650, 14403, -7003, 0, 10056, 6322, -9884, 5751, 0, -4950, 4130, 0, -3958, 0,
+            3258, 2616, -1897, -2117, 2354, 0, 0, -1423, -1117, -1571, -1739, 0, -4421, 0, 0, 0, 0, 1165, 0, 0, 8752 };
 
     /**
      * Calculates all moon data at the specified coordinates
@@ -114,8 +135,9 @@ public class MoonCalc {
                 .toCalendar(getNextPhase(calendar, julianDateMidnight, MoonPhaseName.THIRD_QUARTER), zone, locale));
 
         Eclipse eclipse = moon.getEclipse();
+        EclipseCalc meCalc = new MoonEclipseCalc();
         eclipse.getKinds().forEach(eclipseKind -> {
-            double jdate = getEclipse(calendar, EclipseType.MOON, julianDateMidnight, eclipseKind);
+            double jdate = meCalc.calculate(calendar, julianDateMidnight, eclipseKind);
             Calendar eclipseDate = DateTimeUtils.toCalendar(jdate, zone, locale);
             if (eclipseDate != null) {
                 eclipse.set(eclipseKind, eclipseDate, new Position());
@@ -180,7 +202,7 @@ public class MoonCalc {
         phase.setAgeDegree(3.6 * agePercent);
         double illumination = getIllumination(julianDate);
         phase.setIllumination(illumination);
-        boolean isWaxing = age < (29.530588853 / 2);
+        boolean isWaxing = age < (SYNODIC_MONTH / 2);
         if (DateTimeUtils.isSameDay(calendar, phase.getNew())) {
             phase.setName(MoonPhaseName.NEW);
         } else if (DateTimeUtils.isSameDay(calendar, phase.getFirstQuarter())) {
@@ -230,8 +252,7 @@ public class MoonCalc {
                 } else {
                     utset = hour + quadRet[1];
                 }
-            }
-            if (quadRet[3] == 2) {
+            } else if (quadRet[3] == 2) {
                 if (quadRet[0] < 0) {
                     utrise = hour + quadRet[2];
                     utset = hour + quadRet[1];
@@ -391,6 +412,7 @@ public class MoonCalc {
     }
 
     /**
+<<<<<<< Upstream, based on main
      * Calculates the eclipse.
      */
     private double getEclipse(double k, EclipseType typ, EclipseKind eclipse) {
@@ -465,6 +487,8 @@ public class MoonCalc {
     }
 
     /**
+=======
+>>>>>>> d31b893 Start refactoring Eclipse for sun and moon
      * Calculates the illumination.
      */
     private double getIllumination(double jd) {
@@ -506,6 +530,7 @@ public class MoonCalc {
     }
 
     /**
+<<<<<<< Upstream, based on main
      * Calculates the next eclipse.
      */
     protected double getEclipse(Calendar cal, EclipseType type, double midnightJd, EclipseKind eclipse) {
@@ -522,10 +547,12 @@ public class MoonCalc {
 <<<<<<< Upstream, based on moon_distance
 =======
     /**
+=======
+>>>>>>> d31b893 Start refactoring Eclipse for sun and moon
      * Calculates the date, where the moon is furthest away from the earth.
      */
     private double getApogee(double julianDate, double decimalYear) {
-        double k = Math.floor((decimalYear - 1999.97) * 13.2555) + .5;
+        double k = numberOfCycles(decimalYear) + .5;
         double jd = 0;
         do {
             double t = k / 1325.55;
@@ -550,11 +577,15 @@ public class MoonCalc {
         return jd;
     }
 
+    private double numberOfCycles(double decimalYear) {
+        return Math.floor((decimalYear - 1999.97) * YEARLY_CYCLES);
+    }
+
     /**
      * Calculates the date, where the moon is closest to the earth.
      */
     private double getPerigee(double julianDate, double decimalYear) {
-        double k = Math.floor((decimalYear - 1999.97) * 13.2555);
+        double k = numberOfCycles(decimalYear);
         double jd = 0;
         do {
             double t = k / 1325.55;
@@ -609,11 +640,19 @@ public class MoonCalc {
         double arc = 206264.8062;
         double coseps = .91748;
         double sineps = .39778;
+<<<<<<< Upstream, based on main
         double lo = frac(.606433 + 1336.855225 * t);
         double l = p2 * frac(.374897 + 1325.55241 * t);
         double ls = p2 * frac(.993133 + 99.997361 * t);
         double d = p2 * frac(.827361 + 1236.853086 * t);
         double f = p2 * frac(.259086 + 1342.227825 * t);
+=======
+        double lo = MathUtils.frak(.606433 + 1336.855225 * t);
+        double l = p2 * MathUtils.frak(.374897 + 1325.55241 * t);
+        double ls = p2 * MathUtils.frak(.993133 + 99.997361 * t);
+        double d = p2 * MathUtils.frak(.827361 + 1236.853086 * t);
+        double f = p2 * MathUtils.frak(.259086 + 1342.227825 * t);
+>>>>>>> d31b893 Start refactoring Eclipse for sun and moon
         double dl = 22640 * Math.sin(l) - 4586 * Math.sin(l - 2 * d) + 2370 * Math.sin(2 * d) + 769 * Math.sin(2 * l)
                 - 668 * Math.sin(ls) - 412 * Math.sin(2 * f) - 212 * Math.sin(2 * l - 2 * d)
                 - 206 * Math.sin(l + ls - 2 * d) + 192 * Math.sin(l + 2 * d) - 165 * Math.sin(ls - 2 * d)
@@ -622,7 +661,11 @@ public class MoonCalc {
         double h = f - 2 * d;
         double n = -526 * Math.sin(h) + 44 * Math.sin(l + h) - 31 * Math.sin(-l + h) - 23 * Math.sin(ls + h)
                 + 11 * Math.sin(-ls + h) - 25 * Math.sin(-2 * l + f) + 21 * Math.sin(-l + f);
+<<<<<<< Upstream, based on main
         double lmoon = p2 * frac(lo + dl / 1296000);
+=======
+        double lmoon = p2 * MathUtils.frak(lo + dl / 1296000);
+>>>>>>> d31b893 Start refactoring Eclipse for sun and moon
         double bmoon = (18520 * Math.sin(s) + n) / arc;
         double cb = Math.cos(bmoon);
         double x = cb * Math.cos(lmoon);
@@ -641,7 +684,7 @@ public class MoonCalc {
 
     private double sinAlt(double moonJd, int hour, double lambda, double cphi, double sphi) {
         double jdo = moonJd + hour / 24.0;
-        double t = (jdo - 51544.5) / 36525.0;
+        double t = (jdo - DateTimeUtils.MJD_JD2000) / DateTimeUtils.JULIAN_CENTURY_DAYS;
         double[] decra = calcMoon(t);
         double tau = 15.0 * (localMeanSiderealTime(jdo, lambda) - decra[1]);
         return sphi * sinDeg(decra[0]) + cphi * cosDeg(decra[0]) * cosDeg(tau);
@@ -650,8 +693,9 @@ public class MoonCalc {
     private double localMeanSiderealTime(double moonJd, double lambda) {
         double moonJdo = Math.floor(moonJd);
         double ut = (moonJd - moonJdo) * 24.0;
-        double t = (moonJdo - 51544.5) / 36525.0;
+        double t = (moonJdo - DateTimeUtils.MJD_JD2000) / DateTimeUtils.JULIAN_CENTURY_DAYS;
         double gmst = 6.697374558 + 1.0027379093 * ut + (8640184.812866 + (.093104 - .0000062 * t) * t) * t / 3600.0;
+<<<<<<< Upstream, based on main
         return 24.0 * frac((gmst - lambda / 15.0) / 24.0);
     }
 
@@ -661,16 +705,18 @@ public class MoonCalc {
             ret += 1;
         }
         return ret;
+=======
+        return 24.0 * MathUtils.frak((gmst - lambda / 15.0) / 24.0);
+>>>>>>> d31b893 Start refactoring Eclipse for sun and moon
     }
 
     private double[] quad(double yminus, double yo, double yplus) {
         double nz = 0;
         double a = .5 * (yminus + yplus) - yo;
         double b = .5 * (yplus - yminus);
-        double c = yo;
         double xe = -b / (2 * a);
-        double ye = (a * xe + b) * xe + c;
-        double dis = b * b - 4 * a * c;
+        double ye = (a * xe + b) * xe + yo;
+        double dis = b * b - 4 * a * yo;
         double zero1 = 0;
         double zero2 = 0;
         if (dis >= 0) {
@@ -690,6 +736,7 @@ public class MoonCalc {
         return new double[] { ye, zero1, zero2, nz };
     }
 
+<<<<<<< Upstream, based on main
     private double varO(double k, double t) {
         return 124.7746 - 1.5637558 * k + .0020691 * t * t + .00000215 * t * t * t;
     }
@@ -719,6 +766,8 @@ public class MoonCalc {
         return (cal.get(Calendar.YEAR) + (cal.get(Calendar.DAY_OF_YEAR) + tz) / 365 - 2000) * 12.3685;
     }
 
+=======
+>>>>>>> d31b893 Start refactoring Eclipse for sun and moon
     private double moonCorrection(double jd, double t, double k) {
         double ret = jd;
         ret += .000325 * sinDeg(299.77 + .107408 * k - .009173 * t * t) + .000165 * sinDeg(251.88 + .016321 * k)
@@ -732,6 +781,17 @@ public class MoonCalc {
         return ret;
     }
 
+<<<<<<< Upstream, based on moon_distance
+=======
+    private double getCoefficient(double d, double m, double m1, double f) {
+        double sr = 0;
+        for (int t = 0; t < 60; t++) {
+            sr += KR[t] * cosDeg(KD[t] * d + KM[t] * m + KM1[t] * m1 + KF[t] * f);
+        }
+        return sr;
+    }
+
+>>>>>>> df0c399 Start refactoring Eclipse for sun and moon
     /**
      * Sets the azimuth, elevation and zodiac in the moon object.
      */
@@ -743,8 +803,9 @@ public class MoonCalc {
         double lmst = DateTimeUtils.toLMST(gmst, lon) * Math.toRadians(15);
 
         double d = julianDate - 2447891.5;
-        double anomalyMean = Math.toRadians(360) / 365.242191 * d + 4.87650757829735 - 4.935239984568769;
-        double nu = anomalyMean + Math.toRadians(360.0) / Math.PI * 0.016713 * Math.sin(anomalyMean);
+        double anomalyMean = MathUtils.TWO_PI / AstroConstants.TROPICAL_YEAR_DAYS * d + 4.87650757829735
+                - 4.935239984568769;
+        double nu = anomalyMean + Math.PI * 0.016713 * Math.sin(anomalyMean);
         double sunLon = mod2Pi(nu + 4.935239984568769);
 
         double l0 = Math.toRadians(318.351648);
@@ -792,11 +853,10 @@ public class MoonCalc {
         double sindec = Math.sin(dec);
         double lha = lmst - ra;
         double coslha = Math.cos(lha);
-        double sinlha = Math.sin(lha);
         double coslat = Math.cos(geolat);
         double sinlat = Math.sin(geolat);
 
-        double n = -cosdec * sinlha;
+        double n = -cosdec * Math.sin(lha);
         double d = sindec * coslat - cosdec * coslha * sinlat;
         double az = mod2Pi(Math.atan2(n, d));
         double alt = Math.asin(sindec * sinlat + cosdec * coslha * coslat);
@@ -828,16 +888,12 @@ public class MoonCalc {
      */
     private double[] geoEqu2TopoEqu(double[] raDec, double distance, double observerLat, double lmst) {
         double cosdec = Math.cos(raDec[1]);
-        double sindec = Math.sin(raDec[1]);
-        double coslst = Math.cos(lmst);
-        double sinlst = Math.sin(lmst);
         double coslat = Math.cos(observerLat);
-        double sinlat = Math.sin(observerLat);
         double rho = getCenterDistance(observerLat);
 
-        double x = distance * cosdec * Math.cos(raDec[0]) - rho * coslat * coslst;
-        double y = distance * cosdec * Math.sin(raDec[0]) - rho * coslat * sinlst;
-        double z = distance * sindec - rho * sinlat;
+        double x = distance * cosdec * Math.cos(raDec[0]) - rho * coslat * Math.cos(lmst);
+        double y = distance * cosdec * Math.sin(raDec[0]) - rho * coslat * Math.sin(lmst);
+        double z = distance * Math.sin(raDec[1]) - rho * Math.sin(observerLat);
 
         double distanceTopocentric = Math.sqrt(x * x + y * y + z * z);
         double raTopo = mod2Pi(Math.atan2(y, x));
@@ -856,8 +912,8 @@ public class MoonCalc {
         fl = fl * fl;
         si = si * si;
         double u = 1.0 / Math.sqrt(co * co + fl * si);
-        double a = 6378.137 * u;
-        double b = 6378.137 * fl * u;
+        double a = AstroConstants.EARTH_EQUATORIAL_RADIUS * u;
+        double b = AstroConstants.EARTH_EQUATORIAL_RADIUS * fl * u;
         return Math.sqrt(a * a * co * co + b * b * si);
     }
 
@@ -872,31 +928,29 @@ public class MoonCalc {
 
         if (altdeg < -2 || altdeg >= 90) {
             return 0;
-        }
-
-        if (altdeg > 15) {
+        } else if (altdeg > 15) {
             return 0.00452 * pressure / ((273 + temperature) * Math.tan(alt));
-        }
+        } else {
+            double y = alt;
+            double d = 0.0;
+            double p = (pressure - 80.0) / 930.0;
+            double q = 0.0048 * (temperature - 10.0);
+            double y0 = y;
+            double d0 = d;
+            double n = 0.0;
 
-        double y = alt;
-        double d = 0.0;
-        double p = (pressure - 80.0) / 930.0;
-        double q = 0.0048 * (temperature - 10.0);
-        double y0 = y;
-        double d0 = d;
-        double n = 0.0;
-
-        for (int i = 0; i < 3; i++) {
-            n = y + (7.31 / (y + 4.4));
-            n = 1.0 / Math.tan(Math.toRadians(n));
-            d = n * p / (60.0 + q * (n + 39.0));
-            n = y - y0;
-            y0 = d - d0 - n;
-            n = ((n != 0.0) && (y0 != 0.0)) ? y - n * (alt + d - y) / y0 : alt + d;
-            y0 = y;
-            d0 = d;
-            y = n;
+            for (int i = 0; i < 3; i++) {
+                n = y + (7.31 / (y + 4.4));
+                n = 1.0 / Math.tan(Math.toRadians(n));
+                d = n * p / (60.0 + q * (n + 39.0));
+                n = y - y0;
+                y0 = d - d0 - n;
+                n = ((n != 0.0) && (y0 != 0.0)) ? y - n * (alt + d - y) / y0 : alt + d;
+                y0 = y;
+                d0 = d;
+                y = n;
+            }
+            return d;
         }
-        return d;
     }
 }
