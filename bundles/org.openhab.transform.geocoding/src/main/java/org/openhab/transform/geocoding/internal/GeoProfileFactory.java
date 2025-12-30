@@ -12,7 +12,7 @@
  */
 package org.openhab.transform.geocoding.internal;
 
-import static org.openhab.transform.geocoding.internal.OSMGeoConstants.PROFILE_TYPE_UID;
+import static org.openhab.transform.geocoding.internal.OSMGeoConstants.OSM_PROFILE_TYPE_UID;
 
 import java.util.Collection;
 import java.util.List;
@@ -55,7 +55,7 @@ public class GeoProfileFactory implements ProfileFactory, ProfileTypeProvider {
 
     @Override
     public Collection<ProfileType> getProfileTypes(@Nullable Locale locale) {
-        return List.of(ProfileTypeBuilder.newState(PROFILE_TYPE_UID, "OpenStreetMap Geo Coding")
+        return List.of(ProfileTypeBuilder.newState(OSM_PROFILE_TYPE_UID, "OpenStreetMap Geo Coding")
                 .withSupportedItemTypes(CoreItemFactory.STRING)
                 .withSupportedItemTypesOfChannel(CoreItemFactory.LOCATION).build());
     }
@@ -69,6 +69,6 @@ public class GeoProfileFactory implements ProfileFactory, ProfileTypeProvider {
 
     @Override
     public Collection<ProfileTypeUID> getSupportedProfileTypeUIDs() {
-        return List.of(PROFILE_TYPE_UID);
+        return List.of(OSM_PROFILE_TYPE_UID);
     }
 }

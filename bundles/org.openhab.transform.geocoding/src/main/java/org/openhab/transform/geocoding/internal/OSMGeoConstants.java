@@ -27,8 +27,8 @@ import org.openhab.core.transform.TransformationService;
 public class OSMGeoConstants {
 
     // Profile Type UID
-    public static final ProfileTypeUID PROFILE_TYPE_UID = new ProfileTypeUID(
-            TransformationService.TRANSFORM_PROFILE_SCOPE, "geocoding");
+    public static final ProfileTypeUID OSM_PROFILE_TYPE_UID = new ProfileTypeUID(
+            TransformationService.TRANSFORM_PROFILE_SCOPE, "osm-geocoding");
 
     // URLs
     public static final String BASE_URL = "https://nominatim.openstreetmap.org/";

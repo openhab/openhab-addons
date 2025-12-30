@@ -4,7 +4,7 @@
 	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
 
-	<config-description uri="profile:transform:geocoding">
+	<config-description uri="profile:transform:osm-geocoding">
 		<parameter name="resolveDuration" type="text" required="false">
 			<label>Resolve Duration</label>
 			<description>Duration between reverse geocoding executions. Minimum: 1 minute</description>

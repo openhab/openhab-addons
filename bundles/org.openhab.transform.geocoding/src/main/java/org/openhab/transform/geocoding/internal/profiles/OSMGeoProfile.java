@@ -12,7 +12,7 @@
  */
 package org.openhab.transform.geocoding.internal.profiles;
 
-import static org.openhab.transform.geocoding.internal.OSMGeoConstants.PROFILE_TYPE_UID;
+import static org.openhab.transform.geocoding.internal.OSMGeoConstants.OSM_PROFILE_TYPE_UID;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -87,7 +87,7 @@ public class OSMGeoProfile implements StateProfile {
 
     @Override
     public ProfileTypeUID getProfileTypeUID() {
-        return PROFILE_TYPE_UID;
+        return OSM_PROFILE_TYPE_UID;
     }
 
     @Override
