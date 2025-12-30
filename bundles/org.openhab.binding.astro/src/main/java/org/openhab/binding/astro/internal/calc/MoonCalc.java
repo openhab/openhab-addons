@@ -41,15 +41,22 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 <<<<<<< Upstream, based on main
 <<<<<<< Upstream, based on main
 import org.openhab.binding.astro.internal.model.DistanceType;
+<<<<<<< Upstream, based on main
 import org.openhab.binding.astro.internal.model.EclipseSet;
+=======
+import org.openhab.binding.astro.internal.model.Eclipse;
+>>>>>>> a1c7d2d Start refactoring Eclipse for sun and moon
 import org.openhab.binding.astro.internal.model.Moon;
 import org.openhab.binding.astro.internal.model.MoonPhase;
 import org.openhab.binding.astro.internal.model.MoonPhaseName;
 import org.openhab.binding.astro.internal.model.MoonPosition;
 import org.openhab.binding.astro.internal.model.Range;
 <<<<<<< Upstream, based on main
+<<<<<<< Upstream, based on main
 import org.openhab.binding.astro.internal.util.AstroConstants;
 =======
+=======
+>>>>>>> a1c7d2d Start refactoring Eclipse for sun and moon
 =======
 import org.openhab.binding.astro.internal.model.*;
 >>>>>>> f56c745 Review Moon Distance and factorization of MoonCalc
@@ -67,7 +74,13 @@ import org.openhab.binding.astro.internal.model.MoonPhaseName;
 import org.openhab.binding.astro.internal.model.Position;
 import org.openhab.binding.astro.internal.model.Range;
 >>>>>>> 3188e3a Correcting import.
+<<<<<<< Upstream, based on main
 >>>>>>> 046baae Correcting import.
+=======
+=======
+import org.openhab.binding.astro.internal.util.AstroConstants;
+>>>>>>> 62dfe71 Start refactoring Eclipse for sun and moon
+>>>>>>> a1c7d2d Start refactoring Eclipse for sun and moon
 import org.openhab.binding.astro.internal.util.DateTimeUtils;
 import org.openhab.binding.astro.internal.util.MathUtils;
 
@@ -82,6 +95,7 @@ import org.openhab.binding.astro.internal.util.MathUtils;
  *           zodiac based on http://lexikon.astronomie.info/java/sunmoon/
  */
 @NonNullByDefault
+<<<<<<< Upstream, based on main
 <<<<<<< Upstream, based on main
 public class MoonCalc extends AstroCalc {
     private static final double FL = 1.0 - AstroConstants.WGS84_EARTH_FLATTENING;
@@ -100,6 +114,27 @@ public class MoonCalc extends AstroCalc {
 =======
 public class MoonCalc {
 >>>>>>> 810a1e9 Initial commit for Moon phase revamp
+=======
+public class MoonCalc extends AstroCalc {
+    private static final double SYNODIC_MONTH = 29.530588853;
+    private static final double YEARLY_CYCLES = AstroConstants.TROPICAL_YEAR_DAYS / SYNODIC_MONTH;
+    private static final int[] KD = new int[] { 0, 2, 2, 0, 0, 0, 2, 2, 2, 2, 0, 1, 0, 2, 0, 0, 4, 0, 4, 2, 2, 1, 1, 2,
+            2, 4, 2, 0, 2, 2, 1, 2, 0, 0, 2, 2, 2, 4, 0, 3, 2, 4, 0, 2, 2, 2, 4, 0, 4, 1, 2, 0, 1, 3, 4, 2, 0, 1, 2,
+            2 };
+    private static final int[] KM = new int[] { 0, 0, 0, 0, 1, 0, 0, -1, 0, -1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1,
+            -1, 0, 0, 0, 1, 0, -1, 0, -2, 1, 2, -2, 0, 0, -1, 0, 0, 1, -1, 2, 2, 1, -1, 0, 0, -1, 0, 1, 0, 1, 0, 0, -1,
+            2, 1, 0, 0 };
+    private static final int[] KM1 = new int[] { 1, -1, 0, 2, 0, 0, -2, -1, 1, 0, -1, 0, 1, 0, 1, 1, -1, 3, -2, -1, 0,
+            -1, 0, 1, 2, 0, -3, -2, -1, -2, 1, 0, 2, 0, -1, 1, 0, -1, 2, -1, 1, -2, -1, -1, -2, 0, 1, 4, 0, -2, 0, 2, 1,
+            -2, -3, 2, 1, -1, 3, -1 };
+    private static final int[] KF = new int[] { 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, -2, 2, -2, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, -2, 2, 0, 2, 0, 0, 0, 0, 0, 0, -2, 0, 0, 0, 0, -2, -2, 0, 0, 0, 0, 0, 0,
+            0, -2 };
+    private static final int[] KR = new int[] { -20905355, -3699111, -2955968, -569925, 48888, -3149, 246158, -152138,
+            -170733, -204586, -129620, 108743, 104755, 10321, 0, 79661, -34782, -23210, -21636, 24208, 30824, -8379,
+            -16675, -12831, -10445, -11650, 14403, -7003, 0, 10056, 6322, -9884, 5751, 0, -4950, 4130, 0, -3958, 0,
+            3258, 2616, -1897, -2117, 2354, 0, 0, -1423, -1117, -1571, -1739, 0, -4421, 0, 0, 0, 0, 1165, 0, 0, 8752 };
+>>>>>>> a1c7d2d Start refactoring Eclipse for sun and moon
 
     /**
      * Calculates all moon data at the specified coordinates
@@ -147,12 +182,24 @@ public class MoonCalc {
                 .toCalendar(getNextPhase(calendar, julianDateMidnight, MoonPhaseName.THIRD_QUARTER), zone, locale));
 >>>>>>> 810a1e9 Initial commit for Moon phase revamp
 
+<<<<<<< Upstream, based on main
         double julianDate = DateTimeUtils.dateToJulianDate(calendar);
 
         if (moon.getEclipseSet().needsRecalc(julianDate)) {
             moon.setEclipseSet(new EclipseSet(ECLIPSE_CALC.getNextEclipses(julianDate).stream()
                     .map(eclipse -> eclipse.withPosition(getMoonPosition(eclipse.when(), latitude, longitude)))));
         }
+=======
+        Eclipse eclipse = moon.getEclipse();
+        EclipseCalc meCalc = new MoonEclipseCalc();
+        eclipse.getKinds().forEach(eclipseKind -> {
+            double jdate = meCalc.calculate(calendar, julianDateMidnight, eclipseKind);
+            Calendar eclipseDate = DateTimeUtils.toCalendar(jdate, zone, locale);
+            if (eclipseDate != null) {
+                eclipse.set(eclipseKind, eclipseDate, new Position());
+            }
+        });
+>>>>>>> a1c7d2d Start refactoring Eclipse for sun and moon
 
 <<<<<<< Upstream, based on moon_distance
         Set.of(DistanceType.APOGEE, DistanceType.PERIGEE)
@@ -218,10 +265,27 @@ public class MoonCalc {
         phase.setAgeDegree(3.6 * agePercent);
         double illumination = getIllumination(julianDate);
         phase.setIllumination(illumination);
+<<<<<<< Upstream, based on main
 
         Optional<MoonPhaseName> remarkablePhase = phase.remarkablePhases()
                 .filter(p -> DateTimeUtils.isSameDay(calendar, phase.getPhaseDate(p))).findFirst();
         phase.setName(remarkablePhase.orElse(MoonPhaseName.fromAgePercent(agePercent / 100)));
+=======
+        boolean isWaxing = age < (SYNODIC_MONTH / 2);
+        if (DateTimeUtils.isSameDay(calendar, phase.getNew())) {
+            phase.setName(MoonPhaseName.NEW);
+        } else if (DateTimeUtils.isSameDay(calendar, phase.getFirstQuarter())) {
+            phase.setName(MoonPhaseName.FIRST_QUARTER);
+        } else if (DateTimeUtils.isSameDay(calendar, phase.getThirdQuarter())) {
+            phase.setName(MoonPhaseName.THIRD_QUARTER);
+        } else if (DateTimeUtils.isSameDay(calendar, phase.getFull())) {
+            phase.setName(MoonPhaseName.FULL);
+        } else if (illumination >= 0 && illumination < 50) {
+            phase.setName(isWaxing ? MoonPhaseName.WAXING_CRESCENT : MoonPhaseName.WANING_CRESCENT);
+        } else if (illumination >= 50 && illumination < 100) {
+            phase.setName(isWaxing ? MoonPhaseName.WAXING_GIBBOUS : MoonPhaseName.WANING_GIBBOUS);
+        }
+>>>>>>> a1c7d2d Start refactoring Eclipse for sun and moon
     }
 
     /**
@@ -464,6 +528,86 @@ public class MoonCalc {
     }
 
     /**
+<<<<<<< Upstream, based on main
+=======
+<<<<<<< Upstream, based on main
+     * Calculates the eclipse.
+     */
+    private double getEclipse(double k, EclipseType typ, EclipseKind eclipse) {
+        double kMod = Math.floor(k) + ((typ == EclipseType.SUN) ? 0 : 0.5);
+        double t = kMod / 1236.85;
+        double f = varF(kMod, t);
+        double jd = 0;
+        double ringTest = 0;
+        if (sinDeg(Math.abs(f)) <= .36) {
+            double o = varO(kMod, t);
+            double f1 = f - .02665 * sinDeg(o);
+            double a1 = 299.77 + .107408 * kMod - .009173 * t * t;
+            double e = varE(t);
+            double m = varM(kMod, t);
+            double m1 = varM1(kMod, t);
+            double p = .207 * e * sinDeg(m) + .0024 * e * sinDeg(2 * m) - .0392 * sinDeg(m1) + .0116 * sinDeg(2 * m1)
+                    - .0073 * e * sinDeg(m1 + m) + .0067 * e * sinDeg(m1 - m) + .0118 * sinDeg(2 * f1);
+            double q = 5.2207 - .0048 * e * cosDeg(m) + .002 * e * cosDeg(2 * m) - .3299 * cosDeg(m1)
+                    - .006 * e * cosDeg(m1 + m) + .0041 * e * cosDeg(m1 - m);
+            double g = (p * cosDeg(f1) + q * sinDeg(f1)) * (1 - .0048 * cosDeg(Math.abs(f1)));
+            double u = .0059 + .0046 * e * cosDeg(m) - .0182 * cosDeg(m1) + .0004 * cosDeg(2 * m1)
+                    - .0005 * cosDeg(m + m1);
+            jd = varJde(kMod, t);
+            jd += (typ == EclipseType.MOON) ? -.4065 * sinDeg(m1) + .1727 * e * sinDeg(m)
+                    : -.4075 * sinDeg(m1) + .1721 * e * sinDeg(m);
+
+            jd += .0161 * sinDeg(2 * m1) - .0097 * sinDeg(2 * f1) + .0073 * e * sinDeg(m1 - m)
+                    - .005 * e * sinDeg(m1 + m) - .0023 * sinDeg(m1 - 2 * f1) + .0021 * e * sinDeg(2 * m);
+            jd += .0012 * sinDeg(m1 + 2 * f1) + .0006 * e * sinDeg(2 * m1 + m) - .0004 * sinDeg(3 * m1)
+                    - .0003 * e * sinDeg(m + 2 * f1) + .0003 * sinDeg(a1) - .0002 * e * sinDeg(m - 2 * f1)
+                    - .0002 * e * sinDeg(2 * m1 - m) - .0002 * sinDeg(o);
+            switch (typ) {
+                case MOON:
+                    if ((1.0248 - u - Math.abs(g)) / .545 <= 0) {
+                        jd = 0; // no moon eclipse
+                    }
+                    if (eclipse == EclipseKind.PARTIAL && (1.0128 - u - Math.abs(g)) / .545 > 0
+                            && (.4678 - u) * (.4678 - u) - g * g > 0) {
+                        jd = 0; // no partial moon eclipse
+                    }
+                    if (eclipse == EclipseKind.TOTAL
+                            && ((1.0128 - u - Math.abs(g)) / .545 <= 0 != (.4678 - u) * (.4678 - u) - g * g <= 0)) {
+                        jd = 0; // no total moon eclipse
+                    }
+                    break;
+                case SUN:
+                    if (Math.abs(g) > 1.5433 + u) {
+                        jd = 0; // no sun eclipse
+                    }
+                    if (eclipse == EclipseKind.PARTIAL && ((g >= -.9972 && g <= .9972)
+                            || (Math.abs(g) >= .9972 && Math.abs(g) < .9972 + Math.abs(u)))) {
+                        jd = 0; // no partial sun eclipse
+                    }
+                    if (eclipse != EclipseKind.PARTIAL) {
+                        if ((g < -.9972 || g > .9972) || (Math.abs(g) < .9972 && Math.abs(g) > .9972 + Math.abs(u))) {
+                            jd = 0; // no ring or total sun eclipse
+                        }
+                        if (u > .0047 || u >= .00464 * Math.sqrt(1 - g * g)) {
+                            ringTest = 1; // no total sun eclipse
+                        }
+                        if (ringTest == 1 && eclipse == EclipseKind.TOTAL) {
+                            jd = 0;
+                        }
+                        if (ringTest == 0 && eclipse == EclipseKind.RING) {
+                            jd = 0;
+                        }
+                    }
+                    break;
+            }
+        }
+        return jd;
+    }
+
+    /**
+=======
+>>>>>>> d31b893 Start refactoring Eclipse for sun and moon
+>>>>>>> a1c7d2d Start refactoring Eclipse for sun and moon
      * Calculates the illumination.
      */
     private double getIllumination(double jd) {
@@ -527,6 +671,7 @@ public class MoonCalc {
     }
 
     /**
+<<<<<<< Upstream, based on main
      * Calculates the next eclipse.
      */
     protected double getEclipse(Calendar cal, EclipseType type, double midnightJd, EclipseKind eclipse) {
@@ -543,10 +688,12 @@ public class MoonCalc {
 <<<<<<< Upstream, based on moon_distance
 =======
     /**
+=======
+>>>>>>> d31b893 Start refactoring Eclipse for sun and moon
      * Calculates the date, where the moon is furthest away from the earth.
      */
     private double getApogee(double julianDate, double decimalYear) {
-        double k = Math.floor((decimalYear - 1999.97) * 13.2555) + .5;
+        double k = numberOfCycles(decimalYear) + .5;
         double jd = 0;
         do {
             double t = k / 1325.55;
@@ -571,11 +718,15 @@ public class MoonCalc {
         return jd;
     }
 
+    private double numberOfCycles(double decimalYear) {
+        return Math.floor((decimalYear - 1999.97) * YEARLY_CYCLES);
+    }
+
     /**
      * Calculates the date, where the moon is closest to the earth.
      */
     private double getPerigee(double julianDate, double decimalYear) {
-        double k = Math.floor((decimalYear - 1999.97) * 13.2555);
+        double k = numberOfCycles(decimalYear);
         double jd = 0;
         do {
             double t = k / 1325.55;
@@ -631,11 +782,19 @@ public class MoonCalc {
         double arc = 206264.8062;
         double coseps = .91748;
         double sineps = .39778;
+<<<<<<< Upstream, based on main
         double lo = frac(.606433 + 1336.855225 * t);
         double l = p2 * frac(.374897 + 1325.55241 * t);
         double ls = p2 * frac(.993133 + 99.997361 * t);
         double d = p2 * frac(.827361 + 1236.853086 * t);
         double f = p2 * frac(.259086 + 1342.227825 * t);
+=======
+        double lo = MathUtils.frak(.606433 + 1336.855225 * t);
+        double l = p2 * MathUtils.frak(.374897 + 1325.55241 * t);
+        double ls = p2 * MathUtils.frak(.993133 + 99.997361 * t);
+        double d = p2 * MathUtils.frak(.827361 + 1236.853086 * t);
+        double f = p2 * MathUtils.frak(.259086 + 1342.227825 * t);
+>>>>>>> d31b893 Start refactoring Eclipse for sun and moon
         double dl = 22640 * Math.sin(l) - 4586 * Math.sin(l - 2 * d) + 2370 * Math.sin(2 * d) + 769 * Math.sin(2 * l)
                 - 668 * Math.sin(ls) - 412 * Math.sin(2 * f) - 212 * Math.sin(2 * l - 2 * d)
                 - 206 * Math.sin(l + ls - 2 * d) + 192 * Math.sin(l + 2 * d) - 165 * Math.sin(ls - 2 * d)
@@ -644,7 +803,11 @@ public class MoonCalc {
         double h = f - 2 * d;
         double n = -526 * Math.sin(h) + 44 * Math.sin(l + h) - 31 * Math.sin(-l + h) - 23 * Math.sin(ls + h)
                 + 11 * Math.sin(-ls + h) - 25 * Math.sin(-2 * l + f) + 21 * Math.sin(-l + f);
+<<<<<<< Upstream, based on main
         double lmoon = p2 * frac(lo + dl / 1296000);
+=======
+        double lmoon = p2 * MathUtils.frak(lo + dl / 1296000);
+>>>>>>> d31b893 Start refactoring Eclipse for sun and moon
         double bmoon = (18520 * Math.sin(s) + n) / arc;
         double cb = Math.cos(bmoon);
         double x = cb * Math.cos(lmoon);
@@ -663,7 +826,7 @@ public class MoonCalc {
 
     private double sinAlt(double moonJd, int hour, double lambda, double cphi, double sphi) {
         double jdo = moonJd + hour / 24.0;
-        double t = (jdo - 51544.5) / 36525.0;
+        double t = (jdo - DateTimeUtils.MJD_JD2000) / DateTimeUtils.JULIAN_CENTURY_DAYS;
         double[] decra = calcMoon(t);
         double tau = 15.0 * (localMeanSiderealTime(jdo, lambda) - decra[1]);
         return sphi * sinDeg(decra[0]) + cphi * cosDeg(decra[0]) * cosDeg(tau);
@@ -672,11 +835,26 @@ public class MoonCalc {
     private double localMeanSiderealTime(double moonJd, double lambda) {
         double moonJdo = Math.floor(moonJd);
         double ut = (moonJd - moonJdo) * 24.0;
-        double t = (moonJdo - 51544.5) / 36525.0;
+        double t = (moonJdo - DateTimeUtils.MJD_JD2000) / DateTimeUtils.JULIAN_CENTURY_DAYS;
         double gmst = 6.697374558 + 1.0027379093 * ut + (8640184.812866 + (.093104 - .0000062 * t) * t) * t / 3600.0;
+<<<<<<< Upstream, based on main
         return 24.0 * frac((gmst - lambda / 15.0) / 24.0);
     }
 
+<<<<<<< Upstream, based on main
+=======
+    private double frac(double x) {
+        double ret = x - (int) (x);
+        if (ret < 0) {
+            ret += 1;
+        }
+        return ret;
+=======
+        return 24.0 * MathUtils.frak((gmst - lambda / 15.0) / 24.0);
+>>>>>>> d31b893 Start refactoring Eclipse for sun and moon
+    }
+
+>>>>>>> a1c7d2d Start refactoring Eclipse for sun and moon
     private double[] quad(double yminus, double yo, double yplus) {
         double nz = 0;
         double a = .5 * (yminus + yplus) - yo;
@@ -703,6 +881,41 @@ public class MoonCalc {
         return new double[] { ye, zero1, zero2, nz };
     }
 
+<<<<<<< Upstream, based on main
+=======
+<<<<<<< Upstream, based on main
+    private double varO(double k, double t) {
+        return 124.7746 - 1.5637558 * k + .0020691 * t * t + .00000215 * t * t * t;
+    }
+
+    private double varF(double k, double t) {
+        return 160.7108 + 390.67050274 * k - .0016341 * t * t - .00000227 * t * t * t + .000000011 * t * t * t * t;
+    }
+
+    private double varM1(double k, double t) {
+        return 201.5643 + 385.81693528 * k + .1017438 * t * t + .00001239 * t * t * t - .000000058 * t * t * t * t;
+    }
+
+    private double varM(double k, double t) {
+        return 2.5534 + 29.10535669 * k - .0000218 * t * t - .00000011 * t * t * t;
+    }
+
+    private double varE(double t) {
+        return 1 - .002516 * t - .0000074 * t * t;
+    }
+
+    private double varJde(double k, double t) {
+        return 2451550.09765 + 29.530588853 * k + .0001337 * t * t - .00000015 * t * t * t
+                + .00000000073 * t * t * t * t;
+    }
+
+    private double varK(Calendar cal, double tz) {
+        return (cal.get(Calendar.YEAR) + (cal.get(Calendar.DAY_OF_YEAR) + tz) / 365 - 2000) * 12.3685;
+    }
+
+=======
+>>>>>>> d31b893 Start refactoring Eclipse for sun and moon
+>>>>>>> a1c7d2d Start refactoring Eclipse for sun and moon
     private double moonCorrection(double jd, double t, double k) {
         double ret = jd;
         ret += .000325 * sinDeg(299.77 + .107408 * k - .009173 * t * t) + .000165 * sinDeg(251.88 + .016321 * k)
@@ -716,6 +929,17 @@ public class MoonCalc {
         return ret;
     }
 
+<<<<<<< Upstream, based on moon_distance
+=======
+    private double getCoefficient(double d, double m, double m1, double f) {
+        double sr = 0;
+        for (int t = 0; t < 60; t++) {
+            sr += KR[t] * cosDeg(KD[t] * d + KM[t] * m + KM1[t] * m1 + KF[t] * f);
+        }
+        return sr;
+    }
+
+>>>>>>> df0c399 Start refactoring Eclipse for sun and moon
     /**
      * Sets the azimuth, elevation and zodiac in the moon object.
      */
@@ -838,11 +1062,18 @@ public class MoonCalc {
         co = co * co;
         double si = Math.sin(lat);
         si = si * si;
+<<<<<<< Upstream, based on main
         double fl = FL * FL;
         double u = 1.0 / Math.sqrt(co + fl * si);
         double a = AstroConstants.EARTH_EQUATORIAL_RADIUS * u;
         double b = a * fl;
         return Math.sqrt(a * a * co + b * b * si);
+=======
+        double u = 1.0 / Math.sqrt(co * co + fl * si);
+        double a = AstroConstants.EARTH_EQUATORIAL_RADIUS * u;
+        double b = AstroConstants.EARTH_EQUATORIAL_RADIUS * fl * u;
+        return Math.sqrt(a * a * co * co + b * b * si);
+>>>>>>> a1c7d2d Start refactoring Eclipse for sun and moon
     }
 
     /**
@@ -856,31 +1087,29 @@ public class MoonCalc {
 
         if (altdeg < -2 || altdeg >= 90) {
             return 0;
-        }
-
-        if (altdeg > 15) {
+        } else if (altdeg > 15) {
             return 0.00452 * pressure / ((273 + temperature) * Math.tan(alt));
-        }
+        } else {
+            double y = alt;
+            double d = 0.0;
+            double p = (pressure - 80.0) / 930.0;
+            double q = 0.0048 * (temperature - 10.0);
+            double y0 = y;
+            double d0 = d;
+            double n = 0.0;
 
-        double y = alt;
-        double d = 0.0;
-        double p = (pressure - 80.0) / 930.0;
-        double q = 0.0048 * (temperature - 10.0);
-        double y0 = y;
-        double d0 = d;
-        double n = 0.0;
-
-        for (int i = 0; i < 3; i++) {
-            n = y + (7.31 / (y + 4.4));
-            n = 1.0 / Math.tan(Math.toRadians(n));
-            d = n * p / (60.0 + q * (n + 39.0));
-            n = y - y0;
-            y0 = d - d0 - n;
-            n = ((n != 0.0) && (y0 != 0.0)) ? y - n * (alt + d - y) / y0 : alt + d;
-            y0 = y;
-            d0 = d;
-            y = n;
+            for (int i = 0; i < 3; i++) {
+                n = y + (7.31 / (y + 4.4));
+                n = 1.0 / Math.tan(Math.toRadians(n));
+                d = n * p / (60.0 + q * (n + 39.0));
+                n = y - y0;
+                y0 = d - d0 - n;
+                n = ((n != 0.0) && (y0 != 0.0)) ? y - n * (alt + d - y) / y0 : alt + d;
+                y0 = y;
+                d0 = d;
+                y = n;
+            }
+            return d;
         }
-        return d;
     }
 }

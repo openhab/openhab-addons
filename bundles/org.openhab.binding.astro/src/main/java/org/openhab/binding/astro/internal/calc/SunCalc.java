@@ -27,7 +27,11 @@ import java.util.TimeZone;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+<<<<<<< Upstream, based on main
 import org.openhab.binding.astro.internal.model.EclipseSet;
+=======
+import org.openhab.binding.astro.internal.model.Eclipse;
+>>>>>>> a1c7d2d Start refactoring Eclipse for sun and moon
 import org.openhab.binding.astro.internal.model.Position;
 import org.openhab.binding.astro.internal.model.Range;
 import org.openhab.binding.astro.internal.model.Season;
@@ -239,6 +243,7 @@ public class SunCalc {
         }
 
         // eclipse
+<<<<<<< Upstream, based on main
 
         if (sun.getEclipseSet().needsRecalc(j)) {
             sun.setEclipseSet(new EclipseSet(ECLIPSE_CALC.getNextEclipses(j).stream().map(eclipse -> {
@@ -246,6 +251,17 @@ public class SunCalc {
                 return eclipse.withPosition(getPosition(eclipseCal, latitude, longitude, altitude));
             })));
         }
+=======
+        Eclipse eclipse = sun.getEclipse();
+        EclipseCalc seCalc = new SunEclipseCalc();
+        eclipse.getKinds().forEach(eclipseKind -> {
+            double jdate = seCalc.calculate(calendar, j, eclipseKind);
+            Calendar eclipseDate = DateTimeUtils.toCalendar(jdate, zone, locale);
+            if (eclipseDate != null) {
+                eclipse.set(eclipseKind, eclipseDate, new Position());
+            }
+        });
+>>>>>>> a1c7d2d Start refactoring Eclipse for sun and moon
 
         sun.setZodiac(ZodiacCalc.calculate(lsun, calendar.toInstant()));
 
