@@ -120,7 +120,8 @@ public class OSMReverseGeocoding {
         }
     }
 
-    private String decodeAddress(JSONObject jsonObject, List<String> streetPart1, List<String> streetPart2,
+    @SafeVarargs
+    private final String decodeAddress(JSONObject jsonObject, List<String> streetPart1, List<String> streetPart2,
             List<String>... cityKeys) {
         if (jsonObject.has(ADDRESS_KEY)) {
             JSONObject address = jsonObject.getJSONObject(ADDRESS_KEY);
