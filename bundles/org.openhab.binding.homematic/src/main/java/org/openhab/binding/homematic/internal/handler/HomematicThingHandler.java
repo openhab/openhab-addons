@@ -450,7 +450,7 @@ public class HomematicThingHandler extends BaseThingHandler {
 
             Map<String, Number> specialValues = dp.getSpecialValues();
             if (specialValues != null) {
-                Number value = dp.isFloatType() ? dp.getDoubleValue() : dp.getIntegerValue();
+                Number value = dp.getNumericValue();
                 for (Number special : specialValues.values()) {
                     if (value.equals(special)) {
                         return dp.getValue();
