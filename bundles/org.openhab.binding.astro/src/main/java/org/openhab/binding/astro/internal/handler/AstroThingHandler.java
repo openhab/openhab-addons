@@ -35,8 +35,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import javax.measure.quantity.Angle;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.astro.internal.action.AstroActions;
@@ -49,7 +47,6 @@ import org.openhab.binding.astro.internal.model.Position;
 import org.openhab.binding.astro.internal.util.PropertyUtils;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TimeZoneProvider;
-import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.scheduler.CronScheduler;
 import org.openhab.core.scheduler.ScheduledCompletableFuture;
 import org.openhab.core.thing.Channel;
@@ -59,6 +56,7 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -400,16 +398,14 @@ public abstract class AstroThingHandler extends BaseThingHandler {
      */
     protected abstract Job getDailyJob(TimeZone zone, Locale locale);
 
-    public abstract @Nullable Position getPositionAt(ZonedDateTime date);
+    public abstract Position getPositionAt(ZonedDateTime date);
 
-    public @Nullable QuantityType<Angle> getAzimuth(ZonedDateTime date) {
-        Position position = getPositionAt(date);
-        return position != null ? position.getAzimuth() : null;
+    public State getAzimuth(ZonedDateTime date) {
+        return getPositionAt(date).getAzimuth();
     }
 
-    public @Nullable QuantityType<Angle> getElevation(ZonedDateTime date) {
-        Position position = getPositionAt(date);
-        return position != null ? position.getElevation() : null;
+    public State getElevation(ZonedDateTime date) {
+        return getPositionAt(date).getElevation();
     }
 
     @Override

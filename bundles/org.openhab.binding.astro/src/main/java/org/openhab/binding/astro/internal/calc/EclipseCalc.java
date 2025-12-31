@@ -28,21 +28,21 @@ import org.openhab.binding.astro.internal.model.EclipseKind;
 @NonNullByDefault
 public abstract class EclipseCalc extends AstroCalc {
 
-    /**
-     * Calculates the next eclipse.
-     */
     public double calculate(Calendar cal, double midnightJd, EclipseKind eclipse) {
         double tz = 0;
         double eclipseJd = 0;
         do {
             double k = var_k(cal, tz);
             tz += 1;
-            eclipseJd = getAstroEclipse(k, eclipse);
+            eclipseJd = getEclipse(Math.floor(k) + getJDAjust(), eclipse);
         } while (eclipseJd <= midnightJd);
         return eclipseJd;
     }
 
-    protected abstract double getAstroEclipse(double k, EclipseKind eclipse);
+    protected abstract double getJDAjust();
+
+    protected abstract double astroAdjust(EclipseKind eclipse, double e, double m, double m1, double g, double u,
+            double jd);
 
     /**
      * Calculates the eclipse.
@@ -67,17 +67,12 @@ public abstract class EclipseCalc extends AstroCalc {
                 - .006 * e * cosDeg(m1 + m) + .0041 * e * cosDeg(m1 - m);
         double g = (p * cosDeg(f1) + q * sinDeg(f1)) * (1 - .0048 * cosDeg(Math.abs(f1)));
         double u = .0059 + .0046 * e * cosDeg(m) - .0182 * cosDeg(m1) + .0004 * cosDeg(2 * m1) - .0005 * cosDeg(m + m1);
-        double jd = 0;
-        jd = var_jde(kMod, t);
+        double jd = var_jde(kMod, t);
         jd += .0161 * sinDeg(2 * m1) - .0097 * sinDeg(2 * f1) + .0073 * e * sinDeg(m1 - m) - .005 * e * sinDeg(m1 + m)
                 - .0023 * sinDeg(m1 - 2 * f1) + .0021 * e * sinDeg(2 * m);
         jd += .0012 * sinDeg(m1 + 2 * f1) + .0006 * e * sinDeg(2 * m1 + m) - .0004 * sinDeg(3 * m1)
                 - .0003 * e * sinDeg(m + 2 * f1) + .0003 * sinDeg(a1) - .0002 * e * sinDeg(m - 2 * f1)
                 - .0002 * e * sinDeg(2 * m1 - m) - .0002 * sinDeg(o);
-        jd += astroAdjust(eclipse, e, m, m1, g, u, jd);
-        return jd;
+        return astroAdjust(eclipse, e, m, m1, g, u, jd);
     }
-
-    protected abstract double astroAdjust(EclipseKind eclipse, double e, double m, double m1, double g, double u,
-            double jd);
 }

@@ -43,7 +43,7 @@ import org.openhab.binding.astro.internal.model.Eclipse;
 import org.openhab.binding.astro.internal.model.Moon;
 import org.openhab.binding.astro.internal.model.MoonPhase;
 import org.openhab.binding.astro.internal.model.MoonPhaseName;
-import org.openhab.binding.astro.internal.model.Position;
+import org.openhab.binding.astro.internal.model.MoonPosition;
 import org.openhab.binding.astro.internal.model.Range;
 <<<<<<< Upstream, based on main
 =======
@@ -80,6 +80,8 @@ import org.openhab.binding.astro.internal.util.MathUtils;
 public class MoonCalc extends AstroCalc {
     private static final double SYNODIC_MONTH = 29.530588853;
     private static final double YEARLY_CYCLES = AstroConstants.TROPICAL_YEAR_DAYS / SYNODIC_MONTH;
+    private static final double FL = 1.0 - AstroConstants.WGS84_EARTH_FLATTENING;
+    private static final EclipseCalc ECLIPSE_CALC = new MoonEclipseCalc();
     private static final int[] KD = new int[] { 0, 2, 2, 0, 0, 0, 2, 2, 2, 2, 0, 1, 0, 2, 0, 0, 4, 0, 4, 2, 2, 1, 1, 2,
             2, 4, 2, 0, 2, 2, 1, 2, 0, 0, 2, 2, 2, 4, 0, 3, 2, 4, 0, 2, 2, 2, 4, 0, 4, 1, 2, 0, 1, 3, 4, 2, 0, 1, 2,
             2 };
@@ -135,13 +137,11 @@ public class MoonCalc extends AstroCalc {
                 .toCalendar(getNextPhase(calendar, julianDateMidnight, MoonPhaseName.THIRD_QUARTER), zone, locale));
 
         Eclipse eclipse = moon.getEclipse();
-        EclipseCalc meCalc = new MoonEclipseCalc();
+
         eclipse.getKinds().forEach(eclipseKind -> {
-            double jdate = meCalc.calculate(calendar, julianDateMidnight, eclipseKind);
-            Calendar eclipseDate = DateTimeUtils.toCalendar(jdate, zone, locale);
-            if (eclipseDate != null) {
-                eclipse.set(eclipseKind, eclipseDate, new Position());
-            }
+            double jdate = ECLIPSE_CALC.calculate(calendar, julianDateMidnight, eclipseKind);
+            var moonPosition = getMoonPosition(jdate, latitude, longitude);
+            eclipse.set(eclipseKind, jdate, moonPosition.getElevationAsDouble());
         });
 
 <<<<<<< Upstream, based on moon_distance
@@ -171,7 +171,10 @@ public class MoonCalc extends AstroCalc {
             Locale locale) {
         double julianDate = DateTimeUtils.dateToJulianDate(calendar);
         setMoonPhase(calendar, moon, zone, locale);
-        setAzimuthElevationZodiac(julianDate, latitude, longitude, moon);
+
+        var moonPosition = getMoonPosition(julianDate, latitude, longitude);
+        moon.setPosition(moonPosition);
+        moon.setZodiac(ZodiacCalc.calculate(moonPosition.getMonLon(), null));
 
         moon.setDistance(DistanceType.CURRENT, MoonDistanceCalc.calculate(julianDate));
     }
@@ -494,7 +497,7 @@ public class MoonCalc extends AstroCalc {
     private double getIllumination(double jd) {
         double t = DateTimeUtils.toJulianCenturies(jd);
         double d = 297.8502042 + 445267.11151686 * t - .00163 * t * t + t * t * t / 545868 - t * t * t * t / 113065000;
-        double m = 357.5291092 + 35999.0502909 * t - .0001536 * t * t + t * t * t / 24490000;
+        double m = AstroConstants.E05_0 + 35999.0502909 * t - .0001536 * t * t + t * t * t / 24490000;
         double m1 = 134.9634114 + 477198.8676313 * t + .008997 * t * t + t * t * t / 69699 - t * t * t * t / 14712000;
         double i = 180 - d - 6.289 * sinDeg(m1) + 2.1 * sinDeg(m) - 1.274 * sinDeg(2 * d - m1) - .658 * sinDeg(2 * d)
                 - .241 * sinDeg(2 * m1) - .110 * sinDeg(d);
@@ -627,7 +630,7 @@ public class MoonCalc extends AstroCalc {
     private double getDistance(double jd) {
         double t = DateTimeUtils.toJulianCenturies(jd);
         double d = 297.8502042 + 445267.11151686 * t - .00163 * t * t + t * t * t / 545868 - t * t * t * t / 113065000;
-        double m = 357.5291092 + 35999.0502909 * t - .0001536 * t * t + t * t * t / 24490000;
+        double m = AstroConstants.E05_0 + 35999.0502909 * t - .0001536 * t * t + t * t * t / 24490000;
         double m1 = 134.9634114 + 477198.8676313 * t + .008997 * t * t + t * t * t / 69699 - t * t * t * t / 14712000;
         double f = 93.27209929999999 + 483202.0175273 * t - .0034029 * t * t - t * t * t / 3526000
                 + t * t * t * t / 863310000;
@@ -795,7 +798,7 @@ public class MoonCalc extends AstroCalc {
     /**
      * Sets the azimuth, elevation and zodiac in the moon object.
      */
-    private void setAzimuthElevationZodiac(double julianDate, double latitude, double longitude, Moon moon) {
+    private MoonPosition getMoonPosition(double julianDate, double latitude, double longitude) {
         double lat = Math.toRadians(latitude);
         double lon = Math.toRadians(longitude);
 
@@ -837,11 +840,7 @@ public class MoonCalc extends AstroCalc {
         double[] raDecTopo = geoEqu2TopoEqu(raDec, distance, lat, lmst);
         double[] azAlt = equ2AzAlt(raDecTopo[0], raDecTopo[1], lat, lmst);
 
-        Position position = moon.getPosition();
-        position.setAzimuth(Math.toDegrees(azAlt[0]));
-        position.setElevation(Math.toDegrees(azAlt[1]) + refraction(azAlt[1]));
-
-        moon.setZodiac(ZodiacCalc.calculate(moonLon, null));
+        return new MoonPosition(Math.toDegrees(azAlt[0]), Math.toDegrees(azAlt[1]) + refraction(azAlt[1]), moonLon);
     }
 
     /**
@@ -908,9 +907,7 @@ public class MoonCalc extends AstroCalc {
     private double getCenterDistance(double lat) {
         double co = Math.cos(lat);
         double si = Math.sin(lat);
-        double fl = 1.0 - 1.0 / 298.257223563;
-        fl = fl * fl;
-        si = si * si;
+        double fl = FL * FL;
         double u = 1.0 / Math.sqrt(co * co + fl * si);
         double a = AstroConstants.EARTH_EQUATORIAL_RADIUS * u;
         double b = AstroConstants.EARTH_EQUATORIAL_RADIUS * fl * u;

@@ -12,17 +12,14 @@
  */
 package org.openhab.binding.astro.internal.model;
 
-import java.util.AbstractMap.SimpleEntry;
-import java.util.Calendar;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.astro.internal.handler.AstroThingHandler;
-import org.openhab.core.i18n.TimeZoneProvider;
+import org.openhab.binding.astro.internal.util.DateTimeUtils;
 
 /**
  * Holds eclipse informations.
@@ -31,7 +28,11 @@ import org.openhab.core.i18n.TimeZoneProvider;
  */
 @NonNullByDefault
 public class Eclipse {
-    private final Map<EclipseKind, @Nullable Entry<Calendar, @Nullable Double>> entries = new HashMap<>();
+    private record EclipseData(Instant when, double elevation) {
+
+    }
+
+    private final Map<EclipseKind, @Nullable EclipseData> entries = new HashMap<>(EclipseKind.values().length);
 
     public Eclipse(EclipseKind... eclipses) {
         for (EclipseKind eclipseKind : eclipses) {
@@ -46,21 +47,21 @@ public class Eclipse {
     /**
      * Returns the date of the next total eclipse.
      */
-    public @Nullable Calendar getTotal() {
+    public @Nullable Instant getTotal() {
         return getDate(EclipseKind.TOTAL);
     }
 
     /**
      * Returns the date of the next partial eclipse.
      */
-    public @Nullable Calendar getPartial() {
+    public @Nullable Instant getPartial() {
         return getDate(EclipseKind.PARTIAL);
     }
 
     /**
      * Returns the date of the next ring eclipse.
      */
-    public @Nullable Calendar getRing() {
+    public @Nullable Instant getRing() {
         return getDate(EclipseKind.RING);
     }
 
@@ -85,28 +86,18 @@ public class Eclipse {
         return getElevation(EclipseKind.RING);
     }
 
-    public @Nullable Calendar getDate(EclipseKind eclipseKind) {
-        Entry<Calendar, @Nullable Double> entry = entries.get(eclipseKind);
-        return entry != null ? entry.getKey() : null;
+    public @Nullable Instant getDate(EclipseKind eclipseKind) {
+        EclipseData entry = entries.get(eclipseKind);
+        return entry != null ? entry.when : null;
     }
 
     private @Nullable Double getElevation(EclipseKind eclipseKind) {
-        Entry<Calendar, @Nullable Double> entry = entries.get(eclipseKind);
-        return entry != null ? entry.getValue() : null;
+        EclipseData entry = entries.get(eclipseKind);
+        return entry != null ? entry.elevation : null;
     }
 
-    public void set(EclipseKind eclipseKind, Calendar eclipseDate, @Nullable Position position) {
-        entries.put(eclipseKind, new SimpleEntry<Calendar, @Nullable Double>(eclipseDate,
-                position != null ? position.getElevationAsDouble() : null));
-    }
-
-    public void setElevations(AstroThingHandler astroHandler, TimeZoneProvider timeZoneProvider) {
-        getKinds().forEach(eclipseKind -> {
-            Calendar eclipseDate = getDate(eclipseKind);
-            if (eclipseDate != null) {
-                set(eclipseKind, eclipseDate,
-                        astroHandler.getPositionAt(eclipseDate.toInstant().atZone(timeZoneProvider.getTimeZone())));
-            }
-        });
+    public void set(EclipseKind eclipseKind, double jdEclipse, double elevation) {
+        Instant eclipseDate = DateTimeUtils.jdToInstant(jdEclipse);
+        entries.put(eclipseKind, new EclipseData(eclipseDate, elevation));
     }
 }

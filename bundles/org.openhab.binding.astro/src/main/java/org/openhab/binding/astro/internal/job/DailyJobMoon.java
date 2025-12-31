@@ -98,8 +98,7 @@ public final class DailyJobMoon extends AbstractJob {
 
             Eclipse eclipse = moon.getEclipse();
             eclipse.getKinds().forEach(eclipseKind -> {
-                Calendar eclipseDate = eclipse.getDate(eclipseKind);
-                if (eclipseDate != null) {
+                if (eclipse.getDate(eclipseKind) instanceof Instant eclipseDate) {
                     scheduleEvent(handler, eclipseDate, eclipseKind.toString(), EVENT_CHANNEL_ID_ECLIPSE, false, zone,
                             locale);
                 }

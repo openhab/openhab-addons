@@ -25,18 +25,23 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public class Sun extends RiseSet implements Planet {
+    private final Eclipse eclipse = new Eclipse(EclipseKind.PARTIAL, EclipseKind.TOTAL, EclipseKind.RING);
 
     private Map<SunPhaseName, Range> ranges = new HashMap<>();
 
-    private Position position = new Position();
+    private Position position = SunPosition.NULL;
 
     private Zodiac zodiac = Zodiac.NULL;
 
     private @Nullable Season season = null;
 
+<<<<<<< Upstream, based on moon_distance
     private Eclipse eclipse = new Eclipse(EclipseKind.PARTIAL, EclipseKind.TOTAL, EclipseKind.RING);
 
     private Radiation radiation = Radiation.NULL;
+=======
+    private Radiation radiation = new Radiation();
+>>>>>>> 0596b7c Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added unit tests for eclipses
 
     private SunPhase phase = new SunPhase();
 
@@ -284,13 +289,6 @@ public class Sun extends RiseSet implements Planet {
      */
     public Eclipse getEclipse() {
         return eclipse;
-    }
-
-    /**
-     * Sets the eclipses.
-     */
-    public void setEclipse(Eclipse eclipse) {
-        this.eclipse = eclipse;
     }
 
     /**

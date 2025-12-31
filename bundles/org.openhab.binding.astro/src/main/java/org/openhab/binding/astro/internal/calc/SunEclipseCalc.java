@@ -18,7 +18,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.astro.internal.model.EclipseKind;
 
 /**
- * Calculates the eclipses for the astro object
+ * Ajust the eclipses calculations for the sun
  *
  * @author Gerhard Riegler - Initial contribution
  * @author Gaël L'hopital - Extracted from MoonCalc
@@ -27,22 +27,15 @@ import org.openhab.binding.astro.internal.model.EclipseKind;
 public class SunEclipseCalc extends EclipseCalc {
 
     @Override
-    protected double getAstroEclipse(double k, EclipseKind eclipse) {
-        double kMod = Math.floor(k);
-        return getEclipse(kMod, eclipse);
-    }
-
-    @Override
     protected double astroAdjust(EclipseKind eclipse, double e, double m, double m1, double g, double u, double jd) {
         if (Math.abs(g) > 1.5433 + u) {
             return 0; // no sun eclipse
         }
-
-        if (EclipseKind.PARTIAL.equals(eclipse)) {
+        if (!EclipseKind.PARTIAL.equals(eclipse)) {
             if ((g < -.9972 || g > .9972) || (Math.abs(g) < .9972 && Math.abs(g) > .9972 + Math.abs(u))) {
                 return 0; // no ring or total sun eclipse
             }
-            double ringTest = (u > .0047 || u >= .00464 * Math.sqrt(1 - g * g)) ? 1 : 0;
+            double ringTest = u > .0047 || u >= .00464 * Math.sqrt(1 - g * g) ? 1 : 0;
             if (ringTest == 1 && EclipseKind.TOTAL.equals(eclipse)) {
                 return 0;
             }
@@ -52,7 +45,11 @@ public class SunEclipseCalc extends EclipseCalc {
         } else if ((g >= -.9972 && g <= .9972) || (Math.abs(g) >= .9972 && Math.abs(g) < .9972 + Math.abs(u))) {
             return 0; // no partial sun eclipse
         }
-
         return jd + -.4075 * sinDeg(m1) + .1721 * e * sinDeg(m);
+    }
+
+    @Override
+    protected double getJDAjust() {
+        return 0;
     }
 }
