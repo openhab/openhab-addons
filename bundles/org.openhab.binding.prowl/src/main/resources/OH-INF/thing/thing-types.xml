@@ -7,7 +7,7 @@
 	<!-- Prowl Thing Type -->
 	<thing-type id="broker">
 		<label>Broker</label>
-		<description>A broker thing for the Prowl Binding</description>
+		<description>A broker Thing for the Prowl binding</description>
 
 		<channels>
 			<channel id="remaining" typeId="remaining"/>
@@ -15,17 +15,17 @@
 
 		<config-description>
 			<parameter name="application" type="text" required="false">
-				<label>Application name</label>
+				<label>Application Name</label>
 				<description>Application name used in every push message</description>
 				<default>openHAB</default>
 			</parameter>
 			<parameter name="apiKey" type="text" required="true">
 				<label>API key</label>
-				<description>API key created in the ProwlApp</description>
+				<description>API key created on the Prowl website</description>
 			</parameter>
 			<parameter name="refresh" type="integer" required="false" min="1">
-				<label>Refresh</label>
-				<description>Specifies the refresh time in minutes for checking for remaining free messages</description>
+				<label>Refresh Interval</label>
+				<description>Refresh interval, in minutes, for checking remaining free messages</description>
 				<default>30</default>
 			</parameter>
 
@@ -36,7 +36,7 @@
 	<channel-type id="remaining">
 		<item-type>Number</item-type>
 		<label>Remaining Messages</label>
-		<description>Remaining free push messages for Prowl Binding</description>
+		<description>Remaining free push messages for the Prowl binding</description>
 		<state pattern="%d" readOnly="true"/>
 	</channel-type>
 </thing:thing-descriptions>

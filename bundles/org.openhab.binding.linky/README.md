@@ -254,7 +254,7 @@ The retrieved information is available in multiple groups.
 #### Dynamic Thing Channels  
 
 The binding (as of openHAB 5.1.0) supports reading consumption indexes from the Enedis website.  
-This makes it possible to view consumption for different tariffs such as *heures pleines / heures creuses* or *tempo*.  
+This makes it possible to view consumption for different tariffs such as _heures pleines / heures creuses_ or _tempo_.  
 
 To handle this, binding will create a new set of channels for daily, weekly, monthly, and yearly groups.  
 
@@ -263,7 +263,6 @@ You will have two different sets of indexes:
 - **Raw consumption indexes:**  
   These are the default indexes returned by Enedis. The naming uses base indexes, so there is no direct way to know which tariff each index corresponds to.  
   Channels will be named as follows:  
-
 
   consumptionSupplierIdx0, consumptionSupplierIdx1, ..., consumptionSupplierIdx9
   consumptionDistributorIdx0, consumptionDistributorIdx1, ..., consumptionDistributorIdx3
@@ -278,7 +277,7 @@ For example:
    daily#heuresPleines, daily#heuresCreuses, daily#bleuHeuresCreuses,
   daily#bleuHeuresPleines, daily#redHeuresCreuses, ...
 
-⚠️ **Warning:** 
+⚠️ **Warning:**
 Dynamic channels and indexes are currently only supported with the **EnedisWebBridge**.  
 Support for other bridges will be introduced later, once Enedis provides an API to access this data.  
 
@@ -320,7 +319,7 @@ Number Linky_Tempo "Linky Tempo Day [%s]" channel="linky:tempo-calendar:local:te
 
 ### Displaying Information Graph
 
-Using the timeseries channel and the binding version in openHAB 5.1.0, you will be able to easily create a chart to show the consumption graph. 
+Using the timeseries channel and the binding version in openHAB 5.1.0, you will be able to easily create a chart to show the consumption graph.
 To do this, you need to enable a timeseries persistence framework.
 Graph definitions will look like this:
 

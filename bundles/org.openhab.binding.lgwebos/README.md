@@ -29,10 +29,10 @@ The binding broadcasts a search message via UDP on the network in order to disco
 
 Please note, that if you are running openHAB in a Docker container you have several alternatives for this binding to work:
 
-* use macvlan or host networking
-* manually configure the device:
-  * host and access key for basic functionality
-  * mac address and broadcast address to be able to turn on the TV
+- use macvlan or host networking
+- manually configure the device:
+  - host and access key for basic functionality
+  - mac address and broadcast address to be able to turn on the TV
 
 ## Thing Configuration
 
@@ -57,12 +57,11 @@ Example: If your TV has the IP address `192.168.0.123`, the broadcast address is
 
 In addition forwarding of broadcast packets needs to be enabled:
 
-* net.ipv4.icmp_echo_ignore_broadcasts=0
-* net.ipv4.conf.all.bc_forwarding=1
-* net.ipv4.conf.${interface}.bc_forwarding=1
+- net.ipv4.icmp_echo_ignore_broadcasts=0
+- net.ipv4.conf.all.bc_forwarding=1
+- net.ipv4.conf.${interface}.bc_forwarding=1
 
-See for example [here](https://www.devwithimagination.com/2020/06/15/homebridge-docker-and-wake-on-lan/) for instructions how to do that.
-
+See, for example, [this guide on Homebridge, Docker, and Wake-on-LAN](https://www.devwithimagination.com/2020/06/15/homebridge-docker-and-wake-on-lan/) for instructions on enabling broadcast forwarding.
 
 ### Configuration in .things file
 

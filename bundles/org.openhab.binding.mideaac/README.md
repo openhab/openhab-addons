@@ -29,53 +29,53 @@ No binding configuration is required.
 
 ## Thing Configuration
 
-| Parameter     | Required ?  | Comment                                                           | Default                   | Advanced |
-|---------------|-------------|-------------------------------------------------------------------|---------------------------|----------|
-| ipAddress     | Yes         | IP Address of the device.                                         |                           |          |
-| ipPort        | Yes         | IP port of the device                                             | 6444                      | Yes      |
-| deviceId      | Yes         | ID of the device. Leave 0 to do ID discovery.                     | 0                         | Yes      |
-| cloud         | Yes for V.3 | Your Cloud Provider name (or default).                            | NetHome Plus              |          |
-| email         | No          | Email for your cloud account (or default).                        | nethome+us@mailinator.com |          |
-| password      | No          | Password for your cloud account (or default).                     | password1                 |          |
-| token         | Yes for V.3 | Secret Token - Retrieved from cloud                               |                           | Yes      |
-| key           | Yes for V.3 | Secret Key - Retrieved from cloud                                 |                           | Yes      |
-| pollingTime   | Yes         | Frequency to Poll AC Status in seconds. Minimum is 30.            | 60 seconds                |          |
-| keyTokenUpdate| No          | Frequency to update key-token from cloud in hours.  Minimum is 24 | 0 hours (disabled)        | Yes      |
-| energyPoll    | Yes         | Frequency to poll energy data (if supported)                      | 0 minutes (disabled)      |          |
-| timeout       | Yes         | Socket connection timeout in seconds. Min. is 2, max. 10.         | 4 seconds                 | Yes      |
-| promptTone    | Yes         | "Ding" tone when command is received and executed.                | false                     |          |
-| version       | Yes         | Version 3 has token, key and cloud requirements.                  | 3                         | Yes      |
-| energyDecode  | Yes         | Binary Coded Decimal (BCD) = true. Big-endian = false.            | true                      | Yes      |
+| Parameter      | Required ?  | Comment                                                           | Default                     | Advanced |
+|----------------|-------------|-------------------------------------------------------------------|-----------------------------|----------|
+| ipAddress      | Yes         | IP Address of the device.                                         |                             |          |
+| ipPort         | Yes         | IP port of the device                                             | 6444                        | Yes      |
+| deviceId       | Yes         | ID of the device. Leave 0 to do ID discovery.                     | 0                           | Yes      |
+| cloud          | Yes for V.3 | Your Cloud Provider name (or default).                            | NetHome Plus                |          |
+| email          | No          | Email for your cloud account (or default).                        | <nethome+us@mailinator.com> |          |
+| password       | No          | Password for your cloud account (or default).                     | password1                   |          |
+| token          | Yes for V.3 | Secret Token - Retrieved from cloud                               |                             | Yes      |
+| key            | Yes for V.3 | Secret Key - Retrieved from cloud                                 |                             | Yes      |
+| pollingTime    | Yes         | Frequency to Poll AC Status in seconds. Minimum is 30.            | 60 seconds                  |          |
+| keyTokenUpdate | No          | Frequency to update key-token from cloud in hours.  Minimum is 24 | 0 hours (disabled)          | Yes      |
+| energyPoll     | Yes         | Frequency to poll energy data (if supported)                      | 0 minutes (disabled)        |          |
+| timeout        | Yes         | Socket connection timeout in seconds. Min. is 2, max. 10.         | 4 seconds                   | Yes      |
+| promptTone     | Yes         | "Ding" tone when command is received and executed.                | false                       |          |
+| version        | Yes         | Version 3 has token, key and cloud requirements.                  | 3                           | Yes      |
+| energyDecode   | Yes         | Binary Coded Decimal (BCD) = true. Big-endian = false.            | true                        | Yes      |
 
 ## Channels
 
 Following channels are available:
 Note:  After discovery, the Thing properties dropdown on the Thing UI page will show what channels and modes your device supports.
 
-| Channel              | Type               | Description                                                                                            | Read only | Advanced |
-|----------------------|--------------------|--------------------------------------------------------------------------------------------------------|-----------|----------|
-| power                | Switch             | Turn the AC on or off.                                                                                 |           |          |
-| target-temperature   | Number:Temperature | Target temperature.                                                                                    |           |          |
-| operational-mode     | String             | Operational modes: OFF, AUTO, COOL, DRY, HEAT, FAN ONLY                                                |           |          |
-| fan-speed            | String             | Fan speeds: OFF (turns off), SILENT, LOW, MEDIUM, HIGH, AUTO. Not all modes supported by all units.    |           |          |
-| swing-mode           | String             | Swing mode: OFF, VERTICAL, HORIZONTAL, BOTH. Not all modes supported by all units.                     |           |          |
-| eco-mode             | Switch             | Eco mode - Cool only (Temperature is set to 24 C (75 F) and fan on AUTO)                               |           |          |
-| turbo-mode           | Switch             | Turbo mode, "Boost" in Midea Air app, long press "+" on IR Remote Controller. COOL and HEAT mode only. |           |          |
-| sleep-function       | Switch             | Sleep function ("Moon with a star" icon on IR Remote Controller).                                      |           |          |
-| indoor-temperature   | Number:Temperature | Indoor temperature measured in the room, where internal unit is installed.                             | Yes       |          |
-| outdoor-temperature  | Number:Temperature | Outdoor temperature by external unit. Some units do not report reading when off.                       | Yes       |          |
-| temperature-unit     | Switch             | Sets the LED display on the evaporator to Fahrenheit (true) or Celsius (false).                        |           | Yes      |
-| on-timer             | String             | Sets the future time to turn on the AC.                                                                |           | Yes      |
-| off-timer            | String             | Sets the future time to turn off the AC.                                                               |           | Yes      |
-| screen-display       | Switch             | If device supports across LAN, turns off the LED display.                                              |           | Yes      |
-| maximum-humidity     | Number             | If device supports, allows setting the maximum humidity in DRY mode                                    |           | Yes
-| humidity             | Number             | If device supports, the indoor room humidity.                                                          | Yes       | Yes      |
-| energy-consumption   | Number             | If device supports, cumulative Kilowatt-Hours usage                                                    | Yes       | Yes      |
-| current-draw         | Number             | If device supports, instantaneous amperage usage                                                       | Yes       | Yes      |
-| power-consumption    | Number             | If device supports, instantaneous wattage reading                                                      | Yes       | Yes      |
-| appliance-error      | Switch             | If device supports, appliance error notification                                                       | Yes       | Yes      |
-| filter-status        | Switch             | If device supports, notification that filter needs cleaning                                            | Yes       | Yes      |
-| auxiliary-heat       | Switch             | If device supports, auxiliary heat (On or Off)                                                         | Yes       | Yes      |
+| Channel             | Type               | Description                                                                                            | Read only | Advanced |
+|---------------------|--------------------|--------------------------------------------------------------------------------------------------------|-----------|----------|
+| power               | Switch             | Turn the AC on or off.                                                                                 |           |          |
+| target-temperature  | Number:Temperature | Target temperature.                                                                                    |           |          |
+| operational-mode    | String             | Operational modes: OFF, AUTO, COOL, DRY, HEAT, FAN ONLY                                                |           |          |
+| fan-speed           | String             | Fan speeds: OFF (turns off), SILENT, LOW, MEDIUM, HIGH, AUTO. Not all modes supported by all units.    |           |          |
+| swing-mode          | String             | Swing mode: OFF, VERTICAL, HORIZONTAL, BOTH. Not all modes supported by all units.                     |           |          |
+| eco-mode            | Switch             | Eco mode - Cool only (Temperature is set to 24 C (75 F) and fan on AUTO)                               |           |          |
+| turbo-mode          | Switch             | Turbo mode, "Boost" in Midea Air app, long press "+" on IR Remote Controller. COOL and HEAT mode only. |           |          |
+| sleep-function      | Switch             | Sleep function ("Moon with a star" icon on IR Remote Controller).                                      |           |          |
+| indoor-temperature  | Number:Temperature | Indoor temperature measured in the room, where internal unit is installed.                             | Yes       |          |
+| outdoor-temperature | Number:Temperature | Outdoor temperature by external unit. Some units do not report reading when off.                       | Yes       |          |
+| temperature-unit    | Switch             | Sets the LED display on the evaporator to Fahrenheit (true) or Celsius (false).                        |           | Yes      |
+| on-timer            | String             | Sets the future time to turn on the AC.                                                                |           | Yes      |
+| off-timer           | String             | Sets the future time to turn off the AC.                                                               |           | Yes      |
+| screen-display      | Switch             | If device supports across LAN, turns off the LED display.                                              |           | Yes      |
+| maximum-humidity    | Number             | If device supports, allows setting the maximum humidity in DRY mode                                    |           | Yes      |
+| humidity            | Number             | If device supports, the indoor room humidity.                                                          | Yes       | Yes      |
+| energy-consumption  | Number             | If device supports, cumulative Kilowatt-Hours usage                                                    | Yes       | Yes      |
+| current-draw        | Number             | If device supports, instantaneous amperage usage                                                       | Yes       | Yes      |
+| power-consumption   | Number             | If device supports, instantaneous wattage reading                                                      | Yes       | Yes      |
+| appliance-error     | Switch             | If device supports, appliance error notification                                                       | Yes       | Yes      |
+| filter-status       | Switch             | If device supports, notification that filter needs cleaning                                            | Yes       | Yes      |
+| auxiliary-heat      | Switch             | If device supports, auxiliary heat (On or Off)                                                         | Yes       | Yes      |
 
 ## Examples
 
