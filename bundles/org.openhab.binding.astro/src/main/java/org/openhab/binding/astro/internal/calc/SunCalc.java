@@ -327,7 +327,7 @@ public class SunCalc {
         Eclipse eclipse = sun.getEclipse();
         eclipse.getKinds().forEach(eclipseKind -> {
             double jdate = ECLIPSE_CALC.calculate(calendar, j, eclipseKind);
-            Calendar eclipseCal = DateTimeUtils.toCalendar(jdate, zone, locale);
+            Calendar eclipseCal = Objects.requireNonNull(DateTimeUtils.toCalendar(jdate, zone, locale));
             SunPosition sunPosition = getPosition(eclipseCal, latitude, longitude, altitude);
             eclipse.set(eclipseKind, jdate, sunPosition.getElevationAsDouble());
         });
