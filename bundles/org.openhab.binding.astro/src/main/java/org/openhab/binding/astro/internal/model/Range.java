@@ -82,6 +82,8 @@ public class Range {
      * Returns true, if the given calendar matches into the range.
      */
     public boolean matches(Calendar cal) {
+        Calendar start = this.start;
+        Calendar end = this.end;
         if (start == null && end == null) {
             return false;
         }

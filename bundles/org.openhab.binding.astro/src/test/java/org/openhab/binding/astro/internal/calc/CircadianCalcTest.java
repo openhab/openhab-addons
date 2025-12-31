@@ -16,8 +16,10 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.Locale;
 import java.util.TimeZone;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.astro.internal.model.Circadian;
 import org.openhab.binding.astro.internal.model.Range;
@@ -27,6 +29,7 @@ import org.openhab.binding.astro.internal.model.Range;
  *
  * @author Gaël L'hopital - Initial contribution
  */
+@NonNullByDefault
 public class CircadianCalcTest {
 
     private static final TimeZone UTC = TimeZone.getTimeZone("UTC");
@@ -69,7 +72,7 @@ public class CircadianCalcTest {
     }
 
     private static Calendar newCalendar(int year, int month, int day, int hour, int minute) {
-        Calendar calendar = new GregorianCalendar(UTC);
+        Calendar calendar = new GregorianCalendar(UTC, Locale.ROOT);
         calendar.clear();
         calendar.set(year, month, day, hour, minute, 0);
         calendar.set(Calendar.MILLISECOND, 0);
