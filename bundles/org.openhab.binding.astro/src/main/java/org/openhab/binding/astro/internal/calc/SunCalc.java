@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.TimeZone;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -278,7 +279,7 @@ public class SunCalc {
         Eclipse eclipse = sun.getEclipse();
         eclipse.getKinds().forEach(eclipseKind -> {
             double jdate = ECLIPSE_CALC.calculate(calendar, j, eclipseKind);
-            Calendar eclipseCal = DateTimeUtils.toCalendar(jdate, zone, locale);
+            Calendar eclipseCal = Objects.requireNonNull(DateTimeUtils.toCalendar(jdate, zone, locale));
             SunPosition sunPosition = getPosition(eclipseCal, latitude, longitude, altitude);
             eclipse.set(eclipseKind, jdate, sunPosition.getElevationAsDouble());
         });
