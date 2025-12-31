@@ -562,6 +562,18 @@ public class TuyaDeviceHandler extends BaseThingHandler implements DeviceInfoSub
     public void initialize() {
         configuration = getConfigAs(DeviceConfiguration.class);
 
+        boolean hasMeasurables = false;
+        for (var e : schemaDps.values()) {
+            if (!e.readOnly) {
+                hasMeasurables = true;
+                break;
+            }
+        }
+        if (!hasMeasurables) {
+            logger.debug("{}: no measurables - polling disabled", thing.getUID().getId());
+            configuration.pollingInterval = 0;
+        }
+
         // check if we have channels and add them if available
         if (thing.getChannels().isEmpty()) {
             addChannels();
