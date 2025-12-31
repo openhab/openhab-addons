@@ -143,8 +143,8 @@ Trigger channels (for rules):
 |----------------------------|---------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------|
 | motion-start               | none                                                                                                                                  | Motion started                          |
 | motion-update              | none                                                                                                                                  | Motion updated (debounced update event) |
-| smart-audio-detect-start   | `alrmSmoke`, `alrmCmonx`, `alrmSiren`, `alrmBabyCry`, `alrmSpeak`, `alrmBark`, `alrmBurglar`, `alrmCarHorn`, `alrmGlassBreak`, `none` | Smart audio detection started           |
-| smart-audio-detect-update  | `alrmSmoke`, `alrmCmonx`, `alrmSiren`, `alrmBabyCry`, `alrmSpeak`, `alrmBark`, `alrmBurglar`, `alrmCarHorn`, `alrmGlassBreak`, `none` | Smart audio detection updated           |
+| smart-detect-audio-start   | `alrmSmoke`, `alrmCmonx`, `alrmSiren`, `alrmBabyCry`, `alrmSpeak`, `alrmBark`, `alrmBurglar`, `alrmCarHorn`, `alrmGlassBreak`, `none` | Smart audio detection started           |
+| smart-detect-audio-update  | `alrmSmoke`, `alrmCmonx`, `alrmSiren`, `alrmBabyCry`, `alrmSpeak`, `alrmBark`, `alrmBurglar`, `alrmCarHorn`, `alrmGlassBreak`, `none` | Smart audio detection updated           |
 | smart-detect-zone-start    | `person`, `vehicle`, `package`, `licensePlate`, `face`, `animal`, `none`                                                              | Zone smart detection started            |
 | smart-detect-zone-update   | `person`, `vehicle`, `package`, `licensePlate`, `face`, `animal`, `none`                                                              | Zone smart detection updated            |
 | smart-detect-line-start    | `person`, `vehicle`, `package`, `licensePlate`, `face`, `animal`, `none`                                                              | Line smart detection started            |
@@ -222,9 +222,7 @@ The playback URLs can be used in the MainUI video widget by enabling WebRTC in t
 
 An example WebRTC stream URL would be:
 
-```
-/unifiprotect/media/play/unifiprotect:camera:home:1234567890:high
-```
+`/unifiprotect/media/play/unifiprotect:camera:home:1234567890:high`
 
 Where `unifiprotect:camera:home:1234567890` is the camera's Thing UID and `high` is the quality (high, medium, low, package) if supported by the camera.
 
@@ -236,9 +234,7 @@ It's also highly recommended to use the camera's Snapshot URL property or the It
 
 An example snapshot image URL would be:
 
-```
-/unifiprotect/media/image/unifiprotect:camera:home:1234567890
-```
+`/unifiprotect/media/image/unifiprotect:camera:home:1234567890`
 
 Where `unifiprotect:camera:home:1234567890` is the camera's Thing UID.
 You can append `?quality=high` to the URL to get the a higher quality snapshot image if supported by the camera, but can fail if not supported.

@@ -24,5 +24,10 @@ public enum SeasonName {
     SPRING,
     SUMMER,
     AUTUMN,
-    WINTER
+    WINTER;
+
+    public SeasonName next() {
+        SeasonName[] values = values();
+        return values[(this.ordinal() + 1) % values.length];
+    }
 }

@@ -7,7 +7,7 @@
 	<channel-type id="setpointTemperature">
 		<item-type>Number:Temperature</item-type>
 		<label>Setpoint Temperature</label>
-		<description>Gets or sets the set point of this zone</description>
+		<description>Get or set the setpoint for this zone</description>
 		<category>heating</category>
 		<tags>
 			<tag>Setpoint</tag>
@@ -19,7 +19,7 @@
 	<channel-type id="offsetTemperature">
 		<item-type>Number:Temperature</item-type>
 		<label>Thermostat Temperature Offset</label>
-		<description>Gets or sets the temperature offset for this thermostat</description>
+		<description>Get or set the temperature offset for this thermostat</description>
 		<category>heating</category>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
@@ -27,7 +27,7 @@
 	<channel-type id="preHeat">
 		<item-type>Switch</item-type>
 		<label>Preheat</label>
-		<description>Switch the preheating of a zone ON or OFF</description>
+		<description>Turn preheating for a zone on or off</description>
 		<category>switch</category>
 		<tags>
 			<tag>Switch</tag>
@@ -38,7 +38,7 @@
 	<channel-type id="coolingAllowed">
 		<item-type>Switch</item-type>
 		<label>Cooling Allowed</label>
-		<description>Switch the cooling allowed of a zone ON or OFF</description>
+		<description>Turn cooling for a zone on or off</description>
 		<category>switch</category>
 		<tags>
 			<tag>Switch</tag>
@@ -49,7 +49,7 @@
 	<channel-type id="regulationControl">
 		<item-type>String</item-type>
 		<label>Regulation Control</label>
-		<description>Switch the regulation control of a zone to Active, Passive or Off</description>
+		<description>Set the regulation control of a zone to active, passive, or off</description>
 		<category>switch</category>
 		<tags>
 			<tag>Control</tag>
@@ -67,14 +67,14 @@
 	<channel-type id="lock">
 		<item-type>Switch</item-type>
 		<label>Lock</label>
-		<description>Locks the switch state of the Plugwise Smart plug</description>
+		<description>Lock the switch state of the Plugwise smart plug</description>
 		<category>switch</category>
 	</channel-type>
 
 	<channel-type id="chState">
 		<item-type>Switch</item-type>
 		<label>Central Heating Active</label>
-		<description>Is the boiler active for central heating, On or OFF</description>
+		<description>Whether the boiler is active for central heating (on or off)</description>
 		<category>switch</category>
 		<tags>
 			<tag>Status</tag>
@@ -86,7 +86,7 @@
 	<channel-type id="dhwState">
 		<item-type>Switch</item-type>
 		<label>Domestic Hot Water Active</label>
-		<description>Is the boiler active for domestic hot water, On or OFF</description>
+		<description>Whether the boiler is active for domestic hot water (on or off)</description>
 		<category>switch</category>
 		<tags>
 			<tag>Status</tag>
@@ -98,7 +98,7 @@
 	<channel-type id="coolingState">
 		<item-type>Switch</item-type>
 		<label>Cooling State</label>
-		<description>Is the boiler active for cooling, On or OFF</description>
+		<description>Whether the boiler is active for cooling (on or off)</description>
 		<category>switch</category>
 		<tags>
 			<tag>Status</tag>
@@ -110,7 +110,7 @@
 	<channel-type id="flameState">
 		<item-type>Switch</item-type>
 		<label>Flame State</label>
-		<description>Is the boiler's flame active, On or OFF</description>
+		<description>Whether the boiler's flame is active (on or off)</description>
 		<category>switch</category>
 		<tags>
 			<tag>Status</tag>
@@ -165,7 +165,7 @@
 	<channel-type id="intendedHeatingState">
 		<item-type>Switch</item-type>
 		<label>Intended Heating State</label>
-		<description>Should the boiler be active for central heating, On or OFF</description>
+		<description>Whether the boiler should be active for central heating (on or off)</description>
 		<category>switch</category>
 		<state readOnly="true"/>
 	</channel-type>
@@ -173,7 +173,7 @@
 	<channel-type id="dhwComfortMode">
 		<item-type>Switch</item-type>
 		<label>Domestic Hot Water Comfort Mode</label>
-		<description>Is the boiler's domestic hot water mode set to comfort, On or OFF</description>
+		<description>Whether the boiler's domestic hot water mode is set to comfort (on or off)</description>
 		<category>switch</category>
 		<tags>
 			<tag>Status</tag>
@@ -185,7 +185,7 @@
 	<channel-type id="intendedBoilerTemp">
 		<item-type>Number:Temperature</item-type>
 		<label>Intended Boiler Temperature</label>
-		<description>Gets the intended temperature of this boiler</description>
+		<description>The intended temperature of this boiler</description>
 		<category>heating</category>
 		<tags>
 			<tag>Setpoint</tag>
@@ -197,15 +197,15 @@
 	<channel-type id="modulationLevel">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Modulation Level</label>
-		<description>Gets the modulation level of this boiler</description>
+		<description>The modulation level of this boiler</description>
 		<category>heating</category>
 		<state readOnly="true" pattern="%.0f %%"/>
 	</channel-type>
 
 	<channel-type id="otAppFaultCode">
 		<item-type>Number</item-type>
-		<label>Opentherm Application Faultcode</label>
-		<description>Gets the Opentherm application fault code of this boiler</description>
+		<label>OpenTherm Application Fault Code</label>
+		<description>The OpenTherm application fault code of this boiler</description>
 		<category>heating</category>
 		<state readOnly="true" pattern="%.0f"/>
 	</channel-type>
@@ -213,7 +213,7 @@
 	<channel-type id="dhwTemperature">
 		<item-type>Number:Temperature</item-type>
 		<label>Domestic Hot Water Temperature</label>
-		<description>Gets the temperature of the domestic hot water</description>
+		<description>The temperature of the domestic hot water</description>
 		<category>heating</category>
 		<tags>
 			<tag>Measurement</tag>
@@ -224,8 +224,8 @@
 
 	<channel-type id="otOEMFaultCode">
 		<item-type>Number</item-type>
-		<label>OEM Fault Code</label>
-		<description>Gets the OEM fault code of this boiler</description>
+		<label>OpenTherm OEM Fault Code</label>
+		<description>The OpenTherm OEM fault code of this boiler</description>
 		<category>heating</category>
 		<state readOnly="true" pattern="%.0f"/>
 	</channel-type>
@@ -233,7 +233,7 @@
 	<channel-type id="boilerTemperature">
 		<item-type>Number:Temperature</item-type>
 		<label>Boiler Temperature</label>
-		<description>Gets the temperature of this boiler</description>
+		<description>The temperature of this boiler</description>
 		<category>heating</category>
 		<tags>
 			<tag>Measurement</tag>
@@ -245,7 +245,7 @@
 	<channel-type id="returnWaterTemperature">
 		<item-type>Number:Temperature</item-type>
 		<label>Return Water Temperature</label>
-		<description>Gets the temperature of the return water</description>
+		<description>The temperature of the return water</description>
 		<category>heating</category>
 		<tags>
 			<tag>Measurement</tag>
@@ -257,7 +257,7 @@
 	<channel-type id="dhwSetpoint">
 		<item-type>Number:Temperature</item-type>
 		<label>Domestic Hot Water Setpoint Temperature</label>
-		<description>Gets the temperature of the domestic hot water setpoint</description>
+		<description>The domestic hot water setpoint temperature</description>
 		<category>heating</category>
 		<tags>
 			<tag>Setpoint</tag>
@@ -269,7 +269,7 @@
 	<channel-type id="maxBoilerTemperature">
 		<item-type>Number:Temperature</item-type>
 		<label>Max Boiler Temperature</label>
-		<description>Gets the maximum temperature of this boiler</description>
+		<description>The maximum temperature of this boiler</description>
 		<category>heating</category>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -277,7 +277,7 @@
 	<channel-type id="waterPressure">
 		<item-type>Number:Pressure</item-type>
 		<label>Water Pressure</label>
-		<description>Gets the water pressure of the boiler</description>
+		<description>The water pressure of the boiler</description>
 		<category>heating</category>
 		<tags>
 			<tag>Measurement</tag>
@@ -289,7 +289,7 @@
 	<channel-type id="presetScene">
 		<item-type>String</item-type>
 		<label>Preset Scene</label>
-		<description>Gets or sets the preset scene of the zone</description>
+		<description>Get or set the preset scene for the zone</description>
 		<category>heating</category>
 		<tags>
 			<tag>Control</tag>
@@ -298,7 +298,7 @@
 		<state>
 			<options>
 				<option value="home">Home</option>
-				<option value="asleep">A Sleep</option>
+				<option value="asleep">Asleep</option>
 				<option value="away">Away</option>
 				<option value="vacation">Vacation</option>
 				<option value="no_frost">No Frost</option>
