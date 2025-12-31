@@ -89,8 +89,11 @@ public class OSMReverseGeocoding {
                 logger.debug("Decoding of location {} failed with status {} and response: {}", location.toFullString(),
                         statusResponse, jsonResponse);
             }
-        } catch (InterruptedException | TimeoutException | ExecutionException e) {
+        } catch (TimeoutException | ExecutionException e) {
             logger.debug("Decoding of location {} failed with exception {}", location.toFullString(), e.getMessage());
+        } catch (InterruptedException ie) {
+            logger.debug("Decoding of location {} interrupted {}", location.toFullString(), ie.getMessage());
+            Thread.currentThread().interrupt();
         }
     }
 

@@ -54,7 +54,7 @@ public class OSMGeoProfile implements StateProfile {
     private final ScheduledExecutorService scheduler;
     private OSMReverseGeocoding lastState;
     private Instant lastResolveTime = Instant.MIN;
-    private Duration resolveDuration;
+    private Duration refreshInterval;
     private String language;
     private @Nullable ScheduledFuture<?> resolverJob;
 
@@ -71,18 +71,18 @@ public class OSMGeoProfile implements StateProfile {
             language = locale.getLocale().getLanguage() + "-" + locale.getLocale().getCountry();
         }
         try {
-            resolveDuration = DurationUtils.parse(configuration.resolveDuration);
-            // ensure minimal duration of 1 minute
-            if (resolveDuration.getSeconds() < 60) {
-                resolveDuration = Duration.ofMinutes(1);
+            refreshInterval = DurationUtils.parse(configuration.resolveInterval);
+            // ensure minimal refresh interval of 1 minute
+            if (refreshInterval.getSeconds() < 60) {
+                refreshInterval = Duration.ofMinutes(1);
             }
         } catch (IllegalArgumentException e) {
             // fallback to default duration of 5 minutes
-            resolveDuration = Duration.ofMinutes(5);
-            logger.warn("Could not parse duration '{}', using default duration {}", configuration.resolveDuration,
-                    resolveDuration);
+            refreshInterval = Duration.ofMinutes(5);
+            logger.warn("Could not parse interval '{}', using default interval {}", configuration.resolveInterval,
+                    refreshInterval);
         }
-        logger.debug("GeoProfile created with language: {} and resolve duration: {}", language, resolveDuration);
+        logger.debug("GeoProfile created with language: {} and resolve interval: {}", language, refreshInterval);
         lastState = new OSMReverseGeocoding(PointType.valueOf("0,0"), configuration, httpClient);
     }
 
@@ -111,11 +111,11 @@ public class OSMGeoProfile implements StateProfile {
             synchronized (this) {
                 lastState = new OSMReverseGeocoding(point, configuration, httpClient);
                 Instant now = Instant.now();
-                Instant nextResolveTime = lastResolveTime.plus(resolveDuration);
+                Instant nextResolveTime = lastResolveTime.plus(refreshInterval);
                 if (resolverJob == null) {
                     // no job running so let's check last resolve timestamp
                     if (now.isAfter(nextResolveTime)) {
-                        // resolve duration passed, do immediate resolve
+                        // resolve interval passed, do immediate resolve
                         logger.trace("Resolve now.");
                         resolverJob = scheduler.schedule(this::doResolve, 0, TimeUnit.SECONDS);
                     } else {

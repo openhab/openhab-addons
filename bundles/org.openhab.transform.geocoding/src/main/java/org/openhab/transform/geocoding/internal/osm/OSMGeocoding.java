@@ -72,8 +72,11 @@ public class OSMGeocoding {
                 logger.debug("Geo search for {} failed with status {} and response: {}", encodedSearch, statusResponse,
                         jsonResponse);
             }
-        } catch (InterruptedException | TimeoutException | ExecutionException | UnsupportedEncodingException e) {
+        } catch (TimeoutException | ExecutionException | UnsupportedEncodingException e) {
             logger.debug("Geo search for {} failed with exception {}", searchString, e.getMessage());
+        } catch (InterruptedException ie) {
+            logger.debug("Geo search interrupeted for {} failed with exception {}", searchString, ie.getMessage());
+            Thread.currentThread().interrupt();
         }
         return null;
     }

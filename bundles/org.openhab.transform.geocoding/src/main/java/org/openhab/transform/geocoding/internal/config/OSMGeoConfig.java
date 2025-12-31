@@ -25,6 +25,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class OSMGeoConfig {
     public String format = ROW_ADDRESS_FORMAT;
-    public String resolveDuration = "5m";
+    public String resolveInterval = "5m";
     public String language = "";
 }

@@ -35,7 +35,7 @@ E.g. _Springfield US_ command will deliver multiple results and only one is chos
 | Configuration Parameter | Type | Description                                                                                      |
 |-------------------------|------|--------------------------------------------------------------------------------------------------|
 | `format`                | text | Country specific address formatting                                                              |
-| `resolveDuration`       | text | Duration between reverse geocoding executions. Minimum: 1 minute                                 |
+| `resolveInterval`       | text | Interval of reverse geocoding executions. Minimum: 1 minute                                      S|
 | `language`              | text | Preferred language of the result. Only necessary if openHAB locale settings shall be overwritten |
 
 Select preferred display `format` for reverse geocoding.
@@ -48,7 +48,7 @@ Options:
 Note that [address fields](https://nominatim.org/release-docs/latest/api/Output/#addressdetails) may be missing e.g. for rural areas. 
 Default format is `row_address`.
 
-The `resolveDuration` defines the minimum time between two reverse geocoding transformations.
+The `resolveInterval` defines the minimum time between two reverse geocoding transformations.
 An external API is called to resolve the geo coordinates and it shall not be queried too frequent.
 Channel updates within the duration are omitted.
 After the configured duration expired the last received location will be transformed. 
