@@ -87,7 +87,7 @@ public class AstroIconProvider implements IconProvider {
 
     @Override
     public @Nullable InputStream getIcon(String category, String iconSetId, @Nullable String state, Format format) {
-        String iconName = "icon/%s.svg".formatted(Locale.ROOT, category);
+        String iconName = String.format(Locale.ROOT, "icon/%s.svg", category);
         if (ICON_SETS.contains(category) && state != null) {
             try {
                 Enum<?> stateEnum = switch (category) {

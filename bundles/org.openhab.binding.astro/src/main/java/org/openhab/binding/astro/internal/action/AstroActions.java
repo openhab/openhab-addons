@@ -52,12 +52,12 @@ public class AstroActions implements ThingActions {
 
     private final Logger logger = LoggerFactory.getLogger(AstroActions.class);
     private @Nullable AstroThingHandler handler;
-    private TimeZoneProvider timeZoneProvider;
+    private final TimeZoneProvider timeZoneProvider;
 
     @Activate
     public AstroActions(@Reference TimeZoneProvider timeZoneProvider) {
         this.timeZoneProvider = timeZoneProvider;
-        logger.debug("Astro actions service instanciated");
+        logger.debug("Astro actions service instantiated");
     }
 
     @Override
