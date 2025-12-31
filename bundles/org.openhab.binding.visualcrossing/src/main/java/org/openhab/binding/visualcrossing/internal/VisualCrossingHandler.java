@@ -151,8 +151,8 @@ public class VisualCrossingHandler extends BaseThingHandler {
                             .orElse(UNDEF));
                 }
                 case PRECIP_TYPE -> {
-                    return requireNonNull(currentConditions.map(cc -> newStringType(cc, CurrentConditions::preciptype))
-                            .orElse(UNDEF));
+                    return requireNonNull(currentConditions
+                            .map(cc -> newStringCollectionType(cc, CurrentConditions::preciptype)).orElse(UNDEF));
                 }
                 case SNOW -> {
                     return requireNonNull(
