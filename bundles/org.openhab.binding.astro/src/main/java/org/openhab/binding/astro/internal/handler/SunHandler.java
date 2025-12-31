@@ -70,9 +70,6 @@ public class SunHandler extends AstroThingHandler {
         Calendar calendar = Calendar.getInstance(zone, locale);
         sunCalc.setPositionalInfo(calendar, latitude != null ? latitude : 0, longitude != null ? longitude : 0,
                 altitude != null ? altitude : 0, sun);
-
-        sun.getEclipse().setElevations(this, timeZoneProvider);
-
         sun.setCircadian(CircadianCalc.calculate(calendar, sun.getRise(), sun.getSet(), sun.getNoon()));
 
         this.sun = sun;
@@ -131,9 +128,8 @@ public class SunHandler extends AstroThingHandler {
     }
 
     @Override
-    public @Nullable Position getPositionAt(ZonedDateTime date) {
-        Sun localSun = getPositionedSunAt(date);
-        return localSun.getPosition();
+    public Position getPositionAt(ZonedDateTime date) {
+        return getPositionedSunAt(date).getPosition();
     }
 
     public @Nullable Radiation getRadiationAt(ZonedDateTime date) {

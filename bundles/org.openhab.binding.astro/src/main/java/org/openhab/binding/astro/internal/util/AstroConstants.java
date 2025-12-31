@@ -28,6 +28,15 @@ public class AstroConstants {
     public static final double SOLAR_MEAN_MOTION_PER_SECOND = MathUtils.TWO_PI / AstroConstants.TROPICAL_YEAR_SECONDS;
     public static final double EARTH_EQUATORIAL_RADIUS = 6378.137; // WGS-84 reference in km
 
+    /** Earth flattening from WGS84 model: 1.0 / 298.257223563. */
+    public static final double WGS84_EARTH_FLATTENING = 1.0 / 298.257223563;
+
+    /** Constant term of the E5 angle. */
+    public static final double E05_0 = 357.52910918;
+
+    /** Rate term of the prime meridian. */
+    public static final double W_DOT = 360.9856235;
+
     /** Constructor */
     private AstroConstants() {
         throw new IllegalAccessError("Non-instantiable");
