@@ -79,6 +79,7 @@ public abstract class Position {
     public double getElevationAsDouble() {
         return elevation;
     }
+<<<<<<< Upstream, based on main
 
 <<<<<<< Upstream, based on main
     /**
@@ -92,3 +93,6 @@ public abstract class Position {
 =======
 }
 >>>>>>> 48a7069 Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added unit tests for eclipses
+=======
+}
+>>>>>>> d82040e Applied spotless
