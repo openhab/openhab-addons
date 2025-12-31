@@ -56,5 +56,4 @@ public abstract class Position {
     public double getElevationAsDouble() {
         return elevation;
     }
-
 }
