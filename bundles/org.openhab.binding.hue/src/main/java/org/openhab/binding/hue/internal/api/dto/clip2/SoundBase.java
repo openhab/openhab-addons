@@ -21,17 +21,17 @@ import org.openhab.binding.hue.internal.api.dto.clip2.enums.SoundValue;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * DTO for 'sound status' of a chime.
+ * Base DTO for the state of a chime.
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
 @NonNullByDefault
-public class SoundStatus {
-    private @Nullable String sound;
-    private @Nullable @SerializedName("sound_values") List<String> soundValues;
+public class SoundBase {
+    protected @Nullable @SerializedName("sound_values") List<String> soundValues;
+    protected @Nullable String sound;
 
     public @Nullable SoundValue getSoundValue() {
-        return sound instanceof String s ? SoundValue.of(s) : null;
+        return sound instanceof String sound ? SoundValue.of(sound) : null;
     }
 
     public List<SoundValue> getSoundValues() {

@@ -21,32 +21,25 @@ import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
 
-import com.google.gson.annotations.SerializedName;
-
 /**
- * DTO for a chime.
+ * Extended DTO for the state of a chime.
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
 @NonNullByDefault
-@SuppressWarnings("unused")
-public class Sound {
-    private @Nullable @SerializedName("sound_values") List<String> soundValues;
-    private @Nullable SoundStatus status;
-    private @Nullable String sound;
-    private @Nullable Volume volume;
-    private @Nullable Long duration; // in milliseconds
+public class Sound extends SoundBase {
+    protected @Nullable SoundBase status; // "status" contains current state
+    protected @Nullable Volume volume;
+    protected @Nullable Long duration; // in milliseconds
 
-    public @Nullable SoundStatus getStatus() {
-        return status;
-    }
-
+    @Override
     public List<SoundValue> getSoundValues() {
-        return status instanceof SoundStatus status ? status.getSoundValues() : List.of();
+        return status instanceof SoundBase status ? status.getSoundValues() : List.of();
     }
 
-    public @Nullable SoundValue getSoundStatusValue() {
-        return status instanceof SoundStatus s ? s.getSoundValue() : null;
+    @Override
+    public @Nullable SoundValue getSoundValue() {
+        return status instanceof SoundBase status ? status.getSoundValue() : null;
     }
 
     public Sound setDuration(@Nullable QuantityType<?> duration) {
@@ -62,7 +55,7 @@ public class Sound {
     }
 
     public Sound setSoundValue(SoundValue soundValue) {
-        sound = soundValue.name().toLowerCase();
+        this.sound = soundValue.name().toLowerCase();
         return this;
     }
 }
