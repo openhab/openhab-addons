@@ -73,22 +73,13 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.astro.internal.model.EclipseKind;
 
 /**
- * Calculates the eclipses for the astro object
+ * Ajust the eclipses calculations for the moon
  *
  * @author Gerhard Riegler - Initial contribution
  * @author Gaël L'hopital - Extracted from MoonCalc
  */
 @NonNullByDefault
 public class MoonEclipseCalc extends EclipseCalc {
-
-    /**
-     * Calculates the eclipse.
-     */
-    @Override
-    protected double getAstroEclipse(double k, EclipseKind eclipse) {
-        double kMod = Math.floor(k) + 0.5;
-        return getEclipse(kMod, eclipse);
-    }
 
     @Override
     protected double astroAdjust(EclipseKind eclipse, double e, double m, double m1, double g, double u, double jd) {
@@ -105,5 +96,10 @@ public class MoonEclipseCalc extends EclipseCalc {
         }
         return jd + -.4065 * sinDeg(m1) + .1727 * e * sinDeg(m);
 >>>>>>> a1c7d2d Start refactoring Eclipse for sun and moon
+    }
+
+    @Override
+    protected double getJDAjust() {
+        return 0.5;
     }
 }

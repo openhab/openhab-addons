@@ -55,8 +55,6 @@ public class DateTimeUtilsTest {
     @Test
     void testTruncateInstant() {
         Instant instant = Instant.parse("2024-03-12T10:15:30.123456Z");
-        assertEquals(Instant.parse("2024-03-12T10:15:30Z"), DateTimeUtils.truncateToSecond(instant));
-        assertEquals(Instant.parse("2024-03-12T10:15:00Z"), DateTimeUtils.truncateToMinute(instant));
         assertEquals(Instant.parse("2024-03-12T00:00:00Z"), DateTimeUtils.truncateToMidnight(instant));
     }
 

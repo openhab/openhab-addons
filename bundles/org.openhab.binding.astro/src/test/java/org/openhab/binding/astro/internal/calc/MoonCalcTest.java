@@ -159,14 +159,28 @@ public class MoonCalcTest {
         Moon moon = moonCalc.getMoonInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE, TIME_ZONE, Locale.ROOT);
         moonCalc.setPositionalInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE, moon, TIME_ZONE, Locale.ROOT);
 
+<<<<<<< Upstream, based on main
         var azimuth = moon.getPosition().getAzimuth();
         var elevation = moon.getPosition().getElevation();
         assertNotNull(azimuth);
         assertNotNull(elevation);
 
+=======
+<<<<<<< Upstream, based on main
+>>>>>>> 48a7069 Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added unit tests for eclipses
         // expected result from heavens-above.com is Azimuth: 100.5, altitude -17
+<<<<<<< Upstream, based on main
         assertEquals(100.5, moon.getPosition().getAzimuthAsDouble(), ACCURACY_IN_DEGREE);
         assertEquals(-17, moon.getPosition().getElevationAsDouble(), ACCURACY_IN_DEGREE);
+=======
+        assertEquals(100.5, moon.getPosition().getAzimuth().doubleValue(), ACCURACY_IN_DEGREE);
+        assertEquals(-17, moon.getPosition().getElevation().doubleValue(), ACCURACY_IN_DEGREE);
+=======
+        // expected result from haevens-above.com is Azimuth: 100.5, altitude -17
+        assertEquals(100.5, moon.getPosition().getAzimuthAsDouble(), ACCURACY_IN_DEGREE);
+        assertEquals(-17, moon.getPosition().getElevationAsDouble(), ACCURACY_IN_DEGREE);
+>>>>>>> 637b449 Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added unit tests for eclipses
+>>>>>>> 48a7069 Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added unit tests for eclipses
     }
 
     @Test

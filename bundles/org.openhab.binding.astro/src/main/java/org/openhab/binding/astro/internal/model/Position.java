@@ -24,18 +24,26 @@ import org.openhab.core.types.UnDefType;
  * Immutable class holding calculated azimuth and elevation.
  *
  * @author Gerhard Riegler - Initial contribution
- * @author Gaël L'hopital - Added shade length
  * @author Christoph Weitkamp - Introduced UoM
  */
 @NonNullByDefault
+<<<<<<< Upstream, based on main
 public class Position {
     public static final Position NONE = new Position();
     private final double azimuth;
     private final double elevation;
+=======
+public abstract class Position {
+>>>>>>> 48a7069 Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added unit tests for eclipses
 
+<<<<<<< Upstream, based on main
     private Position() {
         this(Double.NaN, Double.NaN);
     }
+=======
+    protected final double azimuth;
+    protected final double elevation;
+>>>>>>> 48a7069 Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added unit tests for eclipses
 
     public Position(double azimuth, double elevation) {
         this.azimuth = azimuth;
@@ -46,7 +54,11 @@ public class Position {
      * Returns the azimuth.
      */
     public State getAzimuth() {
+<<<<<<< Upstream, based on main
         return Double.isNaN(azimuth) ? UnDefType.UNDEF : new QuantityType<>(azimuth, Units.DEGREE_ANGLE);
+=======
+        return Double.isNaN(azimuth) ? UnDefType.NULL : new QuantityType<>(azimuth, Units.DEGREE_ANGLE);
+>>>>>>> 48a7069 Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added unit tests for eclipses
     }
 
     public double getAzimuthAsDouble() {
@@ -57,13 +69,18 @@ public class Position {
      * Returns the elevation.
      */
     public State getElevation() {
+<<<<<<< Upstream, based on main
         return Double.isNaN(elevation) ? UnDefType.UNDEF : new QuantityType<>(elevation, Units.DEGREE_ANGLE);
+=======
+        return Double.isNaN(elevation) ? UnDefType.NULL : new QuantityType<>(elevation, Units.DEGREE_ANGLE);
+>>>>>>> 48a7069 Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added unit tests for eclipses
     }
 
     public double getElevationAsDouble() {
         return elevation;
     }
 
+<<<<<<< Upstream, based on main
     /**
      * Returns the shade length ratio.
      */
@@ -72,3 +89,6 @@ public class Position {
                 : elevation <= 0 ? UnDefType.NULL : new DecimalType(1d / MathUtils.tanDeg(elevation));
     }
 }
+=======
+}
+>>>>>>> 48a7069 Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added unit tests for eclipses

@@ -75,8 +75,13 @@ public class MoonHandler extends AstroThingHandler {
         Moon moon = getMoonAt(now, locale);
         Double latitude = thingConfig.latitude;
         Double longitude = thingConfig.longitude;
+<<<<<<< Upstream, based on main
         moonCalc.setPositionalInfo(DateTimeUtils.calFromInstantSource(instantSource, zone, locale),
                 latitude != null ? latitude : 0, longitude != null ? longitude : 0, moon, zone, locale);
+=======
+        moonCalc.setPositionalInfo(Calendar.getInstance(zone, locale), latitude != null ? latitude : 0,
+                longitude != null ? longitude : 0, moon, zone, locale);
+>>>>>>> 48a7069 Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added unit tests for eclipses
         this.moon = moon;
 
         publishPlanet();

@@ -85,7 +85,10 @@ public class SunHandler extends AstroThingHandler {
         Calendar calendar = DateTimeUtils.calFromInstantSource(instantSource, zone, locale);
         sunCalc.setPositionalInfo(calendar, latitude != null ? latitude : 0, longitude != null ? longitude : 0,
                 altitude != null ? altitude : 0, sun);
+<<<<<<< Upstream, based on main
 
+=======
+>>>>>>> 48a7069 Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added unit tests for eclipses
         sun.setCircadian(CircadianCalc.calculate(calendar, sun.getRise(), sun.getSet(), sun.getNoon()));
         sun.setRadiation(RadiationCalc.calculate(now, sun.getPosition().getElevationAsDouble(), altitude));
 

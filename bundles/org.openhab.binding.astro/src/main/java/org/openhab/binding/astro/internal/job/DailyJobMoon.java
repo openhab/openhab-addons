@@ -95,9 +95,18 @@ public final class DailyJobMoon extends AbstractJob {
                 scheduleEvent(handler, cal, EVENT_PHASE_NEW, EVENT_CHANNEL_ID_MOON_PHASE, false, zone, locale);
             }
 
+<<<<<<< Upstream, based on main
             moon.getEclipseSet().getEclipses().forEach(eclipse -> {
                 scheduleEvent(handler, eclipse.when(), eclipse.kind().toString(), EVENT_CHANNEL_ID_ECLIPSE, false,
                         zone.toZoneId());
+=======
+            Eclipse eclipse = moon.getEclipse();
+            eclipse.getKinds().forEach(eclipseKind -> {
+                if (eclipse.getDate(eclipseKind) instanceof Instant eclipseDate) {
+                    scheduleEvent(handler, eclipseDate, eclipseKind.toString(), EVENT_CHANNEL_ID_ECLIPSE, false, zone,
+                            locale);
+                }
+>>>>>>> 48a7069 Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added unit tests for eclipses
             });
 
             Set.of(DistanceType.APOGEE, DistanceType.PERIGEE).forEach(type -> {

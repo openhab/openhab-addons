@@ -25,16 +25,34 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public class Sun extends RiseSet implements Planet {
+    private final Eclipse eclipse = new Eclipse(EclipseKind.PARTIAL, EclipseKind.TOTAL, EclipseKind.RING);
 
     private Map<SunPhaseName, Range> ranges = new HashMap<>();
 
+<<<<<<< Upstream, based on main
     private Position position = Position.NONE;
     private Zodiac zodiac = Zodiac.NONE;
     private EclipseSet eclipseSet = EclipseSet.NONE;
     private Radiation radiation = Radiation.NONE;
+=======
+    private Position position = SunPosition.NULL;
+
+    private Zodiac zodiac = Zodiac.NULL;
+>>>>>>> 48a7069 Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added unit tests for eclipses
 
     private @Nullable Season season = null;
 
+<<<<<<< Upstream, based on main
+=======
+<<<<<<< Upstream, based on moon_distance
+    private Eclipse eclipse = new Eclipse(EclipseKind.PARTIAL, EclipseKind.TOTAL, EclipseKind.RING);
+
+    private Radiation radiation = Radiation.NULL;
+=======
+    private Radiation radiation = new Radiation();
+>>>>>>> 0596b7c Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added unit tests for eclipses
+
+>>>>>>> 48a7069 Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added unit tests for eclipses
     private SunPhase phase = new SunPhase();
 
     private Circadian circadian = Circadian.NONE;
@@ -283,10 +301,13 @@ public class Sun extends RiseSet implements Planet {
         return eclipseSet;
     }
 
+<<<<<<< Upstream, based on main
     public void setEclipseSet(EclipseSet eclipseSet) {
         this.eclipseSet = eclipseSet;
     }
 
+=======
+>>>>>>> 48a7069 Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added unit tests for eclipses
     /**
      * Returns the sun phase.
      */
