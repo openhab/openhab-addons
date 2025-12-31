@@ -45,13 +45,13 @@ public class Sound {
         return status instanceof SoundStatus status ? status.getSoundValues() : List.of();
     }
 
-    public @Nullable SoundValue getSoundValue() {
+    public @Nullable SoundValue getSoundStatusValue() {
         return status instanceof SoundStatus s ? s.getSoundValue() : null;
     }
 
     public Sound setDuration(@Nullable QuantityType<?> duration) {
         this.duration = duration != null && duration.toUnit(Units.SECOND) instanceof QuantityType<?> seconds
-                ? seconds.longValue() * 1000 // API specification requires a step size of 1000
+                ? seconds.longValue() * 1000 // API specification requires a step size of 1000ms
                 : null;
         return this;
     }

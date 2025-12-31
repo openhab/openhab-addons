@@ -1037,7 +1037,7 @@ class Clip2DtoTest {
         assertEquals(new StringType("NO_SOUND"), state);
         Sound sound = item.getSound(ChimeType.CHIME);
         assertNotNull(sound);
-        assertEquals(SoundValue.NO_SOUND, sound.getSoundValue());
+        assertEquals(SoundValue.NO_SOUND, sound.getSoundStatusValue());
         List<SoundValue> soundTypes = sound.getSoundValues();
         assertNotNull(soundTypes);
         assertEquals(20, soundTypes.size());

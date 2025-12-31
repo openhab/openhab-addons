@@ -487,7 +487,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 alarmDuration = thing.getChannel(CHANNEL_2_DURATION) instanceof Channel channel2
                         && getItemState(channel2.getUID(), QuantityType.class) instanceof QuantityType<?> quantity
                                 ? quantity
-                                : null;
+                                : QuantityType.valueOf(1, Units.SECOND); // default 1 second
                 // fall through
 
             case CHANNEL_2_ALERT_SOUND:
@@ -500,7 +500,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
                     SoundValue soundType = SoundValue.of(stringCommand.toString());
                     PercentType volume = thing.getChannel(CHANNEL_2_VOLUME) instanceof Channel chan
                             && getItemState(chan.getUID(), PercentType.class) instanceof PercentType level ? level
-                                    : null;
+                                    : new PercentType(50); // default 50%
                     putResource = new Resource(ResourceType.SPEAKER).setSound(chimeType, soundType, volume,
                             alarmDuration);
                 }
