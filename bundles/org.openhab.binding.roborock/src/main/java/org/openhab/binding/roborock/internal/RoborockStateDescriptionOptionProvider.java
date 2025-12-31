@@ -12,17 +12,12 @@
  */
 package org.openhab.binding.roborock.internal;
 
-import java.util.List;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.events.EventPublisher;
-import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.binding.BaseDynamicStateDescriptionProvider;
 import org.openhab.core.thing.i18n.ChannelTypeI18nLocalizationService;
 import org.openhab.core.thing.link.ItemChannelLinkRegistry;
 import org.openhab.core.thing.type.DynamicStateDescriptionProvider;
-import org.openhab.core.types.StateOption;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -30,7 +25,8 @@ import org.osgi.service.component.annotations.Reference;
 /**
  * Dynamic provider of state options while leaving other state description fields as original.
  *
- * @author Laurent Garnier - Initial contribution
+ * @author Laurent Garnier - Initial contribution for Sonos Binding
+ * @author Paul Smedley - modified for Roborock
  */
 @Component(service = { DynamicStateDescriptionProvider.class, RoborockStateDescriptionOptionProvider.class })
 @NonNullByDefault
@@ -43,9 +39,5 @@ public class RoborockStateDescriptionOptionProvider extends BaseDynamicStateDesc
         this.eventPublisher = eventPublisher;
         this.itemChannelLinkRegistry = itemChannelLinkRegistry;
         this.channelTypeI18nLocalizationService = channelTypeI18nLocalizationService;
-    }
-
-    public @Nullable List<StateOption> getStateOptions(ChannelUID channelUID) {
-        return channelOptionsMap.get(channelUID);
     }
 }
