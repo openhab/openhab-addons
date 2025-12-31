@@ -40,9 +40,9 @@ public final class PublishPlanetJob extends AbstractJob {
         try {
             handler.publishDailyInfo();
         } catch (Exception e) {
-            logger.warn("The publishing of daily info for \"{}\" failed: {}", handler.getThing().getUID(),
+            LOGGER.warn("The publishing of daily info for \"{}\" failed: {}", handler.getThing().getUID(),
                     e.getMessage());
-            logger.trace("", e);
+            LOGGER.trace("", e);
         }
     }
 

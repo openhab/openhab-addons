@@ -54,13 +54,13 @@ public final class DailyJobMoon extends AbstractJob {
     public void run() {
         try {
             handler.publishDailyInfo();
-            if (logger.isDebugEnabled()) {
-                logger.debug("Scheduled Astro event-jobs for thing {}", handler.getThing().getUID());
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("Scheduled Astro event-jobs for thing {}", handler.getThing().getUID());
             }
 
             Planet planet = handler.getPlanet();
             if (planet == null) {
-                logger.error("Planet not instantiated");
+                LOGGER.error("Planet not instantiated");
                 return;
             }
             Moon moon = (Moon) planet;
@@ -111,9 +111,9 @@ public final class DailyJobMoon extends AbstractJob {
                 scheduleEvent(handler, cal, EVENT_APOGEE, EVENT_CHANNEL_ID_APOGEE, false, zone, locale);
             }
         } catch (Exception e) {
-            logger.warn("The daily moon job execution for \"{}\" failed: {}", handler.getThing().getUID(),
+            LOGGER.warn("The daily moon job execution for \"{}\" failed: {}", handler.getThing().getUID(),
                     e.getMessage());
-            logger.trace("", e);
+            LOGGER.trace("", e);
         }
     }
 

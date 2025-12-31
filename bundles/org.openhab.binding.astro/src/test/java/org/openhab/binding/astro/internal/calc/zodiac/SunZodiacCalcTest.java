@@ -23,6 +23,7 @@ import java.util.Locale;
 import java.util.TimeZone;
 import java.util.stream.Stream;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -36,6 +37,7 @@ import org.openhab.binding.astro.internal.model.ZodiacSign;
  *
  * @author Gaël L'hopital - Initial contribution
  */
+@NonNullByDefault
 public class SunZodiacCalcTest {
 
     private static Stream<Arguments> zodiacAngles() {

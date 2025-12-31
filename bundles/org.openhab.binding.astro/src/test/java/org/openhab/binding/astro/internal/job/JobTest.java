@@ -34,7 +34,7 @@ import org.openhab.binding.astro.internal.util.DateTimeUtils;
 @NonNullByDefault
 public class JobTest {
 
-    private final TimeZone TIME_ZONE = TimeZone.getTimeZone("Asia/Tbilisi");
+    private static final TimeZone TIME_ZONE = TimeZone.getTimeZone("Asia/Tbilisi");
 
     @BeforeEach
     public void init() {

@@ -12,13 +12,15 @@
  */
 package org.openhab.binding.astro.internal.calc.zodiac;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.Locale;
 import java.util.TimeZone;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.astro.internal.calc.MoonCalc;
@@ -38,6 +40,7 @@ import org.openhab.binding.astro.internal.util.DateTimeUtils;
  * @author Leo Siepel - Initial contribution
  * @see <a href="https://www.heavens-above.com/Moon.aspx">Heavens Above Moon</a>
  */
+@NonNullByDefault
 public class MoonZodiacCalcTest {
 
     private static final TimeZone TIME_ZONE = TimeZone.getTimeZone("Europe/Amsterdam");
@@ -46,7 +49,7 @@ public class MoonZodiacCalcTest {
     private static final double AMSTERDAM_LATITUDE = 52.367607;
     private static final double AMSTERDAM_LONGITUDE = 4.8978293;
 
-    private MoonCalc moonCalc;
+    private @Nullable MoonCalc moonCalc;
 
     @BeforeEach
     public void init() {
@@ -55,6 +58,8 @@ public class MoonZodiacCalcTest {
 
     @Test
     public void testGetMoonInfoForZodiac() {
+        MoonCalc moonCalc = this.moonCalc;
+        assertNotNull(moonCalc);
         Moon moon = moonCalc.getMoonInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE, TIME_ZONE, Locale.ROOT);
         moonCalc.setPositionalInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE, moon, TIME_ZONE, Locale.ROOT);
 
