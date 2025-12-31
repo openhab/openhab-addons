@@ -23,6 +23,7 @@ public class Event {
     public Node node;
     public int ccId;
     public int endpointIndex;
+    public Statistics statistics;
 
     enum Source {
         driver,

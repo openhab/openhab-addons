@@ -269,10 +269,6 @@ public class ZWaveJSClient implements WebSocketListener {
 
     @Override
     public void onWebSocketText(@NonNullByDefault({}) String message) {
-        if (message.contains("\"event\":\"statistics updated\"")) {
-            return;
-        }
-
         BaseMessage baseEvent = null;
         try {
             baseEvent = gson.fromJson(message, BaseMessage.class);

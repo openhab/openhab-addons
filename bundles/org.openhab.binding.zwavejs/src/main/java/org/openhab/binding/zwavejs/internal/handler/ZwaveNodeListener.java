@@ -14,6 +14,7 @@ package org.openhab.binding.zwavejs.internal.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.zwavejs.internal.api.dto.Event;
+import org.openhab.binding.zwavejs.internal.api.dto.Statistics;
 
 /**
  * The {@link ZwaveNodeListener} interface defines the methods that must be implemented by any class
@@ -61,4 +62,11 @@ public interface ZwaveNodeListener {
      * @param event the event that contains information about the removed node
      */
     void onNodeRemoved(Event event);
+
+    /*
+     * This method is called when the statistics of a node are updated.
+     *
+     * @param event the event that contains information about the updated statistics
+     */
+    void onStatisticsUpdated(Statistics statistics);
 }
