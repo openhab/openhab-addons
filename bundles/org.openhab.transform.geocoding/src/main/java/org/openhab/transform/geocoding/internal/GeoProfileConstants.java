@@ -19,26 +19,26 @@ import org.openhab.core.thing.profiles.ProfileTypeUID;
 import org.openhab.core.transform.TransformationService;
 
 /**
- * The {@link OSMGeoConstants} defines fields used for OpenStreetMap geocoding / reverse geocoding
+ * The {@link GeoProfileConstants} defines fields used for the profile and across providers.
  *
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
-public class OSMGeoConstants {
+public class GeoProfileConstants {
 
     // Profile Type UID
-    public static final ProfileTypeUID OSM_PROFILE_TYPE_UID = new ProfileTypeUID(
-            TransformationService.TRANSFORM_PROFILE_SCOPE, "osm-geocoding");
+    public static final ProfileTypeUID GEOCODING_PROFILE_TYPE_UID = new ProfileTypeUID(
+            TransformationService.TRANSFORM_PROFILE_SCOPE, "geocoding");
 
-    // URLs
-    public static final String BASE_URL = "https://nominatim.openstreetmap.org/";
-    public static final String SEARCH_URL = BASE_URL + "search?q=%s&format=jsonv2";
-    public static final String REVERSE_URL = BASE_URL + "reverse?lat=%.7f&lon=%.7f&format=jsonv2";
+    // Constants for Provider
+    public static final String PROVIDER_NOMINATIM_OPENSTREETMAP = "nominatim-osm";
 
+    // JSON Keys
     public static final String ADDRESS_KEY = "address";
     public static final String LATITUDE_KEY = "lat";
     public static final String LONGITUDE_KEY = "lon";
 
+    // Address options constants
     public static final String ROW_ADDRESS_FORMAT = "row_address";
     public static final String US_ADDRESS_FORMAT = "us_address";
     public static final String JSON_FORMAT = "json";
@@ -51,4 +51,9 @@ public class OSMGeoConstants {
     public static final List<String> CITY_KEYS = List.of("municipality", "city", "town", "village");
     public static final List<String> DISTRICT_KEYS = List.of("city_district", "district", "borough", "suburb",
             "subdivision");
+
+    // Nominatim / OpenStreetMap URLs
+    public static final String BASE_URL = "https://nominatim.openstreetmap.org/";
+    public static final String SEARCH_URL = BASE_URL + "search?q=%s&format=jsonv2";
+    public static final String REVERSE_URL = BASE_URL + "reverse?lat=%.7f&lon=%.7f&format=jsonv2";
 }

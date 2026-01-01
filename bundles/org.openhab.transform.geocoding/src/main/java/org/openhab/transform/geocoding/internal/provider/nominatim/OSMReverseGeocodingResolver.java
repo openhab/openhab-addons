@@ -10,9 +10,9 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.transform.geocoding.internal.osm;
+package org.openhab.transform.geocoding.internal.provider.nominatim;
 
-import static org.openhab.transform.geocoding.internal.OSMGeoConstants.*;
+import static org.openhab.transform.geocoding.internal.GeoProfileConstants.*;
 
 import java.util.List;
 import java.util.Locale;
@@ -24,82 +24,80 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpStatus;
 import org.json.JSONObject;
 import org.openhab.core.library.types.PointType;
-import org.openhab.transform.geocoding.internal.config.OSMGeoConfig;
+import org.openhab.core.types.State;
+import org.openhab.transform.geocoding.internal.config.GeoProfileConfig;
+import org.openhab.transform.geocoding.internal.provider.GeocodingResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Reverse geocoding of a given location using OpenStreetMap (OSM) Nominatim API service
+ * The {@link OSMReverseGeocodingResolver} is the reverse geocding resolver for Nomination / OpenStreetMap API. Given
+ * geo coordinates will be resolved into a human readable address string.
  *
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
-public class OSMReverseGeocoding {
-    private final Logger logger = LoggerFactory.getLogger(OSMReverseGeocoding.class);
+public class OSMReverseGeocodingResolver extends GeocodingResolver {
+    private final Logger logger = LoggerFactory.getLogger(OSMReverseGeocodingResolver.class);
 
-    private HttpClient httpClient;
-    private OSMGeoConfig config;
-    private boolean resolved = false;
-    private PointType location;
-    private @Nullable String address;
+    private @Nullable PointType location;
 
-    public OSMReverseGeocoding(PointType location, OSMGeoConfig config, HttpClient httpClient) {
-        this.location = location;
-        this.config = config;
-        this.httpClient = httpClient;
-    }
-
-    public boolean isResolved() {
-        return resolved;
-    }
-
-    public String getAddress() {
-        String localAddress = address;
-        if (localAddress != null) {
-            return localAddress;
+    public OSMReverseGeocodingResolver(State state, GeoProfileConfig config, HttpClient httpClient) {
+        super(state, config, httpClient);
+        if (state instanceof PointType pointType) {
+            location = pointType;
         }
-        return "unknown";
     }
 
     /**
-     * Performs the reverse geo coding HTTP request
+     * Performs the reverse geocoding HTTP request
      *
      * @param point the PointType containing latitude and longitude
      */
+    @Override
     public void resolve() {
-        if (resolved) {
-            logger.trace("Location {} is already resolved {}", location.toFullString(), getAddress());
+        PointType localLocation = location;
+        if (localLocation == null) {
+            logger.info("State {} isn't a location and cannot be reolved into an address", toBeResolved.toFullString());
             return;
         }
+        if (isResolved()) {
+            logger.trace("Location {} is already resolved {}", toBeResolved.toFullString(), getResolved());
+            return;
+        }
+
+        // after check for right state and resolve status do the actual reolve functionality
         try {
             ContentResponse response = httpClient
-                    .newRequest(String.format(Locale.US, REVERSE_URL, location.getLatitude().doubleValue(),
-                            location.getLongitude().doubleValue()))
-                    .header("Accept-Language", config.language)
-                    .header("User-Agent", "openHAB Geo Transformation Service").timeout(10, TimeUnit.SECONDS).send();
+                    .newRequest(String.format(Locale.US, REVERSE_URL, localLocation.getLatitude().doubleValue(),
+                            localLocation.getLongitude().doubleValue()))
+                    .header(HttpHeader.ACCEPT_LANGUAGE, config.language)
+                    .header(HttpHeader.USER_AGENT, userAgentSupplier.get())
+                    .timeout(HTTP_TIMEOUT_SECONDS, TimeUnit.SECONDS).send();
             int statusResponse = response.getStatus();
             String jsonResponse = response.getContentAsString();
             if (statusResponse == HttpStatus.OK_200) {
-                address = format(jsonResponse);
-                resolved = true;
+                resolvedString = format(jsonResponse);
             } else {
-                logger.debug("Decoding of location {} failed with status {} and response: {}", location.toFullString(),
-                        statusResponse, jsonResponse);
+                logger.debug("Decoding of location {} failed with status {} and response: {}",
+                        localLocation.toFullString(), statusResponse, jsonResponse);
             }
         } catch (TimeoutException | ExecutionException e) {
-            logger.debug("Decoding of location {} failed with exception {}", location.toFullString(), e.getMessage());
+            logger.debug("Decoding of location {} failed with exception {}", localLocation.toFullString(),
+                    e.getMessage());
         } catch (InterruptedException ie) {
-            logger.debug("Decoding of location {} interrupted {}", location.toFullString(), ie.getMessage());
+            logger.debug("Decoding of location {} interrupted {}", localLocation.toFullString(), ie.getMessage());
             Thread.currentThread().interrupt();
         }
     }
 
     @Override
     public String toString() {
-        return location.toFullString();
+        return toBeResolved.toFullString();
     }
 
     public String format(String jsonResponse) {

@@ -4,7 +4,15 @@
 	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
 
-	<config-description uri="profile:transform:osm-geocoding">
+	<config-description uri="profile:transform:geocoding">
+		<parameter name="provider" type="text" required="false">
+			<label>Geocoding Provider</label>
+			<description>Provider which is used to execute geocoding requests</description>
+			<default>nominatim-osm</default>
+			<options>
+				<option value="nominatim-osm">Nominatim / OpenStreetMap</option>
+			</options>
+		</parameter>
 		<parameter name="resolveInterval" type="text" required="false">
 			<label>Resolve Interval</label>
 			<description>Interval of reverse geocoding executions. Minimum: 1 minute</description>

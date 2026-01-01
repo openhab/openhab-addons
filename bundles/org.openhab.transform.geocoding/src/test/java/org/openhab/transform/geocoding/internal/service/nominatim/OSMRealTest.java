@@ -10,18 +10,20 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.transform.geocoding.internal;
+package org.openhab.transform.geocoding.internal.service.nominatim;
 
 import static org.junit.jupiter.api.Assertions.fail;
-import static org.openhab.transform.geocoding.internal.OSMGeoConstants.ROW_ADDRESS_FORMAT;
+import static org.openhab.transform.geocoding.internal.GeoProfileConstants.ROW_ADDRESS_FORMAT;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.openhab.core.library.types.PointType;
-import org.openhab.transform.geocoding.internal.config.OSMGeoConfig;
-import org.openhab.transform.geocoding.internal.osm.OSMGeocoding;
-import org.openhab.transform.geocoding.internal.osm.OSMReverseGeocoding;
+import org.openhab.core.library.types.StringType;
+import org.openhab.transform.geocoding.internal.config.GeoProfileConfig;
+import org.openhab.transform.geocoding.internal.provider.GeocodingResolver;
+import org.openhab.transform.geocoding.internal.provider.nominatim.OSMGeocodingResolver;
+import org.openhab.transform.geocoding.internal.provider.nominatim.OSMReverseGeocodingResolver;
 
 /**
  * Testing with real API calls to Nominatim/OpenStreetMap
@@ -34,18 +36,23 @@ class OSMRealTest {
     void testReverseGeocoding() {
         HttpClient httpClient = getHttpClient();
         String coordinates = "40.74162115629083, -73.99000345325618";
-        // String coordinates = "1, 1";
-        OSMGeoConfig osmConfig = new OSMGeoConfig();
+        GeoProfileConfig osmConfig = new GeoProfileConfig();
         osmConfig.language = "de-DE";
         osmConfig.format = ROW_ADDRESS_FORMAT;
-        OSMReverseGeocoding toObserve = new OSMReverseGeocoding(PointType.valueOf(coordinates), osmConfig, httpClient);
+        GeocodingResolver toObserve = new OSMReverseGeocodingResolver(PointType.valueOf(coordinates), osmConfig,
+                httpClient);
+        toObserve.setUserAgentSupplier(this::getUserAgent);
         toObserve.resolve();
     }
 
     void testGeocoding() {
         HttpClient httpClient = getHttpClient();
         String search = "bimbambum";
-        OSMGeocoding toObserve = new OSMGeocoding(search, httpClient);
+        GeoProfileConfig osmConfig = new GeoProfileConfig();
+        osmConfig.language = "de-DE";
+        osmConfig.format = ROW_ADDRESS_FORMAT;
+        OSMGeocodingResolver toObserve = new OSMGeocodingResolver(new StringType(search), osmConfig, httpClient);
+        toObserve.setUserAgentSupplier(this::getUserAgent);
         toObserve.resolve();
     }
 
@@ -57,5 +64,9 @@ class OSMRealTest {
             fail(e.getMessage());
         }
         return httpClient;
+    }
+
+    public String getUserAgent() {
+        return "openHAB/unitTest";
     }
 }

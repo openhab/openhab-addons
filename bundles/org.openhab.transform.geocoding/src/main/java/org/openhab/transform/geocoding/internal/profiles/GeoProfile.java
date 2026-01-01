@@ -12,7 +12,7 @@
  */
 package org.openhab.transform.geocoding.internal.profiles;
 
-import static org.openhab.transform.geocoding.internal.OSMGeoConstants.OSM_PROFILE_TYPE_UID;
+import static org.openhab.transform.geocoding.internal.GeoProfileConstants.GEOCODING_PROFILE_TYPE_UID;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -33,38 +33,36 @@ import org.openhab.core.thing.profiles.StateProfile;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 import org.openhab.core.util.DurationUtils;
-import org.openhab.transform.geocoding.internal.config.OSMGeoConfig;
-import org.openhab.transform.geocoding.internal.osm.OSMGeocoding;
-import org.openhab.transform.geocoding.internal.osm.OSMReverseGeocoding;
+import org.openhab.transform.geocoding.internal.config.GeoProfileConfig;
+import org.openhab.transform.geocoding.internal.provider.GeocodingProviderFactory;
+import org.openhab.transform.geocoding.internal.provider.GeocodingResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Profile using OpenStreetMap (OSM) API service for geo coding/decoding
+ * The {@link GeoProfile} handles the general profile behavior.without knowing the used provider. The provider is
+ * evaluated in super class {@link GeocodingProviderFactory}.
  *
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
-public class OSMGeoProfile implements StateProfile {
-    private final Logger logger = LoggerFactory.getLogger(OSMGeoProfile.class);
+public class GeoProfile extends GeocodingProviderFactory implements StateProfile {
+    private final Logger logger = LoggerFactory.getLogger(GeoProfile.class);
     private final ProfileCallback callback;
-    private final OSMGeoConfig configuration;
-    private final HttpClient httpClient;
 
     private final ScheduledExecutorService scheduler;
-    private OSMReverseGeocoding lastState;
+    private GeocodingResolver lastState;
     private Instant lastResolveTime = Instant.MIN;
     private Duration refreshInterval;
     private String language;
     private @Nullable ScheduledFuture<?> resolverJob;
 
-    public OSMGeoProfile(final ProfileCallback callback, final ProfileContext context, final HttpClient client,
+    public GeoProfile(final ProfileCallback callback, final ProfileContext context, final HttpClient client,
             final LocaleProvider locale) {
+        super(context.getConfiguration().as(GeoProfileConfig.class), client);
         this.callback = callback;
-        this.httpClient = client;
         this.scheduler = context.getExecutorService();
 
-        this.configuration = context.getConfiguration().as(OSMGeoConfig.class);
         if (!configuration.language.isBlank()) {
             language = configuration.language;
         } else {
@@ -83,12 +81,12 @@ public class OSMGeoProfile implements StateProfile {
                     refreshInterval);
         }
         logger.debug("GeoProfile created with language: {} and resolve interval: {}", language, refreshInterval);
-        lastState = new OSMReverseGeocoding(PointType.valueOf("0,0"), configuration, httpClient);
+        lastState = super.createResolver(PointType.valueOf("0,0"));
     }
 
     @Override
     public ProfileTypeUID getProfileTypeUID() {
-        return OSM_PROFILE_TYPE_UID;
+        return GEOCODING_PROFILE_TYPE_UID;
     }
 
     @Override
@@ -109,7 +107,7 @@ public class OSMGeoProfile implements StateProfile {
     private void processState(State location) {
         if (location instanceof PointType point) {
             synchronized (this) {
-                lastState = new OSMReverseGeocoding(point, configuration, httpClient);
+                lastState = super.createResolver(point);
                 Instant now = Instant.now();
                 Instant nextResolveTime = lastResolveTime.plus(refreshInterval);
                 if (resolverJob == null) {
@@ -135,7 +133,7 @@ public class OSMGeoProfile implements StateProfile {
      * Callback function of the resolverJob to perform reverse geocoding on the last stored state
      */
     private void doResolve() {
-        OSMReverseGeocoding localLastState;
+        GeocodingResolver localLastState;
         synchronized (this) {
             localLastState = lastState;
             lastResolveTime = Instant.now();
@@ -144,7 +142,7 @@ public class OSMGeoProfile implements StateProfile {
         // do reverse geocoding and double check for success before sending update
         localLastState.resolve();
         if (localLastState.isResolved()) {
-            callback.sendUpdate(StringType.valueOf(localLastState.getAddress()));
+            callback.sendUpdate(StringType.valueOf(localLastState.getResolved()));
         } else {
             logger.debug("Could not resolve address for location: {}", localLastState.toString());
         }
@@ -167,11 +165,13 @@ public class OSMGeoProfile implements StateProfile {
      */
     private void search(Command command) {
         if (command instanceof StringType string) {
-            OSMGeocoding geoSearch = new OSMGeocoding(string.toString(), httpClient);
-            PointType geoCoordinates = geoSearch.resolve();
-            if (geoCoordinates != null) {
-                logger.trace("Send {} for {}", geoCoordinates.toFullString(), command.toFullString());
-                callback.sendCommand(geoCoordinates);
+            GeocodingResolver geoSearch = createResolver(string);
+            geoSearch.resolve();
+            if (geoSearch.isResolved()) {
+                String geoCoordinates = geoSearch.getResolved();
+                PointType point = PointType.valueOf(geoCoordinates);
+                logger.trace("Send coordinates {} for address {}", point.toFullString(), command.toFullString());
+                callback.handleCommand(point);
             } else {
                 logger.debug("Geo search could not resolve coordinates for command {}", command.toFullString());
             }

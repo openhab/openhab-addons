@@ -12,18 +12,19 @@
  */
 package org.openhab.transform.geocoding.internal.config;
 
-import static org.openhab.transform.geocoding.internal.OSMGeoConstants.ROW_ADDRESS_FORMAT;
+import static org.openhab.transform.geocoding.internal.GeoProfileConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link OSMGeoConfig} class contains the configuration parameters for OSM geocoding/reverse geocoding
+ * The {@link GeoProfileConfig} class contains the configuration parameters for the profile
  *
  * @author Bernd Weymann - initial contribution
  *
  */
 @NonNullByDefault
-public class OSMGeoConfig {
+public class GeoProfileConfig {
+    public String provider = PROVIDER_NOMINATIM_OPENSTREETMAP;
     public String format = ROW_ADDRESS_FORMAT;
     public String resolveInterval = "5m";
     public String language = "";

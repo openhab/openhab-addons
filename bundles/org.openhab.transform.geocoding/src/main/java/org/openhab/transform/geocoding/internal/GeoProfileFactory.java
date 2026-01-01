@@ -12,7 +12,7 @@
  */
 package org.openhab.transform.geocoding.internal;
 
-import static org.openhab.transform.geocoding.internal.OSMGeoConstants.OSM_PROFILE_TYPE_UID;
+import static org.openhab.transform.geocoding.internal.GeoProfileConstants.GEOCODING_PROFILE_TYPE_UID;
 
 import java.util.Collection;
 import java.util.List;
@@ -31,13 +31,13 @@ import org.openhab.core.thing.profiles.ProfileType;
 import org.openhab.core.thing.profiles.ProfileTypeBuilder;
 import org.openhab.core.thing.profiles.ProfileTypeProvider;
 import org.openhab.core.thing.profiles.ProfileTypeUID;
-import org.openhab.transform.geocoding.internal.profiles.OSMGeoProfile;
+import org.openhab.transform.geocoding.internal.profiles.GeoProfile;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 /**
- * {@link GeoProfileFactory} is a factory for OpenStreetMap (OSM) geo coding profile
+ * {@link GeoProfileFactory} is the factory to create the geocoding profile
  *
  * @author Bernd Weymann - Initial contribution
  */
@@ -55,7 +55,7 @@ public class GeoProfileFactory implements ProfileFactory, ProfileTypeProvider {
 
     @Override
     public Collection<ProfileType> getProfileTypes(@Nullable Locale locale) {
-        return List.of(ProfileTypeBuilder.newState(OSM_PROFILE_TYPE_UID, "OpenStreetMap Geo Coding")
+        return List.of(ProfileTypeBuilder.newState(GEOCODING_PROFILE_TYPE_UID, "Geocoding")
                 .withSupportedItemTypes(CoreItemFactory.STRING)
                 .withSupportedItemTypesOfChannel(CoreItemFactory.LOCATION).build());
     }
@@ -63,12 +63,11 @@ public class GeoProfileFactory implements ProfileFactory, ProfileTypeProvider {
     @Override
     public @Nullable Profile createProfile(ProfileTypeUID profileTypeUID, ProfileCallback profileCallback,
             ProfileContext profileContext) {
-        return new OSMGeoProfile(profileCallback, profileContext, httpClientFactory.getCommonHttpClient(),
-                localeProvider);
+        return new GeoProfile(profileCallback, profileContext, httpClientFactory.getCommonHttpClient(), localeProvider);
     }
 
     @Override
     public Collection<ProfileTypeUID> getSupportedProfileTypeUIDs() {
-        return List.of(OSM_PROFILE_TYPE_UID);
+        return List.of(GEOCODING_PROFILE_TYPE_UID);
     }
 }

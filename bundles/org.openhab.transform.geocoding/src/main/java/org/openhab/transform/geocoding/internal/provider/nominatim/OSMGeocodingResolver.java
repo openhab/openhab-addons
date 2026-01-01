@@ -10,9 +10,9 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.transform.geocoding.internal.osm;
+package org.openhab.transform.geocoding.internal.provider.nominatim;
 
-import static org.openhab.transform.geocoding.internal.OSMGeoConstants.*;
+import static org.openhab.transform.geocoding.internal.GeoProfileConstants.*;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -25,28 +25,34 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpStatus;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.openhab.core.library.types.PointType;
+import org.openhab.core.library.types.StringType;
+import org.openhab.core.types.State;
+import org.openhab.transform.geocoding.internal.config.GeoProfileConfig;
+import org.openhab.transform.geocoding.internal.provider.GeocodingResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Get coordinates for a given search string using OpenStreetMap (OSM) Nominatim API service
+ * The {@link OSMGeocodingResolver} is the geocding resolver for Nomination / OpenStreetMap API. A given String will be
+ * resolved into geo coordinates.
  *
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
-public class OSMGeocoding {
-    private final Logger logger = LoggerFactory.getLogger(OSMGeocoding.class);
+public class OSMGeocodingResolver extends GeocodingResolver {
+    private final Logger logger = LoggerFactory.getLogger(OSMGeocodingResolver.class);
 
-    private HttpClient httpClient;
-    private String searchString;
+    private @Nullable String searchString;
 
-    public OSMGeocoding(String search, HttpClient httpClient) {
-        this.searchString = search;
-        this.httpClient = httpClient;
+    public OSMGeocodingResolver(State state, GeoProfileConfig config, HttpClient httpClient) {
+        super(state, config, httpClient);
+        if (state instanceof StringType stringType) {
+            searchString = stringType.toFullString();
+        }
     }
 
     /**
@@ -54,18 +60,28 @@ public class OSMGeocoding {
      *
      * @param command string with the search query
      */
-    public @Nullable PointType resolve() {
+    @Override
+    public void resolve() {
+        String localSearchString = searchString;
+        if (localSearchString == null) {
+            logger.info("State {} isn't a location and cannot be reolved into an address", toBeResolved.toFullString());
+            return;
+        }
+        if (isResolved()) {
+            logger.trace("Location {} is already resolved {}", toBeResolved.toFullString(), getResolved());
+            return;
+        }
         try {
             String encodedSearch = URLEncoder.encode(searchString, StandardCharsets.UTF_8.toString());
             ContentResponse response = httpClient.newRequest(String.format(SEARCH_URL, encodedSearch))
-                    .header("User-Agent", "openHAB Geo Transformation Service").timeout(10, TimeUnit.SECONDS).send();
+                    .header(HttpHeader.ACCEPT_LANGUAGE, config.language)
+                    .header(HttpHeader.USER_AGENT, userAgentSupplier.get())
+                    .timeout(HTTP_TIMEOUT_SECONDS, TimeUnit.SECONDS).send();
             int statusResponse = response.getStatus();
             String jsonResponse = response.getContentAsString();
             if (statusResponse == HttpStatus.OK_200) {
-                PointType geoCoordinates = parse(jsonResponse);
-                if (geoCoordinates != null) {
-                    return geoCoordinates;
-                } else {
+                resolvedString = parse(jsonResponse);
+                if (!isResolved()) {
                     logger.debug("Geo search doesn't provide coordinates {}", jsonResponse);
                 }
             } else {
@@ -78,17 +94,15 @@ public class OSMGeocoding {
             logger.debug("Geo search interrupeted for {} failed with exception {}", searchString, ie.getMessage());
             Thread.currentThread().interrupt();
         }
-        return null;
     }
 
-    public @Nullable PointType parse(String jsonResponse) {
+    public @Nullable String parse(String jsonResponse) {
         JSONArray searchResults = new JSONArray(jsonResponse);
         logger.debug("Geo search found {} results", searchResults.length());
         if (searchResults.length() > 0) {
             JSONObject firstResult = searchResults.getJSONObject(0);
             if (firstResult.has(LATITUDE_KEY) && firstResult.has(LONGITUDE_KEY)) {
-                return PointType
-                        .valueOf(firstResult.getString(LATITUDE_KEY) + "," + firstResult.getString(LONGITUDE_KEY));
+                return firstResult.getString(LATITUDE_KEY) + "," + firstResult.getString(LONGITUDE_KEY);
             }
         }
         return null;

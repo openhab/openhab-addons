@@ -10,11 +10,11 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.transform.geocoding.internal;
+package org.openhab.transform.geocoding.internal.service.nominatim;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
-import static org.openhab.transform.geocoding.internal.OSMGeoConstants.*;
+import static org.openhab.transform.geocoding.internal.GeoProfileConstants.*;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -25,9 +25,10 @@ import org.eclipse.jetty.client.HttpClient;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.openhab.core.library.types.PointType;
-import org.openhab.transform.geocoding.internal.config.OSMGeoConfig;
-import org.openhab.transform.geocoding.internal.osm.OSMGeocoding;
-import org.openhab.transform.geocoding.internal.osm.OSMReverseGeocoding;
+import org.openhab.core.library.types.StringType;
+import org.openhab.transform.geocoding.internal.config.GeoProfileConfig;
+import org.openhab.transform.geocoding.internal.provider.nominatim.OSMGeocodingResolver;
+import org.openhab.transform.geocoding.internal.provider.nominatim.OSMReverseGeocodingResolver;
 
 /**
  * Test responses from OpenStreetMap
@@ -39,8 +40,8 @@ class OSMGeocodingTest {
 
     @Test
     void testReverseAddressFormat() {
-        OSMReverseGeocoding toObserve = new OSMReverseGeocoding(mock(PointType.class), new OSMGeoConfig(),
-                mock(HttpClient.class));
+        OSMReverseGeocodingResolver toObserve = new OSMReverseGeocodingResolver(mock(PointType.class),
+                new GeoProfileConfig(), mock(HttpClient.class));
         String fileContent = readFile("src/test/resources/geo-reverse-result.json");
         String expectedResult = "Am Friedrichshain 22, 10407 Berlin Pankow";
         assertEquals(expectedResult, toObserve.format(fileContent));
@@ -52,10 +53,10 @@ class OSMGeocodingTest {
 
     @Test
     void testReverseJsonFormat() {
-        OSMGeoConfig configuration = new OSMGeoConfig();
+        GeoProfileConfig configuration = new GeoProfileConfig();
         configuration.format = JSON_FORMAT;
 
-        OSMReverseGeocoding toObserve = new OSMReverseGeocoding(mock(PointType.class), configuration,
+        OSMReverseGeocodingResolver toObserve = new OSMReverseGeocodingResolver(mock(PointType.class), configuration,
                 mock(HttpClient.class));
         String fileContent = readFile("src/test/resources/geo-reverse-result.json");
         String expectedResult = (new JSONObject(fileContent)).getJSONObject(ADDRESS_KEY).toString();
@@ -68,10 +69,10 @@ class OSMGeocodingTest {
 
     @Test
     void testReverseUSFormat() {
-        OSMGeoConfig configuration = new OSMGeoConfig();
+        GeoProfileConfig configuration = new GeoProfileConfig();
         configuration.format = US_ADDRESS_FORMAT;
 
-        OSMReverseGeocoding toObserve = new OSMReverseGeocoding(mock(PointType.class), configuration,
+        OSMReverseGeocodingResolver toObserve = new OSMReverseGeocodingResolver(mock(PointType.class), configuration,
                 mock(HttpClient.class));
         String fileContent = readFile("src/test/resources/geo-reverse-nyc.json");
         String expectedResult = "6 West 23rd Street, City of New York Manhattan 10010";
@@ -80,12 +81,16 @@ class OSMGeocodingTest {
 
     @Test
     void testGeocoding() {
-        OSMGeocoding toObserve = new OSMGeocoding("Not necessary", mock(HttpClient.class));
+        GeoProfileConfig configuration = new GeoProfileConfig();
+        configuration.format = US_ADDRESS_FORMAT;
+
+        OSMGeocodingResolver toObserve = new OSMGeocodingResolver(new StringType("Not necessary"), configuration,
+                mock(HttpClient.class));
         String fileContent = readFile("src/test/resources/geo-search-result.json");
         String expectedResult = "52.5252949,13.3706843";
-        PointType computedResult = toObserve.parse(fileContent);
+        String computedResult = toObserve.parse(fileContent);
         assertNotNull(computedResult);
-        assertEquals(expectedResult, computedResult.toFullString());
+        assertEquals(expectedResult, computedResult);
     }
 
     static String readFile(String fileName) {
