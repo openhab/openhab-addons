@@ -28,7 +28,11 @@ import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.jupnp.UpnpService;
+import org.jupnp.controlpoint.ControlPoint;
+import org.jupnp.model.message.header.UDNHeader;
 import org.jupnp.model.meta.RemoteDevice;
+import org.jupnp.model.types.UDN;
 import org.openhab.binding.upnpcontrol.internal.UpnpChannelName;
 import org.openhab.binding.upnpcontrol.internal.UpnpDynamicCommandDescriptionProvider;
 import org.openhab.binding.upnpcontrol.internal.UpnpDynamicStateDescriptionProvider;
@@ -77,6 +81,7 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
     static final Pattern PROTOCOL_PATTERN = Pattern.compile("(?:.*):(?:.*):(.*):(?:.*)");
 
     protected UpnpIOService upnpIOService;
+    protected UpnpService upnpService;
 
     protected volatile @Nullable RemoteDevice device;
 
@@ -125,6 +130,7 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
 
         this.upnpIOService = upnpIOService;
         this.bindingConfig = configuration;
+        this.upnpService = upnpService;
 
         this.upnpStateDescriptionProvider = upnpStateDescriptionProvider;
         this.upnpCommandDescriptionProvider = upnpCommandDescriptionProvider;
@@ -652,8 +658,6 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
     protected @Nullable RemoteDevice getDevice() {
         return device;
     }
-<<<<<<< HEAD
-=======
 
     /**
      * Send a device search request to the UPnP remote device.
@@ -668,5 +672,4 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
             logger.debug("M-SEARCH query sent for device UDN: {}", getUDN());
         }
     }
->>>>>>> 259d892f7a (fix compile : need to review review rebase step to be sure don't miss anything)
 }

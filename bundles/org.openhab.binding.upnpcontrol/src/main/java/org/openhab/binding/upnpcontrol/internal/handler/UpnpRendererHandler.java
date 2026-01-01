@@ -64,6 +64,7 @@ import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.PlayPauseType;
 import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.types.RawType;
 import org.openhab.core.library.types.RewindFastforwardType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.Units;
@@ -80,6 +81,10 @@ import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 
 /**
  * The {@link UpnpRendererHandler} is responsible for handling commands sent to the UPnP Renderer. It extends
@@ -177,8 +182,9 @@ public class UpnpRendererHandler extends UpnpHandler {
     public UpnpRendererHandler(Thing thing, UpnpIOService upnpIOService, UpnpService upnpService,
             UpnpControlHandlerFactory handlerFactory, UpnpDynamicStateDescriptionProvider upnpStateDescriptionProvider,
             UpnpDynamicCommandDescriptionProvider upnpCommandDescriptionProvider,
-            UpnpControlBindingConfiguration configuration) {
-        super(thing, upnpIOService, configuration, upnpStateDescriptionProvider, upnpCommandDescriptionProvider);
+            UpnpControlBindingConfiguration configuration, MediaService mediaService) {
+        super(thing, upnpIOService, upnpService, configuration, upnpStateDescriptionProvider,
+                upnpCommandDescriptionProvider);
 
         serviceSubscriptions.add(AV_TRANSPORT);
         serviceSubscriptions.add(RENDERING_CONTROL);
@@ -815,66 +821,59 @@ public class UpnpRendererHandler extends UpnpHandler {
             } else if (mediaTypeCommand == MediaCommandEnumType.PLAY
                     || mediaTypeCommand == MediaCommandEnumType.ENQUEUE) {
                 if (val.contains("/Root/upnpcontrol")) {
-<<<<<<< HEAD
-                int idx = val.indexOf("/l");
-				 if (val.contains("/Root/tidal")) {
-                    int p1 = val.lastIndexOf('/');
-                    String id = val.substring(p1 + 1);
 
-                    String uri = "https://api.tidal.com/v1/tracks/";
-                    uri = uri + id;
-                    uri = uri + "/urlpostpaywall?sessionId=";
-                    uri = uri + "a3df0f52-bd9b-4a54-b300-be2f10f8c8be";
-                    uri = uri
-                            + "&countryCode=FR&limit=1000&urlusagemode=STREAM&audioquality=LOSSLESS&assetpresentation=FULL";
-
-                    logger.info(uri);
-                    RawType tp = HttpUtil.downloadData(uri, null, false, 65536);
-                    String str = new String(tp.getBytes(), StandardCharsets.UTF_8);
-                    JsonElement elm = new Gson().fromJson(str, JsonElement.class);
-                    JsonObject obj = (JsonObject) elm;
-                    JsonElement elmUrl = obj.get("urls");
-                    String url = elmUrl.getAsString();
-
-                    setCurrentURI(url, "");
-                    play();
-                    logger.info("");
-                    return;
-                }
-                val = val.substring(idx);
-
-                if (serverHandlers.isEmpty()) {
-                    setUpnpRenderer(mediaType.getParam().toFullString());
-                }
-
-                if (!serverHandlers.isEmpty()) {
-                    UpnpServerHandler serverHandler = (UpnpServerHandler) serverHandlers.toArray()[0];
-                    serverHandler.browse(val, "BrowseDirectChildren", "*", "0", "0", "+dc:title");
-                    try {
-                        Thread.sleep(2000);
-                    } catch (Exception ex) {
-=======
                     int idx = val.indexOf("/l");
-                    if (idx >= 0) {
-                        val = val.substring(idx);
-                    }
->>>>>>> c62fe04e63 (experiment playing stream to Java audio or WebAudio sink)
+                    if (val.contains("/Root/tidal")) {
+                        int p1 = val.lastIndexOf('/');
+                        String id = val.substring(p1 + 1);
 
+                        String uri = "https://api.tidal.com/v1/tracks/";
+                        uri = uri + id;
+                        uri = uri + "/urlpostpaywall?sessionId=";
+                        uri = uri + "a3df0f52-bd9b-4a54-b300-be2f10f8c8be";
+                        uri = uri
+                                + "&countryCode=FR&limit=1000&urlusagemode=STREAM&audioquality=LOSSLESS&assetpresentation=FULL";
+
+                        logger.info(uri);
+                        RawType tp = HttpUtil.downloadData(uri, null, false, 65536);
+                        String str = new String(tp.getBytes(), StandardCharsets.UTF_8);
+                        JsonElement elm = new Gson().fromJson(str, JsonElement.class);
+                        JsonObject obj = (JsonObject) elm;
+                        JsonElement elmUrl = obj.get("urls");
+                        String url = elmUrl.getAsString();
+
+                        setCurrentURI(url, "");
+                        play();
+                        logger.info("");
+                        return;
+                    }
+                    val = val.substring(idx);
+
+                    if (serverHandlers.isEmpty()) {
+                        setUpnpRenderer(mediaType.getParam().toFullString());
                     }
 
-                    serverHandler.serveMedia();
-                    pause();
-                    play();
-                    updateControlState();
-                }
+                    if (!serverHandlers.isEmpty()) {
+                        UpnpServerHandler serverHandler = (UpnpServerHandler) serverHandlers.toArray()[0];
+                        serverHandler.browse(val, "BrowseDirectChildren", "*", "0", "0", "+dc:title");
+                        try {
+                            Thread.sleep(2000);
+                        } catch (Exception ex) {
+                        }
+
+                        serverHandler.serveMedia();
+                        pause();
+                        play();
+                        updateControlState();
+                    }
                 } else {
                     String streamUri = mediaService.getMediaListenner("tidal").getStreamUri(val);
                     logger.info("Stream uri is:{}", streamUri);
                     if (!streamUri.isBlank()) {
-                    setCurrentURI(streamUri, "");
-                    play();
+                        setCurrentURI(streamUri, "");
+                        play();
+                    }
                 }
-            }
             }
         } else if (command instanceof StringType) {
             String val = ((StringType) command).toFullString();
@@ -1221,7 +1220,6 @@ public class UpnpRendererHandler extends UpnpHandler {
                     break;
                 case "CurrentTrackMetaData":
                 case "CurrentURIMetaData":
-<<<<<<< HEAD
                 case "TrackMetaData": // Some (non-compliant) renderers emit TrackMetaData instead of
                                       // CurrentTrackMetaData/CurrentURIMetaData
 
