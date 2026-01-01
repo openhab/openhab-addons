@@ -84,9 +84,6 @@ classDiagram
     UriConfigurationExtractor --> ConfigurationUpdate : creates
     SystemInfoConfigurationExtractor --> ConfigurationUpdate : creates
     ConfigurationUpdate --> Configuration : applies to
-
-    %% External library styling
-    classStyle Configuration fill:#ffb366,stroke:#ff8800
 ```
 
 ## Design Pattern

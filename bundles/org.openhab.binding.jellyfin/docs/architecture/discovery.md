@@ -96,10 +96,6 @@ classDiagram
         +String UserName
         +PlayState playState
     }
-
-    classStyle ClientDiscoveryService fill:#ffb366,stroke:#ff8800
-
-    classStyle SessionInfoDto fill:#99dd99,stroke:#66bb66
 ```
 
 ### Integration with TaskManager

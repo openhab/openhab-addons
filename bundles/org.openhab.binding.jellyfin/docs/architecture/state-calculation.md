@@ -53,12 +53,6 @@ classDiagram
     class State {
         <<interface>>
     }
-
-    classStyle SessionInfoDto fill:#99dd99,stroke:#66bb66
-
-    classStyle BaseItemDto fill:#99dd99,stroke:#66bb66
-
-    classStyle PlayerStateInfo fill:#99dd99,stroke:#66bb66
 ```
 
 ## Calculation Flow

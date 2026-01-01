@@ -68,8 +68,6 @@ classDiagram
         +getNowPlayingItem() BaseItemDto
         +getPlayState() PlayerStateInfo
     }
-
-    classStyle SessionInfoDto fill:#99dd99,stroke:#66bb66
 ```
 
 ## Summary

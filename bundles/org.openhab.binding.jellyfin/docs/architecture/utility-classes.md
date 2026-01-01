@@ -45,8 +45,6 @@ classDiagram
     class StateAnalysis {
         <<record>>
     }
-
-    classStyle ServerStateManager fill:#ffb366,stroke:#ff8800
 ```
 
 ## Summary

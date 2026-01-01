@@ -66,8 +66,6 @@ classDiagram
         +getInterval() int
         +run()
     }
-
-    classStyle AbstractTask fill:#99ccff,stroke:#3366ff
 ```
 
 ## Tasks by Server State
