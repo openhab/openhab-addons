@@ -12,13 +12,11 @@
  */
 package org.openhab.binding.spotify.internal.api;
 
-import static org.eclipse.jetty.http.HttpMethod.GET;
-import static org.eclipse.jetty.http.HttpMethod.POST;
-import static org.eclipse.jetty.http.HttpMethod.PUT;
-import static org.openhab.binding.spotify.internal.SpotifyBindingConstants.SPOTIFY_API_PLAYER_URL;
-import static org.openhab.binding.spotify.internal.SpotifyBindingConstants.SPOTIFY_API_URL;
+import static org.eclipse.jetty.http.HttpMethod.*;
+import static org.openhab.binding.spotify.internal.SpotifyBindingConstants.*;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -37,13 +35,32 @@ import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.spotify.internal.api.exception.SpotifyAuthorizationException;
 import org.openhab.binding.spotify.internal.api.exception.SpotifyException;
 import org.openhab.binding.spotify.internal.api.exception.SpotifyTokenExpiredException;
+import org.openhab.binding.spotify.internal.api.model.AddedShow;
+import org.openhab.binding.spotify.internal.api.model.AddedShows;
+import org.openhab.binding.spotify.internal.api.model.Album;
+import org.openhab.binding.spotify.internal.api.model.Albums;
+import org.openhab.binding.spotify.internal.api.model.ApiSearchResult;
+import org.openhab.binding.spotify.internal.api.model.Artist;
+import org.openhab.binding.spotify.internal.api.model.Artists;
+import org.openhab.binding.spotify.internal.api.model.Categorie;
+import org.openhab.binding.spotify.internal.api.model.CategoriesResult;
+import org.openhab.binding.spotify.internal.api.model.CurrentPlay;
 import org.openhab.binding.spotify.internal.api.model.CurrentlyPlayingContext;
 import org.openhab.binding.spotify.internal.api.model.Device;
 import org.openhab.binding.spotify.internal.api.model.Devices;
+import org.openhab.binding.spotify.internal.api.model.FollowedArtists;
 import org.openhab.binding.spotify.internal.api.model.Me;
 import org.openhab.binding.spotify.internal.api.model.ModelUtil;
+import org.openhab.binding.spotify.internal.api.model.NewReleases;
 import org.openhab.binding.spotify.internal.api.model.Playlist;
 import org.openhab.binding.spotify.internal.api.model.Playlists;
+import org.openhab.binding.spotify.internal.api.model.SavedAlbum;
+import org.openhab.binding.spotify.internal.api.model.SavedAlbums;
+import org.openhab.binding.spotify.internal.api.model.Show;
+import org.openhab.binding.spotify.internal.api.model.Track;
+import org.openhab.binding.spotify.internal.api.model.Tracks;
+import org.openhab.binding.spotify.internal.api.model.UserTrackEntries;
+import org.openhab.binding.spotify.internal.api.model.UserTrackEntry;
 import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
 import org.openhab.core.auth.client.oauth2.OAuthClientService;
 import org.openhab.core.auth.client.oauth2.OAuthException;
@@ -70,6 +87,7 @@ public class SpotifyApi {
     private static final CurrentlyPlayingContext EMPTY_CURRENTLYPLAYINGCONTEXT = new CurrentlyPlayingContext();
     private static final String PLAY_TRACK_URIS = "{\"uris\":[%s],\"offset\":{\"position\":%d},\"position_ms\":%d}";
     private static final String PLAY_TRACK_CONTEXT_URI = "{\"context_uri\":\"%s\",\"offset\":{\"position\":%d},\"position_ms\":%d}}";
+    private static final String ENQUEUE_URI = "uri=%s";
     private static final String TRANSFER_PLAY = "{\"device_ids\":[\"%s\"],\"play\":%b}";
 
     private final Logger logger = LoggerFactory.getLogger(SpotifyApi.class);
@@ -117,6 +135,22 @@ public class SpotifyApi {
             play = String.format(PLAY_TRACK_CONTEXT_URI, trackId, offset, positionMs);
         }
         requestPlayer(PUT, url, play, String.class);
+    }
+
+    /**
+     * Call Spotify Api to play the given track on the given device. If the device id is empty it will be played on
+     * the active device.
+     *
+     * @param deviceId device to play on or empty if play on the active device
+     * @param trackId id of the track to play
+     * @param offset offset
+     * @param positionMs position in ms
+     */
+    public void queueTrack(String deviceId, String trackId, int offset, int positionMs) {
+        String url = "queue";
+        url = url + "?uri=" + trackId;
+        url = url + optionalDeviceId(deviceId, QSM);
+        requestPlayer(POST, url, "", String.class);
     }
 
     /**
@@ -225,11 +259,183 @@ public class SpotifyApi {
     /**
      * @return Returns the playlists of the user.
      */
-    public List<Playlist> getPlaylists(int offset, int limit) {
-        final Playlists playlists = request(GET, SPOTIFY_API_URL + "/playlists?offset" + offset + "&limit=" + limit, "",
-                Playlists.class);
+    public @Nullable CurrentPlay getCurrentPlaylist(long offset, long limit) {
+        final CurrentPlay currentPlay = request(GET, SPOTIFY_API_URL + "/player/queue", "", CurrentPlay.class);
+        return currentPlay;
+    }
+
+    /**
+     * @return Returns the playlists of the user.
+     */
+    public List<Playlist> getPlaylists(long offset, long limit) {
+        final Playlists playlists = request(GET, SPOTIFY_API_URL + "/playlists?offset=" + offset + "&limit=" + limit,
+                "", Playlists.class);
 
         return playlists == null || playlists.getItems() == null ? Collections.emptyList() : playlists.getItems();
+    }
+
+    /**
+     * @return Returns the albums of the user.
+     */
+    public List<Album> getAlbums(long offset, long limit) {
+        final SavedAlbums savedAlbums = request(GET, SPOTIFY_API_URL + "/albums?offset=" + offset + "&limit=" + limit,
+                "", SavedAlbums.class);
+
+        List<Album> albums = new ArrayList<Album>();
+        if (savedAlbums != null) {
+            for (SavedAlbum savedAlbum : savedAlbums.getItems()) {
+                albums.add(savedAlbum.album);
+            }
+        }
+        return albums;
+    }
+
+    /**
+     * @return Returns the albums of the user.
+     */
+    public List<Album> getNewReleases(long offset, long limit) {
+        final NewReleases newReleases = request(GET,
+                SPOTIFY_API_BASE_URL + "/browse/new-releases?offset" + offset + "&limit=" + limit, "",
+                NewReleases.class);
+
+        return newReleases == null || newReleases.albums.getItems() == null ? Collections.emptyList()
+                : newReleases.albums.getItems();
+    }
+
+    /**
+     * @return Returns an album
+     */
+    public @Nullable Album getAlbum(String albumId) {
+        final Album album = request(GET, SPOTIFY_API_BASE_URL + "/albums/" + albumId, "", Album.class);
+
+        return album;
+    }
+
+    /**
+     * @return Returns the artists of the user.
+     */
+    public List<Artist> getArtists(long offset, long limit) {
+        final FollowedArtists followedArtists = request(GET,
+                SPOTIFY_API_URL + "/following?type=artist&offset" + offset + "&limit=" + limit, "",
+                FollowedArtists.class);
+
+        return followedArtists == null || followedArtists.getArtists() == null ? Collections.emptyList()
+                : followedArtists.getArtists().getItems();
+    }
+
+    /**
+     * @return Returns the artists of the user.
+     */
+    public List<Categorie> getCategories(long offset, long limit) {
+        final CategoriesResult categoriesRes = request(GET,
+                SPOTIFY_API_BASE_URL + "/browse/categories?offset" + offset + "&limit=" + limit, "",
+                CategoriesResult.class);
+
+        return categoriesRes == null || categoriesRes.categories.getItems() == null ? Collections.emptyList()
+                : categoriesRes.categories.getItems();
+    }
+
+    /**
+     * @return Returns the artists of the user.
+     */
+    public List<Album> getArtistAlbums(String artistId) {
+        final Albums albums = request(GET, SPOTIFY_API_BASE_URL + "/artists/" + artistId + "/albums", "", Albums.class);
+
+        return albums == null || albums.getItems() == null ? Collections.emptyList() : albums.getItems();
+    }
+
+    /**
+     * @return Returns the artists of the user.
+     */
+    public List<Artist> getTopArtists(long offset, long limit) {
+        final Artists topArtists = request(GET, SPOTIFY_API_URL + "/top/artists?offset" + offset + "&limit=" + limit,
+                "", Artists.class);
+
+        return topArtists == null || topArtists.getItems() == null ? Collections.emptyList() : topArtists.getItems();
+    }
+
+    /**
+     * @return Returns the artists of the user.
+     */
+    public List<Show> getShows(long offset, long limit) {
+        final AddedShows addedShows = request(GET, SPOTIFY_API_URL + "/shows?offset" + offset + "&limit=" + limit, "",
+                AddedShows.class);
+
+        List<Show> shows = new ArrayList<Show>();
+        if (addedShows != null) {
+            for (AddedShow addedShow : addedShows.getItems()) {
+                shows.add(addedShow.show);
+            }
+        }
+
+        return shows;
+    }
+
+    /**
+     * @return Returns the artists of the user.
+     */
+    public List<Track> getTopTracks(long offset, long limit) {
+        final Tracks topTracks = request(GET, SPOTIFY_API_URL + "/top/tracks?offset" + offset + "&limit=" + limit, "",
+                Tracks.class);
+
+        return topTracks == null || topTracks.getItems() == null ? Collections.emptyList() : topTracks.getItems();
+    }
+
+    /**
+     * @return Returns the artists of the user.
+     */
+    public List<Track> getTracks(long offset, long limit) {
+        String url = SPOTIFY_API_URL + "/tracks?offset" + offset;
+        if (limit != 0) {
+            url = url + "&limit=" + limit;
+        }
+        final UserTrackEntries userTracks = request(GET, url, "", UserTrackEntries.class);
+
+        return getTrackFromUserTrackEntries(userTracks);
+    }
+
+    /**
+     * @return Returns the artists of the user.
+     */
+    public List<Track> getRecentlyPlayedTracks(long offset, long limit) {
+        final UserTrackEntries userTracks = request(GET,
+                SPOTIFY_API_URL + "/player/recently-played?offset" + offset + "&limit=" + limit, "",
+                UserTrackEntries.class);
+
+        return getTrackFromUserTrackEntries(userTracks);
+    }
+
+    public List<Track> getTrackFromUserTrackEntries(@Nullable UserTrackEntries userTracks) {
+        List<Track> tracks = new ArrayList<Track>();
+        if (userTracks != null) {
+            for (UserTrackEntry userTrack : userTracks.getItems()) {
+                tracks.add(userTrack.track);
+            }
+        }
+
+        return tracks;
+    }
+
+    /**
+     * @return Returns a playlist details
+     */
+    public @Nullable Playlist getPlaylist(String uri) {
+        final Playlist playlist = request(GET,
+                SPOTIFY_API_BASE_URL + "/playlists/" + uri.replace("spotify:playlist:", ""), "", Playlist.class);
+        return playlist;
+    }
+
+    /**
+     * @return Returns the artists of the user.
+     */
+    public @Nullable ApiSearchResult search(String searchQuery, long offset, long limit) {
+        final ApiSearchResult searchResult = request(GET,
+                SPOTIFY_API_BASE_URL + "/search?q=" + searchQuery
+                        + "&type=show%2Cepisode%2Caudiobook%2Calbum%2Cartist%2Cplaylist%2Ctrack" + "&offset=" + offset
+                        + "&limit=" + limit,
+                "", ApiSearchResult.class);
+
+        return searchResult;
     }
 
     /**

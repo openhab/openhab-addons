@@ -12,27 +12,28 @@
  */
 package org.openhab.binding.spotify.internal.api.model;
 
+import java.util.List;
+
 /**
- * Spotify Web Api Image data class.
+ * Spotify Api Show data class : a Podcast entry.
  *
- * @author Andreas Stenlund - Initial contribution
- * @author Hilbrand Bouwkamp - Moved to it's own class
+ * @author Laurent Arnal - Initial contribution
  */
-public class Image {
+public class Show extends BaseEntry {
 
-    private Integer height;
-    private String url;
-    private Integer width;
+    private List<String> availableMarkets;
+    private ExternalUrl externalUrls;
+    private String href;
 
-    public Integer getHeight() {
-        return height;
+    public List<String> getAvailableMarkets() {
+        return availableMarkets;
     }
 
-    public String getUrl() {
-        return url;
+    public ExternalUrl getExternalUrls() {
+        return externalUrls;
     }
 
-    public Integer getWidth() {
-        return width;
+    public String getHref() {
+        return href;
     }
 }

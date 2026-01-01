@@ -14,4 +14,12 @@
 
   <name>openHAB Add-ons :: Bundles :: Spotify Binding</name>
 
+  <dependencies>
+    <dependency>
+      <groupId>org.openhab.core.bundles</groupId>
+      <artifactId>org.openhab.core.media</artifactId>
+      <version>5.2.0-SNAPSHOT</version>
+      <scope>compile</scope>
+    </dependency>
+  </dependencies>
 </project>

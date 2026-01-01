@@ -20,18 +20,15 @@ import java.util.List;
  * @author Andreas Stenlund - Initial contribution
  * @author Hilbrand Bouwkamp - Moved to it's own class
  */
-public class Album {
+public class Album extends BaseEntry {
 
     private String albumType;
     private List<Artist> artists;
     private List<String> availableMarkets;
     private ExternalUrl externalUrls;
     private String href;
-    private String id;
-    private List<Image> images;
-    private String name;
-    private String type;
-    private String uri;
+
+    private Tracks tracks;
 
     public String getAlbumType() {
         return albumType;
@@ -53,23 +50,7 @@ public class Album {
         return href;
     }
 
-    public String getId() {
-        return id;
-    }
-
-    public List<Image> getImages() {
-        return images;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public String getUri() {
-        return uri;
+    public Tracks getTracks() {
+        return tracks;
     }
 }

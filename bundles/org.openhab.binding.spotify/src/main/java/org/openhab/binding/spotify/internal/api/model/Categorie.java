@@ -12,19 +12,26 @@
  */
 package org.openhab.binding.spotify.internal.api.model;
 
+import java.util.List;
+
+import org.openhab.core.media.Image;
+
 /**
- * Spotify Web Api Playlist data class.
+ * Spotify Web Api Categorie data class.
  *
- * @author Hilbrand Bouwkamp - Initial contribution
+ * @author Laurent Arnal - Initial contribution
  */
-public class Playlist extends BaseEntry {
-
-    private String description;
-    private PlayListTracks tracks;
+public class Categorie extends BaseEntry {
     private String href;
+    private List<Image> icons;
 
-    public PlayListTracks getTracks() {
-        return tracks;
+    @Override
+    public String getUri() {
+        return href;
     }
 
+    @Override
+    public List<Image> getImages() {
+        return icons;
+    }
 }

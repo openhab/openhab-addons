@@ -18,14 +18,10 @@ package org.openhab.binding.spotify.internal.api.model;
  * @author Andreas Stenlund - Initial contribution
  * @author Hilbrand Bouwkamp - Moved to it's own class
  */
-public class Artist {
+public class Artist extends BaseEntry {
 
     private ExternalUrl externalUrls;
     private String href;
-    private String id;
-    private String name;
-    private String type;
-    private String uri;
 
     public ExternalUrl getExternalUrls() {
         return externalUrls;
@@ -33,21 +29,5 @@ public class Artist {
 
     public String getHref() {
         return href;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public String getUri() {
-        return uri;
     }
 }
