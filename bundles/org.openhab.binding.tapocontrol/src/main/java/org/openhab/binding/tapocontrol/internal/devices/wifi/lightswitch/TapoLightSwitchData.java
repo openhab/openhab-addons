@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.tapocontrol.internal.devices.wifi.lightswitch;
 
+import static org.openhab.binding.tapocontrol.internal.TapoControlHandlerFactory.GSON;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.tapocontrol.internal.devices.dto.TapoBaseDeviceData;
 
@@ -24,6 +26,10 @@ public class TapoLightSwitchData extends TapoBaseDeviceData {
     @Expose(serialize = true, deserialize = true)
     private boolean deviceOn = false;
 
+    @SerializedName("on_time")
+    @Expose(serialize = true, deserialize = true)
+    private int onTime = 0;
+
     public void switchOnOff(boolean on) {
         deviceOn = on;
     }
@@ -34,5 +40,18 @@ public class TapoLightSwitchData extends TapoBaseDeviceData {
 
     public boolean isOff() {
         return !deviceOn;
+    }
+
+    public Number getOnTime() {
+        return onTime;
+    }
+
+    @Override
+    public String toString() {
+        return toJson();
+    }
+
+    public String toJson() {
+        return GSON.toJson(this);
     }
 }

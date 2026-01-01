@@ -105,8 +105,8 @@ All devices support some of the following channels:
 |           | currentTemp      | Number:Temperature     | Current Temperature                 | T310, T315                                                              |
 |           | currentHumidity  | Number:Dimensionless   | Current relative humidity in %      | T310, T315                                                              |
 | effects   | fxName           | String                 | Active lightning effect             | L530, L900, L920, L930                                                  |
-| device    | wifiSignal       | Number                 | WiFi-quality-level                  | P100, P105, P110, P115, L510, L530, L610, L630, L900, L920, L930        |
-|           | onTime           | Number:Time            | seconds output is on                | P100, P105, P110, P115, L510, L530, L900, L920, L930                    |
+| device    | wifiSignal       | Number                 | WiFi-quality-level                  | P100, P105, P110, P115, L510, L530, L610, L630, L900, L920, L930, HS200 |
+|           | onTime           | Number:Time            | seconds output is on                | P100, P105, P110, P115, L510, L530, L900, L920, L930, HS200             |
 |           | signalStrength   | Number                 | RF-quality-level                    | T110                                                                    |
 |           | isOnline         | Switch                 | Device is Online                    | T110                                                                    |
 |           | batteryLow       | Switch                 | Battery of device is low            | T110                                                                    |

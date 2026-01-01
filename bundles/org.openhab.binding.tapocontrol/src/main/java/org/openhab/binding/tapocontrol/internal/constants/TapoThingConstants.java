@@ -124,11 +124,12 @@ public class TapoThingConstants {
     public static final Set<ThingTypeUID> SUPPORTED_ENERGY_DATA_UIDS = Set.of(P110_THING_TYPE, P115_THING_TYPE);
 
     /*** THINGS WITH CHANNEL GROUPS ***/
-    public static final Set<ThingTypeUID> CHANNEL_GROUP_THING_SET = Collections.unmodifiableSet(
-            Stream.of(SUPPORTED_BRIDGE_UIDS, SUPPORTED_HUB_UIDS, SUPPORTED_SOCKET_UIDS, SUPPORTED_SOCKET_STRIP_UIDS,
+    public static final Set<ThingTypeUID> CHANNEL_GROUP_THING_SET = Collections.unmodifiableSet(Stream
+            .of(SUPPORTED_BRIDGE_UIDS, SUPPORTED_HUB_UIDS, SUPPORTED_SOCKET_UIDS, SUPPORTED_SOCKET_STRIP_UIDS,
                     SUPPORTED_WHITE_BULB_UIDS, SUPPORTED_COLOR_BULB_UIDS, SUPPORTED_LIGHT_STRIP_UIDS,
                     SUPPORTED_SMART_CONTACTS, SUPPORTED_MOTION_SENSORS, SUPPORTED_WEATHER_SENSORS,
-                    SUPPORTED_SMART_SWITCHES).flatMap(Set::stream).collect(Collectors.toSet()));
+                    SUPPORTED_SMART_SWITCHES, SUPPORTED_LIGHT_SWITCH_UIDS)
+            .flatMap(Set::stream).collect(Collectors.toSet()));
 
     public static final String CHILD_REPRESENTATION_PROPERTY = "serialNumber";
 
