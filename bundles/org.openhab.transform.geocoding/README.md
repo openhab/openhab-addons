@@ -11,7 +11,7 @@ Geocoding transformation service using [Nominatim API for OpenStreetMap](https:/
 
 **You must respect the** [Nominatim Usage Policy](https://operations.osmfoundation.org/policies/nominatim/)!
 You need to estimate your call frequency towards the _Nominatim_ service.
-For reverse geocoding the configuration parameter `resolveDuration` with minimum resolve time of 1 minute shall fulfill the throttling requirements.
+For reverse geocoding the configuration parameter `resolveInterval` with minimum resolve time of 1 minute shall fulfill the throttling requirements.
 For geocoding there's no throttling.
 Each user needs to respect the maximum allowed frequency of 1 call per second.
 The required `User-Agent` is provided by this transformation service. 
@@ -50,9 +50,9 @@ Default format is `row_address`.
 
 The `resolveInterval` defines the minimum time between two reverse geocoding transformations.
 An external API is called to resolve the geo coordinates and it shall not be queried too frequent.
-Channel updates within the duration are omitted.
-After the configured duration expired the last received location will be transformed. 
-Minimum configurable duration is 1 minute.
+Channel updates within the Interval are omitted.
+After the configured interval is expired the last received location will be transformed. 
+Minimum configurable interval is 1 minute.
 Default is 5 minutes (`5m`).
 
 The API calls are performed with your openHAB locale settings.
@@ -61,5 +61,5 @@ This can be overwritten with `language` configuration parameter using [Java Loca
 ### Example 
 
 ```java
-String <itemName> { channel="<locationChannelUID>"[profile="transform:osm-geocoding",format="us_address",resolveDuration="10m",language="en-US"]}
+String <itemName> { channel="<locationChannelUID>"[profile="transform:osm-geocoding",format="us_address",resolveInterval="10m",language="en-US"]}
 ```

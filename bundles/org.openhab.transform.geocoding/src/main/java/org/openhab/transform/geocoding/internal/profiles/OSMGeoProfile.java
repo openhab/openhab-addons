@@ -77,7 +77,7 @@ public class OSMGeoProfile implements StateProfile {
                 refreshInterval = Duration.ofMinutes(1);
             }
         } catch (IllegalArgumentException e) {
-            // fallback to default duration of 5 minutes
+            // fallback to default interval of 5 minutes
             refreshInterval = Duration.ofMinutes(5);
             logger.warn("Could not parse interval '{}', using default interval {}", configuration.resolveInterval,
                     refreshInterval);
@@ -102,7 +102,7 @@ public class OSMGeoProfile implements StateProfile {
     }
 
     /**
-     * Processes the incoming state and schedules reverse geocoding according to configured duration
+     * Processes the incoming state and schedules reverse geocoding according to configured interval
      *
      * @param location to be resolved
      */
