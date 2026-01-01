@@ -450,7 +450,7 @@ Import-Package: \\
             </mapping>
             <useDefaultExcludes>true</useDefaultExcludes>
             <properties>
-              <year>2025</year>
+              <year>2026</year>
             </properties>
             <encoding>UTF-8</encoding>
             <licenseSets>
