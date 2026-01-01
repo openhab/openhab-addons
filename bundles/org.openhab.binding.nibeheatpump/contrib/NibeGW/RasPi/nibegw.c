@@ -9,9 +9,8 @@
  * http://www.eclipse.org/legal/epl-2.0
  *
  * SPDX-License-Identifier: EPL-2.0
- *
- * ----------------------------------------------------------------------------
- *
+ */
+/**
  *	This application listening data from various Nibe heat pumps (RS485 bus)
  *	and send valid frames to configurable IP/port address by UDP packets.
  *	Application also acknowledge the valid packets to heat pump.

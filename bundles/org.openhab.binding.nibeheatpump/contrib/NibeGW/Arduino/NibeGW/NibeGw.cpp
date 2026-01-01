@@ -9,11 +9,9 @@
  * http://www.eclipse.org/legal/epl-2.0
  *
  * SPDX-License-Identifier: EPL-2.0
- *
- * ----------------------------------------------------------------------------
- *
+ */
+/**
  * Author: pauli.anttila@gmail.com
- *
  */
 
 #include "NibeGw.h"

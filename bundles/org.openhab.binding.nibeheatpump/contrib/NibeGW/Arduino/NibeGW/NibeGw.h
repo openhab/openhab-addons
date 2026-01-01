@@ -9,9 +9,8 @@
  * http://www.eclipse.org/legal/epl-2.0
  *
  * SPDX-License-Identifier: EPL-2.0
- *
- * ----------------------------------------------------------------------------
- *
+ */
+/**
  * Frame format:
  * +----+------+------+-----+-----+----+----+-----+
  * | 5C | ADDR | ADDR | CMD | LEN |  DATA   | CHK |
