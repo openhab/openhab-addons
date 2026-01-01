@@ -446,6 +446,7 @@ Import-Package: \\
             <strictCheck>true</strictCheck>
             <aggregate>true</aggregate>
             <mapping>
+              <java.hbs>SLASHSTAR_STYLE</java.hbs>
               <xml>xml-header-style</xml>
             </mapping>
             <useDefaultExcludes>true</useDefaultExcludes>
@@ -462,6 +463,8 @@ Import-Package: \\
                 <includes>
                   <include>**/org/openhab/**/*.java</include>
                   <include>**/features/**/header.xml</include>
+                  <!-- org.openhab.binding.matter -->
+                  <include>**/code-gen/**/*.java.hbs</include>
                 </includes>
                 <excludes>
                   <exclude>**/3rdparty/**</exclude>
