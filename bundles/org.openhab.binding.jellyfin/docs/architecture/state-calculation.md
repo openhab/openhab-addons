@@ -53,6 +53,12 @@ classDiagram
     class State {
         <<interface>>
     }
+
+    %% Color scheme for external libraries
+    classDef openhabApi fill:#99dd99,stroke:#66bb66,color:#000
+    class BaseItemDto openhabApi
+    class PlayerStateInfo openhabApi
+    class SessionInfoDto openhabApi
 ```
 
 ## Calculation Flow

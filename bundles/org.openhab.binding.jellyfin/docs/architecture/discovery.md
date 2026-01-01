@@ -96,6 +96,10 @@ classDiagram
         +String UserName
         +PlayState playState
     }
+
+    %% Color scheme for external libraries
+    classDef openhabApi fill:#99dd99,stroke:#66bb66,color:#000
+    class SessionInfoDto openhabApi
 ```
 
 ### Integration with TaskManager
