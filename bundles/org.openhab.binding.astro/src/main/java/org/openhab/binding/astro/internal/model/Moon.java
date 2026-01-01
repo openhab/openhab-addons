@@ -27,7 +27,7 @@ public class Moon extends RiseSet implements Planet {
     private MoonDistance apogee = new MoonDistance();
     private MoonDistance perigee = new MoonDistance();
     private MoonDistance distance = new MoonDistance();
-    private Position position = SunPosition.NULL;
+    private Position position = MoonPosition.NULL;
     private Zodiac zodiac = Zodiac.NULL;
 
     /**

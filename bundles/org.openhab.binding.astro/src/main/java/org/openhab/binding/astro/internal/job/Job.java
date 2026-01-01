@@ -80,7 +80,7 @@ public interface Job extends SchedulerRunnable, Runnable {
                 astroHandler.schedule(job, eventAt);
             }
         } catch (Exception ex) {
-            logger.error("{}", ex.getMessage(), ex);
+            LOGGER.error("{}", ex.getMessage(), ex);
         }
     }
 
@@ -171,7 +171,7 @@ public interface Job extends SchedulerRunnable, Runnable {
         if (!configAlreadyApplied) {
             final Channel channel = astroHandler.getThing().getChannel(channelId);
             if (channel == null) {
-                logger.warn("Cannot find channel '{}' for thing '{}'.", channelId, astroHandler.getThing().getUID());
+                LOGGER.warn("Cannot find channel '{}' for thing '{}'.", channelId, astroHandler.getThing().getUID());
                 return;
             }
             AstroChannelConfig config = channel.getConfiguration().as(AstroChannelConfig.class);
