@@ -28,6 +28,7 @@ import org.openhab.core.types.UnDefType;
  */
 @NonNullByDefault
 <<<<<<< Upstream, based on main
+<<<<<<< Upstream, based on main
 public class Position {
     public static final Position NONE = new Position();
     private final double azimuth;
@@ -41,9 +42,17 @@ public abstract class Position {
         this(Double.NaN, Double.NaN);
     }
 =======
+=======
+public class Position {
+    public static final Position NULL = new Position();
+>>>>>>> 385bae1 Rebased. Corrected moon_day dynamic icons Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added unit tests for eclipses
     protected final double azimuth;
     protected final double elevation;
 >>>>>>> 48a7069 Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added unit tests for eclipses
+
+    private Position() {
+        this(Double.NaN, Double.NaN);
+    }
 
     public Position(double azimuth, double elevation) {
         this.azimuth = azimuth;
@@ -80,6 +89,7 @@ public abstract class Position {
         return elevation;
     }
 <<<<<<< Upstream, based on main
+<<<<<<< Upstream, based on main
 
 <<<<<<< Upstream, based on main
     /**
@@ -88,6 +98,14 @@ public abstract class Position {
     public State getShadeLength() {
         return Double.isNaN(elevation) ? UnDefType.UNDEF
                 : elevation <= 0 ? UnDefType.NULL : new DecimalType(1d / MathUtils.tanDeg(elevation));
+=======
+
+    /**
+     * Returns the shade length.
+     */
+    public State getShadeLength() {
+        return Double.isNaN(elevation) ? UnDefType.NULL : new DecimalType(1 / MathUtils.tanDeg(elevation));
+>>>>>>> 385bae1 Rebased. Corrected moon_day dynamic icons Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added unit tests for eclipses
     }
 }
 =======

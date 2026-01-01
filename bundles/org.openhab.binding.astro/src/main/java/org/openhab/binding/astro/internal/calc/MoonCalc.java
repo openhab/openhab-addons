@@ -398,13 +398,13 @@ public class MoonCalc extends AstroCalc {
         double kMod = Math.floor(k) + phase.mode;
 >>>>>>> 810a1e9 Initial commit for Moon phase revamp
         double t = kMod / 1236.85;
-<<<<<<< Upstream, based on main
         double e = varE(t);
         double m = varM(kMod, t);
         double m1 = varM1(kMod, t);
         double f = varF(kMod, t);
         double o = varO(kMod, t);
         double jd = varJde(kMod, t);
+<<<<<<< Upstream, based on main
 <<<<<<< Upstream, based on main
         switch (phase) {
             case NEW:
@@ -489,6 +489,8 @@ public class MoonCalc extends AstroCalc {
         double f = var_f(kMod, t);
         double o = var_o(kMod, t);
         double jd = var_jde(kMod, t);
+=======
+>>>>>>> 385bae1 Rebased. Corrected moon_day dynamic icons Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added unit tests for eclipses
         switch (phase) {
             case NEW:
                 jd += -.4072 * sinDeg(m1) + .17241 * e * sinDeg(m) + .01608 * sinDeg(2 * m1) + .01039 * sinDeg(2 * f)
@@ -528,13 +530,17 @@ public class MoonCalc extends AstroCalc {
                 double w = .00306 - .00038 * e * cosDeg(m) + .00026 * cosDeg(m1) - .00002 * cosDeg(m1 - m)
                         + .00002 * cosDeg(m1 + m) + .00002 * cosDeg(2 * f);
                 jd += MoonPhaseName.FIRST_QUARTER.equals(phase) ? w : -w;
+<<<<<<< Upstream, based on main
 >>>>>>> 24ede3e Initial commit for Moon phase revamp
 >>>>>>> 810a1e9 Initial commit for Moon phase revamp
+=======
+>>>>>>> 385bae1 Rebased. Corrected moon_day dynamic icons Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added unit tests for eclipses
         }
         return moonCorrection(jd, t, kMod);
     }
 
     /**
+<<<<<<< Upstream, based on main
 <<<<<<< Upstream, based on main
 =======
 <<<<<<< Upstream, based on main
@@ -615,6 +621,8 @@ public class MoonCalc extends AstroCalc {
 =======
 >>>>>>> d31b893 Start refactoring Eclipse for sun and moon
 >>>>>>> a1c7d2d Start refactoring Eclipse for sun and moon
+=======
+>>>>>>> 385bae1 Rebased. Corrected moon_day dynamic icons Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added unit tests for eclipses
      * Calculates the illumination.
      */
     private double getIllumination(double jd) {
@@ -678,6 +686,7 @@ public class MoonCalc extends AstroCalc {
     }
 
     /**
+<<<<<<< Upstream, based on moon_distance
 <<<<<<< Upstream, based on main
      * Calculates the next eclipse.
      */
@@ -697,6 +706,8 @@ public class MoonCalc extends AstroCalc {
     /**
 =======
 >>>>>>> d31b893 Start refactoring Eclipse for sun and moon
+=======
+>>>>>>> b61414e Rebased. Corrected moon_day dynamic icons Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added unit tests for eclipses
      * Calculates the date, where the moon is furthest away from the earth.
      */
     private double getApogee(double julianDate, double decimalYear) {
@@ -789,19 +800,11 @@ public class MoonCalc extends AstroCalc {
         double arc = 206264.8062;
         double coseps = .91748;
         double sineps = .39778;
-<<<<<<< Upstream, based on main
         double lo = frac(.606433 + 1336.855225 * t);
         double l = p2 * frac(.374897 + 1325.55241 * t);
         double ls = p2 * frac(.993133 + 99.997361 * t);
         double d = p2 * frac(.827361 + 1236.853086 * t);
         double f = p2 * frac(.259086 + 1342.227825 * t);
-=======
-        double lo = MathUtils.frak(.606433 + 1336.855225 * t);
-        double l = p2 * MathUtils.frak(.374897 + 1325.55241 * t);
-        double ls = p2 * MathUtils.frak(.993133 + 99.997361 * t);
-        double d = p2 * MathUtils.frak(.827361 + 1236.853086 * t);
-        double f = p2 * MathUtils.frak(.259086 + 1342.227825 * t);
->>>>>>> d31b893 Start refactoring Eclipse for sun and moon
         double dl = 22640 * Math.sin(l) - 4586 * Math.sin(l - 2 * d) + 2370 * Math.sin(2 * d) + 769 * Math.sin(2 * l)
                 - 668 * Math.sin(ls) - 412 * Math.sin(2 * f) - 212 * Math.sin(2 * l - 2 * d)
                 - 206 * Math.sin(l + ls - 2 * d) + 192 * Math.sin(l + 2 * d) - 165 * Math.sin(ls - 2 * d)
@@ -810,11 +813,7 @@ public class MoonCalc extends AstroCalc {
         double h = f - 2 * d;
         double n = -526 * Math.sin(h) + 44 * Math.sin(l + h) - 31 * Math.sin(-l + h) - 23 * Math.sin(ls + h)
                 + 11 * Math.sin(-ls + h) - 25 * Math.sin(-2 * l + f) + 21 * Math.sin(-l + f);
-<<<<<<< Upstream, based on main
         double lmoon = p2 * frac(lo + dl / 1296000);
-=======
-        double lmoon = p2 * MathUtils.frak(lo + dl / 1296000);
->>>>>>> d31b893 Start refactoring Eclipse for sun and moon
         double bmoon = (18520 * Math.sin(s) + n) / arc;
         double cb = Math.cos(bmoon);
         double x = cb * Math.cos(lmoon);
@@ -845,6 +844,7 @@ public class MoonCalc extends AstroCalc {
         double t = (moonJdo - DateTimeUtils.MJD_JD2000) / DateTimeUtils.JULIAN_CENTURY_DAYS;
         double gmst = 6.697374558 + 1.0027379093 * ut + (8640184.812866 + (.093104 - .0000062 * t) * t) * t / 3600.0;
 <<<<<<< Upstream, based on main
+<<<<<<< Upstream, based on main
         return 24.0 * frac((gmst - lambda / 15.0) / 24.0);
     }
 
@@ -859,6 +859,9 @@ public class MoonCalc extends AstroCalc {
 =======
         return 24.0 * MathUtils.frak((gmst - lambda / 15.0) / 24.0);
 >>>>>>> d31b893 Start refactoring Eclipse for sun and moon
+=======
+        return 24.0 * MathUtils.frac((gmst - lambda / 15.0) / 24.0);
+>>>>>>> 385bae1 Rebased. Corrected moon_day dynamic icons Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added unit tests for eclipses
     }
 
 >>>>>>> a1c7d2d Start refactoring Eclipse for sun and moon
@@ -888,6 +891,7 @@ public class MoonCalc extends AstroCalc {
         return new double[] { ye, zero1, zero2, nz };
     }
 
+<<<<<<< Upstream, based on main
 <<<<<<< Upstream, based on main
 =======
 <<<<<<< Upstream, based on main
@@ -923,6 +927,8 @@ public class MoonCalc extends AstroCalc {
 =======
 >>>>>>> d31b893 Start refactoring Eclipse for sun and moon
 >>>>>>> a1c7d2d Start refactoring Eclipse for sun and moon
+=======
+>>>>>>> 385bae1 Rebased. Corrected moon_day dynamic icons Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added unit tests for eclipses
     private double moonCorrection(double jd, double t, double k) {
         double ret = jd;
         ret += .000325 * sinDeg(299.77 + .107408 * k - .009173 * t * t) + .000165 * sinDeg(251.88 + .016321 * k)

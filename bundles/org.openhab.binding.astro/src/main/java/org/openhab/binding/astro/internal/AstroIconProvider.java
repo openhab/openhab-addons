@@ -156,6 +156,7 @@ public class AstroIconProvider implements IconProvider {
     @Override
     public @Nullable InputStream getIcon(String category, String iconSetId, @Nullable String state, Format format) {
 <<<<<<< Upstream, based on main
+<<<<<<< Upstream, based on main
         String set = category.equals(MOON_PHASE_SET) ? MOON_DAY_SET : category;
         String resourceWithoutState = "icon/" + set + "." + format.toString();
         if (state == null) {
@@ -199,14 +200,9 @@ public class AstroIconProvider implements IconProvider {
                 logger.warn("Unable to load resource '{}': {}", iconResource.getPath(), e.getMessage());
 =======
 <<<<<<< Upstream, based on main
+=======
+>>>>>>> 385bae1 Rebased. Corrected moon_day dynamic icons Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added unit tests for eclipses
         String iconName = String.format(Locale.ROOT, "icon/%s.svg", category);
-=======
-        String iconName = "icon/%s.svg".formatted(category);
-<<<<<<< Upstream, based on main
-<<<<<<< Upstream, based on main
->>>>>>> 24ede3e Initial commit for Moon phase revamp
-=======
->>>>>>> 8c08c02 Resolved conflicting files Adds moon-day icon set. Rebased.
         if (ICON_SETS.contains(category) && state != null) {
             try {
 <<<<<<< Upstream, based on main
@@ -233,10 +229,21 @@ public class AstroIconProvider implements IconProvider {
                     case ZODIAC_SET -> ZodiacSign.valueOf(state).name().toLowerCase(Locale.US);
                     case MOON_PHASE_SET -> MoonPhaseName.valueOf(state).name().toLowerCase(Locale.US);
                     case MOON_ECLIPSE_SET -> EclipseKind.valueOf(state).name().toLowerCase(Locale.US);
-                    case MOON_DAY_SET -> state;
+                    case MOON_DAY_SET -> {
+                        try {
+                            var age = QuantityType.valueOf(state);
+                            if (age.toUnit(Units.DAY) instanceof QuantityType ageInDays) {
+                                yield Integer.toString(ageInDays.intValue());
+                            }
+                        } catch (NumberFormatException ignore) {
+                        }
+                        yield "";
+                    }
                     default -> throw new IllegalArgumentException("Category of icon not found: %s".formatted(category));
                 };
-                iconName = iconName.replace(".", "-%s.".formatted(iconState));
+                if (!iconState.isEmpty()) {
+                    iconName = iconName.replace(".", "-%s.".formatted(iconState));
+                }
             } catch (IllegalArgumentException e) {
                 // Invalid state for the icon set, we'll remain on default icon
 <<<<<<< Upstream, based on main

@@ -30,12 +30,16 @@ public class Sun extends RiseSet implements Planet {
     private Map<SunPhaseName, Range> ranges = new HashMap<>();
 
 <<<<<<< Upstream, based on main
+<<<<<<< Upstream, based on main
     private Position position = Position.NONE;
     private Zodiac zodiac = Zodiac.NONE;
     private EclipseSet eclipseSet = EclipseSet.NONE;
     private Radiation radiation = Radiation.NONE;
 =======
     private Position position = SunPosition.NULL;
+=======
+    private Position position = Position.NULL;
+>>>>>>> 385bae1 Rebased. Corrected moon_day dynamic icons Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added unit tests for eclipses
 
     private Zodiac zodiac = Zodiac.NULL;
 >>>>>>> 48a7069 Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added unit tests for eclipses

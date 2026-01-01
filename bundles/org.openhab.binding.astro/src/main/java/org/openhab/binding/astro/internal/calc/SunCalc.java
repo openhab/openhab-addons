@@ -35,9 +35,16 @@ import org.openhab.binding.astro.internal.model.Eclipse;
 >>>>>>> a1c7d2d Start refactoring Eclipse for sun and moon
 =======
 <<<<<<< Upstream, based on moon_distance
+<<<<<<< Upstream, based on main
 >>>>>>> 48a7069 Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added unit tests for eclipses
+=======
+<<<<<<< Upstream, based on moon_distance
+>>>>>>> 385bae1 Rebased. Corrected moon_day dynamic icons Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added unit tests for eclipses
 import org.openhab.binding.astro.internal.model.Position;
 =======
+=======
+import org.openhab.binding.astro.internal.model.Position;
+>>>>>>> b61414e Rebased. Corrected moon_day dynamic icons Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added unit tests for eclipses
 import org.openhab.binding.astro.internal.model.Radiation;
 >>>>>>> 0596b7c Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added unit tests for eclipses
 import org.openhab.binding.astro.internal.model.Range;
@@ -45,9 +52,12 @@ import org.openhab.binding.astro.internal.model.Season;
 import org.openhab.binding.astro.internal.model.Sun;
 import org.openhab.binding.astro.internal.model.SunPhaseName;
 <<<<<<< Upstream, based on main
+<<<<<<< Upstream, based on main
 =======
 import org.openhab.binding.astro.internal.model.SunPosition;
 >>>>>>> 48a7069 Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added unit tests for eclipses
+=======
+>>>>>>> 385bae1 Rebased. Corrected moon_day dynamic icons Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added unit tests for eclipses
 import org.openhab.binding.astro.internal.util.AstroConstants;
 import org.openhab.binding.astro.internal.util.DateTimeUtils;
 import org.openhab.binding.astro.internal.util.MathUtils;
@@ -109,6 +119,7 @@ public class SunCalc {
     public void setPositionalInfo(Calendar calendar, double latitude, double longitude, @Nullable Double altitude,
             Sun sun) {
 <<<<<<< Upstream, based on main
+<<<<<<< Upstream, based on main
         Position sunPosition = getPosition(calendar, latitude, longitude, altitude);
         sun.setPosition(sunPosition);
     }
@@ -116,12 +127,19 @@ public class SunCalc {
     public Position getPosition(Calendar calendar, double latitude, double longitude, @Nullable Double altitude) {
 =======
         SunPosition sunPosition = getPosition(calendar, latitude, longitude, altitude);
+=======
+        Position sunPosition = getPosition(calendar, latitude, longitude, altitude);
+>>>>>>> 385bae1 Rebased. Corrected moon_day dynamic icons Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added unit tests for eclipses
         sun.setPosition(sunPosition);
         setRadiationInfo(calendar, sunPosition.getElevationAsDouble(), altitude, sun);
     }
 
+<<<<<<< Upstream, based on main
     public SunPosition getPosition(Calendar calendar, double latitude, double longitude, @Nullable Double altitude) {
 >>>>>>> 48a7069 Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added unit tests for eclipses
+=======
+    public Position getPosition(Calendar calendar, double latitude, double longitude, @Nullable Double altitude) {
+>>>>>>> 385bae1 Rebased. Corrected moon_day dynamic icons Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added unit tests for eclipses
         double lw = Math.toRadians(-longitude);
         double phi = Math.toRadians(latitude);
 
@@ -139,6 +157,7 @@ public class SunCalc {
         return new Position(azimuth, elevation);
 =======
 <<<<<<< Upstream, based on moon_distance
+<<<<<<< Upstream, based on moon_distance
         double shadeLength = getShadeLength(elevation);
 
         Position position = sun.getPosition();
@@ -147,6 +166,9 @@ public class SunCalc {
         position.setShadeLength(shadeLength);
 =======
         return new SunPosition(azimuth, elevation);
+=======
+        return new Position(azimuth, elevation);
+>>>>>>> b61414e Rebased. Corrected moon_day dynamic icons Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added unit tests for eclipses
     }
 
     /**
@@ -328,7 +350,7 @@ public class SunCalc {
         eclipse.getKinds().forEach(eclipseKind -> {
             double jdate = ECLIPSE_CALC.calculate(calendar, j, eclipseKind);
             Calendar eclipseCal = Objects.requireNonNull(DateTimeUtils.toCalendar(jdate, zone, locale));
-            SunPosition sunPosition = getPosition(eclipseCal, latitude, longitude, altitude);
+            Position sunPosition = getPosition(eclipseCal, latitude, longitude, altitude);
             eclipse.set(eclipseKind, jdate, sunPosition.getElevationAsDouble());
         });
 >>>>>>> a1c7d2d Start refactoring Eclipse for sun and moon

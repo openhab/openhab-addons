@@ -77,32 +77,32 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class AstroCalc {
-    protected static double var_f(double k, double t) {
+    protected static double varF(double k, double t) {
         return 160.7108 + 390.67050274 * k - .0016341 * t * t - .00000227 * t * t * t + .000000011 * t * t * t * t;
     }
 
-    protected static double var_o(double k, double t) {
+    protected static double varO(double k, double t) {
         return 124.7746 - 1.5637558 * k + .0020691 * t * t + .00000215 * t * t * t;
     }
 
-    protected static double var_e(double t) {
+    protected static double varE(double t) {
         return 1 - .002516 * t - .0000074 * t * t;
     }
 
-    protected static double var_m1(double k, double t) {
+    protected static double varM1(double k, double t) {
         return 201.5643 + 385.81693528 * k + .1017438 * t * t + .00001239 * t * t * t - .000000058 * t * t * t * t;
     }
 
-    protected static double var_m(double k, double t) {
+    protected static double varM(double k, double t) {
         return 2.5534 + 29.10535669 * k - .0000218 * t * t - .00000011 * t * t * t;
     }
 
-    protected static double var_jde(double k, double t) {
+    protected static double varJde(double k, double t) {
         return 2451550.09765 + 29.530588853 * k + .0001337 * t * t - .00000015 * t * t * t
                 + .00000000073 * t * t * t * t;
     }
 
-    protected static double var_k(Calendar cal, double tz) {
+    protected static double varK(Calendar cal, double tz) {
         return (cal.get(Calendar.YEAR) + (cal.get(Calendar.DAY_OF_YEAR) + tz) / 365 - 2000) * 12.3685;
 >>>>>>> a1c7d2d Start refactoring Eclipse for sun and moon
     }
