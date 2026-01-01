@@ -39,6 +39,8 @@ import org.openhab.binding.astro.internal.model.MoonPhaseName;
 import org.openhab.binding.astro.internal.model.SeasonName;
 import org.openhab.binding.astro.internal.model.ZodiacSign;
 import org.openhab.core.i18n.TranslationProvider;
+import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.ui.icon.IconProvider;
 import org.openhab.core.ui.icon.IconSet;
 import org.openhab.core.ui.icon.IconSet.Format;
@@ -130,15 +132,7 @@ public class AstroIconProvider implements IconProvider {
 
     @Override
     public @Nullable InputStream getIcon(String category, String iconSetId, @Nullable String state, Format format) {
-<<<<<<< Upstream, based on main
         String iconName = String.format(Locale.ROOT, "icon/%s.svg", category);
-=======
-        String iconName = "icon/%s.svg".formatted(category);
-<<<<<<< Upstream, based on main
-<<<<<<< Upstream, based on main
->>>>>>> 24ede3e Initial commit for Moon phase revamp
-=======
->>>>>>> 8c08c02 Resolved conflicting files Adds moon-day icon set. Rebased.
         if (ICON_SETS.contains(category) && state != null) {
             try {
 <<<<<<< Upstream, based on main
@@ -165,10 +159,21 @@ public class AstroIconProvider implements IconProvider {
                     case ZODIAC_SET -> ZodiacSign.valueOf(state).name().toLowerCase(Locale.US);
                     case MOON_PHASE_SET -> MoonPhaseName.valueOf(state).name().toLowerCase(Locale.US);
                     case MOON_ECLIPSE_SET -> EclipseKind.valueOf(state).name().toLowerCase(Locale.US);
-                    case MOON_DAY_SET -> state;
+                    case MOON_DAY_SET -> {
+                        try {
+                            var age = QuantityType.valueOf(state);
+                            if (age.toUnit(Units.DAY) instanceof QuantityType ageInDays) {
+                                yield Integer.toString(ageInDays.intValue());
+                            }
+                        } catch (NumberFormatException ignore) {
+                        }
+                        yield "";
+                    }
                     default -> throw new IllegalArgumentException("Category of icon not found: %s".formatted(category));
                 };
-                iconName = iconName.replace(".", "-%s.".formatted(iconState));
+                if (!iconState.isEmpty()) {
+                    iconName = iconName.replace(".", "-%s.".formatted(iconState));
+                }
             } catch (IllegalArgumentException e) {
                 // Invalid state for the icon set, we'll remain on default icon
                 logger.warn("Error retrieving icon for state '{}' - using default. Error: {}", state, e.getMessage());

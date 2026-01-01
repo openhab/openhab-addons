@@ -57,7 +57,7 @@ public class MathUtils {
         return Math.sin(Math.toRadians(deg));
     }
 
-    public static double frak(double x) {
+    public static double frac(double x) {
         return x - Math.floor(x);
     }
 }

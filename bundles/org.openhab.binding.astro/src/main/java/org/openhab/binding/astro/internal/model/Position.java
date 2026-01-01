@@ -13,6 +13,8 @@
 package org.openhab.binding.astro.internal.model;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.astro.internal.util.MathUtils;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.State;
@@ -25,10 +27,14 @@ import org.openhab.core.types.UnDefType;
  * @author Christoph Weitkamp - Introduced UoM
  */
 @NonNullByDefault
-public abstract class Position {
-
+public class Position {
+    public static final Position NULL = new Position();
     protected final double azimuth;
     protected final double elevation;
+
+    private Position() {
+        this(Double.NaN, Double.NaN);
+    }
 
     public Position(double azimuth, double elevation) {
         this.azimuth = azimuth;
@@ -55,5 +61,12 @@ public abstract class Position {
 
     public double getElevationAsDouble() {
         return elevation;
+    }
+
+    /**
+     * Returns the shade length.
+     */
+    public State getShadeLength() {
+        return Double.isNaN(elevation) ? UnDefType.NULL : new DecimalType(1 / MathUtils.tanDeg(elevation));
     }
 }

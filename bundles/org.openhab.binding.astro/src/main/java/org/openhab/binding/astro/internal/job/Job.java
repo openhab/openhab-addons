@@ -88,10 +88,14 @@ public interface Job extends SchedulerRunnable, Runnable {
             }
         } catch (Exception ex) {
 <<<<<<< Upstream, based on moon_distance
+<<<<<<< Upstream, based on moon_distance
             LOGGER.error("{}", ex.getMessage(), ex);
 =======
             logger.error("{}", ex.getMessage(), ex);
 >>>>>>> 0596b7c Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added unit tests for eclipses
+=======
+            LOGGER.error("{}", ex.getMessage(), ex);
+>>>>>>> b61414e Rebased. Corrected moon_day dynamic icons Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added unit tests for eclipses
         }
     }
 
@@ -199,10 +203,14 @@ public interface Job extends SchedulerRunnable, Runnable {
             final Channel channel = astroHandler.getThing().getChannel(channelId);
             if (channel == null) {
 <<<<<<< Upstream, based on moon_distance
+<<<<<<< Upstream, based on moon_distance
                 LOGGER.warn("Cannot find channel '{}' for thing '{}'.", channelId, astroHandler.getThing().getUID());
 =======
                 logger.warn("Cannot find channel '{}' for thing '{}'.", channelId, astroHandler.getThing().getUID());
 >>>>>>> 0596b7c Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added unit tests for eclipses
+=======
+                LOGGER.warn("Cannot find channel '{}' for thing '{}'.", channelId, astroHandler.getThing().getUID());
+>>>>>>> b61414e Rebased. Corrected moon_day dynamic icons Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added unit tests for eclipses
                 return;
             }
             AstroChannelConfig config = channel.getConfiguration().as(AstroChannelConfig.class);

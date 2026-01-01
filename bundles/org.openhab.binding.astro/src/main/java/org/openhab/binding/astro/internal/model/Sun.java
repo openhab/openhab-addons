@@ -29,7 +29,7 @@ public class Sun extends RiseSet implements Planet {
 
     private Map<SunPhaseName, Range> ranges = new HashMap<>();
 
-    private Position position = SunPosition.NULL;
+    private Position position = Position.NULL;
 
     private Zodiac zodiac = Zodiac.NULL;
 
