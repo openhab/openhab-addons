@@ -60,27 +60,33 @@ public class SmartForecastSolarPlaneHandler extends AdjustableForecastSolarPlane
      * @param f The forecast object containing the forecast data
      */
     @Override
-    protected synchronized void setForecast(ForecastSolarObject f) {
-        forecast = f;
-        Optional<Double> energyCalculation = Utils.getEnergyTillNow(configuration.calculationItemName,
-                persistenceService.get());
-        energyProduction = energyCalculation.orElse(0.0);
-        forecastProduction = forecast.getActualEnergyValue(ZonedDateTime.now(Utils.getClock()));
+    protected void setForecast(ForecastSolarObject newForecast) {
+        if (persistenceService != null) {
+            // Get inverter energy production till now and predicted energy production from forecast
+            Optional<Double> energyCalculation = Utils.getEnergyTillNow(configuration.calculationItemName,
+                    persistenceService);
+            energyProduction = energyCalculation.isPresent() ? energyCalculation.get() : 0;
+            forecastProduction = newForecast.getActualEnergyValue(ZonedDateTime.now(Utils.getClock()));
 
-        double factor = 1;
-        if (isHoldingTimeElapsed()) {
-            if (forecastProduction > 0) {
-                factor = energyProduction / forecastProduction;
+            // calculate correction factor if holding time elapsed
+            double factor = 1;
+            if (isHoldingTimeElapsed(newForecast)) {
+                if (forecastProduction > 0) {
+                    factor = energyProduction / forecastProduction;
+                }
+                newForecast.setCorrectionFactor(factor);
+            } else {
+                logger.debug("Holding time not elapsed, no adjustment of forecast");
             }
-            forecast.setCorrectionFactor(factor);
-        } else {
-            logger.debug("Holding time not elapsed, no adjustment of forecast");
-        }
-        logger.debug("Inverter {}, Forecast {} factor {}", energyProduction, forecastProduction, factor);
+            logger.debug("Inverter {}, Forecast {} factor {}", energyProduction, forecastProduction, factor);
 
-        // factor is applied to the forecast so new adapted values are available
-        updateState(CHANNEL_CORRECTION_FACTOR, new DecimalType(factor));
-        super.setForecast(forecast);
+            // factor is applied to the forecast so new adapted values are available
+            updateState(CHANNEL_CORRECTION_FACTOR, new DecimalType(factor));
+        } else {
+            logger.debug("No persistence service available, no adjustment of forecast");
+        }
+        // finally call superclass to set the adjusted forecast
+        super.setForecast(newForecast);
     }
 
     public double getEnergyProduction() {

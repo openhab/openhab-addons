@@ -18,7 +18,9 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.openhab.binding.solarforecast.internal.forecastsolar.ForecastSolarObject;
 import org.openhab.binding.solarforecast.internal.utils.Utils;
 import org.openhab.core.persistence.PersistenceService;
 import org.openhab.core.persistence.PersistenceServiceRegistry;
@@ -40,7 +42,7 @@ public class AdjustableForecastSolarPlaneHandler extends ForecastSolarPlaneHandl
     private final Logger logger = LoggerFactory.getLogger(AdjustableForecastSolarPlaneHandler.class);
     protected final PersistenceServiceRegistry persistenceRegistry;
 
-    protected Optional<QueryablePersistenceService> persistenceService = Optional.empty();
+    protected @Nullable QueryablePersistenceService persistenceService;
 
     public AdjustableForecastSolarPlaneHandler(Thing thing, HttpClient hc, PersistenceServiceRegistry psr) {
         super(thing, hc);
@@ -49,44 +51,36 @@ public class AdjustableForecastSolarPlaneHandler extends ForecastSolarPlaneHandl
 
     @Override
     public void initialize() {
-        if (super.doInitialize()) {
-            if (!configuration.calculationItemName.isBlank()) {
-                PersistenceService service = persistenceRegistry.get(configuration.calculationItemPersistence);
-                if (service != null) {
-                    if (service instanceof QueryablePersistenceService queryService) {
-                        if (Utils.checkPersistence(configuration.calculationItemName, queryService)) {
-                            persistenceService = Optional.of(queryService);
-                            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE,
-                                    "@text/solarforecast.plane.status.await-feedback");
-                            bridgeHandler.ifPresentOrElse(handler -> {
-                                handler.addPlane(this);
-                            }, () -> {
-                                // bridge handler is not available, so we cannot add the plane
-                                configErrorStatus("@text/solarforecast.plane.status.bridge-handler-not-found");
-                            });
-                        } else {
-                            // item not found in persistence
-                            configErrorStatus("@text/solarforecast.plane.status.item-not-in-persistence" + " [\""
-                                    + configuration.calculationItemName + "\", \""
-                                    + configuration.calculationItemPersistence + "\"]");
-                        }
+        super.initialize();
+        if (!configuration.calculationItemName.isBlank()) {
+            PersistenceService service = persistenceRegistry.get(configuration.calculationItemPersistence);
+            if (service != null) {
+                if (service instanceof QueryablePersistenceService queryService) {
+                    if (Utils.checkPersistence(configuration.calculationItemName, queryService)) {
+                        persistenceService = queryService;
+                        updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE,
+                                "@text/solarforecast.plane.status.await-feedback");
                     } else {
-                        // persistence service not queryable
-                        configErrorStatus("@text/solarforecast.plane.status.persistence-not-queryable" + " [\""
+                        // item not found in persistence
+                        configErrorStatus("@text/solarforecast.plane.status.item-not-in-persistence" + " [\""
+                                + configuration.calculationItemName + "\", \""
                                 + configuration.calculationItemPersistence + "\"]");
                     }
                 } else {
-                    // persistence service not found
-                    configErrorStatus("@text/solarforecast.plane.status.persistence-not-found" + " [\""
+                    // persistence service not queryable
+                    configErrorStatus("@text/solarforecast.plane.status.persistence-not-queryable" + " [\""
                             + configuration.calculationItemPersistence + "\"]");
                 }
             } else {
-                // calculation item not configured
-                configErrorStatus("@text/solarforecast.plane.status.item-not-found" + " [\""
-                        + configuration.calculationItemName + "\"]");
+                // persistence service not found
+                configErrorStatus("@text/solarforecast.plane.status.persistence-not-found" + " [\""
+                        + configuration.calculationItemPersistence + "\"]");
             }
+        } else {
+            // calculation item not configured
+            configErrorStatus("@text/solarforecast.plane.status.item-not-found" + " [\""
+                    + configuration.calculationItemName + "\"]");
         }
-        // else initialization failed already in super.doInitialize()
     }
 
     @Override
@@ -97,13 +91,13 @@ public class AdjustableForecastSolarPlaneHandler extends ForecastSolarPlaneHandl
         Map<String, String> parameters = super.queryParameters();
 
         if (isHoldingTimeElapsed()) {
-            if (!configuration.calculationItemName.isBlank() && persistenceService.isPresent() && apiKey.isPresent()) {
+            if (!configuration.calculationItemName.isBlank() && persistenceService != null) {
                 // https://doc.forecast.solar/actual
                 Optional<Double> energyCalculation = Utils.getEnergyTillNow(configuration.calculationItemName,
-                        persistenceService.get());
+                        persistenceService);
                 parameters.put("actual", String.valueOf(energyCalculation.orElse(0.0)));
             } else {
-                logger.debug("Add reset parameters - config missing calculationItem, persistence or API key");
+                logger.debug("Add reset parameters - config missing calculationItem or persistence");
                 parameters.put("actual", "0");
             }
         } else {
@@ -113,12 +107,16 @@ public class AdjustableForecastSolarPlaneHandler extends ForecastSolarPlaneHandl
     }
 
     public boolean isHoldingTimeElapsed() {
-        Optional<Instant> firstMeasure = forecast.getFirstPowerTimestamp();
+        return isHoldingTimeElapsed(getForecast());
+    }
+
+    public boolean isHoldingTimeElapsed(ForecastSolarObject queryForecast) {
+        Optional<Instant> firstMeasure = queryForecast.getFirstPowerTimestamp();
         if (firstMeasure.isPresent()) {
             return Instant.now(Utils.getClock())
                     .isAfter(firstMeasure.get().plus(configuration.holdingTime, ChronoUnit.MINUTES));
         }
-        if (!forecast.isEmpty()) {
+        if (!queryForecast.isEmpty()) {
             logger.warn("No adjustment possible: Unable to find first measure in forecast");
         } else {
             logger.debug("Forecast is empty, no first measure available");
