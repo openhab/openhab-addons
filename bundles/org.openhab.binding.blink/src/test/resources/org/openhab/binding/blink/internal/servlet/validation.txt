@@ -1,0 +1,5 @@
+<body>
+<div>
+  {{error}}
+</div>
+</body>
