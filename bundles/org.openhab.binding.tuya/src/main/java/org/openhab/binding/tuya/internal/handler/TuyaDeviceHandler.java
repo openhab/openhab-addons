@@ -564,7 +564,7 @@ public class TuyaDeviceHandler extends BaseThingHandler implements DeviceInfoSub
 
         boolean hasMeasurables = false;
         for (var e : schemaDps.values()) {
-            if (!e.readOnly) {
+            if (e.readOnly) {
                 hasMeasurables = true;
                 break;
             }
