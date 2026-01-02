@@ -23,7 +23,12 @@
 			<parameter name="refreshInterval" type="integer" unit="s" min="30">
 				<default>120</default>
 				<label>Refresh Interval</label>
-				<description>Interval the device states linked to the account are polled in sec.</description>
+				<description>Interval the account devices' states are polled, in sec.</description>
+			</parameter>
+			<parameter name="mfaCode" type="text">
+				<label>MFA Code</label>
+				<description>MultiFactor / Two Factor Authentication Code sent to your device after initial login attempt. Once
+					received, type it here and then click Save to complete the login.</description>
 			</parameter>
 		</config-description>
 	</bridge-type>
@@ -55,17 +60,17 @@
 		<representation-property>cameraId</representation-property>
 
 		<config-description>
-			<parameter name="cameraId" type="integer" required="true">
+			<parameter name="cameraId" type="integer" required="true" readOnly="true">
 				<label>ID</label>
-				<description>Internal ID of camera (please use auto-discovery).</description>
+				<description>Internal ID of camera.</description>
 			</parameter>
-			<parameter name="networkId" type="integer" required="true">
+			<parameter name="networkId" type="integer" required="true" readOnly="true">
 				<label>ID</label>
-				<description>Internal ID of network (please use auto-discovery).</description>
+				<description>Internal ID of network.</description>
 			</parameter>
-			<parameter name="cameraType" type="text" required="true">
+			<parameter name="cameraType" type="text" required="true" readOnly="true">
 				<label>Type</label>
-				<description>Camera type, either CAMERA or OWL (for blink minis) (please use auto-discovery).
+				<description>Camera type, either CAMERA, DOORBELL, or OWL (for blink minis).
 				</description>
 			</parameter>
 		</config-description>
@@ -78,7 +83,8 @@
 		</supported-bridge-type-refs>
 
 		<label>Blink Security Network</label>
-		<description>Blink Security Network</description>
+		<description>A Blink Security Network is defined by a Blink Sync Module, which has a number of cameras connected to
+			it.</description>
 
 		<channels>
 			<channel id="armed" typeId="armed"/>
@@ -91,9 +97,9 @@
 		<representation-property>networkId</representation-property>
 
 		<config-description>
-			<parameter name="networkId" type="integer" required="true">
+			<parameter name="networkId" type="integer" required="true" readOnly="true">
 				<label>ID</label>
-				<description>Internal ID of network (please use auto-discovery).</description>
+				<description>Internal ID of network.</description>
 			</parameter>
 		</config-description>
 
@@ -105,7 +111,7 @@
 		<description>Motion Detection Status</description>
 		<category>Camera</category>
 		<tags>
-			<tag>Switchable</tag>
+			<tag>Switch</tag>
 		</tags>
 	</channel-type>
 
@@ -115,7 +121,7 @@
 		<description>Save snapshot as thumbnail</description>
 		<category>Camera</category>
 		<tags>
-			<tag>Switchable</tag>
+			<tag>Switch</tag>
 		</tags>
 	</channel-type>
 
@@ -129,10 +135,10 @@
 	<channel-type id="temperature">
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature</label>
-		<description>Temperature measured by Kamera</description>
+		<description>Temperature measured by Camera</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>CurrentTemperature</tag>
+			<tag>Temperature</tag>
 		</tags>
 		<state pattern="%.1f °F" readOnly="true"/>
 	</channel-type>
@@ -142,7 +148,7 @@
 		<label>Armed</label>
 		<description>Network armed (start recording/reporting motion events for enabled cameras)</description>
 		<tags>
-			<tag>Switchable</tag>
+			<tag>Switch</tag>
 		</tags>
 	</channel-type>
 

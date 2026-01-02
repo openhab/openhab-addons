@@ -22,6 +22,8 @@ import org.openhab.binding.blink.internal.config.CameraConfiguration;
  * also being used to watch for motion.
  *
  * @author Sascha Volkenandt - Initial contribution
+ * @author Robert T. Brown (-rb) - support Blink Authentication changes in 2025 (OAUTHv2)
+ * @author Volker Bier - add support for Doorbells
  */
 public class BlinkEvents {
 
@@ -52,11 +54,34 @@ public class BlinkEvents {
         }
 
         public boolean isCamera() {
-            return "catalina".equals(device);
+            return true;
+            /**
+             * Was:
+             * return "catalina".equals(device);
+             *
+             * But I have observed these device names:
+             *
+             * device......common name
+             * camera......XT and XT2 cameras (the 2 original generations)
+             * catalina....gen3
+             * sedona......gen4
+             * lotus.......doorbell
+             * owl.........mini
+             *
+             * These are all cameras, so I'm hardcoding "true" here until someone identifies a media event NOT generated
+             * by a camera.
+             **/
         }
 
         public boolean isCamera(CameraConfiguration config) {
             return isCamera() && network_id == config.networkId && device_id == config.cameraId;
+        }
+
+        @Override
+        public String toString() {
+            return ("NetworkId/DeviceId/MediaId: " + network_id + "/" + device_id + "/" + id + ", Device: " + device
+                    + ", thumbnail: " + thumbnail + ", Watched=" + watched + ", Deleted?=" + deleted + ", Created at: "
+                    + created_at + ", Updated at: " + updated_at);
         }
     }
 }

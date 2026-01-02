@@ -27,6 +27,7 @@ import com.google.gson.Gson;
  * The {@link NetworkService} class handles all communication with camera related blink apis.
  *
  * @author Matthias Oesterheld - Initial contribution
+ * @author Robert T. Brown (-rb) - support Blink Authentication changes in 2025 (OAUTHv2)
  */
 @NonNullByDefault
 public class NetworkService extends BaseBlinkApiService {
@@ -43,11 +44,12 @@ public class NetworkService extends BaseBlinkApiService {
      * @return command id
      */
     public Long arm(@Nullable BlinkAccount account, @Nullable String networkId, boolean enable) throws IOException {
-        if (account == null || account.account == null || networkId == null)
-            throw new IllegalArgumentException("Cannot call network arm api without account or network");
+        if (account == null || account.account == null || networkId == null) {
+            throw new IllegalArgumentException("This Blink Account is not authenticated yet");
+        }
         String action = (enable) ? "/state/arm" : "/state/disarm";
         String uri = "/api/v1/accounts/" + account.account.account_id + "/networks/" + networkId + action;
-        BlinkCommand cmd = apiRequest(account.account.tier, uri, HttpMethod.POST, account.auth.token, null,
+        BlinkCommand cmd = apiRequest(account.account.tier, uri, HttpMethod.POST, account.auth.access_token, null,
                 BlinkCommand.class);
         return cmd.id;
     }

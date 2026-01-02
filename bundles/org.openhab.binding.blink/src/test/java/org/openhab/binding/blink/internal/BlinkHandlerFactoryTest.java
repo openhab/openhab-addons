@@ -12,9 +12,9 @@
  */
 package org.openhab.binding.blink.internal;
 
-import static org.hamcrest.MatcherAssert.*;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,6 +33,7 @@ import org.openhab.binding.blink.internal.handler.CameraHandler;
 import org.openhab.binding.blink.internal.handler.NetworkHandler;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.net.NetworkAddressService;
+import org.openhab.core.storage.StorageService;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
@@ -56,10 +57,11 @@ class BlinkHandlerFactoryTest {
     private @Mock @NonNullByDefault({}) HttpService httpService;
     private @Mock @NonNullByDefault({}) HttpClientFactory httpClientFactory;
     private @Mock @NonNullByDefault({}) NetworkAddressService networkAddressService;
+    private @Mock @NonNullByDefault({}) StorageService storageService;
     private @Mock @NonNullByDefault({}) BundleContext mockBundleContext;
 
-    private BlinkHandlerFactory factory = new BlinkHandlerFactory(httpService, httpClientFactory,
-            networkAddressService);
+    private BlinkHandlerFactory factory = new BlinkHandlerFactory(httpService, httpClientFactory, networkAddressService,
+            storageService);
 
     static List<@Nullable String> thingUIDs() {
         ArrayList<@Nullable String> uids = new ArrayList<>();
@@ -72,7 +74,7 @@ class BlinkHandlerFactoryTest {
 
     void setupMocks() {
         when(httpClientFactory.getCommonHttpClient()).thenReturn(new HttpClient());
-        factory = new BlinkHandlerFactory(httpService, httpClientFactory, networkAddressService) {
+        factory = new BlinkHandlerFactory(httpService, httpClientFactory, networkAddressService, storageService) {
             @Override
             protected BundleContext getBundleContext() {
                 return mockBundleContext;

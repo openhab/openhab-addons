@@ -18,6 +18,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * The {@link CameraConfiguration} class contains fields mapping for camera thing configuration parameters.
  *
  * @author Matthias Oesterheld - Initial contribution
+ * @author Volker Bier - add support for Doorbells
  */
 @NonNullByDefault
 public class CameraConfiguration {
@@ -29,6 +30,7 @@ public class CameraConfiguration {
     // camera types
     public enum CameraType {
         CAMERA,
+        DOORBELL,
         OWL
     }
 

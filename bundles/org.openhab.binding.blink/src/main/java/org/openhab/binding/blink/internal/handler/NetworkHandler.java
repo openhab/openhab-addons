@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.blink.internal.handler;
 
-import static org.openhab.binding.blink.internal.BlinkBindingConstants.*;
+import static org.openhab.binding.blink.internal.BlinkBindingConstants.CHANNEL_NETWORK_ARMED;
 
 import java.io.IOException;
 
@@ -40,6 +40,7 @@ import com.google.gson.Gson;
  * sent to one of the network's channels.
  *
  * @author Matthias Oesterheld - Initial contribution
+ * @author Robert T. Brown (-rb) - support Blink Authentication changes in 2025 (OAUTHv2)
  */
 @NonNullByDefault
 public class NetworkHandler extends BaseThingHandler implements EventListener {
@@ -74,7 +75,7 @@ public class NetworkHandler extends BaseThingHandler implements EventListener {
                 }
             }
         } catch (IOException e) {
-            accountHandler.setOffline(e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Command Failed");
         }
     }
 
@@ -91,16 +92,25 @@ public class NetworkHandler extends BaseThingHandler implements EventListener {
         }
         accountHandler = (AccountHandler) bridge.getHandler();
 
-        updateStatus(ThingStatus.ONLINE);
+        // set the status to UNKNOWN temporarily and let the background refresh task decide the real status.
+        updateStatus(ThingStatus.UNKNOWN); // keep it unknown until refreshState() gets info from Blink.
     }
 
     @Override
     public void handleHomescreenUpdate() {
         try {
-            logger.debug("Homescreen update for network {}", thing.getUID().getAsString());
+            logger.trace("Network {} checking for state updates", config.networkId);
             updateState(CHANNEL_NETWORK_ARMED, accountHandler.getNetworkArmed(String.valueOf(config.networkId), false));
+            updateStatus(ThingStatus.ONLINE);
         } catch (IOException e) {
-            accountHandler.setOffline(e);
+            // accountHandler.setOffline(e);
+            // if the network (aka sync module) can't be updated, then set the network itself offline.
+            // One scenario why this happens is if the user deletes a sync module in the Blink App--we still
+            // have a NetworkThing, but it can no longer be found in the "homescreen" list of legit networks.
+            // Show it as OFFLINE.
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "Network (sync module) state could not be updated (e.g. unplugged / deleted)");
+
         }
     }
 

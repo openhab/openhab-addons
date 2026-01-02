@@ -12,10 +12,10 @@
  */
 package org.openhab.binding.blink.internal.discovery;
 
-import static org.hamcrest.MatcherAssert.*;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
-import static org.mockito.Mockito.any;
 
 import java.util.ArrayList;
 
@@ -40,6 +40,9 @@ import org.openhab.core.thing.internal.BridgeImpl;
  * Test class.
  *
  * @author Matthias Oesterheld - Initial contribution
+ * @author Robert T. Brown (-rb) - support Blink Authentication changes in 2025 (OAUTHv2)
+ * @author Volker Bier - add support for Doorbells
+ * 
  */
 @ExtendWith(MockitoExtension.class)
 @NonNullByDefault
@@ -93,6 +96,18 @@ class BlinkDiscoveryServiceTest {
         BlinkCamera camera = new BlinkCamera(123L, 234L);
         camera.name = "Testcam1";
         homescreen.cameras.add(camera);
+        doReturn(homescreen).when(accountHandler).getDevices(false);
+        discoveryService.discover();
+        verify(discoveryService).thingDiscovered(any());
+    }
+
+    @Test
+    void testDiscoverOneDoorbell() {
+        doReturn(bridge).when(accountHandler).getThing();
+        BlinkHomescreen homescreen = testHomescreen();
+        BlinkCamera camera = new BlinkCamera(123L, 234L);
+        camera.name = "Testcam1";
+        homescreen.doorbells.add(camera);
         doReturn(homescreen).when(accountHandler).getDevices(false);
         discoveryService.discover();
         verify(discoveryService).thingDiscovered(any());

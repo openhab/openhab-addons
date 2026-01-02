@@ -48,6 +48,7 @@ import com.google.gson.Gson;
  * see https://github.com/MattTW/BlinkMonitorProtocol for the unofficial blink api documentation
  *
  * @author Matthias Oesterheld - Initial contribution
+ * @author Robert T. Brown (-rb) - support Blink Authentication changes in 2025 (OAUTHv2)
  */
 @NonNullByDefault
 public class BaseBlinkApiService {
@@ -55,9 +56,7 @@ public class BaseBlinkApiService {
     public static final String USER_AGENT = "27.0ANDROID_28373244";
     private final Logger logger = LoggerFactory.getLogger(BaseBlinkApiService.class);
 
-    private static final String HEADER_TOKEN_AUTH = "token-auth";
-    @SuppressWarnings("FieldCanBeLocal")
-    private final String BASE_URL = "https://rest-{tier}.immedia-semi.com";
+    private static final String BASE_URL = "https://rest-{tier}.immedia-semi.com";
     static final String CONTENT_TYPE_JSON = "application/json; charset=UTF-8";
 
     final Map<String, Future<?>> cmdStatusJobs = new ConcurrentHashMap<>();
@@ -70,12 +69,37 @@ public class BaseBlinkApiService {
         this.gson = gson;
     }
 
+    /**
+     * Makes a call to a Blink API endpoint, parses the result as JSON, returning it as a Java DTO
+     *
+     * @param <T> the type of DTO object
+     * @param tier the blink server tier which would service this account, which determines the hostname in the URL
+     * @param uri the path portion of the URL
+     * @param method GET/POST/PUT
+     * @param token the authentication token
+     * @param params a Map of parameters, if applicable, to be sent as JSON in the request body
+     * @param classOfT the DTO.class to be used by gson to convert JSON into an instance of this type T.
+     * @return the DTO object, populated from the response of the Blink endpoint
+     * @throws IOException if there was any failure in making the call
+     */
     protected <T> T apiRequest(String tier, String uri, HttpMethod method, @Nullable String token,
             @Nullable Map<String, String> params, Class<T> classOfT) throws IOException {
         String json = request(tier, uri, method, token, params, null);
         return gson.fromJson(json, classOfT);
     }
 
+    /**
+     * Makes a call to a Blink API endpoint, returns the response directly as a string
+     *
+     * @param tier the blink server tier which would service this account, which determines the hostname in the URL
+     * @param uri the path portion of the URL
+     * @param method GET/POST/PUT
+     * @param token the authentication token
+     * @param params a Map of fields, to be sent as JSON in the request body (params is ignored if content!=null)
+     * @param content a string to be sent in the request body (if params and content are both specified, use content)
+     * @return the String response of the Blink endpoint
+     * @throws IOException if there was any failure in making the call
+     */
     String request(String tier, String uri, HttpMethod method, @Nullable String token,
             @Nullable Map<String, String> params, @Nullable String content) throws IOException {
         String url = createUrl(tier, uri);
@@ -88,6 +112,17 @@ public class BaseBlinkApiService {
         }
     }
 
+    /**
+     * Makes a call to a Blink API endpoint, returns the response directly as a byte array (e.g. for images)
+     *
+     * @param tier the blink server tier which would service this account, which determines the hostname in the URL
+     * @param uri the path portion of the URL
+     * @param method GET/POST/PUT
+     * @param token the authentication token
+     * @param params a Map of fields, to be sent as JSON in the request body
+     * @return the byte[] response of the Blink endpoint
+     * @throws IOException if there was any failure in making the call
+     */
     public byte[] rawRequest(String tier, String uri, HttpMethod method, @Nullable String token,
             @Nullable Map<String, String> params) throws IOException {
         String url = createUrl(tier, uri);
@@ -100,28 +135,42 @@ public class BaseBlinkApiService {
         }
     }
 
+    /**
+     * Assemble the tier into the blink hostname, and append the uri accordingly, to create a full URL
+     *
+     * @param tier the Blink server tier which serves this account, is inserted to the hostname
+     * @param uri the path portion of the URL
+     * @return a full URL
+     */
     private String createUrl(String tier, String uri) {
         String baseUrl = BASE_URL.replace("{tier}", tier);
         return baseUrl + uri;
     }
 
+    /**
+     * The private method to assemble all the pieces and actually make the API call
+     */
     private ContentResponse createRequestAndSend(String url, HttpMethod method, @Nullable String token,
             @Nullable Map<String, String> params, @Nullable String content, boolean json)
             throws InterruptedException, TimeoutException, ExecutionException, IOException {
         final Request request = httpClient.newRequest(url).method(method.toString());
-        if (params != null && !method.equals(HttpMethod.POST))
+
+        if (params != null && !method.equals(HttpMethod.POST)) {
             params.forEach(request::param);
-        else if (params != null) {
+        } else if (params != null) {
             Fields fields = new Fields();
             params.forEach(fields::add);
             request.content(new FormContentProvider(fields));
         }
-        if (json)
+        if (json) {
             request.header(HttpHeader.ACCEPT, CONTENT_TYPE_JSON);
-        if (token != null)
-            request.header(HEADER_TOKEN_AUTH, token);
-        if (content != null)
+        }
+        if (token != null) {
+            request.header("Authorization", "Bearer " + token);
+        }
+        if (content != null) {
             request.content(new StringContentProvider(content));
+        }
         request.agent(USER_AGENT);
         ContentResponse contentResponse = request.send();
         if (contentResponse.getStatus() != 200) {
@@ -130,10 +179,21 @@ public class BaseBlinkApiService {
         return contentResponse;
     }
 
+    /**
+     * Polls a blink API endpoint to see if a previous command (e.g. ARM a camera) has completed yet).
+     * This method uses a background thread and schedules itself a number of times to check periodically.
+     *
+     * @param scheduler used to schedule period attempts
+     * @param account our blink account for tokens and such
+     * @param networkId the device's network is used as a part of assembling the Blink endpoint URL
+     * @param cmdId the command id which was returned to us when we issued the original command.
+     * @param handler the callback method we invoke when the command was completed (true) or timed out (false)
+     */
     public void watchCommandStatus(ScheduledExecutorService scheduler, @Nullable BlinkAccount account, Long networkId,
             Long cmdId, Consumer<Boolean> handler) {
-        if (account == null || account.account == null)
-            throw new IllegalArgumentException("Cannot call command status api without account");
+        if (account == null || account.account == null) {
+            throw new IllegalArgumentException("This Blink Account is not authenticated yet");
+        }
         watchCommandStatus(scheduler, account, networkId, cmdId, handler, 0);
     }
 
@@ -145,12 +205,12 @@ public class BaseBlinkApiService {
             cmdStatusJobs.remove(uri);
             try {
                 logger.debug("Checking for status of async command {} (try {})", cmdId, numTries);
-                BlinkCommandResponse status = apiRequest(account.account.tier, uri, HttpMethod.GET, account.auth.token,
-                        null, BlinkCommandResponse.class);
+                BlinkCommandResponse status = apiRequest(account.account.tier, uri, HttpMethod.GET,
+                        account.auth.access_token, null, BlinkCommandResponse.class);
                 if (status.complete) {
                     logger.debug("Command {} completed with message {}", cmdId, status.status_msg);
                     handler.accept(true);
-                } else if (numTries == 15) { // TODO
+                } else if (numTries == 15) { // blink should complete, or reject, the command by now. Is usually 2.
                     logger.error("Timeout waiting for completion of async command {}", cmdId);
                     handler.accept(false);
                 } else {

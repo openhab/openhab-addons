@@ -39,6 +39,8 @@ import org.slf4j.LoggerFactory;
  * Background Discovery is enabled by default.
  *
  * @author Matthias Oesterheld - Initial contribution
+ * @author Robert T. Brown (-rb) - support Blink Authentication changes in 2025 (OAUTHv2)
+ * @author Volker Bier - add support for Doorbells
  */
 @NonNullByDefault
 public class BlinkDiscoveryService extends AbstractDiscoveryService implements ThingHandlerService {
@@ -50,24 +52,30 @@ public class BlinkDiscoveryService extends AbstractDiscoveryService implements T
     AccountHandler accountHandler;
     @Nullable
     ScheduledFuture<?> discoveryJob;
+    Object discoveryJobSync = new Object();
 
     public BlinkDiscoveryService() {
         super(SUPPORTED_THING_TYPES_UIDS, 15, true);
     }
 
+    @SuppressWarnings("null")
     @Override
     protected void startBackgroundDiscovery() {
         logger.debug("Starting Blink background discovery");
-        if (discoveryJob == null || discoveryJob.isCancelled()) {
-            discoveryJob = scheduler.scheduleWithFixedDelay(this::discover, 0, 30, TimeUnit.MINUTES);
+        synchronized (discoveryJobSync) {
+            if (discoveryJob == null || discoveryJob.isCancelled()) {
+                discoveryJob = scheduler.scheduleWithFixedDelay(this::discover, 0, 30, TimeUnit.MINUTES);
+            }
         }
     }
 
     @Override
     protected void stopBackgroundDiscovery() {
-        if (discoveryJob != null) {
-            discoveryJob.cancel(true);
-            discoveryJob = null;
+        synchronized (discoveryJobSync) {
+            if (discoveryJob != null) {
+                discoveryJob.cancel(true);
+                discoveryJob = null;
+            }
         }
     }
 
@@ -80,24 +88,34 @@ public class BlinkDiscoveryService extends AbstractDiscoveryService implements T
      * actual discovery of things based on homescreen api results is done here.
      */
     void discover() {
-        if (accountHandler == null) {
+        AccountHandler handler = accountHandler;
+        if (handler == null) {
             logger.debug("Blink background discovery cancelled without accountHandler.");
             return;
         }
-        if (accountHandler.getThing().getStatus() != ThingStatus.ONLINE) {
-            logger.debug("Not starting discovery for things which ar not online.");
+        if (handler.getThing().getStatus() != ThingStatus.ONLINE) {
+            logger.debug("Unable to discover things until the Blink Account is online.");
             return;
         }
-        BlinkHomescreen homescreen = accountHandler.getDevices(false);
-        if (homescreen == null || homescreen.cameras == null || homescreen.networks == null)
+        BlinkHomescreen homescreen = handler.getDevices(false);
+        if (homescreen == null || homescreen.cameras == null || homescreen.networks == null) {
             return;
-        ThingUID bridgeUID = accountHandler.getThing().getUID();
+        }
+        ThingUID bridgeUID = handler.getThing().getUID();
         logger.debug("Blink background discovery running for {}", bridgeUID.getAsString());
         homescreen.cameras.forEach(camera -> {
             ThingUID uid = new ThingUID(THING_TYPE_CAMERA, bridgeUID, Long.toString(camera.id));
             DiscoveryResultBuilder dr = DiscoveryResultBuilder.create(uid).withLabel(camera.name).withBridge(bridgeUID)
                     .withProperty(PROPERTY_CAMERA_ID, camera.id).withProperty(PROPERTY_NETWORK_ID, camera.network_id)
                     .withProperty(PROPERTY_CAMERA_TYPE, CameraConfiguration.CameraType.CAMERA)
+                    .withRepresentationProperty(PROPERTY_CAMERA_ID);
+            thingDiscovered(dr.build());
+        });
+        homescreen.doorbells.forEach(camera -> {
+            ThingUID uid = new ThingUID(THING_TYPE_CAMERA, bridgeUID, Long.toString(camera.id));
+            DiscoveryResultBuilder dr = DiscoveryResultBuilder.create(uid).withLabel(camera.name).withBridge(bridgeUID)
+                    .withProperty(PROPERTY_CAMERA_ID, camera.id).withProperty(PROPERTY_NETWORK_ID, camera.network_id)
+                    .withProperty(PROPERTY_CAMERA_TYPE, CameraConfiguration.CameraType.DOORBELL)
                     .withRepresentationProperty(PROPERTY_CAMERA_ID);
             thingDiscovered(dr.build());
         });

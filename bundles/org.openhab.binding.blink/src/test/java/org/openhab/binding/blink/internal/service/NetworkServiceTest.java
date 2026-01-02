@@ -12,9 +12,9 @@
  */
 package org.openhab.binding.blink.internal.service;
 
-import static org.hamcrest.MatcherAssert.*;
-import static org.hamcrest.Matchers.*;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 import java.io.IOException;
@@ -69,9 +69,9 @@ class NetworkServiceTest {
         String disarmUri = "/api/v1/accounts/" + blinkAccount.account.account_id + "/networks/" + networkId
                 + "/state/disarm";
         doReturn(expectedArmed).when(networkService).apiRequest(blinkAccount.account.tier, armUri, HttpMethod.POST,
-                blinkAccount.auth.token, null, BlinkCommand.class);
+                blinkAccount.auth.access_token, null, BlinkCommand.class);
         doReturn(expectedDisarmed).when(networkService).apiRequest(blinkAccount.account.tier, disarmUri,
-                HttpMethod.POST, blinkAccount.auth.token, null, BlinkCommand.class);
+                HttpMethod.POST, blinkAccount.auth.access_token, null, BlinkCommand.class);
         assertThat(networkService.arm(blinkAccount, networkId, true), is(expectedArmed.id));
         assertThat(networkService.arm(blinkAccount, networkId, false), is(expectedDisarmed.id));
     }

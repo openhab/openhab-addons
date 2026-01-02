@@ -12,11 +12,12 @@
  */
 package org.openhab.binding.blink.internal.service;
 
-import static org.hamcrest.MatcherAssert.*;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
-import static org.mockito.Mockito.any;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -123,7 +124,6 @@ class BaseBlinkApiServiceTest {
     }
 
     @Test
-    @SuppressWarnings("null")
     void testExceptionOnStatusNonEqual200() throws ExecutionException, InterruptedException, TimeoutException {
         when(response.getStatus()).thenReturn(500);
         doReturn(response).when(request).send();
@@ -133,16 +133,12 @@ class BaseBlinkApiServiceTest {
     }
 
     @Test
-    @SuppressWarnings("null")
     void testExceptionOnErrorInSend() throws ExecutionException, InterruptedException, TimeoutException {
         IOException exception;
         doThrow(InterruptedException.class).when(request).send();
         exception = assertThrows(IOException.class,
                 () -> apiService.request("abc", "/api/v1/hurz", HttpMethod.GET, null, null, null));
         assertThat(exception.getCause(), is(notNullValue()));
-        // assertThat(exception.getCause().getClass(), is(InterruptedException.class));
-        // would like to check if cause is a InterruptedException.class, but I'm in @NotNull @Nullable hell because of
-        // assertThrows
         doThrow(TimeoutException.class).when(request).send();
         exception = assertThrows(IOException.class,
                 () -> apiService.request("abc", "/api/v1/hurz", HttpMethod.GET, null, null, null));
@@ -188,7 +184,7 @@ class BaseBlinkApiServiceTest {
         BlinkCommandResponse cmdResponse = new BlinkCommandResponse();
         cmdResponse.complete = true;
         doReturn(cmdResponse).when(apiService).apiRequest(same(account.account.tier), eq(expectedUri),
-                eq(HttpMethod.GET), same(account.auth.token), isNull(), eq(BlinkCommandResponse.class));
+                eq(HttpMethod.GET), same(account.auth.access_token), isNull(), eq(BlinkCommandResponse.class));
         @SuppressWarnings("unchecked")
         Consumer<Boolean> handler = mock(Consumer.class);
         apiService.watchCommandStatus(scheduler, account, networkId, commandId, handler);
@@ -210,7 +206,7 @@ class BaseBlinkApiServiceTest {
         Future<?> future = mock(ScheduledFuture.class);
         doReturn(future).when(scheduler).schedule(ArgumentMatchers.any(Runnable.class), anyLong(), any());
         doThrow(new IOException()).when(apiService).apiRequest(same(account.account.tier), eq(expectedUri),
-                eq(HttpMethod.GET), same(account.auth.token), isNull(), eq(BlinkCommandResponse.class));
+                eq(HttpMethod.GET), same(account.auth.access_token), isNull(), eq(BlinkCommandResponse.class));
         @SuppressWarnings("unchecked")
         Consumer<Boolean> handler = mock(Consumer.class);
         apiService.watchCommandStatus(scheduler, account, networkId, commandId, handler);
@@ -234,7 +230,7 @@ class BaseBlinkApiServiceTest {
         BlinkCommandResponse cmdResponse = new BlinkCommandResponse();
         cmdResponse.complete = false;
         doReturn(cmdResponse).when(apiService).apiRequest(same(account.account.tier), eq(expectedUri),
-                eq(HttpMethod.GET), same(account.auth.token), isNull(), eq(BlinkCommandResponse.class));
+                eq(HttpMethod.GET), same(account.auth.access_token), isNull(), eq(BlinkCommandResponse.class));
         @SuppressWarnings("unchecked")
         Consumer<Boolean> handler = mock(Consumer.class);
         apiService.watchCommandStatus(scheduler, account, networkId, commandId, handler);

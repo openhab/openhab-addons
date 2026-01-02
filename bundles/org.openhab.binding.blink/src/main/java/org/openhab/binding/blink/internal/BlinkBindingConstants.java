@@ -20,6 +20,7 @@ import org.openhab.core.thing.ThingTypeUID;
  * used across the whole binding.
  *
  * @author Matthias Oesterheld - Initial contribution
+ * @author Robert T. Brown (-rb) - support Blink Authentication changes in 2025 (OAUTHv2)
  */
 @NonNullByDefault
 public class BlinkBindingConstants {
@@ -43,9 +44,11 @@ public class BlinkBindingConstants {
     public static final String PROPERTY_ACCOUNT_ID = "accountId";
     public static final String PROPERTY_CLIENT_ID = "clientId";
     public static final String PROPERTY_TIER = "tier";
-    public static final String PROPERTY_TOKEN = "token";
-    public static final String PROPERTY_LAST_TOKEN_REFRESH = "lastTokenRefresh";
+    public static final String PROPERTY_LAST_TOKEN_REFRESH = "Last Token Refresh";
+    public static final String PROPERTY_TOKEN_EXPIRES = "Token Expires At";
     public static final String PROPERTY_NETWORK_ID = "networkId";
+    public static final String PROPERTY_HARDWARE_ID = "hardwareId";
+    public static final String PROPERTY_USER_ID = "userId";
 
     ;
 }

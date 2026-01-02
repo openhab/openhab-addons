@@ -19,10 +19,12 @@ import java.util.List;
  * states.
  *
  * @author Matthias Oesterheld - Initial contribution
+ * @author Volker Bier - add support for Doorbells
  */
 public class BlinkHomescreen {
 
     public List<BlinkNetwork> networks;
     public List<BlinkCamera> cameras;
+    public List<BlinkCamera> doorbells;
     public List<BlinkCamera> owls;
 }

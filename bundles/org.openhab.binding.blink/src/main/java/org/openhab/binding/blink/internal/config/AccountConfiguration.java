@@ -18,11 +18,13 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * The {@link AccountConfiguration} class contains fields mapping account bridge configuration parameters.
  *
  * @author Matthias Oesterheld - Initial contribution
+ * @author Robert T. Brown (-rb) - support Blink Authentication changes in 2025 (OAUTHv2)
  */
 @NonNullByDefault
 public class AccountConfiguration {
 
     public @NonNullByDefault({}) String email = "";
     public @NonNullByDefault({}) String password = "";
+    public @NonNullByDefault({}) String mfaCode = "";
     public @NonNullByDefault({}) int refreshInterval = 120;
 }

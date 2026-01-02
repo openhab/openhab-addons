@@ -23,8 +23,9 @@ cameras.
 
 ### blink Account (bridge)
 
-The blink account is used to authenticate against the API. blink does not support OAuth or any other authorization
-protocol, so the credentials have to be provided in the bridge configuration.
+The blink account is used to authenticate against the API. As of 2025, Blink solely supports the OAuth v2
+protocol.  The initial email/password credentials must be provided in the Blink Account bridge configuration,
+but subsequent authentication is performed via an access_token and a refresh_token.
 
 Configuration parameters are:
 
@@ -33,17 +34,9 @@ Configuration parameters are:
 | email             | E-Mail address which is used in the blink app. |
 | password          | Password which is used in the blink app.       |
 | refreshInterval   | Refresh interval for camera and network status. This should be used with caution, since there is the possibility that blink might enforce a lockout if the server gets hit too often. The official app polls every 30 seconds, so this should be considered the lowest value. |
+| mfaCode           | Upon initial login, Blink sends the user an MFA code, to their phone or email. Type it here. Once accepted, the field is cleared since it can only be used once. |
 
-blink has implemented a 2-factor-authentication, so after the first login, a email or text message (as configured in
-your app settings) will be sent to you. This pin code needs to be entered into a form generated for each blink account
-bridge.
 
-The URL for pin verification is `<youropenhaburl>/blink/<accountUID>`. The easiest way to get this, is to copy the
-validationURL thing property:
-
-![](doc/verification-url.png)
-
-![](doc/2fa.png)
 
 ### blink Camera
 
@@ -82,7 +75,7 @@ setup). For completeness, the configuration parameters set by auto-discovery are
 |----------|--------|------------------------------|
 | motiondetection  | Switch | Enables/disables motion detection for this camera.  |
 | battery | LowBattery | Read-only channel, triggering ON when battery status is low. Not available in blink minis. |
-| temperature | Number | Read-only channel, outputting camera temperature. Not available in blink minis. |
+| temperature | Number | Read-only channel, outputting camera temperature. Not available in blink minis nor doorbells. |
 | setThumbnail | Switch | Write-only channel, triggering taking a new snapshot as thumbnail. Also triggers a new getThumbnail state on completion. |
 | getThumbnail | Image | Read-only channel, returns the current thumbnail. Triggers a state change on new thumbnail.  |
 | motionTriggered | Trigger | Triggered when motion event is detected during account refresh. Therefore, this is linked to the refresh interval of the account and will not be in real-time.|

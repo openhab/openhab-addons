@@ -12,9 +12,9 @@
  */
 package org.openhab.binding.blink.internal.service;
 
-import static org.hamcrest.MatcherAssert.*;
-import static org.hamcrest.Matchers.*;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 import java.io.IOException;
@@ -75,9 +75,9 @@ class CameraServiceTest {
         String disableUri = "/network/" + cameraConfiguration.networkId + "/camera/" + cameraConfiguration.cameraId
                 + "/disable";
         doReturn(enableResult).when(cameraService).apiRequest(blinkAccount.account.tier, enableUri, HttpMethod.POST,
-                blinkAccount.auth.token, null, BlinkCommand.class);
+                blinkAccount.auth.access_token, null, BlinkCommand.class);
         doReturn(disableResult).when(cameraService).apiRequest(blinkAccount.account.tier, disableUri, HttpMethod.POST,
-                blinkAccount.auth.token, null, BlinkCommand.class);
+                blinkAccount.auth.access_token, null, BlinkCommand.class);
         assertThat(cameraService.motionDetection(blinkAccount, cameraConfiguration, true), is(enableResult.id));
         assertThat(cameraService.motionDetection(blinkAccount, cameraConfiguration, false), is(disableResult.id));
     }
@@ -91,7 +91,7 @@ class CameraServiceTest {
         String expectedUri = "/network/" + cameraConfiguration.networkId + "/camera/" + cameraConfiguration.cameraId
                 + "/thumbnail";
         doReturn(expected).when(cameraService).apiRequest(blinkAccount.account.tier, expectedUri, HttpMethod.POST,
-                blinkAccount.auth.token, null, BlinkCommand.class);
+                blinkAccount.auth.access_token, null, BlinkCommand.class);
         assertThat(cameraService.createThumbnail(blinkAccount, cameraConfiguration), is(expected.id));
     }
 
@@ -101,7 +101,7 @@ class CameraServiceTest {
         byte[] expectedImage = "iamanimage".getBytes(StandardCharsets.UTF_8);
         String imagePath = "/full/path/to/thumbnail.jpg";
         doReturn(expectedImage).when(cameraService).rawRequest(blinkAccount.account.tier, imagePath, HttpMethod.GET,
-                blinkAccount.auth.token, null);
+                blinkAccount.auth.access_token, null);
         assertThat(cameraService.getThumbnail(blinkAccount, imagePath), is(expectedImage));
     }
 

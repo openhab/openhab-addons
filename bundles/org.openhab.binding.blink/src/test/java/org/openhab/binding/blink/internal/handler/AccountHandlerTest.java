@@ -12,12 +12,13 @@
  */
 package org.openhab.binding.blink.internal.handler;
 
-import static org.hamcrest.MatcherAssert.*;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.hamcrest.Matchers.contains;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
-import static org.mockito.Mockito.any;
 
 import java.io.IOException;
 import java.time.Instant;
@@ -51,11 +52,11 @@ import org.openhab.binding.blink.internal.dto.BlinkEvents;
 import org.openhab.binding.blink.internal.dto.BlinkHomescreen;
 import org.openhab.binding.blink.internal.dto.BlinkNetwork;
 import org.openhab.binding.blink.internal.service.AccountService;
-import org.openhab.binding.blink.internal.servlet.AccountVerificationServlet;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.net.NetworkAddressService;
+import org.openhab.core.storage.StorageService;
 import org.openhab.core.test.java.JavaTest;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
@@ -103,6 +104,10 @@ class AccountHandlerTest extends JavaTest {
     @Mock
     @NonNullByDefault({})
     NetworkAddressService networkAddressService;
+    @Mock
+    @NonNullByDefault({})
+    StorageService storageService;
+
     @Spy
     Bridge bridge = new BridgeImpl(THING_TYPE_UID, CLIENT_ID);
 
@@ -117,23 +122,18 @@ class AccountHandlerTest extends JavaTest {
         config.put("password", "derwolf");
         config.put("refreshInterval", 30);
         when(bridge.getConfiguration()).thenReturn(config);
-        accountHandler = spy(new AccountHandler(bridge, httpService, bundleContext, networkAddressService,
-                httpClientFactory, new Gson()));
+        accountHandler = spy(new AccountHandler(bridge, bundleContext, storageService, httpClientFactory, new Gson()));
     }
 
     @Test
     void test2FACompletedInitialization() throws IOException {
         accountHandler.blinkService = accountService;
         BlinkAccount account = BlinkTestUtil.testBlinkAccount();
-        account.account.client_verification_required = false;
-        doReturn(account).when(accountService).login(any(), anyString(), anyBoolean());
-        doReturn(CLIENT_ID).when(accountService).generateClientId();
+        doReturn(account).when(accountService).loginStage1WithUsername(any(), anyString());
         doNothing().when(accountHandler).loadEvents();
         accountHandler.setCallback(callback);
         accountHandler.initialize();
         waitForAssert(() -> {
-            if (accountHandler.accountServlet == null)
-                fail("accountServlet is null");
             ArgumentCaptor<ThingStatusInfo> statusCaptor = ArgumentCaptor.forClass(ThingStatusInfo.class);
             verify(callback, atLeastOnce()).statusUpdated(eq(bridge), statusCaptor.capture());
             assertThat(statusCaptor.getValue().getStatus(), is(ThingStatus.ONLINE));
@@ -146,16 +146,13 @@ class AccountHandlerTest extends JavaTest {
         accountHandler.blinkService = accountService;
         doAnswer(invocation -> {
             BlinkAccount account = BlinkTestUtil.testBlinkAccount();
-            account.account.client_verification_required = invocation.getArgument(2);
             return account;
-        }).when(accountService).login(any(), anyString(), anyBoolean());
-        doReturn(CLIENT_ID).when(accountService).generateClientId();
+        }).when(accountService).loginStage1WithUsername(any(), anyString());
         accountHandler.setCallback(callback);
         accountHandler.initialize();
         waitForAssert(() -> {
             try {
-                verify(accountService).generateClientId();
-                verify(accountService).login(eq(accountHandler.config), anyString(), eq(true));
+                verify(accountService).loginStage1WithUsername(eq(accountHandler.config), anyString());
                 ArgumentCaptor<ThingStatusInfo> statusCaptor = ArgumentCaptor.forClass(ThingStatusInfo.class);
                 verify(callback, atLeastOnce()).statusUpdated(eq(bridge), statusCaptor.capture());
                 assertThat(statusCaptor.getValue().getStatus(), is(ThingStatus.OFFLINE));
@@ -172,16 +169,14 @@ class AccountHandlerTest extends JavaTest {
         accountHandler.blinkService = accountService;
         doAnswer(invocation -> {
             BlinkAccount account = BlinkTestUtil.testBlinkAccount();
-            account.account.client_verification_required = invocation.getArgument(2);
             return account;
-        }).when(accountService).login(any(), anyString(), anyBoolean());
+        }).when(accountService).loginStage1WithUsername(any(), anyString());
         Map<String, String> thingProps = Map.of("generatedClientId", CLIENT_ID);
         doReturn(thingProps).when(bridge).getProperties();
         accountHandler.initialize();
         waitForAssert(() -> {
             try {
-                verify(accountService, never()).generateClientId();
-                verify(accountService).login(eq(accountHandler.config), anyString(), eq(false));
+                verify(accountService).loginStage1WithUsername(eq(accountHandler.config), anyString());
                 assertThat(accountHandler.getGeneratedClientId(), is(equalTo(CLIENT_ID)));
             } catch (IOException e) {
                 fail(e.getMessage());
@@ -191,15 +186,11 @@ class AccountHandlerTest extends JavaTest {
 
     @Test
     void testDispose() {
-        AccountVerificationServlet servlet = mock(AccountVerificationServlet.class);
-        accountHandler.accountServlet = servlet;
         accountHandler.blinkService = accountService;
         accountHandler.dispose();
         verify(accountHandler).cleanup();
-        verify(servlet).dispose();
         verify(accountService).dispose();
         // noinspection ConstantConditions
-        assertThat(accountHandler.accountServlet, is(nullValue()));
     }
 
     @Test
@@ -259,7 +250,7 @@ class AccountHandlerTest extends JavaTest {
     }
 
     @Test
-    void testRefreshStateLoadsDevicesAndEvents() {
+    void testRefreshStateLoadsDevicesAndEvents() throws IOException {
         accountHandler.config = new AccountConfiguration();
         accountHandler.config.refreshInterval = 120;
         accountHandler.blinkAccount = BlinkTestUtil.testBlinkAccount();
