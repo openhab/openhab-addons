@@ -22,14 +22,13 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public class BluelinkAccountConfiguration {
-
     /**
      * Bluelink account username (email).
      */
     public @Nullable String username;
 
     /**
-     * Bluelink account password.
+     * Bluelink account password or refresh_token
      */
     public @Nullable String password;
 

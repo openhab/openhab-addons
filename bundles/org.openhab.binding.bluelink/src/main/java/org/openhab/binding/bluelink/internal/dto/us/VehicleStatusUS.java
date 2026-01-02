@@ -10,10 +10,11 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.bluelink.internal.dto;
+package org.openhab.binding.bluelink.internal.dto.us;
 
 import java.util.List;
 
+import org.openhab.binding.bluelink.internal.dto.AirTemperature;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.ImperialUnits;
 import org.openhab.core.library.unit.SIUnits;
@@ -23,16 +24,16 @@ import org.openhab.core.types.UnDefType;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * Vehicle status response from the Bluelink API.
+ * Vehicle status response from the US API.
  *
  * @author Marcus Better - Initial contribution
  */
-public record VehicleStatus(VehicleStatusData vehicleStatus) {
+public record VehicleStatusUS(VehicleStatusData vehicleStatus) {
 
     public record VehicleStatusData(String dateTime, VehicleLocation vehicleLocation, boolean engine, boolean doorLock,
             DoorStatus doorOpen, WindowStatus windowOpen, boolean trunkOpen, boolean hoodOpen, boolean airCtrlOn,
             AirTemperature airTemp, boolean defrost, int steerWheelHeat, int sideBackWindowHeat, int sideMirrorHeat,
-            SeatHeaterState seatHeaterVentState, BatteryStatus battery, EvStatus evStatus, DrivingRange dte,
+            SeatHeaterState seatHeaterVentState, BatteryStatus battery, EvStatus evStatus, RangeValue dte,
             int fuelLevel, boolean lowFuelLight, boolean washerFluidStatus,
             @SerializedName("breakOilStatus") boolean brakeOilStatus, boolean smartKeyBatteryWarning,
             @SerializedName("tirePressureLamp") TirePressureWarning tirePressureWarning) {
@@ -59,7 +60,7 @@ public record VehicleStatus(VehicleStatusData vehicleStatus) {
      * EV-specific status.
      */
     public record EvStatus(boolean batteryCharge, int batteryStatus, int batteryPlugin,
-            ReserveChargeInfo reservChargeInfos, List<DrivingDistance> drvDistance, ChargeRemainingTime remainTime2) {
+            ReserveChargeInfo reservChargeInfos, List<DrivingRange> drvDistance, ChargeRemainingTime remainTime2) {
     }
 
     /**
@@ -75,20 +76,17 @@ public record VehicleStatus(VehicleStatusData vehicleStatus) {
             @SerializedName("targetSOCLevel") int targetSocLevel) {
     }
 
-    public record DrivingDistance(RangeByFuel rangeByFuel) {
-    }
-
     /**
      * Range by fuel type.
      */
-    public record RangeByFuel(RangeValue totalAvailableRange, RangeValue evModeRange, RangeValue gasModeRange) {
+    public record RangeByFuel(@SerializedName("totalAvailableRange") RangeValue total,
+            @SerializedName("evModeRange") RangeValue ev, @SerializedName("gasModeRange") RangeValue gas) {
     }
 
     /**
      * Range value with unit.
      */
     public record RangeValue(double value, int unit) {
-
         public State getRange() {
             return switch (unit) {
                 case 1 -> new QuantityType<>(value * 1000, SIUnits.METRE);
@@ -98,24 +96,15 @@ public record VehicleStatus(VehicleStatusData vehicleStatus) {
         }
     }
 
-    public record ChargeRemainingTime(
-            // Current
-            TimeValue atc,
-            // Fast
-            TimeValue etc1,
-            // Portable
-            TimeValue etc2,
-            // Station
-            TimeValue etc3) {
+    public record ChargeRemainingTime(@SerializedName("atc") ChargeRemainingTime.TimeValue current,
+            @SerializedName("etc1") ChargeRemainingTime.TimeValue fast,
+            @SerializedName("etc2") ChargeRemainingTime.TimeValue portable,
+            @SerializedName("etc3") ChargeRemainingTime.TimeValue station) {
+        public record TimeValue(int value, int unit) {
+        }
     }
 
-    public record TimeValue(int value, int unit) {
-    }
-
-    /**
-     * DTE (Distance to Empty) for non-EV.
-     */
-    public record DrivingRange(double value, int unit) {
+    public record DrivingRange(@SerializedName("rangeByFuel") RangeByFuel rangeByFuel) {
     }
 
     public record TirePressureWarning(@SerializedName("tirePressureWarningLampAll") int all,

@@ -10,17 +10,17 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.bluelink.internal.dto;
+package org.openhab.binding.bluelink.internal.dto.us;
 
 import java.util.List;
 
 /**
- * Response from the enrollment details API.
+ * Response from the enrollment details API (Bluelink US).
  *
  * @author Marcus Better - Initial contribution
  */
 public record EnrollmentResponse(List<EnrolledVehicle> enrolledVehicleDetails) {
 
-    public record EnrolledVehicle(VehicleInfo vehicleDetails) {
+    public record EnrolledVehicle(VehicleInfoUS vehicleDetails) {
     }
 }

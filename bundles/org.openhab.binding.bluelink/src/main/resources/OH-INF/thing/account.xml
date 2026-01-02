@@ -10,13 +10,13 @@
 		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 
 		<config-description>
-			<parameter name="username" type="text" required="true">
+			<parameter name="username" type="text" required="false">
 				<label>Username</label>
 				<description>Your Bluelink account email address</description>
 			</parameter>
 			<parameter name="password" type="text" required="true">
-				<label>Password</label>
-				<description>Your Bluelink account password</description>
+				<label>Password / Refresh Token</label>
+				<description>Your Bluelink account password / Refresh token for EU region</description>
 				<context>password</context>
 			</parameter>
 			<parameter name="pin" type="text" required="false">
@@ -25,11 +25,12 @@
 				<context>password</context>
 			</parameter>
 			<parameter name="region" type="text" required="false">
-				<advanced>true</advanced>
+				<advanced>false</advanced>
 				<label>Region</label>
 				<description>API region. If not set, auto-detected from system locale.</description>
 				<options>
 					<option value="US">United States</option>
+					<option value="EU">European Union</option>
 				</options>
 			</parameter>
 		</config-description>
