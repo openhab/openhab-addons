@@ -34,24 +34,24 @@ import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 import org.openhab.core.util.DurationUtils;
 import org.openhab.transform.geocoding.internal.config.GeoProfileConfig;
-import org.openhab.transform.geocoding.internal.provider.GeocodingProviderFactory;
-import org.openhab.transform.geocoding.internal.provider.GeocodingResolver;
+import org.openhab.transform.geocoding.internal.provider.BaseGeoResolver;
+import org.openhab.transform.geocoding.internal.provider.GeoResolverFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link GeoProfile} handles the general profile behavior.without knowing the used provider. The provider is
- * evaluated in super class {@link GeocodingProviderFactory}.
+ * The {@link GeoProfile} handles the general profile behavior without knowing the used provider. The provider is
+ * evaluated in super class {@link GeoResolverFactory}.
  *
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
-public class GeoProfile extends GeocodingProviderFactory implements StateProfile {
+public class GeoProfile extends GeoResolverFactory implements StateProfile {
     private final Logger logger = LoggerFactory.getLogger(GeoProfile.class);
     private final ProfileCallback callback;
 
     private final ScheduledExecutorService scheduler;
-    private GeocodingResolver lastState;
+    private BaseGeoResolver lastState;
     private Instant lastResolveTime = Instant.MIN;
     private Duration refreshInterval;
     private String language;
@@ -133,7 +133,7 @@ public class GeoProfile extends GeocodingProviderFactory implements StateProfile
      * Callback function of the resolverJob to perform reverse geocoding on the last stored state
      */
     private void doResolve() {
-        GeocodingResolver localLastState;
+        BaseGeoResolver localLastState;
         synchronized (this) {
             localLastState = lastState;
             lastResolveTime = Instant.now();
@@ -165,7 +165,7 @@ public class GeoProfile extends GeocodingProviderFactory implements StateProfile
      */
     private void search(Command command) {
         if (command instanceof StringType string) {
-            GeocodingResolver geoSearch = createResolver(string);
+            BaseGeoResolver geoSearch = createResolver(string);
             geoSearch.resolve();
             if (geoSearch.isResolved()) {
                 String geoCoordinates = geoSearch.getResolved();

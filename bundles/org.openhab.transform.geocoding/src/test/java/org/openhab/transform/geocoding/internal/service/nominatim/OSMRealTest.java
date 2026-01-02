@@ -21,12 +21,11 @@ import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.openhab.core.library.types.PointType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.transform.geocoding.internal.config.GeoProfileConfig;
-import org.openhab.transform.geocoding.internal.provider.GeocodingResolver;
-import org.openhab.transform.geocoding.internal.provider.nominatim.OSMGeocodingResolver;
-import org.openhab.transform.geocoding.internal.provider.nominatim.OSMReverseGeocodingResolver;
+import org.openhab.transform.geocoding.internal.provider.BaseGeoResolver;
+import org.openhab.transform.geocoding.internal.provider.nominatim.OSMGeoResolver;
 
 /**
- * Testing with real API calls to Nominatim/OpenStreetMap
+ * The {@link OSMRealTest} executes real API calls to Nominatim/OpenStreetMap therefore not marked with Test annotation.
  *
  * @author Bernd Weymann - Initial contribution
  */
@@ -39,8 +38,7 @@ class OSMRealTest {
         GeoProfileConfig osmConfig = new GeoProfileConfig();
         osmConfig.language = "de-DE";
         osmConfig.format = ROW_ADDRESS_FORMAT;
-        GeocodingResolver toObserve = new OSMReverseGeocodingResolver(PointType.valueOf(coordinates), osmConfig,
-                httpClient);
+        BaseGeoResolver toObserve = new OSMGeoResolver(PointType.valueOf(coordinates), osmConfig, httpClient);
         toObserve.setUserAgentSupplier(this::getUserAgent);
         toObserve.resolve();
     }
@@ -51,7 +49,7 @@ class OSMRealTest {
         GeoProfileConfig osmConfig = new GeoProfileConfig();
         osmConfig.language = "de-DE";
         osmConfig.format = ROW_ADDRESS_FORMAT;
-        OSMGeocodingResolver toObserve = new OSMGeocodingResolver(new StringType(search), osmConfig, httpClient);
+        OSMGeoResolver toObserve = new OSMGeoResolver(new StringType(search), osmConfig, httpClient);
         toObserve.setUserAgentSupplier(this::getUserAgent);
         toObserve.resolve();
     }

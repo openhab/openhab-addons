@@ -18,26 +18,35 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.core.OpenHAB;
+import org.openhab.core.library.types.PointType;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.types.State;
 import org.openhab.transform.geocoding.internal.config.GeoProfileConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * The {@link GeocodingResolver} abstract class is a helper to extend this transformation service with new providers
+ * The {@link BaseGeoResolver} abstract class is a helper to extend this transformation service with new providers
  * without affecting the Profile itsself.
  *
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
-public abstract class GeocodingResolver {
+public abstract class BaseGeoResolver {
+    private final Logger logger = LoggerFactory.getLogger(BaseGeoResolver.class);
 
     // HTTP timeout
     protected static final int HTTP_TIMEOUT_SECONDS = 10;
-    // State to be resolved
-    protected State toBeResolved;
     // HttpClient to execute service API calls
     protected HttpClient httpClient;
     // Configuration parameters to be respected
     protected GeoProfileConfig config;
+    // State to be resolved
+    protected State toBeResolved;
+    // Geo search string to be resolved
+    protected @Nullable String geoSearchString;
+    // Geo location to be resolved
+    protected @Nullable PointType geoLocation;
     // resulting address after resolve call
     protected @Nullable String resolvedString;
     // provide user agent for all providers
@@ -50,11 +59,19 @@ public abstract class GeocodingResolver {
      * @param config with all configured parameters
      * @param httpClient to perform service API calls
      */
-    public GeocodingResolver(State toBeResolved, GeoProfileConfig config, HttpClient httpClient) {
-        this.toBeResolved = toBeResolved;
+    public BaseGeoResolver(State toBeResolved, GeoProfileConfig config, HttpClient httpClient) {
         this.config = config;
         this.httpClient = httpClient;
         userAgentSupplier = this::getUserAgent;
+        this.toBeResolved = toBeResolved;
+        // evaluate which state type is given to decide if it's a geocoding or reverse geocoding requets
+        if (toBeResolved instanceof StringType stringType) {
+            geoSearchString = stringType.toFullString();
+        } else if (toBeResolved instanceof PointType pointType) {
+            geoLocation = pointType;
+        } else {
+            logger.debug("State {} isn't supported for geocoding", toBeResolved);
+        }
     }
 
     /**
@@ -80,11 +97,44 @@ public abstract class GeocodingResolver {
         return "";
     }
 
+    public String getProvider() {
+        return config.provider;
+    }
+
     /**
      * Starts resolved execution with the objects given in the constructor. Check afterwards with isResolved for
      * successful execution and getAddress to get resolved String.
      */
-    public abstract void resolve();
+    public void resolve() {
+        if (isResolved()) {
+            logger.trace("State {} is already resolved {}", toBeResolved.toFullString(), getResolved());
+            return;
+        }
+
+        PointType localGeoLocation = geoLocation;
+        String localGeoSearchString = geoSearchString;
+        if (localGeoLocation != null) {
+            resolvedString = geoReverseSearch(localGeoLocation);
+        } else if (localGeoSearchString != null) {
+            resolvedString = geoSearch(localGeoSearchString);
+        }
+    }
+
+    /**
+     * Search coordinates for given address
+     *
+     * @param address as String
+     * @return resolved coordinates as String "lat,lon" or null if not resolved
+     */
+    public abstract @Nullable String geoSearch(String address);
+
+    /**
+     * Search address for given coordinates
+     *
+     * @param coordinates as PointType
+     * @return address as String or null if not resolved
+     */
+    public abstract @Nullable String geoReverseSearch(PointType coordinates);
 
     /**
      * Override the supplier for unit and release tests.
