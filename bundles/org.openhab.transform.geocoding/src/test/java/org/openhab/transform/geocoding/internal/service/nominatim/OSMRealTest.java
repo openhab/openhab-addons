@@ -13,7 +13,7 @@
 package org.openhab.transform.geocoding.internal.service.nominatim;
 
 import static org.junit.jupiter.api.Assertions.fail;
-import static org.openhab.transform.geocoding.internal.GeoProfileConstants.ROW_ADDRESS_FORMAT;
+import static org.openhab.transform.geocoding.internal.GeoProfileConstants.FORMAT_ADDRESS_ROW;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
@@ -37,7 +37,7 @@ class OSMRealTest {
         String coordinates = "40.74162115629083, -73.99000345325618";
         GeoProfileConfig osmConfig = new GeoProfileConfig();
         osmConfig.language = "de-DE";
-        osmConfig.format = ROW_ADDRESS_FORMAT;
+        osmConfig.format = FORMAT_ADDRESS_ROW;
         BaseGeoResolver toObserve = new OSMGeoResolver(PointType.valueOf(coordinates), osmConfig, httpClient);
         toObserve.setUserAgentSupplier(this::getUserAgent);
         toObserve.resolve();
@@ -48,7 +48,7 @@ class OSMRealTest {
         String search = "bimbambum";
         GeoProfileConfig osmConfig = new GeoProfileConfig();
         osmConfig.language = "de-DE";
-        osmConfig.format = ROW_ADDRESS_FORMAT;
+        osmConfig.format = FORMAT_ADDRESS_ROW;
         OSMGeoResolver toObserve = new OSMGeoResolver(new StringType(search), osmConfig, httpClient);
         toObserve.setUserAgentSupplier(this::getUserAgent);
         toObserve.resolve();

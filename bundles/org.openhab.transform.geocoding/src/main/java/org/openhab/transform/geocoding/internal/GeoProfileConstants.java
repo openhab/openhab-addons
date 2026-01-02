@@ -38,11 +38,11 @@ public class GeoProfileConstants {
     public static final String LATITUDE_KEY = "lat";
     public static final String LONGITUDE_KEY = "lon";
 
-    // Address options constants
-    public static final String ROW_ADDRESS_FORMAT = "row_address";
-    public static final String US_ADDRESS_FORMAT = "us_address";
-    public static final String JSON_FORMAT = "json";
-    public static final String RAW_FORMAT = "raw";
+    // Address options constants for US/UK and ROW (Rest of World)
+    public static final String FORMAT_ADDRESS_ROW = "address_row";
+    public static final String FORMAT_ADDRESS_US = "address_us";
+    public static final String FORMAT_JSON = "json";
+    public static final String FORMAT_RAW = "raw";
 
     // see https://nominatim.org/release-docs/latest/api/Output/#addressdetails
     public static final List<String> ROAD_KEYS = List.of("road");
