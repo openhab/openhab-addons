@@ -116,7 +116,8 @@ public class ShellyThingCreatorTest {
                 Arguments.of("shellybludw-" + DEVICE_ID, "", THING_TYPE_SHELLYBLUDW), //
                 Arguments.of("shellyblumotion-" + DEVICE_ID, "", THING_TYPE_SHELLYBLUMOTION), //
                 Arguments.of("shellybludistance-" + DEVICE_ID, "", THING_TYPE_SHELLYBLUDISTANCE), //
-                Arguments.of("shellybluremote-" + DEVICE_ID, "", THING_TYPE_SHELLYBLUREMOTE) //
+                Arguments.of("shellybluremote-" + DEVICE_ID, "", THING_TYPE_SHELLYBLUREMOTE), //
+                Arguments.of("shellybluws90-" + DEVICE_ID, "", THING_TYPE_SHELLYBLUWS90) //
         );
     }
 
@@ -261,12 +262,14 @@ public class ShellyThingCreatorTest {
                 Arguments.of(SHELLYDT_BLUMOTION, "", THING_TYPE_SHELLYBLUMOTION), //
                 Arguments.of(SHELLYDT_BLUDISTANCE, "", THING_TYPE_SHELLYBLUDISTANCE), //
                 Arguments.of(SHELLYDT_BLUREMOTE, "", THING_TYPE_SHELLYBLUREMOTE), //
+                Arguments.of(SHELLYDT_BLUWS90, "", THING_TYPE_SHELLYBLUWS90), //
 
                 Arguments.of(SHELLYDT_BLUCLASS_BUTTON, "", THING_TYPE_SHELLYBLUBUTTON1), //
                 Arguments.of(SHELLYDT_BLUCLASS_HT, "", THING_TYPE_SHELLYBLUHT), //
                 Arguments.of(SHELLYDT_BLUCLASS_DW, "", THING_TYPE_SHELLYBLUDW), //
                 Arguments.of(SHELLYDT_BLUCLASS_MOTION, "", THING_TYPE_SHELLYBLUMOTION), //
                 Arguments.of(SHELLYDT_BLUCLASS_DISTANCE, "", THING_TYPE_SHELLYBLUDISTANCE), //
+                Arguments.of(SHELLYDT_BLUCLASS_WS, "", THING_TYPE_SHELLYBLUWS90), //
 
                 // Wall displays
                 Arguments.of(SHELLYDT_PLUSWALLDISPLAY, "", THING_TYPE_SHELLYPLUSWALLDISPLAY));

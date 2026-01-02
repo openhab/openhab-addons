@@ -143,4 +143,19 @@
 		<config-description-ref uri="thing-type:shelly:blugw"/>
 	</thing-type>
 
+	<thing-type id="shellybluws90">
+		<label>Ecowitt WS90 (Shelly BLU)</label>
+		<description>@text/thing-type.shelly.shellybluws90.description</description>
+		<semantic-equipment-tag>WeatherStation</semantic-equipment-tag>
+		<channel-groups>
+			<channel-group id="status" typeId="buttonState"/>
+			<channel-group id="sensors" typeId="sensorData"/>
+			<channel-group id="battery" typeId="batteryStatus"/>
+			<channel-group id="device" typeId="deviceStatus"/>
+		</channel-groups>
+
+		<representation-property>serviceName</representation-property>
+		<config-description-ref uri="thing-type:shelly:blubattery"/>
+	</thing-type>
+
 </thing:thing-descriptions>
