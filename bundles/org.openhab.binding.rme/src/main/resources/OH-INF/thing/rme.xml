@@ -6,7 +6,7 @@
 	<thing-type id="manager">
 		<label>RME Rain Manager</label>
 		<description>The RME Rain Manager is a controllable water supply unit that can monitor a gauge in a cistern, and
-			switch between rain water and city provided water</description>
+			switch between rain water and city provided water.</description>
 		<semantic-equipment-tag>Valve</semantic-equipment-tag>
 
 		<channels>
@@ -41,7 +41,7 @@
 				<label>Serial Port</label>
 				<context>serial-port</context>
 				<limitToOptions>false</limitToOptions>
-				<description>Serial Port the RME Rain Manager is connected to</description>
+				<description>Serial Port the RME Rain Manager is connected to.</description>
 			</parameter>
 		</config-description>
 	</thing-type>
@@ -50,7 +50,7 @@
 	<channel-type id="waterlevel">
 		<item-type>Number</item-type>
 		<label>Water Level</label>
-		<description>Indicates the % the cistern is filled with water</description>
+		<description>Indicates the % the cistern is filled with water.</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Level</tag>
@@ -62,7 +62,7 @@
 	<channel-type id="mode">
 		<item-type>String</item-type>
 		<label>Operation Mode</label>
-		<description>Indicates the operation mode of the RME Rain Manager</description>
+		<description>Indicates the operation mode of the RME Rain Manager.</description>
 		<tags>
 			<tag>Status</tag>
 			<tag>Mode</tag>
@@ -79,7 +79,7 @@
 	<channel-type id="source">
 		<item-type>String</item-type>
 		<label>Water Source</label>
-		<description>Indicates water source used to supply water, e.g cistern or city</description>
+		<description>Indicates water source used to supply water, e.g cistern or city.</description>
 		<tags>
 			<tag>Status</tag>
 			<tag>Info</tag>
@@ -96,7 +96,7 @@
 	<channel-type id="statusflag" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Status Flag</label>
-		<description>Status Flag of an RME operational parameter, e.g ON if set, OFF if unset</description>
+		<description>Status Flag of an RME operational parameter, e.g ON if set, OFF if unset.</description>
 		<state readOnly="true">
 			<options>
 				<option value="ON">ON</option>

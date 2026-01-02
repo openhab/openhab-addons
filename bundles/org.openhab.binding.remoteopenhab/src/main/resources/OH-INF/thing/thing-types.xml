@@ -101,7 +101,7 @@
 					(few seconds). This can be useful if you want to deal with a long network outage. Do not enable it if you remote
 					server does not send events during the monitored interval under normal conditions, it will cause frequent restart
 					of the connection and potential loss of events. Default is false.
-				</description>
+				.</description>
 				<default>false</default>
 				<advanced>true</advanced>
 			</parameter>

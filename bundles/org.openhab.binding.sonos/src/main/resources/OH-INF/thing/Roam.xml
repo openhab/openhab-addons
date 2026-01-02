@@ -7,7 +7,7 @@
 	<!-- Sonos Roam Thing Type -->
 	<thing-type id="Roam" listed="false">
 		<label>Roam</label>
-		<description>Represents SONOS Roam speaker</description>
+		<description>Represents SONOS Roam speaker.</description>
 		<semantic-equipment-tag>Speaker</semantic-equipment-tag>
 		<channels>
 			<channel id="add" typeId="add"/>

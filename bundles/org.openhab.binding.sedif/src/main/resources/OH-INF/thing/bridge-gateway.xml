@@ -14,12 +14,12 @@
 			<parameter name="username" type="text" required="true">
 				<label>Username</label>
 				<context>user</context>
-				<description>Your Sedif Username</description>
+				<description>Your Sedif Username.</description>
 			</parameter>
 			<parameter name="password" type="text" required="true">
 				<label>Password</label>
 				<context>password</context>
-				<description>Your Sedif Password</description>
+				<description>Your Sedif Password.</description>
 			</parameter>
 		</config-description>
 	</bridge-type>

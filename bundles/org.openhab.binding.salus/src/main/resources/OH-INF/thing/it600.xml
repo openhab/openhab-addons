@@ -16,7 +16,7 @@
 			device communicates with the Salus cloud bridge and offers features including reading the current temperature,
 			setting the desired temperature, and defining the operation type. The operation of this device depends on a unique
 			Data Source Name (DSN) which serves as an identifier in the Salus cloud system.
-		</description>
+		.</description>
 		<semantic-equipment-tag>Thermostat</semantic-equipment-tag>
 		<channels>
 			<channel id="temperature" typeId="it600-temp-channel"/>
@@ -36,7 +36,7 @@
 					cloud system. It's crucial for the correct operation of the Salus device,
 					enabling communication between the device
 					and the cloud.
-				</description>
+				.</description>
 			</parameter>
 		</config-description>
 	</thing-type>
@@ -44,7 +44,7 @@
 	<channel-type id="it600-temp-channel">
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature</label>
-		<description>Current temperature in room</description>
+		<description>Current temperature in room.</description>
 		<category>Temperature</category>
 		<tags>
 			<tag>Measurement</tag>
@@ -55,7 +55,7 @@
 	<channel-type id="it600-expected-temp-channel">
 		<item-type>Number:Temperature</item-type>
 		<label>Expected Temperature</label>
-		<description>Sets the desired temperature in room</description>
+		<description>Sets the desired temperature in room.</description>
 		<category>Temperature</category>
 		<tags>
 			<tag>Setpoint</tag>
@@ -73,7 +73,7 @@
 			AUTOMATIC — schedules are turned on, following schedule,
 			TEMPORARY_MANUAL — schedules are
 			turned on, following manual temperature until next schedule.
-		</description>
+		.</description>
 		<tags>
 			<tag>Control</tag>
 			<tag>Mode</tag>
@@ -90,7 +90,7 @@
 	<channel-type id="it600-running-state">
 		<item-type>Switch</item-type>
 		<label>Running State</label>
-		<description>Is the device running</description>
+		<description>Is the device running.</description>
 		<tags>
 			<tag>Status</tag>
 			<tag>Power</tag>

@@ -18,21 +18,21 @@
 			</parameter>
 			<parameter name="disableDiscovery" type="boolean" required="true">
 				<label>@text/config.disableDiscovery.label</label>
-				<description>@text/config.disableDiscovery.description</description>
+				<description>@text/config.disableDiscovery.description.</description>
 				<default>false</default>
 			</parameter>
 			<parameter name="ignoreConfig" type="boolean" required="true">
 				<label>@text/config.ignoreConfig.label</label>
-				<description>@text/config.ignoreConfig.description</description>
+				<description>@text/config.ignoreConfig.description.</description>
 				<default>true</default>
 			</parameter>
 			<parameter name="setMode" type="text">
 				<label>@text/config.setMode.label</label>
-				<description>@text/config.setMode.description</description>
+				<description>@text/config.setMode.description.</description>
 			</parameter>
 			<parameter name="transceiverType" type="text">
 				<label>@text/config.transceiverType.label</label>
-				<description>@text/config.transceiverType.description</description>
+				<description>@text/config.transceiverType.description.</description>
 				<default>433.92MHz</default>
 				<options>
 					<option value="310MHz">@text/config.transceiverType.option.310MHz</option>
@@ -43,137 +43,137 @@
 			</parameter>
 			<parameter name="transmitPower" type="integer" min="-18" max="10">
 				<label>@text/config.transmitPower.label</label>
-				<description>@text/config.transmitPower.description</description>
+				<description>@text/config.transmitPower.description.</description>
 				<default>-18</default>
 			</parameter>
 			<parameter name="enableUndecoded" type="boolean">
 				<label>@text/config.enableUndecoded.label</label>
-				<description>@text/config.enableUndecoded.description</description>
+				<description>@text/config.enableUndecoded.description.</description>
 				<default>false</default>
 			</parameter>
 			<parameter name="enableImagintronixOpus" type="boolean">
 				<label>@text/config.enableImagintronixOpus.label</label>
-				<description>@text/config.enableImagintronixOpus.description</description>
+				<description>@text/config.enableImagintronixOpus.description.</description>
 				<default>false</default>
 			</parameter>
 			<parameter name="enableByronSX" type="boolean">
 				<label>@text/config.enableByronSX.label</label>
-				<description>@text/config.enableByronSX.description</description>
+				<description>@text/config.enableByronSX.description.</description>
 				<default>false</default>
 			</parameter>
 			<parameter name="enableRSL" type="boolean">
 				<label>@text/config.enableRSL.label</label>
-				<description>@text/config.enableRSL.description</description>
+				<description>@text/config.enableRSL.description.</description>
 				<default>false</default>
 			</parameter>
 			<parameter name="enableLighting4" type="boolean">
 				<label>@text/config.enableLighting4.label</label>
-				<description>@text/config.enableLighting4.description</description>
+				<description>@text/config.enableLighting4.description.</description>
 				<default>false</default>
 			</parameter>
 			<parameter name="enableFineOffsetViking" type="boolean">
 				<label>@text/config.enableFineOffsetViking.label</label>
-				<description>@text/config.enableFineOffsetViking.description</description>
+				<description>@text/config.enableFineOffsetViking.description.</description>
 				<default>false</default>
 			</parameter>
 			<parameter name="enableRubicson" type="boolean">
 				<label>@text/config.enableRubicson.label</label>
-				<description>@text/config.enableRubicson.description</description>
+				<description>@text/config.enableRubicson.description.</description>
 				<default>false</default>
 			</parameter>
 			<parameter name="enableAEBlyss" type="boolean">
 				<label>@text/config.enableAEBlyss.label</label>
-				<description>@text/config.enableAEBlyss.description</description>
+				<description>@text/config.enableAEBlyss.description.</description>
 				<default>false</default>
 			</parameter>
 			<parameter name="enableBlindsT1T2T3T4" type="boolean">
 				<label>@text/config.enableBlindsT1T2T3T4.label</label>
-				<description>@text/config.enableBlindsT1T2T3T4.description</description>
+				<description>@text/config.enableBlindsT1T2T3T4.description.</description>
 				<default>false</default>
 			</parameter>
 			<parameter name="enableBlindsT0" type="boolean">
 				<label>@text/config.enableBlindsT0.label</label>
-				<description>@text/config.enableBlindsT0.description</description>
+				<description>@text/config.enableBlindsT0.description.</description>
 				<default>false</default>
 			</parameter>
 			<parameter name="enableProGuard" type="boolean">
 				<label>@text/config.enableProGuard.label</label>
-				<description>@text/config.enableProGuard.description</description>
+				<description>@text/config.enableProGuard.description.</description>
 				<default>false</default>
 			</parameter>
 			<parameter name="enableFS20" type="boolean">
 				<label>@text/config.enableFS20.label</label>
-				<description>@text/config.enableFS20.description</description>
+				<description>@text/config.enableFS20.description.</description>
 				<default>false</default>
 			</parameter>
 			<parameter name="enableLaCrosse" type="boolean">
 				<label>@text/config.enableLaCrosse.label</label>
-				<description>@text/config.enableLaCrosse.description</description>
+				<description>@text/config.enableLaCrosse.description.</description>
 				<default>false</default>
 			</parameter>
 			<parameter name="enableHidekiUPM" type="boolean">
 				<label>@text/config.enableHidekiUPM.label</label>
-				<description>@text/config.enableHidekiUPM.description</description>
+				<description>@text/config.enableHidekiUPM.description.</description>
 				<default>false</default>
 			</parameter>
 			<parameter name="enableADLightwaveRF" type="boolean">
 				<label>@text/config.enableADLightwaveRF.label</label>
-				<description>@text/config.enableADLightwaveRF.description</description>
+				<description>@text/config.enableADLightwaveRF.description.</description>
 				<default>false</default>
 			</parameter>
 			<parameter name="enableMertik" type="boolean">
 				<label>@text/config.enableMertik.label</label>
-				<description>@text/config.enableMertik.description</description>
+				<description>@text/config.enableMertik.description.</description>
 				<default>false</default>
 			</parameter>
 			<parameter name="enableVisonic" type="boolean">
 				<label>@text/config.enableVisonic.label</label>
-				<description>@text/config.enableVisonic.description</description>
+				<description>@text/config.enableVisonic.description.</description>
 				<default>false</default>
 			</parameter>
 			<parameter name="enableATI" type="boolean">
 				<label>@text/config.enableATI.label</label>
-				<description>@text/config.enableATI.description</description>
+				<description>@text/config.enableATI.description.</description>
 				<default>false</default>
 			</parameter>
 			<parameter name="enableOregonScientific" type="boolean">
 				<label>@text/config.enableOregonScientific.label</label>
-				<description>@text/config.enableOregonScientific.description</description>
+				<description>@text/config.enableOregonScientific.description.</description>
 				<default>false</default>
 			</parameter>
 			<parameter name="enableMeiantech" type="boolean">
 				<label>@text/config.enableMeiantech.label</label>
-				<description>@text/config.enableMeiantech.description</description>
+				<description>@text/config.enableMeiantech.description.</description>
 				<default>false</default>
 			</parameter>
 			<parameter name="enableHomeEasyEU" type="boolean">
 				<label>@text/config.enableHomeEasyEU.label</label>
-				<description>@text/config.enableHomeEasyEU.description</description>
+				<description>@text/config.enableHomeEasyEU.description.</description>
 				<default>false</default>
 			</parameter>
 			<parameter name="enableAC" type="boolean">
 				<label>@text/config.enableAC.label</label>
-				<description>@text/config.enableAC.description</description>
+				<description>@text/config.enableAC.description.</description>
 				<default>false</default>
 			</parameter>
 			<parameter name="enableARC" type="boolean">
 				<label>@text/config.enableARC.label</label>
-				<description>@text/config.enableARC.description</description>
+				<description>@text/config.enableARC.description.</description>
 				<default>false</default>
 			</parameter>
 			<parameter name="enableX10" type="boolean">
 				<label>@text/config.enableX10.label</label>
-				<description>@text/config.enableX10.description</description>
+				<description>@text/config.enableX10.description.</description>
 				<default>false</default>
 			</parameter>
 			<parameter name="enableHomeConfort" type="boolean">
 				<label>@text/config.enableHomeConfort.label</label>
-				<description>@text/config.enableHomeConfort.description</description>
+				<description>@text/config.enableHomeConfort.description.</description>
 				<default>false</default>
 			</parameter>
 			<parameter name="enableKEELOQ" type="boolean">
 				<label>@text/config.enableKEELOQ.label</label>
-				<description>@text/config.enableKEELOQ.description</description>
+				<description>@text/config.enableKEELOQ.description.</description>
 				<default>false</default>
 			</parameter>
 

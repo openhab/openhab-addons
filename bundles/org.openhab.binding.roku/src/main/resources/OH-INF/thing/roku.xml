@@ -9,7 +9,7 @@
 		<label>Roku</label>
 		<description>
 			A Roku Streaming Media Player
-		</description>
+		.</description>
 		<semantic-equipment-tag>MediaPlayer</semantic-equipment-tag>
 
 		<channels>
@@ -44,7 +44,7 @@
 		<label>Roku TV</label>
 		<description>
 			A Roku Streaming Media TV
-		</description>
+		.</description>
 		<semantic-equipment-tag>Television</semantic-equipment-tag>
 
 		<channels>
@@ -86,7 +86,7 @@
 	<channel-type id="button">
 		<item-type>String</item-type>
 		<label>Remote Button</label>
-		<description>A Remote Button Press to Send to the Roku</description>
+		<description>A Remote Button Press to Send to the Roku.</description>
 		<state>
 			<options>
 				<option value="Home">Home</option>
@@ -113,7 +113,7 @@
 	<channel-type id="buttonTv">
 		<item-type>String</item-type>
 		<label>Remote Button</label>
-		<description>A Remote Button Press to Send to the Roku TV</description>
+		<description>A Remote Button Press to Send to the Roku TV.</description>
 		<tags>
 			<tag>Control</tag>
 			<tag>MediaControl</tag>
@@ -157,7 +157,7 @@
 	<channel-type id="control">
 		<item-type>Player</item-type>
 		<label>Control</label>
-		<description>Control playback e.g. Play/Pause/Next/Previous</description>
+		<description>Control playback e.g. Play/Pause/Next/Previous.</description>
 		<category>Player</category>
 		<tags>
 			<tag>Control</tag>
@@ -168,7 +168,7 @@
 	<channel-type id="activeApp">
 		<item-type>String</item-type>
 		<label>Active App</label>
-		<description>The Currently Running App on the Roku</description>
+		<description>The Currently Running App on the Roku.</description>
 		<tags>
 			<tag>Control</tag>
 			<tag>App</tag>
@@ -178,14 +178,14 @@
 	<channel-type id="activeAppName">
 		<item-type>String</item-type>
 		<label>Active App Name</label>
-		<description>The Currently Running App on the Roku</description>
+		<description>The Currently Running App on the Roku.</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="playMode">
 		<item-type>String</item-type>
 		<label>Play Mode</label>
-		<description>The Current Playback Mode</description>
+		<description>The Current Playback Mode.</description>
 		<tags>
 			<tag>Status</tag>
 			<tag>Mode</tag>
@@ -196,7 +196,7 @@
 	<channel-type id="timeElapsed">
 		<item-type>Number:Time</item-type>
 		<label>Playback Time</label>
-		<description>The Current Playback Time Elapsed</description>
+		<description>The Current Playback Time Elapsed.</description>
 		<tags>
 			<tag>Status</tag>
 			<tag>Duration</tag>
@@ -207,7 +207,7 @@
 	<channel-type id="timeTotal">
 		<item-type>Number:Time</item-type>
 		<label>Total Time</label>
-		<description>The Total Length of the Current Title</description>
+		<description>The Total Length of the Current Title.</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Duration</tag>
@@ -218,7 +218,7 @@
 	<channel-type id="endTime">
 		<item-type>DateTime</item-type>
 		<label>End Time</label>
-		<description>The date/time when the currently playing media will end</description>
+		<description>The date/time when the currently playing media will end.</description>
 		<category>Time</category>
 		<tags>
 			<tag>Status</tag>
@@ -230,7 +230,7 @@
 	<channel-type id="progress">
 		<item-type>Dimmer</item-type>
 		<label>Media Progress</label>
-		<description>The current progress of playing media</description>
+		<description>The current progress of playing media.</description>
 		<tags>
 			<tag>Status</tag>
 			<tag>Progress</tag>
@@ -240,7 +240,7 @@
 	<channel-type id="activeChannel">
 		<item-type>String</item-type>
 		<label>Active Channel</label>
-		<description>The TV Channel Currently Selected on the Roku TV</description>
+		<description>The TV Channel Currently Selected on the Roku TV.</description>
 		<tags>
 			<tag>Control</tag>
 			<tag>Channel</tag>
@@ -250,7 +250,7 @@
 	<channel-type id="signalMode">
 		<item-type>String</item-type>
 		<label>Signal Mode</label>
-		<description>The Signal Type of the Current TV Channel, ie: 1080i</description>
+		<description>The Signal Type of the Current TV Channel, ie: 1080i.</description>
 		<tags>
 			<tag>Status</tag>
 			<tag>Mode</tag>
@@ -261,7 +261,7 @@
 	<channel-type id="signalQuality">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Signal Quality</label>
-		<description>The Signal Quality of the Current TV Channel</description>
+		<description>The Signal Quality of the Current TV Channel.</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>MediaControl</tag>
@@ -272,14 +272,14 @@
 	<channel-type id="channelName">
 		<item-type>String</item-type>
 		<label>Channel Name</label>
-		<description>The Name of the Channel Currently Selected</description>
+		<description>The Name of the Channel Currently Selected.</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="programTitle">
 		<item-type>String</item-type>
 		<label>Program Title</label>
-		<description>The Name of the Current TV Program</description>
+		<description>The Name of the Current TV Program.</description>
 		<tags>
 			<tag>Status</tag>
 			<tag>MediaControl</tag>
@@ -290,7 +290,7 @@
 	<channel-type id="programDescription">
 		<item-type>String</item-type>
 		<label>Program Description</label>
-		<description>The Description of the Current TV Program</description>
+		<description>The Description of the Current TV Program.</description>
 		<tags>
 			<tag>Status</tag>
 			<tag>MediaControl</tag>
@@ -301,7 +301,7 @@
 	<channel-type id="programRating">
 		<item-type>String</item-type>
 		<label>Program Rating</label>
-		<description>The TV Parental Guideline Rating of the Current TV Program</description>
+		<description>The TV Parental Guideline Rating of the Current TV Program.</description>
 		<tags>
 			<tag>Status</tag>
 			<tag>MediaControl</tag>
@@ -312,7 +312,7 @@
 	<channel-type id="powerState" advanced="true">
 		<item-type>String</item-type>
 		<label>Power State</label>
-		<description>Power State of the TV</description>
+		<description>Power State of the TV.</description>
 		<state readOnly="true">
 			<options>
 				<option value="PowerOn">Power On</option>

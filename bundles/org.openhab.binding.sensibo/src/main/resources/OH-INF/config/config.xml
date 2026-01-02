@@ -8,12 +8,12 @@ https://openhab.org/schemas/config-description-1.0.0.xsd">
 	<config-description uri="thing-type:sensibo:account">
 		<parameter name="apiKey" type="text" required="true">
 			<label>API Key</label>
-			<description>Your Sensibo app API key</description>
+			<description>Your Sensibo app API key.</description>
 		</parameter>
 
 		<parameter name="refreshInterval" type="integer" min="30" unit="s">
 			<label>Refresh Interval</label>
-			<description>How often to fetch updates from Sensibo service (polling interval)</description>
+			<description>How often to fetch updates from Sensibo service (polling interval).</description>
 			<default>120</default>
 		</parameter>
 	</config-description>
@@ -21,7 +21,7 @@ https://openhab.org/schemas/config-description-1.0.0.xsd">
 	<config-description uri="thing-type:sensibo:sensibosky">
 		<parameter name="macAddress" type="text" required="true">
 			<label>MAC Address</label>
-			<description>With or without colons</description>
+			<description>With or without colons.</description>
 		</parameter>
 	</config-description>
 

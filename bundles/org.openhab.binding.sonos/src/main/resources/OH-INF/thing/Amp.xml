@@ -8,7 +8,7 @@
 	<thing-type id="Amp" listed="false">
 		<!-- Label without colon (:) because of device pairing name restrictions -->
 		<label>Amp</label>
-		<description>Represents SONOS Amp amplifier</description>
+		<description>Represents SONOS Amp amplifier.</description>
 		<semantic-equipment-tag>AudioVisual</semantic-equipment-tag>
 		<channels>
 			<channel id="add" typeId="add"/>

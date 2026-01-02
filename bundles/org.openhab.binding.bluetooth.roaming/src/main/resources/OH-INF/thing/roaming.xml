@@ -6,7 +6,7 @@
 
 	<bridge-type id="roaming">
 		<label>Roaming Bluetooth Controller</label>
-		<description>A virtual Bluetooth adapter that handles roaming between other adapters</description>
+		<description>A virtual Bluetooth adapter that handles roaming between other adapters.</description>
 		<config-description>
 			<parameter name="groupUIDs" type="text" multiple="true">
 				<label>Adapter UIDs</label>
@@ -17,14 +17,14 @@
 					<br>
 					If not specified, roaming devices can interact through any other Bluetooth adapter thing.
 					]]>
-				</description>
+				.</description>
 				<context>thing</context>
 				<advanced>true</advanced>
 				<default></default>
 			</parameter>
 			<parameter name="backgroundDiscovery" type="boolean">
 				<label>Device Discovery</label>
-				<description>Whether this adapter participates in Bluetooth device discovery</description>
+				<description>Whether this adapter participates in Bluetooth device discovery.</description>
 				<advanced>true</advanced>
 				<default>true</default>
 			</parameter>

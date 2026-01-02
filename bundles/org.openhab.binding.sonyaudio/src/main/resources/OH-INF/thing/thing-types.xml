@@ -7,7 +7,7 @@
 	<channel-type id="power">
 		<item-type>Switch</item-type>
 		<label>Power</label>
-		<description>Power on/off your device</description>
+		<description>Power on/off your device.</description>
 		<category>Switch</category>
 		<tags>
 			<tag>Switch</tag>
@@ -18,7 +18,7 @@
 	<channel-type id="volume">
 		<item-type>Dimmer</item-type>
 		<label>Volume</label>
-		<description>Set the volume level</description>
+		<description>Set the volume level.</description>
 		<category>SoundVolume</category>
 		<tags>
 			<tag>Control</tag>
@@ -30,7 +30,7 @@
 	<channel-type id="mute">
 		<item-type>Switch</item-type>
 		<label>Mute</label>
-		<description>Enable/Disable Mute on the AVR</description>
+		<description>Enable/Disable Mute on the AVR.</description>
 		<tags>
 			<tag>Switch</tag>
 			<tag>SoundVolume</tag>

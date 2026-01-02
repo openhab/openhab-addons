@@ -19,7 +19,7 @@
 	<channel-type id="execute_action">
 		<item-type>Switch</item-type>
 		<label>Somfy Action Group Trigger</label>
-		<description>Trigger of the action group</description>
+		<description>Trigger of the action group.</description>
 		<tags>
 			<tag>Switch</tag>
 			<tag>Mode</tag>

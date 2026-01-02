@@ -9,13 +9,13 @@
 	<channel-type id="rawmessage">
 		<item-type>String</item-type>
 		<label>Raw Message</label>
-		<description>Hexadecimal representation of RFXCOM messages including header and payload</description>
+		<description>Hexadecimal representation of RFXCOM messages including header and payload.</description>
 	</channel-type>
 
 	<channel-type id="rawpayload">
 		<item-type>String</item-type>
 		<label>Raw Payload</label>
-		<description>Hexadecimal representation of payload of raw and undecoded RFXCOM messages</description>
+		<description>Hexadecimal representation of payload of raw and undecoded RFXCOM messages.</description>
 	</channel-type>
 
 	<channel-type id="pulses">
@@ -27,7 +27,7 @@
 	<channel-type id="command">
 		<item-type>Switch</item-type>
 		<label>Command</label>
-		<description>Command channel</description>
+		<description>Command channel.</description>
 		<tags>
 			<tag>Switch</tag>
 			<tag>Power</tag>
@@ -37,20 +37,20 @@
 	<channel-type id="commandId">
 		<item-type>Number</item-type>
 		<label>Command ID</label>
-		<description>Command channel, ID of the command</description>
+		<description>Command channel, ID of the command.</description>
 		<state min="0" max="255" step="1" pattern="%d" readOnly="false"></state>
 	</channel-type>
 
 	<channel-type id="commandString">
 		<item-type>String</item-type>
 		<label>Command String</label>
-		<description>Command channel, Name of the command</description>
+		<description>Command channel, Name of the command.</description>
 	</channel-type>
 
 	<channel-type id="contact">
 		<item-type>Contact</item-type>
 		<label>Contact</label>
-		<description>Contact channel</description>
+		<description>Contact channel.</description>
 		<tags>
 			<tag>Status</tag>
 			<tag>OpenState</tag>
@@ -60,13 +60,13 @@
 	<channel-type id="datetime">
 		<item-type>DateTime</item-type>
 		<label>DateTime</label>
-		<description>DateTime channel</description>
+		<description>DateTime channel.</description>
 	</channel-type>
 
 	<channel-type id="dimminglevel">
 		<item-type>Dimmer</item-type>
 		<label>Dimming Level</label>
-		<description>Dimming level channel</description>
+		<description>Dimming level channel.</description>
 		<tags>
 			<tag>Control</tag>
 			<tag>Brightness</tag>
@@ -77,7 +77,7 @@
 	<channel-type id="fanspeed">
 		<item-type>Number</item-type>
 		<label>Fan Speed</label>
-		<description>Speed of fan</description>
+		<description>Speed of fan.</description>
 		<tags>
 			<tag>Control</tag>
 			<tag>Speed</tag>
@@ -88,13 +88,13 @@
 	<channel-type id="fanspeedcontrol">
 		<item-type>Rollershutter</item-type>
 		<label>Global Speed Control</label>
-		<description>Requested speed setting, UP, DOWN</description>
+		<description>Requested speed setting, UP, DOWN.</description>
 	</channel-type>
 
 	<channel-type id="fanspeedstring">
 		<item-type>String</item-type>
 		<label>Fan Speed</label>
-		<description>Speed of fan</description>
+		<description>Speed of fan.</description>
 		<tags>
 			<tag>Status</tag>
 			<tag>Speed</tag>
@@ -112,7 +112,7 @@
 	<channel-type id="fanreverse">
 		<item-type>Switch</item-type>
 		<label>Reverse Fan</label>
-		<description>Reverse direction of the Fan</description>
+		<description>Reverse direction of the Fan.</description>
 		<tags>
 			<tag>Switch</tag>
 			<tag>Mode</tag>
@@ -122,14 +122,14 @@
 	<channel-type id="mood">
 		<item-type>Number</item-type>
 		<label>Mood</label>
-		<description>Mood channel</description>
+		<description>Mood channel.</description>
 		<state min="1" max="5" step="1" readOnly="false"></state>
 	</channel-type>
 
 	<channel-type id="status">
 		<item-type>String</item-type>
 		<label>Status</label>
-		<description>Status channel</description>
+		<description>Status channel.</description>
 		<tags>
 			<tag>Status</tag>
 			<tag>Info</tag>
@@ -140,7 +140,7 @@
 	<channel-type id="setpoint">
 		<item-type>Number</item-type>
 		<label>Set-point</label>
-		<description>Requested temperature</description>
+		<description>Requested temperature.</description>
 		<tags>
 			<tag>Setpoint</tag>
 			<tag>Temperature</tag>
@@ -151,13 +151,13 @@
 	<channel-type id="tempcontrol">
 		<item-type>Rollershutter</item-type>
 		<label>Global Temperature Control</label>
-		<description>Requested temperature setting, UP, DOWN, STOP</description>
+		<description>Requested temperature setting, UP, DOWN, STOP.</description>
 	</channel-type>
 
 	<channel-type id="motion">
 		<item-type>Switch</item-type>
 		<label>Motion</label>
-		<description>Motion detection sensor state</description>
+		<description>Motion detection sensor state.</description>
 		<tags>
 			<tag>Status</tag>
 			<tag>Motion</tag>
@@ -168,7 +168,7 @@
 	<channel-type id="rainrate">
 		<item-type>Number</item-type>
 		<label>Rain Rate</label>
-		<description>Rain fall rate in millimeters per hour</description>
+		<description>Rain fall rate in millimeters per hour.</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Rain</tag>
@@ -179,7 +179,7 @@
 	<channel-type id="raintotal">
 		<item-type>Number</item-type>
 		<label>Rain Total</label>
-		<description>Total rain in millimeters</description>
+		<description>Total rain in millimeters.</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Rain</tag>
@@ -190,7 +190,7 @@
 	<channel-type id="shutter">
 		<item-type>Rollershutter</item-type>
 		<label>Shutter</label>
-		<description>Open/Close shutter/blind</description>
+		<description>Open/Close shutter/blind.</description>
 		<tags>
 			<tag>Control</tag>
 			<tag>OpenLevel</tag>
@@ -200,7 +200,7 @@
 	<channel-type id="venetianBlind">
 		<item-type>Dimmer</item-type>
 		<label>Venetian Blind</label>
-		<description>Open/close and adjust angle of venetian blind</description>
+		<description>Open/close and adjust angle of venetian blind.</description>
 		<tags>
 			<tag>Control</tag>
 			<tag>Tilt</tag>
@@ -210,7 +210,7 @@
 	<channel-type id="voltage">
 		<item-type>Number</item-type>
 		<label>Voltage</label>
-		<description>Measured voltage</description>
+		<description>Measured voltage.</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Voltage</tag>
@@ -221,7 +221,7 @@
 	<channel-type id="instantpower">
 		<item-type>Number</item-type>
 		<label>Instant Power</label>
-		<description>Instant power consumption in Watts</description>
+		<description>Instant power consumption in Watts.</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Power</tag>
@@ -232,7 +232,7 @@
 	<channel-type id="totalusage">
 		<item-type>Number</item-type>
 		<label>Total Usage</label>
-		<description>Used energy in Watt hours</description>
+		<description>Used energy in Watt hours.</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Energy</tag>
@@ -243,7 +243,7 @@
 	<channel-type id="instantamp" advanced="true">
 		<item-type>Number</item-type>
 		<label>Instant Amp</label>
-		<description>Instant current in Amperes</description>
+		<description>Instant current in Amperes.</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Current</tag>
@@ -254,14 +254,14 @@
 	<channel-type id="totalamphour" advanced="true">
 		<item-type>Number</item-type>
 		<label>Total Ampere-hours</label>
-		<description>Used "energy" in ampere-hours</description>
+		<description>Used "energy" in ampere-hours.</description>
 		<state pattern="%.2f Ah" readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="uv">
 		<item-type>Number</item-type>
 		<label>UV</label>
-		<description>Current UV level</description>
+		<description>Current UV level.</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Ultraviolet</tag>
@@ -272,7 +272,7 @@
 	<channel-type id="temperature">
 		<item-type>Number</item-type>
 		<label>Temperature</label>
-		<description>Current temperature in degree Celsius</description>
+		<description>Current temperature in degree Celsius.</description>
 		<category>Temperature</category>
 		<tags>
 			<tag>Measurement</tag>
@@ -284,7 +284,7 @@
 	<channel-type id="foodTemperature">
 		<item-type>Number</item-type>
 		<label>Food Temperature</label>
-		<description>Current food temperature in degrees Celsius</description>
+		<description>Current food temperature in degrees Celsius.</description>
 		<category>Temperature</category>
 		<tags>
 			<tag>Measurement</tag>
@@ -296,7 +296,7 @@
 	<channel-type id="bbqTemperature">
 		<item-type>Number</item-type>
 		<label>BBQ Temperature</label>
-		<description>Current BBQ temperature in degrees Celsius</description>
+		<description>Current BBQ temperature in degrees Celsius.</description>
 		<category>Temperature</category>
 		<tags>
 			<tag>Measurement</tag>
@@ -308,7 +308,7 @@
 	<channel-type id="humidity">
 		<item-type>Number</item-type>
 		<label>Humidity</label>
-		<description>Relative humidity level in percentages</description>
+		<description>Relative humidity level in percentages.</description>
 		<category>Humidity</category>
 		<tags>
 			<tag>Measurement</tag>
@@ -320,7 +320,7 @@
 	<channel-type id="humiditystatus" advanced="true">
 		<item-type>String</item-type>
 		<label>Humidity Status</label>
-		<description>Current humidity status</description>
+		<description>Current humidity status.</description>
 		<tags>
 			<tag>Status</tag>
 			<tag>Mode</tag>
@@ -350,7 +350,7 @@
 	<channel-type id="forecast">
 		<item-type>String</item-type>
 		<label>Forecast</label>
-		<description>Weather forecast from device</description>
+		<description>Weather forecast from device.</description>
 		<tags>
 			<tag>Forecast</tag>
 		</tags>
@@ -368,7 +368,7 @@
 	<channel-type id="windspeed">
 		<item-type>Number</item-type>
 		<label>Wind Speed</label>
-		<description>Average wind speed in meters per second</description>
+		<description>Average wind speed in meters per second.</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Speed</tag>
@@ -379,7 +379,7 @@
 	<channel-type id="winddirection">
 		<item-type>Number</item-type>
 		<label>Wind Direction</label>
-		<description>Wind direction in degrees</description>
+		<description>Wind direction in degrees.</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Wind</tag>
@@ -390,7 +390,7 @@
 	<channel-type id="chimesound">
 		<item-type>Number</item-type>
 		<label>Chime Sound</label>
-		<description>Chime Sound (not all devices support multiple sounds)</description>
+		<description>Chime Sound (not all devices support multiple sounds).</description>
 	</channel-type>
 
 </thing:thing-descriptions>

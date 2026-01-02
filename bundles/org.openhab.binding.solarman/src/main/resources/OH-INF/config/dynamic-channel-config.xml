@@ -7,17 +7,17 @@
 	<config-description uri="channel-type-config:solarman:dynamic-channel">
 		<parameter name="uom" type="text">
 			<label>Unit of Measurement</label>
-			<description>The unit of measurement used for this channel</description>
+			<description>The unit of measurement used for this channel.</description>
 			<advanced>false</advanced>
 		</parameter>
 		<parameter name="scale" type="decimal">
 			<label>Scale</label>
-			<description>The scaling factor, the final value will be scaled by this</description>
+			<description>The scaling factor, the final value will be scaled by this.</description>
 			<advanced>false</advanced>
 		</parameter>
 		<parameter name="rule" type="integer" required="true">
 			<label>Rule</label>
-			<description>The type of measurement. See explanation for possible values</description>
+			<description>The type of measurement. See explanation for possible values.</description>
 			<advanced>false</advanced>
 			<options>
 				<option value="1">Unsigned Short (Rule 1)</option>
@@ -33,12 +33,12 @@
 		</parameter>
 		<parameter name="offset" type="decimal">
 			<label>Offset</label>
-			<description>The offset subtracted from the measurement</description>
+			<description>The offset subtracted from the measurement.</description>
 			<advanced>false</advanced>
 		</parameter>
 		<parameter name="registers" type="text" required="true">
 			<label>Registers</label>
-			<description>Comma separated list of registers to read for the measurement</description>
+			<description>Comma separated list of registers to read for the measurement.</description>
 			<advanced>false</advanced>
 		</parameter>
 	</config-description>

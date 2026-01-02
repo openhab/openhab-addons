@@ -7,7 +7,7 @@
 	<!-- Player Era 300 Thing Type -->
 	<thing-type id="Era300" listed="false">
 		<label>Era 300</label>
-		<description>Represents SONOS Era 300 speaker</description>
+		<description>Represents SONOS Era 300 speaker.</description>
 		<semantic-equipment-tag>Speaker</semantic-equipment-tag>
 		<channels>
 			<channel id="add" typeId="add"/>

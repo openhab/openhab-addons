@@ -7,7 +7,7 @@
 	<channel-type id="frequency">
 		<item-type>Number:Frequency</item-type>
 		<label>Electric Frequency</label>
-		<description>Frequency of the electricity to/from the inverter</description>
+		<description>Frequency of the electricity to/from the inverter.</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Frequency</tag>
@@ -17,7 +17,7 @@
 	<channel-type id="battery-temperature">
 		<item-type>Number:Temperature</item-type>
 		<label>Battery Temperature</label>
-		<description>Battery Temperature</description>
+		<description>Battery Temperature.</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Temperature</tag>
@@ -27,7 +27,7 @@
 	<channel-type id="inverter-temperature">
 		<item-type>Number:Temperature</item-type>
 		<label>Inverter Temperature</label>
-		<description>Inverter Temperature</description>
+		<description>Inverter Temperature.</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Temperature</tag>
@@ -37,7 +37,7 @@
 	<channel-type id="inverter-workmode">
 		<item-type>String</item-type>
 		<label>Inverter Workmode</label>
-		<description>Inverter Workmode</description>
+		<description>Inverter Workmode.</description>
 		<tags>
 			<tag>Status</tag>
 			<tag>Mode</tag>
@@ -64,7 +64,7 @@
 	<channel-type id="inverter-workmode-cloud">
 		<item-type>String</item-type>
 		<label>Inverter Workmode</label>
-		<description>Inverter Workmode</description>
+		<description>Inverter Workmode.</description>
 		<tags>
 			<tag>Status</tag>
 			<tag>Mode</tag>
@@ -91,7 +91,7 @@
 	<channel-type id="last-retrieve-time-stamp">
 		<item-type>DateTime</item-type>
 		<label>Last Retrieve Time Stamp</label>
-		<description>Last time with a successful retrieval of data</description>
+		<description>Last time with a successful retrieval of data.</description>
 		<category>Time</category>
 		<tags>
 			<tag>Status</tag>
@@ -108,7 +108,7 @@
 	<channel-type id="charger-state">
 		<item-type>String</item-type>
 		<label>Charger State</label>
-		<description>Charger State</description>
+		<description>Charger State.</description>
 		<state pattern="%s" readOnly="true">
 			<options>
 				<option value="0">Preparing</option>
@@ -126,7 +126,7 @@
 	<channel-type id="charger-mode">
 		<item-type>String</item-type>
 		<label>Charger Mode</label>
-		<description>Charger Mode</description>
+		<description>Charger Mode.</description>
 		<tags>
 			<tag>Status</tag>
 			<tag>Mode</tag>
@@ -143,7 +143,7 @@
 	<channel-type id="charger-temperature">
 		<item-type>Number:Temperature</item-type>
 		<label>Charger Temperature</label>
-		<description>Charger Temperature</description>
+		<description>Charger Temperature.</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Temperature</tag>

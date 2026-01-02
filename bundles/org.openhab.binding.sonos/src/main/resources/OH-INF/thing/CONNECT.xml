@@ -7,7 +7,7 @@
 	<!-- Connector CONNECT Thing Type -->
 	<thing-type id="CONNECT" listed="false">
 		<label>CONNECT</label>
-		<description>Represents SONOS CONNECT connector</description>
+		<description>Represents SONOS CONNECT connector.</description>
 		<semantic-equipment-tag>AudioVisual</semantic-equipment-tag>
 		<channels>
 			<channel id="add" typeId="add"/>

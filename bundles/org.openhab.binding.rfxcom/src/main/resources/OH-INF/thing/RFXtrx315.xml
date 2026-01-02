@@ -12,25 +12,25 @@
 		<config-description>
 			<parameter name="bridgeId" type="text" required="true">
 				<label>@text/config.bridgeId.label</label>
-				<description>@text/config.bridgeId.description</description>
+				<description>@text/config.bridgeId.description.</description>
 			</parameter>
 			<parameter name="disableDiscovery" type="boolean" required="true">
 				<label>@text/config.disableDiscovery.label</label>
-				<description>@text/config.disableDiscovery.description</description>
+				<description>@text/config.disableDiscovery.description.</description>
 				<default>false</default>
 			</parameter>
 			<parameter name="ignoreConfig" type="boolean">
 				<label>@text/config.ignoreConfig.label</label>
-				<description>@text/config.ignoreConfig.description</description>
+				<description>@text/config.ignoreConfig.description.</description>
 				<default>true</default>
 			</parameter>
 			<parameter name="setMode" type="text">
 				<label>@text/config.setMode.label</label>
-				<description>@text/config.setMode.description</description>
+				<description>@text/config.setMode.description.</description>
 			</parameter>
 			<parameter name="transceiverType" type="text">
 				<label>@text/config.transceiverType.label</label>
-				<description>@text/config.transceiverType.description</description>
+				<description>@text/config.transceiverType.description.</description>
 				<default>315MHz</default>
 				<options>
 					<option value="310MHz">@text/config.transceiverType.option.310MHz</option>
@@ -39,22 +39,22 @@
 			</parameter>
 			<parameter name="transmitPower" type="integer" min="-18" max="10">
 				<label>@text/config.transmitPower.label</label>
-				<description>@text/config.transmitPower.description</description>
+				<description>@text/config.transmitPower.description.</description>
 				<default>-18</default>
 			</parameter>
 			<parameter name="enableUndecoded" type="boolean">
 				<label>@text/config.enableUndecoded.label</label>
-				<description>@text/config.enableUndecoded.description</description>
+				<description>@text/config.enableUndecoded.description.</description>
 				<default>false</default>
 			</parameter>
 			<parameter name="enableVisonic" type="boolean">
 				<label>@text/config.enableVisonic.label</label>
-				<description>@text/config.enableVisonic.description</description>
+				<description>@text/config.enableVisonic.description.</description>
 				<default>false</default>
 			</parameter>
 			<parameter name="enableX10" type="boolean">
 				<label>@text/config.enableX10.label</label>
-				<description>@text/config.enableX10.description</description>
+				<description>@text/config.enableX10.description.</description>
 				<default>false</default>
 			</parameter>
 

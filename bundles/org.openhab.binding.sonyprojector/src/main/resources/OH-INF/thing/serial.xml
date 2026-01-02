@@ -7,7 +7,7 @@
 	<!-- Sony Serial Connection Thing Type -->
 	<thing-type id="serialconnection">
 		<label>Sony Serial Connection</label>
-		<description>Serial connection to the Sony projector</description>
+		<description>Serial connection to the Sony projector.</description>
 		<semantic-equipment-tag>Projector</semantic-equipment-tag>
 		<channels>
 			<channel id="power" typeId="system.power"/>

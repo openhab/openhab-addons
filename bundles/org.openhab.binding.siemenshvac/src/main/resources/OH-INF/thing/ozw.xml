@@ -7,7 +7,7 @@
 	<!-- Bridge Thing Type -->
 	<bridge-type id="ozw">
 		<label>OZW IP Gateway</label>
-		<description>This is an OZW IP interface</description>
+		<description>This is an OZW IP interface.</description>
 		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
 		<config-description>
 			<parameter name="baseUrl" type="text" pattern="(http|https):\/\/(.+)\/">
@@ -18,14 +18,14 @@
 				<required>true</required>
 			</parameter>
 			<parameter name="userName" type="text">
-				<description>User name of the Siemens HVAC gateway</description>
+				<description>User name of the Siemens HVAC gateway.</description>
 				<required>false</required>
 				<label>User Name</label>
 				<default>Administrator</default>
 			</parameter>
 			<parameter name="userPassword" type="text">
 				<context>password</context>
-				<description>User password of the Siemens HVAC gateway</description>
+				<description>User password of the Siemens HVAC gateway.</description>
 				<required>false</required>
 				<label>User Password</label>
 				<default>password</default>

@@ -9,7 +9,7 @@
 		<label>Thermostat</label>
 		<description>
 			CT30, CT50/3M50 or CT80 Wi-Fi Thermostat
-		</description>
+		.</description>
 		<semantic-equipment-tag>Thermostat</semantic-equipment-tag>
 
 		<channels>
@@ -47,7 +47,7 @@
 	<channel-type id="temperature">
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature</label>
-		<description>The Current Temperature Reading of the Thermostat</description>
+		<description>The Current Temperature Reading of the Thermostat.</description>
 		<category>Temperature</category>
 		<tags>
 			<tag>Measurement</tag>
@@ -59,7 +59,7 @@
 	<channel-type id="humidity">
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Humidity</label>
-		<description>The Current Humidity Reading of the Thermostat</description>
+		<description>The Current Humidity Reading of the Thermostat.</description>
 		<category>Humidity</category>
 		<tags>
 			<tag>Measurement</tag>
@@ -71,7 +71,7 @@
 	<channel-type id="mode">
 		<item-type>Number</item-type>
 		<label>Mode</label>
-		<description>The Current Operating Mode of the HVAC System</description>
+		<description>The Current Operating Mode of the HVAC System.</description>
 		<tags>
 			<tag>Control</tag>
 			<tag>Mode</tag>
@@ -89,7 +89,7 @@
 	<channel-type id="fan-mode">
 		<item-type>Number</item-type>
 		<label>Fan Mode</label>
-		<description>The Current Operating Mode of the Fan</description>
+		<description>The Current Operating Mode of the Fan.</description>
 		<tags>
 			<tag>Control</tag>
 			<tag>Airflow</tag>
@@ -99,7 +99,7 @@
 	<channel-type id="program_mode" advanced="true">
 		<item-type>Number</item-type>
 		<label>Program Mode</label>
-		<description>The Program Schedule That the Thermostat Is Running</description>
+		<description>The Program Schedule That the Thermostat Is Running.</description>
 		<state>
 			<options>
 				<option value="-1">None</option>
@@ -114,7 +114,7 @@
 	<channel-type id="temperature-setpoint">
 		<item-type>Number</item-type>
 		<label>Setpoint</label>
-		<description>The Current Temperature Set Point of the Thermostat</description>
+		<description>The Current Temperature Set Point of the Thermostat.</description>
 		<category>Temperature</category>
 		<tags>
 			<tag>Setpoint</tag>
@@ -126,14 +126,14 @@
 	<channel-type id="override">
 		<item-type>Number</item-type>
 		<label>Override</label>
-		<description>Indicates If the Normal Program Setpoint Has Been Manually Overriden</description>
+		<description>Indicates If the Normal Program Setpoint Has Been Manually Overriden.</description>
 		<state readOnly="true" pattern="%d"/>
 	</channel-type>
 
 	<channel-type id="hold">
 		<item-type>Switch</item-type>
 		<label>Hold</label>
-		<description>Indicates If the Current Set Point Temperature Is to Be Held Indefinitely</description>
+		<description>Indicates If the Current Set Point Temperature Is to Be Held Indefinitely.</description>
 		<tags>
 			<tag>Status</tag>
 			<tag>Temperature</tag>
@@ -143,7 +143,7 @@
 	<channel-type id="status">
 		<item-type>Number</item-type>
 		<label>Status</label>
-		<description>Indicates the Current Running Status of the HVAC System</description>
+		<description>Indicates the Current Running Status of the HVAC System.</description>
 		<tags>
 			<tag>Status</tag>
 			<tag>Mode</tag>
@@ -154,7 +154,7 @@
 	<channel-type id="fan-status">
 		<item-type>Number</item-type>
 		<label>Fan Status</label>
-		<description>Indicates the Current Fan Status of the HVAC System</description>
+		<description>Indicates the Current Fan Status of the HVAC System.</description>
 		<tags>
 			<tag>Status</tag>
 			<tag>Airflow</tag>
@@ -166,42 +166,42 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Remote Temperature</label>
 		<description>The remote temperature takes the place of the ambient temperature as read by the local thermostat
-			temperature sensor</description>
+			temperature sensor.</description>
 		<state pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="t_day" advanced="true">
 		<item-type>Number</item-type>
 		<label>Day</label>
-		<description>The Current Day of the Week Reported by the Thermostat</description>
+		<description>The Current Day of the Week Reported by the Thermostat.</description>
 		<state readOnly="true" pattern="%d"/>
 	</channel-type>
 
 	<channel-type id="t_hour" advanced="true">
 		<item-type>Number</item-type>
 		<label>Hour</label>
-		<description>The Current Hour of the Day Reported by the Thermostat</description>
+		<description>The Current Hour of the Day Reported by the Thermostat.</description>
 		<state readOnly="true" pattern="%d"/>
 	</channel-type>
 
 	<channel-type id="t_minute" advanced="true">
 		<item-type>Number</item-type>
 		<label>Minute</label>
-		<description>The Current Minute Past the Hour Reported by the Thermostat</description>
+		<description>The Current Minute Past the Hour Reported by the Thermostat.</description>
 		<state readOnly="true" pattern="%d"/>
 	</channel-type>
 
 	<channel-type id="dt_stamp" advanced="true">
 		<item-type>String</item-type>
 		<label>Thermostat Date</label>
-		<description>The Current Day of the Week and Time Reported by the Thermostat</description>
+		<description>The Current Day of the Week and Time Reported by the Thermostat.</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="today_heat_runtime">
 		<item-type>Number:Time</item-type>
 		<label>Today's Heating Runtime</label>
-		<description>The Number of Minutes of Heating Run-time Today</description>
+		<description>The Number of Minutes of Heating Run-time Today.</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Duration</tag>
@@ -212,7 +212,7 @@
 	<channel-type id="today_cool_runtime">
 		<item-type>Number:Time</item-type>
 		<label>Today's Cooling Runtime</label>
-		<description>The Number of Minutes of Cooling Run-time Today</description>
+		<description>The Number of Minutes of Cooling Run-time Today.</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Duration</tag>
@@ -223,7 +223,7 @@
 	<channel-type id="yesterday_heat_runtime">
 		<item-type>Number:Time</item-type>
 		<label>Yesterday's Heating Runtime</label>
-		<description>The Number of Minutes of Heating Run-time Yesterday</description>
+		<description>The Number of Minutes of Heating Run-time Yesterday.</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Duration</tag>
@@ -234,7 +234,7 @@
 	<channel-type id="yesterday_cool_runtime">
 		<item-type>Number:Time</item-type>
 		<label>Yesterday's Cooling Runtime</label>
-		<description>The Number of Minutes of Cooling Run-time Yesterday</description>
+		<description>The Number of Minutes of Cooling Run-time Yesterday.</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Duration</tag>
@@ -245,13 +245,13 @@
 	<channel-type id="message" advanced="true">
 		<item-type>String</item-type>
 		<label>Message</label>
-		<description>Use this channel to display a number in the price message area</description>
+		<description>Use this channel to display a number in the price message area.</description>
 	</channel-type>
 
 	<channel-type id="next_temp" advanced="true">
 		<item-type>Number:Temperature</item-type>
 		<label>Next Set Temp</label>
-		<description>Displays the next scheduled thermostat set point temperature</description>
+		<description>Displays the next scheduled thermostat set point temperature.</description>
 		<category>Temperature</category>
 		<tags>
 			<tag>Setpoint</tag>
@@ -263,7 +263,7 @@
 	<channel-type id="next_time" advanced="true">
 		<item-type>DateTime</item-type>
 		<label>Next Set Time</label>
-		<description>Displays the next scheduled thermostat set point time</description>
+		<description>Displays the next scheduled thermostat set point time.</description>
 		<category>Time</category>
 		<tags>
 			<tag>Status</tag>

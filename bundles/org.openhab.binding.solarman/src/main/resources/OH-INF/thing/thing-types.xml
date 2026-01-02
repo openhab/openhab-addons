@@ -74,7 +74,7 @@
 				<description>Additional requests besides the ones defined in the inverter definition.
 					Format:
 					mb_functioncode1:start1-end1, mb_functioncode2:start2-end2, ...
-					Example: 0x03:0x0000-0x0100,0x03:0x0200-0x0300</description>
+					Example: 0x03:0x0000-0x0100,0x03:0x0200-0x0300.</description>
 				<advanced>true</advanced>
 			</parameter>
 		</config-description>

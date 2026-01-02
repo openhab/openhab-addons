@@ -11,16 +11,16 @@
 		</parameter>
 		<parameter name="notificationTimeout" type="integer" unit="s">
 			<label>Notification Timeout</label>
-			<description>Specifies the amount of time in seconds for which the notification sound will be played</description>
+			<description>Specifies the amount of time in seconds for which the notification sound will be played.</description>
 			<default>20</default>
 		</parameter>
 		<parameter name="notificationVolume" type="integer" min="0" max="100" step="1" unit="%">
 			<label>Notification Sound Volume</label>
-			<description>Specifies the volume in percent applied to a notification sound</description>
+			<description>Specifies the volume in percent applied to a notification sound.</description>
 		</parameter>
 		<parameter name="refresh" type="integer" unit="s">
 			<label>Refresh Interval</label>
-			<description>Specifies the refresh interval in seconds</description>
+			<description>Specifies the refresh interval in seconds.</description>
 			<default>60</default>
 		</parameter>
 	</config-description>

@@ -5,7 +5,7 @@
 
 	<type>binding</type>
 	<name>Sensor.Community Binding</name>
-	<description>Binding to integrate DIY Sensors from Sensor.Community</description>
+	<description>Binding to integrate DIY Sensors from Sensor.Community.</description>
 	<connection>hybrid</connection>
 
 </addon:addon>

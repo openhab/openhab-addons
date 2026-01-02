@@ -6,7 +6,7 @@
 
 	<thing-type id="shellyplusrgbwpm">
 		<label>Shelly Plus RGBW</label>
-		<description>@text/thing-type.shelly.shellyplusrgbw.description</description>
+		<description>@text/thing-type.shelly.shellyplusrgbw.description.</description>
 		<category>ColorLight</category>
 		<semantic-equipment-tag>Lightbulb</semantic-equipment-tag>
 		<channel-groups>
@@ -22,12 +22,12 @@
 
 	<channel-group-type id="rgbwpmColorControl">
 		<label>@text/channel-group-type.shelly.rgbwpmColorControl.label</label>
-		<description>@text/channel-group-type.shelly.rgbwpmColorControl.description</description>
+		<description>@text/channel-group-type.shelly.rgbwpmColorControl.description.</description>
 	</channel-group-type>
 
 	<channel-group-type id="colorSettingsRGBWpm">
 		<label>@text/channel-group-type.shelly.colorSettingsRGBWpm.label</label>
-		<description>@text/channel-group-type.shelly.colorSettingsRGBWpm.description</description>
+		<description>@text/channel-group-type.shelly.colorSettingsRGBWpm.description.</description>
 		<channels>
 			<channel id="hsb" typeId="system.color"/>
 			<channel id="full" typeId="colorFull"/>

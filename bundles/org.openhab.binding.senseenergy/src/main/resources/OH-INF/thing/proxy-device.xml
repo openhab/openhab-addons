@@ -14,7 +14,7 @@
 		<description>
 			A proxy device to notify the sense monitor of real-time power draw. All channels are "one-way" in that
 			they only report their settings to Sense.
-		</description>
+		.</description>
 
 		<channels>
 			<channel id="proxy-device-power" typeId="proxy-device-power"/>
@@ -70,7 +70,7 @@
 		<label>Device Switch</label>
 		<description>OnOff switch to notify when device is On/Off. This will report to sense the full ON or full OFF values
 			specified.
-		</description>
+		.</description>
 		<tags>
 			<tag>Switch</tag>
 			<tag>Power</tag>

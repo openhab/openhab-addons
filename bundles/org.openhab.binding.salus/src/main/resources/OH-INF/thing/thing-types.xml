@@ -16,7 +16,7 @@
 			with the Salus cloud bridge. Channels will be discovered and established at runtime.
 			The 'dsn' (ID in Salus cloud
 			system) is a mandatory configuration parameter.
-		</description>
+		.</description>
 		<!-- Note: Channels will be discovered at runtime -->
 		<representation-property>dsn</representation-property>
 		<config-description>
@@ -27,7 +27,7 @@
 					cloud system. It's crucial for the correct operation of the Salus device,
 					enabling communication between the device
 					and the cloud.
-				</description>
+				.</description>
 			</parameter>
 		</config-description>
 	</thing-type>
@@ -40,7 +40,7 @@
 			This channel type represents a generic output.
 			The channel is read-only and its state is represented as a
 			string.
-		</description>
+		.</description>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="generic-input-channel">
@@ -50,7 +50,7 @@
 			This channel type represents a generic input.
 			The channel is write-only and its state is represented as a
 			string.
-		</description>
+		.</description>
 	</channel-type>
 	<!-- Generic Bool -->
 	<channel-type id="generic-output-bool-channel">
@@ -60,7 +60,7 @@
 			This channel type represents a generic output.
 			The channel is read-only and its state is represented as a
 			boolean.
-		</description>
+		.</description>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="generic-input-bool-channel">
@@ -70,7 +70,7 @@
 			This channel type represents a generic input.
 			The channel is write-only and its state is represented as a
 			boolean.
-		</description>
+		.</description>
 	</channel-type>
 	<!-- Generic Number -->
 	<channel-type id="generic-output-number-channel">
@@ -80,7 +80,7 @@
 			This channel type represents a generic output.
 			The channel is read-only and its state is represented as a
 			numeric.
-		</description>
+		.</description>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="generic-input-number-channel">
@@ -90,7 +90,7 @@
 			This channel type represents a generic input.
 			The channel is write-only and its state is represented as a
 			numeric.
-		</description>
+		.</description>
 	</channel-type>
 	<!-- Temp channels -->
 	<channel-type id="temperature-output-channel">
@@ -100,7 +100,7 @@
 			This channel type represents a generic output.
 			The channel is read-only and its state is represented as a
 			temperature (numeric).
-		</description>
+		.</description>
 		<category>Temperature</category>
 		<tags>
 			<tag>Measurement</tag>
@@ -115,7 +115,7 @@
 			This channel type represents a generic input.
 			The channel is write-only and its state is represented as a
 			temperature (numeric).
-		</description>
+		.</description>
 		<category>Temperature</category>
 		<tags>
 			<tag>Setpoint</tag>

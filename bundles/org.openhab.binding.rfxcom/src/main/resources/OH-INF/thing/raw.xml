@@ -30,7 +30,7 @@
 			</parameter>
 			<parameter name="subType" type="text" required="true">
 				<label>@text/config.subType.label</label>
-				<description>@text/config.subType.description</description>
+				<description>@text/config.subType.description.</description>
 				<options>
 					<option value="RAW_PACKET1">RAW_PACKET1</option>
 					<option value="RAW_PACKET2">RAW_PACKET2</option>

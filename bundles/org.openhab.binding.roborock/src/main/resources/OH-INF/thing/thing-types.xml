@@ -6,7 +6,7 @@
 
 	<bridge-type id="account">
 		<label>Account</label>
-		<description>Control Roborock devices</description>
+		<description>Control Roborock devices.</description>
 		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 
 		<representation-property>uniqueId</representation-property>
@@ -14,11 +14,11 @@
 		<config-description>
 			<parameter name="email" type="text" required="true">
 				<label>Email Address</label>
-				<description>email address for Roborock account</description>
+				<description>email address for Roborock account.</description>
 			</parameter>
 			<parameter name="twofa" type="text">
 				<label>2FA</label>
-				<description>2FA code from email. Leave blank until code is received via email</description>
+				<description>2FA code from email. Leave blank until code is received via email.</description>
 			</parameter>
 		</config-description>
 	</bridge-type>
@@ -27,7 +27,7 @@
 			<bridge-type-ref id="account"/>
 		</supported-bridge-type-refs>
 		<label>Robot Vacuum</label>
-		<description>Roborock Robot Vacuum Cleaner</description>
+		<description>Roborock Robot Vacuum Cleaner.</description>
 		<semantic-equipment-tag>CleaningRobot</semantic-equipment-tag>
 
 		<channel-groups>
@@ -211,7 +211,7 @@
 	<channel-type id="in-cleaning" advanced="true">
 		<item-type>Switch</item-type>
 		<label>In Cleaning?</label>
-		<description>On = Cleaning, Off = Not cleaning</description>
+		<description>On = Cleaning, Off = Not cleaning.</description>
 		<tags>
 			<tag>Status</tag>
 			<tag>Info</tag>
@@ -221,7 +221,7 @@
 	<channel-type id="map-present" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Map Present</label>
-		<description>On = Map present, Off = Map not present</description>
+		<description>On = Map present, Off = Map not present.</description>
 		<category>Energy</category>
 		<tags>
 			<tag>Status</tag>
@@ -305,7 +305,7 @@
 	<channel-type id="led-status" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Led Status</label>
-		<description>On = LEDs on, Off = LEDs off</description>
+		<description>On = LEDs on, Off = LEDs off.</description>
 		<tags>
 			<tag>Status</tag>
 			<tag>Info</tag>
@@ -394,7 +394,7 @@
 	<channel-type id="is-locating">
 		<item-type>Switch</item-type>
 		<label>Robot Locating</label>
-		<description>1 = Robot is locating it's position, 0 = robot is not locating it's position</description>
+		<description>1 = Robot is locating it's position, 0 = robot is not locating it's position.</description>
 		<tags>
 			<tag>Status</tag>
 			<tag>Info</tag>
@@ -442,7 +442,7 @@
 	<channel-type id="collect-dust">
 		<item-type>Switch</item-type>
 		<label>Start Collecting Dust</label>
-		<description>Once the vacuum cleaner is back in place, you can start collecting the dust</description>
+		<description>Once the vacuum cleaner is back in place, you can start collecting the dust.</description>
 		<tags>
 			<tag>Switch</tag>
 			<tag>Mode</tag>
@@ -451,7 +451,7 @@
 	<channel-type id="clean-mop-start">
 		<item-type>Switch</item-type>
 		<label>Start Mop Wash</label>
-		<description>Once the vacuum cleaner is back in place, you can start cleaning the mop</description>
+		<description>Once the vacuum cleaner is back in place, you can start cleaning the mop.</description>
 		<tags>
 			<tag>Switch</tag>
 			<tag>Mode</tag>
@@ -678,7 +678,7 @@
 	<channel-type id="last-clean-start-time">
 		<item-type>DateTime</item-type>
 		<label>Cleaning Start</label>
-		<description>Last Cleaning Start Time</description>
+		<description>Last Cleaning Start Time.</description>
 		<category>Time</category>
 		<tags>
 			<tag>Status</tag>
@@ -689,7 +689,7 @@
 	<channel-type id="last-clean-end-time">
 		<item-type>DateTime</item-type>
 		<label>Cleaning End</label>
-		<description>Last Cleaning End Time</description>
+		<description>Last Cleaning End Time.</description>
 		<category>Time</category>
 		<tags>
 			<tag>Status</tag>

@@ -69,7 +69,7 @@
 			<parameter name="clientId" type="text" required="true">
 				<label>Application Client ID</label>
 				<description>This is the Client ID provided by Spotify when you add a new Application for openHAB to your Spotify
-					Account. Go to https://developer.spotify.com/</description>
+					Account. Go to https://developer.spotify.com/.</description>
 			</parameter>
 			<parameter name="clientSecret" type="text" required="true">
 				<label>Application Client Secret</label>

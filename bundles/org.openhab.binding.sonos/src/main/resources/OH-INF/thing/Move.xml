@@ -7,7 +7,7 @@
 	<!-- Sonos Move Thing Type -->
 	<thing-type id="Move" listed="false">
 		<label>Move</label>
-		<description>Represents SONOS Move speaker</description>
+		<description>Represents SONOS Move speaker.</description>
 		<semantic-equipment-tag>Speaker</semantic-equipment-tag>
 		<channels>
 			<channel id="add" typeId="add"/>

@@ -54,7 +54,7 @@
 	<channel-type id="lineName">
 		<item-type>String</item-type>
 		<label>Line</label>
-		<description>Name of the line (network + line number/letter)</description>
+		<description>Name of the line (network + line number/letter).</description>
 		<state readOnly="true"></state>
 	</channel-type>
 

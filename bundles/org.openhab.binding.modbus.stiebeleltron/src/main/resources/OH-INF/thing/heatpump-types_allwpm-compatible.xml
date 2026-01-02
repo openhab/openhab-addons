@@ -11,7 +11,7 @@
 		</supported-bridge-type-refs>
 		<label>Stiebel Eltron Heat Pump (WPM compatible)</label>
 		<description>A Stiebel Eltron Heat Pump (WPM compatible) thing with extended function support connected through Modbus
-			to an ISG</description>
+			to an ISG.</description>
 		<category>heating</category>
 
 		<channel-groups>

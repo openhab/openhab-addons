@@ -5,26 +5,26 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 	<bridge-type id="gateway">
 		<label>Sinopé Gateway</label>
-		<description>A Sinopé Gateway</description>
+		<description>A Sinopé Gateway.</description>
 		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
 		<config-description>
 			<parameter name="hostname" type="text" required="true">
 				<label>Hostname</label>
-				<description>Hostname of the Sinopé Gateway</description>
+				<description>Hostname of the Sinopé Gateway.</description>
 				<context>network-address</context>
 			</parameter>
 			<parameter name="port" type="integer">
 				<label>Port</label>
-				<description>The port that the Sinopé Gateway listens on</description>
+				<description>The port that the Sinopé Gateway listens on.</description>
 				<default>4550</default>
 			</parameter>
 			<parameter name="gatewayId" type="text" required="true">
 				<label>Gateway ID</label>
-				<description>The Sinopé gateway ID (as printed on the back-side, e.g. "xxxx xxxx xxxx xxxx")</description>
+				<description>The Sinopé gateway ID (as printed on the back-side, e.g. "xxxx xxxx xxxx xxxx").</description>
 			</parameter>
 			<parameter name="apiKey" type="text" required="true">
 				<label>API Key</label>
-				<description>Use sinope-core application to generate your api key</description>
+				<description>Use sinope-core application to generate your api key.</description>
 			</parameter>
 			<parameter name="refresh" type="integer" required="false">
 				<label>Refresh Interval</label>
@@ -39,7 +39,7 @@
 			<bridge-type-ref id="gateway"/>
 		</supported-bridge-type-refs>
 		<label>Sinopé Thermostat</label>
-		<description>Sinopé Thermostat control</description>
+		<description>Sinopé Thermostat control.</description>
 		<semantic-equipment-tag>Thermostat</semantic-equipment-tag>
 		<channels>
 			<channel id="insideTemperature" typeId="insideTemperature"/>
@@ -58,7 +58,7 @@
 	<channel-type id="insideTemperature">
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature</label>
-		<description>Current inside temperature</description>
+		<description>Current inside temperature.</description>
 		<category>Temperature</category>
 		<!-- As specified by manufacturer -->
 		<tags>
@@ -71,7 +71,7 @@
 	<channel-type id="outsideTemperature">
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature</label>
-		<description>Current outside temperature</description>
+		<description>Current outside temperature.</description>
 		<category>Temperature</category>
 		<tags>
 			<tag>Measurement</tag>
@@ -83,7 +83,7 @@
 	<channel-type id="setpointTemperature">
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature</label>
-		<description>Setpoint temperature</description>
+		<description>Setpoint temperature.</description>
 		<category>Temperature</category>
 		<tags>
 			<tag>Setpoint</tag>
@@ -95,7 +95,7 @@
 	<channel-type id="setpointMode">
 		<item-type>Number</item-type>
 		<label>Setpoint Mode</label>
-		<description>Thermostat setpoint mode</description>
+		<description>Thermostat setpoint mode.</description>
 		<category>Temperature</category>
 		<state pattern="%s" readOnly="false">
 			<options>
@@ -114,7 +114,7 @@
 	<channel-type id="heatingLevel">
 		<item-type>Dimmer</item-type>
 		<label>Heat Level</label>
-		<description>Heating Level</description>
+		<description>Heating Level.</description>
 		<category>Heating</category>
 		<state min="0" max="100" step="1" pattern="%d %%" readOnly="true"/>
 	</channel-type>

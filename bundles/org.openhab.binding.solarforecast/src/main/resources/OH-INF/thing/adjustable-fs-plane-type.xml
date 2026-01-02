@@ -10,7 +10,7 @@
 		</supported-bridge-type-refs>
 
 		<label>Adjustable Forecast Solar Plane</label>
-		<description>Adjustable PV plane attached to forecast solar paid subscription site</description>
+		<description>Adjustable PV plane attached to forecast solar paid subscription site.</description>
 
 		<channels>
 			<channel id="power-estimate" typeId="power-estimate"/>

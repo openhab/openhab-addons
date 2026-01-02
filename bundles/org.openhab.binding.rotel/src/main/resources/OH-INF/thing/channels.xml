@@ -6,7 +6,7 @@
 
 	<channel-group-type id="mainZoneType1">
 		<label>@text/channel-group.mainZone.label</label>
-		<description>@text/channel-group.mainZone.description</description>
+		<description>@text/channel-group.mainZone.description.</description>
 		<channels>
 			<channel id="power" typeId="system.power"/>
 			<channel id="source" typeId="source"/>
@@ -24,7 +24,7 @@
 
 	<channel-group-type id="mainZoneType2">
 		<label>@text/channel-group.mainZone.label</label>
-		<description>@text/channel-group.mainZone.description</description>
+		<description>@text/channel-group.mainZone.description.</description>
 		<channels>
 			<channel id="power" typeId="system.power"/>
 			<channel id="source" typeId="source"/>
@@ -40,7 +40,7 @@
 
 	<channel-group-type id="mainZoneType3">
 		<label>@text/channel-group.mainZone.label</label>
-		<description>@text/channel-group.mainZone.description</description>
+		<description>@text/channel-group.mainZone.description.</description>
 		<channels>
 			<channel id="power" typeId="system.power"/>
 			<channel id="source" typeId="source"/>
@@ -57,7 +57,7 @@
 
 	<channel-group-type id="mainZoneType4">
 		<label>@text/channel-group.mainZone.label</label>
-		<description>@text/channel-group.mainZone.description</description>
+		<description>@text/channel-group.mainZone.description.</description>
 		<channels>
 			<channel id="power" typeId="system.power"/>
 			<channel id="source" typeId="source"/>
@@ -75,7 +75,7 @@
 
 	<channel-group-type id="mainZoneType5">
 		<label>@text/channel-group.mainZone.label</label>
-		<description>@text/channel-group.mainZone.description</description>
+		<description>@text/channel-group.mainZone.description.</description>
 		<channels>
 			<channel id="power" typeId="system.power"/>
 			<channel id="source" typeId="source"/>
@@ -92,7 +92,7 @@
 
 	<channel-group-type id="mainZoneType6">
 		<label>@text/channel-group.mainZone.label</label>
-		<description>@text/channel-group.mainZone.description</description>
+		<description>@text/channel-group.mainZone.description.</description>
 		<channels>
 			<channel id="power" typeId="system.power"/>
 			<channel id="source" typeId="source"/>
@@ -110,7 +110,7 @@
 
 	<channel-group-type id="zone2type1">
 		<label>@text/channel-group.zone2.label</label>
-		<description>@text/channel-group.zone2.description</description>
+		<description>@text/channel-group.zone2.description.</description>
 		<channels>
 			<channel id="power" typeId="system.power"/>
 			<channel id="source" typeId="source"/>
@@ -121,7 +121,7 @@
 
 	<channel-group-type id="zone2type2">
 		<label>@text/channel-group.zone2.label</label>
-		<description>@text/channel-group.zone2.description</description>
+		<description>@text/channel-group.zone2.description.</description>
 		<channels>
 			<channel id="power" typeId="system.power"/>
 			<channel id="source" typeId="source"/>
@@ -131,7 +131,7 @@
 
 	<channel-group-type id="zone3">
 		<label>@text/channel-group.zone3.label</label>
-		<description>@text/channel-group.zone3.description</description>
+		<description>@text/channel-group.zone3.description.</description>
 		<channels>
 			<channel id="power" typeId="system.power"/>
 			<channel id="source" typeId="source"/>
@@ -142,7 +142,7 @@
 
 	<channel-group-type id="zone4">
 		<label>@text/channel-group.zone4.label</label>
-		<description>@text/channel-group.zone4.description</description>
+		<description>@text/channel-group.zone4.description.</description>
 		<channels>
 			<channel id="power" typeId="system.power"/>
 			<channel id="source" typeId="source"/>
@@ -153,7 +153,7 @@
 
 	<channel-group-type id="allZones">
 		<label>@text/channel-group.allZones.label</label>
-		<description>@text/channel-group.allZones.description</description>
+		<description>@text/channel-group.allZones.description.</description>
 		<channels>
 			<channel id="power" typeId="system.power"/>
 			<channel id="brightness" typeId="brightness"/>
@@ -162,7 +162,7 @@
 
 	<channel-group-type id="zone">
 		<label>@text/channel-group.zone.label</label>
-		<description>@text/channel-group.zone.description</description>
+		<description>@text/channel-group.zone.description.</description>
 		<channels>
 			<channel id="source" typeId="source"/>
 			<channel id="volume" typeId="system.volume"/>
@@ -177,25 +177,25 @@
 	<channel-type id="source">
 		<item-type>String</item-type>
 		<label>Source Input</label>
-		<description>Select the source input</description>
+		<description>Select the source input.</description>
 	</channel-type>
 
 	<channel-type id="recordSource" advanced="true">
 		<item-type>String</item-type>
 		<label>Record Source</label>
-		<description>Select the source to be recorded</description>
+		<description>Select the source to be recorded.</description>
 	</channel-type>
 
 	<channel-type id="dsp">
 		<item-type>String</item-type>
 		<label>DSP Mode</label>
-		<description>Select the DSP mode</description>
+		<description>Select the DSP mode.</description>
 	</channel-type>
 
 	<channel-type id="volumeUpDown">
 		<item-type>Number</item-type>
 		<label>Volume</label>
-		<description>Increase or decrease the volume</description>
+		<description>Increase or decrease the volume.</description>
 		<category>SoundVolume</category>
 		<tags>
 			<tag>Control</tag>
@@ -208,7 +208,7 @@
 	<channel-type id="bass" advanced="true">
 		<item-type>Number</item-type>
 		<label>Bass Adjustment</label>
-		<description>Adjust the bass</description>
+		<description>Adjust the bass.</description>
 		<state pattern="%d" readOnly="false"/>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
@@ -216,7 +216,7 @@
 	<channel-type id="treble" advanced="true">
 		<item-type>Number</item-type>
 		<label>Treble Adjustment</label>
-		<description>Adjust the treble</description>
+		<description>Adjust the treble.</description>
 		<state pattern="%d" readOnly="false"/>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
@@ -224,21 +224,21 @@
 	<channel-type id="track" advanced="true">
 		<item-type>Number</item-type>
 		<label>Current Track</label>
-		<description>The current CD track number</description>
+		<description>The current CD track number.</description>
 		<state pattern="%d" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="random" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Random Mode</label>
-		<description>The current random mode</description>
+		<description>The current random mode.</description>
 		<state readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="repeat" advanced="true">
 		<item-type>String</item-type>
 		<label>Repeat Mode</label>
-		<description>The current repeat mode</description>
+		<description>The current repeat mode.</description>
 		<state readOnly="false" pattern="%s">
 			<options>
 				<option value="TRACK">Track</option>
@@ -251,56 +251,56 @@
 	<channel-type id="frequency" advanced="true">
 		<item-type>Number</item-type>
 		<label>Current Frequency</label>
-		<description>The current frequency (in kHz) for digital source input</description>
+		<description>The current frequency (in kHz) for digital source input.</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="frontPanelLine" advanced="true">
 		<item-type>String</item-type>
 		<label>Front Panel Line</label>
-		<description>The line content displayed on the device front panel</description>
+		<description>The line content displayed on the device front panel.</description>
 	</channel-type>
 
 	<channel-type id="brightness" advanced="true">
 		<item-type>Dimmer</item-type>
 		<label>Front Panel Display Brightness</label>
-		<description>The backlight brightness level (in %) of the device front panel</description>
+		<description>The backlight brightness level (in %) of the device front panel.</description>
 	</channel-type>
 
 	<channel-type id="tcbypass" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Tone Control Bypass</label>
-		<description>The user's bass-/treble-settings are bypassed</description>
+		<description>The user's bass-/treble-settings are bypassed.</description>
 	</channel-type>
 
 	<channel-type id="balance" advanced="true">
 		<item-type>Number</item-type>
 		<label>Balance Adjustment</label>
-		<description>Adjust the speakers left-right balance</description>
+		<description>Adjust the speakers left-right balance.</description>
 	</channel-type>
 
 	<channel-type id="speakera" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Speaker-A Adjustment</label>
-		<description>Turn on/off the speaker group A</description>
+		<description>Turn on/off the speaker group A.</description>
 	</channel-type>
 
 	<channel-type id="speakerb" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Speaker-B Adjustment</label>
-		<description>Turn on/off the speaker group B</description>
+		<description>Turn on/off the speaker group B.</description>
 	</channel-type>
 
 	<channel-type id="otherCommand" advanced="true">
 		<item-type>String</item-type>
 		<label>Other Command</label>
-		<description>Choose the command to send to the device</description>
+		<description>Choose the command to send to the device.</description>
 	</channel-type>
 
 	<channel-type id="radioPreset">
 		<item-type>Number</item-type>
 		<label>Radio Preset</label>
-		<description>Select a radio preset</description>
+		<description>Select a radio preset.</description>
 		<state pattern="%d" readOnly="false" min="1" max="30"/>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>

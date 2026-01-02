@@ -83,7 +83,7 @@
 	<channel-type id="smsmodemreceivetrigger">
 		<kind>trigger</kind>
 		<label>Message Received</label>
-		<description>Triggered when a message is received, in the form "&lt;msisdn_sender&gt;|&lt;text&gt;"</description>
+		<description>Triggered when a message is received, in the form "&lt;msisdn_sender&gt;|&lt;text&gt;".</description>
 		<event/>
 	</channel-type>
 

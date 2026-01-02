@@ -26,7 +26,7 @@
 		<config-description>
 			<parameter name="deviceId" type="text" required="true">
 				<label>@text/config.deviceId.label</label>
-				<description>Sensor Id. Example 56923</description>
+				<description>Sensor Id. Example 56923.</description>
 			</parameter>
 		</config-description>
 	</thing-type>

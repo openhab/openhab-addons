@@ -16,7 +16,7 @@
 <li>hardwired - on the control panel electronics board and in expanders. The number of available hardwired outputs is determined by the control panel during identification procedure.</li>
 <li>wireless - in the INTEGRA 128-WRL control panel and/or when the ACU-120, ACU-270, ACU-100 or ACU-250 controller is connected. The number of available wireless outputs depends on the number of wireless devices registered in the system and is determined during the procedure of adding wireless devices.</li>
 <li>virtual - the outputs which do not exist physically, but can be used e.g. for execution of logical functions.</li></ul>]]>
-		</description>
+		.</description>
 		<semantic-equipment-tag>AlarmDevice</semantic-equipment-tag>
 		<channels>
 			<channel typeId="output_state" id="state"/>
@@ -25,15 +25,15 @@
 		<config-description>
 			<parameter name="id" type="integer" min="1" max="256" required="true">
 				<label>Output Number</label>
-				<description>Number that identifies the output in the alarm system</description>
+				<description>Number that identifies the output in the alarm system.</description>
 			</parameter>
 			<parameter name="invertState" type="boolean" required="false">
 				<label>Invert State</label>
-				<description>Changes active (ON) state to 0</description>
+				<description>Changes active (ON) state to 0.</description>
 			</parameter>
 			<parameter name="commandOnly" type="boolean" required="false">
 				<label>Command Only</label>
-				<description>Accepts commands only, does not update state of the thing</description>
+				<description>Accepts commands only, does not update state of the thing.</description>
 			</parameter>
 			<parameter name="wireless" type="boolean" required="false">
 				<label>Wireless Output</label>
@@ -46,7 +46,7 @@
 	<channel-type id="output_state">
 		<item-type>Switch</item-type>
 		<label>Output State</label>
-		<description>Represents state of the output</description>
+		<description>Represents state of the output.</description>
 		<tags>
 			<tag>Switch</tag>
 		</tags>

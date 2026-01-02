@@ -38,7 +38,7 @@
 					<option value="EncUcs2">EncUcs2</option>
 					<option value="EncCustom">EncCustom</option>
 				</options>
-				<description>Encoding for the message to send. Default Enc7</description>
+				<description>Encoding for the message to send. Default Enc7.</description>
 				<default>Enc7</default>
 			</parameter>
 		</config-description>
@@ -53,12 +53,12 @@
 	<channel-type id="receive">
 		<item-type>String</item-type>
 		<label>Message Received</label>
-		<description>Last message received</description>
+		<description>Last message received.</description>
 	</channel-type>
 
 	<channel-type id="deliverystatus">
 		<item-type>String</item-type>
 		<label>Delivery Status</label>
-		<description>Last message delivery status (either UNKNOWN, QUEUED, SENT, PENDING, DELIVERED, EXPIRED, or FAILED)</description>
+		<description>Last message delivery status (either UNKNOWN, QUEUED, SENT, PENDING, DELIVERED, EXPIRED, or FAILED).</description>
 	</channel-type>
 </thing:thing-descriptions>

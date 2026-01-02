@@ -7,7 +7,7 @@
 	<!-- Sony Serial over IP Connection Thing Type -->
 	<thing-type id="serialoveripconnection">
 		<label>Sony Serial over IP Connection</label>
-		<description>Serial over IP connection to the Sony projector</description>
+		<description>Serial over IP connection to the Sony projector.</description>
 		<semantic-equipment-tag>Projector</semantic-equipment-tag>
 		<channels>
 			<channel id="power" typeId="system.power"/>
