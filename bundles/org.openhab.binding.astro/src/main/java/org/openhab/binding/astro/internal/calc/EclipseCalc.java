@@ -1,5 +1,6 @@
 /*
 <<<<<<< Upstream, based on main
+<<<<<<< Upstream, based on main
  * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
@@ -106,6 +107,9 @@ public abstract class EclipseCalc extends AstroCalc {
     }
 =======
  * Copyright (c) 2010-2025 Contributors to the openHAB project
+=======
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
+>>>>>>> 4379247 Some headers were missing.
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.

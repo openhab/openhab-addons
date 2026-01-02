@@ -1,5 +1,6 @@
 /*
 <<<<<<< Upstream, based on main
+<<<<<<< Upstream, based on main
  * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
@@ -53,6 +54,9 @@ public class AstroCalc {
         return ((jd + tz - DateTimeUtils.JD_2000_01_01) / 365.0) * 12.3685;
 =======
  * Copyright (c) 2010-2025 Contributors to the openHAB project
+=======
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
+>>>>>>> 4379247 Some headers were missing.
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
