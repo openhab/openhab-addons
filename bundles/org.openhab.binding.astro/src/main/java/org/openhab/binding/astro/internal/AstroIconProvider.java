@@ -95,44 +95,48 @@ public class AstroIconProvider implements IconProvider {
 
     @Override
     public @Nullable InputStream getIcon(String category, String iconSetId, @Nullable String state, Format format) {
-        String iconName = String.format(Locale.ROOT, "icon/%s.svg", category);
-        if (ICON_SETS.contains(category) && state != null) {
-            try {
-                String iconState = switch (category) {
-                    case SEASON_SET -> SeasonName.valueOf(state).name().toLowerCase(Locale.US);
-                    case ZODIAC_SET -> ZodiacSign.valueOf(state).name().toLowerCase(Locale.US);
-                    case MOON_PHASE_SET -> MoonPhaseName.valueOf(state).name().toLowerCase(Locale.US);
-                    case MOON_ECLIPSE_SET -> EclipseKind.valueOf(state).name().toLowerCase(Locale.US);
-                    case MOON_DAY_SET -> {
-                        try {
-                            var age = QuantityType.valueOf(state);
-                            if (age.toUnit(Units.DAY) instanceof QuantityType ageInDays) {
-                                yield Integer.toString(ageInDays.intValue());
-                            }
-                        } catch (NumberFormatException ignore) {
-                        }
-                        yield "";
-                    }
-                    default -> throw new IllegalArgumentException("Category of icon not found: %s".formatted(category));
-                };
-                if (!iconState.isEmpty()) {
-                    iconName = iconName.replace(".", "-%s.".formatted(iconState));
-                }
-            } catch (IllegalArgumentException e) {
-                // Invalid state for the icon set, we'll remain on default icon
-                logger.warn("Error retrieving icon for state '{}' - using default. Error: {}", state, e.getMessage());
-            }
+        String set = category.equals(MOON_PHASE_SET) ? MOON_DAY_SET : category;
+        String resourceWithoutState = "icon/" + set + "." + format.toString();
+        if (state == null) {
+            return getResource(resourceWithoutState);
         }
 
-        String result = "";
+        try {
+            String iconState = switch (category) {
+                case SEASON_SET -> SeasonName.valueOf(state).name();
+                case ZODIAC_SET -> ZodiacSign.valueOf(state).name();
+                case MOON_ECLIPSE_SET -> EclipseKind.valueOf(state).name();
+                case MOON_PHASE_SET -> {
+                    yield Integer.toString(MoonPhaseName.valueOf(state).ageDays);
+                }
+                case MOON_DAY_SET -> {
+                    try {
+                        var age = QuantityType.valueOf(state);
+                        if (age.toUnit(Units.DAY) instanceof QuantityType ageInDays) {
+                            yield Integer.toString(ageInDays.intValue());
+                        }
+                    } catch (NumberFormatException ignore) {
+                    }
+                    throw new IllegalArgumentException("Unable to use state '%s' for '%s'".formatted(state, category));
+                }
+                default -> throw new IllegalArgumentException("Icon category '%s' not found".formatted(category));
+            };
+            String resourceWithState = "icon/" + set + "-" + iconState + "." + format.toString();
+            return getResource(resourceWithState);
+        } catch (IllegalArgumentException e) {
+            logger.debug("Use icon {} as state {} is not found", resourceWithoutState, state);
+            return getResource(resourceWithoutState);
+        }
+    }
 
-        URL iconResource = bundle.getEntry(iconName);
+    private @Nullable InputStream getResource(String iconName) {
+        URL iconResource = bundle.getEntry(iconName.toLowerCase(Locale.ROOT));
         try (InputStream stream = iconResource.openStream()) {
-            result = new String(stream.readAllBytes(), StandardCharsets.UTF_8);
+            String result = new String(stream.readAllBytes(), StandardCharsets.UTF_8);
+            return new ByteArrayInputStream(result.getBytes(StandardCharsets.UTF_8));
         } catch (IOException e) {
             logger.warn("Unable to load resource '{}': {}", iconResource.getPath(), e.getMessage());
         }
-
-        return result.isEmpty() ? null : new ByteArrayInputStream(result.getBytes(StandardCharsets.UTF_8));
+        return null;
     }
 }

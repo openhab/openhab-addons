@@ -24,7 +24,6 @@ import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -331,7 +330,7 @@ public abstract class AstroThingHandler extends BaseThingHandler {
      * Adds the provided {@link Job} to the queue (cannot be {@code null})
      */
     public void schedule(Job job, Calendar eventAt) {
-        long sleepTime = eventAt.getTimeInMillis() - new Date().getTime();
+        long sleepTime = eventAt.getTimeInMillis() - System.currentTimeMillis();
         schedule(job, sleepTime);
         if (logger.isDebugEnabled()) {
             final String formattedDate = this.isoFormatter.format(eventAt.getTime());

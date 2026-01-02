@@ -19,6 +19,8 @@ import java.util.GregorianCalendar;
 import java.util.Locale;
 import java.util.TimeZone;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.astro.internal.model.EclipseKind;
@@ -36,10 +38,11 @@ import org.openhab.binding.astro.internal.util.DateTimeUtils;
  * @author Leo Siepel - Initial contribution
  * @see <a href="https://www.heavens-above.com/Moon.aspx">Heavens Above Moon</a>
  */
+@NonNullByDefault
 public class SunMoonEclipseCalcTest {
 
-    private EclipseCalc moonEclipseCalc;
-    private EclipseCalc sunEclipseCalc;
+    private @Nullable EclipseCalc moonEclipseCalc;
+    private @Nullable EclipseCalc sunEclipseCalc;
     private static final TimeZone UTC = TimeZone.getTimeZone("UTC");
 
     @BeforeEach
@@ -55,6 +58,7 @@ public class SunMoonEclipseCalcTest {
         calendar.set(2018, Calendar.DECEMBER, 1, 0, 0, 0);
         double midnightJd = DateTimeUtils.midnightDateToJulianDate(calendar);
 
+        assertNotNull(moonEclipseCalc);
         double eclipseJd2 = moonEclipseCalc.calculate(calendar, midnightJd, EclipseKind.TOTAL);
         Calendar eclipseDate = DateTimeUtils.toCalendar(eclipseJd2, UTC, Locale.US);
 
@@ -73,6 +77,7 @@ public class SunMoonEclipseCalcTest {
         calendar.set(2017, Calendar.JANUARY, 1, 0, 0, 0);
         double midnightJd = DateTimeUtils.midnightDateToJulianDate(calendar);
 
+        assertNotNull(sunEclipseCalc);
         double eclipseJd2 = sunEclipseCalc.calculate(calendar, midnightJd, EclipseKind.TOTAL);
         Calendar eclipseDate = DateTimeUtils.toCalendar(eclipseJd2, UTC, Locale.US);
 
@@ -91,6 +96,7 @@ public class SunMoonEclipseCalcTest {
         calendar.set(2018, Calendar.JULY, 15, 0, 0, 0);
         double midnightJd = DateTimeUtils.midnightDateToJulianDate(calendar);
 
+        assertNotNull(sunEclipseCalc);
         double eclipseJd = sunEclipseCalc.calculate(calendar, midnightJd, EclipseKind.PARTIAL);
         Calendar eclipseDate = DateTimeUtils.toCalendar(eclipseJd, UTC, Locale.US);
 
@@ -107,6 +113,7 @@ public class SunMoonEclipseCalcTest {
         calendar.set(2019, Calendar.JUNE, 1, 0, 0, 0);
         double midnightJd = DateTimeUtils.midnightDateToJulianDate(calendar);
 
+        assertNotNull(moonEclipseCalc);
         double eclipseJd = moonEclipseCalc.calculate(calendar, midnightJd, EclipseKind.PARTIAL);
         Calendar eclipseDate = DateTimeUtils.toCalendar(eclipseJd, UTC, Locale.US);
 
@@ -123,6 +130,7 @@ public class SunMoonEclipseCalcTest {
         calendar.set(2019, Calendar.NOVEMBER, 1, 0, 0, 0);
         double midnightJd = DateTimeUtils.midnightDateToJulianDate(calendar);
 
+        assertNotNull(sunEclipseCalc);
         double eclipseJd = sunEclipseCalc.calculate(calendar, midnightJd, EclipseKind.RING);
         Calendar eclipseDate = DateTimeUtils.toCalendar(eclipseJd, UTC, Locale.US);
 
