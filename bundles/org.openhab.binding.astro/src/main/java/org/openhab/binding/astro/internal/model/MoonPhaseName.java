@@ -21,18 +21,20 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public enum MoonPhaseName {
-    NEW(0),
-    WAXING_CRESCENT(Double.NaN),
-    FIRST_QUARTER(0.25),
-    WAXING_GIBBOUS(Double.NaN),
-    FULL(0.5),
-    WANING_GIBBOUS(Double.NaN),
-    THIRD_QUARTER(0.75), // also called last quarter
-    WANING_CRESCENT(Double.NaN);
+    NEW(1, 0),
+    WAXING_CRESCENT(4, Double.NaN),
+    FIRST_QUARTER(8, 0.25),
+    WAXING_GIBBOUS(11, Double.NaN),
+    FULL(15, 0.5),
+    WANING_GIBBOUS(18, Double.NaN),
+    THIRD_QUARTER(22, 0.75), // also called last quarter
+    WANING_CRESCENT(26, Double.NaN);
 
     public final double mode;
+    public final int ageDays;
 
-    MoonPhaseName(double mode) {
+    MoonPhaseName(int ageDays, double mode) {
         this.mode = mode;
+        this.ageDays = ageDays;
     }
 }
