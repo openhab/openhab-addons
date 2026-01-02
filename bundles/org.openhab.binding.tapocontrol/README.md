@@ -24,8 +24,9 @@ The following Tapo-Devices are supported. For precise channel-description look a
 | Smart Contact Sensor (RF)          | T110        | Window/Door Smart Contact Sensor             |
 | Smart Temperature Sensor (RF)      | T310        | Temperature and Humidity Sensor              |
 |                                    | T315        | Temperature and Humidity Sensor with Display |
-| Smart Switch (RF)                  | S210        | Wall switch with 1 contact                    |
-| Smart Switch (RF)                  | S220        | Wall switch with 2 contacts                   |
+| Smart Switch (RF)                  | S210        | Wall switch with 1 contact                   |
+| Smart Switch (RF)                  | S220        | Wall switch with 2 contacts                  |
+| Smart Light Switch (Wi-Fi)         | HS200       | Wall switch with 1 contact                   |
 
 ## Prerequisites
 
@@ -91,29 +92,29 @@ The things has the following configuration parameters:
 
 All devices support some of the following channels:
 
-| group     | channel          | type                   | description                         | things supporting this channel                                   |
-|-----------|----------------- |------------------------|-------------------------------------|------------------------------------------------------------------|
-| actuator  | output           | Switch                 | Power device on or off              | P100, P105, P110, P115, L510, L530, L610, L630, L900, L920, L930 |
-|           | output1          | Switch                 | Power socket 1 on or off            | P300                                                             |
-|           | output2          | Switch                 | Power socket 2 on or off            | P300                                                             |
-|           | output3          | Switch                 | Power socket 3 on or off            | P300                                                             |
-|           | brightness       | Dimmer                 | Brightness 0-100%                   | L510, L530, L610, L630, L900, L920                               |
-|           | colorTemperature | Number:Temperature     | Color Temperature in Kelvin         | L530 (2500 K .. 6500 K), L630 (2200 K .. 6500 K)                 |
-|           | color            | Color                  | Color                               | L530, L630, L900, L920                                           |
-| sensor    | isOpen           | Switch                 | Contact (Door/Window) is Open       | T110                                                             |
-|           | currentTemp      | Number:Temperature     | Current Temperature                 | T310, T315                                                       |
-|           | currentHumidity  | Number:Dimensionless   | Current relative humidity in %      | T310, T315                                                       |
-| effects   | fxName           | String                 | Active lightning effect             | L530, L900, L920, L930                                           |
-| device    | wifiSignal       | Number                 | WiFi-quality-level                  | P100, P105, P110, P115, L510, L530, L610, L630, L900, L920, L930 |
-|           | onTime           | Number:Time            | seconds output is on                | P100, P105, P110, P115, L510, L530, L900, L920, L930             |
-|           | signalStrength   | Number                 | RF-quality-level                    | T110                                                             |
-|           | isOnline         | Switch                 | Device is Online                    | T110                                                             |
-|           | batteryLow       | Switch                 | Battery of device is low            | T110                                                             |
-| energy    | actualPower      | Number:Power           | actual Power (Watt)                 | P110, P115                                                       |
-|           | todayEnergyUsage | Number:Energy          | used energy today (Wh)              | P110, P115                                                       |
-|           | todayRuntime     | Number:Time            | seconds output was on today         | P110, P115                                                       |
-| alarm     | alarmActive      | Switch                 | Alarm is currntly active            | H100                                                             |
-|           | alarmSource      | String                 | Source causes active alarm          | H100                                                             |
+| group     | channel          | type                   | description                         | things supporting this channel                                          |
+|-----------|----------------- |------------------------|-------------------------------------|-------------------------------------------------------------------------|
+| actuator  | output           | Switch                 | Power device on or off              | P100, P105, P110, P115, L510, L530, L610, L630, L900, L920, L930, HS200 |
+|           | output1          | Switch                 | Power socket 1 on or off            | P300                                                                    |
+|           | output2          | Switch                 | Power socket 2 on or off            | P300                                                                    |
+|           | output3          | Switch                 | Power socket 3 on or off            | P300                                                                    |
+|           | brightness       | Dimmer                 | Brightness 0-100%                   | L510, L530, L610, L630, L900, L920                                      |
+|           | colorTemperature | Number:Temperature     | Color Temperature in Kelvin         | L530 (2500 K .. 6500 K), L630 (2200 K .. 6500 K)                        |
+|           | color            | Color                  | Color                               | L530, L630, L900, L920                                                  |
+| sensor    | isOpen           | Switch                 | Contact (Door/Window) is Open       | T110                                                                    |
+|           | currentTemp      | Number:Temperature     | Current Temperature                 | T310, T315                                                              |
+|           | currentHumidity  | Number:Dimensionless   | Current relative humidity in %      | T310, T315                                                              |
+| effects   | fxName           | String                 | Active lightning effect             | L530, L900, L920, L930                                                  |
+| device    | wifiSignal       | Number                 | WiFi-quality-level                  | P100, P105, P110, P115, L510, L530, L610, L630, L900, L920, L930, HS200 |
+|           | onTime           | Number:Time            | seconds output is on                | P100, P105, P110, P115, L510, L530, L900, L920, L930, HS200             |
+|           | signalStrength   | Number                 | RF-quality-level                    | T110                                                                    |
+|           | isOnline         | Switch                 | Device is Online                    | T110                                                                    |
+|           | batteryLow       | Switch                 | Battery of device is low            | T110                                                                    |
+| energy    | actualPower      | Number:Power           | actual Power (Watt)                 | P110, P115                                                              |
+|           | todayEnergyUsage | Number:Energy          | used energy today (Wh)              | P110, P115                                                              |
+|           | todayRuntime     | Number:Time            | seconds output was on today         | P110, P115                                                              |
+| alarm     | alarmActive      | Switch                 | Alarm is currntly active            | H100                                                                    |
+|           | alarmSource      | String                 | Source causes active alarm          | H100                                                                    |
 
 ## Channel Refresh
 

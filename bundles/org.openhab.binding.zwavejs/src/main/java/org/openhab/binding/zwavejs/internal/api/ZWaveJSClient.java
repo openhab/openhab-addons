@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,7 +10,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 package org.openhab.binding.zwavejs.internal.api;
 
 import java.io.IOException;
@@ -269,10 +268,6 @@ public class ZWaveJSClient implements WebSocketListener {
 
     @Override
     public void onWebSocketText(@NonNullByDefault({}) String message) {
-        if (message.contains("\"event\":\"statistics updated\"")) {
-            return;
-        }
-
         BaseMessage baseEvent = null;
         try {
             baseEvent = gson.fromJson(message, BaseMessage.class);

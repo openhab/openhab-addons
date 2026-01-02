@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,9 +13,7 @@
 package org.openhab.binding.astro.internal.model;
 
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
-import java.util.TimeZone;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -34,7 +32,7 @@ public class Sun extends RiseSet implements Planet {
 
     private Zodiac zodiac = Zodiac.NULL;
 
-    private Season season = new Season(TimeZone.getDefault(), Locale.getDefault());
+    private @Nullable Season season = null;
 
     private Eclipse eclipse = new Eclipse(EclipseKind.PARTIAL, EclipseKind.TOTAL, EclipseKind.RING);
 
@@ -265,6 +263,7 @@ public class Sun extends RiseSet implements Planet {
     /**
      * Returns the seasons.
      */
+    @Nullable
     public Season getSeason() {
         return season;
     }

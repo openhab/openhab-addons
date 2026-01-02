@@ -145,4 +145,13 @@
 		</channels>
 	</channel-group-type>
 
+	<!-- Light Switch -->
+	<channel-group-type id="lightSwitch">
+		<label>Light Switch</label>
+		<description>Tapo Smart Light Switch</description>
+		<channels>
+			<channel id="output" typeId="lightOn"/>
+		</channels>
+	</channel-group-type>
+
 </thing:thing-descriptions>

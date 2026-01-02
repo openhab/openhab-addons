@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -151,8 +151,8 @@ public class VisualCrossingHandler extends BaseThingHandler {
                             .orElse(UNDEF));
                 }
                 case PRECIP_TYPE -> {
-                    return requireNonNull(currentConditions.map(cc -> newStringType(cc, CurrentConditions::preciptype))
-                            .orElse(UNDEF));
+                    return requireNonNull(currentConditions
+                            .map(cc -> newStringCollectionType(cc, CurrentConditions::preciptype)).orElse(UNDEF));
                 }
                 case SNOW -> {
                     return requireNonNull(

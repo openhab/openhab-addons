@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class ZodiacCalc {
-    private static final Logger logger = LoggerFactory.getLogger(ZodiacCalc.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ZodiacCalc.class);
 
     /**
      * Returns a {@link Zodiac} built from the calculated sign for the given instant. The start and end instants are
@@ -51,7 +51,7 @@ public class ZodiacCalc {
         try {
             return new Zodiac(index, start, end);
         } catch (IllegalArgumentException e) {
-            logger.warn("Error defining Zodiac: {}", e.getMessage());
+            LOGGER.warn("Error defining Zodiac: {}", e.getMessage());
             return Zodiac.NULL;
         }
     }

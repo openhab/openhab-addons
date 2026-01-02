@@ -159,7 +159,7 @@ message ACP {
         DOORSUNLOCK = 110;
         TRUNKUNLOCK = 115;
         FUELFLAPUNLOCK = 116;
-        CHARGEFLAPUNLOCK = 117;
+        // CHARGEFLAPUNLOCK = 117; - removed 1.51
         CHARGECOUPLERUNLOCK = 118;
         DOORSPREPARERENTAL = 120;
         DOORSSECUREVEHICLE = 130;
@@ -293,7 +293,7 @@ message ACP {
         doorsUnlock = 110;
         trunkUnlock = 115;
         fuelflapUnlock = 116;
-        chargeflapUnlock = 117;
+        // chargeflapUnlock = 117;  - removed 1.51
         chargecouplerUnlock = 118;
         doorsPrepareRental = 120;
         doorsSecureVehicle = 130;
