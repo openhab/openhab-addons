@@ -13,9 +13,10 @@
 package org.openhab.binding.astro.internal.model;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.core.library.dimension.Intensity;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
+import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
 
 /**
  * Holds the calculated direct, diffuse and total
@@ -25,59 +26,39 @@ import org.openhab.core.library.unit.Units;
  */
 @NonNullByDefault
 public class Radiation {
+    public static final Radiation NULL = new Radiation();
 
-    private double direct;
-    private double diffuse;
-    private double total;
+    private final double direct;
+    private final double diffuse;
 
-    public Radiation() {
+    private Radiation() {
+        this(Double.NaN, Double.NaN);
     }
 
-    public Radiation(double direct, double diffuse, double total) {
+    public Radiation(double direct, double diffuse) {
         this.direct = direct;
         this.diffuse = diffuse;
-        this.total = total;
-    }
-
-    /**
-     * Sets the direct radiation.
-     */
-    public void setDirect(double direct) {
-        this.direct = direct;
-    }
-
-    /**
-     * Sets the diffuse radiation.
-     */
-    public void setDiffuse(double diffuse) {
-        this.diffuse = diffuse;
-    }
-
-    /**
-     * Sets the total radiation.
-     */
-    public void setTotal(double total) {
-        this.total = total;
     }
 
     /**
      * Returns the total radiation.
      */
-    public QuantityType<Intensity> getTotal() {
-        return new QuantityType<>(total, Units.IRRADIANCE);
+    public State getTotal() {
+        return Double.isNaN(direct) || Double.isNaN(diffuse) ? UnDefType.UNDEF
+                : new QuantityType<>(direct + diffuse, Units.IRRADIANCE);
     }
 
     /**
      * Returns the direct radiation.
      */
-    public QuantityType<Intensity> getDirect() {
-        return new QuantityType<>(direct, Units.IRRADIANCE);
+    public State getDirect() {
+        return Double.isNaN(direct) ? UnDefType.UNDEF : new QuantityType<>(direct, Units.IRRADIANCE);
     }
 
     /**
      * Returns the diffuse radiation.
      */
-    public QuantityType<Intensity> getDiffuse() {
-        return new QuantityType<>(diffuse, Units.IRRADIANCE);
+    public State getDiffuse() {
+        return Double.isNaN(diffuse) ? UnDefType.UNDEF : new QuantityType<>(diffuse, Units.IRRADIANCE);
     }
 }
