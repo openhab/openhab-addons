@@ -207,7 +207,7 @@ public class ZwaveJSBridgeHandler extends BaseBridgeHandler implements ZwaveEven
                     }
                     break;
                 case "statistics updated":
-                    if (nodeListener != null) {
+                    if (nodeListener != null && eventMsg.event.statistics != null) {
                         nodeListener.onStatisticsUpdated(eventMsg.event.statistics);
                     }
                     break;

@@ -66,7 +66,7 @@ public interface ZwaveNodeListener {
     /*
      * This method is called when the statistics of a node are updated.
      *
-     * @param event the event that contains information about the updated statistics
+     * @param statistics the event that contains information about the updated statistics
      */
     void onStatisticsUpdated(Statistics statistics);
 }

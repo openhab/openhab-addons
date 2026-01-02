@@ -729,10 +729,11 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
         Map<String, String> properties = thing.getProperties();
         String lastSeenPropString = properties.getOrDefault(PROPERTY_NODE_LASTSEEN, "");
         Instant lastSeenProp = lastSeenPropString.isEmpty() ? Instant.EPOCH : Instant.parse(lastSeenPropString);
+        Instant lastSeenStat = statistics.lastSeen;
 
-        if (!lastSeenProp.equals(statistics.lastSeen)) {
+        if (lastSeenStat != null && !lastSeenProp.equals(lastSeenStat)) {
             properties = new HashMap<>(properties);
-            properties.put(PROPERTY_NODE_LASTSEEN, statistics.lastSeen.toString());
+            properties.put(PROPERTY_NODE_LASTSEEN, lastSeenStat.toString());
             updateProperties(properties);
         }
     }
@@ -894,7 +895,7 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
         properties.put(PROPERTY_NODE_IS_SECURE, String.valueOf(node.isSecure));
         properties.put(PROPERTY_VENDOR, node.deviceConfig != null ? node.deviceConfig.manufacturer : "Unknown");
         properties.put(PROPERTY_MODEL_ID, node.deviceConfig != null ? node.deviceConfig.label : "");
-        properties.put(PROPERTY_NODE_LASTSEEN, node.lastSeen.toString());
+        properties.put(PROPERTY_NODE_LASTSEEN, node.lastSeen != null ? node.lastSeen.toString() : "");
         properties.put(PROPERTY_NODE_FREQ_LISTENING, String.valueOf(node.isFrequentListening));
         properties.put(PROPERTY_FIRMWARE_VERSION, node.firmwareVersion != null ? node.firmwareVersion : "");
 
