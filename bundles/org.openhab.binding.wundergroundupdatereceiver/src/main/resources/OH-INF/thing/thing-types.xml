@@ -25,7 +25,7 @@
 		<config-description>
 			<parameter name="stationId" type="text" required="true" pattern="\w+">
 				<label>Station ID</label>
-				<description><![CDATA[<br />
+				<description><![CDATA[
 					The wunderground.com update api requires a station id, that is defined for the WeatherUnderground
 					account measurements are to be submitted to.<br />
 					<br />
