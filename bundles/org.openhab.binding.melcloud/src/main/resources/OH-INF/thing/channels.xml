@@ -19,6 +19,10 @@
 		<item-type>Switch</item-type>
 		<label>Pending Command</label>
 		<description>Device has a pending command(s)</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -26,6 +30,10 @@
 		<item-type>Switch</item-type>
 		<label>Is Offline</label>
 		<description>Is device in offline state.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -60,7 +68,7 @@
 			<tag>Status</tag>
 			<tag>Mode</tag>
 		</tags>
-		<state readOnly="false">
+		<state>
 			<options>
 				<option value="1">Heat</option>
 				<option value="2">Dry</option>
@@ -79,7 +87,7 @@
 			<tag>Control</tag>
 			<tag>Temperature</tag>
 		</tags>
-		<state min="10" max="40" step="0.5" pattern="%.1f %unit%" readOnly="false"/>
+		<state min="10" max="40" step="0.5" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="fanSpeed-channel">
@@ -90,7 +98,7 @@
 			<tag>Status</tag>
 			<tag>Speed</tag>
 		</tags>
-		<state readOnly="false">
+		<state>
 			<options>
 				<option value="0">Auto</option>
 				<option value="1">1</option>
@@ -110,7 +118,7 @@
 			<tag>Status</tag>
 			<tag>Tilt</tag>
 		</tags>
-		<state readOnly="false">
+		<state>
 			<options>
 				<option value="0">Auto</option>
 				<option value="1">1</option>
@@ -131,7 +139,7 @@
 			<tag>Status</tag>
 			<tag>Tilt</tag>
 		</tags>
-		<state readOnly="false">
+		<state>
 			<options>
 				<option value="0">Auto</option>
 				<option value="1">1</option>
@@ -167,6 +175,17 @@
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
+	<channel-type id="tankTargetWaterTemperature-channel">
+		<item-type>Number:Temperature</item-type>
+		<label>Tank Target Degrees</label>
+		<description>Setpoint temperature of water</description>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state min="20" max="65" step="1" pattern="%.0f %unit%"/>
+	</channel-type>
+
 	<channel-type id="forcedHotWaterMode-channel">
 		<item-type>Switch</item-type>
 		<label>Forced Hot Water Mode</label>
@@ -179,7 +198,7 @@
 
 	<channel-type id="roomTemperatureZone1-channel">
 		<item-type>Number:Temperature</item-type>
-		<label>Room Temperature Zone 1</label>
+		<label>Room Temperature Zone1</label>
 		<description>Room temperature for zone 1</description>
 		<tags>
 			<tag>Measurement</tag>
@@ -190,13 +209,116 @@
 
 	<channel-type id="setTemperatureZone1-channel">
 		<item-type>Number:Temperature</item-type>
-		<label>Set Temperature Zone 1</label>
+		<label>Set Temperature Zone1</label>
 		<description>Set temperature for zone 1</description>
 		<tags>
 			<tag>Setpoint</tag>
 			<tag>Temperature</tag>
 		</tags>
-		<state min="10" max="30" step="0.5" pattern="%.1f %unit%" readOnly="false"/>
+		<state min="10" max="30" step="0.5" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="roomTemperatureZone2-channel">
+		<item-type>Number:Temperature</item-type>
+		<label>Room Temperature Zone2</label>
+		<description>Room temperature for zone 2</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="setTemperatureZone2-channel">
+		<item-type>Number:Temperature</item-type>
+		<label>Set Temperature Zone2</label>
+		<description>Set temperature for zone 2</description>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state min="10" max="30" step="0.5" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="heatFlowTemperatureZone1-channel">
+		<item-type>Number:Temperature</item-type>
+		<label>Heat Flow Temp Zone1</label>
+		<description>Set temperature for water flow for zone 1</description>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state min="20" max="65" step="1" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="heatFlowTemperatureZone2-channel">
+		<item-type>Number:Temperature</item-type>
+		<label>Heat Flow Temp Zone2</label>
+		<description>Set temperature for water flow for zone 2</description>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state min="20" max="65" step="1" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="heatTemperatureModeZone1-channel">
+		<item-type>Number</item-type>
+		<label>Flow Mode Zone1</label>
+		<description>Set flow mode for zone 1</description>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Mode</tag>
+		</tags>
+		<state>
+			<options>
+				<option value="0">Heat thermostat</option>
+				<option value="1">Heat flow</option>
+				<option value="2">Heat curve</option>
+				<option value="3">Cool thermostat</option>
+				<option value="4">Cool flow</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="heatTemperatureModeZone2-channel">
+		<item-type>Number</item-type>
+		<label>Flow Mode Zone2</label>
+		<description>Set flow mode for zone 2</description>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Mode</tag>
+		</tags>
+		<state>
+			<options>
+				<option value="0">Heat thermostat</option>
+				<option value="1">Heat flow</option>
+				<option value="2">Heat curve</option>
+				<option value="3">Cool thermostat</option>
+				<option value="4">Cool flow</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="heatPumpOperationMode-channel">
+		<item-type>String</item-type>
+		<label>Operation Mode</label>
+		<description>Operation mode</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="0">Idle</option>
+				<option value="1">Heat water</option>
+				<option value="2">Heat zones</option>
+				<option value="3">Cooling</option>
+				<option value="4">Defrost</option>
+				<option value="5">Stand-by</option>
+				<option value="6">Legionella</option>
+			</options>
+		</state>
 	</channel-type>
 
 </thing:thing-descriptions>
