@@ -29,6 +29,7 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public enum MoonPhaseName {
 <<<<<<< Upstream, based on main
+<<<<<<< Upstream, based on main
     NEW(0.0),
     WAXING_CRESCENT(0.125),
     FIRST_QUARTER(0.25),
@@ -66,11 +67,26 @@ public enum MoonPhaseName {
     WANING_GIBBOUS(Double.NaN),
     THIRD_QUARTER(0.75), // also called last quarter
     WANING_CRESCENT(Double.NaN);
+=======
+    NEW(1, 0),
+    WAXING_CRESCENT(4, Double.NaN),
+    FIRST_QUARTER(8, 0.25),
+    WAXING_GIBBOUS(11, Double.NaN),
+    FULL(15, 0.5),
+    WANING_GIBBOUS(18, Double.NaN),
+    THIRD_QUARTER(22, 0.75), // also called last quarter
+    WANING_CRESCENT(26, Double.NaN);
+>>>>>>> 5a82fe5 Nadahar code review adressed
 
     public final double mode;
+    public final int ageDays;
 
-    MoonPhaseName(double mode) {
+    MoonPhaseName(int ageDays, double mode) {
         this.mode = mode;
+<<<<<<< Upstream, based on main
 >>>>>>> 810a1e9 Initial commit for Moon phase revamp
+=======
+        this.ageDays = ageDays;
+>>>>>>> 5a82fe5 Nadahar code review adressed
     }
 }
