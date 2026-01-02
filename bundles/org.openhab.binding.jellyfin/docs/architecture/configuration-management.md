@@ -87,7 +87,7 @@ classDiagram
 
     %% Color scheme for external libraries
     classDef openhabCore fill:#ffb366,stroke:#cc8533,color:#000
-    class Configuration openhabCore
+    cssClass "Configuration" openhabCore
 ```
 
 ## Design Pattern

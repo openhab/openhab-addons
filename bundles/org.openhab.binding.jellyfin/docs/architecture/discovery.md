@@ -99,7 +99,7 @@ classDiagram
 
     %% Color scheme for external libraries
     classDef openhabApi fill:#99dd99,stroke:#66bb66,color:#000
-    class SessionInfoDto openhabApi
+    cssClass "SessionInfoDto" openhabApi
 ```
 
 ### Integration with TaskManager
