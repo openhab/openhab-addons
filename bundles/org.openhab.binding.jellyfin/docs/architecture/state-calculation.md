@@ -55,10 +55,9 @@ classDiagram
     }
 
     %% Color scheme for external libraries
-    classDef openhabApi fill:#99dd99,stroke:#66bb66,color:#000
-    cssClass "BaseItemDto" openhabApi
-    cssClass "PlayerStateInfo" openhabApi
-    cssClass "SessionInfoDto" openhabApi
+    style BaseItemDto fill:#99dd99,stroke:#66bb66,color:#000
+    style PlayerStateInfo fill:#99dd99,stroke:#66bb66,color:#000
+    style SessionInfoDto fill:#99dd99,stroke:#66bb66,color:#000
 ```
 
 ## Calculation Flow

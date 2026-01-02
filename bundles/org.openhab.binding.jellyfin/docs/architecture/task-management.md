@@ -68,8 +68,7 @@ classDiagram
     }
 
     %% Color scheme for external libraries
-    classDef jettyWebSocket fill:#99ccff,stroke:#6699cc,color:#000
-    cssClass "AbstractTask" jettyWebSocket
+    style AbstractTask fill:#99ccff,stroke:#6699cc,color:#000
 ```
 
 ## Tasks by Server State

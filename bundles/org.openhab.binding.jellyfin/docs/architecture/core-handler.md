@@ -70,11 +70,9 @@ classDiagram
     }
 
     %% Color scheme for external libraries
-    classDef openhabCore fill:#ffb366,stroke:#cc8533,color:#000
-    classDef openhabApi fill:#99dd99,stroke:#66bb66,color:#000
-    cssClass "BaseThingHandler" openhabCore
-    cssClass "BaseBridgeHandler" openhabCore
-    cssClass "SessionInfoDto" openhabApi
+    style BaseBridgeHandler fill:#ffb366,stroke:#cc8533,color:#000
+    style BaseThingHandler fill:#ffb366,stroke:#cc8533,color:#000
+    style SessionInfoDto fill:#99dd99,stroke:#66bb66,color:#000
 ```
 
 ## Summary
