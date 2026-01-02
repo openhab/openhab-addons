@@ -24,7 +24,11 @@ import org.eclipse.jdt.annotation.Nullable;
  * All moon phases.
  *
  * @author Gerhard Riegler - Initial contribution
+<<<<<<< Upstream, based on main
  * @author Gaël L'hopital - added age equivalence in days & cycleProgressPercentage
+=======
+ * @author Gaël L'hopital - added age equivalence & mode
+>>>>>>> da6a42f Rebased to take new headers in account. Start refactoring Eclipse for sun and moon
  */
 @NonNullByDefault
 public enum MoonPhaseName {
