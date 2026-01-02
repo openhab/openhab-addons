@@ -19,6 +19,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.core.library.unit.MetricPrefix;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ThingTypeUID;
@@ -78,7 +79,8 @@ public class ViessmannBindingConstants {
             entry("gas-cubicMeter", SIUnits.CUBIC_METRE.toString()), //
             entry("bar", Units.BAR.toString()), //
             entry("ampere", Units.AMPERE.toString()), //
-            entry("revolutionsPerSecond", Units.HERTZ.toString()));
+            entry("revolutionsPerSecond", Units.HERTZ.toString()), //
+            entry("milliAmpere", MetricPrefix.MILLI(Units.AMPERE).toString()));
 
     public static final Map<String, String> SUB_CHANNEL_TYPE_MAP = Map.of( //
             "cubicMeter", "volume", //
