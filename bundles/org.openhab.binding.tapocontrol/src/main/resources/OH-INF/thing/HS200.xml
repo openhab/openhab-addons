@@ -15,6 +15,7 @@
 		<semantic-equipment-tag>WallSwitch</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="actuator" typeId="lightSwitch"/>
+			<channel-group id="device" typeId="deviceState"/>
 		</channel-groups>
 		<representation-property>macAddress</representation-property>
 
