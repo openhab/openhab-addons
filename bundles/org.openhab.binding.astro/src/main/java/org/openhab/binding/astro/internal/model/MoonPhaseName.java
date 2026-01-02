@@ -18,6 +18,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * All moon phases.
  *
  * @author Gerhard Riegler - Initial contribution
+ * @author Gaël L'hopital - added age equivalence & mode
  */
 @NonNullByDefault
 public enum MoonPhaseName {
