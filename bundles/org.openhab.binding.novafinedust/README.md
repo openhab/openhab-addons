@@ -5,7 +5,7 @@ Currently only one model is supported, the SDS011.
 
 It basically implements the protocol specified in [this document](https://cdn.sparkfun.com/assets/parts/1/2/2/7/5/Laser_Dust_Sensor_Control_Protocol_V1.3.pdf).
 One can measure the PM 2.5 and PM 10 values with this device.
-It comes very handy for detecting air pollution like neighbors firing their oven with wet wood etc. so one can deactivate the ventilation system.
+It comes in very handy for detecting air pollution, like neighbors firing their oven with wet wood, so you can deactivate the ventilation system.
 
 ## Supported Things
 
@@ -17,7 +17,7 @@ There is no automatic discovery.
 
 ## Thing Configuration
 
-There are 2 different working modes for the `SDS011` thing: Reporting and Polling.
+There are 2 different working modes for the `SDS011` Thing: Reporting and Polling.
 
 ### Reporting
 
@@ -32,7 +32,7 @@ The `pollingInterval` parameter specifies the time in seconds when data will be 
 
 In addition to the mode one has to provide the port to which the device is connected.
 
-A full overview about the parameters of the `SDS011` thing is given in the following table:
+A full overview about the parameters of the `SDS011` Thing is given in the following table:
 
 | parameter name    | mandatory | description                                                                           |
 |-------------------|-----------|---------------------------------------------------------------------------------------|

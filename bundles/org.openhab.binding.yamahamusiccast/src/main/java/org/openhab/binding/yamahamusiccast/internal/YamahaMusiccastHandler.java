@@ -936,18 +936,28 @@ public class YamahaMusiccastHandler extends BaseThingHandler {
             String responseCode = targetObject.getResponseCode();
 
             if ("0".equals(responseCode)) {
-                int dabPreset = targetObject.getDAB().getPreset();
-                int fmPreset = targetObject.getFM().getPreset();
+                var dab = targetObject.getDAB();
+                var fm = targetObject.getFM();
+                Integer dabPreset = null;
+                Integer fmPreset = null;
+                if (dab != null) {
+                    dabPreset = dab.getPreset();
+                }
+                if (fm != null) {
+                    fmPreset = fm.getPreset();
+                }
                 for (Channel channel : getThing().getChannels()) {
                     ChannelUID channelUID = channel.getUID();
                     channelWithoutGroup = channelUID.getIdWithoutGroup();
                     if (isLinked(channelUID)) {
                         switch (channelWithoutGroup) {
                             case CHANNEL_SELECTPRESET_DAB:
-                                updateState(channelUID, StringType.valueOf(String.valueOf(dabPreset)));
+                                updateState(channelUID, dabPreset == null ? UnDefType.NULL
+                                        : StringType.valueOf(String.valueOf(dabPreset)));
                                 break;
                             case CHANNEL_SELECTPRESET_FM:
-                                updateState(channelUID, StringType.valueOf(String.valueOf(fmPreset)));
+                                updateState(channelUID, fmPreset == null ? UnDefType.NULL
+                                        : StringType.valueOf(String.valueOf(fmPreset)));
                                 break;
                         }
                     }
@@ -1070,7 +1080,10 @@ public class YamahaMusiccastHandler extends BaseThingHandler {
         tmpString = getDistributionInfo(this.host);
         DistributionInfo targetObject = gson.fromJson(tmpString, DistributionInfo.class);
         if (targetObject != null) {
-            clients = targetObject.getClientList().size();
+            var clientList = targetObject.getClientList();
+            if (clientList != null) {
+                clients = clientList.size();
+            }
         }
 
         List<StateOption> options = new ArrayList<>();
