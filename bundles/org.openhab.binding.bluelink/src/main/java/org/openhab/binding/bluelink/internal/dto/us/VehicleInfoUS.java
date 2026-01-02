@@ -10,17 +10,19 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.bluelink.internal.dto;
+package org.openhab.binding.bluelink.internal.dto.us;
+
+import org.openhab.binding.bluelink.internal.api.Vehicle;
 
 import com.google.gson.annotations.SerializedName;
 
 /**
- * Vehicle information from the enrollment details API.
+ * Vehicle information from the enrollment details API (Bluelink US).
  *
  * @author Marcus Better - Initial contribution
  */
-public record VehicleInfo(@SerializedName("regid") String registrationId, String nickName, String vin, String evStatus,
-        String modelCode, String vehicleGeneration, double odometer) {
+public record VehicleInfoUS(@SerializedName("regid") String registrationId, String nickName, String vin,
+        String evStatus, String modelCode, String vehicleGeneration, double odometer) {
 
     public boolean isElectric() {
         return "E".equals(evStatus);
@@ -44,5 +46,10 @@ public record VehicleInfo(@SerializedName("regid") String registrationId, String
             return nick;
         }
         return modelCode;
+    }
+
+    public Vehicle mapToVehicle() {
+        return new Vehicle(registrationId, nickName, modelCode, vin, evStatus, isElectric(), getGeneration(), odometer,
+                null);
     }
 }

@@ -15,6 +15,8 @@ package org.openhab.binding.bluelink.internal.api;
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.openhab.binding.bluelink.internal.MockApiData.*;
+import static org.openhab.core.library.unit.MetricPrefix.KILO;
+import static org.openhab.core.library.unit.SIUnits.METRE;
 
 import java.time.ZoneId;
 
@@ -23,9 +25,8 @@ import org.eclipse.jetty.client.HttpClient;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.openhab.binding.bluelink.internal.dto.VehicleInfo;
-import org.openhab.binding.bluelink.internal.dto.VehicleStatus;
 import org.openhab.core.i18n.TimeZoneProvider;
+import org.openhab.core.library.types.QuantityType;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.WireMock;
@@ -35,7 +36,7 @@ import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
  * @author Marcus Better - Initial contribution
  */
 @NonNullByDefault
-public class BluelinkApiTest {
+public class BluelinkApiUSTest {
 
     private static final WireMockServer WIREMOCK_SERVER = new WireMockServer(
             WireMockConfiguration.options().dynamicPort());
@@ -50,7 +51,7 @@ public class BluelinkApiTest {
         stubFor(post(urlEqualTo("/v2/ac/oauth/token")).willReturn(
                 aResponse().withStatus(200).withHeader("Content-Type", "application/json").withBody(TOKEN_RESPONSE)));
         stubFor(get(urlEqualTo("/ac/v2/rcs/rvs/vehicleStatus")).willReturn(aResponse().withStatus(200)
-                .withHeader("Content-Type", "application/json").withBody(VEHICLE_STATUS_RESPONSE)));
+                .withHeader("Content-Type", "application/json").withBody(US_VEHICLE_STATUS_RESPONSE)));
 
         HTTP_CLIENT.start();
     }
@@ -64,31 +65,41 @@ public class BluelinkApiTest {
     @Test
     void testGetVehicleStatus() throws Exception {
         final String baseUrl = "http://localhost:" + WIREMOCK_SERVER.port();
-        final BluelinkApi api = new BluelinkApi(HTTP_CLIENT, baseUrl, timeZoneProvider, TEST_USERNAME, TEST_PASSWORD,
-                null);
+        final BluelinkApiUS api = new BluelinkApiUS(HTTP_CLIENT, baseUrl, timeZoneProvider, TEST_USERNAME,
+                TEST_PASSWORD, null);
         assertTrue(api.login());
 
-        final VehicleInfo vehicle = new VehicleInfo("123", "", "VIN1234", "", "", "2", 0);
+        final Vehicle vehicle = new Vehicle("123", "", "", "VIN1234", "", false, 2, 0.0, null);
         final VehicleStatus status = api.getVehicleStatus(vehicle, false);
 
         assertNotNull(status);
-        assertNotNull(status.vehicleStatus());
-        assertTrue(status.vehicleStatus().doorLock());
-        assertFalse(status.vehicleStatus().engine());
-        assertEquals(75, status.vehicleStatus().battery().stateOfCharge());
+        assertTrue(status.doorsLocked());
+        assertFalse(status.engineOn());
+        assertFalse(status.hoodOpen());
+        assertEquals(75, status.batterySoC());
 
-        final var evStatus = status.vehicleStatus().evStatus();
+        final var evStatus = status.evStatus();
         assertNotNull(evStatus);
-        assertEquals(42, evStatus.batteryStatus());
-        assertTrue(evStatus.batteryCharge());
-        assertEquals(2, evStatus.batteryPlugin());
+        assertEquals(42, evStatus.batterySoC());
+        assertTrue(evStatus.isCharging());
+        assertTrue(evStatus.isPluggedIn());
 
-        final var drvDistance = evStatus.drvDistance();
-        assertNotNull(drvDistance);
-        assertFalse(drvDistance.isEmpty());
-        final var rangeByFuel = drvDistance.getFirst().rangeByFuel();
+        final var rangeByFuel = evStatus.range();
         assertNotNull(rangeByFuel);
-        assertEquals(184.0, rangeByFuel.evModeRange().value());
-        assertEquals(184.0, rangeByFuel.totalAvailableRange().value());
+        assertEquals(new QuantityType<>(184.0, KILO(METRE)), rangeByFuel.ev());
+        assertEquals(new QuantityType<>(184.0, KILO(METRE)), rangeByFuel.total());
+
+        final var location = status.location();
+        assertNotNull(location);
+        assertEquals(55.0, location.altitude());
+        assertEquals(43.23436388, location.latitude());
+        assertEquals(-99.15509166666666, location.longitude());
+
+        final var windowOpen = status.windowOpen();
+        assertNotNull(windowOpen);
+        assertFalse(windowOpen.frontLeft());
+        assertFalse(windowOpen.frontRight());
+        assertTrue(windowOpen.rearLeft());
+        assertTrue(windowOpen.rearRight());
     }
 }

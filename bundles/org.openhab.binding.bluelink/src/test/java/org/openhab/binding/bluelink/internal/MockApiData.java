@@ -25,22 +25,36 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public final class MockApiData {
     public static final String TOKEN_RESPONSE = """
             {
+                "token_type": "Bearer",
                 "access_token": "test-access-token",
                 "refresh_token": "test-refresh-token",
                 "expires_in": "3600",
                 "username": "test@example.com"
             }
             """;
+    public static final String EU_DEVICE_REGISTRATION_RESPONSE = """
+            {
+              "retCode" : "S",
+              "resCode" : "0000",
+              "resMsg" : {
+                "deviceId" : "122c2e30-d642-4d34-ba07-7ce7d787349a"
+              },
+              "msgId" : "5b101b3b-2b30-4f55-8920-5b7e3763beed"
+            }
+            """;
 
-    public static final String ENROLLMENT_RESPONSE;
-    public static final String VEHICLE_STATUS_RESPONSE;
+    public static final String US_ENROLLMENT_RESPONSE;
+    public static final String US_VEHICLE_STATUS_RESPONSE;
+    public static final String EU_VEHICLE_STATUS_RESPONSE;
     public static final String TEST_USERNAME = "test@example.com";
     public static final String TEST_PASSWORD = "testpassword";
+    public static final String TEST_REFRESH_TOKEN = "test-refresh-token";
 
     static {
         try {
-            ENROLLMENT_RESPONSE = loadResource("/enrollment-details.json");
-            VEHICLE_STATUS_RESPONSE = loadResource("/vehicle-status.json");
+            US_ENROLLMENT_RESPONSE = loadResource("/us/enrollment-details.json");
+            US_VEHICLE_STATUS_RESPONSE = loadResource("/us/vehicle-status.json");
+            EU_VEHICLE_STATUS_RESPONSE = loadResource("/eu/vehicle-status.json");
         } catch (final IOException e) {
             throw new UncheckedIOException(e);
         }

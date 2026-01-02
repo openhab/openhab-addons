@@ -10,27 +10,18 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.bluelink.internal.api;
+package org.openhab.binding.bluelink.internal.dto.us;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
+import com.google.gson.annotations.SerializedName;
 
 /**
- * Supported API regions.
+ * Vehicle location data from the Bluelink API.
  *
  * @author Marcus Better - Initial contribution
  */
-@NonNullByDefault
-public enum Region {
-    US("United States"),
-    EU("European Union");
+public record VehicleLocation(Coordinates coord) {
 
-    private final String label;
-
-    Region(final String label) {
-        this.label = label;
-    }
-
-    public String getLabel() {
-        return label;
+    public record Coordinates(@SerializedName("lat") double latitude, @SerializedName("lon") double longitude,
+            @SerializedName("alt") double altitude) {
     }
 }

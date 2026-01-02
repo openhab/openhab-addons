@@ -242,8 +242,8 @@
     },
     "washerFluidStatus": false,
     "windowOpen": {
-      "backLeft": 0,
-      "backRight": 0,
+      "backLeft": 1,
+      "backRight": 1,
       "frontLeft": 0,
       "frontRight": 0
     }
