@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,11 +20,9 @@ import java.util.GregorianCalendar;
 import java.util.Locale;
 import java.util.TimeZone;
 
-import org.junit.jupiter.api.BeforeEach;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
-import org.openhab.binding.astro.internal.calc.SeasonCalc;
 import org.openhab.binding.astro.internal.config.AstroChannelConfig;
-import org.openhab.binding.astro.internal.model.Season;
 
 /**
  * Test class for {@link DateTimeUtils}.
@@ -32,46 +30,11 @@ import org.openhab.binding.astro.internal.model.Season;
  * @author Hilbrand Bouwkamp - Initial contribution
  * @author Gaël L'hopital - Added tests for Instant usage
  */
+@NonNullByDefault
 public class DateTimeUtilsTest {
 
     private static final TimeZone TIME_ZONE = TimeZone.getTimeZone("Europe/Amsterdam");
     private static final Calendar JAN_20_2020 = newCalendar(2020, Calendar.JANUARY, 20, 1, 0, TIME_ZONE);
-    private static final Calendar MAY_20_2020 = newCalendar(2020, Calendar.MAY, 20, 1, 0, TIME_ZONE);
-    private static final Calendar SEPT_20_2020 = newCalendar(2020, Calendar.SEPTEMBER, 20, 1, 0, TIME_ZONE);
-    private static final Calendar DEC_10_2020 = newCalendar(2020, Calendar.DECEMBER, 1, 1, 0, TIME_ZONE);
-    private static final Calendar DEC_10_2021 = newCalendar(2021, Calendar.DECEMBER, 1, 1, 0, TIME_ZONE);
-    private static final double AMSTERDAM_LATITUDE = 52.367607;
-    private static final double SYDNEY_LATITUDE = -33.87;
-
-    private SeasonCalc seasonCalc;
-
-    @BeforeEach
-    public void init() {
-        seasonCalc = new SeasonCalc();
-    }
-
-    @Test
-    public void testGetSeasonAmsterdam() {
-        final Season season = seasonCalc.getSeason(DEC_10_2020, AMSTERDAM_LATITUDE, true, TIME_ZONE, Locale.ROOT);
-
-        assertNextSeason(season.getSpring(), 2020, JAN_20_2020, season);
-        assertNextSeason(season.getSummer(), 2020, MAY_20_2020, season);
-        assertNextSeason(season.getWinter(), 2020, SEPT_20_2020, season);
-        assertNextSeason(
-                seasonCalc.getSeason(DEC_10_2021, AMSTERDAM_LATITUDE, true, TIME_ZONE, Locale.ROOT).getSpring(), 2021,
-                DEC_10_2020, season);
-    }
-
-    @Test
-    public void testGetSeasonSydney() {
-        final Season season = seasonCalc.getSeason(DEC_10_2020, SYDNEY_LATITUDE, true, TIME_ZONE, Locale.ROOT);
-
-        assertNextSeason(season.getAutumn(), 2020, JAN_20_2020, season);
-        assertNextSeason(season.getWinter(), 2020, MAY_20_2020, season);
-        assertNextSeason(season.getSummer(), 2020, SEPT_20_2020, season);
-        assertNextSeason(seasonCalc.getSeason(DEC_10_2021, SYDNEY_LATITUDE, true, TIME_ZONE, Locale.ROOT).getAutumn(),
-                2021, DEC_10_2020, season);
-    }
 
     @Test
     void testTruncate() {
@@ -200,19 +163,37 @@ public class DateTimeUtilsTest {
         assertEquals(1223, DateTimeUtils.getMinutesFromTime("20:23"));
     }
 
-    private static void assertNextSeason(Calendar expectedSeason, int expectedYear, Calendar date, Season season) {
-        final Calendar nextSeason = DateTimeUtils.getNext(date, season.getSpring(), season.getSummer(),
-                season.getAutumn(), season.getWinter());
-        assertEquals(expectedSeason, nextSeason, "Should return the expected season name.");
-        assertNotNull(nextSeason);
-        assertEquals(expectedYear, nextSeason.get(Calendar.YEAR), "Should return the year matching the next season.");
-    }
-
     private static Calendar newCalendar(int year, int month, int dayOfMonth, int hourOfDay, int minute, TimeZone zone) {
         Calendar result = new GregorianCalendar(zone, Locale.ROOT);
         result.set(Calendar.MILLISECOND, 0);
         result.set(year, month, dayOfMonth, hourOfDay, minute, 0);
 
         return result;
+    }
+
+    @Test
+    public void testJdToInstant() {
+        // Test with Unix Epoch (1970-01-01T00:00:00Z) corresponding to JD 2440587.5
+        Instant expectedEpoch = Instant.EPOCH;
+        Instant actualEpoch = DateTimeUtils.jdToInstant(2440587.5);
+        assertEquals(expectedEpoch, actualEpoch, "Julian Day 2440587.5 should match Unix Epoch");
+
+        // same with J2000.0 (2000-01-01T12:00:00Z) toward JD 2451545.0
+        Instant expectedJ2000 = Instant.parse("2000-01-01T12:00:00Z");
+        Instant actualJ2000 = DateTimeUtils.jdToInstant(2451545.0);
+        assertEquals(expectedJ2000, actualJ2000, "Julian Day 2451545.0 should match J2000.0");
+    }
+
+    @Test
+    public void testAtMidnightOfFirstMonthDay() {
+        Instant initialInstant = Instant.parse("2024-05-15T14:30:45.123Z");
+
+        // UTC
+        Instant expectedUtc = Instant.parse("2024-05-01T00:00:00Z");
+        assertEquals(expectedUtc, DateTimeUtils.atMidnightOfFirstMonthDay(initialInstant, TimeZone.getTimeZone("UTC")));
+
+        // Europe/Amsterdam (UTC+2 in May). Local midnight is 22:00 UTC on the previous day.
+        Instant expectedAmsterdam = Instant.parse("2024-04-30T22:00:00Z");
+        assertEquals(expectedAmsterdam, DateTimeUtils.atMidnightOfFirstMonthDay(initialInstant, TIME_ZONE));
     }
 }

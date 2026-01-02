@@ -17,8 +17,8 @@ After (manually) adding a Roborock Account bridge, registered vacuums will be au
 
 ## `account` Bridge Configuration
 
-Account configuration is necessary. 
-The easiest way to do this is from the UI. 
+Account configuration is necessary.
+The easiest way to do this is from the UI.
 Just add a new thing, select the Roborock binding, then Roborock Account Binding Thing, and enter the email for your Roborock account. If the email is valid, you will be send an email with a verification code. Once received, update the twofa field and hit save.
 
 | Thing Parameter | Default Value | Required | Advanced | Description                                                                          |
