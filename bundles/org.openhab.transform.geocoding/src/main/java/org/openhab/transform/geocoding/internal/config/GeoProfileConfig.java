@@ -25,7 +25,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class GeoProfileConfig {
     public String provider = PROVIDER_NOMINATIM_OPENSTREETMAP;
-    public String format = ROW_ADDRESS_FORMAT;
+    public String format = FORMAT_ADDRESS_ROW;
     public String resolveInterval = "5m";
     public String language = "";
 }

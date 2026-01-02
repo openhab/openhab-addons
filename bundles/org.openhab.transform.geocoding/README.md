@@ -44,9 +44,9 @@ Default is 5 minutes (`5m`).
 Select preferred display `format` for reverse geocoding.
 Options:
 
-- `row_address`: `street` `house-number`, `postcode` `city` `district`
-- `us_address`: `house-number` `street`, `city` `district` `postcode`
-- `json`: unformatted JSON response
+- Address format Rest of World `address_row`: `street` `house-number`, `postcode` `city` `district` as default
+- Address format US/UK `address_us`: `house-number` `street`, `city` `district` `postcode`
+- Unformatted JSON response: `json` 
 
 Note that [address fields](https://nominatim.org/release-docs/latest/api/Output/#addressdetails) may be missing e.g. for rural areas. 
 
