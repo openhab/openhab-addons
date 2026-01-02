@@ -2,7 +2,7 @@
 
 Transformation to convert 
 
-- geo coordinates into human readable string address (revrese geocoding)
+- geo coordinates into human readable string address (reverse geocoding)
 - string address description into geo coordinates (geocoding)
 
 ## Reverse Geocoding
@@ -26,13 +26,13 @@ Geocoding is not throttled by the profile.
 
 | Configuration Parameter | Type | Description                                                                                      |
 |-------------------------|------|--------------------------------------------------------------------------------------------------|
-| `provider               | text | Provider which is used to execute geocoding request                                              |
+| `provider`              | text | Provider which is used to execute geocoding request                                              |
 | `resolveInterval`       | text | Interval of reverse geocoding executions. Minimum: 1 minute                                      |
 | `format`                | text | Country specific address formatting                                                              |
 | `language`              | text | Preferred language of the result. Only necessary if openHAB locale settings shall be overwritten |
 
 Select `provider` which shall be used to resolve addresses.
-Currently one provider [Nominatim / OpenStreetMap](#nominatim-openstreetmap-provider) is available which is the default option. 
+Currently one provider [Nominatim / OpenStreetMap](#nominatim--openstreetmap-provider) is available which is the default option. 
 
 The `resolveInterval` defines the minimum time between two reverse geocoding transformations.
 An external API is called to resolve the geo coordinates and it shall not be queried too frequent.
