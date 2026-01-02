@@ -562,6 +562,18 @@ public class TuyaDeviceHandler extends BaseThingHandler implements DeviceInfoSub
     public void initialize() {
         configuration = getConfigAs(DeviceConfiguration.class);
 
+        boolean hasStatusDps = false;
+        for (var e : schemaDps.values()) {
+            if (e.readOnly) {
+                hasStatusDps = true;
+                break;
+            }
+        }
+        if (!hasStatusDps) {
+            logger.debug("{}: no status DPs - polling disabled", thing.getUID().getId());
+            configuration.pollingInterval = 0;
+        }
+
         // check if we have channels and add them if available
         if (thing.getChannels().isEmpty()) {
             addChannels();
