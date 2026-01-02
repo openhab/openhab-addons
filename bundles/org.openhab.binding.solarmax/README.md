@@ -55,7 +55,8 @@ Each inverter requires the following configuration parameters:
 
 ### Full Example
 
-Below you can find an example textual configuration for a SolarMax with some basic functionality. This can be extended/adjusted according to your needs and depending on the required channels (see list above).
+Below you can find an example textual configuration for a SolarMax with some basic functionality.
+This can be extended/adjusted according to your needs and depending on the required channels (see list above).
 
 _inverter.things:_
 

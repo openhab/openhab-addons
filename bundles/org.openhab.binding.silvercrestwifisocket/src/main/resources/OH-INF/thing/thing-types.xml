@@ -29,7 +29,7 @@
 			</parameter>
 			<parameter name="vendor" type="text" required="true">
 				<label>Vendor</label>
-				<description>The vendor selling the WiFi socket.</description>
+				<description>The vendor selling the Wi-Fi socket.</description>
 				<options>
 					<option value="LIDL_SILVERCREST">Lidl (Silvercrest)</option>
 					<option value="ALDI_EASYHOME">Aldi (EasyHome)</option>

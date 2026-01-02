@@ -1,11 +1,12 @@
 # SolarEdge Binding
 
-The SolarEdge binding retrieves live data from SolarEdge inverters via the central web API. This binding should in general be compatible with all inverter models that upload data to the SolarEdge portal.
+The SolarEdge binding retrieves live data from SolarEdge inverters via the central web API.
+This binding should in general be compatible with all inverter models that upload data to the SolarEdge portal.
 Only read access is supported.
 
 ## Supported Things
 
-This binding provides only one Thing type: "generic," which is the inverter itself.
+This binding provides only one Thing type: `generic`, which is the inverter itself.
 As the name suggests, it is generic, which means it applies to all available inverters.
 Create one inverter Thing per physical inverter installation available in your home(s).
 Additional components such as batteries are automatically supported.

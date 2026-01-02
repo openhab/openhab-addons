@@ -100,7 +100,7 @@ Serial or Serial over IP connections must be configured manually.
 ## Binding Configuration
 
 There are no global binding configuration settings.
-All configuration is done via Thing parameters.
+All configuration is done via Thing configuration parameters.
 
 ## Thing Configuration
 

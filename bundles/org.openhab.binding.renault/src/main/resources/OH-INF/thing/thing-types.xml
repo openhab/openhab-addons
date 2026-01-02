@@ -235,7 +235,7 @@
 	<channel-type id="externaltemperature" advanced="true">
 		<item-type>Number:Temperature</item-type>
 		<label>External Temperature</label>
-		<description>Temperature outside of the car</description>
+		<description>Temperature outside of the car.</description>
 		<category>Temperature</category>
 		<tags>
 			<tag>Measurement</tag>

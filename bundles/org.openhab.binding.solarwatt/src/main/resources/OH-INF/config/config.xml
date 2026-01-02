@@ -7,7 +7,7 @@
 	<config-description uri="thing-type:solarwatt:energymanager">
 		<parameter name="hostname" type="text">
 			<label>Hostname</label>
-			<description>Hostname or IP address of the Solarwatt Energymanager.</description>
+			<description>Hostname or IP address of the Solarwatt energy manager.</description>
 			<context>network-address</context>
 		</parameter>
 		<parameter name="refresh" type="integer" unit="s">
@@ -29,7 +29,7 @@
 	<config-description uri="thing-type:solarwatt:device">
 		<parameter name="guid" type="text">
 			<label>Device GUID</label>
-			<description>GUID of the device as used by the Solarwatt Energymanager.</description>
+			<description>GUID of the device as used by the Solarwatt energy manager.</description>
 		</parameter>
 	</config-description>
 </config-description:config-descriptions>

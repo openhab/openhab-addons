@@ -95,7 +95,7 @@ The gateway support for the developer mode is limited as well, so far Connexoon 
 |------------|--------------|-------------------|------------------------------|
 | Device URL | url          | Required          | The identifier of the device |
 
-To retrieve the url parameter or gateway id, just add the automatically discovered device from your inbox and copy its values from Thing edit page. (the url parameter is visible on edit page only)
+To retrieve the url parameter or gateway id, just add the automatically discovered device from your inbox and copy its values from Thing edit page (the url parameter is visible on edit page only).
 Please see the example below.
 
 ## Channels

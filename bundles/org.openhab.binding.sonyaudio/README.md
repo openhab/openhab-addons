@@ -14,7 +14,7 @@ At the moment, the devices supported by this binding are:
 - HT-ZF9
 - HT-MT500
 
-When defined in a \*.things file, the specific Thing types
+When defined in a `.things` file, the specific Thing types
 STR-DN1080, HT-ST5000, HT-ZF9, HT-Z9F, HT-CT800, HT-MT500, and SRS-ZR5 should be used.
 
 Please note that these Thing types are case-sensitive (define them in uppercase).

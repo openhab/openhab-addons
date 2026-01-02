@@ -27,8 +27,7 @@
 			</parameter>
 			<parameter name="gatewayPortNumber" type="integer" required="true">
 				<label>Gateway Port</label>
-				<description>UDP port of the gateway (default 230).
-				</description>
+				<description>UDP port of the gateway.</description>
 				<advanced>true</advanced>
 				<default>230</default>
 				<required>true</required>
