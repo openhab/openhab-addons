@@ -111,11 +111,24 @@ public class BluelinkAccountHandler extends BaseBridgeHandler {
                             "@text/account-handler.initialize.missing-token");
                     yield null;
                 }
+                final String configuredBrand = config.brand;
+                BluelinkApiEU.Brand brand;
+                if (configuredBrand != null && !configuredBrand.isBlank()) {
+                    try {
+                        brand = BluelinkApiEU.Brand.valueOf(configuredBrand.toUpperCase(Locale.ROOT));
+                    } catch (final IllegalArgumentException e) {
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                                "@text/account-handler.initialize.unsupported-brand");
+                        yield null;
+                    }
+                } else {
+                    brand = BluelinkApiEU.Brand.HYUNDAI;
+                }
                 Map<String, String> properties = editProperties();
                 if (baseUrl != null && !baseUrl.isBlank()) {
-                    yield new BluelinkApiEU(httpClient, BluelinkApiEU.Brand.HYUNDAI, baseUrl, password);
+                    yield new BluelinkApiEU(httpClient, brand, baseUrl, password);
                 }
-                yield new BluelinkApiEU(httpClient, properties, BluelinkApiEU.Brand.HYUNDAI, password);
+                yield new BluelinkApiEU(httpClient, properties, brand, password);
             }
             case US -> {
                 if (username == null || username.isBlank() || password == null || password.isBlank()) {

@@ -24,6 +24,17 @@
 				<description>Your Bluelink service PIN (required for lock/unlock commands)</description>
 				<context>password</context>
 			</parameter>
+			<parameter name="brand" type="text" required="false">
+				<advanced>false</advanced>
+				<label>Brand</label>
+				<description>Car brand (required for EU region)</description>
+				<options>
+					<option value="HYUNDAI">Hyundai</option>
+					<option value="KIA">Kia</option>
+					<option value="GENESIS">Genesis</option>
+				</options>
+				<default>HYUNDAI</default>
+			</parameter>
 			<parameter name="region" type="text" required="false">
 				<advanced>false</advanced>
 				<label>Region</label>

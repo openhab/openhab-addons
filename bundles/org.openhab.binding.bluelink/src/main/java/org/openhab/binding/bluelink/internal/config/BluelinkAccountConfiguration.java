@@ -38,6 +38,11 @@ public class BluelinkAccountConfiguration {
     public @Nullable String pin;
 
     /**
+     * Hyundai Motor Group brand (Hyundai, Kia, Genesis). Defaults to Hyundai.
+     */
+    public @Nullable String brand;
+
+    /**
      * API region. Auto-detected from system locale if not set.
      */
     public @Nullable String region;
