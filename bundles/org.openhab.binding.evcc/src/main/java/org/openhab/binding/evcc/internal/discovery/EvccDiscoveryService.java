@@ -22,17 +22,13 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.evcc.internal.discovery.mapper.BatteryDiscoveryMapper;
 import org.openhab.binding.evcc.internal.discovery.mapper.EvccDiscoveryMapper;
-import org.openhab.binding.evcc.internal.discovery.mapper.LoadpointDiscoveryMapper;
-import org.openhab.binding.evcc.internal.discovery.mapper.PvDiscoveryMapper;
-import org.openhab.binding.evcc.internal.discovery.mapper.SiteDiscoveryMapper;
-import org.openhab.binding.evcc.internal.discovery.mapper.StatisticsDiscoveryMapper;
-import org.openhab.binding.evcc.internal.discovery.mapper.VehicleDiscoveryMapper;
 import org.openhab.binding.evcc.internal.handler.EvccBridgeHandler;
 import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.thing.ThingTypeUID;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,14 +50,14 @@ public class EvccDiscoveryService extends AbstractThingHandlerDiscoveryService<E
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    private final List<EvccDiscoveryMapper> mappers = List.of(new LoadpointDiscoveryMapper(),
-            new VehicleDiscoveryMapper(), new BatteryDiscoveryMapper(), new SiteDiscoveryMapper(),
-            new PvDiscoveryMapper(), new StatisticsDiscoveryMapper());
+    private final List<EvccDiscoveryMapper> mappers;
 
     private @Nullable ScheduledFuture<?> evccDiscoveryJob;
 
-    public EvccDiscoveryService() {
+    @Activate
+    public EvccDiscoveryService(@Reference List<EvccDiscoveryMapper> mappers) {
         super(EvccBridgeHandler.class, SUPPORTED_THING_TYPES, TIMEOUT, true);
+        this.mappers = mappers;
     }
 
     @Override
