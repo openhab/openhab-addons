@@ -104,11 +104,7 @@ public class VehicleStatusMapper {
             }
         }
 
-        VehicleStatus.RangeByFuel rangeByFuel = null;
-        var rangeInfos = evStatus.drivingDistances().getFirst().rangeByFuel();
-        if (rangeInfos != null) {
-            rangeByFuel = VehicleStatus.RangeByFuel.from(rangeInfos.total(), rangeInfos.ev(), rangeInfos.gas());
-        }
+        VehicleStatus.RangeByFuel rangeByFuel = mapRangeByFuel(evStatus.drivingDistance());
 
         return new VehicleStatus.EvStatus(evStatus.isCharging(), evStatus.batteryPercentage(),
                 evStatus.plugStatus() > 0, targetSoCs, rangeByFuel,
@@ -173,16 +169,22 @@ public class VehicleStatusMapper {
             }
         }
 
-        VehicleStatus.RangeByFuel rangeByFuel = null;
-        var rangeInfos = evStatus.drvDistance().getFirst().rangeByFuel();
-        if (rangeInfos != null) {
-            rangeByFuel = VehicleStatus.RangeByFuel.from(rangeInfos.total(), rangeInfos.ev(), rangeInfos.gas());
-        }
+        VehicleStatus.RangeByFuel rangeByFuel = mapRangeByFuel(evStatus.drvDistance());
 
         return new VehicleStatus.EvStatus(evStatus.batteryCharge(), evStatus.batteryStatus(),
                 evStatus.batteryPlugin() > 0, targetSoCs, rangeByFuel,
                 new VehicleStatus.ChargeRemainingTime(evStatus.remainTime2().current().value(),
                         evStatus.remainTime2().fast().value(), evStatus.remainTime2().portable().value(),
                         evStatus.remainTime2().station().value()));
+    }
+
+    private static VehicleStatus.@Nullable RangeByFuel mapRangeByFuel(
+            @Nullable List<VehicleStatusUS.DrivingRange> drivingRange) {
+        if (drivingRange != null && !drivingRange.isEmpty()) {
+            var driveDistance1 = drivingRange.getFirst();
+            var rangeInfos = driveDistance1.rangeByFuel();
+            return VehicleStatus.RangeByFuel.from(rangeInfos.total(), rangeInfos.ev(), rangeInfos.gas());
+        }
+        return null;
     }
 }

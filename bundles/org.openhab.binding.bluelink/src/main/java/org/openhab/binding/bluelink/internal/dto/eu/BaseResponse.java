@@ -17,7 +17,7 @@ import com.google.gson.annotations.SerializedName;
 /**
  * The base response from the EU API.
  * 
- * @param <T> the engineType of the response message
+ * @param <T> the type of the result message
  * @author Florian Hotze - Initial contribution
  */
 public record BaseResponse<T> (@SerializedName("retCode") String returnCode,

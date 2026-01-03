@@ -114,7 +114,7 @@ public class BluelinkApiEU implements BluelinkApi {
         if (deviceId == null) {
             registerDevice();
         } else {
-            logger.debug("Device already registered, device registrationId: {}", deviceId);
+            logger.debug("Device already registered, deviceId: {}", deviceId);
         }
         return true;
     }
@@ -271,27 +271,27 @@ public class BluelinkApiEU implements BluelinkApi {
 
         if (vehicle.ccs2ProtocolSupport()) {
             throw new BluelinkApiException(
-                    "CCU CCS protocol support hasn't been implemented yet. Report this on GitHub and provide debug logs.");
+                    "CCU/CCS2 protocol support hasn't been implemented yet. Report this on GitHub and provide debug logs.");
         }
 
         if (forceRefresh) {
             Type type = new TypeToken<BaseResponse<VehicleStatusEU.VehicleStatusData>>() {
             }.getType();
-            BaseResponse<VehicleStatusEU.VehicleStatusData> response1 = gson.fromJson(response.getContentAsString(),
-                    type);
-            if (response1 == null) {
+            BaseResponse<VehicleStatusEU.VehicleStatusData> forceRefreshResponse = gson
+                    .fromJson(response.getContentAsString(), type);
+            if (forceRefreshResponse == null) {
                 return null;
             }
-            return VehicleStatusMapper.map(
-                    new VehicleStatusEU(new VehicleStatusEU.VehicleStatusInfo(null, response1.resultMessage(), null)));
+            return VehicleStatusMapper.map(new VehicleStatusEU(
+                    new VehicleStatusEU.VehicleStatusInfo(null, forceRefreshResponse.resultMessage(), null)));
         } else {
             Type type = new TypeToken<BaseResponse<VehicleStatusEU>>() {
             }.getType();
-            BaseResponse<VehicleStatusEU> response1 = gson.fromJson(response.getContentAsString(), type);
-            if (response1 == null) {
+            BaseResponse<VehicleStatusEU> refreshResponse = gson.fromJson(response.getContentAsString(), type);
+            if (refreshResponse == null) {
                 return null;
             }
-            return VehicleStatusMapper.map(response1.resultMessage());
+            return VehicleStatusMapper.map(refreshResponse.resultMessage());
         }
     }
 
@@ -366,13 +366,13 @@ public class BluelinkApiEU implements BluelinkApi {
         final String pushType;
 
         public BrandConfig(String apiBaseUrl, String loginBaseUrl, String ccspServiceId, String appId,
-                String clientSecret, String cfg, String pushType) {
+                String clientSecret, String cfb, String pushType) {
             this.apiBaseUrl = apiBaseUrl;
             this.loginBaseUrl = loginBaseUrl;
             this.ccspServiceId = ccspServiceId;
             this.appId = appId;
             this.clientSecret = clientSecret;
-            this.cfb = cfg;
+            this.cfb = cfb;
             this.pushType = pushType;
         }
 
