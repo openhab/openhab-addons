@@ -59,7 +59,10 @@
 		<item-type>Number:Power</item-type>
 		<label>Teleinfo PowerFactor Type</label>
 		<category>Energy</category>
-		<state pattern="%d %unit%" readOnly="true"/>
+        <tags>
+            <tag>Measurement</tag>
+        </tags>
+   		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="switch">
@@ -87,6 +90,9 @@
 		<item-type>Number</item-type>
 		<label>Cutoff Type</label>
 		<description>This status describes the current cutoff type.</description>
+        <tags>
+            <tag>Measurement</tag>
+        </tags>
 		<state>
 			<options>
 				<option value="0">Not cutoff</option>
@@ -105,6 +111,9 @@
 		<item-type>Number</item-type>
 		<label>Overvoltage State</label>
 		<description>Describes an over voltage condition possible state.</description>
+        <tags>
+            <tag>Measurement</tag>
+        </tags>
 		<state>
 			<options>
 				<option value="0">No overvoltage</option>
@@ -117,6 +126,9 @@
 		<item-type>Number</item-type>
 		<label>Exceeding Power State</label>
 		<description>Describe an Exceeding power condition state papp > pmax.</description>
+        <tags>
+            <tag>Measurement</tag>
+        </tags>
 		<state>
 			<options>
 				<option value="0">No exceeding power</option>
@@ -129,6 +141,9 @@
 		<item-type>Number</item-type>
 		<label>Function Mode</label>
 		<description>Tell if the meter is in Consummer mode or Producer mode.</description>
+        <tags>
+            <tag>Measurement</tag>
+        </tags>
 		<state>
 			<options>
 				<option value="0">Consummer</option>
@@ -141,6 +156,9 @@
 		<item-type>Number</item-type>
 		<label>Active Energy</label>
 		<description>Tell about energy direction, if negative we take energy from network, if positive we inject energy.</description>
+        <tags>
+            <tag>Measurement</tag>
+        </tags>
 		<state>
 			<options>
 				<option value="0">Active energy positive</option>
@@ -153,6 +171,9 @@
 		<item-type>Number</item-type>
 		<label>Clock State</label>
 		<description>State of the clock.</description>
+        <tags>
+            <tag>Measurement</tag>
+        </tags>
 		<state>
 			<options>
 				<option value="0">Clock ok</option>
@@ -165,6 +186,9 @@
 		<item-type>Number</item-type>
 		<label>PLC Mode</label>
 		<description>Mode of the PLC</description>
+        <tags>
+            <tag>Measurement</tag>
+        </tags>
 		<state>
 			<options>
 				<option value="0">Historic mode</option>
@@ -177,6 +201,9 @@
 		<item-type>Number</item-type>
 		<label>Output Com State</label>
 		<description>State of the communication output</description>
+        <tags>
+            <tag>Measurement</tag>
+        </tags>
 		<state>
 			<options>
 				<option value="0">Desactivated</option>
@@ -191,6 +218,9 @@
 		<item-type>Number</item-type>
 		<label>PLC State</label>
 		<description>State of the PLC</description>
+        <tags>
+            <tag>Measurement</tag>
+        </tags>
 		<state>
 			<options>
 				<option value="0">New/Unlock</option>
@@ -204,6 +234,9 @@
 		<item-type>Number</item-type>
 		<label>PLC Synchro State</label>
 		<description>State of the PLC Synchro</description>
+        <tags>
+            <tag>Measurement</tag>
+        </tags>
 		<state>
 			<options>
 				<option value="0">PLC Sync</option>
@@ -216,6 +249,9 @@
 		<item-type>Number</item-type>
 		<label>Moving Tips</label>
 		<description>Indicate a special tariff slot for a specific period.</description>
+        <tags>
+            <tag>Measurement</tag>
+        </tags>
 		<state>
 			<options>
 				<option value="0">Not moving tips advice</option>
@@ -231,6 +267,9 @@
 		<item-type>Number</item-type>
 		<label>Tempo Color Information</label>
 		<description>This status describes the tempo color of a day.</description>
+        <tags>
+            <tag>Measurement</tag>
+        </tags>
 		<state>
 			<options>
 				<option value="0">Unknow</option>
@@ -245,6 +284,9 @@
 		<item-type>Number</item-type>
 		<label>Numeric Rate Type</label>
 		<category>energy</category>
+        <tags>
+            <tag>Measurement</tag>
+        </tags>
 		<state readOnly="true" pattern="%.0f"/>
 	</channel-type>
 
