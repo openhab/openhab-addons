@@ -416,7 +416,7 @@
 	</channel-type>
 
 	<channel-type id="charge-time-current">
-		<item-type>Number:Time</item-type>
+		<item-type unitHint="min">Number:Time</item-type>
 		<label>Time to Full (Current)</label>
 		<description>Estimated time to fully charged with current charger</description>
 		<category>Time</category>
@@ -424,10 +424,10 @@
 			<tag>Forecast</tag>
 			<tag>Duration</tag>
 		</tags>
-		<state pattern="%.0f min" readOnly="true"/>
+		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="charge-time-fast">
-		<item-type>Number:Time</item-type>
+		<item-type unitHint="min">Number:Time</item-type>
 		<label>Time to Full (Fast)</label>
 		<description>Estimated time to fully charged with Level 3 charger</description>
 		<category>Time</category>
@@ -435,10 +435,10 @@
 			<tag>Forecast</tag>
 			<tag>Duration</tag>
 		</tags>
-		<state pattern="%.0f min" readOnly="true"/>
+		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="charge-time-portable">
-		<item-type>Number:Time</item-type>
+		<item-type unitHint="min">Number:Time</item-type>
 		<label>Time to Full (Portable)</label>
 		<description>Estimated time to fully charged with Level 1 charger</description>
 		<category>Time</category>
@@ -446,10 +446,10 @@
 			<tag>Forecast</tag>
 			<tag>Duration</tag>
 		</tags>
-		<state pattern="%.0f min" readOnly="true"/>
+		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="charge-time-station">
-		<item-type>Number:Time</item-type>
+		<item-type unitHint="min">Number:Time</item-type>
 		<label>Time to Full (Station)</label>
 		<description>Estimated time to fully charged with Level 2 charger</description>
 		<category>Time</category>
@@ -457,7 +457,7 @@
 			<tag>Forecast</tag>
 			<tag>Duration</tag>
 		</tags>
-		<state pattern="%.0f min" readOnly="true"/>
+		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="odometer">
