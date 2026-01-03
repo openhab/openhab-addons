@@ -131,6 +131,10 @@ public final class DailyJobSun extends AbstractJob {
             if (range != null) {
                 scheduleRange(handler, range, EVENT_CHANNEL_ID_EVENING_NIGHT, zone, locale, instantSource);
             }
+            range = sun.getRange(SunPhase.MIDNIGHT);
+            if (range != null) {
+                scheduleRange(handler, range, EVENT_CHANNEL_ID_MIDNIGHT, zone, locale, instantSource);
+            }
             range = sun.getRange(SunPhase.DAYLIGHT);
             if (range != null) {
                 scheduleRange(handler, range, EVENT_CHANNEL_ID_DAYLIGHT, zone, locale, instantSource);

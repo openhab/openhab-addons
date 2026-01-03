@@ -135,6 +135,15 @@ public class SunHandler extends AstroThingHandler {
             case CHANNEL_ID_SUN_NOON_DURATION:
                 r = sun.getRange(SunPhase.NOON);
                 return r == null ? UnDefType.UNDEF : toState(r.getDuration(), channel);
+            case CHANNEL_ID_SUN_MIDNIGHT_START:
+                r = sun.getRange(SunPhase.MIDNIGHT);
+                return r == null ? UnDefType.UNDEF : toState(r.getStart(), channel);
+            case CHANNEL_ID_SUN_MIDNIGHT_END:
+                r = sun.getRange(SunPhase.MIDNIGHT);
+                return r == null ? UnDefType.UNDEF : toState(r.getEnd(), channel);
+            case CHANNEL_ID_SUN_MIDNIGHT_DURATION:
+                r = sun.getRange(SunPhase.MIDNIGHT);
+                return r == null ? UnDefType.UNDEF : toState(r.getDuration(), channel);
             case CHANNEL_ID_SUN_NIGHT_START:
                 r = sun.getRange(SunPhase.NIGHT);
                 return r == null ? UnDefType.UNDEF : toState(r.getStart(), channel);
