@@ -424,7 +424,7 @@
 			<tag>Forecast</tag>
 			<tag>Duration</tag>
 		</tags>
-		<state pattern="%.0f %unit%" readOnly="true"/>
+		<state pattern="%.0f min" readOnly="true"/>
 	</channel-type>
 	<channel-type id="charge-time-fast">
 		<item-type>Number:Time</item-type>
@@ -435,7 +435,7 @@
 			<tag>Forecast</tag>
 			<tag>Duration</tag>
 		</tags>
-		<state pattern="%.0f %unit%" readOnly="true"/>
+		<state pattern="%.0f min" readOnly="true"/>
 	</channel-type>
 	<channel-type id="charge-time-portable">
 		<item-type>Number:Time</item-type>
@@ -446,7 +446,7 @@
 			<tag>Forecast</tag>
 			<tag>Duration</tag>
 		</tags>
-		<state pattern="%.0f %unit%" readOnly="true"/>
+		<state pattern="%.0f min" readOnly="true"/>
 	</channel-type>
 	<channel-type id="charge-time-station">
 		<item-type>Number:Time</item-type>
@@ -457,7 +457,7 @@
 			<tag>Forecast</tag>
 			<tag>Duration</tag>
 		</tags>
-		<state pattern="%.0f %unit%" readOnly="true"/>
+		<state pattern="%.0f min" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="odometer">
