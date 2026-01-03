@@ -50,6 +50,10 @@ import com.google.gson.reflect.TypeToken;
 
 /**
  * EU implementation of the {@link BluelinkApi}.
+ * <p>
+ * Implementation based on
+ * <a href="https://github.com/Hyundai-Kia-Connect/hyundai_kia_connect_api">hyundai_kia_connect_api</a> and
+ * <a href="https://github.com/Hacksore/bluelinky">bluelinky</a>.
  *
  * @author Florian Hotze - Initial contribution
  */
@@ -264,6 +268,11 @@ public class BluelinkApiEU implements BluelinkApi {
 
         logger.debug("Vehicle status request successful for vehicle {}: {}", vehicle.getDisplayName(),
                 response.getContentAsString());
+
+        if (vehicle.ccs2ProtocolSupport()) {
+            throw new BluelinkApiException(
+                    "CCU CCS protocol support hasn't been implemented yet. Report this on GitHub and provide debug logs.");
+        }
 
         if (forceRefresh) {
             Type type = new TypeToken<BaseResponse<VehicleStatusEU.VehicleStatusData>>() {
