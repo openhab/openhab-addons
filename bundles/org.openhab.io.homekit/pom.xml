@@ -16,6 +16,7 @@
 
   <properties>
     <dep.noembedding>javax.json,javax.json-api,netty-common,netty-buffer,netty-transport,netty-handler,netty-codec,netty-codec-http,netty-resolver</dep.noembedding>
+    <bouncycastle.version>1.83</bouncycastle.version>
   </properties>
 
   <dependencies>
@@ -93,20 +94,20 @@
     </dependency>
     <dependency>
       <groupId>org.bouncycastle</groupId>
-      <artifactId>bcpkix-jdk18on</artifactId>
-      <version>1.83</version>
+      <artifactId>bcprov-jdk18on</artifactId>
+      <version>${bouncycastle.version}</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.bouncycastle</groupId>
       <artifactId>bctls-jdk18on</artifactId>
-      <version>1.83</version>
+      <version>${bouncycastle.version}</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.bouncycastle</groupId>
       <artifactId>bcutil-jdk18on</artifactId>
-      <version>1.83</version>
+      <version>${bouncycastle.version}</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
