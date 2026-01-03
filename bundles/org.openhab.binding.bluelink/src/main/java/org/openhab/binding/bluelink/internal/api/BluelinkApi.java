@@ -33,7 +33,7 @@ public interface BluelinkApi {
      * Returns properties to store as Thing properties so they are persisted independent of the {@link BluelinkApi}
      * lifecycle.
      * 
-     * @return
+     * @return a map of properties to be persisted as Thing properties
      */
     default Map<String, String> getProperties() {
         return Collections.emptyMap();

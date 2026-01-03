@@ -105,7 +105,7 @@ public record VehicleStatusEU(@SerializedName("vehicleStatusInfo") VehicleStatus
     public record EvStatus(@SerializedName("batteryCharge") boolean isCharging,
             @SerializedName("batteryStatus") int batteryPercentage, @SerializedName("batteryPlugin") int plugStatus,
             @SerializedName("remainTime2") ChargeRemainingTime remainTime,
-            @SerializedName("drvDistance") List<DrivingRange> drivingDistances,
+            @SerializedName("drvDistance") List<DrivingRange> drivingDistance,
             @SerializedName("reservChargeInfos") ReserveChargeInfos reserveChargeInfos) {
     }
 

@@ -12,11 +12,11 @@
 		<config-description>
 			<parameter name="username" type="text" required="false">
 				<label>Username</label>
-				<description>Your Bluelink account email address</description>
+				<description>Your Bluelink account email address (required for US region)</description>
 			</parameter>
 			<parameter name="password" type="text" required="true">
 				<label>Password / Refresh Token</label>
-				<description>Your Bluelink account password / Refresh token for EU region</description>
+				<description>Your Bluelink account password (US region) / Refresh token (EU region)</description>
 				<context>password</context>
 			</parameter>
 			<parameter name="pin" type="text" required="false">
