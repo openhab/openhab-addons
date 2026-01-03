@@ -409,7 +409,7 @@
 
 			<channel id="advice-moving-tips" typeId="movingTips">
 				<label>Moving Tips Advice</label>
-				<description>State of moving tips adviceh</description>
+				<description>State of moving tips advice</description>
 			</channel>
 
 			<channel id="moving-tips" typeId="movingTips">
@@ -418,82 +418,82 @@
 			</channel>
 
 			<channel id="pjourf1-plus1" typeId="string">
-				<label>Pjour f1 +1</label>
+				<label>NextDay Provider Schedule Slot 1</label>
 				<description>Profile of next day provider schedule, slot 1</description>
 			</channel>
 
 			<channel id="ppointe1" typeId="string">
-				<label>Ppointe 1</label>
+				<label>Next Rush Day Slot 1</label>
 				<description>Profile of next rush day, slot 1</description>
 			</channel>
 
 			<channel id="pjourf2-plus1" typeId="string">
-				<label>Pjour f2 +1</label>
+				<label>NextDay Provider Schedule Slot 2</label>
 				<description>Profile of next day provider schedule, slot 2</description>
 			</channel>
 
 			<channel id="ppointe2" typeId="string">
-				<label>Ppointe 2</label>
+				<label>Next Rush Day Slot 2</label>
 				<description>Profile of next rush day, slot 2</description>
 			</channel>
 
 			<channel id="pjourf3-plus1" typeId="string">
-				<label>Pjour f3 +1</label>
+				<label>NextDay Provider Schedule Slot 3</label>
 				<description>Profile of next day provider schedule, slot 3</description>
 			</channel>
 
 			<channel id="ppointe3" typeId="string">
-				<label>Ppointe 3</label>
+				<label>Next Rush Day Slot 3</label>
 				<description>Profile of next rush day, slot 3</description>
 			</channel>
 
 			<channel id="pjourf4-plus1" typeId="string">
-				<label>Pjour f4 +1</label>
+				<label>NextDay Provider Schedule Slot 4</label>
 				<description>Profile of next day provider schedule, slot 4</description>
 			</channel>
 
 			<channel id="ppointe4" typeId="string">
-				<label>Ppointe 4</label>
+				<label>Next Rush Day Slot 4</label>
 				<description>Profile of next rush day, slot 4</description>
 			</channel>
 
 			<channel id="pjourf5-plus1" typeId="string">
-				<label>Pjour f5 +1</label>
+				<label>NextDay Provider Schedule Slot 5</label>
 				<description>Profile of next day provider schedule, slot 5</description>
 			</channel>
 
 			<channel id="ppointe5" typeId="string">
-				<label>Ppointe 5</label>
+				<label>Next Rush Day Slot 5</label>
 				<description>Profile of next rush day, slot 5</description>
 			</channel>
 
 			<channel id="pjourf6-plus1" typeId="string">
-				<label>Pjour f6 +1</label>
+				<label>NextDay Provider Schedule Slot 6</label>
 				<description>Profile of next day provider schedule, slot 6</description>
 			</channel>
 
 			<channel id="ppointe6" typeId="string">
-				<label>Ppointe 6</label>
+				<label>Next Rush Day Slot 6</label>
 				<description>Profile of next rush day, slot 6</description>
 			</channel>
 
 			<channel id="pjourf7-plus1" typeId="string">
-				<label>Pjour f7 +1</label>
+				<label>NextDay Provider Schedule Slot 7</label>
 				<description>Profile of next day provider schedule, slot 7</description>
 			</channel>
 
 			<channel id="ppointe7" typeId="string">
-				<label>Ppointe 7</label>
+				<label>Next Rush Day Slot 7</label>
 				<description>Profile of next rush day, slot 7</description>
 			</channel>
 
 			<channel id="pjourf8-plus1" typeId="string">
-				<label>Pjour f8 +1</label>
+				<label>NextDay Provider Schedule Slot 8</label>
 				<description>Profile of next day provider schedule, slot 8</description>
 			</channel>
 
 			<channel id="ppointe8" typeId="string">
-				<label>Ppointe 8</label>
+				<label>Next Rush Day Slot 8</label>
 				<description>Profile of next rush day, slot 8</description>
 			</channel>
 		</channels>

@@ -7,6 +7,7 @@
 	<bridge-type id="d2lcontroller">
 		<label>Teleinfo D2L Controller</label>
 		<description>Teleinfo D2L dongle with Wifi Interface</description>
+		<semantic-equipment-tag>ElectricMeter</semantic-equipment-tag>
 
 		<channels>
 			<channel id="invalidFrameCounter" typeId="invalidFrameCounter"/>

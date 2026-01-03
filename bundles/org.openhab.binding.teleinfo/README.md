@@ -10,7 +10,7 @@ These values can be used to
 - check if your subscription is relevant for your needs,
 - monitor your electricity consumption,
 
-### Tic Mode
+### TIC Mode
 
 There are two different TIC modes, corresponding to two distinct frame formats:
 
@@ -24,7 +24,6 @@ There are two different TIC modes, corresponding to two distinct frame formats:
   - Offers a faster refresh rate.
 
 The method for changing the TIC mode of a Linky meter is explained [here](https://forum.gce-electronics.com/t/comment-passer-un-cpt-linky-en-mode-standard/8206/7).
-
 
 ## Supported Things
 
@@ -79,7 +78,6 @@ There are two main ways to do this:
 - Direct connection: Using a Teleinfo-to-serial modem converter (typically provides data with a granularity between 2 to 5 seconds).
 - Remote connection: Using an ERL dongle put into your counter (typically provides data with a granularity of around 1 minute).
 
-
 Before the binding can be used, a controller must be added. There is currently two sort of controller (serial or D2l).
 
 Remote controller connection can use different technologies to transmit the Teleinfo frame.
@@ -122,7 +120,6 @@ The bridge will decode the ID of the D2L device sending the frame and dispatch i
 | Parameter                      | Sample         | Description                                                       |
 |--------------------------------|----------------|-------------------------------------------------------------------|
 | listenningPort                 | 7845           | The tcp port we will listen for Teleinfo frame coming from D2L    |
-
 
 ## Discovery
 
@@ -267,13 +264,11 @@ Note:<br/>
 Cosphi, Active Power, and Reactive Power are not directly available on Linky meters.
 Active power is particularly important as it is used to calculate consumption, which is what your supplier bills you for.
 
-
 How to feed cosphi ?
 
 You will have to create a specific channel Cosphi.
 First channel will be the one you get your cosphi from.
 Second one, with profile="follow" will feed the cosphi to teleinfo binding.
-
 
 ```java
 Number											
@@ -286,7 +281,6 @@ Number
 		channel="teleinfo:lsmm_electricitymeter:myElectricityMeter:commonLSMGroup#cosphi"[profile="follow"]
   }
 ```
-
 
 #### Three Phase Only Channels
 
@@ -390,7 +384,6 @@ Bridge teleinfo:d2lcontroller:teleinfoD2L "D2lBridge" [ listenningPort="7845"] {
 	Thing lsmm_electricitymeter myElectricityMeter [ adco="031528042289", appKey="b9c94b3d84045264e99c12903d7ff983", ivKey="19d2a8b23eba48749baf66fc5e2ff3ab", idd2l="021802000384"]
 ```
 
-
 ## Tested Hardware
 
 The Teleinfo binding has been successfully validated with below hardware configuration:
@@ -408,7 +401,6 @@ You can also build a Teleinfo modem by yourself (see [this example](http://berna
 |-------------------------------------|-----------------------------|---------------------------|------------|-------------------------------------------------------------------------------------|
 | D2L                                 | Linky                       | Single-phase TEMPO        | Standard   | [(more details)](https://eesmart.fr/modulesd2l/erl-wifi-compteur-linky/)            |
 
-
 ### Verify Communication
 
 The communication can be verified using software like picocom
@@ -419,42 +411,42 @@ picocom -b 1200 -d 7 -p e -f n /dev/ttyUSB1 (for Historical mode)
 After a few seconds, you should see Linky frame displayed in your terminal
 
 ```java
-ADSC    81187xxxxxx    M
-VTIC    02      J
-DATE    H250314152111           ;
-NGTF         TEMPO              F
-LTARF       HP  BLEU            +
-EAST    120684765       6
-EASF01  083957312       H
-EASF02  031765917       J
-EASF03  001219877       G
-EASF04  002681581       D
-EASF05  000607543       ?
-EASF06  000452535       ?
-EASF07  000000000       (
-EASF08  000000000       )
-EASF09  000000000       *
-EASF10  000000000       "
-EASD01  076241272       ?
-EASD02  033890466       H
-EASD03  003663842       B
-EASD04  006889185       P
-IRMS1   006     4
-URMS1   233     B
-PREF    12      B
-PCOUP   12      \
-SINSTS  01389   [
-SMAXSN  H250314052302   07720   8
-SMAXSN-1        H250308233739   09340   (
-CCASN   H250314150000   05090   >
-CCASN-1 H250314143000   06668   *
-UMOY1   H250314152000   231     +
-STGE    013AC401        R
-MSG1    PAS DE          MESSAGE                 <
-PRM     2145499yyyyyyyy  4
-RELAIS  000     B
-NTARF   02      O
-NJOURF  00      &
-NJOURF+1        00      B
-PJOURF+1        00004001 06004002 16004001 NONUTILE NONUTILE NONUTILE NONUTILE NONUTILE NONUTILE NONUTILE NONUTILE      1
+ADSC        81187xxxxxx             M
+VTIC        02                      J
+DATE        H250314152111           ;
+NGTF        TEMPO                   F
+LTARF       HP  BLEU                +
+EAST        120684765               6
+EASF01      083957312               H
+EASF02      031765917               J
+EASF03      001219877               G
+EASF04      002681581               D
+EASF05      000607543               ?
+EASF06      000452535               ?
+EASF07      000000000               (
+EASF08      000000000               )
+EASF09      000000000               *
+EASF10      000000000               "
+EASD01      076241272               ?
+EASD02      033890466               H
+EASD03      003663842               B
+EASD04      006889185               P
+IRMS1       006                     4
+URMS1       233                     B
+PREF        12                      B
+PCOUP       12                      \
+SINSTS      01389                   [
+SMAXSN      H250314052302   07720   8
+SMAXSN-1    H250308233739   09340   (
+CCASN       H250314150000   05090   >
+CCASN-1     H250314143000   06668   *
+UMOY1       H250314152000   231     +
+STGE        013AC401                R
+MSG1        PAS DE          MESSAGE <
+PRM         2145499yyyyyyyy         4
+RELAIS      000                     B
+NTARF       02                      O
+NJOURF      00                      &  
+NJOURF+1    00                      B
+PJOURF+1    00004001 06004002 16004001 NONUTILE NONUTILE NONUTILE NONUTILE NONUTILE NONUTILE NONUTILE NONUTILE      1
 ```

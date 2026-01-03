@@ -74,6 +74,7 @@ import com.google.gson.reflect.TypeToken;
 public class TeleinfoD2LControllerHandler extends TeleinfoAbstractControllerHandler {
     private final Logger logger = LoggerFactory.getLogger(TeleinfoD2LControllerHandler.class);
     private @Nullable ScheduledFuture<?> pollingJob = null;
+    private String listenningPort = "";
 
     // this prefix is use on appKey in d2L
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("uuuu-MM-dd'T'HH:mm:ss.SSSX");
@@ -107,6 +108,17 @@ public class TeleinfoD2LControllerHandler extends TeleinfoAbstractControllerHand
 
     @Override
     public void initialize() {
+        Configuration thingConfig = getConfig();
+        listenningPort = (String) thingConfig.get("listenningPort");
+
+        if ("".equals(listenningPort)) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/@listenning_port_not_defined");
+            return;
+        }
+
+        updateStatus(ThingStatus.OFFLINE);
+
         pollingJob = scheduler.schedule(this::pollingCode, 3, TimeUnit.SECONDS);
     }
 
@@ -128,7 +140,6 @@ public class TeleinfoD2LControllerHandler extends TeleinfoAbstractControllerHand
     }
 
     private void pollingCode() {
-        updateStatus(ThingStatus.ONLINE);
         Selector selector = null;
         ServerSocketChannel socket = null;
 
@@ -138,19 +149,22 @@ public class TeleinfoD2LControllerHandler extends TeleinfoAbstractControllerHand
 
             socket = ServerSocketChannel.open();
 
-            Configuration thingConfig = getConfig();
-
-            Object listenningPort = thingConfig.get("listenningPort");
-
             // specify the port and host to connect to
-            InetSocketAddress serverSocketAddr = new InetSocketAddress(Integer.valueOf((String) listenningPort));
+            InetSocketAddress serverSocketAddr = new InetSocketAddress(Integer.valueOf(listenningPort));
 
             socket.bind(serverSocketAddr);
 
             // to set our server as non-blocking.
             socket.configureBlocking(false);
             socket.register(selector, SelectionKey.OP_ACCEPT);
+            updateStatus(ThingStatus.ONLINE);
 
+        } catch (Exception ex) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, ex.getMessage());
+            return;
+        }
+
+        try {
             while (getThing().getStatus() == ThingStatus.ONLINE) {
                 if (selector.select(3000) == 0) {
                     continue;
