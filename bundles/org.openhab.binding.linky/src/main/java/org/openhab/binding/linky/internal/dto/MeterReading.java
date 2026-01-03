@@ -35,8 +35,17 @@ public class MeterReading {
 
     public String quality;
 
+    @SerializedName("reading")
+    public Reading[] reading;
+
     @SerializedName("reading_type")
-    public ReadingType readingType;
+    public ReadingType[] readingType;
+
+    @SerializedName("calendar")
+    public Calendrier[] calendar;
+
+    @SerializedName("temporal_class_totalizer")
+    public TemporalClassTotalizer[] temporalClassTotalizer;
 
     @SerializedName("interval_reading")
     public IntervalReading[] baseValue;
@@ -46,7 +55,8 @@ public class MeterReading {
 
     public static MeterReading convertFromComsumptionReport(ConsumptionReport comsumptionReport, boolean useIndex) {
         MeterReading result = new MeterReading();
-        result.readingType = new ReadingType();
+        result.readingType = new ReadingType[1];
+        result.readingType[0] = new ReadingType();
 
         if (comsumptionReport.consumptions.aggregats != null) {
             if (comsumptionReport.consumptions.aggregats.days != null) {

@@ -49,12 +49,16 @@ public class BridgeRemoteMyElectricalDataHandler extends BridgeRemoteApiHandler 
     private static final String CONTACT_URL = BASE_URL + "contact/%s/cache/";
     private static final String ADDRESS_URL = BASE_URL + "addresses/%s/cache/";
     private static final String MEASURE_DAILY_CONSUMPTION_URL = BASE_URL + "daily_consumption/%s/start/%s/end/%s/cache";
-    private static final String MEASURE_DAILY_INDEX_URL = MEASURE_DAILY_CONSUMPTION_URL;
+    private static final String MEASURE_DAILY_PRODUCTION_URL = BASE_URL + "daily_production/%s/start/%s/end/%s/cache";
+    private static final String MEASURE_INDEX_CONSUMPTION_URL = MEASURE_DAILY_CONSUMPTION_URL;
+    private static final String MEASURE_INDEX_PRODUCTIONN_URL = MEASURE_DAILY_CONSUMPTION_URL;
+
+    private static final String LOAD_CURVE_CONSUMPTION_URL = BASE_URL
+            + "consumption_load_curve/%s/start/%s/end/%s/cache";
+    private static final String LOAD_CURVE_PRODUCTION_URL = BASE_URL + "production_load_curve/%s/start/%s/end/%s/cache";
 
     private static final String MEASURE_MAX_POWER_URL = BASE_URL
             + "daily_consumption_max_power/%s/start/%s/end/%s/cache";
-    private static final String LOAD_CURVE_CONSUMPTION_URL = BASE_URL
-            + "consumption_load_curve/%s/start/%s/end/%s/cache";
 
     // List of Linky services related urls, information
     public static final String LINKY_MYELECTRICALDATA_ACCOUNT_URL = "https://www.myelectricaldata.fr/";
@@ -195,8 +199,28 @@ public class BridgeRemoteMyElectricalDataHandler extends BridgeRemoteApiHandler 
     }
 
     @Override
-    public String getDailyIndexUrl() {
-        return MEASURE_DAILY_INDEX_URL;
+    public String getDailyProductionUrl() {
+        return MEASURE_DAILY_PRODUCTION_URL;
+    }
+
+    @Override
+    public String getIndexConsumptionUrl() {
+        return MEASURE_INDEX_CONSUMPTION_URL;
+    }
+
+    @Override
+    public String getIndexProductionUrl() {
+        return MEASURE_INDEX_PRODUCTIONN_URL;
+    }
+
+    @Override
+    public String getLoadCurveConsumptionUrl() {
+        return LOAD_CURVE_CONSUMPTION_URL;
+    }
+
+    @Override
+    public String getLoadCurveProductionUrl() {
+        return LOAD_CURVE_PRODUCTION_URL;
     }
 
     @Override
@@ -205,8 +229,28 @@ public class BridgeRemoteMyElectricalDataHandler extends BridgeRemoteApiHandler 
     }
 
     @Override
-    public String getLoadCurveUrl() {
-        return LOAD_CURVE_CONSUMPTION_URL;
+    public String getSubsribeServiceUrl() {
+        return "";
+    }
+
+    @Override
+    public String getGeneralDataUrl() {
+        return "";
+    }
+
+    @Override
+    public String getContractSynthUrl() {
+        return "";
+    }
+
+    @Override
+    public String getContractStateUrl() {
+        return "";
+    }
+
+    @Override
+    public String getAlimentationUrl() {
+        return "";
     }
 
     @Override
