@@ -28,11 +28,11 @@ import org.openhab.core.automation.annotation.ActionInput;
 import org.openhab.core.automation.annotation.ActionOutput;
 import org.openhab.core.automation.annotation.RuleAction;
 import org.openhab.core.i18n.TimeZoneProvider;
+import org.openhab.core.library.dimension.Intensity;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.thing.binding.ThingActions;
 import org.openhab.core.thing.binding.ThingActionsScope;
 import org.openhab.core.thing.binding.ThingHandler;
-import org.openhab.core.types.State;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -100,7 +100,7 @@ public class AstroActions implements ThingActions {
     }
 
     @RuleAction(label = "get the total sun radiation", description = "Get the total sun radiation for a given time.")
-    public @Nullable @ActionOutput(name = "result", label = "Total Radiation", type = "org.openhab.core.types.State") State getTotalRadiation(
+    public @Nullable @ActionOutput(name = "result", label = "Total Radiation", type = "QuantityType<org.openhab.core.library.dimension.Intensity>") QuantityType<Intensity> getTotalRadiation(
             @ActionInput(name = "date", label = "Date", required = false, description = "Considered date") @Nullable ZonedDateTime date) {
         logger.debug("Astro action 'getTotalRadiation' called");
         AstroThingHandler theHandler = this.handler;
@@ -152,7 +152,8 @@ public class AstroActions implements ThingActions {
         return ((AstroActions) actions).getAzimuth(date);
     }
 
-    public static @Nullable State getTotalRadiation(ThingActions actions, @Nullable ZonedDateTime date) {
+    public static @Nullable QuantityType<Intensity> getTotalRadiation(ThingActions actions,
+            @Nullable ZonedDateTime date) {
         return ((AstroActions) actions).getTotalRadiation(date);
     }
 

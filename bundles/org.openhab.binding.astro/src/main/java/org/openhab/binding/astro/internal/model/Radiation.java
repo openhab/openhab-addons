@@ -13,6 +13,8 @@
 package org.openhab.binding.astro.internal.model;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.core.library.dimension.Intensity;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.State;
@@ -43,8 +45,8 @@ public class Radiation {
     /**
      * Returns the total radiation.
      */
-    public State getTotal() {
-        return Double.isNaN(direct) || Double.isNaN(diffuse) ? UnDefType.UNDEF
+    public @Nullable QuantityType<Intensity> getTotal() {
+        return Double.isNaN(direct) || Double.isNaN(diffuse) ? null
                 : new QuantityType<>(direct + diffuse, Units.IRRADIANCE);
     }
 
