@@ -47,6 +47,7 @@ public class ServerStateManager {
      * @param thing The openHAB thing representing the server
      * @return StateAnalysis containing the recommended state and reasoning
      */
+    @SuppressWarnings("null") // StateAnalysis URI parameter can be null for certain states
     public StateAnalysis analyzeServerState(ServerState currentState, Configuration configuration, Thing thing) {
         // If the current state is DISPOSED, return it immediately
         if (currentState == ServerState.DISPOSED) {

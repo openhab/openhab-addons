@@ -14,7 +14,7 @@ package org.openhab.binding.jellyfin.internal.events;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.jellyfin.internal.api.generated.current.model.SessionInfoDto;
+import org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.SessionInfoDto;
 
 /**
  * Listener interface for receiving Jellyfin session update notifications.

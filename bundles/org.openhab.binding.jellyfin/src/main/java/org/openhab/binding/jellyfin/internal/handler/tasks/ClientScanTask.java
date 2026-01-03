@@ -18,9 +18,9 @@ import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.jellyfin.internal.api.ApiClient;
-import org.openhab.binding.jellyfin.internal.api.generated.current.DevicesApi;
-import org.openhab.binding.jellyfin.internal.api.generated.current.model.DeviceInfoDto;
-import org.openhab.binding.jellyfin.internal.api.generated.current.model.DeviceInfoDtoQueryResult;
+import org.openhab.binding.jellyfin.internal.thirdparty.api.current.DevicesApi;
+import org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.DeviceInfoDto;
+import org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.DeviceInfoDtoQueryResult;
 import org.openhab.binding.jellyfin.internal.types.ExceptionHandlerType;
 
 /**

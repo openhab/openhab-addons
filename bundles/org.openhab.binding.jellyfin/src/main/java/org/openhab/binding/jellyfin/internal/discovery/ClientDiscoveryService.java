@@ -19,8 +19,8 @@ import static org.openhab.binding.jellyfin.internal.Constants.THING_TYPE_JELLYFI
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.jellyfin.internal.api.generated.current.model.SessionInfoDto;
 import org.openhab.binding.jellyfin.internal.handler.ServerHandler;
+import org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.SessionInfoDto;
 import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.thing.Thing;

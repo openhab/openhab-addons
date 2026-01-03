@@ -16,7 +16,7 @@ import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.jellyfin.internal.Configuration;
-import org.openhab.binding.jellyfin.internal.api.generated.current.model.SystemInfo;
+import org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.SystemInfo;
 
 /**
  * Extracts configuration properties from Jellyfin SystemInfo by parsing relevant

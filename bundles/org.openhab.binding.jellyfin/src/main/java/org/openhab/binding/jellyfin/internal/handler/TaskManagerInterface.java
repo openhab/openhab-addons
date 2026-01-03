@@ -21,10 +21,10 @@ import java.util.function.Consumer;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.jellyfin.internal.api.ApiClient;
-import org.openhab.binding.jellyfin.internal.api.generated.current.model.SystemInfo;
-import org.openhab.binding.jellyfin.internal.api.generated.current.model.UserDto;
 import org.openhab.binding.jellyfin.internal.discovery.ClientDiscoveryService;
 import org.openhab.binding.jellyfin.internal.events.ErrorEventBus;
+import org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.SystemInfo;
+import org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.UserDto;
 import org.openhab.binding.jellyfin.internal.types.ServerState;
 
 /**

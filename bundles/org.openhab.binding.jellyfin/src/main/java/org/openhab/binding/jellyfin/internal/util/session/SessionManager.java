@@ -18,8 +18,8 @@ import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.jellyfin.internal.api.generated.current.model.SessionInfoDto;
 import org.openhab.binding.jellyfin.internal.events.SessionEventBus;
+import org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.SessionInfoDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

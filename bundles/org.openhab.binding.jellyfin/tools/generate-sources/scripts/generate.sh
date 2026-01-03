@@ -69,7 +69,7 @@ OUTPUT=.
 INDEX=0
 for i in "${VERSIONS[@]}"; do
     ALIAS=${VERSION_ALIAS[INDEX++]}
-    PACKAGE_BASE=org.openhab.binding.jellyfin.internal.api.generated.${ALIAS}
+    PACKAGE_BASE=org.openhab.binding.jellyfin.internal.thirdparty.api.${ALIAS}
     PACKAGE_API=${PACKAGE_BASE}
     PACKAGE_MODEL=${PACKAGE_BASE}.model
 
@@ -112,17 +112,17 @@ for i in "${VERSIONS[@]}"; do
     # Older versions (10.8.13, 10.10.7) don't have this problem and will skip this fix.
     FILENAME_YAML_INPUT="${FILENAME_YAML}"
     FILENAME_YAML_FIXED="${FILENAME_YAML}.fixed"
-    
+
     HAS_ENUM=$(yq '.components.schemas.TranscodingInfo.properties.TranscodeReasons | has("enum")' ${FILENAME_YAML})
     HAS_ARRAY_TYPE=$(yq '.components.schemas.TranscodingInfo.properties.TranscodeReasons.type == "array"' ${FILENAME_YAML})
-    
+
     if [ "$HAS_ENUM" = "true" ] && [ "$HAS_ARRAY_TYPE" = "true" ]; then
         echo "⚙️: Fixing malformed TranscodeReasons schema (has both enum and type:array)"
         # Remove the inline enum definition, keeping only the array type with $ref
         yq 'del(.components.schemas.TranscodingInfo.properties.TranscodeReasons.enum)' ${FILENAME_YAML} > ${FILENAME_YAML_FIXED}
         FILENAME_YAML_INPUT="${FILENAME_YAML_FIXED}"
     fi
-    
+
     docker run --rm --interactive \
         --user $(id -u):$(id -g) \
         --volume ${ROOT}:${DOCKER_VOLUME_WORK} \
@@ -136,7 +136,7 @@ for i in "${VERSIONS[@]}"; do
         --config ${OPENAPI_JAVA_CONFIG} \
         --input-spec ${OPENAPI_SPECIFICATION_DIR}/yaml/$(basename ${FILENAME_YAML_INPUT}) -o ${OUTPUT} \
         >/dev/null
-    
+
     # Clean up the temporary fixed file if it was created
     if [ -f "${FILENAME_YAML_FIXED}" ]; then
         rm ${FILENAME_YAML_FIXED}

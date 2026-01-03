@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.function.Predicate;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.jellyfin.internal.api.generated.current.model.UserDto;
+import org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.UserDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

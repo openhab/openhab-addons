@@ -28,24 +28,24 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.jellyfin.internal.Configuration;
 import org.openhab.binding.jellyfin.internal.Constants;
 import org.openhab.binding.jellyfin.internal.api.ApiClient;
-import org.openhab.binding.jellyfin.internal.api.generated.current.ItemsApi;
-import org.openhab.binding.jellyfin.internal.api.generated.current.SessionApi;
-import org.openhab.binding.jellyfin.internal.api.generated.current.UserLibraryApi;
-import org.openhab.binding.jellyfin.internal.api.generated.current.model.BaseItemDto;
-import org.openhab.binding.jellyfin.internal.api.generated.current.model.BaseItemDtoQueryResult;
-import org.openhab.binding.jellyfin.internal.api.generated.current.model.BaseItemKind;
-import org.openhab.binding.jellyfin.internal.api.generated.current.model.MessageCommand;
-import org.openhab.binding.jellyfin.internal.api.generated.current.model.PlayCommand;
-import org.openhab.binding.jellyfin.internal.api.generated.current.model.PlaystateCommand;
-import org.openhab.binding.jellyfin.internal.api.generated.current.model.SessionInfoDto;
-import org.openhab.binding.jellyfin.internal.api.generated.current.model.SystemInfo;
-import org.openhab.binding.jellyfin.internal.api.generated.current.model.UserDto;
 import org.openhab.binding.jellyfin.internal.discovery.ClientDiscoveryService;
 import org.openhab.binding.jellyfin.internal.events.ErrorEvent;
 import org.openhab.binding.jellyfin.internal.events.ErrorEventBus;
 import org.openhab.binding.jellyfin.internal.events.ErrorEventListener;
 import org.openhab.binding.jellyfin.internal.events.SessionEventBus;
 import org.openhab.binding.jellyfin.internal.handler.tasks.AbstractTask;
+import org.openhab.binding.jellyfin.internal.thirdparty.api.current.ItemsApi;
+import org.openhab.binding.jellyfin.internal.thirdparty.api.current.SessionApi;
+import org.openhab.binding.jellyfin.internal.thirdparty.api.current.UserLibraryApi;
+import org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.BaseItemDto;
+import org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.BaseItemDtoQueryResult;
+import org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.BaseItemKind;
+import org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.MessageCommand;
+import org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.PlayCommand;
+import org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.PlaystateCommand;
+import org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.SessionInfoDto;
+import org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.SystemInfo;
+import org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.UserDto;
 import org.openhab.binding.jellyfin.internal.types.ServerState;
 import org.openhab.binding.jellyfin.internal.util.client.ClientListUpdater;
 import org.openhab.binding.jellyfin.internal.util.config.SystemInfoConfigurationExtractor;
@@ -232,11 +232,11 @@ public class ServerHandler extends BaseBridgeHandler implements ErrorEventListen
      */
     public void sendGeneralCommand(@Nullable String sessionId, Object generalCommand) {
         try {
-            org.openhab.binding.jellyfin.internal.api.generated.current.SessionApi sessionApi = new org.openhab.binding.jellyfin.internal.api.generated.current.SessionApi(
+            org.openhab.binding.jellyfin.internal.thirdparty.api.current.SessionApi sessionApi = new org.openhab.binding.jellyfin.internal.thirdparty.api.current.SessionApi(
                     apiClient);
-            if (generalCommand instanceof org.openhab.binding.jellyfin.internal.api.generated.current.model.GeneralCommand) {
+            if (generalCommand instanceof org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.GeneralCommand) {
                 sessionApi.sendFullGeneralCommand(sessionId,
-                        (org.openhab.binding.jellyfin.internal.api.generated.current.model.GeneralCommand) generalCommand);
+                        (org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.GeneralCommand) generalCommand);
             } else {
                 logger.warn("Invalid general command type: {}", generalCommand.getClass().getName());
             }

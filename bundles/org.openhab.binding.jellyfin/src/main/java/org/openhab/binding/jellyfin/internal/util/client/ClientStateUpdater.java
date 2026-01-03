@@ -18,9 +18,9 @@ import java.util.Map;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.jellyfin.internal.Constants;
-import org.openhab.binding.jellyfin.internal.api.generated.current.model.BaseItemDto;
-import org.openhab.binding.jellyfin.internal.api.generated.current.model.PlayerStateInfo;
-import org.openhab.binding.jellyfin.internal.api.generated.current.model.SessionInfoDto;
+import org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.BaseItemDto;
+import org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.PlayerStateInfo;
+import org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.SessionInfoDto;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.PlayPauseType;
@@ -92,21 +92,23 @@ public final class ClientStateUpdater {
         addStringState(states, Constants.PLAYING_ITEM_SEASON_NAME_CHANNEL,
                 playingItem != null ? playingItem.getSeasonName() : null);
 
-        if (playingItem != null && playingItem.getParentIndexNumber() != null) {
-            states.put(Constants.PLAYING_ITEM_SEASON_CHANNEL, new DecimalType(playingItem.getParentIndexNumber()));
+        Integer parentIndexNumber = playingItem != null ? playingItem.getParentIndexNumber() : null;
+        if (parentIndexNumber != null) {
+            states.put(Constants.PLAYING_ITEM_SEASON_CHANNEL, new DecimalType(parentIndexNumber));
         } else {
             states.put(Constants.PLAYING_ITEM_SEASON_CHANNEL, UnDefType.NULL);
         }
 
-        if (playingItem != null && playingItem.getIndexNumber() != null) {
-            states.put(Constants.PLAYING_ITEM_EPISODE_CHANNEL, new DecimalType(playingItem.getIndexNumber()));
+        Integer indexNumber = playingItem != null ? playingItem.getIndexNumber() : null;
+        if (indexNumber != null) {
+            states.put(Constants.PLAYING_ITEM_EPISODE_CHANNEL, new DecimalType(indexNumber));
         } else {
             states.put(Constants.PLAYING_ITEM_EPISODE_CHANNEL, UnDefType.NULL);
         }
 
-        if (playingItem != null && playingItem.getGenres() != null && !playingItem.getGenres().isEmpty()) {
-            states.put(Constants.PLAYING_ITEM_GENRES_CHANNEL,
-                    new StringType(String.join(", ", playingItem.getGenres())));
+        List<String> genres = playingItem != null ? playingItem.getGenres() : null;
+        if (genres != null && !genres.isEmpty()) {
+            states.put(Constants.PLAYING_ITEM_GENRES_CHANNEL, new StringType(String.join(", ", genres)));
         } else {
             states.put(Constants.PLAYING_ITEM_GENRES_CHANNEL, UnDefType.NULL);
         }

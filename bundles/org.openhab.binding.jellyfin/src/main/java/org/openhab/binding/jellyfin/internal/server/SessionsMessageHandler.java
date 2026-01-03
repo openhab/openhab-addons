@@ -18,9 +18,9 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.jellyfin.internal.api.ApiClient;
-import org.openhab.binding.jellyfin.internal.api.generated.current.model.SessionInfoDto;
-import org.openhab.binding.jellyfin.internal.api.generated.current.model.SessionMessageType;
-import org.openhab.binding.jellyfin.internal.api.generated.current.model.SessionsMessage;
+import org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.SessionInfoDto;
+import org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.SessionMessageType;
+import org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.SessionsMessage;
 import org.openhab.binding.jellyfin.internal.util.session.SessionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

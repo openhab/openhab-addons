@@ -16,7 +16,7 @@ import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.jellyfin.internal.api.ApiClient;
-import org.openhab.binding.jellyfin.internal.api.generated.current.model.SystemInfo;
+import org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.SystemInfo;
 import org.openhab.binding.jellyfin.internal.types.ExceptionHandlerType;
 
 /**
@@ -57,7 +57,7 @@ public class ConnectionTask extends AbstractTask {
     @Override
     public void run() {
         try {
-            var systemApi = new org.openhab.binding.jellyfin.internal.api.generated.current.SystemApi(client);
+            var systemApi = new org.openhab.binding.jellyfin.internal.thirdparty.api.current.SystemApi(client);
             var systemInfo = systemApi.getSystemInfo();
 
             this.acceptedHandler.accept(systemInfo);

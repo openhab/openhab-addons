@@ -22,8 +22,8 @@ import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.jellyfin.internal.api.ApiClient;
-import org.openhab.binding.jellyfin.internal.api.generated.ApiException;
-import org.openhab.binding.jellyfin.internal.api.generated.current.model.UserDto;
+import org.openhab.binding.jellyfin.internal.thirdparty.api.ApiException;
+import org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.UserDto;
 import org.openhab.binding.jellyfin.internal.types.ExceptionHandlerType;
 
 import com.fasterxml.jackson.core.type.TypeReference;
