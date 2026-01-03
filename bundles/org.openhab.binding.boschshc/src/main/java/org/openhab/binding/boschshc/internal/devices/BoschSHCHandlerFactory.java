@@ -91,6 +91,8 @@ public class BoschSHCHandlerFactory extends BaseThingHandlerFactory {
             new ThingTypeHandlerMapping(THING_TYPE_SHUTTER_CONTROL, ShutterControlHandler::new),
             new ThingTypeHandlerMapping(THING_TYPE_SHUTTER_CONTROL_2, ShutterControl2Handler::new),
             new ThingTypeHandlerMapping(THING_TYPE_THERMOSTAT, ThermostatHandler::new),
+            new ThingTypeHandlerMapping(THING_TYPE_THERMOSTAT_2, ThermostatHandler::new),
+            new ThingTypeHandlerMapping(THING_TYPE_THERMOSTAT_2_MATTER, ThermostatHandler::new),
             new ThingTypeHandlerMapping(THING_TYPE_CLIMATE_CONTROL, ClimateControlHandler::new),
             new ThingTypeHandlerMapping(THING_TYPE_WALL_THERMOSTAT, WallThermostatHandler::new),
             new ThingTypeHandlerMapping(THING_TYPE_CAMERA_360, CameraHandler::new),
