@@ -295,14 +295,14 @@ public class BluelinkApiEU implements BluelinkApi {
         }
     }
 
-    private void addStandardHeaders(Request request) {
+    private void addStandardHeaders(final Request request) {
         String stamp = generateStamp();
 
         request.header("ccsp-service-id", brandConfig.ccspServiceId).header("ccsp-application-id", brandConfig.appId)
                 .header("Stamp", stamp).header(HttpHeader.USER_AGENT, HTTP_USER_AGENT);
     }
 
-    private void addAuthHeaders(Request request) {
+    private void addAuthHeaders(final Request request) {
         TokenResponse token = this.token;
         if (token != null) {
             request.header(HttpHeader.AUTHORIZATION, token.tokenType() + " " + token.accessToken());
@@ -313,15 +313,24 @@ public class BluelinkApiEU implements BluelinkApi {
         }
     }
 
-    private ContentResponse doRequest(Request request) throws BluelinkApiException {
+    private ContentResponse doRequest(final Request request) throws BluelinkApiException {
         try {
-            ContentResponse response = request.send();
+            final ContentResponse response = request.send();
             if (response.getStatus() >= 200 && response.getStatus() < 300) {
                 return response;
             } else {
+                final String msg = "API request failed with status " + response.getStatus();
+                // retry on HTTP 400: resCode 4004; resMsg Duplicate request
+                if (response.getStatus() == 400) {
+                    BaseResponse<?> response1 = gson.fromJson(response.getContentAsString(), BaseResponse.class);
+                    if (response1 != null && "4004".equals(response1.responseCode())) {
+                        throw new RetryableRequestException(msg);
+                    }
+                }
+
                 logger.debug("API request failed with status {}: {}", response.getStatus(),
                         response.getContentAsString());
-                throw new BluelinkApiException("API request failed with status " + response.getStatus());
+                throw new BluelinkApiException(msg);
             }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
