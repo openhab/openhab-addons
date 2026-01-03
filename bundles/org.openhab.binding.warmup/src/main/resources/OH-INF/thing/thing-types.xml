@@ -6,7 +6,7 @@
 
 	<bridge-type id="my-warmup">
 		<label>My Warmup Account</label>
-		<description>Connection to the https://my.warmup.com site</description>
+		<description>Connection to my.warmup.com</description>
 		<category>WebService</category>
 		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 		<config-description>
@@ -34,20 +34,35 @@
 		</supported-bridge-type-refs>
 
 		<label>Room</label>
-		<description>Warmup WiFi connected Thermostat(s) controlling a room</description>
+		<description>Warmup Wi‑Fi–connected thermostat(s) controlling a room</description>
 		<category>RadiatorControl</category>
 		<semantic-equipment-tag>Thermostat</semantic-equipment-tag>
 		<channels>
-			<channel id="currentTemperature" typeId="system.indoor-temperature"/>
+			<channel id="currentTemperature" typeId="system.indoor-temperature">
+				<label>Current Temperature</label>
+				<description>Currently reported temperature in the room</description>
+			</channel>
 			<channel id="targetTemperature" typeId="targetTemperature"/>
 			<channel id="fixedTemperature" typeId="fixedTemperature"/>
 			<channel id="overrideRemaining" typeId="overrideRemaining"/>
-			<channel id="energyToday" typeId="system.electric-energy"/>
+			<channel id="energyToday" typeId="system.electric-energy">
+				<label>Energy Today</label>
+				<description>Energy used today as reported by the device</description>
+			</channel>
 			<channel id="runMode" typeId="runMode"/>
 			<channel id="frostProtectionMode" typeId="frostProtectionMode"/>
-			<channel id="airTemperature" typeId="system.indoor-temperature"/>
-			<channel id="floor1Temperature" typeId="system.indoor-temperature"/>
-			<channel id="floor2Temperature" typeId="system.indoor-temperature"/>
+			<channel id="airTemperature" typeId="system.indoor-temperature">
+				<label>Air Temperature</label>
+				<description>Currently reported air temperature at the device</description>
+			</channel>
+			<channel id="floor1Temperature" typeId="system.indoor-temperature">
+				<label>Floor 1 Temperature</label>
+				<description>Currently reported temperature from floor probe 1 on the device</description>
+			</channel>
+			<channel id="floor2Temperature" typeId="system.indoor-temperature">
+				<label>Floor 2 Temperature</label>
+				<description>Currently reported temperature from floor probe 2 on the device</description>
+			</channel>
 		</channels>
 
 		<properties>
