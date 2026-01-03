@@ -282,4 +282,19 @@
 		</command>
 	</channel-type>
 
+	<channel-type id="error-status">
+		<item-type>String</item-type>
+		<label>Error status</label>
+		<description>Error status for Signum module</description>
+		<command>
+			<options>
+				<option value="UNKNOWN">Unknown</option>
+				<option value="NORMAL">Normal power supply voltage</option>
+				<option value="BUS_ERROR">CAN bus error</option>
+				<option value="LOW_POWER">Low power supply voltage error</option>
+				<option value="HIGH_POWER">High power supply voltage error</option>
+			</options>
+		</command>
+	</channel-type>
+
 </thing:thing-descriptions>

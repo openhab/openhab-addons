@@ -601,6 +601,27 @@
 		<config-description-ref uri="thing-type:velbus:33channelDeviceWithTemperatureSensor"/>
 	</thing-type>
 
+	<thing-type id="vmbgptc">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+			<bridge-type-ref id="networkbridge"/>
+		</supported-bridge-type-refs>
+
+		<label>VMBGPTC</label>
+		<description>Glass control module with oled display</description>
+		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
+		<channel-groups>
+			<channel-group id="input" typeId="33channelInputModuleWithTemperatureSensor"/>
+			<channel-group id="button" typeId="32channelButtonModule"/>
+			<channel-group id="feedback" typeId="32channelFeedbackModule"/>
+			<channel-group id="thermostat" typeId="thermostat"/>
+			<channel-group id="clockAlarm" typeId="clockAlarm"/>
+			<channel-group id="oledDisplay" typeId="oledDisplay"/>
+		</channel-groups>
+
+		<config-description-ref uri="thing-type:velbus:33channelDeviceWithTemperatureSensor"/>
+	</thing-type>
+
 	<thing-type id="vmbgpo-20">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="bridge"/>

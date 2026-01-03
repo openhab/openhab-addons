@@ -36,6 +36,24 @@
 		<config-description-ref uri="thing-type:velbus:1channelDeviceWithDimspeed"/>
 	</thing-type>
 
+	<thing-type id="vmb2dc-20">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+			<bridge-type-ref id="networkbridge"/>
+		</supported-bridge-type-refs>
+
+		<label>VMB2DC-20</label>
+		<description>2 channel 0 to 10 V dimmer control module</description>
+		<semantic-equipment-tag>LightSource</semantic-equipment-tag>
+		<channel-groups>
+			<channel-group id="brightness" typeId="2channelBrightnessModule"/>
+			<channel-group id="fade-mode" typeId="2channelFadeModule"/>
+			<channel-group id="scene" typeId="2channelSceneModule"/>
+		</channel-groups>
+
+		<config-description-ref uri="thing-type:velbus:8channelDevice"/>
+	</thing-type>
+
 	<thing-type id="vmb4dc">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="bridge"/>
@@ -68,9 +86,15 @@
 			<channel-group id="brightness" typeId="4channelBrightnessModule"/>
 			<channel-group id="fade-mode" typeId="4channelFadeModule"/>
 			<channel-group id="scene" typeId="4channelSceneModule"/>
+			<channel-group id="virtual-light" typeId="1channelVirtualLight"/>
+			<channel-group id="dim-white" typeId="1channelDimWhiteColorModule"/>
 		</channel-groups>
 
-		<config-description-ref uri="thing-type:velbus:4channelDevice"/>
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
+
+		<config-description-ref uri="thing-type:velbus:4channelDeviceWithVirtualLight"/>
 	</thing-type>
 
 	<thing-type id="vmb8dc-20">

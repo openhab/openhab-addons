@@ -216,4 +216,22 @@
 			uri="thing-type:velbus:9channelDeviceWithTemperatureSensorWithoutSubAddress"/>
 	</thing-type>
 
+	<thing-type id="vmbpiro-20">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+			<bridge-type-ref id="networkbridge"/>
+		</supported-bridge-type-refs>
+
+		<label>VMBPIRO-20</label>
+		<description>Outdoor motion, twilight and temperature sensor, Theben</description>
+		<semantic-equipment-tag>Sensor</semantic-equipment-tag>
+		<channel-groups>
+			<channel-group id="input" typeId="9channelInputModuleWithTemperatureAndLightSensor"/>
+			<channel-group id="clockAlarm" typeId="clockAlarm"/>
+		</channel-groups>
+
+		<config-description-ref
+			uri="thing-type:velbus:9channelDeviceWithTemperatureSensorWithoutSubAddress"/>
+	</thing-type>
+
 </thing:thing-descriptions>

@@ -45,6 +45,7 @@ xidel -e \
 | vmb2bl        | 2-channel blind control module                                                             |
 | vmb2ble-10    | 2-channel blind control module with extended possibilities                                 |
 | vmb2ble       | 2-channel blind control module with extended possibilities                                 |
+| vmb2dc-20     | 2-channel 0 to 10 V dimmer control module                                                  |
 | vmb2pbn       | Push-button interface for Niko 1- or 2-fold push-buttons                                   |
 | vmb4an        | Analog I/O module                                                                          |
 | vmb4dc        | 4-channel 0/1-10V dimmer controller                                                        |
@@ -52,14 +53,16 @@ xidel -e \
 | vmb4pb        | 4 button interface module                                                                  |
 | vmb4ry        | 4-channel relay module                                                                     |
 | vmb4ryld-10   | 4-channel relay module with voltage outputs                                                |
+| vmb4ryld-20   | 4-channel relay module with voltage outputs                                                |
 | vmb4ryld      | 4-channel relay module with voltage outputs                                                |
 | vmb4ryno-10   | 4-channel relay module with potential-free contacts                                        |
+| vmb4ryno-20   | 4-channel relay module with potential-free contacts                                        |
 | vmb4ryno      | 4-channel relay module with potential-free contacts                                        |
 | vmb6in        | 6-channel input module                                                                     |
 | vmb6pb-20     | 6-channel input module                                                                     |
 | vmb6pbn       | Push-button interface module for Niko 4- or 6-fold push-button                             |
 | vmb7in        | 7-channel input module (potentialfree + pulse)                                             |
-| vmb8dc-20     | 8 channel 0 to 10 V dimmer control module                                                  |
+| vmb8dc-20     | 8-channel 0 to 10 V dimmer control module                                                  |
 | vmb8ir        | Infrared remote control receiver module                                                    |
 | vmb8pb        | 8-Channel Push Button module                                                               |
 | vmb8pbu       | Push-button interface with 8 channels for universal mounting                               |
@@ -94,6 +97,7 @@ xidel -e \
 | vmbgpod       | Glass control module with oled display and temperature controller                          |
 | vmbgpo-20     | Glass control module with oled display and temperature controller                          |
 | vmbgpo        | Glass control module with oled display                                                     |
+| vmbgptc       | Glass control module with oled display                                                     |
 | vmbin         | 1-channel input module                                                                     |
 | vmbkp         | Keypad interface module                                                                    |
 | vmbmeteo      | Weather station with thermometer, anemometer, rain sensor and light sensor                 |
@@ -101,7 +105,13 @@ xidel -e \
 | vmbpirc       | Motion and twilight sensor for ceiling mounting                                            |
 | vmbpirm       | Mini motion and twilight sensor for recessed or surface mounting                           |
 | vmbpiro       | Outdoor motion, twilight and temperature sensor, Theben                                    |
+| vmbpiro-10    | Outdoor motion, twilight and temperature sensor, Theben                                    |
+| vmbpiro-20    | Outdoor motion, twilight and temperature sensor, Theben                                    |
+| vmbpsumngr-20 | PSU manager                                                                                |
 | vmbrfr8s      | 8 channel RF receiver module                                                               |
+| vmbsig        | Signum IoT gateway module                                                                  |
+| vmbsig-20     | Signum IoT gateway module                                                                  |
+| vmbsig-21     | Signum IoT gateway module                                                                  |
 | vmbvp1        | Doorbird interface module                                                                  |
 
 ## Discovery
@@ -263,7 +273,8 @@ xidel -e 'let $refs := (
 | `counter7Unit`            | `vmb8in-20`                                                                                                                                                                                              | The unit for Counter 7.                                                                                                      |
 | `counter8Unit`            | `vmb8in-20`                                                                                                                                                                                              | The unit for Counter 8.                                                                                                      |
 | `dimspeed`                | `vmb1dm`, `vmb1led`, `vmb4dc`, `vmbdme`, `vmbdmi`, `vmbdmir`                                                                                                                                             | The time (in seconds) needed for dimming from 0 to 100%.                                                                      |
-| `refresh`                 | `vmb1ts`, `vmb4an`, `vmb7in`, `vmbel1`, `vmbel2`, `vmbel4`, `vmbelpir`, `vmbgp1`, `vmbgp1-2`, `vmbgp2`, `vmbgp2-2`, `vmbgp4`, `vmbgp4-2`, `vmbgp4pir`, `vmbgp4pir-2`, `vmbmeteo`, `vmbpiro`, `vmb8in-20` | Refresh interval for sensors or counters (in seconds), default 300. If set to 0 or left empty, no refresh will be scheduled. |
+| `refresh`                 | `vmb1ts`, `vmb4an`, `vmb7in`, `vmbel1`, `vmbel2`, `vmbel4`, `vmbelpir`, `vmbgp1`, `vmbgp1-2`, `vmbgp2`, `vmbgp2-2`, `vmbgp4`, `vmbgp4-2`, `vmbgp4pir`, `vmbgp4pir-2`, `vmbmeteo`, `vmbpiro`, `vmbpiro-10`, `vmbpiro-20`, `vmb8in-20` | Refresh interval for sensors or counters (in seconds), default 300. If set to 0 or left empty, no refresh will be scheduled. |
+| `mode`                    | `vmb4ledpwm-20`                                                                                                                                                                                          | The mode used by the dimmer module (4DIM, RGB, RGBW)                                                                         |
 
 The `vmbdali` and `vmbdali-20` things have 16 virtual light channels.
 A virtual light combines 3 or 4 VMBDALI module channels into an openHAB channel to control RGB or RGBW lights.
@@ -322,6 +333,12 @@ Thing velbus:vmbdali:1:01 [VL1="CH1,CH2,CH3,CH4", VL2="A4,A5,A6"]
 | Supported channels groups | Supported channels | Supported command types      | Remarks |
 |---------------------------|--------------------|------------------------------|---------|
 |                           | `CH1` ... `CH5`    | OnOff                        |         |
+
+### Modules `vmb4ryld-20`, `vmb4ryno-20`
+
+| Supported channels groups | Supported channels | Supported command types      | Remarks |
+|---------------------------|--------------------|------------------------------|---------|
+|                           | `CH1` ... `CH8`    | OnOff                        |         |
 
 ### Module `vmb1rys`
 
@@ -497,25 +514,24 @@ Thing velbus:vmbdali:1:01 [VL1="CH1,CH2,CH3,CH4", VL2="A4,A5,A6"]
 | `thermostat`              | `currentTemperatureSetpoint`, `heatingModeComfortTemperatureSetpoint`, `heatingModeDayTemperatureSetpoint`, `heatingModeNightTemperatureSetpoint`, `heatingModeAntiFrostTemperatureSetpoint`, `coolingModeComfortTemperatureSetpoint`, `coolingModeDayTemperatureSetpoint`, `coolingModeNightTemperatureSetpoint`, `coolingModeSafeTemperatureSetpoint`, `operatingMode`, `mode` | Number                                                                  | Min = -55, Max = 63.5, Step = 0.5 |
 | `thermostat`              | `heater`, `boost`, `pump`, `cooler`, `alarm1`, `alarm2`, `alarm3`, `alarm4`                                                                                                                                                                                                                                                                                                      | Pressed, Released                                                       | Trigger                           |
 
-### Modules `vmbpiro`
+### Modules `vmbpiro`, `vmbpiro-10`, `vmbpiro-20`
 
 | Supported channels groups | Supported channels                                                                                                                                                                                                 | Supported command types                                                 | Remarks                       |
 |---------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------|-------------------------------|
 | `button`                  | `CH1` ... `CH8`                                                                                                                                                                                                    | Pressed, Long_Pressed                                                   |                               |
 | `input`                   | `CH1` ... `CH8`                                                                                                                                                                                                    | Pressed, Released, Long_Pressed                                         | Trigger                       |
-| `input`                   | `CH9`                                                                                                                                                                                                              | Number                                                                  |                               |
+| `input`                   | `CH9`                                                                                                                                                                                                              | Number                                                                  | Temperature                   |
 | `input`                   | `LIGHT`                                                                                                                                                                                                            | Number                                                                  |                               |
-| `feedback`                | `CH1` ... `CH4`                                                                                                                                                                                                    | Clear_LED, Set_LED, Slow_Blink_LED, Fast_Blink_LED, Very_Fast_Blink_LED | Steer the button LED feedback |
 | `clockAlarm`              | `clockAlarm1Enabled`, `clockAlarm2Enabled`                                                                                                                                                                         | OnOff                                                                   |                               |
 | `clockAlarm`              | `clockAlarm1WakeupHour`, `clockAlarm1WakeupMinute`, `clockAlarm1BedtimeHour`, `clockAlarm1BedtimeMinute`, `clockAlarm2WakeupHour`, `clockAlarm2WakeupMinute`, `clockAlarm2BedtimeHour`, `clockAlarm2BedtimeMinute` | Number                                                                  |                               |
 
-### Modules `vmbgpo`, `vmbgpo-20`, `vmbgpod`, `vmbgpod-2`
+### Modules `vmbgpo`, `vmbgptc`, `vmbgpo-20`, `vmbgpod`, `vmbgpod-2`
 
 | Supported channels groups | Supported channels                                                                                                                                                                                                                                                                                                                                                               | Supported command types                                                 | Remarks                           |
 |---------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------|-----------------------------------|
 | `button`                  | `CH1` ... `CH32`                                                                                                                                                                                                                                                                                                                                                                 | Pressed, Long_Pressed                                                   |                                   |
 | `input`                   | `CH1` ... `CH32`                                                                                                                                                                                                                                                                                                                                                                 | Pressed, Released, Long_Pressed                                         | Trigger                           |
-| `input`                   | `CH9`                                                                                                                                                                                                                                                                                                                                                                            | Number                                                                  |                                   |
+| `input`                   | `CH33`                                                                                                                                                                                                                                                                                                                                                                 | Number                                                                  | Temperature                       |
 | `feedback`                | `CH1` ... `CH32`                                                                                                                                                                                                                                                                                                                                                                 | Clear_LED, Set_LED, Slow_Blink_LED, Fast_Blink_LED, Very_Fast_Blink_LED | Steer the button LED feedback     |
 | `clockAlarm`              | `clockAlarm1Enabled`, `clockAlarm2Enabled`                                                                                                                                                                                                                                                                                                                                       | OnOff                                                                   |                                   |
 | `clockAlarm`              | `clockAlarm1WakeupHour`, `clockAlarm1WakeupMinute`, `clockAlarm1BedtimeHour`, `clockAlarm1BedtimeMinute`, `clockAlarm2WakeupHour`, `clockAlarm2WakeupMinute`, `clockAlarm2BedtimeHour`, `clockAlarm2BedtimeMinute`                                                                                                                                                               | Number                                                                  |                                   |
@@ -530,7 +546,7 @@ Thing velbus:vmbdali:1:01 [VL1="CH1,CH2,CH3,CH4", VL2="A4,A5,A6"]
 |---------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------|-----------------------------------|
 | `button`                  | `CH1` ... `CH32`                                                                                                                                                                                                                                                                                                                                                                 | Pressed, Long_Pressed                                                   |                                   |
 | `input`                   | `CH1` ... `CH32`                                                                                                                                                                                                                                                                                                                                                                 | Pressed, Released, Long_Pressed                                         | Trigger                           |
-| `input`                   | `CH9`                                                                                                                                                                                                                                                                                                                                                                            | Number                                                                  |                                   |
+| `input`                   | `CH33`                                                                                                                                                                                                                                                                                                                                                                 | Number                                                                  | Temperature                       |
 | `output`                  | `output`                                                                                                                                                                                                                                                                                                                                                                         | OnOff                                                                   |                                   |
 | `feedback`                | `CH1` ... `CH32`                                                                                                                                                                                                                                                                                                                                                                 | Clear_LED, Set_LED, Slow_Blink_LED, Fast_Blink_LED, Very_Fast_Blink_LED | Steer the button LED feedback     |
 | `clockAlarm`              | `clockAlarm1Enabled`, `clockAlarm2Enabled`                                                                                                                                                                                                                                                                                                                                       | OnOff                                                                   |                                   |
@@ -578,6 +594,8 @@ Thing velbus:vmbdali:1:01 [VL1="CH1,CH2,CH3,CH4", VL2="A4,A5,A6"]
 | `brightness`              | `CH1` ... `CH4`        | OnOff, Percent                  | Sending an ON command will switch the dimmer to the value stored when last turning the dimmer off. |
 | `fade-mode`               | `CH1` ... `CH4`        | Direct, Fade_Rate, Fade_Time    |                                                                                                    |
 | `scene`                   | `CH1` ... `CH4`        | Number                          | Min = 1, Max = 15                                                                                  |
+| `virtual-light`           | `VL1`                  | hsbColor                        | Usable if mode = RGB or RGBW                                                                       |
+| `dim-white`               | `DW1`                  | Percent                         | Usable if mode = RGB (=Dimmer channel) or RGBW  (=White channel)                                   |
 
 ### Module `vmb8dc-20`
 
@@ -587,7 +605,35 @@ Thing velbus:vmbdali:1:01 [VL1="CH1,CH2,CH3,CH4", VL2="A4,A5,A6"]
 | `fade-mode`               | `CH1` ... `CH8`        | Direct, Fade_Rate, Fade_Time    |                   |
 | `scene`                   | `CH1` ... `CH8`        | Number                          | Min = 1, Max = 15 |
 
-The trigger channels can be used as a trigger to rules. The event message can be `PRESSED`, `RELEASED` or `LONG_PRESSED`.
+### Module `vmb2dc-20`
+
+| Supported channels groups | Supported channels     | Supported command types         | Remarks           |
+|---------------------------|------------------------|---------------------------------|-------------------|
+| `brightness`              | `CH1` ... `CH2`        | Percent                         |                   |
+| `fade-mode`               | `CH1` ... `CH2`        | Direct, Fade_Rate, Fade_Time    |                   |
+| `scene`                   | `CH1` ... `CH2`        | Number                          | Min = 1, Max = 15 |
+
+### Modules `vmbpsumngr-20`
+
+| Supported channels groups | Supported channels  | Supported command types         | Remarks |
+|---------------------------|---------------------|---------------------------------|---------|
+| `input`                   | `CH1` ... `CH16`    | Pressed, Released               | Trigger |
+
+### Modules `vmbsig`
+
+| Supported channels groups | Supported channels  | Supported command types         | Remarks |
+|---------------------------|---------------------|---------------------------------|---------|
+|                           | N/A                 |                                 |         |
+
+### Modules `vmbsig-20`, `vmbsig-21`
+
+| Supported channels groups | Supported channels  | Supported command types         | Remarks |
+|---------------------------|---------------------|---------------------------------|---------|
+|                           | `status`            | Status                          | Trigger |
+
+The trigger channels can be used as a trigger to rules. 
+The event message can be `PRESSED`, `RELEASED` or `LONG_PRESSED` for an input.
+The event message can be `UNKNOWN`, `NORMAL`, `BUS_ERROR`, `LOW_POWER` or `HIGH_POWER` for a status.
 
 To remove the state of the Item in the Sitemap for a `button` channel.
 Go to the Items list, select the Item, add a State Description Metadata, and set the Pattern value to a blank space.

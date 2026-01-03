@@ -21,6 +21,7 @@ import org.openhab.binding.velbus.internal.handler.VelbusBridgeHandler;
 import org.openhab.binding.velbus.internal.handler.VelbusDimmerHandler;
 import org.openhab.binding.velbus.internal.handler.VelbusNetworkBridgeHandler;
 import org.openhab.binding.velbus.internal.handler.VelbusNewDimmerHandler;
+import org.openhab.binding.velbus.internal.handler.VelbusNewRelayHandler;
 import org.openhab.binding.velbus.internal.handler.VelbusRelayHandler;
 import org.openhab.binding.velbus.internal.handler.VelbusRelayWithInputHandler;
 import org.openhab.binding.velbus.internal.handler.VelbusSensorHandler;
@@ -28,6 +29,7 @@ import org.openhab.binding.velbus.internal.handler.VelbusSensorWithAlarmClockHan
 import org.openhab.binding.velbus.internal.handler.VelbusSerialBridgeHandler;
 import org.openhab.binding.velbus.internal.handler.VelbusVMB1TSHandler;
 import org.openhab.binding.velbus.internal.handler.VelbusVMB4ANHandler;
+import org.openhab.binding.velbus.internal.handler.VelbusVMB4LEDHandler;
 import org.openhab.binding.velbus.internal.handler.VelbusVMB7INHandler;
 import org.openhab.binding.velbus.internal.handler.VelbusVMB8INHandler;
 import org.openhab.binding.velbus.internal.handler.VelbusVMBDALIHandler;
@@ -37,6 +39,7 @@ import org.openhab.binding.velbus.internal.handler.VelbusVMBGPHandler;
 import org.openhab.binding.velbus.internal.handler.VelbusVMBGPOHandler;
 import org.openhab.binding.velbus.internal.handler.VelbusVMBMeteoHandler;
 import org.openhab.binding.velbus.internal.handler.VelbusVMBPIROHandler;
+import org.openhab.binding.velbus.internal.handler.VelbusVMBSIGHandler;
 import org.openhab.core.io.transport.serial.SerialPortManager;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
@@ -116,6 +119,12 @@ public class VelbusHandlerFactory extends BaseThingHandlerFactory {
             thingHandler = new VelbusVMBDALIHandler(thing);
         } else if (VelbusNewDimmerHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
             thingHandler = new VelbusNewDimmerHandler(thing);
+        } else if (VelbusNewRelayHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
+            thingHandler = new VelbusNewRelayHandler(thing);
+        } else if (VelbusVMBSIGHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
+            thingHandler = new VelbusVMBSIGHandler(thing);
+        } else if (VelbusVMB4LEDHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
+            thingHandler = new VelbusVMB4LEDHandler(thing);
         }
 
         return thingHandler;
