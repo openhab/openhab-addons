@@ -25,8 +25,6 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import javax.measure.quantity.Temperature;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -44,14 +42,10 @@ import org.openhab.binding.bluelink.internal.dto.eu.RegistrationResponse;
 import org.openhab.binding.bluelink.internal.dto.eu.VehicleInfoEU;
 import org.openhab.binding.bluelink.internal.dto.eu.VehicleStatusEU;
 import org.openhab.binding.bluelink.internal.dto.eu.VehiclesResponse;
-import org.openhab.core.library.types.QuantityType;
-import org.openhab.core.library.unit.SIUnits;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 
 /**
@@ -75,9 +69,9 @@ public class BluelinkApiEU implements BluelinkApi {
     private @Nullable UUID deviceId;
 
     public enum Brand {
-        GENESIS,
         HYUNDAI,
-        KIA
+        KIA,
+        GENESIS
     }
 
     public BluelinkApiEU(final HttpClient httpClient, final Map<String, String> properties, final Brand brand,
@@ -292,116 +286,6 @@ public class BluelinkApiEU implements BluelinkApi {
         }
     }
 
-    @Override
-    public boolean lockVehicle(Vehicle vehicle) throws BluelinkApiException {
-        return sendDoorCommand(vehicle, "close");
-    }
-
-    @Override
-    public boolean unlockVehicle(Vehicle vehicle) throws BluelinkApiException {
-        return sendDoorCommand(vehicle, "open");
-    }
-
-    private boolean sendDoorCommand(Vehicle vehicle, String action) throws BluelinkApiException {
-        ensureAuthenticated();
-        String url = brandConfig.apiBaseUrl + "/api/v2/spa/vehicles/" + vehicle.registrationId() + "/control/door";
-        JsonObject payload = new JsonObject();
-        payload.addProperty("action", action);
-        return callApi("POST", url, payload) != null;
-    }
-
-    @Override
-    public boolean climateStart(Vehicle vehicle, QuantityType<Temperature> temperature, boolean heat, boolean defrost)
-            throws BluelinkApiException {
-        ensureAuthenticated();
-        String url = brandConfig.apiBaseUrl + "/api/v2/spa/vehicles/" + vehicle.registrationId()
-                + "/control/temperature";
-
-        JsonObject payload = new JsonObject();
-        payload.addProperty("action", "start");
-
-        JsonObject hvac = new JsonObject();
-        // Convert QuantityType to Celsius
-        double tempVal = temperature.toUnit(SIUnits.CELSIUS).doubleValue();
-
-        hvac.addProperty("airCtrl", 1); // 1 = ON
-        hvac.addProperty("defrost", defrost);
-        hvac.addProperty("heating1", heat ? 1 : 0);
-
-        JsonObject airTemp = new JsonObject();
-        airTemp.addProperty("value", String.format("%.1f", tempVal).replace(",", ".")); // Ensure dot separator
-        airTemp.addProperty("unit", 0); // 0 = Celsius
-        hvac.add("airTemp", airTemp);
-
-        payload.add("hvacInfo", hvac);
-
-        return callApi("POST", url, payload) != null;
-    }
-
-    @Override
-    public boolean climateStop(Vehicle vehicle) throws BluelinkApiException {
-        ensureAuthenticated();
-        String url = brandConfig.apiBaseUrl + "/api/v2/spa/vehicles/" + vehicle.registrationId()
-                + "/control/temperature";
-        JsonObject payload = new JsonObject();
-        payload.addProperty("action", "stop");
-        return callApi("POST", url, payload) != null;
-    }
-
-    @Override
-    public boolean startCharging(Vehicle vehicle) throws BluelinkApiException {
-        return performChargeAction(vehicle, "start");
-    }
-
-    @Override
-    public boolean stopCharging(Vehicle vehicle) throws BluelinkApiException {
-        return performChargeAction(vehicle, "stop");
-    }
-
-    private boolean performChargeAction(Vehicle vehicle, String action) throws BluelinkApiException {
-        ensureAuthenticated();
-        String url = brandConfig.apiBaseUrl + "/api/v2/spa/vehicles/" + vehicle.registrationId() + "/control/charge";
-        JsonObject payload = new JsonObject();
-        payload.addProperty("action", action);
-        return callApi("POST", url, payload) != null;
-    }
-
-    @Override
-    public boolean setChargeLimitDC(Vehicle vehicle, int limit) throws BluelinkApiException {
-        return setChargeLimits(vehicle, limit, -1);
-    }
-
-    @Override
-    public boolean setChargeLimitAC(Vehicle vehicle, int limit) throws BluelinkApiException {
-        return setChargeLimits(vehicle, -1, limit);
-    }
-
-    private boolean setChargeLimits(Vehicle vehicle, int dcLimit, int acLimit) throws BluelinkApiException {
-        ensureAuthenticated();
-        String url = brandConfig.apiBaseUrl + "/api/v2/spa/vehicles/" + vehicle.registrationId()
-                + "/control/charge/target";
-
-        JsonObject payload = new JsonObject();
-        JsonArray targetList = new JsonArray();
-
-        if (dcLimit > 0) {
-            JsonObject dc = new JsonObject();
-            dc.addProperty("targetSOClevel", dcLimit);
-            dc.addProperty("plugType", 0); // DC
-            targetList.add(dc);
-        }
-
-        if (acLimit > 0) {
-            JsonObject ac = new JsonObject();
-            ac.addProperty("targetSOClevel", acLimit);
-            ac.addProperty("plugType", 1); // AC
-            targetList.add(ac);
-        }
-
-        payload.add("targetSOClist", targetList);
-        return callApi("POST", url, payload) != null;
-    }
-
     private void addStandardHeaders(Request request) {
         String stamp = generateStamp();
 
@@ -435,37 +319,6 @@ public class BluelinkApiEU implements BluelinkApi {
             throw new BluelinkApiException("API request interrupted", e);
         } catch (final TimeoutException | ExecutionException e) {
             throw new BluelinkApiException("API request failed", e);
-        }
-    }
-
-    private @Nullable JsonObject callApi(String method, String url, @Nullable JsonObject payload)
-            throws BluelinkApiException {
-        try {
-            Request request = httpClient.newRequest(url).method(method);
-            addStandardHeaders(request);
-            addAuthHeaders(request);
-
-            if ("POST".equalsIgnoreCase(method)) {
-                String jsonBody = payload != null ? gson.toJson(payload) : "{}";
-                request.content(new StringContentProvider(jsonBody), "application/json;charset=UTF-8");
-            }
-
-            ContentResponse response = request.send();
-
-            if (response.getStatus() >= 200 && response.getStatus() < 300) {
-                return gson.fromJson(response.getContentAsString(), JsonObject.class);
-            } else if (response.getStatus() == HttpStatus.UNAUTHORIZED_401) {
-                logger.warn("Access token expired");
-                throw new BluelinkApiException("Unauthorized - Token likely expired");
-            } else {
-                logger.warn("API Error: {} - {}", response.getStatus(), response.getContentAsString());
-                return null;
-            }
-
-        } catch (InterruptedException | ExecutionException | TimeoutException e) {
-            throw new BluelinkApiException("API call failed due to network error", e);
-        } catch (Exception e) {
-            throw new BluelinkApiException("API call failed", e);
         }
     }
 
@@ -507,13 +360,13 @@ public class BluelinkApiEU implements BluelinkApi {
 
         static BrandConfig forBrand(Brand brand) {
             return switch (brand) {
-                case KIA -> new BrandConfig("https://prd.eu-ccapi.kia.com:8080", "https://idpconnect-eu.kia.com",
-                        "fdc85c00-0a2f-4c64-bcb4-2cfb1500730a", "a2b8469b-30a3-4361-8e13-6fceea8fbe74", "secret",
-                        "wLTVxwidmH8CfJYBWSnHD6E0huk0ozdiuygB4hLkM5XCgzAL1Dk5sE36d/bx5PFMbZs=", "APNS");
                 case HYUNDAI -> new BrandConfig("https://prd.eu-ccapi.hyundai.com:8080",
                         "https://idpconnect-eu.hyundai.com", "6d477c38-3ca4-4cf3-9557-2a1929a94654",
                         "014d2225-8495-4735-812d-2616334fd15d", "KUy49XxPzLpLuoK0xhBC77W6VXhmtQR9iQhmIFjjoY4IpxsV",
                         "RFtoRq/vDXJmRndoZaZQyfOot7OrIqGVFj96iY2WL3yyH5Z/pUvlUhqmCxD2t+D65SQ=", "GCM");
+                case KIA -> new BrandConfig("https://prd.eu-ccapi.kia.com:8080", "https://idpconnect-eu.kia.com",
+                        "fdc85c00-0a2f-4c64-bcb4-2cfb1500730a", "a2b8469b-30a3-4361-8e13-6fceea8fbe74", "secret",
+                        "wLTVxwidmH8CfJYBWSnHD6E0huk0ozdiuygB4hLkM5XCgzAL1Dk5sE36d/bx5PFMbZs=", "APNS");
                 case GENESIS ->
                     new BrandConfig("https://prd-eu-ccapi.genesis.com:8080", "https://idpconnect-eu.genesis.com",
                             "3020afa2-30ff-412a-aa51-d28fbe901e10", "f11f2b86-e0e7-4851-90df-5600b01d8b70", "secret",
