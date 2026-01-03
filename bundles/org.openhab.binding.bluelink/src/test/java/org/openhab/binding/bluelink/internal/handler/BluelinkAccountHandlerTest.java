@@ -17,6 +17,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
+import static org.openhab.binding.bluelink.internal.MockApiData.EU_DEVICE_REGISTRATION_RESPONSE;
+import static org.openhab.binding.bluelink.internal.MockApiData.EU_VEHICLES_RESPONSE;
 import static org.openhab.binding.bluelink.internal.MockApiData.TOKEN_RESPONSE;
 import static org.openhab.binding.bluelink.internal.MockApiData.US_ENROLLMENT_RESPONSE;
 
@@ -30,6 +32,7 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -65,37 +68,10 @@ class BluelinkAccountHandlerTest extends JavaTest {
             WireMockConfiguration.options().dynamicPort());
     private static final HttpClient HTTP_CLIENT = new HttpClient();
 
-    private final TimeZoneProvider timeZoneProvider = () -> ZoneId.of("America/New_York");
-    private final LocaleProvider localeProvider = () -> Locale.US;
-
     private @Mock @NonNullByDefault({}) Bridge bridge;
     private @Mock @NonNullByDefault({}) ThingHandlerCallback callback;
 
     private @NonNullByDefault({}) BluelinkAccountHandler handler;
-
-    @BeforeAll
-    static void setUpHttpServer() throws Exception {
-        WIREMOCK_SERVER.start();
-        WireMock.configureFor("localhost", WIREMOCK_SERVER.port());
-        stubFor(post(urlEqualTo("/v2/ac/oauth/token")).willReturn(
-                aResponse().withStatus(200).withHeader("Content-Type", "application/json").withBody(TOKEN_RESPONSE)));
-        stubFor(get(urlPathMatching("/ac/v2/enrollment/details/.*")).willReturn(aResponse().withStatus(200)
-                .withHeader("Content-Type", "application/json").withBody(US_ENROLLMENT_RESPONSE)));
-
-        HTTP_CLIENT.start();
-    }
-
-    @BeforeEach
-    void setUp() {
-        final Configuration config = new Configuration(Map.of("username", MockApiData.TEST_USERNAME, "password",
-                MockApiData.TEST_PASSWORD, "apiBaseUrl", "http://localhost:" + WIREMOCK_SERVER.port()));
-        when(bridge.getConfiguration()).thenReturn(config);
-        when(bridge.getUID()).thenReturn(new ThingUID("bluelink:account:testaccount"));
-
-        handler = new BluelinkAccountHandler(bridge, HTTP_CLIENT, timeZoneProvider, localeProvider);
-        handler.setCallback(callback);
-        handler.initialize();
-    }
 
     @AfterEach
     void tearDown() {
@@ -108,20 +84,101 @@ class BluelinkAccountHandlerTest extends JavaTest {
         HTTP_CLIENT.stop();
     }
 
-    @Test
-    void testLoginAndGetVehicles() throws BluelinkApiException {
-        waitForAssert(() -> {
-            try {
-                assertThat(handler.getVehicles(), is(not(empty())));
-            } catch (final BluelinkApiException e) {
-                throw new IllegalStateException(e);
-            }
-        });
-        final Vehicle vehicle = handler.getVehicles().getFirst();
-        assertNotNull(vehicle);
-        assertEquals("IONIQ 6", vehicle.model());
-        assertEquals("E", vehicle.engineType());
-        assertEquals(2, vehicle.generation());
-        assertTrue(vehicle.electric());
+    @Nested
+    class EURegion {
+        private final TimeZoneProvider timeZoneProvider = () -> ZoneId.of("Europe/Berlin");
+        private final LocaleProvider localeProvider = () -> Locale.GERMAN;
+
+        @BeforeAll
+        static void setUpHttpServer() throws Exception {
+            WIREMOCK_SERVER.start();
+            WireMock.configureFor("localhost", WIREMOCK_SERVER.port());
+            stubFor(post(urlEqualTo("/auth/api/v2/user/oauth2/token")).willReturn(aResponse().withStatus(200)
+                    .withHeader("Content-Type", "application/json").withBody(TOKEN_RESPONSE)));
+            stubFor(post(urlEqualTo("/api/v1/spa/notifications/register")).willReturn(aResponse().withStatus(200)
+                    .withHeader("Content-Type", "application/json").withBody(EU_DEVICE_REGISTRATION_RESPONSE)));
+            stubFor(get(urlPathMatching("/api/v1/spa/vehicles")).willReturn(aResponse().withStatus(200)
+                    .withHeader("Content-Type", "application/json").withBody(EU_VEHICLES_RESPONSE)));
+
+            HTTP_CLIENT.start();
+        }
+
+        @BeforeEach
+        void setUp() {
+            final Configuration config = new Configuration(Map.of("password", MockApiData.TEST_REFRESH_TOKEN, "region",
+                    "EU", "apiBaseUrl", "http://localhost:" + WIREMOCK_SERVER.port()));
+            when(bridge.getConfiguration()).thenReturn(config);
+            when(bridge.getUID()).thenReturn(new ThingUID("bluelink:account:testaccount"));
+
+            handler = new BluelinkAccountHandler(bridge, HTTP_CLIENT, timeZoneProvider, localeProvider);
+            handler.setCallback(callback);
+            handler.initialize();
+        }
+
+        @Test
+        void testLoginAndGetVehicles() throws BluelinkApiException {
+            waitForAssert(() -> {
+                try {
+                    assertThat(handler.getVehicles(), is(not(empty())));
+                } catch (final BluelinkApiException e) {
+                    throw new IllegalStateException(e);
+                }
+            });
+            final Vehicle vehicle = handler.getVehicles().getFirst();
+            assertNotNull(vehicle);
+            assertEquals("aa6c0ca6-48eb-430c-9eea-902bb6cd281c", vehicle.registrationId());
+            assertEquals("VIN1234", vehicle.vin());
+            assertEquals("IONIQ 5", vehicle.model());
+            assertEquals("E", vehicle.engineType());
+            assertEquals("Florian's IONIQ 5", vehicle.getDisplayName());
+            assertTrue(vehicle.electric());
+        }
+    }
+
+    @Nested
+    class USRegion {
+        private final TimeZoneProvider timeZoneProvider = () -> ZoneId.of("America/New_York");
+        private final LocaleProvider localeProvider = () -> Locale.US;
+
+        @BeforeAll
+        static void setUpHttpServer() throws Exception {
+            WIREMOCK_SERVER.start();
+            WireMock.configureFor("localhost", WIREMOCK_SERVER.port());
+            stubFor(post(urlEqualTo("/v2/ac/oauth/token")).willReturn(aResponse().withStatus(200)
+                    .withHeader("Content-Type", "application/json").withBody(TOKEN_RESPONSE)));
+            stubFor(get(urlPathMatching("/ac/v2/enrollment/details/.*")).willReturn(aResponse().withStatus(200)
+                    .withHeader("Content-Type", "application/json").withBody(US_ENROLLMENT_RESPONSE)));
+
+            HTTP_CLIENT.start();
+        }
+
+        @BeforeEach
+        void setUp() {
+            final Configuration config = new Configuration(Map.of("username", MockApiData.TEST_USERNAME, "password",
+                    MockApiData.TEST_PASSWORD, "apiBaseUrl", "http://localhost:" + WIREMOCK_SERVER.port()));
+            when(bridge.getConfiguration()).thenReturn(config);
+            when(bridge.getUID()).thenReturn(new ThingUID("bluelink:account:testaccount"));
+
+            handler = new BluelinkAccountHandler(bridge, HTTP_CLIENT, timeZoneProvider, localeProvider);
+            handler.setCallback(callback);
+            handler.initialize();
+        }
+
+        @Test
+        void testLoginAndGetVehicles() throws BluelinkApiException {
+            waitForAssert(() -> {
+                try {
+                    assertThat(handler.getVehicles(), is(not(empty())));
+                } catch (final BluelinkApiException e) {
+                    throw new IllegalStateException(e);
+                }
+            });
+            final Vehicle vehicle = handler.getVehicles().getFirst();
+            assertNotNull(vehicle);
+            assertEquals("IONIQ 6", vehicle.model());
+            assertEquals("E", vehicle.engineType());
+            assertEquals(2, vehicle.generation());
+            assertTrue(vehicle.electric());
+        }
     }
 }

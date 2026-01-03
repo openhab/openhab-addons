@@ -92,9 +92,12 @@ public class BluelinkApiEU implements BluelinkApi {
     /**
      * Constructor for unit test use only.
      */
-    public BluelinkApiEU(final HttpClient httpClient, final BrandConfig brandConfig, final String refreshToken) {
+    public BluelinkApiEU(final HttpClient httpClient, final Brand brand, final String baseUrl,
+            final String refreshToken) {
         this.httpClient = httpClient;
-        this.brandConfig = brandConfig;
+        final BrandConfig hyundaiBrandConfig = BrandConfig.forBrand(brand);
+        this.brandConfig = new BrandConfig(baseUrl, baseUrl, hyundaiBrandConfig.ccspServiceId, hyundaiBrandConfig.appId,
+                hyundaiBrandConfig.clientSecret, hyundaiBrandConfig.cfb, hyundaiBrandConfig.pushType);
         this.refreshToken = refreshToken;
     }
 

@@ -62,12 +62,9 @@ public class BluelinkApiEUTest {
     @Test
     void testGetVehicleStatus() throws Exception {
         final String baseUrl = "http://localhost:" + WIREMOCK_SERVER.port();
-        final BluelinkApiEU.BrandConfig config = new BluelinkApiEU.BrandConfig(baseUrl, baseUrl,
-                "6d477c38-3ca4-4cf3-9557-2a1929a94654", "014d2225-8495-4735-812d-2616334fd15d",
-                "KUy49XxPzLpLuoK0xhBC77W6VXhmtQR9iQhmIFjjoY4IpxsV",
-                "RFtoRq/vDXJmRndoZaZQyfOot7OrIqGVFj96iY2WL3yyH5Z/pUvlUhqmCxD2t+D65SQ=", "GCM");
 
-        final BluelinkApiEU api = new BluelinkApiEU(HTTP_CLIENT, config, TEST_REFRESH_TOKEN);
+        final BluelinkApiEU api = new BluelinkApiEU(HTTP_CLIENT, BluelinkApiEU.Brand.HYUNDAI, baseUrl,
+                TEST_REFRESH_TOKEN);
         assertTrue(api.login());
 
         final Vehicle vehicle = new Vehicle("1234", "IONIQ 5", "IONIQ 5", "VIN1234", "E", true, null, null, false);

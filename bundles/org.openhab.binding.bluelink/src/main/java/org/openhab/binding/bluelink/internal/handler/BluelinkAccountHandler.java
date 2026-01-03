@@ -103,6 +103,7 @@ public class BluelinkAccountHandler extends BaseBridgeHandler {
             return;
         }
 
+        final String baseUrl = config.apiBaseUrl;
         this.api = switch (parsedRegion) {
             case EU -> {
                 if (password == null || password.isBlank()) {
@@ -111,6 +112,9 @@ public class BluelinkAccountHandler extends BaseBridgeHandler {
                     yield null;
                 }
                 Map<String, String> properties = editProperties();
+                if (baseUrl != null && !baseUrl.isBlank()) {
+                    yield new BluelinkApiEU(httpClient, BluelinkApiEU.Brand.HYUNDAI, baseUrl, password);
+                }
                 yield new BluelinkApiEU(httpClient, properties, BluelinkApiEU.Brand.HYUNDAI, password);
             }
             case US -> {
@@ -120,7 +124,6 @@ public class BluelinkAccountHandler extends BaseBridgeHandler {
                     yield null;
                 }
                 supportsControlActions = true;
-                final String baseUrl = config.apiBaseUrl;
                 if (baseUrl != null && !baseUrl.isBlank()) {
                     yield new BluelinkApiUS(httpClient, baseUrl, timeZoneProvider, username, password, config.pin);
                 }
