@@ -49,20 +49,36 @@ public interface BluelinkApi {
     @Nullable
     VehicleStatus getVehicleStatus(Vehicle vehicle, boolean forceRefresh) throws BluelinkApiException;
 
-    boolean lockVehicle(Vehicle vehicle) throws BluelinkApiException;
+    default boolean lockVehicle(Vehicle vehicle) throws BluelinkApiException {
+        throw new UnsupportedOperationException("Not implemented");
+    }
 
-    boolean unlockVehicle(Vehicle vehicle) throws BluelinkApiException;
+    default boolean unlockVehicle(Vehicle vehicle) throws BluelinkApiException {
+        throw new UnsupportedOperationException("Not implemented");
+    }
 
-    boolean climateStart(Vehicle vehicle, QuantityType<Temperature> temperature, boolean heat, boolean defrost)
-            throws BluelinkApiException;
+    default boolean climateStart(Vehicle vehicle, QuantityType<Temperature> temperature, boolean heat, boolean defrost)
+            throws BluelinkApiException {
+        throw new UnsupportedOperationException("Not implemented");
+    }
 
-    boolean climateStop(Vehicle vehicle) throws BluelinkApiException;
+    default boolean climateStop(Vehicle vehicle) throws BluelinkApiException {
+        throw new UnsupportedOperationException("Not implemented");
+    }
 
-    boolean startCharging(Vehicle vehicle) throws BluelinkApiException;
+    default boolean startCharging(Vehicle vehicle) throws BluelinkApiException {
+        throw new UnsupportedOperationException("Not implemented");
+    }
 
-    boolean stopCharging(Vehicle vehicle) throws BluelinkApiException;
+    default boolean stopCharging(Vehicle vehicle) throws BluelinkApiException {
+        throw new UnsupportedOperationException("Not implemented");
+    }
 
-    boolean setChargeLimitDC(Vehicle vehicle, int limit) throws BluelinkApiException;
+    default boolean setChargeLimitDC(Vehicle vehicle, int limit) throws BluelinkApiException {
+        throw new UnsupportedOperationException("Not implemented");
+    }
 
-    boolean setChargeLimitAC(Vehicle vehicle, int limit) throws BluelinkApiException;
+    default boolean setChargeLimitAC(Vehicle vehicle, int limit) throws BluelinkApiException {
+        throw new UnsupportedOperationException("Not implemented");
+    }
 }
