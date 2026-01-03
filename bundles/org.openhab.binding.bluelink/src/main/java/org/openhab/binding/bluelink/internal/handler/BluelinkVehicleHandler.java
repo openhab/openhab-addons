@@ -17,7 +17,6 @@ import static org.openhab.binding.bluelink.internal.BluelinkBindingConstants.*;
 import static org.openhab.core.library.CoreItemFactory.SWITCH;
 
 import java.time.Duration;
-import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
@@ -134,7 +133,7 @@ public class BluelinkVehicleHandler extends BaseThingHandler {
 
             );
         } catch (final BluelinkApiException e) {
-            logger.debug("error loading vehicle: {}", e.getMessage());
+            logger.debug("Error loading vehicle: {}", e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/vehicle-handler.initialize.vehicle-data-error");
         }
@@ -252,7 +251,7 @@ public class BluelinkVehicleHandler extends BaseThingHandler {
         }
 
         try {
-            logger.debug("refreshing vehicle status");
+            logger.debug("{} vehicle status", forceRefresh ? "Force refreshing" : "Refreshing");
             final VehicleStatus status = bridgeHnd.getVehicleStatus(vehicle, forceRefresh);
             if (status != null) {
                 updateStatus(ThingStatus.ONLINE);
@@ -278,11 +277,7 @@ public class BluelinkVehicleHandler extends BaseThingHandler {
             updateState(GROUP_STATUS, CHANNEL_ODOMETER, odometer);
         }
         if (status.lastUpdate() != null) {
-            try {
-                updateState(GROUP_STATUS, CHANNEL_LAST_UPDATE, new DateTimeType(status.lastUpdate()));
-            } catch (final DateTimeParseException e) {
-                logger.warn("unexpected lastUpdate format: {}", status.lastUpdate());
-            }
+            updateState(GROUP_STATUS, CHANNEL_LAST_UPDATE, new DateTimeType(status.lastUpdate()));
         }
 
         // 12V Battery
