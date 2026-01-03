@@ -49,6 +49,9 @@ public class BoschSHCBindingConstants {
     public static final ThingTypeUID THING_TYPE_SHUTTER_CONTROL = new ThingTypeUID(BINDING_ID, "shutter-control");
     public static final ThingTypeUID THING_TYPE_SHUTTER_CONTROL_2 = new ThingTypeUID(BINDING_ID, "shutter-control-2");
     public static final ThingTypeUID THING_TYPE_THERMOSTAT = new ThingTypeUID(BINDING_ID, "thermostat");
+    public static final ThingTypeUID THING_TYPE_THERMOSTAT_2 = new ThingTypeUID(BINDING_ID, "thermostat-2");
+    public static final ThingTypeUID THING_TYPE_THERMOSTAT_2_MATTER = new ThingTypeUID(BINDING_ID,
+            "thermostat-2-matter");
     public static final ThingTypeUID THING_TYPE_CLIMATE_CONTROL = new ThingTypeUID(BINDING_ID, "climate-control");
     public static final ThingTypeUID THING_TYPE_WALL_THERMOSTAT = new ThingTypeUID(BINDING_ID, "wall-thermostat");
     public static final ThingTypeUID THING_TYPE_CAMERA_360 = new ThingTypeUID(BINDING_ID, "security-camera-360");

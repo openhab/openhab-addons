@@ -269,8 +269,52 @@
 			<bridge-type-ref id="shc"/>
 		</supported-bridge-type-refs>
 
-		<label>Thermostat</label>
+		<label>Radiator Thermostat</label>
 		<description>Radiator thermostat</description>
+		<semantic-equipment-tag>Thermostat</semantic-equipment-tag>
+
+		<channels>
+			<channel id="temperature" typeId="temperature"/>
+			<channel id="valve-tappet-position" typeId="valve-tappet-position"/>
+			<channel id="child-lock" typeId="child-lock"/>
+			<channel id="silent-mode" typeId="silent-mode"/>
+			<channel id="battery-level" typeId="system.battery-level"/>
+			<channel id="low-battery" typeId="system.low-battery"/>
+		</channels>
+
+		<config-description-ref uri="thing-type:boschshc:device"/>
+
+	</thing-type>
+
+	<thing-type id="thermostat-2">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="shc"/>
+		</supported-bridge-type-refs>
+
+		<label>Radiator Thermostat II</label>
+		<description>Second generation radiator thermostat</description>
+		<semantic-equipment-tag>Thermostat</semantic-equipment-tag>
+
+		<channels>
+			<channel id="temperature" typeId="temperature"/>
+			<channel id="valve-tappet-position" typeId="valve-tappet-position"/>
+			<channel id="child-lock" typeId="child-lock"/>
+			<channel id="silent-mode" typeId="silent-mode"/>
+			<channel id="battery-level" typeId="system.battery-level"/>
+			<channel id="low-battery" typeId="system.low-battery"/>
+		</channels>
+
+		<config-description-ref uri="thing-type:boschshc:device"/>
+
+	</thing-type>
+
+	<thing-type id="thermostat-2-matter">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="shc"/>
+		</supported-bridge-type-refs>
+
+		<label>Radiator Thermostat II [+M]</label>
+		<description>Second generation radiator thermostat with Matter support.</description>
 		<semantic-equipment-tag>Thermostat</semantic-equipment-tag>
 
 		<channels>
