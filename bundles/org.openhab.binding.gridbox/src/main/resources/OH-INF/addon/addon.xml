@@ -5,7 +5,7 @@
 
 	<type>binding</type>
 	<name>GridBox Binding</name>
-	<description>Get information from the Viessmann GridBox</description>
+	<description>Get information from the Viessmann GridBox/E.ON Home Box</description>
 	<connection>cloud</connection>
 
 </addon:addon>
