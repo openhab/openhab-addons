@@ -34,12 +34,12 @@ public class Sound extends SoundBase {
 
     @Override
     public List<SoundValue> getSoundValues() {
-        return status instanceof SoundBase status ? status.getSoundValues() : List.of();
+        return status instanceof SoundBase statusValue ? statusValue.getSoundValues() : List.of();
     }
 
     @Override
     public @Nullable SoundValue getSoundValue() {
-        return status instanceof SoundBase status ? status.getSoundValue() : null;
+        return status instanceof SoundBase statusValue ? statusValue.getSoundValue() : null;
     }
 
     public Sound setDuration(@Nullable QuantityType<?> duration) {

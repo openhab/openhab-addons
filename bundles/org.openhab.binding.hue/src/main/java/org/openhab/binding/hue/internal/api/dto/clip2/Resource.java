@@ -1012,9 +1012,6 @@ public class Resource {
                         // fall through
                     }
                 }
-                // fall through
-            default:
-                // fall through
         }
         return null;
     }

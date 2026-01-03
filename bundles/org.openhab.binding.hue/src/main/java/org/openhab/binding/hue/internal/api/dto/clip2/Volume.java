@@ -26,7 +26,7 @@ public class Volume {
     private @Nullable Integer level;
 
     public @Nullable PercentType getLevel() {
-        return this.level instanceof Integer level ? new PercentType(level) : null;
+        return level instanceof Integer percentValue ? new PercentType(percentValue) : null;
     }
 
     public Volume setVolumeLevel(PercentType volumeLevel) {

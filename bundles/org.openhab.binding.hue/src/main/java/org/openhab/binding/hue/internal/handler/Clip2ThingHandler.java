@@ -969,7 +969,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
                  * This binding creates its dynamic list of channels by a 'subtractive' method i.e. the full set of
                  * channels is initially created from the thing type xml, and then for any channels where UndefType.NULL
                  * data is returned, the respective channel is removed from the full list. However in seldom cases
-                 * UndfType.NULL may wrongly be returned, so we should log a warning here just in case.
+                 * UndefType.NULL may wrongly be returned, so we should log a warning here just in case.
                  */
                 if (logger.isDebugEnabled()) {
                     supportedChannelIdSet.stream().filter(channelId -> Objects.isNull(thing.getChannel(channelId)))

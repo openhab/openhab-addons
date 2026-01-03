@@ -31,7 +31,7 @@ public class SoundBase {
     protected @Nullable String sound;
 
     public @Nullable SoundValue getSoundValue() {
-        return sound instanceof String sound ? SoundValue.of(sound) : null;
+        return sound instanceof String soundValue ? SoundValue.of(soundValue) : null;
     }
 
     public List<SoundValue> getSoundValues() {
