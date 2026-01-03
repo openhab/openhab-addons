@@ -142,6 +142,6 @@ public class SunHandler extends AstroThingHandler {
 
     public @Nullable Radiation getRadiationAt(ZonedDateTime date) {
         Sun localSun = getPositionedSunAt(date);
-        return localSun.getRadiation();
+        return RadiationCalc.calculate(date, localSun.getPosition().getElevationAsDouble(), thingConfig.altitude);
     }
 }

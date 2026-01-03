@@ -51,8 +51,9 @@ import org.slf4j.LoggerFactory;
 public class AstroActions implements ThingActions {
 
     private final Logger logger = LoggerFactory.getLogger(AstroActions.class);
-    private @Nullable AstroThingHandler handler;
     private final TimeZoneProvider timeZoneProvider;
+
+    private @Nullable AstroThingHandler handler;
 
     @Activate
     public AstroActions(@Reference TimeZoneProvider timeZoneProvider) {
