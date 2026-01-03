@@ -129,7 +129,7 @@ public class VehicleStatusMapper {
             try {
                 lastUpdate = ISO_ZONED_DATE_TIME.parse(status.dateTime(), Instant::from);
             } catch (final DateTimeParseException e) {
-                LOGGER.warn("unexpected lastUpdate format: {}", status.dateTime());
+                LOGGER.warn("Unexpected lastUpdate format: {}", status.dateTime());
             }
         }
 
