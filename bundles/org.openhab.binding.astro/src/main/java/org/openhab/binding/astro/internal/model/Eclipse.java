@@ -29,7 +29,6 @@ import org.openhab.binding.astro.internal.util.DateTimeUtils;
 @NonNullByDefault
 public class Eclipse {
     private record EclipseData(Instant when, double elevation) {
-
     }
 
     private final Map<EclipseKind, @Nullable EclipseData> entries = new HashMap<>(EclipseKind.values().length);

@@ -12,7 +12,10 @@
  */
 package org.openhab.binding.astro.internal.model;
 
+import javax.measure.quantity.Angle;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.astro.internal.util.MathUtils;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
@@ -44,8 +47,8 @@ public class Position {
     /**
      * Returns the azimuth.
      */
-    public State getAzimuth() {
-        return Double.isNaN(azimuth) ? UnDefType.NULL : new QuantityType<>(azimuth, Units.DEGREE_ANGLE);
+    public @Nullable QuantityType<Angle> getAzimuth() {
+        return Double.isNaN(azimuth) ? null : new QuantityType<>(azimuth, Units.DEGREE_ANGLE);
     }
 
     public double getAzimuthAsDouble() {
@@ -55,8 +58,8 @@ public class Position {
     /**
      * Returns the elevation.
      */
-    public State getElevation() {
-        return Double.isNaN(elevation) ? UnDefType.NULL : new QuantityType<>(elevation, Units.DEGREE_ANGLE);
+    public @Nullable QuantityType<Angle> getElevation() {
+        return Double.isNaN(elevation) ? null : new QuantityType<>(elevation, Units.DEGREE_ANGLE);
     }
 
     public double getElevationAsDouble() {

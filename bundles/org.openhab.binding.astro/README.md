@@ -32,13 +32,13 @@ This is done by setting `useMeteorologicalSeason` to true in the advanced settin
 
 This binding has its own IconProvider and makes available the following list of icons
 
-| Icon Name             | Dynamic | Illustration |
-|-----------------------|---------|--------------|
-| oh:astro:zodiac       |   Yes   | ![Zodiac](doc/images/zodiac.svg) |
-| oh:astro:season       |   Yes   | ![Season](doc/images/season.svg) |
-| oh:astro:moon_phase   |   Yes   | ![Moon Phase](doc/images/moon_day.svg) |
-| oh:astro:moon_eclipse |   Yes   | ![Moon Eclipse](doc/images/moon_eclipse.svg) |
-| oh:astro:moon_day     |   Yes   | ![Moon Age](doc/images/moon_day.svg) |
+| Icon Name             | Dynamic | Illustration                                 |
+| --------------------- | ------- | -------------------------------------------- |
+| oh:astro:zodiac       | Yes     | ![Zodiac](doc/images/zodiac.svg)             |
+| oh:astro:season       | Yes     | ![Season](doc/images/season.svg)             |
+| oh:astro:moon_phase   | Yes     | ![Moon Phase](doc/images/moon_day.svg)       |
+| oh:astro:moon_eclipse | Yes     | ![Moon Eclipse](doc/images/moon_eclipse.svg) |
+| oh:astro:moon_day     | Yes     | ![Moon Age](doc/images/moon_day.svg)         |
 
 ## Channels
 
