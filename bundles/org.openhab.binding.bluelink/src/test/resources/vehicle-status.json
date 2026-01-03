@@ -1,0 +1,251 @@
+{
+  "hataTID": "Iebung0Aquai8Coo",
+  "vehicleStatus": {
+    "acc": false,
+    "airConditionStatus": "false",
+    "airCtrlOn": false,
+    "airTemp": {
+      "hvacTempType": 1,
+      "unit": 0,
+      "value": "LO"
+    },
+    "battery": {
+      "batSignalReferenceValue": {
+        "batWarning": 65
+      },
+      "batSoc": 75,
+      "powerAutoCutMode": 2,
+      "sjbDeliveryMode": 1
+    },
+    "breakOilStatus": false,
+    "dateTime": "2025-12-18T04:09:28Z",
+    "defrost": false,
+    "defrostStatus": "false",
+    "doorLock": true,
+    "doorLockStatus": "true",
+    "doorOpen": {
+      "backLeft": 0,
+      "backRight": 0,
+      "frontLeft": 0,
+      "frontRight": 0
+    },
+    "engine": false,
+    "evStatus": {
+      "batteryCharge": true,
+      "batteryDisChargePlugin": 1,
+      "batteryDischrgPower": 7.4,
+      "batteryFstChrgPower": 0.0,
+      "batteryPlugin": 2,
+      "batteryPrecondition": false,
+      "batteryStatus": 42,
+      "batteryStndChrgPower": 7.4,
+      "disChargeRemaintime": 0,
+      "drvDistance": [
+        {
+          "rangeByFuel": {
+            "evModeRange": {
+              "unit": 1,
+              "value": 184.0
+            },
+            "gasModeRange": {
+              "unit": 1,
+              "value": 0.0
+            },
+            "totalAvailableRange": {
+              "unit": 1,
+              "value": 184.0
+            }
+          },
+          "type": 2
+        }
+      ],
+      "evIgnitionStatus": true,
+      "inletLockModeStatus": 0,
+      "remainTime": [],
+      "remainTime2": {
+        "atc": {
+          "unit": 1,
+          "value": 265
+        },
+        "etc1": {
+          "unit": 1,
+          "value": 41
+        },
+        "etc2": {
+          "unit": 1,
+          "value": 1680
+        },
+        "etc3": {
+          "unit": 1,
+          "value": 175
+        }
+      },
+      "reservChargeInfos": {
+        "offpeakPowerInfo": {
+          "offPeakPowerFlag": 0,
+          "offPeakPowerTime1": {
+            "endTime": {
+              "time": "1200",
+              "timeSection": 0
+            },
+            "startTime": {
+              "time": "1200",
+              "timeSection": 0
+            }
+          }
+        },
+        "reservChargeInfo": {
+          "dateTime": "2025/12/17T20:10:16Z",
+          "reservChargeInfoDetail": {
+            "reservChargeSet": false,
+            "reservEndTime": "",
+            "reservFatcSet": {
+              "airCtrl": 0,
+              "airTemp": {
+                "unit": 0,
+                "value": "0BH"
+              },
+              "defrost": false
+            },
+            "reservInfo": {
+              "day": [
+                3
+              ],
+              "time": {
+                "time": "0710",
+                "timeSection": 0
+              }
+            }
+          }
+        },
+        "reservFlag": 0,
+        "reserveChargeInfo2": {
+          "reservChargeInfoDetail": {
+            "reservChargeSet": false,
+            "reservEndTime": "",
+            "reservFatcSet": {
+              "airCtrl": 0,
+              "airTemp": {
+                "unit": 0,
+                "value": "0BH"
+              },
+              "defrost": false
+            },
+            "reservInfo": {
+              "day": [
+                9
+              ],
+              "time": {
+                "time": "1200",
+                "timeSection": 0
+              }
+            }
+          }
+        },
+        "targetSOClist": [
+          {
+            "plugType": 0,
+            "rangeByFuel": {
+              "evModeRange": {
+                "unit": 1,
+                "value": 184
+              },
+              "gasModeRange": {
+                "unit": 1,
+                "value": 0
+              },
+              "totalAvailableRange": {
+                "unit": 1,
+                "value": 184
+              }
+            },
+            "targetSOClevel": 80,
+            "type": 2
+          },
+          {
+            "plugType": 1,
+            "rangeByFuel": {
+              "evModeRange": {
+                "unit": 1,
+                "value": 184
+              },
+              "gasModeRange": {
+                "unit": 1,
+                "value": 0
+              },
+              "totalAvailableRange": {
+                "unit": 1,
+                "value": 184
+              }
+            },
+            "targetSOClevel": 80,
+            "type": 2
+          }
+        ]
+      },
+      "timeDiff": 0,
+      "v2L": false,
+      "valueDiff": 0
+    },
+    "hazardStatus": 0,
+    "hoodOpen": false,
+    "ign3": true,
+    "ignitionStatus": "false",
+    "lampWireStatus": {
+      "headLamp": {
+        "headLampStatus": false,
+        "leftBifuncLamp": false,
+        "leftHighLamp": false,
+        "leftLowLamp": false,
+        "rightBifuncLamp": false,
+        "rightHighLamp": false,
+        "rightLowLamp": false
+      },
+      "stopLamp": {
+        "leftLamp": false,
+        "rightLamp": false
+      },
+      "turnSignalLamp": {
+        "leftFrontLamp": false,
+        "leftRearLamp": false,
+        "rightFrontLamp": false,
+        "rightRearLamp": false
+      }
+    },
+    "lowFuelLight": false,
+    "remoteWaitingTimeAlert": {
+      "remoteControlAvailable": 1,
+      "remoteControlWaitingTime": 168
+    },
+    "sideBackWindowHeat": 0,
+    "sleepModeCheck": false,
+    "smartKeyBatteryWarning": false,
+    "steerWheelHeat": 0,
+    "tailLampStatus": 0,
+    "tirePressureLamp": {
+      "tirePressureWarningLampAll": 0,
+      "tirePressureWarningLampFrontLeft": 0,
+      "tirePressureWarningLampFrontRight": 0,
+      "tirePressureWarningLampRearLeft": 0,
+      "tirePressureWarningLampRearRight": 0
+    },
+    "transCond": true,
+    "trunkOpen": false,
+    "trunkOpenStatus": "false",
+    "vehicleLocation": {
+      "coord": {
+        "alt": 55.0,
+        "lat": 43.23436388,
+        "lon": -99.15509166666666,
+        "type": 0
+      }
+    },
+    "washerFluidStatus": false,
+    "windowOpen": {
+      "backLeft": 0,
+      "backRight": 0,
+      "frontLeft": 0,
+      "frontRight": 0
+    }
+  }
+}

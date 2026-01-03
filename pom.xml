@@ -446,11 +446,16 @@ Import-Package: \\
             <strictCheck>true</strictCheck>
             <aggregate>true</aggregate>
             <mapping>
+              <java.hbs>SLASHSTAR_STYLE</java.hbs>
               <xml>xml-header-style</xml>
+              <c>JAVADOC_STYLE</c>
+              <cpp>JAVADOC_STYLE</cpp>
+              <h>JAVADOC_STYLE</h>
+              <ino>JAVADOC_STYLE</ino>
             </mapping>
             <useDefaultExcludes>true</useDefaultExcludes>
             <properties>
-              <year>2025</year>
+              <year>2026</year>
             </properties>
             <encoding>UTF-8</encoding>
             <licenseSets>
@@ -462,6 +467,13 @@ Import-Package: \\
                 <includes>
                   <include>**/org/openhab/**/*.java</include>
                   <include>**/features/**/header.xml</include>
+                  <!-- org.openhab.binding.matter -->
+                  <include>**/code-gen/**/*.java.hbs</include>
+                  <!-- org.openhab.binding.nibeheatpump -->
+                  <include>**/contrib/**/*.c</include>
+                  <include>**/contrib/**/*.cpp</include>
+                  <include>**/contrib/**/*.h</include>
+                  <include>**/contrib/**/*.ino</include>
                 </includes>
                 <excludes>
                   <exclude>**/3rdparty/**</exclude>

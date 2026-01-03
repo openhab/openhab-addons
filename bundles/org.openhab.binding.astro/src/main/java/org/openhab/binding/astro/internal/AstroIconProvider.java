@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -87,7 +87,7 @@ public class AstroIconProvider implements IconProvider {
 
     @Override
     public @Nullable InputStream getIcon(String category, String iconSetId, @Nullable String state, Format format) {
-        String iconName = "icon/%s.svg".formatted(category);
+        String iconName = String.format(Locale.ROOT, "icon/%s.svg", category);
         if (ICON_SETS.contains(category) && state != null) {
             try {
                 Enum<?> stateEnum = switch (category) {

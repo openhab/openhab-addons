@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,6 +21,8 @@ import java.util.GregorianCalendar;
 import java.util.Locale;
 import java.util.TimeZone;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.astro.internal.model.Season;
@@ -38,6 +40,7 @@ import org.openhab.binding.astro.internal.util.DateTimeUtils;
  *
  * @author Witold Markowski - Initial contribution
  */
+@NonNullByDefault
 public class SeasonCalcTest {
     private static final TimeZone AMSTERDAM_TZ = TimeZone.getTimeZone("Europe/Amsterdam");
     private static final TimeZone SYDNEY_TZ = TimeZone.getTimeZone("Australia/Sydney");
@@ -53,7 +56,7 @@ public class SeasonCalcTest {
     private static final double AMSTERDAM_LONGITUDE = 4.8978293;
     private static final double AMSTERDAM_ALTITUDE = 0.0;
 
-    private SunCalc sunCalc;
+    private @Nullable SunCalc sunCalc;
 
     @BeforeEach
     public void init() {
@@ -102,6 +105,8 @@ public class SeasonCalcTest {
 
     @Test
     public void testAstroAndMeteoSeasons() {
+        SunCalc sunCalc = this.sunCalc;
+        assertNotNull(sunCalc);
         Sun meteoSun = sunCalc.getSunInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE, AMSTERDAM_ALTITUDE,
                 true, AMSTERDAM_TZ, Locale.ROOT);
         Sun equiSun = sunCalc.getSunInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE, AMSTERDAM_ALTITUDE,

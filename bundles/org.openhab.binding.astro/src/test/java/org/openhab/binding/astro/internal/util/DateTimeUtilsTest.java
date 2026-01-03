@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,6 +20,7 @@ import java.util.GregorianCalendar;
 import java.util.Locale;
 import java.util.TimeZone;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.astro.internal.config.AstroChannelConfig;
 
@@ -29,6 +30,7 @@ import org.openhab.binding.astro.internal.config.AstroChannelConfig;
  * @author Hilbrand Bouwkamp - Initial contribution
  * @author Gaël L'hopital - Added tests for Instant usage
  */
+@NonNullByDefault
 public class DateTimeUtilsTest {
 
     private static final TimeZone TIME_ZONE = TimeZone.getTimeZone("Europe/Amsterdam");

@@ -1,0 +1,495 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="bluelink"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="vehicle">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="account"/>
+		</supported-bridge-type-refs>
+
+		<label>Bluelink Vehicle</label>
+		<description>A Hyundai vehicle connected via Bluelink.</description>
+		<semantic-equipment-tag>Vehicle</semantic-equipment-tag>
+
+		<channel-groups>
+			<channel-group id="status" typeId="status"/>
+			<channel-group id="charging" typeId="charging"/>
+			<channel-group id="fuel" typeId="fuel"/>
+			<channel-group id="doors" typeId="doors"/>
+			<channel-group id="windows" typeId="windows"/>
+			<channel-group id="climate" typeId="climate"/>
+			<channel-group id="range" typeId="range"/>
+			<channel-group id="warnings" typeId="warnings"/>
+		</channel-groups>
+
+		<representation-property>vin</representation-property>
+
+		<config-description>
+			<parameter name="vin" type="text" required="true">
+				<label>VIN</label>
+				<description>Vehicle Identification Number (VIN)</description>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" min="0" unit="min" required="false">
+				<label>Refresh Interval</label>
+				<description>Interval in minutes to fetch cached data from the Hyundai/Kia servers</description>
+				<default>30</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="forceRefreshInterval" type="integer" min="0" unit="min" required="false">
+				<label>Refresh Interval</label>
+				<description>Interval in minutes to refresh data from the vehicle</description>
+				<default>240</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<!-- Channel Group Types -->
+
+	<channel-group-type id="status">
+		<label>Vehicle Status</label>
+		<channels>
+			<channel id="locked" typeId="locked"/>
+			<channel id="engine-running" typeId="engine-running"/>
+			<channel id="odometer" typeId="odometer"/>
+			<channel id="battery-level" typeId="battery-level"/>
+			<channel id="location" typeId="system.location"/>
+			<channel id="last-update" typeId="last-update"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="charging">
+		<label>Charging</label>
+	</channel-group-type>
+
+	<channel-group-type id="fuel">
+		<label>Fuel</label>
+	</channel-group-type>
+
+	<channel-group-type id="doors">
+		<label>Doors</label>
+		<channels>
+			<channel id="front-left" typeId="door-state">
+				<label>Front Left Door</label>
+			</channel>
+			<channel id="front-right" typeId="door-state">
+				<label>Front Right Door</label>
+			</channel>
+			<channel id="rear-left" typeId="door-state">
+				<label>Rear Left Door</label>
+			</channel>
+			<channel id="rear-right" typeId="door-state">
+				<label>Rear Right Door</label>
+			</channel>
+			<channel id="trunk" typeId="trunk-state"/>
+			<channel id="hood" typeId="hood-state"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="windows">
+		<label>Windows</label>
+		<channels>
+			<channel id="front-left" typeId="window-state">
+				<label>Front Left Window</label>
+			</channel>
+			<channel id="front-right" typeId="window-state">
+				<label>Front Right Window</label>
+			</channel>
+			<channel id="rear-left" typeId="window-state">
+				<label>Rear Left Window</label>
+			</channel>
+			<channel id="rear-right" typeId="window-state">
+				<label>Rear Right Window</label>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="climate">
+		<label>Climate Control</label>
+		<channels>
+			<channel id="hvac-on" typeId="hvac-on"/>
+			<channel id="temperature-setpoint" typeId="temperature-setpoint"/>
+			<channel id="defrost" typeId="defrost"/>
+			<channel id="seat-front-left" typeId="seat-heater">
+				<label>Front Left Seat Heater</label>
+			</channel>
+			<channel id="seat-front-right" typeId="seat-heater">
+				<label>Front Right Seat Heater</label>
+			</channel>
+			<channel id="seat-rear-left" typeId="seat-heater">
+				<label>Rear Left Seat Heater</label>
+			</channel>
+			<channel id="seat-rear-right" typeId="seat-heater">
+				<label>Rear Right Seat Heater</label>
+			</channel>
+			<channel id="steering-heater" typeId="heater-state">
+				<label>Steering Wheel Heater</label>
+			</channel>
+			<channel id="rear-window-heater" typeId="heater-state">
+				<label>Rear Window Heater</label>
+			</channel>
+			<channel id="side-mirror-heater" typeId="heater-state">
+				<label>Side Mirror Heater</label>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="range">
+		<label>Driving Range</label>
+		<channels>
+			<channel id="total-range" typeId="range">
+				<label>Total Driving Range</label>
+			</channel>
+			<channel id="ev-range" typeId="range">
+				<label>Electric Driving Range</label>
+			</channel>
+			<channel id="fuel-range" typeId="range">
+				<label>Fuel Driving Range</label>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="warnings">
+		<label>Warnings</label>
+		<channels>
+			<channel id="tire-pressure" typeId="warning">
+				<label>Tire Pressure Warning</label>
+			</channel>
+			<channel id="tire-pressure-front-left" typeId="warning">
+				<label>Tire Pressure Warning (Front Left)</label>
+			</channel>
+			<channel id="tire-pressure-front-right" typeId="warning">
+				<label>Tire Pressure Warning (Front Right)</label>
+			</channel>
+			<channel id="tire-pressure-rear-left" typeId="warning">
+				<label>Tire Pressure Warning (Rear Left)</label>
+			</channel>
+			<channel id="tire-pressure-rear-right" typeId="warning">
+				<label>Tire Pressure Warning (Rear Right)</label>
+			</channel>
+			<channel id="washer-fluid" typeId="warning">
+				<label>Washer Fluid Level Warning</label>
+			</channel>
+			<channel id="brake-fluid" typeId="warning">
+				<label>Brake Fluid Level Warning</label>
+			</channel>
+			<channel id="smart-key-battery" typeId="warning">
+				<label>Smart Key Battery Warning</label>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<!-- Channel Types -->
+
+	<channel-type id="locked">
+		<item-type>Switch</item-type>
+		<label>Locked</label>
+		<description>Vehicle door lock status</description>
+		<category>Lock</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>LockState</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="engine-running">
+		<item-type>Switch</item-type>
+		<label>Engine Running</label>
+		<description>Engine running status</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="battery-level">
+		<item-type>Number:Dimensionless</item-type>
+		<label>12V Battery Level</label>
+		<description>12V battery state of charge</description>
+		<category>BatteryLevel</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
+		<state pattern="%.0f %%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="door-state">
+		<item-type>Contact</item-type>
+		<label>Door</label>
+		<description>Door open/closed state</description>
+		<category>Door</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="trunk-state">
+		<item-type>Contact</item-type>
+		<label>Trunk</label>
+		<description>Trunk open/closed state</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="hood-state">
+		<item-type>Contact</item-type>
+		<label>Hood</label>
+		<description>Hood open/closed state</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="window-state">
+		<item-type>Contact</item-type>
+		<label>Window</label>
+		<description>Window open/closed state</description>
+		<category>Window</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="hvac-on">
+		<item-type>Switch</item-type>
+		<label>Climate Control</label>
+		<description>Climate control active state</description>
+		<category>Climate</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Heating</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="temperature-setpoint">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature Setpoint</label>
+		<description>Air temperature setpoint</description>
+		<category>Temperature</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="defrost">
+		<item-type>Switch</item-type>
+		<label>Defrost</label>
+		<description>Defrost on/off status</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Enabled</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="seat-heater">
+		<item-type>Number</item-type>
+		<label>Seat Heater</label>
+		<description>Seat heater level (0-3)</description>
+		<category>Heating</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Heating</tag>
+		</tags>
+		<state min="0" max="3" step="1" pattern="%.0f" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="heater-state">
+		<item-type>Switch</item-type>
+		<label>Heater</label>
+		<description>Heater on/off status</description>
+		<category>Heating</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Heating</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="last-update">
+		<item-type>DateTime</item-type>
+		<label>Last Update</label>
+		<description>Time of last vehicle data update</description>
+		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="range">
+		<item-type>Number:Length</item-type>
+		<label>Range</label>
+		<description>Estimated driving range</description>
+		<category>Car</category>
+		<tags>
+			<tag>Forecast</tag>
+		</tags>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="fuel-level">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Fuel Level</label>
+		<description>Fuel tank level</description>
+		<category>Oil</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Level</tag>
+		</tags>
+		<state pattern="%.0f %%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="ev-soc">
+		<item-type>Number:Dimensionless</item-type>
+		<label>EV Battery</label>
+		<description>EV battery state of charge</description>
+		<category>Battery</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Level</tag>
+		</tags>
+		<state pattern="%.0f %%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="ev-charging">
+		<item-type>Switch</item-type>
+		<label>Charging State</label>
+		<description>EV charging status</description>
+		<category>Battery</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="ev-plugged-in">
+		<item-type>Switch</item-type>
+		<label>Plugged In</label>
+		<description>Whether the charge cable is plugged</description>
+		<category>Battery</category>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="charge-limit-dc">
+		<item-type>Number:Dimensionless</item-type>
+		<label>DC Charge Limit</label>
+		<description>Target charge limit on DC</description>
+		<category>Battery</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Energy</tag>
+		</tags>
+		<state pattern="%.0f %%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="charge-limit-ac">
+		<item-type>Number:Dimensionless</item-type>
+		<label>AC Charge Limit</label>
+		<description>Target charge limit on AC</description>
+		<category>Battery</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Energy</tag>
+		</tags>
+		<state pattern="%.0f %%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="charge-time-current">
+		<item-type>Number:Time</item-type>
+		<label>Time to Full (Current)</label>
+		<description>Estimated time to fully charged with current charger</description>
+		<category>Time</category>
+		<tags>
+			<tag>Forecast</tag>
+			<tag>Duration</tag>
+		</tags>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="charge-time-fast">
+		<item-type>Number:Time</item-type>
+		<label>Time to Full (Fast)</label>
+		<description>Estimated time to fully charged with Level 3 charger</description>
+		<category>Time</category>
+		<tags>
+			<tag>Forecast</tag>
+			<tag>Duration</tag>
+		</tags>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="charge-time-portable">
+		<item-type>Number:Time</item-type>
+		<label>Time to Full (Portable)</label>
+		<description>Estimated time to fully charged with Level 1 charger</description>
+		<category>Time</category>
+		<tags>
+			<tag>Forecast</tag>
+			<tag>Duration</tag>
+		</tags>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="charge-time-station">
+		<item-type>Number:Time</item-type>
+		<label>Time to Full (Station)</label>
+		<description>Estimated time to fully charged with Level 2 charger</description>
+		<category>Time</category>
+		<tags>
+			<tag>Forecast</tag>
+			<tag>Duration</tag>
+		</tags>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="odometer">
+		<item-type>Number:Length</item-type>
+		<label>Odometer</label>
+		<description>Vehicle odometer reading</description>
+		<category>Car</category>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="warning">
+		<item-type>Switch</item-type>
+		<label>Warning</label>
+		<description>Warning indicator</description>
+		<category>Alarm</category>
+		<tags>
+			<tag>Switch</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="fuel-warning">
+		<item-type>Switch</item-type>
+		<label>Fuel Level Warning</label>
+		<description>Low fuel level indicator</description>
+		<category>Alarm</category>
+		<tags>
+			<tag>Switch</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+</thing:thing-descriptions>

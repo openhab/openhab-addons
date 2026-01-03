@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -532,10 +532,6 @@ public class PhilipsTVConnectionManager implements DiscoveryListener {
     public synchronized void postUpdateThing(ThingStatus status, ThingStatusDetail statusDetail, String msg) {
         logger.trace("postUpdateThing {} {} {}", status, statusDetail, msg);
         if (status == ThingStatus.ONLINE) {
-            PhilipsTVService powerService = channelServices.get(CHANNEL_POWER);
-            if (powerService != null) {
-                powerService.handleCommand(CHANNEL_POWER, RefreshType.REFRESH);
-            }
             if (!msg.equalsIgnoreCase(STANDBY_MSG)) {
                 startDeviceHealthJob(5, TimeUnit.SECONDS);
                 pendingPowerOn = false;

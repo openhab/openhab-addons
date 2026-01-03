@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,8 +17,11 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.TimeZone;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -43,6 +46,7 @@ import org.openhab.binding.astro.internal.util.DateTimeUtils;
  *      Sun Phase returns UNDEF</a>
  * @see <a href="https://www.heavens-above.com/sun.aspx">Heavens Above Sun</a>
  */
+@NonNullByDefault
 public class SunCalcTest {
 
     private static final TimeZone AMSTERDAM_TIME_ZONE = TimeZone.getTimeZone("Europe/Amsterdam");
@@ -53,7 +57,7 @@ public class SunCalcTest {
     private static final double AMSTERDAM_ALTITUDE = 0.0;
     private static final int ACCURACY_IN_MILLIS = 3 * 60 * 1000;
 
-    private SunCalc sunCalc;
+    private @Nullable SunCalc sunCalc;
 
     @BeforeEach
     public void init() {
@@ -62,8 +66,8 @@ public class SunCalcTest {
 
     @Test
     public void testGetSunInfoForOldDate() {
-        Sun sun = sunCalc.getSunInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE, AMSTERDAM_ALTITUDE, false,
-                AMSTERDAM_TIME_ZONE, Locale.ROOT);
+        Sun sun = Objects.requireNonNull(sunCalc).getSunInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE,
+                AMSTERDAM_ALTITUDE, false, AMSTERDAM_TIME_ZONE, Locale.ROOT);
 
         assertNotNull(sun.getNight());
 
@@ -91,8 +95,8 @@ public class SunCalcTest {
 
     @Test
     public void testGetSunInfoForAstronomicalDawnAccuracy() {
-        Sun sun = sunCalc.getSunInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE, AMSTERDAM_ALTITUDE, false,
-                AMSTERDAM_TIME_ZONE, Locale.ROOT);
+        Sun sun = Objects.requireNonNull(sunCalc).getSunInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE,
+                AMSTERDAM_ALTITUDE, false, AMSTERDAM_TIME_ZONE, Locale.ROOT);
 
         Range range = sun.getAstroDawn();
         assertNotNull(range);
@@ -109,8 +113,8 @@ public class SunCalcTest {
 
     @Test
     public void testGetSunInfoForNauticDawnAccuracy() {
-        Sun sun = sunCalc.getSunInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE, AMSTERDAM_ALTITUDE, false,
-                AMSTERDAM_TIME_ZONE, Locale.ROOT);
+        Sun sun = Objects.requireNonNull(sunCalc).getSunInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE,
+                AMSTERDAM_ALTITUDE, false, AMSTERDAM_TIME_ZONE, Locale.ROOT);
 
         Range range = sun.getNauticDawn();
         assertNotNull(range);
@@ -127,8 +131,8 @@ public class SunCalcTest {
 
     @Test
     public void testGetSunInfoForCivilDawnAccuracy() {
-        Sun sun = sunCalc.getSunInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE, AMSTERDAM_ALTITUDE, false,
-                AMSTERDAM_TIME_ZONE, Locale.ROOT);
+        Sun sun = Objects.requireNonNull(sunCalc).getSunInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE,
+                AMSTERDAM_ALTITUDE, false, AMSTERDAM_TIME_ZONE, Locale.ROOT);
 
         Range range = sun.getCivilDawn();
         assertNotNull(range);
@@ -145,8 +149,8 @@ public class SunCalcTest {
 
     @Test
     public void testGetSunInfoForRiseAccuracy() {
-        Sun sun = sunCalc.getSunInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE, AMSTERDAM_ALTITUDE, false,
-                AMSTERDAM_TIME_ZONE, Locale.ROOT);
+        Sun sun = Objects.requireNonNull(sunCalc).getSunInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE,
+                AMSTERDAM_ALTITUDE, false, AMSTERDAM_TIME_ZONE, Locale.ROOT);
 
         Range range = sun.getRise();
         assertNotNull(range);
@@ -159,8 +163,8 @@ public class SunCalcTest {
 
     @Test
     public void testGetSunInfoForSunNoonAccuracy() {
-        Sun sun = sunCalc.getSunInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE, AMSTERDAM_ALTITUDE, false,
-                AMSTERDAM_TIME_ZONE, Locale.ROOT);
+        Sun sun = Objects.requireNonNull(sunCalc).getSunInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE,
+                AMSTERDAM_ALTITUDE, false, AMSTERDAM_TIME_ZONE, Locale.ROOT);
 
         Range range = sun.getNoon();
         assertNotNull(range);
@@ -174,8 +178,8 @@ public class SunCalcTest {
 
     @Test
     public void testGetSunInfoForSetAccuracy() {
-        Sun sun = sunCalc.getSunInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE, AMSTERDAM_ALTITUDE, false,
-                AMSTERDAM_TIME_ZONE, Locale.ROOT);
+        Sun sun = Objects.requireNonNull(sunCalc).getSunInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE,
+                AMSTERDAM_ALTITUDE, false, AMSTERDAM_TIME_ZONE, Locale.ROOT);
 
         Range range = sun.getSet();
         assertNotNull(range);
@@ -189,8 +193,8 @@ public class SunCalcTest {
 
     @Test
     public void testGetSunInfoForCivilDuskAccuracy() {
-        Sun sun = sunCalc.getSunInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE, AMSTERDAM_ALTITUDE, false,
-                AMSTERDAM_TIME_ZONE, Locale.ROOT);
+        Sun sun = Objects.requireNonNull(sunCalc).getSunInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE,
+                AMSTERDAM_ALTITUDE, false, AMSTERDAM_TIME_ZONE, Locale.ROOT);
 
         Range range = sun.getCivilDusk();
         assertNotNull(range);
@@ -209,8 +213,8 @@ public class SunCalcTest {
 
     @Test
     public void testGetSunInfoForNauticDuskAccuracy() {
-        Sun sun = sunCalc.getSunInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE, AMSTERDAM_ALTITUDE, false,
-                AMSTERDAM_TIME_ZONE, Locale.ROOT);
+        Sun sun = Objects.requireNonNull(sunCalc).getSunInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE,
+                AMSTERDAM_ALTITUDE, false, AMSTERDAM_TIME_ZONE, Locale.ROOT);
 
         Range range = sun.getNauticDusk();
         assertNotNull(range);
@@ -229,8 +233,8 @@ public class SunCalcTest {
 
     @Test
     public void testGetSunInfoForAstronomicalDuskAccuracy() {
-        Sun sun = sunCalc.getSunInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE, AMSTERDAM_ALTITUDE, false,
-                AMSTERDAM_TIME_ZONE, Locale.ROOT);
+        Sun sun = Objects.requireNonNull(sunCalc).getSunInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE,
+                AMSTERDAM_ALTITUDE, false, AMSTERDAM_TIME_ZONE, Locale.ROOT);
 
         Range range = sun.getAstroDusk();
         assertNotNull(range);
@@ -249,8 +253,8 @@ public class SunCalcTest {
     @Test
     @Disabled
     public void testRangesForCoherenceBetweenNightEndAndAstroDawnStart() {
-        Sun sun = sunCalc.getSunInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE, AMSTERDAM_ALTITUDE, false,
-                AMSTERDAM_TIME_ZONE, Locale.ROOT);
+        Sun sun = Objects.requireNonNull(sunCalc).getSunInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE,
+                AMSTERDAM_ALTITUDE, false, AMSTERDAM_TIME_ZONE, Locale.ROOT);
 
         Range range = sun.getAllRanges().get(SunPhaseName.NIGHT);
         assertNotNull(range);
@@ -261,8 +265,8 @@ public class SunCalcTest {
 
     @Test
     public void testRangesForCoherenceBetweenMorningNightEndAndAstroDawnStart() {
-        Sun sun = sunCalc.getSunInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE, AMSTERDAM_ALTITUDE, false,
-                AMSTERDAM_TIME_ZONE, Locale.ROOT);
+        Sun sun = Objects.requireNonNull(sunCalc).getSunInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE,
+                AMSTERDAM_ALTITUDE, false, AMSTERDAM_TIME_ZONE, Locale.ROOT);
 
         Range range = sun.getAllRanges().get(SunPhaseName.MORNING_NIGHT);
         assertNotNull(range);
@@ -273,8 +277,8 @@ public class SunCalcTest {
 
     @Test
     public void testRangesForCoherenceBetweenAstroDownEndAndNauticDawnStart() {
-        Sun sun = sunCalc.getSunInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE, AMSTERDAM_ALTITUDE, false,
-                AMSTERDAM_TIME_ZONE, Locale.ROOT);
+        Sun sun = Objects.requireNonNull(sunCalc).getSunInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE,
+                AMSTERDAM_ALTITUDE, false, AMSTERDAM_TIME_ZONE, Locale.ROOT);
 
         Range range = sun.getAllRanges().get(SunPhaseName.ASTRO_DAWN);
         assertNotNull(range);
@@ -285,8 +289,8 @@ public class SunCalcTest {
 
     @Test
     public void testRangesForCoherenceBetweenNauticDawnEndAndCivilDawnStart() {
-        Sun sun = sunCalc.getSunInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE, AMSTERDAM_ALTITUDE, false,
-                AMSTERDAM_TIME_ZONE, Locale.ROOT);
+        Sun sun = Objects.requireNonNull(sunCalc).getSunInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE,
+                AMSTERDAM_ALTITUDE, false, AMSTERDAM_TIME_ZONE, Locale.ROOT);
 
         Range range = sun.getAllRanges().get(SunPhaseName.NAUTIC_DAWN);
         assertNotNull(range);
@@ -297,8 +301,8 @@ public class SunCalcTest {
 
     @Test
     public void testRangesForCoherenceBetweenCivilDawnEndAndSunRiseStart() {
-        Sun sun = sunCalc.getSunInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE, AMSTERDAM_ALTITUDE, false,
-                AMSTERDAM_TIME_ZONE, Locale.ROOT);
+        Sun sun = Objects.requireNonNull(sunCalc).getSunInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE,
+                AMSTERDAM_ALTITUDE, false, AMSTERDAM_TIME_ZONE, Locale.ROOT);
 
         Range range = sun.getAllRanges().get(SunPhaseName.CIVIL_DAWN);
         assertNotNull(range);
@@ -309,8 +313,8 @@ public class SunCalcTest {
 
     @Test
     public void testRangesForCoherenceBetweenSunRiseEndAndDaylightStart() {
-        Sun sun = sunCalc.getSunInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE, AMSTERDAM_ALTITUDE, false,
-                AMSTERDAM_TIME_ZONE, Locale.ROOT);
+        Sun sun = Objects.requireNonNull(sunCalc).getSunInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE,
+                AMSTERDAM_ALTITUDE, false, AMSTERDAM_TIME_ZONE, Locale.ROOT);
 
         Range range = sun.getAllRanges().get(SunPhaseName.SUN_RISE);
         assertNotNull(range);
@@ -321,8 +325,8 @@ public class SunCalcTest {
 
     @Test
     public void testRangesForCoherenceBetweenDaylightEndAndSunSetStart() {
-        Sun sun = sunCalc.getSunInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE, AMSTERDAM_ALTITUDE, false,
-                AMSTERDAM_TIME_ZONE, Locale.ROOT);
+        Sun sun = Objects.requireNonNull(sunCalc).getSunInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE,
+                AMSTERDAM_ALTITUDE, false, AMSTERDAM_TIME_ZONE, Locale.ROOT);
 
         Range range = sun.getAllRanges().get(SunPhaseName.DAYLIGHT);
         assertNotNull(range);
@@ -333,8 +337,8 @@ public class SunCalcTest {
 
     @Test
     public void testRangesForCoherenceBetweenSunSetEndAndCivilDuskStart() {
-        Sun sun = sunCalc.getSunInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE, AMSTERDAM_ALTITUDE, false,
-                AMSTERDAM_TIME_ZONE, Locale.ROOT);
+        Sun sun = Objects.requireNonNull(sunCalc).getSunInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE,
+                AMSTERDAM_ALTITUDE, false, AMSTERDAM_TIME_ZONE, Locale.ROOT);
 
         Range range = sun.getAllRanges().get(SunPhaseName.SUN_SET);
         assertNotNull(range);
@@ -345,8 +349,8 @@ public class SunCalcTest {
 
     @Test
     public void testRangesForCoherenceBetweenCivilDuskEndAndNauticDuskStart() {
-        Sun sun = sunCalc.getSunInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE, AMSTERDAM_ALTITUDE, false,
-                AMSTERDAM_TIME_ZONE, Locale.ROOT);
+        Sun sun = Objects.requireNonNull(sunCalc).getSunInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE,
+                AMSTERDAM_ALTITUDE, false, AMSTERDAM_TIME_ZONE, Locale.ROOT);
 
         Range range = sun.getAllRanges().get(SunPhaseName.CIVIL_DUSK);
         assertNotNull(range);
@@ -357,8 +361,8 @@ public class SunCalcTest {
 
     @Test
     public void testRangesForCoherenceBetweenNauticDuskEndAndAstroDuskStart() {
-        Sun sun = sunCalc.getSunInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE, AMSTERDAM_ALTITUDE, false,
-                AMSTERDAM_TIME_ZONE, Locale.ROOT);
+        Sun sun = Objects.requireNonNull(sunCalc).getSunInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE,
+                AMSTERDAM_ALTITUDE, false, AMSTERDAM_TIME_ZONE, Locale.ROOT);
 
         Range range = sun.getAllRanges().get(SunPhaseName.NAUTIC_DUSK);
         assertNotNull(range);
@@ -369,8 +373,8 @@ public class SunCalcTest {
 
     @Test
     public void testRangesForCoherenceBetweenAstroDuskEndAndNightStart() {
-        Sun sun = sunCalc.getSunInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE, AMSTERDAM_ALTITUDE, false,
-                AMSTERDAM_TIME_ZONE, Locale.ROOT);
+        Sun sun = Objects.requireNonNull(sunCalc).getSunInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE,
+                AMSTERDAM_ALTITUDE, false, AMSTERDAM_TIME_ZONE, Locale.ROOT);
 
         Range range = sun.getAllRanges().get(SunPhaseName.ASTRO_DUSK);
         assertNotNull(range);
@@ -381,8 +385,8 @@ public class SunCalcTest {
 
     @Test
     public void testRangesForCoherenceBetweenAstroDuskEndAndEveningNightStart() {
-        Sun sun = sunCalc.getSunInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE, AMSTERDAM_ALTITUDE, false,
-                AMSTERDAM_TIME_ZONE, Locale.ROOT);
+        Sun sun = Objects.requireNonNull(sunCalc).getSunInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE,
+                AMSTERDAM_ALTITUDE, false, AMSTERDAM_TIME_ZONE, Locale.ROOT);
 
         Range range = sun.getAllRanges().get(SunPhaseName.ASTRO_DUSK);
         assertNotNull(range);
@@ -396,7 +400,8 @@ public class SunCalcTest {
         TimeZone tZone = TimeZone.getTimeZone("Europe/London");
         Calendar tDate = SunCalcTest.newCalendar(2020, Calendar.MAY, 13, 5, 12, tZone);
 
-        Sun sun = sunCalc.getSunInfo(tDate, 53.524695, -2.4, 0.0, true, AMSTERDAM_TIME_ZONE, Locale.ROOT);
+        Sun sun = Objects.requireNonNull(sunCalc).getSunInfo(tDate, 53.524695, -2.4, 0.0, true, AMSTERDAM_TIME_ZONE,
+                Locale.ROOT);
         assertEquals(SunPhaseName.CIVIL_DAWN, sun.getPhase().getName());
     }
 
@@ -407,7 +412,8 @@ public class SunCalcTest {
         Calendar tDate = SunCalcTest.newCalendar(2020, Calendar.MAY, 13, 5, 13, tZone);
         tDate.set(Calendar.SECOND, 4);
 
-        Sun sun = sunCalc.getSunInfo(tDate, 53.524695, -2.4, 0.0, true, AMSTERDAM_TIME_ZONE, Locale.ROOT);
+        Sun sun = Objects.requireNonNull(sunCalc).getSunInfo(tDate, 53.524695, -2.4, 0.0, true, AMSTERDAM_TIME_ZONE,
+                Locale.ROOT);
         assertEquals(SunPhaseName.SUN_RISE, sun.getPhase().getName());
     }
 
@@ -416,7 +422,8 @@ public class SunCalcTest {
         TimeZone tZone = TimeZone.getTimeZone("Europe/London");
         Calendar tDate = SunCalcTest.newCalendar(2020, Calendar.MAY, 13, 5, 18, tZone);
 
-        Sun sun = sunCalc.getSunInfo(tDate, 53.524695, -2.4, 0.0, true, AMSTERDAM_TIME_ZONE, Locale.ROOT);
+        Sun sun = Objects.requireNonNull(sunCalc).getSunInfo(tDate, 53.524695, -2.4, 0.0, true, AMSTERDAM_TIME_ZONE,
+                Locale.ROOT);
         assertEquals(SunPhaseName.DAYLIGHT, sun.getPhase().getName());
     }
 
