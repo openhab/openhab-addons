@@ -104,6 +104,12 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
+      <groupId>org.bouncycastle</groupId>
+      <artifactId>bcutil-jdk18on</artifactId>
+      <version>1.83</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
       <groupId>org.zeromq</groupId>
       <artifactId>curve25519-java</artifactId>
       <version>0.1.0</version>
