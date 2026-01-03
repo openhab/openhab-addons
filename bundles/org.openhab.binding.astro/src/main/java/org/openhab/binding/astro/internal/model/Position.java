@@ -12,7 +12,10 @@
  */
 package org.openhab.binding.astro.internal.model;
 
+import javax.measure.quantity.Angle;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.astro.internal.util.MathUtils;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
@@ -62,12 +65,17 @@ public class Position {
     /**
      * Returns the azimuth.
      */
+<<<<<<< Upstream, based on main
     public State getAzimuth() {
 <<<<<<< Upstream, based on main
         return Double.isNaN(azimuth) ? UnDefType.UNDEF : new QuantityType<>(azimuth, Units.DEGREE_ANGLE);
 =======
         return Double.isNaN(azimuth) ? UnDefType.NULL : new QuantityType<>(azimuth, Units.DEGREE_ANGLE);
 >>>>>>> 48a7069 Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added unit tests for eclipses
+=======
+    public @Nullable QuantityType<Angle> getAzimuth() {
+        return Double.isNaN(azimuth) ? null : new QuantityType<>(azimuth, Units.DEGREE_ANGLE);
+>>>>>>> 0c5383c Reverting contract modification in Action. lspiel code review adressed.
     }
 
     public double getAzimuthAsDouble() {
@@ -77,12 +85,17 @@ public class Position {
     /**
      * Returns the elevation.
      */
+<<<<<<< Upstream, based on main
     public State getElevation() {
 <<<<<<< Upstream, based on main
         return Double.isNaN(elevation) ? UnDefType.UNDEF : new QuantityType<>(elevation, Units.DEGREE_ANGLE);
 =======
         return Double.isNaN(elevation) ? UnDefType.NULL : new QuantityType<>(elevation, Units.DEGREE_ANGLE);
 >>>>>>> 48a7069 Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added unit tests for eclipses
+=======
+    public @Nullable QuantityType<Angle> getElevation() {
+        return Double.isNaN(elevation) ? null : new QuantityType<>(elevation, Units.DEGREE_ANGLE);
+>>>>>>> 0c5383c Reverting contract modification in Action. lspiel code review adressed.
     }
 
     public double getElevationAsDouble() {

@@ -39,6 +39,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import javax.measure.quantity.Angle;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.astro.internal.AstroBindingConstants;
@@ -53,11 +55,15 @@ import org.openhab.binding.astro.internal.util.DateTimeUtils;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TimeZoneProvider;
 <<<<<<< Upstream, based on main
+<<<<<<< Upstream, based on main
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.StringType;
 =======
 >>>>>>> 48a7069 Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added unit tests for eclipses
+=======
+import org.openhab.core.library.types.QuantityType;
+>>>>>>> 0c5383c Reverting contract modification in Action. lspiel code review adressed.
 import org.openhab.core.scheduler.CronScheduler;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -66,11 +72,14 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
+<<<<<<< Upstream, based on main
 import org.openhab.core.types.State;
 <<<<<<< Upstream, based on main
 import org.openhab.core.types.UnDefType;
 =======
 >>>>>>> 48a7069 Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added unit tests for eclipses
+=======
+>>>>>>> 0c5383c Reverting contract modification in Action. lspiel code review adressed.
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -500,11 +509,11 @@ public abstract class AstroThingHandler extends BaseThingHandler {
 
     public abstract Position getPositionAt(ZonedDateTime date);
 
-    public State getAzimuth(ZonedDateTime date) {
+    public @Nullable QuantityType<Angle> getAzimuth(ZonedDateTime date) {
         return getPositionAt(date).getAzimuth();
     }
 
-    public State getElevation(ZonedDateTime date) {
+    public @Nullable QuantityType<Angle> getElevation(ZonedDateTime date) {
         return getPositionAt(date).getElevation();
     }
 
