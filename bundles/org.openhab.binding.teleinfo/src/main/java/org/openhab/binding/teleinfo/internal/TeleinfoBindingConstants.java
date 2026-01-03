@@ -33,6 +33,7 @@ public class TeleinfoBindingConstants {
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_SERIAL_CONTROLLER = new ThingTypeUID(BINDING_ID, "serialcontroller");
+    public static final ThingTypeUID THING_TYPE_D2L_CONTROLLER = new ThingTypeUID(BINDING_ID, "d2lcontroller");
     public static final String THING_SERIAL_CONTROLLER_CHANNEL_INVALID_FRAME_COUNTER = "invalidFrameCounter";
 
     // List of commons channel ids
@@ -178,9 +179,48 @@ public class TeleinfoBindingConstants {
     public static final String CHANNEL_LSM_UMOY2_DATE = "threePhasedLSMGroup#umoy2Date";
     public static final String CHANNEL_LSM_UMOY3_DATE = "threePhasedLSMGroup#umoy3Date";
 
+    public static final String CHANNEL_RELAIS = "commonLSMGroup#relais";
+
+    public static final String CHANNEL_PJOURF_IDX = "commonLSMGroup#pjourf";
+    public static final String CHANNEL_PPOINTE_IDX = "commonLSMGroup#ppointe";
+
+    public static final String CHANNEL_IRMS1F = "commonLSMGroup#irms1f";
+    public static final String CHANNEL_COSPHI = "commonLSMGroup#cosphi";
+    public static final String CHANNEL_SACTIVE = "commonLSMGroup#sactive";
+    public static final String CHANNEL_SREACTIVE = "commonLSMGroup#sreactive";
+
+    public static final String CHANNEL_CONTACT_SEC = "commonLSMGroup#contact-sec";
+    public static final String CHANNEL_CACHE = "commonLSMGroup#cache";
+    public static final String CHANNEL_CUT_OFF = "commonLSMGroup#cut-off";
+    public static final String CHANNEL_OVER_VOLTAGE = "commonLSMGroup#over-voltage";
+    public static final String CHANNEL_EXCEEDING_POWER = "commonLSMGroup#exceeding-power";
+    public static final String CHANNEL_FUNCTION = "commonLSMGroup#function";
+    public static final String CHANNEL_DIRECTION = "commonLSMGroup#direction";
+    public static final String CHANNEL_SUPPLIER_RATE = "commonLSMGroup#supplier-rate";
+    public static final String CHANNEL_DISTRIBUTOR_RATE = "commonLSMGroup#distributor-rate";
+    public static final String CHANNEL_CLOCK = "commonLSMGroup#clock";
+    public static final String CHANNEL_PLC = "commonLSMGroup#plc";
+    public static final String CHANNEL_COM_OUTPUT = "commonLSMGroup#outputcom";
+    public static final String CHANNEL_PLC_STATE = "commonLSMGroup#plc-state";
+    public static final String CHANNEL_PLC_SYNCHRO = "commonLSMGroup#plc-synchro";
+    public static final String CHANNEL_TEMPO_TODAY = "commonLSMGroup#tempo-today";
+    public static final String CHANNEL_TEMPO_TOMORROW = "commonLSMGroup#tempo-tomorrow";
+    public static final String CHANNEL_MOVING_TIPS_ADVICE = "commonLSMGroup#moving-tips";
+    public static final String CHANNEL_MOVING_TIPS = "commonLSMGroup#advice-moving-tips";
+
     public static final String NOT_A_CHANNEL = "";
 
     public static final String THING_ELECTRICITY_METER_PROPERTY_ADCO = "adco";
+
+    public static final String THING_ELECTRICITY_METER_PROPERTY_IDD2L = "id-d2l";
+    public static final String THING_ELECTRICITY_METER_PROPERTY_TYPETRAME = "type-trame";
+    public static final String THING_ELECTRICITY_METER_PROPERTY_DATE_FIRMWARE = "date-firmware";
+    public static final String THING_ELECTRICITY_METER_PROPERTY_VTIC = "vtic";
+    public static final String THING_ELECTRICITY_METER_PROPERTY_MANUFACTURER = "meter-manufacturer";
+    public static final String THING_ELECTRICITY_METER_PROPERTY_TYPE = "meter-type";
+    public static final String THING_ELECTRICITY_METER_PROPERTY_CATEGORY = "meter-category";
+    public static final String THING_ELECTRICITY_METER_PROPERTY_MATRICULE = "meter-matricule";
+    public static final String THING_ELECTRICITY_METER_PROPERTY_MANUFACTURE_YEAR = "meter-manufacture-year";
 
     public static final ThingTypeUID THING_HC_CBEMM_ELECTRICITY_METER_TYPE_UID = new ThingTypeUID(BINDING_ID,
             "cbemm_hc_electricitymeter");
