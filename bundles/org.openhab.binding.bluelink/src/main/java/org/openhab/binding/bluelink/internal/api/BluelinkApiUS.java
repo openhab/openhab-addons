@@ -57,7 +57,8 @@ import com.google.gson.GsonBuilder;
 /**
  * US implementation of the {@link BluelinkApi}.
  * <p>
- * Implementation based on [hyundai_kia_connect_api](https://github.com/Hyundai-Kia-Connect/hyundai_kia_connect_api)
+ * Implementation based on
+ * <a href="https://github.com/Hyundai-Kia-Connect/hyundai_kia_connect_api">hyundai_kia_connect_api</a>.
  *
  * @author Marcus Better - Initial contribution
  */
