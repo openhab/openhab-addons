@@ -45,6 +45,7 @@ public final class MockApiData {
 
     public static final String US_ENROLLMENT_RESPONSE;
     public static final String US_VEHICLE_STATUS_RESPONSE;
+    public static final String EU_VEHICLES_RESPONSE;
     public static final String EU_VEHICLE_STATUS_RESPONSE;
     public static final String TEST_USERNAME = "test@example.com";
     public static final String TEST_PASSWORD = "testpassword";
@@ -54,6 +55,7 @@ public final class MockApiData {
         try {
             US_ENROLLMENT_RESPONSE = loadResource("/us/enrollment-details.json");
             US_VEHICLE_STATUS_RESPONSE = loadResource("/us/vehicle-status.json");
+            EU_VEHICLES_RESPONSE = loadResource("/eu/vehicles.json");
             EU_VEHICLE_STATUS_RESPONSE = loadResource("/eu/vehicle-status.json");
         } catch (final IOException e) {
             throw new UncheckedIOException(e);

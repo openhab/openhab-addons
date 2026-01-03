@@ -1,0 +1,29 @@
+{
+  "retCode" : "S",
+  "resCode" : "0000",
+  "resMsg" : {
+    "vehicles" : [ {
+      "vin" : "VIN1234",
+      "vehicleId" : "aa6c0ca6-48eb-430c-9eea-902bb6cd281c",
+      "vehicleName" : "IONIQ 5",
+      "type" : "EV",
+      "tmuNum" : "-",
+      "nickname" : "Florian's IONIQ 5",
+      "year" : "2022",
+      "master" : true,
+      "carShare" : 0,
+      "regDate" : "2022-10-06 20:11:05.588",
+      "detailInfo" : {
+        "inColor" : "NNB",
+        "outColor" : "S5K",
+        "prodCarmdlCd" : "GI",
+        "saleCarmdlCd" : "GI",
+        "bodyType" : "2",
+        "saleCarmdlEnNm" : "IONIQ 5"
+      },
+      "protocolType" : 0,
+      "ccuCCS2ProtocolSupport" : 0
+    } ]
+  },
+  "msgId" : "efc70921-7128-4b41-b6a9-8cfa8fe6a642"
+}
