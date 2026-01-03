@@ -67,7 +67,7 @@ public class BluelinkAccountHandler extends BaseBridgeHandler {
     private volatile @Nullable BluelinkApi api;
     private volatile @Nullable ScheduledFuture<?> loginTask;
 
-    private boolean supportsActions = false;
+    private boolean supportsControlActions = false;
 
     public BluelinkAccountHandler(final Bridge bridge, final HttpClient httpClient,
             final TimeZoneProvider timeZoneProvider, final LocaleProvider localeProvider) {
@@ -119,7 +119,7 @@ public class BluelinkAccountHandler extends BaseBridgeHandler {
                             "@text/account-handler.initialize.missing-credentials");
                     yield null;
                 }
-                supportsActions = true;
+                supportsControlActions = true;
                 final String baseUrl = config.apiBaseUrl;
                 if (baseUrl != null && !baseUrl.isBlank()) {
                     yield new BluelinkApiUS(httpClient, baseUrl, timeZoneProvider, username, password, config.pin);
@@ -132,8 +132,8 @@ public class BluelinkAccountHandler extends BaseBridgeHandler {
         loginTask = scheduler.schedule(this::login, 0, TimeUnit.MILLISECONDS);
     }
 
-    public boolean supportsActions() {
-        return supportsActions;
+    public boolean supportsControlActions() {
+        return supportsControlActions;
     }
 
     private void login() {

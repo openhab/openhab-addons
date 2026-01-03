@@ -106,8 +106,12 @@ public class BluelinkVehicleHandler extends BaseThingHandler {
         initTask = scheduler.schedule(() -> loadVehicle(vin), 0, TimeUnit.MILLISECONDS);
 
         final var bridgeHnd = getBridgeHandler();
-        if (bridgeHnd != null && bridgeHnd.supportsActions()) {
-            thingHandlerFactory.registerService(this, VehicleActions.class);
+        if (bridgeHnd != null) {
+            if (bridgeHnd.supportsControlActions()) {
+                thingHandlerFactory.registerService(this, VehicleControlActions.class);
+            } else {
+                thingHandlerFactory.registerService(this, BaseVehicleActions.class);
+            }
         }
     }
 
