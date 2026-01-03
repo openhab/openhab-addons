@@ -134,6 +134,10 @@ public class Clip2ThingHandler extends BaseThingHandler {
     private static final int FLAG_SCENE_ADD = 16;
     private static final int FLAG_SCENE_DELETE = 32;
 
+    // smart chime devices use write-only volume and duration channels, so these are their default values
+    private static final PercentType DEFAULT_SOUND_VOLUME = new PercentType(50);
+    private static final QuantityType<?> DEFAULT_ALARM_DURATION = QuantityType.valueOf(3, Units.SECOND);
+
     /**
      * A map of service Resources whose state contributes to the overall state of this thing. It is a map between the
      * resource ID (string) and a Resource object containing the last known state. e.g. a DEVICE thing may support a
@@ -247,8 +251,19 @@ public class Clip2ThingHandler extends BaseThingHandler {
     private void addSupportedChannel(String channelId) {
         if (!disposing && !updateDependenciesDone) {
             synchronized (supportedChannelIdSet) {
-                logger.debug("{} -> addSupportedChannel() '{}' added to supported channel set", resourceId, channelId);
-                supportedChannelIdSet.add(channelId);
+                if (supportedChannelIdSet.add(channelId)) {
+                    logger.debug("{} -> addSupportedChannel() '{}' added to supported channel set", resourceId,
+                            channelId);
+                    switch (channelId) { // set speaker write only channel default values
+                        case CHANNEL_2_VOLUME:
+                            updateState(channelId, DEFAULT_SOUND_VOLUME);
+                            break;
+                        case CHANNEL_2_DURATION:
+                            updateState(channelId, DEFAULT_ALARM_DURATION);
+                            break;
+                        default:
+                    }
+                }
                 if (DYNAMIC_CHANNELS.contains(channelId)) {
                     clearDynamicsChannel();
                 }
@@ -487,7 +502,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 alarmDuration = thing.getChannel(CHANNEL_2_DURATION) instanceof Channel channel2
                         && getItemState(channel2.getUID(), QuantityType.class) instanceof QuantityType<?> quantity
                                 ? quantity
-                                : QuantityType.valueOf(1, Units.SECOND); // default 1 second
+                                : DEFAULT_ALARM_DURATION;
                 // fall through
 
             case CHANNEL_2_ALERT_SOUND:
@@ -498,10 +513,10 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 if (command instanceof StringType stringCommand) {
                     chimeType = chimeType != null ? chimeType : ChimeType.CHIME;
                     SoundValue soundType = SoundValue.of(stringCommand.toString());
-                    PercentType volume = thing.getChannel(CHANNEL_2_VOLUME) instanceof Channel chan
+                    PercentType soundVolume = thing.getChannel(CHANNEL_2_VOLUME) instanceof Channel chan
                             && getItemState(chan.getUID(), PercentType.class) instanceof PercentType level ? level
-                                    : new PercentType(50); // default 50%
-                    putResource = new Resource(ResourceType.SPEAKER).setSound(chimeType, soundType, volume,
+                                    : DEFAULT_SOUND_VOLUME;
+                    putResource = new Resource(ResourceType.SPEAKER).setSound(chimeType, soundType, soundVolume,
                             alarmDuration);
                 }
                 break;

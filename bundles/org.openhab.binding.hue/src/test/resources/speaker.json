@@ -1,11 +1,10 @@
 {
-	"errors": [
-	],
+	"errors": [],
 	"data": [
 		{
-			"id": "42863429-e22a-4c09-8495-7b79433acb3f",
+			"id": "31d70cf5-fd2b-489f-a9f2-78c7b82e5109",
 			"owner": {
-				"rid": "408645cf-eb3d-423a-a70f-3bd0d6312af0",
+				"rid": "b8010fa9-808d-42bc-a3e1-a1a93bd4f89c",
 				"rtype": "device"
 			},
 			"alarm": {
@@ -33,15 +32,7 @@
 					"hue_default",
 					"sonar",
 					"swing",
-					"bright",
-					"glow",
-					"bounce",
-					"reveal",
-					"welcome",
-					"bright_modern",
-					"fairy",
-					"galaxy",
-					"echo"
+					"bright"
 				],
 				"status": {
 					"sound": "no_sound",
@@ -57,14 +48,6 @@
 						"sonar",
 						"swing",
 						"bright",
-						"glow",
-						"bounce",
-						"reveal",
-						"welcome",
-						"bright_modern",
-						"fairy",
-						"galaxy",
-						"echo",
 						"no_sound"
 					]
 				}
