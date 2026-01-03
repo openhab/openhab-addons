@@ -93,6 +93,14 @@ public class Range {
         return cal.getTimeInMillis() >= matchStart && cal.getTimeInMillis() < matchEnd;
     }
 
+    @Override
+    public String toString() {
+        Calendar start = this.start;
+        Calendar end = this.end;
+        return new StringBuilder(70).append("Range [").append(start == null ? "undefined" : start.getTime())
+                .append(" -> ").append(end == null ? "undefined" : end.getTime()).append(']').toString();
+    }
+
     private static Comparator<@Nullable Calendar> nullSafeCalendarComparator = (c1, c2) -> {
         if (c1 == null) {
             return (c2 == null) ? 0 : -1;

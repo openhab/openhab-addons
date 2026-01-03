@@ -54,8 +54,15 @@ public interface Job extends SchedulerRunnable, Runnable {
     static void schedule(AstroThingHandler astroHandler, Job job, Calendar eventAt, TimeZone zone, Locale locale) {
         try {
             Calendar today = Calendar.getInstance(zone, locale);
-            if (isSameDay(eventAt, today) && isTimeGreaterEquals(eventAt, today)) {
+            boolean sameDay;
+            if ((sameDay = isSameDay(eventAt, today)) && isTimeGreaterEquals(eventAt, today)) {
                 astroHandler.schedule(job, eventAt);
+            } else if (LOGGER.isDebugEnabled()) {
+                if (sameDay) {
+                    LOGGER.debug("Not scheduling {} since it's in the past ({})", job, eventAt.getTime());
+                } else {
+                    LOGGER.debug("Not scheduling {} since it's at another date ({})", job, eventAt.getTime());
+                }
             }
         } catch (Exception ex) {
             LOGGER.error("{}", ex.getMessage(), ex);
@@ -171,7 +178,7 @@ public interface Job extends SchedulerRunnable, Runnable {
             return range;
         }
 
-        return new Range(truncateToSecond(applyConfig(start, config)), truncateToSecond(applyConfig(end, config)));
+        return new Range(applyConfig(start, config), applyConfig(end, config));
     }
 
     /**
