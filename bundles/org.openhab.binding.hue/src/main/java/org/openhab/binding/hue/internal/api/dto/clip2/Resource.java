@@ -1023,8 +1023,8 @@ public class Resource {
      * Get the speaker sound state for the given chime type.
      */
     public State getSoundState(ChimeType chimeType) {
-        return getSound(chimeType) instanceof Sound sound && sound.getSoundValue() instanceof SoundValue soundType
-                ? StringType.valueOf(soundType.name())
+        return getSound(chimeType) instanceof Sound sound && sound.getSoundValue() instanceof SoundValue soundValue
+                ? StringType.valueOf(soundValue.name())
                 : UnDefType.NULL;
     }
 
@@ -1063,9 +1063,9 @@ public class Resource {
     /**
      * Set the speaker sound type, volume and duration for the given chime type.
      */
-    public Resource setSound(ChimeType chimeType, @Nullable SoundValue soundType, @Nullable PercentType volume,
+    public Resource setSound(ChimeType chimeType, @Nullable SoundValue soundValue, @Nullable PercentType volume,
             @Nullable QuantityType<?> duration) {
-        Sound sound = soundType != null ? new Sound().setSoundValue(soundType).setVolume(volume) : null;
+        Sound sound = soundValue != null ? new Sound().setSoundValue(soundValue).setVolume(volume) : null;
         switch (chimeType) {
             case ALARM:
                 alarm = sound == null ? null : sound.setDuration(duration); // only alarm may set a duration

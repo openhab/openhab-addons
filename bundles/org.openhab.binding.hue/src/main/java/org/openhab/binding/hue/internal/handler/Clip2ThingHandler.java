@@ -512,11 +512,11 @@ public class Clip2ThingHandler extends BaseThingHandler {
             case CHANNEL_2_CHIME_SOUND:
                 if (command instanceof StringType stringCommand) {
                     chimeType = chimeType != null ? chimeType : ChimeType.CHIME;
-                    SoundValue soundType = SoundValue.of(stringCommand.toString());
+                    SoundValue soundValue = SoundValue.of(stringCommand.toString());
                     PercentType soundVolume = thing.getChannel(CHANNEL_2_VOLUME) instanceof Channel chan
                             && getItemState(chan.getUID(), PercentType.class) instanceof PercentType level ? level
                                     : DEFAULT_SOUND_VOLUME;
-                    putResource = new Resource(ResourceType.SPEAKER).setSound(chimeType, soundType, soundVolume,
+                    putResource = new Resource(ResourceType.SPEAKER).setSound(chimeType, soundValue, soundVolume,
                             alarmDuration);
                 }
                 break;
