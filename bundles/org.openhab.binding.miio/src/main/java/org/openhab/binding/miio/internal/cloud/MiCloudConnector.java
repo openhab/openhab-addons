@@ -17,6 +17,9 @@ import java.net.CookieStore;
 import java.net.HttpCookie;
 import java.net.MalformedURLException;
 import java.net.URI;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -25,6 +28,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Random;
 import java.util.TimeZone;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -82,7 +86,7 @@ public class MiCloudConnector {
 
     protected int loginFailedCounter = 0;
     protected HttpClient httpClient;
-    // private String capchaResponse = "";
+    private String captchaResponse = "";
     protected String sign = "";
     protected CloudLoginState loginState = CloudLoginState.INTIATING;
 
@@ -106,7 +110,7 @@ public class MiCloudConnector {
     // code":10012,"action":"","title":"","tips":"Onwettig verzoek","desc":"非法请求"}
     private final Logger logger = LoggerFactory.getLogger(MiCloudConnector.class);
 
-    static public String generateCliendId() {
+    static public String generateClientId() {
         return (new Random().ints(97, 122 + 1).limit(6)
                 .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append).toString());
     }
@@ -120,7 +124,7 @@ public class MiCloudConnector {
         this.userId = userId != null ? userId : "";
         this.serviceToken = serviceToken != null ? serviceToken : "";
         this.ssecurity = ssecurity != null ? ssecurity : "";
-        this.clientId = clientId != null ? clientId : generateCliendId();
+        this.clientId = clientId != null ? clientId : generateClientId();
         this.httpClient.setFollowRedirects(true);
         if (!checkCredentials()) {
             throw new MiCloudException("username or password can't be empty");
@@ -136,7 +140,7 @@ public class MiCloudConnector {
         if (!checkCredentials()) {
             throw new MiCloudException("username or password can't be empty");
         }
-        clientId = generateCliendId();
+        clientId = generateClientId();
     }
 
     void startClient() throws MiCloudException {
@@ -180,14 +184,13 @@ public class MiCloudConnector {
         return clientId;
     }
 
-    public String getMapUrl(String vacuumMap, String country) throws MiCloudException {
+    public Optional<String> getMapUrl(String vacuumMap, String country) throws MiCloudException {
         String url = getApiUrl(country) + "/home/getmapfileurl";
         Map<String, String> map = new HashMap<>();
         map.put("data", "{\"obj_name\":\"" + vacuumMap + "\"}");
-        String mapResponse = request(url, map);
-        logger.trace("Response: {}", mapResponse);
-        String errorMsg = "";
         try {
+            String mapResponse = request(url, map);
+            logger.trace("Response: {}", mapResponse);
             JsonElement response = JsonParser.parseString(mapResponse);
             if (response.isJsonObject()) {
                 logger.debug("Received  JSON message {}", response);
@@ -195,21 +198,20 @@ public class MiCloudConnector {
                         && response.getAsJsonObject().get("result").isJsonObject()) {
                     JsonObject jo = response.getAsJsonObject().get("result").getAsJsonObject();
                     if (jo.has("url")) {
-                        return jo.get("url").getAsString();
+                        return Optional.of(jo.get("url").getAsString());
                     } else {
-                        errorMsg = "Could not get url";
+                        throw new MiCloudException("Could not get url from response");
                     }
                 } else {
-                    errorMsg = "Could not get result";
+                    throw new MiCloudException("Could not get result from response");
                 }
             } else {
-                errorMsg = "Received message is invalid JSON";
+                throw new MiCloudException("Received message is invalid JSON");
             }
-        } catch (ClassCastException | IllegalStateException e) {
-            errorMsg = "Received message could not be parsed";
+        } catch (JsonParseException | ClassCastException | IllegalStateException e) {
+            logger.debug("Error parsing map URL response: {}", e.getMessage());
+            throw new MiCloudException("Received message could not be parsed", e);
         }
-        logger.debug("{}: {}", errorMsg, mapResponse);
-        return "";
     }
 
     public String getDeviceStatus(String device, String country) throws MiCloudException {
@@ -254,9 +256,9 @@ public class MiCloudConnector {
     }
 
     public List<CloudDeviceDTO> getDevices(String country) {
-        final String response = getDeviceString(country);
         List<CloudDeviceDTO> devicesList = new ArrayList<>();
         try {
+            final String response = getDeviceString(country);
             final JsonElement resp = JsonParser.parseString(response);
             if (resp.isJsonObject()) {
                 final JsonObject jor = resp.getAsJsonObject();
@@ -275,6 +277,9 @@ public class MiCloudConnector {
             } else {
                 logger.debug("Response is not a json object: '{}'", response);
             }
+        } catch (MiCloudException e) {
+            logger.info("{}", e.getMessage());
+            loginFailedCounter++;
         } catch (JsonSyntaxException | IllegalStateException | ClassCastException e) {
             loginFailedCounter++;
             logger.info("Error while parsing devices: {}", e.getMessage());
@@ -282,10 +287,10 @@ public class MiCloudConnector {
         return devicesList;
     }
 
-    public String getDeviceString(String country) {
-        String resp;
+    public String getDeviceString(String country) throws MiCloudException {
         try {
-            resp = request("/home/device_list_page", country, "{\"getVirtualModel\":true,\"getHuamiDevices\":1}");
+            String resp = request("/home/device_list_page", country,
+                    "{\"getVirtualModel\":true,\"getHuamiDevices\":1}");
             logger.trace("Get devices response: {}", resp);
             if (resp.length() > 2) {
                 CloudUtil.saveDeviceInfoFile(resp, country, logger);
@@ -295,7 +300,7 @@ public class MiCloudConnector {
             logger.info("{}", e.getMessage());
             loginFailedCounter++;
         }
-        return "";
+        throw new MiCloudException("Empty device list response");
     }
 
     public String request(String urlPart, String country, String params) throws MiCloudException {
@@ -367,14 +372,16 @@ public class MiCloudConnector {
             serviceToken = "";
             logger.debug("Error while executing request to {} :{}", url, e.getMessage());
             loginFailedCounter++;
+            throw new MiCloudException("Error while executing request: " + e.getMessage(), e);
         } catch (InterruptedException | TimeoutException | ExecutionException | IOException e) {
             logger.debug("Error while executing request to {} :{}", url, e.getMessage());
             loginFailedCounter++;
+            throw new MiCloudException("Error while executing request: " + e.getMessage(), e);
         } catch (MiIoCryptoException e) {
             logger.debug("Error while decrypting response of request to {} :{}", url, e.getMessage(), e);
             loginFailedCounter++;
+            throw new MiCloudException("Error decrypting response: " + e.getMessage(), e);
         }
-        return "";
     }
 
     private void addCookie(CookieStore cookieStore, String name, String value, String domain) {
@@ -384,13 +391,49 @@ public class MiCloudConnector {
         cookieStore.add(URI.create("https://" + domain), cookie);
     }
 
+    protected byte[] fetchImageBytes(String url, int timeoutSeconds) throws MiCloudException {
+        try {
+            Request request = httpClient.newRequest(url).agent(USERAGENT).method("GET").timeout(timeoutSeconds,
+                    TimeUnit.SECONDS);
+            final ContentResponse response = request.send();
+            if (response.getStatus() >= HttpStatus.BAD_REQUEST_400) {
+                throw new MiCloudException("Failed to fetch image from " + url + " status=" + response.getStatus());
+            }
+            return response.getContent();
+        } catch (InterruptedException | TimeoutException | ExecutionException e) {
+            throw new MiCloudException("Error fetching image from " + url + ": " + e.getMessage(), e);
+        }
+    }
+
+    protected Path saveBytesToTempFile(byte[] content, String prefix, String suffix) throws MiCloudException {
+        try {
+            Path tmp = Files.createTempFile(prefix, suffix == null ? ".img" : suffix);
+            Files.write(tmp, content, StandardOpenOption.WRITE);
+            return tmp;
+        } catch (IOException e) {
+            throw new MiCloudException("Error writing temporary image file: " + e.getMessage(), e);
+        }
+    }
+
+    protected byte[] fetchAndInformImage(String url, int timeoutSeconds, String tempPrefix) throws MiCloudException {
+        byte[] content = fetchImageBytes(url, timeoutSeconds);
+        try {
+            Path path = saveBytesToTempFile(content, tempPrefix == null ? "miio-img-" : tempPrefix, ".jpg");
+            logger.info("Saved image to {} -> {} bytes", path.toAbsolutePath(), content.length);
+        } catch (MiCloudException e) {
+            logger.debug("Could not save image to temp file: {}", e.getMessage());
+        }
+        informImageListeners(content);
+        return content;
+    }
+
     public synchronized boolean login() {
         logger.info(" client Id={}", clientId);
 
         return login("");
     }
 
-    public synchronized boolean login(String capchaResponse) {
+    public synchronized boolean login(String captchaResponse) {
         if (!checkCredentials()) {
             return false;
         }
@@ -400,7 +443,7 @@ public class MiCloudConnector {
         logger.debug("Xiaomi cloud login with userid {}", username);
         /*
          * try {
-         * // if (loginRequest(capchaResponse)) {
+         * // if (loginRequest(captchaResponse)) {
          * // loginFailedCounter = 0;
          * // } else {
          * // loginFailedCounter++;

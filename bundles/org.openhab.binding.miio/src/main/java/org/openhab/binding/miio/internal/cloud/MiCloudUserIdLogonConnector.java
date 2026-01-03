@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,13 +12,9 @@
  */
 package org.openhab.binding.miio.internal.cloud;
 
-import java.io.IOException;
 import java.net.CookieStore;
 import java.net.HttpCookie;
 import java.net.MalformedURLException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -43,6 +39,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
@@ -54,6 +51,8 @@ import com.google.gson.JsonSyntaxException;
  */
 @NonNullByDefault
 public class MiCloudUserIdLogonConnector extends MiCloudConnector {
+    private static final String BROWSER_USERAGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:140.0) Gecko/20100101 Firefox/140.0";
+
     private final Logger logger = LoggerFactory.getLogger(MiCloudUserIdLogonConnector.class);
     private @Nullable Request fa;
 
@@ -70,13 +69,12 @@ public class MiCloudUserIdLogonConnector extends MiCloudConnector {
 
     @Override
     public synchronized boolean login() {
-        logger.info(" client Id={}", clientId);
-
+        logger.info("client Id={}", clientId);
         return login("");
     }
 
     @Override
-    public synchronized boolean login(String capchaResponse) {
+    public synchronized boolean login(String captchaResponse) {
         if (!checkCredentials()) {
             return false;
         }
@@ -85,7 +83,7 @@ public class MiCloudUserIdLogonConnector extends MiCloudConnector {
         }
         logger.debug("Xiaomi cloud login with userid {}", username);
         try {
-            if (loginRequest(capchaResponse)) {
+            if (loginRequest(captchaResponse)) {
                 loginFailedCounter = 0;
             } else {
                 loginFailedCounter++;
@@ -101,7 +99,7 @@ public class MiCloudUserIdLogonConnector extends MiCloudConnector {
         return true;
     }
 
-    protected boolean loginRequest(String capchaResponse) throws MiCloudException {
+    protected boolean loginRequest(String captchaResponse) throws MiCloudException {
         try {
             startClient();
 
@@ -109,7 +107,7 @@ public class MiCloudUserIdLogonConnector extends MiCloudConnector {
             String location;
             if (!sign.startsWith("http")) {
                 this.sign = sign;
-                location = loginStep2(sign, capchaResponse);
+                location = loginStep2(sign, captchaResponse);
             } else {
                 location = sign; // seems we already have login location
             }
@@ -135,47 +133,47 @@ public class MiCloudUserIdLogonConnector extends MiCloudConnector {
     }
 
     private String loginStep1() throws InterruptedException, TimeoutException, ExecutionException, MiCloudException {
-        final ContentResponse responseStep1;
-
         logger.trace("Xiaomi Login step 1");
         String url = "https://account.xiaomi.com/pass/serviceLogin?sid=xiaomiio&_json=true";
         Request request = httpClient.newRequest(url).timeout(REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS);
         request.agent(USERAGENT);
         request.header(HttpHeader.CONTENT_TYPE, "application/x-www-form-urlencoded");
-        request.cookie(new HttpCookie("userId", this.userId.length() > 0 ? this.userId : this.username));
+        request.cookie(new HttpCookie("userId", !this.userId.isEmpty() ? this.userId : this.username));
 
-        responseStep1 = request.send();
+        final ContentResponse responseStep1 = request.send();
         final String content = responseStep1.getContentAsString();
         logger.trace("Xiaomi Login step 1 content response= {}", content);
         logger.trace("Xiaomi Login step 1 response = {}", responseStep1);
+
         try {
             JsonElement resp = JsonParser.parseString(CloudUtil.parseJson(content));
             CloudLogin1DTO jsonResp = GSON.fromJson(resp, CloudLogin1DTO.class);
-            final String sign = jsonResp != null ? jsonResp.getSign() : null;
-            if (sign != null && !sign.isBlank()) {
+
+            if (jsonResp == null) {
+                throw new MiCloudException("Xiaomi Login step 1: Failed to parse response");
+            }
+
+            String sign = jsonResp.getSign();
+            if (!sign.isEmpty()) {
                 logger.trace("Xiaomi Login step 1 sign = {}", sign);
                 return sign;
             } else {
                 logger.debug("Xiaomi Login _sign missing. Maybe still has login cookie.");
-                return "";
+                throw new MiCloudException("Xiaomi Login _sign missing. Maybe still has login cookie.");
             }
         } catch (JsonParseException | IllegalStateException | ClassCastException e) {
             throw new MiCloudException("Error getting logon sign. Cannot parse response: " + e.getMessage(), e);
         }
     }
 
-    private String loginStep2(String sign, String capchaResponse) throws MiIoCryptoException, InterruptedException,
+    private String loginStep2(String sign, String captchaResponse) throws MiIoCryptoException, InterruptedException,
             TimeoutException, ExecutionException, MiCloudException, JsonSyntaxException, JsonParseException {
-        String passToken;
-        String cUserId;
-
         logger.trace("Xiaomi Login step 2");
         String url = "https://account.xiaomi.com/pass/serviceLoginAuth2";
 
         Request request = httpClient.newRequest(url).timeout(REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS);
         request.agent(USERAGENT);
         request.method(HttpMethod.POST);
-        final ContentResponse responseStep2;
 
         Fields fields = new Fields();
         fields.put("sid", "xiaomiio");
@@ -186,17 +184,16 @@ public class MiCloudUserIdLogonConnector extends MiCloudConnector {
         if (!sign.isEmpty()) {
             fields.put("_sign", sign);
         }
-        if (!capchaResponse.isEmpty()) {
-            fields.put("captCode", capchaResponse);
-            logger.debug("Logon with capcha response {}", capchaResponse);
+        if (!captchaResponse.isEmpty()) {
+            fields.put("captCode", captchaResponse);
+            logger.debug("Logon with captcha response {}", captchaResponse);
         } else {
-            logger.debug("Logon step 2 without capcha response");
+            logger.debug("Logon step 2 without captcha response");
         }
-
         fields.put("_json", "true");
 
         request.content(new FormContentProvider(fields));
-        responseStep2 = request.send();
+        final ContentResponse responseStep2 = request.send();
 
         final String content2 = responseStep2.getContentAsString();
         logger.trace("Xiaomi login step 2 response = {}", responseStep2);
@@ -204,17 +201,23 @@ public class MiCloudUserIdLogonConnector extends MiCloudConnector {
 
         JsonElement resp2 = JsonParser.parseString(CloudUtil.parseJson(content2));
         CloudLoginDTO jsonResp = GSON.fromJson(resp2, CloudLoginDTO.class);
+
         if (jsonResp == null) {
             throw new MiCloudException("Error getting logon details from step 2: " + content2);
         }
+
+        // Extract fields using null-safe DTO getters
         ssecurity = jsonResp.getSsecurity();
         userId = jsonResp.getUserId();
-        cUserId = jsonResp.getcUserId();
-        passToken = jsonResp.getPassToken();
+        String cUserId = jsonResp.getcUserId();
+        String passToken = jsonResp.getPassToken();
         String location = jsonResp.getLocation();
         String code = jsonResp.getCode();
-        String capchaUrl = jsonResp.getCapchaUrl();
+        String captchaUrl = jsonResp.getCaptchaUrl();
         String callbackUrl = jsonResp.getCallback();
+        String notificationUrl = jsonResp.getNotificationUrl();
+        Integer securityStatus = jsonResp.getSecurityStatus();
+        Integer pwd = jsonResp.getPwd();
 
         logger.trace("Xiaomi login ssecurity = {}", ssecurity);
         logger.trace("Xiaomi login userId = {}", userId);
@@ -222,14 +225,15 @@ public class MiCloudUserIdLogonConnector extends MiCloudConnector {
         logger.trace("Xiaomi login passToken = {}", passToken);
         logger.trace("Xiaomi login location = {}", location);
         logger.trace("Xiaomi login code = {}", code);
-        logger.trace("Xiaomi login capcha URL = {}", capchaUrl);
+        logger.trace("Xiaomi login captcha URL = {}", captchaUrl);
         logger.trace("Xiaomi login callbackUrl = {}", callbackUrl);
+
         if ("87001".equals(code)) {
-            logger.debug("Xiaomi Cloud Step2 failed capcha: {}", CloudUtil.parseJson(content2));
+            logger.debug("Xiaomi Cloud Step2 failed captcha: {}", CloudUtil.parseJson(content2));
             updateLoginState(CloudLoginState.CAPTCHA_FAILED);
         }
 
-        if (jsonResp.getSecurityStatus() == null || 0 != jsonResp.getSecurityStatus()) {
+        if (securityStatus == null || securityStatus != 0) {
             logger.debug("Xiaomi Cloud Step2 response: {}", CloudUtil.parseJson(content2));
             logger.debug(
                     """
@@ -240,68 +244,60 @@ public class MiCloudUserIdLogonConnector extends MiCloudConnector {
                             In case of login issues check userId/password details are correct.
                             If login details are correct, try to logon using browser from the openHAB ip using the browser. Alternatively try to complete logon with above URL.\
                             """,
-                    jsonResp.getCode(), jsonResp.getSecurityStatus(), jsonResp.getPwd(), jsonResp.getLocation());
+                    code, securityStatus, pwd, location);
 
-            if (jsonResp.getNotificationUrl() != null && !jsonResp.getNotificationUrl().isEmpty()) {
-                logger.info("Click submit and get token. Then enter the token in OH:\r\n{} ",
-                        jsonResp.getNotificationUrl());
-                get2factory(jsonResp.getNotificationUrl());
+            if (!notificationUrl.isEmpty()) {
+                logger.info("Click submit and get token. Then enter the token in OH:\r\n{} ", notificationUrl);
+                get2factory(notificationUrl);
                 updateLoginState(CloudLoginState.AWAITING_2FA);
             }
-
         }
 
-        if (capchaUrl != null && !capchaUrl.isEmpty()) {
+        if (!captchaUrl.isEmpty()) {
             updateLoginState(CloudLoginState.AWAITING_CAPTCHA);
-            downloadCaptcha(capchaUrl);
+            downloadCaptcha(captchaUrl);
         }
 
         if (logger.isTraceEnabled()) {
             dumpCookies(url, false);
         }
+
         if (!location.isEmpty()) {
             return location;
         } else {
             if (loginState.equals(CloudLoginState.AWAITING_2FA) || loginState.equals(CloudLoginState.AWAITING_CAPTCHA)
                     || loginState.equals(CloudLoginState.CAPTCHA_FAILED)) {
-                logger.debug(" retry with new capcha/2fa");
-                throw new MiCloudException("Error getting logon location URL. Return code: " + code);
-            } else {
-                throw new MiCloudException("Error getting logon location URL. Return code: " + code);
+                logger.debug("Retry with new captcha/2fa");
             }
+            throw new MiCloudException("Error getting logon location URL. Return code: " + code);
         }
     }
 
     private void get2factory(String url) {
         try {
-            String agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:140.0) Gecko/20100101 Firefox/140.0";
             CookieStore cookieStore = httpClient.getCookieStore();
             httpClient.setCookieStore(new HttpCookieStore.Empty());
             logger.debug("Trying to request code from {}", url);
-            Request request = httpClient.newRequest(url).timeout(REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS);
-            // request.agent("Android-9.1.1-1.0.0-ONEPLUS A3010-136-" + AGENT_ID);
-            request.agent(agent);
-            request.method(HttpMethod.GET);
 
-            Fields stor = request.getParams();
+            Request request = httpClient.newRequest(url).timeout(REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS);
+            request.agent(BROWSER_USERAGENT);
+            request.method(HttpMethod.GET);
             debugRequest(request);
 
             String newurl = url.replace("authStart", "list");
-
             request = httpClient.newRequest(newurl).timeout(REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS);
-            request.agent(agent);
+            request.agent(BROWSER_USERAGENT);
             debugRequest(request);
 
             request = httpClient.newRequest("https://account.xiaomi.com/identity/auth/verifyEmail?_flag=8&_json=true")
                     .timeout(REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS);
-            request.agent(agent);
+            request.agent(BROWSER_USERAGENT);
             debugRequest(request);
 
             long ms = java.time.Instant.now().toEpochMilli();
-            String mailticket = "https://account.xiaomi.com/identity/auth/sendEmailTicket?_dc=" + String.valueOf(ms);
+            String mailticket = "https://account.xiaomi.com/identity/auth/sendEmailTicket?_dc=" + ms;
             request = httpClient.newRequest(mailticket).timeout(REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS);
-            request.agent("Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:140.0) Gecko/20100101 Firefox/140.0");
-
+            request.agent(BROWSER_USERAGENT);
             request.method(HttpMethod.POST);
 
             Fields fields = new Fields();
@@ -309,110 +305,121 @@ public class MiCloudUserIdLogonConnector extends MiCloudConnector {
             fields.put("icode", "");
             fields.put("_json", "true");
             request.content(new FormContentProvider(fields));
-
             debugRequest(request);
 
-            String verifyticket = "https://account.xiaomi.com/identity/auth/verifyEmail?_dc=" + String.valueOf(ms);
-
+            String verifyticket = "https://account.xiaomi.com/identity/auth/verifyEmail?_dc=" + ms;
             request = httpClient.newRequest(verifyticket).timeout(REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS);
             request.method(HttpMethod.POST);
             this.fa = request;
-            httpClient.setCookieStore(cookieStore);
 
+            httpClient.setCookieStore(cookieStore);
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
             logger.warn("Error requesting 2FA code: {}", e.getMessage(), e);
         }
     }
 
+    /**
+     * Processes the 2FA response code.
+     *
+     * @param faCode The 2FA code entered by the user
+     */
     public void FAResponse(String faCode) {
         try {
-            Fields fields = new Fields();
-            fields.put("_flag", "0");
-            fields.put("trust", "false");
-            fields.put("_json", "true");
-            fields.put("ticket", faCode.trim());
             Request fa = this.fa;
             if (fa == null) {
                 logger.warn("2FA request not initialized");
                 return;
             }
+
+            Fields fields = new Fields();
+            fields.put("_flag", "0");
+            fields.put("trust", "false");
+            fields.put("_json", "true");
+            fields.put("ticket", faCode.trim());
             fa.content(new FormContentProvider(fields));
+
             ContentResponse result = debugRequest(fa);
-            JsonElement resultJson = JsonParser.parseString(CloudUtil.parseJson(result.getContentAsString()));
-            String location = resultJson.getAsJsonObject().get("location").getAsString();
+            String resultContent = result.getContentAsString();
+            String jsonContent = CloudUtil.parseJson(resultContent);
+            JsonElement resultJson = JsonParser.parseString(jsonContent);
+
+            if (!resultJson.isJsonObject()) {
+                logger.warn("2FA response is not a valid JSON object: {}", resultContent);
+                return;
+            }
+
+            JsonObject jsonObject = resultJson.getAsJsonObject();
+            String location = CloudUtil.getJsonString(jsonObject, "location", "");
+
+            if (location.isEmpty()) {
+                String code = CloudUtil.getJsonString(jsonObject, "code", "");
+                String description = CloudUtil.getJsonString(jsonObject, "description", "");
+                logger.warn("2FA failed - code: {}, description: {}", code, description);
+                return;
+            }
 
             Request request = httpClient.newRequest(location).timeout(REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS);
             request.method(HttpMethod.POST);
             ContentResponse endresult = debugRequest(request);
 
-            HttpFields h = endresult.getHeaders();
+            HttpFields headers = endresult.getHeaders();
+            location = extractLocationFromHeaders(headers);
 
-            location = "";
-            for (HttpField header : h) {
-                if ("extension-pragma".equals(header.getName())) {
-                    logger.trace("end ss= {}", header.getValue());
-                }
-                if ("location".equals(header.getName())) {
-                    location = header.getValue();
-                    logger.trace("end ss= {}", header.getValue());
-                }
-            }
-
-            if (!location.isBlank()) {
+            if (!location.isEmpty()) {
                 final ContentResponse response = loginStep3(location);
-                logger.trace("Xiaomi login step 2 startus = {}", response.getStatus());
-                logger.trace("Xiaomi login step 2 response = {}", response);
-                logger.trace("Xiaomi login step 2 content = {}", response.toString());
-                logger.trace("Xiaomi login step 2 header = {}", response.getHeaders().toString());
-                logger.trace("Xiaomi login step 2 content = {}", response.getContentAsString());
+                logger.trace("Xiaomi login step 3 status = {}", response.getStatus());
+                logger.trace("Xiaomi login step 3 response = {}", response);
+                logger.trace("Xiaomi login step 3 header = {}", response.getHeaders().toString());
+                logger.trace("Xiaomi login step 3 content = {}", response.getContentAsString());
+            } else {
+                logger.warn("2FA completed but no redirect location found");
             }
-
         } catch (InterruptedException | TimeoutException | ExecutionException | MalformedURLException e) {
             logger.warn("Error in 2FA code: {}", e.getMessage(), e);
+        } catch (JsonParseException e) {
+            logger.warn("Error parsing 2FA response: {}", e.getMessage(), e);
         }
-
-        // Request request = httpClient.newRequest(cb).timeout(REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS);
-        // request.agent("Android-9.1.1-1.0.0-ONEPLUS A3010-136-" + AGENT_ID);
     }
 
-    protected void downloadCaptcha(String capchaURL) {
-        String imgUrl = capchaURL.startsWith("/") ? "https://account.xiaomi.com" + capchaURL : capchaURL;
-
-        if (!imgUrl.isEmpty() && imgUrl.startsWith("http")) {
-            logger.debug("Downloading captcha from: {}", imgUrl);
-
-            try {
-
-                // Request request = httpClient.newRequest(imgUrl).timeout(REQUEST_TIMEOUT_SECONDS,
-                // TimeUnit.SECONDS).agent(USERAGENT);
-                // request.agent(USERAGENT);
-                // final ContentResponse responseStep2 = request.send();
-
-                final ContentResponse responseStep2 = httpClient.newRequest(imgUrl)
-                        .timeout(REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS).agent(USERAGENT).send();
-                if (responseStep2 == null) {
-                    logger.warn("Error downloading capcha ");
-                    return;
-                }
-                logger.trace("Xiaomi login step 2 response = {}", responseStep2.getContentAsString());
-                // logger.trace("Xiaomi login step 2 content = {}", content2);
-                final byte[] content = responseStep2.getContent();
-                String fileDest = "capcha.jpg";
-                try {
-                    Path path = Paths.get(fileDest);
-                    logger.info("Saved to {} -> {} bytes", path.getFileName().toAbsolutePath(), content.length);
-                    Files.write(path, content);
-                } catch (IOException e) {
-                    logger.warn("Error writing {}: {}", fileDest, e.getMessage(), e);
-                }
-                informImageListeners(content);
-
-            } catch (InterruptedException | TimeoutException | ExecutionException e) {
-                logger.debug("Error while executing request to {} :{}", capchaURL, e.getMessage());
+    /**
+     * Extracts the location URL from HTTP response headers.
+     *
+     * @param headers The HTTP response headers
+     * @return The location URL or empty string if not found
+     */
+    private String extractLocationFromHeaders(HttpFields headers) {
+        for (HttpField header : headers) {
+            String headerName = header.getName();
+            if ("location".equalsIgnoreCase(headerName)) {
+                String value = header.getValue();
+                logger.trace("Found location header: {}", value);
+                return value != null ? value : "";
             }
-        } else {
-            logger.debug("Captcha URL wrong: {}", capchaURL);
+            if ("extension-pragma".equalsIgnoreCase(headerName)) {
+                logger.trace("Found extension-pragma header: {}", header.getValue());
+            }
+        }
+        return "";
+    }
 
+    /**
+     * Downloads and processes a captcha image.
+     *
+     * @param captchaURL The URL of the captcha image
+     */
+    protected void downloadCaptcha(String captchaURL) {
+        String imgUrl = captchaURL.startsWith("/") ? "https://account.xiaomi.com" + captchaURL : captchaURL;
+
+        if (imgUrl.isEmpty() || !imgUrl.startsWith("http")) {
+            logger.debug("Captcha URL invalid: {}", captchaURL);
+            return;
+        }
+
+        logger.debug("Downloading captcha from: {}", imgUrl);
+        try {
+            fetchAndInformImage(imgUrl, REQUEST_TIMEOUT_SECONDS, "miio-captcha-");
+        } catch (MiCloudException e) {
+            logger.debug("Error while downloading captcha: {}", e.getMessage());
         }
     }
 }

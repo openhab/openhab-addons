@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,9 +12,6 @@
  */
 package org.openhab.binding.miio.internal.cloud;
 
-import java.io.IOException;
-import java.nio.file.Paths;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
@@ -36,6 +33,7 @@ import com.google.gson.JsonObject;
 @NonNullByDefault
 public class MiCloudQRConnector extends MiCloudConnector {
     private static final int REQUEST_TIMEOUT_SECONDS = 120;
+    private static final int DEFAULT_SESSION_TIMEOUT_SECONDS = 300;
     private final Logger logger = LoggerFactory.getLogger(MiCloudQRConnector.class);
 
     public MiCloudQRConnector(String username, String password, HttpClient httpClient) throws MiCloudException {
@@ -48,7 +46,9 @@ public class MiCloudQRConnector extends MiCloudConnector {
         super(username, password, httpClient, clientId, userId, serviceToken, ssecurity);
     }
 
-    // Data class for holding login session data (QR code login)
+    /**
+     * Data class for holding login session data (QR code login)
+     */
     public static class LoginSessionData {
         public final String imageUrl;
         public final String loginUrl;
@@ -81,66 +81,55 @@ public class MiCloudQRConnector extends MiCloudConnector {
         logger.debug("Cloud login using QR code");
         try {
             LoginSessionData sessionData = startLoginSession();
-            if (sessionData != null) {
-                /// updateState(CHANNEL_QR_CODE, new RawType(sessionData.imageContent, "image/png"));
-
-                getQRImage(sessionData.imageUrl);
-                logger.info("Xiaomi QR code login: {}", sessionData.loginUrl);
-
-                // miIoScheduler.scheduleWithFixedDelay(() -> {
-                // try {
-                String location = checkSession(sessionData, null);
-                if (location != null && !location.isEmpty()) {
-                    this.sign = location;
-                    ContentResponse res = loginStep3(location);
-                    logger.debug("login step 3 response: {}: {}", res, res.getContentAsString());
-                    if (res.getStatus() == 200) {
-                        logger.info("Xiaomi QR code login successful");
-                        return true;
-                    } else {
-                        logger.warn("Failed to login to Xiaomi cloud, status code: {}", res.getStatus());
-                    }
-
-                } else {
-                    logger.warn("Failed to fetch service token, status code: {}", location);
-                }
+            if (sessionData == null) {
+                logger.warn("Failed to start QR code login session");
+                return false;
             }
 
+            getQRImage(sessionData.imageUrl);
+            logger.info("Xiaomi QR code login: {}", sessionData.loginUrl);
+
+            String location = checkSession(sessionData, null);
+            if (location == null || location.isEmpty()) {
+                logger.warn("Failed to fetch service token, location is empty");
+                return false;
+            }
+
+            this.sign = location;
+            ContentResponse res = loginStep3(location);
+            logger.debug("login step 3 response: {}: {}", res, res.getContentAsString());
+
+            if (res.getStatus() == 200) {
+                logger.info("Xiaomi QR code login successful");
+                return true;
+            } else {
+                logger.warn("Failed to login to Xiaomi cloud, status code: {}", res.getStatus());
+            }
         } catch (Exception e) {
             logger.warn("Error during Xiaomi QR code login", e);
         }
         return false;
     }
 
+    /**
+     * Fetches the QR code image from the given URL.
+     *
+     * @param url The URL of the QR code image
+     * @return The image bytes, or empty array if failed
+     */
     public byte[] getQRImage(String url) {
-        ContentResponse response;
         try {
-            response = httpClient.newRequest(url).header("User-Agent", USERAGENT).method("GET").send();
-            final byte[] content = response.getContent();
-
-            String fileDest = "capcha.jpg";
-            try {
-
-                fileDest = Paths.get(fileDest).toAbsolutePath().toString();
-                CloudUtil.writeBytesToFileNio(content, fileDest);
-                logger.info("Saved to {} -> {} bytes", fileDest, content.length);
-            } catch (IOException e) {
-                logger.warn("Error writing {}.\r\n{}", fileDest, e.getMessage(), e);
-            }
-            informImageListeners(content);
-
-            return content;
-
-        } catch (InterruptedException | TimeoutException | ExecutionException e) {
-            logger.warn("Error getting image: {}", e.getMessage(), e);
+            return fetchAndInformImage(url, REQUEST_TIMEOUT_SECONDS, "miio-qr-");
+        } catch (MiCloudException e) {
+            logger.warn("Error getting QR image: {}", e.getMessage());
+            return new byte[0];
         }
-        return new byte[0];
     }
 
     /**
      * Starts a QR code login session (step 1 of Xiaomi login)
      *
-     * @return LoginSessionData with QR code and session info
+     * @return LoginSessionData with QR code and session info, or null if failed
      */
     public @Nullable LoginSessionData startLoginSession() {
         logger.debug("Xiaomi login step 1 Starting QR code login session");
@@ -148,24 +137,40 @@ public class MiCloudQRConnector extends MiCloudConnector {
             String url = "https://account.xiaomi.com/longPolling/loginUrl";
             long now = System.currentTimeMillis();
 
-            Request request = httpClient.newRequest("https://google.com").timeout(REQUEST_TIMEOUT_SECONDS,
-                    TimeUnit.SECONDS);
-            logger.debug("Initial request to google.com: {}", request.send().getStatus());
+            // Initial request to establish connection
+            // Request request = httpClient.newRequest("https://google.com").timeout(REQUEST_TIMEOUT_SECONDS,
+            // TimeUnit.SECONDS);
+            // logger.debug("Initial request to google.com: {}", request.send().getStatus());
+
             ContentResponse response = httpClient.newRequest(url).param("_qrsize", "240")
                     .param("qs", "%3Fsid%3Dxiaomiio%26_json%3Dtrue").param("callback", "https://sts.api.io.mi.com/sts")
                     .param("_hasLogo", "false").param("sid", "xiaomiio").param("serviceParam", "")
                     .param("_locale", locale.toString()).param("_dc", String.valueOf(now)).method("GET")
                     .agent(USERAGENT).timeout(REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS).send();
+
             String text = response.getContentAsString();
             logger.debug("Xiaomi login step 1 login session request response code: {}", response.getStatus());
-            String json = CloudUtil.parseJson(text);
 
+            String json = CloudUtil.parseJson(text);
             logger.debug("Xiaomi login step 1 login session request response: {}", json);
-            JsonObject responseData = GSON.fromJson(json, com.google.gson.JsonObject.class);
-            String qr = responseData.get("qr").getAsString();
-            String loginUrl = responseData.get("loginUrl").getAsString();
-            String lp = responseData.get("lp").getAsString();
-            int timeout = responseData.get("timeout").getAsInt();
+
+            JsonObject responseData = GSON.fromJson(json, JsonObject.class);
+            if (responseData == null) {
+                logger.info("Xiaomi login step 1: Invalid JSON response");
+                return null;
+            }
+            String qr = CloudUtil.getJsonString(responseData, "qr", "");
+            String loginUrl = CloudUtil.getJsonString(responseData, "loginUrl", "");
+            String lp = CloudUtil.getJsonString(responseData, "lp", "");
+            int timeout = CloudUtil.getJsonInt(responseData, "timeout", DEFAULT_SESSION_TIMEOUT_SECONDS);
+
+            // Validate required fields
+            if (qr.isEmpty() || loginUrl.isEmpty() || lp.isEmpty()) {
+                logger.info("Xiaomi login step 1: Missing required fields in response - qr: {}, loginUrl: {}, lp: {}",
+                        !qr.isEmpty(), !loginUrl.isEmpty(), !lp.isEmpty());
+                return null;
+            }
+
             long expiresAt = System.currentTimeMillis() + timeout * 1000L;
             LoginSessionData sessionData = new LoginSessionData(qr, loginUrl, lp, expiresAt, timeout);
             logger.debug("Xiaomi login step 1 login: {}", sessionData);
@@ -195,118 +200,45 @@ public class MiCloudQRConnector extends MiCloudConnector {
             Request request = httpClient.newRequest(pollUrl).method("GET").timeout(
                     pollTimeoutMillis != null ? pollTimeoutMillis : 30 * REQUEST_TIMEOUT_SECONDS * 1000,
                     TimeUnit.MILLISECONDS);
+
             ContentResponse response = request.send();
             if (response.getStatus() != 200) {
+                logger.debug("Xiaomi login step 2: Non-200 response: {}", response.getStatus());
                 return null;
             }
+
             String json = response.getContentAsString().replace("&&&START&&&", "");
             JsonObject responseJson = GSON.fromJson(json, JsonObject.class);
-            this.userId = responseJson.get("userId").getAsString();
-            this.ssecurity = responseJson.get("ssecurity").getAsString();
-            String cuserId = responseJson.get("cUserId").getAsString();
-            String passToken = responseJson.get("passToken").getAsString();
-            String location = responseJson.get("location").getAsString();
-            String code = responseJson.get("code").getAsString();
+            if (responseJson == null) {
+                throw new MiCloudException("Invalid response during QR code login session check");
+            }
+
+            this.userId = CloudUtil.getJsonString(responseJson, "userId", "");
+            this.ssecurity = CloudUtil.getJsonString(responseJson, "ssecurity", "");
+            String cuserId = CloudUtil.getJsonString(responseJson, "cUserId", "");
+            String passToken = CloudUtil.getJsonString(responseJson, "passToken", "");
+            String location = CloudUtil.getJsonString(responseJson, "location", "");
+            String code = CloudUtil.getJsonString(responseJson, "code", "");
+
             logger.debug("Xiaomi login ssecurity: {}", this.ssecurity);
             logger.debug("Xiaomi login userId: {}", this.userId);
             logger.debug("Xiaomi login cUserId: {}", cuserId);
             logger.debug("Xiaomi login passToken: {}", passToken);
             logger.debug("Xiaomi login location: {}", location);
             logger.debug("Xiaomi login code: {}", code);
-            if (location == null || location.isEmpty()) {
+
+            if (location.isEmpty()) {
                 throw new MiCloudException("Error getting logon location URL. Return code: " + code);
             }
             return location;
         } catch (TimeoutException e) {
             logger.debug("Xiaomi login step 2 Long polling timed out");
             return null;
+        } catch (MiCloudException e) {
+            throw e;
         } catch (Exception e) {
             logger.debug("Xiaomi login step 2 Long polling requests failed: {}", e.getMessage());
             return null;
         }
     }
-
-    /**
-     * Checks the QR login session (long polling) and fetches login tokens if available.
-     *
-     * @param loginSessionData The session data from startLoginSession
-     * @param pollTimeoutMillis Optional poll timeout in milliseconds (null for default)
-     * @return The location URL if login is successful, null if still pending
-     * @throws MiCloudException if polling times out or fails
-     */
-    /*
-     * public @Nullable String checkSession(LoginSessionData loginSessionData, @Nullable Long pollTimeoutMillis) throws
-     * MiCloudException {
-     * logger.debug("Xiaomi login step 2 checking session");
-     * if (loginSessionData.expiresAt < System.currentTimeMillis()) {
-     * throw new MiCloudException("Long polling timed out");
-     * }
-     * try {
-     * String pollUrl = loginSessionData.longPollingUrl;
-     * Request request = httpClient.newRequest(pollUrl)
-     * .method("GET")
-     * .timeout(pollTimeoutMillis != null ? pollTimeoutMillis : REQUEST_TIMEOUT_SECONDS * 1000, TimeUnit.MILLISECONDS);
-     * ContentResponse response = request.send();
-     * if (response.getStatus() != 200) {
-     * return null;
-     * }
-     * String json = response.getContentAsString().replace("&&&START&&&", "");
-     * JsonObject responseJson = GSON.fromJson(json, JsonObject.class);
-     * this.userId = responseJson.get("userId").getAsString();
-     * this.ssecurity = responseJson.get("ssecurity").getAsString();
-     * String cuserId = responseJson.get("cUserId").getAsString();
-     * String passToken = responseJson.get("passToken").getAsString();
-     * String location = responseJson.get("location").getAsString();
-     * String code = responseJson.get("code").getAsString();
-     * logger.debug("Xiaomi login ssecurity: {}", this.ssecurity);
-     * logger.debug("Xiaomi login userId: {}", this.userId);
-     * logger.debug("Xiaomi login cUserId: {}", cuserId);
-     * logger.debug("Xiaomi login passToken: {}", passToken);
-     * logger.debug("Xiaomi login location: {}", location);
-     * logger.debug("Xiaomi login code: {}", code);
-     * if (location == null || location.isEmpty()) {
-     * throw new MiCloudException("Error getting logon location URL. Return code: " + code);
-     * }
-     * return location;
-     * } catch (TimeoutException e) {
-     * logger.debug("Xiaomi login step 2 Long polling timed out");
-     * return null;
-     * } catch (Exception e) {
-     * logger.debug("Xiaomi login step 2 Long polling requests failed: {}", e.getMessage());
-     * return null;
-     * }
-     * }
-     */
-    /**
-     * Fetches the service token by visiting the location URL (step 3 of QR login).
-     *
-     * @param location The URL to visit
-     * @return The ContentResponse from the request
-     * @throws MiCloudException if the request fails
-     */
-    /*
-     * public ContentResponse fetchServiceToken(String location) throws MiCloudException {
-     * logger.debug("Xiaomi login step 3 @ {}", location);
-     * try {
-     * Request request = httpClient.newRequest(location)
-     * .method("GET")
-     * .header("content-type", "application/x-www-form-urlencoded")
-     * .timeout(REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS);
-     * ContentResponse response = request.send();
-     * logger.debug("Xiaomi login step 3 content: {}", response.getContentAsString());
-     * logger.debug("Xiaomi login step 3 status code: {}", response.getStatus());
-     * // Try to extract serviceToken from cookies
-     * List<HttpCookie> cookies = response.getCookies();
-     * for (HttpCookie cookie : cookies) {
-     * if ("serviceToken".equals(cookie.getName())) {
-     * this.serviceToken = cookie.getValue();
-     * break;
-     * }
-     * }
-     * return response;
-     * } catch (Exception e) {
-     * throw new MiCloudException("Failed to fetch service token: " + e.getMessage(), e);
-     * }
-     * }
-     */
 }

@@ -9,7 +9,7 @@
 		<description>Cloud Logon Helper Thing supporting captcha and 2FA authentication</description>
 
 		<channels>
-			<channel id="captcha" typeId="captcha"/>
+			<channel id="logonimage" typeId="logonimage"/>
 			<channel id="captcharesponse" typeId="captcharesponse"/>
 			<channel id="twofa" typeId="twofa"/>
 		</channels>
@@ -74,10 +74,10 @@
 		</config-description>
 	</thing-type>
 
-	<channel-type id="captcha">
+	<channel-type id="logonimage">
 		<item-type>Image</item-type>
-		<label>Captcha Image</label>
-		<description>Enter the captcha value in the captcha response channel.</description>
+		<label>Logon/Captcha Image</label>
+		<description>Scan QR code for logon or Enter the captcha value in the captcha response channel.</description>
 		<category>settings</category>
 	</channel-type>
 

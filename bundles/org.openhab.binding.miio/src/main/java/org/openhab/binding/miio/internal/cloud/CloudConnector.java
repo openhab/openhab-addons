@@ -17,6 +17,7 @@ import static org.openhab.binding.miio.internal.MiIoBindingConstants.BINDING_ID;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
@@ -220,7 +221,7 @@ public class CloudConnector {
     public @Nullable RawType getMap(String mapId, String country) throws MiCloudException {
         logger.debug("Getting vacuum map {} from Xiaomi cloud server: '{}'", mapId, country);
         String mapCountry;
-        String mapUrl = "";
+        Optional<String> mapUrl = Optional.empty();
         final @Nullable MiCloudConnector cl = this.cloudConnector;
         if (cl == null || !isConnected()) {
             throw new MiCloudException("Cannot execute request. Cloud service not available");
@@ -239,12 +240,12 @@ public class CloudConnector {
             mapCountry = country.trim().toLowerCase();
             mapUrl = cl.getMapUrl(mapId, mapCountry);
         }
-        if (mapUrl.isBlank()) {
+        if (!mapUrl.isPresent() || mapUrl.get().isEmpty()) {
             logger.debug("Cannot download map data: Returned map URL is empty");
             return null;
         }
         try {
-            RawType mapData = HttpUtil.downloadData(mapUrl, null, false, -1);
+            RawType mapData = HttpUtil.downloadData(mapUrl.get(), null, false, -1);
             if (mapData != null) {
                 return mapData;
             } else {

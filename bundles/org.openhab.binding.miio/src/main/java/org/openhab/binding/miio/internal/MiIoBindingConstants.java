@@ -110,7 +110,7 @@ public final class MiIoBindingConstants {
     public static final String CHANNEL_HISTORY_RECORD = "cleaning#last_clean_record";
     public static final String CHANNEL_VACUUM_MAP = "cleaning#map";
 
-    public static final String CHANNEL_CAPTCHA = "captcha";
+    public static final String CHANNEL_LOGON_IMAGE = "logonimage";
     public static final String CHANNEL_CAPTCHA_RESPONSE = "captcharesponse";
     public static final String CHANNEL_TWOFA = "twofa";
 

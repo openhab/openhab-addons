@@ -38,6 +38,9 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.miio.internal.MiIoCryptoException;
 import org.slf4j.Logger;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+
 /**
  * The {@link CloudUtil} class is used for supporting functions for Xiaomi cloud access
  *
@@ -117,34 +120,6 @@ public class CloudUtil {
     }
 
     /**
-     * Generate signature for the request (Python equivalent).
-     *
-     * @param url the full request url. e.g.: http://api.xiaomi.com/getUser?id=123321
-     * @param signedNonce secret key for encryption (Base64 encoded).
-     * @param nonce
-     * @param params request params. This should be a Map.
-     * @return BASE64 encoded HMAC-SHA256 signature
-     * @throws MiIoCryptoException
-     */
-    /*
-     * REMOVED: not used
-     * public static String generateSignaturePy(String url, String signedNonce, String nonce, Map<String, String>
-     * params)
-     * throws MiIoCryptoException {
-     * String path = url.split("com", 2)[1];
-     * List<String> signatureParams = new ArrayList<>();
-     * signatureParams.add(path);
-     * signatureParams.add(signedNonce);
-     * signatureParams.add(nonce);
-     * for (Map.Entry<String, String> entry : params.entrySet()) {
-     * signatureParams.add(entry.getKey() + "=" + entry.getValue());
-     * }
-     * String signatureString = String.join("&", signatureParams);
-     * return CloudCrypto.hMacSha256Encode(Base64.getDecoder().decode(signedNonce),
-     * signatureString.getBytes(StandardCharsets.UTF_8));
-     * }
-     */
-    /**
      * Generate encrypted signature (SHA1, base64) for the request.
      *
      * @param url the full request url
@@ -153,8 +128,8 @@ public class CloudUtil {
      * @param params request params
      * @return BASE64 encoded SHA1 signature
      */
-    public static String generateEncSignature(String url, String method, String signedNonce,
-            Map<String, String> params) {
+    public static String generateEncSignature(String url, String method, String signedNonce, Map<String, String> params)
+            throws MiIoCryptoException {
         String path = url.split("com", 2)[1].replace("/app/", "/");
         List<String> signatureParams = new ArrayList<>();
         signatureParams.add(method.toUpperCase());
@@ -171,12 +146,21 @@ public class CloudUtil {
             byte[] digest = md.digest(signatureString.getBytes(StandardCharsets.UTF_8));
             return Base64.getEncoder().encodeToString(digest);
         } catch (java.security.NoSuchAlgorithmException e) {
-            throw new RuntimeException("SHA-1 algorithm not found", e);
+            throw new MiIoCryptoException("SHA-1 algorithm not found", e);
         }
     }
 
     /**
      * Generate encrypted parameters for the request.
+     *
+     * <p>
+     * This method creates a copy of the provided params map and performs the following
+     * steps:
+     * <ol>
+     * <li>Compute an rc4_hash__ value used by the Xiaomi API.</li>
+     * <li>Encrypt each parameter value using RC4 with the provided signedNonce.</li>
+     * <li>Add signature, ssecurity and _nonce fields required by the API.</li>
+     * </ol>
      *
      * @param url the full request url
      * @param method HTTP method (GET/POST)
@@ -184,8 +168,8 @@ public class CloudUtil {
      * @param nonce nonce value
      * @param params request params (will not be modified)
      * @param ssecurity ssecurity value
-     * @return Map with encrypted parameters and required fields
-     * @throws Exception
+     * @return Map with encrypted parameters and required fields (a new map)
+     * @throws Exception when encryption or signature generation fails
      */
     public static Map<String, String> generateEncParams(String url, String method, String signedNonce, String nonce,
             Map<String, String> params, String ssecurity) throws Exception {
@@ -205,6 +189,17 @@ public class CloudUtil {
         return encParams;
     }
 
+    /**
+     * Generate a time-dependent nonce value encoded as BASE64.
+     *
+     * <p>
+     * The generated value embeds a random long and a minute-resolution timestamp
+     * (milli / 60000). The result is safe for use with Xiaomi's signing API.
+     *
+     * @param milli current epoch milliseconds used to derive the timestamp portion
+     * @return BASE64 encoded nonce string
+     * @throws IOException never thrown in current implementation, kept for API compatibility
+     */
     public static String generateNonce(long milli) throws IOException {
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         DataOutputStream dataOutputStream = new DataOutputStream(output);
@@ -214,6 +209,16 @@ public class CloudUtil {
         return Base64.getEncoder().encodeToString(output.toByteArray());
     }
 
+    /**
+     * Produce a signed nonce by concatenating the decoded ssecret and decoded nonce,
+     * then computing the SHA-256 hash and returning it as BASE64.
+     *
+     * @param ssecret base64-encoded secret (ssecurity)
+     * @param nonce base64-encoded nonce (from {@link #generateNonce})
+     * @return BASE64 encoded SHA-256 hash of (ssecret || nonce)
+     * @throws IOException if base64 decoding fails (propagated for callers)
+     * @throws MiIoCryptoException on crypto related errors
+     */
     public static String signedNonce(String ssecret, String nonce) throws IOException, MiIoCryptoException {
         byte[] byteArrayS = Base64.getDecoder().decode(ssecret.getBytes(StandardCharsets.UTF_8));
         byte[] byteArrayN = Base64.getDecoder().decode(nonce.getBytes(StandardCharsets.UTF_8));
@@ -223,16 +228,80 @@ public class CloudUtil {
         return CloudCrypto.sha256Hash(output.toByteArray());
     }
 
+    /**
+     * Write a byte array to a filesystem path using NIO.
+     *
+     * @param bFile data to write
+     * @param fileDest destination path as string
+     * @throws IOException when writing to the filesystem fails
+     */
     public static void writeBytesToFileNio(byte[] bFile, String fileDest) throws IOException {
         Path path = Paths.get(fileDest);
         Files.write(path, bFile);
     }
 
+    /**
+     * Parse a Xiaomi JSON response that may contain a non-JSON prefix.
+     *
+     * <p>
+     * Xiaomi sometimes prefixes JSON payloads with the string "&&&START&&&".
+     * This helper removes that prefix when present. If the prefix is not found
+     * the method returns UNEXPECTED + original data to aid debugging.
+     *
+     * @param data raw response string
+     * @return cleaned JSON string or an UNEXPECTED-prefixed value
+     */
     public static String parseJson(String data) {
         if (data.contains("&&&START&&&")) {
             return data.replace("&&&START&&&", "");
         } else {
             return UNEXPECTED.concat(data);
+        }
+    }
+
+    /**
+     * Safely extracts a string value from a JsonObject.
+     *
+     * @param json The JsonObject to extract from
+     * @param key The key to look up
+     * @param defaultValue The default value if key is missing or null
+     * @return The string value or defaultValue if not available
+     */
+    public static String getJsonString(@Nullable JsonObject json, String key, String defaultValue) {
+        if (json == null || !json.has(key)) {
+            return defaultValue;
+        }
+        JsonElement element = json.get(key);
+        if (element == null || element.isJsonNull()) {
+            return defaultValue;
+        }
+        try {
+            return element.getAsString();
+        } catch (Exception e) {
+            return defaultValue;
+        }
+    }
+
+    /**
+     * Safely extracts an integer value from a JsonObject.
+     *
+     * @param json The JsonObject to extract from
+     * @param key The key to look up
+     * @param defaultValue The default value if key is missing or null
+     * @return The integer value or defaultValue if not available
+     */
+    public static int getJsonInt(@Nullable JsonObject json, String key, int defaultValue) {
+        if (json == null || !json.has(key)) {
+            return defaultValue;
+        }
+        JsonElement element = json.get(key);
+        if (element == null || element.isJsonNull()) {
+            return defaultValue;
+        }
+        try {
+            return element.getAsInt();
+        } catch (Exception e) {
+            return defaultValue;
         }
     }
 }

@@ -245,7 +245,7 @@ public class MiIoDiscovery extends AbstractDiscoveryService {
     }
 
     private void cloudThingDiscovery() {
-        logger.debug("Discovering standard cloud connector thing");
+        logger.debug("Discovering standard cloud connector thing.");
         DiscoveryResultBuilder dr = DiscoveryResultBuilder.create(new ThingUID(THING_TYPE_CLOUD, "cloudConnector"))
                 .withLabel("Cloud Connector");
         final Configuration miioConfig = this.miioConfig;
