@@ -312,6 +312,7 @@
 		<item-type>DateTime</item-type>
 		<label>Total Eclipse</label>
 		<description>The DateTime of the next total eclipse</description>
+		<category>calendar</category>
 		<tags>
 			<tag>Calculation</tag>
 			<tag>Timestamp</tag>
@@ -323,6 +324,7 @@
 		<item-type>DateTime</item-type>
 		<label>Partial Eclipse</label>
 		<description>The DateTime of the next partial eclipse</description>
+		<category>calendar</category>
 		<tags>
 			<tag>Calculation</tag>
 			<tag>Timestamp</tag>
@@ -334,6 +336,7 @@
 		<item-type>DateTime</item-type>
 		<label>Ring Eclipse</label>
 		<description>The DateTime of the next ring eclipse</description>
+		<category>calendar</category>
 		<tags>
 			<tag>Calculation</tag>
 			<tag>Timestamp</tag>
@@ -411,6 +414,7 @@
 		<item-type>DateTime</item-type>
 		<label>First Quarter</label>
 		<description>The DateTime the moon is in the first quarter</description>
+		<category>oh:astro:moon_phase-first_quarter</category>
 		<tags>
 			<tag>Calculation</tag>
 			<tag>Timestamp</tag>
@@ -422,6 +426,7 @@
 		<item-type>DateTime</item-type>
 		<label>Third Quarter</label>
 		<description>The DateTime the moon is in the third quarter</description>
+		<category>oh:astro:moon_phase-third_quarter</category>
 		<tags>
 			<tag>Calculation</tag>
 			<tag>Timestamp</tag>
@@ -433,6 +438,7 @@
 		<item-type>DateTime</item-type>
 		<label>Full Moon</label>
 		<description>The DateTime for full moon</description>
+		<category>oh:astro:moon_phase-full</category>
 		<tags>
 			<tag>Calculation</tag>
 			<tag>Timestamp</tag>
@@ -444,6 +450,7 @@
 		<item-type>DateTime</item-type>
 		<label>New Moon</label>
 		<description>The DateTime for new moon</description>
+		<category>oh:astro:moon_phase-new</category>
 		<tags>
 			<tag>Calculation</tag>
 			<tag>Timestamp</tag>
@@ -455,6 +462,7 @@
 		<item-type>Number:Time</item-type>
 		<label>Moon Age</label>
 		<description>The age of the moon in days</description>
+		<category>oh:astro:moon_day</category>
 		<tags>
 			<tag>Calculation</tag>
 			<tag>Duration</tag>
@@ -496,6 +504,7 @@
 		<item-type>String</item-type>
 		<label>Moon Phase Name</label>
 		<description>The name of the current moon phase</description>
+		<category>oh:astro:moon_phase</category>
 		<tags>
 			<tag>Status</tag>
 		</tags>
@@ -570,6 +579,7 @@
 		<item-type>DateTime</item-type>
 		<label>Date</label>
 		<description>The DateTime when the distance is reached</description>
+		<category>calendar</category>
 		<tags>
 			<tag>Calculation</tag>
 			<tag>Timestamp</tag>
@@ -604,6 +614,7 @@
 	<channel-group-type id="moonZodiac">
 		<label>Zodiac</label>
 		<description>The zodiac of the moon</description>
+		<category>oh:astro:zodiac</category>
 		<channels>
 			<channel id="sign" typeId="sign"/>
 		</channels>

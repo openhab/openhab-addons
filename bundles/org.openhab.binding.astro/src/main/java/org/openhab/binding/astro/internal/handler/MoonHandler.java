@@ -64,8 +64,6 @@ public class MoonHandler extends AstroThingHandler {
         Double longitude = thingConfig.longitude;
         moonCalc.setPositionalInfo(Calendar.getInstance(zone, locale), latitude != null ? latitude : 0,
                 longitude != null ? longitude : 0, moon, zone, locale);
-
-        moon.getEclipse().setElevations(this, timeZoneProvider);
         this.moon = moon;
 
         publishPlanet();
@@ -100,7 +98,7 @@ public class MoonHandler extends AstroThingHandler {
     }
 
     @Override
-    public @Nullable Position getPositionAt(ZonedDateTime date) {
+    public Position getPositionAt(ZonedDateTime date) {
         Moon localMoon = getMoonAt(date, Locale.ROOT);
         Double latitude = thingConfig.latitude;
         Double longitude = thingConfig.longitude;

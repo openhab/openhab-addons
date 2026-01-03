@@ -12,7 +12,10 @@
  */
 package org.openhab.binding.astro.internal.util;
 
+import static org.openhab.binding.astro.internal.util.MathUtils.mod;
+
 import java.time.Instant;
+import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Calendar;
 import java.util.Locale;
@@ -38,9 +41,29 @@ public class DateTimeUtils {
 
     public static final double JD_J2000 = 2451545.0; // 2000-01-01 12:00
     public static final double JD_UNIX_EPOCH = 2440587.5; // 1970-01-01 00:00 UTC
+    public static final double MJD_JD2000 = 51544.5;
+
     private static final double J1970 = JD_UNIX_EPOCH + 0.5; // 1970-01-01 12:00 UTC (julian solar noon)
-    private static final int JULIAN_CENTURY_DAYS = 36525; // Length of a Julian Century in days
     private static final double SECONDS_PER_DAY = 60 * 60 * 24;
+    public static final int JULIAN_CENTURY_DAYS = 36525; // Length of a Julian Century in days
+
+    /**
+     * Convert julian date to greenwich mean sidereal time.
+     */
+    public static double toGMST(double jd) {
+        double ut = (jd - 0.5 - Math.floor(jd - 0.5)) * 24.;
+        double jdMod = Math.floor(jd - 0.5) + 0.5;
+        double t = toJulianCenturies(jdMod);
+        double t0 = 6.697374558 + t * (2400.051336 + t * 0.000025862);
+        return mod(t0 + ut * 1.002737909, 24.);
+    }
+
+    /**
+     * Convert greenwich mean sidereal time to local mean sidereal time.
+     */
+    public static double toLMST(double gmst, double lon) {
+        return mod(gmst + Math.toDegrees(lon) / 15., 24.);
+    }
 
     /** Constructor */
     private DateTimeUtils() {
@@ -57,26 +80,12 @@ public class DateTimeUtils {
     }
 
     /**
-     * Truncates the time from the instant object.
-     */
-    public static Instant truncateToSecond(Instant instant) {
-        return instant.truncatedTo(ChronoUnit.SECONDS);
-    }
-
-    /**
      * Truncates the time from the calendar object.
      */
     public static Calendar truncateToMinute(Calendar calendar) {
         Calendar cal = truncateToSecond(calendar);
         cal.set(Calendar.SECOND, 0);
         return cal;
-    }
-
-    /**
-     * Truncates the time from the instant object.
-     */
-    public static Instant truncateToMinute(Instant instant) {
-        return instant.truncatedTo(ChronoUnit.MINUTES);
     }
 
     /**
@@ -206,6 +215,13 @@ public class DateTimeUtils {
     }
 
     /**
+     * Returns true, if two instant objects are on the same day ignoring time.
+     */
+    public static boolean isSameDay(@Nullable ZonedDateTime cal1, @Nullable ZonedDateTime cal2) {
+        return cal1 != null && cal2 != null && cal1.toLocalDate().equals(cal2.toLocalDate());
+    }
+
+    /**
      * Returns the next Calendar from today.
      */
     public static Calendar getNextFromToday(TimeZone zone, Locale locale, Calendar... calendars) {
@@ -243,6 +259,15 @@ public class DateTimeUtils {
         Calendar truncCal1 = truncateToMinute(cal1);
         Calendar truncCal2 = truncateToMinute(cal2);
         return truncCal1.getTimeInMillis() >= truncCal2.getTimeInMillis();
+    }
+
+    /**
+     * Returns true, if inst1 is greater or equal than inst2, ignoring seconds.
+     */
+    public static boolean isTimeGreaterEquals(ZonedDateTime inst1, ZonedDateTime inst2) {
+        ZonedDateTime truncInst1 = inst1.truncatedTo(ChronoUnit.MINUTES);
+        ZonedDateTime truncInst2 = inst2.truncatedTo(ChronoUnit.MINUTES);
+        return !truncInst1.isBefore(truncInst2);
     }
 
     public static Calendar getAdjustedEarliest(Calendar cal, AstroChannelConfig config) {

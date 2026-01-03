@@ -25,16 +25,15 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public class Sun extends RiseSet implements Planet {
+    private final Eclipse eclipse = new Eclipse(EclipseKind.PARTIAL, EclipseKind.TOTAL, EclipseKind.RING);
 
     private Map<SunPhaseName, Range> ranges = new HashMap<>();
 
-    private Position position = new Position();
+    private Position position = Position.NULL;
 
     private Zodiac zodiac = Zodiac.NULL;
 
     private @Nullable Season season = null;
-
-    private Eclipse eclipse = new Eclipse(EclipseKind.PARTIAL, EclipseKind.TOTAL, EclipseKind.RING);
 
     private Radiation radiation = new Radiation();
 
@@ -280,13 +279,6 @@ public class Sun extends RiseSet implements Planet {
      */
     public Eclipse getEclipse() {
         return eclipse;
-    }
-
-    /**
-     * Sets the eclipses.
-     */
-    public void setEclipse(Eclipse eclipse) {
-        this.eclipse = eclipse;
     }
 
     /**

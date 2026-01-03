@@ -56,4 +56,8 @@ public class MathUtils {
     public static double sinDeg(double deg) {
         return Math.sin(Math.toRadians(deg));
     }
+
+    public static double frac(double x) {
+        return x - Math.floor(x);
+    }
 }

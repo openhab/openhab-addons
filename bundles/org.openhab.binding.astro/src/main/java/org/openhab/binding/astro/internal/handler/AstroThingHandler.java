@@ -24,7 +24,6 @@ import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -333,7 +332,7 @@ public abstract class AstroThingHandler extends BaseThingHandler {
      * Adds the provided {@link Job} to the queue (cannot be {@code null})
      */
     public void schedule(Job job, Calendar eventAt) {
-        long sleepTime = eventAt.getTimeInMillis() - new Date().getTime();
+        long sleepTime = eventAt.getTimeInMillis() - System.currentTimeMillis();
         schedule(job, sleepTime);
         if (logger.isDebugEnabled()) {
             final String formattedDate = this.isoFormatter.format(eventAt.getTime());
@@ -389,16 +388,14 @@ public abstract class AstroThingHandler extends BaseThingHandler {
      */
     protected abstract Job getDailyJob(TimeZone zone, Locale locale);
 
-    public abstract @Nullable Position getPositionAt(ZonedDateTime date);
+    public abstract Position getPositionAt(ZonedDateTime date);
 
     public @Nullable QuantityType<Angle> getAzimuth(ZonedDateTime date) {
-        Position position = getPositionAt(date);
-        return position != null ? position.getAzimuth() : null;
+        return getPositionAt(date).getAzimuth();
     }
 
     public @Nullable QuantityType<Angle> getElevation(ZonedDateTime date) {
-        Position position = getPositionAt(date);
-        return position != null ? position.getElevation() : null;
+        return getPositionAt(date).getElevation();
     }
 
     @Override

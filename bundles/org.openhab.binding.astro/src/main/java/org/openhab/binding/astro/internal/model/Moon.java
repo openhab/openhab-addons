@@ -21,12 +21,13 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class Moon extends RiseSet implements Planet {
+    private final Eclipse eclipse = new Eclipse(EclipseKind.PARTIAL, EclipseKind.TOTAL);
+
     private MoonPhase phase = new MoonPhase();
     private MoonDistance apogee = new MoonDistance();
     private MoonDistance perigee = new MoonDistance();
     private MoonDistance distance = new MoonDistance();
-    private Eclipse eclipse = new Eclipse(EclipseKind.PARTIAL, EclipseKind.TOTAL);
-    private Position position = new Position();
+    private Position position = MoonPosition.NULL;
     private Zodiac zodiac = Zodiac.NULL;
 
     /**
@@ -76,13 +77,6 @@ public class Moon extends RiseSet implements Planet {
      */
     public Eclipse getEclipse() {
         return eclipse;
-    }
-
-    /**
-     * Sets the eclipses.
-     */
-    public void setEclipse(Eclipse eclipse) {
-        this.eclipse = eclipse;
     }
 
     /**
