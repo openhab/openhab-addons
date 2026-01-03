@@ -92,7 +92,9 @@ public class MonopriceAudioHandler extends BaseThingHandler implements Monoprice
     private Set<String> ignoreZones = new HashSet<>();
     private long lastPollingUpdate = System.currentTimeMillis();
     private long pollingInterval = ZERO;
+    private int maxZones = ZERO;
     private int numZones = ZERO;
+    private int numSources = ZERO;
     private int allVolume = ONE;
     private int initialAllVolume = ZERO;
     private boolean disableKeypadPolling = false;
@@ -114,6 +116,7 @@ public class MonopriceAudioHandler extends BaseThingHandler implements Monoprice
         final String serialPort = config.serialPort;
         final String host = config.host;
         final Integer port = config.port;
+        maxZones = amp.getZoneIds().size();
         numZones = config.numZones;
         final String ignoreZonesConfig = config.ignoreZones;
         disableKeypadPolling = config.disableKeypadPolling || amp == AmplifierModel.MONOPRICE70;
@@ -154,11 +157,11 @@ public class MonopriceAudioHandler extends BaseThingHandler implements Monoprice
             for (String zone : ignoreZonesConfig.split(",")) {
                 try {
                     int zoneInt = Integer.parseInt(zone);
-                    if (zoneInt >= ONE && zoneInt <= amp.getMaxZones()) {
+                    if (zoneInt >= ONE && zoneInt <= maxZones) {
                         ignoreZones.add(ZONE + zoneInt);
                     } else {
                         logger.debug("Invalid ignore zone value: {}, value must be between {} and {}", zone, ONE,
-                                amp.getMaxZones());
+                                maxZones);
                     }
                 } catch (NumberFormatException nfe) {
                     logger.debug("Invalid ignore zone value: {}", zone);
@@ -170,6 +173,7 @@ public class MonopriceAudioHandler extends BaseThingHandler implements Monoprice
         List<Integer> activeZones = IntStream.range(1, numZones + 1).boxed().collect(Collectors.toList());
 
         List<StateOption> sourceLabels = amp.getSourceLabels(config);
+        numSources = sourceLabels.size();
         stateDescriptionProvider.setStateOptions(
                 new ChannelUID(getThing().getUID(), ALL + CHANNEL_DELIMIT + CHANNEL_TYPE_ALLSOURCE), sourceLabels);
         activeZones.forEach(zoneNum -> {
@@ -179,10 +183,10 @@ public class MonopriceAudioHandler extends BaseThingHandler implements Monoprice
         });
 
         // remove the channels for the zones we are not using
-        if (numZones < amp.getMaxZones()) {
+        if (numZones < maxZones) {
             List<Channel> channels = new ArrayList<>(this.getThing().getChannels());
 
-            List<Integer> zonesToRemove = IntStream.range(numZones + 1, amp.getMaxZones() + 1).boxed()
+            List<Integer> zonesToRemove = IntStream.range(numZones + 1, maxZones + 1).boxed()
                     .collect(Collectors.toList());
 
             zonesToRemove.forEach(zone -> {
@@ -237,6 +241,7 @@ public class MonopriceAudioHandler extends BaseThingHandler implements Monoprice
             }
 
             try {
+                final int cmdOnOff = (command == OnOffType.ON ? ONE : ZERO);
                 if (!"all".equals(zoneName)) {
                     MonopriceAudioZoneDTO dto = zoneDataMap.get(zoneId);
                     if (dto == null) {
@@ -247,14 +252,14 @@ public class MonopriceAudioHandler extends BaseThingHandler implements Monoprice
                     switch (channelType) {
                         case CHANNEL_TYPE_POWER:
                             if (command instanceof OnOffType) {
-                                connector.sendCommand(zoneId, amp.getPowerCmd(), command == OnOffType.ON ? ONE : ZERO);
-                                dto.setPower(command == OnOffType.ON ? amp.getOnStr() : amp.getOffStr());
+                                connector.sendCommand(zoneId, amp.getPowerCmd(), cmdOnOff);
+                                dto.setPower(amp.getFormattedValue(cmdOnOff));
                             }
                             break;
                         case CHANNEL_TYPE_SOURCE:
                             if (command instanceof DecimalType decimalCommand) {
                                 final int value = decimalCommand.intValue();
-                                if (value >= ONE && value <= amp.getNumSources()) {
+                                if (value >= ONE && value <= numSources) {
                                     logger.debug("Got source command {} zone {}", value, zoneId);
                                     connector.sendCommand(zoneId, amp.getSourceCmd(), value);
                                     dto.setSource(amp.getFormattedValue(value));
@@ -273,8 +278,8 @@ public class MonopriceAudioHandler extends BaseThingHandler implements Monoprice
                             break;
                         case CHANNEL_TYPE_MUTE:
                             if (command instanceof OnOffType) {
-                                connector.sendCommand(zoneId, amp.getMuteCmd(), command == OnOffType.ON ? ONE : ZERO);
-                                dto.setMute(command == OnOffType.ON ? amp.getOnStr() : amp.getOffStr());
+                                connector.sendCommand(zoneId, amp.getMuteCmd(), cmdOnOff);
+                                dto.setMute(amp.getFormattedValue(cmdOnOff));
                             }
                             break;
                         case CHANNEL_TYPE_TREBLE:
@@ -309,8 +314,8 @@ public class MonopriceAudioHandler extends BaseThingHandler implements Monoprice
                             break;
                         case CHANNEL_TYPE_DND:
                             if (command instanceof OnOffType) {
-                                connector.sendCommand(zoneId, amp.getDndCmd(), command == OnOffType.ON ? ONE : ZERO);
-                                dto.setDnd(command == OnOffType.ON ? amp.getOnStr() : amp.getOffStr());
+                                connector.sendCommand(zoneId, amp.getDndCmd(), cmdOnOff);
+                                dto.setDnd(amp.getFormattedValue(cmdOnOff));
                             }
                             break;
                         default:
@@ -324,15 +329,14 @@ public class MonopriceAudioHandler extends BaseThingHandler implements Monoprice
                     switch (channelType) {
                         case CHANNEL_TYPE_ALLPOWER:
                             if (command instanceof OnOffType) {
-                                final int cmd = command == OnOffType.ON ? ONE : ZERO;
                                 zoneStream.forEach((streamZoneId) -> {
                                     if (command == OnOffType.OFF
                                             || !ignoreZones.contains(amp.getZoneName(streamZoneId))) {
                                         try {
                                             MonopriceAudioZoneDTO streamDto = zoneDataMap.get(streamZoneId);
                                             if (streamDto != null) {
-                                                connector.sendCommand(streamZoneId, amp.getPowerCmd(), cmd);
-                                                streamDto.setPower(amp.getFormattedValue(cmd));
+                                                connector.sendCommand(streamZoneId, amp.getPowerCmd(), cmdOnOff);
+                                                streamDto.setPower(amp.getFormattedValue(cmdOnOff));
                                                 updateChannelState(streamZoneId, CHANNEL_TYPE_POWER);
 
                                                 if (command == OnOffType.ON) {
@@ -353,7 +357,7 @@ public class MonopriceAudioHandler extends BaseThingHandler implements Monoprice
                         case CHANNEL_TYPE_ALLSOURCE:
                             if (command instanceof DecimalType decimalCommand) {
                                 final int value = decimalCommand.intValue();
-                                if (value >= ONE && value <= amp.getNumSources()) {
+                                if (value >= ONE && value <= numSources) {
                                     zoneStream.forEach((streamZoneId) -> {
                                         if (!ignoreZones.contains(amp.getZoneName(streamZoneId))) {
                                             try {
@@ -398,15 +402,14 @@ public class MonopriceAudioHandler extends BaseThingHandler implements Monoprice
                             break;
                         case CHANNEL_TYPE_ALLMUTE:
                             if (command instanceof OnOffType) {
-                                final int cmd = command == OnOffType.ON ? ONE : ZERO;
                                 zoneStream.forEach((streamZoneId) -> {
                                     if (!ignoreZones.contains(amp.getZoneName(streamZoneId))) {
                                         try {
                                             MonopriceAudioZoneDTO streamDto = zoneDataMap.get(streamZoneId);
                                             if (streamDto != null) {
-                                                connector.sendCommand(streamZoneId, amp.getMuteCmd(), cmd);
+                                                connector.sendCommand(streamZoneId, amp.getMuteCmd(), cmdOnOff);
                                                 if (streamDto.isPowerOn()) {
-                                                    streamDto.setMute(amp.getFormattedValue(cmd));
+                                                    streamDto.setMute(amp.getFormattedValue(cmdOnOff));
                                                     updateChannelState(streamZoneId, CHANNEL_TYPE_MUTE);
                                                 }
                                             }

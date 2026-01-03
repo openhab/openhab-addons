@@ -34,9 +34,9 @@ import org.openhab.core.types.StateOption;
 public enum AmplifierModel {
 
     // Monoprice 10761/Dayton Audio DAX66
-    MONOPRICE("<", "\r", "?", "", "#>", "PR", "CH", "VO", "MU", "TR", "BS", "BL", "DT", 38, -7, 7, 7, -10, 10, 10, 6,
-            true, List.of("11", "12", "13", "14", "15", "16", "21", "22", "23", "24", "25", "26", "31", "32", "33",
-                    "34", "35", "36")) {
+    MONOPRICE("<", "\r", "?", "", "#>", "PR", "CH", "VO", "MU", "TR", "BS", "BL", "DT", 38, -7, 7, 7, -10, 10, 10, true,
+            List.of("11", "12", "13", "14", "15", "16", "21", "22", "23", "24", "25", "26", "31", "32", "33", "34",
+                    "35", "36")) {
         @Override
         public MonopriceAudioZoneDTO getZoneData(String newZoneData) {
             return getMonopriceZoneData(newZoneData);
@@ -44,13 +44,11 @@ public enum AmplifierModel {
 
         @Override
         public List<StateOption> getSourceLabels(MonopriceAudioThingConfiguration config) {
-            return List.of(new StateOption("1", config.inputLabel1), new StateOption("2", config.inputLabel2),
-                    new StateOption("3", config.inputLabel3), new StateOption("4", config.inputLabel4),
-                    new StateOption("5", config.inputLabel5), new StateOption("6", config.inputLabel6));
+            return getSourceLabels6(config);
         }
     },
     // Monoprice 44519 4 zone variant
-    MONOPRICE4("<", "\r", "?", "", "#>", "PR", "CH", "VO", "MU", "TR", "BS", "BL", "DT", 38, -7, 7, 7, -10, 10, 10, 6,
+    MONOPRICE4("<", "\r", "?", "", "#>", "PR", "CH", "VO", "MU", "TR", "BS", "BL", "DT", 38, -7, 7, 7, -10, 10, 10,
             true, List.of("11", "12", "13", "14", "21", "22", "23", "24", "31", "32", "33", "34")) {
         @Override
         public MonopriceAudioZoneDTO getZoneData(String newZoneData) {
@@ -59,13 +57,11 @@ public enum AmplifierModel {
 
         @Override
         public List<StateOption> getSourceLabels(MonopriceAudioThingConfiguration config) {
-            return List.of(new StateOption("1", config.inputLabel1), new StateOption("2", config.inputLabel2),
-                    new StateOption("3", config.inputLabel3), new StateOption("4", config.inputLabel4),
-                    new StateOption("5", config.inputLabel5), new StateOption("6", config.inputLabel6));
+            return getSourceLabels6(config);
         }
     },
     // Monoprice 44518 8 zone variant
-    MONOPRICE8("<", "\r", "?", "", "#>", "PR", "CH", "VO", "MU", "TR", "BS", "BL", "DT", 38, -7, 7, 7, -10, 10, 10, 6,
+    MONOPRICE8("<", "\r", "?", "", "#>", "PR", "CH", "VO", "MU", "TR", "BS", "BL", "DT", 38, -7, 7, 7, -10, 10, 10,
             true, List.of("11", "12", "13", "14", "15", "16", "17", "18", "21", "22", "23", "24", "25", "26", "27",
                     "28", "31", "32", "33", "34", "35", "36", "37", "38")) {
         @Override
@@ -75,14 +71,12 @@ public enum AmplifierModel {
 
         @Override
         public List<StateOption> getSourceLabels(MonopriceAudioThingConfiguration config) {
-            return List.of(new StateOption("1", config.inputLabel1), new StateOption("2", config.inputLabel2),
-                    new StateOption("3", config.inputLabel3), new StateOption("4", config.inputLabel4),
-                    new StateOption("5", config.inputLabel5), new StateOption("6", config.inputLabel6));
+            return getSourceLabels6(config);
         }
     },
     // Dayton Audio DAX88
-    DAX88("<", "\r", "?", "", ">", "PR", "CH", "VO", "MU", "TR", "BS", "BL", "DT", 38, -12, 12, 12, -10, 10, 10, 8,
-            true, List.of("01", "02", "03", "04", "05", "06", "07", "08")) {
+    DAX88("<", "\r", "?", "", ">", "PR", "CH", "VO", "MU", "TR", "BS", "BL", "DT", 38, -12, 12, 12, -10, 10, 10, true,
+            List.of("01", "02", "03", "04", "05", "06", "07", "08")) {
         @Override
         public MonopriceAudioZoneDTO getZoneData(String newZoneData) {
             return getMonopriceZoneData(newZoneData);
@@ -90,13 +84,10 @@ public enum AmplifierModel {
 
         @Override
         public List<StateOption> getSourceLabels(MonopriceAudioThingConfiguration config) {
-            return List.of(new StateOption("1", config.inputLabel1), new StateOption("2", config.inputLabel2),
-                    new StateOption("3", config.inputLabel3), new StateOption("4", config.inputLabel4),
-                    new StateOption("5", config.inputLabel5), new StateOption("6", config.inputLabel6),
-                    new StateOption("7", config.inputLabel7), new StateOption("8", config.inputLabel8));
+            return getSourceLabels8(config);
         }
     },
-    MONOPRICE70("!", "+\r", "?", "ZS", "?", "PR", "IS", "VO", "MU", "TR", "BS", "BA", "", 38, -7, 7, 7, -32, 31, 32, 2,
+    MONOPRICE70("!", "+\r", "?", "ZS", "?", "PR", "IS", "VO", "MU", "TR", "BS", "BA", "", 38, -7, 7, 7, -32, 31, 32,
             false, List.of("1", "2", "3", "4", "5", "6")) {
         @Override
         public MonopriceAudioZoneDTO getZoneData(String newZoneData) {
@@ -141,8 +132,8 @@ public enum AmplifierModel {
             return List.of(new StateOption("0", config.inputLabel1), new StateOption("1", config.inputLabel2));
         }
     },
-    XANTECH("!", "+\r", "?", "ZD", "#", "PR", "SS", "VO", "MU", "TR", "BS", "BL", "", 38, -7, 7, 7, -32, 31, 32, 8,
-            false, List.of("1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16")) {
+    XANTECH("!", "+\r", "?", "ZD", "#", "PR", "SS", "VO", "MU", "TR", "BS", "BL", "", 38, -7, 7, 7, -32, 31, 32, false,
+            List.of("1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16")) {
         @Override
         public MonopriceAudioZoneDTO getZoneData(String newZoneData) {
             final MonopriceAudioZoneDTO zoneData = new MonopriceAudioZoneDTO();
@@ -165,14 +156,11 @@ public enum AmplifierModel {
 
         @Override
         public List<StateOption> getSourceLabels(MonopriceAudioThingConfiguration config) {
-            return List.of(new StateOption("1", config.inputLabel1), new StateOption("2", config.inputLabel2),
-                    new StateOption("3", config.inputLabel3), new StateOption("4", config.inputLabel4),
-                    new StateOption("5", config.inputLabel5), new StateOption("6", config.inputLabel6),
-                    new StateOption("7", config.inputLabel7), new StateOption("8", config.inputLabel8));
+            return getSourceLabels8(config);
         }
     };
 
-    // Used by 10761/DAX66 and DAX88
+    // Used by 10761/DAX66, 44519, 44518 and DAX88
     private static MonopriceAudioZoneDTO getMonopriceZoneData(String newZoneData) {
         final MonopriceAudioZoneDTO zoneData = new MonopriceAudioZoneDTO();
         final Matcher matcher = MONOPRICE_PATTERN.matcher(newZoneData);
@@ -191,6 +179,21 @@ public enum AmplifierModel {
             zoneData.setKeypad(matcher.group(11));
         }
         return zoneData;
+    }
+
+    // Used by 10761/DAX66, 44519 and 44518
+    private static List<StateOption> getSourceLabels6(MonopriceAudioThingConfiguration config) {
+        return List.of(new StateOption("1", config.inputLabel1), new StateOption("2", config.inputLabel2),
+                new StateOption("3", config.inputLabel3), new StateOption("4", config.inputLabel4),
+                new StateOption("5", config.inputLabel5), new StateOption("6", config.inputLabel6));
+    }
+
+    // Used by DAX88 and Xantech
+    private static List<StateOption> getSourceLabels8(MonopriceAudioThingConfiguration config) {
+        return List.of(new StateOption("1", config.inputLabel1), new StateOption("2", config.inputLabel2),
+                new StateOption("3", config.inputLabel3), new StateOption("4", config.inputLabel4),
+                new StateOption("5", config.inputLabel5), new StateOption("6", config.inputLabel6),
+                new StateOption("7", config.inputLabel7), new StateOption("8", config.inputLabel8));
     }
 
     // Monoprice 10761/DAX66 status string: #>1200010000130809100601
@@ -229,17 +232,9 @@ public enum AmplifierModel {
     private final int minBal;
     private final int maxBal;
     private final int balOffset;
-    private final int maxZones;
-    private final int numSources;
     private final boolean padNumbers;
     private final List<String> zoneIds;
     private final Map<String, String> zoneIdMap;
-
-    private static final String ON_STR = "1";
-    private static final String OFF_STR = "0";
-
-    private static final String ON_STR_PAD = "01";
-    private static final String OFF_STR_PAD = "00";
 
     /**
      * Constructor for all the enum parameters
@@ -248,7 +243,7 @@ public enum AmplifierModel {
     AmplifierModel(String cmdPrefix, String cmdSuffix, String queryPrefix, String querySuffix, String respPrefix,
             String powerCmd, String sourceCmd, String volumeCmd, String muteCmd, String trebleCmd, String bassCmd,
             String balanceCmd, String dndCmd, int maxVol, int minTone, int maxTone, int toneOffset, int minBal,
-            int maxBal, int balOffset, int numSources, boolean padNumbers, List<String> zoneIds) {
+            int maxBal, int balOffset, boolean padNumbers, List<String> zoneIds) {
         this.cmdPrefix = cmdPrefix;
         this.cmdSuffix = cmdSuffix;
         this.queryPrefix = queryPrefix;
@@ -269,12 +264,10 @@ public enum AmplifierModel {
         this.minBal = minBal;
         this.maxBal = maxBal;
         this.balOffset = balOffset;
-        this.maxZones = zoneIds.size();
-        this.numSources = numSources;
         this.padNumbers = padNumbers;
         this.zoneIds = zoneIds;
 
-        // Build a map between the amp's physical zone IDs and the thing's logical zone names
+        // Build a map between the amp's physical zone IDs and the Thing's logical zone names
         final Map<String, String> zoneIdMap = new HashMap<>();
         IntStream.range(0, zoneIds.size()).forEach(i -> zoneIdMap.put(zoneIds.get(i), "zone" + (i + 1)));
         this.zoneIdMap = Collections.unmodifiableMap(zoneIdMap);
@@ -373,14 +366,6 @@ public enum AmplifierModel {
         return toneOffset;
     }
 
-    public int getMaxZones() {
-        return maxZones;
-    }
-
-    public int getNumSources() {
-        return numSources;
-    }
-
     public String getCmdSuffix() {
         return cmdSuffix;
     }
@@ -391,13 +376,5 @@ public enum AmplifierModel {
 
     public String getFormattedValue(Integer value) {
         return padNumbers ? String.format("%02d", value) : value.toString();
-    }
-
-    public String getOnStr() {
-        return padNumbers ? ON_STR_PAD : ON_STR;
-    }
-
-    public String getOffStr() {
-        return padNumbers ? OFF_STR_PAD : OFF_STR;
     }
 }
