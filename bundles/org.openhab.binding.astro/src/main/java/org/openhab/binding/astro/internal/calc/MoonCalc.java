@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -189,10 +189,10 @@ public class MoonCalc {
         double utrise = -1;
         double utset = -1;
         do {
-            double yminus = SINALT(moonJd, hour - 1, lambda, cphi, sphi) - sinho;
-            double yo = SINALT(moonJd, hour, lambda, cphi, sphi) - sinho;
-            double yplus = SINALT(moonJd, hour + 1, lambda, cphi, sphi) - sinho;
-            double[] quadRet = QUAD(yminus, yo, yplus);
+            double yminus = sinAlt(moonJd, hour - 1, lambda, cphi, sphi) - sinho;
+            double yo = sinAlt(moonJd, hour, lambda, cphi, sphi) - sinho;
+            double yplus = sinAlt(moonJd, hour + 1, lambda, cphi, sphi) - sinho;
+            double[] quadRet = quad(yminus, yo, yplus);
             if (quadRet[3] == 1) {
                 if (yminus < 0) {
                     utrise = hour + quadRet[1];
@@ -262,12 +262,12 @@ public class MoonCalc {
     private double calcMoonPhase(double k, double mode) {
         double kMod = Math.floor(k) + mode;
         double t = kMod / 1236.85;
-        double e = var_e(t);
-        double m = var_m(kMod, t);
-        double m1 = var_m1(kMod, t);
-        double f = var_f(kMod, t);
-        double o = var_o(kMod, t);
-        double jd = var_jde(kMod, t);
+        double e = varE(t);
+        double m = varM(kMod, t);
+        double m1 = varM1(kMod, t);
+        double f = varF(kMod, t);
+        double o = varO(kMod, t);
+        double jd = varJde(kMod, t);
         if (mode == NEW_MOON) {
             jd += -.4072 * sinDeg(m1) + .17241 * e * sinDeg(m) + .01608 * sinDeg(2 * m1) + .01039 * sinDeg(2 * f)
                     + .00739 * e * sinDeg(m1 - m) - .00514 * e * sinDeg(m1 + m) + .00208 * e * e * sinDeg(2 * m)
@@ -314,16 +314,16 @@ public class MoonCalc {
     private double getEclipse(double k, EclipseType typ, EclipseKind eclipse) {
         double kMod = Math.floor(k) + ((typ == EclipseType.SUN) ? 0 : 0.5);
         double t = kMod / 1236.85;
-        double f = var_f(kMod, t);
+        double f = varF(kMod, t);
         double jd = 0;
         double ringTest = 0;
         if (sinDeg(Math.abs(f)) <= .36) {
-            double o = var_o(kMod, t);
+            double o = varO(kMod, t);
             double f1 = f - .02665 * sinDeg(o);
             double a1 = 299.77 + .107408 * kMod - .009173 * t * t;
-            double e = var_e(t);
-            double m = var_m(kMod, t);
-            double m1 = var_m1(kMod, t);
+            double e = varE(t);
+            double m = varM(kMod, t);
+            double m1 = varM1(kMod, t);
             double p = .207 * e * sinDeg(m) + .0024 * e * sinDeg(2 * m) - .0392 * sinDeg(m1) + .0116 * sinDeg(2 * m1)
                     - .0073 * e * sinDeg(m1 + m) + .0067 * e * sinDeg(m1 - m) + .0118 * sinDeg(2 * f1);
             double q = 5.2207 - .0048 * e * cosDeg(m) + .002 * e * cosDeg(2 * m) - .3299 * cosDeg(m1)
@@ -331,7 +331,7 @@ public class MoonCalc {
             double g = (p * cosDeg(f1) + q * sinDeg(f1)) * (1 - .0048 * cosDeg(Math.abs(f1)));
             double u = .0059 + .0046 * e * cosDeg(m) - .0182 * cosDeg(m1) + .0004 * cosDeg(2 * m1)
                     - .0005 * cosDeg(m + m1);
-            jd = var_jde(kMod, t);
+            jd = varJde(kMod, t);
             jd += (typ == EclipseType.MOON) ? -.4065 * sinDeg(m1) + .1727 * e * sinDeg(m)
                     : -.4075 * sinDeg(m1) + .1721 * e * sinDeg(m);
 
@@ -402,7 +402,7 @@ public class MoonCalc {
         double tz = 0;
         double phaseJd = 0;
         do {
-            double k = var_k(cal, tz);
+            double k = varK(cal, tz);
             tz += 1;
             phaseJd = calcMoonPhase(k, mode);
         } while (phaseJd <= midnightJd);
@@ -416,7 +416,7 @@ public class MoonCalc {
         double tz = 0;
         double phaseJd = 0;
         do {
-            double k = var_k(cal, tz);
+            double k = varK(cal, tz);
             tz -= 1;
             phaseJd = calcMoonPhase(k, mode);
         } while (phaseJd > jd);
@@ -430,7 +430,7 @@ public class MoonCalc {
         double tz = 0;
         double eclipseJd = 0;
         do {
-            double k = var_k(cal, tz);
+            double k = varK(cal, tz);
             tz += 1;
             eclipseJd = getEclipse(k, type, eclipse);
         } while (eclipseJd <= midnightJd);
@@ -524,11 +524,11 @@ public class MoonCalc {
         double arc = 206264.8062;
         double coseps = .91748;
         double sineps = .39778;
-        double lo = FRAK(.606433 + 1336.855225 * t);
-        double l = p2 * FRAK(.374897 + 1325.55241 * t);
-        double ls = p2 * FRAK(.993133 + 99.997361 * t);
-        double d = p2 * FRAK(.827361 + 1236.853086 * t);
-        double f = p2 * FRAK(.259086 + 1342.227825 * t);
+        double lo = frac(.606433 + 1336.855225 * t);
+        double l = p2 * frac(.374897 + 1325.55241 * t);
+        double ls = p2 * frac(.993133 + 99.997361 * t);
+        double d = p2 * frac(.827361 + 1236.853086 * t);
+        double f = p2 * frac(.259086 + 1342.227825 * t);
         double dl = 22640 * Math.sin(l) - 4586 * Math.sin(l - 2 * d) + 2370 * Math.sin(2 * d) + 769 * Math.sin(2 * l)
                 - 668 * Math.sin(ls) - 412 * Math.sin(2 * f) - 212 * Math.sin(2 * l - 2 * d)
                 - 206 * Math.sin(l + ls - 2 * d) + 192 * Math.sin(l + 2 * d) - 165 * Math.sin(ls - 2 * d)
@@ -537,7 +537,7 @@ public class MoonCalc {
         double h = f - 2 * d;
         double n = -526 * Math.sin(h) + 44 * Math.sin(l + h) - 31 * Math.sin(-l + h) - 23 * Math.sin(ls + h)
                 + 11 * Math.sin(-ls + h) - 25 * Math.sin(-2 * l + f) + 21 * Math.sin(-l + f);
-        double lmoon = p2 * FRAK(lo + dl / 1296000);
+        double lmoon = p2 * frac(lo + dl / 1296000);
         double bmoon = (18520 * Math.sin(s) + n) / arc;
         double cb = Math.cos(bmoon);
         double x = cb * Math.cos(lmoon);
@@ -554,23 +554,23 @@ public class MoonCalc {
         return new double[] { dec, ra };
     }
 
-    private double SINALT(double moonJd, int hour, double lambda, double cphi, double sphi) {
+    private double sinAlt(double moonJd, int hour, double lambda, double cphi, double sphi) {
         double jdo = moonJd + hour / 24.0;
         double t = (jdo - 51544.5) / 36525.0;
         double[] decra = calcMoon(t);
-        double tau = 15.0 * (LMST(jdo, lambda) - decra[1]);
+        double tau = 15.0 * (localMeanSiderealTime(jdo, lambda) - decra[1]);
         return sphi * sinDeg(decra[0]) + cphi * cosDeg(decra[0]) * cosDeg(tau);
     }
 
-    private double LMST(double moonJd, double lambda) {
+    private double localMeanSiderealTime(double moonJd, double lambda) {
         double moonJdo = Math.floor(moonJd);
         double ut = (moonJd - moonJdo) * 24.0;
         double t = (moonJdo - 51544.5) / 36525.0;
         double gmst = 6.697374558 + 1.0027379093 * ut + (8640184.812866 + (.093104 - .0000062 * t) * t) * t / 3600.0;
-        return 24.0 * FRAK((gmst - lambda / 15.0) / 24.0);
+        return 24.0 * frac((gmst - lambda / 15.0) / 24.0);
     }
 
-    private double FRAK(double x) {
+    private double frac(double x) {
         double ret = x - (int) (x);
         if (ret < 0) {
             ret += 1;
@@ -578,7 +578,7 @@ public class MoonCalc {
         return ret;
     }
 
-    private double[] QUAD(double yminus, double yo, double yplus) {
+    private double[] quad(double yminus, double yo, double yplus) {
         double nz = 0;
         double a = .5 * (yminus + yplus) - yo;
         double b = .5 * (yplus - yminus);
@@ -605,32 +605,32 @@ public class MoonCalc {
         return new double[] { ye, zero1, zero2, nz };
     }
 
-    private double var_o(double k, double t) {
+    private double varO(double k, double t) {
         return 124.7746 - 1.5637558 * k + .0020691 * t * t + .00000215 * t * t * t;
     }
 
-    private double var_f(double k, double t) {
+    private double varF(double k, double t) {
         return 160.7108 + 390.67050274 * k - .0016341 * t * t - .00000227 * t * t * t + .000000011 * t * t * t * t;
     }
 
-    private double var_m1(double k, double t) {
+    private double varM1(double k, double t) {
         return 201.5643 + 385.81693528 * k + .1017438 * t * t + .00001239 * t * t * t - .000000058 * t * t * t * t;
     }
 
-    private double var_m(double k, double t) {
+    private double varM(double k, double t) {
         return 2.5534 + 29.10535669 * k - .0000218 * t * t - .00000011 * t * t * t;
     }
 
-    private double var_e(double t) {
+    private double varE(double t) {
         return 1 - .002516 * t - .0000074 * t * t;
     }
 
-    private double var_jde(double k, double t) {
+    private double varJde(double k, double t) {
         return 2451550.09765 + 29.530588853 * k + .0001337 * t * t - .00000015 * t * t * t
                 + .00000000073 * t * t * t * t;
     }
 
-    private double var_k(Calendar cal, double tz) {
+    private double varK(Calendar cal, double tz) {
         return (cal.get(Calendar.YEAR) + (cal.get(Calendar.DAY_OF_YEAR) + tz) / 365 - 2000) * 12.3685;
     }
 

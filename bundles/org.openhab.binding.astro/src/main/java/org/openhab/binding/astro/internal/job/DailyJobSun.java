@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -58,13 +58,13 @@ public final class DailyJobSun extends AbstractJob {
     public void run() {
         try {
             handler.publishDailyInfo();
-            if (logger.isDebugEnabled()) {
-                logger.debug("Scheduled Astro event-jobs for thing {}", handler.getThing().getUID());
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("Scheduled Astro event-jobs for thing {}", handler.getThing().getUID());
             }
 
             Planet planet = handler.getPlanet();
             if (planet == null) {
-                logger.error("Planet not instantiated");
+                LOGGER.error("Planet not instantiated");
                 return;
             }
             Sun sun = (Sun) planet;
@@ -175,9 +175,9 @@ public final class DailyJobSun extends AbstractJob {
                 scheduleSunPhase(handler, CIVIL_DUSK, cal, zone, locale);
             }
         } catch (Exception e) {
-            logger.warn("The daily sun job execution for \"{}\" failed: {}", handler.getThing().getUID(),
+            LOGGER.warn("The daily sun job execution for \"{}\" failed: {}", handler.getThing().getUID(),
                     e.getMessage());
-            logger.trace("", e);
+            LOGGER.trace("", e);
         }
     }
 

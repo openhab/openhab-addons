@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,7 +14,9 @@ package org.openhab.binding.zwavejs.internal.handler;
 
 import static org.openhab.binding.zwavejs.internal.BindingConstants.*;
 import static org.openhab.binding.zwavejs.internal.CommandClassConstants.EQUIPMENT_MAP;
+import static org.openhab.core.thing.Thing.*;
 
+import java.time.Instant;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -31,6 +33,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.zwavejs.internal.api.dto.Event;
 import org.openhab.binding.zwavejs.internal.api.dto.Node;
+import org.openhab.binding.zwavejs.internal.api.dto.Statistics;
 import org.openhab.binding.zwavejs.internal.api.dto.Status;
 import org.openhab.binding.zwavejs.internal.api.dto.commands.NodeGetValueCommand;
 import org.openhab.binding.zwavejs.internal.api.dto.commands.NodeSetValueCommand;
@@ -722,6 +725,20 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
     }
 
     @Override
+    public void onStatisticsUpdated(Statistics statistics) {
+        Map<String, String> properties = thing.getProperties();
+        String lastSeenPropString = properties.getOrDefault(PROPERTY_NODE_LASTSEEN, "");
+        Instant lastSeenProp = lastSeenPropString.isEmpty() ? Instant.EPOCH : Instant.parse(lastSeenPropString);
+        Instant lastSeenStat = statistics.lastSeen;
+
+        if (lastSeenStat != null && !lastSeenProp.equals(lastSeenStat)) {
+            properties = new HashMap<>(properties);
+            properties.put(PROPERTY_NODE_LASTSEEN, lastSeenStat.toString());
+            updateProperties(properties);
+        }
+    }
+
+    @Override
     public Integer getId() {
         return this.config.id;
     }
@@ -763,6 +780,9 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
 
         // Initialize state for channels and configuration
         initializeChannelAndConfigState(node, result);
+
+        // Update properties in case the device had a firmware update or something
+        updateNodeProperties(node);
 
         return true;
     }
@@ -863,6 +883,25 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
             }
             updateConfiguration(configuration);
             logger.debug("Node {}. Done values to configuration items", node.nodeId);
+        }
+    }
+
+    private void updateNodeProperties(Node node) {
+        Map<String, String> origProperties = thing.getProperties();
+        Map<String, String> properties = new HashMap<>(origProperties);
+
+        properties.put(PROPERTY_NODE_IS_LISTENING, String.valueOf(node.isListening));
+        properties.put(PROPERTY_NODE_IS_ROUTING, String.valueOf(node.isRouting));
+        properties.put(PROPERTY_NODE_IS_SECURE, String.valueOf(node.isSecure));
+        properties.put(PROPERTY_VENDOR, node.deviceConfig != null ? node.deviceConfig.manufacturer : "Unknown");
+        properties.put(PROPERTY_MODEL_ID, node.deviceConfig != null ? node.deviceConfig.label : "");
+        properties.put(PROPERTY_NODE_LASTSEEN, node.lastSeen != null ? node.lastSeen.toString() : "");
+        properties.put(PROPERTY_NODE_FREQ_LISTENING, String.valueOf(node.isFrequentListening));
+        properties.put(PROPERTY_FIRMWARE_VERSION, node.firmwareVersion != null ? node.firmwareVersion : "");
+
+        if (!properties.equals(origProperties)) {
+            updateProperties(properties);
+            logger.debug("Node {} updated thing properties", node.nodeId);
         }
     }
 

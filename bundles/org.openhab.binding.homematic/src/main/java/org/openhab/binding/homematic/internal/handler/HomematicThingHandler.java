@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -450,7 +450,7 @@ public class HomematicThingHandler extends BaseThingHandler {
 
             Map<String, Number> specialValues = dp.getSpecialValues();
             if (specialValues != null) {
-                Number value = dp.isFloatType() ? dp.getDoubleValue() : dp.getIntegerValue();
+                Number value = dp.getNumericValue();
                 for (Number special : specialValues.values()) {
                     if (value.equals(special)) {
                         return dp.getValue();
