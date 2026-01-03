@@ -26,7 +26,7 @@ public record VehicleInfoEU(@SerializedName("vin") String vin, @SerializedName("
         @SerializedName("nickname") String nickname,
         @SerializedName("ccuCCS2ProtocolSupport") int ccuCcs2ProtocolSupport) {
     public String getEngineType() {
-        if (type == null) {
+        if (type == null || type.isBlank()) {
             return null;
         }
         return type.substring(0, type.length() - 1);
