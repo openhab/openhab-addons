@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,12 +17,14 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.TimeZone;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.astro.internal.model.Moon;
-import org.openhab.binding.astro.internal.model.ZodiacSign;
 import org.openhab.binding.astro.internal.util.DateTimeUtils;
 
 /***
@@ -37,6 +39,7 @@ import org.openhab.binding.astro.internal.util.DateTimeUtils;
  * @author Leo Siepel - Initial contribution
  * @see <a href="https://www.heavens-above.com/Moon.aspx">Heavens Above Moon</a>
  */
+@NonNullByDefault
 public class MoonCalcTest {
 
     private static final TimeZone TIME_ZONE = TimeZone.getTimeZone("Europe/Amsterdam");
@@ -48,7 +51,7 @@ public class MoonCalcTest {
     private static final int ACCURACY_IN_KILOMETRES = 4;
     private static final double ACCURACY_IN_DEGREE = 0.3;
 
-    private MoonCalc moonCalc;
+    private @Nullable MoonCalc moonCalc;
 
     @BeforeEach
     public void init() {
@@ -57,7 +60,8 @@ public class MoonCalcTest {
 
     @Test
     public void testGetMoonInfoForOldDate() {
-        Moon moon = moonCalc.getMoonInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE, TIME_ZONE, Locale.ROOT);
+        Moon moon = Objects.requireNonNull(moonCalc).getMoonInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE,
+                TIME_ZONE, Locale.ROOT);
 
         assertNotNull(moon.getApogee());
         assertNotNull(moon.getPerigee());
@@ -77,7 +81,8 @@ public class MoonCalcTest {
 
     @Test
     public void testGetMoonInfoForApogeeAccuracy() {
-        Moon moon = moonCalc.getMoonInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE, TIME_ZONE, Locale.ROOT);
+        Moon moon = Objects.requireNonNull(moonCalc).getMoonInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE,
+                TIME_ZONE, Locale.ROOT);
 
         // expected result from haevens-above.com is 406,391 km @ 04 March 2019 12:27
         assertEquals(406391, moon.getApogee().getDistance().doubleValue(), ACCURACY_IN_KILOMETRES);
@@ -89,7 +94,8 @@ public class MoonCalcTest {
 
     @Test
     public void testGetMoonInfoForPerigeeAccuracy() {
-        Moon moon = moonCalc.getMoonInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE, TIME_ZONE, Locale.ROOT);
+        Moon moon = Objects.requireNonNull(moonCalc).getMoonInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE,
+                TIME_ZONE, Locale.ROOT);
 
         // expected result from haevens-above.com is 359,377 km @ 19 February 2019 20:44
         assertEquals(359377, moon.getPerigee().getDistance().doubleValue(), ACCURACY_IN_KILOMETRES);
@@ -102,7 +108,8 @@ public class MoonCalcTest {
 
     @Test
     public void testGetMoonInfoForRiseAccuracy() {
-        Moon moon = moonCalc.getMoonInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE, TIME_ZONE, Locale.ROOT);
+        Moon moon = Objects.requireNonNull(moonCalc).getMoonInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE,
+                TIME_ZONE, Locale.ROOT);
 
         Calendar riseStart = moon.getRise().getStart();
         assertNotNull(riseStart);
@@ -113,7 +120,8 @@ public class MoonCalcTest {
 
     @Test
     public void testGetMoonInfoForSetAccuracy() {
-        Moon moon = moonCalc.getMoonInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE, TIME_ZONE, Locale.ROOT);
+        Moon moon = Objects.requireNonNull(moonCalc).getMoonInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE,
+                TIME_ZONE, Locale.ROOT);
 
         Calendar setStart = moon.getSet().getStart();
         assertNotNull(setStart);
@@ -123,15 +131,9 @@ public class MoonCalcTest {
     }
 
     @Test
-    public void testGetMoonInfoForZodiac() {
-        Moon moon = moonCalc.getMoonInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE, TIME_ZONE, Locale.ROOT);
-        moonCalc.setPositionalInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE, moon, TIME_ZONE, Locale.ROOT);
-
-        assertEquals(ZodiacSign.SAGITTARIUS, moon.getZodiac().getSign());
-    }
-
-    @Test
     public void testGetMoonInfoForMoonPositionAccuracy() {
+        MoonCalc moonCalc = this.moonCalc;
+        assertNotNull(moonCalc);
         Moon moon = moonCalc.getMoonInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE, TIME_ZONE, Locale.ROOT);
         moonCalc.setPositionalInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE, moon, TIME_ZONE, Locale.ROOT);
 
@@ -142,6 +144,8 @@ public class MoonCalcTest {
 
     @Test
     public void testGetMoonInfoForMoonDistanceAccuracy() {
+        MoonCalc moonCalc = this.moonCalc;
+        assertNotNull(moonCalc);
         Moon moon = moonCalc.getMoonInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE, TIME_ZONE, Locale.ROOT);
         moonCalc.setPositionalInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE, moon, TIME_ZONE, Locale.ROOT);
 
@@ -151,6 +155,8 @@ public class MoonCalcTest {
 
     @Test
     public void testGetMoonInfoForMoonPhaseAccuracy() {
+        MoonCalc moonCalc = this.moonCalc;
+        assertNotNull(moonCalc);
         Moon moon = moonCalc.getMoonInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE, TIME_ZONE, Locale.ROOT);
         moonCalc.setPositionalInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE, moon, TIME_ZONE, Locale.ROOT);
 

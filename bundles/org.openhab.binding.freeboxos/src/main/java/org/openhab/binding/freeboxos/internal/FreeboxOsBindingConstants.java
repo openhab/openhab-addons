@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -160,6 +160,7 @@ public class FreeboxOsBindingConstants {
     public static final String OPENVPN_ROUTED = "openvpn-routed";
     public static final String OPENVPN_BRIDGE = "openvpn-bridge";
     public static final String WIREGUARD = "wireguard";
+    public static final String IPSEC = "ipsec";
 
     // Repeater channels
     public static final String LED = "led";

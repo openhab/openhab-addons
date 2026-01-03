@@ -22,7 +22,7 @@
 				<options>
 					<option value="TUNNEL">Tunnel</option>
 					<option value="ROUTER">Router</option>
-					<option value="SECURETUNNEL">Secure tunnel (experimental, use advanced options to configure)</option>
+					<option value="SECURETUNNEL">Secure tunnel (use advanced options to configure)</option>
 					<option value="SECUREROUTER">Secure router (experimental, use advanced options to configure)</option>
 				</options>
 			</parameter>

@@ -11,6 +11,7 @@ Binding for Bosch Smart Home devices.
     - [Door/Window Contact](#door-window-contact)
     - [Door/Window Contact II](#door-window-contact-ii)
     - [Door/Window Contact II Plus](#door-window-contact-ii-plus)
+    - [Door/Window Contact II [+M]](#door-window-contact-ii-m)
     - [Light Control II](#light-control-ii)
     - [Motion Detector](#motion-detector)
     - [Presence Simulation](#presence-simulation)
@@ -125,13 +126,13 @@ Detects open windows and doors and features an additional button.
 
 **Thing Type ID**: `window-contact-2`
 
-| Channel ID      | Item Type | Writable | Description                  |
-| ----------------| --------- | :------: | ---------------------------- |
-| contact         | Contact   | no       | Contact state of the device. |
+| Channel ID      | Item Type | Writable | Description                                                                                                                                                                                                                 |
+| --------------- | --------- | :------: | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| contact         | Contact   | no       | Contact state of the device.                                                                                                                                                                                                |
 | battery-level   | Number    | no       | Current battery level percentage as integer number. Bosch-specific battery levels are mapped to numbers as follows: `OK`: 100, `LOW_BATTERY`: 10, `CRITICAL_LOW`: 1, `CRITICALLY_LOW_BATTERY`: 1, `NOT_AVAILABLE`: `UNDEF`. |
-| low-battery     | Switch    | no       | Indicates whether the battery is low (`ON`) or OK (`OFF`). |
-| bypass          | Switch    | no       | Indicates whether the device is currently bypassed. Possible values are `ON`,`OFF` and `UNDEF` if the bypass state cannot be determined. |
-| signal-strength | Number    | no       | Communication quality between the device and the Smart Home Controller. Possible values range between 0 (unknown) and 4 (best signal strength). |
+| low-battery     | Switch    | no       | Indicates whether the battery is low (`ON`) or OK (`OFF`).                                                                                                                                                                  |
+| bypass          | Switch    | no       | Indicates whether the device is currently bypassed. Possible values are `ON`,`OFF` and `UNDEF` if the bypass state cannot be determined.                                                                                    |
+| signal-strength | Number    | no       | Communication quality between the device and the Smart Home Controller. Possible values range between 0 (unknown) and 4 (best signal strength).                                                                             |
 
 ### Door/Window Contact II Plus
 
@@ -149,6 +150,20 @@ Detects open windows and doors, provides a configurable button and a vibration s
 | vibration-sensor-enabled     | Switch    | yes      | Channel to enable or disable the vibration sensor.                                                                                                                                                                          |
 | vibration-sensor-sensitivity | String    | yes      | The sensitivity of the vibration sensor. Possible values are `VERY_HIGH`, `HIGH`, `MEDIUM`, `LOW` and `VERY_LOW`.                                                                                                           |
 | vibration-sensor-state       | String    | no       | Indicates whether vibrations were detected by the sensor. Possible values are `NO_VIBRATION`, `VIBRATION_DETECTED` and `UNKNOWN`.                                                                                           |
+
+### Door/Window Contact II [+M]
+
+Detects open windows and doors and features an additional button. This version of the sensor supports the Matter standard.
+
+**Thing Type ID**: `window-contact-2-matter`
+
+| Channel ID      | Item Type | Writable | Description                                                                                                                                                                                                                 |
+| --------------- | --------- | :------: | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| contact         | Contact   | no       | Contact state of the device.                                                                                                                                                                                                |
+| battery-level   | Number    | no       | Current battery level percentage as integer number. Bosch-specific battery levels are mapped to numbers as follows: `OK`: 100, `LOW_BATTERY`: 10, `CRITICAL_LOW`: 1, `CRITICALLY_LOW_BATTERY`: 1, `NOT_AVAILABLE`: `UNDEF`. |
+| low-battery     | Switch    | no       | Indicates whether the battery is low (`ON`) or OK (`OFF`).                                                                                                                                                                  |
+| bypass          | Switch    | no       | Indicates whether the device is currently bypassed. Possible values are `ON`,`OFF` and `UNDEF` if the bypass state cannot be determined.                                                                                    |
+| signal-strength | Number    | no       | Communication quality between the device and the Smart Home Controller. Possible values range between 0 (unknown) and 4 (best signal strength).                                                                             |
 
 ### Light Control II
 

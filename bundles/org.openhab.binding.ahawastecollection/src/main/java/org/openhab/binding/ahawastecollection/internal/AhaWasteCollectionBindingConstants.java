@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -31,7 +31,8 @@ public class AhaWasteCollectionBindingConstants {
 
     // List of all Channel ids
     public static final String GENERAL_WASTE = "generalWaste";
-    public static final String LEIGHTWEIGHT_PACKAGING = "leightweightPackaging";
+    public static final String LIGHTWEIGHT_PACKAGING = "lightweightPackaging";
     public static final String BIOWASTE = "bioWaste";
     public static final String PAPER = "paper";
+    public static final String CHRISTMAS_TREE = "christmasTree";
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,6 +17,7 @@ import static org.openhab.binding.astro.internal.AstroBindingConstants.*;
 import static org.openhab.binding.astro.internal.util.DateTimeUtils.*;
 
 import java.lang.invoke.MethodHandles;
+import java.time.Instant;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
@@ -41,7 +42,7 @@ import org.slf4j.LoggerFactory;
 public interface Job extends SchedulerRunnable, Runnable {
 
     /** The {@link Logger} Instance */
-    final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+    final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     /**
      * Schedules the provided {@link Job} instance
@@ -57,7 +58,22 @@ public interface Job extends SchedulerRunnable, Runnable {
                 astroHandler.schedule(job, eventAt);
             }
         } catch (Exception ex) {
-            logger.error("{}", ex.getMessage(), ex);
+            LOGGER.error("{}", ex.getMessage(), ex);
+        }
+    }
+
+    /**
+     * Schedules the provided {@link Job} instance
+     *
+     * @param astroHandler the {@link AstroThingHandler} instance
+     * @param job the {@link Job} instance to schedule
+     * @param eventAt the {@link Instant} instance denoting scheduled instant
+     */
+    static void schedule(AstroThingHandler astroHandler, Job job, Instant eventAt) {
+        try {
+            astroHandler.schedule(job, eventAt);
+        } catch (Exception ex) {
+            LOGGER.error("{}", ex.getMessage(), ex);
         }
     }
 
@@ -91,7 +107,7 @@ public interface Job extends SchedulerRunnable, Runnable {
         if (!configAlreadyApplied) {
             final Channel channel = astroHandler.getThing().getChannel(channelId);
             if (channel == null) {
-                logger.warn("Cannot find channel '{}' for thing '{}'.", channelId, astroHandler.getThing().getUID());
+                LOGGER.warn("Cannot find channel '{}' for thing '{}'.", channelId, astroHandler.getThing().getUID());
                 return;
             }
             AstroChannelConfig config = channel.getConfiguration().as(AstroChannelConfig.class);
@@ -114,7 +130,7 @@ public interface Job extends SchedulerRunnable, Runnable {
             Locale locale) {
         final Channel channel = astroHandler.getThing().getChannel(channelId);
         if (channel == null) {
-            logger.warn("Cannot find channel '{}' for thing '{}'.", channelId, astroHandler.getThing().getUID());
+            LOGGER.warn("Cannot find channel '{}' for thing '{}'.", channelId, astroHandler.getThing().getUID());
             return;
         }
         AstroChannelConfig config = channel.getConfiguration().as(AstroChannelConfig.class);
@@ -124,7 +140,7 @@ public interface Job extends SchedulerRunnable, Runnable {
         Calendar end = adjustedRange.getEnd();
 
         if (start == null || end == null) {
-            logger.debug("event was not scheduled as either start or end was null");
+            LOGGER.debug("event was not scheduled as either start or end was null");
             return;
         }
 
@@ -167,6 +183,17 @@ public interface Job extends SchedulerRunnable, Runnable {
     static void schedulePublishPlanet(AstroThingHandler astroHandler, Calendar eventAt, TimeZone zone, Locale locale) {
         Job publishJob = new PublishPlanetJob(astroHandler);
         schedule(astroHandler, publishJob, eventAt, zone, locale);
+    }
+
+    /**
+     * Schedules Planet events
+     *
+     * @param astroHandler the {@link AstroThingHandler} instance
+     * @param when the {@link Instant} instance denoting scheduled instant
+     */
+    static void schedulePublishPlanet(AstroThingHandler astroHandler, Instant when) {
+        Job publishJob = new PublishPlanetJob(astroHandler);
+        schedule(astroHandler, publishJob, when);
     }
 
     /**

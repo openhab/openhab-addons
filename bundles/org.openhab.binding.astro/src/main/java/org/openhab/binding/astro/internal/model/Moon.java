@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -27,7 +27,7 @@ public class Moon extends RiseSet implements Planet {
     private MoonDistance distance = new MoonDistance();
     private Eclipse eclipse = new Eclipse(EclipseKind.PARTIAL, EclipseKind.TOTAL);
     private Position position = new Position();
-    private Zodiac zodiac = new Zodiac(null);
+    private Zodiac zodiac = Zodiac.NULL;
 
     /**
      * Returns the moon phase.

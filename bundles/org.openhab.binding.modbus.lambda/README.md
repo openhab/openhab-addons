@@ -26,7 +26,7 @@ Note, that the things will show up under the Modbus binding.
 
 A Modbus Bridge has to be installed before installing the above mentioned things.
 The binding supports installations with more than one Heat Pump, Boiler, Buffer, Heating Circuit.
-For each of these parts you have to provide the Subindex of your Thing in the configurations section, usually using the User Interface. 
+For each of these parts you have to provide the Subindex of your Thing in the configurations section, usually using the User Interface.
 So if you have two Heating Circuits use 0 for the first and 1 for the second Heating Circuit.
 Handling of General System Settings (Base Adress 200) is not supported (yet). Solar functions (Base Address 4000) are now supported.
 Some of the registers noted RW in the manual are read only in the binding.
@@ -37,7 +37,7 @@ This extension does not support autodiscovery. The things need to be added manua
 
 ## Thing Configuration
 
-You first need to set up a TCP Modbus bridge according to the Modbus documentation. 
+You first need to set up a TCP Modbus bridge according to the Modbus documentation.
 A typical modbus bridge configuration would look like this:
 
 ```java
@@ -72,7 +72,7 @@ Heat Pump, Boiler, Buffer and Heating Circuit things use another parameter Subin
 
 Channels within the things are grouped into channel groups.
 
-### General: 
+### General
 
 ### Ambient Group
 
@@ -116,7 +116,7 @@ This group contains general operational information about the heat pump itself.
 | heat-pump-compressor-rating    | Number                    | true      | Compressor unit rating                                                  |
 | heat-pump-qp-heating           | Number:Power              | true      | Actual heating capacity                                                 |
 | heat-pump-fi-power-consumption | Number:Power              | true      | Frequency inverter actual power consumption                             |
-| heat-pump-cop                  | Number                    | true      | Coefficient of performance                                              | 
+| heat-pump-cop                  | Number                    | true      | Coefficient of performance                                              |
 | heat-pump-request-password     | Number                    | false     | Password register to release modbus request registers                   |
 | heat-pump-request-type         | Number:                   | false     | Request Type                                                            |
 | heat-pump-request-t-flow       | Number:Temperature        | false     | Requested flow line termperature                                        |
@@ -125,6 +125,8 @@ This group contains general operational information about the heat pump itself.
 | heat-pump-relais-state         | Number:Temperature        | true      | Heatpump Relais State for 2nd heating stage                             |
 | heat-pump-vdae                 | Number:Energy             | true      | Accumulated electrical energy consumption of compressor unit            |
 | heat-pump-vdaq                 | Number:Energy             | true      | Accumulated thermal energy output of compressor unit                    |
+| heat-pump-vdae-swap            | Number:Energy             | true      | Accumulated electrical energy consumption of compressor unit (DWord swapped) |
+| heat-pump-vdaq-swap            | Number:Energy             | true      | Accumulated thermal energy output of compressor unit (DWord swapped)         |
 
 ### Boiler Group
 
@@ -155,6 +157,7 @@ This group contains information about the buffer for the heating circuit.
 | buffer-request-heat-sink-temperature-difference | Number:Temperature | false     | Requested temperature difference between flow line and return line   |
 | buffer-request-heating-capacity                 | Number:Power       | false     | Requested capacity                                                   |
 | maximum-buffer-temperature                      | Number:Temperature | false     | Setting for maximum buffer temperature )                             |
+
 ### Solar Group
 
 This group contains information about the solar thermic component.
@@ -226,8 +229,8 @@ Number:Temperature  lambdabuffer_requestreturnlinetemperature  "Request Return L
 Number:Temperature  lambdabuffer_requestheatsinktemperature    "Requested Heat Sink Temperature Difference" (lambdabuffer)  { channel="modbus:buffer:Lambda_Bridge:lambdabuffer:buffer-group#buffer-request-heat-sink-temperature" }
 Number:Power        lambdabuffer_requestheatingcapacity              "Requested Heating Capacity"                 (lambdabuffer)  { channel="modbus:buffer:Lambda_Bridge:lambdabuffer:buffer-group#buffer-request-heating-capacity" }
 Number:Temperature  lambdabuffer_maximumbuffertemperature      "Maximum Buffer Temperature"                 (lambdabuffer)  { channel="modbus:buffer:Lambda_Bridge:lambdabuffer:buffer-group#maximum-buffer-temperature" }
-  ```
-  
+```
+
 ### Items Lambda General
 
 ```java

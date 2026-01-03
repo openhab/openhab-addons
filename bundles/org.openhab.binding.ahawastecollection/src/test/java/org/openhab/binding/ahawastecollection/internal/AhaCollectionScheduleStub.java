@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -29,9 +29,10 @@ import org.openhab.binding.ahawastecollection.internal.CollectionDate.WasteType;
 public final class AhaCollectionScheduleStub implements AhaCollectionSchedule {
 
     public static final Date GENERAL_WASTE_DATE = new GregorianCalendar(2021, 2, 19).getTime();
-    public static final Date LEIGHTWEIGHT_PACKAGING_DATE = new GregorianCalendar(2021, 2, 20).getTime();
+    public static final Date LIGHTWEIGHT_PACKAGING_DATE = new GregorianCalendar(2021, 2, 20).getTime();
     public static final Date BIO_WASTE_DATE = new GregorianCalendar(2021, 2, 21).getTime();
     public static final Date PAPER_DATE = new GregorianCalendar(2021, 2, 22).getTime();
+    public static final Date CHRISTMAS_TREE_DATE = new GregorianCalendar(2022, 1, 6).getTime();
 
     @Override
     public Map<WasteType, CollectionDate> getCollectionDates() throws IOException {
@@ -39,9 +40,11 @@ public final class AhaCollectionScheduleStub implements AhaCollectionSchedule {
         result.put(WasteType.GENERAL_WASTE,
                 new CollectionDate(WasteType.GENERAL_WASTE, Arrays.asList(GENERAL_WASTE_DATE)));
         result.put(WasteType.LIGHT_PACKAGES,
-                new CollectionDate(WasteType.GENERAL_WASTE, Arrays.asList(LEIGHTWEIGHT_PACKAGING_DATE)));
+                new CollectionDate(WasteType.GENERAL_WASTE, Arrays.asList(LIGHTWEIGHT_PACKAGING_DATE)));
         result.put(WasteType.BIO_WASTE, new CollectionDate(WasteType.GENERAL_WASTE, Arrays.asList(BIO_WASTE_DATE)));
         result.put(WasteType.PAPER, new CollectionDate(WasteType.GENERAL_WASTE, Arrays.asList(PAPER_DATE)));
+        result.put(WasteType.CHRISTMAS_TREES,
+                new CollectionDate(WasteType.CHRISTMAS_TREES, Arrays.asList(CHRISTMAS_TREE_DATE)));
         return result;
     }
 }

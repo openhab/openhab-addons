@@ -4,34 +4,6 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<channel-type id="battery-voltage">
-		<item-type>Number:ElectricPotential</item-type>
-		<label>Battery Voltage</label>
-		<description>The current battery voltage</description>
-		<category>Energy</category>
-		<state pattern="%.1f %unit%" readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="battery-alarm">
-		<item-type>String</item-type>
-		<label>Battery Alarm</label>
-		<description>The battery alarm state</description>
-		<category>Energy</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Voltage</tag>
-		</tags>
-		<state readOnly="true">
-			<options>
-				<option value="minThreshold">Below min threshold</option>
-				<option value="threshold1">Below threshold 1</option>
-				<option value="threshold2">Below threshold 2</option>
-				<option value="threshold3">Below threshold 3</option>
-				<option value="noThreshold">No battery alarm</option>
-			</options>
-		</state>
-	</channel-type>
-
 	<channel-type id="powersource-batpercentremaining">
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Battery Percent Remaining</label>
@@ -590,6 +562,246 @@
 				<option value="6">Extremely Poor</option>
 			</options>
 		</state>
+	</channel-type>
+
+	<channel-type id="carbondioxideconcentrationmeasurement-measuredvalue">
+		<item-type unitHint="ppm">Number:Dimensionless</item-type>
+		<label>CO2 Concentration</label>
+		<description>Indicates the measured carbon dioxide concentration in parts per million (ppm).</description>
+		<category>CarbonDioxide</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>CO2</tag>
+		</tags>
+		<state pattern="%.0f ppm" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="carbonmonoxideconcentrationmeasurement-measuredvalue">
+		<item-type unitHint="ppm">Number:Dimensionless</item-type>
+		<label>CO Concentration</label>
+		<description>Indicates the measured carbon monoxide concentration in parts per million (ppm).</description>
+		<category>Alarm</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>CO</tag>
+		</tags>
+		<state pattern="%.0f ppm" readOnly="true"/>
+	</channel-type>
+
+	<!-- Smoke/CO Alarm Channels -->
+	<channel-type id="smokecoalarm-expressedstate">
+		<item-type>Number</item-type>
+		<label>Expressed State</label>
+		<description>Indicates the visibly and audibly expressed alarm state with the highest priority.</description>
+		<category>Alarm</category>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>Smoke</tag>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="0">Normal</option>
+				<option value="1">Smoke Alarm</option>
+				<option value="2">CO Alarm</option>
+				<option value="3">Battery Alert</option>
+				<option value="4">Testing</option>
+				<option value="5">Hardware Fault</option>
+				<option value="6">End Of Service</option>
+				<option value="7">Interconnect Smoke</option>
+				<option value="8">Interconnect CO</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="smokecoalarm-smokestate">
+		<item-type>Number</item-type>
+		<label>Smoke Alarm</label>
+		<description>Indicates whether the smoke sensor is currently triggering an alarm.</description>
+		<category>Alarm</category>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>Smoke</tag>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="0">Normal</option>
+				<option value="1">Warning</option>
+				<option value="2">Critical</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="smokecoalarm-costate">
+		<item-type>Number</item-type>
+		<label>CO Alarm</label>
+		<description>Indicates whether the CO sensor is currently triggering an alarm.</description>
+		<category>Alarm</category>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>CO</tag>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="0">Normal</option>
+				<option value="1">Warning</option>
+				<option value="2">Critical</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="smokecoalarm-batteryalert">
+		<item-type>Number</item-type>
+		<label>Battery Alert</label>
+		<description>Indicates whether the battery power resource fault detection is triggered.</description>
+		<category>Alarm</category>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>LowBattery</tag>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="0">Normal</option>
+				<option value="1">Warning</option>
+				<option value="2">Critical</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="smokecoalarm-devicemuted">
+		<item-type>Number</item-type>
+		<label>Device Muted</label>
+		<description>Indicates whether the audible expression of the device is currently muted.</description>
+		<category>Alarm</category>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="0">Not Muted</option>
+				<option value="1">Muted</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="smokecoalarm-testinprogress">
+		<item-type>Switch</item-type>
+		<label>Test In Progress</label>
+		<description>Indicates whether the device self-test is currently activated.</description>
+		<category>Alarm</category>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="smokecoalarm-hardwarefault">
+		<item-type>Switch</item-type>
+		<label>Hardware Fault</label>
+		<description>Indicates whether the hardware fault detection mechanism is triggered.</description>
+		<category>Alarm</category>
+		<tags>
+			<tag>Alarm</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="smokecoalarm-endofservice">
+		<item-type>Number</item-type>
+		<label>End Of Service</label>
+		<description>Indicates whether the end-of-service has been triggered at the device.</description>
+		<category>Alarm</category>
+		<tags>
+			<tag>Alarm</tag>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="0">Normal</option>
+				<option value="1">Expired</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="smokecoalarm-interconnectsmoke">
+		<item-type>Number</item-type>
+		<label>Interconnect Smoke Alarm</label>
+		<description>Indicates whether the interconnected smoke alarm is currently triggering from another device.</description>
+		<category>Alarm</category>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>Smoke</tag>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="0">Normal</option>
+				<option value="1">Warning</option>
+				<option value="2">Critical</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="smokecoalarm-interconnectco">
+		<item-type>Number</item-type>
+		<label>Interconnect CO Alarm</label>
+		<description>Indicates whether the interconnected CO alarm is currently triggering from another device.</description>
+		<category>Alarm</category>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>CO</tag>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="0">Normal</option>
+				<option value="1">Warning</option>
+				<option value="2">Critical</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="smokecoalarm-contaminationstate">
+		<item-type>Number</item-type>
+		<label>Contamination State</label>
+		<description>Indicates the contamination level of the smoke sensor.</description>
+		<category>Alarm</category>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="0">Normal</option>
+				<option value="1">Low</option>
+				<option value="2">Warning</option>
+				<option value="3">Critical</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="smokecoalarm-smokesensitivity">
+		<item-type>Number</item-type>
+		<label>Smoke Sensitivity</label>
+		<description>Indicates the sensitivity level of the smoke sensor.</description>
+		<category>Alarm</category>
+		<tags>
+			<tag>Control</tag>
+		</tags>
+		<state>
+			<options>
+				<option value="0">High</option>
+				<option value="1">Standard</option>
+				<option value="2">Low</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="smokecoalarm-expirydate">
+		<item-type>DateTime</item-type>
+		<label>Expiry Date</label>
+		<description>Indicates the date when the device reaches its stated expiry date.</description>
+		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
+		<state readOnly="true"/>
 	</channel-type>
 
 </thing:thing-descriptions>

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -230,6 +230,16 @@ public class TestResponse {
         } catch (FileNotFoundException e) {
             fail("Test file not found: " + e.getMessage());
         }
+    }
+
+    @Test
+    void testEmptyParser() {
+        EntsoeDocumentParser standardParser = new EntsoeDocumentParser();
+        assertNotNull(standardParser);
+        assertNotNull(standardParser.getFailureReason());
+        EntsoeDocumentParser emptyParser = new EntsoeDocumentParser("");
+        assertNotNull(emptyParser);
+        assertNotNull(emptyParser.getFailureReason());
     }
 
     private void verifySpotPrice(Map<Instant, SpotPrice> map, String timestamp, double expectedValue) {

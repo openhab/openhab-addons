@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -11,6 +11,8 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.astro.internal.calc;
+
+import static org.openhab.binding.astro.internal.util.MathUtils.*;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -28,8 +30,6 @@ import org.openhab.binding.astro.internal.model.MoonPhase;
 import org.openhab.binding.astro.internal.model.MoonPhaseName;
 import org.openhab.binding.astro.internal.model.Position;
 import org.openhab.binding.astro.internal.model.Range;
-import org.openhab.binding.astro.internal.model.Zodiac;
-import org.openhab.binding.astro.internal.model.ZodiacSign;
 import org.openhab.binding.astro.internal.util.DateTimeUtils;
 
 /**
@@ -181,18 +181,18 @@ public class MoonCalc {
         double moonJd = Math.floor(DateTimeUtils.midnightDateToJulianDate(calendar)) - 2400000.0;
         moonJd -= ((calendar.get(Calendar.ZONE_OFFSET) + calendar.get(Calendar.DST_OFFSET)) / 60000.0) / 1440.0;
 
-        double sphi = SN(phi);
-        double cphi = CS(phi);
-        double sinho = SN(8.0 / 60.0);
+        double sphi = sinDeg(phi);
+        double cphi = cosDeg(phi);
+        double sinho = sinDeg(8.0 / 60.0);
 
         int hour = 1;
         double utrise = -1;
         double utset = -1;
         do {
-            double yminus = SINALT(moonJd, hour - 1, lambda, cphi, sphi) - sinho;
-            double yo = SINALT(moonJd, hour, lambda, cphi, sphi) - sinho;
-            double yplus = SINALT(moonJd, hour + 1, lambda, cphi, sphi) - sinho;
-            double[] quadRet = QUAD(yminus, yo, yplus);
+            double yminus = sinAlt(moonJd, hour - 1, lambda, cphi, sphi) - sinho;
+            double yo = sinAlt(moonJd, hour, lambda, cphi, sphi) - sinho;
+            double yplus = sinAlt(moonJd, hour + 1, lambda, cphi, sphi) - sinho;
+            double[] quadRet = quad(yminus, yo, yplus);
             if (quadRet[3] == 1) {
                 if (yminus < 0) {
                     utrise = hour + quadRet[1];
@@ -262,47 +262,47 @@ public class MoonCalc {
     private double calcMoonPhase(double k, double mode) {
         double kMod = Math.floor(k) + mode;
         double t = kMod / 1236.85;
-        double e = var_e(t);
-        double m = var_m(kMod, t);
-        double m1 = var_m1(kMod, t);
-        double f = var_f(kMod, t);
-        double o = var_o(kMod, t);
-        double jd = var_jde(kMod, t);
+        double e = varE(t);
+        double m = varM(kMod, t);
+        double m1 = varM1(kMod, t);
+        double f = varF(kMod, t);
+        double o = varO(kMod, t);
+        double jd = varJde(kMod, t);
         if (mode == NEW_MOON) {
-            jd += -.4072 * SN(m1) + .17241 * e * SN(m) + .01608 * SN(2 * m1) + .01039 * SN(2 * f)
-                    + .00739 * e * SN(m1 - m) - .00514 * e * SN(m1 + m) + .00208 * e * e * SN(2 * m)
-                    - .00111 * SN(m1 - 2 * f) - .00057 * SN(m1 + 2 * f);
-            jd += .00056 * e * SN(2 * m1 + m) - .00042 * SN(3 * m1) + .00042 * e * SN(m + 2 * f)
-                    + .00038 * e * SN(m - 2 * f) - .00024 * e * SN(2 * m1 - m) - .00017 * SN(o)
-                    - .00007 * SN(m1 + 2 * m) + .00004 * SN(2 * m1 - 2 * f);
-            jd += .00004 * SN(3 * m) + .00003 * SN(m1 + m - 2 * f) + .00003 * SN(2 * m1 + 2 * f)
-                    - .00003 * SN(m1 + m + 2 * f) + .00003 * SN(m1 - m + 2 * f) - .00002 * SN(m1 - m - 2 * f)
-                    - .00002 * SN(3 * m1 + m);
-            jd += .00002 * SN(4 * m1);
+            jd += -.4072 * sinDeg(m1) + .17241 * e * sinDeg(m) + .01608 * sinDeg(2 * m1) + .01039 * sinDeg(2 * f)
+                    + .00739 * e * sinDeg(m1 - m) - .00514 * e * sinDeg(m1 + m) + .00208 * e * e * sinDeg(2 * m)
+                    - .00111 * sinDeg(m1 - 2 * f) - .00057 * sinDeg(m1 + 2 * f);
+            jd += .00056 * e * sinDeg(2 * m1 + m) - .00042 * sinDeg(3 * m1) + .00042 * e * sinDeg(m + 2 * f)
+                    + .00038 * e * sinDeg(m - 2 * f) - .00024 * e * sinDeg(2 * m1 - m) - .00017 * sinDeg(o)
+                    - .00007 * sinDeg(m1 + 2 * m) + .00004 * sinDeg(2 * m1 - 2 * f);
+            jd += .00004 * sinDeg(3 * m) + .00003 * sinDeg(m1 + m - 2 * f) + .00003 * sinDeg(2 * m1 + 2 * f)
+                    - .00003 * sinDeg(m1 + m + 2 * f) + .00003 * sinDeg(m1 - m + 2 * f)
+                    - .00002 * sinDeg(m1 - m - 2 * f) - .00002 * sinDeg(3 * m1 + m);
+            jd += .00002 * sinDeg(4 * m1);
         } else if (mode == FULL_MOON) {
-            jd += -.40614 * SN(m1) + .17302 * e * SN(m) + .01614 * SN(2 * m1) + .01043 * SN(2 * f)
-                    + .00734 * e * SN(m1 - m) - .00515 * e * SN(m1 + m) + .00209 * e * e * SN(2 * m)
-                    - .00111 * SN(m1 - 2 * f) - .00057 * SN(m1 + 2 * f);
-            jd += .00056 * e * SN(2 * m1 + m) - .00042 * SN(3 * m1) + .00042 * e * SN(m + 2 * f)
-                    + .00038 * e * SN(m - 2 * f) - .00024 * e * SN(2 * m1 - m) - .00017 * SN(o)
-                    - .00007 * SN(m1 + 2 * m) + .00004 * SN(2 * m1 - 2 * f);
-            jd += .00004 * SN(3 * m) + .00003 * SN(m1 + m - 2 * f) + .00003 * SN(2 * m1 + 2 * f)
-                    - .00003 * SN(m1 + m + 2 * f) + .00003 * SN(m1 - m + 2 * f) - .00002 * SN(m1 - m - 2 * f)
-                    - .00002 * SN(3 * m1 + m);
-            jd += .00002 * SN(4 * m1);
+            jd += -.40614 * sinDeg(m1) + .17302 * e * sinDeg(m) + .01614 * sinDeg(2 * m1) + .01043 * sinDeg(2 * f)
+                    + .00734 * e * sinDeg(m1 - m) - .00515 * e * sinDeg(m1 + m) + .00209 * e * e * sinDeg(2 * m)
+                    - .00111 * sinDeg(m1 - 2 * f) - .00057 * sinDeg(m1 + 2 * f);
+            jd += .00056 * e * sinDeg(2 * m1 + m) - .00042 * sinDeg(3 * m1) + .00042 * e * sinDeg(m + 2 * f)
+                    + .00038 * e * sinDeg(m - 2 * f) - .00024 * e * sinDeg(2 * m1 - m) - .00017 * sinDeg(o)
+                    - .00007 * sinDeg(m1 + 2 * m) + .00004 * sinDeg(2 * m1 - 2 * f);
+            jd += .00004 * sinDeg(3 * m) + .00003 * sinDeg(m1 + m - 2 * f) + .00003 * sinDeg(2 * m1 + 2 * f)
+                    - .00003 * sinDeg(m1 + m + 2 * f) + .00003 * sinDeg(m1 - m + 2 * f)
+                    - .00002 * sinDeg(m1 - m - 2 * f) - .00002 * sinDeg(3 * m1 + m);
+            jd += .00002 * sinDeg(4 * m1);
         } else {
-            jd += -.62801 * SN(m1) + .17172 * e * SN(m) - .01183 * e * SN(m1 + m) + .00862 * SN(2 * m1)
-                    + .00804 * SN(2 * f) + .00454 * e * SN(m1 - m) + .00204 * e * e * SN(2 * m) - .0018 * SN(m1 - 2 * f)
-                    - .0007 * SN(m1 + 2 * f);
-            jd += -.0004 * SN(3 * m1) - .00034 * e * SN(2 * m1 - m) + .00032 * e * SN(m + 2 * f)
-                    + .00032 * e * SN(m - 2 * f) - .00028 * e * e * SN(m1 + 2 * m) + .00027 * e * SN(2 * m1 + m)
-                    - .00017 * SN(o);
-            jd += -.00005 * SN(m1 - m - 2 * f) + .00004 * SN(2 * m1 + 2 * f) - .00004 * SN(m1 + m + 2 * f)
-                    + .00004 * SN(m1 - 2 * m) + .00003 * SN(m1 + m - 2 * f) + .00003 * SN(3 * m)
-                    + .00002 * SN(2 * m1 - 2 * f);
-            jd += .00002 * SN(m1 - m + 2 * f) - .00002 * SN(3 * m1 + m);
-            double w = .00306 - .00038 * e * CS(m) + .00026 * CS(m1) - .00002 * CS(m1 - m) + .00002 * CS(m1 + m)
-                    + .00002 * CS(2 * f);
+            jd += -.62801 * sinDeg(m1) + .17172 * e * sinDeg(m) - .01183 * e * sinDeg(m1 + m) + .00862 * sinDeg(2 * m1)
+                    + .00804 * sinDeg(2 * f) + .00454 * e * sinDeg(m1 - m) + .00204 * e * e * sinDeg(2 * m)
+                    - .0018 * sinDeg(m1 - 2 * f) - .0007 * sinDeg(m1 + 2 * f);
+            jd += -.0004 * sinDeg(3 * m1) - .00034 * e * sinDeg(2 * m1 - m) + .00032 * e * sinDeg(m + 2 * f)
+                    + .00032 * e * sinDeg(m - 2 * f) - .00028 * e * e * sinDeg(m1 + 2 * m)
+                    + .00027 * e * sinDeg(2 * m1 + m) - .00017 * sinDeg(o);
+            jd += -.00005 * sinDeg(m1 - m - 2 * f) + .00004 * sinDeg(2 * m1 + 2 * f) - .00004 * sinDeg(m1 + m + 2 * f)
+                    + .00004 * sinDeg(m1 - 2 * m) + .00003 * sinDeg(m1 + m - 2 * f) + .00003 * sinDeg(3 * m)
+                    + .00002 * sinDeg(2 * m1 - 2 * f);
+            jd += .00002 * sinDeg(m1 - m + 2 * f) - .00002 * sinDeg(3 * m1 + m);
+            double w = .00306 - .00038 * e * cosDeg(m) + .00026 * cosDeg(m1) - .00002 * cosDeg(m1 - m)
+                    + .00002 * cosDeg(m1 + m) + .00002 * cosDeg(2 * f);
             jd += (mode == FIRST_QUARTER) ? w : -w;
         }
         return moonCorrection(jd, t, kMod);
@@ -314,29 +314,32 @@ public class MoonCalc {
     private double getEclipse(double k, EclipseType typ, EclipseKind eclipse) {
         double kMod = Math.floor(k) + ((typ == EclipseType.SUN) ? 0 : 0.5);
         double t = kMod / 1236.85;
-        double f = var_f(kMod, t);
+        double f = varF(kMod, t);
         double jd = 0;
         double ringTest = 0;
-        if (SN(Math.abs(f)) <= .36) {
-            double o = var_o(kMod, t);
-            double f1 = f - .02665 * SN(o);
+        if (sinDeg(Math.abs(f)) <= .36) {
+            double o = varO(kMod, t);
+            double f1 = f - .02665 * sinDeg(o);
             double a1 = 299.77 + .107408 * kMod - .009173 * t * t;
-            double e = var_e(t);
-            double m = var_m(kMod, t);
-            double m1 = var_m1(kMod, t);
-            double p = .207 * e * SN(m) + .0024 * e * SN(2 * m) - .0392 * SN(m1) + .0116 * SN(2 * m1)
-                    - .0073 * e * SN(m1 + m) + .0067 * e * SN(m1 - m) + .0118 * SN(2 * f1);
-            double q = 5.2207 - .0048 * e * CS(m) + .002 * e * CS(2 * m) - .3299 * CS(m1) - .006 * e * CS(m1 + m)
-                    + .0041 * e * CS(m1 - m);
-            double g = (p * CS(f1) + q * SN(f1)) * (1 - .0048 * CS(Math.abs(f1)));
-            double u = .0059 + .0046 * e * CS(m) - .0182 * CS(m1) + .0004 * CS(2 * m1) - .0005 * CS(m + m1);
-            jd = var_jde(kMod, t);
-            jd += (typ == EclipseType.MOON) ? -.4065 * SN(m1) + .1727 * e * SN(m) : -.4075 * SN(m1) + .1721 * e * SN(m);
+            double e = varE(t);
+            double m = varM(kMod, t);
+            double m1 = varM1(kMod, t);
+            double p = .207 * e * sinDeg(m) + .0024 * e * sinDeg(2 * m) - .0392 * sinDeg(m1) + .0116 * sinDeg(2 * m1)
+                    - .0073 * e * sinDeg(m1 + m) + .0067 * e * sinDeg(m1 - m) + .0118 * sinDeg(2 * f1);
+            double q = 5.2207 - .0048 * e * cosDeg(m) + .002 * e * cosDeg(2 * m) - .3299 * cosDeg(m1)
+                    - .006 * e * cosDeg(m1 + m) + .0041 * e * cosDeg(m1 - m);
+            double g = (p * cosDeg(f1) + q * sinDeg(f1)) * (1 - .0048 * cosDeg(Math.abs(f1)));
+            double u = .0059 + .0046 * e * cosDeg(m) - .0182 * cosDeg(m1) + .0004 * cosDeg(2 * m1)
+                    - .0005 * cosDeg(m + m1);
+            jd = varJde(kMod, t);
+            jd += (typ == EclipseType.MOON) ? -.4065 * sinDeg(m1) + .1727 * e * sinDeg(m)
+                    : -.4075 * sinDeg(m1) + .1721 * e * sinDeg(m);
 
-            jd += .0161 * SN(2 * m1) - .0097 * SN(2 * f1) + .0073 * e * SN(m1 - m) - .005 * e * SN(m1 + m)
-                    - .0023 * SN(m1 - 2 * f1) + .0021 * e * SN(2 * m);
-            jd += .0012 * SN(m1 + 2 * f1) + .0006 * e * SN(2 * m1 + m) - .0004 * SN(3 * m1) - .0003 * e * SN(m + 2 * f1)
-                    + .0003 * SN(a1) - .0002 * e * SN(m - 2 * f1) - .0002 * e * SN(2 * m1 - m) - .0002 * SN(o);
+            jd += .0161 * sinDeg(2 * m1) - .0097 * sinDeg(2 * f1) + .0073 * e * sinDeg(m1 - m)
+                    - .005 * e * sinDeg(m1 + m) - .0023 * sinDeg(m1 - 2 * f1) + .0021 * e * sinDeg(2 * m);
+            jd += .0012 * sinDeg(m1 + 2 * f1) + .0006 * e * sinDeg(2 * m1 + m) - .0004 * sinDeg(3 * m1)
+                    - .0003 * e * sinDeg(m + 2 * f1) + .0003 * sinDeg(a1) - .0002 * e * sinDeg(m - 2 * f1)
+                    - .0002 * e * sinDeg(2 * m1 - m) - .0002 * sinDeg(o);
             switch (typ) {
                 case MOON:
                     if ((1.0248 - u - Math.abs(g)) / .545 <= 0) {
@@ -387,9 +390,9 @@ public class MoonCalc {
         double d = 297.8502042 + 445267.11151686 * t - .00163 * t * t + t * t * t / 545868 - t * t * t * t / 113065000;
         double m = 357.5291092 + 35999.0502909 * t - .0001536 * t * t + t * t * t / 24490000;
         double m1 = 134.9634114 + 477198.8676313 * t + .008997 * t * t + t * t * t / 69699 - t * t * t * t / 14712000;
-        double i = 180 - d - 6.289 * SN(m1) + 2.1 * SN(m) - 1.274 * SN(2 * d - m1) - .658 * SN(2 * d)
-                - .241 * SN(2 * m1) - .110 * SN(d);
-        return (1 + CS(i)) / 2 * 100.0;
+        double i = 180 - d - 6.289 * sinDeg(m1) + 2.1 * sinDeg(m) - 1.274 * sinDeg(2 * d - m1) - .658 * sinDeg(2 * d)
+                - .241 * sinDeg(2 * m1) - .110 * sinDeg(d);
+        return (1 + cosDeg(i)) / 2 * 100.0;
     }
 
     /**
@@ -399,7 +402,7 @@ public class MoonCalc {
         double tz = 0;
         double phaseJd = 0;
         do {
-            double k = var_k(cal, tz);
+            double k = varK(cal, tz);
             tz += 1;
             phaseJd = calcMoonPhase(k, mode);
         } while (phaseJd <= midnightJd);
@@ -413,7 +416,7 @@ public class MoonCalc {
         double tz = 0;
         double phaseJd = 0;
         do {
-            double k = var_k(cal, tz);
+            double k = varK(cal, tz);
             tz -= 1;
             phaseJd = calcMoonPhase(k, mode);
         } while (phaseJd > jd);
@@ -427,7 +430,7 @@ public class MoonCalc {
         double tz = 0;
         double eclipseJd = 0;
         do {
-            double k = var_k(cal, tz);
+            double k = varK(cal, tz);
             tz += 1;
             eclipseJd = getEclipse(k, type, eclipse);
         } while (eclipseJd <= midnightJd);
@@ -447,16 +450,17 @@ public class MoonCalc {
             double m = 347.3477 + 27.1577721 * k - .0008323 * t * t - .000001 * t * t * t;
             double f = 316.6109 + 364.5287911 * k - .0125131 * t * t - .0000148 * t * t * t;
             jd = 2451534.6698 + 27.55454988 * k - .0006886 * t * t - .000001098 * t * t * t + .0000000052 * t * t
-                    + .4392 * SN(2 * d) + .0684 * SN(4 * d) + (.0456 - .00011 * t) * SN(m)
-                    + (.0426 - .00011 * t) * SN(2 * d - m) + .0212 * SN(2 * f);
-            jd += -.0189 * SN(d) + .0144 * SN(6 * d) + .0113 * SN(4 * d - m) + .0047 * SN(2 * d + 2 * f)
-                    + .0036 * SN(d + m) + .0035 * SN(8 * d) + .0034 * SN(6 * d - m) - .0034 * SN(2 * d - 2 * f)
-                    + .0022 * SN(2 * d - 2 * m) - .0017 * SN(3 * d);
-            jd += .0013 * SN(4 * d + 2 * f) + .0011 * SN(8 * d - m) + .001 * SN(4 * d - 2 * m) + .0009 * SN(10 * d)
-                    + .0007 * SN(3 * d + m) + .0006 * SN(2 * m) + .0005 * SN(2 * d + m) + .0005 * SN(2 * d + 2 * m)
-                    + .0004 * SN(6 * d + 2 * f);
-            jd += .0004 * SN(6 * d - 2 * m) + .0004 * SN(10 * d - m) - .0004 * SN(5 * d) - .0004 * SN(4 * d - 2 * f)
-                    + .0003 * SN(2 * f + m) + .0003 * SN(12 * d) + .0003 * SN(2 * d + 2 * f - m) - .0003 * SN(d - m);
+                    + .4392 * sinDeg(2 * d) + .0684 * sinDeg(4 * d) + (.0456 - .00011 * t) * sinDeg(m)
+                    + (.0426 - .00011 * t) * sinDeg(2 * d - m) + .0212 * sinDeg(2 * f);
+            jd += -.0189 * sinDeg(d) + .0144 * sinDeg(6 * d) + .0113 * sinDeg(4 * d - m) + .0047 * sinDeg(2 * d + 2 * f)
+                    + .0036 * sinDeg(d + m) + .0035 * sinDeg(8 * d) + .0034 * sinDeg(6 * d - m)
+                    - .0034 * sinDeg(2 * d - 2 * f) + .0022 * sinDeg(2 * d - 2 * m) - .0017 * sinDeg(3 * d);
+            jd += .0013 * sinDeg(4 * d + 2 * f) + .0011 * sinDeg(8 * d - m) + .001 * sinDeg(4 * d - 2 * m)
+                    + .0009 * sinDeg(10 * d) + .0007 * sinDeg(3 * d + m) + .0006 * sinDeg(2 * m)
+                    + .0005 * sinDeg(2 * d + m) + .0005 * sinDeg(2 * d + 2 * m) + .0004 * sinDeg(6 * d + 2 * f);
+            jd += .0004 * sinDeg(6 * d - 2 * m) + .0004 * sinDeg(10 * d - m) - .0004 * sinDeg(5 * d)
+                    - .0004 * sinDeg(4 * d - 2 * f) + .0003 * sinDeg(2 * f + m) + .0003 * sinDeg(12 * d)
+                    + .0003 * sinDeg(2 * d + 2 * f - m) - .0003 * sinDeg(d - m);
             k += 1;
         } while (jd < julianDate);
         return jd;
@@ -475,24 +479,28 @@ public class MoonCalc {
             double m = 347.3477 + 27.1577721 * k - .0008323 * t * t - .000001 * t * t * t;
             double f = 316.6109 + 364.5287911 * k - .0125131 * t * t - .0000148 * t * t * t;
             jd = 2451534.6698 + 27.55454988 * k - .0006886 * t * t - .000001098 * t * t * t + .0000000052 * t * t
-                    - 1.6769 * SN(2 * d) + .4589 * SN(4 * d) - .1856 * SN(6 * d) + .0883 * SN(8 * d);
-            jd += -(.0773 + .00019 * t) * SN(2 * d - m) + (.0502 - .00013 * t) * SN(m) - .046 * SN(10 * d)
-                    + (.0422 - .00011 * t) * SN(4 * d - m) - .0256 * SN(6 * d - m) + .0253 * SN(12 * d) + .0237 * SN(d);
-            jd += .0162 * SN(8 * d - m) - .0145 * SN(14 * d) + .0129 * SN(2 * f) - .0112 * SN(3 * d)
-                    - .0104 * SN(10 * d - m) + .0086 * SN(16 * d) + .0069 * SN(12 * d - m) + .0066 * SN(5 * d)
-                    - .0053 * SN(2 * d + 2 * f);
-            jd += -.0052 * SN(18 * d) - .0046 * SN(14 * d - m) - .0041 * SN(7 * d) + .004 * SN(2 * d + m)
-                    + .0032 * SN(20 * d) - .0032 * SN(d + m) + .0031 * SN(16 * d - m);
-            jd += -.0029 * SN(4 * d + m) - .0027 * SN(2 * d - 2 * m) + .0024 * SN(4 * d - 2 * m)
-                    - .0021 * SN(6 * d - 2 * m) - .0021 * SN(22 * d) - .0021 * SN(18 * d - m);
-            jd += .0019 * SN(6 * d + m) - .0018 * SN(11 * d) - .0014 * SN(8 * d + m) - .0014 * SN(4 * d - 2 * f)
-                    - .0014 * SN(6 * d - 2 * f) + .0014 * SN(3 * d + m) - .0014 * SN(5 * d + m) + .0013 * SN(13 * d);
-            jd += .0013 * SN(20 * d - m) + .0011 * SN(3 * d + 2 * m) - .0011 * SN(4 * d + 2 * f - 2 * m)
-                    - .001 * SN(d + 2 * m) - .0009 * SN(22 * d - m) - .0008 * SN(4 * f) + .0008 * SN(6 * d - 2 * f)
-                    + .0008 * SN(2 * d - 2 * f + m);
-            jd += .0007 * SN(2 * m) + .0007 * SN(2 * f - m) + .0007 * SN(2 * d + 4 * f) - .0006 * SN(2 * f - 2 * m)
-                    - .0006 * SN(2 * d - 2 * f + 2 * m) + .0006 * SN(24 * d) + .0005 * SN(4 * d - 4 * f)
-                    + .0005 * SN(2 * d + 2 * m) - .0004 * SN(d - m) + .0027 * SN(9 * d) + .0027 * SN(4 * d + 2 * f);
+                    - 1.6769 * sinDeg(2 * d) + .4589 * sinDeg(4 * d) - .1856 * sinDeg(6 * d) + .0883 * sinDeg(8 * d);
+            jd += -(.0773 + .00019 * t) * sinDeg(2 * d - m) + (.0502 - .00013 * t) * sinDeg(m) - .046 * sinDeg(10 * d)
+                    + (.0422 - .00011 * t) * sinDeg(4 * d - m) - .0256 * sinDeg(6 * d - m) + .0253 * sinDeg(12 * d)
+                    + .0237 * sinDeg(d);
+            jd += .0162 * sinDeg(8 * d - m) - .0145 * sinDeg(14 * d) + .0129 * sinDeg(2 * f) - .0112 * sinDeg(3 * d)
+                    - .0104 * sinDeg(10 * d - m) + .0086 * sinDeg(16 * d) + .0069 * sinDeg(12 * d - m)
+                    + .0066 * sinDeg(5 * d) - .0053 * sinDeg(2 * d + 2 * f);
+            jd += -.0052 * sinDeg(18 * d) - .0046 * sinDeg(14 * d - m) - .0041 * sinDeg(7 * d)
+                    + .004 * sinDeg(2 * d + m) + .0032 * sinDeg(20 * d) - .0032 * sinDeg(d + m)
+                    + .0031 * sinDeg(16 * d - m);
+            jd += -.0029 * sinDeg(4 * d + m) - .0027 * sinDeg(2 * d - 2 * m) + .0024 * sinDeg(4 * d - 2 * m)
+                    - .0021 * sinDeg(6 * d - 2 * m) - .0021 * sinDeg(22 * d) - .0021 * sinDeg(18 * d - m);
+            jd += .0019 * sinDeg(6 * d + m) - .0018 * sinDeg(11 * d) - .0014 * sinDeg(8 * d + m)
+                    - .0014 * sinDeg(4 * d - 2 * f) - .0014 * sinDeg(6 * d - 2 * f) + .0014 * sinDeg(3 * d + m)
+                    - .0014 * sinDeg(5 * d + m) + .0013 * sinDeg(13 * d);
+            jd += .0013 * sinDeg(20 * d - m) + .0011 * sinDeg(3 * d + 2 * m) - .0011 * sinDeg(4 * d + 2 * f - 2 * m)
+                    - .001 * sinDeg(d + 2 * m) - .0009 * sinDeg(22 * d - m) - .0008 * sinDeg(4 * f)
+                    + .0008 * sinDeg(6 * d - 2 * f) + .0008 * sinDeg(2 * d - 2 * f + m);
+            jd += .0007 * sinDeg(2 * m) + .0007 * sinDeg(2 * f - m) + .0007 * sinDeg(2 * d + 4 * f)
+                    - .0006 * sinDeg(2 * f - 2 * m) - .0006 * sinDeg(2 * d - 2 * f + 2 * m) + .0006 * sinDeg(24 * d)
+                    + .0005 * sinDeg(4 * d - 4 * f) + .0005 * sinDeg(2 * d + 2 * m) - .0004 * sinDeg(d - m)
+                    + .0027 * sinDeg(9 * d) + .0027 * sinDeg(4 * d + 2 * f);
             k += 1;
         } while (jd < julianDate);
         return jd;
@@ -516,11 +524,11 @@ public class MoonCalc {
         double arc = 206264.8062;
         double coseps = .91748;
         double sineps = .39778;
-        double lo = FRAK(.606433 + 1336.855225 * t);
-        double l = p2 * FRAK(.374897 + 1325.55241 * t);
-        double ls = p2 * FRAK(.993133 + 99.997361 * t);
-        double d = p2 * FRAK(.827361 + 1236.853086 * t);
-        double f = p2 * FRAK(.259086 + 1342.227825 * t);
+        double lo = frac(.606433 + 1336.855225 * t);
+        double l = p2 * frac(.374897 + 1325.55241 * t);
+        double ls = p2 * frac(.993133 + 99.997361 * t);
+        double d = p2 * frac(.827361 + 1236.853086 * t);
+        double f = p2 * frac(.259086 + 1342.227825 * t);
         double dl = 22640 * Math.sin(l) - 4586 * Math.sin(l - 2 * d) + 2370 * Math.sin(2 * d) + 769 * Math.sin(2 * l)
                 - 668 * Math.sin(ls) - 412 * Math.sin(2 * f) - 212 * Math.sin(2 * l - 2 * d)
                 - 206 * Math.sin(l + ls - 2 * d) + 192 * Math.sin(l + 2 * d) - 165 * Math.sin(ls - 2 * d)
@@ -529,7 +537,7 @@ public class MoonCalc {
         double h = f - 2 * d;
         double n = -526 * Math.sin(h) + 44 * Math.sin(l + h) - 31 * Math.sin(-l + h) - 23 * Math.sin(ls + h)
                 + 11 * Math.sin(-ls + h) - 25 * Math.sin(-2 * l + f) + 21 * Math.sin(-l + f);
-        double lmoon = p2 * FRAK(lo + dl / 1296000);
+        double lmoon = p2 * frac(lo + dl / 1296000);
         double bmoon = (18520 * Math.sin(s) + n) / arc;
         double cb = Math.cos(bmoon);
         double x = cb * Math.cos(lmoon);
@@ -546,31 +554,23 @@ public class MoonCalc {
         return new double[] { dec, ra };
     }
 
-    private double CS(double x) {
-        return Math.cos(x * SunCalc.DEG2RAD);
-    }
-
-    private double SN(double x) {
-        return Math.sin(x * SunCalc.DEG2RAD);
-    }
-
-    private double SINALT(double moonJd, int hour, double lambda, double cphi, double sphi) {
+    private double sinAlt(double moonJd, int hour, double lambda, double cphi, double sphi) {
         double jdo = moonJd + hour / 24.0;
         double t = (jdo - 51544.5) / 36525.0;
         double[] decra = calcMoon(t);
-        double tau = 15.0 * (LMST(jdo, lambda) - decra[1]);
-        return sphi * SN(decra[0]) + cphi * CS(decra[0]) * CS(tau);
+        double tau = 15.0 * (localMeanSiderealTime(jdo, lambda) - decra[1]);
+        return sphi * sinDeg(decra[0]) + cphi * cosDeg(decra[0]) * cosDeg(tau);
     }
 
-    private double LMST(double moonJd, double lambda) {
+    private double localMeanSiderealTime(double moonJd, double lambda) {
         double moonJdo = Math.floor(moonJd);
         double ut = (moonJd - moonJdo) * 24.0;
         double t = (moonJdo - 51544.5) / 36525.0;
         double gmst = 6.697374558 + 1.0027379093 * ut + (8640184.812866 + (.093104 - .0000062 * t) * t) * t / 3600.0;
-        return 24.0 * FRAK((gmst - lambda / 15.0) / 24.0);
+        return 24.0 * frac((gmst - lambda / 15.0) / 24.0);
     }
 
-    private double FRAK(double x) {
+    private double frac(double x) {
         double ret = x - (int) (x);
         if (ret < 0) {
             ret += 1;
@@ -578,7 +578,7 @@ public class MoonCalc {
         return ret;
     }
 
-    private double[] QUAD(double yminus, double yo, double yplus) {
+    private double[] quad(double yminus, double yo, double yplus) {
         double nz = 0;
         double a = .5 * (yminus + yplus) - yo;
         double b = .5 * (yplus - yminus);
@@ -605,45 +605,45 @@ public class MoonCalc {
         return new double[] { ye, zero1, zero2, nz };
     }
 
-    private double var_o(double k, double t) {
+    private double varO(double k, double t) {
         return 124.7746 - 1.5637558 * k + .0020691 * t * t + .00000215 * t * t * t;
     }
 
-    private double var_f(double k, double t) {
+    private double varF(double k, double t) {
         return 160.7108 + 390.67050274 * k - .0016341 * t * t - .00000227 * t * t * t + .000000011 * t * t * t * t;
     }
 
-    private double var_m1(double k, double t) {
+    private double varM1(double k, double t) {
         return 201.5643 + 385.81693528 * k + .1017438 * t * t + .00001239 * t * t * t - .000000058 * t * t * t * t;
     }
 
-    private double var_m(double k, double t) {
+    private double varM(double k, double t) {
         return 2.5534 + 29.10535669 * k - .0000218 * t * t - .00000011 * t * t * t;
     }
 
-    private double var_e(double t) {
+    private double varE(double t) {
         return 1 - .002516 * t - .0000074 * t * t;
     }
 
-    private double var_jde(double k, double t) {
+    private double varJde(double k, double t) {
         return 2451550.09765 + 29.530588853 * k + .0001337 * t * t - .00000015 * t * t * t
                 + .00000000073 * t * t * t * t;
     }
 
-    private double var_k(Calendar cal, double tz) {
+    private double varK(Calendar cal, double tz) {
         return (cal.get(Calendar.YEAR) + (cal.get(Calendar.DAY_OF_YEAR) + tz) / 365 - 2000) * 12.3685;
     }
 
     private double moonCorrection(double jd, double t, double k) {
         double ret = jd;
-        ret += .000325 * SN(299.77 + .107408 * k - .009173 * t * t) + .000165 * SN(251.88 + .016321 * k)
-                + .000164 * SN(251.83 + 26.651886 * k) + .000126 * SN(349.42 + 36.412478 * k)
-                + .00011 * SN(84.66 + 18.206239 * k);
-        ret += .000062 * SN(141.74 + 53.303771 * k) + .00006 * SN(207.14 + 2.453732 * k)
-                + .000056 * SN(154.84 + 7.30686 * k) + .000047 * SN(34.52 + 27.261239 * k)
-                + .000042 * SN(207.19 + .121824 * k) + .00004 * SN(291.34 + 1.844379 * k);
-        ret += .000037 * SN(161.72 + 24.198154 * k) + .000035 * SN(239.56 + 25.513099 * k)
-                + .000023 * SN(331.55 + 3.592518 * k);
+        ret += .000325 * sinDeg(299.77 + .107408 * k - .009173 * t * t) + .000165 * sinDeg(251.88 + .016321 * k)
+                + .000164 * sinDeg(251.83 + 26.651886 * k) + .000126 * sinDeg(349.42 + 36.412478 * k)
+                + .00011 * sinDeg(84.66 + 18.206239 * k);
+        ret += .000062 * sinDeg(141.74 + 53.303771 * k) + .00006 * sinDeg(207.14 + 2.453732 * k)
+                + .000056 * sinDeg(154.84 + 7.30686 * k) + .000047 * sinDeg(34.52 + 27.261239 * k)
+                + .000042 * sinDeg(207.19 + .121824 * k) + .00004 * sinDeg(291.34 + 1.844379 * k);
+        ret += .000037 * sinDeg(161.72 + 24.198154 * k) + .000035 * sinDeg(239.56 + 25.513099 * k)
+                + .000023 * sinDeg(331.55 + 3.592518 * k);
         return ret;
     }
 
@@ -663,7 +663,7 @@ public class MoonCalc {
                 -1897, -2117, 2354, 0, 0, -1423, -1117, -1571, -1739, 0, -4421, 0, 0, 0, 0, 1165, 0, 0, 8752 };
         double sr = 0;
         for (int t = 0; t < 60; t++) {
-            sr += kr[t] * CS(kd[t] * d + km[t] * m + km1[t] * m1 + kf[t] * f);
+            sr += kr[t] * cosDeg(kd[t] * d + km[t] * m + km1[t] * m1 + kf[t] * f);
         }
         return sr;
     }
@@ -672,35 +672,35 @@ public class MoonCalc {
      * Sets the azimuth, elevation and zodiac in the moon object.
      */
     private void setAzimuthElevationZodiac(double julianDate, double latitude, double longitude, Moon moon) {
-        double lat = latitude * SunCalc.DEG2RAD;
-        double lon = longitude * SunCalc.DEG2RAD;
+        double lat = Math.toRadians(latitude);
+        double lon = Math.toRadians(longitude);
 
         double gmst = toGMST(julianDate);
-        double lmst = toLMST(gmst, lon) * 15. * SunCalc.DEG2RAD;
+        double lmst = toLMST(gmst, lon) * Math.toRadians(15);
 
         double d = julianDate - 2447891.5;
-        double anomalyMean = 360 * SunCalc.DEG2RAD / 365.242191 * d + 4.87650757829735 - 4.935239984568769;
-        double nu = anomalyMean + 360.0 * SunCalc.DEG2RAD / Math.PI * 0.016713 * Math.sin(anomalyMean);
+        double anomalyMean = Math.toRadians(360) / 365.242191 * d + 4.87650757829735 - 4.935239984568769;
+        double nu = anomalyMean + Math.toRadians(360.0) / Math.PI * 0.016713 * Math.sin(anomalyMean);
         double sunLon = mod2Pi(nu + 4.935239984568769);
 
-        double l0 = 318.351648 * SunCalc.DEG2RAD;
-        double p0 = 36.340410 * SunCalc.DEG2RAD;
-        double n0 = 318.510107 * SunCalc.DEG2RAD;
-        double i = 5.145396 * SunCalc.DEG2RAD;
-        double l = 13.1763966 * SunCalc.DEG2RAD * d + l0;
-        double mMoon = l - 0.1114041 * SunCalc.DEG2RAD * d - p0;
-        double n = n0 - 0.0529539 * SunCalc.DEG2RAD * d;
+        double l0 = Math.toRadians(318.351648);
+        double p0 = Math.toRadians(36.340410);
+        double n0 = Math.toRadians(318.510107);
+        double i = Math.toRadians(5.145396);
+        double l = Math.toRadians(13.1763966) * d + l0;
+        double mMoon = l - Math.toRadians(0.1114041) * d - p0;
+        double n = n0 - Math.toRadians(0.0529539) * d;
         double c = l - sunLon;
-        double ev = 1.2739 * SunCalc.DEG2RAD * Math.sin(2 * c - mMoon);
-        double ae = 0.1858 * SunCalc.DEG2RAD * Math.sin(anomalyMean);
-        double a3 = 0.37 * SunCalc.DEG2RAD * Math.sin(anomalyMean);
+        double ev = Math.toRadians(1.2739) * Math.sin(2 * c - mMoon);
+        double ae = Math.toRadians(0.1858) * Math.sin(anomalyMean);
+        double a3 = Math.toRadians(0.37) * Math.sin(anomalyMean);
         double mMoon2 = mMoon + ev - ae - a3;
-        double ec = 6.2886 * SunCalc.DEG2RAD * Math.sin(mMoon2);
-        double a4 = 0.214 * SunCalc.DEG2RAD * Math.sin(2 * mMoon2);
+        double ec = Math.toRadians(6.2886) * Math.sin(mMoon2);
+        double a4 = Math.toRadians(0.214) * Math.sin(2 * mMoon2);
         double l2 = l + ev + ec - ae + a4;
-        double v = 0.6583 * SunCalc.DEG2RAD * Math.sin(2 * (l2 - sunLon));
+        double v = Math.toRadians(0.6583) * Math.sin(2 * (l2 - sunLon));
         double l3 = l2 + v;
-        double n2 = n - 0.16 * SunCalc.DEG2RAD * Math.sin(anomalyMean);
+        double n2 = n - Math.toRadians(0.16) * Math.sin(anomalyMean);
 
         double moonLon = mod2Pi(n2 + Math.atan2(Math.sin(l3 - n2) * Math.cos(i), Math.cos(l3 - n2)));
         double moonLat = Math.asin(Math.sin(l3 - n2) * Math.sin(i));
@@ -713,21 +713,10 @@ public class MoonCalc {
         double[] azAlt = equ2AzAlt(raDecTopo[0], raDecTopo[1], lat, lmst);
 
         Position position = moon.getPosition();
-        position.setAzimuth(azAlt[0] * SunCalc.RAD2DEG);
-        position.setElevation(azAlt[1] * SunCalc.RAD2DEG + refraction(azAlt[1]));
+        position.setAzimuth(Math.toDegrees(azAlt[0]));
+        position.setElevation(Math.toDegrees(azAlt[1]) + refraction(azAlt[1]));
 
-        // zodiac
-        double idxd = Math.floor(moonLon * SunCalc.RAD2DEG / 30);
-        int idx = 0;
-        if (idxd < 0) {
-            idx = (int) (Math.ceil(idxd));
-        } else {
-            idx = (int) (Math.floor(idxd));
-        }
-
-        if (idx >= 0 || idx <= ZodiacSign.values().length) {
-            moon.setZodiac(new Zodiac(ZodiacSign.values()[idx]));
-        }
+        moon.setZodiac(ZodiacCalc.calculate(moonLon, null));
     }
 
     private double mod2Pi(double x) {
@@ -765,8 +754,8 @@ public class MoonCalc {
      */
     private double[] ecl2Equ(double lat, double lon, double jd) {
         double t = (jd - 2451545.0) / 36525.0;
-        double eps = (23. + (26 + 21.45 / 60.) / 60. + t * (-46.815 + t * (-0.0006 + t * 0.00181)) / 3600.)
-                * SunCalc.DEG2RAD;
+        double eps = Math
+                .toRadians(23. + (26 + 21.45 / 60.) / 60. + t * (-46.815 + t * (-0.0006 + t * 0.00181)) / 3600.);
         double coseps = Math.cos(eps);
         double sineps = Math.sin(eps);
 
@@ -816,7 +805,7 @@ public class MoonCalc {
      * Convert greenwich mean sidereal time to local mean sidereal time.
      */
     private double toLMST(double gmst, double lon) {
-        return mod(gmst + SunCalc.RAD2DEG * lon / 15., 24.);
+        return mod(gmst + Math.toDegrees(lon) / 15., 24.);
     }
 
     /**
@@ -841,7 +830,7 @@ public class MoonCalc {
     private double refraction(double alt) {
         int pressure = 1015;
         int temperature = 10;
-        double altdeg = alt * SunCalc.RAD2DEG;
+        double altdeg = Math.toDegrees(alt);
 
         if (altdeg < -2 || altdeg >= 90) {
             return 0;
@@ -861,7 +850,7 @@ public class MoonCalc {
 
         for (int i = 0; i < 3; i++) {
             n = y + (7.31 / (y + 4.4));
-            n = 1.0 / Math.tan(n * SunCalc.DEG2RAD);
+            n = 1.0 / Math.tan(Math.toRadians(n));
             d = n * p / (60.0 + q * (n + 39.0));
             n = y - y0;
             y0 = d - d0 - n;

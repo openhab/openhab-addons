@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -24,7 +24,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class ICloudApiResponseException extends Exception {
 
     private static final long serialVersionUID = 1L;
-    private int statusCode;
+    protected int statusCode;
+    protected String body;
 
     /**
      * The constructor.
@@ -32,9 +33,15 @@ public class ICloudApiResponseException extends Exception {
      * @param url URL for which the exception occurred
      * @param statusCode HTTP status code which was reported
      */
-    public ICloudApiResponseException(String url, int statusCode) {
+    public ICloudApiResponseException(String url, int statusCode, String body) {
         super(String.format("Request %s failed with %s.", url, statusCode));
         this.statusCode = statusCode;
+        this.body = body;
+    }
+
+    @Override
+    public String toString() {
+        return "ICloudApiResponseException [statusCode=" + statusCode + ", body=" + body + "]";
     }
 
     /**

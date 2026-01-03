@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,6 +16,7 @@ import static org.openhab.binding.astro.internal.AstroBindingConstants.*;
 import static org.openhab.binding.astro.internal.job.Job.*;
 import static org.openhab.binding.astro.internal.model.SunPhaseName.*;
 
+import java.time.Instant;
 import java.util.Calendar;
 import java.util.Locale;
 import java.util.TimeZone;
@@ -25,8 +26,8 @@ import org.openhab.binding.astro.internal.handler.AstroThingHandler;
 import org.openhab.binding.astro.internal.model.Eclipse;
 import org.openhab.binding.astro.internal.model.Planet;
 import org.openhab.binding.astro.internal.model.Range;
+import org.openhab.binding.astro.internal.model.Season;
 import org.openhab.binding.astro.internal.model.Sun;
-import org.openhab.binding.astro.internal.model.SunZodiac;
 
 /**
  * Daily scheduled jobs For Sun planet
@@ -57,13 +58,13 @@ public final class DailyJobSun extends AbstractJob {
     public void run() {
         try {
             handler.publishDailyInfo();
-            if (logger.isDebugEnabled()) {
-                logger.debug("Scheduled Astro event-jobs for thing {}", handler.getThing().getUID());
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("Scheduled Astro event-jobs for thing {}", handler.getThing().getUID());
             }
 
             Planet planet = handler.getPlanet();
             if (planet == null) {
-                logger.error("Planet not instantiated");
+                LOGGER.error("Planet not instantiated");
                 return;
             }
             Sun sun = (Sun) planet;
@@ -124,15 +125,16 @@ public final class DailyJobSun extends AbstractJob {
             });
 
             // schedule republish jobs
-            SunZodiac sunZodiac;
-            Calendar cal = (sunZodiac = sun.getZodiac()) == null ? null : sunZodiac.getEnd();
-            if (cal != null) {
-                schedulePublishPlanet(handler, cal, zone, locale);
+            if (sun.getZodiac().getEnd() instanceof Instant when) {
+                schedulePublishPlanet(handler, when);
             }
-            schedulePublishPlanet(handler, sun.getSeason().getNextSeason(), zone, locale);
+
+            if (sun.getSeason() instanceof Season season) {
+                schedulePublishPlanet(handler, season.getNextSeason());
+            }
 
             // schedule phase jobs
-            cal = sun.getRise().getStart();
+            Calendar cal = sun.getRise().getStart();
             if (cal != null) {
                 scheduleSunPhase(handler, SUN_RISE, cal, zone, locale);
             }
@@ -173,9 +175,9 @@ public final class DailyJobSun extends AbstractJob {
                 scheduleSunPhase(handler, CIVIL_DUSK, cal, zone, locale);
             }
         } catch (Exception e) {
-            logger.warn("The daily sun job execution for \"{}\" failed: {}", handler.getThing().getUID(),
+            LOGGER.warn("The daily sun job execution for \"{}\" failed: {}", handler.getThing().getUID(),
                     e.getMessage());
-            logger.trace("", e);
+            LOGGER.trace("", e);
         }
     }
 

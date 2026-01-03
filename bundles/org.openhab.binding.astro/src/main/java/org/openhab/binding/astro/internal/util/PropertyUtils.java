@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,6 +15,7 @@ package org.openhab.binding.astro.internal.util;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -63,6 +64,9 @@ public class PropertyUtils {
             cal.setTimeZone(zone);
             ZonedDateTime zoned = gregorianCal.toZonedDateTime().withFixedOffsetZone();
             return new DateTimeType(zoned);
+        } else if (value instanceof Instant instant) {
+            Instant configuredInstant = DateTimeUtils.applyConfig(instant, config);
+            return new DateTimeType(configuredInstant.atZone(zone.toZoneId()).withFixedOffsetZone());
         } else if (value instanceof Number) {
             BigDecimal decimalValue = new BigDecimal(value.toString()).setScale(2, RoundingMode.HALF_UP);
             return new DecimalType(decimalValue);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -36,20 +36,26 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.xml.sax.ErrorHandler;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
 
 /**
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
-public class EntsoeDocumentParser {
+public class EntsoeDocumentParser implements ErrorHandler {
     private final DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
     private final Logger logger = LoggerFactory.getLogger(EntsoeDocumentParser.class);
     private final TreeMap<String, String> sequenceDurationMap = new TreeMap<>();
     private final TreeMap<String, TreeMap<Instant, SpotPrice>> sequencePriceMap = new TreeMap<>();
     private @Nullable String failureReason;
     private @Nullable Document document;
+
+    public EntsoeDocumentParser() {
+        failureReason = "Parser not initialized with response";
+    }
 
     /**
      * Constructor. Parses the given XML response string.
@@ -284,6 +290,7 @@ public class EntsoeDocumentParser {
     private @Nullable Document parseDocument(String response)
             throws ParserConfigurationException, SAXException, IOException {
         DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
+        documentBuilder.setErrorHandler(this);
         Document document = documentBuilder.parse(new InputSource(new StringReader(response)));
         document.getDocumentElement().normalize();
         return document;
@@ -300,5 +307,28 @@ public class EntsoeDocumentParser {
     private Instant calculateDateTime(Instant start, int iteration, String resolution) {
         Duration d = Duration.parse(resolution).multipliedBy(iteration);
         return start.plus(d);
+    }
+
+    @Override
+    public void warning(@Nullable SAXParseException exception) throws SAXException {
+        throwParserException("Unknown warning", exception);
+    }
+
+    @Override
+    public void error(@Nullable SAXParseException exception) throws SAXException {
+        throwParserException("Unknown error", exception);
+    }
+
+    @Override
+    public void fatalError(@Nullable SAXParseException exception) throws SAXException {
+        throwParserException("Unknown fatal error", exception);
+    }
+
+    private void throwParserException(String message, @Nullable SAXParseException exception) throws SAXException {
+        if (exception != null) {
+            throw exception;
+        } else {
+            throw new SAXException(message);
+        }
     }
 }

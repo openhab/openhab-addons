@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -64,7 +64,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class ServerHandler extends ApiConsumerHandler implements FreeDeviceIntf {
-    private static final Set<String> VPN_SERVERS = Set.of(PPTP, OPENVPN_ROUTED, OPENVPN_BRIDGE, WIREGUARD);
+    private static final Set<String> VPN_SERVERS = Set.of(PPTP, OPENVPN_ROUTED, OPENVPN_BRIDGE, WIREGUARD, IPSEC);
 
     private final Logger logger = LoggerFactory.getLogger(ServerHandler.class);
     private final ChannelUID eventChannelUID;
@@ -192,7 +192,7 @@ public class ServerHandler extends ApiConsumerHandler implements FreeDeviceIntf 
                 updateChannelDecimal(groupName, VPN_CONNECTIONS, vpnServer.connectionCount());
                 updateChannelDecimal(groupName, VPN_AUTHENTICATED, vpnServer.authConnectionCount());
             } else {
-                logger.warn("Unexpected and VPN server type: {}", groupName);
+                logger.warn("Unexpected and unhandled VPN server type: '{}'", groupName);
             }
         });
 

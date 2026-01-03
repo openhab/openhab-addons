@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,9 +13,7 @@
 package org.openhab.binding.astro.internal.model;
 
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
-import java.util.TimeZone;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -32,15 +30,17 @@ public class Sun extends RiseSet implements Planet {
 
     private Position position = new Position();
 
-    private @Nullable SunZodiac zodiac;
+    private Zodiac zodiac = Zodiac.NULL;
 
-    private Season season = new Season(TimeZone.getDefault(), Locale.getDefault());
+    private @Nullable Season season = null;
 
     private Eclipse eclipse = new Eclipse(EclipseKind.PARTIAL, EclipseKind.TOTAL, EclipseKind.RING);
 
     private Radiation radiation = new Radiation();
 
     private SunPhase phase = new SunPhase();
+
+    private Circadian circadian = Circadian.DEFAULT;
 
     /**
      * Returns the astro dawn range.
@@ -249,21 +249,21 @@ public class Sun extends RiseSet implements Planet {
     /**
      * Returns the zodiac.
      */
-    @Nullable
-    public SunZodiac getZodiac() {
+    public Zodiac getZodiac() {
         return zodiac;
     }
 
     /**
      * Sets the zodiac.
      */
-    public void setZodiac(@Nullable SunZodiac zodiac) {
+    public void setZodiac(Zodiac zodiac) {
         this.zodiac = zodiac;
     }
 
     /**
      * Returns the seasons.
      */
+    @Nullable
     public Season getSeason() {
         return season;
     }
@@ -308,5 +308,13 @@ public class Sun extends RiseSet implements Planet {
      */
     public Map<SunPhaseName, Range> getAllRanges() {
         return ranges;
+    }
+
+    public Circadian getCircadian() {
+        return circadian;
+    }
+
+    public void setCircadian(Circadian circadian) {
+        this.circadian = circadian;
     }
 }

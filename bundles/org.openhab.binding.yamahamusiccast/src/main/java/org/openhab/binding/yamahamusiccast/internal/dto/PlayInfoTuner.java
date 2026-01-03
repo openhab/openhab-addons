@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,7 +19,6 @@ import com.google.gson.annotations.SerializedName;
  *
  * @author Markus Kastner - Initial contribution
  */
-
 public class PlayInfoTuner {
 
     @SerializedName("response_code")
@@ -29,10 +28,10 @@ public class PlayInfoTuner {
     private String band;
 
     @SerializedName("fm")
-    private fmObject fm;
+    private FmObject fm;
 
     @SerializedName("dab")
-    private dabObject dab;
+    private DabObject dab;
 
     public String getResponseCode() {
         if (responseCode == null) {
@@ -48,15 +47,15 @@ public class PlayInfoTuner {
         return band;
     }
 
-    public fmObject getFM() {
+    public FmObject getFM() {
         return fm;
     }
 
-    public dabObject getDAB() {
+    public DabObject getDAB() {
         return dab;
     }
 
-    public class fmObject {
+    public static class FmObject {
         @SerializedName("preset")
         private int preset = 0;
         @SerializedName("freq")
@@ -71,7 +70,7 @@ public class PlayInfoTuner {
         }
     }
 
-    public class dabObject {
+    public static class DabObject {
         @SerializedName("preset")
         private int preset = 0;
         @SerializedName("service_label")

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -451,6 +451,10 @@ public class HeatpumpHandler extends BaseThingHandler {
                 getScaled(block.heatpumpVdAE, KILOWATT_HOUR, -3.0));
         updateState(channelUID(GROUP_HEAT_PUMP, CHANNEL_HEAT_PUMP_VDAQ),
                 getScaled(block.heatpumpVdAQ, KILOWATT_HOUR, -3.0));
+        updateState(channelUID(GROUP_HEAT_PUMP, CHANNEL_HEAT_PUMP_VDAE_SWAP),
+                getScaled(block.heatpumpVdAEswap, KILOWATT_HOUR, -3.0));
+        updateState(channelUID(GROUP_HEAT_PUMP, CHANNEL_HEAT_PUMP_VDAQ_SWAP),
+                getScaled(block.heatpumpVdAQswap, KILOWATT_HOUR, -3.0));
 
         resetCommunicationError();
     }
