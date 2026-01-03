@@ -67,7 +67,7 @@
     <maven.compiler.release>${oh.java.version}</maven.compiler.release>
 
     <ohc.version>5.2.0-SNAPSHOT</ohc.version>
-    <bnd.version>7.1.0</bnd.version>
+    <bnd.version>7.2.0</bnd.version>
     <commons.net.version>3.9.0</commons.net.version>
     <eea.version>2.4.0</eea.version>
     <jackson.annotations.version>2.20</jackson.annotations.version>
