@@ -35,21 +35,32 @@
 				want the old (round Hue bridge) to be emulated.</description>
 			<default>false</default>
 		</parameter>
+		<parameter name="useSemanticModel" type="boolean">
+			<label>Use Semantic Model</label>
+			<description>If enabled, the Hue emulation will use the semantic model to determine which items to expose. Items
+				belonging to equipment classified as LightSource are exposed as Hue lights. Light capabilities are derived from
+				semantic points: Switch items with the 'Switch'/'Power' tags are exposed as on/off lights, Color items with the
+				'Control'/'Color' tags are exposed as color lights, and Dimmer items with the 'Control'/'Brightness' tags are
+				exposed as dimmable white lights. If a LightSource is located within a semantic Location, that Location is exposed
+				as a Hue room. Lights without an associated Location are still exposed but are not assigned to a room.
+			</description>
+			<default>false</default>
+		</parameter>
 		<parameter name="restrictToTagsSwitches" type="text" required="false">
 			<label>Switch Item Tags</label>
-			<description>The HUE emulation can either publish Switch items if this is set to an empty string or filter items by
+			<description>The Hue emulation can either publish Switch items if this is set to an empty string or filter items by
 				tags. Use commas to separate multiple entries.</description>
 			<default>Switchable</default>
 		</parameter>
 		<parameter name="restrictToTagsColorLights" type="text" required="false">
 			<label>Color Item Tags</label>
-			<description>The HUE emulation can either publish all Color items if this is set to an empty string or filter items
+			<description>The Hue emulation can either publish all Color items if this is set to an empty string or filter items
 				by tags. Use commas to separate multiple entries.</description>
 			<default>ColorLighting</default>
 		</parameter>
 		<parameter name="restrictToTagsWhiteLights" type="text" required="false">
 			<label>White Item Tags</label>
-			<description>The HUE emulation can either publish all Dimmer items if this is set to an empty string or filter items
+			<description>The Hue emulation can either publish all Dimmer items if this is set to an empty string or filter items
 				by tags. Use commas to separate multiple entries.</description>
 			<default>Lighting</default>
 		</parameter>
@@ -61,7 +72,7 @@
 		</parameter>
 		<parameter name="discoveryIp" type="text" required="false">
 			<label>Optional Discovery Address</label>
-			<description>If your host has multiple IP addresses you may specify the IP(s) you would like to advertise in the UPNP
+			<description>If your host has multiple IP addresses you may specify the IP(s) you would like to advertise in the UPnP
 				discovery process. You may safely leave this empty on most systems. Use commas to separate multiple entries.</description>
 		</parameter>
 		<parameter name="discoveryHttpPort" type="integer" required="false">

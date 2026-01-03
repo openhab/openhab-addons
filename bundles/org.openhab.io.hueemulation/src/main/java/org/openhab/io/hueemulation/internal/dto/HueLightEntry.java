@@ -52,7 +52,7 @@ public class HueLightEntry {
 
     public String name;
     /** Associated item UID */
-    public @NonNullByDefault({}) transient GenericItem item;
+    public transient GenericItem item;
     public transient DeviceType deviceType;
     public transient @Nullable Command lastCommand = null;
     public transient @Nullable HueStateChange lastHueChange = null;
@@ -90,13 +90,24 @@ public class HueLightEntry {
      * @param deviceType The device type decides which capabilities this device has
      */
     public HueLightEntry(GenericItem item, String uniqueid, DeviceType deviceType) {
-        String label = item.getLabel();
+        this(item, uniqueid, deviceType, uniqueid);
+    }
+
+    /**
+     * Create a hue device.
+     *
+     * @param item The associated item
+     * @param uniqueid The unique id
+     * @param deviceType The device type decides which capabilities this device has
+     * @param name The name of the device
+     */
+    public HueLightEntry(GenericItem item, String uniqueid, DeviceType deviceType, String name) {
         this.item = item;
         this.deviceType = deviceType;
+        this.name = name;
         this.uniqueid = uniqueid;
         switch (deviceType) {
             case ColorType:
-                this.name = label != null ? label : "";
                 this.type = "Extended Color light";
                 this.modelid = "LCT010";
                 this.colorGamut = "C";
@@ -110,7 +121,6 @@ public class HueLightEntry {
                 break;
             case WhiteType:
                 /** Hue White A19 - 3nd gen - white, 2700K only */
-                this.name = label != null ? label : "";
                 this.type = "Dimmable light";
                 this.modelid = "LWB006";
                 this.colorGamut = null;
@@ -123,7 +133,6 @@ public class HueLightEntry {
                 this.capabilities.certified = true;
                 break;
             case WhiteTemperatureType:
-                this.name = label != null ? label : "";
                 this.type = "Color temperature light";
                 this.modelid = "LTW001";
                 this.colorGamut = "2200K-6500K";
@@ -141,7 +150,6 @@ public class HueLightEntry {
                  * Pretend to be an OSRAM plug, there is no native Philips Hue plug on the market.
                  * Those are supported by most of the external apps and Alexa.
                  */
-                this.name = label != null ? label : "";
                 this.type = "On/off light";
                 this.modelid = "Plug 01";
                 this.colorGamut = null;
@@ -159,7 +167,7 @@ public class HueLightEntry {
     }
 
     /**
-     * This custom serializer updates the light state and label, before serializing.
+     * This custom serializer updates the light state, before serializing.
      */
     @NonNullByDefault({})
     public static class Serializer implements JsonSerializer<HueLightEntry> {
@@ -171,10 +179,6 @@ public class HueLightEntry {
         public JsonElement serialize(HueLightEntry product, Type type, JsonSerializationContext context) {
             product.state = StateUtils.adjustedColorStateFromItemState(product.item.getState(), product.deviceType,
                     product.lastCommand, product.lastHueChange);
-            String label = product.item.getLabel();
-            if (label != null) {
-                product.name = label;
-            }
 
             return context.serialize(product, HueDeviceHelper.class);
         }
@@ -186,16 +190,13 @@ public class HueLightEntry {
      *
      * @param element A replace item
      */
-    public void updateItem(GenericItem element) {
+    public void updateItem(GenericItem element, String name) {
         item = element;
         state = StateUtils.colorStateFromItemState(item.getState(), deviceType);
 
         lastCommand = null;
         lastHueChange = null;
 
-        String label = element.getLabel();
-        if (label != null) {
-            name = label;
-        }
+        this.name = name;
     }
 }
