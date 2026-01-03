@@ -560,9 +560,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 return;
         }
 
-        if (putResource == null)
-
-        {
+        if (putResource == null) {
             if (logger.isDebugEnabled()) {
                 logger.debug("{} -> handleCommand() command:{} not supported on channelUID:{}", resourceId, command,
                         channelUID);
