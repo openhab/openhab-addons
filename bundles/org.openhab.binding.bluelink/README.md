@@ -3,10 +3,9 @@
 This binding integrates Hyundai vehicles equipped with Bluelink connected car services.
 It allows you to monitor your vehicle's status and control various features remotely.
 
-Genesis vehicles may also work, though this has not been tested.
+Kia and Genesis vehicles may also work, though this has not been tested.
 
-**NOTE: The binding only support the US region at the moment, because the Bluelink API
-differs by region.**
+**NOTE: The binding only supports the EU and US regions at the moment, because the Bluelink API differs by region.**
 
 ## Supported Things
 
@@ -24,12 +23,17 @@ registered to your account.
 
 ### `account` Bridge
 
-| Parameter  | Required | Description                                              |
-|------------|----------|----------------------------------------------------------|
-| `username` | Yes      | Bluelink account email                                   |
-| `password` | Yes      | Bluelink account password                                |
-| `pin`      | No       | Bluelink service PIN (required for lock/unlock commands) |
-| `region`   | No       | Country code (`US`), autodetected if absent              |
+| Parameter  | Required | Description                                                    |
+|------------|----------|----------------------------------------------------------------|
+| `username` | US only  | Bluelink account email                                         |
+| `password` | Yes      | Bluelink account password (US) / Refresh Token (EU)            |
+| `pin`      | No       | Bluelink service PIN (required for lock/unlock commands)       |
+| `brand`    | EU only  | Car brand (`HYUNDAI`, `KIA`, `GENESIS`), defaults to `HYUNDAI` |
+| `region`   | No       | Country code (`US`, `EU`), autodetected if absent              |
+
+For the EU region, a refresh token is needed to access the API.
+Such a refresh token is valid for 180 days, so it has to be renewed regularly.
+There are various ways of retrieving a refresh token, [RustyDust/bluelink_refresh_token](https://github.com/RustyDust/bluelink_refresh_token) has been tested and works as of Jan 2026.
 
 ### `vehicle` Thing
 
@@ -59,6 +63,11 @@ Vehicle things support the following actions:
 | unlock()        | -                                                          | Unlock the vehicle                                         |
 | startCharging() | -                                                          | Start charging the vehicle                                 |
 | stopCharging()  | -                                                          | Stop charging the verhicle                                 |
+
+The `forceRefresh()` action is always available.
+
+Availability of the control actions depends on the region:
+Control actions are available in the US, but not in the EU.
 
 ## Channels
 
