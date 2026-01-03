@@ -53,10 +53,10 @@ public class BaseVehicleActions implements ThingActions {
     }
 
     public static void forceRefresh(final @Nullable ThingActions actions) {
-        if (actions instanceof VehicleControlActions va) {
+        if (actions instanceof BaseVehicleActions va) {
             va.forceRefresh();
         } else {
-            throw new IllegalArgumentException("expected VehicleControlActions");
+            throw new IllegalArgumentException("expected BaseVehicleActions");
         }
     }
 }

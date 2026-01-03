@@ -275,7 +275,7 @@ public class BluelinkVehicleHandler extends BaseThingHandler {
         updateState(GROUP_STATUS, CHANNEL_ENGINE_RUNNING, OnOffType.from(status.engineOn()));
         var odometer = status.odometer();
         if (odometer != null) {
-            updateState(GROUP_STATUS, CHANNEL_ODOMETER, status.odometer());
+            updateState(GROUP_STATUS, CHANNEL_ODOMETER, odometer);
         }
         if (status.lastUpdate() != null) {
             try {

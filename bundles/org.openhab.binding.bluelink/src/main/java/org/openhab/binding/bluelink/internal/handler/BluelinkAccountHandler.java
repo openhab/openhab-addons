@@ -131,6 +131,10 @@ public class BluelinkAccountHandler extends BaseBridgeHandler {
             }
         };
 
+        if (this.api == null) {
+            return;
+        }
+
         updateStatus(ThingStatus.UNKNOWN);
         loginTask = scheduler.schedule(this::login, 0, TimeUnit.MILLISECONDS);
     }
