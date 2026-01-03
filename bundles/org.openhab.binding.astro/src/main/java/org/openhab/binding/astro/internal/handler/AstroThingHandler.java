@@ -19,6 +19,7 @@ import static org.openhab.core.types.RefreshType.REFRESH;
 import java.lang.invoke.MethodHandles;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
@@ -344,7 +345,9 @@ public abstract class AstroThingHandler extends BaseThingHandler {
     public void schedule(Job job, Instant eventAt) {
         long sleepTime = Instant.now().until(eventAt, ChronoUnit.MILLIS);
         schedule(job, sleepTime);
-        logger.debug("Scheduled {} in {}ms (at {})", job, sleepTime, eventAt);
+        if (logger.isDebugEnabled()) {
+            logger.debug("Scheduled {} in {}ms (at {})", job, sleepTime, eventAt.atZone(ZoneId.systemDefault()));
+        }
     }
 
     private void tidyScheduledFutures() {

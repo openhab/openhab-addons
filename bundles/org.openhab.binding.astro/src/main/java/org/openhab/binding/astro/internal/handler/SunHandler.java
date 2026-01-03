@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.astro.internal.handler;
 
+import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Calendar;
@@ -22,6 +23,7 @@ import java.util.TimeZone;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.astro.internal.calc.CircadianCalc;
+import org.openhab.binding.astro.internal.calc.RadiationCalc;
 import org.openhab.binding.astro.internal.calc.SunCalc;
 import org.openhab.binding.astro.internal.job.DailyJobSun;
 import org.openhab.binding.astro.internal.job.Job;
@@ -68,12 +70,14 @@ public class SunHandler extends AstroThingHandler {
         Double longitude = thingConfig.longitude;
         Double altitude = thingConfig.altitude;
         Calendar calendar = Calendar.getInstance(zone, locale);
+        ZonedDateTime now = Instant.now().atZone(zoneId);
         sunCalc.setPositionalInfo(calendar, latitude != null ? latitude : 0, longitude != null ? longitude : 0,
                 altitude != null ? altitude : 0, sun);
 
         sun.getEclipse().setElevations(this, timeZoneProvider);
 
         sun.setCircadian(CircadianCalc.calculate(calendar, sun.getRise(), sun.getSet(), sun.getNoon()));
+        sun.setRadiation(RadiationCalc.calculate(now, sun.getPosition().getElevationAsDouble(), altitude));
 
         this.sun = sun;
 
@@ -138,6 +142,6 @@ public class SunHandler extends AstroThingHandler {
 
     public @Nullable Radiation getRadiationAt(ZonedDateTime date) {
         Sun localSun = getPositionedSunAt(date);
-        return localSun.getRadiation();
+        return RadiationCalc.calculate(date, localSun.getPosition().getElevationAsDouble(), thingConfig.altitude);
     }
 }
