@@ -4,7 +4,7 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<channel-type id="ejphpm">
+	<channel-type id="ejp-hpm">
 		<item-type>Number:Energy</item-type>
 		<label>EJPHPM</label>
 		<description>Total consumed energy at high rate pricing</description>
@@ -16,7 +16,7 @@
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="ejphn">
+	<channel-type id="ejp-hn">
 		<item-type>Number:Energy</item-type>
 		<label>EJPHN</label>
 		<description>Total consumed energy at low rate pricing</description>
@@ -28,7 +28,7 @@
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="pejp">
+	<channel-type id="p-ejp">
 		<item-type>Number:Time</item-type>
 		<label>PEJP</label>
 		<description>Prior notice to EJP start</description>

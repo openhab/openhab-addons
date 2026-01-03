@@ -55,7 +55,7 @@
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="powerFactor">
+	<channel-type id="power-factor">
 		<item-type>Number:Power</item-type>
 		<label>Teleinfo PowerFactor Type</label>
 		<category>Energy</category>
@@ -69,7 +69,7 @@
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="dateTime">
+	<channel-type id="date-time">
 		<item-type>DateTime</item-type>
 		<label>Teleinfo DateTime Type</label>
 		<category>Energy</category>
@@ -83,7 +83,7 @@
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="cutoff">
+	<channel-type id="cut-off">
 		<item-type>Number</item-type>
 		<label>Cutoff Type</label>
 		<description>This status describes the current cutoff type.</description>
@@ -101,7 +101,7 @@
 	</channel-type>
 
 
-	<channel-type id="overVoltageState">
+	<channel-type id="over-voltage-state">
 		<item-type>Number</item-type>
 		<label>Overvoltage State</label>
 		<description>Describes an over voltage condition possible state.</description>
@@ -113,7 +113,7 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="exceedingPowerState">
+	<channel-type id="exceeding-power-state">
 		<item-type>Number</item-type>
 		<label>Exceeding Power State</label>
 		<description>Describe an Exceeding power condition state papp > pmax.</description>
@@ -149,7 +149,7 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="clockState">
+	<channel-type id="clock-state">
 		<item-type>Number</item-type>
 		<label>Clock State</label>
 		<description>State of the clock.</description>
@@ -173,7 +173,7 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="outputcomState">
+	<channel-type id="outputcom-state">
 		<item-type>Number</item-type>
 		<label>Output Com State</label>
 		<description>State of the communication output</description>
@@ -187,7 +187,7 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="plcState">
+	<channel-type id="plc-state">
 		<item-type>Number</item-type>
 		<label>PLC State</label>
 		<description>State of the PLC</description>
@@ -200,7 +200,7 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="synchroPlcState">
+	<channel-type id="synchro-plc-state">
 		<item-type>Number</item-type>
 		<label>PLC Synchro State</label>
 		<description>State of the PLC Synchro</description>
@@ -212,7 +212,7 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="movingTips">
+	<channel-type id="moving-tips">
 		<item-type>Number</item-type>
 		<label>Moving Tips</label>
 		<description>Indicate a special tariff slot for a specific period.</description>

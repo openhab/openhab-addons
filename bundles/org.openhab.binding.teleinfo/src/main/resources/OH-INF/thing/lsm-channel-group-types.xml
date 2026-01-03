@@ -221,62 +221,62 @@
 				<description>Profile of next rush day</description>
 			</channel>
 
-			<channel id="date" typeId="dateTime">
+			<channel id="date" typeId="date-time">
 				<label>DATE</label>
 				<description>Date and Time</description>
 			</channel>
 
-			<channel id="smaxsnDate" typeId="dateTime">
+			<channel id="smaxsnDate" typeId="date-time">
 				<label>SMAXSN TIMESTAMP</label>
 				<description>Timestamp of SMAXSN value</description>
 			</channel>
 
-			<channel id="smaxsnMinus1Date" typeId="dateTime">
+			<channel id="smaxsnMinus1Date" typeId="date-time">
 				<label>SMAXSN-1 TIMESTAMP</label>
 				<description>Timestamp of SMAXSN-1 value</description>
 			</channel>
 
-			<channel id="ccasnDate" typeId="dateTime">
+			<channel id="ccasnDate" typeId="date-time">
 				<label>CCASN TIMESTAMP</label>
 				<description>Timestamp of CCASN value</description>
 			</channel>
 
-			<channel id="ccasnMinus1Date" typeId="dateTime">
+			<channel id="ccasnMinus1Date" typeId="date-time">
 				<label>CCASN-1 TIMESTAMP</label>
 				<description>Timestamp of CCASN-1 value</description>
 			</channel>
 
-			<channel id="umoy1Date" typeId="dateTime">
+			<channel id="umoy1Date" typeId="date-time">
 				<label>UMOY1 TIMESTAMP</label>
 				<description>Timestamp of UMOY1 value</description>
 			</channel>
 
-			<channel id="dpm1Date" typeId="dateTime">
+			<channel id="dpm1Date" typeId="date-time">
 				<label>DPM1 TIMESTAMP</label>
 				<description>Date of DPM1</description>
 			</channel>
 
-			<channel id="fpm1Date" typeId="dateTime">
+			<channel id="fpm1Date" typeId="date-time">
 				<label>FPM1 TIMESTAMP</label>
 				<description>Date of FPM1</description>
 			</channel>
 
-			<channel id="dpm2Date" typeId="dateTime">
+			<channel id="dpm2Date" typeId="date-time">
 				<label>DPM2 TIMESTAMP</label>
 				<description>Date of DPM2</description>
 			</channel>
 
-			<channel id="fpm2Date" typeId="dateTime">
+			<channel id="fpm2Date" typeId="date-time">
 				<label>FPM2 TIMESTAMP</label>
 				<description>Date of FPM2</description>
 			</channel>
 
-			<channel id="dpm3Date" typeId="dateTime">
+			<channel id="dpm3Date" typeId="date-time">
 				<label>DPM3 TIMESTAMP</label>
 				<description>Date of DPM3</description>
 			</channel>
 
-			<channel id="fpm3Date" typeId="dateTime">
+			<channel id="fpm3Date" typeId="date-time">
 				<label>FPM3 TIMESTAMP</label>
 				<description>Date of FPM3</description>
 			</channel>
@@ -311,7 +311,7 @@
 				<description>Intensity (floating value)</description>
 			</channel>
 
-			<channel id="cosphi" typeId="powerFactor">
+			<channel id="cosphi" typeId="power-factor">
 				<label>CosPhi</label>
 				<description>CosPhi (floating value)</description>
 			</channel>
@@ -331,7 +331,7 @@
 				<description>State of main relay</description>
 			</channel>
 
-			<channel id="cut-off" typeId="cutoff">
+			<channel id="cut-off" typeId="cut-off">
 				<label>Cut Off</label>
 				<description>State of Cut Off switch</description>
 			</channel>
@@ -342,12 +342,12 @@
 			</channel>
 
 
-			<channel id="over-voltage" typeId="overVoltageState">
+			<channel id="over-voltage" typeId="over-voltage-state">
 				<label>Over Voltage</label>
 				<description>State of over voltage</description>
 			</channel>
 
-			<channel id="exceeding-power" typeId="exceedingPowerState">
+			<channel id="exceeding-power" typeId="exceeding-power-state">
 				<label>Exceeding</label>
 				<description>State of exceeding</description>
 			</channel>
@@ -372,7 +372,7 @@
 				<description>The distributor rate</description>
 			</channel>
 
-			<channel id="clock" typeId="clockState">
+			<channel id="clock" typeId="clock-state">
 				<label>Clock State</label>
 				<description>State Of Clock</description>
 			</channel>
@@ -382,17 +382,17 @@
 				<description>Type of PLC</description>
 			</channel>
 
-			<channel id="outputcom" typeId="outputcomState">
+			<channel id="outputcom" typeId="outputcom-state">
 				<label>Communication Output State</label>
 				<description>State of communication output</description>
 			</channel>
 
-			<channel id="plc-state" typeId="plcState">
+			<channel id="plc-state" typeId="plc-state">
 				<label>Plc State</label>
 				<description>State of PLC</description>
 			</channel>
 
-			<channel id="plc-synchro" typeId="synchroPlcState">
+			<channel id="plc-synchro" typeId="synchro-plc-state">
 				<label>Plc Synchro</label>
 				<description>State of PLC Synchro</description>
 			</channel>
@@ -407,12 +407,12 @@
 				<description>The state of tempo tariff for tomorrow</description>
 			</channel>
 
-			<channel id="advice-moving-tips" typeId="movingTips">
+			<channel id="advice-moving-tips" typeId="moving-tips">
 				<label>Moving Tips Advice</label>
 				<description>State of moving tips advice</description>
 			</channel>
 
-			<channel id="moving-tips" typeId="movingTips">
+			<channel id="moving-tips" typeId="moving-tips">
 				<label>Moving Tips</label>
 				<description>State of moving tips</description>
 			</channel>
@@ -555,22 +555,22 @@
 				<description>Injected active charge point N-1</description>
 			</channel>
 
-			<channel id="smaxinDate" typeId="dateTime">
+			<channel id="smaxinDate" typeId="date-time">
 				<label>SMAXIN TIMESTAMP</label>
 				<description>Timestamp of SMAXIN value</description>
 			</channel>
 
-			<channel id="smaxinMinus1Date" typeId="dateTime">
+			<channel id="smaxinMinus1Date" typeId="date-time">
 				<label>SMAXIN-1 TIMESTAMP</label>
 				<description>Timestamp of SMAXIN-1 value</description>
 			</channel>
 
-			<channel id="ccainDate" typeId="dateTime">
+			<channel id="ccainDate" typeId="date-time">
 				<label>CCAIN TIMESTAMP</label>
 				<description>Timestamp of CCAIN value</description>
 			</channel>
 
-			<channel id="ccainMinus1Date" typeId="dateTime">
+			<channel id="ccainMinus1Date" typeId="date-time">
 				<label>CCAIN-1 TIMESTAMP</label>
 				<description>Timestamp of CCAIN-1 value</description>
 			</channel>
@@ -658,42 +658,42 @@
 				<description>Mean Voltage on phase 3</description>
 			</channel>
 
-			<channel id="smaxsn1Date" typeId="dateTime">
+			<channel id="smaxsn1Date" typeId="date-time">
 				<label>SMAXSN1 TIMESTAMP</label>
 				<description>Timestamp of SMAXSN1 value</description>
 			</channel>
 
-			<channel id="smaxsn2Date" typeId="dateTime">
+			<channel id="smaxsn2Date" typeId="date-time">
 				<label>SMAXSN2 TIMESTAMP</label>
 				<description>Timestamp of SMAXSN2 value</description>
 			</channel>
 
-			<channel id="smaxsn3Date" typeId="dateTime">
+			<channel id="smaxsn3Date" typeId="date-time">
 				<label>SMAXSN3 TIMESTAMP</label>
 				<description>Timestamp of SMAXSN3 value</description>
 			</channel>
 
-			<channel id="smaxsn1Minus1Date" typeId="dateTime">
+			<channel id="smaxsn1Minus1Date" typeId="date-time">
 				<label>SMAXSN1-1 TIMESTAMP</label>
 				<description>Timestamp of SMAXSN1-1 value</description>
 			</channel>
 
-			<channel id="smaxsn2Minus1Date" typeId="dateTime">
+			<channel id="smaxsn2Minus1Date" typeId="date-time">
 				<label>SMAXSN2-1 TIMESTAMP</label>
 				<description>Timestamp of SMAXSN2-1 value</description>
 			</channel>
 
-			<channel id="smaxsn3Minus1Date" typeId="dateTime">
+			<channel id="smaxsn3Minus1Date" typeId="date-time">
 				<label>SMAXSN3-1 TIMESTAMP</label>
 				<description>Timestamp of SMAXSN3-1 value</description>
 			</channel>
 
-			<channel id="umoy2Date" typeId="dateTime">
+			<channel id="umoy2Date" typeId="date-time">
 				<label>UMOY2 TIMESTAMP</label>
 				<description>Timestamp of UMOY2 value</description>
 			</channel>
 
-			<channel id="umoy3Date" typeId="dateTime">
+			<channel id="umoy3Date" typeId="date-time">
 				<label>UMOY3 TIMESTAMP</label>
 				<description>Timestamp of UMOY3 value</description>
 			</channel>

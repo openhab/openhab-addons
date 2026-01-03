@@ -4,7 +4,7 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<channel-type id="bbrhpjr">
+	<channel-type id="bbr-hp-jr">
 		<item-type>Number:Energy</item-type>
 		<label>BBRHPJR</label>
 		<description>Total consumed energy at high rate pricing on red days</description>
@@ -16,7 +16,7 @@
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="bbrhcjr">
+	<channel-type id="bbr-hc-jr">
 		<item-type>Number:Energy</item-type>
 		<label>BBRHCJR</label>
 		<description>Total consumed energy at low rate pricing on red days</description>
@@ -28,7 +28,7 @@
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="bbrhpjw">
+	<channel-type id="bbr-hp-jw">
 		<item-type>Number:Energy</item-type>
 		<label>BBRHPJW</label>
 		<description>Total consumed energy at high rate pricing on white days</description>
@@ -40,7 +40,7 @@
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="bbrhcjw">
+	<channel-type id="bbr-hc-jw">
 		<item-type>Number:Energy</item-type>
 		<label>BBRHCJW</label>
 		<description>Total consumed energy at low rate pricing on white days</description>
@@ -52,7 +52,7 @@
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="bbrhpjb">
+	<channel-type id="bbr-hp-jb">
 		<item-type>Number:Energy</item-type>
 		<label>BBRHPJB</label>
 		<description>Total consumed energy at high rate pricing on blue days</description>
@@ -64,7 +64,7 @@
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="bbrhcjb">
+	<channel-type id="bbr-hc-jb">
 		<item-type>Number:Energy</item-type>
 		<label>BBRHCJB</label>
 		<description>Total consumed energy at low rate pricing on blue days</description>
@@ -76,7 +76,7 @@
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="couleurDemain">
+	<channel-type id="couleur-demain">
 		<item-type>String</item-type>
 		<label>DEMAIN</label>
 		<description>Following day color</description>
@@ -94,7 +94,7 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="programmeCircuit1">
+	<channel-type id="programme-circuit-1">
 		<item-type>String</item-type>
 		<label>ProgrammeCircuit1</label>
 		<description>Circuit 1 program</description>
@@ -112,7 +112,7 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="programmeCircuit2">
+	<channel-type id="programme-circuit-2">
 		<item-type>String</item-type>
 		<label>ProgrammeCircuit2</label>
 		<description>Circuit 2 program</description>

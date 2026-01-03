@@ -10,7 +10,7 @@
 		<semantic-equipment-tag>ElectricMeter</semantic-equipment-tag>
 
 		<channels>
-			<channel id="invalidFrameCounter" typeId="invalidFrameCounter"/>
+			<channel id="invalidFrameCounter" typeId="invalid-frame-counter"/>
 		</channels>
 
 		<config-description>
@@ -45,7 +45,7 @@
 	</bridge-type>
 
 
-	<channel-type id="invalidFrameCounter">
+	<channel-type id="invalid-frame-counter">
 		<item-type>Number</item-type>
 		<label>Frames Corrupted</label>
 		<description>Counter tracking the number of frames invalid/corrupted (checksum)</description>

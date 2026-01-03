@@ -15,24 +15,24 @@
 		<semantic-equipment-tag>ElectricMeter</semantic-equipment-tag>
 		<channels>
 			<channel id="frame" typeId="frame"/>
-			<channel id="isousc" typeId="isousc"/>
-			<channel id="ptec" typeId="ptec"/>
-			<channel id="iinst1" typeId="iinst1"/>
-			<channel id="iinst2" typeId="iinst2"/>
-			<channel id="iinst3" typeId="iinst3"/>
-			<channel id="imax1" typeId="imax1"/>
-			<channel id="imax2" typeId="imax2"/>
-			<channel id="imax3" typeId="imax3"/>
-			<channel id="pmax" typeId="pmax"/>
-			<channel id="papp" typeId="papp"/>
-			<channel id="ppot" typeId="ppot"/>
-			<channel id="adir1" typeId="adir1"/>
-			<channel id="adir2" typeId="adir2"/>
-			<channel id="adir3" typeId="adir3"/>
-			<channel id="lastUpdate" typeId="lastUpdate"/>
-			<channel id="pejp" typeId="pejp"/>
-			<channel id="ejphpm" typeId="ejphpm"/>
-			<channel id="ejphn" typeId="ejphn"/>
+			<channel id="isousc" typeId="i-sousc"/>
+			<channel id="ptec" typeId="p-tec"/>
+			<channel id="iinst1" typeId="i-inst-1"/>
+			<channel id="iinst2" typeId="i-inst-2"/>
+			<channel id="iinst3" typeId="i-inst-3"/>
+			<channel id="imax1" typeId="i-max-1"/>
+			<channel id="imax2" typeId="i-max-2"/>
+			<channel id="imax3" typeId="i-max-3"/>
+			<channel id="pmax" typeId="p-max"/>
+			<channel id="papp" typeId="p-app"/>
+			<channel id="ppot" typeId="p-pot"/>
+			<channel id="adir1" typeId="a-dir-1"/>
+			<channel id="adir2" typeId="a-dir-2"/>
+			<channel id="adir3" typeId="a-dir-3"/>
+			<channel id="lastUpdate" typeId="last-update"/>
+			<channel id="pejp" typeId="p-ejp"/>
+			<channel id="ejphpm" typeId="ejp-hpm"/>
+			<channel id="ejphn" typeId="ejp-hn"/>
 		</channels>
 
 		<config-description-ref uri="thing-type:teleinfo:adco"/>

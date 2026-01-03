@@ -4,7 +4,7 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<channel-type id="isousc">
+	<channel-type id="i-sousc">
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>ISOUSC</label>
 		<description>Subscribed electric current</description>
@@ -16,7 +16,7 @@
 		<state pattern="%d A" readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="ptec">
+	<channel-type id="p-tec">
 		<item-type>String</item-type>
 		<label>PTEC</label>
 		<description>Current pricing period</description>
@@ -42,7 +42,7 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="hhphc">
+	<channel-type id="h-hphc">
 		<item-type>String</item-type>
 		<label>HHPHC</label>
 		<description>Pricing schedule group</description>
@@ -62,7 +62,7 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="lastUpdate">
+	<channel-type id="last-update">
 		<item-type>DateTime</item-type>
 		<label>Last Update</label>
 		<description>Timestamp of last received Teleinfo frame</description>

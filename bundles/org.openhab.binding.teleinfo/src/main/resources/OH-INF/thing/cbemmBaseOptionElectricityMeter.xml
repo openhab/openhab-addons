@@ -14,12 +14,12 @@
 			Multitarif")</description>
 		<semantic-equipment-tag>ElectricMeter</semantic-equipment-tag>
 		<channels>
-			<channel id="isousc" typeId="isousc"/>
-			<channel id="ptec" typeId="ptec"/>
-			<channel id="imax" typeId="imax"/>
+			<channel id="isousc" typeId="i-sousc"/>
+			<channel id="ptec" typeId="p-tec"/>
+			<channel id="imax" typeId="i-max"/>
 			<channel id="adps" typeId="adps"/>
-			<channel id="iinst" typeId="iinst"/>
-			<channel id="lastUpdate" typeId="lastUpdate"/>
+			<channel id="iinst" typeId="i-inst"/>
+			<channel id="lastUpdate" typeId="last-update"/>
 			<channel id="base" typeId="base"/>
 		</channels>
 

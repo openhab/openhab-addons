@@ -4,7 +4,7 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<channel-type id="hchc">
+	<channel-type id="hc-hc">
 		<item-type>Number:Energy</item-type>
 		<label>HCHC</label>
 		<description>Total consumed energy at low rate pricing</description>
@@ -16,7 +16,7 @@
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="hchp">
+	<channel-type id="hc-hp">
 		<item-type>Number:Energy</item-type>
 		<label>HCHP</label>
 		<description>Total consumed energy at high rate pricing</description>
