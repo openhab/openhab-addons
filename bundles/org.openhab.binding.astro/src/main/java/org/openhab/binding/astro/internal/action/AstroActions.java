@@ -15,6 +15,8 @@ package org.openhab.binding.astro.internal.action;
 import java.time.ZonedDateTime;
 import java.util.Locale;
 
+import javax.measure.quantity.Angle;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.astro.internal.AstroBindingConstants;
@@ -31,7 +33,6 @@ import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.thing.binding.ThingActions;
 import org.openhab.core.thing.binding.ThingActionsScope;
 import org.openhab.core.thing.binding.ThingHandler;
-import org.openhab.core.types.State;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -73,7 +74,7 @@ public class AstroActions implements ThingActions {
     }
 
     @RuleAction(label = "get the azimuth", description = "Get the azimuth for a given time.")
-    public @Nullable @ActionOutput(name = "result", label = "Azimuth", type = "org.openhab.core.library.types.State") State getAzimuth(
+    public @Nullable @ActionOutput(name = "result", label = "Azimuth", type = "org.openhab.core.library.types.QuantityType<javax.measure.quantity.Angle>") QuantityType<Angle> getAzimuth(
             @ActionInput(name = "date", label = "Date", required = false, description = "Considered date") @Nullable ZonedDateTime date) {
         logger.debug("Astro action 'getAzimuth' called");
         AstroThingHandler theHandler = this.handler;
@@ -86,7 +87,7 @@ public class AstroActions implements ThingActions {
     }
 
     @RuleAction(label = "get the elevation", description = "Get the elevation for a given time.")
-    public @Nullable @ActionOutput(name = "result", label = "Elevation", type = "org.openhab.core.library.types.State") State getElevation(
+    public @Nullable @ActionOutput(name = "result", label = "Elevation", type = "org.openhab.core.library.types.QuantityType<javax.measure.quantity.Angle>") QuantityType<Angle> getElevation(
             @ActionInput(name = "date", label = "Date", required = false, description = "Considered date") @Nullable ZonedDateTime date) {
         logger.debug("Astro action 'getElevation' called");
         AstroThingHandler theHandler = this.handler;
@@ -143,11 +144,11 @@ public class AstroActions implements ThingActions {
         return null;
     }
 
-    public static @Nullable State getElevation(ThingActions actions, @Nullable ZonedDateTime date) {
+    public static @Nullable QuantityType<Angle> getElevation(ThingActions actions, @Nullable ZonedDateTime date) {
         return ((AstroActions) actions).getElevation(date);
     }
 
-    public static @Nullable State getAzimuth(ThingActions actions, @Nullable ZonedDateTime date) {
+    public static @Nullable QuantityType<Angle> getAzimuth(ThingActions actions, @Nullable ZonedDateTime date) {
         return ((AstroActions) actions).getAzimuth(date);
     }
 

@@ -27,23 +27,17 @@ import org.openhab.binding.astro.internal.model.EclipseKind;
 import org.openhab.binding.astro.internal.util.DateTimeUtils;
 
 /***
- * Specific unit tests to check if {@link MoonCalc} generates correct data for
- * Amsterdam city on 27 February 2019. In particular the following cases are
- * covered:
- * <ul>
- * <li>checks if generated data are the same (with some accuracy) as produced by
- * haevens-above.com</li>
- * </ul>
+ * Specific unit tests to check if {@link EclipseCalc} generates correct data
+ * toward known partial, total or ring eclipses for Sun and Moon
  *
- * @author Leo Siepel - Initial contribution
- * @see <a href="https://www.heavens-above.com/Moon.aspx">Heavens Above Moon</a>
+ * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-public class SunMoonEclipseCalcTest {
+public class EclipseCalcTest {
+    private static final TimeZone UTC = TimeZone.getTimeZone("UTC");
 
     private @Nullable EclipseCalc moonEclipseCalc;
     private @Nullable EclipseCalc sunEclipseCalc;
-    private static final TimeZone UTC = TimeZone.getTimeZone("UTC");
 
     @BeforeEach
     public void init() {
