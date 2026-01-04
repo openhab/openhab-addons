@@ -15,10 +15,13 @@ package org.openhab.binding.shelly.internal.manager;
 import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.shelly.internal.ShellyBindingConstants;
+import org.openhab.core.common.ThreadPoolManager;
 
 /**
  * {@link ShellyManagerCache} implements a cache with expiring times of the entries
@@ -27,23 +30,34 @@ import org.openhab.binding.shelly.internal.ShellyBindingConstants;
  */
 @NonNullByDefault
 public class ShellyManagerCache<K, V> extends ConcurrentHashMap<K, V> {
-
+    protected final ScheduledExecutorService scheduler = ThreadPoolManager.getScheduledPool("ShellyManagerThreadpool");
     private static final long serialVersionUID = 1L;
 
     private Map<K, Long> timeMap = new ConcurrentHashMap<>();
-    private long expiryInMillis = ShellyManagerConstants.CACHE_TIMEOUT_DEF_MIN * 60 * 1000; // Default 1h
+
+    private @Nullable ScheduledFuture<?> cleanupJob;
+    private static long expiryInMillis = 15 * 60 * 1000; // 15min
 
     public ShellyManagerCache() {
         initialize();
     }
 
-    public ShellyManagerCache(long expiryInMillis) {
-        this.expiryInMillis = expiryInMillis;
-        initialize();
+    public void initialize() {
+        if (cleanupJob == null) {
+            // start background cleanup
+            cleanupJob = scheduler.scheduleWithFixedDelay(this::cleanupMap, 2, 60, TimeUnit.SECONDS);
+        }
     }
 
-    void initialize() {
-        new CleanerThread().start();
+    private void cleanupMap() {
+        long currentTime = new Date().getTime();
+        for (K key : timeMap.keySet()) {
+            Long timeValue = timeMap.get(key);
+            if (key != null && (timeValue == null || currentTime > (timeValue + expiryInMillis))) {
+                remove(key);
+                timeMap.remove(key);
+            }
+        }
     }
 
     @Override
@@ -73,35 +87,6 @@ public class ShellyManagerCache<K, V> extends ConcurrentHashMap<K, V> {
             return put(key, value);
         } else {
             return get(key);
-        }
-    }
-
-    class CleanerThread extends Thread {
-
-        public CleanerThread() {
-            super(String.format("OH-binding-%s-%s", ShellyBindingConstants.BINDING_ID, "Cleaner"));
-        }
-
-        @Override
-        public void run() {
-            while (true) {
-                cleanMap();
-                try {
-                    Thread.sleep(expiryInMillis / 2);
-                } catch (InterruptedException e) {
-                }
-            }
-        }
-
-        private void cleanMap() {
-            long currentTime = new Date().getTime();
-            for (K key : timeMap.keySet()) {
-                Long timeValue = timeMap.get(key);
-                if (key != null && (timeValue == null || currentTime > (timeValue + expiryInMillis))) {
-                    remove(key);
-                    timeMap.remove(key);
-                }
-            }
         }
     }
 }

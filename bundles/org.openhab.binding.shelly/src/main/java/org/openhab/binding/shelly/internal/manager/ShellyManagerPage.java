@@ -86,8 +86,8 @@ public class ShellyManagerPage {
     protected final Map<String, String> htmlTemplates = new HashMap<>();
     protected final Gson gson = new Gson();
 
-    protected final ShellyManagerCache<String, FwRepoEntry> firmwareRepo = new ShellyManagerCache<>(15 * 60 * 1000);
-    protected final ShellyManagerCache<String, FwArchList> firmwareArch = new ShellyManagerCache<>(15 * 60 * 1000);
+    protected @Nullable ShellyManagerCache<String, FwRepoEntry> firmwareRepo;
+    protected @Nullable ShellyManagerCache<String, FwArchList> firmwareArch;
 
     public static class ShellyMgrResponse {
         public @Nullable Object data = "";
@@ -394,9 +394,15 @@ public class ShellyManagerPage {
     protected FwRepoEntry getFirmwareRepoEntry(String deviceType, String mode) throws ShellyApiException {
         logger.debug("ShellyManager: Load firmware list from {}", FWREPO_PROD_URL);
         FwRepoEntry fw = null;
-        if (firmwareRepo.containsKey(deviceType)) {
+        if (firmwareRepo != null) {
             fw = firmwareRepo.get(deviceType);
+            if (fw != null) {
+                return fw;
+            }
+        } else {
+            firmwareRepo = new ShellyManagerCache<>();
         }
+
         String json = httpGet(FWREPO_PROD_URL); // returns a strange JSON format so we are parsing this manually
         String entry = substringBetween(json, "\"" + deviceType + "\":{", "}");
         if (!entry.isEmpty()) {
@@ -427,7 +433,9 @@ public class ShellyManagerPage {
                 }
             }
 
-            firmwareRepo.put(deviceType, fw);
+            if (firmwareRepo != null) {
+                firmwareRepo.put(deviceType, fw);
+            }
         }
 
         return fw != null ? fw : new FwRepoEntry();
@@ -437,11 +445,13 @@ public class ShellyManagerPage {
         FwArchList list;
         String json = "";
 
-        if (firmwareArch.contains(deviceType)) {
+        if (firmwareArch != null) {
             list = firmwareArch.get(deviceType); // return from cache
             if (list != null) {
                 return list;
             }
+        } else {
+            firmwareArch = new ShellyManagerCache<>();
         }
 
         try {
@@ -464,7 +474,9 @@ public class ShellyManagerPage {
         }
 
         // save list to cache
-        firmwareArch.put(deviceType, list);
+        if (firmwareArch != null) {
+            firmwareArch.put(deviceType, list);
+        }
         return list;
     }
 
