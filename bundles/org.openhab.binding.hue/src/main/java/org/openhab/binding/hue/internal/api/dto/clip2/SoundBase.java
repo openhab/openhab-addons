@@ -12,25 +12,29 @@
  */
 package org.openhab.binding.hue.internal.api.dto.clip2;
 
+import java.util.List;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.hue.internal.api.dto.clip2.enums.MuteType;
+import org.openhab.binding.hue.internal.api.dto.clip2.enums.SoundValue;
+
+import com.google.gson.annotations.SerializedName;
 
 /**
- * DTO for mute state of a sound.
+ * Base DTO for the state of a chime.
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
 @NonNullByDefault
-public class Mute {
-    private @Nullable String mute;
+public class SoundBase {
+    protected @Nullable @SerializedName("sound_values") List<String> soundValues;
+    protected @Nullable String sound;
 
-    public @Nullable MuteType getMuteType() {
-        return mute instanceof String m ? MuteType.of(m) : null;
+    public @Nullable SoundValue getSoundValue() {
+        return sound instanceof String soundValue ? SoundValue.of(soundValue) : null;
     }
 
-    public Mute setMuteType(MuteType muteType) {
-        mute = muteType.name().toLowerCase();
-        return this;
+    public List<SoundValue> getSoundValues() {
+        return soundValues instanceof List<String> list ? list.stream().map(SoundValue::of).toList() : List.of();
     }
 }

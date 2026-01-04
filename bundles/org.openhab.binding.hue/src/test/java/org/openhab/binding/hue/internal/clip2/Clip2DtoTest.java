@@ -47,6 +47,7 @@ import org.openhab.binding.hue.internal.api.dto.clip2.ResourceReference;
 import org.openhab.binding.hue.internal.api.dto.clip2.Resources;
 import org.openhab.binding.hue.internal.api.dto.clip2.Rotation;
 import org.openhab.binding.hue.internal.api.dto.clip2.RotationEvent;
+import org.openhab.binding.hue.internal.api.dto.clip2.Sound;
 import org.openhab.binding.hue.internal.api.dto.clip2.TamperReport;
 import org.openhab.binding.hue.internal.api.dto.clip2.Temperature;
 import org.openhab.binding.hue.internal.api.dto.clip2.TimedEffects;
@@ -54,10 +55,12 @@ import org.openhab.binding.hue.internal.api.dto.clip2.enums.ActionType;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.Archetype;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.BatteryStateType;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.ButtonEventType;
+import org.openhab.binding.hue.internal.api.dto.clip2.enums.ChimeType;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.DirectionType;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.EffectType;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.ResourceType;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.RotationEventType;
+import org.openhab.binding.hue.internal.api.dto.clip2.enums.SoundValue;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.ZigbeeStatus;
 import org.openhab.binding.hue.internal.api.dto.clip2.helper.Setters;
 import org.openhab.binding.hue.internal.api.serialization.InstantDeserializer;
@@ -95,18 +98,13 @@ class Clip2DtoTest {
     // Resource types which do not yet have a test JSON payload available
     public static final Set<ResourceType> RESOURCES_WITH_NO_JSON_TEST_CASE_YET = EnumSet.of(
     //@formatter:off
-            ResourceType.BELL_BUTTON,
             ResourceType.CLIP,
-            ResourceType.CONVENIENCE_AREA_MOTION,
             ResourceType.DEVICE_SOFTWARE_UPDATE,
             ResourceType.GROUPED_LIGHT_LEVEL,
             ResourceType.MATTER,
             ResourceType.MATTER_FABRIC,
             ResourceType.MOTION_AREA_CANDIDATE,
-            ResourceType.MOTION_AREA_CONFIGURATION,
-            ResourceType.SECURITY_AREA_MOTION,
             ResourceType.SERVICE_GROUP,
-            ResourceType.SPEAKER,
             ResourceType.WIFI_CONNECTIVITY,
             ResourceType.ZIGBEE_DEVICE_DISCOVERY
     //@formatter:on
@@ -144,6 +142,21 @@ class Clip2DtoTest {
         assertNotNull(button);
         assertEquals(new DecimalType(2003),
                 item.getButtonEventState(Map.of("00000000-0000-0000-0000-000000000001", 2)));
+        assertEquals(new DateTimeType("2023-09-17T18:51:36.959+0000"), item.getButtonLastUpdatedState());
+    }
+
+    @Test
+    void testBellButton() {
+        String json = load(ResourceType.BELL_BUTTON.name().toLowerCase());
+        Resources resources = GSON.fromJson(json, Resources.class);
+        assertNotNull(resources);
+        List<Resource> list = resources.getResources();
+        assertNotNull(list);
+        assertEquals(1, list.size());
+        Resource item = list.get(0);
+        assertEquals(ResourceType.BELL_BUTTON, item.getType());
+        Button button = item.getButton();
+        assertNotNull(button);
         assertEquals(new DateTimeType("2023-09-17T18:51:36.959+0000"), item.getButtonLastUpdatedState());
     }
 
@@ -946,5 +959,87 @@ class Clip2DtoTest {
         assertTrue(enabled);
         assertEquals(OnOffType.ON, item.getMotionState());
         assertEquals(new DateTimeType("2024-12-13T11:01:25.156Z"), item.getMotionLastUpdatedState());
+    }
+
+    @Test
+    void testConvenienceAreaMotion() {
+        String json = load(ResourceType.CONVENIENCE_AREA_MOTION.name().toLowerCase());
+        Resources resources = GSON.fromJson(json, Resources.class);
+        assertNotNull(resources);
+        List<Resource> list = resources.getResources();
+        assertNotNull(list);
+        assertEquals(1, list.size());
+        Resource item = list.get(0);
+        assertEquals(ResourceType.CONVENIENCE_AREA_MOTION, item.getType());
+        Motion motion = item.getMotion();
+        assertNotNull(motion);
+        assertFalse(motion.isMotion());
+        assertEquals(new DateTimeType("2025-10-20T20:58:23.718Z"), item.getMotionLastUpdatedState());
+        assertEquals(OnOffType.OFF, item.getMotionValidState());
+        assertEquals(OnOffType.ON, item.getEnabledState());
+    }
+
+    @Test
+    void testSecurityAreaMotion() {
+        String json = load(ResourceType.SECURITY_AREA_MOTION.name().toLowerCase());
+        Resources resources = GSON.fromJson(json, Resources.class);
+        assertNotNull(resources);
+        List<Resource> list = resources.getResources();
+        assertNotNull(list);
+        assertEquals(1, list.size());
+        Resource item = list.get(0);
+        assertEquals(ResourceType.SECURITY_AREA_MOTION, item.getType());
+        Motion motion = item.getMotion();
+        assertNotNull(motion);
+        assertFalse(motion.isMotion());
+        assertEquals(new DateTimeType("2025-10-20T16:47:14.733Z"), item.getMotionLastUpdatedState());
+        assertEquals(OnOffType.OFF, item.getMotionValidState());
+        assertEquals(OnOffType.ON, item.getEnabledState());
+    }
+
+    @Test
+    void testMotionAreaConfiguration() {
+        String json = load(ResourceType.MOTION_AREA_CONFIGURATION.name().toLowerCase());
+        Resources resources = GSON.fromJson(json, Resources.class);
+        assertNotNull(resources);
+        List<Resource> list = resources.getResources();
+        assertNotNull(list);
+        assertEquals(1, list.size());
+        Resource item = list.get(0);
+        assertEquals(ResourceType.MOTION_AREA_CONFIGURATION, item.getType());
+        List<ResourceReference> serviceReferences = item.getServiceReferences();
+        assertEquals(2, serviceReferences.size());
+        ResourceReference resourceReference = serviceReferences.stream()
+                .filter(sr -> sr.getType() == ResourceType.CONVENIENCE_AREA_MOTION).findFirst().orElse(null);
+        assertNotNull(resourceReference);
+        resourceReference = serviceReferences.stream().filter(sr -> sr.getType() == ResourceType.SECURITY_AREA_MOTION)
+                .findFirst().orElse(null);
+        assertNotNull(resourceReference);
+    }
+
+    @Test
+    void testSpeaker() {
+        String json = load(ResourceType.SPEAKER.name().toLowerCase());
+        Resources resources = GSON.fromJson(json, Resources.class);
+        assertNotNull(resources);
+        List<Resource> list = resources.getResources();
+        assertNotNull(list);
+        assertEquals(1, list.size());
+        Resource item = list.get(0);
+        assertEquals(ResourceType.SPEAKER, item.getType());
+        State state = item.getSoundMuteState();
+        assertEquals(OnOffType.OFF, state);
+        state = item.getSoundState(ChimeType.ALARM);
+        assertEquals(new StringType("NO_SOUND"), state);
+        state = item.getSoundState(ChimeType.ALERT);
+        assertEquals(new StringType("NO_SOUND"), state);
+        state = item.getSoundState(ChimeType.CHIME);
+        assertEquals(new StringType("NO_SOUND"), state);
+        Sound sound = item.getSound(ChimeType.CHIME);
+        assertNotNull(sound);
+        assertEquals(SoundValue.NO_SOUND, sound.getSoundValue());
+        List<SoundValue> soundValues = sound.getSoundValues();
+        assertNotNull(soundValues);
+        assertEquals(12, soundValues.size());
     }
 }

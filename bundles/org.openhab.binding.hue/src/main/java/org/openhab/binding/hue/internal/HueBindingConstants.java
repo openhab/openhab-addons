@@ -141,6 +141,7 @@ public class HueBindingConstants {
     public static final ThingTypeUID THING_TYPE_DEVICE = new ThingTypeUID(BINDING_ID, "device");
     public static final ThingTypeUID THING_TYPE_ZONE = new ThingTypeUID(BINDING_ID, "zone");
     public static final ThingTypeUID THING_TYPE_ROOM = new ThingTypeUID(BINDING_ID, "room");
+    public static final ThingTypeUID THING_TYPE_AREA = new ThingTypeUID(BINDING_ID, "area");
 
     // channels for API v2
     public static final String CHANNEL_2_COLOR = CHANNEL_COLOR;
@@ -176,6 +177,15 @@ public class HueBindingConstants {
     public static final String CHANNEL_2_SECURITY_CONTACT_LAST_UPDATED = "security-contact-last-updated";
     public static final String CHANNEL_2_SECURITY_TAMPER = "security-tamper";
     public static final String CHANNEL_2_SECURITY_TAMPER_LAST_UPDATED = "security-tamper-last-updated";
+    public static final String CHANNEL_2_ALARM_SOUND = "alarm-sound";
+    public static final String CHANNEL_2_ALERT_SOUND = "alert-sound";
+    public static final String CHANNEL_2_CHIME_SOUND = "chime-sound";
+    public static final String CHANNEL_2_MUTE = "mute";
+    public static final String CHANNEL_2_VOLUME = "volume";
+    public static final String CHANNEL_2_DURATION = "duration";
+    public static final String CHANNEL_2_MOTION_AREA_ENABLED = "motion-area-enabled";
+    public static final String CHANNEL_2_SECURITY_MOTION = "security-motion";
+    public static final String CHANNEL_2_SECURITY_MOTION_LAST_UPDATED = "security-motion-last-updated";
 
     // channel IDs that (optionally) support dynamics
     public static final Set<String> DYNAMIC_CHANNELS = Set.of(CHANNEL_2_BRIGHTNESS, CHANNEL_2_COLOR,
