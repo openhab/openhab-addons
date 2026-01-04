@@ -28,8 +28,8 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Base converter class.
- * The converter classes are responsible for converting "state" messages from the smartthings hub into openHAB States.
- * And, converting handler.handleCommand() into messages to be sent to smartthings
+ * The converter classes are responsible for converting "state" messages from the SmartThings into openHAB States.
+ * And, converting handler.handleCommand() into messages to be sent to SmartThings
  *
  * @author Bob Raker - Initial contribution
  */

@@ -55,7 +55,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
 /**
- * Receives all Http data from the SmartThings Hub
+ * Receives all HTTP data from SmartThings
  *
  * @author Bob Raker - Initial contribution
  */

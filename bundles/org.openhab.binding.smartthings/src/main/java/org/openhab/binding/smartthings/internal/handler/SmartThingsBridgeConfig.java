@@ -15,7 +15,7 @@ package org.openhab.binding.smartthings.internal.handler;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Configuration data for SmartThings hub
+ * Configuration data for SmartThings
  *
  * @author Bob Raker - Initial contribution
  */
