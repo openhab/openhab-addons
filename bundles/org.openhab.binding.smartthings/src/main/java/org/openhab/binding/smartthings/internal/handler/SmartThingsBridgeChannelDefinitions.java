@@ -22,7 +22,7 @@ import org.openhab.core.semantics.model.DefaultSemanticTags.Point;
 import org.openhab.core.semantics.model.DefaultSemanticTags.Property;
 
 /**
- * Configuration data for SmartThings hub
+ * Configuration data for SmartThings
  *
  * @author Bob Raker - Initial contribution
  */

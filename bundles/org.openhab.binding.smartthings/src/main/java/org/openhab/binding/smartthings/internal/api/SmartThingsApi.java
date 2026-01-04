@@ -59,7 +59,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
 /**
- * Class to handle SmartThings Web Api calls.
+ * Class to handle SmartThings Web API calls
  *
  * @author Laurent Arnal - Initial contribution
  */
