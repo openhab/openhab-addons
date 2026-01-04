@@ -69,8 +69,8 @@ public class HomekitBridgedAccessoryDiscoveryService
     }
 
     private void discoverBridgedAccessories(Thing bridge, Collection<Accessory> accessories) {
-        String bridgeUniqueId = bridge.getConfiguration().get(CONFIG_UNIQUE_ID) instanceof String uniqueId ? uniqueId
-                : null;
+        String bridgeUniqueId = thingHandler.getThing().getConfiguration()
+                .get(CONFIG_UNIQUE_ID) instanceof String uniqueId ? uniqueId : null;
         if (bridgeUniqueId == null) {
             return;
         }
