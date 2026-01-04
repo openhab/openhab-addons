@@ -22,14 +22,13 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public class BluelinkAccountConfiguration {
-
     /**
      * Bluelink account username (email).
      */
     public @Nullable String username;
 
     /**
-     * Bluelink account password.
+     * Bluelink account password or refresh_token
      */
     public @Nullable String password;
 
@@ -37,6 +36,11 @@ public class BluelinkAccountConfiguration {
      * Bluelink service PIN (required for lock/unlock commands).
      */
     public @Nullable String pin;
+
+    /**
+     * Hyundai Motor Group brand (Hyundai, Kia, Genesis). Defaults to Hyundai.
+     */
+    public @Nullable String brand;
 
     /**
      * API region. Auto-detected from system locale if not set.
