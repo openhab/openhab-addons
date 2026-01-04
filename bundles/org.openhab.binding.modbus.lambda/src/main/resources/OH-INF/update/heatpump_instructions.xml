@@ -10,7 +10,7 @@
 				<label>Heatpump VdA E since last reset (DWord swapped)</label>
 			</add-channel>
 			<add-channel id="heat-pump-vdaq-swap">
-				<type>typeId="heat-pump:heat-pump-vdaq-swap"</type>
+				<type>modbus:heat-pump-vdaq-swap</type>
 				<label>Heatpump VdA Q since last reset (DWord swapped)</label>
 			</add-channel>
 			<remove-channel id="heatpump-request-password"/>
