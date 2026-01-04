@@ -5,7 +5,7 @@
 
 	<type>binding</type>
 	<name>Ring Binding</name>
-	<description>This is the addon for ring.com devices like the Video Doorbell</description>
+	<description>This is the addon for ring.com devices like the Video Doorbell.</description>
 	<connection>cloud</connection>
 
 </addon:addon>

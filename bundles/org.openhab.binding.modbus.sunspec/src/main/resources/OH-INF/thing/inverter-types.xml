@@ -45,7 +45,7 @@
 
 		<label>Split Phase Inverter</label>
 		<description>Split phase (Japanese grid and 240V grid in North America) inverter supporting SunSpec mapping over tcp
-			modbus connection</description>
+			modbus connection.</description>
 		<category>Inverter</category>
 
 		<channel-groups>
@@ -81,7 +81,7 @@
 		</supported-bridge-type-refs>
 
 		<label>Three Phase Inverter</label>
-		<description>Three phase inverter supporting SunSpec mapping over tcp modbus connection</description>
+		<description>Three phase inverter supporting SunSpec mapping over tcp modbus connection.</description>
 		<category>Inverter</category>
 
 		<channel-groups>

@@ -34,22 +34,22 @@
 		<config-description>
 			<parameter name="serialNumber" type="text" required="true">
 				<label>Serial number</label>
-				<description>Identifier of meter </description>
+				<description>Identifier of meter .</description>
 			</parameter>
 			<parameter name="mcastGroup" type="text" required="true">
 				<label>Multicast Group</label>
-				<description>IP address of the multicast group</description>
+				<description>IP address of the multicast group.</description>
 				<default>239.12.255.254</default>
 			</parameter>
 			<parameter name="port" type="integer" required="false" min="1024" max="49151">
 				<label>Port</label>
-				<description>Port of the multicast group</description>
+				<description>Port of the multicast group.</description>
 				<default>9522</default>
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="pollingPeriod" type="integer" required="false">
 				<label>Polling Period</label>
-				<description>Polling period for refreshing the data in s</description>
+				<description>Polling period for refreshing the data in s.</description>
 				<default>30</default>
 				<advanced>true</advanced>
 			</parameter>

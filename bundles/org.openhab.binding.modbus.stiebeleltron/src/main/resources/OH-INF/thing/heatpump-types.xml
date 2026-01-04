@@ -10,7 +10,7 @@
 			<bridge-type-ref id="serial"/>
 		</supported-bridge-type-refs>
 		<label>Stiebel Eltron Heat Pump</label>
-		<description>A Stiebel Eltron Heat Pump connected through modbus to an ISG</description>
+		<description>A Stiebel Eltron Heat Pump connected through modbus to an ISG.</description>
 
 		<channel-groups>
 			<channel-group id="systemState" typeId="system-state"/>

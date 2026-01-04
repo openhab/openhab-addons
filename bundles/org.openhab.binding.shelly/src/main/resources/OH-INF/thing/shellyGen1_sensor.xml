@@ -6,7 +6,7 @@
 
 	<thing-type id="shellyht">
 		<label>Shelly H&amp;T</label>
-		<description>@text/thing-type.shelly.shellyht.description</description>
+		<description>@text/thing-type.shelly.shellyht.description.</description>
 		<category>Sensor</category>
 		<semantic-equipment-tag>Sensor</semantic-equipment-tag>
 		<channel-groups>
@@ -21,7 +21,7 @@
 
 	<thing-type id="shellysmoke">
 		<label>Shelly Smoke</label>
-		<description>@text/thing-type.shelly.shellysmoke.description</description>
+		<description>@text/thing-type.shelly.shellysmoke.description.</description>
 		<category>SmokeDetector</category>
 		<semantic-equipment-tag>SmokeDetector</semantic-equipment-tag>
 		<channel-groups>
@@ -36,7 +36,7 @@
 
 	<thing-type id="shellygas">
 		<label>Shelly Gas</label>
-		<description>@text/thing-type.shelly.shellygas.description</description>
+		<description>@text/thing-type.shelly.shellygas.description.</description>
 		<category>Sensor</category>
 		<semantic-equipment-tag>Sensor</semantic-equipment-tag>
 		<channel-groups>
@@ -50,7 +50,7 @@
 
 	<thing-type id="shellyflood">
 		<label>Shelly Flood</label>
-		<description>@text/thing-type.shelly.shellyflood.description</description>
+		<description>@text/thing-type.shelly.shellyflood.description.</description>
 		<category>Sensor</category>
 		<semantic-equipment-tag>LeakSensor</semantic-equipment-tag>
 		<channel-groups>
@@ -65,7 +65,7 @@
 
 	<thing-type id="shellydw">
 		<label>Shelly Door/Window</label>
-		<description>@text/thing-type.shelly.shellydw.description</description>
+		<description>@text/thing-type.shelly.shellydw.description.</description>
 		<category>Sensor</category>
 		<semantic-equipment-tag>ContactSensor</semantic-equipment-tag>
 		<channel-groups>
@@ -80,7 +80,7 @@
 
 	<thing-type id="shellydw2">
 		<label>Shelly Door/Window</label>
-		<description>@text/thing-type.shelly.shellydw2.description</description>
+		<description>@text/thing-type.shelly.shellydw2.description.</description>
 		<category>Sensor</category>
 		<semantic-equipment-tag>ContactSensor</semantic-equipment-tag>
 		<channel-groups>
@@ -95,7 +95,7 @@
 
 	<thing-type id="shellysense">
 		<label>Shelly Sense</label>
-		<description>@text/thing-type.shelly.shellysense.description</description>
+		<description>@text/thing-type.shelly.shellysense.description.</description>
 		<semantic-equipment-tag>Sensor</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="control" typeId="control"/>
@@ -110,7 +110,7 @@
 
 	<thing-type id="shellybutton1">
 		<label>Shelly Button 1</label>
-		<description>@text/thing-type.shelly.shellybutton1.description</description>
+		<description>@text/thing-type.shelly.shellybutton1.description.</description>
 		<category>WallSwitch</category>
 		<semantic-equipment-tag>WallSwitch</semantic-equipment-tag>
 		<channel-groups>
@@ -125,7 +125,7 @@
 
 	<thing-type id="shellybutton2">
 		<label>Shelly Button 2</label>
-		<description>@text/thing-type.shelly.shellybutton2.description</description>
+		<description>@text/thing-type.shelly.shellybutton2.description.</description>
 		<category>WallSwitch</category>
 		<semantic-equipment-tag>Button</semantic-equipment-tag>
 		<channel-groups>
@@ -140,7 +140,7 @@
 
 	<thing-type id="shellymotion">
 		<label>Shelly Motion</label>
-		<description>@text/thing-type.shelly.shellymotion.description</description>
+		<description>@text/thing-type.shelly.shellymotion.description.</description>
 		<category>MotionDetector</category>
 		<semantic-equipment-tag>MotionDetector</semantic-equipment-tag>
 		<channel-groups>
@@ -155,7 +155,7 @@
 
 	<thing-type id="shellytrv">
 		<label>Shelly TRV</label>
-		<description>@text/thing-type.shelly.shellytrv.description</description>
+		<description>@text/thing-type.shelly.shellytrv.description.</description>
 		<category>RadiatorControl</category>
 		<semantic-equipment-tag>RadiatorControl</semantic-equipment-tag>
 		<channel-groups>
@@ -172,7 +172,7 @@
 	<channel-type id="controlMode">
 		<item-type>String</item-type>
 		<label>@text/channel-type.shelly.controlMode.label</label>
-		<description>@text/channel-type.shelly.controlMode.description</description>
+		<description>@text/channel-type.shelly.controlMode.description.</description>
 		<state readOnly="false">
 			<options>
 				<option value="manual">@text/channel-type.shelly.controlMode.state.option.manual</option>
@@ -184,14 +184,14 @@
 	<channel-type id="controlProfile">
 		<item-type>String</item-type>
 		<label>@text/channel-type.shelly.controlProfile.label</label>
-		<description>@text/channel-type.shelly.controlProfile.description</description>
+		<description>@text/channel-type.shelly.controlProfile.description.</description>
 		<state readOnly="false"></state>
 	</channel-type>
 
 	<channel-type id="targetTemp">
 		<item-type>Number:Temperature</item-type>
 		<label>@text/channel-type.shelly.targetTemp.label</label>
-		<description>@text/channel-type.shelly.targetTemp.description</description>
+		<description>@text/channel-type.shelly.targetTemp.description.</description>
 		<category>Heating</category>
 		<tags>
 			<tag>Setpoint</tag>
@@ -203,13 +203,13 @@
 	<channel-type id="boostControl">
 		<item-type>Switch</item-type>
 		<label>@text/channel-type.shelly.boostControl.label</label>
-		<description>@text/channel-type.shelly.boostControl.description</description>
+		<description>@text/channel-type.shelly.boostControl.description.</description>
 	</channel-type>
 
 	<channel-type id="boostTimer">
 		<item-type>Number:Time</item-type>
 		<label>@text/channel-type.shelly.boostTimer.label</label>
-		<description>@text/channel-type.shelly.boostTimer.description</description>
+		<description>@text/channel-type.shelly.boostTimer.description.</description>
 		<category>Time</category>
 		<state min="0" step="1" pattern="%.0f %unit%" readOnly="false"></state>
 	</channel-type>
@@ -217,35 +217,35 @@
 	<channel-type id="controlSchedule" advanced="true">
 		<item-type>Switch</item-type>
 		<label>@text/channel-type.shelly.controlSchedule.label</label>
-		<description>@text/channel-type.shelly.controlSchedule.description</description>
+		<description>@text/channel-type.shelly.controlSchedule.description.</description>
 		<state readOnly="false"></state>
 	</channel-type>
 
 	<channel-group-type id="sensorData">
 		<label>@text/channel-group-type.shelly.sensorData.label</label>
-		<description>@text/channel-group-type.shelly.sensorData.description</description>
+		<description>@text/channel-group-type.shelly.sensorData.description.</description>
 	</channel-group-type>
 
 	<channel-group-type id="batteryStatus">
 		<label>@text/channel-group-type.shelly.batteryStatus.label</label>
-		<description>@text/channel-group-type.shelly.batteryStatus.description</description>
+		<description>@text/channel-group-type.shelly.batteryStatus.description.</description>
 		<category>BatteryLevel</category>
 	</channel-group-type>
 
 	<channel-group-type id="control">
 		<label>@text/channel-group-type.shelly.control.label</label>
-		<description>@text/channel-group-type.shelly.control.description</description>
+		<description>@text/channel-group-type.shelly.control.description.</description>
 	</channel-group-type>
 
 	<channel-group-type id="buttonState">
 		<label>@text/channel-group-type.shelly.buttonState.label</label>
-		<description>@text/channel-group-type.shelly.buttonState.description</description>
+		<description>@text/channel-group-type.shelly.buttonState.description.</description>
 	</channel-group-type>
 
 	<channel-type id="sensorContact">
 		<item-type>Contact</item-type>
 		<label>@text/channel-type.shelly.sensorContact.label</label>
-		<description>@text/channel-type.shelly.sensorContact.description</description>
+		<description>@text/channel-type.shelly.sensorContact.description.</description>
 		<tags>
 			<tag>Status</tag>
 			<tag>OpenState</tag>
@@ -261,7 +261,7 @@
 	<channel-type id="sensorState">
 		<item-type>String</item-type>
 		<label>@text/channel-type.shelly.sensorState.label</label>
-		<description>@text/channel-type.shelly.sensorState.description</description>
+		<description>@text/channel-type.shelly.sensorState.description.</description>
 		<state pattern="%s" readOnly="true">
 			<options>
 				<option value="warmup">@text/channel-type.shelly.sensorState.state.option.warmup</option>
@@ -275,7 +275,7 @@
 	<channel-type id="alarmState">
 		<item-type>String</item-type>
 		<label>@text/channel-type.shelly.alarmState.label</label>
-		<description>@text/channel-type.shelly.alarmState.description</description>
+		<description>@text/channel-type.shelly.alarmState.description.</description>
 		<tags>
 			<tag>Alarm</tag>
 		</tags>
@@ -293,7 +293,7 @@
 	<channel-type id="lastEvent">
 		<item-type>String</item-type>
 		<label>@text/channel-type.shelly.lastEvent.label</label>
-		<description>@text/channel-type.shelly.lastEvent.description</description>
+		<description>@text/channel-type.shelly.lastEvent.description.</description>
 		<state pattern="%s" readOnly="true">
 			<options>
 				<option value="S">@text/channel-type.shelly.lastEvent.state.option.S</option>
@@ -310,7 +310,7 @@
 	<channel-type id="eventCount">
 		<item-type>Number</item-type>
 		<label>@text/channel-type.shelly.eventCount.label</label>
-		<description>@text/channel-type.shelly.eventCount.description</description>
+		<description>@text/channel-type.shelly.eventCount.description.</description>
 		<state pattern="%.0f" readOnly="true">
 		</state>
 	</channel-type>
@@ -318,7 +318,7 @@
 	<channel-type id="sensorTemp">
 		<item-type>Number:Temperature</item-type>
 		<label>@text/channel-type.shelly.sensorTemp.label</label>
-		<description>@text/channel-type.shelly.sensorTemp.description</description>
+		<description>@text/channel-type.shelly.sensorTemp.description.</description>
 		<category>Temperature</category>
 		<tags>
 			<tag>Measurement</tag>
@@ -331,7 +331,7 @@
 	<channel-type id="sensorHumidity">
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>@text/channel-type.shelly.sensorHumidity.label</label>
-		<description>@text/channel-type.shelly.sensorHumidity.description</description>
+		<description>@text/channel-type.shelly.sensorHumidity.description.</description>
 		<category>Humidity</category>
 		<tags>
 			<tag>Measurement</tag>
@@ -343,7 +343,7 @@
 	<channel-type id="sensorFlood">
 		<item-type>Switch</item-type>
 		<label>@text/channel-type.shelly.sensorFlood.label</label>
-		<description>@text/channel-type.shelly.sensorFlood.description</description>
+		<description>@text/channel-type.shelly.sensorFlood.description.</description>
 		<category>Water</category>
 		<tags>
 			<tag>Alarm</tag>
@@ -356,7 +356,7 @@
 	<channel-type id="sensorSmoke">
 		<item-type>Switch</item-type>
 		<label>@text/channel-type.shelly.sensorSmoke.label</label>
-		<description>@text/channel-type.shelly.sensorSmoke.description</description>
+		<description>@text/channel-type.shelly.sensorSmoke.description.</description>
 		<category>Smoke</category>
 		<tags>
 			<tag>Alarm</tag>
@@ -369,13 +369,13 @@
 	<channel-type id="sensorMute">
 		<item-type>Switch</item-type>
 		<label>@text/channel-type.shelly.sensorMute.label</label>
-		<description>@text/channel-type.shelly.sensorMute.description</description>
+		<description>@text/channel-type.shelly.sensorMute.description.</description>
 	</channel-type>
 
 	<channel-type id="sensorLux">
 		<item-type>Number:Illuminance</item-type>
 		<label>@text/channel-type.shelly.sensorLux.label</label>
-		<description>@text/channel-type.shelly.sensorLux.description</description>
+		<description>@text/channel-type.shelly.sensorLux.description.</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Illuminance</tag>
@@ -387,7 +387,7 @@
 	<channel-type id="sensorIllumination">
 		<item-type>String</item-type>
 		<label>@text/channel-type.shelly.sensorIllumination.label</label>
-		<description>@text/channel-type.shelly.sensorIllumination.description</description>
+		<description>@text/channel-type.shelly.sensorIllumination.description.</description>
 		<state readOnly="true">
 			<options>
 				<option value="dark">@text/channel-type.shelly.sensorIllumination.state.option.dark</option>
@@ -401,7 +401,7 @@
 	<channel-type id="motionTimestamp">
 		<item-type>DateTime</item-type>
 		<label>@text/channel-type.shelly.motionTimestamp.label</label>
-		<description>@text/channel-type.shelly.motionTimestamp.description</description>
+		<description>@text/channel-type.shelly.motionTimestamp.description.</description>
 		<category>Time</category>
 		<tags>
 			<tag>Status</tag>
@@ -414,7 +414,7 @@
 	<channel-type id="motionActive" advanced="true">
 		<item-type>Switch</item-type>
 		<label>@text/channel-type.shelly.motionActive.label</label>
-		<description>channel-type.shelly.motionActive.description</description>
+		<description>@text/channel-type.shelly.motionActive.description.</description>
 		<category>Contact</category>
 		<state readOnly="true">
 		</state>
@@ -423,7 +423,7 @@
 	<channel-type id="sensorMotion">
 		<item-type>Switch</item-type>
 		<label>@text/channel-type.shelly.sensorMotion.label</label>
-		<description>@text/channel-type.shelly.sensorMotion.description</description>
+		<description>@text/channel-type.shelly.sensorMotion.description.</description>
 		<category>Motion</category>
 		<tags>
 			<tag>Status</tag>
@@ -436,7 +436,7 @@
 	<channel-type id="sensorVibration">
 		<item-type>Switch</item-type>
 		<label>@text/channel-type.shelly.sensorVibration.label</label>
-		<description>@text/channel-type.shelly.sensorVibration.description</description>
+		<description>@text/channel-type.shelly.sensorVibration.description.</description>
 		<category>Flow</category>
 		<tags>
 			<tag>Alarm</tag>
@@ -449,7 +449,7 @@
 	<channel-type id="sensorTilt">
 		<item-type>Number:Angle</item-type>
 		<label>@text/channel-type.shelly.sensorTilt.label</label>
-		<description>@text/channel-type.shelly.sensorTilt.description</description>
+		<description>@text/channel-type.shelly.sensorTilt.description.</description>
 		<category>Tilt</category>
 		<tags>
 			<tag>Measurement</tag>
@@ -462,7 +462,7 @@
 	<channel-type id="sensorPPM">
 		<item-type>Number:Dimensionless</item-type>
 		<label>@text/channel-type.shelly.sensorPPM.label</label>
-		<description>@text/channel-type.shelly.sensorPPM.description</description>
+		<description>@text/channel-type.shelly.sensorPPM.description.</description>
 		<category>Gas</category>
 		<tags>
 			<tag>Measurement</tag>
@@ -475,7 +475,7 @@
 	<channel-type id="sensorADC">
 		<item-type>Number:ElectricPotential</item-type>
 		<label>@text/channel-type.shelly.sensorADC.label</label>
-		<description>@text/channel-type.shelly.sensorADC.description</description>
+		<description>@text/channel-type.shelly.sensorADC.description.</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Voltage</tag>
@@ -487,20 +487,20 @@
 	<channel-type id="sensorPosition">
 		<item-type>Dimmer</item-type>
 		<label>@text/channel-type.shelly.sensorPosition.label</label>
-		<description>@text/channel-type.shelly.sensorPosition.description</description>
+		<description>@text/channel-type.shelly.sensorPosition.description.</description>
 		<category>RadiatorControl</category>
 		<tags>
 			<tag>Control</tag>
 			<tag>Level</tag>
 		</tags>
-		<state min="0" max="100" step="1" readOnly="false" pattern="%.0f %unit%"></state>
+		<state min="0" max="100" step="1" readOnly="false" pattern="%.0f %%"></state>
 	</channel-type>
 
 	<channel-type id="sensorValve">
 		<item-type>String</item-type>
 		<label>@text/channel-type.shelly.sensorValve.label</label>
-		<description>@text/channel-type.shelly.sensorValve.description</description>
-		<category>Pressure</category>
+		<description>@text/channel-type.shelly.sensorValve.description.</description>
+		<category>Valve</category>
 		<state readOnly="true">
 			<options>
 				<option value="closed">@text/channel-type.shelly.sensorValve.state.option.closed</option>
@@ -518,7 +518,7 @@
 	<channel-type id="sensorExtTemp">
 		<item-type>Number:Temperature</item-type>
 		<label>@text/channel-type.shelly.sensorExtTemp.label</label>
-		<description>@text/channel-type.shelly.sensorExtTemp.label</description>
+		<description>@text/channel-type.shelly.sensorExtTemp.label.</description>
 		<category>Temperature</category>
 		<tags>
 			<tag>Measurement</tag>
@@ -531,7 +531,7 @@
 	<channel-type id="sensorExtHum">
 		<item-type>Number:Dimensionless</item-type>
 		<label>@text/channel-type.shelly.sensorExtHum.label</label>
-		<description>@text/channel-type.shelly.sensorExtHum.description</description>
+		<description>@text/channel-type.shelly.sensorExtHum.description.</description>
 		<category>Humidity</category>
 		<tags>
 			<tag>Measurement</tag>
@@ -544,7 +544,7 @@
 	<channel-type id="sensorExtVolt">
 		<item-type>Number:ElectricPotential</item-type>
 		<label>@text/channel-type.shelly.sensorExtVolt.label</label>
-		<description>@text/channel-type.shelly.sensorExtVolt.description</description>
+		<description>@text/channel-type.shelly.sensorExtVolt.description.</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Voltage</tag>
@@ -556,7 +556,7 @@
 	<channel-type id="sensorExtDigitalInput">
 		<item-type>Switch</item-type>
 		<label>@text/channel-type.shelly.sensorExtDigitalInput.label</label>
-		<description>@text/channel-type.shelly.sensorExtDigitalInput.description</description>
+		<description>@text/channel-type.shelly.sensorExtDigitalInput.description.</description>
 		<category>Status</category>
 		<state readOnly="true">
 		</state>
@@ -565,8 +565,8 @@
 	<channel-type id="sensorExtAnalogInput">
 		<item-type>Number:Dimensionless</item-type>
 		<label>@text/channel-type.shelly.sensorExtAnalogInput.label</label>
-		<description>@text/channel-type.shelly.sensorExtAnalogInput.description</description>
-		<category>Humidity</category>
+		<description>@text/channel-type.shelly.sensorExtAnalogInput.description.</description>
+		<category>Status</category>
 		<state readOnly="true" pattern="%.0f %unit%">
 		</state>
 	</channel-type>
@@ -574,7 +574,7 @@
 	<channel-type id="sensorError">
 		<item-type>String</item-type>
 		<label>@text/channel-type.shelly.sensorError.label</label>
-		<description>@text/channel-type.shelly.sensorError.description</description>
+		<description>@text/channel-type.shelly.sensorError.description.</description>
 		<state readOnly="true">
 		</state>
 	</channel-type>
@@ -582,46 +582,46 @@
 	<channel-type id="sensorSleepTime" advanced="true">
 		<item-type>Number:Time</item-type>
 		<label>@text/channel-type.shelly.sensorSleepTime.label</label>
-		<description>@text/channel-type.shelly.sensorSleepTime.description</description>
+		<description>@text/channel-type.shelly.sensorSleepTime.description.</description>
 		<state readOnly="false" min="0" max="86400" pattern="%.0f %unit%"/>
 	</channel-type>
 
 	<channel-type id="sensorChannel">
 		<item-type>Number</item-type>
 		<label>@text/channel-type.shelly.sensorChannel.label</label>
-		<description>@text/channel-type.shelly.sensorChannel.description</description>
+		<description>@text/channel-type.shelly.sensorChannel.description.</description>
 	</channel-type>
 
 	<channel-type id="sensorRotationX">
 		<item-type>Number:Angle</item-type>
 		<label>@text/channel-type.shelly.sensorRotationX.label</label>
-		<description>@text/channel-type.shelly.sensorRotationX.description</description>
-		<state readOnly="true" pattern="%0d %unit%"/>
+		<description>@text/channel-type.shelly.sensorRotationX.description.</description>
+		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="sensorRotationY">
 		<item-type>Number:Angle</item-type>
 		<label>@text/channel-type.shelly.sensorRotationY.label</label>
-		<description>@text/channel-type.shelly.sensorRotationY.description</description>
-		<state readOnly="true" pattern="%0d %unit%"/>
+		<description>@text/channel-type.shelly.sensorRotationY.description.</description>
+		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="sensorRotationZ">
 		<item-type>Number:Angle</item-type>
 		<label>@text/channel-type.shelly.sensorRotationZ.label</label>
-		<description>@text/channel-type.shelly.sensorRotationZ.description</description>
-		<state readOnly="true" pattern="%0d %unit%"/>
+		<description>@text/channel-type.shelly.sensorRotationZ.description.</description>
+		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 
 	<channel-type id="sensorSteps">
 		<item-type>Number</item-type>
 		<label>@text/channel-type.shelly.sensorSteps.label</label>
-		<description>@text/channel-type.shelly.sensorSteps.description</description>
+		<description>@text/channel-type.shelly.sensorSteps.description.</description>
 		<state readOnly="true" pattern="%d"/>
 	</channel-type>
 
 	<channel-type id="sensorDirection">
 		<item-type>String</item-type>
 		<label>@text/channel-type.shelly.sensorDirection.label</label>
-		<description>@text/channel-type.shelly.sensorDirection.description</description>
+		<description>@text/channel-type.shelly.sensorDirection.description.</description>
 		<state pattern="%s" readOnly="true">
 			<options>
 				<option value="up">@text/channel-type.shelly.sensorDirection.state.option.up</option>
@@ -633,18 +633,18 @@
 	<channel-type id="sensorDistance">
 		<item-type unitHint="mm">Number:Length</item-type>
 		<label>@text/channel-type.shelly.sensorDistance.label</label>
-		<description>@text/channel-type.shelly.sensorDistance.description</description>
+		<description>@text/channel-type.shelly.sensorDistance.description.</description>
 		<category>Distance</category>
 		<tags>
 			<tag>Measurement</tag>
 		</tags>
-		<state readOnly="true" pattern="%d %unit%"/>
+		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 
 	<channel-type id="senseKey">
 		<item-type>String</item-type>
 		<label>@text/channel-type.shelly.senseKey.label</label>
-		<description>@text/channel-type.shelly.senseKey.description</description>
+		<description>@text/channel-type.shelly.senseKey.description.</description>
 	</channel-type>
 
 </thing:thing-descriptions>

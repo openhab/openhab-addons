@@ -6,7 +6,7 @@
 
 	<thing-type id="mower">
 		<label>Mower</label>
-		<description>Mower robot connected via robonect module</description>
+		<description>Mower robot connected via robonect module.</description>
 		<semantic-equipment-tag>LawnMower</semantic-equipment-tag>
 		<channels>
 			<channel id="name" typeId="nameType"/>
@@ -33,15 +33,15 @@
 
 			<channel id="last-error-code" typeId="errorCodeType">
 				<label>Last Error Code</label>
-				<description>The Error code of the last error occurred</description>
+				<description>The Error code of the last error occurred.</description>
 			</channel>
 			<channel id="last-error-message" typeId="errorMessageType">
 				<label>Last Error Message</label>
-				<description>The error message of the last error occurred</description>
+				<description>The error message of the last error occurred.</description>
 			</channel>
 			<channel id="last-error-date" typeId="errorDateType">
 				<label>Last Error Date</label>
-				<description>The date and time of the last error occurred</description>
+				<description>The date and time of the last error occurred.</description>
 			</channel>
 
 			<channel id="health-temperature" typeId="temperatureType"/>
@@ -64,28 +64,28 @@
 			<parameter name="host" type="text" required="true">
 				<context>network-address</context>
 				<label>Host</label>
-				<description>Host name or network address of the Robonect module</description>
+				<description>Host name or network address of the Robonect module.</description>
 			</parameter>
 			<parameter name="user" type="text" required="false">
 				<label>User</label>
-				<description>The user id if authentication has been enabled on the mower</description>
+				<description>The user id if authentication has been enabled on the mower.</description>
 			</parameter>
 			<parameter name="password" type="text" required="false">
 				<context>password</context>
 				<label>Password</label>
-				<description>The password if authentication has been enabled on the mower</description>
+				<description>The password if authentication has been enabled on the mower.</description>
 			</parameter>
 			<parameter name="pollInterval" type="integer" required="false" unit="s">
 				<label>Polling Interval</label>
 				<default>30</default>
 				<description>The interval for the binding to poll the mowers status information.
-				</description>
+				.</description>
 			</parameter>
 			<parameter name="offlineTimeout" type="integer" required="false" unit="m">
 				<label>Offline Timeout</label>
 				<default>30</default>
 				<description>The maximum time the mower may be offline before the offline trigger is triggered.
-				</description>
+				.</description>
 			</parameter>
 			<parameter name="timezone" type="text" required="false">
 				<label>Timezone</label>
@@ -122,7 +122,7 @@
 	<channel-type id="nameType">
 		<item-type>String</item-type>
 		<label>Mower Name</label>
-		<description>The name of the mower</description>
+		<description>The name of the mower.</description>
 		<state readOnly="false"/>
 	</channel-type>
 
@@ -143,14 +143,14 @@
 	<channel-type id="hoursType">
 		<item-type>Number:Time</item-type>
 		<label>Total Mowing Hours</label>
-		<description>The number of total mowing hours</description>
+		<description>The number of total mowing hours.</description>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="temperatureType">
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature</label>
-		<description>The temperature inside the mower</description>
+		<description>The temperature inside the mower.</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Temperature</tag>
@@ -161,7 +161,7 @@
 	<channel-type id="humidityType">
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Humidity</label>
-		<description>The relative humidity in the mower in percent</description>
+		<description>The relative humidity in the mower in percent.</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Humidity</tag>
@@ -172,28 +172,28 @@
 	<channel-type id="blades-quality">
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Blade Quality</label>
-		<description>The quality of the blades</description>
+		<description>The quality of the blades.</description>
 		<state readOnly="true" pattern="%d %%"/>
 	</channel-type>
 
 	<channel-type id="blades-usage-hours">
 		<item-type unitHint="h">Number:Time</item-type>
 		<label>Blade Usage Hours</label>
-		<description>The usage time in hours of the blades</description>
+		<description>The usage time in hours of the blades.</description>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="blades-replacement-days">
 		<item-type unitHint="d">Number:Time</item-type>
 		<label>Blade In Use Days</label>
-		<description>The number of days since the blades have been replaced</description>
+		<description>The number of days since the blades have been replaced.</description>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="modeType">
 		<item-type>String</item-type>
 		<label>Mower Mode</label>
-		<description>The mower mode</description>
+		<description>The mower mode.</description>
 		<tags>
 			<tag>Control</tag>
 			<tag>Mode</tag>
@@ -211,14 +211,14 @@
 	<channel-type id="jobType">
 		<item-type>Switch</item-type>
 		<label>Mowing Job</label>
-		<description>Starts a mowing job</description>
+		<description>Starts a mowing job.</description>
 		<config-description-ref uri="channel-type:robonect:jobType"/>
 	</channel-type>
 
 	<channel-type id="timerStatusType">
 		<item-type>String</item-type>
 		<label>Timer Status</label>
-		<description>The status of the timer</description>
+		<description>The status of the timer.</description>
 		<state readOnly="true">
 			<options>
 				<option value="INACTIVE">Inactive</option>
@@ -231,7 +231,7 @@
 	<channel-type id="mowerStatusType">
 		<item-type>Number</item-type>
 		<label>Mower Status</label>
-		<description>The status of the mower</description>
+		<description>The status of the mower.</description>
 		<tags>
 			<tag>Status</tag>
 			<tag>Info</tag>
@@ -256,7 +256,7 @@
 	<channel-type id="startType">
 		<item-type>Switch</item-type>
 		<label>Start</label>
-		<description>On if started, Off if stopped</description>
+		<description>On if started, Off if stopped.</description>
 		<tags>
 			<tag>Switch</tag>
 			<tag>Power</tag>
@@ -277,21 +277,21 @@
 	<channel-type id="nextTimerType">
 		<item-type>DateTime</item-type>
 		<label>Next Timer Date</label>
-		<description>The next date the timer starts</description>
+		<description>The next date the timer starts.</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="errorCodeType">
 		<item-type>Number</item-type>
 		<label>Error Code</label>
-		<description>Error code defined by the mower manufacturer</description>
+		<description>Error code defined by the mower manufacturer.</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="errorMessageType">
 		<item-type>String</item-type>
 		<label>Error Message</label>
-		<description>The error message</description>
+		<description>The error message.</description>
 		<tags>
 			<tag>Alarm</tag>
 			<tag>Info</tag>
@@ -302,7 +302,7 @@
 	<channel-type id="errorDateType">
 		<item-type>DateTime</item-type>
 		<label>Error Date</label>
-		<description>The date and time the error occurred</description>
+		<description>The date and time the error occurred.</description>
 		<state readOnly="true"/>
 	</channel-type>
 

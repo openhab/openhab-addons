@@ -31,6 +31,7 @@
 			</parameter>
 			<parameter name="stationId" type="integer" required="true">
 				<label>Station Number</label>
+				<description>WMO station number.</description>
 			</parameter>
 		</config-description>
 
@@ -39,7 +40,7 @@
 	<channel-type id="wind-speed-beaufort">
 		<item-type>Number</item-type>
 		<label>Beaufort</label>
-		<description>Wind speed in Beaufort Scale</description>
+		<description>Wind speed in Beaufort Scale.</description>
 		<category>Wind</category>
 		<tags>
 			<tag>Calculation</tag>
@@ -51,7 +52,7 @@
 	<channel-type id="wind-direction">
 		<item-type>String</item-type>
 		<label>Wind Direction</label>
-		<description>Wind direction</description>
+		<description>Wind direction.</description>
 		<category>Wind</category>
 		<tags>
 			<tag>Measurement</tag>
@@ -89,8 +90,8 @@
 
 	<channel-type id="attenuation-factor" advanced="true">
 		<item-type>Number</item-type>
-		<label>Mitigation Factor</label>
-		<description>Cloud layer mitigation factor</description>
+		<label>Attenuation Factor</label>
+		<description>Cloud layer attenuation factor.</description>
 		<category>sun_clouds</category>
 		<state readOnly="true" pattern="%.1f" max="1" min="0"/>
 	</channel-type>
@@ -98,7 +99,7 @@
 	<channel-type id="overcast" advanced="true">
 		<item-type>String</item-type>
 		<label>Overcast</label>
-		<description>Overcast</description>
+		<description>Overcast.</description>
 		<category>sun_clouds</category>
 		<state readOnly="true" pattern="%s">
 			<options>
@@ -112,7 +113,7 @@
 	<channel-type id="horizontal-visibility" advanced="true">
 		<item-type>String</item-type>
 		<label>Horizontal Visibility</label>
-		<description>Horizontal visibility range</description>
+		<description>Horizontal visibility range.</description>
 		<state readOnly="true" pattern="%s">
 			<options>
 				<option value="LESS_THAN_1">Less than 1 km</option>
@@ -126,7 +127,7 @@
 	<channel-type id="time-utc" advanced="true">
 		<item-type>DateTime</item-type>
 		<label>Observation Time</label>
-		<description>Timestamp when data was observed</description>
+		<description>Timestamp when data was observed.</description>
 		<category>time</category>
 		<state readOnly="true"/>
 	</channel-type>

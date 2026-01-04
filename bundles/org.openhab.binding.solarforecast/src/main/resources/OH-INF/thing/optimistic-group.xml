@@ -5,7 +5,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 	<channel-group-type id="optimistic-values">
 		<label>Optimistic Forecast Values</label>
-		<description>Forecast values showing 90th percentile case data</description>
+		<description>Forecast values showing 90th percentile case data.</description>
 		<channels>
 			<channel id="power-estimate" typeId="power-estimate"/>
 			<channel id="energy-estimate" typeId="energy-estimate"/>

@@ -6,7 +6,7 @@
 
 	<thing-type id="button">
 		<label>Push Button</label>
-		<description>A simple push button</description>
+		<description>A simple push button.</description>
 
 		<channels>
 			<channel id="button" typeId="system.rawbutton"/>
@@ -17,7 +17,7 @@
 				<label>Serial Port</label>
 				<context>serial-port</context>
 				<limitToOptions>false</limitToOptions>
-				<description>The serial port that the button is connected to</description>
+				<description>The serial port that the button is connected to.</description>
 			</parameter>
 		</config-description>
 	</thing-type>

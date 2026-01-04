@@ -11,7 +11,7 @@
 			integration of other Salus devices into the ecosystem, as it provides a pathway for them to interact with the Salus
 			cloud. Without this bridge, the devices would be unable to send, receive or exchange data with the cloud platform,
 			hindering functionality and data utilization.
-		</description>
+		.</description>
 		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 		<representation-property>username</representation-property>
 		<config-description>
@@ -50,7 +50,7 @@
 			</parameter>
 			<parameter name="maxHttpRetries" type="integer" required="false">
 				<label>Max HTTP Retries</label>
-				<description>How many times HTTP requests can be retried</description>
+				<description>How many times HTTP requests can be retried.</description>
 				<advanced>true</advanced>
 				<default>3</default>
 			</parameter>

@@ -5,7 +5,7 @@
 
 	<type>binding</type>
 	<name>Roku Binding</name>
-	<description>Controls Roku Streaming Media Players and TVs</description>
+	<description>Controls Roku Streaming Media Players and TVs.</description>
 	<connection>local</connection>
 
 	<discovery-methods>

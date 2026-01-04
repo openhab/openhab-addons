@@ -7,7 +7,7 @@
 	<!-- SYMFONISK Thing Type -->
 	<thing-type id="SYMFONISK" listed="false">
 		<label>SYMFONISK</label>
-		<description>Represents IKEA SYMFONISK speaker</description>
+		<description>Represents IKEA SYMFONISK speaker.</description>
 		<semantic-equipment-tag>Speaker</semantic-equipment-tag>
 		<channels>
 			<channel id="add" typeId="add"/>

@@ -7,21 +7,21 @@
 	<config-description uri="thing-type:somfytahoma:device">
 		<parameter name="url" type="text" required="true">
 			<label>Somfy Tahoma Device URL</label>
-			<description>The identifier of this Somfy device</description>
+			<description>The identifier of this Somfy device.</description>
 		</parameter>
 	</config-description>
 
 	<config-description uri="thing-type:somfytahoma:gateway">
 		<parameter name="id" type="text" required="true">
 			<label>Somfy Tahoma Gateway ID</label>
-			<description>The identifier of this Somfy gateway</description>
+			<description>The identifier of this Somfy gateway.</description>
 		</parameter>
 	</config-description>
 
 	<config-description uri="bridge-type:somfytahoma:bridge">
 		<parameter name="cloudPortal" type="text" required="false">
 			<label>Cloud Portal</label>
-			<description>Cloud portal to connect to</description>
+			<description>Cloud portal to connect to.</description>
 			<options>
 				<option value="www.tahomalink.com">Somfy TaHoma / Somfy Connexoon IO / Somfy (Europe)</option>
 				<option value="ha201-1.overkiz.com">Somfy Connexoon RTS / Somfy (Australia)</option>
@@ -37,43 +37,43 @@
 
 		<parameter name="email" type="text">
 			<label>Email Address</label>
-			<description>Email address for the portal</description>
+			<description>Email address for the portal.</description>
 		</parameter>
 
 		<parameter name="password" type="text">
 			<context>password</context>
 			<label>Password</label>
-			<description>Password for the portal</description>
+			<description>Password for the portal.</description>
 		</parameter>
 
 		<parameter name="refresh" type="integer" required="false" min="10" max="120">
 			<label>Refresh</label>
-			<description>Specifies the refresh time in seconds for polling events from the cloud</description>
+			<description>Specifies the refresh time in seconds for polling events from the cloud.</description>
 			<default>30</default>
 		</parameter>
 
 		<parameter name="statusTimeout" type="integer" required="false" min="120">
 			<label>Status Timeout</label>
-			<description>Specifies the timeout in seconds after which statuses of all devices are retrieved from the cloud</description>
+			<description>Specifies the timeout in seconds after which statuses of all devices are retrieved from the cloud.</description>
 			<default>300</default>
 		</parameter>
 
 		<parameter name="retries" type="integer" required="false">
 			<label>Retries</label>
-			<description>Specifies how many times the command should be retried upon failure</description>
+			<description>Specifies how many times the command should be retried upon failure.</description>
 			<default>10</default>
 		</parameter>
 
 		<parameter name="retryDelay" type="integer" required="false" min="100">
 			<label>Retry delay</label>
-			<description>Specifies the delay in milliseconds between subsequent retries after a command failure</description>
+			<description>Specifies the delay in milliseconds between subsequent retries after a command failure.</description>
 			<default>1000</default>
 		</parameter>
 
 		<parameter name="devMode" type="boolean" required="false">
 			<label>Developer mode</label>
 			<description>Enables the direct control of your devices over the lan using the local API endpoint. See
-				https://github.com/Somfy-Developer/Somfy-TaHoma-Developer-Mode</description>
+				https://github.com/Somfy-Developer/Somfy-TaHoma-Developer-Mode.</description>
 			<default>false</default>
 			<advanced>true</advanced>
 		</parameter>
@@ -81,14 +81,14 @@
 		<parameter name="ip" type="text" required="false">
 			<label>Gateway IP</label>
 			<description>Local IP address of gateway. Relevant only if developer mode is enabled. If not provided, the binding
-				will try to autodetect it</description>
+				will try to autodetect it.</description>
 			<advanced>true</advanced>
 		</parameter>
 
 		<parameter name="pin" type="text" required="false">
 			<label>Gateway PIN</label>
 			<description>Gateway PIN in format ABCD-EFGH-IJKL. Relevant only if developer mode is enabled. If not provided, the
-				binding will try to autodetect it</description>
+				binding will try to autodetect it.</description>
 			<advanced>true</advanced>
 		</parameter>
 
@@ -96,7 +96,7 @@
 			<label>Local token</label>
 			<description>Local token. Relevant only if developer mode is enabled. If not provided, the binding
 				will try to
-				generate it using the gateway IP and PIN</description>
+				generate it using the gateway IP and PIN.</description>
 			<advanced>true</advanced>
 		</parameter>
 	</config-description>

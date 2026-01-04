@@ -22,7 +22,7 @@
 	<channel-type id="status">
 		<item-type>String</item-type>
 		<label>Status</label>
-		<description>Status for SomfyTahoma</description>
+		<description>Status for SomfyTahoma.</description>
 		<state readOnly="true"/>
 	</channel-type>
 </thing:thing-descriptions>

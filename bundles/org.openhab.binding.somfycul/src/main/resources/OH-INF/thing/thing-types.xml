@@ -7,7 +7,7 @@
 	<!-- The CUL stick as bridge -->
 	<bridge-type id="cul-device">
 		<label>CUL Stick</label>
-		<description>The CUL stick controlling the Somfy RTS devices</description>
+		<description>The CUL stick controlling the Somfy RTS devices.</description>
 		<config-description>
 			<parameter-group name="port">
 				<context>communication</context>
@@ -17,7 +17,7 @@
 			<parameter name="port" type="text" required="true" groupName="port">
 				<context>serial-port</context>
 				<label>Serial Port</label>
-				<description>Select serial port (COM1, /dev/ttyS0, ...)</description>
+				<description>Select serial port (COM1, /dev/ttyS0, ...).</description>
 				<default>/dev/ttyUSB0</default>
 			</parameter>
 
@@ -45,7 +45,7 @@
 			<bridge-type-ref id="cul-device"/>
 		</supported-bridge-type-refs>
 		<label>Somfy RTS Rollershutter</label>
-		<description>The Somfy RTS Rollershutter device controlled by the CUL stick</description>
+		<description>The Somfy RTS Rollershutter device controlled by the CUL stick.</description>
 		<channels>
 			<channel id="position" typeId="position"/>
 			<channel id="program" typeId="program"/>
@@ -55,7 +55,7 @@
 	<channel-type id="position">
 		<item-type>Rollershutter</item-type>
 		<label>Control</label>
-		<description>Device control (UP, DOWN, MY/STOP)</description>
+		<description>Device control (UP, DOWN, MY/STOP).</description>
 		<tags>
 			<tag>Control</tag>
 			<tag>OpenLevel</tag>
@@ -65,7 +65,7 @@
 	<channel-type id="program">
 		<item-type>Switch</item-type>
 		<label>Program</label>
-		<description>Device program</description>
+		<description>Device program.</description>
 		<tags>
 			<tag>Control</tag>
 			<tag>Mode</tag>

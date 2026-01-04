@@ -1,24 +1,26 @@
 # Synop Analyzer Binding
 
-This binding integrates the possibility to download and interpret Synop messages.
+This binding downloads and interprets SYNOP weather observation messages.
 
 ## Binding Configuration
 
-The binding has no configuration options itself, all configuration is done at 'Things' level.
+The binding itself has no configuration options; all configuration is done at the Thing level.
 
 ## Supported Things
 
-There is exactly one supported thing, which represents a Synop message. It has the id `synopanalyzer`.
+There is exactly one supported Thing type, which represents a SYNOP message: `synopanalyzer`.
 
 ## Discovery
 
-If a system location is set, the nearest available Synop station be automatically discovered for this location.
-The search radius will expand at each successive scan.
+If a system location is set, the nearest available SYNOP station will be automatically discovered for this location.
+The search radius expands with each successive scan.
 
 ## Thing Configuration
 
-Besides the Synop Station Number (as ```synopID``` as a [StationID](https://www.ogimet.com/gsynop_nav.phtml.en) string), the second configuration parameter is ```refreshInterval``` which defines the refresh interval in minutes.
-Synop message are typically updated every hour.
+- `stationId` — The WMO station number (see the [station list](https://www.ogimet.com/gsynop_nav.phtml.en)).
+- `refreshInterval` — The refresh interval in minutes.
+
+SYNOP messages are typically updated every hour.
 
 ## Channels
 
@@ -38,26 +40,26 @@ The weather information that is retrieved is available as these channels:
 | time-utc              | DateTime           | Observation time of the Synop message      |
 | horizontal-visibility | String             | Horizontal visibility range                |
 
-- ”cloud attenuation factor” (Kc) as defined by Kasten and Czeplak (1980)
+- "Cloud attenuation factor" (Kc) as defined by Kasten and Czeplak (1980).
 
 ## Example
 
 ### Things
 
-Here is an example of thing definition:
+Example Thing definition:
 
 ```java
-synopanalyzer:synopanalyzer:orly [ stationId=7149 ]
+synopanalyzer:synopanalyzer:trappes [ stationId=7149 ]
 ```
 
 ### Items
 
 ```java
-Number Synop_Temperature "Temperature [%.1f °C]" <temperature> { channel = "synopanalyzer:synopanalyzer:trappes:temperature" }
-Number Synop_Pressure "Pressure [%.1f mb]" <pressure> { channel = "synopanalyzer:synopanalyzer:trappes:pressure" }
-Number Synop_Wind_Angle "Wind Angle [%d°]" <wind>     { channel = "synopanalyzer:synopanalyzer:trappes:wind-angle"}
-String Synop_Wind_Direction "Direction [%s]" { channel = "synopanalyzer:synopanalyzer:trappes:wind-direction"}
-Number Synop_Wind_Speed "Wind Speed [%.2f m/s]" <wind> { channel = "synopanalyzer:synopanalyzer:trappes:wind-speed-ms"}
-Number Synop_Octa "Octa [%d]/8" { channel = "synopanalyzer:synopanalyzer:trappes:octa"}
-DateTime Synop_time  "Observation Time [%1$ta %1$tR]"        <clock>   { channel = "synopanalyzer:synopanalyzer:trappes:time-utc"}
+Number:Temperature Synop_Temperature "Temperature [%.1f %unit%]" <temperature> { channel = "synopanalyzer:synopanalyzer:trappes:temperature" }
+Number:Pressure    Synop_Pressure    "Pressure [%.1f %unit%]"     <pressure>   { channel = "synopanalyzer:synopanalyzer:trappes:pressure" }
+Number:Angle       Synop_Wind_Angle  "Wind Angle [%d °]"          <wind>       { channel = "synopanalyzer:synopanalyzer:trappes:wind-angle" }
+String             Synop_Wind_Direction "Direction [%s]"                        { channel = "synopanalyzer:synopanalyzer:trappes:wind-direction" }
+Number:Speed       Synop_Wind_Speed  "Wind Speed [%.2f %unit%]"   <wind>       { channel = "synopanalyzer:synopanalyzer:trappes:wind-speed" }
+Number             Synop_Octa        "Octa [%d]/8"                              { channel = "synopanalyzer:synopanalyzer:trappes:octa" }
+DateTime           Synop_time        "Observation Time [%1$ta %1$tR]" <clock>  { channel = "synopanalyzer:synopanalyzer:trappes:time-utc" }
 ```

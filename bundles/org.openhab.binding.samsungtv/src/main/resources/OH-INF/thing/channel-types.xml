@@ -52,7 +52,7 @@
 		<label>Color Temperature</label>
 		<description>Color temperature of the TV picture. Minimum value is 0 and
 			maximum 4.
-		</description>
+		.</description>
 		<state min="0" max="4"/>
 	</channel-type>
 
@@ -122,7 +122,7 @@
 		<label>Power</label>
 		<description>TV power. Some of the Samsung TV models doesn't allow to set
 			Power ON remotely.
-		</description>
+		.</description>
 		<tags>
 			<tag>Switch</tag>
 			<tag>Power</tag>
@@ -142,7 +142,7 @@
 	<channel-type id="setartmode" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Set Art Mode</label>
-		<description>Set ArtMode ON/OFF from an external source (needed for >=2022 Frame TV's)</description>
+		<description>Set ArtMode ON/OFF from an external source (needed for >=2022 Frame TV's).</description>
 		<tags>
 			<tag>Switch</tag>
 			<tag>Mode</tag>
@@ -152,25 +152,25 @@
 	<channel-type id="artwork" advanced="true">
 		<item-type>Image</item-type>
 		<label>Art Selected</label>
-		<description>Set/get Artwork that will be displayed in artMode</description>
+		<description>Set/get Artwork that will be displayed in artMode.</description>
 	</channel-type>
 
 	<channel-type id="artworklabel" advanced="true">
 		<item-type>String</item-type>
 		<label>Artwork Label</label>
-		<description>Set/get label of the artwork to be displayed</description>
+		<description>Set/get label of the artwork to be displayed.</description>
 	</channel-type>
 
 	<channel-type id="artworkjson" advanced="true">
 		<item-type>String</item-type>
 		<label>Artwork Json</label>
-		<description>Send and receive JSON from the TV Art channel</description>
+		<description>Send and receive JSON from the TV Art channel.</description>
 	</channel-type>
 
 	<channel-type id="artworkbrightness" advanced="true">
 		<item-type>Dimmer</item-type>
 		<label>Artwork Brightness</label>
-		<description>Set/get brightness of the artwork displayed</description>
+		<description>Set/get brightness of the artwork displayed.</description>
 	</channel-type>
 
 	<channel-type id="artworkcolortemperature" advanced="true">
@@ -178,12 +178,13 @@
 		<label>Artwork Color Temperature</label>
 		<description>Set/get color temperature of the artwork displayed. Minimum value is -5 and
 			maximum 5.</description>
+		<state min="-5" max="5"/>
 	</channel-type>
 
 	<channel-type id="artworkorientation">
 		<item-type>Switch</item-type>
 		<label>Artwork Orientation</label>
-		<description>TV orientation, Landcape or Portrait</description>
+		<description>TV orientation, Landcape or Portrait.</description>
 		<tags>
 			<tag>Switch</tag>
 			<tag>MediaControl</tag>
@@ -193,7 +194,7 @@
 	<channel-type id="sourceapp" advanced="true">
 		<item-type>String</item-type>
 		<label>Application</label>
-		<description>Application currently running</description>
+		<description>Application currently running.</description>
 	</channel-type>
 
 	<channel-type id="keycode">
@@ -201,7 +202,7 @@
 		<label>Key Code</label>
 		<description>The key code channel emulates the infrared remote controller and
 			allows to send virtual button presses.
-		</description>
+		.</description>
 		<state>
 			<options>
 				<option value="KEY_0">KEY_0</option>

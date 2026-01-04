@@ -8,47 +8,47 @@
 	<channel-type id="add" advanced="true">
 		<item-type>String</item-type>
 		<label>Add</label>
-		<description>Add the given Sonos device to the group of this Sonos device</description>
+		<description>Add the given Sonos device to the group of this Sonos device.</description>
 	</channel-type>
 
 	<channel-type id="alarm" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Set Alarm</label>
 		<description>Set the first occurring alarm either ON or OFF. Alarms first have to be defined through the Sonos
-			Controller app</description>
+			Controller app.</description>
 	</channel-type>
 
 	<channel-type id="alarmproperties" advanced="true">
 		<item-type>String</item-type>
 		<label>Alarm Properties</label>
-		<description>Properties of the alarm currently running</description>
+		<description>Properties of the alarm currently running.</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="alarmrunning" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Alarm Is Running</label>
-		<description>Set to ON if the alarm was triggered</description>
+		<description>Set to ON if the alarm was triggered.</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="bass" advanced="true">
 		<item-type>Number</item-type>
 		<label>Bass</label>
-		<description>Set or get the bass level adjustment</description>
+		<description>Set or get the bass level adjustment.</description>
 		<state min="-10" max="10" step="1" readOnly="false" pattern="%d"/>
 	</channel-type>
 
 	<channel-type id="clearqueue" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Clear Queue</label>
-		<description>Suppress all songs from the current queue</description>
+		<description>Suppress all songs from the current queue.</description>
 	</channel-type>
 
 	<channel-type id="codec" advanced="true">
 		<item-type>String</item-type>
 		<label>Codec</label>
-		<description>Name of codec currently being decoded</description>
+		<description>Name of codec currently being decoded.</description>
 		<state readOnly="true">
 			<options>
 				<option value="noSignal">No Signal</option>
@@ -71,14 +71,14 @@
 	<channel-type id="coordinator" advanced="true">
 		<item-type>String</item-type>
 		<label>Coordinator</label>
-		<description>UDN of the coordinator for the current group</description>
+		<description>UDN of the coordinator for the current group.</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="currentalbum">
 		<item-type>String</item-type>
 		<label>Current Album</label>
-		<description>Name of the album currently playing</description>
+		<description>Name of the album currently playing.</description>
 		<tags>
 			<tag>Status</tag>
 			<tag>Info</tag>
@@ -89,14 +89,14 @@
 	<channel-type id="currentalbumart">
 		<item-type>Image</item-type>
 		<label>Current Album Cover Art</label>
-		<description>Cover art of the album currently playing</description>
+		<description>Cover art of the album currently playing.</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="currentalbumarturl" advanced="true">
 		<item-type>String</item-type>
 		<label>Current Album Cover Art URL</label>
-		<description>Cover art URL of the album currently playing</description>
+		<description>Cover art URL of the album currently playing.</description>
 		<tags>
 			<tag>Status</tag>
 			<tag>Info</tag>
@@ -107,7 +107,7 @@
 	<channel-type id="currenttrack" advanced="true">
 		<item-type>String</item-type>
 		<label>Current Track</label>
-		<description>Name of the current track or radio station currently playing</description>
+		<description>Name of the current track or radio station currently playing.</description>
 		<tags>
 			<tag>Status</tag>
 			<tag>Info</tag>
@@ -118,108 +118,108 @@
 	<channel-type id="currenttrackuri" advanced="true">
 		<item-type>String</item-type>
 		<label>Current Track URI</label>
-		<description>URI of the current track</description>
+		<description>URI of the current track.</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="currenttransporturi" advanced="true">
 		<item-type>String</item-type>
 		<label>Current AV Transport URI</label>
-		<description>URI of the current AV transport</description>
+		<description>URI of the current AV transport.</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="favorite" advanced="true">
 		<item-type>String</item-type>
 		<label>Favorite</label>
-		<description>Play the given favorite entry. The favorite entry has to be predefined in the Sonos Controller app</description>
+		<description>Play the given favorite entry. The favorite entry has to be predefined in the Sonos Controller app.</description>
 	</channel-type>
 
 	<channel-type id="heightlevel" advanced="true">
 		<item-type>Number</item-type>
 		<label>Height Level</label>
-		<description>Set or get the height level adjustment</description>
+		<description>Set or get the height level adjustment.</description>
 		<state min="-10" max="10" step="1" readOnly="false" pattern="%d"/>
 	</channel-type>
 
 	<channel-type id="led" advanced="true">
 		<item-type>Switch</item-type>
-		<label>Led</label>
-		<description>Set or get the status of the white led on the front of the Sonos device</description>
+		<label>LED</label>
+		<description>Set or get the status of the white LED on the front of the Sonos device.</description>
 	</channel-type>
 
 	<channel-type id="localcoordinator" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Local Coordinator</label>
-		<description>Indicator set to ON if this Sonos device is the Zone Group Coordinator</description>
+		<description>Indicator set to ON if this Sonos device is the Zone Group Coordinator.</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="loudness" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Loudness</label>
-		<description>Enable or disable the loudness</description>
+		<description>Enable or disable the loudness.</description>
 	</channel-type>
 
 	<channel-type id="nightmode" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Night Mode</label>
-		<description>Enable or disable the night mode feature</description>
+		<description>Enable or disable the night mode feature.</description>
 	</channel-type>
 
 	<channel-type id="notificationsound" advanced="true">
 		<item-type>String</item-type>
 		<label>Notification Sound</label>
-		<description>Play a notification sound by a given URI</description>
+		<description>Play a notification sound by a given URI.</description>
 	</channel-type>
 
 	<channel-type id="playlist" advanced="true">
 		<item-type>String</item-type>
 		<label>Play Playlist</label>
-		<description>Play the given playlist. The playlist has to be predefined in the Sonos Controller app</description>
+		<description>Play the given playlist. The playlist has to be predefined in the Sonos Controller app.</description>
 	</channel-type>
 
 	<channel-type id="playqueue" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Play Queue</label>
-		<description>Play the songs from the current queue</description>
+		<description>Play the songs from the current queue.</description>
 	</channel-type>
 
 	<channel-type id="playtrack" advanced="true">
 		<item-type>Number</item-type>
 		<label>Play Track</label>
-		<description>Play the given track number from the current queue</description>
+		<description>Play the given track number from the current queue.</description>
 	</channel-type>
 
 	<channel-type id="playuri" advanced="true">
 		<item-type>String</item-type>
 		<label>Play URI</label>
-		<description>Play the given URI</description>
+		<description>Play the given URI.</description>
 	</channel-type>
 
 	<channel-type id="publicaddress" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Public Address</label>
 		<description>Put all Sonos devices in one group, and stream audio from the line-in from the Sonos device that
-			triggered the command</description>
+			triggered the command.</description>
 	</channel-type>
 
 	<channel-type id="radio" advanced="true">
 		<item-type>String</item-type>
 		<label>Radio</label>
-		<description>Play the given radio station. The radio station has to be predefined in the Sonos Controller app</description>
+		<description>Play the given radio station. The radio station has to be predefined in the Sonos Controller app.</description>
 	</channel-type>
 
 	<channel-type id="remove" advanced="true">
 		<item-type>String</item-type>
 		<label>Remove</label>
-		<description>Remove the given Sonos device from the group of this Sonos device</description>
+		<description>Remove the given Sonos device from the group of this Sonos device.</description>
 	</channel-type>
 
 	<channel-type id="repeat" advanced="true">
 		<item-type>String</item-type>
 		<label>Repeat</label>
-		<description>Repeat track or queue playback</description>
+		<description>Repeat track or queue playback.</description>
 		<state readOnly="false">
 			<options>
 				<option value="OFF">Off</option>
@@ -232,57 +232,57 @@
 	<channel-type id="restore" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Restore</label>
-		<description>Restore the state of the Sonos device</description>
+		<description>Restore the state of the Sonos device.</description>
 	</channel-type>
 
 	<channel-type id="restoreall" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Restore All</label>
-		<description>Restore the state of all the Sonos devices</description>
+		<description>Restore the state of all the Sonos devices.</description>
 	</channel-type>
 
 	<channel-type id="save" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Save</label>
-		<description>Save the state of the Sonos device</description>
+		<description>Save the state of the Sonos device.</description>
 	</channel-type>
 
 	<channel-type id="saveall" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Save All</label>
-		<description>Save the state of all the Sonos devices</description>
+		<description>Save the state of all the Sonos devices.</description>
 	</channel-type>
 
 	<channel-type id="shuffle" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Shuffle</label>
-		<description>Shuffle queue playback</description>
+		<description>Shuffle queue playback.</description>
 	</channel-type>
 
 	<channel-type id="sleeptimer" advanced="true">
 		<item-type>Number</item-type>
 		<label>Sleep Timer</label>
-		<description>Set/show the duration of the sleep timer in seconds</description>
+		<description>Set/show the duration of the sleep timer in seconds.</description>
 		<state min="0" max="68399" step="1" readOnly="false" pattern="%d s"/>
 	</channel-type>
 
 	<channel-type id="snooze" advanced="true">
 		<item-type>Number</item-type>
 		<label>Snooze</label>
-		<description>Snooze the running alarm, if any, with the given number of minutes</description>
+		<description>Snooze the running alarm, if any, with the given number of minutes.</description>
 		<state readOnly="false" pattern="%d min"/>
 	</channel-type>
 
 	<channel-type id="speechenhancement" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Speech Enhancement</label>
-		<description>Enable or disable the speech enhancement feature</description>
+		<description>Enable or disable the speech enhancement feature.</description>
 	</channel-type>
 
 	<channel-type id="standalone" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Stand Alone</label>
-		<description>Make the Sonos device leave its group and become a standalone player</description>
+		<description>Make the Sonos device leave its group and become a standalone player.</description>
 	</channel-type>
 
 	<!-- The Sonos State Type -->
@@ -308,33 +308,33 @@
 	<channel-type id="treble" advanced="true">
 		<item-type>Number</item-type>
 		<label>Treble</label>
-		<description>Set or get the treble level adjustment</description>
+		<description>Set or get the treble level adjustment.</description>
 		<state min="-10" max="10" step="1" readOnly="false" pattern="%d"/>
 	</channel-type>
 
 	<channel-type id="subwoofer" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Subwoofer</label>
-		<description>Enable or disable the subwoofer</description>
+		<description>Enable or disable the subwoofer.</description>
 	</channel-type>
 
 	<channel-type id="subwoofergain" advanced="true">
 		<item-type>Number</item-type>
 		<label>Subwoofer Gain</label>
-		<description>Set or get the subwoofer gain adjustment</description>
+		<description>Set or get the subwoofer gain adjustment.</description>
 		<state min="-15" max="15" step="1" readOnly="false" pattern="%d"/>
 	</channel-type>
 
 	<channel-type id="surround" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Surround Audio</label>
-		<description>Enable or disable the surround audio</description>
+		<description>Enable or disable the surround audio.</description>
 	</channel-type>
 
 	<channel-type id="surroundmusicmode" advanced="true">
 		<item-type>String</item-type>
 		<label>Surround Music Mode</label>
-		<description>Set or get the surround playback mode for music</description>
+		<description>Set or get the surround playback mode for music.</description>
 		<state readOnly="false">
 			<options>
 				<option value="0">Ambient</option>
@@ -346,34 +346,34 @@
 	<channel-type id="surroundmusiclevel" advanced="true">
 		<item-type>Number</item-type>
 		<label>Surround Music Level</label>
-		<description>Set or get the surround level adjustment for music</description>
+		<description>Set or get the surround level adjustment for music.</description>
 		<state min="-15" max="15" step="1" readOnly="false" pattern="%d"/>
 	</channel-type>
 
 	<channel-type id="surroundtvlevel" advanced="true">
 		<item-type>Number</item-type>
 		<label>Surround TV Level</label>
-		<description>Set or get the surround level adjustment for TV</description>
+		<description>Set or get the surround level adjustment for TV.</description>
 		<state min="-15" max="15" step="1" readOnly="false" pattern="%d"/>
 	</channel-type>
 
 	<channel-type id="tuneinstationid" advanced="true">
 		<item-type>String</item-type>
-		<label>TuneIn Station Id</label>
-		<description>Provide the current TuneIn station id or play the TuneIn radio given by its station id</description>
+		<label>TuneIn Station ID</label>
+		<description>Provide the current TuneIn station ID or play the TuneIn radio given by its station ID.</description>
 	</channel-type>
 
 	<channel-type id="zonegroupid" advanced="true">
 		<item-type>String</item-type>
 		<label>Zone Group ID</label>
-		<description>Id of the Zone Group the Sonos device belongs to</description>
+		<description>ID of the Zone Group the Sonos device belongs to.</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="zonename">
 		<item-type>String</item-type>
 		<label>Zone Name</label>
-		<description>Name of the Zone Group associated to the Sonos device</description>
+		<description>Name of the Zone Group associated to the Sonos device.</description>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -381,21 +381,21 @@
 	<channel-type id="linein" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Line-in Connected</label>
-		<description>Indicator set to ON when the line-in of the Sonos device is connected</description>
+		<description>Indicator set to ON when the line-in of the Sonos device is connected.</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="playlinein" advanced="true">
 		<item-type>String</item-type>
 		<label>Play Line-in</label>
-		<description>Play the line-in of the the Sonos device corresponding to the given UIN</description>
+		<description>Play the line-in of the Sonos device corresponding to the given UDN.</description>
 	</channel-type>
 
 	<!-- Extended channels (for SONOS Move only) -->
 	<channel-type id="batterycharging" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Battery Charging</label>
-		<description>Indicator set to ON when the battery is charging</description>
+		<description>Indicator set to ON when the battery is charging.</description>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -403,7 +403,7 @@
 	<channel-type id="microphone" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Microphone</label>
-		<description>Indicator set to ON when the microphone is enabled</description>
+		<description>Indicator set to ON when the microphone is enabled.</description>
 		<state readOnly="true"/>
 	</channel-type>
 

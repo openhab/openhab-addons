@@ -43,7 +43,7 @@
 
 	<channel-group-type id="general">
 		<label>General Information</label>
-		<description>General information about the monitor</description>
+		<description>General information about the monitor.</description>
 		<channels>
 			<channel id="frequency" typeId="frequency"/>
 			<channel id="grid-power" typeId="grid-power"/>
@@ -59,22 +59,22 @@
 
 	<channel-group-type id="discovered-devices">
 		<label>Discovered Devices</label>
-		<description>Sense discovered devices</description>
+		<description>Sense discovered devices.</description>
 	</channel-group-type>
 
 	<channel-group-type id="self-reporting-devices">
 		<label>Self-Reporting Devices</label>
-		<description>Devices that self report their power to Sense</description>
+		<description>Devices that self report their power to Sense.</description>
 	</channel-group-type>
 
 	<channel-group-type id="proxy-devices">
 		<label>Proxy Devices</label>
-		<description>Proxy devices configured in openHAB which report their power</description>
+		<description>Proxy devices configured in openHAB which report their power.</description>
 	</channel-group-type>
 
 	<channel-group-type id="device-template">
 		<label>Device</label>
-		<description>Discovered devices</description>
+		<description>Discovered devices.</description>
 		<channels>
 			<channel id="device-power" typeId="device-power"/>
 			<channel id="trigger" typeId="device-trigger"/>
@@ -150,7 +150,7 @@
 	<channel-type id="grid-power">
 		<item-type unitHint="W">Number:Power</item-type>
 		<label>Grid Power</label>
-		<description>Power consumed from the grid (negative if supplying power to grid)</description>
+		<description>Power consumed from the grid (negative if supplying power to grid).</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Power</tag>
@@ -161,7 +161,7 @@
 	<channel-type id="devices-updated-trigger" advanced="true">
 		<kind>trigger</kind>
 		<label>Discovered Devices Updated</label>
-		<description>Triggered when the discovered device list has been updated</description>
+		<description>Triggered when the discovered device list has been updated.</description>
 	</channel-type>
 
 	<channel-type id="device-power">

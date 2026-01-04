@@ -42,7 +42,7 @@
 
 		<parameter name="allowResetCmds" type="boolean">
 			<label>Enable Reset Commands</label>
-			<description>Flag to enable execution of support reset commands (use with care)</description>
+			<description>Flag to enable execution of support reset commands (use with care).</description>
 			<default>false</default>
 		</parameter>
 

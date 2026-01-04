@@ -5,7 +5,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 	<thing-type id="meter">
 		<label>Solar-Log Meter</label>
-		<description>Basic thing for the Solar-Log Binding</description>
+		<description>Basic thing for the Solar-Log Binding.</description>
 		<semantic-equipment-tag>ElectricMeter</semantic-equipment-tag>
 		<channels>
 			<channel id="lastupdate" typeId="lastupdate"></channel>
@@ -29,12 +29,12 @@
 		<config-description>
 			<parameter name="url" type="text" required="true">
 				<label>URL</label>
-				<description>URL of the Solar-Log web interface (e.g. http://solar-log)</description>
+				<description>URL of the Solar-Log web interface (e.g., http://solar-log).</description>
 				<default>http://solar-log</default>
 			</parameter>
 			<parameter name="refreshInterval" type="integer" min="15">
 				<label>Refresh Interval</label>
-				<description>States how often a refresh shall occur (in s).</description>
+				<description>How often to refresh (in seconds).</description>
 				<default>15</default>
 			</parameter>
 		</config-description>
@@ -42,7 +42,7 @@
 	<channel-type id="lastupdate">
 		<item-type>DateTime</item-type>
 		<label>Last Update</label>
-		<description>Last Update Time</description>
+		<description>Last Update Time.</description>
 		<tags>
 			<tag>Status</tag>
 			<tag>Timestamp</tag>
@@ -52,7 +52,7 @@
 	<channel-type id="pac">
 		<item-type>Number</item-type>
 		<label>PAC</label>
-		<description>Total output PAC from all of the inverters</description>
+		<description>Total output PAC from all of the inverters.</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Power</tag>
@@ -62,7 +62,7 @@
 	<channel-type id="pdc">
 		<item-type>Number</item-type>
 		<label>PDC</label>
-		<description>Total output PDC from all of the inverters</description>
+		<description>Total output PDC from all of the inverters.</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Power</tag>
@@ -72,7 +72,7 @@
 	<channel-type id="uac">
 		<item-type>Number</item-type>
 		<label>UAC</label>
-		<description>Average voltage UAC from the inverter</description>
+		<description>Average voltage UAC from the inverter.</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Voltage</tag>
@@ -82,7 +82,7 @@
 	<channel-type id="udc">
 		<item-type>Number</item-type>
 		<label>UDC</label>
-		<description>Average voltage UDC from the inverter</description>
+		<description>Average voltage UDC from the inverter.</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Voltage</tag>
@@ -92,7 +92,7 @@
 	<channel-type id="yieldday">
 		<item-type>Number</item-type>
 		<label>Yield Day</label>
-		<description>Total yield for the day from all of the inverters</description>
+		<description>Total yield for the day from all of the inverters.</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Energy</tag>
@@ -102,7 +102,7 @@
 	<channel-type id="yieldyesterday">
 		<item-type>Number</item-type>
 		<label>Yield Yesterday</label>
-		<description>Total yield for the previous day from all of the inverters</description>
+		<description>Total yield for the previous day from all of the inverters.</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Energy</tag>
@@ -112,7 +112,7 @@
 	<channel-type id="yieldmonth">
 		<item-type>Number</item-type>
 		<label>Yield Month</label>
-		<description>Total yield for the month from all of the inverters</description>
+		<description>Total yield for the month from all of the inverters.</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Energy</tag>
@@ -122,7 +122,7 @@
 	<channel-type id="yieldyear">
 		<item-type>Number</item-type>
 		<label>Yield Year</label>
-		<description>Total yield for the year from all of the inverters</description>
+		<description>Total yield for the year from all of the inverters.</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Energy</tag>
@@ -132,7 +132,7 @@
 	<channel-type id="yieldtotal">
 		<item-type>Number</item-type>
 		<label>Yield Total</label>
-		<description>Total yield from all of the inverters</description>
+		<description>Total yield from all of the inverters.</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Energy</tag>
@@ -142,7 +142,7 @@
 	<channel-type id="conspac">
 		<item-type>Number</item-type>
 		<label>Consumption PAC</label>
-		<description>Current total consumption PAC from all of the consumption meters (W)</description>
+		<description>Current total consumption PAC from all of the consumption meters (W).</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Power</tag>
@@ -152,7 +152,7 @@
 	<channel-type id="consyieldday">
 		<item-type>Number</item-type>
 		<label>Consumption Today</label>
-		<description>Total consumption from all of the consumption meters</description>
+		<description>Total consumption from all of the consumption meters.</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Energy</tag>
@@ -162,7 +162,7 @@
 	<channel-type id="consyieldyesterday">
 		<item-type>Number</item-type>
 		<label>Consumption Yesterday</label>
-		<description>Total consumption for the previous day; all of the consumption meters</description>
+		<description>Total consumption for the previous day from all of the consumption meters.</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Energy</tag>
@@ -172,7 +172,7 @@
 	<channel-type id="consyieldmonth">
 		<item-type>Number</item-type>
 		<label>Consumption Month</label>
-		<description>Total consumption for the month; all of the consumption meters</description>
+		<description>Total consumption for the month from all of the consumption meters.</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Energy</tag>
@@ -182,13 +182,13 @@
 	<channel-type id="consyieldyear">
 		<item-type>Number</item-type>
 		<label>Consumption Year</label>
-		<description>Total consumption for the year; all of the consumption meters</description>
+		<description>Total consumption for the year from all of the consumption meters.</description>
 		<state readOnly="true" pattern="%d Wh"></state>
 	</channel-type>
 	<channel-type id="consyieldtotal">
 		<item-type>Number</item-type>
 		<label>Consumption Total</label>
-		<description>Accumulated total consumption, all Consumption meter</description>
+		<description>Accumulated total consumption from all consumption meters.</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Energy</tag>
@@ -198,7 +198,7 @@
 	<channel-type id="totalpower">
 		<item-type>Number</item-type>
 		<label>Total Power</label>
-		<description>Installed generator power (Wp)</description>
+		<description>Installed generator power (Wp).</description>
 		<state readOnly="true" pattern="%d Wp"></state>
 	</channel-type>
 

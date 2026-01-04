@@ -6,7 +6,7 @@
 
 	<thing-type id="particulate">
 		<label>Particulate Sensor</label>
-		<description>Sensor to measure Particulate Matter (PM)</description>
+		<description>Sensor to measure Particulate Matter (PM).</description>
 		<semantic-equipment-tag>AirQualitySensor</semantic-equipment-tag>
 		<channels>
 			<channel id="pm25" typeId="pm25-channel"/>
@@ -17,18 +17,18 @@
 			<parameter name="ipAddress" type="text">
 				<context>network-address</context>
 				<label>Internal IP Address</label>
-				<description>Local IP address of your personal owned sensor</description>
+				<description>Local IP address of your personal owned sensor.</description>
 			</parameter>
 			<parameter name="sensorid" type="integer">
 				<label>External Sensor ID</label>
-				<description>Sensor ID from https://deutschland.maps.sensor.community/</description>
+				<description>Sensor ID from https://deutschland.maps.sensor.community/.</description>
 			</parameter>
 		</config-description>
 	</thing-type>
 
 	<thing-type id="conditions">
 		<label>Condition Sensor</label>
-		<description>Sensor to measure Temperature and Humidity conditions</description>
+		<description>Sensor to measure Temperature and Humidity conditions.</description>
 		<semantic-equipment-tag>Sensor</semantic-equipment-tag>
 		<channels>
 			<channel id="temperature" typeId="temp-channel"/>
@@ -41,18 +41,18 @@
 			<parameter name="ipAddress" type="text">
 				<context>network-address</context>
 				<label>Internal IP Address</label>
-				<description>Local IP address of your personal owned sensor</description>
+				<description>Local IP address of your personal owned sensor.</description>
 			</parameter>
 			<parameter name="sensorid" type="integer">
 				<label>External Sensor ID</label>
-				<description>Sensor ID from https://deutschland.maps.sensor.community/</description>
+				<description>Sensor ID from https://deutschland.maps.sensor.community/.</description>
 			</parameter>
 		</config-description>
 	</thing-type>
 
 	<thing-type id="noise">
 		<label>Noise Sensor</label>
-		<description>Sensor to measure noise on location</description>
+		<description>Sensor to measure noise on location.</description>
 		<semantic-equipment-tag>Sensor</semantic-equipment-tag>
 		<channels>
 			<channel id="noise-eq" typeId="noise-eq-channel"/>
@@ -64,11 +64,11 @@
 			<parameter name="ipAddress" type="text">
 				<context>network-address</context>
 				<label>Internal IP Address</label>
-				<description>Local IP address of your personal owned sensor</description>
+				<description>Local IP address of your personal owned sensor.</description>
 			</parameter>
 			<parameter name="sensorid" type="integer">
 				<label>External Sensor ID</label>
-				<description>Sensor ID from https://deutschland.maps.sensor.community/</description>
+				<description>Sensor ID from https://deutschland.maps.sensor.community/.</description>
 			</parameter>
 		</config-description>
 	</thing-type>
@@ -94,7 +94,7 @@
 	<channel-type id="temp-channel">
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature</label>
-		<description>Temperature from the selected Sensor ID</description>
+		<description>Temperature from the selected Sensor ID.</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Temperature</tag>
@@ -104,7 +104,7 @@
 	<channel-type id="hum-channel">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Humidity</label>
-		<description>Humidity from the selected Sensor ID</description>
+		<description>Humidity from the selected Sensor ID.</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Humidity</tag>
@@ -114,7 +114,7 @@
 	<channel-type id="pressure-channel">
 		<item-type>Number:Pressure</item-type>
 		<label>Atmospheric Pressure</label>
-		<description>Atmospheric Pressure from the selected Sensor ID</description>
+		<description>Atmospheric Pressure from the selected Sensor ID.</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Pressure</tag>
@@ -124,7 +124,7 @@
 	<channel-type id="pressure-sea-channel">
 		<item-type>Number:Pressure</item-type>
 		<label>Atmospheric Pressure Sea Level</label>
-		<description>Atmospheric Pressure at sea level from the selected Sensor ID</description>
+		<description>Atmospheric Pressure at sea level from the selected Sensor ID.</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Pressure</tag>
@@ -134,7 +134,7 @@
 	<channel-type id="noise-eq-channel">
 		<item-type unitHint="dB">Number:Dimensionless</item-type>
 		<label>Average Noise</label>
-		<description>Average noise level from the selected Sensor ID</description>
+		<description>Average noise level from the selected Sensor ID.</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Noise</tag>
@@ -144,7 +144,7 @@
 	<channel-type id="noise-min-channel">
 		<item-type unitHint="dB">Number:Dimensionless</item-type>
 		<label>Minimum Noise</label>
-		<description>Minimum noise level (last 2.5 minutes) from the selected Sensor ID</description>
+		<description>Minimum noise level (last 2.5 minutes) from the selected Sensor ID.</description>
 		<tags>
 			<tag>Calculation</tag>
 			<tag>Noise</tag>
@@ -154,7 +154,7 @@
 	<channel-type id="noise-max-channel">
 		<item-type unitHint="dB">Number:Dimensionless</item-type>
 		<label>Maximum Noise</label>
-		<description>Maximum noise level (last 2.5 minutes) from the selected Sensor ID</description>
+		<description>Maximum noise level (last 2.5 minutes) from the selected Sensor ID.</description>
 		<tags>
 			<tag>Calculation</tag>
 			<tag>Noise</tag>

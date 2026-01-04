@@ -9,7 +9,7 @@
 			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
 		<label>Somfy AS Roller Shutter</label>
-		<description>Somfy Adjustable Slats Roller Shutter</description>
+		<description>Somfy Adjustable Slats Roller Shutter.</description>
 		<semantic-equipment-tag>Blinds</semantic-equipment-tag>
 		<channels>
 			<channel id="rocker" typeId="rocker"></channel>

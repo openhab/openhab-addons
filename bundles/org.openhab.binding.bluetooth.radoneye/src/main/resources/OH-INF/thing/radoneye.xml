@@ -12,7 +12,7 @@
 		</supported-bridge-type-refs>
 
 		<label>RadonEye RD200</label>
-		<description>Indoor radon monitor</description>
+		<description>Indoor radon monitor.</description>
 		<semantic-equipment-tag>AirQualitySensor</semantic-equipment-tag>
 
 		<channels>
@@ -28,7 +28,7 @@
 		<config-description>
 			<parameter name="address" type="text">
 				<label>Address</label>
-				<description>Bluetooth address in XX:XX:XX:XX:XX:XX format</description>
+				<description>Bluetooth address in XX:XX:XX:XX:XX:XX format.</description>
 			</parameter>
 			<parameter name="fwVersion" type="integer" min="1" max="2">
 				<label>Firmware Version</label>
@@ -46,7 +46,7 @@
 	<channel-type id="radoneye_radon">
 		<item-type>Number:RadiationSpecificActivity</item-type>
 		<label>Radon Current Level</label>
-		<description>Radon gas level</description>
+		<description>Radon gas level.</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Radon</tag>
@@ -56,7 +56,7 @@
 	<channel-type id="radoneye_decay">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Decay Counter</label>
-		<description>The decay count in the last time frame</description>
+		<description>The decay count in the last time frame.</description>
 		<state readOnly="true" pattern="%.0f"/>
 	</channel-type>
 </thing:thing-descriptions>

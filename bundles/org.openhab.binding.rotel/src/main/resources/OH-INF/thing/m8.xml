@@ -7,7 +7,7 @@
 	<!-- Rotel M8 Connection Thing Type -->
 	<thing-type id="m8">
 		<label>M8 Monoblock Amplifier</label>
-		<description>Connection to the Rotel Michi M8 monoblock amplifier</description>
+		<description>Connection to the Rotel Michi M8 monoblock amplifier.</description>
 		<semantic-equipment-tag>AudioVisual</semantic-equipment-tag>
 
 		<channels>

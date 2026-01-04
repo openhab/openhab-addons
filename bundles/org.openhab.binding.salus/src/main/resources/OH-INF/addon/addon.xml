@@ -10,7 +10,7 @@
 		integration of Salus' wide range devices into your home control system, facilitating bidirectional communication
 		and
 		control.
-	</description>
+	.</description>
 	<connection>cloud</connection>
 
 </addon:addon>

@@ -7,7 +7,7 @@
 	<!-- Sonos Port Thing Type -->
 	<thing-type id="Port" listed="false">
 		<label>Port</label>
-		<description>Represents SONOS Port connector</description>
+		<description>Represents SONOS Port connector.</description>
 		<semantic-equipment-tag>AudioVisual</semantic-equipment-tag>
 		<channels>
 			<channel id="add" typeId="add"/>

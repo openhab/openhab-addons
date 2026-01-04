@@ -11,11 +11,11 @@
 	<config-description>
 		<parameter name="opmlUrl" type="text">
 			<label>OPML Service URL</label>
-			<description>URL for the OPML/tunein.com service</description>
+			<description>URL for the OPML/tunein.com service.</description>
 		</parameter>
 		<parameter name="callbackUrl" type="text">
 			<label>Callback URL</label>
-			<description>URL to use for playing notification sounds, e.g. http://192.168.0.2:8080</description>
+			<description>URL to use for playing notification sounds, e.g. http://192.168.0.2:8080.</description>
 		</parameter>
 	</config-description>
 

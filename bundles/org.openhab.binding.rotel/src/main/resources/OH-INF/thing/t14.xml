@@ -7,7 +7,7 @@
 	<!-- Rotel T14 Connection Thing Type -->
 	<thing-type id="t14">
 		<label>T14 Tuner</label>
-		<description>Connection to the Rotel T14 tuner</description>
+		<description>Connection to the Rotel T14 tuner.</description>
 		<semantic-equipment-tag>Receiver</semantic-equipment-tag>
 
 		<channels>

@@ -5,6 +5,6 @@
 
 	<type>binding</type>
 	<name>SolarForecast Binding</name>
-	<description>Solar Forecast for your location</description>
+	<description>Solar Forecast for your location.</description>
 	<connection>cloud</connection>
 </addon:addon>

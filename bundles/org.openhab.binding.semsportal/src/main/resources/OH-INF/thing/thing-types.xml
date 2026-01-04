@@ -18,12 +18,12 @@
 		<config-description>
 			<parameter name="username" type="text" required="true">
 				<label>Username</label>
-				<description>Username (email address) of the account at the SEMS portal</description>
+				<description>Username (email address) of the account at the SEMS portal.</description>
 			</parameter>
 			<parameter name="password" type="text" required="true">
 				<context>password</context>
 				<label>Password</label>
-				<description>Password of the SEMS Portal</description>
+				<description>Password of the SEMS Portal.</description>
 			</parameter>
 			<parameter name="interval" type="integer" min="1" max="60" unit="min">
 				<label>Interval</label>
@@ -63,7 +63,7 @@
 	<channel-type id="currentOutput">
 		<item-type>Number:Power</item-type>
 		<label>Current Output</label>
-		<description>Current output in Watts</description>
+		<description>Current output in Watts.</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Power</tag>
@@ -72,7 +72,7 @@
 	<channel-type id="todayTotal">
 		<item-type>Number:Energy</item-type>
 		<label>Todays Total Output</label>
-		<description>Todays total output in kWh</description>
+		<description>Todays total output in kWh.</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Energy</tag>
@@ -81,7 +81,7 @@
 	<channel-type id="monthTotal">
 		<item-type>Number:Energy</item-type>
 		<label>Current Month Total Output</label>
-		<description>The total output of this month in kWh</description>
+		<description>The total output of this month in kWh.</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Energy</tag>
@@ -90,7 +90,7 @@
 	<channel-type id="overallTotal">
 		<item-type>Number:Energy</item-type>
 		<label>Overall Total Output</label>
-		<description>The total output from the start of the installation in kWh</description>
+		<description>The total output from the start of the installation in kWh.</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Energy</tag>

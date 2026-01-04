@@ -6,7 +6,7 @@
 
 	<bridge-type id="ethm-1">
 		<label>ETHM-1</label>
-		<description>Ethernet communication module</description>
+		<description>Ethernet communication module.</description>
 		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
 		<config-description>
 			<parameter name="host" type="text" required="true">

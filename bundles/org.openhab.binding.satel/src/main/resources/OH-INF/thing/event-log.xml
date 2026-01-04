@@ -13,7 +13,7 @@
 
 		<label>Event Log</label>
 		<description><![CDATA[A virtual thing that allows reading records from the alarm system event log.<br>
-		Event log must read sequentially starting from the most recent record.]]></description>
+		Event log must read sequentially starting from the most recent record.]]>.</description>
 
 		<channels>
 			<channel typeId="index" id="index"/>

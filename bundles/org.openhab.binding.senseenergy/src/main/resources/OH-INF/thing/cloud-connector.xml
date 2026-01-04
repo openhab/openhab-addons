@@ -12,13 +12,13 @@
 			<parameter name="email" type="text" required="true">
 				<label>Email</label>
 				<context>text</context>
-				<description>Sense account email address</description>
+				<description>Sense account email address.</description>
 				<required>true</required>
 			</parameter>
 			<parameter name="password" type="text" required="true">
 				<label>Password</label>
 				<context>password</context>
-				<description>Sense account password</description>
+				<description>Sense account password.</description>
 				<required>true</required>
 			</parameter>
 		</config-description>

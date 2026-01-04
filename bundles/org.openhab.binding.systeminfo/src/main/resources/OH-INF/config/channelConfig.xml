@@ -14,7 +14,7 @@
 
 		<parameter-group name="priorityGroup">
 			<label>String</label>
-			<description>String</description>
+			<description>String.</description>
 			<advanced>false</advanced>
 		</parameter-group>
 

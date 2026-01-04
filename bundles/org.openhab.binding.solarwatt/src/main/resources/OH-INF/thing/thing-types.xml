@@ -7,7 +7,7 @@
 	<bridge-type id="energymanager">
 		<label>Solarwatt Energymanager</label>
 		<description>Solarwatt Energymanager is the bridge to all things attached to the PV production system.
-		</description>
+		.</description>
 		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
 		<representation-property>hostname</representation-property>
 
@@ -20,7 +20,7 @@
 		</supported-bridge-type-refs>
 
 		<label>EV Station</label>
-		<description>Electric vehicle charger station</description>
+		<description>Electric vehicle charger station.</description>
 		<semantic-equipment-tag>EVSE</semantic-equipment-tag>
 		<representation-property>IdName</representation-property>
 
@@ -85,7 +85,7 @@
 		</supported-bridge-type-refs>
 
 		<label>Power Meter</label>
-		<description>Power meter for produced or consumed energy</description>
+		<description>Power meter for produced or consumed energy.</description>
 		<semantic-equipment-tag>ElectricMeter</semantic-equipment-tag>
 		<representation-property>IdName</representation-property>
 

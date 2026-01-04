@@ -25,18 +25,18 @@
 		<config-description>
 			<parameter name="deviceId" type="text" required="true">
 				<label>@text/config.deviceId.label</label>
-				<description>Device Id. Example 3456</description>
+				<description>Device Id. Example 3456.</description>
 			</parameter>
 			<parameter name="subType" type="text" required="true">
 				<label>@text/config.subType.label</label>
-				<description>@text/config.subType.description</description>
+				<description>@text/config.subType.description.</description>
 				<options>
 					<option value="PT2262">PT2262</option>
 				</options>
 			</parameter>
 			<parameter name="pulse" type="integer" min="100" max="800">
 				<label>Pulse Length</label>
-				<description>Pulse length of the device</description>
+				<description>Pulse length of the device.</description>
 				<default>350</default>
 			</parameter>
 			<parameter name="onCommandId" type="integer" required="false" min="0" max="15">

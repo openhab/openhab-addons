@@ -7,7 +7,7 @@
 	<!-- Soundbar Arc Ultra Thing Type -->
 	<thing-type id="ArcUltra" listed="false">
 		<label>Arc Ultra</label>
-		<description>Represents SONOS Arc Ultra soundbar</description>
+		<description>Represents SONOS Arc Ultra soundbar.</description>
 		<semantic-equipment-tag>Speaker</semantic-equipment-tag>
 		<channels>
 			<channel id="add" typeId="add"/>

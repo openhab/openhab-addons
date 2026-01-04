@@ -7,7 +7,7 @@
 	<!-- Soundbar PLAYBASE Thing Type -->
 	<thing-type id="PLAYBASE" listed="false">
 		<label>PLAYBASE</label>
-		<description>Represents SONOS PLAYBASE soundbar</description>
+		<description>Represents SONOS PLAYBASE soundbar.</description>
 		<semantic-equipment-tag>Speaker</semantic-equipment-tag>
 		<channels>
 			<channel id="add" typeId="add"/>

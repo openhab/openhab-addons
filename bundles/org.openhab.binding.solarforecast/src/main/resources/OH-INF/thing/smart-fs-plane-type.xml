@@ -10,7 +10,7 @@
 		</supported-bridge-type-refs>
 
 		<label>Smart Forecast Solar Plane</label>
-		<description>Smart PV Plane attached to smart forecast solar site</description>
+		<description>Smart PV Plane attached to smart forecast solar site.</description>
 
 		<channels>
 			<channel id="power-estimate" typeId="power-estimate"/>

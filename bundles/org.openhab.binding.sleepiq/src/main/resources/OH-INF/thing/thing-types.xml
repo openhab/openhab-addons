@@ -16,16 +16,16 @@
 		<config-description>
 			<parameter name="username" type="text" required="true">
 				<label>Username</label>
-				<description>Username of a registered SleepIQ account owner</description>
+				<description>Username of a registered SleepIQ account owner.</description>
 			</parameter>
 			<parameter name="password" type="text" required="true">
 				<label>Password</label>
-				<description>Password of a registered SleepIQ account owner</description>
+				<description>Password of a registered SleepIQ account owner.</description>
 				<context>password</context>
 			</parameter>
 			<parameter name="pollingInterval" type="integer" min="30" step="30">
 				<label>Polling Interval</label>
-				<description>Seconds between fetching values from the cloud service</description>
+				<description>Seconds between fetching values from the cloud service.</description>
 				<default>120</default>
 			</parameter>
 		</config-description>
@@ -39,7 +39,7 @@
 		</supported-bridge-type-refs>
 
 		<label>Single Chamber Bed</label>
-		<description>A Sleep Number bed with SleepIQ and a single air chamber</description>
+		<description>A Sleep Number bed with SleepIQ and a single air chamber.</description>
 		<semantic-equipment-tag>Bed</semantic-equipment-tag>
 
 		<channel-groups>
@@ -49,7 +49,7 @@
 		<config-description>
 		<parameter name="bedId" type="text" required="true">
 		<label>Bed ID</label>
-		<description>The bed identifier identifies a specific bed</description>
+		<description>The bed identifier identifies a specific bed.</description>
 		</parameter>
 		</config-description>
 		</thing-type>
@@ -62,7 +62,7 @@
 		</supported-bridge-type-refs>
 
 		<label>Dual Chamber Bed</label>
-		<description>A Sleep Number bed with SleepIQ and two individual air chambers</description>
+		<description>A Sleep Number bed with SleepIQ and two individual air chambers.</description>
 		<semantic-equipment-tag>Bed</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="left" typeId="chamberGroupType"/>
@@ -76,7 +76,7 @@
 		<config-description>
 			<parameter name="bedId" type="text" required="true">
 				<label>Bed ID</label>
-				<description>The bed identifier identifies a specific bed</description>
+				<description>The bed identifier identifies a specific bed.</description>
 			</parameter>
 		</config-description>
 	</thing-type>
@@ -117,7 +117,7 @@
 	<channel-type id="inBedType">
 		<item-type>Switch</item-type>
 		<label>In Bed</label>
-		<description>The presence of a person or object on the chamber</description>
+		<description>The presence of a person or object on the chamber.</description>
 		<tags>
 			<tag>Status</tag>
 			<tag>Presence</tag>
@@ -127,13 +127,13 @@
 	<channel-type id="sleepNumberType">
 		<item-type>Number</item-type>
 		<label>Sleep Number</label>
-		<description>The Sleep Number setting of the chamber</description>
+		<description>The Sleep Number setting of the chamber.</description>
 		<state readOnly="false" min="5" max="100" step="5" pattern="%d"/>
 	</channel-type>
 	<channel-type id="pressureType">
 		<item-type>Number</item-type>
 		<label>Pressure</label>
-		<description>The current pressure inside the chamber</description>
+		<description>The current pressure inside the chamber.</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Pressure</tag>
@@ -144,31 +144,31 @@
 		<item-type>String</item-type>
 		<label>Last Link</label>
 		<description>The amount of time that has passed since a connection was made from the chamber to the cloud service (D d
-			HH:MM:SS)</description>
+			HH:MM:SS).</description>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="alertIdType">
 		<item-type>Number</item-type>
 		<label>Alert ID</label>
-		<description>Identifier for an alert condition with the chamber</description>
+		<description>Identifier for an alert condition with the chamber.</description>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="alertDetailedMessageType">
 		<item-type>String</item-type>
 		<label>Alert Detailed Message</label>
-		<description>A detailed message describing an alert condition with the chamber</description>
+		<description>A detailed message describing an alert condition with the chamber.</description>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="firstNameType">
 		<item-type>String</item-type>
 		<label>First Name</label>
-		<description>The first name of the sleeper</description>
+		<description>The first name of the sleeper.</description>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="sleepGoalMinutesType">
 		<item-type>Number:Time</item-type>
 		<label>Sleep Goal</label>
-		<description>The goal for the amount of sleep per night (in minutes)</description>
+		<description>The goal for the amount of sleep per night (in minutes).</description>
 		<tags>
 			<tag>Setpoint</tag>
 			<tag>Duration</tag>
@@ -178,7 +178,7 @@
 	<channel-type id="privacyMode">
 		<item-type>Switch</item-type>
 		<label>Privacy Mode</label>
-		<description>Enable/disable privacy mode</description>
+		<description>Enable/disable privacy mode.</description>
 		<tags>
 			<tag>Switch</tag>
 			<tag>Mode</tag>
@@ -188,25 +188,25 @@
 	<channel-type id="todaySleepIQType">
 		<item-type>Number</item-type>
 		<label>Today's Sleep IQ</label>
-		<description>The Sleep Quotient for today</description>
+		<description>The Sleep Quotient for today.</description>
 		<state readOnly="true" pattern="%d"/>
 	</channel-type>
 	<channel-type id="todayAverageHeartRateType">
 		<item-type>Number</item-type>
 		<label>Today's Avg Heart Rate</label>
-		<description>The average heart rate for today</description>
+		<description>The average heart rate for today.</description>
 		<state readOnly="true" pattern="%d"/>
 	</channel-type>
 	<channel-type id="todayAverageRespirationRateType">
 		<item-type>Number</item-type>
 		<label>Today's Avg Respiration Rate</label>
-		<description>The average respiration rate for today</description>
+		<description>The average respiration rate for today.</description>
 		<state readOnly="true" pattern="%d"/>
 	</channel-type>
 	<channel-type id="todayMessageType">
 		<item-type>String</item-type>
 		<label>Today's Message</label>
-		<description>The description of today's sleep quality</description>
+		<description>The description of today's sleep quality.</description>
 		<tags>
 			<tag>Status</tag>
 			<tag>Info</tag>
@@ -216,7 +216,7 @@
 	<channel-type id="todaySleepDurationSecondsType">
 		<item-type>Number:Time</item-type>
 		<label>Today's Sleep Duration</label>
-		<description>The total duration of sleep for today in seconds</description>
+		<description>The total duration of sleep for today in seconds.</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Duration</tag>
@@ -226,7 +226,7 @@
 	<channel-type id="todaySleepInBedSecondsType">
 		<item-type>Number:Time</item-type>
 		<label>Today's Sleep In Bed Duration</label>
-		<description>The total duration of time in bed in seconds</description>
+		<description>The total duration of time in bed in seconds.</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Duration</tag>
@@ -236,7 +236,7 @@
 	<channel-type id="todaySleepOutOfBedSecondsType">
 		<item-type>Number:Time</item-type>
 		<label>Today's Sleep Out Of Bed Duration</label>
-		<description>The total duration of time out of bed in seconds</description>
+		<description>The total duration of time out of bed in seconds.</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Duration</tag>
@@ -246,7 +246,7 @@
 	<channel-type id="todaySleepRestfulSecondsType">
 		<item-type>Number:Time</item-type>
 		<label>Today's Sleep Restful Duration</label>
-		<description>The total duration of restful sleep for today in seconds</description>
+		<description>The total duration of restful sleep for today in seconds.</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Duration</tag>
@@ -256,7 +256,7 @@
 	<channel-type id="todaySleepRestlessSecondsType">
 		<item-type>Number:Time</item-type>
 		<label>Today's Sleep Restless Duration</label>
-		<description>The total duration of restless sleep for today in seconds</description>
+		<description>The total duration of restless sleep for today in seconds.</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Duration</tag>
@@ -266,25 +266,25 @@
 	<channel-type id="monthlySleepIQType">
 		<item-type>Number</item-type>
 		<label>Monthly Sleep IQ</label>
-		<description>The overall Sleep Quotient for the past month</description>
+		<description>The overall Sleep Quotient for the past month.</description>
 		<state readOnly="true" pattern="%d"/>
 	</channel-type>
 	<channel-type id="monthlyAverageHeartRateType">
 		<item-type>Number</item-type>
 		<label>Monthly Avg Heart Rate</label>
-		<description>The average heart rate for the past month</description>
+		<description>The average heart rate for the past month.</description>
 		<state readOnly="true" pattern="%d"/>
 	</channel-type>
 	<channel-type id="monthlyAverageRespirationRateType">
 		<item-type>Number</item-type>
 		<label>Monthly Avg Respiration Rate</label>
-		<description>The average respiration rate for the past month</description>
+		<description>The average respiration rate for the past month.</description>
 		<state readOnly="true" pattern="%d"/>
 	</channel-type>
 	<channel-type id="foundationPresetType">
 		<item-type>Number</item-type>
 		<label>Preset</label>
-		<description>Bed position preset</description>
+		<description>Bed position preset.</description>
 		<tags>
 			<tag>Control</tag>
 			<tag>Position</tag>
@@ -303,7 +303,7 @@
 	<channel-type id="foundationPositionHeadType">
 		<item-type>Number</item-type>
 		<label>Head Position</label>
-		<description>The position of the adjustable head</description>
+		<description>The position of the adjustable head.</description>
 		<tags>
 			<tag>Control</tag>
 			<tag>Position</tag>
@@ -313,7 +313,7 @@
 	<channel-type id="foundationPositionFootType">
 		<item-type>Number</item-type>
 		<label>Foot Position</label>
-		<description>The position of the adjustable foot</description>
+		<description>The position of the adjustable foot.</description>
 		<tags>
 			<tag>Control</tag>
 			<tag>Position</tag>
@@ -323,7 +323,7 @@
 	<channel-type id="nightStandOutletType">
 		<item-type>Switch</item-type>
 		<label>Night Stand</label>
-		<description>The night stand outlet</description>
+		<description>The night stand outlet.</description>
 		<tags>
 			<tag>Switch</tag>
 			<tag>Mode</tag>
@@ -333,7 +333,7 @@
 	<channel-type id="underBedLightType">
 		<item-type>Switch</item-type>
 		<label>Under Bed Light</label>
-		<description>The under bed lighting</description>
+		<description>The under bed lighting.</description>
 		<tags>
 			<tag>Switch</tag>
 			<tag>Light</tag>

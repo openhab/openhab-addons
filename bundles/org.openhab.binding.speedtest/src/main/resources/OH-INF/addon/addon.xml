@@ -5,7 +5,7 @@
 
 	<type>binding</type>
 	<name>Speedtest Binding</name>
-	<description>Binding for Ookla Speedtest (https://www.speedtest.net/)</description>
+	<description>Binding for Ookla Speedtest (https://www.speedtest.net/).</description>
 	<connection>cloud</connection>
 
 </addon:addon>

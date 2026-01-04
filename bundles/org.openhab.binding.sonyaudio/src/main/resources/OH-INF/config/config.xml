@@ -7,7 +7,7 @@
 	<config-description uri="thing-type:sonyaudio:config">
 		<parameter name="ipAddress" type="text">
 			<label>Network Address</label>
-			<description>The IP or host name of the SONY audio device</description>
+			<description>The IP or host name of the SONY audio device.</description>
 			<context>network-address</context>
 		</parameter>
 		<parameter name="port" type="integer" min="1" max="65535">
@@ -19,15 +19,15 @@
 		</parameter>
 		<parameter name="path" type="text">
 			<label>Base Path</label>
-			<description>The base path, "/sony" in most cases</description>
+			<description>The base path, "/sony" in most cases.</description>
 			<default>/sony</default>
 			<advanced>true</advanced>
 		</parameter>
 		<parameter name="refreshInterval" type="integer" min="0">
 			<label>Refresh Interval</label>
-			<description>The refresh interval in seconds for polling the receiver (0=disable). Binding receive automatically
-				updates from
-			</description>
+			<description>The refresh interval in seconds for polling the receiver (0 = disable). The binding also receives
+				asynchronous updates from the device.
+			.</description>
 			<default>300</default>
 			<advanced>true</advanced>
 		</parameter>

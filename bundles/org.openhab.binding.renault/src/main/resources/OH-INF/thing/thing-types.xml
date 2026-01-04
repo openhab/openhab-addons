@@ -7,7 +7,7 @@
 	<thing-type id="car">
 
 		<label>Renault Car</label>
-		<description>A MyRenault registered car.</description>
+		<description>A MyRenault-registered car.</description>
 		<semantic-equipment-tag>Vehicle</semantic-equipment-tag>
 
 		<channels>
@@ -87,7 +87,7 @@
 			</parameter>
 			<parameter name="vin" type="text" required="true">
 				<label>VIN</label>
-				<description>Vehicle Identification Number</description>
+				<description>Vehicle Identification Number.</description>
 			</parameter>
 			<parameter name="refreshInterval" type="integer" unit="min" min="1">
 				<label>Refresh Interval</label>
@@ -120,14 +120,14 @@
 	<channel-type id="batterystatusupdated">
 		<item-type>DateTime</item-type>
 		<label>Battery Status Updated</label>
-		<description>Timestamp of the last battery status update</description>
+		<description>Timestamp of the last battery status update.</description>
 		<category>Time</category>
 		<state pattern="%1$tH:%1$tM %1$td.%1$tm.%1$tY" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="plugstatus">
 		<item-type>String</item-type>
 		<label>Plug Status</label>
-		<description>Status of charging plug.</description>
+		<description>Status of the charging plug.</description>
 		<tags>
 			<tag>Status</tag>
 			<tag>Power</tag>
@@ -203,7 +203,7 @@
 	<channel-type id="odometer">
 		<item-type>Number:Length</item-type>
 		<label>Odometer</label>
-		<description>Total distance travelled</description>
+		<description>Total distance travelled.</description>
 		<state pattern="%.1f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="hvacstatus">
@@ -224,7 +224,7 @@
 	<channel-type id="hvactargettemperature" advanced="true">
 		<item-type>Number:Temperature</item-type>
 		<label>HVAC Target Temperature</label>
-		<description>HVAC target temperature (19 to 21)</description>
+		<description>HVAC target temperature (19 to 21).</description>
 		<category>Temperature</category>
 		<tags>
 			<tag>Setpoint</tag>
@@ -235,7 +235,7 @@
 	<channel-type id="externaltemperature" advanced="true">
 		<item-type>Number:Temperature</item-type>
 		<label>External Temperature</label>
-		<description>Temperature outside of the car</description>
+		<description>Temperature outside of the car.</description>
 		<category>Temperature</category>
 		<tags>
 			<tag>Measurement</tag>
@@ -246,20 +246,20 @@
 	<channel-type id="image">
 		<item-type>String</item-type>
 		<label>Image URL</label>
-		<description>Image URL of MyRenault</description>
+		<description>Image URL of MyRenault.</description>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="locationupdated">
 		<item-type>DateTime</item-type>
 		<label>Location Updated</label>
-		<description>Timestamp of the last location update</description>
+		<description>Timestamp of the last location update.</description>
 		<category>Time</category>
 		<state pattern="%1$tH:%1$tM %1$td.%1$tm.%1$tY" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="locked">
 		<item-type>Switch</item-type>
 		<label>Locked</label>
-		<description>Locked status of the car</description>
+		<description>Locked status of the car.</description>
 		<category>Lock</category>
 		<tags>
 			<tag>Status</tag>

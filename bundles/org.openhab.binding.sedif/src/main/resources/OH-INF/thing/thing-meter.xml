@@ -15,7 +15,7 @@
 			If you don't use autodiscovery, you will need to get your
 			contractName from this Sedif web site, and eventually your meterId if you have multiple meter on the same account.
 			See the documentation about where to find this informations.
-		</description>
+		.</description>
 		<semantic-equipment-tag>WaterMeter</semantic-equipment-tag>
 
 		<channel-groups>
@@ -30,11 +30,11 @@
 		<config-description>
 			<parameter name="contractId" type="text" required="true">
 				<label>Contract Id</label>
-				<description>Your Contract Id</description>
+				<description>Your Contract Id.</description>
 			</parameter>
 			<parameter name="meterId" type="text" required="false">
 				<label>Meter Id</label>
-				<description>Your Meter Id</description>
+				<description>Your Meter Id.</description>
 			</parameter>
 		</config-description>
 	</thing-type>

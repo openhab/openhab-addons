@@ -31,7 +31,7 @@ demo.things
 Thing senechome:senechome:pvbattery [ hostname="192.168.0.128", refreshInterval=60, limitationTresholdValue=70, limitationDuration=60, useHttp=false ]
 ```
 
-If the thing goes online then the connection to the web interface is successful.
+If the Thing goes online then the connection to the web interface is successful.
 In case it is offline you should see an error message.
 The refresh interval is 15 seconds by default, but you can optionally provide your own value adding the `refreshInterval` key.
 
@@ -39,8 +39,8 @@ The property `limitationThresholdValue` is used as threshold for channel `powerL
 
 ## Channels
 
-| Channel                       | Type           | Description                                                              |
-| ----------------------------- | -------------- | ------------------------------------------------------------------------ |
+| Channel                       | Type           | Description                                                               |
+|-------------------------------|----------------|---------------------------------------------------------------------------|
 | powerLimitation               | percent        | How much is your pv generator limited (0% if not limited anyway).         |
 | powerLimitationState          | ON/OFF         | Power limitation active (based on configuration).                         |
 | currentMPP1                   | ampere         | PV generator current on MPP1.                                             |
@@ -60,8 +60,8 @@ The property `limitationThresholdValue` is used as threshold for channel `powerL
 | batteryFuelCharge             | percent        | Fuel charge of your battery (0 - 100%).                                   |
 | systemState                   |                | Text describing current action of the senec home system (e.g. CHARGE).    |
 | systemStateValue              |                | Value describing current action of the senec home system (e.g. 14).       |
-| chargeMode                    | OFF/CHARGE/    | In `CHARGE` mode, the battery will try to fill as quickly as possible   |
-|                               | STORAGE        | in `STORAGE` mode, the battery will try to reach 25% SOC.                  |
+| chargeMode                    | OFF/CHARGE/    | In `CHARGE` mode, the battery will try to fill as quickly as possible     |
+|                               | STORAGE        | in `STORAGE` mode, the battery will try to reach 25% SOC.                 |
 | gridPower                     | watt           | Grid power level, negative for supply, positive values for drawing power. |
 | gridPowerDraw                 | watt           | Absolute power level of power draw, zero while supplying.                 |
 | gridPowerSupply               | watt           | Absolute power level of power supply, zero while drawing.                 |

@@ -6,7 +6,7 @@
 
 	<thing-type id="radio">
 		<label>Radio Thing</label>
-		<description>Provides a way to interact with the Radio Browser database of stations</description>
+		<description>Provides a way to interact with the Radio Browser database of stations.</description>
 		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 
 		<channels>
@@ -24,7 +24,7 @@
 		<config-description>
 			<parameter name="filters" type="text" required="true">
 				<label>Filters</label>
-				<description>Enter your own custom filter starting with ?, to ensure a stream that works with your device</description>
+				<description>Enter your own custom filter starting with ?, to ensure a stream that works with your device.</description>
 				<default>hidebroken=true,limit=1700,reverse=true,order=votes</default>
 				<advanced>true</advanced>
 			</parameter>
@@ -52,31 +52,31 @@
 	<channel-type id="country">
 		<item-type>String</item-type>
 		<label>Country</label>
-		<description>Show only stations located in the selected country</description>
+		<description>Show only stations located in the selected country.</description>
 	</channel-type>
 
 	<channel-type id="language">
 		<item-type>String</item-type>
 		<label>Language</label>
-		<description>Show only stations spoken in the selected language</description>
+		<description>Show only stations spoken in the selected language.</description>
 	</channel-type>
 
 	<channel-type id="state">
 		<item-type>String</item-type>
 		<label>State</label>
-		<description>Show only stations located in the selected state, requires country to be selected first</description>
+		<description>Show only stations located in the selected state, requires country to be selected first.</description>
 	</channel-type>
 
 	<channel-type id="station">
 		<item-type>String</item-type>
 		<label>Station</label>
-		<description>A list of stations that you can select from</description>
+		<description>A list of stations that you can select from.</description>
 	</channel-type>
 
 	<channel-type id="genre">
 		<item-type>String</item-type>
 		<label>Genre</label>
-		<description>A list of genres or tags that you can select from</description>
+		<description>A list of genres or tags that you can select from.</description>
 		<tags>
 			<tag>Control</tag>
 			<tag>Info</tag>
@@ -129,7 +129,7 @@
 	<channel-type id="stream">
 		<item-type>String</item-type>
 		<label>Stream</label>
-		<description>The stations URI that can be sent to a openHAB audio sink</description>
+		<description>The stations URI that can be sent to a openHAB audio sink.</description>
 		<tags>
 			<tag>Status</tag>
 			<tag>Info</tag>
@@ -139,7 +139,7 @@
 	<channel-type id="name">
 		<item-type>String</item-type>
 		<label>Name</label>
-		<description>The currently selected stations name</description>
+		<description>The currently selected stations name.</description>
 		<tags>
 			<tag>Status</tag>
 			<tag>Info</tag>
@@ -149,13 +149,13 @@
 	<channel-type id="icon">
 		<item-type>String</item-type>
 		<label>Icon</label>
-		<description>The currently selected stations icon</description>
+		<description>The currently selected stations icon.</description>
 	</channel-type>
 
 	<channel-type id="recent">
 		<item-type>String</item-type>
 		<label>Recent</label>
-		<description>A list of recently played stations</description>
+		<description>A list of recently played stations.</description>
 	</channel-type>
 
 </thing:thing-descriptions>

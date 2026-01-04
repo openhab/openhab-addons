@@ -6,8 +6,8 @@
 
 	<!-- Sample Thing Type -->
 	<thing-type id="smgw">
-		<label>Smartmeter Gateway</label>
-		<description>A Smartmeter Gateway</description>
+		<label>Smart Meter Gateway</label>
+		<description>A Smart Meter Gateway.</description>
 		<semantic-equipment-tag>ElectricMeter</semantic-equipment-tag>
 		<channels>
 			<channel id="meter" typeId="system.electric-energy">
@@ -21,7 +21,7 @@
 			<parameter name="hostname" type="text">
 				<context>network-address</context>
 				<label>Hostname</label>
-				<description>Hostname or IP address of the device</description>
+				<description>Hostname or IP address of the device.</description>
 				<default>192.168.1.200</default>
 			</parameter>
 			<parameter name="username" type="text" required="true">

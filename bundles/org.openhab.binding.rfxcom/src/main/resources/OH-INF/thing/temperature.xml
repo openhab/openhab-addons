@@ -26,11 +26,11 @@
 		<config-description>
 			<parameter name="deviceId" type="text" required="true">
 				<label>@text/config.deviceId.label</label>
-				<description>Sensor Id. Example 56923</description>
+				<description>Sensor Id. Example 56923.</description>
 			</parameter>
 			<parameter name="subType" type="text" required="true">
 				<label>@text/config.subType.label</label>
-				<description>@text/config.subType.description</description>
+				<description>@text/config.subType.description.</description>
 				<options>
 					<option value="TEMP1">THR128/138, THC138</option>
 					<option value="TEMP2">THC238/268,THN132,THWR288,THRN122,THN122,AW129/131</option>

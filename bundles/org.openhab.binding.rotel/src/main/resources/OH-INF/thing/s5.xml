@@ -7,7 +7,7 @@
 	<!-- Rotel S5 Connection Thing Type -->
 	<thing-type id="s5">
 		<label>S5 Stereo Amplifier</label>
-		<description>Connection to the Rotel Michi S5 stereo amplifier</description>
+		<description>Connection to the Rotel Michi S5 stereo amplifier.</description>
 		<semantic-equipment-tag>AudioVisual</semantic-equipment-tag>
 
 		<channels>

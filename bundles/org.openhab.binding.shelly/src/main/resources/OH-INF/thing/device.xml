@@ -6,7 +6,7 @@
 
 	<channel-group-type id="deviceStatus">
 		<label>@text/channel-group-type.shelly.deviceStatus.label</label>
-		<description>@text/channel-group-type.shelly.deviceStatus.description</description>
+		<description>@text/channel-group-type.shelly.deviceStatus.description.</description>
 		<channels>
 			<channel id="alarm" typeId="alarmTrigger"/>
 			<channel id="wifiSignal" typeId="system.signal-strength"/>
@@ -16,7 +16,7 @@
 	<channel-type id="alarmTrigger">
 		<kind>trigger</kind>
 		<label>@text/channel-type.shelly.alarmTrigger.label</label>
-		<description>@text/channel-type.shelly.alarmTrigger.description</description>
+		<description>@text/channel-type.shelly.alarmTrigger.description.</description>
 		<category>Alarm</category>
 		<event>
 			<options>
@@ -39,7 +39,7 @@
 	<channel-type id="sensorWakeup" advanced="true">
 		<item-type>String</item-type>
 		<label>@text/channel-type.shelly.sensorWakeup.label</label>
-		<description>@text/channel-type.shelly.sensorWakeup.description</description>
+		<description>@text/channel-type.shelly.sensorWakeup.description.</description>
 		<state pattern="%s" readOnly="true">
 			<options>
 				<option value="button">@text/channel-type.shelly.sensorWakeup.state.option.button</option>
@@ -55,28 +55,28 @@
 	<channel-type id="deviceName" advanced="true">
 		<item-type>String</item-type>
 		<label>@text/channel-type.shelly.deviceName.label</label>
-		<description>@text/channel-type.shelly.deviceName.description</description>
+		<description>@text/channel-type.shelly.deviceName.description.</description>
 		<state readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="gatewayDevice" advanced="true">
 		<item-type>String</item-type>
 		<label>@text/channel-type.shelly.gatewayDevice.label</label>
-		<description>@text/channel-type.shelly.gatewayDevice.description</description>
+		<description>@text/channel-type.shelly.gatewayDevice.description.</description>
 		<state readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="calibrated" advanced="true">
 		<item-type>Switch</item-type>
 		<label>@text/channel-type.shelly.calibrated.label</label>
-		<description>@text/channel-type.shelly.calibrated.description</description>
+		<description>@text/channel-type.shelly.calibrated.description.</description>
 		<state readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="charger" advanced="true">
 		<item-type>Switch</item-type>
 		<label>@text/channel-type.shelly.charger.label</label>
-		<description>@text/channel-type.shelly.charger.description</description>
+		<description>@text/channel-type.shelly.charger.description.</description>
 		<category>Battery</category>
 		<state readOnly="true">
 		</state>
@@ -84,7 +84,7 @@
 	<channel-type id="externalPower" advanced="true">
 		<item-type>Switch</item-type>
 		<label>@text/channel-type.shelly.externalPower.label</label>
-		<description>@text/channel-type.shelly.externalPower.description</description>
+		<description>@text/channel-type.shelly.externalPower.description.</description>
 		<category>Status</category>
 		<state readOnly="true">
 		</state>
@@ -92,7 +92,7 @@
 	<channel-type id="uptime" advanced="true">
 		<item-type>Number:Time</item-type>
 		<label>@text/channel-type.shelly.uptime.label</label>
-		<description>@text/channel-type.shelly.uptime.description</description>
+		<description>@text/channel-type.shelly.uptime.description.</description>
 		<category>Time</category>
 		<state readOnly="true" pattern="%.0f %unit%">
 		</state>
@@ -100,7 +100,7 @@
 	<channel-type id="heartBeat" advanced="true">
 		<item-type>DateTime</item-type>
 		<label>@text/channel-type.shelly.heartBeat.label</label>
-		<description>@text/channel-type.shelly.heartBeat.description</description>
+		<description>@text/channel-type.shelly.heartBeat.description.</description>
 		<category>Time</category>
 		<tags>
 			<tag>Status</tag>
@@ -112,7 +112,7 @@
 	<channel-type id="updateAvailable" advanced="true">
 		<item-type>Switch</item-type>
 		<label>@text/channel-type.shelly.updateAvailable.label</label>
-		<description>@text/channel-type.shelly.updateAvailable.description</description>
+		<description>@text/channel-type.shelly.updateAvailable.description.</description>
 		<category>Status</category>
 		<state readOnly="true">
 		</state>
@@ -120,7 +120,7 @@
 	<channel-type id="deviceTemp" advanced="true">
 		<item-type>Number:Temperature</item-type>
 		<label>@text/channel-type.shelly.deviceTemp.label</label>
-		<description>@text/channel-type.shelly.deviceTemp.description</description>
+		<description>@text/channel-type.shelly.deviceTemp.description.</description>
 		<category>Temperature</category>
 		<tags>
 			<tag>Measurement</tag>
@@ -132,7 +132,7 @@
 	<channel-type id="supplyVoltage" advanced="true">
 		<item-type>Number:ElectricPotential</item-type>
 		<label>@text/channel-type.shelly.supplyVoltage.label</label>
-		<description>@text/channel-type.shelly.supplyVoltage.description</description>
+		<description>@text/channel-type.shelly.supplyVoltage.description.</description>
 		<category>Energy</category>
 		<tags>
 			<tag>Measurement</tag>
@@ -143,7 +143,7 @@
 	<channel-type id="selfTest">
 		<item-type>String</item-type>
 		<label>@text/channel-type.shelly.selfTest.label</label>
-		<description>@text/channel-type.shelly.selfTest.description</description>
+		<description>@text/channel-type.shelly.selfTest.description.</description>
 		<state pattern="%s" readOnly="true">
 			<options>
 				<option value="not_completed">@text/channel-type.shelly.selfTest.state.option.not_completed</option>
@@ -158,7 +158,7 @@
 	<channel-type id="deviceFirmware" advanced="true">
 		<item-type>String</item-type>
 		<label>@text/channel-type.shelly.deviceFirmware.label</label>
-		<description>@text/channel-type.shelly.firmware.description</description>
+		<description>@text/channel-type.shelly.firmware.description.</description>
 		<state pattern="%s" readOnly="true">
 		</state>
 	</channel-type>

@@ -7,7 +7,7 @@
 	<!-- Rotel RDD-1580 Connection Thing Type -->
 	<thing-type id="rdd1580">
 		<label>RDD-1580 Stereo DAC</label>
-		<description>Connection to the Rotel RDD-1580 stereo DAC</description>
+		<description>Connection to the Rotel RDD-1580 stereo DAC.</description>
 		<semantic-equipment-tag>AudioVisual</semantic-equipment-tag>
 
 		<channels>

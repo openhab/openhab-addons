@@ -8,7 +8,7 @@
 	<bridge-type id="bridge">
 
 		<label>Sure Petcare API Bridge</label>
-		<description>The Sure Petcare Cloud API Bridge</description>
+		<description>The Sure Petcare Cloud API Bridge.</description>
 		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 		<channels>
 			<channel id="refresh" typeId="refreshType"/>
@@ -17,21 +17,21 @@
 		<config-description>
 			<parameter name="username" type="text" required="true">
 				<label>Username (Email)</label>
-				<description>The username to access the Sure Petcare API</description>
+				<description>The username to access the Sure Petcare API.</description>
 			</parameter>
 			<parameter name="password" type="text" required="true">
 				<label>Password</label>
-				<description>The password to access the Sure Petcare API</description>
+				<description>The password to access the Sure Petcare API.</description>
 				<context>password</context>
 			</parameter>
 			<parameter name="refreshIntervalTopology" type="integer" required="false" min="300" unit="s">
 				<label>Refresh Interval Topology</label>
-				<description>Query interval (in secs) for device topology</description>
+				<description>Query interval (in secs) for device topology.</description>
 				<default>36000</default>
 			</parameter>
 			<parameter name="refreshIntervalStatus" type="integer" required="false" min="60" unit="s">
 				<label>Refresh Interval Pet Status</label>
-				<description>Query interval (in secs) for pet status</description>
+				<description>Query interval (in secs) for pet status.</description>
 				<default>300</default>
 			</parameter>
 		</config-description>
@@ -54,7 +54,7 @@
 		</supported-bridge-type-refs>
 
 		<label>Sure Petcare Household</label>
-		<description>A Sure Petcare household</description>
+		<description>A Sure Petcare household.</description>
 		<semantic-equipment-tag>PetCare</semantic-equipment-tag>
 		<channels>
 			<channel id="id" typeId="idType"/>
@@ -78,7 +78,7 @@
 		</supported-bridge-type-refs>
 
 		<label>Sure Petcare Hub Device</label>
-		<description>A Sure Petcare hub device (connects pet/cat flaps, feeders and waterstations to a network)</description>
+		<description>A Sure Petcare hub device (connects pet/cat flaps, feeders and waterstations to a network).</description>
 		<semantic-equipment-tag>PetCare</semantic-equipment-tag>
 		<channels>
 			<channel id="id" typeId="idType"/>
@@ -108,7 +108,7 @@
 		</supported-bridge-type-refs>
 
 		<label>Sure Petcare Flap Device</label>
-		<description>A Sure Petcare cat or pet flap device</description>
+		<description>A Sure Petcare cat or pet flap device.</description>
 		<semantic-equipment-tag>PetFlap</semantic-equipment-tag>
 		<channels>
 			<channel id="id" typeId="idType"/>
@@ -155,7 +155,7 @@
 		</supported-bridge-type-refs>
 
 		<label>Sure Petcare Feeder Device</label>
-		<description>A Sure Petcare pet feeder device</description>
+		<description>A Sure Petcare pet feeder device.</description>
 		<semantic-equipment-tag>PetFeeder</semantic-equipment-tag>
 		<channels>
 			<channel id="id" typeId="idType"/>
@@ -198,7 +198,7 @@
 		</supported-bridge-type-refs>
 
 		<label>Sure Petcare Waterstation Device</label>
-		<description>A Sure Petcare pet waterstation device</description>
+		<description>A Sure Petcare pet waterstation device.</description>
 
 		<channels>
 			<channel id="id" typeId="idType"/>
@@ -231,7 +231,7 @@
 		</supported-bridge-type-refs>
 
 		<label>Sure Petcare Pet</label>
-		<description>A Sure Petcare pet</description>
+		<description>A Sure Petcare pet.</description>
 
 		<channels>
 			<channel id="id" typeId="idType"/>
@@ -272,36 +272,36 @@
 
 	<channel-type id="idType">
 		<item-type>Number</item-type>
-		<label>Id</label>
-		<description>A unique id of the thing</description>
+		<label>ID</label>
+		<description>A unique ID of the thing.</description>
 		<state readOnly="true" pattern="%d"/>
 	</channel-type>
 
 	<channel-type id="nameType">
 		<item-type>String</item-type>
 		<label>Name</label>
-		<description>The name of the thing</description>
+		<description>The name of the thing.</description>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
 	<channel-type id="commentType">
 		<item-type>String</item-type>
 		<label>Comment</label>
-		<description>Comments about the thing</description>
+		<description>Comments about the thing.</description>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
 	<channel-type id="timezoneIdType">
 		<item-type>Number</item-type>
-		<label>Timezone Id</label>
-		<description>The identifier of the timezone</description>
+		<label>Timezone ID</label>
+		<description>The identifier of the timezone.</description>
 		<state readOnly="true" pattern="%d"/>
 	</channel-type>
 
 	<channel-type id="productType">
 		<item-type>String</item-type>
 		<label>Product Type</label>
-		<description>The type of product this device represents</description>
+		<description>The type of product this device represents.</description>
 		<state readOnly="true">
 			<options>
 				<option value="0">Unknown</option>
@@ -317,14 +317,14 @@
 	<channel-type id="shareCodeType" advanced="true">
 		<item-type>String</item-type>
 		<label>Share Code</label>
-		<description>A unique code provided by Sure Petcare to access photos of pets</description>
+		<description>A unique code provided by Sure Petcare to access photos of pets.</description>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
 	<channel-type id="genderType">
 		<item-type>String</item-type>
 		<label>Gender</label>
-		<description>The gender of the pet</description>
+		<description>The gender of the pet.</description>
 		<state readOnly="true">
 			<options>
 				<option value="0">Female</option>
@@ -336,7 +336,7 @@
 	<channel-type id="breedType">
 		<item-type>String</item-type>
 		<label>Breed</label>
-		<description>The breed of the pet</description>
+		<description>The breed of the pet.</description>
 		<state readOnly="true">
 			<options>
 				<option value="333">Abyssinian</option>
@@ -398,7 +398,7 @@
 	<channel-type id="speciesType">
 		<item-type>String</item-type>
 		<label>Species</label>
-		<description>The species of the pet</description>
+		<description>The species of the pet.</description>
 		<state readOnly="true">
 			<options>
 				<option value="0">Undefined</option>
@@ -411,21 +411,21 @@
 	<channel-type id="photoType">
 		<item-type>Image</item-type>
 		<label>Pet Photo</label>
-		<description>The image of the pet</description>
+		<description>The image of the pet.</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="tagIdentifierType">
 		<item-type>String</item-type>
 		<label>Micro Chip Tag Identifier</label>
-		<description>The unique identifier of the pet micro chip tag</description>
+		<description>The unique identifier of the pet micro chip tag.</description>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
 	<channel-type id="locationType">
 		<item-type>String</item-type>
 		<label>Location</label>
-		<description>The current location of the pet</description>
+		<description>The current location of the pet.</description>
 		<state readOnly="false">
 			<options>
 				<option value="0">Unknown</option>
@@ -438,14 +438,14 @@
 	<channel-type id="locationChangedType">
 		<item-type>DateTime</item-type>
 		<label>Last Location Change Time</label>
-		<description>The time when the pet location has last changed</description>
+		<description>The time when the pet location has last changed.</description>
 		<state readOnly="true" pattern="%1$tF %1$tR"/>
 	</channel-type>
 
 	<channel-type id="locationTimeoffsetType">
 		<item-type>String</item-type>
 		<label>Location Update with Time Offset</label>
-		<description>The location update of the pet with time offset (10, 30, 60 minutes ago.)</description>
+		<description>The location update of the pet with time offset (10, 30, 60 minutes ago.).</description>
 		<state readOnly="false">
 			<options>
 				<option value="10">10 mins ago</option>
@@ -465,7 +465,7 @@
 	<channel-type id="ledModeType" advanced="true">
 		<item-type>String</item-type>
 		<label>LED Mode</label>
-		<description>The current LED mode of the device</description>
+		<description>The current LED mode of the device.</description>
 		<state readOnly="false">
 			<options>
 				<option value="0">Off</option>
@@ -478,7 +478,7 @@
 	<channel-type id="pairingModeType" advanced="true">
 		<item-type>String</item-type>
 		<label>Pairing Mode</label>
-		<description>The current pairing mode of the device</description>
+		<description>The current pairing mode of the device.</description>
 		<state readOnly="true">
 			<options>
 				<option value="0">Normal Mode</option>
@@ -490,28 +490,28 @@
 	<channel-type id="onlineType">
 		<item-type>Switch</item-type>
 		<label>Online</label>
-		<description>Indicator if device is online or offline</description>
+		<description>Indicator if device is online or offline.</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="curfewEnabledType">
 		<item-type>Switch</item-type>
 		<label>Curfew Enabled</label>
-		<description>Indicator if the curfew is enabled</description>
+		<description>Indicator if the curfew is enabled.</description>
 		<state readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="curfewLockTimeType">
 		<item-type>String</item-type>
 		<label>Curfew Lock Time</label>
-		<description>The time when the curfew starts</description>
+		<description>The time when the curfew starts.</description>
 		<state readOnly="false" pattern="%s"/>
 	</channel-type>
 
 	<channel-type id="curfewUnlockTimeType">
 		<item-type>String</item-type>
 		<label>Curfew Unlock Time</label>
-		<description>The time when the curfew finishes</description>
+		<description>The time when the curfew finishes.</description>
 		<state readOnly="false" pattern="%s"/>
 	</channel-type>
 
@@ -526,75 +526,75 @@
 	<channel-type id="weightType">
 		<item-type>Number:Mass</item-type>
 		<label>Pet Weight</label>
-		<description>The pet weight</description>
+		<description>The pet weight.</description>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="feederDeviceType">
 		<item-type>String</item-type>
 		<label>Pet Feeding Device Name</label>
-		<description>The pet feeding device name</description>
+		<description>The pet feeding device name.</description>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
 	<channel-type id="feederLastFeedingType">
 		<item-type>DateTime</item-type>
 		<label>Pet Last Feeding</label>
-		<description>The last pet feeding</description>
+		<description>The last pet feeding.</description>
 		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"/>
 	</channel-type>
 
 	<channel-type id="feederLastChangeType">
 		<item-type>Number:Mass</item-type>
 		<label>Pet Feeding Last Change</label>
-		<description>The pet feeding last change</description>
+		<description>The pet feeding last change.</description>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
 	<channel-type id="feederLastChangeLeftType">
 		<item-type>Number:Mass</item-type>
 		<label>Pet Feeding Last Change Left</label>
-		<description>The pet feeding last change left</description>
+		<description>The pet feeding last change left.</description>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
 	<channel-type id="feederLastChangeRightType">
 		<item-type>Number:Mass</item-type>
 		<label>Pet Feeding Last Change Right</label>
-		<description>The pet feeding last change right</description>
+		<description>The pet feeding last change right.</description>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
 	<channel-type id="waterDeviceType">
 		<item-type>String</item-type>
 		<label>Device Name</label>
-		<description>The pet waterstation device name</description>
+		<description>The pet waterstation device name.</description>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
 	<channel-type id="waterLastDrinkingType">
 		<item-type>DateTime</item-type>
 		<label>Pet Last Drinking</label>
-		<description>The last pet drinking</description>
+		<description>The last pet drinking.</description>
 		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"/>
 	</channel-type>
 
 	<channel-type id="waterLastChangeType">
 		<item-type>Number:Volume</item-type>
 		<label>Pet Drinking Last Change</label>
-		<description>The pet drinking last change</description>
+		<description>The pet drinking last change.</description>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
 	<channel-type id="lockingModeType">
 		<item-type>String</item-type>
 		<label>Locking Mode</label>
-		<description>The id of the locking mode the flap is currently set to</description>
+		<description>The ID of the locking mode the flap is currently set to.</description>
 		<state readOnly="false">
 			<options>
 				<option value="0">Unlocked</option>
-				<option value="1">Locked In-only</option>
-				<option value="2">Locked Out-only</option>
+				<option value="1">Locked In-Only</option>
+				<option value="2">Locked Out-Only</option>
 				<option value="3">Locked</option>
 				<option value="4">Curfew</option>
 			</options>
@@ -604,7 +604,7 @@
 	<channel-type id="batteryVoltageType">
 		<item-type>Number:ElectricPotential</item-type>
 		<label>Battery Voltage</label>
-		<description>The current battery voltage</description>
+		<description>The current battery voltage.</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Voltage</tag>
@@ -614,7 +614,7 @@
 
 	<channel-type id="rssiDeviceType" advanced="true">
 		<item-type unitHint="dBm">Number:Power</item-type>
-		<label>Signal Strength Device (RSSI)</label>
+		<label>Device Signal Strength (RSSI)</label>
 		<description>The received device signal strength (RSSI).</description>
 		<tags>
 			<tag>Measurement</tag>
@@ -625,7 +625,7 @@
 
 	<channel-type id="rssiHubType" advanced="true">
 		<item-type unitHint="dBm">Number:Power</item-type>
-		<label>Signal Strength Hub (RSSI)</label>
+		<label>Hub Signal Strength (RSSI)</label>
 		<description>The received hub signal strength (RSSI).</description>
 		<tags>
 			<tag>Measurement</tag>
@@ -710,7 +710,7 @@
 	<channel-type id="bowlsCloseDelayType">
 		<item-type>String</item-type>
 		<label>Feeder Lid Close Delay</label>
-		<description>The feeder lid close delay</description>
+		<description>The feeder lid close delay.</description>
 		<state readOnly="true">
 			<options>
 				<option value="0">Fast</option>
@@ -727,8 +727,8 @@
 		<state readOnly="true">
 			<options>
 				<option value="0">Off</option>
-				<option value="1">Full open</option>
-				<option value="2">Almost Full open</option>
+				<option value="1">Full Open</option>
+				<option value="2">Almost Full Open</option>
 				<option value="3">Half closed</option>
 				<option value="4">Almost closed</option>
 			</options>

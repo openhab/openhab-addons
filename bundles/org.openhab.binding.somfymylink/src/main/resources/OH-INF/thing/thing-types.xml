@@ -7,7 +7,7 @@
 	<!-- Bridge -->
 	<bridge-type id="mylink">
 		<label>Somfy MyLink</label>
-		<description>Somfy MyLink bridge enabling communication with Somfy devices</description>
+		<description>Somfy MyLink bridge enabling communication with Somfy devices.</description>
 		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 		<channels>
 			<channel id="sceneid" typeId="scenelist"/>
@@ -16,11 +16,11 @@
 			<parameter name="ipAddress" type="text" required="true">
 				<context>network-address</context>
 				<label>IP or Hostname</label>
-				<description>The IP or hostname of the Somfy MyLink</description>
+				<description>The IP or hostname of the Somfy MyLink.</description>
 			</parameter>
 			<parameter name="systemId" type="text">
 				<label>System Id</label>
-				<description>The system id of the My Link bridge. This can be found in the integration settings on your My Link app</description>
+				<description>The system id of the My Link bridge. This can be found in the integration settings on your My Link app.</description>
 			</parameter>
 		</config-description>
 	</bridge-type>
@@ -31,7 +31,7 @@
 			<bridge-type-ref id="mylink"/>
 		</supported-bridge-type-refs>
 		<label>Somfy Scene</label>
-		<description>Scene control</description>
+		<description>Scene control.</description>
 		<channels>
 			<channel id="scenecontrol" typeId="button"/>
 		</channels>
@@ -39,7 +39,7 @@
 		<config-description>
 			<parameter name="sceneId" type="text" required="true">
 				<label>Scene ID</label>
-				<description>Address of scene in the Somfy system</description>
+				<description>Address of scene in the Somfy system.</description>
 			</parameter>
 		</config-description>
 	</thing-type>
@@ -50,7 +50,7 @@
 			<bridge-type-ref id="mylink"/>
 		</supported-bridge-type-refs>
 		<label>Somfy Shade</label>
-		<description>Controls shades</description>
+		<description>Controls shades.</description>
 		<semantic-equipment-tag>Blinds</semantic-equipment-tag>
 		<channels>
 			<channel id="shadelevel" typeId="shadeControl"/>
@@ -59,7 +59,7 @@
 		<config-description>
 			<parameter name="targetId" type="text" required="true">
 				<label>Target ID</label>
-				<description>Address of shade in the Somfy system</description>
+				<description>Address of shade in the Somfy system.</description>
 			</parameter>
 		</config-description>
 	</thing-type>
@@ -67,14 +67,14 @@
 	<channel-type id="scenelist">
 		<item-type>String</item-type>
 		<label>Scene List</label>
-		<description>Comma-separated list of scenes of form sceneId=sceneName</description>
-		<state pattern="%s"></state>
+		<description>Comma-separated list of scenes of form sceneId=sceneName.</description>
+		<state pattern="%s" readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="shadeControl">
 		<item-type>Rollershutter</item-type>
 		<label>Control</label>
-		<description>Device control (UP, DOWN, MY/STOP, closure 0-100%)</description>
+		<description>Device control (UP, DOWN, MY/STOP, closure 0-100%).</description>
 		<tags>
 			<tag>Control</tag>
 			<tag>OpenLevel</tag>
@@ -84,7 +84,7 @@
 	<channel-type id="button">
 		<item-type>Switch</item-type>
 		<label>Scene button</label>
-		<description>Button to trigger a scene or rule</description>
+		<description>Button to trigger a scene or rule.</description>
 		<category>Switch</category>
 	</channel-type>
 

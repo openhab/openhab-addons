@@ -10,16 +10,16 @@
 			<context>serial-port</context>
 			<limitToOptions>false</limitToOptions>
 			<label>@text/config.serialPort.label</label>
-			<description>@text/config.serialPort.description</description>
+			<description>@text/config.serialPort.description.</description>
 		</parameter>
 		<parameter name="host" type="text" required="false">
 			<context>network-address</context>
 			<label>@text/config.hostOverIp.label</label>
-			<description>@text/config.hostOverIp.description</description>
+			<description>@text/config.hostOverIp.description.</description>
 		</parameter>
 		<parameter name="port" type="integer" required="false">
 			<label>@text/config.portOverIp.label</label>
-			<description>@text/config.portOverIp.description</description>
+			<description>@text/config.portOverIp.description.</description>
 		</parameter>
 	</config-description>
 
@@ -28,16 +28,16 @@
 			<context>serial-port</context>
 			<limitToOptions>false</limitToOptions>
 			<label>@text/config.serialPort.label</label>
-			<description>@text/config.serialPort.description</description>
+			<description>@text/config.serialPort.description.</description>
 		</parameter>
 		<parameter name="host" type="text" required="false">
 			<context>network-address</context>
 			<label>@text/config.host.label</label>
-			<description>@text/config.host.description</description>
+			<description>@text/config.host.description.</description>
 		</parameter>
 		<parameter name="port" type="integer" required="false">
 			<label>@text/config.port.label</label>
-			<description>@text/config.port.description</description>
+			<description>@text/config.port.description.</description>
 			<default>9590</default>
 		</parameter>
 	</config-description>
@@ -47,16 +47,16 @@
 			<context>serial-port</context>
 			<limitToOptions>false</limitToOptions>
 			<label>@text/config.serialPort.label</label>
-			<description>@text/config.serialPort.description</description>
+			<description>@text/config.serialPort.description.</description>
 		</parameter>
 		<parameter name="host" type="text" required="false">
 			<context>network-address</context>
 			<label>@text/config.host.label</label>
-			<description>@text/config.host.description</description>
+			<description>@text/config.host.description.</description>
 		</parameter>
 		<parameter name="port" type="integer" required="false">
 			<label>@text/config.port.label</label>
-			<description>@text/config.port.description</description>
+			<description>@text/config.port.description.</description>
 			<default>9596</default>
 		</parameter>
 	</config-description>
@@ -66,21 +66,21 @@
 			<context>serial-port</context>
 			<limitToOptions>false</limitToOptions>
 			<label>@text/config.serialPort.label</label>
-			<description>@text/config.serialPort.description</description>
+			<description>@text/config.serialPort.description.</description>
 		</parameter>
 		<parameter name="host" type="text" required="false">
 			<context>network-address</context>
 			<label>@text/config.host.label</label>
-			<description>@text/config.host.description</description>
+			<description>@text/config.host.description.</description>
 		</parameter>
 		<parameter name="port" type="integer" required="false">
 			<label>@text/config.port.label</label>
-			<description>@text/config.port.description</description>
+			<description>@text/config.port.description.</description>
 			<default>9590</default>
 		</parameter>
 		<parameter name="protocol" type="text" required="false">
 			<label>@text/config.protocol.label</label>
-			<description>@text/config.protocol.description</description>
+			<description>@text/config.protocol.description.</description>
 			<limitToOptions>true</limitToOptions>
 			<options>
 				<option value="ASCII_V1">@text/config.protocol.option.ASCII_V1</option>
@@ -96,20 +96,20 @@
 			<context>serial-port</context>
 			<limitToOptions>false</limitToOptions>
 			<label>@text/config.serialPort.label</label>
-			<description>@text/config.serialPort.description</description>
+			<description>@text/config.serialPort.description.</description>
 		</parameter>
 		<parameter name="host" type="text" required="false">
 			<context>network-address</context>
 			<label>@text/config.hostOverIp.label</label>
-			<description>@text/config.hostOverIp.description</description>
+			<description>@text/config.hostOverIp.description.</description>
 		</parameter>
 		<parameter name="port" type="integer" required="false">
 			<label>@text/config.portOverIp.label</label>
-			<description>@text/config.portOverIp.description</description>
+			<description>@text/config.portOverIp.description.</description>
 		</parameter>
 		<parameter name="protocol" type="text" required="false">
 			<label>@text/config.protocol.label</label>
-			<description>@text/config.protocol.description</description>
+			<description>@text/config.protocol.description.</description>
 			<limitToOptions>true</limitToOptions>
 			<options>
 				<option value="ASCII_V1">@text/config.protocol.option.ASCII_V1</option>
@@ -125,36 +125,36 @@
 			<context>serial-port</context>
 			<limitToOptions>false</limitToOptions>
 			<label>@text/config.serialPort.label</label>
-			<description>@text/config.serialPort.description</description>
+			<description>@text/config.serialPort.description.</description>
 		</parameter>
 		<parameter name="host" type="text" required="false">
 			<context>network-address</context>
 			<label>@text/config.hostOverIp.label</label>
-			<description>@text/config.hostOverIp.description</description>
+			<description>@text/config.hostOverIp.description.</description>
 		</parameter>
 		<parameter name="port" type="integer" required="false">
 			<label>@text/config.portOverIp.label</label>
-			<description>@text/config.portOverIp.description</description>
+			<description>@text/config.portOverIp.description.</description>
 		</parameter>
 		<parameter name="inputLabelVideo1" type="text" required="false">
 			<label>@text/config.inputLabelVideo1.label</label>
-			<description>@text/config.inputLabelVideo1.description</description>
+			<description>@text/config.inputLabelVideo1.description.</description>
 		</parameter>
 		<parameter name="inputLabelVideo2" type="text" required="false">
 			<label>@text/config.inputLabelVideo2.label</label>
-			<description>@text/config.inputLabelVideo2.description</description>
+			<description>@text/config.inputLabelVideo2.description.</description>
 		</parameter>
 		<parameter name="inputLabelVideo3" type="text" required="false">
 			<label>@text/config.inputLabelVideo3.label</label>
-			<description>@text/config.inputLabelVideo3.description</description>
+			<description>@text/config.inputLabelVideo3.description.</description>
 		</parameter>
 		<parameter name="inputLabelVideo4" type="text" required="false">
 			<label>@text/config.inputLabelVideo4.label</label>
-			<description>@text/config.inputLabelVideo4.description</description>
+			<description>@text/config.inputLabelVideo4.description.</description>
 		</parameter>
 		<parameter name="inputLabelVideo5" type="text" required="false">
 			<label>@text/config.inputLabelVideo5.label</label>
-			<description>@text/config.inputLabelVideo5.description</description>
+			<description>@text/config.inputLabelVideo5.description.</description>
 		</parameter>
 	</config-description>
 
@@ -163,48 +163,48 @@
 			<context>serial-port</context>
 			<limitToOptions>false</limitToOptions>
 			<label>@text/config.serialPort.label</label>
-			<description>@text/config.serialPort.description</description>
+			<description>@text/config.serialPort.description.</description>
 		</parameter>
 		<parameter name="host" type="text" required="false">
 			<context>network-address</context>
 			<label>@text/config.hostOverIp.label</label>
-			<description>@text/config.hostOverIp.description</description>
+			<description>@text/config.hostOverIp.description.</description>
 		</parameter>
 		<parameter name="port" type="integer" required="false">
 			<label>@text/config.portOverIp.label</label>
-			<description>@text/config.portOverIp.description</description>
+			<description>@text/config.portOverIp.description.</description>
 		</parameter>
 		<parameter name="inputLabelCd" type="text" required="false">
 			<label>@text/config.inputLabelCd.label</label>
-			<description>@text/config.inputLabelCd.description</description>
+			<description>@text/config.inputLabelCd.description.</description>
 		</parameter>
 		<parameter name="inputLabelTuner" type="text" required="false">
 			<label>@text/config.inputLabelTuner.label</label>
-			<description>@text/config.inputLabelTuner.description</description>
+			<description>@text/config.inputLabelTuner.description.</description>
 		</parameter>
 		<parameter name="inputLabelTape" type="text" required="false">
 			<label>@text/config.inputLabelTape.label</label>
-			<description>@text/config.inputLabelTape.description</description>
+			<description>@text/config.inputLabelTape.description.</description>
 		</parameter>
 		<parameter name="inputLabelVideo1" type="text" required="false">
 			<label>@text/config.inputLabelVideo1.label</label>
-			<description>@text/config.inputLabelVideo1.description</description>
+			<description>@text/config.inputLabelVideo1.description.</description>
 		</parameter>
 		<parameter name="inputLabelVideo2" type="text" required="false">
 			<label>@text/config.inputLabelVideo2.label</label>
-			<description>@text/config.inputLabelVideo2.description</description>
+			<description>@text/config.inputLabelVideo2.description.</description>
 		</parameter>
 		<parameter name="inputLabelVideo3" type="text" required="false">
 			<label>@text/config.inputLabelVideo3.label</label>
-			<description>@text/config.inputLabelVideo3.description</description>
+			<description>@text/config.inputLabelVideo3.description.</description>
 		</parameter>
 		<parameter name="inputLabelVideo4" type="text" required="false">
 			<label>@text/config.inputLabelVideo4.label</label>
-			<description>@text/config.inputLabelVideo4.description</description>
+			<description>@text/config.inputLabelVideo4.description.</description>
 		</parameter>
 		<parameter name="inputLabelVideo5" type="text" required="false">
 			<label>@text/config.inputLabelVideo5.label</label>
-			<description>@text/config.inputLabelVideo5.description</description>
+			<description>@text/config.inputLabelVideo5.description.</description>
 		</parameter>
 	</config-description>
 
@@ -213,52 +213,52 @@
 			<context>serial-port</context>
 			<limitToOptions>false</limitToOptions>
 			<label>@text/config.serialPort.label</label>
-			<description>@text/config.serialPort.description</description>
+			<description>@text/config.serialPort.description.</description>
 		</parameter>
 		<parameter name="host" type="text" required="false">
 			<context>network-address</context>
 			<label>@text/config.hostOverIp.label</label>
-			<description>@text/config.hostOverIp.description</description>
+			<description>@text/config.hostOverIp.description.</description>
 		</parameter>
 		<parameter name="port" type="integer" required="false">
 			<label>@text/config.portOverIp.label</label>
-			<description>@text/config.portOverIp.description</description>
+			<description>@text/config.portOverIp.description.</description>
 		</parameter>
 		<parameter name="inputLabelCd" type="text" required="false">
 			<label>@text/config.inputLabelCd.label</label>
-			<description>@text/config.inputLabelCd.description</description>
+			<description>@text/config.inputLabelCd.description.</description>
 		</parameter>
 		<parameter name="inputLabelTuner" type="text" required="false">
 			<label>@text/config.inputLabelTuner.label</label>
-			<description>@text/config.inputLabelTuner.description</description>
+			<description>@text/config.inputLabelTuner.description.</description>
 		</parameter>
 		<parameter name="inputLabelTape" type="text" required="false">
 			<label>@text/config.inputLabelTape.label</label>
-			<description>@text/config.inputLabelTape.description</description>
+			<description>@text/config.inputLabelTape.description.</description>
 		</parameter>
 		<parameter name="inputLabelVideo1" type="text" required="false">
 			<label>@text/config.inputLabelVideo1.label</label>
-			<description>@text/config.inputLabelVideo1.description</description>
+			<description>@text/config.inputLabelVideo1.description.</description>
 		</parameter>
 		<parameter name="inputLabelVideo2" type="text" required="false">
 			<label>@text/config.inputLabelVideo2.label</label>
-			<description>@text/config.inputLabelVideo2.description</description>
+			<description>@text/config.inputLabelVideo2.description.</description>
 		</parameter>
 		<parameter name="inputLabelVideo3" type="text" required="false">
 			<label>@text/config.inputLabelVideo3.label</label>
-			<description>@text/config.inputLabelVideo3.description</description>
+			<description>@text/config.inputLabelVideo3.description.</description>
 		</parameter>
 		<parameter name="inputLabelVideo4" type="text" required="false">
 			<label>@text/config.inputLabelVideo4.label</label>
-			<description>@text/config.inputLabelVideo4.description</description>
+			<description>@text/config.inputLabelVideo4.description.</description>
 		</parameter>
 		<parameter name="inputLabelVideo5" type="text" required="false">
 			<label>@text/config.inputLabelVideo5.label</label>
-			<description>@text/config.inputLabelVideo5.description</description>
+			<description>@text/config.inputLabelVideo5.description.</description>
 		</parameter>
 		<parameter name="inputLabelMulti" type="text" required="false">
 			<label>@text/config.inputLabelMulti.label</label>
-			<description>@text/config.inputLabelMulti.description</description>
+			<description>@text/config.inputLabelMulti.description.</description>
 		</parameter>
 	</config-description>
 
@@ -267,56 +267,56 @@
 			<context>serial-port</context>
 			<limitToOptions>false</limitToOptions>
 			<label>@text/config.serialPort.label</label>
-			<description>@text/config.serialPort.description</description>
+			<description>@text/config.serialPort.description.</description>
 		</parameter>
 		<parameter name="host" type="text" required="false">
 			<context>network-address</context>
 			<label>@text/config.hostOverIp.label</label>
-			<description>@text/config.hostOverIp.description</description>
+			<description>@text/config.hostOverIp.description.</description>
 		</parameter>
 		<parameter name="port" type="integer" required="false">
 			<label>@text/config.portOverIp.label</label>
-			<description>@text/config.portOverIp.description</description>
+			<description>@text/config.portOverIp.description.</description>
 		</parameter>
 		<parameter name="inputLabelCd" type="text" required="false">
 			<label>@text/config.inputLabelCd.label</label>
-			<description>@text/config.inputLabelCd.description</description>
+			<description>@text/config.inputLabelCd.description.</description>
 		</parameter>
 		<parameter name="inputLabelTuner" type="text" required="false">
 			<label>@text/config.inputLabelTuner.label</label>
-			<description>@text/config.inputLabelTuner.description</description>
+			<description>@text/config.inputLabelTuner.description.</description>
 		</parameter>
 		<parameter name="inputLabelUsb" type="text" required="false">
 			<label>@text/config.inputLabelUsb.label</label>
-			<description>@text/config.inputLabelUsb.description</description>
+			<description>@text/config.inputLabelUsb.description.</description>
 		</parameter>
 		<parameter name="inputLabelVideo1" type="text" required="false">
 			<label>@text/config.inputLabelVideo1.label</label>
-			<description>@text/config.inputLabelVideo1.description</description>
+			<description>@text/config.inputLabelVideo1.description.</description>
 		</parameter>
 		<parameter name="inputLabelVideo2" type="text" required="false">
 			<label>@text/config.inputLabelVideo2.label</label>
-			<description>@text/config.inputLabelVideo2.description</description>
+			<description>@text/config.inputLabelVideo2.description.</description>
 		</parameter>
 		<parameter name="inputLabelVideo3" type="text" required="false">
 			<label>@text/config.inputLabelVideo3.label</label>
-			<description>@text/config.inputLabelVideo3.description</description>
+			<description>@text/config.inputLabelVideo3.description.</description>
 		</parameter>
 		<parameter name="inputLabelVideo4" type="text" required="false">
 			<label>@text/config.inputLabelVideo4.label</label>
-			<description>@text/config.inputLabelVideo4.description</description>
+			<description>@text/config.inputLabelVideo4.description.</description>
 		</parameter>
 		<parameter name="inputLabelVideo5" type="text" required="false">
 			<label>@text/config.inputLabelVideo5.label</label>
-			<description>@text/config.inputLabelVideo5.description</description>
+			<description>@text/config.inputLabelVideo5.description.</description>
 		</parameter>
 		<parameter name="inputLabelVideo6" type="text" required="false">
 			<label>@text/config.inputLabelVideo6.label</label>
-			<description>@text/config.inputLabelVideo6.description</description>
+			<description>@text/config.inputLabelVideo6.description.</description>
 		</parameter>
 		<parameter name="inputLabelMulti" type="text" required="false">
 			<label>@text/config.inputLabelMulti.label</label>
-			<description>@text/config.inputLabelMulti.description</description>
+			<description>@text/config.inputLabelMulti.description.</description>
 		</parameter>
 	</config-description>
 
@@ -325,11 +325,11 @@
 			<context>serial-port</context>
 			<limitToOptions>false</limitToOptions>
 			<label>@text/config.serialPort.label</label>
-			<description>@text/config.serialPort.description</description>
+			<description>@text/config.serialPort.description.</description>
 		</parameter>
 		<parameter name="baudRate" type="integer" required="false">
 			<label>@text/config.baudRate.label</label>
-			<description>@text/config.baudRate.description</description>
+			<description>@text/config.baudRate.description.</description>
 			<limitToOptions>true</limitToOptions>
 			<options>
 				<option value="19200">19200</option>
@@ -340,27 +340,27 @@
 		<parameter name="host" type="text" required="false">
 			<context>network-address</context>
 			<label>@text/config.hostOverIp.label</label>
-			<description>@text/config.hostOverIp.description</description>
+			<description>@text/config.hostOverIp.description.</description>
 		</parameter>
 		<parameter name="port" type="integer" required="false">
 			<label>@text/config.portOverIp.label</label>
-			<description>@text/config.portOverIp.description</description>
+			<description>@text/config.portOverIp.description.</description>
 		</parameter>
 		<parameter name="inputLabelVideo1" type="text" required="false">
 			<label>@text/config.inputLabelVideo1.label</label>
-			<description>@text/config.inputLabelVideo1.description</description>
+			<description>@text/config.inputLabelVideo1.description.</description>
 		</parameter>
 		<parameter name="inputLabelVideo2" type="text" required="false">
 			<label>@text/config.inputLabelVideo2.label</label>
-			<description>@text/config.inputLabelVideo2.description</description>
+			<description>@text/config.inputLabelVideo2.description.</description>
 		</parameter>
 		<parameter name="inputLabelVideo3" type="text" required="false">
 			<label>@text/config.inputLabelVideo3.label</label>
-			<description>@text/config.inputLabelVideo3.description</description>
+			<description>@text/config.inputLabelVideo3.description.</description>
 		</parameter>
 		<parameter name="inputLabelVideo4" type="text" required="false">
 			<label>@text/config.inputLabelVideo4.label</label>
-			<description>@text/config.inputLabelVideo4.description</description>
+			<description>@text/config.inputLabelVideo4.description.</description>
 		</parameter>
 	</config-description>
 

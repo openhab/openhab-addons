@@ -7,7 +7,7 @@
 	<!-- Manage Rego 6xx based Heat Pump over IP -->
 	<thing-type id="ipRego6xx">
 		<label>Heat Pump</label>
-		<description>Manage Rego 6xx based heat pump over TCP/IP</description>
+		<description>Manage Rego 6xx based heat pump over TCP/IP.</description>
 		<semantic-equipment-tag>HeatPump</semantic-equipment-tag>
 
 		<channel-groups>
@@ -42,7 +42,7 @@
 	<!-- Manage Rego 6xx based Heat Pump over serial -->
 	<thing-type id="serialRego6xx">
 		<label>Heat Pump</label>
-		<description>Manage Rego 6xx based heat pump over serial port</description>
+		<description>Manage Rego 6xx based heat pump over serial port.</description>
 		<semantic-equipment-tag>HeatPump</semantic-equipment-tag>
 
 		<channel-groups>
@@ -73,7 +73,7 @@
 	<!-- Manage Husdata interface over IP -->
 	<thing-type id="ipHusdata">
 		<label>Husdata Interface</label>
-		<description>Access heat pump over Husdata interface connected via TCP/IP</description>
+		<description>Access heat pump over Husdata interface connected via TCP/IP.</description>
 		<semantic-equipment-tag>HeatPump</semantic-equipment-tag>
 
 		<channel-groups>
@@ -100,7 +100,7 @@
 	<!-- Manage Husdata interface over serial -->
 	<thing-type id="serialHusdata">
 		<label>Husdata Interface</label>
-		<description>Access heat pump over Husdata interface connected via serial port</description>
+		<description>Access heat pump over Husdata interface connected via serial port.</description>
 		<semantic-equipment-tag>HeatPump</semantic-equipment-tag>
 
 		<channel-groups>
@@ -236,7 +236,7 @@
 	<channel-type id="radiatorReturnTemp">
 		<item-type>Number:Temperature</item-type>
 		<label>Radiator Return</label>
-		<description>Temperature of the water that returns to the heat pump from the radiators</description>
+		<description>Temperature of the water that returns to the heat pump from the radiators.</description>
 		<category>Temperature</category>
 		<tags>
 			<tag>Measurement</tag>
@@ -248,7 +248,7 @@
 	<channel-type id="outdoorTemp">
 		<item-type>Number:Temperature</item-type>
 		<label>Outdoor</label>
-		<description>The outdoor temperature. Determines how much heating the heat pump should produce</description>
+		<description>The outdoor temperature. Determines how much heating the heat pump should produce.</description>
 		<category>Temperature</category>
 		<tags>
 			<tag>Measurement</tag>
@@ -260,7 +260,7 @@
 	<channel-type id="hotWaterTemp" advanced="true">
 		<item-type>Number:Temperature</item-type>
 		<label>Hot Water</label>
-		<description>Temperature in the hot water cylinder</description>
+		<description>Temperature in the hot water cylinder.</description>
 		<category>Temperature</category>
 		<tags>
 			<tag>Measurement</tag>
@@ -272,7 +272,7 @@
 	<channel-type id="radiatorForwardTemp" advanced="true">
 		<item-type>Number:Temperature</item-type>
 		<label>Radiator Forward</label>
-		<description>Temperature on the flow water in the circuit</description>
+		<description>Temperature on the flow water in the circuit.</description>
 		<category>Temperature</category>
 		<tags>
 			<tag>Measurement</tag>
@@ -284,7 +284,7 @@
 	<channel-type id="indoorTemp" advanced="true">
 		<item-type>Number:Temperature</item-type>
 		<label>Indoor</label>
-		<description>Present temperature in the room where the sensor is fitted</description>
+		<description>Present temperature in the room where the sensor is fitted.</description>
 		<category>Temperature</category>
 		<tags>
 			<tag>Measurement</tag>
@@ -296,7 +296,7 @@
 	<channel-type id="compressorTemp">
 		<item-type>Number:Temperature</item-type>
 		<label>Compressor</label>
-		<description>Compressor’s working temperature</description>
+		<description>Compressor’s working temperature.</description>
 		<category>Temperature</category>
 		<tags>
 			<tag>Measurement</tag>
@@ -308,7 +308,7 @@
 	<channel-type id="heatFluidOutTemp">
 		<item-type>Number:Temperature</item-type>
 		<label>Heat Fluid Out</label>
-		<description>Temperature of the radiator water as it leaves the heat pump</description>
+		<description>Temperature of the radiator water as it leaves the heat pump.</description>
 		<category>Temperature</category>
 		<tags>
 			<tag>Measurement</tag>
@@ -320,7 +320,7 @@
 	<channel-type id="heatFluidInTemp">
 		<item-type>Number:Temperature</item-type>
 		<label>Heat Fluid In</label>
-		<description>Temperature of the water that is led into the heat pump</description>
+		<description>Temperature of the water that is led into the heat pump.</description>
 		<category>Temperature</category>
 		<tags>
 			<tag>Measurement</tag>
@@ -332,7 +332,7 @@
 	<channel-type id="coldFluidInTemp">
 		<item-type>Number:Temperature</item-type>
 		<label>Cold Fluid In</label>
-		<description>Temperature of the heat transfer fluid that is led into the heat pump from the bore hole or the ground</description>
+		<description>Temperature of the heat transfer fluid that is led into the heat pump from the bore hole or the ground.</description>
 		<category>Temperature</category>
 		<tags>
 			<tag>Measurement</tag>
@@ -344,7 +344,7 @@
 	<channel-type id="coldFluidOutTemp">
 		<item-type>Number:Temperature</item-type>
 		<label>Cold Fluid Out</label>
-		<description>Temperature of the heat transfer fluid that is led out of the heat pump to the bore hole or the ground</description>
+		<description>Temperature of the heat transfer fluid that is led out of the heat pump to the bore hole or the ground.</description>
 		<category>Temperature</category>
 		<tags>
 			<tag>Measurement</tag>
@@ -356,7 +356,7 @@
 	<channel-type id="externalHotWaterTemp" advanced="true">
 		<item-type>Number:Temperature</item-type>
 		<label>External Hot Water</label>
-		<description>Temperature in the external hot water cylinder</description>
+		<description>Temperature in the external hot water cylinder.</description>
 		<category>Temperature</category>
 		<tags>
 			<tag>Measurement</tag>
@@ -368,7 +368,7 @@
 	<channel-type id="lastErrorType">
 		<item-type>String</item-type>
 		<label>Last Error Type</label>
-		<description>Information about the alarm type that occurred last</description>
+		<description>Information about the alarm type that occurred last.</description>
 		<category>Error</category>
 		<tags>
 			<tag>Alarm</tag>
@@ -406,7 +406,7 @@
 	<channel-type id="lastErrorTimestamp">
 		<item-type>DateTime</item-type>
 		<label>Last Error Date</label>
-		<description>Information about when last alarm occurred</description>
+		<description>Information about when last alarm occurred.</description>
 		<category>Time</category>
 		<state readOnly="true" pattern="%1$td.%1$tm.%1$tY %1$tH:%1$tM:%1$tS"/>
 	</channel-type>
@@ -414,7 +414,7 @@
 	<channel-type id="powerLamp" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Power Lamp</label>
-		<description>Lamp on when the heat pump is on</description>
+		<description>Lamp on when the heat pump is on.</description>
 		<category>Switch</category>
 		<state readOnly="true"/>
 	</channel-type>
@@ -422,7 +422,7 @@
 	<channel-type id="heatPumpLamp">
 		<item-type>Switch</item-type>
 		<label>Heat Pump Lamp</label>
-		<description>Lamp on when the heat pump (compressor) is operational</description>
+		<description>Lamp on when the heat pump (compressor) is operational.</description>
 		<category>Switch</category>
 		<state readOnly="true"/>
 	</channel-type>
@@ -430,7 +430,7 @@
 	<channel-type id="additionalHeatLamp">
 		<item-type>Switch</item-type>
 		<label>Additional Heat Lamp</label>
-		<description>Lamp on when the heat pump is using additional heat from an electric cassette</description>
+		<description>Lamp on when the heat pump is using additional heat from an electric cassette.</description>
 		<category>Switch</category>
 		<state readOnly="true"/>
 	</channel-type>
@@ -438,7 +438,7 @@
 	<channel-type id="hotWaterLamp">
 		<item-type>Switch</item-type>
 		<label>Hot Water Lamp</label>
-		<description>Lamp on when the heat pump is heating water in the heater</description>
+		<description>Lamp on when the heat pump is heating water in the heater.</description>
 		<category>Switch</category>
 		<state readOnly="true"/>
 	</channel-type>
@@ -446,7 +446,7 @@
 	<channel-type id="alarmLamp">
 		<item-type>Switch</item-type>
 		<label>Alarm Lamp</label>
-		<description>Lamp indicates that a fault has occurred in the heat pump</description>
+		<description>Lamp indicates that a fault has occurred in the heat pump.</description>
 		<category>Siren</category>
 		<state readOnly="true"/>
 	</channel-type>
@@ -496,7 +496,7 @@
 	<channel-type id="switchValveState" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Switch Valve</label>
-		<description>The valve switches between heating the heating water and hot water</description>
+		<description>The valve switches between heating the heating water and hot water.</description>
 		<category>Heating</category>
 		<state readOnly="true"/>
 	</channel-type>
@@ -514,7 +514,7 @@
 	<channel-type id="radiatorReturnTarget" advanced="true">
 		<item-type>Number:Temperature</item-type>
 		<label>Radiator Return Target</label>
-		<description>Calculated desired radiator return temperature</description>
+		<description>Calculated desired radiator return temperature.</description>
 		<category>Temperature</category>
 		<tags>
 			<tag>Setpoint</tag>
@@ -526,7 +526,7 @@
 	<channel-type id="radiatorReturnOn" advanced="true">
 		<item-type>Number:Temperature</item-type>
 		<label>Minimal Radiator Return</label>
-		<description>Calculated minimal (start) radiator return temperature</description>
+		<description>Calculated minimal (start) radiator return temperature.</description>
 		<category>Temperature</category>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -534,7 +534,7 @@
 	<channel-type id="radiatorReturnOff" advanced="true">
 		<item-type>Number:Temperature</item-type>
 		<label>Maximal Radiator Return</label>
-		<description>Calculated maximal (stop) radiator return temperature</description>
+		<description>Calculated maximal (stop) radiator return temperature.</description>
 		<category>Temperature</category>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -542,7 +542,7 @@
 	<channel-type id="hotWaterTarget" advanced="true">
 		<item-type>Number:Temperature</item-type>
 		<label>Hot Water Target</label>
-		<description>Desired radiator return temperature</description>
+		<description>Desired radiator return temperature.</description>
 		<category>Temperature</category>
 		<tags>
 			<tag>Setpoint</tag>
@@ -554,7 +554,7 @@
 	<channel-type id="hotWaterTargetHysteresis" advanced="true">
 		<item-type>Number:Temperature</item-type>
 		<label>Hot Water Hysteresis</label>
-		<description> The function measures below and above the value set in hotWaterTarget</description>
+		<description> The function measures below and above the value set in hotWaterTarget.</description>
 		<category>Temperature</category>
 		<state min="2" max="15" step="0.1" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -562,7 +562,7 @@
 	<channel-type id="hotWaterOn" advanced="true">
 		<item-type>Number:Temperature</item-type>
 		<label>Minimal Hot Water</label>
-		<description>Minimal (start) hot water temperature</description>
+		<description>Minimal (start) hot water temperature.</description>
 		<category>Temperature</category>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -570,7 +570,7 @@
 	<channel-type id="hotWaterOff" advanced="true">
 		<item-type>Number:Temperature</item-type>
 		<label>Maximal Hot Water</label>
-		<description>Maximal (stop) hot water temperature</description>
+		<description>Maximal (stop) hot water temperature.</description>
 		<category>Temperature</category>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -578,7 +578,7 @@
 	<channel-type id="radiatorForwardTarget" advanced="true">
 		<item-type>Number:Temperature</item-type>
 		<label>Radiator Forward Target</label>
-		<description>Calculated desired radiator forward temperature</description>
+		<description>Calculated desired radiator forward temperature.</description>
 		<category>Temperature</category>
 		<tags>
 			<tag>Setpoint</tag>
@@ -604,7 +604,7 @@
 	<channel-type id="heatCurve" advanced="true">
 		<item-type>Number</item-type>
 		<label>Heat Curve</label>
-		<description>Heat curve influences the heat pump’s production of heat</description>
+		<description>Heat curve influences the heat pump’s production of heat.</description>
 		<category>Line</category>
 		<state min="0" max="10" step="0.1" pattern="%.1f"/>
 	</channel-type>
@@ -612,7 +612,7 @@
 	<channel-type id="heatCurveFineAdj" advanced="true">
 		<item-type>Number:Temperature</item-type>
 		<label>Heat Curve Fine Tune</label>
-		<description>Fine-tuning means that you offset the heat curve in parallel</description>
+		<description>Fine-tuning means that you offset the heat curve in parallel.</description>
 		<category>Temperature</category>
 		<state min="-10" max="10" step="0.1" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -620,7 +620,7 @@
 	<channel-type id="indoorTempSetting" advanced="true">
 		<item-type>Number:Temperature</item-type>
 		<label>Indoor Target</label>
-		<description>Desired temperature in the room where the sensor is fitted</description>
+		<description>Desired temperature in the room where the sensor is fitted.</description>
 		<category>Temperature</category>
 		<tags>
 			<tag>Setpoint</tag>
@@ -632,7 +632,7 @@
 	<channel-type id="curveInflByInTemp" advanced="true">
 		<item-type>Number</item-type>
 		<label>Room Sensor Influence</label>
-		<description>Set how much the room sensor should influence the heat curve</description>
+		<description>Set how much the room sensor should influence the heat curve.</description>
 		<category>Line</category>
 		<state step="0.1" pattern="%.1f"/>
 	</channel-type>
@@ -641,7 +641,7 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Adjust Heat Curve At 20 °C</label>
 		<description>Heat curve can be adjusted up or down every fifth outdoor degree. The purpose of breaking the curve is to
-			be able to influence the heat pump's heat production at extra sensitive outdoor temperatures</description>
+			be able to influence the heat pump's heat production at extra sensitive outdoor temperatures.</description>
 		<category>Temperature</category>
 		<state step="0.1" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -650,7 +650,7 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Adjust Heat Curve At 15 °C</label>
 		<description>Heat curve can be adjusted up or down every fifth outdoor degree. The purpose of breaking the curve is to
-			be able to influence the heat pump's heat production at extra sensitive outdoor temperatures</description>
+			be able to influence the heat pump's heat production at extra sensitive outdoor temperatures.</description>
 		<category>Temperature</category>
 		<state step="0.1" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -659,7 +659,7 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Adjust Heat Curve At 10 °C</label>
 		<description>Heat curve can be adjusted up or down every fifth outdoor degree. The purpose of breaking the curve is to
-			be able to influence the heat pump's heat production at extra sensitive outdoor temperatures</description>
+			be able to influence the heat pump's heat production at extra sensitive outdoor temperatures.</description>
 		<category>Temperature</category>
 		<state step="0.1" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -668,7 +668,7 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Adjust Heat Curve At 5 °C</label>
 		<description>Heat curve can be adjusted up or down every fifth outdoor degree. The purpose of breaking the curve is to
-			be able to influence the heat pump's heat production at extra sensitive outdoor temperatures</description>
+			be able to influence the heat pump's heat production at extra sensitive outdoor temperatures.</description>
 		<category>Temperature</category>
 		<state step="0.1" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -677,7 +677,7 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Adjust Heat Curve At 0 °C</label>
 		<description>Heat curve can be adjusted up or down every fifth outdoor degree. The purpose of breaking the curve is to
-			be able to influence the heat pump's heat production at extra sensitive outdoor temperatures</description>
+			be able to influence the heat pump's heat production at extra sensitive outdoor temperatures.</description>
 		<category>Temperature</category>
 		<state step="0.1" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -686,7 +686,7 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Adjust Heat Curve At -5 °C</label>
 		<description>Heat curve can be adjusted up or down every fifth outdoor degree. The purpose of breaking the curve is to
-			be able to influence the heat pump's heat production at extra sensitive outdoor temperatures</description>
+			be able to influence the heat pump's heat production at extra sensitive outdoor temperatures.</description>
 		<category>Temperature</category>
 		<state step="0.1" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -695,7 +695,7 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Adjust Heat Curve At -10 °C</label>
 		<description>Heat curve can be adjusted up or down every fifth outdoor degree. The purpose of breaking the curve is to
-			be able to influence the heat pump's heat production at extra sensitive outdoor temperatures</description>
+			be able to influence the heat pump's heat production at extra sensitive outdoor temperatures.</description>
 		<category>Temperature</category>
 		<state step="0.1" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -704,7 +704,7 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Adjust Heat Curve At -15 °C</label>
 		<description>Heat curve can be adjusted up or down every fifth outdoor degree. The purpose of breaking the curve is to
-			be able to influence the heat pump's heat production at extra sensitive outdoor temperatures</description>
+			be able to influence the heat pump's heat production at extra sensitive outdoor temperatures.</description>
 		<category>Temperature</category>
 		<state step="0.1" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -713,7 +713,7 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Adjust Heat Curve At -20 °C</label>
 		<description>Heat curve can be adjusted up or down every fifth outdoor degree. The purpose of breaking the curve is to
-			be able to influence the heat pump's heat production at extra sensitive outdoor temperatures</description>
+			be able to influence the heat pump's heat production at extra sensitive outdoor temperatures.</description>
 		<category>Temperature</category>
 		<state step="0.1" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -722,7 +722,7 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Adjust Heat Curve At -25 °C</label>
 		<description>Heat curve can be adjusted up or down every fifth outdoor degree. The purpose of breaking the curve is to
-			be able to influence the heat pump's heat production at extra sensitive outdoor temperatures</description>
+			be able to influence the heat pump's heat production at extra sensitive outdoor temperatures.</description>
 		<category>Temperature</category>
 		<state step="0.1" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -731,7 +731,7 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Adjust Heat Curve At -30 °C</label>
 		<description>Heat curve can be adjusted up or down every fifth outdoor degree. The purpose of breaking the curve is to
-			be able to influence the heat pump's heat production at extra sensitive outdoor temperatures</description>
+			be able to influence the heat pump's heat production at extra sensitive outdoor temperatures.</description>
 		<category>Temperature</category>
 		<state step="0.1" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -740,7 +740,7 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Adjust Heat Curve At -35 °C</label>
 		<description>Heat curve can be adjusted up or down every fifth outdoor degree. The purpose of breaking the curve is to
-			be able to influence the heat pump's heat production at extra sensitive outdoor temperatures</description>
+			be able to influence the heat pump's heat production at extra sensitive outdoor temperatures.</description>
 		<category>Temperature</category>
 		<state step="0.1" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -787,7 +787,7 @@
 	<channel-type id="heatCurve2FineAdj" advanced="true">
 		<item-type>Number:Temperature</item-type>
 		<label>Heat Curve 2 Fine Tune</label>
-		<description>Fine-tuning means that you offset the heat curve 2 in parallel</description>
+		<description>Fine-tuning means that you offset the heat curve 2 in parallel.</description>
 		<category>Temperature</category>
 		<state min="-10" max="10" step="0.1" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -851,7 +851,7 @@
 	<channel-type id="heatPumpInOperationDHW" advanced="true">
 		<item-type>Number:Time</item-type>
 		<label>Heat Pump in Oper. - DHW</label>
-		<description>Heat pump in operation while heating DHW - number of hours</description>
+		<description>Heat pump in operation while heating DHW - number of hours.</description>
 		<category>Time</category>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
@@ -859,7 +859,7 @@
 	<channel-type id="heatPumpInOperationRAD" advanced="true">
 		<item-type>Number:Time</item-type>
 		<label>Heat Pump in Oper. - Radiators</label>
-		<description>Heat pump in operation while heating radiators - number of hours</description>
+		<description>Heat pump in operation while heating radiators - number of hours.</description>
 		<category>Time</category>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
@@ -867,7 +867,7 @@
 	<channel-type id="addHeatInOperationDHW" advanced="true">
 		<item-type>Number:Time</item-type>
 		<label>Add. Heat in Oper. - DHW</label>
-		<description>Additional heat in operation heating DHW - number of hours</description>
+		<description>Additional heat in operation heating DHW - number of hours.</description>
 		<category>Time</category>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
@@ -875,7 +875,7 @@
 	<channel-type id="addHeatInOperationRAD" advanced="true">
 		<item-type>Number:Time</item-type>
 		<label>Add. Heat in Oper. - Radiators</label>
-		<description>Additional heat in operation heating radiators - number of hours</description>
+		<description>Additional heat in operation heating radiators - number of hours.</description>
 		<category>Time</category>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
@@ -884,7 +884,7 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Summer Disconnection</label>
 		<description>The function means the heat pump only produces hot water when the outdoor temperature rises above the set
-			value</description>
+			value.</description>
 		<category>Temperature</category>
 		<state min="10" max="30" step="0.1" pattern="%.1f %unit%"/>
 	</channel-type>

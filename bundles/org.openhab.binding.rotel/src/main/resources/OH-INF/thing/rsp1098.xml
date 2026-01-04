@@ -7,7 +7,7 @@
 	<!-- Rotel RSP-1098 Connection Thing Type -->
 	<thing-type id="rsp1098">
 		<label>RSP-1098 Surround Processor</label>
-		<description>Connection to the Rotel RSP-1098 surround processor</description>
+		<description>Connection to the Rotel RSP-1098 surround processor.</description>
 		<semantic-equipment-tag>AudioVisual</semantic-equipment-tag>
 
 		<channel-groups>

@@ -27,7 +27,7 @@
 			</parameter>
 			<parameter name="subType" type="text" required="true">
 				<label>@text/config.subType.label</label>
-				<description>@text/config.subType.description</description>
+				<description>@text/config.subType.description.</description>
 				<options>
 					<option value="AC">AC</option>
 					<option value="ARC">ARC</option>

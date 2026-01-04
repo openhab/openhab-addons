@@ -8,7 +8,7 @@
 			<bridge-type-ref id="panel"/>
 		</supported-bridge-type-refs>
 		<label>Partition</label>
-		<description>A Qolsys IQ Partition</description>
+		<description>A Qolsys IQ partition.</description>
 		<semantic-equipment-tag>AlarmZone</semantic-equipment-tag>
 		<channels>
 			<channel id="armState" typeId="armState"/>
@@ -23,19 +23,19 @@
 		<config-description>
 			<parameter name="id" type="integer" required="true">
 				<label>Partition ID</label>
-				<description>The Partition ID.</description>
+				<description>The partition ID.</description>
 			</parameter>
 			<parameter name="disarmCode" type="text" required="false">
 				<default></default>
 				<label>Disarm Code</label>
 				<description>Optional disarm code to use when receiving a disarm command without a code. Required for integrations
-					like Alexa and Homekit who do not provide codes when disarming. Leave blank to always require a code</description>
+					like Alexa and Homekit who do not provide codes when disarming. Leave blank to always require a code.</description>
 			</parameter>
 			<parameter name="armCode" type="text" required="false">
 				<default></default>
 				<label>Arm Code</label>
 				<description>Optional arm code to use when receiving arm commands without a code. Only required if the panel has
-					been configured to require arm codes. Leave blank to always require a code</description>
+					been configured to require arm codes. Leave blank to always require a code.</description>
 				<advanced>true</advanced>
 			</parameter>
 		</config-description>
@@ -44,7 +44,7 @@
 		<item-type>String</item-type>
 		<label>Partition Arm State</label>
 		<description>Reports the current partition arm state or sends an arm or disarm command to the system. For security
-			codes, append the 6 digit code to the command separated by a colon (e.g. 'DISARM:123456')</description>
+			codes, append the 6-digit code to the command separated by a colon (e.g. DISARM:123456).</description>
 		<category>Alarm</category>
 		<tags>
 			<tag>Status</tag>
@@ -98,14 +98,14 @@
 	<channel-type id="armingDelay">
 		<item-type>Number</item-type>
 		<label>Partition Arming Delay</label>
-		<description>The arming delay currently in progress</description>
+		<description>The arming delay currently in progress.</description>
 		<category>Alarm</category>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="errorEvent" advanced="true">
 		<item-type>String</item-type>
 		<label>Error Event</label>
-		<description>Last error event message reported by the partition. Clears after 30 seconds</description>
+		<description>Last error event message reported by the partition. Clears after 30 seconds.</description>
 		<state readOnly="true"></state>
 	</channel-type>
 </thing:thing-descriptions>

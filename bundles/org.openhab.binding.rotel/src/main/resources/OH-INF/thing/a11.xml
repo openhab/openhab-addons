@@ -7,7 +7,7 @@
 	<!-- Rotel A11 Connection Thing Type -->
 	<thing-type id="a11">
 		<label>A11 Integrated Amplifier</label>
-		<description>Connection to the Rotel A11 integrated amplifier</description>
+		<description>Connection to the Rotel A11 integrated amplifier.</description>
 		<semantic-equipment-tag>AudioVisual</semantic-equipment-tag>
 
 		<channels>

@@ -7,7 +7,7 @@
 	<!-- Rotel RC-1570 Connection Thing Type -->
 	<thing-type id="rc1570">
 		<label>RC-1570 Stereo Preamplifier</label>
-		<description>Connection to the Rotel RC-1570 stereo preamplifier</description>
+		<description>Connection to the Rotel RC-1570 stereo preamplifier.</description>
 		<semantic-equipment-tag>AudioVisual</semantic-equipment-tag>
 
 		<channels>

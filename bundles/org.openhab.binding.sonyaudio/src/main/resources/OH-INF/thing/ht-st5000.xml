@@ -8,7 +8,7 @@
 	<channel-type id="input-st5000">
 		<item-type>String</item-type>
 		<label>Input Source</label>
-		<description>Select the input source of the receiver</description>
+		<description>Select the input source of the receiver.</description>
 		<tags>
 			<tag>Control</tag>
 			<tag>MediaControl</tag>
@@ -31,7 +31,7 @@
 	<channel-type id="sound-field-st5000">
 		<item-type>String</item-type>
 		<label>Sound Field</label>
-		<description>Select the Sound Field for the receiver</description>
+		<description>Select the Sound Field for the receiver.</description>
 		<tags>
 			<tag>Control</tag>
 			<tag>MediaControl</tag>
@@ -52,7 +52,7 @@
 	<!-- HT-ST5000 Thing Type -->
 	<thing-type id="HT-ST5000">
 		<label>SONY Soundbar HT-ST5000</label>
-		<description>SONY Soundbar HT-ST5000</description>
+		<description>SONY Soundbar HT-ST5000.</description>
 		<semantic-equipment-tag>Speaker</semantic-equipment-tag>
 		<channels>
 			<channel id="power" typeId="power"/>

@@ -26,7 +26,7 @@
 		<config-description>
 			<parameter name="deviceId" type="text" required="true">
 				<label>@text/config.deviceId.label</label>
-				<description>Unit Id. Example 'B', '7' or 'D'</description>
+				<description>Unit Id. Example 'B', '7' or 'D'.</description>
 				<options>
 					<option value="00">0</option>
 					<option value="01">1</option>
@@ -48,7 +48,7 @@
 			</parameter>
 			<parameter name="subType" type="text" required="true">
 				<label>@text/config.subType.label</label>
-				<description>@text/config.subType.description</description>
+				<description>@text/config.subType.description.</description>
 				<options>
 					<option value="LUCCI_AIR_FAN">Lucci Air fan</option>
 					<option value="CASAFAN">Casafan</option>

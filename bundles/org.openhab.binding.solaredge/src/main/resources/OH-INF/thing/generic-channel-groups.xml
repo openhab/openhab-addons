@@ -8,192 +8,192 @@
 		<channels>
 			<channel id="production" typeId="type-power">
 				<label>Production</label>
-				<description>Current Production</description>
+				<description>Current Production.</description>
 			</channel>
 			<channel id="pv_status" typeId="type-status">
 				<label>PV Status</label>
-				<description>Current PV Status</description>
+				<description>Current PV Status.</description>
 			</channel>
 			<channel id="consumption" typeId="type-power">
 				<label>Consumption</label>
-				<description>Current Consumption</description>
+				<description>Current Consumption.</description>
 			</channel>
 			<channel id="load_status" typeId="type-status">
 				<label>Load Status</label>
-				<description>Current Load Status</description>
+				<description>Current Load Status.</description>
 			</channel>
 			<channel id="battery_charge" typeId="type-power">
 				<label>Battery Charge</label>
-				<description>Current Charge Rate</description>
+				<description>Current Charge Rate.</description>
 			</channel>
 			<channel id="battery_discharge" typeId="type-power">
 				<label>Battery Discharge</label>
-				<description>Current Discharge Rate</description>
+				<description>Current Discharge Rate.</description>
 			</channel>
 			<channel id="battery_charge_discharge" typeId="type-power">
 				<label>Battery Charge/Discharge</label>
-				<description>Current Charge/Discharge Rate</description>
+				<description>Current Charge/Discharge Rate.</description>
 			</channel>
 			<channel id="battery_level" typeId="type-percent">
 				<label>Battery Level</label>
-				<description>Current Charge Level</description>
+				<description>Current Charge Level.</description>
 			</channel>
 			<channel id="battery_status" typeId="type-status">
 				<label>Battery Status</label>
-				<description>Current Battery Status</description>
+				<description>Current Battery Status.</description>
 			</channel>
 			<channel id="battery_critical" typeId="type-status">
 				<label>Battery Critical</label>
-				<description>Battery Critical</description>
+				<description>Battery Critical.</description>
 			</channel>
 			<channel id="import" typeId="type-power">
 				<label>Import</label>
-				<description>Current Import from Grid</description>
+				<description>Current Import from Grid.</description>
 			</channel>
 			<channel id="export" typeId="type-power">
 				<label>Export</label>
-				<description>Current Export to Grid</description>
+				<description>Current Export to Grid.</description>
 			</channel>
 			<channel id="grid_status" typeId="type-status">
 				<label>Grid Status</label>
-				<description>Current Grid Status</description>
+				<description>Current Grid Status.</description>
 			</channel>
 		</channels>
 	</channel-group-type>
 
 	<channel-group-type id="genericweb-aggregate-day">
 		<label>Aggregate Day Data</label>
-		<description>Aggregate data (by day)</description>
+		<description>Aggregate data (by day).</description>
 		<channels>
 			<channel id="production" typeId="type-energy">
 				<label>Production</label>
-				<description>Aggregate Day Production</description>
+				<description>Aggregate Day Production.</description>
 			</channel>
 			<channel id="consumption" typeId="type-energy">
 				<label>Consumption</label>
-				<description>Aggregate Day Consumption</description>
+				<description>Aggregate Day Consumption.</description>
 			</channel>
 			<channel id="selfConsumptionForConsumption" typeId="type-energy">
 				<label>Self Consumption</label>
-				<description>Aggregate Day Self Consumption</description>
+				<description>Aggregate Day Self Consumption.</description>
 			</channel>
 			<channel id="selfConsumptionCoverage" typeId="type-percent">
 				<label>Self Consumption Coverage</label>
-				<description>Aggregate Day Self Consumption Coverage</description>
+				<description>Aggregate Day Self Consumption Coverage.</description>
 			</channel>
 			<channel id="batterySelfConsumption" typeId="type-energy">
 				<label>Battery Self Consumption</label>
-				<description>Aggregate Day Battery Self Consumption</description>
+				<description>Aggregate Day Battery Self Consumption.</description>
 			</channel>
 			<channel id="import" typeId="type-energy">
 				<label>Import</label>
-				<description>Aggregate Day Import</description>
+				<description>Aggregate Day Import.</description>
 			</channel>
 			<channel id="export" typeId="type-energy">
 				<label>Export</label>
-				<description>Aggregate Day Export</description>
+				<description>Aggregate Day Export.</description>
 			</channel>
 		</channels>
 	</channel-group-type>
 	<channel-group-type id="genericweb-aggregate-week">
 		<label>Aggregate Week Data</label>
-		<description>Aggregate data (by week)</description>
+		<description>Aggregate data (by week).</description>
 		<channels>
 			<channel id="production" typeId="type-energy">
 				<label>Production</label>
-				<description>Aggregate Week Production</description>
+				<description>Aggregate Week Production.</description>
 			</channel>
 			<channel id="consumption" typeId="type-energy">
 				<label>Consumption</label>
-				<description>Aggregate Week Consumption</description>
+				<description>Aggregate Week Consumption.</description>
 			</channel>
 			<channel id="selfConsumptionForConsumption" typeId="type-energy">
 				<label>Self Consumption</label>
-				<description>Aggregate Week Self Consumption</description>
+				<description>Aggregate Week Self Consumption.</description>
 			</channel>
 			<channel id="selfConsumptionCoverage" typeId="type-percent">
 				<label>Self Consumption Coverage</label>
-				<description>Aggregate Week Self Consumption Coverage</description>
+				<description>Aggregate Week Self Consumption Coverage.</description>
 			</channel>
 			<channel id="batterySelfConsumption" typeId="type-energy">
 				<label>Battery Self Consumption</label>
-				<description>Aggregate Week Battery Self Consumption</description>
+				<description>Aggregate Week Battery Self Consumption.</description>
 			</channel>
 			<channel id="import" typeId="type-energy">
 				<label>Import</label>
-				<description>Aggregate Week Import</description>
+				<description>Aggregate Week Import.</description>
 			</channel>
 			<channel id="export" typeId="type-energy">
 				<label>Export</label>
-				<description>Aggregate Week Export</description>
+				<description>Aggregate Week Export.</description>
 			</channel>
 		</channels>
 	</channel-group-type>
 	<channel-group-type id="genericweb-aggregate-month">
 		<label>Aggregate Month Data</label>
-		<description>Aggregate data (by month)</description>
+		<description>Aggregate data (by month).</description>
 		<channels>
 			<channel id="production" typeId="type-energy">
 				<label>Production</label>
-				<description>Aggregate Month Production</description>
+				<description>Aggregate Month Production.</description>
 			</channel>
 			<channel id="consumption" typeId="type-energy">
 				<label>Consumption</label>
-				<description>Aggregate Month Consumption</description>
+				<description>Aggregate Month Consumption.</description>
 			</channel>
 			<channel id="selfConsumptionForConsumption" typeId="type-energy">
 				<label>Self Consumption</label>
-				<description>Aggregate Month Self Consumption</description>
+				<description>Aggregate Month Self Consumption.</description>
 			</channel>
 			<channel id="selfConsumptionCoverage" typeId="type-percent">
 				<label>Self Consumption Coverage</label>
-				<description>Aggregate Month Self Consumption Coverage</description>
+				<description>Aggregate Month Self Consumption Coverage.</description>
 			</channel>
 			<channel id="batterySelfConsumption" typeId="type-energy">
 				<label>Battery Self Consumption</label>
-				<description>Aggregate Month Battery Self Consumption</description>
+				<description>Aggregate Month Battery Self Consumption.</description>
 			</channel>
 			<channel id="import" typeId="type-energy">
 				<label>Import</label>
-				<description>Aggregate Month Import</description>
+				<description>Aggregate Month Import.</description>
 			</channel>
 			<channel id="export" typeId="type-energy">
 				<label>Export</label>
-				<description>Aggregate Month Export</description>
+				<description>Aggregate Month Export.</description>
 			</channel>
 		</channels>
 	</channel-group-type>
 	<channel-group-type id="genericweb-aggregate-year">
 		<label>Aggregate Year Data</label>
-		<description>Aggregate data (by year)</description>
+		<description>Aggregate data (by year).</description>
 		<channels>
 			<channel id="production" typeId="type-energy">
 				<label>Production</label>
-				<description>Aggregate Year Production</description>
+				<description>Aggregate Year Production.</description>
 			</channel>
 			<channel id="consumption" typeId="type-energy">
 				<label>Consumption</label>
-				<description>Aggregate Year Consumption</description>
+				<description>Aggregate Year Consumption.</description>
 			</channel>
 			<channel id="selfConsumptionForConsumption" typeId="type-energy">
 				<label>Self Consumption</label>
-				<description>Aggregate Year Self Consumption</description>
+				<description>Aggregate Year Self Consumption.</description>
 			</channel>
 			<channel id="selfConsumptionCoverage" typeId="type-percent">
 				<label>Self Consumption Coverage</label>
-				<description>Aggregate Year Self Consumption Coverage</description>
+				<description>Aggregate Year Self Consumption Coverage.</description>
 			</channel>
 			<channel id="batterySelfConsumption" typeId="type-energy">
 				<label>Battery Self Consumption</label>
-				<description>Aggregate Year Battery Self Consumption</description>
+				<description>Aggregate Year Battery Self Consumption.</description>
 			</channel>
 			<channel id="import" typeId="type-energy">
 				<label>Import</label>
-				<description>Aggregate Year Import</description>
+				<description>Aggregate Year Import.</description>
 			</channel>
 			<channel id="export" typeId="type-energy">
 				<label>Export</label>
-				<description>Aggregate Year Export</description>
+				<description>Aggregate Year Export.</description>
 			</channel>
 		</channels>
 	</channel-group-type>

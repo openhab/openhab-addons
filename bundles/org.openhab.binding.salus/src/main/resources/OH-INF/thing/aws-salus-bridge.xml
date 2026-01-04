@@ -11,13 +11,13 @@
 			integration of other Salus devices into the ecosystem, as it provides a pathway for them to interact with the Salus
 			cloud. Without this bridge, the devices would be unable to send, receive or exchange data with the cloud platform,
 			hindering functionality and data utilization.
-		</description>
+		.</description>
 		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
 		<representation-property>username</representation-property>
 		<config-description>
 			<parameter-group name="aws">
 				<label>AWS</label>
-				<description>AWS Properties</description>
+				<description>AWS Properties.</description>
 			</parameter-group>
 			<parameter name="username" type="text" required="true">
 				<label>Username/Email</label>
@@ -54,7 +54,7 @@
 			</parameter>
 			<parameter name="maxHttpRetries" type="integer" required="false">
 				<label>Max HTTP Retries</label>
-				<description>How many times HTTP requests can be retried</description>
+				<description>How many times HTTP requests can be retried.</description>
 				<advanced>true</advanced>
 				<default>3</default>
 			</parameter>
@@ -72,7 +72,7 @@
 				<label>Client ID</label>
 				<description>
 					The app client ID
-				</description>
+				.</description>
 				<default>4pk5efh3v84g5dav43imsv4fbj</default>
 				<advanced>true</advanced>
 			</parameter>
@@ -80,7 +80,7 @@
 				<label>Region</label>
 				<description>
 					Region with which the SDK should communicate
-				</description>
+				.</description>
 				<default>eu-central-1</default>
 				<advanced>true</advanced>
 			</parameter>

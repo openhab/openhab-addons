@@ -29,7 +29,7 @@
 			</parameter>
 			<parameter name="commandOnly" type="boolean" required="false">
 				<label>Command Only</label>
-				<description>Accepts commands only, does not update state of the thing</description>
+				<description>Accepts commands only, does not update state of the thing.</description>
 			</parameter>
 		</config-description>
 
@@ -38,7 +38,7 @@
 	<channel-type id="shutter_state">
 		<item-type>Rollershutter</item-type>
 		<label>Shutter State</label>
-		<description>Represents state of the roller shutter</description>
+		<description>Represents state of the roller shutter.</description>
 		<tags>
 			<tag>Control</tag>
 			<tag>OpenLevel</tag>

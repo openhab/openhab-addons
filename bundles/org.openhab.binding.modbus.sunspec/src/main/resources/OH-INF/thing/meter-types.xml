@@ -11,7 +11,7 @@
 		</supported-bridge-type-refs>
 
 		<label>Single Phase Meter</label>
-		<description>Single phase (AN or AB) meter supporting SunSpec mapping over modbus connection</description>
+		<description>Single phase (AN or AB) meter supporting SunSpec mapping over modbus connection.</description>
 		<category>Meter</category>
 
 		<channel-groups>
@@ -41,7 +41,7 @@
 		</supported-bridge-type-refs>
 
 		<label>Split Phase Meter</label>
-		<description>Split phase (ABN) meter supporting SunSpec mapping over modbus connection</description>
+		<description>Split phase (ABN) meter supporting SunSpec mapping over modbus connection.</description>
 		<category>Meter</category>
 
 		<channel-groups>
@@ -74,7 +74,7 @@
 		</supported-bridge-type-refs>
 
 		<label>Three Phase Meter, Wye-Connected</label>
-		<description>Wye-connected three phase (ABCN) meter supporting SunSpec mapping over modbus connection</description>
+		<description>Wye-connected three phase (ABCN) meter supporting SunSpec mapping over modbus connection.</description>
 		<category>Meter</category>
 
 		<channel-groups>
@@ -110,7 +110,7 @@
 		</supported-bridge-type-refs>
 
 		<label>Three Phase Meter, Delta-Connected</label>
-		<description>Delta-connected three phase (ABC) meter supporting SunSpec mapping over modbus connection</description>
+		<description>Delta-connected three phase (ABC) meter supporting SunSpec mapping over modbus connection.</description>
 		<category>Meter</category>
 
 		<channel-groups>

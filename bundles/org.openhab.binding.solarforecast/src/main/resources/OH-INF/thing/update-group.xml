@@ -5,7 +5,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 	<channel-group-type id="update-values">
 		<label>Forecast Update Values</label>
-		<description>Channels regarding forecast updates</description>
+		<description>Channels regarding forecast updates.</description>
 		<channels>
 			<channel id="api-count" typeId="api-count"/>
 			<channel id="latest-update" typeId="latest-update"/>

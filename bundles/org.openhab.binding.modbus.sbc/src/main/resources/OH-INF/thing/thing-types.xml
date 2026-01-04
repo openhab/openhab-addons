@@ -101,7 +101,7 @@
 	<channel-type id="active_power">
 		<item-type>Number:Power</item-type>
 		<label>Effective Active Power</label>
-		<description>Negative numbers mean feeding back</description>
+		<description>Negative numbers mean feeding back.</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Power</tag>
@@ -112,7 +112,7 @@
 	<channel-type id="reactive_power">
 		<item-type>Number:Power</item-type>
 		<label>Effective Reactive Power</label>
-		<description>Negative numbers mean feeding back</description>
+		<description>Negative numbers mean feeding back.</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Power</tag>

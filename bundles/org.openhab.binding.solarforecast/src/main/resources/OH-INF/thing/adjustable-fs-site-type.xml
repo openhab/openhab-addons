@@ -6,7 +6,7 @@
 
 	<bridge-type id="adjustable-fs-site">
 		<label>Adjustable Forecast Solar Site</label>
-		<description>Site location for forecast solar paid subscription</description>
+		<description>Site location for forecast solar paid subscription.</description>
 
 		<channels>
 			<channel id="power-estimate" typeId="power-estimate"/>

@@ -8,15 +8,15 @@
 	<config-description uri="thing-type:smhi:forecast">
 		<parameter name="latitude" type="decimal" step="0.000001" required="true">
 			<label>Latitude</label>
-			<description>Latitude for the forecast</description>
+			<description>Latitude for the forecast.</description>
 		</parameter>
 		<parameter name="longitude" type="decimal" step="0.000001" required="true">
 			<label>Longitude</label>
-			<description>Longitude for the forecast</description>
+			<description>Longitude for the forecast.</description>
 		</parameter>
 		<parameter name="hourlyForecasts" type="integer" multiple="true">
 			<label>Hourly Forecasts</label>
-			<description>The hourly forecasts to display</description>
+			<description>The hourly forecasts to display.</description>
 			<limitToOptions>true</limitToOptions>
 			<options>
 				<option value="0">@text/thing-type.smhi.forecast.group.hour_0.label</option>
@@ -48,7 +48,7 @@
 		</parameter>
 		<parameter name="dailyForecasts" type="integer" multiple="true">
 			<label>Daily Forecasts</label>
-			<description>The daily forecasts to display</description>
+			<description>The daily forecasts to display.</description>
 			<limitToOptions>true</limitToOptions>
 			<options>
 				<option value="0">@text/thing-type.smhi.forecast.group.day_0.label</option>

@@ -27,7 +27,7 @@
 	<channel-type id="ac-voltage-to-next-type">
 		<item-type>Number:ElectricPotential</item-type>
 		<label>AC Voltage</label>
-		<description>This phase's AC voltage relative to the next phase</description>
+		<description>This phase's AC voltage relative to the next phase.</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Voltage</tag>
@@ -38,7 +38,7 @@
 	<channel-type id="ac-voltage-to-n-type">
 		<item-type>Number:ElectricPotential</item-type>
 		<label>AC Voltage Phase To N Value</label>
-		<description>This phase's AC voltage relative to N line</description>
+		<description>This phase's AC voltage relative to N line.</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Voltage</tag>
@@ -171,7 +171,7 @@
 	<channel-type id="status-type">
 		<item-type>String</item-type>
 		<label>Status</label>
-		<description>Device status</description>
+		<description>Device status.</description>
 		<tags>
 			<tag>Status</tag>
 			<tag>Mode</tag>

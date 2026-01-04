@@ -6,7 +6,7 @@
 
 	<bridge-type id="smart-fs-site">
 		<label>Smart Forecast Solar Site</label>
-		<description>Site location for forecast solar and smart forecast adaptations</description>
+		<description>Site location for forecast solar and smart forecast adaptations.</description>
 
 		<channels>
 			<channel id="power-estimate" typeId="power-estimate"/>

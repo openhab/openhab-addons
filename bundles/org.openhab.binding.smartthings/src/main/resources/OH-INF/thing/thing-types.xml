@@ -6,18 +6,18 @@
 
 	<!-- The Bridge Type -->
 	<bridge-type id="smartthings">
-		<label>Smartthings Hub</label>
-		<description>Smartthings Hub V2 that is attached to the same network</description>
+		<label>SmartThings Hub</label>
+		<description>SmartThings Hub V2 that is attached to the same network.</description>
 		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
 		<config-description>
 			<parameter name="smartthingsIp" type="text" required="true">
 				<context>network-address</context>
 				<label>IP Address</label>
-				<description>IP address of the Smartthings Hub</description>
+				<description>IP address of the SmartThings Hub.</description>
 			</parameter>
 			<parameter name="smartthingsPort" type="integer" min="0" max="65535" required="false">
 				<label>IP Port Number</label>
-				<description>Port number of the Smartthings Hub</description>
+				<description>Port number of the SmartThings Hub.</description>
 				<default>39500</default>
 			</parameter>
 		</config-description>
@@ -33,7 +33,7 @@
 			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
 		<label>Acceleration Sensor</label>
-		<description>Acceleration Sensor</description>
+		<description>Acceleration Sensor.</description>
 		<channels>
 			<channel id="acceleration" typeId="acceleration-channel">
 				<label>Acceleration</label>
@@ -47,7 +47,7 @@
 			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
 		<label>Air Conditioner Mode</label>
-		<description>Air Conditioner Mode</description>
+		<description>Air Conditioner Mode.</description>
 		<semantic-equipment-tag>AirConditioner</semantic-equipment-tag>
 		<channels>
 			<channel id="airConditionerMode" typeId="airConditionerMode-channel">
@@ -62,7 +62,7 @@
 			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
 		<label>Alarm</label>
-		<description>Alarm</description>
+		<description>Alarm.</description>
 		<semantic-equipment-tag>AlarmDevice</semantic-equipment-tag>
 		<channels>
 			<channel id="alarm" typeId="alarm-channel">
@@ -77,7 +77,7 @@
 			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
 		<label>Battery Status</label>
-		<description>An indication of the status of the battery</description>
+		<description>An indication of the status of the battery.</description>
 		<semantic-equipment-tag>Battery</semantic-equipment-tag>
 		<channels>
 			<channel id="battery" typeId="battery-channel">
@@ -92,7 +92,7 @@
 			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
 		<label>Beacon</label>
-		<description>The presence value of the beacon</description>
+		<description>The presence value of the beacon.</description>
 		<semantic-equipment-tag>Tracker</semantic-equipment-tag>
 		<channels>
 			<channel id="presence" typeId="presence-channel">
@@ -107,7 +107,7 @@
 			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
 		<label>Bulb</label>
-		<description>Allows for the control of a bulb device</description>
+		<description>Allows for the control of a bulb device.</description>
 		<semantic-equipment-tag>Lightbulb</semantic-equipment-tag>
 		<channels>
 			<channel id="switch" typeId="switch-channel">
@@ -122,7 +122,7 @@
 			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
 		<label>Button</label>
-		<description>Button</description>
+		<description>Button.</description>
 		<semantic-equipment-tag>Button</semantic-equipment-tag>
 		<channels>
 			<channel id="button" typeId="button-channel">
@@ -137,7 +137,7 @@
 			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
 		<label>Carbon Dioxide Measurement</label>
-		<description>Carbon Dioxide Measurement</description>
+		<description>Carbon Dioxide Measurement.</description>
 		<semantic-equipment-tag>CO2Sensor</semantic-equipment-tag>
 		<channels>
 			<channel id="carbonDioxide" typeId="carbonDioxide-channel">
@@ -150,8 +150,8 @@
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
-		<label>carbon Monoxide Detector</label>
-		<description>Carbon Monoxide Detector</description>
+		<label>Carbon Monoxide Detector</label>
+		<description>Carbon Monoxide Detector.</description>
 		<semantic-equipment-tag>COSensor</semantic-equipment-tag>
 		<channels>
 			<channel id="carbonMonoxide" typeId="carbonMonoxide-channel">
@@ -166,7 +166,7 @@
 			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
 		<label>Color Control</label>
-		<description>Color Control</description>
+		<description>Color Control.</description>
 		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
 		<channels>
 			<channel id="hue" typeId="hue-channel">
@@ -196,7 +196,7 @@
 			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
 		<label>Color</label>
-		<description>Color</description>
+		<description>Color.</description>
 		<semantic-equipment-tag>LightSource</semantic-equipment-tag>
 		<channels>
 			<channel id="colorValue" typeId="colorValue-channel">
@@ -218,7 +218,7 @@
 			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
 		<label>Color Temperature</label>
-		<description>Color Temperature</description>
+		<description>Color Temperature.</description>
 		<semantic-equipment-tag>LightSource</semantic-equipment-tag>
 		<channels>
 			<channel id="colorTemperature" typeId="colorTemperature-channel">
@@ -233,7 +233,7 @@
 			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
 		<label>Consumable</label>
-		<description>Consumable</description>
+		<description>Consumable.</description>
 		<channels>
 			<channel id="consumable" typeId="consumable-channel">
 				<label>Consumable</label>
@@ -248,7 +248,7 @@
 			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
 		<label>Contact Sensor</label>
-		<description>Allows reading the value of a contact sensor device</description>
+		<description>Allows reading the value of a contact sensor device.</description>
 		<semantic-equipment-tag>ContactSensor</semantic-equipment-tag>
 		<channels>
 			<channel id="contact" typeId="contact-channel">
@@ -263,7 +263,7 @@
 			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
 		<label>Door Control</label>
-		<description>Allow for the control of a door</description>
+		<description>Allow for the control of a door.</description>
 		<semantic-equipment-tag>Lock</semantic-equipment-tag>
 		<channels>
 			<channel id="door" typeId="door-control-channel">
@@ -281,7 +281,7 @@
 			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
 		<label>Dryer Mode</label>
-		<description>Controls a dryer temperature</description>
+		<description>Controls a dryer temperature.</description>
 		<semantic-equipment-tag>Dehumidifier</semantic-equipment-tag>
 		<channels>
 			<channel id="dryerMode" typeId="dryer-mode-channel">
@@ -296,7 +296,7 @@
 			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
 		<label>Dryer Operating State</label>
-		<description>Dryer operating state info</description>
+		<description>Dryer operating state info.</description>
 		<semantic-equipment-tag>Dehumidifier</semantic-equipment-tag>
 		<channels>
 			<channel id="machineState" typeId="machine-state-channel">
@@ -317,7 +317,7 @@
 			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
 		<label>Energy Meter</label>
-		<description>Read the energy consumption of an energy metering device</description>
+		<description>Read the energy consumption of an energy metering device.</description>
 		<semantic-equipment-tag>ElectricMeter</semantic-equipment-tag>
 		<channels>
 			<channel id="energy" typeId="energy-channel">
@@ -332,8 +332,8 @@
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
-		<label>estimated Time of Arrival</label>
-		<description>Estimated Time Of Arrival</description>
+		<label>Estimated Time of Arrival</label>
+		<description>Estimated Time of Arrival.</description>
 		<channels>
 			<channel id="estimatedTimeOfArrival" typeId="estimatedTimeOfArrival-channel">
 				<label>Estimated Time of Arrival</label>
@@ -348,7 +348,7 @@
 			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
 		<label>Garage Door Control</label>
-		<description>Garage Door Control</description>
+		<description>Garage Door Control.</description>
 		<semantic-equipment-tag>GarageDoor</semantic-equipment-tag>
 		<channels>
 			<channel id="door" typeId="door-control-channel">
@@ -367,7 +367,7 @@
 			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
 		<label>Holdable Button</label>
-		<description>holdableButton</description>
+		<description>holdableButton.</description>
 		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
 		<channels>
 			<channel id="button" typeId="button-channel">
@@ -386,7 +386,7 @@
 			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
 		<label>Illuminance Measurement</label>
-		<description>Illuminance Measurement</description>
+		<description>Illuminance Measurement.</description>
 		<semantic-equipment-tag>IlluminanceSensor</semantic-equipment-tag>
 		<channels>
 			<channel id="illuminance" typeId="illuminance-channel">
@@ -402,7 +402,7 @@
 			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
 		<label>Image Capture</label>
-		<description>Allows for the capture of an image on devices that support it</description>
+		<description>Allows for the capture of an image on devices that support it.</description>
 		<semantic-equipment-tag>Camera</semantic-equipment-tag>
 		<channels>
 			<channel id="imageCapture" typeId="imageCapture-channel">
@@ -418,7 +418,7 @@
 			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
 		<label>Indicator</label>
-		<description>The indicator capability gives you the ability to set the indicator LED light on a Z-Wave switch</description>
+		<description>The indicator capability gives you the ability to set the indicator LED light on a Z-Wave switch.</description>
 		<channels>
 			<channel id="indicatorStatus" typeId="indicatorStatus-channel">
 				<label>Indicator</label>
@@ -433,7 +433,7 @@
 			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
 		<label>Infrared Level</label>
-		<description>Allows for the control of the infrared level attribute of a device</description>
+		<description>Allows for the control of the infrared level attribute of a device.</description>
 		<channels>
 			<channel id="infraredLevel" typeId="infraredLevel-channel">
 				<label>Infrared Level</label>
@@ -448,7 +448,7 @@
 			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
 		<label>Light</label>
-		<description>Light</description>
+		<description>Light.</description>
 		<semantic-equipment-tag>LightSource</semantic-equipment-tag>
 		<channels>
 			<channel id="switch" typeId="switch-channel">
@@ -464,7 +464,7 @@
 			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
 		<label>Lock</label>
-		<description>Allow for the control of a lock device</description>
+		<description>Allow for the control of a lock device.</description>
 		<semantic-equipment-tag>Lock</semantic-equipment-tag>
 		<channels>
 			<channel id="lock" typeId="lock-channel">
@@ -480,7 +480,7 @@
 			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
 		<label>Lock Only</label>
-		<description>Allow for the lock control of a lock device</description>
+		<description>Allow for the lock control of a lock device.</description>
 		<semantic-equipment-tag>Lock</semantic-equipment-tag>
 		<channels>
 			<channel id="lock" typeId="lock-only-channel">
@@ -496,7 +496,7 @@
 			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
 		<label>Media Controller</label>
-		<description>Allows for the control of a media controller device</description>
+		<description>Allows for the control of a media controller device.</description>
 		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
 		<channels>
 			<channel id="activities" typeId="activities-channel">
@@ -515,7 +515,7 @@
 			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
 		<label>Motion Sensor</label>
-		<description>Allows for the ability to read motion sensor device states</description>
+		<description>Allows for the ability to read motion sensor device states.</description>
 		<semantic-equipment-tag>MotionDetector</semantic-equipment-tag>
 		<channels>
 			<channel id="motion" typeId="motion-channel">
@@ -531,7 +531,7 @@
 			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
 		<label>Music Player</label>
-		<description>Allows for control of a music playing device</description>
+		<description>Allows for control of a music playing device.</description>
 		<semantic-equipment-tag>MediaPlayer</semantic-equipment-tag>
 		<channels>
 			<channel id="status" typeId="status-channel">
@@ -559,7 +559,7 @@
 			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
 		<label>Outlet</label>
-		<description>Allows for the control of an outlet device</description>
+		<description>Allows for the control of an outlet device.</description>
 		<semantic-equipment-tag>PowerOutlet</semantic-equipment-tag>
 		<channels>
 			<channel id="switch" typeId="switch-channel">
@@ -575,7 +575,7 @@
 			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
 		<label>pH Measurement</label>
-		<description>Read the pH value off of a pH measurement capable device</description>
+		<description>Read the pH value off of a pH measurement capable device.</description>
 		<semantic-equipment-tag>Wellness</semantic-equipment-tag>
 		<channels>
 			<channel id="pH" typeId="pH-channel">
@@ -591,7 +591,7 @@
 			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
 		<label>PowerMeter</label>
-		<description>Allows for reading the power consumption from devices that report it</description>
+		<description>Allows for reading the power consumption from devices that report it.</description>
 		<semantic-equipment-tag>ElectricMeter</semantic-equipment-tag>
 		<channels>
 			<channel id="power" typeId="power-channel">
@@ -607,7 +607,7 @@
 			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
 		<label>Power Source</label>
-		<description>The current power source for the device</description>
+		<description>The current power source for the device.</description>
 		<channels>
 			<channel id="powerSource" typeId="powerSource-channel">
 				<label>Power Source</label>
@@ -622,7 +622,7 @@
 			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
 		<label>Presence Sensor</label>
-		<description>The ability to see the current status of a presence sensor device</description>
+		<description>The ability to see the current status of a presence sensor device.</description>
 		<semantic-equipment-tag>OccupancySensor</semantic-equipment-tag>
 		<channels>
 			<channel id="presence" typeId="presence-channel">
@@ -638,7 +638,7 @@
 			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
 		<label>Humidity Sensor</label>
-		<description>Allow reading the relative humidity from devices that support it</description>
+		<description>Allow reading the relative humidity from devices that support it.</description>
 		<semantic-equipment-tag>HumiditySensor</semantic-equipment-tag>
 		<channels>
 			<channel id="humidity" typeId="humidity-channel">
@@ -653,7 +653,7 @@
 			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
 		<label>Relay Switch</label>
-		<description>Relay Switch</description>
+		<description>Relay Switch.</description>
 		<semantic-equipment-tag>PowerOutlet</semantic-equipment-tag>
 		<channels>
 			<channel id="switch" typeId="switch-channel">
@@ -669,7 +669,7 @@
 			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
 		<label>Shock Sensor</label>
-		<description>A Device that senses whether or not there is a shock</description>
+		<description>A Device that senses whether or not there is a shock.</description>
 		<semantic-equipment-tag>VibrationSensor</semantic-equipment-tag>
 		<channels>
 			<channel id="shock" typeId="shock-channel">
@@ -685,7 +685,7 @@
 			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
 		<label>Signal Strength</label>
-		<description>Gives the ability to read the signal stregth of Devices that support it</description>
+		<description>Gives the ability to read the signal strength of devices that support it.</description>
 		<semantic-equipment-tag>Sensor</semantic-equipment-tag>
 		<channels>
 			<channel id="lqi" typeId="lqi-channel">
@@ -704,7 +704,7 @@
 			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
 		<label>Sleep Sensor</label>
-		<description>A Device that senses whether or not someone is sleeping</description>
+		<description>A Device that senses whether or not someone is sleeping.</description>
 		<semantic-equipment-tag>Wellness</semantic-equipment-tag>
 		<channels>
 			<channel id="sleeping" typeId="sleeping-channel">
@@ -720,7 +720,7 @@
 			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
 		<label>Smoke Detector</label>
-		<description>Measure smoke and optionally carbon monoxide levels</description>
+		<description>Measure smoke and optionally carbon monoxide levels.</description>
 		<channels>
 			<channel id="smoke" typeId="smoke-channel">
 				<label>Smoke</label>
@@ -738,7 +738,7 @@
 			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
 		<label>Sound Pressure Level</label>
-		<description>Sound Pressure Level</description>
+		<description>Sound Pressure Level.</description>
 		<semantic-equipment-tag>Sensor</semantic-equipment-tag>
 		<channels>
 			<channel id="soundPressureLevel" typeId="soundPressureLevel-channel">
@@ -754,7 +754,7 @@
 			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
 		<label>Sound Sensor</label>
-		<description>A Device that senses sound</description>
+		<description>A Device that senses sound.</description>
 		<semantic-equipment-tag>Sensor</semantic-equipment-tag>
 		<channels>
 			<channel id="sound" typeId="sound-channel">
@@ -770,7 +770,7 @@
 			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
 		<label>Speech Recognition</label>
-		<description>Speech Recognition</description>
+		<description>Speech Recognition.</description>
 		<channels>
 			<channel id="phraseSpoken" typeId="phraseSpoken-channel">
 				<label>Speech Recognition</label>
@@ -785,7 +785,7 @@
 			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
 		<label>Step Sensor</label>
-		<description>A Device that works as a step counter</description>
+		<description>A Device that works as a step counter.</description>
 		<semantic-equipment-tag>Wellness</semantic-equipment-tag>
 		<channels>
 			<channel id="goal" typeId="goal-channel">
@@ -804,7 +804,7 @@
 			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
 		<label>Switch</label>
-		<description>Switch</description>
+		<description>Switch.</description>
 		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
 		<channels>
 			<channel id="switch" typeId="switch-channel">
@@ -820,7 +820,7 @@
 			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
 		<label>Switch Level</label>
-		<description>Allows for the control of the level attribute of a light</description>
+		<description>Allows for the control of the level attribute of a light.</description>
 		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
 		<channels>
 			<channel id="level" typeId="level-channel">
@@ -839,7 +839,7 @@
 			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
 		<label>Tamper Alert</label>
-		<description>Tamper Alert</description>
+		<description>Tamper Alert.</description>
 		<semantic-equipment-tag>AlarmDevice</semantic-equipment-tag>
 		<channels>
 			<channel id="tamper" typeId="tamper-channel">
@@ -854,7 +854,7 @@
 			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
 		<label>Temperature Measurement</label>
-		<description>Get the temperature from a Device that reports current temperature</description>
+		<description>Get the temperature from a Device that reports current temperature.</description>
 		<semantic-equipment-tag>TemperatureSensor</semantic-equipment-tag>
 		<channels>
 			<channel id="temperature" typeId="temperature-channel">
@@ -870,7 +870,7 @@
 			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
 		<label>Thermostat</label>
-		<description>Allows for the control of a thermostat device</description>
+		<description>Allows for the control of a thermostat device.</description>
 		<semantic-equipment-tag>Thermostat</semantic-equipment-tag>
 		<channels>
 			<channel id="heatingSetpoint" typeId="heatingSetpoint-channel">
@@ -901,7 +901,7 @@
 			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
 		<label>Thermostat Cooling Setpoint</label>
-		<description>Thermostat Cooling Setpoint</description>
+		<description>Thermostat Cooling Setpoint.</description>
 		<semantic-equipment-tag>Thermostat</semantic-equipment-tag>
 		<channels>
 			<channel id="coolingSetpoint" typeId="coolingSetpoint-channel">
@@ -917,7 +917,7 @@
 			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
 		<label>Thermostat Fan Mode</label>
-		<description>Thermostat Fan Mode</description>
+		<description>Thermostat Fan Mode.</description>
 		<semantic-equipment-tag>Thermostat</semantic-equipment-tag>
 		<channels>
 			<channel id="thermostatFanMode" typeId="thermostatFanMode-channel">
@@ -933,7 +933,7 @@
 			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
 		<label>Thermostat Heating Setpoint</label>
-		<description>Thermostat Heating Setpoint</description>
+		<description>Thermostat Heating Setpoint.</description>
 		<semantic-equipment-tag>Thermostat</semantic-equipment-tag>
 		<channels>
 			<channel id="heatingSetpoint" typeId="heatingSetpoint-channel">
@@ -949,7 +949,7 @@
 			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
 		<label>Thermostat Mode</label>
-		<description>Thermostat Mode</description>
+		<description>Thermostat Mode.</description>
 		<semantic-equipment-tag>Thermostat</semantic-equipment-tag>
 		<channels>
 			<channel id="thermostatMode" typeId="thermostatMode-channel">
@@ -965,7 +965,7 @@
 			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
 		<label>Thermostat Operating State</label>
-		<description>Thermostat Operating State</description>
+		<description>Thermostat Operating State.</description>
 		<semantic-equipment-tag>Thermostat</semantic-equipment-tag>
 		<channels>
 			<channel id="thermostatOperatingState" typeId="thermostatOperatingState-channel">
@@ -981,7 +981,7 @@
 			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
 		<label>Thermostat Setpoint</label>
-		<description>Thermostat Setpoint</description>
+		<description>Thermostat Setpoint.</description>
 		<semantic-equipment-tag>Thermostat</semantic-equipment-tag>
 		<channels>
 			<channel id="thermostatSetpoint" typeId="thermostatSetpoint-channel">
@@ -996,7 +996,7 @@
 			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
 		<label>Three Axis</label>
-		<description>Gives the three axis coordinates for devices that support it</description>
+		<description>Gives the three axis coordinates for devices that support it.</description>
 		<channels>
 			<channel id="threeAxis" typeId="three-axis-channel">
 				<label>Three Axis</label>
@@ -1011,7 +1011,7 @@
 			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
 		<label>Timed Session</label>
-		<description>Timed Session</description>
+		<description>Timed Session.</description>
 		<channels>
 			<channel id="sessionStatus" typeId="sessionStatus-channel">
 				<label>Session Status</label>
@@ -1029,7 +1029,7 @@
 			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
 		<label>Touch Sensor</label>
-		<description>Touch Sensor</description>
+		<description>Touch Sensor.</description>
 		<semantic-equipment-tag>Sensor</semantic-equipment-tag>
 		<channels>
 			<channel id="touch" typeId="touch-channel">
@@ -1045,7 +1045,7 @@
 			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
 		<label>Ultraviolet Index</label>
-		<description>Gives the ability to get the ultraviolet index from devices that report it</description>
+		<description>Gives the ability to get the ultraviolet index from devices that report it.</description>
 		<semantic-equipment-tag>Sensor</semantic-equipment-tag>
 		<channels>
 			<channel id="ultravioletIndex" typeId="ultravioletIndex-channel">
@@ -1061,7 +1061,7 @@
 			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
 		<label>Valve</label>
-		<description>Allows for the control of a valve device</description>
+		<description>Allows for the control of a valve device.</description>
 		<semantic-equipment-tag>Valve</semantic-equipment-tag>
 		<channels>
 			<channel id="valve" typeId="valve-channel">
@@ -1080,7 +1080,7 @@
 			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
 		<label>Voltage Measurement</label>
-		<description>Get the value of voltage measured from devices that support it</description>
+		<description>Get the value of voltage measured from devices that support it.</description>
 		<semantic-equipment-tag>Sensor</semantic-equipment-tag>
 		<channels>
 			<channel id="voltage" typeId="voltage-channel">
@@ -1096,7 +1096,7 @@
 			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
 		<label>Washer Mode</label>
-		<description>Controls a washer temperature</description>
+		<description>Controls a washer temperature.</description>
 		<semantic-equipment-tag>WashingMachine</semantic-equipment-tag>
 		<channels>
 			<channel id="washerMode" typeId="washer-mode-channel">
@@ -1111,7 +1111,7 @@
 			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
 		<label>Washer Operating State</label>
-		<description>Washer operating state info</description>
+		<description>Washer operating state info.</description>
 		<semantic-equipment-tag>WashingMachine</semantic-equipment-tag>
 		<channels>
 			<channel id="machineState" typeId="machine-state-channel">
@@ -1133,7 +1133,7 @@
 			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
 		<label>Water Sensor</label>
-		<description>Get the status off of a water sensor device</description>
+		<description>Get the status off of a water sensor device.</description>
 		<semantic-equipment-tag>LeakSensor</semantic-equipment-tag>
 		<channels>
 			<channel id="water" typeId="water-channel">
@@ -1149,7 +1149,7 @@
 			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
 		<label>Window Shade</label>
-		<description>Window Shade</description>
+		<description>Window Shade.</description>
 		<semantic-equipment-tag>WindowCovering</semantic-equipment-tag>
 		<channels>
 			<channel id="windowShade" typeId="windowShade-channel">
@@ -1168,7 +1168,7 @@
 	<channel-type id="acceleration-channel">
 		<item-type>String</item-type>
 		<label>Acceleration</label>
-		<description>Acceleration</description>
+		<description>Acceleration.</description>
 		<category>Motion</category>
 		<state readOnly="true" pattern="%s">
 			<options>
@@ -1724,7 +1724,7 @@
 	<channel-type id="switch-channel">
 		<item-type>Switch</item-type>
 		<label>Switch</label>
-		<description>This is a switch</description>
+		<description>This is a switch.</description>
 		<category>switch</category>
 		<tags>
 			<tag>Switch</tag>
@@ -1862,7 +1862,7 @@
 	<channel-type id="three-axis-channel">
 		<item-type>String</item-type>
 		<label>Three Axis</label>
-		<description>This string contains the x, y, z coordinates</description>
+		<description>This string contains the x, y, z coordinates.</description>
 		<category></category>
 	</channel-type>
 

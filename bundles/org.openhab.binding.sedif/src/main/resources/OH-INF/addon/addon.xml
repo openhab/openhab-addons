@@ -5,7 +5,7 @@
 
 	<type>binding</type>
 	<name>Sedif Binding</name>
-	<description>Retrieves your water consumption data from Sedif website</description>
+	<description>Retrieves your water consumption data from Sedif website.</description>
 	<connection>cloud</connection>
 	<countries>fr</countries>
 

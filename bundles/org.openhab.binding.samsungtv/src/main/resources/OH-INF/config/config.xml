@@ -10,7 +10,7 @@
 			<description>
 				This enables the Input Source and Channel Number channels on TV's that don't support this locally, by
 				connecting wth the Smartthings cloud API. Only available with WebSocket and SecureWebSocket Protocols.
-			</description>
+			.</description>
 			<advanced>true</advanced>
 		</parameter-group>
 		<parameter name="hostName" type="text" required="true">
@@ -30,7 +30,7 @@
 		<parameter name="refreshInterval" type="integer" unit="ms">
 			<label>Refresh Interval</label>
 			<description>States how often a refresh shall occur in milliseconds.
-			</description>
+			.</description>
 			<default>1000</default>
 		</parameter>
 		<parameter name="protocol" type="text" required="true">
@@ -46,18 +46,18 @@
 		</parameter>
 		<parameter name="webSocketToken" type="text" readOnly="true">
 			<label>Websocket Token</label>
-			<description>Security token for secure websocket connection</description>
+			<description>Security token for secure websocket connection.</description>
 			<advanced>true</advanced>
 		</parameter>
 		<parameter name="subscription" type="boolean">
 			<label>Subscribe to UPNP</label>
-			<description>Reduces polling on UPNP devices, but may be unreliable, disable if you have problems</description>
+			<description>Reduces polling on UPNP devices, but may be unreliable, disable if you have problems.</description>
 			<default>false</default>
 			<advanced>true</advanced>
 		</parameter>
 		<parameter name="orientationKey" type="text">
 			<label>Key code to send to rotate TV</label>
-			<description>Only works with optional rotating mount</description>
+			<description>Only works with optional rotating mount.</description>
 			<default>KEY_MULTI_VIEW</default>
 			<advanced>true</advanced>
 		</parameter>
@@ -73,7 +73,7 @@
 		</parameter>
 		<parameter name="smartThingsSubscription" type="boolean" groupName="Cloud Connection">
 			<label>Subscribe to SmartThings</label>
-			<description>Reduces polling on SmartThings, by subscribing to Device Events</description>
+			<description>Reduces polling on SmartThings, by subscribing to Device Events.</description>
 			<default>true</default>
 			<advanced>true</advanced>
 		</parameter>
