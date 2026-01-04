@@ -121,29 +121,29 @@ public class SmartThingsTypeRegistryImpl implements SmartThingsTypeRegistry {
         this.bridgeHandler = bridgeHandler;
     }
 
-    public String getOpenhabChannelType(String smartThingsType, SmartThingsCapability capa, String key,
+    public String getChannelType(String smartThingsType, SmartThingsCapability capa, String key,
             @Nullable ChannelProperty channelProp) {
-        String openhabChannelType = SmartThingsBridgeChannelDefinitions.getChannelType(smartThingsType);
-        String openhabUoM = null;
+        String channelType = SmartThingsBridgeChannelDefinitions.getChannelType(smartThingsType);
+        String unit = null;
         String result = "";
 
         if (channelProp != null) {
-            openhabUoM = channelProp.getUoM();
+            unit = channelProp.getUoM();
 
-            if (channelProp.getOpenhabChannelType() != null) {
-                openhabChannelType = channelProp.getOpenhabChannelType();
+            if (channelProp.getChannelType() != null) {
+                channelType = channelProp.getChannelType();
             }
         }
 
-        if (openhabChannelType == null) {
-            logger.info("need review");
+        if (channelType == null) {
+            logger.debug("need review");
             return result;
         }
 
-        result = openhabChannelType;
+        result = channelType;
 
-        if (openhabUoM != null) {
-            result = result + ":" + openhabUoM;
+        if (unit != null) {
+            result = result + ":" + unit;
         }
 
         return result;
@@ -163,19 +163,17 @@ public class SmartThingsTypeRegistryImpl implements SmartThingsTypeRegistry {
                     continue;
                 }
 
-                // logger.info("capa: {} <> {}", capa.id, key);
-
                 if (attr == null) {
                     continue;
                 }
                 if (attr.schema == null) {
-                    logger.info("no schema");
+                    logger.debug("no schema");
                 }
                 if (attr.schema.properties == null) {
-                    logger.info("no properties");
+                    logger.debug("no properties");
                 }
                 if (!attr.schema.properties.containsKey("value")) {
-                    logger.info("no value");
+                    logger.debug("no value");
                 }
 
                 SmartThingsProperty prop = attr.schema.properties.get("value");
@@ -191,7 +189,7 @@ public class SmartThingsTypeRegistryImpl implements SmartThingsTypeRegistry {
 
                 }
             } catch (Exception ex) {
-                logger.info("Unable to register ChannelTypes for capa : {}", key);
+                logger.warn("Unable to register ChannelTypes for capability '{}'", key, ex);
             }
 
         }
@@ -201,7 +199,7 @@ public class SmartThingsTypeRegistryImpl implements SmartThingsTypeRegistry {
             SmartThingsProperty prop) {
         SmartThingsChannelTypeProvider lcChannelTypeProvider = channelTypeProvider;
         String smartThingsType = prop.type;
-        String openHabChannelType = "NA";
+        String channelTypeId = "NA";
 
         SmartThingsProperty unit = null;
         if (attr.schema.properties.containsKey("unit")) {
@@ -210,9 +208,9 @@ public class SmartThingsTypeRegistryImpl implements SmartThingsTypeRegistry {
 
         ChannelProperty channelProp = SmartThingsBridgeChannelDefinitions.getChannelProperty(capa.id + "#" + attrKey);
 
-        openHabChannelType = getOpenhabChannelType(smartThingsType, capa, attrKey, channelProp);
+        channelTypeId = getChannelType(smartThingsType, capa, attrKey, channelProp);
 
-        if ("".equals(openHabChannelType)) {
+        if ("".equals(channelTypeId)) {
             logger.info("need review");
         }
         String label = capa.name;
@@ -233,7 +231,7 @@ public class SmartThingsTypeRegistryImpl implements SmartThingsTypeRegistry {
             }
         }
 
-        if ("".equals(openHabChannelType)) {
+        if ("".equals(channelTypeId)) {
             return;
         }
 
@@ -244,8 +242,8 @@ public class SmartThingsTypeRegistryImpl implements SmartThingsTypeRegistry {
         if (lcChannelTypeProvider != null) {
             channelType = lcChannelTypeProvider.getInternalChannelType(channelTypeUID);
             if (channelType == null) {
-                channelType = createChannelType(capa, unit, channelTypeName, "", label, openHabChannelType,
-                        channelTypeUID, options, channelProp);
+                channelType = createChannelType(capa, unit, channelTypeName, "", label, channelTypeId, channelTypeUID,
+                        options, channelProp);
                 lcChannelTypeProvider.addChannelType(channelType);
             }
         }
