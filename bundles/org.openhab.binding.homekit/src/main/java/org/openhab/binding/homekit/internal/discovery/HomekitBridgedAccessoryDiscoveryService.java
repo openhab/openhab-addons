@@ -26,9 +26,10 @@ import org.openhab.binding.homekit.internal.handler.HomekitBridgeHandler;
 import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.DiscoveryService;
+import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingUID;
-import org.osgi.framework.FrameworkUtil;
+import org.osgi.framework.Bundle;
 import org.osgi.service.component.annotations.Component;
 
 /**
@@ -75,6 +76,9 @@ public class HomekitBridgedAccessoryDiscoveryService
             return;
         }
 
+        TranslationProvider i18n = ((HomekitBridgeHandler) thingHandler).getTranslationProvider();
+        Bundle bundle = ((HomekitBridgeHandler) thingHandler).getBundle();
+
         accessories.forEach(accessory -> {
             if (accessory.aid instanceof Long aid && accessory.services != null) {
                 ThingUID uid = new ThingUID(THING_TYPE_BRIDGED_ACCESSORY, bridge.getUID(), aid.toString());
@@ -82,8 +86,7 @@ public class HomekitBridgedAccessoryDiscoveryService
                 String label = THING_LABEL_FMT.formatted(accessory.getAccessoryInstanceLabel(), uniqueId);
                 if (aid != 1L || Optional.ofNullable(accessory.services).stream().flatMap(List::stream)
                         .flatMap(service -> Optional.ofNullable(service.characteristics).stream()).flatMap(List::stream)
-                        .map(characteristic -> characteristic.getContent(uid, null, i18nProvider,
-                                FrameworkUtil.getBundle(this.getClass())))
+                        .map(characteristic -> characteristic.getContent(uid, null, i18n, bundle))
                         .anyMatch(Content.ChannelDefinition.class::isInstance)) {
                     // if aid #1 yields at least one channel definition then also discover an embedded thing for it
                     thingDiscovered(DiscoveryResultBuilder.create(uid) //
