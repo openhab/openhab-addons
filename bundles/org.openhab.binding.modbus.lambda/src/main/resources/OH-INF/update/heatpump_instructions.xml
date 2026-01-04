@@ -25,7 +25,7 @@
 			</add-channel>
 			<remove-channel id="heatpump-request-relais-state"/>
 			<add-channel id="heat-pump-relais-state">
-				<type>typeId="heat-pump:heat-pump-relais-state"</type>
+				<type>modbus:heat-pump-relais-state</type>
 				<label>Relais State</label>
 			</add-channel>
 		</instruction-set>
