@@ -52,7 +52,8 @@ public class HomeWizardBindingConstants {
 
     // Channel Groups
     public static final String CHANNEL_GROUP_ENERGY = "energy";
-    public static final String CHANNEL_GROUP_P1_BATTERIES = "batteries";
+    public static final String CHANNEL_GROUP_BATTERIES = "batteries";
+    public static final String CHANNEL_GROUP_SYSTEM = "system";
     public static final String CHANNEL_GROUP_WATER = "water";
     public static final String CHANNEL_GROUP_SKT_CONTROL = "control";
 
@@ -107,6 +108,14 @@ public class HomeWizardBindingConstants {
     public static final String CHANNEL_GAS_TIMESTAMP = "gas_timestamp";
     public static final String CHANNEL_GAS_TOTAL = "total_gas";
 
+    // System
+    public static final String CHANNEL_SYSTEM_WIFI_SSID = "wifi_ssid";
+    public static final String CHANNEL_SYSTEM_WIFI_RSSI = "wifi_rssi";
+    public static final String CHANNEL_SYSTEM_CLOUD_ENABLED = "cloud_enabled";
+    public static final String CHANNEL_SYSTEM_UPTIME = "uptime";
+    public static final String CHANNEL_SYSTEM_STATUS_LED_BRIGHTNESS = "status_led_brightness";
+
+    // Batteries
     public static final String CHANNEL_BATTERIES_MODE = "batteries_mode";
     public static final String CHANNEL_BATTERIES_COUNT = "batteries_count";
     public static final String CHANNEL_BATTERIES_POWER = "batteries_power";
@@ -114,7 +123,6 @@ public class HomeWizardBindingConstants {
     public static final String CHANNEL_BATTERIES_MAX_CONSUMPTION = "batteries_max_consumption";
     public static final String CHANNEL_BATTERIES_MAX_PRODUCTION = "batteries_max_production";
 
-    // Batteries
     public static final String BATTERIES_MODE_STANDBY = "standby";
     public static final String BATTERIES_MODE_ZERO = "zero";
     public static final String BATTERIES_MODE_TO_FULL = "to_full";

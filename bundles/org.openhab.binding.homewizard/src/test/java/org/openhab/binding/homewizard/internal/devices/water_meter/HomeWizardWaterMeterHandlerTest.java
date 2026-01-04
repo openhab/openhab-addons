@@ -81,6 +81,7 @@ public class HomeWizardWaterMeterHandlerTest extends HomeWizardHandlerTest {
             doReturn(DataUtil.fromFile("response-device-information-water-meter.json")).when(handler)
                     .getDeviceInformationData();
             doReturn(DataUtil.fromFile("response-measurement-water-meter.json")).when(handler).getMeasurementData();
+            doReturn(DataUtil.fromFile("response-system.json")).when(handler).getSystemData();
         } catch (Exception e) {
             assertFalse(true);
         }
@@ -99,6 +100,10 @@ public class HomeWizardWaterMeterHandlerTest extends HomeWizardHandlerTest {
         try {
             verify(callback).statusUpdated(eq(thing), argThat(arg -> arg.getStatus().equals(ThingStatus.UNKNOWN)));
             verify(callback).statusUpdated(eq(thing), argThat(arg -> arg.getStatus().equals(ThingStatus.ONLINE)));
+
+            verify(callback).stateUpdated(
+                    getSystemChannelUid(thing, HomeWizardBindingConstants.CHANNEL_SYSTEM_WIFI_SSID),
+                    getState("My Wi-Fi"));
 
             verify(callback).stateUpdated(
                     new ChannelUID(thing.getUID(),

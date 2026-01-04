@@ -34,8 +34,8 @@ public class HomeWizardEnergySocketStatePayloadTest {
 
     @Test
     public void deserializeResponse() throws IOException {
-        HomeWizardEnergySocketStatePayload key = DATA_UTIL.fromJson("response-state-energy-socket.json",
-                HomeWizardEnergySocketStatePayload.class);
+        HomeWizardDeviceStatePayload key = DATA_UTIL.fromJson("response-state-energy-socket.json",
+                HomeWizardDeviceStatePayload.class);
         assertThat(key, is(notNullValue()));
 
         assertThat(key.getPowerOn(), is(true));
@@ -45,8 +45,8 @@ public class HomeWizardEnergySocketStatePayloadTest {
 
     @Test
     public void deserializeResponseEmpty() throws IOException {
-        HomeWizardEnergySocketStatePayload key = DATA_UTIL.fromJson("response-empty.json",
-                HomeWizardEnergySocketStatePayload.class);
+        HomeWizardDeviceStatePayload key = DATA_UTIL.fromJson("response-empty.json",
+                HomeWizardDeviceStatePayload.class);
         assertThat(key, is(notNullValue()));
 
         assertThat(key.getPowerOn(), is(false));

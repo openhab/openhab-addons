@@ -4,6 +4,26 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
+	<channel-group-type id="hw-v1-system-group">
+		<label>System</label>
+		<channels>
+			<channel id="wifi_ssid" typeId="hw-wifi-ssid"/>
+			<channel id="wifi_rssi" typeId="hw-wifi-rssi"/>
+			<channel id="cloud_enabled" typeId="hw-cloud-enabled"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="hw-system-group">
+		<label>System</label>
+		<channels>
+			<channel id="wifi_ssid" typeId="hw-wifi-ssid"/>
+			<channel id="wifi_rssi" typeId="hw-wifi-rssi"/>
+			<channel id="uptime" typeId="hw-uptime"/>
+			<channel id="cloud_enabled" typeId="hw-cloud-enabled"/>
+			<channel id="status_led_brightness" typeId="hw-status-led-brightness"/>
+		</channels>
+	</channel-group-type>
+
 	<channel-group-type id="hw-batteries-group">
 		<label>Batteries</label>
 		<channels>
@@ -38,6 +58,63 @@
 
 		</channels>
 	</channel-group-type>
+
+	<channel-type id="hw-wifi-ssid">
+		<item-type>String</item-type>
+		<label>Wi-Fi SSID</label>
+		<description>
+			This channel provides the SSID of the Wi-Fi network.
+		</description>
+		P
+	</channel-type>
+
+	<channel-type id="hw-wifi-rssi" advanced="true">
+		<item-type unitHint="dB">Number:Dimensionless</item-type>
+		<label>Wi-Fi RSSI</label>
+		<description>
+			This channel provides the signal strength of the Wi-Fi network.
+		</description>
+		<category>QualityOfService</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Level</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="hw-uptime" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Uptime</label>
+		<description>
+			This channel provides the uptime of the device in seconds.
+		</description>
+		<category>Duration</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="hw-cloud-enabled">
+		<item-type>Switch</item-type>
+		<label>Cloud Enabled</label>
+		<description>
+			This channel provides the state of the cloud communication.
+		</description>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="hw-status-led-brightness" advanced="true">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>Status LED Brightness</label>
+		<description>
+			This channel provides the brightness of the status LED in percent.
+		</description>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
+	</channel-type>
 
 	<channel-type id="hw-power">
 		<item-type>Number:Power</item-type>

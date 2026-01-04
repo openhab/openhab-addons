@@ -26,7 +26,7 @@ The binding offers Things, providing access to all the supported HomeWizard devi
 | hwe-p1        | P1 Meter            | Reads total and current energy usage and total gas usage (v1 and v2).                               |
 | hwe-skt       | Energy Socket       | Reads total and current energy usage. Controls power switch, lock, and ring brightness (v1).        |
 | hwe-wtr       | Watermeter          | Reads total and current water usage (v1).                                                           |
-| hwe-kwh       | kWh Meter           | Reads total and current energy usage (v1).                                                          |
+| hwe-kwh       | kWh Meter           | Reads total and current energy usage (v1 and v2).                                                   |
 | hwe-bat       | Plug-In Battery     | Reads total and current energy usage and the current charge (v2).                                   |
 | p1_wifi_meter | Wi-Fi P1 Meter      | [Deprecated] Reads total and current energy usage and total gas usage.                              |
 | energy_socket | Wi-Fi Energy Socket | [Deprecated] Reads total and current energy usage. Controls power switch, lock, and ring brightness.|
@@ -87,6 +87,11 @@ For DSMR5 meters this is generally once per second, for older versions the frequ
 | batteries_target_power    | Number:Power              | The target power consumption/production of the controlled Plug-In Batteries.           | v1, 2.1.0    |
 | batteries_max_consumption | Number:Power              | The maximum allowed consumption power of the controlled Plug-In Batteries.             | v1, 2.1.0    |
 | batteries_max_production  | Number:Power              | The maximum allowed production power of the controlled Plug-In Batteries.              | v1, 2.1.0    |
+| wifi_ssid                 | String                    | The SSID of the Wi-Fi network.                                                         | v1, 2.0.0    |
+| wifi_rssi                 | Number:Dimensionless      | The signal strength of the Wi-Fi network.                                              | v1, 2.0.0    |
+| uptime                    | Number:Time               | The uptime of the device in seconds.                                                   | v1, 2.0.0    |
+| cloud_enabled             | Switch                    | The state of the cloud communication.                                                  | v1, 2.0.0    |
+| status_led_brightness     | Number:Dimensionless      | The brightness of the status LED in percent.                                           | v1, 2.0.0    |
 
 ### HWE-KWH
 
@@ -115,6 +120,11 @@ For DSMR5 meters this is generally once per second, for older versions the frequ
 | batteries_target_power    | Number:Power              | The target power consumption/production of the controlled Plug-In Batteries.           | v1, 2.1.0    |
 | batteries_max_consumption | Number:Power              | The maximum allowed consumption power of the controlled Plug-In Batteries.             | v1, 2.1.0    |
 | batteries_max_production  | Number:Power              | The maximum allowed production power of the controlled Plug-In Batteries.              | v1, 2.1.0    |
+| wifi_ssid                 | String                    | The SSID of the Wi-Fi network.                                                         | v1, 2.0.0    |
+| wifi_rssi                 | Number:Dimensionless      | The signal strength of the Wi-Fi network.                                              | v1, 2.0.0    |
+| uptime                    | Number:Time               | The uptime of the device in seconds.                                                   | v1, 2.0.0    |
+| cloud_enabled             | Switch                    | The state of the cloud communication.                                                  | v1, 2.0.0    |
+| status_led_brightness     | Number:Dimensionless      | The brightness of the status LED in percent.                                           | v1, 2.0.0    |
 
 ### HWE-SKT
 
@@ -132,6 +142,9 @@ For DSMR5 meters this is generally once per second, for older versions the frequ
 | power_switch              | Switch                    | Access to the power switch of the Energy Socket.                                       | v1           |
 | power_lock                | Switch                    | Access to the power lock of the Energy Socket.                                         | v1           |
 | ring_brightness           | Number:Dimensionless      | Access to the brightness of the ring of the Energy Socket.                             | v1           |
+| wifi_ssid                 | String                    | The SSID of the Wi-Fi network.                                                         | v1           |
+| wifi_rssi                 | Number:Dimensionless      | The signal strength of the Wi-Fi network.                                              | v1           |
+| cloud_enabled             | Switch                    | The state of the cloud communication.                                                  | v1           |
 
 ### HWE-BAT
 
@@ -145,6 +158,11 @@ For DSMR5 meters this is generally once per second, for older versions the frequ
 | frequency                 | Number:Frequency          | The active frequency in Hertz.                                                         | 2.0.0        |
 | state_of_charge           | Number:Dimensionless      | Access to the current state of charge in percent.                                      | 2.0.0        |
 | cycles                    | Number:Dimensionless      | Access to the number of battery cycles.                                                | 2.0.0        |
+| wifi_ssid                 | String                    | The SSID of the Wi-Fi network.                                                         | 2.0.0        |
+| wifi_rssi                 | Number:Dimensionless      | The signal strength of the Wi-Fi network.                                              | 2.0.0        |
+| uptime                    | Number:Time               | The uptime of the device in seconds.                                                   | 2.0.0        |
+| cloud_enabled             | Switch                    | The state of the cloud communication.                                                  | 2.0.0        |
+| status_led_brightness     | Number:Dimensionless      | The brightness of the status LED in percent.                                           | 2.0.0        |
 
 ### HWE-WTR
 
@@ -152,6 +170,9 @@ For DSMR5 meters this is generally once per second, for older versions the frequ
 |---------------------------|---------------------------|----------------------------------------------------------------------------------------|--------------|
 | total_liter               | Number:Volume             | Total water usage in cubic meters.                                                     | v1           |
 | active_liter              | Number:VolumetricFlowRate | The active water usage in liters per minute.                                           | v1           |
+| wifi_ssid                 | String                    | The SSID of the Wi-Fi network.                                                         | v1           |
+| wifi_rssi                 | Number:Dimensionless      | The signal strength of the Wi-Fi network.                                              | v1           |
+| cloud_enabled             | Switch                    | The state of the cloud communication.                                                  | v1           |
 
 ## Full Example
 

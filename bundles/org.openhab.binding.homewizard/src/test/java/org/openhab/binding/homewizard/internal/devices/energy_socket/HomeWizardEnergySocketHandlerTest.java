@@ -81,6 +81,11 @@ public class HomeWizardEnergySocketHandlerTest extends HomeWizardHandlerTest {
                 mockChannel(thing.getUID(), HomeWizardBindingConstants.CHANNEL_GROUP_ENERGY,
                         HomeWizardBindingConstants.CHANNEL_RING_BRIGHTNESS),
 
+                mockChannel(thing.getUID(), HomeWizardBindingConstants.CHANNEL_GROUP_SYSTEM,
+                        HomeWizardBindingConstants.CHANNEL_SYSTEM_WIFI_SSID),
+                mockChannel(thing.getUID(), HomeWizardBindingConstants.CHANNEL_GROUP_SYSTEM,
+                        HomeWizardBindingConstants.CHANNEL_SYSTEM_CLOUD_ENABLED),
+
                 mockChannel(thing.getUID(), HomeWizardBindingConstants.LEGACY_CHANNEL_ENERGY_IMPORT_T1),
                 mockChannel(thing.getUID(), HomeWizardBindingConstants.LEGACY_CHANNEL_ENERGY_EXPORT_T1),
                 mockChannel(thing.getUID(), HomeWizardBindingConstants.LEGACY_CHANNEL_POWER),
@@ -100,6 +105,7 @@ public class HomeWizardEnergySocketHandlerTest extends HomeWizardHandlerTest {
                     .getDeviceInformationData();
             doReturn(DataUtil.fromFile("response-measurement-energy-socket.json")).when(handler).getMeasurementData();
             doReturn(DataUtil.fromFile("response-state-energy-socket.json")).when(handler).getStateData();
+            doReturn(DataUtil.fromFile("response-system.json")).when(handler).getSystemData();
         } catch (Exception e) {
             assertFalse(true);
         }
@@ -146,6 +152,28 @@ public class HomeWizardEnergySocketHandlerTest extends HomeWizardHandlerTest {
             verify(callback)
                     .stateUpdated(new ChannelUID(thing.getUID(), HomeWizardBindingConstants.CHANNEL_GROUP_SKT_CONTROL
                             + "#" + HomeWizardBindingConstants.CHANNEL_RING_BRIGHTNESS), getState(100.0));
+            verify(callback).stateUpdated(
+                    getSystemChannelUid(thing, HomeWizardBindingConstants.CHANNEL_SYSTEM_WIFI_SSID),
+                    getState("My Wi-Fi"));
+            verify(callback).stateUpdated(
+                    getSystemChannelUid(thing, HomeWizardBindingConstants.CHANNEL_SYSTEM_CLOUD_ENABLED),
+                    getState(true));
+
+        } finally {
+            handler.dispose();
+        }
+    }
+
+    // @Test
+    public void testUpdateSystemChannels() {
+        final Thing thing = mockThing(false);
+        final ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
+        final HomeWizardEnergySocketHandlerMock handler = createAndInitHandler(callback, thing);
+
+        try {
+            verify(callback).stateUpdated(
+                    getSystemChannelUid(thing, HomeWizardBindingConstants.CHANNEL_SYSTEM_CLOUD_ENABLED),
+                    getState("ON"));
 
         } finally {
             handler.dispose();

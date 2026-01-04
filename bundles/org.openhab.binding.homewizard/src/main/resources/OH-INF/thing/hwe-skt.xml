@@ -12,9 +12,10 @@
 		<channel-groups>
 			<channel-group id="energy" typeId="skt-energy-group"/>
 			<channel-group id="control" typeId="skt-control-group"/>
+			<channel-group id="system" typeId="hw-v1-system-group"/>
 		</channel-groups>
 		<properties>
-			<property name="thingTypeVersion">1</property>
+			<property name="thingTypeVersion">2</property>
 		</properties>
 
 		<config-description-ref uri="thing-type:homewizard:device"/>

@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.homewizard.internal.devices.water_meter;
+package org.openhab.binding.homewizard.internal.devices;
 
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -23,38 +23,38 @@ import org.junit.jupiter.api.Test;
 import org.openhab.binding.homewizard.internal.dto.DataUtil;
 
 /**
- * Tests deserialization of HomeWizard Device Information API responses from JSON.
+ * Tests deserialization of HomeWizard API responses from JSON.
  *
  * @author Gearrel Welvaart - Initial contribution
+ *
+ *
  */
 @NonNullByDefault
-public class HomeWizardWaterMeterMeasurementPayloadTest {
+public class HomeWizardSystemPayloadTest {
 
     private static final DataUtil DATA_UTIL = new DataUtil();
 
     @Test
     public void deserializeResponse() throws IOException {
-        HomeWizardWaterMeterMeasurementPayload key = DATA_UTIL.fromJson("response-measurement-water-meter.json",
-                HomeWizardWaterMeterMeasurementPayload.class);
+        HomeWizardSystemPayload key = DATA_UTIL.fromJson("response-system.json", HomeWizardSystemPayload.class);
         assertThat(key, is(notNullValue()));
 
         assertThat(key.getWifiSsid(), is("My Wi-Fi"));
-        assertThat(key.getWifiRssi(), is(-58));
-
-        assertThat(key.getActiveLiter(), is(7.2));
-        assertThat(key.getTotalLiter(), is(123.456));
+        assertThat(key.getWifiRssi(), is(-77));
+        assertThat(key.isCloudEnabled(), is(true));
+        assertThat(key.getUptime(), is(356));
+        assertThat(key.getStatusLedBrightness(), is(100));
     }
 
     @Test
     public void deserializeResponseEmpty() throws IOException {
-        HomeWizardWaterMeterMeasurementPayload key = DATA_UTIL.fromJson("response-empty.json",
-                HomeWizardWaterMeterMeasurementPayload.class);
+        HomeWizardSystemPayload key = DATA_UTIL.fromJson("response-empty.json", HomeWizardSystemPayload.class);
         assertThat(key, is(notNullValue()));
 
         assertThat(key.getWifiSsid(), is(""));
-        assertThat(key.getWifiRssi(), is(-100));
-
-        assertThat(key.getActiveLiter(), is(0.0));
-        assertThat(key.getTotalLiter(), is(0.0));
+        assertThat(key.getWifiRssi(), is(0));
+        assertThat(key.isCloudEnabled(), is(false));
+        assertThat(key.getUptime(), is(0));
+        assertThat(key.getStatusLedBrightness(), is(0));
     }
 }
