@@ -20,6 +20,6 @@ public enum Mode {
     SECONDARY_AREA,
     HOME,
     DEMO,
-    UNKNOWN,
-    POI
+    POI,
+    UNKNOWN
 }
