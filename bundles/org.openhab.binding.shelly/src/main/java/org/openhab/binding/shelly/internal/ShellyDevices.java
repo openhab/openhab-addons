@@ -137,6 +137,7 @@ public class ShellyDevices {
     public static final String SHELLYDT_PRO3EM_2 = "SPEM-003CEBEU120";
     public static final String SHELLYDT_PRO3EM3CT63 = "SPEM-003CEBEU63";
     public static final String SHELLYDT_PRO3EM400 = "SPEM-003CEBEU400";
+    public static final String SHELLYDT_PRORGBWPM = "SPDC-0D5PE16EU";
 
     // Shelly Plus Mini Series
     public static final String SHELLYDT_MINI_1 = "SNSW-001X8EU";
@@ -274,6 +275,7 @@ public class ShellyDevices {
     public static final ThingTypeUID THING_TYPE_SHELLYPRO3EM = new ThingTypeUID(BINDING_ID, "shellypro3em");
     public static final ThingTypeUID THING_TYPE_SHELLYPRO3EM63 = new ThingTypeUID(BINDING_ID, "shellypro3em63");
     public static final ThingTypeUID THING_TYPE_SHELLYPRO3EM400 = new ThingTypeUID(BINDING_ID, "shellypro3em400");
+    public static final ThingTypeUID THING_TYPE_SHELLYPRORGBWPM = new ThingTypeUID(BINDING_ID, "shellyprorgbwpm");
 
     // Shelly Blu series
     public static final ThingTypeUID THING_TYPE_SHELLYBLUBUTTON1 = new ThingTypeUID(BINDING_ID, "shellyblubutton");
@@ -302,7 +304,8 @@ public class ShellyDevices {
 
     // RGBW2 devices
     public static final Set<ThingTypeUID> GROUP_RGBW2_THING_TYPES = Set.of( //
-            THING_TYPE_SHELLYRGBW2_COLOR, THING_TYPE_SHELLYRGBW2_WHITE, THING_TYPE_SHELLYPLUSRGBWPM);
+            THING_TYPE_SHELLYRGBW2_COLOR, THING_TYPE_SHELLYRGBW2_WHITE, THING_TYPE_SHELLYPLUSRGBWPM,
+            THING_TYPE_SHELLYPRORGBWPM);
 
     // All Light Bulbs / RGBW devices
     public static final Set<ThingTypeUID> GROUP_LIGHT_THING_TYPES = Stream
@@ -474,6 +477,7 @@ public class ShellyDevices {
             Map.entry(SHELLYDT_PRO3EM_2, THING_TYPE_SHELLYPRO3EM), //
             Map.entry(SHELLYDT_PRO3EM3CT63, THING_TYPE_SHELLYPRO3EM63), //
             Map.entry(SHELLYDT_PRO3EM400, THING_TYPE_SHELLYPRO3EM400), //
+            Map.entry(SHELLYDT_PRORGBWPM, THING_TYPE_SHELLYPRORGBWPM), //
 
             // BLU Series
             Map.entry(SHELLYDT_BLUBUTTON1, THING_TYPE_SHELLYBLUBUTTON1),
@@ -646,6 +650,7 @@ public class ShellyDevices {
             Map.entry("shellypro3em63", THING_TYPE_SHELLYPRO3EM63), //
             Map.entry("shellypro3em3ct63", THING_TYPE_SHELLYPRO3EM63), //
             Map.entry("shellypro3em400", THING_TYPE_SHELLYPRO3EM400),
+            Map.entry("shellyprorgbwpm", THING_TYPE_SHELLYPRORGBWPM), //
 
             // Shelly BLU Series
             Map.entry("shellyblubutton", THING_TYPE_SHELLYBLUBUTTON1), //

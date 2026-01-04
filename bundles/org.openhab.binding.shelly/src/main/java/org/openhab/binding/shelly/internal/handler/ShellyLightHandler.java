@@ -16,7 +16,6 @@ import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
 import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
-import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -24,7 +23,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.shelly.internal.api.ShellyApiException;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
-import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsRgbwLight;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsStatus;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyShortLightStatus;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusLight;
@@ -331,75 +329,8 @@ public class ShellyLightHandler extends ShellyBaseHandler {
         int lightId = 0;
         boolean updated = false;
         for (ShellyStatusLightChannel light : status.lights) {
-            Integer channelId = lightId + 1;
-            String controlGroup = buildControlGroupName(profile, channelId);
             createLightChannels(light, lightId);
-            // The bulb has a combined channel set for color or white mode
-            // The RGBW2 uses 2 different thing types: color=1 channel, white=4 channel
-            if (profile.isBulb) {
-                updateChannel(CHANNEL_GROUP_LIGHT_CONTROL, CHANNEL_LIGHT_COLOR_MODE, getOnOff(profile.inColor));
-            }
-
-            ShellyColorUtils col = getCurrentColors(lightId);
-            col.power = getOnOff(light.ison);
-
-            List<ShellySettingsRgbwLight> lights = profile.settings.lights;
-            if (lights != null) {
-                // Channel control/timer
-                ShellySettingsRgbwLight ls = lights.get(lightId);
-                updated |= updateChannel(controlGroup, CHANNEL_TIMER_AUTOON,
-                        toQuantityType(getDouble(ls.autoOn), Units.SECOND));
-                updated |= updateChannel(controlGroup, CHANNEL_TIMER_AUTOOFF,
-                        toQuantityType(getDouble(ls.autoOff), Units.SECOND));
-                updated |= updateChannel(controlGroup, CHANNEL_LIGHT_POWER, col.power);
-                updated |= updateChannel(controlGroup, CHANNEL_TIMER_ACTIVE, getOnOff(light.hasTimer));
-                updated |= updateChannel(controlGroup, CHANNEL_LIGHT_POWER, col.power);
-            }
-
-            if (getBool(light.overpower)) {
-                postEvent(ALARM_TYPE_OVERPOWER, false);
-            }
-
-            if (profile.inColor || (profile.isGen2 && profile.isRGBW2)) {
-                logger.trace("{}: update color settings", thingName);
-                col.setRGBW(getInteger(light.red), getInteger(light.green), getInteger(light.blue),
-                        getInteger(light.white));
-                col.setGain(getInteger(light.gain));
-                col.setEffect(getInteger(light.effect));
-
-                String colorGroup = CHANNEL_GROUP_COLOR_CONTROL;
-                logger.trace("{}: Update channels for group {}: RGBW={}/{}/{}, in %:{}%/{}%/{}%, white={}%, gain={}%",
-                        thingName, colorGroup, col.red, col.green, col.blue, col.percentRed, col.percentGreen,
-                        col.percentBlue, col.percentWhite, col.percentGain);
-                updated |= updateChannel(colorGroup, CHANNEL_COLOR_RED, col.percentRed);
-                updated |= updateChannel(colorGroup, CHANNEL_COLOR_GREEN, col.percentGreen);
-                updated |= updateChannel(colorGroup, CHANNEL_COLOR_BLUE, col.percentBlue);
-                updated |= updateChannel(colorGroup, CHANNEL_COLOR_WHITE, col.percentWhite);
-                updated |= updateChannel(colorGroup, CHANNEL_COLOR_GAIN, col.percentGain);
-                updated |= updateChannel(colorGroup, CHANNEL_COLOR_EFFECT, getDecimal(col.effect));
-                setFullColor(colorGroup, col);
-
-                logger.trace("{}: update {}.color picker", thingName, colorGroup);
-                updated |= updateChannel(colorGroup, CHANNEL_COLOR_PICKER, col.toHSB());
-            }
-
-            if ((!profile.inColor && !profile.isGen2) || profile.isBulb) {
-                String whiteGroup = buildWhiteGroupName(profile, channelId);
-                col.setBrightness(getInteger(light.brightness));
-                updated |= updateChannel(whiteGroup, CHANNEL_BRIGHTNESS + "$Switch", col.power);
-                updated |= updateChannel(whiteGroup, CHANNEL_BRIGHTNESS + "$Value",
-                        toQuantityType(col.power == OnOffType.ON ? col.percentBrightness.doubleValue() : 0, DIGITS_NONE,
-                                Units.PERCENT));
-
-                if ((profile.isBulb || profile.isDuo) && (light.temp != null)) {
-                    col.setTemp(getInteger(light.temp));
-                    updated |= updateChannel(whiteGroup, CHANNEL_COLOR_TEMP, col.percentTemp);
-                    logger.trace("{}: update {}.color picker", thingName, whiteGroup);
-                    updated |= updateChannel(whiteGroup, CHANNEL_COLOR_PICKER, col.toHSB());
-                }
-            }
-
-            // continue with next light
+            updated |= ShellyComponents.updateLights(this, light, lightId, getCurrentColors(lightId));
             lightId++;
         }
         return updated;
