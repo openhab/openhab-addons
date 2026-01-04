@@ -76,8 +76,8 @@ public class HomekitBridgedAccessoryDiscoveryService
             return;
         }
 
-        TranslationProvider i18n = ((HomekitBridgeHandler) thingHandler).getTranslationProvider();
-        Bundle bundle = ((HomekitBridgeHandler) thingHandler).getBundle();
+        TranslationProvider i18n = thingHandler.getTranslationProvider();
+        Bundle bundle = thingHandler.getBundle();
 
         accessories.forEach(accessory -> {
             if (accessory.aid instanceof Long aid && accessory.services != null) {
