@@ -868,12 +868,4 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
      * Subclasses MUST override this to perform any extra processing required.
      */
     protected abstract void initializeNotReadyThings();
-
-    public TranslationProvider getTranslationProvider() {
-        return i18nProvider;
-    }
-
-    public Bundle getBundle() {
-        return bundle;
-    }
 }

@@ -60,8 +60,6 @@ public class HomekitBindingConstants {
     // labels for things e.g. 'Living Room Light (11:22:33:44:55:66-1234)'
     public static final String THING_LABEL_FMT = "%s (%s)";
 
-    public static final String HARDWARE_EMBEDDED_THING_LABEL = "hardware-embedded-accessory.label";
-
     // configuration parameters
     public static final String CONFIG_HTTP_HOST_HEADER = "httpHostHeader";
     public static final String CONFIG_IP_ADDRESS = "ipAddress";
