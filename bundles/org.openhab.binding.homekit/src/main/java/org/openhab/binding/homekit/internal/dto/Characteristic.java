@@ -79,13 +79,17 @@ public class Characteristic {
      * whereas characteristics with dynamic values return a {@code ChannelDefinition} record.
      * Examines the characteristic type, data format, permissions, and other properties to determine the appropriate
      * Content type and, where relevant, the channel type, item type, tags, category, and attributes. In the case of a
-     * 'ChannelDefinition' the method also builds a ChannelType and registers it with the provided HomekitTypeProvider.
+     * 'ChannelDefinition' the method also builds a ChannelType and if a HomekitTypeProvider is provided then registers
+     * it with that provider.
      *
      * @param thingUID the ThingUID to associate the ChannelDefinition with.
-     * @param typeProvider the HomekitTypeProvider to register the channel type with.
+     * @param typeProvider the HomekitTypeProvider to register the channel type with; may be null.
+     * @param i18nProvider the TranslationProvider for localizing option labels.
+     * @param bundle the Bundle for localization context.
+     * 
      * @return the {@link Content} or null if it cannot be mapped.
      */
-    public @Nullable Content getContent(ThingUID thingUID, HomekitTypeProvider typeProvider,
+    public @Nullable Content getContent(ThingUID thingUID, @Nullable HomekitTypeProvider typeProvider,
             TranslationProvider i18nProvider, Bundle bundle) {
         CharacteristicType characteristicType = getCharacteristicType();
         DataFormatType dataFormatType;
@@ -833,9 +837,10 @@ public class Characteristic {
         String channelTypeLabel = characteristicType.toString();
 
         if (!isStateChannel) {
-            ChannelType channelType = ChannelTypeBuilder.trigger(channelTypeUid, channelTypeLabel).build();
-            typeProvider.putChannelType(channelType);
-
+            if (typeProvider != null) {
+                ChannelType channelType = ChannelTypeBuilder.trigger(channelTypeUid, channelTypeLabel).build();
+                typeProvider.putChannelType(channelType);
+            }
         } else {
             if (itemType == null) {
                 return null;
@@ -911,8 +916,10 @@ public class Characteristic {
             }
 
             // persist the (state) channel TYPE
-            ChannelType channelType = chanTypBldr.build();
-            typeProvider.putChannelType(channelType);
+            if (typeProvider != null) {
+                ChannelType channelType = chanTypBldr.build();
+                typeProvider.putChannelType(channelType);
+            }
         }
 
         /*
