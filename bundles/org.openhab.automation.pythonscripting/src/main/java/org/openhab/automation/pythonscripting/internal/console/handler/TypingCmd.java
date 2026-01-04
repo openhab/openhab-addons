@@ -84,7 +84,7 @@ public class TypingCmd {
         dumpInit(outputPath.toString(), fileContainerMap);
 
         logger.info(bundleClassMap.size() + " bundle and " + reflectionClassMap.size() + " java classes processed");
-        logger.info("Total of " + (bundleClassMap.size() + reflectionClassMap.size()) + " type hint files create in '"
+        logger.info("Total of " + (bundleClassMap.size() + reflectionClassMap.size()) + " type hint files created in '"
                 + outputPath + "'");
     }
 

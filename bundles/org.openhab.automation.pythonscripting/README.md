@@ -66,6 +66,10 @@ Web based config dialog can be found via Web UI => Settings / Add-on Settings / 
 
 Additionally, you can configure the Add-on via a config file `/openhab/services/pythonscripting.cfg` like below.
 
+::: tip Configuration note
+If you use the marketplace version of this Add-on, it is necessary to use the config file. OpenHAB has a bug which prevents the web based config dialog to work correctly for `kar` file based Add-ons.
+:::
+
 ```text
 # Use scope and import wrapper
 #
@@ -123,23 +127,19 @@ Additionally, you can configure the Add-on via a config file `/openhab/services/
 #org.openhab.automation.pythonscripting:jythonEmulation = false
 ```
 
-::: tip Configuration note
-If you use the marketplace version of this Add-on, it is necessary to use the config file. OpenHAB has a bug which prevents the web based config dialog to work correctly for `kar` file based Add-ons.
-:::
-
 ### Console
 
 The [openHAB Console](https://www.openhab.org/docs/administration/console.html) provides access to additional features of these Add-on.
 
 1. `pythonscripting info` is showing you additional data like version numbers, activated features and used path locations<br/><br/>![Pythonscripting info](doc/console_pythonscripting_info.png)
 
-2. `pythonscripting console` provides an interactive python console where you can try live python features<br/><br/>![Pythonscripting console](doc/console_pythonscripting_console.png)
+1. `pythonscripting console` provides an interactive python console where you can try live python features<br/><br/>![Pythonscripting console](doc/console_pythonscripting_console.png)
 
-3. `pythonscripting update` allows you to check, list, update or downgrade your helper lib<br/><br/>![Pythonscripting update](doc/console_pythonscripting_update.png)
+1. `pythonscripting update` allows you to check, list, update or downgrade your helper lib<br/><br/>![Pythonscripting update](doc/console_pythonscripting_update.png)
 
-4. `pythonscripting pip` allows you check, install or remove external python modules.<br/><br/>Check [pip usage](#using-pip-to-install-external-modules) for details
+1. `pythonscripting pip` allows you check, install or remove external python modules.<br/><br/>Check [pip usage](#using-pip-to-install-external-modules) for details
 
-5. `pythonscripting typing` generates python type hint stub files.<br/><br/>Check [python autocompletion](#enable-pyhton-autocompletion) for details
+1. `pythonscripting typing` generates python type hint stub files.<br/><br/>Check [python autocompletion](#enable-python-autocompletion) for details
 
 ### Enabling VEnv
 
@@ -152,7 +152,7 @@ VEnv based python runtimes are optional, but needed to provide support for addit
 
 These values are needed during the next step
 
-2. Download graalpy-community and create venv
+1. Download graalpy-community and create venv
 
     ::: tip Choose the correct GraalVM version
     Ensure that you include the right version of your installed GraalVM in the download command. The version must match the version provided by openHAB.
@@ -168,9 +168,9 @@ These values are needed during the next step
     ./bin/graalpy -m venv /openhab/userdata/cache/org.openhab.automation.pythonscripting/venv
     ```
 
-3. Install 'patchelf' which is needed for native module support in graalpy (optional).
+1. Install 'patchelf' which is needed for native module support in graalpy (optional).
 
-    ```
+    ```shell
     apt update
     apt-get install patchelf
     # zypper install patchelf
@@ -191,9 +191,9 @@ As first, you must enable [VEnv](#enabling-venv). After this is enabled, you can
 
 1. Using the pythonscripting console<br/><br/>![Pythonscripting pip install](doc/console_pythonscripting_pip_install.png)![Pythonscripting pip install](doc/console_pythonscripting_pip_list.png)![Pythonscripting pip install](doc/console_pythonscripting_pip_show.png)
 
-2. Using venv pip on your host system
+1. Using venv pip on your host system
 
-    ```
+    ```shell
     /openhab/userdata/cache/org.openhab.automation.pythonscripting/venv/bin/pip install requests
     ```
 
@@ -201,7 +201,7 @@ As first, you must enable [VEnv](#enabling-venv). After this is enabled, you can
 
 Before you can enable autocompletion, you must generate the required type hint stub files. Login into [openHAB console](https://www.openhab.org/docs/administration/console.html) and run
 
-```
+```shell
 pythonscripting typing
 ```
 
@@ -272,14 +272,6 @@ This could either a permission/owner problem or a problem during deployment of t
 You should check that this file exists and it is readable by openHAB.
 You should also check your logs for a message related to the helper lib deployment by just grep for "helper lib".
 
-### SystemError, Option python.NativeModules is set to 'true' and a second GraalPy context ...
-
-```log
-SystemError, Option python.NativeModules is set to 'true' and a second GraalPy context attempted to load a native module '<xyz>' from path '<lib_path>.so'. At least one context in this process runs with 'IsolateNativeModules' set to false. Depending on the order of context creation, this means some contexts in the process cannot use native module, all other contexts must fall back and set python.NativeModules to 'false' to run native extensions in LLVM mode. This is recommended only for extensions included in the Python standard library. Running a 3rd party extension in LLVM mode requires a custom build of the extension and is generally discouraged due to compatibility reasons.
-```
-
-These errors can occur if you use a native library in your external module but forgot to enable "native modules". Check the [Add-on configuration](#configuration) and enable "native modules".
-
 ## Limitations
 
-- GraalPy can't handle arguments in constructors of Java objects. Means you can't instantiate a Java object in Python with a parameter. https://github.com/oracle/graalpython/issues/367
+- GraalPy can't handle arguments in constructors of Java objects. Means you can't instantiate a Java object in Python with a parameter. <https://github.com/oracle/graalpython/issues/367>
