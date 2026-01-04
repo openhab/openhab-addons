@@ -23,24 +23,21 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public final class MockApiData {
-    public static final String TOKEN_RESPONSE = """
-            {
-                "access_token": "test-access-token",
-                "refresh_token": "test-refresh-token",
-                "expires_in": "3600",
-                "username": "test@example.com"
-            }
-            """;
-
+    public static final String TOKEN_RESPONSE_CA;
+    public static final String TOKEN_RESPONSE_US;
     public static final String ENROLLMENT_RESPONSE;
-    public static final String VEHICLE_STATUS_RESPONSE;
+    public static final String VEHICLE_STATUS_RESPONSE_CA;
+    public static final String VEHICLE_STATUS_RESPONSE_US;
     public static final String TEST_USERNAME = "test@example.com";
     public static final String TEST_PASSWORD = "testpassword";
 
     static {
         try {
+            TOKEN_RESPONSE_CA = loadResource("/login-response-ca.json");
+            TOKEN_RESPONSE_US = loadResource("/login-response-us.json");
             ENROLLMENT_RESPONSE = loadResource("/enrollment-details.json");
-            VEHICLE_STATUS_RESPONSE = loadResource("/vehicle-status.json");
+            VEHICLE_STATUS_RESPONSE_US = loadResource("/vehicle-status-us.json");
+            VEHICLE_STATUS_RESPONSE_CA = loadResource("/vehicle-status-ca.json");
         } catch (final IOException e) {
             throw new UncheckedIOException(e);
         }
