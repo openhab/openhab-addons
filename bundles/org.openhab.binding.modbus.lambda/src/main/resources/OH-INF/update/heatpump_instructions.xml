@@ -20,7 +20,7 @@
 			</add-channel>
 			<remove-channel id="heatpump-request-type"/>
 			<add-channel id="heat-pump-request-type">
-				<type>typeId="heat-pump:heat-pump-request-type"</type>
+				<type>modbus:heat-pump-request-type</type>
 				<label>Requested Type</label>
 			</add-channel>
 			<remove-channel id="heatpump-request-relais-state"/>
