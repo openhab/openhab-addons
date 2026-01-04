@@ -1047,9 +1047,9 @@ class TestChannelCreationForNetatmo {
         Bundle bundle = mock(Bundle.class);
         ThingUID uid = new ThingUID("netatmo", "test");
 
-        boolean hasChannelDefinition = (Optional.ofNullable(accessory.services).stream().flatMap(List::stream)
+        boolean hasChannelDefinition = Optional.ofNullable(accessory.services).stream().flatMap(List::stream)
                 .flatMap(service -> Optional.ofNullable(service.characteristics).stream()).flatMap(List::stream)
-                .map(characteristic -> characteristic.getContent(uid, null, i18n, bundle)))
+                .map(characteristic -> characteristic.getContent(uid, null, i18n, bundle))
                 .anyMatch(Content.ChannelDefinition.class::isInstance);
 
         assertTrue(hasChannelDefinition);
