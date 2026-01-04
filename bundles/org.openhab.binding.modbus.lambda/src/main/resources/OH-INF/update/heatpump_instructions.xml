@@ -6,7 +6,7 @@
 	<thing-type uid="modbus:heat-pump">
 		<instruction-set targetVersion="1">
 			<add-channel id="heat-pump-vdae-swap">
-				<type>typeId="heat-pump:heat-pump-vdae-swap"</type>
+				<type>modbus:heat-pump-vdae-swap</type>
 				<label>Heatpump VdA E since last reset (DWord swapped)</label>
 			</add-channel>
 			<add-channel id="heat-pump-vdaq-swap">
