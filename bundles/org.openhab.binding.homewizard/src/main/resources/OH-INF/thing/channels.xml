@@ -65,7 +65,6 @@
 		<description>
 			This channel provides the SSID of the Wi-Fi network.
 		</description>
-		P
 	</channel-type>
 
 	<channel-type id="hw-wifi-rssi" advanced="true">
