@@ -79,8 +79,8 @@ public class ViessmannBindingConstants {
             entry("gas-cubicMeter", SIUnits.CUBIC_METRE.toString()), //
             entry("bar", Units.BAR.toString()), //
             entry("ampere", Units.AMPERE.toString()), //
-            entry("revolutionsPerSecond", Units.HERTZ.toString()), //
-            entry("milliAmpere", MetricPrefix.MILLI(Units.AMPERE).toString()));
+            entry("milliAmpere", MetricPrefix.MILLI(Units.AMPERE).toString()), //
+            entry("revolutionsPerSecond", Units.HERTZ.toString()));
 
     public static final Map<String, String> SUB_CHANNEL_TYPE_MAP = Map.of( //
             "cubicMeter", "volume", //
