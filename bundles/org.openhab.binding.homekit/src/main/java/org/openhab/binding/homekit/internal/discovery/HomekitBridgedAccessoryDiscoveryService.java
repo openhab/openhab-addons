@@ -74,8 +74,8 @@ public class HomekitBridgedAccessoryDiscoveryService
         }
 
         ThingUID bridgeUid = handler.getThing().getUID();
-        TranslationProvider i18n = handler.i18nProvider;
-        Bundle bundle = handler.bundle;
+        TranslationProvider i18n = handler.getTranslationProvider();
+        Bundle bundle = handler.getBundle();
 
         handler.getAccessories().values().forEach(accessory -> {
             if (accessory.aid instanceof Long aid && accessory.services != null) {

@@ -114,8 +114,8 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
     protected final Set<Thing> notReadyThings = ConcurrentHashMap.newKeySet();
 
     protected final HomekitTypeProvider typeProvider;
-    public final TranslationProvider i18nProvider;
-    public final Bundle bundle;
+    protected final TranslationProvider i18nProvider;
+    protected final Bundle bundle;
 
     protected boolean isBridgedAccessory = false;
     protected final Throttler throttler = new Throttler();
@@ -868,4 +868,12 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
      * Subclasses MUST override this to perform any extra processing required.
      */
     protected abstract void initializeNotReadyThings();
+
+    public TranslationProvider getTranslationProvider() {
+        return i18nProvider;
+    }
+
+    public Bundle getBundle() {
+        return bundle;
+    }
 }

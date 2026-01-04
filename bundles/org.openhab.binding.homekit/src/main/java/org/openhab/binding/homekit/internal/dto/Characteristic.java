@@ -86,7 +86,6 @@ public class Characteristic {
      * @param typeProvider the HomekitTypeProvider to register the channel type with; may be null.
      * @param i18nProvider the TranslationProvider for localizing option labels.
      * @param bundle the Bundle for localization context.
-     * 
      * @return the {@link Content} or null if it cannot be mapped.
      */
     public @Nullable Content getContent(ThingUID thingUID, @Nullable HomekitTypeProvider typeProvider,
