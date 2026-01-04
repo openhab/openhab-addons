@@ -15,7 +15,7 @@
 			</add-channel>
 			<remove-channel id="heatpump-request-password"/>
 			<add-channel id="heat-pump-request-password">
-				<type>typeId="heat-pump:heat-pump-request-password"</type>
+				<type>modbus:heat-pump-request-password</type>
 				<label>Requested Password</label>
 			</add-channel>
 			<remove-channel id="heatpump-request-type"/>
