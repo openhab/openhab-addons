@@ -44,8 +44,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link SmartThingsHandlerFactory} is responsible for creating things and thing
- * handlers.
+ * The {@link SmartThingsHandlerFactory} is responsible for creating things and thing handlers.
  *
  * @author Bob Raker - Initial contribution
  */
