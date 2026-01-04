@@ -210,22 +210,9 @@ public class SmartThingsDiscoveryService extends AbstractDiscoveryService
         removeOlderResults(getTimestampOfLastScan());
     }
 
-    /**
-     * Starts background scanning for attached devices.
-     */
-    @Override
-    protected void startBackgroundDiscovery() {
-    }
-
-    /**
-     * Stops background scanning for attached devices.
-     */
-    @Override
-    protected void stopBackgroundDiscovery() {
-    }
-
     @Override
     public void deactivate() {
+        super.deactivate();
     }
 
     @Override
