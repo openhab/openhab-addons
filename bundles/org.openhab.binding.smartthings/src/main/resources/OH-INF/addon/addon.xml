@@ -4,7 +4,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/addon/v1.0.0 https://openhab.org/schemas/addon-1.0.0.xsd">
 
 	<type>binding</type>
-	<name>Samsung SmartThings Binding</name>
-	<description>This is the binding for the Samsung SmartThings hub.</description>
-	<connection>local</connection>
+	<name>SmartThings Binding</name>
+	<description>This is the binding for Samsung SmartThings.</description>
+	<connection>cloud</connection>
 </addon:addon>
