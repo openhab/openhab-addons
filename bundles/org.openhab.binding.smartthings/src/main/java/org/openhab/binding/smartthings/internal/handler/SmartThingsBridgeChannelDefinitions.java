@@ -46,38 +46,38 @@ public class SmartThingsBridgeChannelDefinitions {
     }
 
     public class ChannelProperty {
-        private @Nullable String openhabChannelType;
+        private @Nullable String channelType;
         private @Nullable String uOm;
         private @Nullable SemanticTag semanticPoint;
         private @Nullable SemanticTag semanticProperty;
 
         public ChannelProperty(String openhabChannelType) {
-            this.openhabChannelType = openhabChannelType;
+            this.channelType = openhabChannelType;
             this.uOm = null;
         }
 
         public ChannelProperty(@Nullable String openhabChannelType, @Nullable String uOm) {
-            this.openhabChannelType = openhabChannelType;
+            this.channelType = openhabChannelType;
             this.uOm = uOm;
         }
 
         public ChannelProperty(@Nullable String openhabChannelType, @Nullable String uOm,
                 @Nullable SemanticTag semanticPoint, @Nullable SemanticTag semanticProperty) {
-            this.openhabChannelType = openhabChannelType;
+            this.channelType = openhabChannelType;
             this.uOm = uOm;
             this.semanticPoint = semanticPoint;
             this.semanticProperty = semanticProperty;
         }
 
         public ChannelProperty(@Nullable SemanticTag semanticPoint, @Nullable SemanticTag semanticProperty) {
-            this.openhabChannelType = null;
+            this.channelType = null;
             this.uOm = null;
             this.semanticPoint = semanticPoint;
             this.semanticProperty = semanticProperty;
         }
 
-        public @Nullable String getOpenhabChannelType() {
-            return this.openhabChannelType;
+        public @Nullable String getChannelType() {
+            return this.channelType;
         }
 
         public @Nullable String getUoM() {
