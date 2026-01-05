@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.astro.internal.model;
 
-import static org.openhab.core.library.unit.MetricPrefix.KILO;
 import static org.openhab.core.library.unit.SIUnits.METRE;
 
 import java.time.Instant;
@@ -60,6 +59,6 @@ public class MoonDistance {
      * Returns the distance in kilometers.
      */
     public @Nullable QuantityType<Length> getDistance() {
-        return Double.isNaN(distance) ? null : new QuantityType<>(distance, KILO(METRE));
+        return Double.isNaN(distance) ? null : new QuantityType<>(distance, METRE);
     }
 }

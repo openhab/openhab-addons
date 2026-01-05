@@ -13,6 +13,8 @@
 package org.openhab.binding.astro.internal.calc;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.openhab.core.library.unit.MetricPrefix.KILO;
+import static org.openhab.core.library.unit.SIUnits.METRE;
 
 import java.time.Instant;
 import java.util.Calendar;
@@ -88,7 +90,9 @@ public class MoonCalcTest {
         // expected result from haevens-above.com is 406,391 km @ 04 March 2019 12:27
         var apogeeDistance = moon.getApogee().getDistance();
         assertNotNull(apogeeDistance);
-        assertEquals(406391, apogeeDistance.doubleValue(), ACCURACY_IN_KILOMETRES);
+        var kmDistance = apogeeDistance.toUnit(KILO(METRE));
+        assertNotNull(kmDistance);
+        assertEquals(406391, kmDistance.doubleValue(), ACCURACY_IN_KILOMETRES);
         Instant apogeeDate = moon.getApogee().getDate();
         assertNotNull(apogeeDate);
         assertEquals(MoonCalcTest.newCalendar(2019, Calendar.MARCH, 4, 12, 27, TIME_ZONE).getTimeInMillis(),
@@ -103,7 +107,9 @@ public class MoonCalcTest {
         // expected result from haevens-above.com is 359,377 km @ 19 February 2019 20:44
         var perigeeDistance = moon.getPerigee().getDistance();
         assertNotNull(perigeeDistance);
-        assertEquals(359377, perigeeDistance.doubleValue(), ACCURACY_IN_KILOMETRES);
+        var kmDistance = perigeeDistance.toUnit(KILO(METRE));
+        assertNotNull(kmDistance);
+        assertEquals(359377, kmDistance.doubleValue(), ACCURACY_IN_KILOMETRES);
 
         Instant perigeeDate = moon.getPerigee().getDate();
         assertNotNull(perigeeDate);
@@ -157,7 +163,9 @@ public class MoonCalcTest {
         // expected result from haevens-above.com is 392612 km
         var currentDistance = moon.getDistance().getDistance();
         assertNotNull(currentDistance);
-        assertEquals(392612, currentDistance.doubleValue(), ACCURACY_IN_KILOMETRES);
+        var kmDistance = currentDistance.toUnit(KILO(METRE));
+        assertNotNull(kmDistance);
+        assertEquals(392612, kmDistance.doubleValue(), ACCURACY_IN_KILOMETRES);
     }
 
     @Test
