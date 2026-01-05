@@ -83,11 +83,11 @@ public class ViessmannGatewayHandler extends BaseBridgeHandler implements Bridge
     protected final List<String> devicesList = new ArrayList<>();
     protected final List<DeviceData> discoveredDeviceList = new ArrayList<>();
 
-    private final ItemChannelLinkRegistry linkRegistry;
+    private @Nullable final ItemChannelLinkRegistry linkRegistry;
 
     private GatewayConfiguration config = new GatewayConfiguration();
 
-    public ViessmannGatewayHandler(Bridge bridge, ItemChannelLinkRegistry linkRegistry) {
+    public ViessmannGatewayHandler(Bridge bridge, @Nullable ItemChannelLinkRegistry linkRegistry) {
         super(bridge);
         this.linkRegistry = linkRegistry;
     }

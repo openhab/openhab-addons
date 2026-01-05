@@ -21,7 +21,7 @@ import java.util.Map;
  * @author Ronny Grun - Initial contribution
  */
 public class StoredChannelValues {
-    public Map<String, String> prop = new HashMap<String, String>();
+    public Map<String, String> prop = new HashMap<>();
 
     public void putProperty(String key, String value) {
         prop.put(key, value);

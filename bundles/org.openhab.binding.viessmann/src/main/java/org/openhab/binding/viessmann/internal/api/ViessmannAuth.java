@@ -227,7 +227,7 @@ public class ViessmannAuth {
                 setState(ViessmannAuthState.NEED_AUTH);
                 return;
             }
-            logger.trace("ViessmannAuth: Got a valid token response: {}", response);
+            logger.debug("ViessmannAuth: Got a valid token response: {}", response);
             api.setTokenResponseDTO(tokenResponse);
             refreshToken = tokenResponse.refreshToken;
             api.setTokenExpiryDate(TimeUnit.SECONDS.toMillis(tokenResponse.expiresIn));

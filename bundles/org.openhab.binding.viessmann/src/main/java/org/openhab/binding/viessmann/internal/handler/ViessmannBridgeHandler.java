@@ -134,10 +134,6 @@ public class ViessmannBridgeHandler extends BaseBridgeHandler implements BridgeI
         return new ArrayList<>(devicesList);
     }
 
-    public List<Thing> getChildren() {
-        return getThing().getThings().stream().filter(Thing::isEnabled).collect(Collectors.toList());
-    }
-
     private void setConfigInstallationGatewayId() {
         Configuration conf = editConfiguration();
         conf.put("installationId", newInstallationId);
