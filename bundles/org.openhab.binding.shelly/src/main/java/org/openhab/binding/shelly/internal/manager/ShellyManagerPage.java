@@ -86,8 +86,8 @@ public class ShellyManagerPage {
     protected final Map<String, String> htmlTemplates = new HashMap<>();
     protected final Gson gson = new Gson();
 
-    protected @Nullable ShellyManagerCache<String, FwRepoEntry> firmwareRepo;
-    protected @Nullable ShellyManagerCache<String, FwArchList> firmwareArch;
+    protected final ShellyManagerCache<String, FwRepoEntry> firmwareRepo;
+    protected final ShellyManagerCache<String, FwArchList> firmwareArch;
 
     public static class ShellyMgrResponse {
         public @Nullable Object data = "";
@@ -145,13 +145,16 @@ public class ShellyManagerPage {
     }
 
     public ShellyManagerPage(ConfigurationAdmin configurationAdmin, ShellyTranslationProvider translationProvider,
-            HttpClient httpClient, String localIp, int localPort, ShellyHandlerFactory handlerFactory) {
+            HttpClient httpClient, String localIp, int localPort, ShellyHandlerFactory handlerFactory,
+            ShellyManagerCache<String, FwRepoEntry> firmwareRepo, ShellyManagerCache<String, FwArchList> firmwareArch) {
         this.configurationAdmin = configurationAdmin;
         this.resources = translationProvider;
         this.handlerFactory = handlerFactory;
         this.httpClient = httpClient;
         this.localIp = localIp;
         this.localPort = localPort;
+        this.firmwareRepo = firmwareRepo;
+        this.firmwareArch = firmwareArch;
     }
 
     public ShellyMgrResponse generateContent(String path, Map<String, String[]> parameters) throws ShellyApiException {
@@ -393,14 +396,9 @@ public class ShellyManagerPage {
 
     protected FwRepoEntry getFirmwareRepoEntry(String deviceType, String mode) throws ShellyApiException {
         logger.debug("ShellyManager: Load firmware list from {}", FWREPO_PROD_URL);
-        FwRepoEntry fw = null;
-        if (firmwareRepo != null) {
-            fw = firmwareRepo.get(deviceType);
-            if (fw != null) {
-                return fw;
-            }
-        } else {
-            firmwareRepo = new ShellyManagerCache<>();
+        FwRepoEntry fw = firmwareRepo.get(deviceType);
+        if (fw != null) {
+            return fw;
         }
 
         String json = httpGet(FWREPO_PROD_URL); // returns a strange JSON format so we are parsing this manually
@@ -433,25 +431,17 @@ public class ShellyManagerPage {
                 }
             }
 
-            if (firmwareRepo != null) {
-                firmwareRepo.put(deviceType, fw);
-            }
+            firmwareRepo.put(deviceType, fw);
         }
 
         return fw != null ? fw : new FwRepoEntry();
     }
 
     protected FwArchList getFirmwareArchiveList(String deviceType) throws ShellyApiException {
-        FwArchList list;
         String json = "";
-
-        if (firmwareArch != null) {
-            list = firmwareArch.get(deviceType); // return from cache
-            if (list != null) {
-                return list;
-            }
-        } else {
-            firmwareArch = new ShellyManagerCache<>();
+        FwArchList list = firmwareArch.get(deviceType); // return from cache
+        if (list != null) {
+            return list;
         }
 
         try {
@@ -474,9 +464,7 @@ public class ShellyManagerPage {
         }
 
         // save list to cache
-        if (firmwareArch != null) {
-            firmwareArch.put(deviceType, list);
-        }
+        firmwareArch.put(deviceType, list);
         return list;
     }
 

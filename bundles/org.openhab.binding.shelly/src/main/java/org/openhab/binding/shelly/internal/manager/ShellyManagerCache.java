@@ -12,9 +12,10 @@
  */
 package org.openhab.binding.shelly.internal.manager;
 
-import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.Map.Entry;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -29,64 +30,62 @@ import org.openhab.core.common.ThreadPoolManager;
  * @author Markus Michels - Initial contribution
  */
 @NonNullByDefault
-public class ShellyManagerCache<K, V> extends ConcurrentHashMap<K, V> {
+public class ShellyManagerCache<K, V> {
     protected final ScheduledExecutorService scheduler = ThreadPoolManager.getScheduledPool("ShellyManagerThreadpool");
-    private static final long serialVersionUID = 1L;
+    private static final long EXPIRY_IN_MILLIS = 15 * 60 * 1000; // 15min
 
-    private Map<K, Long> timeMap = new ConcurrentHashMap<>();
+    private record CacheEntry<V> (Long created, V value) {
+    }
 
+    // All access must be guarded by "this"
+    private final @NonNullByDefault({}) Map<K, CacheEntry<V>> storage = new HashMap<>();
+
+    // All access must be guarded by "this"
     private @Nullable ScheduledFuture<?> cleanupJob;
-    private static long expiryInMillis = 15 * 60 * 1000; // 15min
 
     public ShellyManagerCache() {
         initialize();
     }
 
-    public void initialize() {
+    public synchronized void initialize() {
         if (cleanupJob == null) {
             // start background cleanup
-            cleanupJob = scheduler.scheduleWithFixedDelay(this::cleanupMap, 2, 60, TimeUnit.SECONDS);
+            cleanupJob = scheduler.scheduleWithFixedDelay(this::cleanupMap, 2, EXPIRY_IN_MILLIS / 2L, TimeUnit.SECONDS);
         }
+    }
+
+    public synchronized void dispose() {
+        if (cleanupJob != null) {
+            cleanupJob.cancel(true);
+            cleanupJob = null;
+        }
+        storage.clear();
     }
 
     private void cleanupMap() {
-        long currentTime = new Date().getTime();
-        for (K key : timeMap.keySet()) {
-            Long timeValue = timeMap.get(key);
-            if (key != null && (timeValue == null || currentTime > (timeValue + expiryInMillis))) {
-                remove(key);
-                timeMap.remove(key);
+        long currentTime = System.currentTimeMillis();
+        Entry<K, CacheEntry<V>> entry;
+        synchronized (this) {
+            for (Iterator<Entry<K, CacheEntry<V>>> iterator = storage.entrySet().iterator(); iterator.hasNext();) {
+                entry = iterator.next();
+                if (currentTime > (entry.getValue().created.longValue() + EXPIRY_IN_MILLIS)) {
+                    iterator.remove();
+                }
             }
         }
     }
 
-    @Override
+    @Nullable
+    public synchronized V get(K key) {
+        CacheEntry<V> entry = storage.get(key);
+        return entry == null ? null : entry.value;
+    }
+
     public V put(K key, V value) {
-        Date date = new Date();
-        timeMap.put(key, date.getTime());
-        return super.put(key, value);
-    }
-
-    @Override
-    public void putAll(@Nullable Map<? extends K, ? extends V> m) {
-        if (m == null) {
-            throw new IllegalArgumentException();
+        CacheEntry<V> entry = new CacheEntry<>(Long.valueOf(System.currentTimeMillis()), value);
+        synchronized (this) {
+            entry = storage.put(key, entry);
         }
-        for (K key : m.keySet()) {
-            @Nullable
-            V value = m.get(key);
-            if (key != null && value != null) { // don't allow null values
-                put(key, value);
-            }
-        }
-    }
-
-    @Override
-    public V putIfAbsent(K key, V value) {
-        if (!containsKey(key)) {
-            return put(key, value);
-        } else {
-            return get(key);
-        }
+        return entry == null ? null : entry.value;
     }
 }

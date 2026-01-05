@@ -41,8 +41,10 @@ public class ShellyManagerImageLoader extends ShellyManagerPage {
 
     public ShellyManagerImageLoader(ConfigurationAdmin configurationAdmin,
             ShellyTranslationProvider translationProvider, HttpClient httpClient, String localIp, int localPort,
-            ShellyHandlerFactory handlerFactory) {
-        super(configurationAdmin, translationProvider, httpClient, localIp, localPort, handlerFactory);
+            ShellyHandlerFactory handlerFactory, ShellyManagerCache<String, FwRepoEntry> firmwareRepo,
+            ShellyManagerCache<String, FwArchList> firmwareArch) {
+        super(configurationAdmin, translationProvider, httpClient, localIp, localPort, handlerFactory, firmwareRepo,
+                firmwareArch);
     }
 
     @Override
