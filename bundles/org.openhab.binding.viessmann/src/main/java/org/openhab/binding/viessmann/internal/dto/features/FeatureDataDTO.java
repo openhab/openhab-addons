@@ -13,6 +13,7 @@
 package org.openhab.binding.viessmann.internal.dto.features;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * The {@link FeatureDataDTO} provides all data of a feature
@@ -29,6 +30,6 @@ public class FeatureDataDTO {
     public String deviceId;
     public String timestamp;
     public FeatureProperties properties;
-    public FeatureCommands commands;
+    public Map<String, FeatureCommand> commands;
     public List<String> components = null;
 }

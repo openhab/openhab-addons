@@ -12,12 +12,13 @@
  */
 package org.openhab.binding.viessmann.internal.dto;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.openhab.binding.viessmann.internal.dto.features.FeatureCommands;
+import org.openhab.binding.viessmann.internal.dto.features.FeatureCommand;
 import org.openhab.binding.viessmann.internal.util.ViessmannUtil;
 
 /**
@@ -37,7 +38,8 @@ public class ThingMessageDTO {
     private String suffix;
     private String unit;
     private final Map<String, String> properties = new HashMap<>();
-    public FeatureCommands commands;
+    public Map<String, FeatureCommand> commands = new HashMap<>();
+    public boolean isSubChannel = false;
 
     public String getType() {
         return type;
@@ -118,11 +120,11 @@ public class ThingMessageDTO {
         this.deviceId = deviceId;
     }
 
-    public FeatureCommands getCommands() {
+    public Map<String, FeatureCommand> getCommands() {
         return commands;
     }
 
-    public void setCommands(FeatureCommands commands) {
+    public void setCommands(Map<String, FeatureCommand> commands) {
         this.commands = commands;
     }
 
@@ -186,5 +188,13 @@ public class ThingMessageDTO {
             circuitId = circuitId.replace(".", "");
         }
         return circuitId;
+    }
+
+    public void setIsSubChannel(boolean bool) {
+        this.isSubChannel = bool;
+    }
+
+    public ArrayList<String> getAllCommands() {
+        return new ArrayList<>(commands.keySet());
     }
 }

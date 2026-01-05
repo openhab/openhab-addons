@@ -22,6 +22,7 @@ import java.util.Properties;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -86,5 +87,38 @@ public final class ViessmannUtil {
         String result = input.replaceAll("([a-z])([A-Z])", "$1-$2").replaceAll("([A-Z])([A-Z][a-z])", "$1-$2");
         result = result.replaceAll("([a-zA-Z])([0-9]+)", "$1-$2").replaceAll("([0-9]+)([a-zA-Z])", "$1-$2");
         return result.toLowerCase();
+    }
+
+    /**
+     * Converts a hyphen-separated string to camelCase or UpperCamelCase.
+     *
+     * @param input the hyphen-separated input (e.g. {@code "flow-temperature"})
+     * @param capitalizeFirst {@code true} for UpperCamelCase, {@code false} for camelCase
+     * @return the converted string, or the input if {@code null} or blank
+     */
+    public static @Nullable String hyphenToCamel(@Nullable String input, boolean capitalizeFirst) {
+        if (input == null || input.isBlank()) {
+            return input;
+        }
+
+        StringBuilder result = new StringBuilder();
+        boolean upperNext = capitalizeFirst;
+
+        for (int i = 0; i < input.length(); i++) {
+            char c = input.charAt(i);
+
+            if (c == '-') {
+                upperNext = true;
+                continue;
+            }
+
+            if (upperNext) {
+                result.append(Character.toUpperCase(c));
+                upperNext = false;
+            } else {
+                result.append(Character.toLowerCase(c));
+            }
+        }
+        return result.toString();
     }
 }

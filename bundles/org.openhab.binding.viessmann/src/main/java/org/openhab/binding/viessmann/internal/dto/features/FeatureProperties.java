@@ -23,6 +23,7 @@ public class FeatureProperties {
     public FeatureString value;
     public FeatureString status;
     public FeatureBoolean active;
+    public FeaturePropertiesEnabled enabled;
     public FeatureString name;
     public FeatureInteger shift;
     public FeatureDouble slope;
@@ -31,6 +32,7 @@ public class FeatureProperties {
     public FeatureBoolean overlapAllowed;
     public FeatureInteger temperature;
     public FeatureString start;
+    public FeatureString begin;
     public FeatureString end;
     public FeatureInteger top;
     public FeatureInteger middle;
@@ -65,6 +67,9 @@ public class FeatureProperties {
         if (active != null) {
             list.add("active");
         }
+        if (enabled != null) {
+            list.add("enabled");
+        }
         if (name != null) {
             list.add("name");
         }
@@ -85,6 +90,9 @@ public class FeatureProperties {
         }
         if (start != null) {
             list.add("start");
+        }
+        if (begin != null) {
+            list.add("begin");
         }
         if (end != null) {
             list.add("end");

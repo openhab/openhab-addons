@@ -14,18 +14,21 @@ package org.openhab.binding.viessmann.internal.handler;
 
 import static org.openhab.binding.viessmann.internal.ViessmannBindingConstants.*;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -35,10 +38,11 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.viessmann.internal.ViessmannDynamicStateDescriptionProvider;
 import org.openhab.binding.viessmann.internal.api.ViessmannCommunicationException;
 import org.openhab.binding.viessmann.internal.config.ThingsConfig;
-import org.openhab.binding.viessmann.internal.dto.HeatingCircuit;
 import org.openhab.binding.viessmann.internal.dto.ThingMessageDTO;
 import org.openhab.binding.viessmann.internal.dto.ViessmannMessage;
-import org.openhab.binding.viessmann.internal.dto.features.FeatureCommands;
+import org.openhab.binding.viessmann.internal.dto.device.StoredChannelValues;
+import org.openhab.binding.viessmann.internal.dto.features.FeatureCommand;
+import org.openhab.binding.viessmann.internal.dto.features.FeatureCommandParams;
 import org.openhab.binding.viessmann.internal.dto.features.FeatureDataDTO;
 import org.openhab.binding.viessmann.internal.dto.features.FeatureProperties;
 import org.openhab.binding.viessmann.internal.dto.schedule.DaySchedule;
@@ -73,6 +77,8 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 
 /**
  * The {@link DeviceHandler} is responsible for handling DeviceHandler
@@ -87,10 +93,11 @@ public class DeviceHandler extends ViessmannThingHandler {
     private final Logger logger = LoggerFactory.getLogger(DeviceHandler.class);
 
     private static final Gson GSON = new GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss").create();
+    private static final Set<String> BASE_ALLOWED_SUFFIXES = Set.of("active");
 
     private ThingsConfig config = new ThingsConfig();
 
-    private final Map<String, HeatingCircuit> heatingCircuits = new HashMap<>();
+    private final StoredChannelValues storedChannelValues = new StoredChannelValues();
 
     private final ItemChannelLinkRegistry linkRegistry;
     private final ManagedItemProvider managedItemProvider;
@@ -292,89 +299,210 @@ public class DeviceHandler extends ViessmannThingHandler {
             return;
         }
 
-        logger.trace("ChannelUID: {} | Properties: {}", ch.getUID(), ch.getProperties());
+        String channelId = ch.getUID().getId();
+        String[] parts = channelId.split("#", 2);
+        channelId = parts[0];
+        String suffix = parts.length > 1 ? parts[1] : "";
 
-        String uri = null;
-        String param = null;
-        boolean initState = false;
-        int initStateDelay = 0;
+        String[] params = prop.getOrDefault("params", "{}").split(",");
         String[] com = commands.split(",");
 
-        if (command instanceof OnOffType onOff) {
-            uri = prop.get(onOff == OnOffType.ON ? "activateUri" : "deactivateUri");
-            String feature = prop.get("feature");
-            param = "{}";
-            if (feature != null && feature.contains("oneTimeCharge")) {
-                initState = true;
-                initStateDelay = 2;
-            }
-        } else if (command instanceof DecimalType) {
-            logger.trace("Received DecimalType Command for Channel {}", ch.getUID());
-            for (String str : com) {
-                if (str.contains("setCurve")) {
-                    String circuitId = prop.get("circuitId");
-                    HeatingCircuit heatingCircuit = heatingCircuits.get(circuitId);
-                    if (heatingCircuit != null) {
-                        String slope = heatingCircuit.getSlope();
-                        String shift = heatingCircuit.getShift();
-                        String value = command.toString();
-                        if (ch.getUID().toString().contains("shift")) {
-                            param = "{\"slope\":" + slope + ", \"shift\":" + value + "}";
-                            heatingCircuit.setShift(value);
-                        } else if (ch.getUID().toString().contains("slope")) {
-                            param = "{\"slope\":" + value + ", \"shift\":" + shift + "}";
-                            heatingCircuit.setSlope(value);
-                        }
-                        if (circuitId != null) {
-                            heatingCircuits.put(circuitId, heatingCircuit);
-                        }
-                    }
-                    uri = prop.get(str + "Uri");
-                    break;
-                }
-                if (str.contains("setHysteresis")) {
-                    uri = prop.get(str + "Uri");
-                    param = "{\"" + prop.get(str + "Params") + "\":" + command.toString() + "}";
-                    break;
-                }
+        logger.trace("ChannelUID: {} | Properties: {} | Params {}", ch.getUID(), prop, params);
 
-            }
-        } else if (command instanceof QuantityType<?> value) {
-            double f = value.doubleValue();
-            for (String str : com) {
-                if (str.matches(".*(Temperature|setHysteresis|setMin|setMax|temperature).*")) {
-                    uri = prop.get(str + "Uri");
-                    param = "{\"" + prop.get(str + "Params") + "\":" + f + "}";
-                    break;
-                }
-            }
-            logger.trace("Received QuantityType Command for Channel {} Command: {}", ch.getUID(), value.floatValue());
-        } else if (command instanceof StringType) {
-            String s = command.toString();
-            for (String str : com) {
-                uri = prop.get(str + "Uri");
-                String paramKey = prop.get(str + "Params");
-                param = s.startsWith("{") ? "{\"" + paramKey + "\":" + s + "}" : "{\"" + paramKey + "\":\"" + s + "\"}";
+        if (command instanceof OnOffType onOff) {
+            handleOnOff(channelUID, channelId, suffix, prop, params, com, onOff);
+        } else if (command instanceof DecimalType dec) {
+            handleNumeric(channelUID, channelId, suffix, prop, params, com, dec.doubleValue());
+        } else if (command instanceof QuantityType<?> qty) {
+            handleNumeric(channelUID, channelId, suffix, prop, params, com, qty.doubleValue());
+        } else if (command instanceof StringType str) {
+            handleString(channelUID, channelId, suffix, prop, com, str);
+        }
+    }
+
+    private void handleOnOff(ChannelUID channelUID, String channelId, String suffix, Map<String, String> prop,
+            String[] params, String[] com, OnOffType onOff) {
+        logger.trace("Received OnOff Command for Channel {} value={}", channelUID, onOff);
+        if (!checkCommandType(prop, "boolean") && !"boolean".equals(prop.get("channelType"))) {
+            logger.warn("OnOffType Command not executable for Channel: {}", channelUID);
+            return;
+        }
+
+        boolean isOn = onOff == OnOffType.ON;
+        String feature = prop.get("feature");
+
+        UriParam up = resolveOnOffUri(prop, channelId, params, com, isOn);
+        if (up == null) {
+            logger.warn("Channel {} misconfigured (no URI)", channelUID);
+            return;
+        }
+        sendChannelCommand(up.uri(), up.param(), feature != null && feature.contains("oneTimeCharge") ? 2 : 0,
+                feature != null && feature.contains("oneTimeCharge"));
+    }
+
+    private void handleNumeric(ChannelUID channelUID, String channelId, String suffix, Map<String, String> prop,
+            String[] params, String[] com, double value) {
+        logger.trace("Received Numeric Command for Channel {} value={}", channelUID, value);
+        if (!checkCommandType(prop, "number")) {
+            logger.warn("Numeric Command not executable for Channel: {}", channelUID);
+            return;
+        }
+
+        UriParam up = resolveNumericCommand(prop, channelId, suffix, params, com, value);
+        if (up == null) {
+            logger.trace("No matching numeric command for Channel {}", channelUID);
+            return;
+        }
+        sendChannelCommand(up.uri(), up.param(), 0, false);
+    }
+
+    private void handleString(ChannelUID channelUID, String channelId, String suffix, Map<String, String> prop,
+            String[] com, StringType command) {
+        logger.trace("Received StringType Command for Channel {} value={}", channelUID, command);
+        if (!checkCommandType(prop, "string")) {
+            logger.warn("StringType Command not executable for Channel: {}", channelUID);
+            return;
+        }
+
+        String value = command.toString();
+        String lcSuffix = suffix.toLowerCase();
+
+        String uri = null;
+        String paramsDef = null;
+
+        for (String c : com) {
+            String p = prop.get(c + "Params");
+            if ((p != null && p.contains(lcSuffix)) || c.toLowerCase().contains(lcSuffix)) {
+                uri = prop.get(c + "Uri");
+                paramsDef = p;
                 break;
             }
-            logger.trace("Received StringType Command for Channel {}", ch.getUID());
         }
 
-        if (uri != null && param != null) {
-            BridgeInterface bridgeInterface = getBridgeInterface();
-            if (bridgeInterface == null) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "@text/offline.conf-error.bridge-type");
-                return;
-            }
-            try {
-                if (!bridgeInterface.setData(uri, param) || initState) {
-                    scheduler.schedule(this::initChannelState, initStateDelay, TimeUnit.SECONDS);
-                }
-            } catch (ViessmannCommunicationException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+        if (uri == null || paramsDef == null) {
+            logger.trace("No matching StringType command for Channel {}", channelUID);
+            return;
+        }
+
+        JsonObject json = new JsonObject();
+        String[] params = paramsDef.split(",");
+
+        for (String p : params) {
+            String v = storedChannelValues.getProperty(channelId + "#" + p);
+            if (p.equals(suffix) || v == null) {
+                json.addProperty(p, value);
+            } else {
+                json.addProperty(p, v);
             }
         }
+        sendChannelCommand(uri, json.toString(), 0, false);
+    }
+
+    private void sendChannelCommand(String uri, String param, int delaySeconds, boolean reloadFeatures) {
+        BridgeInterface bridge = getBridgeInterface();
+        if (bridge == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/offline.conf-error.bridge-type");
+            return;
+        }
+
+        try {
+            if (!bridge.setData(uri, param) || reloadFeatures) {
+                scheduler.schedule(this::initChannelState, delaySeconds, TimeUnit.SECONDS);
+            }
+        } catch (ViessmannCommunicationException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+        }
+    }
+
+    private @Nullable UriParam resolveOnOffUri(Map<String, String> prop, String channelId, String[] params,
+            String[] com, boolean isOn) {
+        // setActive / setEnabled (highest priority)
+        for (String base : List.of("setActive", "setEnabled")) {
+            if (prop.containsKey(base + "Uri")) {
+                String key = require(prop, base + "Params");
+                return new UriParam(require(prop, base + "Uri"), "{\"" + key + "\":" + isOn + "}");
+            }
+        }
+
+        // multi-param JSON
+        if (isOn && params.length > 1) {
+            JsonObject json = new JsonObject();
+            for (String p : params) {
+                String value = storedChannelValues.getProperty(channelId + "#" + p);
+                if (value != null) {
+                    if ("number".equals(prop.get(p + "Type"))) {
+                        json.addProperty(p, Double.parseDouble(value));
+                    } else {
+                        json.addProperty(p, value);
+                    }
+                }
+            }
+
+            String uri = prop.containsKey("scheduleUri") ? prop.get("scheduleUri") : prop.get("activateUri");
+            if (uri == null) {
+                return null;
+            }
+            return new UriParam(uri, json.toString());
+        }
+
+        // Simple activate / deactivate
+        String uri = prop.get(isOn ? "activateUri" : "deactivateUri");
+        return uri != null ? new UriParam(uri, "{}") : null;
+    }
+
+    private @Nullable UriParam resolveNumericCommand(Map<String, String> prop, String channelId, String suffix,
+            String[] params, String[] com, double value) {
+        String lcSuffix = Objects.requireNonNull(ViessmannUtil.hyphenToCamel(suffix, false)).toLowerCase();
+        String uri = null;
+        String paramsDef = null;
+        String cmd = null;
+        JsonObject json = new JsonObject();
+
+        for (String c : com) {
+            cmd = c;
+
+            paramsDef = prop.get(cmd + "Params");
+
+            if ((paramsDef != null && paramsDef.toLowerCase().contains(lcSuffix))
+                    || cmd.toLowerCase().contains(lcSuffix) || isQuantityCommand(cmd)) {
+                uri = prop.get(cmd + "Uri");
+
+                if ((paramsDef != null
+                        && paramsDef.matches(".*(Temperature|setHysteresis|setMin|setMax|temperature).*"))) {
+                    json.addProperty(paramsDef, value);
+                    if (uri == null) {
+                        return null;
+                    }
+                    return new UriParam(uri, json.toString());
+                }
+                break;
+            }
+        }
+
+        if (uri == null || cmd == null) {
+            return null;
+        }
+
+        for (String p : params) {
+            String v = storedChannelValues.getProperty(channelId + "#" + p);
+            String type = prop.get(p + "Type");
+
+            if (v == null || p.equals(suffix)) {
+                v = Double.toString(value);
+            }
+
+            if ("number".equals(type)) {
+                json.addProperty(p, Double.parseDouble(v));
+            } else {
+                json.addProperty(p, v);
+            }
+
+            if (cmd.toLowerCase().contains(lcSuffix) || isQuantityCommand(cmd)) {
+                break;
+            }
+        }
+        return new UriParam(uri, json.toString());
     }
 
     @Override
@@ -385,435 +513,445 @@ public class DeviceHandler extends ViessmannThingHandler {
     @Override
     public void handleUpdate(FeatureDataDTO featureDataDTO) {
         updateStatus(ThingStatus.ONLINE);
+        if (featureDataDTO.properties == null) {
+            return;
+        }
         ThingMessageDTO msg = new ThingMessageDTO();
-        if (featureDataDTO.properties != null) {
-            msg.setDeviceId(featureDataDTO.deviceId);
-            msg.setFeatureClear(featureDataDTO.feature);
-            msg.setFeatureDescription(getFeatureDescription(featureDataDTO.feature));
-            FeatureCommands commands = featureDataDTO.commands;
-            if (commands != null) {
-                msg.setCommands(commands);
+        msg.setDeviceId(featureDataDTO.deviceId);
+        msg.setFeatureClear(featureDataDTO.feature);
+        msg.setFeatureDescription(getFeatureDescription(featureDataDTO.feature));
+
+        Map<String, FeatureCommand> commands = featureDataDTO.commands;
+        if (commands != null) {
+            msg.setCommands(commands);
+        }
+
+        FeatureProperties prop = featureDataDTO.properties;
+        List<String> entr = prop.getUsedEntries();
+        if (entr.isEmpty()) {
+            return;
+        }
+
+        for (String entry : entr) {
+            if ("unit".equals(entry)) {
+                continue;
             }
-            FeatureProperties prop = featureDataDTO.properties;
-            List<String> entr = prop.getUsedEntries();
-            if (!entr.isEmpty()) {
-                for (String entry : entr) {
-                    String valueEntry = "";
-                    String typeEntry = "";
-                    boolean bool = false;
-                    String viUnit = "";
-                    String unit = null;
-                    HeatingCircuit heatingCircuit = new HeatingCircuit();
-                    msg.setFeatureName(getFeatureName(featureDataDTO.feature));
-                    msg.setSuffix(entry);
-                    switch (entry) {
-                        case "value":
-                            viUnit = prop.value.unit;
-                            typeEntry = switch (viUnit) {
-                                case "celsius" -> "temperature";
-                                case "percent", "kelvin", "liter", "bar" -> viUnit;
-                                case "minute" -> "duration";
-                                case "revolutionsPerSecond" -> "revolutions-per-second";
-                                case "kilowattHour/year" -> "house-heating-load";
-                                case "kiloJoule" -> "thermal-energy";
-                                case "cubicMeter/hour" -> "cubic-meter-per-hour";
-                                case null, default -> prop.value.type;
-                            };
-                            if ("liter/hour".equals(viUnit)) {
-                                valueEntry = String.valueOf(Double.parseDouble(prop.value.value) / 60);
-                                viUnit = "liter/minute";
-                                typeEntry = "liter-per-minute";
-                            } else {
-                                valueEntry = prop.value.value;
-                            }
-                            if ("kilowatt".equals(viUnit)) {
-                                valueEntry = String.valueOf(Double.parseDouble(prop.value.value) * 1000);
-                                viUnit = "watt";
-                                typeEntry = "power";
-                            }
-                            break;
-                        case "status":
-                            typeEntry = prop.status.type;
-                            valueEntry = prop.status.value;
-                            if ("off".equals(valueEntry)) {
-                                typeEntry = "boolean";
-                            } else if ("on".equals(valueEntry)) {
-                                typeEntry = "boolean";
-                                bool = true;
-                            }
-                            viUnit = "";
-                            break;
-                        case "active":
-                            typeEntry = prop.active.type;
-                            valueEntry = prop.active.value ? "true" : "false";
-                            bool = prop.active.value;
-                            break;
-                        case "name":
-                            typeEntry = prop.name.type;
-                            valueEntry = prop.name.value;
-                            break;
-                        case "shift":
-                            typeEntry = "shift";
-                            valueEntry = prop.shift.value.toString();
-                            heatingCircuit.setSlope(prop.slope.value.toString());
-                            heatingCircuit.setShift(prop.shift.value.toString());
-                            heatingCircuits.put(msg.getCircuitId(), heatingCircuit);
-                            break;
-                        case "slope":
-                            typeEntry = "slope";
-                            valueEntry = prop.slope.value.toString();
-                            heatingCircuit.setSlope(prop.slope.value.toString());
-                            heatingCircuit.setShift(prop.shift.value.toString());
-                            heatingCircuits.put(msg.getCircuitId(), heatingCircuit);
-                            break;
-                        case "entries":
-                            msg.setSuffix("schedule");
-                            typeEntry = prop.entries.type;
-                            valueEntry = new Gson().toJson(prop.entries.value);
-                            break;
-                        case "overlapAllowed":
-                            typeEntry = prop.overlapAllowed.type;
-                            valueEntry = prop.overlapAllowed.value ? "true" : "false";
-                            bool = prop.overlapAllowed.value;
-                            break;
-                        case "temperature":
-                            valueEntry = prop.temperature.value.toString();
-                            typeEntry = "temperature";
-                            viUnit = prop.temperature.unit;
-                            break;
-                        case "start":
-                            typeEntry = prop.start.type;
-                            valueEntry = prop.start.value;
-                            break;
-                        case "end":
-                            typeEntry = prop.end.type;
-                            valueEntry = prop.end.value;
-                            break;
-                        case "top":
-                            typeEntry = prop.top.type;
-                            valueEntry = prop.top.value.toString();
-                            break;
-                        case "middle":
-                            typeEntry = prop.middle.type;
-                            valueEntry = prop.middle.value.toString();
-                            break;
-                        case "bottom":
-                            typeEntry = prop.bottom.type;
-                            valueEntry = prop.bottom.value.toString();
-                            break;
-                        case "day":
-                            // returns array as string
-                            typeEntry = prop.day.type;
-                            valueEntry = prop.day.value.toString();
-                            if (featureDataDTO.feature.contains("gas")) {
-                                viUnit = "gas-" + prop.day.unit;
-                            } else if (featureDataDTO.feature.contains("power")) {
-                                viUnit = "power-" + prop.day.unit;
-                            } else if (featureDataDTO.feature.contains(".heat.")) {
-                                viUnit = "heat-" + prop.day.unit;
-                            } else {
-                                viUnit = prop.day.unit;
-                            }
-                            break;
-                        case "week":
-                            // returns array as string
-                            typeEntry = prop.week.type;
-                            valueEntry = prop.week.value.toString();
-                            if (featureDataDTO.feature.contains("gas")) {
-                                viUnit = "gas-" + prop.week.unit;
-                            } else if (featureDataDTO.feature.contains("power")) {
-                                viUnit = "power-" + prop.week.unit;
-                            } else if (featureDataDTO.feature.contains(".heat.")) {
-                                viUnit = "heat-" + prop.week.unit;
-                            } else {
-                                viUnit = prop.week.unit;
-                            }
-                            break;
-                        case "month":
-                            // returns array as string
-                            typeEntry = prop.month.type;
-                            valueEntry = prop.month.value.toString();
-                            if (featureDataDTO.feature.contains("gas")) {
-                                viUnit = "gas-" + prop.month.unit;
-                            } else if (featureDataDTO.feature.contains("power")) {
-                                viUnit = "power-" + prop.month.unit;
-                            } else if (featureDataDTO.feature.contains(".heat.")) {
-                                viUnit = "heat-" + prop.month.unit;
-                            } else {
-                                viUnit = prop.month.unit;
-                            }
-                            break;
-                        case "year":
-                            // returns array as string
-                            typeEntry = prop.year.type;
-                            valueEntry = prop.year.value.toString();
-                            if (featureDataDTO.feature.contains("gas")) {
-                                viUnit = "gas-" + prop.year.unit;
-                            } else if (featureDataDTO.feature.contains("power")) {
-                                viUnit = "power-" + prop.year.unit;
-                            } else if (featureDataDTO.feature.contains(".heat.")) {
-                                viUnit = "heat-" + prop.year.unit;
-                            } else {
-                                viUnit = prop.year.unit;
-                            }
-                            break;
-                        case "unit":
-                            typeEntry = prop.unit.type;
-                            valueEntry = prop.unit.value;
-                            break;
-                        case "starts":
-                            typeEntry = prop.starts.type;
-                            valueEntry = prop.starts.value.toString();
-                            viUnit = prop.starts.unit;
-                            break;
-                        case "hours":
-                            typeEntry = "duration";
-                            valueEntry = prop.hours.value.toString();
-                            viUnit = "hour";
-                            break;
-                        case "hoursLoadClassOne":
-                            typeEntry = "duration";
-                            valueEntry = prop.hoursLoadClassOne.value.toString();
-                            viUnit = "hour";
-                            break;
-                        case "hoursLoadClassTwo":
-                            typeEntry = "duration";
-                            valueEntry = prop.hoursLoadClassTwo.value.toString();
-                            viUnit = "hour";
-                            break;
-                        case "hoursLoadClassThree":
-                            typeEntry = "duration";
-                            valueEntry = prop.hoursLoadClassThree.value.toString();
-                            viUnit = "hour";
-                            break;
-                        case "hoursLoadClassFour":
-                            typeEntry = "duration";
-                            valueEntry = prop.hoursLoadClassFour.value.toString();
-                            viUnit = "hour";
-                            break;
-                        case "hoursLoadClassFive":
-                            typeEntry = "duration";
-                            valueEntry = prop.hoursLoadClassFive.value.toString();
-                            viUnit = "hour";
-                            break;
-                        case "min":
-                            typeEntry = prop.min.type;
-                            valueEntry = prop.min.value.toString();
-                            viUnit = prop.min.unit;
-                            break;
-                        case "max":
-                            typeEntry = prop.max.type;
-                            valueEntry = prop.max.value.toString();
-                            viUnit = prop.max.unit;
-                            break;
-                        case "phase":
-                            typeEntry = prop.phase.type;
-                            valueEntry = prop.phase.value;
-                            viUnit = "";
-                            break;
-                        case "switchOnValue":
-                            typeEntry = prop.switchOnValue.type;
-                            valueEntry = prop.switchOnValue.value;
-                            viUnit = prop.switchOffValue.unit;
-                            break;
-                        case "switchOffValue":
-                            typeEntry = prop.switchOffValue.type;
-                            valueEntry = prop.switchOffValue.value;
-                            viUnit = prop.switchOffValue.unit;
-                            break;
-                        default:
-                            break;
+
+            String valueEntry = "";
+            String typeEntry = "";
+            boolean bool = false;
+            String viUnit = "";
+            String unit = null;
+            msg.setFeatureName(getFeatureName(featureDataDTO.feature));
+            msg.setSuffix(entry);
+            switch (entry) {
+                case "value":
+                    viUnit = prop.value.unit;
+                    typeEntry = switch (viUnit) {
+                        case "celsius" -> "temperature";
+                        case "percent", "kelvin", "liter", "bar" -> viUnit;
+                        case "minute" -> "duration-minute";
+                        case "revolutionsPerSecond" -> "revolutions-per-second";
+                        case "kilowattHour/year" -> "house-heating-load";
+                        case "kiloJoule" -> "thermal-energy";
+                        case "cubicMeter/hour" -> "cubic-meter-per-hour";
+                        case null, default -> prop.value.type;
+                    };
+                    if ("liter/hour".equals(viUnit)) {
+                        valueEntry = String.valueOf(Double.parseDouble(prop.value.value) / 60);
+                        viUnit = "liter/minute";
+                        typeEntry = "liter-per-minute";
+                    } else {
+                        valueEntry = prop.value.value;
                     }
-                    msg.setType(typeEntry);
-                    msg.setValue(valueEntry);
-                    msg.setChannelType(typeEntry);
+                    if ("kilowatt".equals(viUnit)) {
+                        valueEntry = String.valueOf(Double.parseDouble(prop.value.value) * 1000);
+                        viUnit = "watt";
+                        typeEntry = "power";
+                    }
+                    break;
+                case "status":
+                    typeEntry = prop.status.type;
+                    valueEntry = prop.status.value;
+                    if ("off".equals(valueEntry)) {
+                        typeEntry = "boolean";
+                    } else if ("on".equals(valueEntry)) {
+                        typeEntry = "boolean";
+                        bool = true;
+                    }
+                    viUnit = "";
+                    break;
+                case "active":
+                    typeEntry = prop.active.type;
+                    valueEntry = prop.active.value ? "true" : "false";
+                    bool = prop.active.value;
+                    break;
+                case "name":
+                    typeEntry = prop.name.type;
+                    valueEntry = prop.name.value;
+                    break;
+                case "shift":
+                    typeEntry = "shift";
+                    valueEntry = prop.shift.value.toString();
+                    break;
+                case "slope":
+                    typeEntry = "slope";
+                    valueEntry = prop.slope.value.toString();
+                    break;
+                case "entries":
+                    msg.setSuffix("schedule");
+                    typeEntry = prop.entries.type;
+                    valueEntry = new Gson().toJson(prop.entries.value);
+                    break;
+                case "overlapAllowed":
+                    typeEntry = prop.overlapAllowed.type;
+                    valueEntry = prop.overlapAllowed.value ? "true" : "false";
+                    bool = prop.overlapAllowed.value;
+                    break;
+                case "temperature":
+                    valueEntry = prop.temperature.value.toString();
+                    typeEntry = "temperature";
+                    viUnit = prop.temperature.unit;
+                    break;
+                case "start":
+                    typeEntry = prop.start.type;
+                    valueEntry = prop.start.value;
+                    break;
+                case "begin":
+                    typeEntry = prop.begin.type;
+                    valueEntry = prop.begin.value;
+                    break;
+                case "end":
+                    typeEntry = prop.end.type;
+                    valueEntry = prop.end.value;
+                    break;
+                case "top":
+                    typeEntry = prop.top.type;
+                    valueEntry = prop.top.value.toString();
+                    break;
+                case "middle":
+                    typeEntry = prop.middle.type;
+                    valueEntry = prop.middle.value.toString();
+                    break;
+                case "bottom":
+                    typeEntry = prop.bottom.type;
+                    valueEntry = prop.bottom.value.toString();
+                    break;
+                case "day":
+                    // returns array as string
+                    typeEntry = prop.day.type;
+                    valueEntry = prop.day.value.toString();
+                    if (featureDataDTO.feature.contains("gas")) {
+                        viUnit = "gas-" + prop.day.unit;
+                    } else if (featureDataDTO.feature.contains("power")) {
+                        viUnit = "power-" + prop.day.unit;
+                    } else if (featureDataDTO.feature.contains(".heat.")) {
+                        viUnit = "heat-" + prop.day.unit;
+                    } else {
+                        viUnit = prop.day.unit;
+                    }
+                    break;
+                case "week":
+                    // returns array as string
+                    typeEntry = prop.week.type;
+                    valueEntry = prop.week.value.toString();
+                    if (featureDataDTO.feature.contains("gas")) {
+                        viUnit = "gas-" + prop.week.unit;
+                    } else if (featureDataDTO.feature.contains("power")) {
+                        viUnit = "power-" + prop.week.unit;
+                    } else if (featureDataDTO.feature.contains(".heat.")) {
+                        viUnit = "heat-" + prop.week.unit;
+                    } else {
+                        viUnit = prop.week.unit;
+                    }
+                    break;
+                case "month":
+                    // returns array as string
+                    typeEntry = prop.month.type;
+                    valueEntry = prop.month.value.toString();
+                    if (featureDataDTO.feature.contains("gas")) {
+                        viUnit = "gas-" + prop.month.unit;
+                    } else if (featureDataDTO.feature.contains("power")) {
+                        viUnit = "power-" + prop.month.unit;
+                    } else if (featureDataDTO.feature.contains(".heat.")) {
+                        viUnit = "heat-" + prop.month.unit;
+                    } else {
+                        viUnit = prop.month.unit;
+                    }
+                    break;
+                case "year":
+                    // returns array as string
+                    typeEntry = prop.year.type;
+                    valueEntry = prop.year.value.toString();
+                    if (featureDataDTO.feature.contains("gas")) {
+                        viUnit = "gas-" + prop.year.unit;
+                    } else if (featureDataDTO.feature.contains("power")) {
+                        viUnit = "power-" + prop.year.unit;
+                    } else if (featureDataDTO.feature.contains(".heat.")) {
+                        viUnit = "heat-" + prop.year.unit;
+                    } else {
+                        viUnit = prop.year.unit;
+                    }
+                    break;
+                case "starts":
+                    typeEntry = prop.starts.type;
+                    valueEntry = prop.starts.value.toString();
+                    viUnit = prop.starts.unit;
+                    break;
+                case "hours":
+                    typeEntry = "duration";
+                    valueEntry = prop.hours.value.toString();
+                    viUnit = "hour";
+                    break;
+                case "hoursLoadClassOne":
+                    typeEntry = "duration";
+                    valueEntry = prop.hoursLoadClassOne.value.toString();
+                    viUnit = "hour";
+                    break;
+                case "hoursLoadClassTwo":
+                    typeEntry = "duration";
+                    valueEntry = prop.hoursLoadClassTwo.value.toString();
+                    viUnit = "hour";
+                    break;
+                case "hoursLoadClassThree":
+                    typeEntry = "duration";
+                    valueEntry = prop.hoursLoadClassThree.value.toString();
+                    viUnit = "hour";
+                    break;
+                case "hoursLoadClassFour":
+                    typeEntry = "duration";
+                    valueEntry = prop.hoursLoadClassFour.value.toString();
+                    viUnit = "hour";
+                    break;
+                case "hoursLoadClassFive":
+                    typeEntry = "duration";
+                    valueEntry = prop.hoursLoadClassFive.value.toString();
+                    viUnit = "hour";
+                    break;
+                case "min":
+                    typeEntry = prop.min.type;
+                    valueEntry = prop.min.value.toString();
+                    viUnit = prop.min.unit;
+                    break;
+                case "max":
+                    typeEntry = prop.max.type;
+                    valueEntry = prop.max.value.toString();
+                    viUnit = prop.max.unit;
+                    break;
+                case "phase":
+                    typeEntry = prop.phase.type;
+                    valueEntry = prop.phase.value;
+                    viUnit = "";
+                    break;
+                case "switchOnValue":
+                    typeEntry = prop.switchOnValue.type;
+                    valueEntry = prop.switchOnValue.value;
+                    viUnit = prop.switchOffValue.unit;
+                    break;
+                case "switchOffValue":
+                    typeEntry = prop.switchOffValue.type;
+                    valueEntry = prop.switchOffValue.value;
+                    viUnit = prop.switchOffValue.unit;
+                    break;
+                case "enabled":
+                    typeEntry = prop.enabled.type;
+                    JsonElement v = prop.enabled.value;
+                    if ("array".equals(typeEntry)) {
+                        valueEntry = v.toString();
+                    }
+                    if ("boolean".equals(typeEntry)) {
+                        valueEntry = v.getAsBoolean() ? "true" : "false";
+                        bool = v.getAsBoolean();
+                    }
+                    break;
+                default:
+                    break;
+            }
+            msg.setType(typeEntry);
+            msg.setValue(valueEntry);
+            msg.setChannelType(typeEntry);
 
-                    if (msg.getDeviceId().contains(config.deviceId) && !"unit".equals(entry)) {
-                        if (!"[]".equals(valueEntry)) {
-                            logger.trace("Feature: {} Type:{} Entry: {}={}", featureDataDTO.feature, typeEntry, entry,
-                                    valueEntry);
+            if ("[]".equals(valueEntry)) {
+                return;
+            }
 
-                            String subChannelType = "";
+            if (msg.getDeviceId().contains(config.deviceId)) {
+                logger.trace("Feature: {} Type:{} Entry: {}={}", featureDataDTO.feature, typeEntry, entry, valueEntry);
 
-                            if (viUnit != null) {
-                                if (!viUnit.isEmpty()) {
-                                    msg.setUnit(viUnit);
-                                    unit = UNIT_MAP.get(viUnit);
-                                    subChannelType = SUB_CHANNEL_TYPE_MAP.getOrDefault(viUnit, "");
-                                    if (unit == null) {
-                                        logger.warn(
-                                                "Unknown unit. Could not parse unit: {} of Feature: {} - Please open an issue on GitHub.",
-                                                viUnit, featureDataDTO.feature);
-                                        return;
-                                    }
-                                }
-                            }
+                String subChannelType = "";
 
-                            Channel channel = thing.getChannel(msg.getChannelId());
-                            if (channel == null) {
-                                logger.trace("Channel does not exist -> Channel is being created");
-                                createOrUpdateChannel(msg, false);
-                            } else {
-                                Map<String, String> properties = channel.getProperties();
-                                for (String propKey : PROPERTIES_URIS) {
-                                    if (properties.containsKey(propKey)) {
-                                        logger.trace("URI from Channel: {}={}", propKey, properties.get(propKey));
-                                        Map<String, String> uris = msg.getCommands().getUris();
-                                        logger.trace("URI from JSON response: {}={}", propKey, uris.get(propKey));
-                                        if (!Objects.equals(properties.get(propKey), uris.get(propKey))) {
-                                            logger.trace(
-                                                    "The command URI is different. The channel is now being updated.");
-                                            createOrUpdateChannel(msg, false);
-                                        }
-                                    }
-                                }
-                                String channelDescription = channel.getDescription();
-                                if (channelDescription != null) {
-                                    if (!channelDescription.equals(msg.getFeatureDescription())) {
-                                        logger.trace(
-                                                "Channel Description is different. The channel is now being updated.");
-                                        createOrUpdateChannel(msg, false);
-                                    }
-                                }
+                if (viUnit != null) {
+                    if (!viUnit.isEmpty()) {
+                        msg.setUnit(viUnit);
+                        unit = UNIT_MAP.get(viUnit);
+                        subChannelType = SUB_CHANNEL_TYPE_MAP.getOrDefault(viUnit, "");
+                        if (unit == null) {
+                            logger.warn(
+                                    "Unknown unit. Could not parse unit: {} of Feature: {} - Please open an issue on GitHub.",
+                                    viUnit, featureDataDTO.feature);
+                            return;
+                        }
+                    }
+                }
 
-                                String channelLabel = channel.getLabel();
-                                if (channelLabel != null) {
-                                    if (!channelLabel.equals(msg.getFeatureName())) {
-                                        logger.trace("Channel Label is different. The channel is now being updated.");
-                                        createOrUpdateChannel(msg, false);
-                                    }
-                                }
-                            }
-                            setStateDescriptionOptions(msg);
+                Channel channel = thing.getChannel(msg.getChannelId());
+                if (channel == null) {
+                    logger.trace("Channel does not exist -> Channel is being created");
+                    createOrUpdateChannel(msg);
+                } else {
+                    updateChannelIfPropertiesChanged(channel, msg);
 
-                            ThingMessageDTO subMsg = new ThingMessageDTO();
-                            subMsg.setDeviceId(featureDataDTO.deviceId);
-                            subMsg.setFeatureClear(featureDataDTO.feature);
-                            subMsg.setFeatureDescription(getFeatureDescription(featureDataDTO.feature));
-                            subMsg.setFeatureName(getFeatureName(featureDataDTO.feature));
-                            subMsg.setType(typeEntry);
-                            subMsg.setValue(valueEntry);
+                    String channelDescription = channel.getDescription();
+                    if (channelDescription != null) {
+                        if (!channelDescription.equals(msg.getFeatureDescription())) {
+                            logger.trace("Channel Description is different. The channel is now being updated.");
+                            createOrUpdateChannel(msg);
+                        }
+                    }
+
+                    String channelLabel = channel.getLabel();
+                    if (channelLabel != null) {
+                        if (!channelLabel.equals(msg.getFeatureName())) {
+                            logger.trace("Channel Label is different. The channel is now being updated.");
+                            createOrUpdateChannel(msg);
+                        }
+                    }
+                }
+                setStateDescriptionOptions(msg);
+
+                ThingMessageDTO subMsg = new ThingMessageDTO();
+                subMsg.setDeviceId(featureDataDTO.deviceId);
+                subMsg.setFeatureClear(featureDataDTO.feature);
+                subMsg.setFeatureDescription(getFeatureDescription(featureDataDTO.feature));
+                subMsg.setFeatureName(getFeatureName(featureDataDTO.feature));
+                subMsg.setType(typeEntry);
+                subMsg.setValue(valueEntry);
+                switch (entry) {
+                    case "entries":
+                        subMsg.setIsSubChannel(true);
+                        subMsg.setSuffix("produced");
+                        subMsg.setChannelType("boolean-read-only");
+                        checkIfSubChannelExists(subMsg);
+                        break;
+                    case "day":
+                        subMsg.setIsSubChannel(true);
+                        subMsg.setSuffix("today");
+                        subMsg.setChannelType(subChannelType);
+                        checkIfSubChannelExists(subMsg);
+                        subMsg.setSuffix("yesterday");
+                        checkIfSubChannelExists(subMsg);
+                        break;
+                    case "week":
+                        subMsg.setIsSubChannel(true);
+                        subMsg.setSuffix("this-week");
+                        subMsg.setChannelType(subChannelType);
+                        checkIfSubChannelExists(subMsg);
+                        subMsg.setSuffix("last-week");
+                        checkIfSubChannelExists(subMsg);
+                        break;
+                    case "month":
+                        subMsg.setIsSubChannel(true);
+                        subMsg.setSuffix("this-month");
+                        subMsg.setChannelType(subChannelType);
+                        checkIfSubChannelExists(subMsg);
+                        subMsg.setSuffix("last-month");
+                        checkIfSubChannelExists(subMsg);
+                        break;
+                    case "year":
+                        subMsg.setIsSubChannel(true);
+                        subMsg.setSuffix("this-year");
+                        subMsg.setChannelType(subChannelType);
+                        checkIfSubChannelExists(subMsg);
+                        subMsg.setSuffix("last-year");
+                        checkIfSubChannelExists(subMsg);
+                        break;
+                    case "active":
+                        if (featureDataDTO.feature.contains("oneTimeCharge")) {
+                            subMsg.setIsSubChannel(true);
+                            subMsg.setSuffix("status");
+                            subMsg.setChannelType("boolean-read-only");
+                            checkIfSubChannelExists(subMsg);
+                        }
+                        break;
+                    default:
+                        break;
+                }
+
+                storedChannelValues.putProperty(msg.getChannelId(), msg.getValue());
+
+                switch (typeEntry) {
+                    case "decimal":
+                    case "number":
+                    case "temperature":
+                    case "percent":
+                    case "minute":
+                    case "hours":
+                    case "kelvin":
+                    case "liter":
+                    case "liter-per-minute":
+                    case "bar":
+                    case "power":
+                    case "revolutions-per-second":
+                    case "slope":
+                    case "shift":
+                    case "duration":
+                    case "duration-minute":
+                    case "thermal-energy":
+                    case "cubic-meter-per-hour":
+                        updateChannelState(msg.getChannelId(), msg.getValue(), unit);
+                        break;
+                    case "boolean":
+                        OnOffType state = bool ? OnOffType.ON : OnOffType.OFF;
+                        updateState(msg.getChannelId(), state);
+                        if (featureDataDTO.feature.contains("oneTimeCharge")) {
+                            updateState(subMsg.getChannelId(), state);
+                        }
+                        break;
+                    case "house-heating-load":
+                        updateState(msg.getChannelId(), new DecimalType(msg.getValue()));
+                        break;
+                    case "string":
+                    case "array":
+                        updateState(msg.getChannelId(), StringType.valueOf(msg.getValue()));
+                        String[] parts = msg.getValue().replace("[", "").replace("]", "").replace(" ", "").split(",");
+                        if (parts.length > 1) {
                             switch (entry) {
-                                case "entries":
-                                    subMsg.setSuffix("produced");
-                                    subMsg.setChannelType("boolean-read-only");
-                                    createOrUpdateChannel(subMsg, true);
-                                    break;
                                 case "day":
                                     subMsg.setSuffix("today");
-                                    subMsg.setChannelType(subChannelType);
-                                    createOrUpdateChannel(subMsg, true);
+                                    updateChannelState(subMsg.getChannelId(), parts[0], unit);
                                     subMsg.setSuffix("yesterday");
-                                    createOrUpdateChannel(subMsg, true);
+                                    updateChannelState(subMsg.getChannelId(), parts[1], unit);
                                     break;
                                 case "week":
                                     subMsg.setSuffix("this-week");
-                                    subMsg.setChannelType(subChannelType);
-                                    createOrUpdateChannel(subMsg, true);
+                                    updateChannelState(subMsg.getChannelId(), parts[0], unit);
                                     subMsg.setSuffix("last-week");
-                                    createOrUpdateChannel(subMsg, true);
+                                    updateChannelState(subMsg.getChannelId(), parts[1], unit);
                                     break;
                                 case "month":
                                     subMsg.setSuffix("this-month");
-                                    subMsg.setChannelType(subChannelType);
-                                    createOrUpdateChannel(subMsg, true);
+                                    updateChannelState(subMsg.getChannelId(), parts[0], unit);
                                     subMsg.setSuffix("last-month");
-                                    createOrUpdateChannel(subMsg, true);
+                                    updateChannelState(subMsg.getChannelId(), parts[1], unit);
                                     break;
                                 case "year":
                                     subMsg.setSuffix("this-year");
-                                    subMsg.setChannelType(subChannelType);
-                                    createOrUpdateChannel(subMsg, true);
+                                    updateChannelState(subMsg.getChannelId(), parts[0], unit);
                                     subMsg.setSuffix("last-year");
-                                    createOrUpdateChannel(subMsg, true);
-                                    break;
-                                case "active":
-                                    if (featureDataDTO.feature.contains("oneTimeCharge")) {
-                                        subMsg.setSuffix("status");
-                                        subMsg.setChannelType("boolean-read-only");
-                                        createOrUpdateChannel(subMsg, true);
-                                    }
-                                default:
-                                    break;
-                            }
-
-                            switch (typeEntry) {
-                                case "decimal":
-                                case "number":
-                                case "temperature":
-                                case "percent":
-                                case "minute":
-                                case "hours":
-                                case "kelvin":
-                                case "liter":
-                                case "liter-per-minute":
-                                case "bar":
-                                case "power":
-                                case "revolutions-per-second":
-                                case "slope":
-                                case "shift":
-                                case "duration":
-                                case "thermal-energy":
-                                case "cubic-meter-per-hour":
-                                    updateChannelState(msg.getChannelId(), msg.getValue(), unit);
-                                    break;
-                                case "boolean":
-                                    OnOffType state = bool ? OnOffType.ON : OnOffType.OFF;
-                                    updateState(msg.getChannelId(), state);
-                                    if (featureDataDTO.feature.contains("oneTimeCharge")) {
-                                        updateState(subMsg.getChannelId(), state);
-                                    }
-                                    break;
-                                case "house-heating-load":
-                                    updateState(msg.getChannelId(), new DecimalType(msg.getValue()));
-                                    break;
-                                case "string":
-                                case "array":
-                                    updateState(msg.getChannelId(), StringType.valueOf(msg.getValue()));
-
-                                    String[] parts = msg.getValue().replace("[", "").replace("]", "").replace(" ", "")
-                                            .split(",");
-                                    if (parts.length > 1) {
-                                        switch (entry) {
-                                            case "day":
-                                                subMsg.setSuffix("today");
-                                                updateChannelState(subMsg.getChannelId(), parts[0], unit);
-                                                subMsg.setSuffix("yesterday");
-                                                updateChannelState(subMsg.getChannelId(), parts[1], unit);
-                                                break;
-                                            case "week":
-                                                subMsg.setSuffix("this-week");
-                                                updateChannelState(subMsg.getChannelId(), parts[0], unit);
-                                                subMsg.setSuffix("last-week");
-                                                updateChannelState(subMsg.getChannelId(), parts[1], unit);
-                                                break;
-                                            case "month":
-                                                subMsg.setSuffix("this-month");
-                                                updateChannelState(subMsg.getChannelId(), parts[0], unit);
-                                                subMsg.setSuffix("last-month");
-                                                updateChannelState(subMsg.getChannelId(), parts[1], unit);
-                                                break;
-                                            case "year":
-                                                subMsg.setSuffix("this-year");
-                                                updateChannelState(subMsg.getChannelId(), parts[0], unit);
-                                                subMsg.setSuffix("last-year");
-                                                updateChannelState(subMsg.getChannelId(), parts[1], unit);
-                                                break;
-                                            default:
-                                                break;
-                                        }
-                                    }
-                                    break;
-                                case "Schedule":
-                                    updateState(msg.getChannelId(), StringType.valueOf(msg.getValue()));
-                                    String channelId = msg.getChannelId().replace("#schedule", "#produced");
-                                    updateState(channelId, parseSchedule(msg.getValue()));
+                                    updateChannelState(subMsg.getChannelId(), parts[1], unit);
                                     break;
                                 default:
                                     break;
                             }
                         }
-                    }
+                        break;
+                    case "Schedule":
+                        updateState(msg.getChannelId(), StringType.valueOf(msg.getValue()));
+                        String channelId = msg.getChannelId().replace("#schedule", "#produced");
+                        updateState(channelId, parseSchedule(msg.getValue()));
+                        break;
+                    default:
+                        break;
                 }
             }
         }
@@ -824,17 +962,17 @@ public class DeviceHandler extends ViessmannThingHandler {
      *
      * @param msg contains everything is needed of the channel to be created or updated.
      */
-    private void createOrUpdateChannel(ThingMessageDTO msg, boolean isSubChannel) {
+    private void createOrUpdateChannel(ThingMessageDTO msg) {
         getSafeCallback().ifPresent(cb -> {
             ChannelUID channelUID = new ChannelUID(getThing().getUID(), msg.getChannelId());
             ChannelTypeUID typeUID = new ChannelTypeUID(BINDING_ID, convertChannelType(msg));
 
             Map<String, String> properties = new HashMap<>();
-            if (!isSubChannel) {
+            if (!msg.isSubChannel) {
                 properties = buildProperties(msg);
             }
 
-            if (isSubChannel && checkSubChannelLabelAndDescription(msg)) {
+            if (msg.isSubChannel && checkSubChannelLabelAndDescription(msg)) {
                 properties.put("feature", msg.getFeatureClear());
             }
 
@@ -845,7 +983,8 @@ public class DeviceHandler extends ViessmannThingHandler {
 
             Thing edited = editThing().withoutChannel(channelUID).withChannel(channel).build();
             updateThing(edited);
-            logger.debug("Channel {} created/updated on Thing {}", channelUID, getThing().getUID());
+            logger.debug("{} {} created/updated on Thing {}", msg.isSubChannel ? "Sub-Channel" : "Channel", channelUID,
+                    getThing().getUID());
         });
     }
 
@@ -972,7 +1111,7 @@ public class DeviceHandler extends ViessmannThingHandler {
         SimpleDateFormat inputParser = new SimpleDateFormat(inputFormat);
         try {
             return inputParser.parse(time);
-        } catch (java.text.ParseException e) {
+        } catch (ParseException e) {
             return new Date(0);
         }
     }
@@ -988,164 +1127,122 @@ public class DeviceHandler extends ViessmannThingHandler {
 
     private Map<String, String> buildProperties(ThingMessageDTO msg) {
         Map<String, String> prop = new HashMap<>();
+
+        String suffix = Objects.requireNonNullElse(msg.getSuffix(), "");
+        String lcSuffix = suffix.toLowerCase();
+
+        prop.put("suffix", suffix);
         prop.put("feature", msg.getFeatureClear());
         prop.put("channelType", convertChannelType(msg));
-        FeatureCommands commands = msg.getCommands();
-        if (commands != null) {
-            List<String> com = commands.getUsedCommands();
-            if (!com.isEmpty()) {
-                for (String command : com) {
-                    prop.put("command", addPropertiesCommands(prop, command));
-                    switch (command) {
-                        case "setName":
-                            prop.put("setNameUri", commands.setName.uri);
-                            prop.put("setNameParams", "name");
-                            break;
-                        case "setCurve":
-                            prop.put("circuitId", msg.getCircuitId());
-                            prop.put("setCurveUri", commands.setCurve.uri);
-                            prop.put("setCurveParams", "slope,shift");
-                            break;
-                        case "setSchedule":
-                            prop.put("setScheduleUri", commands.setSchedule.uri);
-                            prop.put("setScheduleParams", "newSchedule");
-                            break;
-                        case "setMode":
-                            prop.put("setModeUri", commands.setMode.uri);
-                            prop.put("setModeParams", "mode");
-                            break;
-                        case "setTemperature":
-                            prop.put("setTemperatureUri", commands.setTemperature.uri);
-                            prop.put("setTemperatureParams", "targetTemperature");
-                            break;
-                        case "setTargetTemperature":
-                            prop.put("setTargetTemperatureUri", commands.setTargetTemperature.uri);
-                            prop.put("command", "setTargetTemperature");
-                            prop.put("setTargetTemperatureParams", "temperature");
-                            break;
-                        case "activate":
-                            prop.put("activateUri", commands.activate.uri);
-                            prop.put("activateParams", "{}");
-                            prop.put("deactivateParams", "{}");
-                            break;
-                        case "deactivate":
-                            prop.put("deactivateUri", commands.deactivate.uri);
-                            prop.put("activateParams", "{}");
-                            prop.put("deactivateParams", "{}");
-                            break;
-                        case "changeEndDate":
-                            prop.put("changeEndDateUri", commands.changeEndDate.uri);
-                            prop.put("command", "changeEndDate,schedule,unschedule");
-                            prop.put("changeEndDateParams", "end");
-                            prop.put("scheduleParams", "start,end");
-                            prop.put("unscheduleParams", "{}");
-                            break;
-                        case "schedule":
-                            prop.put("scheduleUri", commands.schedule.uri);
-                            prop.put("scheduleParams", "start,end");
-                            break;
-                        case "unschedule":
-                            prop.put("unscheduleUri", commands.unschedule.uri);
-                            prop.put("unscheduleParams", "{}");
-                            break;
-                        case "setMin":
-                            if (msg.getSuffix().contains("min")) {
-                                prop.put("setMinUri", commands.setMin.uri);
-                                prop.put("command", "setMin");
-                                prop.put("setMinParams", "temperature");
-                            }
-                            break;
-                        case "setMax":
-                            if (msg.getSuffix().contains("max")) {
-                                prop.put("setMaxUri", commands.setMax.uri);
-                                prop.put("command", "setMax");
-                                prop.put("setMaxParams", "temperature");
-                            }
-                            break;
-                        case "setHysteresis":
-                            prop.put("setHysteresisUri", commands.setHysteresis.uri);
-                            prop.put("command", "setHysteresis");
-                            prop.put("setHysteresisParams", "hysteresis");
-                            break;
-                        case "setHysteresisSwitchOnValue":
-                            if (msg.getSuffix().contains("switchOnValue")) {
-                                prop.put("setHysteresisSwitchOnValueUri", commands.setHysteresisSwitchOnValue.uri);
-                                prop.put("command", "setHysteresisSwitchOnValue");
-                                prop.put("setHysteresisSwitchOnValueParams", "hysteresis");
-                            }
-                            break;
-                        case "setHysteresisSwitchOffValue":
-                            if (msg.getSuffix().contains("switchOffValue")) {
-                                prop.put("setHysteresisSwitchOffValueUri", commands.setHysteresisSwitchOffValue.uri);
-                                prop.put("command", "setHysteresisSwitchOffValue");
-                                prop.put("setHysteresisSwitchOffValueParams", "hysteresis");
-                            }
-                            break;
-                        default:
-                            break;
-                    }
-                }
+        prop.put("circuitId", msg.getCircuitId());
+
+        Map<String, FeatureCommand> commands = msg.getCommands();
+        if (commands == null || commands.isEmpty()) {
+            return prop;
+        }
+
+        for (String command : msg.getAllCommands()) {
+            String lcCommand = command.toLowerCase();
+
+            // empty suffix → only one command allowed
+            if (lcSuffix.isBlank() && prop.containsKey("command")) {
+                continue;
             }
+
+            FeatureCommand fc = commands.get(command);
+            if (fc == null || fc.isDeprecated) {
+                continue;
+            }
+
+            List<String> allParams = fc.getAllParams();
+            Set<String> allowedSuffixes = new HashSet<>(BASE_ALLOWED_SUFFIXES);
+            allowedSuffixes.addAll(allParams);
+
+            if (!lcSuffix.isBlank() && !lcCommand.contains(lcSuffix) && !allowedSuffixes.contains(lcSuffix)) {
+                continue;
+            }
+
+            for (String param : allParams) {
+                prop.put(param + "Params", addProperties(prop, param + "Params", param));
+                prop.put("params", addProperties(prop, "params", param));
+                prop.put(fc.name + "Params", addProperties(prop, fc.name + "Params", param));
+
+                FeatureCommandParams fcp = fc.params.get(param);
+                if (fcp == null) {
+                    continue;
+                }
+
+                Map<String, Object> constraints = fcp.getConstraints();
+                prop.put(param + "RegEx", (String) constraints.getOrDefault("regEx", ""));
+                prop.put(param + "Type", fcp.getType());
+            }
+
+            prop.put("command", addProperties(prop, "command", command));
+            prop.put(fc.name + "Uri", fc.uri);
         }
         return prop;
     }
 
-    private String addPropertiesCommands(Map<String, String> properties, String command) {
-        String commands = properties.get("command");
-        if (commands != null) {
-            commands = commands + "," + command;
-            return commands;
+    private String addProperties(Map<String, String> properties, String key, String value) {
+        String p = properties.get(key);
+        if (p != null) {
+            if (!p.contains(value)) {
+                p = p + "," + value;
+            }
+            return p;
         }
-        return command;
+        return value;
     }
 
     private String convertChannelType(ThingMessageDTO msg) {
         String channelType = msg.getChannelType();
-        FeatureCommands commands = msg.getCommands();
-        if (commands != null) {
-            List<String> com = commands.getUsedCommands();
-            if (!com.isEmpty() && !"boolean-read-only".equals(channelType)) {
-                for (String command : com) {
-                    switch (command) {
-                        case "setTemperature":
-                        case "setTargetTemperature":
-                            if (!"boolean".equals(channelType)) {
-                                channelType = "set-temperature";
-                            }
-                            break;
-                        case "setMin":
-                            if (msg.getSuffix().contains("min")) {
-                                channelType = "set-min";
-                            }
-                            break;
-                        case "setMax":
-                            if (msg.getSuffix().contains("max")) {
-                                channelType = "set-max";
-                            }
-                            break;
-                        case "setHysteresis", "setHysteresisSwitchOnValue":
-                            channelType = "set-target-hysteresis";
-                            break;
-                        case "setHysteresisSwitchOffValue":
-                            if (msg.getSuffix().contains("switchOffValue")) {
-                                channelType = "set-hysteresis-off";
-                            }
-                            break;
-                        case "setMode":
-                            channelType = "set-mode";
-                            break;
-                        case "setSchedule":
-                        case "setName":
-                            if (msg.getSuffix().contains("active")) {
-                                channelType = "boolean-read-only";
-                            }
-                            break;
-                        default:
-                            break;
-                    }
+
+        List<String> com = msg.getAllCommands();
+        if (com == null) {
+            return channelType.toLowerCase();
+        }
+        if (!com.isEmpty() && !"boolean-read-only".equals(channelType)) {
+            for (String command : com) {
+                switch (command) {
+                    case "setTemperature":
+                    case "setTargetTemperature":
+                        if (!"boolean".equals(channelType)) {
+                            channelType = "set-temperature";
+                        }
+                        break;
+                    case "setMin":
+                        if (msg.getSuffix().contains("min")) {
+                            channelType = "set-min";
+                        }
+                        break;
+                    case "setMax":
+                        if (msg.getSuffix().contains("max")) {
+                            channelType = "set-max";
+                        }
+                        break;
+                    case "setHysteresis", "setHysteresisSwitchOnValue":
+                        channelType = "set-target-hysteresis";
+                        break;
+                    case "setHysteresisSwitchOffValue":
+                        if (msg.getSuffix().contains("switchOffValue")) {
+                            channelType = "set-hysteresis-off";
+                        }
+                        break;
+                    case "setMode":
+                        channelType = "set-mode";
+                        break;
+                    case "setSchedule":
+                    case "setName":
+                        if (msg.getSuffix().contains("active")) {
+                            channelType = "boolean-read-only";
+                        }
+                        break;
+                    case "active":
+                        channelType = "boolean";
+                        break;
+                    default:
+                        break;
                 }
-            } else if ("boolean".equals(channelType)) {
-                channelType = channelType + "-read-only";
             }
         } else if ("boolean".equals(channelType)) {
             channelType = channelType + "-read-only";
@@ -1154,21 +1251,36 @@ public class DeviceHandler extends ViessmannThingHandler {
     }
 
     private void setStateDescriptionOptions(ThingMessageDTO msg) {
-        if ("set-mode".equals(convertChannelType(msg))) {
-            List<String> modes = msg.commands.setMode.params.mode.constraints.enumValue;
-            if (modes != null) {
-                Locale locale = localeProvider.getLocale();
-                List<StateOption> stateOptions = new ArrayList<>();
-                for (String command : modes) {
-                    String commandLabel = Objects.requireNonNull(
-                            i18Provider.getText(bundle, "viessmann.command.label." + command, command, locale));
-                    StateOption stateOption = new StateOption(command, commandLabel);
-                    stateOptions.add(stateOption);
-                }
-                ChannelUID channelUID = new ChannelUID(thing.getUID(), msg.getChannelId());
-                setChannelStateDescription(channelUID, stateOptions);
-            }
+        Locale locale = localeProvider.getLocale();
+        List<StateOption> stateOptions = new ArrayList<>();
+
+        Map<String, FeatureCommand> commands = msg.getCommands();
+        if (commands == null || commands.isEmpty()) {
+            return;
         }
+        commands.forEach((name, command) -> {
+            ArrayList<String> p = command.getAllParams();
+            p.forEach(param -> {
+                FeatureCommandParams fcp = command.params.get(param);
+                Map<String, Object> constraints = fcp.getConstraints();
+                if (constraints.containsKey("enumValue")) {
+                    List<String> modes = Optional.ofNullable(command.params.get(param))
+                            .map(FeatureCommandParams::getConstraints).map(c -> c.get("enumValue"))
+                            .filter(List.class::isInstance).map(v -> (List<?>) v)
+                            .map(l -> l.stream().filter(String.class::isInstance).map(String.class::cast).toList())
+                            .orElse(List.of());
+
+                    for (String cmd : modes) {
+                        String commandLabel = Objects.requireNonNull(
+                                i18Provider.getText(bundle, "viessmann.command.label." + cmd, cmd, locale));
+                        StateOption stateOption = new StateOption(cmd, commandLabel);
+                        stateOptions.add(stateOption);
+                    }
+                    ChannelUID channelUID = new ChannelUID(thing.getUID(), msg.getChannelId());
+                    setChannelStateDescription(channelUID, stateOptions);
+                }
+            });
+        });
     }
 
     private int getThingTypeVersion() {
@@ -1196,5 +1308,56 @@ public class DeviceHandler extends ViessmannThingHandler {
         // fallback: treat as file-based
         logger.debug("Item '{}' not found in managed provider – treating as file-based.", itemName);
         return false;
+    }
+
+    private String require(Map<String, String> map, String key) {
+        String value = map.get(key);
+        if (value == null || value.isBlank()) {
+            throw new IllegalStateException(key + " missing");
+        }
+        return value;
+    }
+
+    private void updateChannelIfPropertiesChanged(Channel channel, ThingMessageDTO msg) {
+        Map<String, String> oldProperties = channel.getProperties();
+        Map<String, String> newProperties = buildProperties(msg);
+
+        if (!Objects.equals(oldProperties, newProperties)) {
+            createOrUpdateChannel(msg);
+            logger.debug("Channel {} properties updated: {}", channel.getUID(), newProperties);
+        }
+    }
+
+    private void checkIfSubChannelExists(ThingMessageDTO msg) {
+        Channel channel = thing.getChannel(msg.getChannelId());
+        if (channel == null) {
+            logger.trace("Sub-Channel does not exist -> Channel is being created");
+            createOrUpdateChannel(msg);
+        }
+    }
+
+    private boolean checkCommandType(Map<String, String> prop, String type) {
+        String[] params = new String[] { "{}" };
+        if (prop.containsKey("params")) {
+            params = prop.get("params").split(",");
+        }
+
+        for (String p : params) {
+            String propType = prop.get(p + "Type");
+            if (propType == null) {
+                return false;
+            }
+            if (propType.equals(type)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private record UriParam(String uri, String param) {
+    }
+
+    private boolean isQuantityCommand(String command) {
+        return command.matches(".*(Temperature|temperature|setHysteresis|setMin|setMax).*");
     }
 }

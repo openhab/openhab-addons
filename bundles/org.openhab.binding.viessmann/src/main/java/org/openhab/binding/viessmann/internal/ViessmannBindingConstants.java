@@ -14,7 +14,6 @@ package org.openhab.binding.viessmann.internal;
 
 import static java.util.Map.entry;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -95,20 +94,4 @@ public class ViessmannBindingConstants {
     public static final String CHANNEL_ERROR_IS_ACTIVE = "error-is-active";
     public static final String CHANNEL_RUN_QUERY_ONCE = "run-query-once";
     public static final String CHANNEL_RUN_ERROR_QUERY_ONCE = "run-error-query-once";
-
-    public static final List<String> PROPERTIES_URIS = List.of( //
-            "setNameUri", //
-            "setCurveUri", //
-            "setScheduleUri", //
-            "setModeUri", //
-            "setTemperatureUri", //
-            "temperatureUri", //
-            "activateUri", //
-            "deactivateUri", //
-            "changeEndDateUri", //
-            "scheduleUri", //
-            "unscheduleUri", //
-            "setMinUri", //
-            "setMaxUri", //
-            "setHysteresisUri");
 }
