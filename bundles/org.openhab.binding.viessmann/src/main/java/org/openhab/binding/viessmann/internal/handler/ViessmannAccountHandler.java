@@ -200,7 +200,7 @@ public class ViessmannAccountHandler extends BaseBridgeHandler implements ApiInt
         } else {
             apiCalls = 0;
         }
-
+        disposed = false;
         migrateChannelIds();
 
         api = new ViessmannApi(this.config.apiKey, httpClient, this.config.user, this.config.password,

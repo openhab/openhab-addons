@@ -166,6 +166,8 @@ public class ViessmannGatewayHandler extends BaseBridgeHandler implements Bridge
         this.gatewaySerial = config.gatewaySerial;
         this.installationId = config.installationId;
 
+        disposed = false;
+
         migrateChannelIds();
 
         if (!config.disablePolling && errorChannelsLinked()) {

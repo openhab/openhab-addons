@@ -198,6 +198,7 @@ public class ViessmannBridgeHandler extends BaseBridgeHandler implements BridgeI
         } else {
             apiCalls = 0;
         }
+        disposed = false;
         newInstallationId = "";
         newGatewaySerial = "";
 
