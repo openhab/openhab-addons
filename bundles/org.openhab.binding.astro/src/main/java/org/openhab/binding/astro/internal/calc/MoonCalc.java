@@ -14,22 +14,11 @@ package org.openhab.binding.astro.internal.calc;
 
 import static org.openhab.binding.astro.internal.util.MathUtils.*;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.util.Calendar;
-import java.util.Locale;
-import java.util.TimeZone;
+import java.math.*;
+import java.util.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.astro.internal.model.Eclipse;
-import org.openhab.binding.astro.internal.model.EclipseKind;
-import org.openhab.binding.astro.internal.model.EclipseType;
-import org.openhab.binding.astro.internal.model.Moon;
-import org.openhab.binding.astro.internal.model.MoonDistance;
-import org.openhab.binding.astro.internal.model.MoonPhase;
-import org.openhab.binding.astro.internal.model.MoonPhaseName;
-import org.openhab.binding.astro.internal.model.Position;
-import org.openhab.binding.astro.internal.model.Range;
+import org.openhab.binding.astro.internal.model.*;
 import org.openhab.binding.astro.internal.util.DateTimeUtils;
 
 /**
@@ -95,16 +84,8 @@ public class MoonCalc {
             }
         });
 
-        double decimalYear = DateTimeUtils.getDecimalYear(calendar);
-        MoonDistance apogee = moon.getApogee();
-        double apogeeJd = getApogee(julianDate, decimalYear);
-        apogee.setDate(DateTimeUtils.toCalendar(apogeeJd, zone, locale));
-        apogee.setDistance(getDistance(apogeeJd));
-
-        MoonDistance perigee = moon.getPerigee();
-        double perigeeJd = getPerigee(julianDate, decimalYear);
-        perigee.setDate(DateTimeUtils.toCalendar(perigeeJd, zone, locale));
-        perigee.setDistance(getDistance(perigeeJd));
+        Set.of(DistanceType.APOGEE, DistanceType.PERIGEE)
+                .forEach(type -> moon.setDistance(type, MoonDistanceCalc.get(type, julianDate)));
 
         return moon;
     }
@@ -118,9 +99,7 @@ public class MoonCalc {
         setMoonPhase(calendar, moon, zone, locale);
         setAzimuthElevationZodiac(julianDate, latitude, longitude, moon);
 
-        MoonDistance distance = moon.getDistance();
-        distance.setDate(calendar);
-        distance.setDistance(getDistance(julianDate));
+        moon.setDistance(DistanceType.CURRENT, MoonDistanceCalc.calculate(julianDate));
     }
 
     /**
@@ -437,88 +416,6 @@ public class MoonCalc {
         return eclipseJd;
     }
 
-    /**
-     * Calculates the date, where the moon is furthest away from the earth.
-     */
-    private double getApogee(double julianDate, double decimalYear) {
-        double k = Math.floor((decimalYear - 1999.97) * 13.2555) + .5;
-        double jd = 0;
-        do {
-            double t = k / 1325.55;
-            double d = 171.9179 + 335.9106046 * k - .010025 * t * t - .00001156 * t * t * t
-                    + .000000055 * t * t * t * t;
-            double m = 347.3477 + 27.1577721 * k - .0008323 * t * t - .000001 * t * t * t;
-            double f = 316.6109 + 364.5287911 * k - .0125131 * t * t - .0000148 * t * t * t;
-            jd = 2451534.6698 + 27.55454988 * k - .0006886 * t * t - .000001098 * t * t * t + .0000000052 * t * t
-                    + .4392 * sinDeg(2 * d) + .0684 * sinDeg(4 * d) + (.0456 - .00011 * t) * sinDeg(m)
-                    + (.0426 - .00011 * t) * sinDeg(2 * d - m) + .0212 * sinDeg(2 * f);
-            jd += -.0189 * sinDeg(d) + .0144 * sinDeg(6 * d) + .0113 * sinDeg(4 * d - m) + .0047 * sinDeg(2 * d + 2 * f)
-                    + .0036 * sinDeg(d + m) + .0035 * sinDeg(8 * d) + .0034 * sinDeg(6 * d - m)
-                    - .0034 * sinDeg(2 * d - 2 * f) + .0022 * sinDeg(2 * d - 2 * m) - .0017 * sinDeg(3 * d);
-            jd += .0013 * sinDeg(4 * d + 2 * f) + .0011 * sinDeg(8 * d - m) + .001 * sinDeg(4 * d - 2 * m)
-                    + .0009 * sinDeg(10 * d) + .0007 * sinDeg(3 * d + m) + .0006 * sinDeg(2 * m)
-                    + .0005 * sinDeg(2 * d + m) + .0005 * sinDeg(2 * d + 2 * m) + .0004 * sinDeg(6 * d + 2 * f);
-            jd += .0004 * sinDeg(6 * d - 2 * m) + .0004 * sinDeg(10 * d - m) - .0004 * sinDeg(5 * d)
-                    - .0004 * sinDeg(4 * d - 2 * f) + .0003 * sinDeg(2 * f + m) + .0003 * sinDeg(12 * d)
-                    + .0003 * sinDeg(2 * d + 2 * f - m) - .0003 * sinDeg(d - m);
-            k += 1;
-        } while (jd < julianDate);
-        return jd;
-    }
-
-    /**
-     * Calculates the date, where the moon is closest to the earth.
-     */
-    private double getPerigee(double julianDate, double decimalYear) {
-        double k = Math.floor((decimalYear - 1999.97) * 13.2555);
-        double jd = 0;
-        do {
-            double t = k / 1325.55;
-            double d = 171.9179 + 335.9106046 * k - .010025 * t * t - .00001156 * t * t * t
-                    + .000000055 * t * t * t * t;
-            double m = 347.3477 + 27.1577721 * k - .0008323 * t * t - .000001 * t * t * t;
-            double f = 316.6109 + 364.5287911 * k - .0125131 * t * t - .0000148 * t * t * t;
-            jd = 2451534.6698 + 27.55454988 * k - .0006886 * t * t - .000001098 * t * t * t + .0000000052 * t * t
-                    - 1.6769 * sinDeg(2 * d) + .4589 * sinDeg(4 * d) - .1856 * sinDeg(6 * d) + .0883 * sinDeg(8 * d);
-            jd += -(.0773 + .00019 * t) * sinDeg(2 * d - m) + (.0502 - .00013 * t) * sinDeg(m) - .046 * sinDeg(10 * d)
-                    + (.0422 - .00011 * t) * sinDeg(4 * d - m) - .0256 * sinDeg(6 * d - m) + .0253 * sinDeg(12 * d)
-                    + .0237 * sinDeg(d);
-            jd += .0162 * sinDeg(8 * d - m) - .0145 * sinDeg(14 * d) + .0129 * sinDeg(2 * f) - .0112 * sinDeg(3 * d)
-                    - .0104 * sinDeg(10 * d - m) + .0086 * sinDeg(16 * d) + .0069 * sinDeg(12 * d - m)
-                    + .0066 * sinDeg(5 * d) - .0053 * sinDeg(2 * d + 2 * f);
-            jd += -.0052 * sinDeg(18 * d) - .0046 * sinDeg(14 * d - m) - .0041 * sinDeg(7 * d)
-                    + .004 * sinDeg(2 * d + m) + .0032 * sinDeg(20 * d) - .0032 * sinDeg(d + m)
-                    + .0031 * sinDeg(16 * d - m);
-            jd += -.0029 * sinDeg(4 * d + m) - .0027 * sinDeg(2 * d - 2 * m) + .0024 * sinDeg(4 * d - 2 * m)
-                    - .0021 * sinDeg(6 * d - 2 * m) - .0021 * sinDeg(22 * d) - .0021 * sinDeg(18 * d - m);
-            jd += .0019 * sinDeg(6 * d + m) - .0018 * sinDeg(11 * d) - .0014 * sinDeg(8 * d + m)
-                    - .0014 * sinDeg(4 * d - 2 * f) - .0014 * sinDeg(6 * d - 2 * f) + .0014 * sinDeg(3 * d + m)
-                    - .0014 * sinDeg(5 * d + m) + .0013 * sinDeg(13 * d);
-            jd += .0013 * sinDeg(20 * d - m) + .0011 * sinDeg(3 * d + 2 * m) - .0011 * sinDeg(4 * d + 2 * f - 2 * m)
-                    - .001 * sinDeg(d + 2 * m) - .0009 * sinDeg(22 * d - m) - .0008 * sinDeg(4 * f)
-                    + .0008 * sinDeg(6 * d - 2 * f) + .0008 * sinDeg(2 * d - 2 * f + m);
-            jd += .0007 * sinDeg(2 * m) + .0007 * sinDeg(2 * f - m) + .0007 * sinDeg(2 * d + 4 * f)
-                    - .0006 * sinDeg(2 * f - 2 * m) - .0006 * sinDeg(2 * d - 2 * f + 2 * m) + .0006 * sinDeg(24 * d)
-                    + .0005 * sinDeg(4 * d - 4 * f) + .0005 * sinDeg(2 * d + 2 * m) - .0004 * sinDeg(d - m)
-                    + .0027 * sinDeg(9 * d) + .0027 * sinDeg(4 * d + 2 * f);
-            k += 1;
-        } while (jd < julianDate);
-        return jd;
-    }
-
-    /**
-     * Calculates the distance from the moon to earth.
-     */
-    private double getDistance(double jd) {
-        double t = (jd - 2451545) / 36525;
-        double d = 297.8502042 + 445267.11151686 * t - .00163 * t * t + t * t * t / 545868 - t * t * t * t / 113065000;
-        double m = 357.5291092 + 35999.0502909 * t - .0001536 * t * t + t * t * t / 24490000;
-        double m1 = 134.9634114 + 477198.8676313 * t + .008997 * t * t + t * t * t / 69699 - t * t * t * t / 14712000;
-        double f = 93.27209929999999 + 483202.0175273 * t - .0034029 * t * t - t * t * t / 3526000
-                + t * t * t * t / 863310000;
-        return 385000.56 + getCoefficient(d, m, m1, f) / 1000;
-    }
-
     private double[] calcMoon(double t) {
         double p2 = 6.283185307;
         double arc = 206264.8062;
@@ -645,27 +542,6 @@ public class MoonCalc {
         ret += .000037 * sinDeg(161.72 + 24.198154 * k) + .000035 * sinDeg(239.56 + 25.513099 * k)
                 + .000023 * sinDeg(331.55 + 3.592518 * k);
         return ret;
-    }
-
-    private double getCoefficient(double d, double m, double m1, double f) {
-        int[] kd = new int[] { 0, 2, 2, 0, 0, 0, 2, 2, 2, 2, 0, 1, 0, 2, 0, 0, 4, 0, 4, 2, 2, 1, 1, 2, 2, 4, 2, 0, 2, 2,
-                1, 2, 0, 0, 2, 2, 2, 4, 0, 3, 2, 4, 0, 2, 2, 2, 4, 0, 4, 1, 2, 0, 1, 3, 4, 2, 0, 1, 2, 2 };
-        int[] km = new int[] { 0, 0, 0, 0, 1, 0, 0, -1, 0, -1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, -1, 0, 0, 0, 1, 0,
-                -1, 0, -2, 1, 2, -2, 0, 0, -1, 0, 0, 1, -1, 2, 2, 1, -1, 0, 0, -1, 0, 1, 0, 1, 0, 0, -1, 2, 1, 0, 0 };
-        int[] km1 = new int[] { 1, -1, 0, 2, 0, 0, -2, -1, 1, 0, -1, 0, 1, 0, 1, 1, -1, 3, -2, -1, 0, -1, 0, 1, 2, 0,
-                -3, -2, -1, -2, 1, 0, 2, 0, -1, 1, 0, -1, 2, -1, 1, -2, -1, -1, -2, 0, 1, 4, 0, -2, 0, 2, 1, -2, -3, 2,
-                1, -1, 3, -1 };
-        int[] kf = new int[] { 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, -2, 2, -2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2,
-                0, 0, 0, 0, 0, 0, -2, 2, 0, 2, 0, 0, 0, 0, 0, 0, -2, 0, 0, 0, 0, -2, -2, 0, 0, 0, 0, 0, 0, 0, -2 };
-        int[] kr = new int[] { -20905355, -3699111, -2955968, -569925, 48888, -3149, 246158, -152138, -170733, -204586,
-                -129620, 108743, 104755, 10321, 0, 79661, -34782, -23210, -21636, 24208, 30824, -8379, -16675, -12831,
-                -10445, -11650, 14403, -7003, 0, 10056, 6322, -9884, 5751, 0, -4950, 4130, 0, -3958, 0, 3258, 2616,
-                -1897, -2117, 2354, 0, 0, -1423, -1117, -1571, -1739, 0, -4421, 0, 0, 0, 0, 1165, 0, 0, 8752 };
-        double sr = 0;
-        for (int t = 0; t < 60; t++) {
-            sr += kr[t] * cosDeg(kd[t] * d + km[t] * m + km1[t] * m1 + kf[t] * f);
-        }
-        return sr;
     }
 
     /**

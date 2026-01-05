@@ -18,6 +18,8 @@ import static org.openhab.binding.astro.internal.util.DateTimeUtils.*;
 
 import java.lang.invoke.MethodHandles;
 import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
@@ -67,6 +69,26 @@ public interface Job extends SchedulerRunnable, Runnable {
      *
      * @param astroHandler the {@link AstroThingHandler} instance
      * @param job the {@link Job} instance to schedule
+     * @param eventAt the {@link Calendar} instance denoting scheduled instant
+     */
+    static void schedule(AstroThingHandler astroHandler, Job job, Instant eventAt, ZoneId zone) {
+        try {
+            ZonedDateTime now = ZonedDateTime.now(zone);
+            ZonedDateTime eventZDT = eventAt.atZone(zone);
+
+            if (isSameDay(eventZDT, now) && isTimeGreaterEquals(eventZDT, now)) {
+                astroHandler.schedule(job, eventAt);
+            }
+        } catch (Exception ex) {
+            LOGGER.error("{}", ex.getMessage(), ex);
+        }
+    }
+
+    /**
+     * Schedules the provided {@link Job} instance
+     *
+     * @param astroHandler the {@link AstroThingHandler} instance
+     * @param job the {@link Job} instance to schedule
      * @param eventAt the {@link Instant} instance denoting scheduled instant
      */
     static void schedule(AstroThingHandler astroHandler, Job job, Instant eventAt) {
@@ -86,6 +108,19 @@ public interface Job extends SchedulerRunnable, Runnable {
      * @param channelId the channel ID
      */
     static void scheduleEvent(AstroThingHandler astroHandler, Calendar eventAt, String event, String channelId,
+            boolean configAlreadyApplied, TimeZone zone, Locale locale) {
+        scheduleEvent(astroHandler, eventAt, List.of(event), channelId, configAlreadyApplied, zone, locale);
+    }
+
+    /**
+     * Schedules an {@link EventJob} instance
+     *
+     * @param astroHandler the {@link AstroThingHandler} instance
+     * @param eventAt the {@link Instant} instance denoting scheduled instant
+     * @param event the event ID
+     * @param channelId the channel ID
+     */
+    static void scheduleEvent(AstroThingHandler astroHandler, Instant eventAt, String event, String channelId,
             boolean configAlreadyApplied, TimeZone zone, Locale locale) {
         scheduleEvent(astroHandler, eventAt, List.of(event), channelId, configAlreadyApplied, zone, locale);
     }
@@ -117,6 +152,35 @@ public interface Job extends SchedulerRunnable, Runnable {
         }
         List<Job> jobs = events.stream().map(e -> new EventJob(astroHandler, channelId, e)).collect(toList());
         schedule(astroHandler, new CompositeJob(astroHandler, jobs), instant, zone, locale);
+    }
+
+    /**
+     * Schedules an {@link EventJob} instance
+     *
+     * @param astroHandler the {@link AstroThingHandler} instance
+     * @param eventAt the {@link Calendar} instance denoting scheduled instant
+     * @param events the event IDs to schedule
+     * @param channelId the channel ID
+     */
+    static void scheduleEvent(AstroThingHandler astroHandler, Instant eventAt, List<String> events, String channelId,
+            boolean configAlreadyApplied, TimeZone zone, Locale locale) {
+        if (events.isEmpty()) {
+            return;
+        }
+        final Instant instant;
+        if (!configAlreadyApplied) {
+            final Channel channel = astroHandler.getThing().getChannel(channelId);
+            if (channel == null) {
+                LOGGER.warn("Cannot find channel '{}' for thing '{}'.", channelId, astroHandler.getThing().getUID());
+                return;
+            }
+            AstroChannelConfig config = channel.getConfiguration().as(AstroChannelConfig.class);
+            instant = applyConfig(eventAt, config);
+        } else {
+            instant = eventAt;
+        }
+        List<Job> jobs = events.stream().map(e -> new EventJob(astroHandler, channelId, e)).collect(toList());
+        schedule(astroHandler, new CompositeJob(astroHandler, jobs), instant, zone.toZoneId());
     }
 
     /**

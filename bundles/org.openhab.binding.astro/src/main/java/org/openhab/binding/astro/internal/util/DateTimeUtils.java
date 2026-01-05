@@ -13,6 +13,7 @@
 package org.openhab.binding.astro.internal.util;
 
 import java.time.Instant;
+import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Calendar;
 import java.util.Locale;
@@ -206,6 +207,13 @@ public class DateTimeUtils {
     }
 
     /**
+     * Returns true, if two instant objects are on the same day ignoring time.
+     */
+    public static boolean isSameDay(@Nullable ZonedDateTime cal1, @Nullable ZonedDateTime cal2) {
+        return cal1 != null && cal2 != null && cal1.toLocalDate().equals(cal2.toLocalDate());
+    }
+
+    /**
      * Returns the next Calendar from today.
      */
     public static Calendar getNextFromToday(TimeZone zone, Locale locale, Calendar... calendars) {
@@ -243,6 +251,15 @@ public class DateTimeUtils {
         Calendar truncCal1 = truncateToMinute(cal1);
         Calendar truncCal2 = truncateToMinute(cal2);
         return truncCal1.getTimeInMillis() >= truncCal2.getTimeInMillis();
+    }
+
+    /**
+     * Returns true, if inst1 is greater or equal than inst2, ignoring seconds.
+     */
+    public static boolean isTimeGreaterEquals(ZonedDateTime inst1, ZonedDateTime inst2) {
+        ZonedDateTime truncInst1 = inst1.truncatedTo(ChronoUnit.MINUTES);
+        ZonedDateTime truncInst2 = inst2.truncatedTo(ChronoUnit.MINUTES);
+        return !truncInst1.isBefore(truncInst2);
     }
 
     public static Calendar getAdjustedEarliest(Calendar cal, AstroChannelConfig config) {

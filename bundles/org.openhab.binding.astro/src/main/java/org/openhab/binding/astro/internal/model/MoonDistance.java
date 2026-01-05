@@ -15,12 +15,13 @@ package org.openhab.binding.astro.internal.model;
 import static org.openhab.core.library.unit.MetricPrefix.KILO;
 import static org.openhab.core.library.unit.SIUnits.METRE;
 
-import java.util.Calendar;
+import java.time.Instant;
 
 import javax.measure.quantity.Length;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.astro.internal.util.DateTimeUtils;
 import org.openhab.core.library.types.QuantityType;
 
 /**
@@ -28,39 +29,37 @@ import org.openhab.core.library.types.QuantityType;
  *
  * @author Gerhard Riegler - Initial contribution
  * @author Christoph Weitkamp - Introduced UoM
+ * @author Gaël L'hopital - Use Instant, made immutable
  */
 @NonNullByDefault
 public class MoonDistance {
+    public static final MoonDistance NULL = new MoonDistance();
 
-    private @Nullable Calendar date;
-    private double distance;
+    private final @Nullable Instant date;
+    private final double distance;
+
+    private MoonDistance() {
+        this.date = null;
+        this.distance = Double.NaN;
+    }
+
+    public MoonDistance(double distanceJd, double distance) {
+        this.date = DateTimeUtils.jdToInstant(distanceJd);
+        this.distance = distance;
+    }
 
     /**
      * Returns the date of the calculated distance.
      */
     @Nullable
-    public Calendar getDate() {
+    public Instant getDate() {
         return date;
-    }
-
-    /**
-     * Sets the date of the calculated distance.
-     */
-    public void setDate(@Nullable Calendar date) {
-        this.date = date;
     }
 
     /**
      * Returns the distance in kilometers.
      */
-    public QuantityType<Length> getDistance() {
-        return new QuantityType<>(distance, KILO(METRE));
-    }
-
-    /**
-     * Sets the distance in kilometers.
-     */
-    public void setDistance(double kilometer) {
-        this.distance = kilometer;
+    public @Nullable QuantityType<Length> getDistance() {
+        return Double.isNaN(distance) ? null : new QuantityType<>(distance, KILO(METRE));
     }
 }

@@ -12,6 +12,11 @@
  */
 package org.openhab.binding.astro.internal.model;
 
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
@@ -21,13 +26,16 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class Moon extends RiseSet implements Planet {
+    private final Map<DistanceType, MoonDistance> distances = new HashMap<>(DistanceType.values().length);
+
     private MoonPhase phase = new MoonPhase();
-    private MoonDistance apogee = new MoonDistance();
-    private MoonDistance perigee = new MoonDistance();
-    private MoonDistance distance = new MoonDistance();
     private Eclipse eclipse = new Eclipse(EclipseKind.PARTIAL, EclipseKind.TOTAL);
     private Position position = new Position();
     private Zodiac zodiac = Zodiac.NULL;
+
+    public Moon() {
+        EnumSet.allOf(DistanceType.class).forEach(d -> distances.put(d, MoonDistance.NULL));
+    }
 
     /**
      * Returns the moon phase.
@@ -43,32 +51,26 @@ public class Moon extends RiseSet implements Planet {
         this.phase = phase;
     }
 
+    public MoonDistance getDistanceType(DistanceType type) {
+        return Objects.requireNonNull(distances.get(type));
+    }
+
     /**
      * Returns the apogee.
      */
     public MoonDistance getApogee() {
-        return apogee;
-    }
-
-    /**
-     * Sets the apogee.
-     */
-    public void setApogee(MoonDistance apogee) {
-        this.apogee = apogee;
+        return getDistanceType(DistanceType.APOGEE);
     }
 
     /**
      * Returns the perigee.
      */
     public MoonDistance getPerigee() {
-        return perigee;
+        return getDistanceType(DistanceType.PERIGEE);
     }
 
-    /**
-     * Sets the perigee.
-     */
-    public void setPerigee(MoonDistance perigee) {
-        this.perigee = perigee;
+    public void setDistance(DistanceType type, MoonDistance moonDistance) {
+        distances.put(type, moonDistance);
     }
 
     /**
@@ -89,14 +91,7 @@ public class Moon extends RiseSet implements Planet {
      * Returns the current distance.
      */
     public MoonDistance getDistance() {
-        return distance;
-    }
-
-    /**
-     * Sets the current distance.
-     */
-    public void setDistance(MoonDistance distance) {
-        this.distance = distance;
+        return getDistanceType(DistanceType.CURRENT);
     }
 
     /**
