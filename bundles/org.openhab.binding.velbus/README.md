@@ -49,7 +49,7 @@ xidel -e \
 | vmb2pbn       | Push-button interface for Niko 1- or 2-fold push-buttons                                   |
 | vmb4an        | Analog I/O module                                                                          |
 | vmb4dc        | 4-channel 0/1-10V dimmer controller                                                        |
-| vmb4ledpwm-20 | 4 channel led PWM dimmer module                                                            |
+| vmb4ledpwm-20 | 4-channel led PWM dimmer module                                                            |
 | vmb4pb        | 4 button interface module                                                                  |
 | vmb4ry        | 4-channel relay module                                                                     |
 | vmb4ryld-10   | 4-channel relay module with voltage outputs                                                |
@@ -59,7 +59,7 @@ xidel -e \
 | vmb4ryno-20   | 4-channel relay module with potential-free contacts                                        |
 | vmb4ryno      | 4-channel relay module with potential-free contacts                                        |
 | vmb6in        | 6-channel input module                                                                     |
-| vmb6pb-20     | 6-channel input module                                                                     |
+| vmb6pb-20     | 6-button interface module                                                                     |
 | vmb6pbn       | Push-button interface module for Niko 4- or 6-fold push-button                             |
 | vmb7in        | 7-channel input module (potentialfree + pulse)                                             |
 | vmb8dc-20     | 8-channel 0 to 10 V dimmer control module                                                  |
@@ -108,7 +108,7 @@ xidel -e \
 | vmbpiro-10    | Outdoor motion, twilight and temperature sensor, Theben                                    |
 | vmbpiro-20    | Outdoor motion, twilight and temperature sensor, Theben                                    |
 | vmbpsumngr-20 | PSU manager                                                                                |
-| vmbrfr8s      | 8 channel RF receiver module                                                               |
+| vmbrfr8s      | 8-channel RF receiver module                                                               |
 | vmbsig        | Signum IoT gateway module                                                                  |
 | vmbsig-20     | Signum IoT gateway module                                                                  |
 | vmbsig-21     | Signum IoT gateway module                                                                  |

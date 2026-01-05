@@ -43,7 +43,7 @@
 		</supported-bridge-type-refs>
 
 		<label>VMB2DC-20</label>
-		<description>2 channel 0 to 10 V dimmer control module</description>
+		<description>2-channel 0 to 10 V dimmer control module</description>
 		<semantic-equipment-tag>LightSource</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="brightness" typeId="2channelBrightnessModule"/>
@@ -80,7 +80,7 @@
 		</supported-bridge-type-refs>
 
 		<label>VMB4LEDPWM-20</label>
-		<description>4 channel led PWM dimmer module</description>
+		<description>4-channel led PWM dimmer module</description>
 		<semantic-equipment-tag>LightSource</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="brightness" typeId="4channelBrightnessModule"/>
@@ -104,7 +104,7 @@
 		</supported-bridge-type-refs>
 
 		<label>VMB8DC-20</label>
-		<description>8 channel 0 to 10 V dimmer control module</description>
+		<description>8-channel 0 to 10 V dimmer control module</description>
 		<semantic-equipment-tag>LightSource</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="brightness" typeId="8channelBrightnessModule"/>

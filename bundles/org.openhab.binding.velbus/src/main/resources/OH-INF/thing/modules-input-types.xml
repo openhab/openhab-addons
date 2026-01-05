@@ -66,7 +66,7 @@
 		</supported-bridge-type-refs>
 
 		<label>VMB6PB-20</label>
-		<description>6 button interface module</description>
+		<description>6-button interface module</description>
 		<semantic-equipment-tag>Button</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="input" typeId="8channelInputModule"/>
@@ -176,7 +176,7 @@
 		</supported-bridge-type-refs>
 
 		<label>VMB8PB</label>
-		<description>8-Channel Push Button module</description>
+		<description>8-channel Push Button module</description>
 		<semantic-equipment-tag>Button</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="input" typeId="8channelInputModule"/>
@@ -728,7 +728,7 @@
 		</supported-bridge-type-refs>
 
 		<label>VMBRFR8S</label>
-		<description>8 channel RF receiver module</description>
+		<description>8-channel RF receiver module</description>
 		<channel-groups>
 			<channel-group id="input" typeId="8channelInputModule"/>
 			<channel-group id="feedback" typeId="8channelFeedbackModule"/>

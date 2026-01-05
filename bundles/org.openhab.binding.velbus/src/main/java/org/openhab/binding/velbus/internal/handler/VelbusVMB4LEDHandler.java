@@ -375,12 +375,11 @@ public class VelbusVMB4LEDHandler extends VelbusSensorWithAlarmClockHandler {
                 }
             } else if (command == COMMAND_DIMVALUE_STATUS) {
                 if (moduleMode.equals(DIM)) {
-                    if (channel >= 1 && channel <= 4 && packet.length >= 7) {
-                        VelbusColorChannel colorChannel = colorChannels[channel - 1];
-
+                    if (channel >= 1 && channel <= 4 && packet.length >= 8) {
                         for (int i = 0; i < (packet.length - 8); i++) {
                             ChannelUID brightness = new ChannelUID(thing.getUID(), CHANNEL_GROUP_BRIGHTNESS,
                                     CHANNEL + Integer.toString(channel + i));
+                            VelbusColorChannel colorChannel = colorChannels[channel + i - 1];
 
                             colorChannel.setBrightness(packet[6 + i]);
 
