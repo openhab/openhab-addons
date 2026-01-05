@@ -33,7 +33,7 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 /**
- * Manages custom thing types, channels, channel groups and config descriptions
+ * Manages custom thing types, channels, channel groups and config descriptions.
  * 
  * @author Danny Baumann - Initial contribution
  */
@@ -50,11 +50,7 @@ public class HomematicTypeProvider extends AbstractStorageBasedTypeProvider impl
 
     @Override
     public Collection<ConfigDescription> getConfigDescriptions(@Nullable Locale locale) {
-        Collection<ConfigDescription> result = new ArrayList<>();
-        for (Map.Entry<URI, ConfigDescription> entry : configDescriptionsByURI.entrySet()) {
-            result.add(entry.getValue());
-        }
-        return result;
+        return new ArrayList<>(configDescriptionsByURI.values());
     }
 
     @Override
