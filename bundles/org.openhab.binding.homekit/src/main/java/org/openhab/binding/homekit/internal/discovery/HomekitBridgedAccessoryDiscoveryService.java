@@ -65,19 +65,18 @@ public class HomekitBridgedAccessoryDiscoveryService
     @Override
     public void startScan() {
         if (thingHandler instanceof HomekitBridgeHandler handler) {
-            discoverBridgedAccessories(handler.getThing(), handler.getAccessories().values());
+            discoverBridgedAccessories(handler.getThing(), handler.getAccessories().values(),
+                    handler.getTranslationProvider(), handler.getBundle());
         }
     }
 
-    private void discoverBridgedAccessories(Thing bridge, Collection<Accessory> accessories) {
+    private void discoverBridgedAccessories(Thing bridge, Collection<Accessory> accessories,
+            TranslationProvider i18nProvider, Bundle bundle) {
         String bridgeUniqueId = thingHandler.getThing().getConfiguration()
                 .get(CONFIG_UNIQUE_ID) instanceof String uniqueId ? uniqueId : null;
         if (bridgeUniqueId == null) {
             return;
         }
-
-        TranslationProvider i18n = thingHandler.getTranslationProvider();
-        Bundle bundle = thingHandler.getBundle();
 
         accessories.forEach(accessory -> {
             if (accessory.aid instanceof Long aid && accessory.services != null) {
@@ -86,7 +85,7 @@ public class HomekitBridgedAccessoryDiscoveryService
                 String label = THING_LABEL_FMT.formatted(accessory.getAccessoryInstanceLabel(), uniqueId);
                 if (aid != 1L || Optional.ofNullable(accessory.services).stream().flatMap(List::stream)
                         .flatMap(service -> Optional.ofNullable(service.characteristics).stream()).flatMap(List::stream)
-                        .map(characteristic -> characteristic.getContent(uid, null, i18n, bundle))
+                        .map(characteristic -> characteristic.getContent(uid, null, i18nProvider, bundle))
                         .anyMatch(Content.ChannelDefinition.class::isInstance)) {
                     // if aid #1 yields at least one channel definition then also discover an embedded thing for it
                     thingDiscovered(DiscoveryResultBuilder.create(uid) //
