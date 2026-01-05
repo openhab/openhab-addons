@@ -13,10 +13,7 @@
 package org.openhab.binding.astro.internal.calc;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.openhab.core.library.unit.MetricPrefix.KILO;
-import static org.openhab.core.library.unit.SIUnits.METRE;
 
-import java.time.Instant;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.Locale;
@@ -83,6 +80,7 @@ public class MoonCalcTest {
 
     @Test
 <<<<<<< Upstream, based on main
+<<<<<<< Upstream, based on main
 =======
     public void testGetMoonInfoForApogeeAccuracy() {
         Moon moon = Objects.requireNonNull(moonCalc).getMoonInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE,
@@ -120,6 +118,8 @@ public class MoonCalcTest {
 
     @Test
 >>>>>>> f56c745 Review Moon Distance and factorization of MoonCalc
+=======
+>>>>>>> c665643 Copilot code view adressed
     public void testGetMoonInfoForRiseAccuracy() {
         Moon moon = Objects.requireNonNull(moonCalc).getMoonInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE,
                 TIME_ZONE, Locale.ROOT);
@@ -157,6 +157,7 @@ public class MoonCalcTest {
 
     @Test
 <<<<<<< Upstream, based on main
+<<<<<<< Upstream, based on main
 =======
     public void testGetMoonInfoForMoonDistanceAccuracy() {
         MoonCalc moonCalc = this.moonCalc;
@@ -174,6 +175,8 @@ public class MoonCalcTest {
 
     @Test
 >>>>>>> f56c745 Review Moon Distance and factorization of MoonCalc
+=======
+>>>>>>> c665643 Copilot code view adressed
     public void testGetMoonInfoForMoonPhaseAccuracy() {
         MoonCalc moonCalc = this.moonCalc;
         assertNotNull(moonCalc);

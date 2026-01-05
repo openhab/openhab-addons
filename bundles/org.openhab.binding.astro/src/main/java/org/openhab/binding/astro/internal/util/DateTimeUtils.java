@@ -208,6 +208,7 @@ public class DateTimeUtils {
 
     /**
 <<<<<<< Upstream, based on main
+<<<<<<< Upstream, based on main
      * Returns true, if two ZonedDateTime objects are on the same day ignoring time.
      */
     public static boolean isSameDay(@Nullable ZonedDateTime zdt1, @Nullable ZonedDateTime zdt2) {
@@ -215,6 +216,9 @@ public class DateTimeUtils {
                 && zdt1.toLocalDate().equals(zdt2.withZoneSameInstant(zdt1.getZone()).toLocalDate());
 =======
      * Returns true, if two instant objects are on the same day ignoring time.
+=======
+     * Returns true, if two ZonedDateTime objects are on the same day ignoring time.
+>>>>>>> c665643 Copilot code view adressed
      */
     public static boolean isSameDay(@Nullable ZonedDateTime cal1, @Nullable ZonedDateTime cal2) {
         return cal1 != null && cal2 != null && cal1.toLocalDate().equals(cal2.toLocalDate());
