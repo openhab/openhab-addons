@@ -195,7 +195,7 @@
 
 		<config-description>
 			<parameter name="patternMatch" type="text" required="true">
-				<label>Patern Match</label>
+				<label>Pattern Match</label>
 				<context>pattern-match</context>
 				<description>Regular expression used to identify device from received data (must match the whole line)</description>
 			</parameter>
