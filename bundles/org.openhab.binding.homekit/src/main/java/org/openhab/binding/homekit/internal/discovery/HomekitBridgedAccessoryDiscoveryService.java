@@ -77,7 +77,6 @@ public class HomekitBridgedAccessoryDiscoveryService
         if (bridgeUniqueId == null) {
             return;
         }
-
         accessories.forEach(accessory -> {
             if (accessory.aid instanceof Long aid && accessory.services != null) {
                 ThingUID uid = new ThingUID(THING_TYPE_BRIDGED_ACCESSORY, bridge.getUID(), aid.toString());
