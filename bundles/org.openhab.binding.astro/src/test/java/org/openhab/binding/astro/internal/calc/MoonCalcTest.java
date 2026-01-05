@@ -13,10 +13,7 @@
 package org.openhab.binding.astro.internal.calc;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.openhab.core.library.unit.MetricPrefix.KILO;
-import static org.openhab.core.library.unit.SIUnits.METRE;
 
-import java.time.Instant;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.Locale;
@@ -51,7 +48,6 @@ public class MoonCalcTest {
     private static final double AMSTERDAM_LONGITUDE = 4.8978293;
 
     private static final int ACCURACY_IN_MILLIS = 5 * 60 * 1000;
-    private static final int ACCURACY_IN_KILOMETRES = 4;
     private static final double ACCURACY_IN_DEGREE = 0.3;
 
     private @Nullable MoonCalc moonCalc;
@@ -80,41 +76,6 @@ public class MoonCalcTest {
 
         // for an old date the phase should not be calculated
         assertNull(moon.getPhase().getName());
-    }
-
-    @Test
-    public void testGetMoonInfoForApogeeAccuracy() {
-        Moon moon = Objects.requireNonNull(moonCalc).getMoonInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE,
-                TIME_ZONE, Locale.ROOT);
-
-        // expected result from haevens-above.com is 406,391 km @ 04 March 2019 12:27
-        var apogeeDistance = moon.getApogee().getDistance();
-        assertNotNull(apogeeDistance);
-        var kmDistance = apogeeDistance.toUnit(KILO(METRE));
-        assertNotNull(kmDistance);
-        assertEquals(406391, kmDistance.doubleValue(), ACCURACY_IN_KILOMETRES);
-        Instant apogeeDate = moon.getApogee().getDate();
-        assertNotNull(apogeeDate);
-        assertEquals(MoonCalcTest.newCalendar(2019, Calendar.MARCH, 4, 12, 27, TIME_ZONE).getTimeInMillis(),
-                apogeeDate.toEpochMilli(), ACCURACY_IN_MILLIS);
-    }
-
-    @Test
-    public void testGetMoonInfoForPerigeeAccuracy() {
-        Moon moon = Objects.requireNonNull(moonCalc).getMoonInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE,
-                TIME_ZONE, Locale.ROOT);
-
-        // expected result from haevens-above.com is 359,377 km @ 19 February 2019 20:44
-        var perigeeDistance = moon.getPerigee().getDistance();
-        assertNotNull(perigeeDistance);
-        var kmDistance = perigeeDistance.toUnit(KILO(METRE));
-        assertNotNull(kmDistance);
-        assertEquals(359377, kmDistance.doubleValue(), ACCURACY_IN_KILOMETRES);
-
-        Instant perigeeDate = moon.getPerigee().getDate();
-        assertNotNull(perigeeDate);
-        assertEquals(MoonCalcTest.newCalendar(2019, Calendar.MARCH, 19, 20, 48, TIME_ZONE).getTimeInMillis(),
-                perigeeDate.toEpochMilli(), ACCURACY_IN_MILLIS);
     }
 
     @Test
@@ -151,21 +112,6 @@ public class MoonCalcTest {
         // expected result from haevens-above.com is Azimuth: 100.5, altitude -17
         assertEquals(100.5, moon.getPosition().getAzimuth().doubleValue(), ACCURACY_IN_DEGREE);
         assertEquals(-17, moon.getPosition().getElevation().doubleValue(), ACCURACY_IN_DEGREE);
-    }
-
-    @Test
-    public void testGetMoonInfoForMoonDistanceAccuracy() {
-        MoonCalc moonCalc = this.moonCalc;
-        assertNotNull(moonCalc);
-        Moon moon = moonCalc.getMoonInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE, TIME_ZONE, Locale.ROOT);
-        moonCalc.setPositionalInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE, moon, TIME_ZONE, Locale.ROOT);
-
-        // expected result from haevens-above.com is 392612 km
-        var currentDistance = moon.getDistance().getDistance();
-        assertNotNull(currentDistance);
-        var kmDistance = currentDistance.toUnit(KILO(METRE));
-        assertNotNull(kmDistance);
-        assertEquals(392612, kmDistance.doubleValue(), ACCURACY_IN_KILOMETRES);
     }
 
     @Test

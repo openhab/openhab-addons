@@ -24,7 +24,7 @@ import org.openhab.binding.astro.internal.util.DateTimeUtils;
 import org.openhab.core.library.types.QuantityType;
 
 /**
- * Holds a distance informations.
+ * Holds a distance information.
  *
  * @author Gerhard Riegler - Initial contribution
  * @author Christoph Weitkamp - Introduced UoM
@@ -56,7 +56,7 @@ public class MoonDistance {
     }
 
     /**
-     * Returns the distance in kilometers.
+     * Returns the distance in metres.
      */
     public @Nullable QuantityType<Length> getDistance() {
         return Double.isNaN(distance) ? null : new QuantityType<>(distance, METRE);

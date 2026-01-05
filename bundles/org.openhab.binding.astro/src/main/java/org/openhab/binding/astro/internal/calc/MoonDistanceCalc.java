@@ -62,6 +62,10 @@ public class MoonDistanceCalc {
     }
 
     public static MoonDistance get(DistanceType type, double julianDate) {
+        if (DistanceType.CURRENT.equals(type)) {
+            throw new IllegalArgumentException("MoonDistanceCalc.get only supports APOGEE and PERIGEE");
+        }
+
         double moment = getApogeePerigee(type, julianDate);
         return calculate(moment);
     }
