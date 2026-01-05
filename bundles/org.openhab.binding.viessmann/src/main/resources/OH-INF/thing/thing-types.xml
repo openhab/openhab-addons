@@ -575,6 +575,14 @@
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
-
+	<channel-type id="cubic-meter-per-hour">
+		<item-type unitHint="m³/h">Number:VolumetricFlowRate</item-type>
+		<label>Cubic Meters Per Hour</label>
+		<category>Number</category>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
 
 </thing:thing-descriptions>

@@ -430,6 +430,11 @@ public class DeviceHandler extends ViessmannThingHandler {
                                 viUnit = "watt";
                                 typeEntry = "power";
                             }
+                            if ("cubicMeter/hour".equals(viUnit)) {
+                                valueEntry = String.valueOf(Double.parseDouble(prop.value.value) * 1000 / 60);
+                                viUnit = "liter/minute";
+                                typeEntry = "cubic-meter-per-hour";
+                            }
                             break;
                         case "status":
                             typeEntry = prop.status.type;
@@ -753,6 +758,7 @@ public class DeviceHandler extends ViessmannThingHandler {
                                 case "shift":
                                 case "duration":
                                 case "thermal-energy":
+                                case "cubic-meter-per-hour":
                                     updateChannelState(msg.getChannelId(), msg.getValue(), unit);
                                     break;
                                 case "boolean":
