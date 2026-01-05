@@ -409,8 +409,10 @@ public class ViessmannApi {
                         logger.debug("ViError: {} | Device not reachable", viError.getMessage());
                         throw new ViessmannCommunicationException(viError.getMessage());
                     case HttpStatus.BAD_REQUEST_400:
-                        logger.debug("ViError: {} | Gateway offline", viError.getExtendedPayload().getReason());
-                        throw new ViessmannCommunicationException(viError.getExtendedPayload().getReason());
+                        logger.debug("ViError: {} | {}", viError.getExtendedPayload().getReason(),
+                                viError.getExtendedPayload().getDetails());
+                        throw new ViessmannCommunicationException(viError.getExtendedPayload().getReason() + " | "
+                                + viError.getExtendedPayload().getDetails());
                     default:
                         logger.error("ViError: {} | StatusCode: {} | Reason: {}", viError.getMessage(),
                                 viError.getStatusCode(), viError.getExtendedPayload().getReason());
