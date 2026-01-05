@@ -15,16 +15,21 @@ package org.openhab.binding.homekit.internal.discovery;
 import static org.openhab.binding.homekit.internal.HomekitBindingConstants.*;
 
 import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.homekit.internal.dto.Accessory;
+import org.openhab.binding.homekit.internal.dto.Content;
 import org.openhab.binding.homekit.internal.handler.HomekitBridgeHandler;
 import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.DiscoveryService;
+import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingUID;
+import org.osgi.framework.Bundle;
 import org.osgi.service.component.annotations.Component;
 
 /**
@@ -60,27 +65,35 @@ public class HomekitBridgedAccessoryDiscoveryService
     @Override
     public void startScan() {
         if (thingHandler instanceof HomekitBridgeHandler handler) {
-            discoverBridgedAccessories(handler.getThing(), handler.getAccessories().values());
+            discoverBridgedAccessories(handler.getThing(), handler.getAccessories().values(),
+                    handler.getTranslationProvider(), handler.getBundle());
         }
     }
 
-    private void discoverBridgedAccessories(Thing bridge, Collection<Accessory> accessories) {
+    private void discoverBridgedAccessories(Thing bridge, Collection<Accessory> accessories,
+            TranslationProvider i18nProvider, Bundle bundle) {
         String bridgeUniqueId = thingHandler.getThing().getConfiguration()
                 .get(CONFIG_UNIQUE_ID) instanceof String uniqueId ? uniqueId : null;
         if (bridgeUniqueId == null) {
             return;
         }
         accessories.forEach(accessory -> {
-            if (accessory.aid instanceof Long aid && aid != 1L && accessory.services != null) {
+            if (accessory.aid instanceof Long aid && accessory.services != null) {
                 ThingUID uid = new ThingUID(THING_TYPE_BRIDGED_ACCESSORY, bridge.getUID(), aid.toString());
                 String uniqueId = STRING_AID_FMT.formatted(bridgeUniqueId, aid);
                 String label = THING_LABEL_FMT.formatted(accessory.getAccessoryInstanceLabel(), uniqueId);
-                thingDiscovered(DiscoveryResultBuilder.create(uid) //
-                        .withBridge(bridge.getUID()) //
-                        .withLabel(label) //
-                        .withProperty(CONFIG_ACCESSORY_ID, aid.toString()) //
-                        .withProperty(PROPERTY_UNIQUE_ID, uniqueId).withRepresentationProperty(PROPERTY_UNIQUE_ID)
-                        .build());
+                if (aid != 1L || Optional.ofNullable(accessory.services).stream().flatMap(List::stream)
+                        .flatMap(service -> Optional.ofNullable(service.characteristics).stream()).flatMap(List::stream)
+                        .map(characteristic -> characteristic.getContent(uid, null, i18nProvider, bundle))
+                        .anyMatch(Content.ChannelDefinition.class::isInstance)) {
+                    // if aid #1 yields at least one channel definition then also discover an embedded thing for it
+                    thingDiscovered(DiscoveryResultBuilder.create(uid) //
+                            .withBridge(bridge.getUID()) //
+                            .withLabel(label) //
+                            .withProperty(CONFIG_ACCESSORY_ID, aid.toString()) //
+                            .withProperty(PROPERTY_UNIQUE_ID, uniqueId).withRepresentationProperty(PROPERTY_UNIQUE_ID)
+                            .build());
+                }
             }
         });
     }

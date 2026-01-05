@@ -17,6 +17,7 @@ There are three types of Things supported:
 
 Things of type `bridge` and `accessory` both communicate directly with their HomeKit accessory device via the LAN.
 Whereas `bridged-accessory` Things communicate via their respective `bridge` Thing.
+Sometimes a `bridge` may contain a `bridged-accessory` that is physically embedded within the same hardware.
 
 ## Discovery
 
@@ -55,6 +56,7 @@ The following table shows the Thing configuration parameters for `bridged-access
 As a general rule `accessoryID` is set by the auto-discovery process.
 However you can configure it manually if you wish.
 It must be the ID of the `bridged-accessory` within the `bridge`.
+The `accessoryID` is probably "1" for a `bridged-accessory` that is physically embedded within the same hardware as its `bridge`.
 
 ## Thing Pairing
 
