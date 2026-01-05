@@ -76,6 +76,8 @@ public class ViessmannGatewayHandler extends BaseBridgeHandler implements Bridge
     private String gatewaySerial = "";
 
     private @Nullable ScheduledFuture<?> viessmannErrorsPollingJob;
+    private @Nullable ScheduledFuture<?> initJob;
+    private volatile boolean disposed = false;
 
     public @Nullable List<DeviceData> devicesData;
     protected final List<String> devicesList = new ArrayList<>();
@@ -132,11 +134,20 @@ public class ViessmannGatewayHandler extends BaseBridgeHandler implements Bridge
 
     @Override
     public void dispose() {
+        disposed = true;
+
+        if (initJob != null) {
+            initJob.cancel(true);
+            initJob = null;
+        }
+
+        stopViessmannErrorsPolling();
+
         BridgeHandler bridgeHandler = getBridgeHandler();
         if (bridgeHandler != null) {
             ((ViessmannAccountHandler) bridgeHandler).removeRegisteredErrorPollingGateway(gatewaySerial);
         }
-        stopViessmannErrorsPolling();
+        super.dispose();
     }
 
     @Override
@@ -165,17 +176,22 @@ public class ViessmannGatewayHandler extends BaseBridgeHandler implements Bridge
             startViessmannErrorsPolling(config.pollingIntervalErrors);
         }
 
-        scheduler.execute(() -> {
+        initJob = scheduler.schedule(() -> {
+            if (disposed) {
+                return;
+            }
             try {
                 getAllDevices();
-                if (!devicesList.isEmpty()) {
+                if (!devicesList.isEmpty() && !disposed) {
                     updateBridgeStatus(ThingStatus.ONLINE);
                 }
             } catch (Exception e) {
-                logger.error("Failed to initialize Viessmann Gateway", e);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                if (!disposed) {
+                    logger.error("Failed to initialize Viessmann Gateway", e);
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                }
             }
-        });
+        }, 0, TimeUnit.SECONDS);
     }
 
     private void migrateChannelIds() {
@@ -323,12 +339,18 @@ public class ViessmannGatewayHandler extends BaseBridgeHandler implements Bridge
         return false;
     }
 
-    private void pollingFeatures() {
-        List<Thing> children = getChildren();
-        for (Thing child : children) {
-            ThingHandler childHandler = child.getHandler();
-            if (childHandler instanceof DeviceHandler && ThingHandlerHelper.isHandlerInitialized(childHandler)) {
-                updateFeaturesOfDevice((DeviceHandler) childHandler);
+    protected void pollingFeatures() {
+        if (disposed) {
+            return;
+        }
+
+        for (Thing child : getChildren()) {
+            ThingHandler handler = child.getHandler();
+            if (handler instanceof DeviceHandler deviceHandler && ThingHandlerHelper.isHandlerInitialized(handler)) {
+                if (child.getStatus() == ThingStatus.REMOVED) {
+                    continue;
+                }
+                updateFeaturesOfDevice(deviceHandler);
             }
         }
     }
@@ -392,13 +414,17 @@ public class ViessmannGatewayHandler extends BaseBridgeHandler implements Bridge
     }
 
     private void startViessmannErrorsPolling(Integer pollingInterval) {
-        ScheduledFuture<?> currentPollingJob = viessmannErrorsPollingJob;
-        if (currentPollingJob == null) {
-            viessmannErrorsPollingJob = scheduler.scheduleWithFixedDelay(() -> {
-                logger.debug("Refresh job scheduled to run every {} minutes for polling errors", pollingInterval);
-                getDeviceError();
-            }, 0, pollingInterval, TimeUnit.MINUTES);
+        if (viessmannErrorsPollingJob != null) {
+            return;
         }
+
+        viessmannErrorsPollingJob = scheduler.scheduleWithFixedDelay(() -> {
+            if (disposed || !isInitialized()) {
+                return;
+            }
+            logger.debug("Refresh job scheduled to run every {} minutes for polling errors", pollingInterval);
+            getDeviceError();
+        }, 0, pollingInterval, TimeUnit.MINUTES);
     }
 
     public void stopViessmannErrorsPolling() {
