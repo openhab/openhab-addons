@@ -234,6 +234,7 @@ public class DateTimeUtils {
 
     /**
 <<<<<<< Upstream, based on main
+<<<<<<< Upstream, based on main
      * Evaluates whether the second date time is within the same date as the first date time in the time zone of
      * the latter.
      *
@@ -241,6 +242,8 @@ public class DateTimeUtils {
      * @param zdt2 the second date to evaluate.
      * @return {@code true} if {@code zdt2} is within the same date as {@code zdt1} in {@code zdt1}'s time zone.
 =======
+=======
+>>>>>>> a082c65 Copilot code view adressed
 <<<<<<< Upstream, based on main
      * Returns true, if two ZonedDateTime objects are on the same day ignoring time.
 >>>>>>> f25b664 Review Moon Distance and factorization of MoonCalc
@@ -250,6 +253,9 @@ public class DateTimeUtils {
                 && zdt1.toLocalDate().equals(zdt2.withZoneSameInstant(zdt1.getZone()).toLocalDate());
 =======
      * Returns true, if two instant objects are on the same day ignoring time.
+=======
+     * Returns true, if two ZonedDateTime objects are on the same day ignoring time.
+>>>>>>> c665643 Copilot code view adressed
      */
     public static boolean isSameDay(@Nullable ZonedDateTime cal1, @Nullable ZonedDateTime cal2) {
         return cal1 != null && cal2 != null && cal1.toLocalDate().equals(cal2.toLocalDate());

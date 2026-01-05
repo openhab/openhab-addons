@@ -57,6 +57,9 @@ public class MoonDistance {
 
     /**
 <<<<<<< Upstream, based on main
+<<<<<<< Upstream, based on main
+=======
+>>>>>>> c665643 Copilot code view adressed
      * Returns the distance in metres.
      */
     public @Nullable QuantityType<Length> getDistance() {
