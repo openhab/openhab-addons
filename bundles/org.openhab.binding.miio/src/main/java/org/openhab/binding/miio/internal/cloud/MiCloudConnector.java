@@ -509,7 +509,7 @@ public class MiCloudConnector {
         for (CloudLogonListener listener : listeners) {
             logger.debug("Inform listener {}, with image", listener);
             try {
-                listener.onCaptcha(image);
+                listener.onLogonImage(image);
             } catch (Exception e) {
                 logger.debug("Could not inform listener {}: {}: ", listener, e.getMessage(), e);
             }

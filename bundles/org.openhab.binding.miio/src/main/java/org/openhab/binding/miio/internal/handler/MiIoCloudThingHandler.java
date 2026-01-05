@@ -109,26 +109,16 @@ public class MiIoCloudThingHandler extends BaseThingHandler implements CloudLogo
             setupCloudConnector();
             cloudConnector.setLoginMode(CloudLoginMode.TOKEN);
             miIoScheduler.schedule(this::connectorLogin, 1, TimeUnit.SECONDS);
-
-            // miIoScheduler.schedule(this::startqrLogin, 1, TimeUnit.SECONDS);
-            // miIoScheduler.schedule(this::startLogin, 1, TimeUnit.SECONDS);
-            // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Initiating logon");
-
         } else {
-            // setupCloudConnector();
-
             if (this.loginMethod == CloudLoginMode.QRCODE) {
                 logger.debug("Login method is QR code");
-                miIoScheduler.schedule(this::startqrLogin, 1, TimeUnit.SECONDS);
+                miIoScheduler.schedule(this::startQRLogin, 1, TimeUnit.SECONDS);
             } else {
                 logger.debug("Login method is User ID");
-                miIoScheduler.schedule(this::startLogin, 1, TimeUnit.SECONDS);
+                miIoScheduler.schedule(this::startUserIdLogin, 1, TimeUnit.SECONDS);
             }
-
-            // scheduleLogin();
         }
-
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Initiating logon");
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Initiating logon");
     }
 
     private String getConfigString(Configuration config, String key) {
@@ -136,7 +126,7 @@ public class MiIoCloudThingHandler extends BaseThingHandler implements CloudLogo
         return value == null ? "" : value;
     }
 
-    private void startqrLogin() {
+    private void startQRLogin() {
 
         logger.debug("Logon with QR code for username {}", username);
         try {
@@ -186,12 +176,7 @@ public class MiIoCloudThingHandler extends BaseThingHandler implements CloudLogo
         cloudConnector.registerListener(this);
     }
 
-    private void scheduleLogin() {
-        miIoScheduler.schedule(this::startLogin, 1, TimeUnit.SECONDS);
-        // miIoScheduler.schedule(this::qrcode, 1, TimeUnit.SECONDS);
-    }
-
-    private void startLogin() {
+    private void startUserIdLogin() {
         logger.debug("Logon with username {}", username);
         try {
 
@@ -208,8 +193,8 @@ public class MiIoCloudThingHandler extends BaseThingHandler implements CloudLogo
     }
 
     @Override
-    public void onCaptcha(byte[] captcha) {
-        logger.debug("Captcha received with length: {}", captcha.length);
+    public void onLogonImage(byte[] captcha) {
+        logger.debug("QR / Captcha received with length: {}", captcha.length);
         String mimeType = HttpUtil.guessContentTypeFromData(captcha);
         updateState(CHANNEL_LOGON_IMAGE, new RawType(captcha, mimeType));
     }
@@ -257,7 +242,7 @@ public class MiIoCloudThingHandler extends BaseThingHandler implements CloudLogo
 
     @Override
     public void dispose() {
-        logger.debug("Disposing Xiaomi Mi IO handler '{}'", getThing().getUID());
+        logger.debug("Disposing Xiaomi Mi IO Cloudconnector handler '{}'", getThing().getUID());
         // shutdownScheduler();
     }
 

@@ -206,7 +206,6 @@ public class MiCloudUserIdLogonConnector extends MiCloudConnector {
             throw new MiCloudException("Error getting logon details from step 2: " + content2);
         }
 
-        // Extract fields using null-safe DTO getters
         ssecurity = jsonResp.getSsecurity();
         userId = jsonResp.getUserId();
         String cUserId = jsonResp.getcUserId();
@@ -233,7 +232,7 @@ public class MiCloudUserIdLogonConnector extends MiCloudConnector {
             updateLoginState(CloudLoginState.CAPTCHA_FAILED);
         }
 
-        if (securityStatus == null || securityStatus != 0) {
+        if (securityStatus != 0) {
             logger.debug("Xiaomi Cloud Step2 response: {}", CloudUtil.parseJson(content2));
             logger.debug(
                     """

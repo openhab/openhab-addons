@@ -29,7 +29,7 @@ public interface CloudLogonListener {
      *
      * @param image the captcha image as jpg byte array
      */
-    void onCaptcha(byte[] image);
+    void onLogonImage(byte[] image);
 
     /**
      * Callback method for the {@link MiIoMessageListener}

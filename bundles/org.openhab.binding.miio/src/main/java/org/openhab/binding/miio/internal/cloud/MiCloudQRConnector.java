@@ -137,11 +137,6 @@ public class MiCloudQRConnector extends MiCloudConnector {
             String url = "https://account.xiaomi.com/longPolling/loginUrl";
             long now = System.currentTimeMillis();
 
-            // Initial request to establish connection
-            // Request request = httpClient.newRequest("https://google.com").timeout(REQUEST_TIMEOUT_SECONDS,
-            // TimeUnit.SECONDS);
-            // logger.debug("Initial request to google.com: {}", request.send().getStatus());
-
             ContentResponse response = httpClient.newRequest(url).param("_qrsize", "240")
                     .param("qs", "%3Fsid%3Dxiaomiio%26_json%3Dtrue").param("callback", "https://sts.api.io.mi.com/sts")
                     .param("_hasLogo", "false").param("sid", "xiaomiio").param("serviceParam", "")
