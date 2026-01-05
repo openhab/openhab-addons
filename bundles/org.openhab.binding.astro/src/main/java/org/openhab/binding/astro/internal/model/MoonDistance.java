@@ -65,7 +65,11 @@ public class MoonDistance {
      * Returns the distance in kilometers.
      */
     public @Nullable QuantityType<Length> getDistance() {
+<<<<<<< Upstream, based on main
         return Double.isNaN(distance) ? null : new QuantityType<>(distance, KILO(METRE));
 >>>>>>> f56c745 Review Moon Distance and factorization of MoonCalc
+=======
+        return Double.isNaN(distance) ? null : new QuantityType<>(distance, METRE);
+>>>>>>> f52fedd Switch calculations to meter
     }
 }
