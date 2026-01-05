@@ -156,24 +156,10 @@ public class HomeWizardEnergySocketHandlerTest extends HomeWizardHandlerTest {
                     getSystemChannelUid(thing, HomeWizardBindingConstants.CHANNEL_SYSTEM_WIFI_SSID),
                     getState("My Wi-Fi"));
             verify(callback).stateUpdated(
-                    getSystemChannelUid(thing, HomeWizardBindingConstants.CHANNEL_SYSTEM_CLOUD_ENABLED),
-                    getState(true));
-
-        } finally {
-            handler.dispose();
-        }
-    }
-
-    // @Test
-    public void testUpdateSystemChannels() {
-        final Thing thing = mockThing(false);
-        final ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
-        final HomeWizardEnergySocketHandlerMock handler = createAndInitHandler(callback, thing);
-
-        try {
+                    getSystemChannelUid(thing, HomeWizardBindingConstants.CHANNEL_SYSTEM_WIFI_RSSI), getState(-50));
             verify(callback).stateUpdated(
                     getSystemChannelUid(thing, HomeWizardBindingConstants.CHANNEL_SYSTEM_CLOUD_ENABLED),
-                    getState("ON"));
+                    getState(true));
 
         } finally {
             handler.dispose();

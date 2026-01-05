@@ -339,7 +339,7 @@ public abstract class HomeWizardDeviceHandler extends BaseThingHandler {
                         HomeWizardBindingConstants.CHANNEL_SYSTEM_WIFI_RSSI, new DecimalType(payload.getWifiRssi()));
             }
         }
-    };
+    }
 
     /**
      * Device specific handling of the returned batteries data.

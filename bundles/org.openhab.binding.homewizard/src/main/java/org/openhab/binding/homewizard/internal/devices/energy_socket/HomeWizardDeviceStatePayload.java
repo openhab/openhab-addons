@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.homewizard.internal.devices.energy_socket;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -21,6 +23,7 @@ import com.google.gson.annotations.SerializedName;
  * @author Gearrel Welvaart - Renamed class
  *
  */
+@NonNullByDefault
 public class HomeWizardDeviceStatePayload {
     @SerializedName("power_on")
     private boolean powerOn;

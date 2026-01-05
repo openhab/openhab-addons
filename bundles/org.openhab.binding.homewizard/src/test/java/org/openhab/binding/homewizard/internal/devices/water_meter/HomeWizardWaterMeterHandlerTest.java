@@ -102,10 +102,6 @@ public class HomeWizardWaterMeterHandlerTest extends HomeWizardHandlerTest {
             verify(callback).statusUpdated(eq(thing), argThat(arg -> arg.getStatus().equals(ThingStatus.ONLINE)));
 
             verify(callback).stateUpdated(
-                    getSystemChannelUid(thing, HomeWizardBindingConstants.CHANNEL_SYSTEM_WIFI_SSID),
-                    getState("My Wi-Fi"));
-
-            verify(callback).stateUpdated(
                     new ChannelUID(thing.getUID(),
                             HomeWizardBindingConstants.CHANNEL_GROUP_WATER + "#"
                                     + HomeWizardBindingConstants.CHANNEL_ACTIVE_LITER),
@@ -115,6 +111,15 @@ public class HomeWizardWaterMeterHandlerTest extends HomeWizardHandlerTest {
                             HomeWizardBindingConstants.CHANNEL_GROUP_WATER + "#"
                                     + HomeWizardBindingConstants.CHANNEL_TOTAL_LITER),
                     getState(123.456, SIUnits.CUBIC_METRE));
+
+            verify(callback).stateUpdated(
+                    getSystemChannelUid(thing, HomeWizardBindingConstants.CHANNEL_SYSTEM_WIFI_SSID),
+                    getState("My Wi-Fi"));
+            verify(callback).stateUpdated(
+                    getSystemChannelUid(thing, HomeWizardBindingConstants.CHANNEL_SYSTEM_WIFI_RSSI), getState(-58));
+            verify(callback).stateUpdated(
+                    getSystemChannelUid(thing, HomeWizardBindingConstants.CHANNEL_SYSTEM_CLOUD_ENABLED),
+                    getState(true));
 
         } finally {
             handler.dispose();

@@ -110,6 +110,20 @@ public class HomeWizardPlugInBatteryMeterHandlerTest extends HomeWizardHandlerTe
 
             verify(callback).stateUpdated(getEnergyChannelUid(thing, HomeWizardBindingConstants.CHANNEL_FREQUENCY),
                     getState(50.0, Units.HERTZ));
+
+            verify(callback).stateUpdated(
+                    getSystemChannelUid(thing, HomeWizardBindingConstants.CHANNEL_SYSTEM_WIFI_SSID),
+                    getState("My Wi-Fi"));
+            verify(callback).stateUpdated(
+                    getSystemChannelUid(thing, HomeWizardBindingConstants.CHANNEL_SYSTEM_WIFI_RSSI), getState(-77));
+            verify(callback).stateUpdated(getSystemChannelUid(thing, HomeWizardBindingConstants.CHANNEL_SYSTEM_UPTIME),
+                    getState(356, Units.SECOND));
+            verify(callback).stateUpdated(
+                    getSystemChannelUid(thing, HomeWizardBindingConstants.CHANNEL_SYSTEM_CLOUD_ENABLED),
+                    getState(true));
+            verify(callback).stateUpdated(
+                    getSystemChannelUid(thing, HomeWizardBindingConstants.CHANNEL_SYSTEM_STATUS_LED_BRIGHTNESS),
+                    getState(100));
         } finally {
             handler.dispose();
         }

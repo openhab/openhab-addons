@@ -38,7 +38,7 @@ public class HomeWizardEnergyMeterSubHandler {
     /**
      * Device specific handling of the returned data.
      *
-     * @param data The data obtained form the API call
+     * @param data The data obtained from the API call
      */
     public static void handleMeasurementData(String data, HomeWizardDeviceHandler handler) {
         var payload = gson.fromJson(data, HomeWizardEnergyMeterMeasurementPayload.class);
