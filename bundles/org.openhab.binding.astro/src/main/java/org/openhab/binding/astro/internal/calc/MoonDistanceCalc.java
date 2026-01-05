@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.astro.internal.calc;
 
-import static org.openhab.binding.astro.internal.util.MathUtils.*;
+import static org.openhab.binding.astro.internal.util.MathUtils.sinDeg;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.astro.internal.model.DistanceType;
@@ -54,10 +54,10 @@ public class MoonDistanceCalc {
         double t2 = t * t;
         double t3 = t2 * t;
         double t4 = t3 * t;
-        double d = 297.8502042 + 445267.11151686 * t - .00163 * t2 + t3 / 545868 - t4 / 113065000;
-        double m = AstroConstants.E05_0 + 35999.0502909 * t - .0001536 * t2 + t3 / 24490000;
-        double m1 = 134.9634114 + 477198.8676313 * t + .008997 * t2 + t3 / 69699 - t4 / 14712000;
-        double f = 93.27209929999999 + 483202.0175273 * t - .0034029 * t2 - t3 / 3526000 + t4 / 863310000;
+        double d = Math.toRadians(297.8502042 + 445267.11151686 * t - .00163 * t2 + t3 / 545868 - t4 / 113065000);
+        double m = Math.toRadians(AstroConstants.E05_0 + 35999.0502909 * t - .0001536 * t2 + t3 / 24490000);
+        double m1 = Math.toRadians(134.9634114 + 477198.8676313 * t + .008997 * t2 + t3 / 69699 - t4 / 14712000);
+        double f = Math.toRadians(93.2720993 + 483202.0175273 * t - .0034029 * t2 - t3 / 3526000 + t4 / 863310000);
         return new MoonDistance(jd, 385000560 + getCoefficient(d, m, m1, f));
     }
 
@@ -73,7 +73,7 @@ public class MoonDistanceCalc {
     private static double getCoefficient(double d, double m, double m1, double f) {
         double sr = 0;
         for (int t = 0; t < 60; t++) {
-            sr += KR[t] * cosDeg(KD[t] * d + KM[t] * m + KM1[t] * m1 + KF[t] * f);
+            sr += KR[t] * Math.cos(KD[t] * d + KM[t] * m + KM1[t] * m1 + KF[t] * f);
         }
         return sr;
     }
