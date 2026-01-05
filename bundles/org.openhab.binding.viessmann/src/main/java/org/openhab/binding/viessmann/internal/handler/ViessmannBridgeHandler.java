@@ -168,8 +168,9 @@ public class ViessmannBridgeHandler extends BaseBridgeHandler implements BridgeI
     public void dispose() {
         disposed = true;
 
-        if (initJob != null) {
-            initJob.cancel(true);
+        ScheduledFuture<?> currentInitJob = initJob;
+        if (currentInitJob != null) {
+            currentInitJob.cancel(true);
             initJob = null;
         }
 
