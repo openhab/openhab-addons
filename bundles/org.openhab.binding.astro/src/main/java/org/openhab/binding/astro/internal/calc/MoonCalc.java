@@ -14,11 +14,23 @@ package org.openhab.binding.astro.internal.calc;
 
 import static org.openhab.binding.astro.internal.util.MathUtils.*;
 
-import java.math.*;
-import java.util.*;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.Calendar;
+import java.util.Locale;
+import java.util.Set;
+import java.util.TimeZone;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.astro.internal.model.*;
+import org.openhab.binding.astro.internal.model.DistanceType;
+import org.openhab.binding.astro.internal.model.Eclipse;
+import org.openhab.binding.astro.internal.model.EclipseKind;
+import org.openhab.binding.astro.internal.model.EclipseType;
+import org.openhab.binding.astro.internal.model.Moon;
+import org.openhab.binding.astro.internal.model.MoonPhase;
+import org.openhab.binding.astro.internal.model.MoonPhaseName;
+import org.openhab.binding.astro.internal.model.Position;
+import org.openhab.binding.astro.internal.model.Range;
 import org.openhab.binding.astro.internal.util.DateTimeUtils;
 
 /**
