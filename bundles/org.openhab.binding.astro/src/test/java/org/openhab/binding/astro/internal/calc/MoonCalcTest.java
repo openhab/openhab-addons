@@ -14,6 +14,7 @@ package org.openhab.binding.astro.internal.calc;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.time.Instant;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.Locale;
@@ -79,6 +80,40 @@ public class MoonCalcTest {
     }
 
     @Test
+<<<<<<< Upstream, based on main
+=======
+    public void testGetMoonInfoForApogeeAccuracy() {
+        Moon moon = Objects.requireNonNull(moonCalc).getMoonInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE,
+                TIME_ZONE, Locale.ROOT);
+
+        // expected result from haevens-above.com is 406,391 km @ 04 March 2019 12:27
+        var apogeeDistance = moon.getApogee().getDistance();
+        assertNotNull(apogeeDistance);
+        assertEquals(406391, apogeeDistance.doubleValue(), ACCURACY_IN_KILOMETRES);
+        Instant apogeeDate = moon.getApogee().getDate();
+        assertNotNull(apogeeDate);
+        assertEquals(MoonCalcTest.newCalendar(2019, Calendar.MARCH, 4, 12, 27, TIME_ZONE).getTimeInMillis(),
+                apogeeDate.toEpochMilli(), ACCURACY_IN_MILLIS);
+    }
+
+    @Test
+    public void testGetMoonInfoForPerigeeAccuracy() {
+        Moon moon = Objects.requireNonNull(moonCalc).getMoonInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE,
+                TIME_ZONE, Locale.ROOT);
+
+        // expected result from haevens-above.com is 359,377 km @ 19 February 2019 20:44
+        var perigeeDistance = moon.getPerigee().getDistance();
+        assertNotNull(perigeeDistance);
+        assertEquals(359377, perigeeDistance.doubleValue(), ACCURACY_IN_KILOMETRES);
+
+        Instant perigeeDate = moon.getPerigee().getDate();
+        assertNotNull(perigeeDate);
+        assertEquals(MoonCalcTest.newCalendar(2019, Calendar.MARCH, 19, 20, 48, TIME_ZONE).getTimeInMillis(),
+                perigeeDate.toEpochMilli(), ACCURACY_IN_MILLIS);
+    }
+
+    @Test
+>>>>>>> f56c745 Review Moon Distance and factorization of MoonCalc
     public void testGetMoonInfoForRiseAccuracy() {
         Moon moon = Objects.requireNonNull(moonCalc).getMoonInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE,
                 TIME_ZONE, Locale.ROOT);
@@ -115,6 +150,22 @@ public class MoonCalcTest {
     }
 
     @Test
+<<<<<<< Upstream, based on main
+=======
+    public void testGetMoonInfoForMoonDistanceAccuracy() {
+        MoonCalc moonCalc = this.moonCalc;
+        assertNotNull(moonCalc);
+        Moon moon = moonCalc.getMoonInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE, TIME_ZONE, Locale.ROOT);
+        moonCalc.setPositionalInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE, moon, TIME_ZONE, Locale.ROOT);
+
+        // expected result from haevens-above.com is 392612 km
+        var currentDistance = moon.getDistance().getDistance();
+        assertNotNull(currentDistance);
+        assertEquals(392612, currentDistance.doubleValue(), ACCURACY_IN_KILOMETRES);
+    }
+
+    @Test
+>>>>>>> f56c745 Review Moon Distance and factorization of MoonCalc
     public void testGetMoonInfoForMoonPhaseAccuracy() {
         MoonCalc moonCalc = this.moonCalc;
         assertNotNull(moonCalc);

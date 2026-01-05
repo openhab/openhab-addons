@@ -76,6 +76,26 @@ public interface Job extends SchedulerRunnable, Runnable {
      *
      * @param astroHandler the {@link AstroThingHandler} instance
      * @param job the {@link Job} instance to schedule
+     * @param eventAt the {@link Calendar} instance denoting scheduled instant
+     */
+    static void schedule(AstroThingHandler astroHandler, Job job, Instant eventAt, ZoneId zone) {
+        try {
+            ZonedDateTime now = ZonedDateTime.now(zone);
+            ZonedDateTime eventZDT = eventAt.atZone(zone);
+
+            if (isSameDay(eventZDT, now) && isTimeGreaterEquals(eventZDT, now)) {
+                astroHandler.schedule(job, eventAt);
+            }
+        } catch (Exception ex) {
+            LOGGER.error("{}", ex.getMessage(), ex);
+        }
+    }
+
+    /**
+     * Schedules the provided {@link Job} instance
+     *
+     * @param astroHandler the {@link AstroThingHandler} instance
+     * @param job the {@link Job} instance to schedule
      * @param eventAt the {@link Instant} instance denoting scheduled instant
      */
     static void schedule(AstroThingHandler astroHandler, Job job, Instant eventAt, ZoneId zone) {
@@ -157,7 +177,11 @@ public interface Job extends SchedulerRunnable, Runnable {
      * Schedules an {@link EventJob} instance
      *
      * @param astroHandler the {@link AstroThingHandler} instance
+<<<<<<< Upstream, based on main
      * @param eventAt the {@link Instant} instance denoting scheduled instant
+=======
+     * @param eventAt the {@link Calendar} instance denoting scheduled instant
+>>>>>>> f56c745 Review Moon Distance and factorization of MoonCalc
      * @param events the event IDs to schedule
      * @param channelId the channel ID
      */
