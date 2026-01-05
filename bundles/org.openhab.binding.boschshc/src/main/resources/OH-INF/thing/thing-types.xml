@@ -270,7 +270,7 @@
 		</supported-bridge-type-refs>
 
 		<label>Radiator Thermostat</label>
-		<description>Radiator thermostat</description>
+		<description>First generation radiator thermostat.</description>
 		<semantic-equipment-tag>Thermostat</semantic-equipment-tag>
 
 		<channels>
@@ -292,7 +292,7 @@
 		</supported-bridge-type-refs>
 
 		<label>Radiator Thermostat II</label>
-		<description>Second generation radiator thermostat</description>
+		<description>Second generation radiator thermostat.</description>
 		<semantic-equipment-tag>Thermostat</semantic-equipment-tag>
 
 		<channels>

@@ -232,7 +232,7 @@ This thing type is used if Light/Shutter Control II devices are configured as sh
 
 ### Radiator Thermostat
 
-Radiator thermostat
+First generation radiator thermostat.
 
 **Thing Type ID**: `thermostat`
 
@@ -247,7 +247,7 @@ Radiator thermostat
 
 ### Radiator Thermostat II
 
-Second generation radiator thermostat
+Second generation radiator thermostat.
 
 **Thing Type ID**: `thermostat-2`
 
