@@ -320,7 +320,7 @@ public abstract class HomeWizardDeviceHandler extends BaseThingHandler {
     /**
      * Device specific handling of the returned measurement data.
      *
-     * @param payload The data obtained form the API call
+     * @param payload The data obtained from the API call
      */
     protected void handleMeasurementData(String data) {
         if (!config.isUsingApiVersion2()) {

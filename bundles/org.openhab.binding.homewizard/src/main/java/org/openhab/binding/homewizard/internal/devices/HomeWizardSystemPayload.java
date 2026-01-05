@@ -62,7 +62,7 @@ public class HomeWizardSystemPayload {
     /**
      * Getter for cloud enabled
      *
-     * @return cloudEnaled
+     * @return cloudEnabled
      */
     public Boolean isCloudEnabled() {
         return cloudEnabled;
