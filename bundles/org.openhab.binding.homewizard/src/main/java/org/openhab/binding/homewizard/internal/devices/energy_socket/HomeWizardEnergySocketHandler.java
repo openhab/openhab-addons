@@ -221,7 +221,7 @@ public class HomeWizardEnergySocketHandler extends HomeWizardDeviceHandler {
         try {
             return (int) (Double.valueOf(percentage.replaceAll("[^\\d.]", "")) * 255.0 / 100.0);
         } catch (NumberFormatException ex) {
-            logger.warn("Recevied invalid brightness percentage from socket");
+            logger.warn("Received invalid brightness percentage from socket");
             return 0;
         }
     }
