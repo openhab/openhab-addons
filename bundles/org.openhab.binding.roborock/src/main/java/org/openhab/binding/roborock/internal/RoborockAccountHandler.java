@@ -260,7 +260,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
                     return;
                 } else {
                     String response = "";
-                    if (!country.isEmpty()) {
+                    if (country != null && !country.isEmpty()) {
                         response = webTargets.doLoginV4(baseUri, country, countryCode, localConfig.email,
                                 localConfig.twofa);
                     } else {
