@@ -292,7 +292,7 @@ public class BindingInjector {
         var memoryClassLoader = (MemoryClassLoader) classLoader;
         var parentJarClassLoader = (JarClassLoader) Optional.ofNullable(memoryClassLoader.getParent())
                 .orElseThrow(() -> new IllegalArgumentException("ClassLoader cannot be null"));
-        return parentJarClassLoader.isLoadedClass(name) || memoryClassLoader.isLoadedClass(name);
+        return parentJarClassLoader.isAUserLibrary(name) || memoryClassLoader.isLoadedClass(name);
     }
 
     /**
