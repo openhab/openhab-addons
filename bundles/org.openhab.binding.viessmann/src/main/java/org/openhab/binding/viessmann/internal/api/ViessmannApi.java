@@ -16,6 +16,7 @@ import static org.openhab.binding.viessmann.internal.ViessmannBindingConstants.*
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Properties;
 
@@ -54,7 +55,7 @@ public class ViessmannApi {
 
     private static final String HTTP_METHOD_GET = "GET";
     private static final String HTTP_METHOD_POST = "POST";
-    private static final String CONTENT_TYPE_APPLICATION_JSON = "application/json";
+    private static final String CONTENT_TYPE_APPLICATION_JSON = "application/json; charset=UTF-8";
     private static final String PARAM_VI_ERROR_ID = "viErrorId";
 
     private final Logger logger = LoggerFactory.getLogger(ViessmannApi.class);
@@ -353,8 +354,9 @@ public class ViessmannApi {
         try {
             logger.debug("API: POST Request URL is '{}', JSON is '{}'", url, json);
             long startTime = System.currentTimeMillis();
+            byte[] payload = json.getBytes(StandardCharsets.UTF_8);
             String response = HttpUtil.executeUrl(HTTP_METHOD_POST, url, setHeaders(),
-                    new ByteArrayInputStream(json.getBytes()), CONTENT_TYPE_APPLICATION_JSON, API_TIMEOUT_MS);
+                    new ByteArrayInputStream(payload), CONTENT_TYPE_APPLICATION_JSON, API_TIMEOUT_MS);
             logger.trace("API: Response took {} msec: {}", System.currentTimeMillis() - startTime, response);
             if (response.contains(PARAM_VI_ERROR_ID)) {
                 handleViError(interfaceHandler, response);

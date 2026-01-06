@@ -16,8 +16,8 @@ import static org.openhab.binding.viessmann.internal.ViessmannBindingConstants.*
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -365,14 +365,14 @@ public class DeviceHandler extends ViessmannThingHandler {
         }
 
         String value = command.toString();
-        String lcSuffix = suffix.toLowerCase();
+        String lcSuffix = suffix.toLowerCase(Locale.ROOT);
 
         String uri = null;
         String paramsDef = null;
 
         for (String c : com) {
             String p = prop.get(c + "Params");
-            if ((p != null && p.contains(lcSuffix)) || c.toLowerCase().contains(lcSuffix)) {
+            if ((p != null && p.contains(lcSuffix)) || c.toLowerCase(Locale.ROOT).contains(lcSuffix)) {
                 uri = prop.get(c + "Uri");
                 paramsDef = p;
                 break;
@@ -453,7 +453,7 @@ public class DeviceHandler extends ViessmannThingHandler {
 
     private @Nullable UriParam resolveNumericCommand(Map<String, String> prop, String channelId, String suffix,
             String[] params, String[] com, double value) {
-        String lcSuffix = Objects.requireNonNull(ViessmannUtil.hyphenToCamel(suffix, false)).toLowerCase();
+        String lcSuffix = Objects.requireNonNull(ViessmannUtil.hyphenToCamel(suffix, false)).toLowerCase(Locale.ROOT);
         String uri = null;
         String paramsDef = null;
         String cmd = null;
@@ -464,8 +464,8 @@ public class DeviceHandler extends ViessmannThingHandler {
 
             paramsDef = prop.get(cmd + "Params");
 
-            if ((paramsDef != null && paramsDef.toLowerCase().contains(lcSuffix))
-                    || cmd.toLowerCase().contains(lcSuffix) || isQuantityCommand(cmd)) {
+            if ((paramsDef != null && paramsDef.toLowerCase(Locale.ROOT).contains(lcSuffix))
+                    || cmd.toLowerCase(Locale.ROOT).contains(lcSuffix) || isQuantityCommand(cmd)) {
                 uri = prop.get(cmd + "Uri");
 
                 if ((paramsDef != null
@@ -498,7 +498,7 @@ public class DeviceHandler extends ViessmannThingHandler {
                 json.addProperty(p, v);
             }
 
-            if (cmd.toLowerCase().contains(lcSuffix) || isQuantityCommand(cmd)) {
+            if (cmd.toLowerCase(Locale.ROOT).contains(lcSuffix) || isQuantityCommand(cmd)) {
                 break;
             }
         }
@@ -1052,17 +1052,13 @@ public class DeviceHandler extends ViessmannThingHandler {
     }
 
     private OnOffType parseSchedule(String scheduleJson) {
-        Calendar now = Calendar.getInstance();
+        ZonedDateTime now = ZonedDateTime.now(ViessmannUtil.getOpenHABZoneId());
 
-        int hour = now.get(Calendar.HOUR_OF_DAY); // Get hour in 24-hour format
-        int minute = now.get(Calendar.MINUTE);
+        int hour = now.getHour();
+        int minute = now.getMinute();
+        int dayOfWeek = now.getDayOfWeek().getValue();
 
         Date currTime = parseTime(hour + ":" + minute);
-
-        Date date = new Date();
-        Calendar c = Calendar.getInstance();
-        c.setTime(date);
-        int dayOfWeek = c.get(Calendar.DAY_OF_WEEK);
 
         ScheduleDTO schedule = GSON.fromJson(scheduleJson, ScheduleDTO.class);
         if (schedule == null) {
@@ -1071,25 +1067,25 @@ public class DeviceHandler extends ViessmannThingHandler {
         }
         List<DaySchedule> day = schedule.getMon();
         switch (dayOfWeek) {
-            case 2:
+            case 1:
                 day = schedule.getMon();
                 break;
-            case 3:
+            case 2:
                 day = schedule.getTue();
                 break;
-            case 4:
+            case 3:
                 day = schedule.getWed();
                 break;
-            case 5:
+            case 4:
                 day = schedule.getThu();
                 break;
-            case 6:
+            case 5:
                 day = schedule.getFri();
                 break;
-            case 7:
+            case 6:
                 day = schedule.getSat();
                 break;
-            case 1:
+            case 7:
                 day = schedule.getSun();
                 break;
             default:
@@ -1108,7 +1104,7 @@ public class DeviceHandler extends ViessmannThingHandler {
 
     private Date parseTime(String time) {
         final String inputFormat = "HH:mm";
-        SimpleDateFormat inputParser = new SimpleDateFormat(inputFormat);
+        SimpleDateFormat inputParser = new SimpleDateFormat(inputFormat, Locale.ROOT);
         try {
             return inputParser.parse(time);
         } catch (ParseException e) {
@@ -1129,7 +1125,7 @@ public class DeviceHandler extends ViessmannThingHandler {
         Map<String, String> prop = new HashMap<>();
 
         String suffix = Objects.requireNonNullElse(msg.getSuffix(), "");
-        String lcSuffix = suffix.toLowerCase();
+        String lcSuffix = suffix.toLowerCase(Locale.ROOT);
 
         prop.put("suffix", suffix);
         prop.put("feature", msg.getFeatureClear());
@@ -1142,7 +1138,7 @@ public class DeviceHandler extends ViessmannThingHandler {
         }
 
         for (String command : msg.getAllCommands()) {
-            String lcCommand = command.toLowerCase();
+            String lcCommand = command.toLowerCase(Locale.ROOT);
 
             // empty suffix → only one command allowed
             if (lcSuffix.isBlank() && prop.containsKey("command")) {
@@ -1199,7 +1195,7 @@ public class DeviceHandler extends ViessmannThingHandler {
 
         List<String> com = msg.getAllCommands();
         if (com == null) {
-            return channelType.toLowerCase();
+            return channelType.toLowerCase(Locale.ROOT);
         }
         if (!com.isEmpty() && !"boolean-read-only".equals(channelType)) {
             for (String command : com) {
@@ -1247,7 +1243,7 @@ public class DeviceHandler extends ViessmannThingHandler {
         } else if ("boolean".equals(channelType)) {
             channelType = channelType + "-read-only";
         }
-        return channelType.toLowerCase();
+        return channelType.toLowerCase(Locale.ROOT);
     }
 
     private void setStateDescriptionOptions(ThingMessageDTO msg) {

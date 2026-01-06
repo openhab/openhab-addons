@@ -286,7 +286,8 @@ public class ViessmannAuth {
     }
 
     private @Nullable String executeUrlAuthorize(String url) {
-        String authorization = new String(Base64.getEncoder().encode((user + ":" + password).getBytes()),
+        String credentials = user + ":" + password;
+        String authorization = new String(Base64.getEncoder().encode(credentials.getBytes(StandardCharsets.UTF_8)),
                 StandardCharsets.UTF_8);
         httpClient.getAuthenticationStore().clearAuthentications();
         httpClient.getCookieStore().removeAll();

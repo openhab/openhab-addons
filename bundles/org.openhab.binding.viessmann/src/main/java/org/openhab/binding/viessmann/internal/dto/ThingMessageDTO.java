@@ -14,6 +14,7 @@ package org.openhab.binding.viessmann.internal.dto;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -165,7 +166,7 @@ public class ThingMessageDTO {
         int count = 0;
         for (String str : parts) {
             if (count != 0) {
-                sb.append(str.substring(0, 1).toUpperCase()).append(str.substring(1));
+                sb.append(str.substring(0, 1).toUpperCase(Locale.ROOT)).append(str.substring(1));
             } else {
                 sb.append(str);
             }

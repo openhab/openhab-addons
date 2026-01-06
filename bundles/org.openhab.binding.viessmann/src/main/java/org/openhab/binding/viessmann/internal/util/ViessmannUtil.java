@@ -12,8 +12,17 @@
  */
 package org.openhab.binding.viessmann.internal.util;
 
+import java.time.ZoneId;
+import java.util.Locale;
+import java.util.TimeZone;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.viessmann.internal.handler.DeviceHandler;
+import org.openhab.core.i18n.TimeZoneProvider;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.FrameworkUtil;
+import org.osgi.framework.ServiceReference;
 
 /**
  * The {@link ViessmannUtil} class provides utility methods for the Viessmann binding.
@@ -36,7 +45,7 @@ public final class ViessmannUtil {
     public static String camelToHyphen(String input) {
         String result = input.replaceAll("([a-z])([A-Z])", "$1-$2").replaceAll("([A-Z])([A-Z][a-z])", "$1-$2");
         result = result.replaceAll("([a-zA-Z])([0-9]+)", "$1-$2").replaceAll("([0-9]+)([a-zA-Z])", "$1-$2");
-        return result.toLowerCase();
+        return result.toLowerCase(Locale.ROOT);
     }
 
     /**
@@ -70,5 +79,16 @@ public final class ViessmannUtil {
             }
         }
         return result.toString();
+    }
+
+    public static ZoneId getOpenHABZoneId() {
+        BundleContext ctx = FrameworkUtil.getBundle(DeviceHandler.class).getBundleContext();
+        ServiceReference<TimeZoneProvider> ref = ctx.getServiceReference(TimeZoneProvider.class);
+        if (ref != null) {
+            TimeZoneProvider tzProvider = ctx.getService(ref);
+            TimeZone tz = TimeZone.getTimeZone(tzProvider.getTimeZone());
+            return tz.toZoneId();
+        }
+        return ZoneId.systemDefault();
     }
 }

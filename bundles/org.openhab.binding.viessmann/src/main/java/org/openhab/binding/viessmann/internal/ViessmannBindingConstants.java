@@ -14,6 +14,7 @@ package org.openhab.binding.viessmann.internal;
 
 import static java.util.Map.entry;
 
+import java.time.LocalTime;
 import java.util.Map;
 import java.util.Set;
 
@@ -42,6 +43,8 @@ public class ViessmannBindingConstants {
     public static final Set<ThingTypeUID> DISCOVERABLE_DEVICE_TYPE_UIDS = Set.of(THING_TYPE_DEVICE);
 
     public static final String COUNT_API_CALLS = "count-api-calls";
+    public static final LocalTime RESET_API_CALLS_FROM = LocalTime.of(0, 0, 1);
+    public static final LocalTime RESET_API_CALLS_TO = LocalTime.of(1, 0, 0);
 
     // References for needed API identifiers
     public static final String VIESSMANN_HOST = "api.viessmann-climatesolutions.com";
