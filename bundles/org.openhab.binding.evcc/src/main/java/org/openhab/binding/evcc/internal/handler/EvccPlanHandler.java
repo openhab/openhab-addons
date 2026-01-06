@@ -56,6 +56,8 @@ import com.google.gson.JsonPrimitive;
 @NonNullByDefault
 public class EvccPlanHandler extends EvccBaseThingHandler {
 
+    private static final String DATE_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
+
     private final int index;
     private final String vehicleID;
     private final JsonArray cachedRepeatingPlans = new JsonArray();
@@ -238,7 +240,7 @@ public class EvccPlanHandler extends EvccBaseThingHandler {
                     } catch (DateTimeParseException ignored) {
                         try {
                             OffsetDateTime odt = OffsetDateTime.parse(value,
-                                    DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZ"));
+                                    DateTimeFormatter.ofPattern(DATE_TIME_FORMAT));
                             value = odt.toString();
 
                         } catch (DateTimeParseException e) {
@@ -263,12 +265,12 @@ public class EvccPlanHandler extends EvccBaseThingHandler {
             performApiRequest(endpoint, DELETE, JsonNull.INSTANCE);
             return;
         }
-        String time = "2000-01-01T00:00:00.000Z"; // Default time
+        ZonedDateTime zdt = ZonedDateTime.now(localZone).plusHours(1).withSecond(0).withNano(0);
+        String time = zdt.toInstant().toString(); // Default time
         if (JSON_KEY_TIME.equals(channelKey)) {
             if (!TimeFormatValidator.isExactTimeFormat(value)) {
                 try {
-                    OffsetDateTime odt = OffsetDateTime.parse(value,
-                            DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZ"));
+                    OffsetDateTime odt = OffsetDateTime.parse(value, DateTimeFormatter.ofPattern(DATE_TIME_FORMAT));
                     time = odt.toZonedDateTime().toInstant().toString();
                 } catch (DateTimeParseException ignored) {
                     return; // time is not null and is not matching the time formats
