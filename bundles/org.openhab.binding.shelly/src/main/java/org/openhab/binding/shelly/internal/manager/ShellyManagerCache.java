@@ -34,7 +34,7 @@ public class ShellyManagerCache<K, V> {
     protected final ScheduledExecutorService scheduler = ThreadPoolManager.getScheduledPool("ShellyManagerThreadpool");
     private static final long EXPIRY_IN_MILLIS = 15 * 60 * 1000; // 15min
 
-    private record CacheEntry<V>(Long created, V value) {
+    private record CacheEntry<V> (Long created, V value) {
     }
 
     // All access must be guarded by "this"
@@ -100,5 +100,4 @@ public class ShellyManagerCache<K, V> {
         cancelJob();
         storage.clear();
     }
-
 }
