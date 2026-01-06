@@ -415,6 +415,7 @@ public class DeviceHandler extends ViessmannThingHandler {
                                 case "minute" -> "duration";
                                 case "revolutionsPerSecond" -> "revolutions-per-second";
                                 case "kilowattHour/year" -> "house-heating-load";
+                                case "kiloJoule" -> "thermal-energy";
                                 case null, default -> prop.value.type;
                             };
                             if ("liter/hour".equals(viUnit)) {
@@ -751,6 +752,7 @@ public class DeviceHandler extends ViessmannThingHandler {
                                 case "slope":
                                 case "shift":
                                 case "duration":
+                                case "thermal-energy":
                                     updateChannelState(msg.getChannelId(), msg.getValue(), unit);
                                     break;
                                 case "boolean":
