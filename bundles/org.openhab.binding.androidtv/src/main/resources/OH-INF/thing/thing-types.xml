@@ -90,7 +90,6 @@
 				<default>true</default>
 				<advanced>true</advanced>
 			</parameter>
-
 		</config-description>
 
 	</thing-type>
