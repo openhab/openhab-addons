@@ -36,7 +36,7 @@ public class Sun extends RiseSet implements Planet {
 
     private Eclipse eclipse = new Eclipse(EclipseKind.PARTIAL, EclipseKind.TOTAL, EclipseKind.RING);
 
-    private Radiation radiation = new Radiation();
+    private Radiation radiation = Radiation.NULL;
 
     private SunPhase phase = new SunPhase();
 
@@ -237,6 +237,10 @@ public class Sun extends RiseSet implements Planet {
      */
     public Radiation getRadiation() {
         return radiation;
+    }
+
+    public void setRadiation(Radiation radiation) {
+        this.radiation = radiation;
     }
 
     /**

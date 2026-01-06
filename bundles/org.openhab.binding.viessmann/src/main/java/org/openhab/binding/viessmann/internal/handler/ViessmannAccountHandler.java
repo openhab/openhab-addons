@@ -93,6 +93,9 @@ public class ViessmannAccountHandler extends BaseBridgeHandler implements ApiInt
     private @Nullable ScheduledFuture<?> viessmannBridgePollingJob;
     private @Nullable ScheduledFuture<?> viessmannBridgeLimitJob;
 
+    private @Nullable ScheduledFuture<?> initJob;
+    private volatile boolean disposed = false;
+
     public @Nullable List<DeviceData> devicesData;
 
     protected final List<String> gatewaysList = new ArrayList<>();
@@ -166,9 +169,19 @@ public class ViessmannAccountHandler extends BaseBridgeHandler implements ApiInt
 
     @Override
     public void dispose() {
+        disposed = true;
+
+        ScheduledFuture<?> currentInitJob = initJob;
+        if (currentInitJob != null) {
+            currentInitJob.cancel(true);
+            initJob = null;
+        }
+
         stopViessmannBridgePolling();
         stopViessmannErrorsPolling();
         stopViessmannBridgeLimitReset();
+
+        super.dispose();
     }
 
     @Override
@@ -187,27 +200,32 @@ public class ViessmannAccountHandler extends BaseBridgeHandler implements ApiInt
         } else {
             apiCalls = 0;
         }
-
+        disposed = false;
         migrateChannelIds();
 
         api = new ViessmannApi(this.config.apiKey, httpClient, this.config.user, this.config.password,
                 this.config.installationId, this.config.gatewaySerial, callbackUrl);
         api.createOAuthClientService(this);
 
-        scheduler.execute(() -> {
+        initJob = scheduler.schedule(() -> {
+            if (disposed) {
+                return;
+            }
             try {
                 if (api.doAuthorize()) {
                     getAllGateways();
-                    if (!gatewaysList.isEmpty()) {
+                    if (!gatewaysList.isEmpty() && !disposed) {
                         updateProperty("pollingInterval [s]", String.valueOf(pollingInterval));
                         startViessmannBridgePolling(pollingInterval, 1);
                         updateBridgeStatus(ThingStatus.ONLINE);
                     }
                 }
             } catch (Exception e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                if (!disposed) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                }
             }
-        });
+        }, 0, TimeUnit.SECONDS);
     }
 
     private void migrateChannelIds() {
@@ -364,7 +382,10 @@ public class ViessmannAccountHandler extends BaseBridgeHandler implements ApiInt
         apiCalls++;
         String apiCallsAsString = String.valueOf(apiCalls);
         stateStorage.put(STORED_API_CALLS, apiCallsAsString);
-        updateState(COUNT_API_CALLS, DecimalType.valueOf(apiCallsAsString));
+
+        if (!disposed && isInitialized()) {
+            updateState(COUNT_API_CALLS, DecimalType.valueOf(apiCallsAsString));
+        }
     }
 
     private void checkResetApiCalls() {
@@ -381,17 +402,24 @@ public class ViessmannAccountHandler extends BaseBridgeHandler implements ApiInt
     }
 
     private void pollingFeatures() {
+        if (disposed) {
+            return;
+        }
+
         List<Thing> accountChildren = getThing().getThings().stream().filter(Thing::isEnabled).toList();
+
         for (Thing accountChild : accountChildren) {
-            ViessmannGatewayHandler accountChildHandler = (ViessmannGatewayHandler) accountChild.getHandler();
-            if (accountChildHandler != null && ThingHandlerHelper.isHandlerInitialized(accountChildHandler)) {
-                List<Thing> children = accountChildHandler.getChildren();
-                for (Thing child : children) {
-                    ThingHandler childHandler = child.getHandler();
-                    if (childHandler instanceof DeviceHandler
-                            && ThingHandlerHelper.isHandlerInitialized(childHandler)) {
-                        updateFeaturesOfDevice((DeviceHandler) childHandler);
-                    }
+            ThingHandler gh = accountChild.getHandler();
+            if (!(gh instanceof ViessmannGatewayHandler gatewayHandler)
+                    || !ThingHandlerHelper.isHandlerInitialized(gatewayHandler)) {
+                continue;
+            }
+
+            for (Thing child : gatewayHandler.getChildren()) {
+                ThingHandler th = child.getHandler();
+                if (th instanceof DeviceHandler deviceHandler && ThingHandlerHelper.isHandlerInitialized(th)
+                        && child.getStatus() != ThingStatus.REMOVED) {
+                    updateFeaturesOfDevice(deviceHandler);
                 }
             }
         }
@@ -455,24 +483,30 @@ public class ViessmannAccountHandler extends BaseBridgeHandler implements ApiInt
     }
 
     private void startViessmannBridgePolling(Integer pollingIntervalS, Integer initialDelay) {
-        ScheduledFuture<?> currentPollingJob = viessmannBridgePollingJob;
-        if (currentPollingJob == null) {
-            viessmannBridgePollingJob = scheduler.scheduleWithFixedDelay(() -> {
-                api.checkExpiringToken();
-                checkResetApiCalls();
-                if (!config.disablePolling) {
-                    logger.debug("[startViessmannBridgePolling] Refresh job scheduled to run every {} seconds for '{}'",
-                            pollingIntervalS, getThing().getUID());
-                    pollingFeatures();
-                }
-                int newPollingInterval = getPollingInterval();
-                if (newPollingInterval != pollingInterval) {
-                    pollingInterval = newPollingInterval;
-                    updateBridgePollingInterval();
-                }
-
-            }, initialDelay, pollingIntervalS, TimeUnit.SECONDS);
+        if (viessmannBridgePollingJob != null) {
+            return;
         }
+
+        viessmannBridgePollingJob = scheduler.scheduleWithFixedDelay(() -> {
+            if (disposed || !isInitialized()) {
+                return;
+            }
+
+            api.checkExpiringToken();
+            checkResetApiCalls();
+
+            if (!config.disablePolling) {
+                logger.debug("[startViessmannBridgePolling] Refresh job scheduled to run every {} seconds for '{}'",
+                        pollingIntervalS, getThing().getUID());
+                pollingFeatures();
+            }
+
+            int newPollingInterval = getPollingInterval();
+            if (newPollingInterval != pollingInterval) {
+                pollingInterval = newPollingInterval;
+                updateBridgePollingInterval();
+            }
+        }, initialDelay, pollingIntervalS, TimeUnit.SECONDS);
     }
 
     private void startViessmannBridgeLimitReset(Long delay) {

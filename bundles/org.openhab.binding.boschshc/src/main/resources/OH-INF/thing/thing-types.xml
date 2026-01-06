@@ -155,6 +155,28 @@
 
 	</thing-type>
 
+	<thing-type id="window-contact-2-matter">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="shc"/>
+		</supported-bridge-type-refs>
+
+		<label>Door/Window Contact II [+M]</label>
+		<description>Detects open windows and doors and features an additional button. This version of the sensor supports the
+			Matter standard.</description>
+		<semantic-equipment-tag>ContactSensor</semantic-equipment-tag>
+
+		<channels>
+			<channel id="contact" typeId="contact"/>
+			<channel id="battery-level" typeId="system.battery-level"/>
+			<channel id="low-battery" typeId="system.low-battery"/>
+			<channel id="bypass-state" typeId="bypass-state"/>
+			<channel id="signal-strength" typeId="system.signal-strength"/>
+		</channels>
+
+		<config-description-ref uri="thing-type:boschshc:device"/>
+
+	</thing-type>
+
 	<thing-type id="motion-detector">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="shc"/>
