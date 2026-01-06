@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.evcc.internal.handler;
 
+import java.util.Locale;
 import java.util.regex.Pattern;
 
 import javax.measure.Unit;
@@ -178,7 +179,7 @@ public final class StateResolver {
      * @return the inferred {@link Unit}
      */
     private Unit<?> determineBaseUnitFromKey(String key) {
-        String lower = key.toLowerCase();
+        String lower = key.toLowerCase(Locale.ROOT);
 
         if (lower.contains("soc") || lower.contains("percentage")) {
             return Units.PERCENT;

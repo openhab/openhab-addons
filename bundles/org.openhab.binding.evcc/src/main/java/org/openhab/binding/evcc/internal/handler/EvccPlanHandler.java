@@ -29,14 +29,11 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.i18n.LocaleProvider;
-import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -61,7 +58,6 @@ public class EvccPlanHandler extends EvccBaseThingHandler {
 
     private final int index;
     private final String vehicleID;
-    private final Map<String, String> pendingCommands = new ConcurrentHashMap<>();
     private final JsonArray cachedRepeatingPlans = new JsonArray();
     private JsonObject cachedOneTimePlan = new JsonObject();
     private final Map<Integer, String> localizedDayOfWeekMap = new HashMap<>();
@@ -120,10 +116,12 @@ public class EvccPlanHandler extends EvccBaseThingHandler {
             if (index == 0) {
                 if (state.has(JSON_KEY_PLAN)) {
                     state = state.getAsJsonObject(JSON_KEY_PLAN);
+                    state.addProperty(JSON_KEY_ACTIVE, true);
                     cachedOneTimePlan = state.deepCopy();
                 } else {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
-                    return;
+                    JsonObject plan = new JsonObject();
+                    plan.addProperty(JSON_KEY_ACTIVE, false);
+                    state = plan;
                 }
             } else if (index > 0 && state.has(JSON_KEY_REPEATING_PLANS)) {
                 // Cache the plans
@@ -183,150 +181,131 @@ public class EvccPlanHandler extends EvccBaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (CHANNEL_SEND_UPDATE.equals(channelUID.getId()) && OnOffType.ON.equals(command)
-                && !pendingCommands.isEmpty()) {
-            updatePlan();
-            scheduler.schedule(() -> updateState(channelUID, OnOffType.OFF), 500, TimeUnit.MILLISECONDS);
-        } else {
-            if (!CHANNEL_SEND_UPDATE.equals(channelUID.getId()) && command instanceof State state) {
-                String stateString = state.toString();
-                if (CHANNEL_PLAN_SOC.equals(channelUID.getId())
-                        || CHANNEL_PLAN_PRECONDITION.equals(channelUID.getId())) {
-                    int spaceIdx = stateString.indexOf(" ");
-                    if (spaceIdx != -1) {
-                        stateString = stateString.substring(0, spaceIdx);
-                    }
+        if (command instanceof State state) {
+            String stateString = state.toString();
+            if (CHANNEL_PLAN_SOC.equals(channelUID.getId()) || CHANNEL_PLAN_PRECONDITION.equals(channelUID.getId())) {
+                int spaceIdx = stateString.indexOf(" ");
+                if (spaceIdx != -1) {
+                    stateString = stateString.substring(0, spaceIdx);
                 }
-                String channelKey = Utils.getKeyFromChannelUID(channelUID);
-                pendingCommands.put(channelKey, stateString); // store for later processing
-            } else {
-                super.handleCommand(channelUID, command);
             }
-        }
-    }
-
-    private void updatePlan() {
-        boolean successful;
-        if (index > 0 && (index - 1) < cachedRepeatingPlans.size()) {
-            successful = updateRepeatingPlan();
+            String channelKey = Utils.getKeyFromChannelUID(channelUID);
+            updatePlan(channelKey, stateString);
         } else {
-            successful = updateOneTimePlan();
-        }
-        if (successful) {
-            pendingCommands.clear();
+            super.handleCommand(channelUID, command);
         }
     }
 
-    private boolean updateRepeatingPlan() {
+    private void updatePlan(String channelKey, String value) {
+        if (index > 0 && (index - 1) < cachedRepeatingPlans.size()) {
+            updateRepeatingPlan(channelKey, value);
+        } else {
+            updateOneTimePlan(channelKey, value);
+        }
+    }
+
+    private void updateRepeatingPlan(String channelKey, String changedValue) {
         JsonArray payload = cachedRepeatingPlans.deepCopy();
         JsonObject plan = payload.get(index - 1).getAsJsonObject();
-        Map<String, String> values = getCachedValues(plan);
+        switch (channelKey) {
+            case JSON_KEY_ACTIVE -> plan.addProperty(channelKey, "ON".equals(changedValue));
+            case JSON_KEY_SOC, JSON_KEY_PRECONDITION ->
+                plan.add(channelKey, new JsonPrimitive(Integer.parseInt(changedValue)));
+            default -> plan.addProperty(channelKey, changedValue);
+        }
         for (Map.Entry<String, JsonElement> entry : plan.entrySet()) {
             String key = entry.getKey();
-            if (values.containsKey(key) && values.get(key) instanceof String value) {
-                switch (key) {
-                    case JSON_KEY_WEEKDAYS -> {
-                        JsonArray weekdaysArray = new JsonArray();
-                        String[] days = value.split(";");
-                        for (String day : days) {
-                            Integer dayValue = localizedReverseMap.get(day);
-                            if (dayValue != null) {
-                                weekdaysArray.add(new JsonPrimitive(dayValue));
-                            }
-                        }
-                        plan.add(key, weekdaysArray);
-                    }
-                    case JSON_KEY_SOC, JSON_KEY_PRECONDITION -> {
-                        plan.add(key, new JsonPrimitive(Integer.parseInt(value)));
-                    }
-                    case JSON_KEY_ACTIVE -> {
-                        if ("ON".equals(value)) {
-                            plan.add(key, new JsonPrimitive(true));
-                        } else {
-                            plan.add(key, new JsonPrimitive(false));
+            String value = entry.getValue().getAsString();
+            switch (key) {
+                case JSON_KEY_WEEKDAYS -> {
+                    JsonArray weekdaysArray = new JsonArray();
+                    String[] days = plan.get(JSON_KEY_WEEKDAYS).getAsString().split(";");
+                    for (String day : days) {
+                        Integer dayValue = localizedReverseMap.get(day);
+                        if (dayValue != null) {
+                            weekdaysArray.add(new JsonPrimitive(dayValue));
                         }
                     }
-                    case JSON_KEY_TIME -> {
-                        JsonElement tzElement = plan.get(JSON_KEY_TZ);
-                        if (tzElement == null || tzElement.isJsonNull()) {
-                            return false;
-                        }
-                        try {
-                            ZonedDateTime.parse(value);
-                        } catch (DateTimeParseException ignored) {
-                            try {
-                                OffsetDateTime odt = OffsetDateTime.parse(value,
-                                        DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZ"));
-                                value = odt.toInstant().toString();
-
-                            } catch (DateTimeParseException e) {
-                                return false;
-                            }
-                        }
-                        String tz = tzElement.getAsString();
-                        ZonedDateTime evccTime = ZonedDateTime.parse(value);
-                        String time = convertLocalTimeToEvcc(evccTime, tz);
-                        plan.add(key, new JsonPrimitive(time));
-                    }
-                    default -> plan.add(key, new JsonPrimitive(value));
+                    plan.add(JSON_KEY_WEEKDAYS, weekdaysArray);
                 }
+                case JSON_KEY_TIME -> {
+                    JsonElement tzElement = plan.get(JSON_KEY_TZ);
+                    if (tzElement == null || tzElement.isJsonNull()) {
+                        return;
+                    }
+                    try {
+                        ZonedDateTime.parse(value);
+                    } catch (DateTimeParseException ignored) {
+                        try {
+                            OffsetDateTime odt = OffsetDateTime.parse(value,
+                                    DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZ"));
+                            value = odt.toString();
+
+                        } catch (DateTimeParseException e) {
+                            return;
+                        }
+                    }
+                    String tz = tzElement.getAsString();
+                    ZonedDateTime evccTime = ZonedDateTime.parse(value);
+                    String time = convertLocalTimeToEvcc(evccTime, tz);
+                    plan.add(JSON_KEY_TIME, new JsonPrimitive(time));
+                }
+                default -> plan.add(key, entry.getValue());
             }
         }
+
         payload.set(index - 1, plan);
-        return sendCommand(endpoint, payload);
+        performApiRequest(endpoint, POST, payload);
     }
 
-    private boolean updateOneTimePlan() {
-        Map<String, String> values = getCachedValues(cachedOneTimePlan);
-        String soc = values.get(JSON_KEY_SOC);
-        String time = values.get(JSON_KEY_TIME);
-        if (time == null || soc == null) {
-            return false;
+    private void updateOneTimePlan(String channelKey, String value) {
+        if (JSON_KEY_ACTIVE.equals(channelKey) && "OFF".equals(value)) {
+            performApiRequest(endpoint, DELETE, JsonNull.INSTANCE);
+            return;
         }
-        if (!TimeFormatValidator.isExactTimeFormat(time)) {
-            try {
-                OffsetDateTime odt = OffsetDateTime.parse(time,
-                        DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZ"));
-                time = odt.toInstant().toString();
-            } catch (DateTimeParseException ignored) {
-                return false; // time is not null and is not matching the time formats
+        String time = "2000-01-01T00:00:00.000Z"; // Default time
+        if (JSON_KEY_TIME.equals(channelKey)) {
+            if (!TimeFormatValidator.isExactTimeFormat(value)) {
+                try {
+                    OffsetDateTime odt = OffsetDateTime.parse(value,
+                            DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZ"));
+                    time = odt.toZonedDateTime().toInstant().toString();
+                } catch (DateTimeParseException ignored) {
+                    return; // time is not null and is not matching the time formats
+                }
             }
+        } else if (cachedOneTimePlan.has(JSON_KEY_TIME)) {
+            time = cachedOneTimePlan.get(JSON_KEY_TIME).getAsString();
         }
-        String precondition = values.get(JSON_KEY_PRECONDITION);
+        String soc = "100";
+        if (JSON_KEY_SOC.equals(channelKey)) {
+            soc = value;
+        } else if (cachedOneTimePlan.has(JSON_KEY_SOC)) {
+            cachedOneTimePlan.get(JSON_KEY_SOC).getAsString();
+        }
         String url = String.join("/", endpoint, soc, time);
-        if (precondition != null) {
+        String precondition = "";
+        if (JSON_KEY_PRECONDITION.equals(channelKey)) {
+            precondition = value;
+        } else if (cachedOneTimePlan.has(JSON_KEY_PRECONDITION)) {
+            cachedOneTimePlan.get(JSON_KEY_PRECONDITION).getAsString();
+        }
+        if (!precondition.isEmpty()) {
             url = String.join("?", url, "precondition=" + precondition);
         }
-        return sendCommand(url, JsonNull.INSTANCE);
-    }
-
-    private Map<String, String> getCachedValues(JsonObject cachedValues) {
-        Map<String, String> values = new HashMap<>();
-        for (Map.Entry<String, JsonElement> entry : cachedValues.entrySet()) {
-            if (pendingCommands.containsKey(entry.getKey())) {
-                String value = pendingCommands.get(entry.getKey());
-                if (value != null) {
-                    values.put(entry.getKey(), value);
-                }
-            } else {
-                if (entry.getValue().isJsonPrimitive() && entry.getValue().getAsJsonPrimitive().isString()) {
-                    values.put(entry.getKey(), entry.getValue().getAsString());
-                }
-            }
-        }
-        return values;
+        performApiRequest(url, POST, JsonNull.INSTANCE);
     }
 
     private ZonedDateTime convertEvccTimeToLocal(String time, String tz) {
         LocalTime lt = LocalTime.parse(time, DateTimeFormatter.ofPattern("HH:mm"));
         ZoneId evccZone = ZoneId.of(tz);
-        ZonedDateTime evccTime = lt.atDate(LocalDate.now()).atZone(evccZone);
+        ZonedDateTime evccTime = lt.atDate(LocalDate.now(localZone)).atZone(evccZone);
         return evccTime.withZoneSameInstant(localZone);
     }
 
     private String convertLocalTimeToEvcc(ZonedDateTime localTime, String tz) {
         LocalTime lt = localTime.toLocalTime();
-        ZonedDateTime evccTime = lt.atDate(LocalDate.now()).atZone(localZone).withZoneSameInstant(ZoneId.of(tz));
+        ZonedDateTime evccTime = lt.atDate(LocalDate.now(localZone)).atZone(ZoneId.of(tz));
         return evccTime.toLocalTime().format(DateTimeFormatter.ofPattern("HH:mm"));
     }
 
@@ -334,7 +313,8 @@ public class EvccPlanHandler extends EvccBaseThingHandler {
 
         // Exact: yyyy-MM-dd'T'HH:mm:ss'Z'
         private static final DateTimeFormatter EXACT_TIME_FMT = new DateTimeFormatterBuilder()
-                .appendPattern("yyyy-MM-dd'T'HH:mm:ss'Z'").toFormatter().withResolverStyle(ResolverStyle.STRICT);
+                .appendPattern("yyyy-MM-dd'T'HH:mm:ss'Z'").toFormatter(Locale.ROOT)
+                .withResolverStyle(ResolverStyle.STRICT);
 
         /**
          * true, if input is exact yyyy-MM-dd'T'HH:mm:ss'Z'

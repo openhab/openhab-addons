@@ -30,7 +30,6 @@ public class EvccBindingConstants {
 
     public static final String BINDING_ID = "evcc";
 
-    public static final String CHANNEL_SEND_UPDATE = "send-update";
     public static final String CHANNEL_PLAN_SOC = "plan-soc";
     public static final String CHANNEL_PLAN_PRECONDITION = "plan-precondition";
 
@@ -113,4 +112,7 @@ public class EvccBindingConstants {
     public static final String NUMBER_LENGTH = CoreItemFactory.NUMBER + ":Length";
     public static final String NUMBER_ENERGY_PRICE = CoreItemFactory.NUMBER + ":EnergyPrice";
     public static final String NUMBER_TEMPERATURE = CoreItemFactory.NUMBER + ":Temperature";
+
+    public static final String POST = "POST";
+    public static final String DELETE = "DELETE";
 }

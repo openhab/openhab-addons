@@ -3,18 +3,12 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
-	<thing-type id="plan" listed="false">
+	<thing-type id="plan">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="server"/>
 		</supported-bridge-type-refs>
 		<label>Plan</label>
 		<description>A plan configured for your vehicle in evcc</description>
-		<channels>
-			<channel id="send-update" typeId="plan-update">
-				<label>Update Plan</label>
-				<description>Sends the updated plan to evcc</description>
-			</channel>
-		</channels>
 		<representation-property>id</representation-property>
 		<config-description>
 			<parameter name="index" type="text">
@@ -27,15 +21,6 @@
 			</parameter>
 		</config-description>
 	</thing-type>
-	<channel-type id="plan-update">
-		<item-type>Switch</item-type>
-		<label>Trigger Plan Update</label>
-		<description>The binding will send an API request to update the plan</description>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
-		</tags>
-	</channel-type>
 	<channel-type id="plan-soc">
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Plan SoC</label>

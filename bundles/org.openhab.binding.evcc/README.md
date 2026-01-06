@@ -57,32 +57,7 @@ All things need to be configured via index, except vehicles, they need to be con
 
 The `plan` Thing represents a charging plan for a vehicle configured in your evcc instance.
 Needs the index of the plan and the database id of the vehicle as configuration parameters.
-The index 0 is always the One-time plan, higher indices are repeating plans.
-
-Any changes made to the plan channels will not be sent to evcc automatically, but cached.
-If you want to update the plan, you have to use the update plan channel of the thing to send it to evcc.
-**Updating the plan will only work when setting the update plan channel to state ON**.
-Afterward, the update plan channel will be automatically reset to state OFF.
-The weekdays will be localized based on the language settings of your openHAB instance.
-
-Here is an example to update a One-time charging plan via DLSRule script:
-
-```xtend
-One_time_charging_plan_1_for_BMW_iX3_Plan_Time.sendCommand("2025-12-19T06:00:00.000Z");
-One_time_charging_plan_1_for_BMW_iX3_Plan_SoC.sendCommand(85);
-One_time_charging_plan_1_for_BMW_iX3_Precondition_Time.sendCommand(1800);
-One_time_charging_plan_1_for_BMW_iX3_Update_Plan.sendCommand("ON");
-```
-
-Here is an example to update a repeating charging plan via DLSRule script:
-
-```xtend
-Repeating_charging_plan_1_for_BMW_iX3_Plan_Weekdays.sendCommand("Monday;Tuesday;Wednesday");
-Repeating_charging_plan_1_for_BMW_iX3_Plan_Time.sendCommand("09:00");
-Repeating_charging_plan_1_for_BMW_iX3_Plan_SoC.sendCommand(85);
-Repeating_charging_plan_1_for_BMW_iX3_Precondition_Time.sendCommand(1800);
-Repeating_charging_plan_1_for_BMW_iX3_Update_Plan.sendCommand("ON");
-```
+The index 0 is always the One-time plan, higher indices (1...N) are repeating plans.
 
 ## Channels
 
@@ -216,14 +191,14 @@ Switch                   Evcc_Loadpoint_Vehicle_Welcome_Active             "Vehi
 
 #### Plan
 
+Channels plan-weekdays and plan-tz are only available for repeating plans. 
+
 ```java
-Switch               Evcc_Plan_Update         "Trigger Plan Update [%s]" { channel="evcc:battery:demo-server:demo-battery:plan-update" }
 Number:Dimensionless Evcc_Plan_Soc            "Plan SoC [%s]"            { channel="evcc:battery:demo-server:demo-battery:plan-soc" }
 Number:Time          Evcc_Plan_Precondition   "Precondition Time [%s]"   { channel="evcc:battery:demo-server:demo-battery:plan-precondition" }
 DateTime             Evcc_Plan_Time           "Plan Time [%s]"           { channel="evcc:battery:demo-server:demo-battery:plan-time" }
 String               Evcc_Plan_Weekdays       "Plan Weekdays [%s]"       { channel="evcc:battery:demo-server:demo-battery:plan-weekdays" }
 String               Evcc_Plan_Tz             "Plan Timezone [%s]"       { channel="evcc:battery:demo-server:demo-battery:plan-tz" }
-String               Evcc_Plan_Repeating_Time "Plan Time [%s]"           { channel="evcc:battery:demo-server:demo-battery:plan-repeating-time" }
 Switch               Evcc_Plan_Active         "Active [%s]"              { channel="evcc:battery:demo-server:demo-battery:plan-active" }
 ```
 

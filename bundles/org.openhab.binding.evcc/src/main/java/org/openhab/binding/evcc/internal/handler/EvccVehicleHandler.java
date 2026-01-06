@@ -14,6 +14,7 @@ package org.openhab.binding.evcc.internal.handler;
 
 import static org.openhab.binding.evcc.internal.EvccBindingConstants.*;
 
+import java.util.Locale;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -54,16 +55,14 @@ public class EvccVehicleHandler extends EvccBaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof State state) {
-            String datapoint = Utils.getKeyFromChannelUID(channelUID).toLowerCase();
+            String datapoint = Utils.getKeyFromChannelUID(channelUID).toLowerCase(Locale.ROOT);
             String value = state.toString();
             if (value.contains(" ")) {
                 value = value.substring(0, state.toString().indexOf(" "));
             }
             String url = endpoint + "/" + vehicleId + "/" + datapoint + "/" + value;
             logger.debug("Sending command to this url: {}", url);
-            if (sendCommand(url, JsonNull.INSTANCE)) {
-                updateState(channelUID, state);
-            }
+            performApiRequest(url, POST, JsonNull.INSTANCE);
         } else {
             super.handleCommand(channelUID, command);
         }

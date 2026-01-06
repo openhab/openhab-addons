@@ -13,6 +13,7 @@
 package org.openhab.binding.evcc.internal.discovery;
 
 import java.text.Normalizer;
+import java.util.Locale;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
@@ -36,6 +37,6 @@ public class Utils {
             result = Normalizer.normalize(name, Normalizer.Form.NFKD);
             result = result.replaceAll("\\p{M}", "");
         }
-        return result.replaceAll("[^a-zA-Z0-9_]", "-").toLowerCase();
+        return result.replaceAll("[^a-zA-Z0-9_]", "-").toLowerCase(Locale.ROOT);
     }
 }

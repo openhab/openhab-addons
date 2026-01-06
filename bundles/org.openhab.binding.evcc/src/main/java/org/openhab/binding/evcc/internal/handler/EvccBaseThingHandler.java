@@ -30,15 +30,10 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.util.StringContentProvider;
-import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.thing.Bridge;
@@ -262,33 +257,18 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
         });
     }
 
-    protected boolean sendCommand(String url, JsonElement payload) {
-        AtomicBoolean successful = new AtomicBoolean(false);
+    protected void performApiRequest(String url, String method, JsonElement payload) {
         Optional.ofNullable(bridgeHandler).ifPresent(handler -> {
-            HttpClient httpClient = handler.getHttpClient();
-            try {
-                if (!payload.isJsonNull()) {
-                    ContentResponse response = httpClient.newRequest(url).timeout(5, TimeUnit.SECONDS)
-                            .method(HttpMethod.POST).content(new StringContentProvider(payload.toString()))
-                            .header(HttpHeader.ACCEPT, "application/json")
-                            .header(HttpHeader.CONTENT_TYPE, "application/json").send();
-                    successful.set(checkResponse(response));
-                } else {
-                    ContentResponse response = httpClient.newRequest(url).timeout(5, TimeUnit.SECONDS)
-                            .method(HttpMethod.POST).header(HttpHeader.ACCEPT, "application/json").send();
-                    successful.set(checkResponse(response));
-                }
-            } catch (Exception e) {
-                logger.warn("evcc bridge couldn't call the API", e);
-            }
+            HttpMethod httpMethod = HttpMethod.valueOf(method);
+            handler.enqueueRequest(url, httpMethod, payload, this::checkResponse, error -> {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            });
         });
-        return successful.get();
     }
 
-    private boolean checkResponse(ContentResponse response) {
+    private void checkResponse(ContentResponse response) {
         if (response.getStatus() == 200) {
             logger.debug("Sending command was successful");
-            return true;
         } else {
             try {
                 @Nullable
@@ -307,7 +287,6 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
             } catch (Exception e) {
                 logger.warn("evcc bridge couldn't parse the API error response", e);
             }
-            return false;
         }
     }
 

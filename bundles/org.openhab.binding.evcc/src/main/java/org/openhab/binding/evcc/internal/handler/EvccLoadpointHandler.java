@@ -14,6 +14,7 @@ package org.openhab.binding.evcc.internal.handler;
 
 import static org.openhab.binding.evcc.internal.EvccBindingConstants.*;
 
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 
@@ -83,7 +84,7 @@ public class EvccLoadpointHandler extends EvccBaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof State state) {
-            String datapoint = Utils.getKeyFromChannelUID(channelUID).toLowerCase();
+            String datapoint = Utils.getKeyFromChannelUID(channelUID).toLowerCase(Locale.ROOT);
             // Correct the datapoint for the API call
             if ("phasesconfigured".equals(datapoint)) {
                 datapoint = JSON_KEY_PHASES;
@@ -94,7 +95,7 @@ public class EvccLoadpointHandler extends EvccBaseThingHandler {
             } else if (datapoint.contains("disable")) {
                 datapoint += "/disable/" + datapoint.replace("disable", "");
             }
-            String value = "";
+            String value;
             if (state instanceof OnOffType) {
                 value = state == OnOffType.ON ? "true" : "false";
             } else {
@@ -105,9 +106,8 @@ public class EvccLoadpointHandler extends EvccBaseThingHandler {
             }
             String url = String.join("/", endpoint, datapoint, value);
             logger.debug("Sending command to this url: {}", url);
-            if (sendCommand(url, JsonNull.INSTANCE)) {
-                updateState(channelUID, state);
-            }
+            performApiRequest(url, POST, JsonNull.INSTANCE);
+            updateState(channelUID, state);
         } else {
             super.handleCommand(channelUID, command);
         }

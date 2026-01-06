@@ -14,16 +14,23 @@ package org.openhab.binding.evcc.internal.handler;
 
 import java.util.Collection;
 import java.util.Optional;
+import java.util.Queue;
 import java.util.Set;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
+import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.evcc.internal.EvccBridgeConfiguration;
 import org.openhab.binding.evcc.internal.discovery.EvccDiscoveryService;
 import org.openhab.core.i18n.LocaleProvider;
@@ -41,6 +48,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 /**
@@ -54,6 +62,9 @@ public class EvccBridgeHandler extends BaseBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(EvccBridgeHandler.class);
     private final Gson gson = new Gson();
+    private final Queue<QueuedRequest> requestQueue = new ConcurrentLinkedQueue<>();
+    private @Nullable ScheduledFuture<?> queueWorker;
+    private final AtomicBoolean isPulling = new AtomicBoolean(false);
 
     private final HttpClient httpClient;
     private final TranslationProvider i18nProvider;
@@ -82,6 +93,7 @@ public class EvccBridgeHandler extends BaseBridgeHandler {
         endpoint = config.scheme + "://" + config.host + ":" + config.port + "/api/state";
 
         startPolling(config.pollInterval);
+        startQueueWorker();
 
         fetchEvccState().ifPresent(state -> {
             this.lastState = state;
@@ -92,11 +104,11 @@ public class EvccBridgeHandler extends BaseBridgeHandler {
     @Override
     public void dispose() {
         Optional.ofNullable(pollJob).ifPresent(job -> job.cancel(true));
+        pollJob = null;
+        Optional.ofNullable(queueWorker).ifPresent(job -> job.cancel(true));
+        queueWorker = null;
         listeners.clear();
-    }
-
-    public HttpClient getHttpClient() {
-        return httpClient;
+        requestQueue.clear();
     }
 
     public String getBaseURL() {
@@ -123,7 +135,65 @@ public class EvccBridgeHandler extends BaseBridgeHandler {
         }), refreshInterval, refreshInterval, TimeUnit.SECONDS);
     }
 
+    private void startQueueWorker() {
+        queueWorker = scheduler.scheduleWithFixedDelay(() -> {
+            try {
+                processQueue();
+            } catch (Exception e) {
+                logger.warn("Error processing evcc request queue", e);
+            }
+        }, 50, 50, TimeUnit.MILLISECONDS);
+    }
+
+    private void processQueue() {
+        if (isPulling.get() || requestQueue.isEmpty()
+                || !ThingStatus.ONLINE.equals(getThing().getStatusInfo().getStatus())) {
+            return; // Pause während Polling
+        }
+        QueuedRequest queued = requestQueue.poll();
+        if (queued == null) {
+            return;
+        }
+        try {
+            ContentResponse response = queued.request().send();
+            try {
+                queued.onSuccess().accept(response);
+            } catch (Exception callbackError) {
+                logger.warn("Error in onSuccess callback: ", callbackError);
+            }
+        } catch (Exception e) {
+            try {
+                queued.onError().accept(e);
+            } catch (Exception callbackError) {
+                logger.warn("Error in onError callback: ", callbackError);
+            }
+        }
+    }
+
+    public void enqueueRequest(String url, HttpMethod method, JsonElement payload, Consumer<ContentResponse> onSuccess,
+            Consumer<Exception> onError) {
+        if (url.isBlank()) {
+            onError.accept(new IllegalArgumentException("URL must not be empty"));
+            return;
+        }
+        try {
+            Request request = httpClient.newRequest(url).timeout(5, TimeUnit.SECONDS).method(method)
+                    .header(HttpHeader.ACCEPT, "application/json");
+
+            if (!payload.isJsonNull()) {
+                request.content(new StringContentProvider(payload.toString())).header(HttpHeader.CONTENT_TYPE,
+                        "application/json");
+            }
+
+            requestQueue.add(new QueuedRequest(request, onSuccess, onError));
+        } catch (Exception e) {
+            logger.warn("evcc bridge couldn't call the API", e);
+            onError.accept(e);
+        }
+    }
+
     public Optional<JsonObject> fetchEvccState() {
+        isPulling.set(true);
         try {
             ContentResponse response = httpClient.newRequest(endpoint).timeout(5, TimeUnit.SECONDS)
                     .header(HttpHeader.ACCEPT, "application/json").send();
@@ -142,8 +212,9 @@ public class EvccBridgeHandler extends BaseBridgeHandler {
             }
         } catch (Exception e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getLocalizedMessage());
+        } finally {
+            isPulling.set(false);
         }
-
         return Optional.empty();
     }
 
@@ -162,7 +233,7 @@ public class EvccBridgeHandler extends BaseBridgeHandler {
     }
 
     public JsonObject getCachedEvccState() {
-        return lastState;
+        return lastState.deepCopy();
     }
 
     public void register(EvccThingLifecycleAware handler) {

@@ -14,6 +14,7 @@ package org.openhab.binding.evcc.internal.handler;
 
 import static org.openhab.binding.evcc.internal.EvccBindingConstants.*;
 
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 
@@ -52,7 +53,8 @@ public class EvccSiteHandler extends EvccBaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof State state) {
-            String datapoint = Utils.getKeyFromChannelUID(channelUID).toLowerCase().replaceAll("co2|price", "");
+            String datapoint = Utils.getKeyFromChannelUID(channelUID).toLowerCase(Locale.ROOT).replaceAll("co2|price",
+                    "");
             String value;
             if (state instanceof OnOffType) {
                 value = state == OnOffType.ON ? "true" : "false";
@@ -64,9 +66,7 @@ public class EvccSiteHandler extends EvccBaseThingHandler {
             }
             String url = endpoint + "/" + datapoint + "/" + value;
             logger.debug("Sending command to this url: {}", url);
-            if (sendCommand(url, JsonNull.INSTANCE)) {
-                updateState(channelUID, state);
-            }
+            performApiRequest(url, POST, JsonNull.INSTANCE);
         } else {
             super.handleCommand(channelUID, command);
         }
