@@ -156,6 +156,7 @@ public class ShellyDevices {
     public static final String SHELLYDT_BLUCLASS_MOTION = "SBMO";
     public static final String SHELLYDT_BLUCLASS_DISTANCE = "SBDI";
     public static final String SHELLYDT_BLUCLASS_REMOTE = "SBRC";
+    public static final String SHELLYDT_BLUCLASS_WS = "SBWS";
 
     public static final String SHELLYDT_BLUBUTTON1 = "SBBT-002C";
     public static final String SHELLYDT_BLUTOUGHZB = "SBBT-102C";
@@ -167,6 +168,7 @@ public class ShellyDevices {
     public static final String SHELLYDT_BLUMOTION = "SBMO-003Z";
     public static final String SHELLYDT_BLUDISTANCE = "SBDI-003E";
     public static final String SHELLYDT_BLUREMOTE = "SBRC-005B";
+    public static final String SHELLYDT_BLUWS90 = "SBWS-90CM";
 
     // Thing Type ID prefixes
     public static final String THING_TYPE_SHELLYPLUS_PREFIX = "shellyplus";
@@ -285,6 +287,7 @@ public class ShellyDevices {
     public static final ThingTypeUID THING_TYPE_SHELLYBLUMOTION = new ThingTypeUID(BINDING_ID, "shellyblumotion");
     public static final ThingTypeUID THING_TYPE_SHELLYBLUDISTANCE = new ThingTypeUID(BINDING_ID, "shellybludistance");
     public static final ThingTypeUID THING_TYPE_SHELLYBLUREMOTE = new ThingTypeUID(BINDING_ID, "shellybluremote");
+    public static final ThingTypeUID THING_TYPE_SHELLYBLUWS90 = new ThingTypeUID(BINDING_ID, "shellybluws90");
 
     /*
      * Thing type classes: Various logic is depending on device types/classes
@@ -361,7 +364,7 @@ public class ShellyDevices {
     public static final Set<ThingTypeUID> GROUP_BLU_THING_TYPES = Set.of( //
             THING_TYPE_SHELLYBLUBUTTON1, THING_TYPE_SHELLYBLUWALLSWITCH4, THING_TYPE_SHELLYBLURCBUTTON4,
             THING_TYPE_SHELLYBLUHT, THING_TYPE_SHELLYBLUDW, THING_TYPE_SHELLYBLUMOTION, THING_TYPE_SHELLYBLUDISTANCE,
-            THING_TYPE_SHELLYBLUREMOTE);
+            THING_TYPE_SHELLYBLUREMOTE, THING_TYPE_SHELLYBLUWS90);
 
     // Wall Displays
     public static final Set<ThingTypeUID> GROUP_WALLDISPLAY_THING_TYPES = Set.of(THING_TYPE_SHELLYPLUSWALLDISPLAY);
@@ -486,6 +489,7 @@ public class ShellyDevices {
             Map.entry(SHELLYDT_BLUMOTION, THING_TYPE_SHELLYBLUMOTION),
             Map.entry(SHELLYDT_BLUDISTANCE, THING_TYPE_SHELLYBLUDISTANCE),
             Map.entry(SHELLYDT_BLUREMOTE, THING_TYPE_SHELLYBLUREMOTE),
+            Map.entry(SHELLYDT_BLUWS90, THING_TYPE_SHELLYBLUWS90),
 
             Map.entry(SHELLYDT_BLUCLASS_BUTTON, THING_TYPE_SHELLYBLUBUTTON1), //
             Map.entry(SHELLYDT_BLUCLASS_HT, THING_TYPE_SHELLYBLUHT), //
@@ -493,6 +497,7 @@ public class ShellyDevices {
             Map.entry(SHELLYDT_BLUCLASS_MOTION, THING_TYPE_SHELLYBLUMOTION),
             Map.entry(SHELLYDT_BLUCLASS_DISTANCE, THING_TYPE_SHELLYBLUDISTANCE),
             Map.entry(SHELLYDT_BLUCLASS_REMOTE, THING_TYPE_SHELLYBLUREMOTE),
+            Map.entry(SHELLYDT_BLUCLASS_WS, THING_TYPE_SHELLYBLUWS90),
 
             // Wall displays
             Map.entry(SHELLYDT_PLUSWALLDISPLAY, THING_TYPE_SHELLYPLUSWALLDISPLAY));
@@ -656,6 +661,7 @@ public class ShellyDevices {
             Map.entry("shellyblumotion", THING_TYPE_SHELLYBLUMOTION), //
             Map.entry("shellybludistance", THING_TYPE_SHELLYBLUDISTANCE), //
             Map.entry("shellybluremote", THING_TYPE_SHELLYBLUREMOTE), //
+            Map.entry("shellybluws90", THING_TYPE_SHELLYBLUWS90), //
 
             // Password protected device
             Map.entry(THING_TYPE_SHELLYPROTECTED_STR, THING_TYPE_SHELLYPROTECTED));
