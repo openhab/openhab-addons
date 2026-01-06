@@ -14,6 +14,10 @@ package org.openhab.automation.java223.internal.strategy.jarloader;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
@@ -39,7 +43,10 @@ public class JarClassLoader extends ClassLoader {
 
     public static final String CLASS_FILE_TYPE = ".class";
 
-    private final Map<String, Path> availableClasses = new HashMap<>();
+    // Map of all resources available in the JAR
+    private final Map<String, Path> availableResources = new HashMap<>();
+    // Map of all classes in user libraries (only from libraries starting with "java223")
+    private final Map<String, Path> availableUserClass = new HashMap<>();
 
     public JarClassLoader(@Nullable ClassLoader parent) {
         super(parent);
@@ -47,8 +54,12 @@ public class JarClassLoader extends ClassLoader {
 
     public void addJar(Path path) {
         try (JarFile jarFile = new JarFile(path.toFile())) {
-            jarFile.stream().map(JarEntry::getName).filter(p -> p.endsWith(CLASS_FILE_TYPE))
-                    .forEach(className -> availableClasses.put(className, path));
+            jarFile.stream().map(JarEntry::getName).forEach(name -> availableResources.put(name, path));
+            if (path.getFileName().toString().startsWith("java223")) {
+                jarFile.stream().map(JarEntry::getName).filter(p -> p.endsWith(CLASS_FILE_TYPE))
+                        .forEach(className -> availableUserClass.put(className, path));
+
+            }
         } catch (IOException e) {
             logger.warn("Failed to process '{}': {}", path, e.getMessage());
         }
@@ -60,9 +71,26 @@ public class JarClassLoader extends ClassLoader {
      * @param name The name of the Class to test
      * @return true if this ClassLoader has already loaded the class
      */
-    public boolean isLoadedClass(String name) {
-        String path = name.replace('.', '/').concat(".class");
-        return availableClasses.containsKey(path);
+    public boolean isAUserLibrary(String name) {
+        String path = name.replace('.', '/').concat(CLASS_FILE_TYPE);
+        return availableUserClass.containsKey(path);
+    }
+
+    @Override
+    protected @Nullable URL findResource(@Nullable String name) {
+        if (name == null) {
+            return null;
+        }
+        Path jarPath = availableResources.get(name);
+        if (jarPath == null) {
+            return null;
+        }
+        try {
+            return new URI("jar:file:" + jarPath.toAbsolutePath() + "!/" + name).toURL();
+        } catch (MalformedURLException | URISyntaxException e) {
+            logger.warn("Failed to create URL for resource '{}' in JAR '{}': {}", name, jarPath, e.getMessage());
+            return null;
+        }
     }
 
     @Override
@@ -70,8 +98,8 @@ public class JarClassLoader extends ClassLoader {
         if (name == null) {
             throw new ClassNotFoundException();
         }
-        String path = name.replace('.', '/').concat(".class");
-        Path jarPath = availableClasses.get(path);
+        String path = name.replace('.', '/').concat(CLASS_FILE_TYPE);
+        Path jarPath = availableResources.get(path);
         if (jarPath == null) {
             throw new ClassNotFoundException();
         }
