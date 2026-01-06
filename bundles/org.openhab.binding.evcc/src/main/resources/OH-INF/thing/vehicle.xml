@@ -9,10 +9,11 @@
 		</supported-bridge-type-refs>
 		<label>Vehicle</label>
 		<description>A vehicle configured in your evcc instance</description>
-		<representation-property>id</representation-property>
+		<semantic-equipment-tag>Vehicle</semantic-equipment-tag>
+		<representation-property>vehicleId</representation-property>
 		<config-description>
-			<parameter name="id" type="text">
-				<label>ID</label>
+			<parameter name="vehicleId" type="text">
+				<label>Vehicle ID</label>
 				<description>The ID of the vehicle in your evcc setup (database ID)</description>
 			</parameter>
 		</config-description>

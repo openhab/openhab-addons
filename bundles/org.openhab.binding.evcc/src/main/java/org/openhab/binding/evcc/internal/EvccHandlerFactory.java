@@ -20,11 +20,13 @@ import org.openhab.binding.evcc.internal.handler.EvccBatteryHandler;
 import org.openhab.binding.evcc.internal.handler.EvccBridgeHandler;
 import org.openhab.binding.evcc.internal.handler.EvccHeatingHandler;
 import org.openhab.binding.evcc.internal.handler.EvccLoadpointHandler;
+import org.openhab.binding.evcc.internal.handler.EvccPlanHandler;
 import org.openhab.binding.evcc.internal.handler.EvccPvHandler;
 import org.openhab.binding.evcc.internal.handler.EvccSiteHandler;
 import org.openhab.binding.evcc.internal.handler.EvccStatisticsHandler;
 import org.openhab.binding.evcc.internal.handler.EvccVehicleHandler;
 import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
@@ -53,15 +55,17 @@ public class EvccHandlerFactory extends BaseThingHandlerFactory {
     private final ChannelTypeRegistry channelTypeRegistry;
     private final TranslationProvider i18nProvider;
     private final LocaleProvider localeProvider;
+    private final TimeZoneProvider timeZoneProvider;
 
     @Activate
     public EvccHandlerFactory(@Reference HttpClientFactory httpClientFactory,
             @Reference ChannelTypeRegistry channelTypeRegistry, @Reference TranslationProvider i18nProvider,
-            @Reference LocaleProvider localeProvider) {
+            @Reference LocaleProvider localeProvider, @Reference TimeZoneProvider timeZoneProvider) {
         this.httpClientFactory = httpClientFactory;
         this.channelTypeRegistry = channelTypeRegistry;
         this.i18nProvider = i18nProvider;
         this.localeProvider = localeProvider;
+        this.timeZoneProvider = timeZoneProvider;
     }
 
     @Override
@@ -90,6 +94,8 @@ public class EvccHandlerFactory extends BaseThingHandlerFactory {
             handler = new EvccPvHandler(thing, channelTypeRegistry);
         } else if (THING_TYPE_STATISTICS.equals(type)) {
             handler = new EvccStatisticsHandler(thing, channelTypeRegistry);
+        } else if (THING_TYPE_PLAN.equals(type)) {
+            handler = new EvccPlanHandler(thing, channelTypeRegistry, timeZoneProvider.getTimeZone());
         }
         return handler;
     }

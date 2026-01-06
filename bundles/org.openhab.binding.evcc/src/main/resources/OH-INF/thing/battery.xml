@@ -10,6 +10,7 @@
 
 		<label>Battery</label>
 		<description>A battery configured in your evcc instance</description>
+		<semantic-equipment-tag>Battery</semantic-equipment-tag>
 		<config-description>
 			<parameter name="index" type="integer">
 				<label>Index</label>

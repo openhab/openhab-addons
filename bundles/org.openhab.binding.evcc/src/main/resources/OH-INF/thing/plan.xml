@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="evcc"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<thing-type id="plan">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="server"/>
+		</supported-bridge-type-refs>
+		<label>Plan</label>
+		<description>A plan configured for your vehicle in evcc</description>
+		<representation-property>id</representation-property>
+		<config-description>
+			<parameter name="index" type="text">
+				<label>Index</label>
+				<description>The plan index: 0 for one-time plan, 1...N for repeating plans for your vehicle in the evcc setup</description>
+			</parameter>
+			<parameter name="vehicleId" type="text">
+				<label>Vehicle ID</label>
+				<description>The ID of the vehicle in your evcc setup (database ID)</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+	<channel-type id="plan-soc">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>Plan SoC</label>
+		<description>Scheduled SoC</description>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Energy</tag>
+		</tags>
+	</channel-type>
+	<channel-type id="plan-precondition">
+		<item-type unitHint="s">Number:Time</item-type>
+		<label>Precondition Time</label>
+		<description>Scheduled preconditioning time (time in seconds to start charging before departure)</description>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Duration</tag>
+		</tags>
+	</channel-type>
+	<channel-type id="plan-time">
+		<item-type>DateTime</item-type>
+		<label>Plan Time</label>
+		<description>Scheduled departure time</description>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Timestamp</tag>
+		</tags>
+	</channel-type>
+	<channel-type id="plan-weekdays">
+		<item-type>String</item-type>
+		<label>Plan Weekdays</label>
+		<description>Planned days on which the vehicle will be charged (only in repeating plans)</description>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Channel</tag>
+		</tags>
+	</channel-type>
+	<channel-type id="plan-active">
+		<item-type>Switch</item-type>
+		<label>Active</label>
+		<description>Indicates whether the repeating plan is active</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Enabled</tag>
+		</tags>
+		<state>
+			<options>
+				<option value="ON">Active</option>
+				<option value="OFF">Inactive</option>
+			</options>
+		</state>
+	</channel-type>
+</thing:thing-descriptions>

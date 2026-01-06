@@ -9,6 +9,7 @@
 		</supported-bridge-type-refs>
 		<label>Loadpoint</label>
 		<description>A loadpoint configured in your evcc instance</description>
+		<semantic-equipment-tag>EVSE</semantic-equipment-tag>
 		<representation-property>index</representation-property>
 		<config-description>
 			<parameter name="index" type="integer">
@@ -289,21 +290,6 @@
 			<tag>Timestamp</tag>
 		</tags>
 		<state readOnly="true"/>
-	</channel-type>
-	<channel-type id="loadpoint-enabled">
-		<item-type>Switch</item-type>
-		<label>Enabled</label>
-		<description>Indicating whether this loadpoint is enabled or not</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Enabled</tag>
-		</tags>
-		<state readOnly="true">
-			<options>
-				<option value="ON">Enabled</option>
-				<option value="OFF">Disabled</option>
-			</options>
-		</state>
 	</channel-type>
 	<channel-type id="loadpoint-plan-projected-end">
 		<item-type>DateTime</item-type>

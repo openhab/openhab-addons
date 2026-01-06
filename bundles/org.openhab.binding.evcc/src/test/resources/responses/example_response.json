@@ -1179,6 +1179,11 @@
       "capacity": 44,
       "minSoc": 15,
       "limitSoc": 80,
+      "plan": {
+        "soc": 80,
+        "precondition": 3600,
+        "time": "2025-09-08T06:00:00Z"
+      },
       "repeatingPlans": [
         {
           "weekdays": [
