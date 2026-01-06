@@ -26,14 +26,12 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class Moon extends RiseSet implements Planet {
-<<<<<<< Upstream, based on moon_distance
     private final Map<DistanceType, MoonDistance> distances = new HashMap<>(DistanceType.values().length);
-=======
     private final Eclipse eclipse = new Eclipse(EclipseKind.PARTIAL, EclipseKind.TOTAL);
->>>>>>> 0596b7c Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added unit tests for eclipses
 
     private EclipseSet eclipseSet = EclipseSet.NONE;
     private MoonPhase phase = new MoonPhase();
+<<<<<<< Upstream, based on main
 <<<<<<< Upstream, based on main
     private Position position = MoonPosition.NONE;
     private Zodiac zodiac = Zodiac.NONE;
@@ -49,8 +47,9 @@ public class Moon extends RiseSet implements Planet {
     private Position position = SunPosition.NULL;
 >>>>>>> 0596b7c Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added unit tests for eclipses
 =======
+=======
+>>>>>>> 5ae0857 Rebased. Corrected moon_day dynamic icons Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added unit tests for eclipses Rebased on moon_distance
     private Position position = MoonPosition.NULL;
->>>>>>> b61414e Rebased. Corrected moon_day dynamic icons Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added unit tests for eclipses
     private Zodiac zodiac = Zodiac.NULL;
 >>>>>>> 48a7069 Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added unit tests for eclipses
 

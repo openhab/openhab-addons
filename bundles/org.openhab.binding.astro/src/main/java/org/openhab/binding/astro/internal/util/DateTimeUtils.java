@@ -262,6 +262,7 @@ public class DateTimeUtils {
 <<<<<<< Upstream, based on main
 <<<<<<< Upstream, based on main
 <<<<<<< Upstream, based on main
+<<<<<<< Upstream, based on main
      * Evaluates whether the second date time is within the same date as the first date time in the time zone of
      * the latter.
      *
@@ -273,19 +274,33 @@ public class DateTimeUtils {
 >>>>>>> a082c65 Copilot code view adressed
 <<<<<<< Upstream, based on main
 =======
+=======
+>>>>>>> 5ae0857 Rebased. Corrected moon_day dynamic icons Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added unit tests for eclipses Rebased on moon_distance
 <<<<<<< Upstream, based on main
 =======
 <<<<<<< Upstream, based on moon_distance
 >>>>>>> 637b449 Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added unit tests for eclipses
+<<<<<<< Upstream, based on main
 >>>>>>> 48a7069 Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added unit tests for eclipses
      * Returns true, if two ZonedDateTime objects are on the same day ignoring time.
 <<<<<<< Upstream, based on main
 >>>>>>> f25b664 Review Moon Distance and factorization of MoonCalc
 =======
 =======
+>>>>>>> 5ae0857 Rebased. Corrected moon_day dynamic icons Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added unit tests for eclipses Rebased on moon_distance
+=======
+     * <<<<<<< Upstream, based on moon_distance
+>>>>>>> 6955cc9 Rebased. Corrected moon_day dynamic icons Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added unit tests for eclipses Rebased on moon_distance
+     * Returns true, if two ZonedDateTime objects are on the same day ignoring time.
+     * =======
      * Returns true, if two instant objects are on the same day ignoring time.
+<<<<<<< Upstream, based on main
 >>>>>>> 0596b7c Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added unit tests for eclipses
 >>>>>>> 48a7069 Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added unit tests for eclipses
+=======
+     * >>>>>>> 0596b7c Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added
+     * unit tests for eclipses
+>>>>>>> 5ae0857 Rebased. Corrected moon_day dynamic icons Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added unit tests for eclipses Rebased on moon_distance
      */
     public static boolean isSameDay(@Nullable ZonedDateTime zdt1, @Nullable ZonedDateTime zdt2) {
         return zdt1 != null && zdt2 != null

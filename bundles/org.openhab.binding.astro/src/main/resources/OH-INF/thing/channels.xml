@@ -417,11 +417,7 @@
 		<item-type>DateTime</item-type>
 		<label>First Quarter</label>
 		<description>The DateTime the moon is in the first quarter</description>
-<<<<<<< Upstream, based on moon_distance
-		<category>calendar</category>
-=======
 		<category>oh:astro:moon_phase-first_quarter</category>
->>>>>>> 98dc761 Initial commit for Moon phase revamp
 		<tags>
 			<tag>Calculation</tag>
 			<tag>Timestamp</tag>
@@ -433,11 +429,7 @@
 		<item-type>DateTime</item-type>
 		<label>Third Quarter</label>
 		<description>The DateTime the moon is in the third quarter</description>
-<<<<<<< Upstream, based on moon_distance
-		<category>calendar</category>
-=======
 		<category>oh:astro:moon_phase-third_quarter</category>
->>>>>>> 98dc761 Initial commit for Moon phase revamp
 		<tags>
 			<tag>Calculation</tag>
 			<tag>Timestamp</tag>
@@ -449,11 +441,7 @@
 		<item-type>DateTime</item-type>
 		<label>Full Moon</label>
 		<description>The DateTime for full moon</description>
-<<<<<<< Upstream, based on moon_distance
-		<category>calendar</category>
-=======
 		<category>oh:astro:moon_phase-full</category>
->>>>>>> 98dc761 Initial commit for Moon phase revamp
 		<tags>
 			<tag>Calculation</tag>
 			<tag>Timestamp</tag>
@@ -465,11 +453,7 @@
 		<item-type>DateTime</item-type>
 		<label>New Moon</label>
 		<description>The DateTime for new moon</description>
-<<<<<<< Upstream, based on moon_distance
-		<category>calendar</category>
-=======
 		<category>oh:astro:moon_phase-new</category>
->>>>>>> 98dc761 Initial commit for Moon phase revamp
 		<tags>
 			<tag>Calculation</tag>
 			<tag>Timestamp</tag>

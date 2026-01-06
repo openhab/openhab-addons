@@ -117,9 +117,9 @@ public class MoonCalc {
 =======
 public class MoonCalc extends AstroCalc {
     private static final double SYNODIC_MONTH = 29.530588853;
-    private static final double YEARLY_CYCLES = AstroConstants.TROPICAL_YEAR_DAYS / SYNODIC_MONTH;
     private static final double FL = 1.0 - AstroConstants.WGS84_EARTH_FLATTENING;
     private static final EclipseCalc ECLIPSE_CALC = new MoonEclipseCalc();
+<<<<<<< Upstream, based on main
     private static final int[] KD = new int[] { 0, 2, 2, 0, 0, 0, 2, 2, 2, 2, 0, 1, 0, 2, 0, 0, 4, 0, 4, 2, 2, 1, 1, 2,
             2, 4, 2, 0, 2, 2, 1, 2, 0, 0, 2, 2, 2, 4, 0, 3, 2, 4, 0, 2, 2, 2, 4, 0, 4, 1, 2, 0, 1, 3, 4, 2, 0, 1, 2,
             2 };
@@ -137,6 +137,8 @@ public class MoonCalc extends AstroCalc {
             -16675, -12831, -10445, -11650, 14403, -7003, 0, 10056, 6322, -9884, 5751, 0, -4950, 4130, 0, -3958, 0,
             3258, 2616, -1897, -2117, 2354, 0, 0, -1423, -1117, -1571, -1739, 0, -4421, 0, 0, 0, 0, 1165, 0, 0, 8752 };
 >>>>>>> a1c7d2d Start refactoring Eclipse for sun and moon
+=======
+>>>>>>> 5ae0857 Rebased. Corrected moon_day dynamic icons Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added unit tests for eclipses Rebased on moon_distance
 
     /**
      * Calculates all moon data at the specified coordinates
@@ -201,22 +203,9 @@ public class MoonCalc extends AstroCalc {
         });
 >>>>>>> a1c7d2d Start refactoring Eclipse for sun and moon
 
-<<<<<<< Upstream, based on moon_distance
+        double julianDate = DateTimeUtils.dateToJulianDate(calendar);
         Set.of(DistanceType.APOGEE, DistanceType.PERIGEE)
                 .forEach(type -> moon.setDistance(type, MoonDistanceCalc.get(type, julianDate)));
-=======
-        double decimalYear = DateTimeUtils.getDecimalYear(calendar);
-        double julianDate = DateTimeUtils.dateToJulianDate(calendar);
-        MoonDistance apogee = moon.getApogee();
-        double apogeeJd = getApogee(julianDate, decimalYear);
-        apogee.setDate(DateTimeUtils.toCalendar(apogeeJd, zone, locale));
-        apogee.setDistance(getDistance(apogeeJd));
-
-        MoonDistance perigee = moon.getPerigee();
-        double perigeeJd = getPerigee(julianDate, decimalYear);
-        perigee.setDate(DateTimeUtils.toCalendar(perigeeJd, zone, locale));
-        perigee.setDistance(getDistance(perigeeJd));
->>>>>>> 62adad6 Adds moon-day icon set. Rebased.
 
         return moon;
     }
@@ -233,12 +222,15 @@ public class MoonCalc extends AstroCalc {
         var moonPosition = getMoonPosition(julianDate, latitude, longitude);
         moon.setPosition(moonPosition);
         moon.setZodiac(ZodiacCalc.calculate(moonPosition.getMonLon(), null));
+<<<<<<< Upstream, based on main
 >>>>>>> 48a7069 Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added unit tests for eclipses
 
         double julianDate = DateTimeUtils.dateToJulianDate(calendar);
         MoonPosition moonPosition = getMoonPosition(julianDate, latitude, longitude);
         moon.setPosition(moonPosition);
         moon.setZodiac(ZodiacCalc.calculate(moonPosition.getLongitude(), null));
+=======
+>>>>>>> 5ae0857 Rebased. Corrected moon_day dynamic icons Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added unit tests for eclipses Rebased on moon_distance
         moon.setDistance(DistanceType.CURRENT, MoonDistanceCalc.calculate(julianDate));
     }
 
@@ -628,6 +620,7 @@ public class MoonCalc extends AstroCalc {
     private double getIllumination(double jd) {
         double t = DateTimeUtils.toJulianCenturies(jd);
 <<<<<<< Upstream, based on main
+<<<<<<< Upstream, based on main
         double t2 = t * t;
         double t3 = t2 * t;
         double t4 = t3 * t;
@@ -639,6 +632,14 @@ public class MoonCalc extends AstroCalc {
         double m = AstroConstants.E05_0 + 35999.0502909 * t - .0001536 * t * t + t * t * t / 24490000;
         double m1 = 134.9634114 + 477198.8676313 * t + .008997 * t * t + t * t * t / 69699 - t * t * t * t / 14712000;
 >>>>>>> 810a1e9 Initial commit for Moon phase revamp
+=======
+        double t2 = t * t;
+        double t3 = t2 * t;
+        double t4 = t3 * t;
+        double d = 297.8502042 + 445267.11151686 * t - .00163 * t2 + t3 / 545868 - t4 / 113065000;
+        double m = AstroConstants.E05_0 + 35999.0502909 * t - .0001536 * t2 + t3 / 24490000;
+        double m1 = 134.9634114 + 477198.8676313 * t + .008997 * t2 + t3 / 69699 - t4 / 14712000;
+>>>>>>> 5ae0857 Rebased. Corrected moon_day dynamic icons Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added unit tests for eclipses Rebased on moon_distance
         double i = 180 - d - 6.289 * sinDeg(m1) + 2.1 * sinDeg(m) - 1.274 * sinDeg(2 * d - m1) - .658 * sinDeg(2 * d)
                 - .241 * sinDeg(2 * m1) - .110 * sinDeg(d);
         return (1 + cosDeg(i)) / 2 * 100.0;
@@ -685,6 +686,7 @@ public class MoonCalc extends AstroCalc {
         return phaseJd;
     }
 
+<<<<<<< Upstream, based on main
     /**
 <<<<<<< Upstream, based on moon_distance
 <<<<<<< Upstream, based on main
@@ -795,6 +797,8 @@ public class MoonCalc extends AstroCalc {
 
 >>>>>>> 98dc761 Initial commit for Moon phase revamp
 >>>>>>> 810a1e9 Initial commit for Moon phase revamp
+=======
+>>>>>>> 5ae0857 Rebased. Corrected moon_day dynamic icons Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added unit tests for eclipses Rebased on moon_distance
     private double[] calcMoon(double t) {
         double p2 = 6.283185307;
         double arc = 206264.8062;
@@ -942,17 +946,6 @@ public class MoonCalc extends AstroCalc {
         return ret;
     }
 
-<<<<<<< Upstream, based on moon_distance
-=======
-    private double getCoefficient(double d, double m, double m1, double f) {
-        double sr = 0;
-        for (int t = 0; t < 60; t++) {
-            sr += KR[t] * cosDeg(KD[t] * d + KM[t] * m + KM1[t] * m1 + KF[t] * f);
-        }
-        return sr;
-    }
-
->>>>>>> df0c399 Start refactoring Eclipse for sun and moon
     /**
      * Sets the azimuth, elevation and zodiac in the moon object.
      */
@@ -1092,7 +1085,7 @@ public class MoonCalc extends AstroCalc {
 >>>>>>> 48a7069 Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added unit tests for eclipses
         double u = 1.0 / Math.sqrt(co * co + fl * si);
         double a = AstroConstants.EARTH_EQUATORIAL_RADIUS * u;
-        double b = AstroConstants.EARTH_EQUATORIAL_RADIUS * fl * u;
+        double b = AstroConstants.EARTH_EQUATORIAL_RADIUS * u * fl;
         return Math.sqrt(a * a * co * co + b * b * si);
 >>>>>>> a1c7d2d Start refactoring Eclipse for sun and moon
     }

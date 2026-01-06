@@ -32,6 +32,7 @@ import org.openhab.binding.astro.internal.model.EclipseSet;
 =======
 import org.openhab.binding.astro.internal.model.Eclipse;
 <<<<<<< Upstream, based on main
+<<<<<<< Upstream, based on main
 >>>>>>> a1c7d2d Start refactoring Eclipse for sun and moon
 =======
 <<<<<<< Upstream, based on moon_distance
@@ -40,13 +41,9 @@ import org.openhab.binding.astro.internal.model.Eclipse;
 =======
 <<<<<<< Upstream, based on moon_distance
 >>>>>>> 385bae1 Rebased. Corrected moon_day dynamic icons Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added unit tests for eclipses
-import org.openhab.binding.astro.internal.model.Position;
 =======
-=======
+>>>>>>> 5ae0857 Rebased. Corrected moon_day dynamic icons Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added unit tests for eclipses Rebased on moon_distance
 import org.openhab.binding.astro.internal.model.Position;
->>>>>>> b61414e Rebased. Corrected moon_day dynamic icons Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added unit tests for eclipses
-import org.openhab.binding.astro.internal.model.Radiation;
->>>>>>> 0596b7c Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added unit tests for eclipses
 import org.openhab.binding.astro.internal.model.Range;
 import org.openhab.binding.astro.internal.model.Season;
 import org.openhab.binding.astro.internal.model.Sun;
@@ -71,12 +68,7 @@ import org.openhab.binding.astro.internal.util.MathUtils;
  */
 @NonNullByDefault
 public class SunCalc {
-<<<<<<< Upstream, based on moon_distance
     private static final double M0 = Math.toRadians(357.5291);
-=======
-    private static final double SC = 1367; // Solar constant in W/m²
-    private static final double M0 = Math.toRadians(AstroConstants.E05_0);
->>>>>>> 0596b7c Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added unit tests for eclipses
     private static final double M1 = Math.toRadians(0.98560028);
     private static final double J0 = 0.0009;
     private static final double J1 = 0.0053;
@@ -122,6 +114,7 @@ public class SunCalc {
 <<<<<<< Upstream, based on main
         Position sunPosition = getPosition(calendar, latitude, longitude, altitude);
         sun.setPosition(sunPosition);
+<<<<<<< Upstream, based on main
     }
 
     public Position getPosition(Calendar calendar, double latitude, double longitude, @Nullable Double altitude) {
@@ -132,6 +125,8 @@ public class SunCalc {
 >>>>>>> 385bae1 Rebased. Corrected moon_day dynamic icons Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added unit tests for eclipses
         sun.setPosition(sunPosition);
         setRadiationInfo(calendar, sunPosition.getElevationAsDouble(), altitude, sun);
+=======
+>>>>>>> 5ae0857 Rebased. Corrected moon_day dynamic icons Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added unit tests for eclipses Rebased on moon_distance
     }
 
 <<<<<<< Upstream, based on main
@@ -154,6 +149,7 @@ public class SunCalc {
         double azimuth = Math.toDegrees(getAzimuth(th, a, phi, d));
         double elevation = Math.toDegrees(getElevation(th, a, phi, d));
 <<<<<<< Upstream, based on main
+<<<<<<< Upstream, based on main
         return new Position(azimuth, elevation);
 =======
 <<<<<<< Upstream, based on moon_distance
@@ -167,7 +163,10 @@ public class SunCalc {
 =======
         return new SunPosition(azimuth, elevation);
 =======
+=======
+>>>>>>> 5ae0857 Rebased. Corrected moon_day dynamic icons Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added unit tests for eclipses Rebased on moon_distance
         return new Position(azimuth, elevation);
+<<<<<<< Upstream, based on main
 >>>>>>> b61414e Rebased. Corrected moon_day dynamic icons Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added unit tests for eclipses
     }
 
@@ -200,6 +199,8 @@ public class SunCalc {
         radiation.setTotal(rTot);
 >>>>>>> 0596b7c Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added unit tests for eclipses
 >>>>>>> 48a7069 Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added unit tests for eclipses
+=======
+>>>>>>> 5ae0857 Rebased. Corrected moon_day dynamic icons Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added unit tests for eclipses Rebased on moon_distance
     }
 
     /**
