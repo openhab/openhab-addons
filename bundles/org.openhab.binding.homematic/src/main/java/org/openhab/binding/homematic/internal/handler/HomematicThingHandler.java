@@ -166,7 +166,7 @@ public class HomematicThingHandler extends BaseThingHandler {
                     }
 
                     ChannelTypeUID channelTypeUID = UidUtils.generateChannelTypeUID(dp);
-                    ChannelType channelType = typeProvider.getChannelType(channelTypeUID, null);
+                    ChannelType channelType = typeProvider.getChannelTypeCreatedSinceStartup(channelTypeUID);
                     if (channelType == null) {
                         channelType = HomematicTypeGeneratorImpl.createChannelType(dp, channelTypeUID);
                         typeProvider.putChannelType(channelType);
@@ -243,7 +243,7 @@ public class HomematicThingHandler extends BaseThingHandler {
                 channelProps.put(propertyName, expectedFunction);
 
                 ChannelTypeUID channelTypeUID = UidUtils.generateChannelTypeUID(dp);
-                ChannelType channelType = typeProvider.getChannelType(channelTypeUID, null);
+                ChannelType channelType = typeProvider.getChannelTypeCreatedSinceStartup(channelTypeUID);
                 if (channelType == null) {
                     channelType = HomematicTypeGeneratorImpl.createChannelType(dp, channelTypeUID);
                     typeProvider.putChannelType(channelType);
