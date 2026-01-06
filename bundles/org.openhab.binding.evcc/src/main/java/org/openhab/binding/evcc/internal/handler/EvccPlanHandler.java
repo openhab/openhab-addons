@@ -256,7 +256,6 @@ public class EvccPlanHandler extends EvccBaseThingHandler {
             }
         }
 
-        payload.set(index - 1, plan);
         performApiRequest(endpoint, POST, payload);
     }
 
@@ -283,7 +282,7 @@ public class EvccPlanHandler extends EvccBaseThingHandler {
         if (JSON_KEY_SOC.equals(channelKey)) {
             soc = value;
         } else if (cachedOneTimePlan.has(JSON_KEY_SOC)) {
-            cachedOneTimePlan.get(JSON_KEY_SOC).getAsString();
+            soc = cachedOneTimePlan.get(JSON_KEY_SOC).getAsString();
         }
         String url = String.join("/", endpoint, soc, time);
         String precondition = "";

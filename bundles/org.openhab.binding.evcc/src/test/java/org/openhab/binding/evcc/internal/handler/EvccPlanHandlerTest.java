@@ -188,14 +188,14 @@ public class EvccPlanHandlerTest extends AbstractThingHandlerTestClass<EvccPlanH
         handler.handleCommand(timeCh, (Command) timeState);
         assertFalse(capturedUrl.isEmpty(), "Url should not be empty!");
         // Expect: base / vehicles / vehicle_1 / plan/soc / 85 / 2025-12-20T08:00:00Z ?precondition=1800
-        assertTrue(capturedUrl.startsWith("http://evcc/api/vehicles/vehicle_1/plan/soc/100/"));
+        assertTrue(capturedUrl.startsWith("http://evcc/api/vehicles/vehicle_1/plan/soc/80/"));
         assertTrue(capturedUrl.contains("2025-12-20T08:00:00Z")); // normalized to Instant (Z)
         assertEquals("POST", capturedMethod);
 
         handler.handleCommand(precCh, (Command) precState);
         assertFalse(capturedUrl.isEmpty(), "Url should not be empty!");
         // Expect: base / vehicles / vehicle_1 / plan/soc / 85 / 2025-12-20T08:00:00Z ?precondition=1800
-        assertTrue(capturedUrl.startsWith("http://evcc/api/vehicles/vehicle_1/plan/soc/100/"));
+        assertTrue(capturedUrl.startsWith("http://evcc/api/vehicles/vehicle_1/plan/soc/80/"));
         assertTrue(capturedUrl.endsWith("?precondition=1800"));
         assertEquals("POST", capturedMethod);
     }
