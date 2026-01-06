@@ -124,6 +124,7 @@ public class HueBindingConstants {
     public static final String PROPERTY_DIMMING_RANGE = "dimmingRange";
     public static final String PROPERTY_COLOR_TEMP_RANGE = "colorTemperatureRange";
     public static final String PROPERTY_COLOR_GAMUT = "colorGamut";
+    public static final String PROPERTY_FIRMWARE_UPDATE_STATE = "firmwareUpdateState";
 
     public static final String NORMALIZE_ID_REGEX = "[^a-zA-Z0-9_]";
 

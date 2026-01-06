@@ -796,8 +796,18 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 resourceConsumedFlags |= FLAG_CACHE_UPDATE;
                 resourceConsumedFlags |= updateChannels && updateChannels(resource) ? FLAG_CHANNELS_UPDATE : 0;
                 putResourceToCache(resource);
-                if (ResourceType.LIGHT == resource.getType() && !updateLightPropertiesDone) {
-                    updateLightProperties(resource);
+                switch (resource.getType()) {
+                    case DEVICE_SOFTWARE_UPDATE:
+                        String fwState = resource.getSoftwareUpdateState().toString().replaceAll("_", " ");
+                        fwState = Character.toUpperCase(fwState.charAt(0)) + fwState.substring(1).toLowerCase();
+                        thing.setProperty(PROPERTY_FIRMWARE_UPDATE_STATE, fwState);
+                        break;
+                    case LIGHT:
+                        if (!updateLightPropertiesDone) {
+                            updateLightProperties(resource);
+                        }
+                        break;
+                    default:
                 }
             }
         }
