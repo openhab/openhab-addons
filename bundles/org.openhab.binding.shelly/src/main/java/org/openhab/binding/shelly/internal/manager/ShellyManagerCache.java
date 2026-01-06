@@ -34,7 +34,7 @@ public class ShellyManagerCache<K, V> {
     protected final ScheduledExecutorService scheduler = ThreadPoolManager.getScheduledPool("ShellyManagerThreadpool");
     private static final long EXPIRY_IN_MILLIS = 15 * 60 * 1000; // 15min
 
-    private record CacheEntry<V> (Long created, V value) {
+    private record CacheEntry<V>(Long created, V value) {
     }
 
     // All access must be guarded by "this"
@@ -44,35 +44,6 @@ public class ShellyManagerCache<K, V> {
     private @Nullable ScheduledFuture<?> cleanupJob;
 
     public ShellyManagerCache() {
-        initialize();
-    }
-
-    public synchronized void initialize() {
-        if (cleanupJob == null) {
-            // start background cleanup
-            cleanupJob = scheduler.scheduleWithFixedDelay(this::cleanupMap, 2, EXPIRY_IN_MILLIS / 2L, TimeUnit.SECONDS);
-        }
-    }
-
-    public synchronized void dispose() {
-        if (cleanupJob != null) {
-            cleanupJob.cancel(true);
-            cleanupJob = null;
-        }
-        storage.clear();
-    }
-
-    private void cleanupMap() {
-        long currentTime = System.currentTimeMillis();
-        Entry<K, CacheEntry<V>> entry;
-        synchronized (this) {
-            for (Iterator<Entry<K, CacheEntry<V>>> iterator = storage.entrySet().iterator(); iterator.hasNext();) {
-                entry = iterator.next();
-                if (currentTime > (entry.getValue().created.longValue() + EXPIRY_IN_MILLIS)) {
-                    iterator.remove();
-                }
-            }
-        }
     }
 
     @Nullable
@@ -85,7 +56,49 @@ public class ShellyManagerCache<K, V> {
         CacheEntry<V> entry = new CacheEntry<>(Long.valueOf(System.currentTimeMillis()), value);
         synchronized (this) {
             entry = storage.put(key, entry);
+
+            if (storage.size() == 1) {
+                startJob();// start background cleanup
+            }
         }
+
         return entry == null ? null : entry.value;
     }
+
+    private void startJob() {
+        if (cleanupJob == null) {
+            cleanupJob = scheduler.scheduleWithFixedDelay(this::cleanupMap, 2, EXPIRY_IN_MILLIS / 2,
+                    TimeUnit.MILLISECONDS);
+        }
+    }
+
+    private void cleanupMap() {
+        long currentTime = System.currentTimeMillis();
+        Entry<K, CacheEntry<V>> entry;
+        synchronized (this) {
+            for (Iterator<Entry<K, CacheEntry<V>>> iterator = storage.entrySet().iterator(); iterator.hasNext();) {
+                entry = iterator.next();
+                if (currentTime > (entry.getValue().created.longValue() + EXPIRY_IN_MILLIS)) {
+                    iterator.remove();
+                }
+            }
+
+            if (storage.size() == 0) {
+                cancelJob(); // stop background cleanup
+            }
+        }
+    }
+
+    private void cancelJob() {
+        if (cleanupJob != null) {
+            cleanupJob.cancel(true);
+            cleanupJob = null;
+        }
+    }
+
+    public synchronized void dispose() {
+        cancelJob();
+        storage.clear();
+    }
+
 }
