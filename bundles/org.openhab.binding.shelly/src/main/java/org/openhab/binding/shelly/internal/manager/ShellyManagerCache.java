@@ -83,7 +83,7 @@ public class ShellyManagerCache<K, V> {
                 }
             }
 
-            if (storage.size() == 0) {
+            if (storage.isEmpty()) {
                 cancelJob(); // stop background cleanup
             }
         }
