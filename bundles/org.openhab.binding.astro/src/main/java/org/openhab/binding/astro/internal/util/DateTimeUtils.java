@@ -218,13 +218,18 @@ public class DateTimeUtils {
 <<<<<<< Upstream, based on main
 <<<<<<< Upstream, based on main
 <<<<<<< Upstream, based on main
+<<<<<<< Upstream, based on main
 =======
 <<<<<<< Upstream, based on moon_distance
 >>>>>>> 637b449 Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added unit tests for eclipses
-     * Returns true, if two ZonedDateTime objects are on the same day ignoring time.
 =======
+     * <<<<<<< Upstream, based on moon_distance
+>>>>>>> 6955cc9 Rebased. Corrected moon_day dynamic icons Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added unit tests for eclipses Rebased on moon_distance
+     * Returns true, if two ZonedDateTime objects are on the same day ignoring time.
+     * =======
      * Returns true, if two instant objects are on the same day ignoring time.
->>>>>>> 0596b7c Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added unit tests for eclipses
+     * >>>>>>> 0596b7c Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added
+     * unit tests for eclipses
      */
     public static boolean isSameDay(@Nullable ZonedDateTime zdt1, @Nullable ZonedDateTime zdt2) {
         return zdt1 != null && zdt2 != null

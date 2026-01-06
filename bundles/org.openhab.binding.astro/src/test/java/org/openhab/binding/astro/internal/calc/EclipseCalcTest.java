@@ -54,6 +54,7 @@ public class EclipseCalcTest {
 
         assertNotNull(moonEclipseCalc);
         double eclipseJd2 = moonEclipseCalc.calculate(calendar, midnightJd, EclipseKind.TOTAL);
+        assertNotNull(eclipseJd2);
         Calendar eclipseDate = DateTimeUtils.toCalendar(eclipseJd2, UTC, Locale.US);
 
         assertNotNull(eclipseDate);
@@ -123,9 +124,10 @@ public class EclipseCalcTest {
         Calendar calendar = new GregorianCalendar(UTC, Locale.US);
         calendar.set(2019, Calendar.NOVEMBER, 1, 0, 0, 0);
         double midnightJd = DateTimeUtils.midnightDateToJulianDate(calendar);
-
+        assertNotNull(calendar);
         assertNotNull(sunEclipseCalc);
         double eclipseJd = sunEclipseCalc.calculate(calendar, midnightJd, EclipseKind.RING);
+        assertNotNull(eclipseJd);
         Calendar eclipseDate = DateTimeUtils.toCalendar(eclipseJd, UTC, Locale.US);
 
         assertNotNull(eclipseDate);

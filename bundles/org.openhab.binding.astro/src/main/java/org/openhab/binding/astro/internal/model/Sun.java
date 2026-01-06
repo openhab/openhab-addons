@@ -29,23 +29,14 @@ public class Sun extends RiseSet implements Planet {
 
     private Map<SunPhaseName, Range> ranges = new HashMap<>();
 
+    private Circadian circadian = Circadian.DEFAULT;
+    private Radiation radiation = Radiation.NULL;
     private Position position = Position.NULL;
-
     private Zodiac zodiac = Zodiac.NULL;
 
     private @Nullable Season season = null;
 
-<<<<<<< Upstream, based on moon_distance
-    private Eclipse eclipse = new Eclipse(EclipseKind.PARTIAL, EclipseKind.TOTAL, EclipseKind.RING);
-
-    private Radiation radiation = Radiation.NULL;
-=======
-    private Radiation radiation = new Radiation();
->>>>>>> 0596b7c Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added unit tests for eclipses
-
     private SunPhase phase = new SunPhase();
-
-    private Circadian circadian = Circadian.DEFAULT;
 
     /**
      * Returns the astro dawn range.

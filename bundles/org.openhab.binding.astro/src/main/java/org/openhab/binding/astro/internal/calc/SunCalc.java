@@ -27,15 +27,7 @@ import java.util.TimeZone;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.astro.internal.model.Eclipse;
-<<<<<<< Upstream, based on moon_distance
-<<<<<<< Upstream, based on moon_distance
 import org.openhab.binding.astro.internal.model.Position;
-=======
-=======
-import org.openhab.binding.astro.internal.model.Position;
->>>>>>> b61414e Rebased. Corrected moon_day dynamic icons Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added unit tests for eclipses
-import org.openhab.binding.astro.internal.model.Radiation;
->>>>>>> 0596b7c Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added unit tests for eclipses
 import org.openhab.binding.astro.internal.model.Range;
 import org.openhab.binding.astro.internal.model.Season;
 import org.openhab.binding.astro.internal.model.Sun;
@@ -53,12 +45,7 @@ import org.openhab.binding.astro.internal.util.MathUtils;
  */
 @NonNullByDefault
 public class SunCalc {
-<<<<<<< Upstream, based on moon_distance
     private static final double M0 = Math.toRadians(357.5291);
-=======
-    private static final double SC = 1367; // Solar constant in W/m²
-    private static final double M0 = Math.toRadians(AstroConstants.E05_0);
->>>>>>> 0596b7c Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added unit tests for eclipses
     private static final double M1 = Math.toRadians(0.98560028);
     private static final double J0 = 0.0009;
     private static final double J1 = 0.0053;
@@ -87,7 +74,6 @@ public class SunCalc {
             Sun sun) {
         Position sunPosition = getPosition(calendar, latitude, longitude, altitude);
         sun.setPosition(sunPosition);
-        setRadiationInfo(calendar, sunPosition.getElevationAsDouble(), altitude, sun);
     }
 
     public Position getPosition(Calendar calendar, double latitude, double longitude, @Nullable Double altitude) {
@@ -104,49 +90,7 @@ public class SunCalc {
 
         double azimuth = Math.toDegrees(getAzimuth(th, a, phi, d));
         double elevation = Math.toDegrees(getElevation(th, a, phi, d));
-<<<<<<< Upstream, based on moon_distance
-<<<<<<< Upstream, based on moon_distance
-        double shadeLength = getShadeLength(elevation);
-
-        Position position = sun.getPosition();
-        position.setAzimuth(azimuth + 180);
-        position.setElevation(elevation);
-        position.setShadeLength(shadeLength);
-=======
-        return new SunPosition(azimuth, elevation);
-=======
         return new Position(azimuth, elevation);
->>>>>>> b61414e Rebased. Corrected moon_day dynamic icons Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added unit tests for eclipses
-    }
-
-    /**
-     * Calculates sun radiation data.
-     */
-    private void setRadiationInfo(Calendar calendar, double elevation, @Nullable Double altitude, Sun sun) {
-        double sinAlpha = MathUtils.sinDeg(elevation);
-
-        int dayOfYear = calendar.get(Calendar.DAY_OF_YEAR);
-        int daysInYear = calendar.getActualMaximum(Calendar.DAY_OF_YEAR);
-
-        // Direct Solar Radiation (in W/m²) at the atmosphere entry
-        // At sunrise/sunset - calculations limits are reached
-        double rOut = (elevation > 3) ? SC * (0.034 * MathUtils.cosDeg(360 * dayOfYear / daysInYear) + 1) : 0;
-        double altitudeRatio = (altitude != null) ? 1 / Math.pow((1 - (6.5 / 288) * (altitude / 1000.0)), 5.256) : 1;
-        double m = (Math.sqrt(1229 + Math.pow(614 * sinAlpha, 2)) - 614 * sinAlpha) * altitudeRatio;
-
-        // Direct radiation after atmospheric layer
-        // 0.6 = Coefficient de transmissivité
-        double rDir = rOut * Math.pow(0.6, m) * sinAlpha;
-
-        // Diffuse Radiation
-        double rDiff = rOut * (0.271 - 0.294 * Math.pow(0.6, m)) * sinAlpha;
-        double rTot = rDir + rDiff;
-
-        Radiation radiation = sun.getRadiation();
-        radiation.setDirect(rDir);
-        radiation.setDiffuse(rDiff);
-        radiation.setTotal(rTot);
->>>>>>> 0596b7c Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added unit tests for eclipses
     }
 
     /**
