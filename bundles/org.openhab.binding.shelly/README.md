@@ -622,7 +622,7 @@ The Thing id is derived from the service name, so that's the reason why the Thin
 |        | totalKWH      | Number   | yes       | Total energy consumption in kWh since the device powered up (resets on restart)   |
 |        | returnedKWH   | Number   | yes       | Total returned energy, kWh                                                        |
 |        | reactiveWatts | Number   | yes       | Instantaneous reactive power, Watts                                               |
-|        | returnedKWH   | Number   | yes       | Total returned energy, kWh                                                        |
+|        | voltage       | Number   | yes       | RMS voltage, Volts                                                                |
 |        | current       | Number   | yes       | Current in A                                                                      |
 |        | powerFactor   | Number   | yes       | Power Factor in percent                                                           |
 |        | resetTotals   | Switch   | yes       | ON: Resets total values for the power meter                                       |
@@ -631,7 +631,7 @@ The Thing id is derived from the service name, so that's the reason why the Thin
 |        | totalKWH      | Number   | yes       | Total energy consumption in kWh since the device powered up (resets on restart)   |
 |        | returnedKWH   | Number   | yes       | Total returned energy, kWh                                                        |
 |        | reactiveWatts | Number   | yes       | Instantaneous reactive power, Watts                                               |
-|        | returnedKWH   | Number   | yes       | Total returned energy, kWh                                                        |
+|        | voltage       | Number   | yes       | RMS voltage, Volts                                                                |
 |        | current       | Number   | yes       | Current in A                                                                      |
 |        | powerFactor   | Number   | yes       | Power Factor in percent                                                           |
 |        | resetTotals   | Switch   | yes       | ON: Resets total values for the power meter                                       |
@@ -640,7 +640,7 @@ The Thing id is derived from the service name, so that's the reason why the Thin
 |        | totalKWH      | Number   | yes       | Total energy consumption in kWh since the device powered up (resets on restart)   |
 |        | returnedKWH   | Number   | yes       | Total returned energy, kWh                                                        |
 |        | reactiveWatts | Number   | yes       | Instantaneous reactive power, Watts                                               |
-|        | returnedKWH   | Number   | yes       | Total returned energy, kWh                                                        |
+|        | voltage       | Number   | yes       | RMS voltage, Volts                                                                |
 |        | current       | Number   | yes       | Current in A                                                                      |
 |        | powerFactor   | Number   | yes       | Power Factor in percent                                                           |
 |        | resetTotals   | Switch   | yes       | ON: Resets total values for the power meter                                       |
@@ -1325,16 +1325,16 @@ Refer to [Smartify Roller Shutters with openHAB and Shelly](doc/UseCaseSmartRoll
 |        | timerActive   | Switch   | yes       | Relay #1: ON: An auto-on/off timer is active                                      |
 | meter1 | currentWatts  | Number   | yes       | Current power consumption in Watts                                                |
 |        | totalKWH      | Number   | yes       | Total energy consumption in kwh since the device powered up (resets on restart)   |
-|        | returnedKWH   | Number   | yes       | Total returned energy, kwh                                                        |
-|        | reactiveWatts | Number   | yes       | Instantaneous reactive power, Watts                                               |
 |        | returnedKWH   | Number   | yes       | Total returned energy, kWh                                                        |
+|        | reactiveWatts | Number   | yes       | Instantaneous reactive power, Watts                                               |
+|        | voltage       | Number   | yes       | RMS voltage, Volts                                                                |
 |        | powerFactor   | Number   | yes       | Power Factor in percent                                                           |
 |        | lastUpdate    | DateTime | yes       | Timestamp of the last measurement                                                 |
 | meter2 | currentWatts  | Number   | yes       | Current power consumption in Watts                                                |
 |        | totalKWH      | Number   | yes       | Total energy consumption in kwh since the device powered up (resets on restart)   |
-|        | returnedKWH   | Number   | yes       | Total returned energy, kwh                                                        |
-|        | reactiveWatts | Number   | yes       | Instantaneous reactive power, Watts                                               |
 |        | returnedKWH   | Number   | yes       | Total returned energy, kWh                                                        |
+|        | reactiveWatts | Number   | yes       | Instantaneous reactive power, Watts                                               |
+|        | voltage       | Number   | yes       | RMS voltage, Volts                                                                |
 |        | powerFactor   | Number   | yes       | Power Factor in percent                                                           |
 |        | lastUpdate    | DateTime | yes       | Timestamp of the last measurement                                                 |
 
@@ -1353,16 +1353,16 @@ Refer to [Smartify Roller Shutters with openHAB and Shelly](doc/UseCaseSmartRoll
 |        | timerActive   | Switch   | yes       | Relay #1: ON: An auto-on/off timer is active                                      |
 | meter1 | currentWatts  | Number   | yes       | Current power consumption in Watts                                                |
 |        | totalKWH      | Number   | yes       | Total energy consumption in kwh since the device powered up (resets on restart)   |
-|        | returnedKWH   | Number   | yes       | Total returned energy, kwh                                                        |
-|        | reactiveWatts | Number   | yes       | Instantaneous reactive power, Watts                                               |
 |        | returnedKWH   | Number   | yes       | Total returned energy, kWh                                                        |
+|        | reactiveWatts | Number   | yes       | Instantaneous reactive power, Watts                                               |
+|        | voltage       | Number   | yes       | RMS voltage, Volts                                                                |
 |        | current       | Number   | yes       | Current in A                                                                      |
 |        | powerFactor   | Number   | yes       | Power Factor in percent                                                           |
 |        | resetTotals   | Switch   | yes       | ON: Resets total values for the power meter                                       |
 |        | lastUpdate    | DateTime | yes       | Timestamp of the last measurement                                                 |
 | meter2 | currentWatts  | Number   | yes       | Current power consumption in Watts                                                |
 |        | totalKWH      | Number   | yes       | Total energy consumption in kwh since the device powered up (resets on restart)   |
-|        | returnedKWH   | Number   | yes       | Total returned energy, kwh                                                        |
+|        | returnedKWH   | Number   | yes       | Total returned energy, kWh                                                        |
 |        | reactiveWatts | Number   | yes       | Instantaneous reactive power, Watts                                               |
 |        | returnedKWH   | Number   | yes       | Total returned energy, kWh                                                        |
 |        | current       | Number   | yes       | Current in A                                                                      |
@@ -1371,9 +1371,9 @@ Refer to [Smartify Roller Shutters with openHAB and Shelly](doc/UseCaseSmartRoll
 |        | lastUpdate    | DateTime | yes       | Timestamp of the last measurement                                                 |
 | meter3 | currentWatts  | Number   | yes       | Current power consumption in Watts                                                |
 |        | totalKWH      | Number   | yes       | Total energy consumption in kwh since the device powered up (resets on restart)   |
-|        | returnedKWH   | Number   | yes       | Total returned energy, kwh                                                        |
-|        | reactiveWatts | Number   | yes       | Instantaneous reactive power, Watts                                               |
 |        | returnedKWH   | Number   | yes       | Total returned energy, kWh                                                        |
+|        | reactiveWatts | Number   | yes       | Instantaneous reactive power, Watts                                               |
+|        | voltage       | Number   | yes       | RMS voltage, Volts                                                                |
 |        | current       | Number   | yes       | Current in A                                                                      |
 |        | powerFactor   | Number   | yes       | Power Factor in percent                                                           |
 |        | resetTotals   | Switch   | yes       | ON: Resets total values for the power meter                                       |
@@ -1512,7 +1512,7 @@ Channels lastEvent and eventCount are only available if input type is set to mom
 |        | timerActive   | Switch   | yes       | Relay #1: ON: An auto-on/off timer is active                                      |
 | meter1 | currentWatts  | Number   | yes       | Current power consumption in Watts                                                |
 |        | totalKWH      | Number   | yes       | Total energy consumption in kwh since the device powered up (resets on restart)   |
-|        | returnedKWH   | Number   | yes       | Total returned energy, kwh                                                        |
+|        | returnedKWH   | Number   | yes       | Total returned energy, kWh                                                        |
 |        | reactiveWatts | Number   | yes       | Instantaneous reactive power, Watts                                               |
 |        | returnedKWH   | Number   | yes       | Total returned energy, kWh                                                        |
 |        | powerFactor   | Number   | yes       | Power Factor in percent                                                           |
@@ -1520,7 +1520,7 @@ Channels lastEvent and eventCount are only available if input type is set to mom
 |        | frequency     | Number   | yes       | Measure frequency (Hz)                                                            |
 | meter2 | currentWatts  | Number   | yes       | Current power consumption in Watts                                                |
 |        | totalKWH      | Number   | yes       | Total energy consumption in kwh since the device powered up (resets on restart)   |
-|        | returnedKWH   | Number   | yes       | Total returned energy, kwh                                                        |
+|        | returnedKWH   | Number   | yes       | Total returned energy, kWh                                                        |
 |        | reactiveWatts | Number   | yes       | Instantaneous reactive power, Watts                                               |
 |        | voltage       | Number   | yes       | RMS voltage, Volts                                                                |
 |        | powerFactor   | Number   | yes       | Power Factor in percent                                                           |
@@ -1671,7 +1671,7 @@ There are no additional channels besides the device group.
 | ------ | ------------- | -------- | --------- | --------------------------------------------------------------------------------- |
 | meter1 | currentWatts  | Number   | yes       | Current power consumption in Watts                                                |
 |        | totalKWH      | Number   | yes       | Total energy consumption in kwh since the device powered up (resets on restart)   |
-|        | returnedKWH   | Number   | yes       | Total returned energy, kwh                                                        |
+|        | returnedKWH   | Number   | yes       | Total returned energy, kWh                                                        |
 |        | reactiveWatts | Number   | yes       | Instantaneous reactive power, Watts                                               |
 |        | voltage       | Number   | yes       | RMS voltage, Volts                                                                |
 |        | current       | Number   | yes       | Current in A                                                                      |
@@ -1680,7 +1680,7 @@ There are no additional channels besides the device group.
 |        | lastUpdate    | DateTime | yes       | Timestamp of the last measurement                                                 |
 | meter2 | currentWatts  | Number   | yes       | Current power consumption in Watts                                                |
 |        | totalKWH      | Number   | yes       | Total energy consumption in kwh since the device powered up (resets on restart)   |
-|        | returnedKWH   | Number   | yes       | Total returned energy, kwh                                                        |
+|        | returnedKWH   | Number   | yes       | Total returned energy, kWh                                                        |
 |        | reactiveWatts | Number   | yes       | Instantaneous reactive power, Watts                                               |
 |        | voltage       | Number   | yes       | RMS voltage, Volts                                                                |
 |        | current       | Number   | yes       | Current in A                                                                      |
@@ -1689,7 +1689,7 @@ There are no additional channels besides the device group.
 |        | lastUpdate    | DateTime | yes       | Timestamp of the last measurement                                                 |
 | meter3 | currentWatts  | Number   | yes       | Current power consumption in Watts                                                |
 |        | totalKWH      | Number   | yes       | Total energy consumption in kwh since the device powered up (resets on restart)   |
-|        | returnedKWH   | Number   | yes       | Total returned energy, kwh                                                        |
+|        | returnedKWH   | Number   | yes       | Total returned energy, kWh                                                        |
 |        | reactiveWatts | Number   | yes       | Instantaneous reactive power, Watts                                               |
 |        | voltage       | Number   | yes       | RMS voltage, Volts                                                                |
 |        | current       | Number   | yes       | Current in A                                                                      |
@@ -1703,7 +1703,7 @@ There are no additional channels besides the device group.
 | ------ | ------------- | -------- | --------- | --------------------------------------------------------------------------------- |
 | meter1 | currentWatts  | Number   | yes       | Current power consumption in Watts                                                |
 |        | totalKWH      | Number   | yes       | Total energy consumption in kwh since the device powered up (resets on restart)   |
-|        | returnedKWH   | Number   | yes       | Total returned energy, kwh                                                        |
+|        | returnedKWH   | Number   | yes       | Total returned energy, kWh                                                        |
 |        | reactiveWatts | Number   | yes       | Instantaneous reactive power, Watts                                               |
 |        | voltage       | Number   | yes       | RMS voltage, Volts                                                                |
 |        | current       | Number   | yes       | Current in A                                                                      |
@@ -1712,7 +1712,7 @@ There are no additional channels besides the device group.
 |        | lastUpdate    | DateTime | yes       | Timestamp of the last measurement                                                 |
 | meter2 | currentWatts  | Number   | yes       | Current power consumption in Watts                                                |
 |        | totalKWH      | Number   | yes       | Total energy consumption in kwh since the device powered up (resets on restart)   |
-|        | returnedKWH   | Number   | yes       | Total returned energy, kwh                                                        |
+|        | returnedKWH   | Number   | yes       | Total returned energy, kWh                                                        |
 |        | reactiveWatts | Number   | yes       | Instantaneous reactive power, Watts                                               |
 |        | voltage       | Number   | yes       | RMS voltage, Volts                                                                |
 |        | current       | Number   | yes       | Current in A                                                                      |
