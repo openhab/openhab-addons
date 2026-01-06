@@ -54,8 +54,8 @@ public interface Job extends SchedulerRunnable, Runnable {
     static void schedule(AstroThingHandler astroHandler, Job job, Calendar eventAt, TimeZone zone, Locale locale) {
         try {
             Calendar today = Calendar.getInstance(zone, locale);
-            boolean sameDay;
-            if ((sameDay = isSameDay(eventAt, today)) && isTimeGreaterEquals(eventAt, today)) {
+            boolean sameDay = isSameDay(eventAt, today);
+            if (sameDay && isTimeGreaterEquals(eventAt, today)) {
                 astroHandler.schedule(job, eventAt);
             } else if (LOGGER.isDebugEnabled()) {
                 if (sameDay) {
