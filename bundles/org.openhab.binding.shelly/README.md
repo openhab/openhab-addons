@@ -1514,7 +1514,7 @@ Channels lastEvent and eventCount are only available if input type is set to mom
 |        | totalKWH      | Number   | yes       | Total energy consumption in kwh since the device powered up (resets on restart)   |
 |        | returnedKWH   | Number   | yes       | Total returned energy, kWh                                                        |
 |        | reactiveWatts | Number   | yes       | Instantaneous reactive power, Watts                                               |
-|        | returnedKWH   | Number   | yes       | Total returned energy, kWh                                                        |
+|        | voltage       | Number   | yes       | RMS voltage, Volts                                                                |
 |        | powerFactor   | Number   | yes       | Power Factor in percent                                                           |
 |        | lastUpdate    | DateTime | yes       | Timestamp of the last measurement                                                 |
 |        | frequency     | Number   | yes       | Measure frequency (Hz)                                                            |
