@@ -16,6 +16,8 @@ import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.CHANNEL_T
 
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -46,6 +48,8 @@ public class DDWRTNetworkBridgeHandler extends BaseBridgeHandler {
     private DDWRTNetworkConfiguration config = new DDWRTNetworkConfiguration();
 
     private volatile DDWRTNetwork network = new DDWRTNetwork(); /* volatile because accessed from multiple threads */
+
+    private @Nullable ScheduledFuture<?> refreshJob;
 
     public DDWRTNetworkBridgeHandler(Bridge bridge) {
         super(bridge);
@@ -79,104 +83,46 @@ public class DDWRTNetworkBridgeHandler extends BaseBridgeHandler {
     @Override
     public void initialize() {
         config = getConfigAs(DDWRTNetworkConfiguration.class);
-        // TODO: Add friendly name
-        // TODO: Initialize the handler.
-        // The framework requires you to return from this method quickly, i.e. any network access must be done in
-        // the background initialization below.
-        // Also, before leaving this method a thing status from one of ONLINE, OFFLINE or UNKNOWN must be set. This
-        // might already be the real thing status in case you can decide it directly.
-        // In case you can not decide the thing status directly (e.g. for long running connection handshake using WAN
-        // access or similar) you should set status UNKNOWN here and then decide the real status asynchronously in the
-        // background.
 
-        // set the thing status to UNKNOWN temporarily and let the background task decide for the real status.
-        // the framework is then able to reuse the resources from the thing handler initialization.
-        // we set this upfront to reliably check status updates in unit tests.
         logger.debug("Initializing DDWRT Network Bridge handler '{}' with config = {}.", getThing().getUID(), config);
 
-        updateStatus(ThingStatus.ONLINE);
-        network.setConfig(config);
+        updateStatus(ThingStatus.UNKNOWN);
+        network.setBridgeUID(getThing().getUID());
 
-        // // Example for background initialization:
-        // scheduler.execute(() -> {
-        // boolean thingReachable = false; // <background task with long running initialization here>
+        // execute setconfig in the background because it can trigger a refresh
+        scheduler.schedule(() -> {
+            network.setConfig(config);
+            synchronized (this) {
+                if (refreshJob == null) {
+                    logger.debug("Scheduling refresh job every {}s", config.refreshInterval);
+                    refreshJob = scheduler.scheduleWithFixedDelay(() -> network.refresh(), 0, config.refreshInterval,
+                            TimeUnit.SECONDS);
+                } else {
+                    network.refresh();
+                }
+            }
 
-        // SshClient client = SshClient.setUpDefaultClient();
-
-        // try {
-        // // client.setServerKeyVerifier((ClientSession ssh, InputStream is, int i) -> true);
-        // client.start();
-
-        // try (ClientSession session = client.connect(config.user, config.hostname, config.port).verify()
-        // .getSession()) {
-        // if (!config.password.isBlank()) {
-        // session.addPasswordIdentity(config.password);
-        // }
-        // logger.debug("opening keys directory {}", privateKeyDir.getName());
-        // File[] privateKeyFiles = privateKeyDir.listFiles();
-        // if (privateKeyFiles != null) {
-        // logger.debug("keys present");
-        // for (File privateKeyFile : privateKeyFiles) {
-        // logger.debug("loading keys from {}", privateKeyDir.getName());
-        // try {
-        // FileKeyPairProvider keyPairProvider = new FileKeyPairProvider(
-        // Collections.singletonList(privateKeyFile.toPath()));
-        // keyPairProvider.setPasswordFinder(FilePasswordProvider.EMPTY);
-        // Iterable<KeyPair> keyPairs = keyPairProvider.loadKeys(null);
-        // if (keyPairs.iterator().hasNext()) {
-        // // Add private key identity
-        // session.addPublicKeyIdentity(keyPairs.iterator().next());
-        // } else {
-        // logger.warn("No valid key pairs found in {}", privateKeyFile.getName());
-        // }
-        // } catch (Exception ex) {
-        // logger.warn("Skipping file {}: not a valid key file. Reason: {}",
-        // privateKeyFile.getName(), ex.getMessage());
-        // }
-        // }
-        // }
-
-        // session.auth().verify();
-
-        // logger.debug("Connected to the server!");
-        // thingReachable = true;
-        // }
-        // } catch (Exception e) {
-        // logger.debug("Exception occurred during refresh: {}", e.getMessage(), e);
-        // } finally {
-        // // Disconnect from the server
-        // if (client.isStarted()) {
-        // client.stop();
-        // }
-        // logger.debug("Disconnected from the server!");
-        // }
-
-        // // when done do:
-        // if (thingReachable) {
-        // logger.debug("ThingStatus.ONLINE");
-        // updateStatus(ThingStatus.ONLINE);
-        // } else {
-        // logger.debug("ThingStatus.OFFLINE");
-        // updateStatus(ThingStatus.OFFLINE);
-        // }
-        // });
-
-        // These logging types should be primarily used by bindings
-        // logger.trace("Example trace message");
-        // logger.debug("Example debug message");
-        // logger.warn("Example warn message");
-        //
-        // Logging to INFO should be avoided normally.
-        // See https://www.openhab.org/docs/developer/guidelines.html#f-logging
-
-        // Note: When initialization can NOT be done set the status with more details for further
-        // analysis. See also class ThingStatusDetail for all available status details.
-        // Add a description to give user information to understand why thing does not work as expected. E.g.
-        // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-        // "Can not access device as username and/or password are invalid");
+        }, 10, TimeUnit.MILLISECONDS);
     }
 
     public @Nullable DDWRTNetwork getNetwork() {
         return network;
+    }
+
+    private void cancelRefreshJob() {
+        synchronized (this) {
+            final ScheduledFuture<?> rj = refreshJob;
+
+            if (rj != null) {
+                logger.debug("Cancelling refresh job");
+                rj.cancel(true);
+                refreshJob = null;
+            }
+        }
+    }
+
+    @Override
+    public void dispose() {
+        cancelRefreshJob();
     }
 }
