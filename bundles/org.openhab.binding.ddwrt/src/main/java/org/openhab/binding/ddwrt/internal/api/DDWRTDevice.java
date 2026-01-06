@@ -40,6 +40,8 @@ import org.slf4j.LoggerFactory;
 public class DDWRTDevice {
     private static final Logger logger = LoggerFactory.getLogger(DDWRTDevice.class);
 
+    private DDWRTDeviceConfiguration config;
+
     // Identity / basic attributes
     private String mac = "";
     private String hostname = "";
@@ -50,8 +52,26 @@ public class DDWRTDevice {
     private @Nullable ClientSession session;
     private @Nullable SshRunner runner;
 
+    // // ---- autonomous refresh state ----
+    // private volatile long intervalSeconds = 0;
+    // private volatile boolean deepRefresh = false;
+
+    // private final AtomicBoolean refreshRunning = new AtomicBoolean(false);
+
+    // // Core Scheduler job (preferred)
+    // private @Nullable ScheduledCompletableFuture<@Nullable Void> ohJob;
+
+    // // Fallback local executor (used only if Core Scheduler unavailable)
+    // private static final ScheduledThreadPoolExecutor FALLBACK_EXEC =
+    // new ScheduledThreadPoolExecutor(Math.max(2, Runtime.getRuntime().availableProcessors() / 4));
+
+    // :TODO: ballle98/openhab-addon#18 add refresh and log monitoring threads to device class
+    // private @Nullable ScheduledFuture<?> refreshJob;
+    // private @Nullable ScheduledFuture<?> logFollowerJob;
+
     /** Private constructor: use the factory methods. */
-    private DDWRTDevice() {
+    private DDWRTDevice(DDWRTDeviceConfiguration cfg) {
+        this.config = cfg;
     }
 
     /**
@@ -63,7 +83,7 @@ public class DDWRTDevice {
      * @return device (initialized where possible; fields may be partial if SSH fails)
      */
     public static DDWRTDevice upsertDeviceInNetwork(DDWRTNetwork net, DDWRTDeviceConfiguration cfg) {
-        DDWRTDevice d = new DDWRTDevice();
+        DDWRTDevice d = new DDWRTDevice(cfg);
 
         try (SshRunner ssh = SshClientManager.getInstance().openRunner(Objects.requireNonNull(cfg.hostname), cfg.port,
                 Objects.requireNonNull(cfg.user), cfg.password, null, null,
@@ -78,9 +98,6 @@ public class DDWRTDevice {
             // Firmware / build version
             String fw = safeTrim(ssh.exec("grep -i DD-WRT /tmp/loginprompt | cut -d' ' -f-2"));
 
-            if (!mac.isEmpty()) {
-                d.mac = mac.toLowerCase();
-            }
             if (!hostname.isEmpty()) {
                 d.hostname = hostname;
             }
@@ -89,6 +106,10 @@ public class DDWRTDevice {
             }
             if (!fw.isEmpty()) {
                 d.firmware = fw;
+            }
+            if (!mac.isEmpty()) {
+                d.mac = mac.toLowerCase();
+                net.upsertDeviceByMac(d.mac, d);
             }
 
             // If you want to persist a session, attach it here (not recommended for long-lived sessions):
@@ -100,6 +121,101 @@ public class DDWRTDevice {
 
         return d;
     }
+
+    // /**
+    // * Enable device-managed periodic refresh. No handler required.
+    // */
+    // public synchronized void enableAutonomousRefresh(long intervalSeconds, boolean deep) {
+    // disableAutonomousRefresh(); // cleanup previous schedule
+
+    // this.intervalSeconds = Math.max(1, intervalSeconds);
+    // this.deepRefresh = deep;
+
+    // final @Nullable Scheduler scheduler = DDWRTRuntime.getScheduler();
+    // if (scheduler != null) {
+    // // Use openHAB Core Scheduler (preferred)
+    // TemporalAdjuster everyNSeconds = temporal -> temporal.plus(Duration.ofSeconds(this.intervalSeconds));
+    // this.ohJob = scheduler.schedule(() -> {
+    // runRefreshSafely(this.deepRefresh);
+    // return null;
+    // }, everyNSeconds);
+    // LOGGER.debug("Autonomous {} refresh started via Core Scheduler every {}s (mac={}, host={})",
+    // deep ? "deep" : "basic", this.intervalSeconds, mac, hostname);
+    // } else {
+    // // Fallback: local executor (unit-test or non-OH context)
+    // this.fallbackFuture = FALLBACK_EXEC.scheduleWithFixedDelay(() -> {
+    // runRefreshSafely(this.deepRefresh);
+    // }, 0, this.intervalSeconds, TimeUnit.SECONDS);
+    // LOGGER.debug("Autonomous {} refresh started via fallback executor every {}s (mac={}, host={})",
+    // deep ? "deep" : "basic", this.intervalSeconds, mac, hostname);
+    // }
+    // }
+
+    // /** Stop autonomous periodic refresh. */
+    // public synchronized void disableAutonomousRefresh() {
+    // final var job = this.ohJob;
+    // this.ohJob = null;
+    // if (job != null) {
+    // job.cancel(true);
+    // }
+    // final var f = this.fallbackFuture;
+    // this.fallbackFuture = null;
+    // if (f != null) {
+    // f.cancel(true);
+    // }
+    // LOGGER.debug("Autonomous refresh stopped (mac={}, host={})", mac, hostname);
+    // }
+
+    // /** On-demand refresh (independent of handlers). */
+    // public void triggerRefresh(boolean deep) {
+    // runRefreshSafely(deep);
+    // }
+
+    // /** Guard against overlapping runs. */
+    // private void runRefreshSafely(boolean deep) {
+    // if (!refreshRunning.compareAndSet(false, true)) {
+    // LOGGER.trace("Refresh already running; skipping (deep={})", deep);
+    // return;
+    // }
+    // try {
+    // if (deep) {
+    // refreshDeep();
+    // } else {
+    // refreshBasic();
+    // }
+    // } finally {
+    // refreshRunning.set(false);
+    // }
+    // }
+
+    // // ---- existing refresh logic (SSH etc.) ----
+    // public void refreshBasic() {
+    // final DDWRTDeviceConfiguration cfg = this.lastConfig;
+    // if (cfg == null) {
+    // LOGGER.debug("No configuration available for refreshBasic (mac={}, host={})", mac, hostname);
+    // return;
+    // }
+    // try {
+    // // SSH quick attributes…
+    // LOGGER.trace("refreshBasic completed (mac={}, host={})", mac, hostname);
+    // } catch (Exception e) {
+    // LOGGER.debug("refreshBasic failed for {}: {}", cfg.hostname, e.getMessage(), e);
+    // }
+    // }
+
+    // public void refreshDeep() {
+    // final DDWRTDeviceConfiguration cfg = this.lastConfig;
+    // if (cfg == null) {
+    // LOGGER.debug("No configuration available for refreshDeep (mac={}, host={})", mac, hostname);
+    // return;
+    // }
+    // try {
+    // // SSH deeper attributes…
+    // LOGGER.trace("refreshDeep completed (mac={}, host={})", mac, hostname);
+    // } catch (Exception e) {
+    // LOGGER.debug("refreshDeep failed for {}: {}", cfg.hostname, e.getMessage(), e);
+    // }
+    // }
 
     /*
      * scheduler.execute(() -> {
@@ -215,20 +331,6 @@ public class DDWRTDevice {
      * 
      */
 
-    // -------------------- Refresh APIs --------------------
-
-    /**
-     * Basic refresh: quick attributes (hostname etc.). Uses short-lived SSH session.
-     */
-    public void refreshBasic() {
-    }
-
-    /**
-     * Deep refresh: radios, client lists, rates, signal, memory/cpu, etc.
-     */
-    public void refreshDeep() {
-    }
-
     // -------------------- Session management (optional) --------------------
 
     /** Attach a persistent session to this device (caller manages lifecycle). */
@@ -246,6 +348,10 @@ public class DDWRTDevice {
     }
 
     // -------------------- Getters / setters --------------------
+
+    public DDWRTDeviceConfiguration getConfig() {
+        return config;
+    }
 
     public String getMac() {
         return mac;
@@ -273,5 +379,11 @@ public class DDWRTDevice {
 
     public void setFirmware(String firmware) {
         this.firmware = firmware;
+    }
+
+    public void refresh() {
+        synchronized (this) {
+            logger.debug("Refreshing {} {}", getMac(), getName());
+        }
     }
 }

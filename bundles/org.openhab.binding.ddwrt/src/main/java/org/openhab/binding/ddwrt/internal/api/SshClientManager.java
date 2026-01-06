@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.sshd.client.SshClient;
+import org.apache.sshd.client.auth.keyboard.UserInteraction;
 import org.apache.sshd.client.future.ConnectFuture;
 import org.apache.sshd.client.keyverifier.AcceptAllServerKeyVerifier;
 import org.apache.sshd.client.session.ClientSession;
@@ -81,10 +82,39 @@ public class SshClientManager {
 
         ConnectFuture cf = client.connect(user, host, port);
         cf.verify();
-        ClientSession session = cf.getSession();
+        ClientSession cs = cf.getSession();
+
+        // :TODO: ballle98/openhab-addons#14 Add support for openwrt and tomato
+        // :TODO: save the welcome banner into the device to use for device type
+        cs.setUserInteraction(new UserInteraction() {
+            @Override
+            public boolean isInteractionAllowed(ClientSession session) {
+                return true;
+            }
+
+            @Override
+            public void welcome(ClientSession session, String banner, String lang) {
+                System.out.println("=== USERAUTH BANNER ===");
+                System.out.println("lang=" + lang);
+                System.out.println(banner); // banner text from server
+                System.out.println("========================");
+            }
+
+            @Override
+            public String[] interactive(ClientSession session, String name, String instruction, String lang,
+                    String[] prompts, boolean[] echo) {
+                // Not used here
+                return new String[0];
+            }
+
+            @Override
+            public String getUpdatedPassword(ClientSession session, String prompt, String lang) {
+                return null;
+            }
+        });
 
         if (password != null && !password.isBlank()) {
-            session.addPasswordIdentity(password);
+            cs.addPasswordIdentity(password);
         }
         List<File> keyFiles = new ArrayList<>();
 
@@ -114,7 +144,7 @@ public class SshClientManager {
                     Iterable<KeyPair> keyPairs = keyPairProvider.loadKeys(null);
                     if (keyPairs.iterator().hasNext()) {
                         // Add private key identity
-                        session.addPublicKeyIdentity(keyPairs.iterator().next());
+                        cs.addPublicKeyIdentity(keyPairs.iterator().next());
                     } else {
                         logger.warn("No valid key pairs found in {}", privateKeyFile.getName());
                     }
@@ -125,11 +155,11 @@ public class SshClientManager {
             }
         }
 
-        session.auth().verify();
+        cs.auth().verify();
 
         logger.debug("Connected to the server {}:{} as {}", host, port, user);
-        logger.debug("Server Ident {}", session.getServerVersion());
+        logger.debug("Server Ident {}", cs.getServerVersion());
 
-        return new SshRunner(session, defaultTimeout);
+        return new SshRunner(cs, defaultTimeout);
     }
 }

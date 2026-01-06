@@ -15,13 +15,9 @@ package org.openhab.binding.ddwrt.internal;
 import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.SUPPORTED_THING_TYPES_UIDS;
 import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.THING_TYPE_DEVICE;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.ddwrt.internal.api.DDWRTDevice;
 import org.openhab.binding.ddwrt.internal.api.DDWRTNetwork;
 import org.openhab.binding.ddwrt.internal.handler.DDWRTNetworkBridgeHandler;
 import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
@@ -62,50 +58,50 @@ public class DDWRTDiscoveryService extends AbstractThingHandlerDiscoveryService<
         discoverDevices(net);
     }
 
-    private void discoverDevices(DDWRTNetwork net) {
+    // :TODO: ballle98/openhab-addons#15 Implement Background Discovery
+    // @Override
+    // protected void startBackgroundDiscovery() {
+    // logger.debug("Start DD-WRT device background discovery");
+    // if (DDWRTDiscoveryJob == null || DDWRTDiscoveryJob.isCancelled()) {
+    // DDWRTDiscoveryJob = scheduler.scheduleWithFixedDelay(DDWRTDiscoveryRunnable, 0, refreshInterval,
+    // TimeUnit.SECONDS);
+    // }
+    // }
 
+    // @Override
+    // protected void stopBackgroundDiscovery() {
+    // logger.debug("Stop DDWRT device background discovery");
+    // if (DDWRTDiscoveryJob != null) {
+    // DDWRTDiscoveryJob.cancel(true);
+    // DDWRTDiscoveryJob = null;
+    // }
+    // }
+
+    private void discoverDevices(DDWRTNetwork net) {
         final ThingUID bridgeUID = thingHandler.getThing().getUID();
         final DDWRTNetworkConfiguration netCfg = net.getConfig();
         if (netCfg == null) {
             logger.warn("No configuration available for discovery.");
             return;
         }
-        final DDWRTDeviceConfiguration devCfg = new DDWRTDeviceConfiguration();
-        devCfg.port = netCfg.port;
-        devCfg.user = netCfg.user;
-        devCfg.password = netCfg.password;
-        devCfg.refreshInterval = netCfg.refreshInterval;
 
-        // Parse hostnames from config
-        final List<String> hosts = Arrays.stream(netCfg.hostnames.split(",")).map(String::trim)
-                .filter(s -> !s.isEmpty()).collect(Collectors.toList());
+        net.getDevices().forEach(device -> {
+            final DDWRTDeviceConfiguration devCfg = device.getConfig();
 
-        hosts.forEach(host -> {
-            try {
-                logger.debug("discovering device: {}", host);
+            // final String macClean = device.getMac().toLowerCase().replace(":", "");
+            final ThingUID thingUID = new ThingUID(THING_TYPE_DEVICE, bridgeUID, device.getName());
 
-                devCfg.hostname = host;
+            logger.debug("discovered device: \'{}\'", thingUID);
 
-                DDWRTDevice device = DDWRTDevice.upsertDeviceInNetwork(net, devCfg);
+            final Map<String, Object> props = Map.of("hostname", devCfg.hostname, "port", devCfg.port, "user",
+                    devCfg.user, "password", devCfg.password, "refreshInterval", devCfg.refreshInterval, "mac",
+                    device.getMac(), "name", device.getName(), "model", device.getModel(), "firmware",
+                    device.getFirmware());
 
-                // final String macClean = device.getMac().toLowerCase().replace(":", "");
-                final ThingUID thingUID = new ThingUID(THING_TYPE_DEVICE, bridgeUID, device.getName());
+            final DiscoveryResult result = DiscoveryResultBuilder.create(thingUID).withBridge(bridgeUID)
+                    .withLabel(device.getName()).withProperties(props).withRepresentationProperty("mac").build();
 
-                logger.debug("discovered device: \'{}\'", thingUID);
-
-                final Map<String, Object> props = Map.of("hostname", devCfg.hostname, "port", devCfg.port, "user",
-                        devCfg.user, "password", devCfg.password, "refreshInterval", devCfg.refreshInterval, "mac",
-                        device.getMac(), "name", device.getName(), "model", device.getModel(), "firmware",
-                        device.getFirmware());
-
-                final DiscoveryResult result = DiscoveryResultBuilder.create(thingUID).withBridge(bridgeUID)
-                        .withLabel(device.getName()).withProperties(props).withRepresentationProperty("mac").build();
-
-                thingDiscovered(result);
-
-            } catch (Exception e) {
-                logger.debug("SSH to host {} failed: {}", host, e.getMessage(), e);
-            }
+            thingDiscovered(result);
         });
 
         return;
