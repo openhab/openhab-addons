@@ -34,10 +34,10 @@ public class ShellyManagerCache<K, V> {
     protected final ScheduledExecutorService scheduler = ThreadPoolManager.getScheduledPool("ShellyManagerThreadpool");
     private static final long EXPIRY_IN_MILLIS = 15 * 60 * 1000; // 15min
 
-    private record CacheEntry<V> (Long created, V value) {
+    private record CacheEntry<V>(Long created, V value) {
     }
 
-    // All access must be guarded by "this"
+    // Non-thread-safe HashMap: all access to 'storage' is synchronized on this instance
     private final @NonNullByDefault({}) Map<K, CacheEntry<V>> storage = new HashMap<>();
 
     // All access must be guarded by "this"
@@ -53,21 +53,17 @@ public class ShellyManagerCache<K, V> {
     }
 
     public V put(K key, V value) {
-        CacheEntry<V> entry = new CacheEntry<>(Long.valueOf(System.currentTimeMillis()), value);
+        CacheEntry<V> entry = new CacheEntry<>(System.currentTimeMillis(), value);
         synchronized (this) {
             entry = storage.put(key, entry);
-
-            if (storage.size() == 1) {
-                startJob();// start background cleanup
-            }
+            startJob(); // start background cleanup
         }
-
-        return entry == null ? null : entry.value;
+        return entry == null ? null : value;
     }
 
-    private void startJob() {
+    private synchronized void startJob() {
         if (cleanupJob == null) {
-            cleanupJob = scheduler.scheduleWithFixedDelay(this::cleanupMap, 2, EXPIRY_IN_MILLIS / 2,
+            cleanupJob = scheduler.scheduleWithFixedDelay(this::cleanupMap, EXPIRY_IN_MILLIS, EXPIRY_IN_MILLIS,
                     TimeUnit.MILLISECONDS);
         }
     }
@@ -89,7 +85,7 @@ public class ShellyManagerCache<K, V> {
         }
     }
 
-    private void cancelJob() {
+    private synchronized void cancelJob() {
         if (cleanupJob != null) {
             cleanupJob.cancel(true);
             cleanupJob = null;
