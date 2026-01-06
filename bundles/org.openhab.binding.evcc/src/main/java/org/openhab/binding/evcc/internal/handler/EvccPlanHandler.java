@@ -221,7 +221,7 @@ public class EvccPlanHandler extends EvccBaseThingHandler {
             switch (key) {
                 case JSON_KEY_WEEKDAYS -> {
                     JsonArray weekdaysArray = new JsonArray();
-                    String[] days = plan.get(JSON_KEY_WEEKDAYS).getAsString().split(";");
+                    String[] days = value.split(";");
                     for (String day : days) {
                         Integer dayValue = localizedReverseMap.get(day);
                         if (dayValue != null) {
@@ -255,7 +255,7 @@ public class EvccPlanHandler extends EvccBaseThingHandler {
                 default -> plan.add(key, entry.getValue());
             }
         }
-
+        payload.set(index - 1, plan);
         performApiRequest(endpoint, POST, payload);
     }
 
@@ -289,7 +289,7 @@ public class EvccPlanHandler extends EvccBaseThingHandler {
         if (JSON_KEY_PRECONDITION.equals(channelKey)) {
             precondition = value;
         } else if (cachedOneTimePlan.has(JSON_KEY_PRECONDITION)) {
-            cachedOneTimePlan.get(JSON_KEY_PRECONDITION).getAsString();
+            precondition = cachedOneTimePlan.get(JSON_KEY_PRECONDITION).getAsString();
         }
         if (!precondition.isEmpty()) {
             url = String.join("?", url, "precondition=" + precondition);
