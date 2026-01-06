@@ -99,6 +99,9 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
     private void initializeBatteryControl(String scheme, String hostname, @Nullable String username,
             @Nullable String password) {
         if (username == null || password == null) {
+            logger.info(
+                    "Credentials are not configured in the bridge. Battery control is not available for Thing '{}'.",
+                    thing.getUID());
             return;
         }
 
@@ -114,7 +117,8 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
             }
         }
         logger.warn(
-                "The firmware version of the Fronius inverter could not be determined. Battery control is not available.");
+                "The firmware version of the Fronius inverter could not be determined. Battery control is not available for Thing '{}'.",
+                thing.getUID());
     }
 
     private void updateProperties() {
@@ -136,13 +140,15 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
     public void initialize() {
         config = getConfigAs(FroniusBaseDeviceConfiguration.class);
         Bridge bridge = getBridge();
-        if (bridge != null) {
-            FroniusBridgeConfiguration bridgeConfig = bridge.getConfiguration().as(FroniusBridgeConfiguration.class);
-            inverterInfo = getInverterInfo(bridgeConfig.scheme, bridgeConfig.hostname, config.deviceId);
-            updateProperties();
-            initializeBatteryControl(bridgeConfig.scheme, bridgeConfig.hostname, bridgeConfig.username,
-                    bridgeConfig.password);
+        if (bridge == null) {
+            logger.warn("bridge is null in initialize(), this is a bug, please report it.");
+            return;
         }
+        FroniusBridgeConfiguration bridgeConfig = bridge.getConfiguration().as(FroniusBridgeConfiguration.class);
+        inverterInfo = getInverterInfo(bridgeConfig.scheme, bridgeConfig.hostname, config.deviceId);
+        updateProperties();
+        initializeBatteryControl(bridgeConfig.scheme, bridgeConfig.hostname, bridgeConfig.username,
+                bridgeConfig.password);
         super.initialize();
     }
 
@@ -156,18 +162,22 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
         super.handleBridgeConfigurationUpdate(configurationParameters);
         Bridge bridge = getBridge();
         FroniusBaseDeviceConfiguration config = this.config;
-        if (bridge != null && config != null) {
-            FroniusBridgeConfiguration bridgeConfig = bridge.getConfiguration().as(FroniusBridgeConfiguration.class);
-            inverterInfo = getInverterInfo(bridgeConfig.scheme, bridgeConfig.hostname, config.deviceId);
-            updateProperties();
-            initializeBatteryControl(bridgeConfig.scheme, bridgeConfig.hostname, bridgeConfig.username,
-                    bridgeConfig.password);
+        if (bridge == null || config == null) {
+            logger.warn(
+                    "bridge or config is null in handleBridgeConfigurationUpdate(), this is a bug, please report it.");
+            return;
         }
+        FroniusBridgeConfiguration bridgeConfig = bridge.getConfiguration().as(FroniusBridgeConfiguration.class);
+        inverterInfo = getInverterInfo(bridgeConfig.scheme, bridgeConfig.hostname, config.deviceId);
+        updateProperties();
+        initializeBatteryControl(bridgeConfig.scheme, bridgeConfig.hostname, bridgeConfig.username,
+                bridgeConfig.password);
     }
 
     public @Nullable FroniusBatteryControl getBatteryControl() {
         if (batteryControl == null) {
-            logger.warn("Battery control is not available. Check the bridge configuration.");
+            logger.warn("Battery control is not available for Thing '{}'. Check the bridge configuration.",
+                    thing.getUID());
         }
         return batteryControl;
     }
