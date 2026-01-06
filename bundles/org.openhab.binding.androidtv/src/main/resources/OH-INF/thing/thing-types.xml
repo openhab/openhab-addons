@@ -90,6 +90,7 @@
 				<default>true</default>
 				<advanced>true</advanced>
 			</parameter>
+
 		</config-description>
 
 	</thing-type>
@@ -267,6 +268,12 @@
 				<label>Enable GoogleTV</label>
 				<description>Enable the GoogleTV Protocol</description>
 				<default>true</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="skipPowerRefresh" type="boolean">
+				<label>Skip Power Refresh</label>
+				<description>Skip additional power refreshing to prevent some devices from entering a refresh loop.</description>
+				<default>false</default>
 				<advanced>true</advanced>
 			</parameter>
 		</config-description>
