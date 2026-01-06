@@ -29,7 +29,7 @@
 		<config-description>
 			<parameter name="id" type="integer" required="true">
 				<label>Zone ID</label>
-				<description>The zone ID</description>
+				<description>The zone ID.</description>
 			</parameter>
 		</config-description>
 	</thing-type>
@@ -58,7 +58,7 @@
 	<channel-type id="contact">
 		<item-type>Contact</item-type>
 		<label>Zone Contact</label>
-		<description>The zone contact state</description>
+		<description>The zone contact state.</description>
 		<state readOnly="true"/>
 	</channel-type>
 </thing:thing-descriptions>

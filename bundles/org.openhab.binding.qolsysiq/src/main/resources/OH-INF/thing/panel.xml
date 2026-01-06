@@ -15,7 +15,7 @@
 			</parameter>
 			<parameter name="port" type="integer">
 				<label>Port</label>
-				<description>The port to connect to on the panel</description>
+				<description>The port to connect to on the panel.</description>
 				<default>12345</default>
 				<advanced>true</advanced>
 			</parameter>
