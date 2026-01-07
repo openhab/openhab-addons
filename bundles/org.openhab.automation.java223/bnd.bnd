@@ -32,3 +32,4 @@ org.openhab.core.voice,\
 com.google.gson,\
 tech.units.indriya,\
 tech.uom.lib.common.function
+-removeheaders: Private-Package
