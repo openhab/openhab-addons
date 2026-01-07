@@ -210,11 +210,8 @@ public class DateTimeUtils {
      * Returns true, if two ZonedDateTime objects are on the same day ignoring time.
      */
     public static boolean isSameDay(@Nullable ZonedDateTime zdt1, @Nullable ZonedDateTime zdt2) {
-        if (zdt1 == null || zdt2 == null) {
-            return false;
-        }
-
-        return zdt1.toLocalDate().equals(zdt2.withZoneSameInstant(zdt1.getZone()).toLocalDate());
+        return zdt1 != null && zdt2 != null
+                && zdt1.toLocalDate().equals(zdt2.withZoneSameInstant(zdt1.getZone()).toLocalDate());
     }
 
     /**
