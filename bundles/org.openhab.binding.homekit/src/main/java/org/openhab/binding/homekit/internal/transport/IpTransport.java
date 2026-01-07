@@ -195,7 +195,7 @@ public class IpTransport implements AutoCloseable {
 
         boolean trace = logger.isTraceEnabled();
         if (trace) {
-            logger.trace("HTTP request to {}:\n{}", ipAddress, new String(request, StandardCharsets.ISO_8859_1));
+            logger.trace("{} sending:\n{}", ipAddress, new String(request, StandardCharsets.ISO_8859_1));
         }
 
         byte[][] response; // 0 = headers, 1 = content, 2 = raw trace (if enabled)
@@ -299,8 +299,7 @@ public class IpTransport implements AutoCloseable {
                 }
             } while (!httpParser.isComplete());
             if (raw != null) {
-                logger.trace("HTTP response from {}:\n{}", ipAddress,
-                        new String(raw.toByteArray(), StandardCharsets.ISO_8859_1));
+                logger.trace("{} received:\n{}", ipAddress, new String(raw.toByteArray(), StandardCharsets.ISO_8859_1));
             }
             return new byte[][] { httpParser.getHeaders(), httpParser.getContent(),
                     raw != null ? raw.toByteArray() : new byte[0] };
@@ -356,9 +355,9 @@ public class IpTransport implements AutoCloseable {
      *
      * @param response the received response as a 3D byte array
      */
-    private void handleResponse(byte[][] response) {
+    private synchronized void handleResponse(byte[][] response) {
         if (logger.isTraceEnabled()) { // don't build trace string if not needed
-            logger.trace("HTTP response from {}:\n{}", ipAddress, new String(response[2], StandardCharsets.ISO_8859_1));
+            logger.trace("{} received:\n{}", ipAddress, new String(response[2], StandardCharsets.ISO_8859_1));
         }
         String headers = new String(response[0], StandardCharsets.ISO_8859_1);
         if (headers.startsWith("HTTP")) {
@@ -367,6 +366,9 @@ public class IpTransport implements AutoCloseable {
                 readFuture.complete(response);
             }
         } else if (headers.startsWith("EVENT")) {
+            if (readHttpResponseFuture != null) {
+                logger.warn("{} received EVENT while waiting for HTTP response", ipAddress);
+            }
             String jsonContent = new String(response[1], StandardCharsets.UTF_8);
             eventListener.onEvent(jsonContent);
         } else {
