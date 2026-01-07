@@ -51,7 +51,7 @@
 	<channel-type id="zoneState" advanced="true">
 		<item-type>Number</item-type>
 		<label>Zone State</label>
-		<description>The zone state</description>
+		<description>The zone state.</description>
 		<state readOnly="true"/>
 	</channel-type>
 
