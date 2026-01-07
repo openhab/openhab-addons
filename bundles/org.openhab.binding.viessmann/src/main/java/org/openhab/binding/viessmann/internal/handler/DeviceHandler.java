@@ -130,7 +130,7 @@ public class DeviceHandler extends ViessmannThingHandler {
         updateProperty(PROPERTY_ID, config.deviceId); // set representation property used by discovery
 
         int thingTypeVersion = getThingTypeVersion();
-        if (thingTypeVersion < 4) {
+        if (thingTypeVersion < DEVICE_THING_TYPE_VERSION) {
             migrateChannelIds();
         }
 
@@ -217,6 +217,7 @@ public class DeviceHandler extends ViessmannThingHandler {
                     renameMap.put(oldUid, newUid);
                 }
             }
+            updateProperty(THING_TYPE_VERSION, Integer.toString(DEVICE_THING_TYPE_VERSION));
         }
 
         if (renameMap.isEmpty()) {

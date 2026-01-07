@@ -218,7 +218,7 @@
 		<semantic-equipment-tag>WaterHeater</semantic-equipment-tag>
 
 		<properties>
-			<property name="thingTypeVersion">4</property>
+			<property name="thingTypeVersion">5</property>
 		</properties>
 		<representation-property>deviceId</representation-property>
 		<config-description>

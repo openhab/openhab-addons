@@ -40,6 +40,9 @@ public class ViessmannBindingConstants {
     public static final ThingTypeUID THING_TYPE_BRIDGE = new ThingTypeUID(BINDING_ID, "bridge");
     public static final ThingTypeUID THING_TYPE_DEVICE = new ThingTypeUID(BINDING_ID, "device");
 
+    public static final String THING_TYPE_VERSION = "thingTypeVersion";
+    public static final int DEVICE_THING_TYPE_VERSION = 5;
+
     public static final Set<ThingTypeUID> DISCOVERABLE_DEVICE_TYPE_UIDS = Set.of(THING_TYPE_DEVICE);
 
     public static final String COUNT_API_CALLS = "count-api-calls";
