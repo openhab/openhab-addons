@@ -138,7 +138,7 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
 
     @Override
     public void initialize() {
-        config = getConfigAs(FroniusBaseDeviceConfiguration.class);
+        FroniusBaseDeviceConfiguration config = this.config = getConfigAs(FroniusBaseDeviceConfiguration.class);
         Bridge bridge = getBridge();
         if (bridge == null) {
             logger.warn("bridge is null in initialize(), this is a bug, please report it.");
@@ -352,7 +352,7 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
      * @param unit The default unit to use when value is null
      * @return a QuantityType from the given value
      */
-    private QuantityType<?> getQuantityOrZero(@Nullable ValueUnit value, Unit unit) {
+    private QuantityType<?> getQuantityOrZero(@Nullable ValueUnit value, Unit<?> unit) {
         QuantityType<?> val = null;
         if (value != null) {
             val = value.asQuantityType().toUnit(unit);
