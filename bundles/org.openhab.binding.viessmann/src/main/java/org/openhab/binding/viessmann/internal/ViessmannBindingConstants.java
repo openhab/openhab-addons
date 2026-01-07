@@ -65,7 +65,9 @@ public class ViessmannBindingConstants {
 
     public static final Map<String, String> UNIT_MAP = Map.ofEntries(entry("celsius", SIUnits.CELSIUS.getSymbol()), //
             entry("kelvin", Units.KELVIN.toString()), //
+            entry("wattHour", Units.WATT_HOUR.toString()), //
             entry("kilowattHour", Units.KILOWATT_HOUR.toString()), //
+            entry("kilowattpeak", "kilowattpeak"), //
             entry("kilowattHour/year", "kilowattHour/year"), //
             entry("gas-kilowattHour", Units.KILOWATT_HOUR.toString()), //
             entry("power-kilowattHour", Units.KILOWATT_HOUR.toString()), //
@@ -83,6 +85,7 @@ public class ViessmannBindingConstants {
             entry("bar", Units.BAR.toString()), //
             entry("ampere", Units.AMPERE.toString()), //
             entry("milliAmpere", MetricPrefix.MILLI(Units.AMPERE).toString()), //
+            entry("volt", Units.VOLT.toString()), //
             entry("revolutionsPerSecond", Units.HERTZ.toString()), //
             entry("kiloJoule", MetricPrefix.KILO(Units.JOULE).toString()));
 

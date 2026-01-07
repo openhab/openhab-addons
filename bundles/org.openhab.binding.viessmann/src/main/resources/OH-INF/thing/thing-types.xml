@@ -329,6 +329,17 @@
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 
+	<channel-type id="watt-hour">
+		<item-type unitHint="Wh">Number:Energy</item-type>
+		<label> Electric Energy</label>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+
 	<channel-type id="heat-energy">
 		<item-type>Number:Energy</item-type>
 		<label>Heat Energy</label>
@@ -360,6 +371,17 @@
 			<tag>Power</tag>
 		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="kilowattpeak">
+		<item-type>Number</item-type>
+		<label>Peak Power (kWp)</label>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
+		<state pattern="%.1f kWp" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="house-heating-load">
@@ -601,6 +623,16 @@
 			<tag>Airflow</tag>
 		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="volt">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Volt</label>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
+		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 </thing:thing-descriptions>
