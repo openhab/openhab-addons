@@ -43,5 +43,5 @@ Thing silvercrestwifisocket:wifiSocket:lamp [ macAddress="ACCF23343C50", vendor=
 The Silvercrest Wi-Fi Socket supports the following channel:
 
 | Channel Type ID | Item Type | Description          |
-|-----------------|-----------|---------------------|
+|-----------------|-----------|----------------------|
 | switch          | Switch    | Wi-Fi Socket Switch. |
