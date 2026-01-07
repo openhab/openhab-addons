@@ -234,10 +234,6 @@ public class IpTransport implements AutoCloseable {
             throw new IOException("Response must contain 3 arrays");
         }
 
-        if (trace) {
-            logger.trace("HTTP response from {}:\n{}", ipAddress, new String(response[2], StandardCharsets.ISO_8859_1));
-        }
-
         checkHeaders(response[0]);
         return response[1];
     }
@@ -302,6 +298,10 @@ public class IpTransport implements AutoCloseable {
                     httpParser.accept(frame);
                 }
             } while (!httpParser.isComplete());
+            if (raw != null) {
+                logger.trace("HTTP response from {}:\n{}", ipAddress,
+                        new String(raw.toByteArray(), StandardCharsets.ISO_8859_1));
+            }
             return new byte[][] { httpParser.getHeaders(), httpParser.getContent(),
                     raw != null ? raw.toByteArray() : new byte[0] };
         }
@@ -357,6 +357,9 @@ public class IpTransport implements AutoCloseable {
      * @param response the received response as a 3D byte array
      */
     private void handleResponse(byte[][] response) {
+        if (logger.isTraceEnabled()) { // don't build trace string if not needed
+            logger.trace("HTTP response from {}:\n{}", ipAddress, new String(response[2], StandardCharsets.ISO_8859_1));
+        }
         String headers = new String(response[0], StandardCharsets.ISO_8859_1);
         if (headers.startsWith("HTTP")) {
             if (readHttpResponseFuture instanceof CompletableFuture<byte[][]> readFuture) {
@@ -364,7 +367,6 @@ public class IpTransport implements AutoCloseable {
                 readFuture.complete(response);
             }
         } else if (headers.startsWith("EVENT")) {
-            logger.trace("HTTP event from {}:\n{}", ipAddress, new String(response[2], StandardCharsets.ISO_8859_1));
             String jsonContent = new String(response[1], StandardCharsets.UTF_8);
             eventListener.onEvent(jsonContent);
         } else {
