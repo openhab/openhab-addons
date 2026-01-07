@@ -187,7 +187,8 @@ public final class StateResolver {
         if (lower.contains("power") || lower.contains("threshold") || lower.contains("tariffsolar")) {
             return Units.WATT;
         }
-        if (lower.contains("energy") || lower.contains("capacity") || lower.contains("import")) {
+        if (lower.contains("energy") || lower.contains("capacity") || lower.contains("import")
+                || lower.contains("solar")) {
             return Units.WATT_HOUR;
         }
         if (lower.contains("temp") || lower.contains("temperature") || lower.contains("heating")) {

@@ -34,6 +34,7 @@ public class EvccBindingConstants {
     public static final String CHANNEL_PLAN_PRECONDITION = "plan-precondition";
 
     public static final ThingTypeUID THING_TYPE_BATTERY = new ThingTypeUID(BINDING_ID, "battery");
+    public static final ThingTypeUID THING_TYPE_FORECAST = new ThingTypeUID(BINDING_ID, "forecast");
     public static final ThingTypeUID THING_TYPE_HEATING = new ThingTypeUID(BINDING_ID, "heating");
     public static final ThingTypeUID THING_TYPE_LOADPOINT = new ThingTypeUID(BINDING_ID, "loadpoint");
     public static final ThingTypeUID THING_TYPE_PLAN = new ThingTypeUID(BINDING_ID, "plan");
@@ -43,10 +44,11 @@ public class EvccBindingConstants {
     public static final ThingTypeUID THING_TYPE_STATISTICS = new ThingTypeUID(BINDING_ID, "statistics");
     public static final ThingTypeUID THING_TYPE_VEHICLE = new ThingTypeUID(BINDING_ID, "vehicle");
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_BATTERY, THING_TYPE_HEATING,
-            THING_TYPE_LOADPOINT, THING_TYPE_PLAN, THING_TYPE_PV, THING_TYPE_SITE, THING_TYPE_STATISTICS,
-            THING_TYPE_VEHICLE);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_BATTERY, THING_TYPE_FORECAST,
+            THING_TYPE_HEATING, THING_TYPE_LOADPOINT, THING_TYPE_PLAN, THING_TYPE_PV, THING_TYPE_SITE,
+            THING_TYPE_STATISTICS, THING_TYPE_VEHICLE);
 
+    public static final String PROPERTY_FORECAST = "forecast";
     public static final String PROPERTY_ID = "id";
     public static final String PROPERTY_INDEX = "index";
     public static final String PROPERTY_TYPE = "type";
@@ -74,11 +76,14 @@ public class EvccBindingConstants {
     public static final String JSON_KEY_CHARGE_CURRENTS = "chargeCurrents";
     public static final String JSON_KEY_CHARGE_VOLTAGES = "chargeVoltages";
     public static final String JSON_KEY_CHARGER_FEATURE_HEATING = "chargerFeatureHeating";
-    public static final String JSON_KEY_CHARGING = "charging";
     public static final String JSON_KEY_CONNECTED = "connected";
+    public static final String JSON_KEY_CO2 = "co2";
+    public static final String JSON_KEY_DAY_AFTER_TOMORROW = "dayAfterTomorrow";
     public static final String JSON_KEY_EFFECTIVE_LIMIT_SOC = "effectiveLimitSoc";
     public static final String JSON_KEY_EFFECTIVE_PLAN_SOC = "effectivePlanSoc";
-    public static final String JSON_KEY_ENABLED = "enabled";
+    public static final String JSON_KEY_ENERGY = "energy";
+    public static final String JSON_KEY_FEED_IN = "feedin";
+    public static final String JSON_KEY_FORECAST = "forecast";
     public static final String JSON_KEY_GRID = "grid";
     public static final String JSON_KEY_GRID_CONFIGURED = "gridConfigured";
     public static final String JSON_KEY_LIMIT_SOC = "limitSoc";
@@ -91,11 +96,14 @@ public class EvccBindingConstants {
     public static final String JSON_KEY_PV = "pv";
     public static final String JSON_KEY_REPEATING_PLANS = "repeatingPlans";
     public static final String JSON_KEY_SMART_COST_TYPE = "smartCostType";
+    public static final String JSON_KEY_SOLAR = "solar";
     public static final String JSON_KEY_SOC = "soc";
     public static final String JSON_KEY_STATISTICS = "statistics";
     public static final String JSON_KEY_TIME = "time";
-    public static final String JSON_KEY_TZ = "tz";
     public static final String JSON_KEY_TITLE = "title";
+    public static final String JSON_KEY_TODAY = "today";
+    public static final String JSON_KEY_TOMORROW = "tomorrow";
+    public static final String JSON_KEY_TZ = "tz";
     public static final String JSON_KEY_VEHICLE_LIMIT_SOC = "vehicleLimitSoc";
     public static final String JSON_KEY_VEHICLE_PRESENT = "vehiclePresent";
     public static final String JSON_KEY_VEHICLE_SOC = "vehicleSoc";
