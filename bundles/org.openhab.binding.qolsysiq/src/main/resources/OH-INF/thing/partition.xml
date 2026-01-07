@@ -23,7 +23,7 @@
 		<config-description>
 			<parameter name="id" type="integer" required="true">
 				<label>Partition ID</label>
-				<description>The partition ID</description>
+				<description>The partition ID.</description>
 			</parameter>
 			<parameter name="disarmCode" type="text" required="false">
 				<default></default>
@@ -72,7 +72,7 @@
 	<channel-type id="alarmState">
 		<item-type>String</item-type>
 		<label>Partition Alarm State</label>
-		<description>Reports on the current alarm state, or triggers an instant alarm</description>
+		<description>Reports on the current alarm state, or triggers an instant alarm.</description>
 		<category>Alarm</category>
 		<tags>
 			<tag>Alarm</tag>

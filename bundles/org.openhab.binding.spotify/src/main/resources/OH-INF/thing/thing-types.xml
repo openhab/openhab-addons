@@ -228,7 +228,7 @@
 			<tag>Status</tag>
 			<tag>Duration</tag>
 		</tags>
-		<state readOnly="true" pattern="%.0f %unit%"/>
+		<state readOnly="true" pattern="%1$tM:%1$tS"/>
 	</channel-type>
 	<channel-type id="currentlyPlayedTrackProgressMs">
 		<item-type>Number:Time</item-type>
@@ -238,7 +238,7 @@
 			<tag>Status</tag>
 			<tag>Progress</tag>
 		</tags>
-		<state readOnly="true" pattern="%.0f %unit%"/>
+		<state readOnly="true" pattern="%1$tM:%1$tS"/>
 	</channel-type>
 	<channel-type id="currentlyPlayedTrackDuration" advanced="true">
 		<item-type>String</item-type>
