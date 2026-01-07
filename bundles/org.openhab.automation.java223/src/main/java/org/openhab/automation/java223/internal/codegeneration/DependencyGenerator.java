@@ -140,7 +140,7 @@ public class DependencyGenerator {
 
                 // we want to warn about the list of packages we didn't find
                 if (logger.isWarnEnabled()) {
-                    Set<String> packagesNotFound = new HashSet<>(DEFAULT_DEPENDENCIES);
+                    Set<String> packagesNotFound = new HashSet<>(dependencies);
                     packagesSuccessfullyExported.stream().map(s -> s.replaceAll("/", ".")).toList()
                             .forEach(packagesNotFound::remove);
                     for (String remainingPackage : packagesNotFound) {
