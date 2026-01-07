@@ -14,7 +14,8 @@
 				<label>Base URL</label>
 				<context>url</context>
 				<description>The URL of the Siemens HVAC IP gateway. Must be in the format http://hostname/ or
-					https://hostname/. Don't forget the trailing '/'.</description>
+					https://hostname/.
+					Don't forget the trailing '/'.</description>
 				<required>true</required>
 			</parameter>
 			<parameter name="userName" type="text">
