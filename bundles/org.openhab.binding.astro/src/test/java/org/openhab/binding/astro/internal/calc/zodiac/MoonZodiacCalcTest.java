@@ -34,7 +34,7 @@ import org.openhab.binding.astro.internal.util.DateTimeUtils;
  * covered:
  * <ul>
  * <li>checks if generated data are the same (with some accuracy) as produced by
- * haevens-above.com</li>
+ * heavens-above.com</li>
  * </ul>
  *
  * @author Leo Siepel - Initial contribution

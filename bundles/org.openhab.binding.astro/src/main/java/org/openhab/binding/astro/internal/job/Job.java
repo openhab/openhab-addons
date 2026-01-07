@@ -158,7 +158,7 @@ public interface Job extends SchedulerRunnable, Runnable {
      * Schedules an {@link EventJob} instance
      *
      * @param astroHandler the {@link AstroThingHandler} instance
-     * @param eventAt the {@link Calendar} instance denoting scheduled instant
+     * @param eventAt the {@link Instant} instance denoting scheduled instant
      * @param events the event IDs to schedule
      * @param channelId the channel ID
      */

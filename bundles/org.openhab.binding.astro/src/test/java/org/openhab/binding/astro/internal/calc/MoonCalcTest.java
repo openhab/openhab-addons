@@ -85,7 +85,7 @@ public class MoonCalcTest {
 
         Calendar riseStart = moon.getRise().getStart();
         assertNotNull(riseStart);
-        // expected result from haevens-above.com is 03:00
+        // expected result from heavens-above.com is 03:00
         assertEquals(MoonCalcTest.newCalendar(2019, Calendar.FEBRUARY, 27, 3, 0, TIME_ZONE).getTimeInMillis(),
                 riseStart.getTimeInMillis(), ACCURACY_IN_MILLIS);
     }
@@ -97,7 +97,7 @@ public class MoonCalcTest {
 
         Calendar setStart = moon.getSet().getStart();
         assertNotNull(setStart);
-        // expected result from haevens-above.com is 11:35
+        // expected result from heavens-above.com is 11:35
         assertEquals(MoonCalcTest.newCalendar(2019, Calendar.FEBRUARY, 27, 11, 35, TIME_ZONE).getTimeInMillis(),
                 setStart.getTimeInMillis(), ACCURACY_IN_MILLIS);
     }
@@ -109,7 +109,7 @@ public class MoonCalcTest {
         Moon moon = moonCalc.getMoonInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE, TIME_ZONE, Locale.ROOT);
         moonCalc.setPositionalInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE, moon, TIME_ZONE, Locale.ROOT);
 
-        // expected result from haevens-above.com is Azimuth: 100.5, altitude -17
+        // expected result from heavens-above.com is Azimuth: 100.5, altitude -17
         assertEquals(100.5, moon.getPosition().getAzimuth().doubleValue(), ACCURACY_IN_DEGREE);
         assertEquals(-17, moon.getPosition().getElevation().doubleValue(), ACCURACY_IN_DEGREE);
     }

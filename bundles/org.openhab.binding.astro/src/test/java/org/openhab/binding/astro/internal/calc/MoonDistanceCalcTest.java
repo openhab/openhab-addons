@@ -34,7 +34,7 @@ import org.openhab.binding.astro.internal.util.DateTimeUtils;
  * covered:
  * <ul>
  * <li>checks if generated data are the same (with some accuracy) as produced by
- * haevens-above.com</li>
+ * heavens-above.com</li>
  * </ul>
  *
  * @author Leo Siepel - Initial contribution
@@ -54,7 +54,7 @@ public class MoonDistanceCalcTest {
         double jdate = DateTimeUtils.dateToJulianDate(FEB_27_2019);
         MoonDistance distance = MoonDistanceCalc.get(DistanceType.APOGEE, jdate);
 
-        // expected result from haevens-above.com is 406,391 km @ 04 March 2019 12:27
+        // expected result from heavens-above.com is 406,391 km @ 04 March 2019 12:27
         var apogeeDistance = distance.getDistance();
         assertNotNull(apogeeDistance);
         var kmDistance = apogeeDistance.toUnit(KILO(METRE));
@@ -71,7 +71,7 @@ public class MoonDistanceCalcTest {
         double jdate = DateTimeUtils.dateToJulianDate(FEB_27_2019);
         MoonDistance distance = MoonDistanceCalc.get(DistanceType.PERIGEE, jdate);
 
-        // expected result from haevens-above.com is 359,377 km @ 19 February 2019 20:44
+        // expected result from heavens-above.com is 359,377 km @ 19 February 2019 20:44
         var perigeeDistance = distance.getDistance();
         assertNotNull(perigeeDistance);
         var kmDistance = perigeeDistance.toUnit(KILO(METRE));
@@ -89,7 +89,7 @@ public class MoonDistanceCalcTest {
         double jdate = DateTimeUtils.dateToJulianDate(FEB_27_2019);
         MoonDistance distance = MoonDistanceCalc.calculate(jdate);
 
-        // expected result from haevens-above.com is 392612 km
+        // expected result from heavens-above.com is 392612 km
         var currentDistance = distance.getDistance();
         assertNotNull(currentDistance);
         var kmDistance = currentDistance.toUnit(KILO(METRE));
@@ -118,7 +118,8 @@ public class MoonDistanceCalcTest {
      *            the calendar.
      * @param zone
      *            the given time zone.
-     * @return
+     * @return a {@link Calendar} set to the given date and time in the specified
+     *         time zone, truncated to minute precision.
      */
     private static Calendar newCalendar(int year, int month, int dayOfMonth, int hourOfDay, int minute, TimeZone zone) {
         Calendar result = new GregorianCalendar(zone, Locale.ROOT);

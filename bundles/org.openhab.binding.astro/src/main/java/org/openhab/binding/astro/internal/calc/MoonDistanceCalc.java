@@ -79,7 +79,13 @@ public class MoonDistanceCalc {
     }
 
     /**
-     * Calculates the date, where the moon is furthest away from the earth.
+     * Calculates the Julian date of the specified lunar distance extreme relative to the earth.
+     * Depending on the given {@link DistanceType}, this returns either the apogee (furthest distance)
+     * or the perigee (closest distance) that occurs on or after the given reference date.
+     *
+     * @param type the distance type to calculate (APOGEE or PERIGEE)
+     * @param julianDate the reference Julian date from which to search forward
+     * @return the Julian date of the requested lunar distance extreme
      */
     private static double getApogeePerigee(DistanceType type, double julianDate) {
         double k = floor((julianDate - JDE_0) / ANOMALISTIC_MONTH) + (type.equals(DistanceType.APOGEE) ? 0.5 : 0) - 1;
