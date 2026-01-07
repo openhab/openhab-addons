@@ -61,55 +61,73 @@ public class HomematicTypeProvider extends AbstractStorageBasedTypeProvider impl
 
     @Override
     public void putThingType(ThingType thingType) {
-        super.putThingType(thingType);
-        thingTypesCreatedSinceStartup.add(thingType.getUID());
+        synchronized (thingTypesCreatedSinceStartup) {
+            super.putThingType(thingType);
+            thingTypesCreatedSinceStartup.add(thingType.getUID());
+        }
     }
 
     @Override
     public void putChannelType(ChannelType channelType) {
-        super.putChannelType(channelType);
-        channelTypesCreatedSinceStartup.add(channelType.getUID());
+        synchronized (channelGroupTypesCreatedSinceStartup) {
+            super.putChannelType(channelType);
+            channelTypesCreatedSinceStartup.add(channelType.getUID());
+        }
     }
 
     @Override
     public void putChannelGroupType(ChannelGroupType channelGroupType) {
-        super.putChannelGroupType(channelGroupType);
-        channelGroupTypesCreatedSinceStartup.add(channelGroupType.getUID());
+        synchronized (channelGroupTypesCreatedSinceStartup) {
+            super.putChannelGroupType(channelGroupType);
+            channelGroupTypesCreatedSinceStartup.add(channelGroupType.getUID());
+        }
     }
 
     @Override
     public Collection<ConfigDescription> getConfigDescriptions(@Nullable Locale locale) {
-        return new ArrayList<>(configDescriptionsByURI.values());
+        synchronized (configDescriptionsByURI) {
+            return new ArrayList<>(configDescriptionsByURI.values());
+        }
     }
 
     @Override
     @Nullable
     public ConfigDescription getConfigDescription(URI uri, @Nullable Locale locale) {
-        return configDescriptionsByURI.get(uri);
+        synchronized (configDescriptionsByURI) {
+            return configDescriptionsByURI.get(uri);
+        }
     }
 
     public @Nullable ThingType getThingTypeCreatedSinceStartup(ThingTypeUID thingTypeUID) {
-        if (!thingTypesCreatedSinceStartup.contains(thingTypeUID)) {
-            return null;
+        synchronized (thingTypesCreatedSinceStartup) {
+            if (!thingTypesCreatedSinceStartup.contains(thingTypeUID)) {
+                return null;
+            }
+            return getThingType(thingTypeUID, null);
         }
-        return getThingType(thingTypeUID, null);
     }
 
     public @Nullable ChannelType getChannelTypeCreatedSinceStartup(ChannelTypeUID channelTypeUID) {
-        if (!channelTypesCreatedSinceStartup.contains(channelTypeUID)) {
-            return null;
+        synchronized (channelTypesCreatedSinceStartup) {
+            if (!channelTypesCreatedSinceStartup.contains(channelTypeUID)) {
+                return null;
+            }
+            return getChannelType(channelTypeUID, null);
         }
-        return getChannelType(channelTypeUID, null);
     }
 
     public @Nullable ChannelGroupType getChannelGroupTypeCreatedSinceStartup(ChannelGroupTypeUID channelGroupTypeUID) {
-        if (!channelGroupTypesCreatedSinceStartup.contains(channelGroupTypeUID)) {
-            return null;
+        synchronized (channelGroupTypesCreatedSinceStartup) {
+            if (!channelGroupTypesCreatedSinceStartup.contains(channelGroupTypeUID)) {
+                return null;
+            }
+            return getChannelGroupType(channelGroupTypeUID, null);
         }
-        return getChannelGroupType(channelGroupTypeUID, null);
     }
 
     public void putConfigDescription(ConfigDescription configDescription) {
-        configDescriptionsByURI.put(configDescription.getUID(), configDescription);
+        synchronized (configDescriptionsByURI) {
+            configDescriptionsByURI.put(configDescription.getUID(), configDescription);
+        }
     }
 }
