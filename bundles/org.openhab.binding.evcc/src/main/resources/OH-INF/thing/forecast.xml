@@ -18,13 +18,14 @@
 		</config-description>
 	</thing-type>
 	<channel-type id="forecast-solar">
-		<item-type>Number:Energy</item-type>
+		<item-type unitHint="Wh">Number:Energy</item-type>
 		<label>Solar Forecast</label>
 		<description>Holds the solar forecast data</description>
 		<tags>
 			<tag>Forecast</tag>
 			<tag>Energy</tag>
 		</tags>
+		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="forecast-co2">
 		<item-type>Number:EmissionIntensity</item-type>
@@ -34,6 +35,7 @@
 			<tag>Forecast</tag>
 			<tag>CO2</tag>
 		</tags>
+		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="forecast-feedin">
 		<item-type>Number:EnergyPrice</item-type>
@@ -43,6 +45,7 @@
 			<tag>Forecast</tag>
 			<tag>Price</tag>
 		</tags>
+		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="forecast-grid">
 		<item-type>Number:EnergyPrice</item-type>
@@ -52,37 +55,42 @@
 			<tag>Forecast</tag>
 			<tag>Price</tag>
 		</tags>
+		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="forecast-scale">
 		<item-type>Number</item-type>
 		<label>Scale</label>
 		<description>Scaling factor for the forecast values</description>
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="forecast-today">
-		<item-type>Number:Energy</item-type>
+		<item-type unitHint="Wh">Number:Energy</item-type>
 		<label>Today's Forecast </label>
 		<description>Accumulated forecast for today</description>
 		<tags>
 			<tag>Forecast</tag>
 			<tag>Energy</tag>
 		</tags>
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="forecast-tomorrow">
-		<item-type>Number:Energy</item-type>
+		<item-type unitHint="Wh">Number:Energy</item-type>
 		<label>Tomorrow's Forecast</label>
 		<description>Accumulated forecast for tomorrow</description>
 		<tags>
 			<tag>Forecast</tag>
 			<tag>Energy</tag>
 		</tags>
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="forecast-day-after-tomorrow">
-		<item-type>Number:Energy</item-type>
+		<item-type unitHint="Wh">Number:Energy</item-type>
 		<label>After Tomorrow's Forecast</label>
 		<description>Accumulated forecast for the day after tomorrow</description>
 		<tags>
 			<tag>Forecast</tag>
 			<tag>Energy</tag>
 		</tags>
+		<state readOnly="true"/>
 	</channel-type>
 </thing:thing-descriptions>

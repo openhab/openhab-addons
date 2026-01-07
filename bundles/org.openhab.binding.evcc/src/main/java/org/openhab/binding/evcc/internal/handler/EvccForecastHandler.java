@@ -66,8 +66,6 @@ public class EvccForecastHandler extends EvccBaseThingHandler {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
                 return;
             }
-            handler.register(this);
-            updateStatus(ThingStatus.ONLINE);
             if (stateOpt.has(JSON_KEY_FORECAST) && stateOpt.getAsJsonObject(JSON_KEY_FORECAST).has(subType)) {
                 String thingKey = getThingKey(subType);
                 ChannelUID channelUID = new ChannelUID(getThing().getUID(), thingKey);
@@ -85,6 +83,8 @@ public class EvccForecastHandler extends EvccBaseThingHandler {
                     }
                 }
                 isInitialized = true;
+                handler.register(this);
+                updateStatus(ThingStatus.ONLINE);
                 prepareApiResponseForChannelStateUpdate(stateOpt);
             }
 
@@ -98,7 +98,7 @@ public class EvccForecastHandler extends EvccBaseThingHandler {
             case JSON_KEY_CO2, JSON_KEY_FEED_IN, JSON_KEY_GRID -> forecastArray = extractCorrespondingForecast(state);
             case JSON_KEY_SOLAR -> {
                 forecastArray = extractCorrespondingForecast(state);
-                updateStatesFromApiResponse(state);
+                updateStatesFromApiResponse(state.getAsJsonObject(JSON_KEY_FORECAST).getAsJsonObject(subType));
             }
             default -> {
                 logger.warn("Unknown forecast type: {}", subType);
@@ -116,7 +116,7 @@ public class EvccForecastHandler extends EvccBaseThingHandler {
         if (state.has(JSON_KEY_FORECAST) && state.getAsJsonObject(JSON_KEY_FORECAST).has(subType)) {
             if (JSON_KEY_SOLAR.equals(subType)) {
                 JsonObject solarObject = state.getAsJsonObject(JSON_KEY_FORECAST).getAsJsonObject(subType);
-                ModifyJSON(solarObject);
+                modifyJSON(solarObject);
                 return solarObject.has("timeseries") ? solarObject.getAsJsonArray("timeseries") : new JsonArray();
             } else {
                 return state.getAsJsonObject(JSON_KEY_FORECAST).getAsJsonArray(subType);
@@ -127,7 +127,7 @@ public class EvccForecastHandler extends EvccBaseThingHandler {
         }
     }
 
-    private void ModifyJSON(JsonObject state) {
+    private void modifyJSON(JsonObject state) {
         if (state.has(JSON_KEY_TODAY)) {
             if (state.getAsJsonObject(JSON_KEY_TODAY).get("complete").getAsBoolean()) {
                 state.add(JSON_KEY_TODAY, state.getAsJsonObject(JSON_KEY_TODAY).get(JSON_KEY_ENERGY));
@@ -171,6 +171,10 @@ public class EvccForecastHandler extends EvccBaseThingHandler {
                     }
                 });
             }
+        }
+        if (timeSeries.size() > 0) {
+            State firstState = timeSeries.getStates().findFirst().orElseThrow().state();
+            updateState(channelUID, firstState);
         }
         sendTimeSeries(channelUID, timeSeries);
     }
