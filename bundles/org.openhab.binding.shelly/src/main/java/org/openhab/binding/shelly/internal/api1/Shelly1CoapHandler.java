@@ -198,122 +198,118 @@ public class Shelly1CoapHandler implements Shelly1CoapListener {
             return;
         }
 
-        String payload = "";
+        thingHandler.incProtMessages();
+
+        String payload = response.getPayloadString();
+        if (logger.isDebugEnabled()) {
+            logger.debug("{}: CoIoT Message from {} (MID={}): {}", thingName,
+                    response.getSourceContext().getPeerAddress(), response.getMID(), payload);
+        }
+
+        if (thingHandler.isStopping()) {
+            logger.debug("{}: Thing is not yet initialized / shutting down, ignore CoIOT message", thingName);
+            return;
+        }
+
+        if (response.isCanceled() || response.isDuplicate() || response.isRejected()) {
+            logger.debug("{}: Packet was canceled, rejected or is a duplicate -> discard", thingName);
+            thingHandler.incProtErrors();
+            return;
+        }
+
         String devId = "";
         String uri = "";
         int serial = -1;
-        try {
-            thingHandler.incProtMessages();
-            if (logger.isDebugEnabled()) {
-                logger.debug("{}: CoIoT Message from {} (MID={}): {}", thingName,
-                        response.getSourceContext().getPeerAddress(), response.getMID(), response.getPayloadString());
-            }
-            if (thingHandler.isStopping()) {
-                logger.debug("{}: Thing is not yet initialized / shutting down, ignore CoIOT message", thingName);
-                return;
-            }
 
-            if (response.isCanceled() || response.isDuplicate() || response.isRejected()) {
-                logger.debug("{} ({}): Packet was canceled, rejected or is a duplicate -> discard", thingName, devId);
-                thingHandler.incProtErrors();
-                return;
-            }
-
-            payload = response.getPayloadString();
-            for (Option opt : options) {
-                switch (opt.getNumber()) {
-                    case OptionNumberRegistry.URI_PATH:
-                        uri = COLOIT_URI_BASE + opt.getStringValue();
-                        break;
-                    case OptionNumberRegistry.URI_HOST: // ignore
-                        break;
-                    case OptionNumberRegistry.CONTENT_FORMAT: // ignore
-                        break;
-                    case COIOT_OPTION_GLOBAL_DEVID:
-                        devId = opt.getStringValue();
-                        String sVersion = substringAfterLast(devId, "#");
-                        int iVersion;
-                        try {
-                            iVersion = Integer.parseInt(sVersion);
-                        } catch (NumberFormatException e) {
-                            logger.debug("{}: Unable to parse version in CoIoT message: {}", thingName, devId);
-                            thingHandler.incProtErrors();
+        for (Option opt : options) {
+            switch (opt.getNumber()) {
+                case OptionNumberRegistry.URI_PATH:
+                    uri = COLOIT_URI_BASE + opt.getStringValue();
+                    break;
+                case OptionNumberRegistry.URI_HOST: // ignore
+                    break;
+                case OptionNumberRegistry.CONTENT_FORMAT: // ignore
+                    break;
+                case COIOT_OPTION_GLOBAL_DEVID:
+                    devId = opt.getStringValue();
+                    String sVersion = substringAfterLast(devId, "#");
+                    int iVersion;
+                    try {
+                        iVersion = Integer.parseInt(sVersion);
+                    } catch (NumberFormatException e) {
+                        logger.debug("{}: Unable to parse version in CoIoT message: {}", thingName, devId);
+                        thingHandler.incProtErrors();
+                        return;
+                    }
+                    if (coiotBound && coiotVers != iVersion) {
+                        logger.debug("{}: CoIoT versopm has changed from {} to {}, maybe the firmware was upgraded",
+                                thingName, coiotVers, iVersion);
+                        thingHandler.reinitializeThing();
+                        coiotBound = false;
+                    }
+                    if (!coiotBound) {
+                        thingHandler.updateProperties(PROPERTY_COAP_VERSION, sVersion);
+                        logger.debug("{}: CoIoT Version {} detected", thingName, iVersion);
+                        if (iVersion == COIOT_VERSION_1) {
+                            coiot = new Shelly1CoIoTVersion1(thingName, thingHandler, blkMap, sensorMap);
+                        } else if (iVersion == COIOT_VERSION_2) {
+                            coiot = new Shelly1CoIoTVersion2(thingName, thingHandler, blkMap, sensorMap);
+                        } else {
+                            logger.warn("{}: Unsupported CoAP version detected: {}", thingName, sVersion);
                             return;
                         }
-                        if (coiotBound && coiotVers != iVersion) {
-                            logger.debug("{}: CoIoT versopm has changed from {} to {}, maybe the firmware was upgraded",
-                                    thingName, coiotVers, iVersion);
-                            thingHandler.reinitializeThing();
-                            coiotBound = false;
-                        }
-                        if (!coiotBound) {
-                            thingHandler.updateProperties(PROPERTY_COAP_VERSION, sVersion);
-                            logger.debug("{}: CoIoT Version {} detected", thingName, iVersion);
-                            if (iVersion == COIOT_VERSION_1) {
-                                coiot = new Shelly1CoIoTVersion1(thingName, thingHandler, blkMap, sensorMap);
-                            } else if (iVersion == COIOT_VERSION_2) {
-                                coiot = new Shelly1CoIoTVersion2(thingName, thingHandler, blkMap, sensorMap);
-                            } else {
-                                logger.warn("{}: Unsupported CoAP version detected: {}", thingName, sVersion);
-                                return;
-                            }
-                            coiotVers = iVersion;
-                            coiotBound = true;
-                        }
-                        break;
-                    case COIOT_OPTION_STATUS_VALIDITY:
-                        break;
-                    case COIOT_OPTION_STATUS_SERIAL:
-                        serial = opt.getIntegerValue();
-                        break;
-                    default:
-                        logger.debug("{} ({}): COAP option {} with value {} skipped", thingName, devId, opt.getNumber(),
-                                opt.getValue());
-                }
+                        coiotVers = iVersion;
+                        coiotBound = true;
+                    }
+                    break;
+                case COIOT_OPTION_STATUS_VALIDITY:
+                    break;
+                case COIOT_OPTION_STATUS_SERIAL:
+                    serial = opt.getIntegerValue();
+                    break;
+                default:
+                    logger.debug("{} ({}): COAP option {} with value {} skipped", thingName, devId, opt.getNumber(),
+                            opt.getValue());
             }
+        }
 
-            // Don't change state to online when thing is in status config error
-            // (e.g. auth failed, but device sends COAP packets via multicast)
-            if (thingHandler.getThingStatusDetail() == ThingStatusDetail.CONFIGURATION_ERROR) {
-                logger.debug("{}: The device is not configuired correctly, skip Coap packet", thingName);
-                return;
+        // Don't change state to online when thing is in status config error
+        // (e.g. auth failed, but device sends COAP packets via multicast)
+        if (thingHandler.getThingStatusDetail() == ThingStatusDetail.CONFIGURATION_ERROR) {
+            logger.debug("{}: The device is not configuired correctly, skip Coap packet", thingName);
+            return;
+        }
+
+        // If we received a CoAP message successful the thing must be online
+        thingHandler.setThingOnline();
+
+        // The device changes the serial on every update, receiving a message with the same serial is a
+        // duplicate, excep for battery devices! Those reset the serial every time when they wake-up
+        if ((serial == lastSerial) && payload.equals(lastPayload) && (!profile.hasBattery
+                || "ext_power".equalsIgnoreCase(coiot.getLastWakeup()) || ((serial & 0xFF) != 0))) {
+            logger.debug("{}: Serial {} was already processed, ignore update", thingName, serial);
+            return;
+        }
+
+        // fixed malformed JSON :-(
+        payload = fixJSON(payload);
+
+        try {
+            if (uri.equalsIgnoreCase(COLOIT_URI_DEVDESC) || (uri.isEmpty() && payload.contains(COIOT_TAG_BLK))) {
+                handleDeviceDescription(devId, payload);
+            } else if (uri.equalsIgnoreCase(COLOIT_URI_DEVSTATUS)
+                    || (uri.isEmpty() && payload.contains(COIOT_TAG_GENERIC))) {
+                handleStatusUpdate(devId, payload, serial);
             }
-
-            // If we received a CoAP message successful the thing must be online
-            thingHandler.setThingOnline();
-
-            // The device changes the serial on every update, receiving a message with the same serial is a
-            // duplicate, excep for battery devices! Those reset the serial every time when they wake-up
-            if ((serial == lastSerial) && payload.equals(lastPayload) && (!profile.hasBattery
-                    || "ext_power".equalsIgnoreCase(coiot.getLastWakeup()) || ((serial & 0xFF) != 0))) {
-                logger.debug("{}: Serial {} was already processed, ignore update", thingName, serial);
-                return;
-            }
-
-            // fixed malformed JSON :-(
-            payload = fixJSON(payload);
-
-            try {
-                if (uri.equalsIgnoreCase(COLOIT_URI_DEVDESC) || (uri.isEmpty() && payload.contains(COIOT_TAG_BLK))) {
-                    handleDeviceDescription(devId, payload);
-                } else if (uri.equalsIgnoreCase(COLOIT_URI_DEVSTATUS)
-                        || (uri.isEmpty() && payload.contains(COIOT_TAG_GENERIC))) {
-                    handleStatusUpdate(devId, payload, serial);
-                }
-            } catch (ShellyApiException e) {
-                logger.debug("{}: Unable to process CoIoT message: {}", thingName, e.toString());
-                thingHandler.incProtErrors();
-            }
-
-            if (!updatesRequested) {
-                // Observe Status Updates
-                reqStatus = sendRequest(reqStatus, config.deviceIp, COLOIT_URI_DEVSTATUS, Type.NON);
-                updatesRequested = true;
-            }
-        } catch (Exception e) {
-            logger.debug("{}: Unable to process CoIoT Message for payload={}", thingName, payload, e);
-            resetSerial();
+        } catch (ShellyApiException e) {
+            logger.debug("{}: Unable to process CoIoT message: {}", thingName, e.toString());
             thingHandler.incProtErrors();
+        }
+
+        if (!updatesRequested) {
+            // Observe Status Updates
+            reqStatus = sendRequest(reqStatus, config.deviceIp, COLOIT_URI_DEVSTATUS, Type.NON);
+            updatesRequested = true;
         }
     }
 
