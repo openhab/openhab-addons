@@ -20,7 +20,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * The {@link ChannelEventTrigger}
