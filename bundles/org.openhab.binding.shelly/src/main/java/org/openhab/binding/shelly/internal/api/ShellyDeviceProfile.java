@@ -256,13 +256,12 @@ public class ShellyDeviceProfile {
     }
 
     public void updateFromStatus(ShellySettingsStatus status) {
-        if (status.input == null) {
-            return;
-        }
         if (hasRelays) {
             // Dimmer-2 doesn't report inputs under /settings, only on /status, we need to update that info after init
-            numInputs = status.inputs.size();
-        } else {
+            if (status.inputs != null) {
+                numInputs = status.inputs.size();
+            }
+        } else if (status.input != null) {
             // RGBW2
             numInputs = 1;
         }
