@@ -62,6 +62,7 @@ public class IpTransport implements AutoCloseable {
 
     private final Socket socket;
     private final String hostName;
+    private final String ipAddress;
     private final EventListener eventListener;
 
     private volatile @Nullable SecureSession secureSession = null;
@@ -81,6 +82,7 @@ public class IpTransport implements AutoCloseable {
     public IpTransport(String ipAddress, String hostName, EventListener eventListener) throws IOException {
         logger.debug("Connecting to {} alias {}", ipAddress, hostName);
         this.hostName = hostName;
+        this.ipAddress = ipAddress;
         this.eventListener = eventListener;
         String[] parts = ipAddress.split(":");
         socket = new Socket();
@@ -193,7 +195,7 @@ public class IpTransport implements AutoCloseable {
 
         boolean trace = logger.isTraceEnabled();
         if (trace) {
-            logger.trace("HTTP request:\n{}", new String(request, StandardCharsets.ISO_8859_1));
+            logger.trace("HTTP request to {}:\n{}", ipAddress, new String(request, StandardCharsets.ISO_8859_1));
         }
 
         byte[][] response; // 0 = headers, 1 = content, 2 = raw trace (if enabled)
@@ -233,7 +235,7 @@ public class IpTransport implements AutoCloseable {
         }
 
         if (trace) {
-            logger.trace("HTTP response:\n{}", new String(response[2], StandardCharsets.ISO_8859_1));
+            logger.trace("HTTP response from {}:\n{}", ipAddress, new String(response[2], StandardCharsets.ISO_8859_1));
         }
 
         checkHeaders(response[0]);
@@ -362,7 +364,7 @@ public class IpTransport implements AutoCloseable {
                 readFuture.complete(response);
             }
         } else if (headers.startsWith("EVENT")) {
-            logger.trace("HTTP event:\n{}", new String(response[2], StandardCharsets.ISO_8859_1));
+            logger.trace("HTTP event from {}:\n{}", ipAddress, new String(response[2], StandardCharsets.ISO_8859_1));
             String jsonContent = new String(response[1], StandardCharsets.UTF_8);
             eventListener.onEvent(jsonContent);
         } else {
