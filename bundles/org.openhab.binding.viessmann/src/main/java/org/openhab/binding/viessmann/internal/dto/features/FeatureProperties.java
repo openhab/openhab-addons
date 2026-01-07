@@ -54,6 +54,12 @@ public class FeatureProperties {
     public FeatureString phase;
     public FeatureString switchOnValue;
     public FeatureString switchOffValue;
+    public FeatureDouble currentDay;
+    public FeatureDouble lastSevenDays;
+    public FeatureDouble currentMonth;
+    public FeatureDouble lastMonth;
+    public FeatureDouble currentYear;
+    public FeatureDouble lastYear;
 
     public ArrayList<String> getUsedEntries() {
         ArrayList<String> list = new ArrayList<>();
@@ -156,6 +162,24 @@ public class FeatureProperties {
         }
         if (switchOffValue != null) {
             list.add("switchOffValue");
+        }
+        if (currentDay != null) {
+            list.add("currentDay");
+        }
+        if (lastSevenDays != null) {
+            list.add("lastSevenDays");
+        }
+        if (currentMonth != null) {
+            list.add("currentMonth");
+        }
+        if (lastMonth != null) {
+            list.add("lastMonth");
+        }
+        if (currentYear != null) {
+            list.add("currentYear");
+        }
+        if (lastYear != null) {
+            list.add("lastYear");
         }
 
         return list;

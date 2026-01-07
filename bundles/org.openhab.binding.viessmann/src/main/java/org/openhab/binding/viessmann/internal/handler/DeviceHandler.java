@@ -766,6 +766,30 @@ public class DeviceHandler extends ViessmannThingHandler {
                         bool = v.getAsBoolean();
                     }
                     break;
+                case "currentDay":
+                    typeEntry = "power-energy";
+                    valueEntry = prop.currentDay.value.toString();
+                    break;
+                case "lastSevenDays":
+                    typeEntry = "power-energy";
+                    valueEntry = prop.lastSevenDays.value.toString();
+                    break;
+                case "currentMonth":
+                    typeEntry = "power-energy";
+                    valueEntry = prop.currentMonth.value.toString();
+                    break;
+                case "lastMonth":
+                    typeEntry = "power-energy";
+                    valueEntry = prop.lastMonth.value.toString();
+                    break;
+                case "currentYear":
+                    typeEntry = "power-energy";
+                    valueEntry = prop.currentYear.value.toString();
+                    break;
+                case "lastYear":
+                    typeEntry = "power-energy";
+                    valueEntry = prop.lastYear.value.toString();
+                    break;
                 default:
                     break;
             }
@@ -903,6 +927,7 @@ public class DeviceHandler extends ViessmannThingHandler {
                     case "watt-hour":
                     case "volt":
                     case "ampere":
+                    case "power-energy":
                         updateChannelState(msg.getChannelId(), msg.getValue(), unit);
                         break;
                     case "boolean":
