@@ -248,14 +248,11 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
             logger.debug("No available token or rriot values from sessionStorage, logging in");
             try {
                 if (localConfig.twofa.isBlank()) {
-                    if (!country.isBlank()) {
+                    if (country != null && !country.isEmpty()) {
                         String response = webTargets.requestCodeV4(baseUri, localConfig.email);
                     } else {
                         String response = webTargets.requestCode(baseUri, localConfig.email);
                     }
-                    Configuration configuration = editConfiguration();
-                    configuration.put("twofa", "");
-                    updateConfiguration(configuration);
                     updateStatus(ThingStatus.UNKNOWN);
                     return;
                 } else {
@@ -266,6 +263,9 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
                     } else {
                         response = webTargets.doLogin(baseUri, localConfig.email, localConfig.twofa);
                     }
+                    Configuration configuration = editConfiguration();
+                    configuration.put("twofa", "");
+                    updateConfiguration(configuration);
                     int code = 0;
                     String message = "";
                     if (response != null && !response.isEmpty()
