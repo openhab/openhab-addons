@@ -52,7 +52,7 @@ public class ShellyManagerCache<K, V> {
         return entry == null ? null : entry.value;
     }
 
-    public V put(K key, V value) {
+    public @Nullable V put(K key, V value) {
         CacheEntry<V> entry = new CacheEntry<>(System.currentTimeMillis(), value);
         synchronized (this) {
             entry = storage.put(key, entry);
@@ -86,9 +86,10 @@ public class ShellyManagerCache<K, V> {
     }
 
     private synchronized void cancelJob() {
+        ScheduledFuture<?> cleanupJob = this.cleanupJob;
         if (cleanupJob != null) {
             cleanupJob.cancel(true);
-            cleanupJob = null;
+            this.cleanupJob = null;
         }
     }
 
