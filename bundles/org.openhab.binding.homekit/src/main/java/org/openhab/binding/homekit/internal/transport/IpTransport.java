@@ -229,16 +229,15 @@ public class IpTransport implements AutoCloseable {
             } else {
                 OutputStream out = socket.getOutputStream();
                 InputStream in = socket.getInputStream();
-                // create Future to write the request (with a timeout)
+                // create Future to write the request (with a timeout), and wait for it to complete
                 Future<@Nullable Void> writeFuture = executor.submit(() -> {
                     out.write(request);
                     out.flush();
                     return null;
                 });
-                // create Future to read the response (with a timeout)
-                Future<byte[][]> readFuture = executor.submit(() -> readPlainResponse(in, trace));
-                // wait for both write and read to complete
                 writeFuture.get(TIMEOUT_MILLI_SECONDS, TimeUnit.MILLISECONDS);
+                // create Future to read the response (with a timeout), and wait for it to complete
+                Future<byte[][]> readFuture = executor.submit(() -> readPlainResponse(in, trace));
                 response = readFuture.get(TIMEOUT_MILLI_SECONDS, TimeUnit.MILLISECONDS);
             }
             earliestNextRequestTime = Instant.now().plus(MINIMUM_REQUEST_INTERVAL); // allow actual processing time
