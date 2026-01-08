@@ -127,53 +127,53 @@ public final class DailyJobSun extends AbstractJob {
 
             // schedule republish jobs
             if (sun.getZodiac().getEnd() instanceof Instant when) {
-                schedulePublishPlanet(handler, when, zone.toZoneId());
+                schedulePublishPlanet(handler, PUBLISH_ZODIAC_JOB, when, zone.toZoneId());
             }
 
             if (sun.getSeason() instanceof Season season) {
-                schedulePublishPlanet(handler, season.getNextSeason(), zone.toZoneId());
+                schedulePublishPlanet(handler, PUBLISH_SEASON_JOB, season.getNextSeason(), zone.toZoneId());
             }
 
             // schedule phase jobs
             Calendar cal = sun.getRise().getStart();
             if (cal != null) {
-                scheduleSunPhase(handler, SUN_RISE, cal, zone, locale);
+                scheduleSunPhase(handler, SUN_RISE.name(), SUN_RISE, cal, zone, locale);
             }
             cal = sun.getSet().getStart();
             if (cal != null) {
-                scheduleSunPhase(handler, SUN_SET, cal, zone, locale);
+                scheduleSunPhase(handler, SUN_SET.name(), SUN_SET, cal, zone, locale);
             }
             cal = (range = sun.getNight()) == null ? null : range.getStart();
             if (cal != null) {
-                scheduleSunPhase(handler, NIGHT, cal, zone, locale);
+                scheduleSunPhase(handler, NIGHT.name(), NIGHT, cal, zone, locale);
             }
             cal = (range = sun.getDaylight()) == null ? null : range.getStart();
             if (cal != null) {
-                scheduleSunPhase(handler, DAYLIGHT, cal, zone, locale);
+                scheduleSunPhase(handler, DAYLIGHT.name(), DAYLIGHT, cal, zone, locale);
             }
             cal = (range = sun.getAstroDawn()) == null ? null : range.getStart();
             if (cal != null) {
-                scheduleSunPhase(handler, ASTRO_DAWN, cal, zone, locale);
+                scheduleSunPhase(handler, ASTRO_DAWN.name(), ASTRO_DAWN, cal, zone, locale);
             }
             cal = (range = sun.getNauticDawn()) == null ? null : range.getStart();
             if (cal != null) {
-                scheduleSunPhase(handler, NAUTIC_DAWN, cal, zone, locale);
+                scheduleSunPhase(handler, NAUTIC_DAWN.name(), NAUTIC_DAWN, cal, zone, locale);
             }
             cal = (range = sun.getCivilDawn()) == null ? null : range.getStart();
             if (cal != null) {
-                scheduleSunPhase(handler, CIVIL_DAWN, cal, zone, locale);
+                scheduleSunPhase(handler, CIVIL_DAWN.name(), CIVIL_DAWN, cal, zone, locale);
             }
             cal = (range = sun.getAstroDusk()) == null ? null : range.getStart();
             if (cal != null) {
-                scheduleSunPhase(handler, ASTRO_DUSK, cal, zone, locale);
+                scheduleSunPhase(handler, ASTRO_DUSK.name(), ASTRO_DUSK, cal, zone, locale);
             }
             cal = (range = sun.getNauticDusk()) == null ? null : range.getStart();
             if (cal != null) {
-                scheduleSunPhase(handler, NAUTIC_DUSK, cal, zone, locale);
+                scheduleSunPhase(handler, NAUTIC_DUSK.name(), NAUTIC_DUSK, cal, zone, locale);
             }
             cal = (range = sun.getCivilDusk()) == null ? null : range.getStart();
             if (cal != null) {
-                scheduleSunPhase(handler, CIVIL_DUSK, cal, zone, locale);
+                scheduleSunPhase(handler, CIVIL_DUSK.name(), CIVIL_DUSK, cal, zone, locale);
             }
         } catch (Exception e) {
             LOGGER.warn("The daily sun job execution for \"{}\" failed: {}", handler.getThing().getUID(),

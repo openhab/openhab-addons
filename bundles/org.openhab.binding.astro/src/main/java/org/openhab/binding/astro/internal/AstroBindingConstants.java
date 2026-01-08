@@ -163,4 +163,11 @@ public final class AstroBindingConstants {
     public static final String EVENT_CHANNEL_ID_CIVIL_DUSK = "civilDusk#event";
     public static final String EVENT_CHANNEL_ID_EVENING_NIGHT = "eveningNight#event";
     public static final String EVENT_CHANNEL_ID_DAYLIGHT = "daylight#event";
+
+    // job identifiers
+
+    public static final String DAILY_JOB = "daily";
+    public static final String POSITIONAL_JOB = "positional";
+    public static final String PUBLISH_ZODIAC_JOB = "publishZodiac";
+    public static final String PUBLISH_SEASON_JOB = "publishSeason";
 }
