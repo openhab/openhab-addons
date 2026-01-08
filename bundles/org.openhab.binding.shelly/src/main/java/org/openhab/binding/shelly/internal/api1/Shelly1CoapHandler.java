@@ -242,7 +242,7 @@ public class Shelly1CoapHandler implements Shelly1CoapListener {
                         return;
                     }
                     if (coiotBound && coiotVers != iVersion) {
-                        logger.debug("{}: CoIoT versopm has changed from {} to {}, maybe the firmware was upgraded",
+                        logger.debug("{}: CoIoT version has changed from {} to {}, maybe the firmware was upgraded",
                                 thingName, coiotVers, iVersion);
                         thingHandler.reinitializeThing();
                         coiotBound = false;
@@ -268,15 +268,15 @@ public class Shelly1CoapHandler implements Shelly1CoapListener {
                     serial = opt.getIntegerValue();
                     break;
                 default:
-                    logger.debug("{} ({}): COAP option {} with value {} skipped", thingName, devId, opt.getNumber(),
+                    logger.debug("{} ({}): CoAP option {} with value {} skipped", thingName, devId, opt.getNumber(),
                             opt.getValue());
             }
         }
 
         // Don't change state to online when thing is in status config error
-        // (e.g. auth failed, but device sends COAP packets via multicast)
+        // (e.g. auth failed, but device sends CoAP packets via multicast)
         if (thingHandler.getThingStatusDetail() == ThingStatusDetail.CONFIGURATION_ERROR) {
-            logger.debug("{}: The device is not configuired correctly, skip Coap packet", thingName);
+            logger.debug("{}: The device is not configured correctly, skip CoAP packet", thingName);
             return;
         }
 
