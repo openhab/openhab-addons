@@ -15,7 +15,7 @@
 			<parameter name="ipAddress" type="text" required="true">
 				<context>network-address</context>
 				<label>IP Address</label>
-				<description>The IP address of the of the VBus-LAN gateway.</description>
+				<description>The IP address of the VBus-LAN gateway.</description>
 			</parameter>
 			<parameter name="port" type="integer" required="false" min="1024" max="65535">
 				<label>Live Data Port</label>

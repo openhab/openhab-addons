@@ -31,6 +31,7 @@
 			</parameter>
 			<parameter name="stationId" type="integer" required="true">
 				<label>Station Number</label>
+				<description>WMO station number</description>
 			</parameter>
 		</config-description>
 
@@ -89,8 +90,8 @@
 
 	<channel-type id="attenuation-factor" advanced="true">
 		<item-type>Number</item-type>
-		<label>Mitigation Factor</label>
-		<description>Cloud layer mitigation factor</description>
+		<label>Attenuation Factor</label>
+		<description>Cloud layer attenuation factor</description>
 		<category>sun_clouds</category>
 		<state readOnly="true" pattern="%.1f" max="1" min="0"/>
 	</channel-type>
