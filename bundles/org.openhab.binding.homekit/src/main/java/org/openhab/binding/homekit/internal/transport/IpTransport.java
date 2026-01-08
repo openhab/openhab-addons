@@ -22,13 +22,14 @@ import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Arrays;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -64,10 +65,21 @@ public class IpTransport implements AutoCloseable {
     private final String hostName;
     private final String ipAddress;
     private final EventListener eventListener;
+    private final AtomicBoolean awaitingHttpResponse = new AtomicBoolean(false);
+    private final SynchronousQueue<byte[][]> responseQueue = new SynchronousQueue<>();
+
+    /**
+     * SpotBugs makes a brain dead assertion that SynchronousQueue.poll() can never return a null result. This is wrong.
+     * According to the JavaDoc the method clearly returns null if the specified waiting time elapses before an element
+     * is available. So this is a silly wrapper around the call to trick SpotBugs into not making such false assertion.
+     */
+    private static byte @Nullable [][] sillySynchronousQueuePoll(SynchronousQueue<byte[][]> queue, long timeout,
+            TimeUnit unit) throws InterruptedException {
+        return queue.poll(timeout, unit);
+    }
 
     private volatile @Nullable SecureSession secureSession = null;
     private volatile @Nullable Thread readThread = null;
-    private volatile @Nullable CompletableFuture<byte[][]> readHttpResponseFuture = null;
 
     private boolean closing = false;
     private Instant earliestNextRequestTime = Instant.MIN;
@@ -186,56 +198,60 @@ public class IpTransport implements AutoCloseable {
      */
     private synchronized byte[] execute(String method, String endpoint, String contentType, byte[] content)
             throws IOException, InterruptedException, ExecutionException, IllegalStateException, TimeoutException {
-        byte[] request = buildRequest(method, endpoint, contentType, content);
+        try {
+            awaitingHttpResponse.set(true);
+            byte[] request = buildRequest(method, endpoint, contentType, content);
 
-        Duration delay = Duration.between(Instant.now(), earliestNextRequestTime);
-        if (delay.isPositive()) {
-            Thread.sleep(delay.toMillis()); // rate limit the HTTP requests
+            Duration delay = Duration.between(Instant.now(), earliestNextRequestTime);
+            if (delay.isPositive()) {
+                Thread.sleep(delay.toMillis()); // rate limit the HTTP requests
+            }
+
+            boolean trace = logger.isTraceEnabled();
+            if (trace) {
+                logger.trace("{} sending:\n{}", ipAddress, new String(request, StandardCharsets.ISO_8859_1));
+            }
+
+            byte[][] response; // 0 = headers, 1 = content, 2 = raw trace (if enabled)
+            earliestNextRequestTime = Instant.now().plus(MINIMUM_REQUEST_INTERVAL); // assume zero processing time
+            if (secureSession instanceof SecureSession secureSession) {
+                // create Future to write the request (with a timeout)
+                Future<@Nullable Void> writeFuture = executor.submit(() -> {
+                    secureSession.send(request);
+                    return null;
+                });
+                // wait for both write and read to complete
+                writeFuture.get(TIMEOUT_MILLI_SECONDS, TimeUnit.MILLISECONDS);
+                response = sillySynchronousQueuePoll(responseQueue, TIMEOUT_MILLI_SECONDS, TimeUnit.MILLISECONDS);
+                if (response == null) {
+                    throw new TimeoutException("Timed out waiting for HTTP response");
+                }
+            } else {
+                OutputStream out = socket.getOutputStream();
+                InputStream in = socket.getInputStream();
+                // create Future to write the request (with a timeout)
+                Future<@Nullable Void> writeFuture = executor.submit(() -> {
+                    out.write(request);
+                    out.flush();
+                    return null;
+                });
+                // create Future to read the response (with a timeout)
+                Future<byte[][]> readFuture = executor.submit(() -> readPlainResponse(in, trace));
+                // wait for both write and read to complete
+                writeFuture.get(TIMEOUT_MILLI_SECONDS, TimeUnit.MILLISECONDS);
+                response = readFuture.get(TIMEOUT_MILLI_SECONDS, TimeUnit.MILLISECONDS);
+            }
+            earliestNextRequestTime = Instant.now().plus(MINIMUM_REQUEST_INTERVAL); // allow actual processing time
+
+            if (response.length != 3) {
+                throw new IOException("Response must contain 3 arrays");
+            }
+
+            checkHeaders(response[0]);
+            return response[1];
+        } finally {
+            awaitingHttpResponse.set(false);
         }
-
-        boolean trace = logger.isTraceEnabled();
-        if (trace) {
-            logger.trace("{} sending:\n{}", ipAddress, new String(request, StandardCharsets.ISO_8859_1));
-        }
-
-        byte[][] response; // 0 = headers, 1 = content, 2 = raw trace (if enabled)
-        earliestNextRequestTime = Instant.now().plus(MINIMUM_REQUEST_INTERVAL); // assume zero processing time
-        if (secureSession instanceof SecureSession secureSession) {
-            // before we write request, create CompletableFuture to read response (with a timeout)
-            CompletableFuture<byte[][]> readFuture = new CompletableFuture<>();
-            readHttpResponseFuture = readFuture;
-            // create Future to write the request (with a timeout)
-            Future<@Nullable Void> writeFuture = executor.submit(() -> {
-                secureSession.send(request);
-                return null;
-            });
-            // now wait for both write and read to complete
-            writeFuture.get(TIMEOUT_MILLI_SECONDS, TimeUnit.MILLISECONDS);
-            response = readFuture.get(TIMEOUT_MILLI_SECONDS, TimeUnit.MILLISECONDS);
-        } else {
-            OutputStream out = socket.getOutputStream();
-            InputStream in = socket.getInputStream();
-            // create Future to write the request (with a timeout)
-            Future<@Nullable Void> writeFuture = executor.submit(() -> {
-                out.write(request);
-                out.flush();
-                return null;
-            });
-            // wait for write to complete
-            writeFuture.get(TIMEOUT_MILLI_SECONDS, TimeUnit.MILLISECONDS);
-            // create Future to read the response (with a timeout)
-            Future<byte[][]> readFuture = executor.submit(() -> readPlainResponse(in, trace));
-            // wait for read to complete
-            response = readFuture.get(TIMEOUT_MILLI_SECONDS, TimeUnit.MILLISECONDS);
-        }
-        earliestNextRequestTime = Instant.now().plus(MINIMUM_REQUEST_INTERVAL); // allow actual processing time
-
-        if (response.length != 3) {
-            throw new IOException("Response must contain 3 arrays");
-        }
-
-        checkHeaders(response[0]);
-        return response[1];
     }
 
     /**
@@ -337,9 +353,7 @@ public class IpTransport implements AutoCloseable {
             }
         }
         readThread = null;
-        if (readHttpResponseFuture instanceof CompletableFuture<byte[][]> readFuture) {
-            readFuture.complete(new byte[3][0]); // complete with an empty response
-        }
+        responseQueue.offer(new byte[3][0]); // unblock any waiting execute() call
         executor.shutdownNow();
         try {
             if (!executor.awaitTermination(500, TimeUnit.MILLISECONDS)) {
@@ -355,24 +369,24 @@ public class IpTransport implements AutoCloseable {
      *
      * @param response the received response as a 3D byte array
      */
-    private synchronized void handleResponse(byte[][] response) {
+    private void handleResponse(byte[][] response) {
         if (logger.isTraceEnabled()) { // don't build trace string if not needed
             logger.trace("{} received:\n{}", ipAddress, new String(response[2], StandardCharsets.ISO_8859_1));
         }
         String headers = new String(response[0], StandardCharsets.ISO_8859_1);
-        if (headers.startsWith("HTTP")) {
-            if (readHttpResponseFuture instanceof CompletableFuture<byte[][]> readFuture) {
-                readHttpResponseFuture = null;
-                readFuture.complete(response);
+        if (headers.startsWith("HTTP")) { // deliver HTTP responses to execute()
+            if (!responseQueue.offer(response)) {
+                logger.warn("{} received HTTP response but no thread was waiting", ipAddress);
             }
-        } else if (headers.startsWith("EVENT")) {
-            if (readHttpResponseFuture != null) {
+        } else if (headers.startsWith("EVENT")) { // deliver EVENT messages directly to listener
+            if (awaitingHttpResponse.get()) {
                 logger.warn("{} received EVENT while waiting for HTTP response", ipAddress);
             }
             String jsonContent = new String(response[1], StandardCharsets.UTF_8);
             eventListener.onEvent(jsonContent);
         } else {
             logger.warn("Unexpected response headers:\n{}", headers);
+            responseQueue.offer(new byte[3][0]); // unblock any waiting execute() call
         }
     }
 
@@ -411,10 +425,6 @@ public class IpTransport implements AutoCloseable {
                 }
             }
         }
-
-        if (readHttpResponseFuture instanceof CompletableFuture<byte[][]> readFuture) {
-            readHttpResponseFuture = null;
-            readFuture.completeExceptionally(new InterruptedException("Listener interrupted"));
-        }
+        responseQueue.offer(new byte[3][0]); // unblock any waiting execute() call
     }
 }
