@@ -52,6 +52,7 @@ This binding has its own IconProvider and makes available the following list of 
 | oh:astro:season-spring      |   Yes   | ![Spring](doc/images/season-spring.svg) |
 | oh:astro:season-summer      |   Yes   | ![Summer](doc/images/season-summer.svg) |
 | oh:astro:season-winter      |   Yes   | ![Winter](doc/images/season-winter.svg) |
+| oh:astro:sun_eclipse        |   Yes   | ![Sun Eclipse](doc/images/sun_eclipse.svg) |
 
 ## Channels
 
