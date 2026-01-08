@@ -17,32 +17,32 @@ import static org.openhab.binding.matter.internal.MatterBindingConstants.*;
 import javax.measure.Unit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.matter.internal.client.dto.cluster.gen.CarbonDioxideConcentrationMeasurementCluster;
+import org.openhab.binding.matter.internal.client.dto.cluster.gen.NitrogenDioxideConcentrationMeasurementCluster;
 import org.openhab.binding.matter.internal.handler.MatterBaseThingHandler;
 import org.openhab.core.library.unit.Units;
 
 /**
- * A converter for translating {@link CarbonDioxideConcentrationMeasurementCluster} events and attributes to openHAB
+ * A converter for translating {@link NitrogenDioxideConcentrationMeasurementCluster} events and attributes to openHAB
  * channels.
  *
  * @author Dan Cunningham - Initial contribution
  */
 @NonNullByDefault
-public class CarbonDioxideConcentrationMeasurementConverter
-        extends AbstractConcentrationMeasurementConverter<CarbonDioxideConcentrationMeasurementCluster> {
+public class NitrogenDioxideConcentrationMeasurementConverter
+        extends AbstractConcentrationMeasurementConverter<NitrogenDioxideConcentrationMeasurementCluster> {
 
-    public CarbonDioxideConcentrationMeasurementConverter(CarbonDioxideConcentrationMeasurementCluster cluster,
+    public NitrogenDioxideConcentrationMeasurementConverter(NitrogenDioxideConcentrationMeasurementCluster cluster,
             MatterBaseThingHandler handler, int endpointNumber, String labelPrefix) {
         super(cluster, handler, endpointNumber, labelPrefix,
-                CHANNEL_ID_CARBONDIOXIDECONCENTRATIONMEASUREMENT_MEASUREDVALUE,
+                CHANNEL_ID_NITROGENDIOXIDECONCENTRATIONMEASUREMENT_MEASUREDVALUE,
                 CHANNEL_CONCENTRATIONMEASUREMENT_MEASUREDVALUE,
-                CHANNEL_LABEL_CARBONDIOXIDECONCENTRATIONMEASUREMENT_MEASUREDVALUE,
-                CHANNEL_DESC_CARBONDIOXIDECONCENTRATIONMEASUREMENT_MEASUREDVALUE,
-                CHANNEL_ID_CARBONDIOXIDECONCENTRATIONMEASUREMENT_LEVELVALUE,
+                CHANNEL_LABEL_NITROGENDIOXIDECONCENTRATIONMEASUREMENT_MEASUREDVALUE,
+                CHANNEL_DESC_NITROGENDIOXIDECONCENTRATIONMEASUREMENT_MEASUREDVALUE,
+                CHANNEL_ID_NITROGENDIOXIDECONCENTRATIONMEASUREMENT_LEVELVALUE,
                 CHANNEL_CONCENTRATIONMEASUREMENT_LEVELVALUE,
-                CHANNEL_ID_CARBONDIOXIDECONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUE,
+                CHANNEL_ID_NITROGENDIOXIDECONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUE,
                 CHANNEL_CONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUE,
-                CHANNEL_ID_CARBONDIOXIDECONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUE,
+                CHANNEL_ID_NITROGENDIOXIDECONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUE,
                 CHANNEL_CONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUE);
     }
 
