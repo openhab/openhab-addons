@@ -578,7 +578,7 @@
 	<channel-type id="cubic-meter-per-hour">
 		<item-type unitHint="m³/h">Number:VolumetricFlowRate</item-type>
 		<label>Cubic Meters Per Hour</label>
-		<category>Number</category>
+		<category>Flow</category>
 		<tags>
 			<tag>Measurement</tag>
 		</tags>
