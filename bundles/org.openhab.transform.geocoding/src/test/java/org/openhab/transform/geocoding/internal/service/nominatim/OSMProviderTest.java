@@ -65,20 +65,20 @@ class OSMProviderTest {
                         PointType.valueOf("0,1"), false, ""), //
                 Arguments.of("nominatim-osm", null, 200, readFile("src/test/resources/geo-reverse-result.json"),
                         PointType.valueOf("0,1"), true, "Am Friedrichshain 22, 10407 Berlin Pankow"), //
-                Arguments.of("nominatim-osm", US_ADDRESS_FORMAT, 200,
+                Arguments.of("nominatim-osm", FORMAT_ADDRESS_US, 200,
                         readFile("src/test/resources/geo-reverse-nyc.json"), PointType.valueOf("0,1"), true,
                         "6 West 23rd Street, City of New York Manhattan 10010"), //
-                Arguments.of("nominatim-osm", JSON_FORMAT, 200, readFile("src/test/resources/geo-reverse-result.json"),
+                Arguments.of("nominatim-osm", FORMAT_JSON, 200, readFile("src/test/resources/geo-reverse-result.json"),
                         PointType.valueOf("0,1"), true,
                         (new JSONObject(readFile("src/test/resources/geo-reverse-result.json")))
                                 .getJSONObject(ADDRESS_KEY).toString()), //
                 Arguments.of("nominatim-osm", null, 200, readFile("src/test/resources/geo-reverse-result-no-road.json"),
                         PointType.valueOf("0,1"), true, "10407 Berlin Pankow"), //
                 Arguments.of("nominatim-osm", null, 400, "", new StringType("Not necessary"), false, ""), //
-                Arguments.of("nominatim-osm", null, 200, "Inavlid response", new StringType("Not necessary"), false,
+                Arguments.of("nominatim-osm", null, 200, "Invalid response", new StringType("Not necessary"), false,
                         ""), //
                 Arguments.of("nominatim-osm", null, 200, "[]", new StringType("Not necessary"), false, ""), //
-                Arguments.of("nominatim-osm", US_ADDRESS_FORMAT, 200,
+                Arguments.of("nominatim-osm", FORMAT_ADDRESS_US, 200,
                         readFile("src/test/resources/geo-search-result.json"), new StringType("Not necessary"), true,
                         "52.5252949,13.3706843") //
         );

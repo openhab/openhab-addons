@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * The {@link BaseGeoResolver} abstract class is a helper to extend this transformation service with new providers
- * without affecting the Profile itsself.
+ * without affecting the Profile itself.
  *
  * @author Bernd Weymann - Initial contribution
  */
@@ -64,7 +64,7 @@ public abstract class BaseGeoResolver {
         this.httpClient = httpClient;
         userAgentSupplier = this::getUserAgent;
         this.toBeResolved = toBeResolved;
-        // evaluate which state type is given to decide if it's a geocoding or reverse geocoding requets
+        // evaluate which state type is given to decide if it's a geocoding or reverse geocoding requests
         if (toBeResolved instanceof StringType stringType) {
             geoSearchString = stringType.toFullString();
         } else if (toBeResolved instanceof PointType pointType) {

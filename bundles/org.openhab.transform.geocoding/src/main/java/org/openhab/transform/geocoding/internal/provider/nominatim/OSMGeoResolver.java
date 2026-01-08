@@ -40,7 +40,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link OSMGeoResolver} is the reverse geocding resolver for Nomination / OpenStreetMap API. Given
+ * The {@link OSMGeoResolver} is the reverse geocoding resolver for Nomination / OpenStreetMap API. Given
  * geo coordinates will be resolved into a human readable address string.
  *
  * @author Bernd Weymann - Initial contribution
@@ -137,17 +137,17 @@ public class OSMGeoResolver extends BaseGeoResolver {
             JSONObject jsonObject = new JSONObject(jsonResponse);
             String resolvedAddress;
             switch (config.format) {
-                case ROW_ADDRESS_FORMAT:
+                case FORMAT_ADDRESS_ROW:
                     resolvedAddress = decodeAddress(jsonObject, ROAD_KEYS, HOUSE_NUMBER_KEYS, ZIP_CODE_KEYS, CITY_KEYS,
                             DISTRICT_KEYS);
                     return resolvedAddress.isBlank() ? decodeJson(jsonObject) : resolvedAddress;
-                case US_ADDRESS_FORMAT:
+                case FORMAT_ADDRESS_US:
                     resolvedAddress = decodeAddress(jsonObject, HOUSE_NUMBER_KEYS, ROAD_KEYS, CITY_KEYS, DISTRICT_KEYS,
                             ZIP_CODE_KEYS);
                     return resolvedAddress.isBlank() ? decodeJson(jsonObject) : resolvedAddress;
-                case JSON_FORMAT:
+                case FORMAT_JSON:
                     return decodeJson(jsonObject);
-                case RAW_FORMAT:
+                case FORMAT_RAW:
                     return jsonObject.toString();
                 default:
                     return decodeJson(jsonObject);

@@ -12,13 +12,17 @@
  */
 package org.openhab.binding.shelly.internal.manager;
 
-import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.Map.Entry;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.shelly.internal.ShellyBindingConstants;
+import org.openhab.core.common.ThreadPoolManager;
 
 /**
  * {@link ShellyManagerCache} implements a cache with expiring times of the entries
@@ -26,82 +30,70 @@ import org.openhab.binding.shelly.internal.ShellyBindingConstants;
  * @author Markus Michels - Initial contribution
  */
 @NonNullByDefault
-public class ShellyManagerCache<K, V> extends ConcurrentHashMap<K, V> {
+public class ShellyManagerCache<K, V> {
+    protected final ScheduledExecutorService scheduler = ThreadPoolManager.getScheduledPool("ShellyManagerThreadpool");
+    private static final long EXPIRY_IN_MILLIS = 15 * 60 * 1000; // 15min
 
-    private static final long serialVersionUID = 1L;
+    private record CacheEntry<V> (Long created, V value) {
+    }
 
-    private Map<K, Long> timeMap = new ConcurrentHashMap<>();
-    private long expiryInMillis = ShellyManagerConstants.CACHE_TIMEOUT_DEF_MIN * 60 * 1000; // Default 1h
+    // Non-thread-safe HashMap: all access to 'storage' is synchronized on this instance
+    private final @NonNullByDefault({}) Map<K, CacheEntry<V>> storage = new HashMap<>();
+
+    // All access must be guarded by "this"
+    private @Nullable ScheduledFuture<?> cleanupJob;
 
     public ShellyManagerCache() {
-        initialize();
     }
 
-    public ShellyManagerCache(long expiryInMillis) {
-        this.expiryInMillis = expiryInMillis;
-        initialize();
+    @Nullable
+    public synchronized V get(K key) {
+        CacheEntry<V> entry = storage.get(key);
+        return entry == null ? null : entry.value;
     }
 
-    void initialize() {
-        new CleanerThread().start();
-    }
-
-    @Override
     public V put(K key, V value) {
-        Date date = new Date();
-        timeMap.put(key, date.getTime());
-        return super.put(key, value);
+        CacheEntry<V> entry = new CacheEntry<>(System.currentTimeMillis(), value);
+        synchronized (this) {
+            entry = storage.put(key, entry);
+            startJob(); // start background cleanup
+        }
+        return entry == null ? null : value;
     }
 
-    @Override
-    public void putAll(@Nullable Map<? extends K, ? extends V> m) {
-        if (m == null) {
-            throw new IllegalArgumentException();
-        }
-        for (K key : m.keySet()) {
-            @Nullable
-            V value = m.get(key);
-            if (key != null && value != null) { // don't allow null values
-                put(key, value);
-            }
+    private synchronized void startJob() {
+        if (cleanupJob == null) {
+            cleanupJob = scheduler.scheduleWithFixedDelay(this::cleanupMap, EXPIRY_IN_MILLIS, EXPIRY_IN_MILLIS,
+                    TimeUnit.MILLISECONDS);
         }
     }
 
-    @Override
-    public V putIfAbsent(K key, V value) {
-        if (!containsKey(key)) {
-            return put(key, value);
-        } else {
-            return get(key);
-        }
-    }
-
-    class CleanerThread extends Thread {
-
-        public CleanerThread() {
-            super(String.format("OH-binding-%s-%s", ShellyBindingConstants.BINDING_ID, "Cleaner"));
-        }
-
-        @Override
-        public void run() {
-            while (true) {
-                cleanMap();
-                try {
-                    Thread.sleep(expiryInMillis / 2);
-                } catch (InterruptedException e) {
+    private void cleanupMap() {
+        long currentTime = System.currentTimeMillis();
+        Entry<K, CacheEntry<V>> entry;
+        synchronized (this) {
+            for (Iterator<Entry<K, CacheEntry<V>>> iterator = storage.entrySet().iterator(); iterator.hasNext();) {
+                entry = iterator.next();
+                if (currentTime > (entry.getValue().created.longValue() + EXPIRY_IN_MILLIS)) {
+                    iterator.remove();
                 }
             }
-        }
 
-        private void cleanMap() {
-            long currentTime = new Date().getTime();
-            for (K key : timeMap.keySet()) {
-                Long timeValue = timeMap.get(key);
-                if (key != null && (timeValue == null || currentTime > (timeValue + expiryInMillis))) {
-                    remove(key);
-                    timeMap.remove(key);
-                }
+            if (storage.isEmpty()) {
+                cancelJob(); // stop background cleanup
             }
         }
+    }
+
+    private synchronized void cancelJob() {
+        if (cleanupJob != null) {
+            cleanupJob.cancel(true);
+            cleanupJob = null;
+        }
+    }
+
+    public synchronized void dispose() {
+        cancelJob();
+        storage.clear();
     }
 }

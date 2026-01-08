@@ -28,7 +28,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.astro.internal.model.Eclipse;
 import org.openhab.binding.astro.internal.model.EclipseType;
 import org.openhab.binding.astro.internal.model.Position;
-import org.openhab.binding.astro.internal.model.Radiation;
 import org.openhab.binding.astro.internal.model.Range;
 import org.openhab.binding.astro.internal.model.Season;
 import org.openhab.binding.astro.internal.model.Sun;
@@ -45,9 +44,6 @@ import org.openhab.binding.astro.internal.util.MathUtils;
  */
 @NonNullByDefault
 public class SunCalc {
-    private static final double J2000 = 2451545.0;
-    private static final double SC = 1367; // Solar constant in W/m²
-
     private static final double M0 = Math.toRadians(357.5291);
     private static final double M1 = Math.toRadians(0.98560028);
     private static final double J0 = 0.0009;
@@ -93,37 +89,6 @@ public class SunCalc {
         position.setAzimuth(azimuth + 180);
         position.setElevation(elevation);
         position.setShadeLength(shadeLength);
-
-        setRadiationInfo(calendar, elevation, altitude, sun);
-    }
-
-    /**
-     * Calculates sun radiation data.
-     */
-    private void setRadiationInfo(Calendar calendar, double elevation, @Nullable Double altitude, Sun sun) {
-        double sinAlpha = MathUtils.sinDeg(elevation);
-
-        int dayOfYear = calendar.get(Calendar.DAY_OF_YEAR);
-        int daysInYear = calendar.getActualMaximum(Calendar.DAY_OF_YEAR);
-
-        // Direct Solar Radiation (in W/m²) at the atmosphere entry
-        // At sunrise/sunset - calculations limits are reached
-        double rOut = (elevation > 3) ? SC * (0.034 * MathUtils.cosDeg(360 * dayOfYear / daysInYear) + 1) : 0;
-        double altitudeRatio = (altitude != null) ? 1 / Math.pow((1 - (6.5 / 288) * (altitude / 1000.0)), 5.256) : 1;
-        double m = (Math.sqrt(1229 + Math.pow(614 * sinAlpha, 2)) - 614 * sinAlpha) * altitudeRatio;
-
-        // Direct radiation after atmospheric layer
-        // 0.6 = Coefficient de transmissivité
-        double rDir = rOut * Math.pow(0.6, m) * sinAlpha;
-
-        // Diffuse Radiation
-        double rDiff = rOut * (0.271 - 0.294 * Math.pow(0.6, m)) * sinAlpha;
-        double rTot = rDir + rDiff;
-
-        Radiation radiation = sun.getRadiation();
-        radiation.setDirect(rDir);
-        radiation.setDiffuse(rDiff);
-        radiation.setTotal(rTot);
     }
 
     /**
@@ -306,15 +271,15 @@ public class SunCalc {
     // all the following methods are translated to java based on the javascript
     // calculations of http://www.suncalc.net
     private double getJulianCycle(double j, double lw) {
-        return Math.round(j - J2000 - J0 - lw / MathUtils.TWO_PI);
+        return Math.round(j - DateTimeUtils.JD_J2000 - J0 - lw / MathUtils.TWO_PI);
     }
 
     private double getApproxSolarTransit(double ht, double lw, double n) {
-        return J2000 + J0 + (ht + lw) / MathUtils.TWO_PI + n;
+        return DateTimeUtils.JD_J2000 + J0 + (ht + lw) / MathUtils.TWO_PI + n;
     }
 
     private double getSolarMeanAnomaly(double js) {
-        return M0 + M1 * (js - J2000);
+        return M0 + M1 * (js - DateTimeUtils.JD_J2000);
     }
 
     private double getEquationOfCenter(double m) {
@@ -338,7 +303,7 @@ public class SunCalc {
     }
 
     private double getSiderealTime(double j, double lw) {
-        return TH0 + TH1 * (j - J2000) - lw;
+        return TH0 + TH1 * (j - DateTimeUtils.JD_J2000) - lw;
     }
 
     private double getAzimuth(double th, double a, double phi, double d) {

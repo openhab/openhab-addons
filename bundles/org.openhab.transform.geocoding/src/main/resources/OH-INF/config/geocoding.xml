@@ -8,6 +8,7 @@
 		<parameter name="provider" type="text" required="false">
 			<label>Geocoding Provider</label>
 			<description>Provider which is used to execute geocoding requests</description>
+			<limitToOptions>true</limitToOptions>
 			<default>nominatim-osm</default>
 			<options>
 				<option value="nominatim-osm">Nominatim / OpenStreetMap</option>
@@ -22,10 +23,10 @@
 			<label>Address Format</label>
 			<description>Country specific address formatting</description>
 			<limitToOptions>true</limitToOptions>
-			<default>row_address</default>
+			<default>address_row</default>
 			<options>
-				<option value="row_address">Rest of World Address Format</option>
-				<option value="us_address">US/UK Address Format</option>
+				<option value="address_row">Address Format Rest of World</option>
+				<option value="address_us">Address Format US/UK</option>
 				<option value="json">JSON encoded</option>
 			</options>
 		</parameter>

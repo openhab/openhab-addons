@@ -71,10 +71,7 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
     private final Logger logger = LoggerFactory.getLogger(HomematicTypeGeneratorImpl.class);
     private static URI configDescriptionUriChannel;
 
-    private HomematicThingTypeProvider thingTypeProvider;
-    private HomematicChannelTypeProvider channelTypeProvider;
-    private HomematicChannelGroupTypeProvider channelGroupTypeProvider;
-    private HomematicConfigDescriptionProvider configDescriptionProvider;
+    private HomematicTypeProvider typeProvider;
     private final Map<String, Set<String>> firmwaresByType = new HashMap<>();
 
     private static final String[] IGNORE_DATAPOINT_NAMES = new String[] { DATAPOINT_NAME_AES_KEY,
@@ -90,39 +87,12 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
     }
 
     @Reference
-    protected void setThingTypeProvider(HomematicThingTypeProvider thingTypeProvider) {
-        this.thingTypeProvider = thingTypeProvider;
+    protected void setTypeProvider(HomematicTypeProvider typeProvider) {
+        this.typeProvider = typeProvider;
     }
 
-    protected void unsetThingTypeProvider(HomematicThingTypeProvider thingTypeProvider) {
-        this.thingTypeProvider = null;
-    }
-
-    @Reference
-    protected void setChannelTypeProvider(HomematicChannelTypeProvider channelTypeProvider) {
-        this.channelTypeProvider = channelTypeProvider;
-    }
-
-    protected void unsetChannelTypeProvider(HomematicChannelTypeProvider channelTypeProvider) {
-        this.channelTypeProvider = null;
-    }
-
-    @Reference
-    protected void setChannelGroupTypeProvider(HomematicChannelGroupTypeProvider channelGroupTypeProvider) {
-        this.channelGroupTypeProvider = channelGroupTypeProvider;
-    }
-
-    protected void unsetChannelGroupTypeProvider(HomematicChannelGroupTypeProvider channelGroupTypeProvider) {
-        this.channelGroupTypeProvider = null;
-    }
-
-    @Reference
-    protected void setConfigDescriptionProvider(HomematicConfigDescriptionProvider configDescriptionProvider) {
-        this.configDescriptionProvider = configDescriptionProvider;
-    }
-
-    protected void unsetConfigDescriptionProvider(HomematicConfigDescriptionProvider configDescriptionProvider) {
-        this.configDescriptionProvider = null;
+    protected void unsetTypeProvider(HomematicTypeProvider typeProvider) {
+        this.typeProvider = null;
     }
 
     @Override
@@ -133,9 +103,9 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
 
     @Override
     public void generate(HmDevice device) {
-        if (thingTypeProvider != null) {
+        if (typeProvider != null) {
             ThingTypeUID thingTypeUID = UidUtils.generateThingTypeUID(device);
-            ThingType tt = thingTypeProvider.getInternalThingType(thingTypeUID);
+            ThingType tt = typeProvider.getThingType(thingTypeUID, null);
 
             if (tt == null || device.isGatewayExtras()) {
                 logger.debug("Generating ThingType for device '{}' with {} datapoints", device.getType(),
@@ -151,10 +121,10 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
                         for (HmDatapoint dp : channel.getDatapoints()) {
                             if (!isIgnoredDatapoint(dp) && dp.getParamsetType() == HmParamsetType.VALUES) {
                                 ChannelTypeUID channelTypeUID = UidUtils.generateChannelTypeUID(dp);
-                                ChannelType channelType = channelTypeProvider.getInternalChannelType(channelTypeUID);
+                                ChannelType channelType = typeProvider.getChannelType(channelTypeUID, null);
                                 if (channelType == null) {
                                     channelType = createChannelType(dp, channelTypeUID);
-                                    channelTypeProvider.addChannelType(channelType);
+                                    typeProvider.putChannelType(channelType);
                                 }
 
                                 ChannelDefinition channelDef = new ChannelDefinitionBuilder(dp.getName(),
@@ -166,19 +136,19 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
 
                     // generate group
                     ChannelGroupTypeUID groupTypeUID = UidUtils.generateChannelGroupTypeUID(channel);
-                    ChannelGroupType groupType = channelGroupTypeProvider.getInternalChannelGroupType(groupTypeUID);
+                    ChannelGroupType groupType = typeProvider.getChannelGroupType(groupTypeUID, null);
                     if (groupType == null || device.isGatewayExtras()) {
                         String groupLabel = String.format("%s", channel.getType() == null ? null
                                 : MiscUtils.capitalize(channel.getType().replace("_", " ")));
                         groupType = ChannelGroupTypeBuilder.instance(groupTypeUID, groupLabel)
                                 .withChannelDefinitions(channelDefinitions).build();
-                        channelGroupTypeProvider.addChannelGroupType(groupType);
+                        typeProvider.putChannelGroupType(groupType);
                         groupTypes.add(groupType);
                     }
 
                 }
                 tt = createThingType(device, groupTypes);
-                thingTypeProvider.addThingType(tt);
+                typeProvider.putThingType(tt);
             }
             addFirmware(device);
         }
@@ -229,7 +199,7 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
         properties.put(Thing.PROPERTY_MODEL_ID, device.getType());
 
         URI configDescriptionURI = getConfigDescriptionURI(device);
-        if (configDescriptionProvider.getInternalConfigDescription(configDescriptionURI) == null) {
+        if (typeProvider.getConfigDescription(configDescriptionURI, null) == null) {
             generateConfigDescription(device, configDescriptionURI);
         }
 
@@ -368,8 +338,8 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
                 }
             }
         }
-        configDescriptionProvider.addConfigDescription(ConfigDescriptionBuilder.create(configDescriptionURI)
-                .withParameters(parms).withParameterGroups(groups).build());
+        typeProvider.putConfigDescription(ConfigDescriptionBuilder.create(configDescriptionURI).withParameters(parms)
+                .withParameterGroups(groups).build());
     }
 
     private URI getConfigDescriptionURI(HmDevice device) {
