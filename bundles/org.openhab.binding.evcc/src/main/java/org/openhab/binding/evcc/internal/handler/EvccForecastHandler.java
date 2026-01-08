@@ -150,6 +150,9 @@ public class EvccForecastHandler extends EvccBaseThingHandler {
         TimeSeries timeSeries = new TimeSeries(TimeSeries.Policy.REPLACE);
         String thingKey = getThingKey(subType);
         ChannelUID channelUID = new ChannelUID(thing.getUID(), thingKey);
+        if (!isLinked(channelUID)) {
+            return;
+        }
         for (JsonElement data : forecastArray) {
             if (data instanceof JsonObject dataObj) {
                 Optional.ofNullable(stateResolver).ifPresent(resolver -> {
@@ -173,8 +176,12 @@ public class EvccForecastHandler extends EvccBaseThingHandler {
             }
         }
         if (timeSeries.size() > 0) {
-            State firstState = timeSeries.getStates().findFirst().orElseThrow().state();
-            updateState(channelUID, firstState);
+            Instant now = Instant.now();
+            List<TimeSeries.Entry> entries = timeSeries.getStates()
+                    .sorted(Comparator.comparing(TimeSeries.Entry::timestamp)).toList();
+            TimeSeries.Entry currentEntry = entries.stream().filter(e -> !e.timestamp().isAfter(now))
+                    .reduce((a, b) -> b).orElse(entries.get(0));
+            Optional.ofNullable(currentEntry).ifPresent(e -> updateState(channelUID, e.state()));
         }
         sendTimeSeries(channelUID, timeSeries);
     }
