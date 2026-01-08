@@ -18,15 +18,10 @@ import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
-
-import javax.measure.Unit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -287,8 +282,8 @@ public class ShellyChannelDefinitions {
     }
 
     public static @Nullable ShellyChannel getDefinition(String channelName) throws IllegalArgumentException {
-        String group = substringBefore(channelName, "#");
-        String channel = substringAfter(channelName, "#");
+        String group = substringBefore(channelName, ChannelUID.CHANNEL_GROUP_SEPARATOR);
+        String channel = substringAfter(channelName, ChannelUID.CHANNEL_GROUP_SEPARATOR);
 
         if (group.startsWith(CHANNEL_GROUP_METER)) {
             group = CHANNEL_GROUP_METER; // map meter1..n to meter
@@ -310,7 +305,7 @@ public class ShellyChannelDefinitions {
             channel = CHANNEL_STATUS_EVENTCOUNT;
         }
 
-        String channelId = group + "#" + channel;
+        String channelId = group + ChannelUID.CHANNEL_GROUP_SEPARATOR + channel;
         return CHANNEL_DEFINITIONS.get(channelId);
     }
 
@@ -655,7 +650,7 @@ public class ShellyChannelDefinitions {
     private static void addChannel(Thing thing, Map<String, Channel> newChannels, boolean supported, String group,
             String channelName) throws IllegalArgumentException {
         if (supported) {
-            String channelId = group + "#" + channelName;
+            String channelId = group + ChannelUID.CHANNEL_GROUP_SEPARATOR + channelName;
             ChannelUID channelUID = new ChannelUID(thing.getUID(), channelId);
             ShellyChannel channelDef = getDefinition(channelId);
             if (channelDef != null) {
@@ -707,24 +702,14 @@ public class ShellyChannelDefinitions {
         }
     }
 
-    public class ShellyChannel {
+    private class ShellyChannel {
         private final ShellyTranslationProvider messages;
-        public String group = "";
-        public String groupLabel = "";
-        public String groupDescription = "";
-
-        public String channel = "";
-        public String label = "";
-        public String description = "";
-        public String itemType = "";
-        public String typeId = "";
-        public String category = "";
-        public Set<String> tags = new HashSet<>();
-        public @Nullable Unit<?> unit;
-        public Optional<Integer> min = Optional.empty();
-        public Optional<Integer> max = Optional.empty();
-        public Optional<Integer> step = Optional.empty();
-        public Optional<String> pattern = Optional.empty();
+        private final String group;
+        private final String channel;
+        private final String label;
+        private final String description;
+        private final String itemType;
+        private final String typeId;
 
         public ShellyChannel(ShellyTranslationProvider messages, String group, String channel, String typeId,
                 String itemType, String... category) {
@@ -734,84 +719,15 @@ public class ShellyChannelDefinitions {
             this.itemType = itemType;
             this.typeId = typeId;
 
-            groupLabel = getText(PREFIX_GROUP + group + ".label");
-            if (groupLabel.startsWith(PREFIX_GROUP)) {
-                groupLabel = "";
-            }
-            groupDescription = getText(PREFIX_GROUP + group + ".description");
-            if (groupDescription.startsWith(PREFIX_GROUP)) {
-                groupDescription = "";
-            }
-            label = getText(PREFIX_CHANNEL + typeId.replace(':', '.') + ".label");
-            if (label.startsWith(PREFIX_CHANNEL)) {
-                label = "";
-            }
-            description = getText(PREFIX_CHANNEL + typeId + ".description");
-            if (description.startsWith(PREFIX_CHANNEL)) {
-                description = ""; // no resource found
-            }
+            String text = getText(PREFIX_CHANNEL + typeId.replace(':', '.') + ".label");
+            label = text.startsWith(PREFIX_CHANNEL) ? "" : text;
+
+            text = getText(PREFIX_CHANNEL + typeId + ".description");
+            description = text.startsWith(PREFIX_CHANNEL) ? "" : text;
         }
 
-        public String getChanneId() {
-            return group + "#" + channel;
-        }
-
-        public String getGroupLabel() {
-            return getGroupAttribute("group");
-        }
-
-        public String getGroupDescription() {
-            return getGroupAttribute("group");
-        }
-
-        public String getLabel() {
-            return getChannelAttribute("label");
-        }
-
-        public String getDescription() {
-            return getChannelAttribute("description");
-        }
-
-        public boolean getAdvanced() {
-            String attr = getChannelAttribute("advanced");
-            return attr.isEmpty() ? false : Boolean.valueOf(attr);
-        }
-
-        public boolean getReadyOnly() {
-            String attr = getChannelAttribute("readOnly");
-            return attr.isEmpty() ? false : Boolean.valueOf(attr);
-        }
-
-        public String getCategory() {
-            return getChannelAttribute("category");
-        }
-
-        public String getMin() {
-            return getChannelAttribute("min");
-        }
-
-        public String getMax() {
-            return getChannelAttribute("max");
-        }
-
-        public String getStep() {
-            return getChannelAttribute("step");
-        }
-
-        public String getPattern() {
-            return getChannelAttribute("pattern");
-        }
-
-        public String getGroupAttribute(String attribute) {
-            String key = PREFIX_GROUP + group + "." + attribute;
-            String value = messages.getText(key);
-            return !value.equals(key) ? value : "";
-        }
-
-        public String getChannelAttribute(String attribute) {
-            String key = PREFIX_CHANNEL + channel + "." + attribute;
-            String value = messages.getText(key);
-            return !value.equals(key) ? value : "";
+        public String getChannelId() {
+            return group + ChannelUID.CHANNEL_GROUP_SEPARATOR + channel;
         }
 
         private String getText(String key) {
@@ -823,20 +739,20 @@ public class ShellyChannelDefinitions {
         private final Map<String, ShellyChannel> map = new HashMap<>();
 
         private ChannelMap add(ShellyChannel def) {
-            map.put(def.getChanneId(), def);
+            map.put(def.getChannelId(), def);
             return this;
         }
 
         public ShellyChannel get(String channelName) throws IllegalArgumentException {
             ShellyChannel def = null;
-            if (channelName.contains("#")) {
+            if (channelName.contains(ChannelUID.CHANNEL_GROUP_SEPARATOR)) {
                 def = map.get(channelName);
                 if (def != null) {
                     return def;
                 }
             }
             for (HashMap.Entry<String, ShellyChannel> entry : map.entrySet()) {
-                if (entry.getValue().channel.contains("#" + channelName)) {
+                if (entry.getValue().channel.contains(ChannelUID.CHANNEL_GROUP_SEPARATOR + channelName)) {
                     def = entry.getValue();
                     break;
                 }
