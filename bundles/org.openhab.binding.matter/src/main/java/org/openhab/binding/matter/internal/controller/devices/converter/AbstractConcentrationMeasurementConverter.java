@@ -317,8 +317,7 @@ public abstract class AbstractConcentrationMeasurementConverter<T extends BaseCl
     }
 
     /**
-     * Helper method to get any attribute from the cluster using reflection.
-     * This is used only used in initState() to get the initial value of the attributes.
+     * Helper method to get any attribute from the cluster.
      */
     @Nullable
     protected Object getClusterAttribute(String attributeName) {
@@ -334,7 +333,6 @@ public abstract class AbstractConcentrationMeasurementConverter<T extends BaseCl
     /**
      * Extracts the integer value from a Matter enum object (LevelValueEnum, MeasurementUnitEnum, etc.).
      * 
-     * This is used only used in initState() to get the initial value of the attributes.
      */
     @Nullable
     protected Integer getEnumValue(Object enumValue) {
