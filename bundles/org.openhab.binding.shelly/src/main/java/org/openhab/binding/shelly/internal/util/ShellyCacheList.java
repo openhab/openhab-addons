@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.shelly.internal.manager;
+package org.openhab.binding.shelly.internal.util;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -25,14 +25,17 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.common.ThreadPoolManager;
 
 /**
- * {@link ShellyManagerCache} implements a cache with expiring times of the entries
+ * {@link ShellyCacheList} implements a cache with expiring times of the entries
  *
  * @author Markus Michels - Initial contribution
+ * @author Jacob Laursen - Refacoring to make it error prune and thread safe
  */
 @NonNullByDefault
-public class ShellyManagerCache<K, V> {
-    protected final ScheduledExecutorService scheduler = ThreadPoolManager.getScheduledPool("ShellyManagerThreadpool");
-    private static final long EXPIRY_IN_MILLIS = 15 * 60 * 1000; // 15min
+public class ShellyCacheList<K, V> {
+    protected final ScheduledExecutorService scheduler = ThreadPoolManager
+            .getScheduledPool("ShellyCacheListThreadpool");
+    private static final long EXPIRY_IN_SEC = 15 * 60; // 15min
+    private long experyInSec;
 
     private record CacheEntry<V> (Long created, V value) {
     }
@@ -43,7 +46,12 @@ public class ShellyManagerCache<K, V> {
     // All access must be guarded by "this"
     private @Nullable ScheduledFuture<?> cleanupJob;
 
-    public ShellyManagerCache() {
+    public ShellyCacheList() {
+        experyInSec = EXPIRY_IN_SEC;
+    }
+
+    public ShellyCacheList(long experyInSec) {
+        this.experyInSec = experyInSec;
     }
 
     @Nullable
@@ -63,8 +71,7 @@ public class ShellyManagerCache<K, V> {
 
     private synchronized void startJob() {
         if (cleanupJob == null) {
-            cleanupJob = scheduler.scheduleWithFixedDelay(this::cleanupMap, EXPIRY_IN_MILLIS, EXPIRY_IN_MILLIS,
-                    TimeUnit.MILLISECONDS);
+            cleanupJob = scheduler.scheduleWithFixedDelay(this::cleanupMap, experyInSec, experyInSec, TimeUnit.SECONDS);
         }
     }
 
@@ -74,7 +81,7 @@ public class ShellyManagerCache<K, V> {
         synchronized (this) {
             for (Iterator<Entry<K, CacheEntry<V>>> iterator = storage.entrySet().iterator(); iterator.hasNext();) {
                 entry = iterator.next();
-                if (currentTime > (entry.getValue().created.longValue() + EXPIRY_IN_MILLIS)) {
+                if (currentTime > (entry.getValue().created.longValue() + experyInSec * 1000)) {
                     iterator.remove();
                 }
             }

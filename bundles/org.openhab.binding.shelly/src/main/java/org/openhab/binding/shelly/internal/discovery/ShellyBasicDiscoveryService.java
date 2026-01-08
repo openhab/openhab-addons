@@ -127,8 +127,9 @@ public class ShellyBasicDiscoveryService extends AbstractDiscoveryService {
         Map<String, Object> properties = new TreeMap<>();
 
         try {
-            ShellyThingConfiguration config = fillConfig(bindingConfig, ipAddress);
+            ShellyThingConfiguration config = fillConfig(bindingConfig, ipAddress, name);
             api = gen2 ? new Shelly2ApiRpc(name, config, httpClient) : new Shelly1HttpApi(name, config, httpClient);
+            api.setConfig(name, config);
             api.initialize();
             devInfo = api.getDeviceInfo();
             mac = getString(devInfo.mac);
@@ -183,9 +184,10 @@ public class ShellyBasicDiscoveryService extends AbstractDiscoveryService {
         return null;
     }
 
-    public static ShellyThingConfiguration fillConfig(ShellyBindingConfiguration bindingConfig, String address)
-            throws IOException {
+    public static ShellyThingConfiguration fillConfig(ShellyBindingConfiguration bindingConfig, String address,
+            String serviceName) throws IOException {
         ShellyThingConfiguration config = new ShellyThingConfiguration();
+        config.serviceName = serviceName;
         config.deviceIp = address;
         config.userId = bindingConfig.defaultUserId;
         config.password = bindingConfig.defaultPassword;

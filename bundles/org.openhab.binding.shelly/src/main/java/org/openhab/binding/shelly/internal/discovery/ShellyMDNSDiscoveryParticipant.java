@@ -30,6 +30,7 @@ import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
 import org.openhab.binding.shelly.internal.config.ShellyBindingConfiguration;
 import org.openhab.binding.shelly.internal.config.ShellyThingConfiguration;
 import org.openhab.binding.shelly.internal.provider.ShellyTranslationProvider;
+import org.openhab.binding.shelly.internal.util.ShellyCacheList;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.mdns.MDNSDiscoveryParticipant;
 import org.openhab.core.i18n.LocaleProvider;
@@ -62,6 +63,7 @@ public class ShellyMDNSDiscoveryParticipant implements MDNSDiscoveryParticipant 
      * <code>_shelly._tcp.local.</code> as well.
      */
     private static final String SERVICE_TYPE = "_http._tcp.local.";
+    private static final long MDNS_CACHE_TIMEOUT_SEC = 15;
 
     private final Logger logger = LoggerFactory.getLogger(ShellyMDNSDiscoveryParticipant.class);
     private final ShellyBindingConfiguration bindingConfig = new ShellyBindingConfiguration();
@@ -75,6 +77,16 @@ public class ShellyMDNSDiscoveryParticipant implements MDNSDiscoveryParticipant 
     public static boolean isValidShellyServiceName(String serviceName) {
         return SHELLY_SERVICE_NAME_PATTERN.matcher(serviceName).matches();
     }
+
+    private class MDNSCacheEntry {
+        String ipAddress = "";
+
+        public MDNSCacheEntry(String ipAddress) {
+            this.ipAddress = ipAddress;
+        }
+    }
+
+    private final ShellyCacheList<String, MDNSCacheEntry> MDNSCache = new ShellyCacheList<>(MDNS_CACHE_TIMEOUT_SEC);
 
     @Activate
     public ShellyMDNSDiscoveryParticipant(@Reference ConfigurationAdmin configurationAdmin,
@@ -125,6 +137,17 @@ public class ShellyMDNSDiscoveryParticipant implements MDNSDiscoveryParticipant 
             logger.trace("{}: Shelly device discovered with empty IP address (service-name={})", serviceName, service);
             return null;
         }
+
+        // Shelly might send multiple mDNS annoucements in a row, those trigger multiple (parallel) discoveries on the
+        // OH side, which is inefficent and causes side effects -> ignore duplicates within MDNS_CACHE_TIMEOUT_SEC secs
+        MDNSCacheEntry result = MDNSCache.get(serviceName);
+        if (result != null && address.equals(result.ipAddress)) {
+            logger.trace("{}: Discovered Shelly Device with IP address {} is already known", serviceName, address);
+            return null;
+        }
+        MDNSCacheEntry entry = new MDNSCacheEntry(address);
+        MDNSCache.put(serviceName, entry);
+
         logger.debug("{}: Shelly device discovered: IP address={}", serviceName, address);
 
         try {

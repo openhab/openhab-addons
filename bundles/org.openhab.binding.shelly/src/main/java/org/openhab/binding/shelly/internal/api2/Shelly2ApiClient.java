@@ -100,6 +100,7 @@ public class Shelly2ApiClient extends ShellyHttpClient {
     protected final ArrayList<ShellyRollerStatus> rollerStatus = new ArrayList<>();
     protected @Nullable ShellyThingInterface thing;
     protected @Nullable Shelly2AuthRsp authReq;
+    private int requestId = 1;
 
     public Shelly2ApiClient(String thingName, ShellyThingInterface thing) {
         super(thingName, thing);
@@ -997,8 +998,9 @@ public class Shelly2ApiClient extends ShellyHttpClient {
 
     protected Shelly2RpcBaseMessage buildRequest(String method, @Nullable Object params) throws ShellyApiException {
         Shelly2RpcBaseMessage request = new Shelly2RpcBaseMessage();
-        request.id = Math.abs(random.nextInt());
-        request.src = "openhab-" + config.localIp; // use a unique identifier;
+        request.jsonrpc = SHELLY2_JSONRPC_VERSION;
+        request.id = requestId++; // Math.abs(random.nextInt());
+        request.src = "ohshelly-" + config.localIp; // use a unique identifier;
         request.method = !method.contains(".") ? SHELLYRPC_METHOD_CLASS_SHELLY + "." + method : method;
         request.params = params;
         request.auth = authReq;
