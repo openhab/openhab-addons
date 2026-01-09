@@ -14,7 +14,7 @@ package org.openhab.binding.astro.internal.handler;
 
 import static org.openhab.binding.astro.internal.AstroBindingConstants.*;
 
-import java.time.Instant;
+import java.time.InstantSource;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Calendar;
@@ -36,6 +36,7 @@ import org.openhab.binding.astro.internal.model.Range;
 import org.openhab.binding.astro.internal.model.Season;
 import org.openhab.binding.astro.internal.model.Sun;
 import org.openhab.binding.astro.internal.model.SunPhaseName;
+import org.openhab.binding.astro.internal.util.DateTimeUtils;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.scheduler.CronScheduler;
@@ -57,7 +58,7 @@ public class SunHandler extends AstroThingHandler {
 
     private final String[] positionalChannelIds = new String[] { "position#azimuth", "position#elevation",
             "radiation#direct", "radiation#diffuse", "radiation#total" };
-    private final SunCalc sunCalc = new SunCalc();
+    private final SunCalc sunCalc;
     private final Logger logger = LoggerFactory.getLogger(SunHandler.class);
     volatile @Nullable Sun sun;
 
@@ -65,8 +66,9 @@ public class SunHandler extends AstroThingHandler {
      * Constructor
      */
     public SunHandler(Thing thing, final CronScheduler scheduler, final TimeZoneProvider timeZoneProvider,
-            LocaleProvider localeProvider) {
-        super(thing, scheduler, timeZoneProvider, localeProvider);
+            LocaleProvider localeProvider, InstantSource instantSource) {
+        super(thing, scheduler, timeZoneProvider, localeProvider, instantSource);
+        sunCalc = new SunCalc(instantSource);
     }
 
     @Override
@@ -74,12 +76,12 @@ public class SunHandler extends AstroThingHandler {
         ZoneId zoneId = timeZoneProvider.getTimeZone();
         TimeZone zone = TimeZone.getTimeZone(zoneId);
         Locale locale = localeProvider.getLocale();
-        Sun sun = getSunAt(ZonedDateTime.now(zoneId));
+        ZonedDateTime now = instantSource.instant().atZone(zoneId);
+        Sun sun = getSunAt(now);
         Double latitude = thingConfig.latitude;
         Double longitude = thingConfig.longitude;
         Double altitude = thingConfig.altitude;
-        Calendar calendar = Calendar.getInstance(zone, locale);
-        ZonedDateTime now = Instant.now().atZone(zoneId);
+        Calendar calendar = DateTimeUtils.calFromInstantSource(instantSource, zone, locale);
         sunCalc.setPositionalInfo(calendar, latitude != null ? latitude : 0, longitude != null ? longitude : 0,
                 altitude != null ? altitude : 0, sun);
 
@@ -295,7 +297,7 @@ public class SunHandler extends AstroThingHandler {
 
     @Override
     protected Job getDailyJob(TimeZone zone, Locale locale) {
-        return new DailyJobSun(this, zone, locale);
+        return new DailyJobSun(this, zone, locale, instantSource);
     }
 
     private Sun getSunAt(ZonedDateTime date) {

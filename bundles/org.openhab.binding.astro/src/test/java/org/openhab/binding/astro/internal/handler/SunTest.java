@@ -15,11 +15,14 @@ package org.openhab.binding.astro.internal.handler;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
+import java.time.Instant;
+import java.time.InstantSource;
 import java.util.Locale;
 import java.util.TimeZone;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -69,7 +72,13 @@ public class SunTest {
         sun = new Sun();
         when(timeZoneProvider.getTimeZone()).thenReturn(TIME_ZONE.toZoneId());
         when(localeProvider.getLocale()).thenReturn(Locale.ROOT);
-        handler = new SunHandler(thing, scheduler, timeZoneProvider, localeProvider);
+        handler = new SunHandler(thing, scheduler, timeZoneProvider, localeProvider,
+                InstantSource.fixed(Instant.ofEpochMilli(1645671600000L)));
+    }
+
+    @AfterEach
+    public void dispose() {
+        handler.dispose();
     }
 
     @Test
@@ -84,7 +93,8 @@ public class SunTest {
 
     @Test
     public void testGetStateWhenNullPhaseName() throws Exception {
-        Sun sun = this.sun;
+        handler.publishDailyInfo();
+        Sun sun = handler.sun;
         assertNotNull(sun);
         sun.getPhase().setName(null);
 
@@ -94,16 +104,9 @@ public class SunTest {
 
     @Test
     public void testGetStateWhenNotNullPhaseName() throws Exception {
-        Sun sun = this.sun;
-        assertNotNull(sun);
         handler.publishPositionalInfo();
-        sun = (Sun) handler.getPlanet();
-        if (sun != null) {
-            sun.getPhase().setName(SunPhaseName.DAYLIGHT);
-        }
-
         when(channel.getUID()).thenReturn(new ChannelUID("astro:sun:home:phase#name"));
-        assertEquals(new StringType("DAYLIGHT"), handler.getState(channel));
+        assertEquals(new StringType("NIGHT"), handler.getState(channel));
     }
 
     @Test

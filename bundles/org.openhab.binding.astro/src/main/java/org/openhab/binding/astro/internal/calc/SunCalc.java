@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.astro.internal.calc;
 
+import java.time.InstantSource;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -64,6 +65,17 @@ public class SunCalc {
     private static final double H3 = Math.toRadians(-18.0); // darkness angle
     private static final int CURVE_TIME_INTERVAL = 20; // 20 minutes
     private static final double JD_ONE_MINUTE_FRACTION = 1.0 / 60 / 24;
+
+    private final InstantSource instantSource;
+
+    /**
+     * Creates a new instance using the specified {@link InstantSource}.
+     *
+     * @param instantSouce the source of the current time.
+     */
+    public SunCalc(InstantSource instantSouce) {
+        this.instantSource = instantSouce;
+    }
 
     /**
      * Calculates the sun position (azimuth and elevation).
@@ -222,7 +234,7 @@ public class SunCalc {
 
         // eclipse
         Eclipse eclipse = sun.getEclipse();
-        MoonCalc mc = new MoonCalc();
+        MoonCalc mc = new MoonCalc(instantSource);
 
         eclipse.getKinds().forEach(eclipseKind -> {
             double jdate = mc.getEclipse(calendar, EclipseType.SUN, j, eclipseKind);
@@ -237,7 +249,7 @@ public class SunCalc {
         Season season = sun.getSeason();
         var year = calendar.get(Calendar.YEAR);
         if (season == null || season.getYear() != year) {
-            sun.setSeason(SeasonCalc.calculate(year, latitude, useMeteorologicalSeason, zone));
+            sun.setSeason(SeasonCalc.calculate(year, latitude, useMeteorologicalSeason, zone, instantSource));
         }
 
         // phase

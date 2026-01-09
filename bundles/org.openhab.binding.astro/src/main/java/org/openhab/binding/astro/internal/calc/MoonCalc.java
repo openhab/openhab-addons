@@ -16,6 +16,7 @@ import static org.openhab.binding.astro.internal.util.MathUtils.*;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.InstantSource;
 import java.util.Calendar;
 import java.util.Locale;
 import java.util.Set;
@@ -50,6 +51,17 @@ public class MoonCalc {
     private static final double FULL_MOON = 0.5;
     private static final double FIRST_QUARTER = 0.25;
     private static final double LAST_QUARTER = 0.75;
+
+    private final InstantSource instantSource;
+
+    /**
+     * Creates a new instance using the specified {@link InstantSource}.
+     *
+     * @param instantSouce the source of the current time.
+     */
+    public MoonCalc(InstantSource instantSouce) {
+        this.instantSource = instantSouce;
+    }
 
     /**
      * Calculates all moon data at the specified coordinates
@@ -135,7 +147,7 @@ public class MoonCalc {
             return;
         }
         long ageRangeTimeMillis = cal.getTimeInMillis() - parentNewMoonMillis;
-        long ageCurrentMillis = System.currentTimeMillis() - parentNewMoonMillis;
+        long ageCurrentMillis = instantSource.millis() - parentNewMoonMillis;
         double agePercent = ageRangeTimeMillis != 0 ? ageCurrentMillis * 100.0 / ageRangeTimeMillis : 0;
         phase.setAgePercent(agePercent);
         phase.setAgeDegree(3.6 * agePercent);

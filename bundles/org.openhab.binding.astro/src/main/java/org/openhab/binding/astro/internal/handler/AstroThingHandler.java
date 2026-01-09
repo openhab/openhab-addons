@@ -21,6 +21,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
+import java.time.InstantSource;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
@@ -101,12 +102,16 @@ public abstract class AstroThingHandler extends BaseThingHandler {
     // All access must be guarded by "monitor"
     private @Nullable ScheduledCompletableFuture<?> dailyJob;
 
+    /** The source of the current time */
+    protected final InstantSource instantSource;
+
     public AstroThingHandler(Thing thing, final CronScheduler scheduler, final TimeZoneProvider timeZoneProvider,
-            LocaleProvider localeProvider) {
+            LocaleProvider localeProvider, InstantSource instantSource) {
         super(thing);
         this.cronScheduler = scheduler;
         this.timeZoneProvider = timeZoneProvider;
         this.localeProvider = localeProvider;
+        this.instantSource = instantSource;
     }
 
     @Override
@@ -345,6 +350,7 @@ public abstract class AstroThingHandler extends BaseThingHandler {
      * Adds the provided {@link Job} to the queue (cannot be {@code null})
      */
     public void schedule(Job job, Calendar eventAt) {
+        // We don't use instantSource here, because we always want to schedule relative to the system clock
         long sleepTime = eventAt.getTimeInMillis() - System.currentTimeMillis();
         if (sleepTime >= 0L) {
             schedule(job, sleepTime);
@@ -359,6 +365,7 @@ public abstract class AstroThingHandler extends BaseThingHandler {
     }
 
     public void schedule(Job job, Instant eventAt) {
+        // We don't use instantSource here, because we always want to schedule relative to the system clock
         long sleepTime = eventAt.toEpochMilli() + 1L - System.currentTimeMillis();
         if (sleepTime >= 0L) {
             schedule(job, sleepTime);

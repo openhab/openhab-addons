@@ -14,9 +14,9 @@ package org.openhab.binding.astro.internal.handler;
 
 import static org.openhab.binding.astro.internal.AstroBindingConstants.*;
 
+import java.time.InstantSource;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.Locale;
 import java.util.TimeZone;
@@ -29,6 +29,7 @@ import org.openhab.binding.astro.internal.job.Job;
 import org.openhab.binding.astro.internal.model.Moon;
 import org.openhab.binding.astro.internal.model.Planet;
 import org.openhab.binding.astro.internal.model.Position;
+import org.openhab.binding.astro.internal.util.DateTimeUtils;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.scheduler.CronScheduler;
@@ -50,7 +51,7 @@ public class MoonHandler extends AstroThingHandler {
 
     private final String[] positionalChannelIds = new String[] { "phase#name", "phase#age", "phase#agePercent",
             "phase#ageDegree", "phase#illumination", "position#azimuth", "position#elevation", "zodiac#sign" };
-    private final MoonCalc moonCalc = new MoonCalc();
+    private final MoonCalc moonCalc;
     private final Logger logger = LoggerFactory.getLogger(MoonHandler.class);
     private volatile @Nullable Moon moon;
 
@@ -58,8 +59,9 @@ public class MoonHandler extends AstroThingHandler {
      * Constructor
      */
     public MoonHandler(Thing thing, final CronScheduler scheduler, final TimeZoneProvider timeZoneProvider,
-            LocaleProvider localeProvider) {
-        super(thing, scheduler, timeZoneProvider, localeProvider);
+            LocaleProvider localeProvider, InstantSource instantSource) {
+        super(thing, scheduler, timeZoneProvider, localeProvider, instantSource);
+        moonCalc = new MoonCalc(instantSource);
     }
 
     @Override
@@ -67,11 +69,12 @@ public class MoonHandler extends AstroThingHandler {
         ZoneId zoneId = timeZoneProvider.getTimeZone();
         TimeZone zone = TimeZone.getTimeZone(zoneId);
         Locale locale = localeProvider.getLocale();
-        Moon moon = getMoonAt(ZonedDateTime.now(zoneId), locale);
+        ZonedDateTime now = instantSource.instant().atZone(zone.toZoneId());
+        Moon moon = getMoonAt(now, locale);
         Double latitude = thingConfig.latitude;
         Double longitude = thingConfig.longitude;
-        moonCalc.setPositionalInfo(Calendar.getInstance(zone, locale), latitude != null ? latitude : 0,
-                longitude != null ? longitude : 0, moon, zone, locale);
+        moonCalc.setPositionalInfo(DateTimeUtils.calFromInstantSource(instantSource, zone, locale),
+                latitude != null ? latitude : 0, longitude != null ? longitude : 0, moon, zone, locale);
 
         moon.getEclipse().setElevations(this, timeZoneProvider);
         this.moon = moon;
