@@ -69,18 +69,14 @@ public interface Job extends SchedulerRunnable, Runnable {
      *
      * @param astroHandler the {@link AstroThingHandler} instance
      * @param job the {@link Job} instance to schedule
-     * @param eventAt the {@link Calendar} instance denoting scheduled instant
+     * @param eventAt the {@link Instant} instance denoting scheduled instant
      */
     static void schedule(AstroThingHandler astroHandler, Job job, Instant eventAt, ZoneId zone) {
-        try {
-            ZonedDateTime now = ZonedDateTime.now(zone);
-            ZonedDateTime eventZDT = eventAt.atZone(zone);
+        ZonedDateTime now = ZonedDateTime.now(zone);
+        ZonedDateTime eventZDT = eventAt.atZone(zone);
 
-            if (isSameDay(eventZDT, now) && isTimeGreaterEquals(eventZDT, now)) {
-                astroHandler.schedule(job, eventAt);
-            }
-        } catch (Exception ex) {
-            LOGGER.error("{}", ex.getMessage(), ex);
+        if (isSameDay(eventZDT, now) && isTimeGreaterEquals(eventZDT, now)) {
+            astroHandler.schedule(job, eventAt);
         }
     }
 
@@ -92,11 +88,7 @@ public interface Job extends SchedulerRunnable, Runnable {
      * @param eventAt the {@link Instant} instance denoting scheduled instant
      */
     static void schedule(AstroThingHandler astroHandler, Job job, Instant eventAt) {
-        try {
-            astroHandler.schedule(job, eventAt);
-        } catch (Exception ex) {
-            LOGGER.error("{}", ex.getMessage(), ex);
-        }
+        astroHandler.schedule(job, eventAt);
     }
 
     /**
