@@ -69,7 +69,7 @@ public class HomematicTypeProvider extends AbstractStorageBasedTypeProvider impl
 
     @Override
     public void putChannelType(ChannelType channelType) {
-        synchronized (channelGroupTypesCreatedSinceStartup) {
+        synchronized (channelTypesCreatedSinceStartup) {
             super.putChannelType(channelType);
             channelTypesCreatedSinceStartup.add(channelType.getUID());
         }
