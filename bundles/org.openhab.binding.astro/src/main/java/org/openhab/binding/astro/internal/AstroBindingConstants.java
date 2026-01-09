@@ -49,14 +49,9 @@ public final class AstroBindingConstants {
     public static final String EVENT_PHASE_FULL = "FULL";
     public static final String EVENT_PHASE_NEW = "NEW";
 
-    public static final String EVENT_PERIGEE = "PERIGEE";
-    public static final String EVENT_APOGEE = "APOGEE";
-
     // event channelIds
     public static final String EVENT_CHANNEL_ID_MOON_PHASE = "phase#event";
     public static final String EVENT_CHANNEL_ID_ECLIPSE = "eclipse#event";
-    public static final String EVENT_CHANNEL_ID_PERIGEE = "perigee#event";
-    public static final String EVENT_CHANNEL_ID_APOGEE = "apogee#event";
 
     public static final String EVENT_CHANNEL_ID_RISE = "rise#event";
     public static final String EVENT_CHANNEL_ID_SET = "set#event";
