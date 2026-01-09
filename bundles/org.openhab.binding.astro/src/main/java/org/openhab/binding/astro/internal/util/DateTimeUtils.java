@@ -263,6 +263,7 @@ public class DateTimeUtils {
 <<<<<<< Upstream, based on main
 <<<<<<< Upstream, based on main
 <<<<<<< Upstream, based on main
+<<<<<<< Upstream, based on main
      * Evaluates whether the second date time is within the same date as the first date time in the time zone of
      * the latter.
      *
@@ -291,7 +292,10 @@ public class DateTimeUtils {
 =======
      * <<<<<<< Upstream, based on moon_distance
 >>>>>>> 6955cc9 Rebased. Corrected moon_day dynamic icons Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added unit tests for eclipses Rebased on moon_distance
+=======
+>>>>>>> 2cffce1 Rebased. Corrected moon_day dynamic icons Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added unit tests for eclipses Rebased on moon_distance Rebased on main after moon_distance inclusion
      * Returns true, if two ZonedDateTime objects are on the same day ignoring time.
+<<<<<<< Upstream, based on main
      * =======
      * Returns true, if two instant objects are on the same day ignoring time.
 <<<<<<< Upstream, based on main
@@ -301,19 +305,12 @@ public class DateTimeUtils {
      * >>>>>>> 0596b7c Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added
      * unit tests for eclipses
 >>>>>>> 5ae0857 Rebased. Corrected moon_day dynamic icons Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added unit tests for eclipses Rebased on moon_distance
+=======
+>>>>>>> 2cffce1 Rebased. Corrected moon_day dynamic icons Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added unit tests for eclipses Rebased on moon_distance Rebased on main after moon_distance inclusion
      */
     public static boolean isSameDay(@Nullable ZonedDateTime zdt1, @Nullable ZonedDateTime zdt2) {
         return zdt1 != null && zdt2 != null
                 && zdt1.toLocalDate().equals(zdt2.withZoneSameInstant(zdt1.getZone()).toLocalDate());
-=======
-     * Returns true, if two instant objects are on the same day ignoring time.
-=======
-     * Returns true, if two ZonedDateTime objects are on the same day ignoring time.
->>>>>>> c665643 Copilot code view adressed
-     */
-    public static boolean isSameDay(@Nullable ZonedDateTime cal1, @Nullable ZonedDateTime cal2) {
-        return cal1 != null && cal2 != null && cal1.toLocalDate().equals(cal2.toLocalDate());
->>>>>>> f56c745 Review Moon Distance and factorization of MoonCalc
     }
 
     /**
