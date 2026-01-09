@@ -314,7 +314,7 @@
 		<item-type>DateTime</item-type>
 		<label>Total Eclipse</label>
 		<description>The DateTime of the next total eclipse</description>
-		<category>calendar</category>
+		<category>Calendar</category>
 		<tags>
 			<tag>Calculation</tag>
 			<tag>Timestamp</tag>
@@ -326,7 +326,7 @@
 		<item-type>DateTime</item-type>
 		<label>Partial Eclipse</label>
 		<description>The DateTime of the next partial eclipse</description>
-		<category>calendar</category>
+		<category>Calendar</category>
 		<tags>
 			<tag>Calculation</tag>
 			<tag>Timestamp</tag>
@@ -338,7 +338,7 @@
 		<item-type>DateTime</item-type>
 		<label>Ring Eclipse</label>
 		<description>The DateTime of the next ring eclipse</description>
-		<category>calendar</category>
+		<category>Calendar</category>
 		<tags>
 			<tag>Calculation</tag>
 			<tag>Timestamp</tag>
@@ -350,6 +350,7 @@
 		<kind>trigger</kind>
 		<label>Sun Eclipse Event</label>
 		<description>Sun eclipse event</description>
+		<category>oh:astro:sun_eclipse</category>
 		<event>
 			<options>
 				<option value="TOTAL">total</option>
