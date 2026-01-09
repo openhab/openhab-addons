@@ -5,7 +5,7 @@
 
 	<type>binding</type>
 	<name>Shelly Binding</name>
-	<description>This binding integrates Shelly devices that can be controlled via WiFi.</description>
+	<description>This binding integrates Shelly devices that can be controlled via Wi-Fi.</description>
 	<connection>local</connection>
 
 	<config-description>

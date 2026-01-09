@@ -113,6 +113,7 @@
 		<item-type>DateTime</item-type>
 		<label>Start Time</label>
 		<description>The start time of the event</description>
+		<category>calendar</category>
 		<tags>
 			<tag>Calculation</tag>
 			<tag>Timestamp</tag>
@@ -125,6 +126,7 @@
 		<item-type>DateTime</item-type>
 		<label>End Time</label>
 		<description>The end time of the event</description>
+		<category>calendar</category>
 		<tags>
 			<tag>Calculation</tag>
 			<tag>Timestamp</tag>
@@ -312,6 +314,7 @@
 		<item-type>DateTime</item-type>
 		<label>Total Eclipse</label>
 		<description>The DateTime of the next total eclipse</description>
+		<category>Calendar</category>
 		<tags>
 			<tag>Calculation</tag>
 			<tag>Timestamp</tag>
@@ -323,6 +326,7 @@
 		<item-type>DateTime</item-type>
 		<label>Partial Eclipse</label>
 		<description>The DateTime of the next partial eclipse</description>
+		<category>Calendar</category>
 		<tags>
 			<tag>Calculation</tag>
 			<tag>Timestamp</tag>
@@ -334,6 +338,7 @@
 		<item-type>DateTime</item-type>
 		<label>Ring Eclipse</label>
 		<description>The DateTime of the next ring eclipse</description>
+		<category>Calendar</category>
 		<tags>
 			<tag>Calculation</tag>
 			<tag>Timestamp</tag>
@@ -345,6 +350,7 @@
 		<kind>trigger</kind>
 		<label>Sun Eclipse Event</label>
 		<description>Sun eclipse event</description>
+		<category>oh:astro:sun_eclipse</category>
 		<event>
 			<options>
 				<option value="TOTAL">total</option>
@@ -411,6 +417,7 @@
 		<item-type>DateTime</item-type>
 		<label>First Quarter</label>
 		<description>The DateTime the moon is in the first quarter</description>
+		<category>calendar</category>
 		<tags>
 			<tag>Calculation</tag>
 			<tag>Timestamp</tag>
@@ -422,6 +429,7 @@
 		<item-type>DateTime</item-type>
 		<label>Third Quarter</label>
 		<description>The DateTime the moon is in the third quarter</description>
+		<category>calendar</category>
 		<tags>
 			<tag>Calculation</tag>
 			<tag>Timestamp</tag>
@@ -433,6 +441,7 @@
 		<item-type>DateTime</item-type>
 		<label>Full Moon</label>
 		<description>The DateTime for full moon</description>
+		<category>calendar</category>
 		<tags>
 			<tag>Calculation</tag>
 			<tag>Timestamp</tag>
@@ -444,6 +453,7 @@
 		<item-type>DateTime</item-type>
 		<label>New Moon</label>
 		<description>The DateTime for new moon</description>
+		<category>calendar</category>
 		<tags>
 			<tag>Calculation</tag>
 			<tag>Timestamp</tag>
@@ -570,6 +580,7 @@
 		<item-type>DateTime</item-type>
 		<label>Date</label>
 		<description>The DateTime when the distance is reached</description>
+		<category>calendar</category>
 		<tags>
 			<tag>Calculation</tag>
 			<tag>Timestamp</tag>

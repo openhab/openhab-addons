@@ -26,8 +26,8 @@
 			</parameter>
 			<parameter name="twofactorCode" type="text" required="false">
 				<context>password</context>
-				<label>2 factor authentication code</label>
-				<description>Enter the 2 factor authentication code, if enabled</description>
+				<label>Two-factor authentication code</label>
+				<description>Enter the two-factor authentication code, if enabled</description>
 			</parameter>
 			<parameter name="hardwareId" type="text">
 				<label>A unique hardware id</label>
@@ -51,7 +51,7 @@
 			</parameter>
 			<parameter name="limitToOwner" type="boolean">
 				<label>Limit To Owner</label>
-				<description>By default all accessible devices are discovered. When enabled, disocovery is limited to devices you
+				<description>By default all accessible devices are discovered. When enabled, discovery is limited to devices you
 					own.</description>
 				<default>false</default>
 				<advanced>true</advanced>
@@ -212,7 +212,7 @@
 	<channel-type id="doorbotId">
 		<item-type>String</item-type>
 		<label>Event Device ID</label>
-		<description>The id of the Ring device (doorbell, chime, etc) that generated the currently selected event</description>
+		<description>The ID of the Ring device (doorbell, chime, etc.) that generated the currently selected event</description>
 		<tags>
 			<tag>Status</tag>
 			<tag>Info</tag>

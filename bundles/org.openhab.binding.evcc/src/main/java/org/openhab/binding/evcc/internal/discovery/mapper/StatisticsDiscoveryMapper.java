@@ -24,6 +24,7 @@ import org.openhab.binding.evcc.internal.handler.EvccBridgeHandler;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.thing.ThingUID;
+import org.osgi.service.component.annotations.Component;
 
 import com.google.gson.JsonObject;
 
@@ -32,6 +33,7 @@ import com.google.gson.JsonObject;
  *
  * @author Marcel Goerentz - Initial contribution
  */
+@Component(service = EvccDiscoveryMapper.class)
 @NonNullByDefault
 public class StatisticsDiscoveryMapper implements EvccDiscoveryMapper {
 

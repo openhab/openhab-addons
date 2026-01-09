@@ -26,6 +26,7 @@ import org.openhab.binding.evcc.internal.handler.EvccBridgeHandler;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.thing.ThingUID;
+import org.osgi.service.component.annotations.Component;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -35,6 +36,7 @@ import com.google.gson.JsonObject;
  *
  * @author Marcel Goerentz - Initial contribution
  */
+@Component(service = EvccDiscoveryMapper.class)
 @NonNullByDefault
 public class VehicleDiscoveryMapper implements EvccDiscoveryMapper {
 
@@ -53,12 +55,10 @@ public class VehicleDiscoveryMapper implements EvccDiscoveryMapper {
             ThingUID uid = new ThingUID(EvccBindingConstants.THING_TYPE_VEHICLE, bridgeHandler.getThing().getUID(),
                     Utils.sanitizeName(title));
             DiscoveryResult result = DiscoveryResultBuilder.create(uid).withLabel(title)
-                    .withBridge(bridgeHandler.getThing().getUID()).withProperty(PROPERTY_ID, id)
-                    .withRepresentationProperty(PROPERTY_ID).build();
-
+                    .withBridge(bridgeHandler.getThing().getUID()).withProperty(PROPERTY_VEHICLE_ID, id)
+                    .withRepresentationProperty(PROPERTY_VEHICLE_ID).build();
             results.add(result);
         }
-
         return results;
     }
 }

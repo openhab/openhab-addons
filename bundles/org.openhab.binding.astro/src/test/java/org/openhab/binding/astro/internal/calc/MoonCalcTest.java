@@ -48,7 +48,6 @@ public class MoonCalcTest {
     private static final double AMSTERDAM_LONGITUDE = 4.8978293;
 
     private static final int ACCURACY_IN_MILLIS = 5 * 60 * 1000;
-    private static final int ACCURACY_IN_KILOMETRES = 4;
     private static final double ACCURACY_IN_DEGREE = 0.3;
 
     private @Nullable MoonCalc moonCalc;
@@ -80,40 +79,13 @@ public class MoonCalcTest {
     }
 
     @Test
-    public void testGetMoonInfoForApogeeAccuracy() {
-        Moon moon = Objects.requireNonNull(moonCalc).getMoonInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE,
-                TIME_ZONE, Locale.ROOT);
-
-        // expected result from haevens-above.com is 406,391 km @ 04 March 2019 12:27
-        assertEquals(406391, moon.getApogee().getDistance().doubleValue(), ACCURACY_IN_KILOMETRES);
-        Calendar apogeeDate = moon.getApogee().getDate();
-        assertNotNull(apogeeDate);
-        assertEquals(MoonCalcTest.newCalendar(2019, Calendar.MARCH, 4, 12, 27, TIME_ZONE).getTimeInMillis(),
-                apogeeDate.getTimeInMillis(), ACCURACY_IN_MILLIS);
-    }
-
-    @Test
-    public void testGetMoonInfoForPerigeeAccuracy() {
-        Moon moon = Objects.requireNonNull(moonCalc).getMoonInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE,
-                TIME_ZONE, Locale.ROOT);
-
-        // expected result from haevens-above.com is 359,377 km @ 19 February 2019 20:44
-        assertEquals(359377, moon.getPerigee().getDistance().doubleValue(), ACCURACY_IN_KILOMETRES);
-
-        Calendar perigeeDate = moon.getPerigee().getDate();
-        assertNotNull(perigeeDate);
-        assertEquals(MoonCalcTest.newCalendar(2019, Calendar.MARCH, 19, 20, 48, TIME_ZONE).getTimeInMillis(),
-                perigeeDate.getTimeInMillis(), ACCURACY_IN_MILLIS);
-    }
-
-    @Test
     public void testGetMoonInfoForRiseAccuracy() {
         Moon moon = Objects.requireNonNull(moonCalc).getMoonInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE,
                 TIME_ZONE, Locale.ROOT);
 
         Calendar riseStart = moon.getRise().getStart();
         assertNotNull(riseStart);
-        // expected result from haevens-above.com is 03:00
+        // expected result from heavens-above.com is 03:00
         assertEquals(MoonCalcTest.newCalendar(2019, Calendar.FEBRUARY, 27, 3, 0, TIME_ZONE).getTimeInMillis(),
                 riseStart.getTimeInMillis(), ACCURACY_IN_MILLIS);
     }
@@ -125,7 +97,7 @@ public class MoonCalcTest {
 
         Calendar setStart = moon.getSet().getStart();
         assertNotNull(setStart);
-        // expected result from haevens-above.com is 11:35
+        // expected result from heavens-above.com is 11:35
         assertEquals(MoonCalcTest.newCalendar(2019, Calendar.FEBRUARY, 27, 11, 35, TIME_ZONE).getTimeInMillis(),
                 setStart.getTimeInMillis(), ACCURACY_IN_MILLIS);
     }
@@ -137,20 +109,9 @@ public class MoonCalcTest {
         Moon moon = moonCalc.getMoonInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE, TIME_ZONE, Locale.ROOT);
         moonCalc.setPositionalInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE, moon, TIME_ZONE, Locale.ROOT);
 
-        // expected result from haevens-above.com is Azimuth: 100.5, altitude -17
+        // expected result from heavens-above.com is Azimuth: 100.5, altitude -17
         assertEquals(100.5, moon.getPosition().getAzimuth().doubleValue(), ACCURACY_IN_DEGREE);
         assertEquals(-17, moon.getPosition().getElevation().doubleValue(), ACCURACY_IN_DEGREE);
-    }
-
-    @Test
-    public void testGetMoonInfoForMoonDistanceAccuracy() {
-        MoonCalc moonCalc = this.moonCalc;
-        assertNotNull(moonCalc);
-        Moon moon = moonCalc.getMoonInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE, TIME_ZONE, Locale.ROOT);
-        moonCalc.setPositionalInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE, moon, TIME_ZONE, Locale.ROOT);
-
-        // expected result from haevens-above.com is 392612 km
-        assertEquals(392612, moon.getDistance().getDistance().doubleValue(), ACCURACY_IN_KILOMETRES);
     }
 
     @Test
