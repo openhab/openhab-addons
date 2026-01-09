@@ -138,11 +138,7 @@ public interface Job extends SchedulerRunnable, Runnable {
      * Schedules an {@link EventJob} instance
      *
      * @param astroHandler the {@link AstroThingHandler} instance
-     *            <<<<<<< Upstream, based on main
      * @param eventAt the {@link Instant} instance denoting scheduled instant
-     *            =======
-     * @param eventAt the {@link Calendar} instance denoting scheduled instant
-     *            >>>>>>> f56c745 Review Moon Distance and factorization of MoonCalc
      * @param events the event IDs to schedule
      * @param channelId the channel ID
      * @param configAlreadyApplied whether the configuration has already been "applied"
