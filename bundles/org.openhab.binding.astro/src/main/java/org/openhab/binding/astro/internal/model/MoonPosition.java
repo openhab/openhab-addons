@@ -17,6 +17,7 @@ package org.openhab.binding.astro.internal.model;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
+<<<<<<< Upstream, based on main
  * Immutable class holding Moon Position information
  *
  * @author Gaël L'hopital - Initial contribution
@@ -62,6 +63,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * Holds informations about the Moon Position
+=======
+ * Holds information about the Moon Position
+>>>>>>> 1bef010 Copilot code review
  *
  * @author Gaël L'hopital - Initial contribution
  */
@@ -83,7 +87,7 @@ public class MoonPosition extends Position {
     /**
      * Returns the moon longitude
      */
-    public double getMonLon() {
+    public double getMoonLon() {
         return moonLon;
 >>>>>>> 48a7069 Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added unit tests for eclipses
     }

@@ -211,6 +211,7 @@ public class MoonCalc extends AstroCalc {
 
         var moonPosition = getMoonPosition(julianDate, latitude, longitude);
         moon.setPosition(moonPosition);
+<<<<<<< Upstream, based on main
         moon.setZodiac(ZodiacCalc.calculate(moonPosition.getMonLon(), null));
 <<<<<<< Upstream, based on main
 >>>>>>> 48a7069 Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added unit tests for eclipses
@@ -221,6 +222,9 @@ public class MoonCalc extends AstroCalc {
         moon.setZodiac(ZodiacCalc.calculate(moonPosition.getLongitude(), null));
 =======
 >>>>>>> 5ae0857 Rebased. Corrected moon_day dynamic icons Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added unit tests for eclipses Rebased on moon_distance
+=======
+        moon.setZodiac(ZodiacCalc.calculate(moonPosition.getMoonLon(), null));
+>>>>>>> 1bef010 Copilot code review
         moon.setDistance(DistanceType.CURRENT, MoonDistanceCalc.calculate(julianDate));
     }
 

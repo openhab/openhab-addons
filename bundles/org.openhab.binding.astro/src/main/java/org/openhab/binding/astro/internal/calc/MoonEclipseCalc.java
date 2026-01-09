@@ -77,7 +77,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.astro.internal.model.EclipseKind;
 
 /**
- * Ajust the eclipses calculations for the moon
+ * Adjust the eclipses calculations for the moon
  *
  * @author Gerhard Riegler - Initial contribution
  * @author Gaël L'hopital - Extracted from MoonCalc
