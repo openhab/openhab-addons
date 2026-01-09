@@ -130,11 +130,9 @@ public class MatterBindingConstants {
     public static final String CHANNEL_ID_DOORLOCK_STATE = "doorlock-lockstate";
     public static final ChannelTypeUID CHANNEL_DOORLOCK_STATE = new ChannelTypeUID(BINDING_ID,
             CHANNEL_ID_DOORLOCK_STATE);
-<<<<<<< HEAD
     public static final String CHANNEL_ID_DOORLOCK_BOLTSTATE = "doorlock-boltstate";
     public static final ChannelTypeUID CHANNEL_DOORLOCK_BOLTSTATE = new ChannelTypeUID(BINDING_ID,
             CHANNEL_ID_DOORLOCK_BOLTSTATE);
-=======
     public static final String CHANNEL_ID_DOORLOCK_DOORSTATE = "doorlock-doorstate";
     public static final ChannelTypeUID CHANNEL_DOORLOCK_DOORSTATE = new ChannelTypeUID(BINDING_ID,
             CHANNEL_ID_DOORLOCK_DOORSTATE);
@@ -144,7 +142,6 @@ public class MatterBindingConstants {
     public static final String CHANNEL_ID_DOORLOCK_LOCKOPERATIONERROR = "doorlock-lockoperationerror";
     public static final ChannelTypeUID CHANNEL_DOORLOCK_LOCKOPERATIONERROR = new ChannelTypeUID(BINDING_ID,
             CHANNEL_ID_DOORLOCK_LOCKOPERATIONERROR);
->>>>>>> main
     public static final String CHANNEL_ID_WINDOWCOVERING_LIFT = "windowcovering-lift";
     public static final ChannelTypeUID CHANNEL_WINDOWCOVERING_LIFT = new ChannelTypeUID(BINDING_ID,
             CHANNEL_ID_WINDOWCOVERING_LIFT);

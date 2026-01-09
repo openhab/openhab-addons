@@ -54,7 +54,6 @@ import org.openhab.core.config.core.ParameterOption;
 import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
-import org.openhab.core.types.UnDefType;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelGroupUID;
 import org.openhab.core.thing.ChannelUID;
@@ -64,6 +63,7 @@ import org.openhab.core.types.Command;
 import org.openhab.core.types.StateDescription;
 import org.openhab.core.types.StateDescriptionFragmentBuilder;
 import org.openhab.core.types.StateOption;
+import org.openhab.core.types.UnDefType;
 
 /**
  * A converter for translating {@link DoorLockCluster} events and attributes to
@@ -206,7 +206,7 @@ public class DoorLockConverter extends GenericConverter<DoorLockCluster> {
             String channelId = channelUID.getIdWithoutGroup();
             OctetString pinCode = getPinCodeForRemoteOperation();
             ClusterCommand doorLockCommand;
-            
+
             if (channelId.equals(CHANNEL_ID_DOORLOCK_BOLTSTATE)) {
                 // Bolt state: lock (bolt) or unbolt
                 doorLockCommand = onOffType == OnOffType.ON ? DoorLockCluster.lockDoor(pinCode)
