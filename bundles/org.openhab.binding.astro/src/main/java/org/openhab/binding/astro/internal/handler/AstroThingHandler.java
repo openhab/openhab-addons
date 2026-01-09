@@ -333,7 +333,6 @@ public abstract class AstroThingHandler extends BaseThingHandler {
      */
     public void schedule(Job job, Calendar eventAt) {
         long sleepTime = eventAt.getTimeInMillis() - System.currentTimeMillis();
-<<<<<<< Upstream, based on main
         if (sleepTime >= 0L) {
             schedule(job, sleepTime);
             if (logger.isDebugEnabled()) {
@@ -343,12 +342,6 @@ public abstract class AstroThingHandler extends BaseThingHandler {
         } else if (logger.isDebugEnabled()) {
             final String formattedDate = this.loggerFormatter.format(eventAt.getTime());
             logger.debug("Failed to schedule {} in {}ms (at {}) since it's in the past", job, sleepTime, formattedDate);
-=======
-        schedule(job, sleepTime);
-        if (logger.isDebugEnabled()) {
-            final String formattedDate = this.isoFormatter.format(eventAt.getTime());
-            logger.debug("Scheduled {} in {}ms (at {})", job, sleepTime, formattedDate);
->>>>>>> ff22090 Nadahar code review adressed
         }
     }
 

@@ -79,47 +79,6 @@ public class MoonCalcTest {
     }
 
     @Test
-<<<<<<< Upstream, based on main
-<<<<<<< Upstream, based on main
-=======
-    public void testGetMoonInfoForApogeeAccuracy() {
-        Moon moon = Objects.requireNonNull(moonCalc).getMoonInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE,
-                TIME_ZONE, Locale.ROOT);
-
-        // expected result from haevens-above.com is 406,391 km @ 04 March 2019 12:27
-        var apogeeDistance = moon.getApogee().getDistance();
-        assertNotNull(apogeeDistance);
-        var kmDistance = apogeeDistance.toUnit(KILO(METRE));
-        assertNotNull(kmDistance);
-        assertEquals(406391, kmDistance.doubleValue(), ACCURACY_IN_KILOMETRES);
-        Instant apogeeDate = moon.getApogee().getDate();
-        assertNotNull(apogeeDate);
-        assertEquals(MoonCalcTest.newCalendar(2019, Calendar.MARCH, 4, 12, 27, TIME_ZONE).getTimeInMillis(),
-                apogeeDate.toEpochMilli(), ACCURACY_IN_MILLIS);
-    }
-
-    @Test
-    public void testGetMoonInfoForPerigeeAccuracy() {
-        Moon moon = Objects.requireNonNull(moonCalc).getMoonInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE,
-                TIME_ZONE, Locale.ROOT);
-
-        // expected result from haevens-above.com is 359,377 km @ 19 February 2019 20:44
-        var perigeeDistance = moon.getPerigee().getDistance();
-        assertNotNull(perigeeDistance);
-        var kmDistance = perigeeDistance.toUnit(KILO(METRE));
-        assertNotNull(kmDistance);
-        assertEquals(359377, kmDistance.doubleValue(), ACCURACY_IN_KILOMETRES);
-
-        Instant perigeeDate = moon.getPerigee().getDate();
-        assertNotNull(perigeeDate);
-        assertEquals(MoonCalcTest.newCalendar(2019, Calendar.MARCH, 19, 20, 48, TIME_ZONE).getTimeInMillis(),
-                perigeeDate.toEpochMilli(), ACCURACY_IN_MILLIS);
-    }
-
-    @Test
->>>>>>> f56c745 Review Moon Distance and factorization of MoonCalc
-=======
->>>>>>> c665643 Copilot code view adressed
     public void testGetMoonInfoForRiseAccuracy() {
         Moon moon = Objects.requireNonNull(moonCalc).getMoonInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE,
                 TIME_ZONE, Locale.ROOT);
@@ -149,40 +108,17 @@ public class MoonCalcTest {
         assertNotNull(moonCalc);
         Moon moon = moonCalc.getMoonInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE, TIME_ZONE, Locale.ROOT);
         moonCalc.setPositionalInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE, moon, TIME_ZONE, Locale.ROOT);
+        var azimuth = moon.getPosition().getAzimuth();
+        var elevation = moon.getPosition().getElevation();
+        assertNotNull(azimuth);
+        assertNotNull(elevation);
 
-<<<<<<< Upstream, based on main
         // expected result from heavens-above.com is Azimuth: 100.5, altitude -17
-        assertEquals(100.5, moon.getPosition().getAzimuth().doubleValue(), ACCURACY_IN_DEGREE);
-        assertEquals(-17, moon.getPosition().getElevation().doubleValue(), ACCURACY_IN_DEGREE);
-=======
-        // expected result from haevens-above.com is Azimuth: 100.5, altitude -17
-        assertEquals(100.5, moon.getPosition().getAzimuthAsDouble(), ACCURACY_IN_DEGREE);
-        assertEquals(-17, moon.getPosition().getElevationAsDouble(), ACCURACY_IN_DEGREE);
->>>>>>> 637b449 Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added unit tests for eclipses
+        assertEquals(100.5, azimuth.doubleValue(), ACCURACY_IN_DEGREE);
+        assertEquals(-17, elevation.doubleValue(), ACCURACY_IN_DEGREE);
     }
 
     @Test
-<<<<<<< Upstream, based on main
-<<<<<<< Upstream, based on main
-=======
-    public void testGetMoonInfoForMoonDistanceAccuracy() {
-        MoonCalc moonCalc = this.moonCalc;
-        assertNotNull(moonCalc);
-        Moon moon = moonCalc.getMoonInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE, TIME_ZONE, Locale.ROOT);
-        moonCalc.setPositionalInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE, moon, TIME_ZONE, Locale.ROOT);
-
-        // expected result from haevens-above.com is 392612 km
-        var currentDistance = moon.getDistance().getDistance();
-        assertNotNull(currentDistance);
-        var kmDistance = currentDistance.toUnit(KILO(METRE));
-        assertNotNull(kmDistance);
-        assertEquals(392612, kmDistance.doubleValue(), ACCURACY_IN_KILOMETRES);
-    }
-
-    @Test
->>>>>>> f56c745 Review Moon Distance and factorization of MoonCalc
-=======
->>>>>>> c665643 Copilot code view adressed
     public void testGetMoonInfoForMoonPhaseAccuracy() {
         MoonCalc moonCalc = this.moonCalc;
         assertNotNull(moonCalc);

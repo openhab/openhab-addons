@@ -14,30 +14,14 @@ package org.openhab.binding.astro.internal.calc;
 
 import static org.openhab.binding.astro.internal.util.MathUtils.*;
 
-<<<<<<< Upstream, based on main
-<<<<<<< Upstream, based on main
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Calendar;
 import java.util.Locale;
 import java.util.Set;
 import java.util.TimeZone;
-=======
-import java.math.*;
-import java.util.*;
->>>>>>> f56c745 Review Moon Distance and factorization of MoonCalc
-=======
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.util.Calendar;
-import java.util.Locale;
-import java.util.Set;
-import java.util.TimeZone;
->>>>>>> 3188e3a Correcting import.
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-<<<<<<< Upstream, based on main
-<<<<<<< Upstream, based on main
 import org.openhab.binding.astro.internal.model.DistanceType;
 import org.openhab.binding.astro.internal.model.Eclipse;
 import org.openhab.binding.astro.internal.model.Moon;
@@ -45,24 +29,7 @@ import org.openhab.binding.astro.internal.model.MoonPhase;
 import org.openhab.binding.astro.internal.model.MoonPhaseName;
 import org.openhab.binding.astro.internal.model.MoonPosition;
 import org.openhab.binding.astro.internal.model.Range;
-<<<<<<< Upstream, based on main
-=======
-import org.openhab.binding.astro.internal.model.*;
->>>>>>> f56c745 Review Moon Distance and factorization of MoonCalc
-=======
-import org.openhab.binding.astro.internal.model.DistanceType;
-import org.openhab.binding.astro.internal.model.Eclipse;
-import org.openhab.binding.astro.internal.model.EclipseKind;
-import org.openhab.binding.astro.internal.model.EclipseType;
-import org.openhab.binding.astro.internal.model.Moon;
-import org.openhab.binding.astro.internal.model.MoonPhase;
-import org.openhab.binding.astro.internal.model.MoonPhaseName;
-import org.openhab.binding.astro.internal.model.Position;
-import org.openhab.binding.astro.internal.model.Range;
->>>>>>> 3188e3a Correcting import.
-=======
 import org.openhab.binding.astro.internal.util.AstroConstants;
->>>>>>> 62dfe71 Start refactoring Eclipse for sun and moon
 import org.openhab.binding.astro.internal.util.DateTimeUtils;
 import org.openhab.binding.astro.internal.util.MathUtils;
 
