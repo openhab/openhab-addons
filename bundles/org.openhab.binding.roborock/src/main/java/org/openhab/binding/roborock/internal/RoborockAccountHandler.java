@@ -249,9 +249,9 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
             try {
                 if (localConfig.twofa.isBlank()) {
                     if (country != null && !country.isEmpty()) {
-                        String response = webTargets.requestCodeV4(baseUri, localConfig.email);
+                        webTargets.requestCodeV4(baseUri, localConfig.email);
                     } else {
-                        String response = webTargets.requestCode(baseUri, localConfig.email);
+                        webTargets.requestCode(baseUri, localConfig.email);
                     }
                     updateStatus(ThingStatus.UNKNOWN);
                     return;
