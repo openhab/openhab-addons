@@ -140,7 +140,6 @@
 			<channel id="multi-maps-list" typeId="multi-maps-list"/>
 			<channel id="room-mapping" typeId="room-mapping"/>
 			<channel id="routine-mapping" typeId="routine-mapping"/>
-			<channel id="fw-features" typeId="fw-features"/>
 			<channel id="customize-clean-mode" typeId="customize-clean-mode"/>
 			<channel id="carpet-mode" typeId="carpet-mode"/>
 		</channels>
