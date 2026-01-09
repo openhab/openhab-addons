@@ -13,7 +13,7 @@ These data loggers are used by inverters from a lot of manufacturers, just to na
 
 ## Supported Things
 
-The `solarman:logger` thing supports reading data from a Solarman LSW-3 Stick Logger (it might also work with LSE-3 and maybe others) when connected to a supported inverter.
+The `solarman:logger` Thing supports reading data from a Solarman LSW-3 Stick Logger (it might also work with LSE-3 and maybe others) when connected to a supported inverter.
 
 It was tested on a SUN-12K-SG04LP3-EU only, with LAN Stick LSE-3 in RAW MODBUS solarmanLoggerMode and Wifi Stick in V5 MODBUS solarmanLoggerMode but because the implementation uses the inverter definitions created as part of Stephan Joubert's Home Assistant plugin it **might** work with the other inverters supported by the plugin.
 
@@ -62,7 +62,7 @@ Possible values:
 The `additionalRequests` allows the user to specify additional address ranges to be polled. The format of the value is `mb_functioncode1:start1-end1, mb_functioncode2:start2-end2,...`
 For example `"0x03:0x27D-0x27E"` will issue an additional read for Holding Registers between `0x27D` and `0x27E`.
 
-This is useful when coupled with user defined channels, for example a thing definition like the one below will also read the register for the AC frequency on a Deye inverter, besides the ones pre-defined in the `deye_sg04lp3` inverter definition.
+This is useful when coupled with user defined channels, for example a Thing definition like the one below will also read the register for the AC frequency on a Deye inverter, besides the ones pre-defined in the `deye_sg04lp3` inverter definition.
 
 ```java
 Thing solarman:logger:local [ hostname="x.x.x.x", inverterType="deye_sg04lp3", serialNumber="1234567890", additionalRequests="0x03:0x27D-0x27E" ] {
@@ -170,7 +170,8 @@ This is the list you get for the `deye_sg04lp3` inverter type:
 
 ## Writable Channels
 
-If you want to write into registers of the invertor you need to directly define your channels as writable, because by default channels are counted as read-only. For example, `deye_sg04lp3` and `deye_sg01hp3` have a full set of writable channels connected to `Time Of Use` functionality, but if you want to add custom writable channels you need to define it like this:
+If you want to write to registers of the inverter, you need to define your channels as writable, because by default channels are treated as read-only.
+For example, `deye_sg04lp3` and `deye_sg01hp3` have a full set of writable channels connected to the `Time Of Use` functionality, but if you want to add custom writable channels you need to define them like this:
 
 ```java
 Thing solarman:logger:local [ hostname="x.x.x.x", inverterType="deye_sg04lp3", serialNumber="1234567890", additionalRequests="0x03:0x00A6-0x00A8" ] {
@@ -179,7 +180,7 @@ Thing solarman:logger:local [ hostname="x.x.x.x", inverterType="deye_sg04lp3", s
 }
 ```
 
-Note the **readOnly="false"** part here, which will make channel accept commands and write data to invertor register.
+Note the **readOnly="false"** part here, which will make the channel accept commands and write data to the inverter register.
 
 ## Full Example
 

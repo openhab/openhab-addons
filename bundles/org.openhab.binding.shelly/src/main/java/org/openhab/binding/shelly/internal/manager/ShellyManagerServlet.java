@@ -13,7 +13,7 @@
 package org.openhab.binding.shelly.internal.manager;
 
 import static org.openhab.binding.shelly.internal.manager.ShellyManagerConstants.*;
-import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
+import static org.openhab.binding.shelly.internal.util.ShellyUtils.getString;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -28,15 +28,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.shelly.internal.ShellyHandlerFactory;
 import org.openhab.binding.shelly.internal.api.ShellyApiException;
 import org.openhab.binding.shelly.internal.manager.ShellyManagerPage.ShellyMgrResponse;
-import org.openhab.binding.shelly.internal.provider.ShellyTranslationProvider;
-import org.openhab.core.io.net.http.HttpClientFactory;
-import org.openhab.core.net.HttpServiceUtil;
-import org.openhab.core.net.NetworkAddressService;
-import org.osgi.service.cm.ConfigurationAdmin;
-import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ConfigurationPolicy;
@@ -65,18 +58,10 @@ public class ShellyManagerServlet extends HttpServlet {
     private final String className;
 
     @Activate
-    public ShellyManagerServlet(@Reference ConfigurationAdmin configurationAdmin,
-            @Reference NetworkAddressService networkAddressService, @Reference HttpClientFactory httpClientFactory,
-            @Reference ShellyHandlerFactory handlerFactory, @Reference ShellyTranslationProvider translationProvider,
-            ComponentContext componentContext, Map<String, Object> config) {
-        className = substringAfterLast(getClass().toString(), ".");
-        String localIp = getString(networkAddressService.getPrimaryIpv4HostAddress());
-        Integer localPort = HttpServiceUtil.getHttpServicePort(componentContext.getBundleContext());
-        this.manager = new ShellyManager(configurationAdmin, translationProvider,
-                httpClientFactory.getCommonHttpClient(), localIp, localPort, handlerFactory);
-
-        // Promote Shelly Manager usage
-        logger.info("{}", translationProvider.get("status.managerstarted", localIp, localPort.toString()));
+    public ShellyManagerServlet(@Reference ShellyManager shellyManager) {
+        className = getClass().getSimpleName();
+        this.manager = shellyManager;
+        logger.debug("{} started", className);
     }
 
     @Deactivate

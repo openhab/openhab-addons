@@ -51,8 +51,10 @@ public class ShellyManagerActionPage extends ShellyManagerPage {
     private final Logger logger = LoggerFactory.getLogger(ShellyManagerActionPage.class);
 
     public ShellyManagerActionPage(ConfigurationAdmin configurationAdmin, ShellyTranslationProvider translationProvider,
-            HttpClient httpClient, String localIp, int localPort, ShellyHandlerFactory handlerFactory) {
-        super(configurationAdmin, translationProvider, httpClient, localIp, localPort, handlerFactory);
+            HttpClient httpClient, String localIp, int localPort, ShellyHandlerFactory handlerFactory,
+            ShellyManagerCache<String, FwRepoEntry> firmwareRepo, ShellyManagerCache<String, FwArchList> firmwareArch) {
+        super(configurationAdmin, translationProvider, httpClient, localIp, localPort, handlerFactory, firmwareRepo,
+                firmwareArch);
     }
 
     @Override

@@ -134,7 +134,7 @@ public class JpaHistoricItem implements HistoricItem {
                 }
             }
         } else if (item instanceof DimmerItem) {
-            state = new PercentType(Integer.parseInt(pItem.getValue()));
+            state = PercentType.valueOf(pItem.getValue());
         } else if (item instanceof SwitchItem) {
             state = OnOffType.valueOf(pItem.getValue());
         } else if (item instanceof ContactItem) {

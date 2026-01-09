@@ -10,6 +10,7 @@
 
 		<label>Photovoltaic</label>
 		<description>A photovoltaic system configured in your evcc instance</description>
+		<semantic-equipment-tag>Inverter</semantic-equipment-tag>
 		<config-description>
 			<parameter name="index" type="integer">
 				<label>Index</label>

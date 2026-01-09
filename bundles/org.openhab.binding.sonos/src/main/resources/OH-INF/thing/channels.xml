@@ -144,8 +144,8 @@
 
 	<channel-type id="led" advanced="true">
 		<item-type>Switch</item-type>
-		<label>Led</label>
-		<description>Set or get the status of the white led on the front of the Sonos device</description>
+		<label>LED</label>
+		<description>Set or get the status of the white LED on the front of the Sonos device</description>
 	</channel-type>
 
 	<channel-type id="localcoordinator" advanced="true">
@@ -359,14 +359,14 @@
 
 	<channel-type id="tuneinstationid" advanced="true">
 		<item-type>String</item-type>
-		<label>TuneIn Station Id</label>
-		<description>Provide the current TuneIn station id or play the TuneIn radio given by its station id</description>
+		<label>TuneIn Station ID</label>
+		<description>Provide the current TuneIn station ID or play the TuneIn radio given by its station ID</description>
 	</channel-type>
 
 	<channel-type id="zonegroupid" advanced="true">
 		<item-type>String</item-type>
 		<label>Zone Group ID</label>
-		<description>Id of the Zone Group the Sonos device belongs to</description>
+		<description>ID of the Zone Group the Sonos device belongs to</description>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -388,7 +388,7 @@
 	<channel-type id="playlinein" advanced="true">
 		<item-type>String</item-type>
 		<label>Play Line-in</label>
-		<description>Play the line-in of the the Sonos device corresponding to the given UIN</description>
+		<description>Play the line-in of the Sonos device corresponding to the given UDN</description>
 	</channel-type>
 
 	<!-- Extended channels (for SONOS Move only) -->

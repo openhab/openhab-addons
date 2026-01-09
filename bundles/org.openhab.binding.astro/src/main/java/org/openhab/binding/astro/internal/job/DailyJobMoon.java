@@ -15,12 +15,15 @@ package org.openhab.binding.astro.internal.job;
 import static org.openhab.binding.astro.internal.AstroBindingConstants.*;
 import static org.openhab.binding.astro.internal.job.Job.scheduleEvent;
 
+import java.time.Instant;
 import java.util.Calendar;
 import java.util.Locale;
+import java.util.Set;
 import java.util.TimeZone;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.astro.internal.handler.AstroThingHandler;
+import org.openhab.binding.astro.internal.model.DistanceType;
 import org.openhab.binding.astro.internal.model.Eclipse;
 import org.openhab.binding.astro.internal.model.Moon;
 import org.openhab.binding.astro.internal.model.MoonPhase;
@@ -102,14 +105,11 @@ public final class DailyJobMoon extends AbstractJob {
                 }
             });
 
-            cal = moon.getPerigee().getDate();
-            if (cal != null) {
-                scheduleEvent(handler, cal, EVENT_PERIGEE, EVENT_CHANNEL_ID_PERIGEE, false, zone, locale);
-            }
-            cal = moon.getApogee().getDate();
-            if (cal != null) {
-                scheduleEvent(handler, cal, EVENT_APOGEE, EVENT_CHANNEL_ID_APOGEE, false, zone, locale);
-            }
+            Set.of(DistanceType.APOGEE, DistanceType.PERIGEE).forEach(type -> {
+                if (moon.getDistanceType(type).getDate() instanceof Instant theMoment) {
+                    scheduleEvent(handler, theMoment, type.toString(), type.eventName(), false, zone, locale);
+                }
+            });
         } catch (Exception e) {
             LOGGER.warn("The daily moon job execution for \"{}\" failed: {}", handler.getThing().getUID(),
                     e.getMessage());
