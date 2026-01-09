@@ -257,7 +257,7 @@ public class Shelly1CoIoTProtocol {
             double power = -1.0;
             for (CoIotSensor update : allUpdates) {
                 CoIotDescrSen d = sensorMap.getOrDefault(update.id, new CoIotDescrSen());
-                if (!checkL.isEmpty() && !d.links.equals(checkL)) {
+                if (!checkL.isEmpty() && !checkL.equals(d.links)) {
                     // continue until we find the correct one
                     continue;
                 }
