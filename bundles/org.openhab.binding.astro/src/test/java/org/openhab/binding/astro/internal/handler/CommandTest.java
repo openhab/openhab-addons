@@ -10,18 +10,18 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.astro.handler.test;
+package org.openhab.binding.astro.internal.handler;
 
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 import static org.openhab.binding.astro.internal.AstroBindingConstants.THING_TYPE_SUN;
-import static org.openhab.binding.astro.test.cases.AstroBindingTestsData.*;
+import static org.openhab.binding.astro.internal.CommonTestConstants.*;
 
+import java.time.Instant;
+import java.time.InstantSource;
 import java.time.ZoneId;
 
 import org.junit.jupiter.api.Test;
-import org.openhab.binding.astro.internal.handler.AstroThingHandler;
-import org.openhab.binding.astro.internal.handler.SunHandler;
 import org.openhab.binding.astro.internal.model.Sun;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.i18n.LocaleProvider;
@@ -45,7 +45,7 @@ import org.openhab.core.types.State;
  * @author Svilen Valkanov - Reworked to plain unit tests
  * @author Christoph Weitkamp - Migrated tests to pure Java
  */
-public class AstroCommandTest {
+public class CommandTest {
 
     @Test
     public void testRefreshCommandUpdatesTheStateOfTheChannels() {
@@ -67,7 +67,8 @@ public class AstroCommandTest {
         TimeZoneProvider timeZoneProvider = mock(TimeZoneProvider.class);
         LocaleProvider localeProvider = mock(LocaleProvider.class);
         when(timeZoneProvider.getTimeZone()).thenReturn(ZoneId.systemDefault());
-        AstroThingHandler sunHandler = spy(new SunHandler(thing, cronScheduler, timeZoneProvider, localeProvider));
+        AstroThingHandler sunHandler = spy(new SunHandler(thing, cronScheduler, timeZoneProvider, localeProvider,
+                InstantSource.fixed(Instant.ofEpochMilli(1645671600000L))));
 
         // Required from the AstroThingHandler to send the status update
         doReturn(true).when(callback).isChannelLinked(eq(channelUID));

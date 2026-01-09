@@ -10,20 +10,19 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.astro.test.cases;
+package org.openhab.binding.astro.internal.handler;
 
-import static org.openhab.binding.astro.test.cases.AstroBindingTestsData.*;
+import static org.openhab.binding.astro.internal.CommonTestConstants.*;
 
 import java.util.Arrays;
 import java.util.List;
 
-import org.openhab.binding.astro.test.AstroStateTest;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
 
 /**
- * Test cases used in the {@link AstroStateTest}
+ * Test cases used in the {@link StateTest}
  *
  * @author Petar Valchev - Initial contribution
  * @author Svilen Valakanov - Added test data from
@@ -32,7 +31,7 @@ import org.openhab.core.library.unit.Units;
  * @author Erdoan Hadzhiyusein - Adapted the class to work with the new DateTimeType
  * @author Christoph Weitkamp - Introduced UoM and migrated tests to pure Java
  */
-public final class AstroParametrizedTestCases {
+public final class ParametrizedStateTestCases {
 
     public static final double TEST_LATITUDE = 22.4343;
     public static final double TEST_LONGITUDE = 54.3225;
@@ -42,7 +41,7 @@ public final class AstroParametrizedTestCases {
 
     public Object[][] cases = new Object[42][3];
 
-    public AstroParametrizedTestCases() {
+    public ParametrizedStateTestCases() {
         cases[0][0] = TEST_SUN_THING_ID;
         cases[0][1] = "rise#start";
         cases[0][2] = new DateTimeType("2016-02-29T05:46:00+03:00");

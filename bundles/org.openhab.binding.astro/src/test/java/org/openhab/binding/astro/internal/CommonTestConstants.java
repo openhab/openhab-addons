@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.astro.test.cases;
+package org.openhab.binding.astro.internal;
 
 import java.math.BigDecimal;
 
@@ -20,7 +20,7 @@ import java.math.BigDecimal;
  * @author Svilen Valkanov - Initial contribution
  * @author Christoph Weitkamp - Migrated tests to pure Java
  */
-public final class AstroBindingTestsData {
+public final class CommonTestConstants {
 
     public static final String TEST_SUN_THING_ID = "testSunThingId";
     public static final String TEST_MOON_THING_ID = "testMoonThingId";
