@@ -6,7 +6,7 @@ It can get forecasts for the nordic countries (Sweden, Norway, Denmark and Finla
 ## Supported Things
 
 The binding support only one thing-type: forecast.
-The thing can be configured to get hourly forecasts for up to 24 hours, and daily forecasts for up to 10 days.
+The Thing can be configured to get hourly forecasts for up to 24 hours, and daily forecasts for up to 10 days.
 
 ## Discovery
 
@@ -14,7 +14,7 @@ This binding does not support automatic discovery.
 
 ## Thing Configuration
 
-The forecast thing needs to be configured with the latitude and longitude for the location of the forecast.
+The forecast Thing needs to be configured with the latitude and longitude for the location of the forecast.
 You can also choose for which hours and which days you would like to get forecasts.
 
 | Parameter        | Description                     | Required |

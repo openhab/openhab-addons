@@ -36,7 +36,7 @@ import org.openhab.binding.astro.internal.util.DateTimeUtils;
  * covered:
  * <ul>
  * <li>checks if generated data are the same (with some accuracy) as produced by
- * haevens-above.com</li>
+ * heavens-above.com</li>
  * <li>checks if the generated {@link Sun#getAllRanges()} are consistent with
  * each other</li>
  * </ul>
@@ -102,7 +102,7 @@ public class SunCalcTest {
         assertNotNull(range);
         Calendar cal = range.getStart();
         assertNotNull(cal);
-        // expected result from haevens-above.com is 27 Feb 2019 05:39 till 06:18
+        // expected result from heavens-above.com is 27 Feb 2019 05:39 till 06:18
         assertEquals(SunCalcTest.newCalendar(2019, Calendar.FEBRUARY, 27, 5, 39, AMSTERDAM_TIME_ZONE).getTimeInMillis(),
                 cal.getTimeInMillis(), ACCURACY_IN_MILLIS);
         cal = range.getEnd();
@@ -120,7 +120,7 @@ public class SunCalcTest {
         assertNotNull(range);
         Calendar cal = range.getStart();
         assertNotNull(cal);
-        // expected result from haevens-above.com is 27 Feb 2019 06:18 till 06:58
+        // expected result from heavens-above.com is 27 Feb 2019 06:18 till 06:58
         assertEquals(SunCalcTest.newCalendar(2019, Calendar.FEBRUARY, 27, 6, 18, AMSTERDAM_TIME_ZONE).getTimeInMillis(),
                 cal.getTimeInMillis(), ACCURACY_IN_MILLIS);
         cal = range.getEnd();
@@ -138,7 +138,7 @@ public class SunCalcTest {
         assertNotNull(range);
         Calendar cal = range.getStart();
         assertNotNull(cal);
-        // expected result from haevens-above.com is 27 Feb 2019 06:58 till 07:32
+        // expected result from heavens-above.com is 27 Feb 2019 06:58 till 07:32
         assertEquals(SunCalcTest.newCalendar(2019, Calendar.FEBRUARY, 27, 6, 58, AMSTERDAM_TIME_ZONE).getTimeInMillis(),
                 cal.getTimeInMillis(), ACCURACY_IN_MILLIS);
         cal = range.getEnd();
@@ -156,7 +156,7 @@ public class SunCalcTest {
         assertNotNull(range);
         Calendar cal = range.getStart();
         assertNotNull(cal);
-        // expected result from haevens-above.com is 27 Feb 2019 07:32
+        // expected result from heavens-above.com is 27 Feb 2019 07:32
         assertEquals(SunCalcTest.newCalendar(2019, Calendar.FEBRUARY, 27, 7, 32, AMSTERDAM_TIME_ZONE).getTimeInMillis(),
                 cal.getTimeInMillis(), ACCURACY_IN_MILLIS);
     }
@@ -170,7 +170,7 @@ public class SunCalcTest {
         assertNotNull(range);
         Calendar cal = range.getStart();
         assertNotNull(cal);
-        // expected result from haevens-above.com is 27 Feb 2019 12:54
+        // expected result from heavens-above.com is 27 Feb 2019 12:54
         assertEquals(
                 SunCalcTest.newCalendar(2019, Calendar.FEBRUARY, 27, 12, 54, AMSTERDAM_TIME_ZONE).getTimeInMillis(),
                 cal.getTimeInMillis(), ACCURACY_IN_MILLIS);
@@ -185,7 +185,7 @@ public class SunCalcTest {
         assertNotNull(range);
         Calendar cal = range.getStart();
         assertNotNull(cal);
-        // expected result from haevens-above.com is 27 Feb 2019 18:15
+        // expected result from heavens-above.com is 27 Feb 2019 18:15
         assertEquals(
                 SunCalcTest.newCalendar(2019, Calendar.FEBRUARY, 27, 18, 15, AMSTERDAM_TIME_ZONE).getTimeInMillis(),
                 cal.getTimeInMillis(), ACCURACY_IN_MILLIS);
@@ -200,7 +200,7 @@ public class SunCalcTest {
         assertNotNull(range);
         Calendar cal = range.getStart();
         assertNotNull(cal);
-        // expected result from haevens-above.com is 27 Feb 2019 18:15 till 18:50
+        // expected result from heavens-above.com is 27 Feb 2019 18:15 till 18:50
         assertEquals(
                 SunCalcTest.newCalendar(2019, Calendar.FEBRUARY, 27, 18, 15, AMSTERDAM_TIME_ZONE).getTimeInMillis(),
                 cal.getTimeInMillis(), ACCURACY_IN_MILLIS);
@@ -220,7 +220,7 @@ public class SunCalcTest {
         assertNotNull(range);
         Calendar cal = range.getStart();
         assertNotNull(cal);
-        // expected result from haevens-above.com is 27 Feb 2019 18:50 till 19:29
+        // expected result from heavens-above.com is 27 Feb 2019 18:50 till 19:29
         assertEquals(
                 SunCalcTest.newCalendar(2019, Calendar.FEBRUARY, 27, 18, 50, AMSTERDAM_TIME_ZONE).getTimeInMillis(),
                 cal.getTimeInMillis(), ACCURACY_IN_MILLIS);
@@ -240,7 +240,7 @@ public class SunCalcTest {
         assertNotNull(range);
         Calendar cal = range.getStart();
         assertNotNull(cal);
-        // expected result from haevens-above.com is 27 Feb 2019 19:29 till 20:09
+        // expected result from heavens-above.com is 27 Feb 2019 19:29 till 20:09
         assertEquals(
                 SunCalcTest.newCalendar(2019, Calendar.FEBRUARY, 27, 19, 29, AMSTERDAM_TIME_ZONE).getTimeInMillis(),
                 cal.getTimeInMillis(), ACCURACY_IN_MILLIS);

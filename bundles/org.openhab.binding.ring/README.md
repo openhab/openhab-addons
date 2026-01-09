@@ -20,7 +20,7 @@ After (manually) adding a Ring Account bridge, registered doorbells and chimes w
 
 Account configuration is necessary.
 The easiest way to do this is from the UI.
-Just add a new thing, select the Ring binding, then Ring Account Binding Thing, and enter username and password.
+Just add a new Thing, select the Ring binding, then Ring Account Binding Thing, and enter username and password.
 Optionally, you can also specify a unique hardware ID and refresh interval for how often to check ring.com for events.
 If hardware ID is not specified, the MAC address of the system running OpenHAB is used.
 

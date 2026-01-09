@@ -101,7 +101,6 @@ public class Shelly1CoapJSonDTO {
     public static class CoIotDevDescription {
         public List<CoIotDescrBlk> blk;
         public List<CoIotDescrSen> sen;
-        // public List<CoIotDescrAct> act;
 
         public CoIotDevDescription() {
             blk = new ArrayList<>();

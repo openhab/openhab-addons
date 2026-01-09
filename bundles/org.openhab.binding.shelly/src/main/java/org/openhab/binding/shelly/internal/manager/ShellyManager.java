@@ -13,7 +13,9 @@
 package org.openhab.binding.shelly.internal.manager;
 
 import static org.openhab.binding.shelly.internal.manager.ShellyManagerConstants.*;
+import static org.openhab.binding.shelly.internal.util.ShellyUtils.getString;
 
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -22,9 +24,21 @@ import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.shelly.internal.ShellyHandlerFactory;
 import org.openhab.binding.shelly.internal.api.ShellyApiException;
+import org.openhab.binding.shelly.internal.manager.ShellyManagerPage.FwArchList;
+import org.openhab.binding.shelly.internal.manager.ShellyManagerPage.FwRepoEntry;
 import org.openhab.binding.shelly.internal.manager.ShellyManagerPage.ShellyMgrResponse;
 import org.openhab.binding.shelly.internal.provider.ShellyTranslationProvider;
+import org.openhab.core.io.net.http.HttpClientFactory;
+import org.openhab.core.net.HttpServiceUtil;
+import org.openhab.core.net.NetworkAddressService;
 import org.osgi.service.cm.ConfigurationAdmin;
+import org.osgi.service.component.ComponentContext;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * {@link ShellyManager} implements the Shelly Manager
@@ -32,23 +46,47 @@ import org.osgi.service.cm.ConfigurationAdmin;
  * @author Markus Michels - Initial contribution
  */
 @NonNullByDefault
+@Component(service = ShellyManager.class)
 public class ShellyManager {
-    private final Map<String, ShellyManagerPage> pages = new LinkedHashMap<>();
+    private final Map<String, ShellyManagerPage> pages;
+    private final Logger logger = LoggerFactory.getLogger(ShellyManager.class);
+    private final ShellyManagerCache<String, FwRepoEntry> firmwareRepo;
+    private final ShellyManagerCache<String, FwArchList> firmwareArch;
 
-    public ShellyManager(ConfigurationAdmin configurationAdmin, ShellyTranslationProvider translationProvider,
-            HttpClient httpClient, String localIp, int localPort, ShellyHandlerFactory handlerFactory) {
+    @Activate
+    public ShellyManager(@Reference ConfigurationAdmin configurationAdmin,
+            @Reference NetworkAddressService networkAddressService, @Reference HttpClientFactory httpClientFactory,
+            @Reference ShellyHandlerFactory handlerFactory, @Reference ShellyTranslationProvider translationProvider,
+            ComponentContext componentContext) {
+        String localIp = getString(networkAddressService.getPrimaryIpv4HostAddress());
+        Integer localPort = HttpServiceUtil.getHttpServicePort(componentContext.getBundleContext());
+        HttpClient httpClient = httpClientFactory.getCommonHttpClient();
+        Map<String, ShellyManagerPage> pages = new LinkedHashMap<>();
+        firmwareRepo = new ShellyManagerCache<>();
+        firmwareArch = new ShellyManagerCache<>();
+
         pages.put(SHELLY_MGR_OVERVIEW_URI, new ShellyManagerOverviewPage(configurationAdmin, translationProvider,
-                httpClient, localIp, localPort, handlerFactory));
+                httpClient, localIp, localPort, handlerFactory, firmwareRepo, firmwareArch));
         pages.put(SHELLY_MGR_ACTION_URI, new ShellyManagerActionPage(configurationAdmin, translationProvider,
-                httpClient, localIp, localPort, handlerFactory));
+                httpClient, localIp, localPort, handlerFactory, firmwareRepo, firmwareArch));
         pages.put(SHELLY_MGR_FWUPDATE_URI, new ShellyManagerOtaPage(configurationAdmin, translationProvider, httpClient,
-                localIp, localPort, handlerFactory));
+                localIp, localPort, handlerFactory, firmwareRepo, firmwareArch));
         pages.put(SHELLY_MGR_OTA_URI, new ShellyManagerOtaPage(configurationAdmin, translationProvider, httpClient,
-                localIp, localPort, handlerFactory));
+                localIp, localPort, handlerFactory, firmwareRepo, firmwareArch));
         pages.put(SHELLY_MGR_IMAGES_URI, new ShellyManagerImageLoader(configurationAdmin, translationProvider,
-                httpClient, localIp, localPort, handlerFactory));
+                httpClient, localIp, localPort, handlerFactory, firmwareRepo, firmwareArch));
         pages.put(SHELLY_MANAGER_URI, new ShellyManagerOverviewPage(configurationAdmin, translationProvider, httpClient,
-                localIp, localPort, handlerFactory));
+                localIp, localPort, handlerFactory, firmwareRepo, firmwareArch));
+        this.pages = Collections.unmodifiableMap(pages);
+
+        // Promote Shelly Manager usage
+        logger.info("{}", translationProvider.get("status.managerstarted", localIp, localPort.toString()));
+    }
+
+    @Deactivate
+    protected void deactivate() {
+        firmwareRepo.dispose();
+        firmwareArch.dispose();
     }
 
     public ShellyMgrResponse generateContent(String path, Map<String, String[]> parameters) throws ShellyApiException {

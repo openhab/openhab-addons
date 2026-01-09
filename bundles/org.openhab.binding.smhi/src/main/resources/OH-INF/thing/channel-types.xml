@@ -513,7 +513,7 @@
 				<option value="1">Clear sky</option>
 				<option value="2">Nearly clear sky</option>
 				<option value="3">Variable cloudiness</option>
-				<option value="4">Halfclear sky</option>
+				<option value="4">Half Clear Sky</option>
 				<option value="5">Cloudy sky</option>
 				<option value="6">Overcast</option>
 				<option value="7">Fog</option>

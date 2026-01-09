@@ -20,7 +20,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.shelly.internal.api.ShellyApiInterface;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
 import org.openhab.binding.shelly.internal.api1.Shelly1CoapJSonDTO.CoIotDescrBlk;
@@ -257,8 +256,8 @@ public class Shelly1CoIoTProtocol {
             double brightness = -1.0;
             double power = -1.0;
             for (CoIotSensor update : allUpdates) {
-                CoIotDescrSen d = fixDescription(sensorMap.get(update.id), blkMap);
-                if (!checkL.isEmpty() && !d.links.equals(checkL)) {
+                CoIotDescrSen d = sensorMap.getOrDefault(update.id, new CoIotDescrSen());
+                if (!checkL.isEmpty() && !checkL.equals(d.links)) {
                     // continue until we find the correct one
                     continue;
                 }
@@ -368,10 +367,6 @@ public class Shelly1CoIoTProtocol {
 
     protected ShellyDeviceProfile getProfile() {
         return profile;
-    }
-
-    public CoIotDescrSen fixDescription(@Nullable CoIotDescrSen sen, Map<String, CoIotDescrBlk> blkMap) {
-        return sen != null ? sen : new CoIotDescrSen();
     }
 
     public void completeMissingSensorDefinition(Map<String, CoIotDescrSen> sensorMap) {

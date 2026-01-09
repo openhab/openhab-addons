@@ -21,6 +21,7 @@ import static org.openhab.binding.evcc.internal.EvccBindingConstants.NUMBER_POWE
 import static org.openhab.binding.evcc.internal.EvccBindingConstants.NUMBER_TIME;
 
 import java.util.Arrays;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
@@ -61,7 +62,7 @@ public class Utils {
      * @return A string that contains hyphens
      */
     public static String sanitizeChannelID(String input) {
-        return input.replaceAll("(?<!^)(?=[A-Z])", "-").toLowerCase();
+        return input.replaceAll("(?<!^)(?=[A-Z])", "-").toLowerCase(Locale.ROOT);
     }
 
     /**
@@ -78,10 +79,10 @@ public class Utils {
         for (int i = 0; i < parts.length; i++) {
             String part = parts[i];
             if (i == 0) {
-                camelCase.append(part.toLowerCase());
+                camelCase.append(part.toLowerCase(Locale.ROOT));
             } else {
-                camelCase.append(part.substring(0, 1).toUpperCase());
-                camelCase.append(part.substring(1).toLowerCase());
+                camelCase.append(part.substring(0, 1).toUpperCase(Locale.ROOT));
+                camelCase.append(part.substring(1).toLowerCase(Locale.ROOT));
             }
         }
 
@@ -112,6 +113,6 @@ public class Utils {
         if (input.isEmpty()) {
             return input;
         }
-        return input.substring(0, 1).toUpperCase() + input.substring(1);
+        return input.substring(0, 1).toUpperCase(Locale.ROOT) + input.substring(1);
     }
 }
