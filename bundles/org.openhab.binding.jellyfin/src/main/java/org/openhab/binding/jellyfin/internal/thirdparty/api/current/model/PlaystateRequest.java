@@ -31,14 +31,17 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class PlaystateRequest {
     public static final String JSON_PROPERTY_COMMAND = "Command";
     @org.eclipse.jdt.annotation.Nullable
+
     private PlaystateCommand command;
 
     public static final String JSON_PROPERTY_SEEK_POSITION_TICKS = "SeekPositionTicks";
     @org.eclipse.jdt.annotation.Nullable
+
     private Long seekPositionTicks;
 
     public static final String JSON_PROPERTY_CONTROLLING_USER_ID = "ControllingUserId";
     @org.eclipse.jdt.annotation.Nullable
+
     private String controllingUserId;
 
     public PlaystateRequest() {
@@ -55,6 +58,7 @@ public class PlaystateRequest {
      * @return command
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_COMMAND, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public PlaystateCommand getCommand() {
@@ -78,6 +82,7 @@ public class PlaystateRequest {
      * @return seekPositionTicks
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_SEEK_POSITION_TICKS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Long getSeekPositionTicks() {
@@ -101,6 +106,7 @@ public class PlaystateRequest {
      * @return controllingUserId
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_CONTROLLING_USER_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getControllingUserId() {

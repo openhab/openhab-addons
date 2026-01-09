@@ -29,7 +29,8 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class ForgotPasswordPinDto {
     public static final String JSON_PROPERTY_PIN = "Pin";
-    @org.eclipse.jdt.annotation.NonNull
+    @org.eclipse.jdt.annotation.Nullable
+
     private String pin;
 
     public ForgotPasswordPinDto() {
@@ -45,7 +46,8 @@ public class ForgotPasswordPinDto {
      * 
      * @return pin
      */
-    @org.eclipse.jdt.annotation.NonNull
+    @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_PIN, required = true)
     @JsonInclude(value = JsonInclude.Include.ALWAYS)
     public String getPin() {

@@ -56,182 +56,227 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class MediaSourceInfo {
     public static final String JSON_PROPERTY_PROTOCOL = "Protocol";
     @org.eclipse.jdt.annotation.Nullable
+
     private MediaProtocol protocol;
 
     public static final String JSON_PROPERTY_ID = "Id";
     @org.eclipse.jdt.annotation.Nullable
+
     private String id;
 
     public static final String JSON_PROPERTY_PATH = "Path";
     @org.eclipse.jdt.annotation.Nullable
+
     private String path;
 
     public static final String JSON_PROPERTY_ENCODER_PATH = "EncoderPath";
     @org.eclipse.jdt.annotation.Nullable
+
     private String encoderPath;
 
     public static final String JSON_PROPERTY_ENCODER_PROTOCOL = "EncoderProtocol";
     @org.eclipse.jdt.annotation.Nullable
+
     private MediaProtocol encoderProtocol;
 
     public static final String JSON_PROPERTY_TYPE = "Type";
     @org.eclipse.jdt.annotation.Nullable
+
     private MediaSourceType type;
 
     public static final String JSON_PROPERTY_CONTAINER = "Container";
     @org.eclipse.jdt.annotation.Nullable
+
     private String container;
 
     public static final String JSON_PROPERTY_SIZE = "Size";
     @org.eclipse.jdt.annotation.Nullable
+
     private Long size;
 
     public static final String JSON_PROPERTY_NAME = "Name";
     @org.eclipse.jdt.annotation.Nullable
+
     private String name;
 
     public static final String JSON_PROPERTY_IS_REMOTE = "IsRemote";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean isRemote;
 
     public static final String JSON_PROPERTY_ETAG = "ETag";
     @org.eclipse.jdt.annotation.Nullable
+
     private String etag;
 
     public static final String JSON_PROPERTY_RUN_TIME_TICKS = "RunTimeTicks";
     @org.eclipse.jdt.annotation.Nullable
+
     private Long runTimeTicks;
 
     public static final String JSON_PROPERTY_READ_AT_NATIVE_FRAMERATE = "ReadAtNativeFramerate";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean readAtNativeFramerate;
 
     public static final String JSON_PROPERTY_IGNORE_DTS = "IgnoreDts";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean ignoreDts;
 
     public static final String JSON_PROPERTY_IGNORE_INDEX = "IgnoreIndex";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean ignoreIndex;
 
     public static final String JSON_PROPERTY_GEN_PTS_INPUT = "GenPtsInput";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean genPtsInput;
 
     public static final String JSON_PROPERTY_SUPPORTS_TRANSCODING = "SupportsTranscoding";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean supportsTranscoding;
 
     public static final String JSON_PROPERTY_SUPPORTS_DIRECT_STREAM = "SupportsDirectStream";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean supportsDirectStream;
 
     public static final String JSON_PROPERTY_SUPPORTS_DIRECT_PLAY = "SupportsDirectPlay";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean supportsDirectPlay;
 
     public static final String JSON_PROPERTY_IS_INFINITE_STREAM = "IsInfiniteStream";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean isInfiniteStream;
 
     public static final String JSON_PROPERTY_USE_MOST_COMPATIBLE_TRANSCODING_PROFILE = "UseMostCompatibleTranscodingProfile";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean useMostCompatibleTranscodingProfile = false;
 
     public static final String JSON_PROPERTY_REQUIRES_OPENING = "RequiresOpening";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean requiresOpening;
 
     public static final String JSON_PROPERTY_OPEN_TOKEN = "OpenToken";
     @org.eclipse.jdt.annotation.Nullable
+
     private String openToken;
 
     public static final String JSON_PROPERTY_REQUIRES_CLOSING = "RequiresClosing";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean requiresClosing;
 
     public static final String JSON_PROPERTY_LIVE_STREAM_ID = "LiveStreamId";
     @org.eclipse.jdt.annotation.Nullable
+
     private String liveStreamId;
 
     public static final String JSON_PROPERTY_BUFFER_MS = "BufferMs";
     @org.eclipse.jdt.annotation.Nullable
+
     private Integer bufferMs;
 
     public static final String JSON_PROPERTY_REQUIRES_LOOPING = "RequiresLooping";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean requiresLooping;
 
     public static final String JSON_PROPERTY_SUPPORTS_PROBING = "SupportsProbing";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean supportsProbing;
 
     public static final String JSON_PROPERTY_VIDEO_TYPE = "VideoType";
     @org.eclipse.jdt.annotation.Nullable
+
     private VideoType videoType;
 
     public static final String JSON_PROPERTY_ISO_TYPE = "IsoType";
     @org.eclipse.jdt.annotation.Nullable
+
     private IsoType isoType;
 
     public static final String JSON_PROPERTY_VIDEO3_D_FORMAT = "Video3DFormat";
     @org.eclipse.jdt.annotation.Nullable
+
     private Video3DFormat video3DFormat;
 
     public static final String JSON_PROPERTY_MEDIA_STREAMS = "MediaStreams";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<MediaStream> mediaStreams;
 
     public static final String JSON_PROPERTY_MEDIA_ATTACHMENTS = "MediaAttachments";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<MediaAttachment> mediaAttachments;
 
     public static final String JSON_PROPERTY_FORMATS = "Formats";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<String> formats;
 
     public static final String JSON_PROPERTY_BITRATE = "Bitrate";
     @org.eclipse.jdt.annotation.Nullable
+
     private Integer bitrate;
 
     public static final String JSON_PROPERTY_FALLBACK_MAX_STREAMING_BITRATE = "FallbackMaxStreamingBitrate";
     @org.eclipse.jdt.annotation.Nullable
+
     private Integer fallbackMaxStreamingBitrate;
 
     public static final String JSON_PROPERTY_TIMESTAMP = "Timestamp";
     @org.eclipse.jdt.annotation.Nullable
+
     private TransportStreamTimestamp timestamp;
 
     public static final String JSON_PROPERTY_REQUIRED_HTTP_HEADERS = "RequiredHttpHeaders";
     @org.eclipse.jdt.annotation.Nullable
+
     private Map<String, String> requiredHttpHeaders;
 
     public static final String JSON_PROPERTY_TRANSCODING_URL = "TranscodingUrl";
     @org.eclipse.jdt.annotation.Nullable
+
     private String transcodingUrl;
 
     public static final String JSON_PROPERTY_TRANSCODING_SUB_PROTOCOL = "TranscodingSubProtocol";
     @org.eclipse.jdt.annotation.Nullable
+
     private MediaStreamProtocol transcodingSubProtocol;
 
     public static final String JSON_PROPERTY_TRANSCODING_CONTAINER = "TranscodingContainer";
     @org.eclipse.jdt.annotation.Nullable
+
     private String transcodingContainer;
 
     public static final String JSON_PROPERTY_ANALYZE_DURATION_MS = "AnalyzeDurationMs";
     @org.eclipse.jdt.annotation.Nullable
+
     private Integer analyzeDurationMs;
 
     public static final String JSON_PROPERTY_DEFAULT_AUDIO_STREAM_INDEX = "DefaultAudioStreamIndex";
     @org.eclipse.jdt.annotation.Nullable
+
     private Integer defaultAudioStreamIndex;
 
     public static final String JSON_PROPERTY_DEFAULT_SUBTITLE_STREAM_INDEX = "DefaultSubtitleStreamIndex";
     @org.eclipse.jdt.annotation.Nullable
+
     private Integer defaultSubtitleStreamIndex;
 
     public static final String JSON_PROPERTY_HAS_SEGMENTS = "HasSegments";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean hasSegments;
 
     public MediaSourceInfo() {
@@ -248,6 +293,7 @@ public class MediaSourceInfo {
      * @return protocol
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_PROTOCOL, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public MediaProtocol getProtocol() {
@@ -271,6 +317,7 @@ public class MediaSourceInfo {
      * @return id
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getId() {
@@ -294,6 +341,7 @@ public class MediaSourceInfo {
      * @return path
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_PATH, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getPath() {
@@ -317,6 +365,7 @@ public class MediaSourceInfo {
      * @return encoderPath
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_ENCODER_PATH, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getEncoderPath() {
@@ -340,6 +389,7 @@ public class MediaSourceInfo {
      * @return encoderProtocol
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_ENCODER_PROTOCOL, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public MediaProtocol getEncoderProtocol() {
@@ -363,6 +413,7 @@ public class MediaSourceInfo {
      * @return type
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_TYPE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public MediaSourceType getType() {
@@ -386,6 +437,7 @@ public class MediaSourceInfo {
      * @return container
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_CONTAINER, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getContainer() {
@@ -409,6 +461,7 @@ public class MediaSourceInfo {
      * @return size
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_SIZE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Long getSize() {
@@ -432,6 +485,7 @@ public class MediaSourceInfo {
      * @return name
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getName() {
@@ -455,6 +509,7 @@ public class MediaSourceInfo {
      * @return isRemote
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_IS_REMOTE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getIsRemote() {
@@ -478,6 +533,7 @@ public class MediaSourceInfo {
      * @return etag
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_ETAG, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getEtag() {
@@ -501,6 +557,7 @@ public class MediaSourceInfo {
      * @return runTimeTicks
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_RUN_TIME_TICKS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Long getRunTimeTicks() {
@@ -524,6 +581,7 @@ public class MediaSourceInfo {
      * @return readAtNativeFramerate
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_READ_AT_NATIVE_FRAMERATE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getReadAtNativeFramerate() {
@@ -547,6 +605,7 @@ public class MediaSourceInfo {
      * @return ignoreDts
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_IGNORE_DTS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getIgnoreDts() {
@@ -570,6 +629,7 @@ public class MediaSourceInfo {
      * @return ignoreIndex
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_IGNORE_INDEX, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getIgnoreIndex() {
@@ -593,6 +653,7 @@ public class MediaSourceInfo {
      * @return genPtsInput
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_GEN_PTS_INPUT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getGenPtsInput() {
@@ -616,6 +677,7 @@ public class MediaSourceInfo {
      * @return supportsTranscoding
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_SUPPORTS_TRANSCODING, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getSupportsTranscoding() {
@@ -639,6 +701,7 @@ public class MediaSourceInfo {
      * @return supportsDirectStream
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_SUPPORTS_DIRECT_STREAM, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getSupportsDirectStream() {
@@ -662,6 +725,7 @@ public class MediaSourceInfo {
      * @return supportsDirectPlay
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_SUPPORTS_DIRECT_PLAY, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getSupportsDirectPlay() {
@@ -685,6 +749,7 @@ public class MediaSourceInfo {
      * @return isInfiniteStream
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_IS_INFINITE_STREAM, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getIsInfiniteStream() {
@@ -709,6 +774,7 @@ public class MediaSourceInfo {
      * @return useMostCompatibleTranscodingProfile
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_USE_MOST_COMPATIBLE_TRANSCODING_PROFILE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getUseMostCompatibleTranscodingProfile() {
@@ -733,6 +799,7 @@ public class MediaSourceInfo {
      * @return requiresOpening
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_REQUIRES_OPENING, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getRequiresOpening() {
@@ -756,6 +823,7 @@ public class MediaSourceInfo {
      * @return openToken
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_OPEN_TOKEN, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getOpenToken() {
@@ -779,6 +847,7 @@ public class MediaSourceInfo {
      * @return requiresClosing
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_REQUIRES_CLOSING, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getRequiresClosing() {
@@ -802,6 +871,7 @@ public class MediaSourceInfo {
      * @return liveStreamId
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_LIVE_STREAM_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getLiveStreamId() {
@@ -825,6 +895,7 @@ public class MediaSourceInfo {
      * @return bufferMs
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_BUFFER_MS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getBufferMs() {
@@ -848,6 +919,7 @@ public class MediaSourceInfo {
      * @return requiresLooping
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_REQUIRES_LOOPING, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getRequiresLooping() {
@@ -871,6 +943,7 @@ public class MediaSourceInfo {
      * @return supportsProbing
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_SUPPORTS_PROBING, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getSupportsProbing() {
@@ -894,6 +967,7 @@ public class MediaSourceInfo {
      * @return videoType
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_VIDEO_TYPE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public VideoType getVideoType() {
@@ -917,6 +991,7 @@ public class MediaSourceInfo {
      * @return isoType
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_ISO_TYPE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public IsoType getIsoType() {
@@ -940,6 +1015,7 @@ public class MediaSourceInfo {
      * @return video3DFormat
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_VIDEO3_D_FORMAT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Video3DFormat getVideo3DFormat() {
@@ -971,6 +1047,7 @@ public class MediaSourceInfo {
      * @return mediaStreams
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_MEDIA_STREAMS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<MediaStream> getMediaStreams() {
@@ -1003,6 +1080,7 @@ public class MediaSourceInfo {
      * @return mediaAttachments
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_MEDIA_ATTACHMENTS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<MediaAttachment> getMediaAttachments() {
@@ -1034,6 +1112,7 @@ public class MediaSourceInfo {
      * @return formats
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_FORMATS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<String> getFormats() {
@@ -1057,6 +1136,7 @@ public class MediaSourceInfo {
      * @return bitrate
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_BITRATE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getBitrate() {
@@ -1081,6 +1161,7 @@ public class MediaSourceInfo {
      * @return fallbackMaxStreamingBitrate
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_FALLBACK_MAX_STREAMING_BITRATE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getFallbackMaxStreamingBitrate() {
@@ -1105,6 +1186,7 @@ public class MediaSourceInfo {
      * @return timestamp
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_TIMESTAMP, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public TransportStreamTimestamp getTimestamp() {
@@ -1137,6 +1219,7 @@ public class MediaSourceInfo {
      * @return requiredHttpHeaders
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_REQUIRED_HTTP_HEADERS, required = false)
     @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
     public Map<String, String> getRequiredHttpHeaders() {
@@ -1160,6 +1243,7 @@ public class MediaSourceInfo {
      * @return transcodingUrl
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_TRANSCODING_URL, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getTranscodingUrl() {
@@ -1184,6 +1268,7 @@ public class MediaSourceInfo {
      * @return transcodingSubProtocol
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_TRANSCODING_SUB_PROTOCOL, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public MediaStreamProtocol getTranscodingSubProtocol() {
@@ -1208,6 +1293,7 @@ public class MediaSourceInfo {
      * @return transcodingContainer
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_TRANSCODING_CONTAINER, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getTranscodingContainer() {
@@ -1231,6 +1317,7 @@ public class MediaSourceInfo {
      * @return analyzeDurationMs
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_ANALYZE_DURATION_MS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getAnalyzeDurationMs() {
@@ -1255,6 +1342,7 @@ public class MediaSourceInfo {
      * @return defaultAudioStreamIndex
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_DEFAULT_AUDIO_STREAM_INDEX, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getDefaultAudioStreamIndex() {
@@ -1279,6 +1367,7 @@ public class MediaSourceInfo {
      * @return defaultSubtitleStreamIndex
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_DEFAULT_SUBTITLE_STREAM_INDEX, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getDefaultSubtitleStreamIndex() {
@@ -1302,6 +1391,7 @@ public class MediaSourceInfo {
      * @return hasSegments
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_HAS_SEGMENTS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getHasSegments() {

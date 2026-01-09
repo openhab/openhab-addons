@@ -30,6 +30,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class PlaylistCreationResult {
     public static final String JSON_PROPERTY_ID = "Id";
     @org.eclipse.jdt.annotation.Nullable
+
     private String id;
 
     public PlaylistCreationResult() {
@@ -46,6 +47,7 @@ public class PlaylistCreationResult {
      * @return id
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getId() {

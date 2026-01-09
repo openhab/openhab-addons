@@ -37,58 +37,72 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class UserDto {
     public static final String JSON_PROPERTY_NAME = "Name";
     @org.eclipse.jdt.annotation.Nullable
+
     private String name;
 
     public static final String JSON_PROPERTY_SERVER_ID = "ServerId";
     @org.eclipse.jdt.annotation.Nullable
+
     private String serverId;
 
     public static final String JSON_PROPERTY_SERVER_NAME = "ServerName";
     @org.eclipse.jdt.annotation.Nullable
+
     private String serverName;
 
     public static final String JSON_PROPERTY_ID = "Id";
     @org.eclipse.jdt.annotation.Nullable
+
     private UUID id;
 
     public static final String JSON_PROPERTY_PRIMARY_IMAGE_TAG = "PrimaryImageTag";
     @org.eclipse.jdt.annotation.Nullable
+
     private String primaryImageTag;
 
     public static final String JSON_PROPERTY_HAS_PASSWORD = "HasPassword";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean hasPassword;
 
     public static final String JSON_PROPERTY_HAS_CONFIGURED_PASSWORD = "HasConfiguredPassword";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean hasConfiguredPassword;
 
     public static final String JSON_PROPERTY_HAS_CONFIGURED_EASY_PASSWORD = "HasConfiguredEasyPassword";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean hasConfiguredEasyPassword;
 
     public static final String JSON_PROPERTY_ENABLE_AUTO_LOGIN = "EnableAutoLogin";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean enableAutoLogin;
 
     public static final String JSON_PROPERTY_LAST_LOGIN_DATE = "LastLoginDate";
     @org.eclipse.jdt.annotation.Nullable
+
     private OffsetDateTime lastLoginDate;
 
     public static final String JSON_PROPERTY_LAST_ACTIVITY_DATE = "LastActivityDate";
     @org.eclipse.jdt.annotation.Nullable
+
     private OffsetDateTime lastActivityDate;
 
     public static final String JSON_PROPERTY_CONFIGURATION = "Configuration";
     @org.eclipse.jdt.annotation.Nullable
+
     private UserConfiguration _configuration;
 
     public static final String JSON_PROPERTY_POLICY = "Policy";
     @org.eclipse.jdt.annotation.Nullable
+
     private UserPolicy policy;
 
     public static final String JSON_PROPERTY_PRIMARY_IMAGE_ASPECT_RATIO = "PrimaryImageAspectRatio";
     @org.eclipse.jdt.annotation.Nullable
+
     private Double primaryImageAspectRatio;
 
     public UserDto() {
@@ -105,6 +119,7 @@ public class UserDto {
      * @return name
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getName() {
@@ -128,6 +143,7 @@ public class UserDto {
      * @return serverId
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_SERVER_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getServerId() {
@@ -151,6 +167,7 @@ public class UserDto {
      * @return serverName
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_SERVER_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getServerName() {
@@ -174,6 +191,7 @@ public class UserDto {
      * @return id
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public UUID getId() {
@@ -197,6 +215,7 @@ public class UserDto {
      * @return primaryImageTag
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_PRIMARY_IMAGE_TAG, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getPrimaryImageTag() {
@@ -220,6 +239,7 @@ public class UserDto {
      * @return hasPassword
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_HAS_PASSWORD, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getHasPassword() {
@@ -243,6 +263,7 @@ public class UserDto {
      * @return hasConfiguredPassword
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_HAS_CONFIGURED_PASSWORD, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getHasConfiguredPassword() {
@@ -268,6 +289,7 @@ public class UserDto {
      */
     @Deprecated
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_HAS_CONFIGURED_EASY_PASSWORD, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getHasConfiguredEasyPassword() {
@@ -291,6 +313,7 @@ public class UserDto {
      * @return enableAutoLogin
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_ENABLE_AUTO_LOGIN, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getEnableAutoLogin() {
@@ -314,6 +337,7 @@ public class UserDto {
      * @return lastLoginDate
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_LAST_LOGIN_DATE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public OffsetDateTime getLastLoginDate() {
@@ -337,6 +361,7 @@ public class UserDto {
      * @return lastActivityDate
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_LAST_ACTIVITY_DATE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public OffsetDateTime getLastActivityDate() {
@@ -360,6 +385,7 @@ public class UserDto {
      * @return _configuration
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_CONFIGURATION, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public UserConfiguration getConfiguration() {
@@ -383,6 +409,7 @@ public class UserDto {
      * @return policy
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_POLICY, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public UserPolicy getPolicy() {
@@ -406,6 +433,7 @@ public class UserDto {
      * @return primaryImageAspectRatio
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_PRIMARY_IMAGE_ASPECT_RATIO, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Double getPrimaryImageAspectRatio() {

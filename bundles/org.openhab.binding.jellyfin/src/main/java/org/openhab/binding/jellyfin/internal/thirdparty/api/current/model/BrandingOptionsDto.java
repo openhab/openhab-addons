@@ -32,14 +32,17 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class BrandingOptionsDto {
     public static final String JSON_PROPERTY_LOGIN_DISCLAIMER = "LoginDisclaimer";
     @org.eclipse.jdt.annotation.Nullable
+
     private String loginDisclaimer;
 
     public static final String JSON_PROPERTY_CUSTOM_CSS = "CustomCss";
     @org.eclipse.jdt.annotation.Nullable
+
     private String customCss;
 
     public static final String JSON_PROPERTY_SPLASHSCREEN_ENABLED = "SplashscreenEnabled";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean splashscreenEnabled;
 
     public BrandingOptionsDto() {
@@ -56,6 +59,7 @@ public class BrandingOptionsDto {
      * @return loginDisclaimer
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_LOGIN_DISCLAIMER, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getLoginDisclaimer() {
@@ -79,6 +83,7 @@ public class BrandingOptionsDto {
      * @return customCss
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_CUSTOM_CSS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getCustomCss() {
@@ -102,6 +107,7 @@ public class BrandingOptionsDto {
      * @return splashscreenEnabled
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_SPLASHSCREEN_ENABLED, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getSplashscreenEnabled() {

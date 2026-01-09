@@ -31,18 +31,22 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class AuthenticationResult {
     public static final String JSON_PROPERTY_USER = "User";
     @org.eclipse.jdt.annotation.Nullable
+
     private UserDto user;
 
     public static final String JSON_PROPERTY_SESSION_INFO = "SessionInfo";
     @org.eclipse.jdt.annotation.Nullable
+
     private SessionInfoDto sessionInfo;
 
     public static final String JSON_PROPERTY_ACCESS_TOKEN = "AccessToken";
     @org.eclipse.jdt.annotation.Nullable
+
     private String accessToken;
 
     public static final String JSON_PROPERTY_SERVER_ID = "ServerId";
     @org.eclipse.jdt.annotation.Nullable
+
     private String serverId;
 
     public AuthenticationResult() {
@@ -59,6 +63,7 @@ public class AuthenticationResult {
      * @return user
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_USER, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public UserDto getUser() {
@@ -82,6 +87,7 @@ public class AuthenticationResult {
      * @return sessionInfo
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_SESSION_INFO, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public SessionInfoDto getSessionInfo() {
@@ -105,6 +111,7 @@ public class AuthenticationResult {
      * @return accessToken
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_ACCESS_TOKEN, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getAccessToken() {
@@ -128,6 +135,7 @@ public class AuthenticationResult {
      * @return serverId
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_SERVER_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getServerId() {

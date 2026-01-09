@@ -31,14 +31,17 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class ExternalIdInfo {
     public static final String JSON_PROPERTY_NAME = "Name";
     @org.eclipse.jdt.annotation.Nullable
+
     private String name;
 
     public static final String JSON_PROPERTY_KEY = "Key";
     @org.eclipse.jdt.annotation.Nullable
+
     private String key;
 
     public static final String JSON_PROPERTY_TYPE = "Type";
     @org.eclipse.jdt.annotation.Nullable
+
     private ExternalIdMediaType type;
 
     public ExternalIdInfo() {
@@ -55,6 +58,7 @@ public class ExternalIdInfo {
      * @return name
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getName() {
@@ -78,6 +82,7 @@ public class ExternalIdInfo {
      * @return key
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_KEY, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getKey() {
@@ -103,6 +108,7 @@ public class ExternalIdInfo {
      * @return type
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_TYPE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public ExternalIdMediaType getType() {

@@ -30,10 +30,12 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class GroupStateUpdate {
     public static final String JSON_PROPERTY_STATE = "State";
     @org.eclipse.jdt.annotation.Nullable
+
     private GroupStateType state;
 
     public static final String JSON_PROPERTY_REASON = "Reason";
     @org.eclipse.jdt.annotation.Nullable
+
     private PlaybackRequestType reason;
 
     public GroupStateUpdate() {
@@ -50,6 +52,7 @@ public class GroupStateUpdate {
      * @return state
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_STATE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public GroupStateType getState() {
@@ -73,6 +76,7 @@ public class GroupStateUpdate {
      * @return reason
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_REASON, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public PlaybackRequestType getReason() {

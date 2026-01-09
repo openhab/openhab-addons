@@ -30,15 +30,15 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class BrandingOptions {
     public static final String JSON_PROPERTY_LOGIN_DISCLAIMER = "LoginDisclaimer";
-    @org.eclipse.jdt.annotation.NonNull
+    @org.eclipse.jdt.annotation.Nullable
     private String loginDisclaimer;
 
     public static final String JSON_PROPERTY_CUSTOM_CSS = "CustomCss";
-    @org.eclipse.jdt.annotation.NonNull
+    @org.eclipse.jdt.annotation.Nullable
     private String customCss;
 
     public static final String JSON_PROPERTY_SPLASHSCREEN_ENABLED = "SplashscreenEnabled";
-    @org.eclipse.jdt.annotation.NonNull
+    @org.eclipse.jdt.annotation.Nullable
     private Boolean splashscreenEnabled;
 
     public BrandingOptions() {
@@ -54,7 +54,7 @@ public class BrandingOptions {
      * 
      * @return loginDisclaimer
      */
-    @org.eclipse.jdt.annotation.NonNull
+    @org.eclipse.jdt.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_LOGIN_DISCLAIMER)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getLoginDisclaimer() {
@@ -77,7 +77,7 @@ public class BrandingOptions {
      * 
      * @return customCss
      */
-    @org.eclipse.jdt.annotation.NonNull
+    @org.eclipse.jdt.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_CUSTOM_CSS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getCustomCss() {
@@ -100,7 +100,7 @@ public class BrandingOptions {
      * 
      * @return splashscreenEnabled
      */
-    @org.eclipse.jdt.annotation.NonNull
+    @org.eclipse.jdt.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_SPLASHSCREEN_ENABLED)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getSplashscreenEnabled() {

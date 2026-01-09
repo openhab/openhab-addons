@@ -30,10 +30,12 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class LibraryOptionInfoDto {
     public static final String JSON_PROPERTY_NAME = "Name";
     @org.eclipse.jdt.annotation.Nullable
+
     private String name;
 
     public static final String JSON_PROPERTY_DEFAULT_ENABLED = "DefaultEnabled";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean defaultEnabled;
 
     public LibraryOptionInfoDto() {
@@ -50,6 +52,7 @@ public class LibraryOptionInfoDto {
      * @return name
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getName() {
@@ -73,6 +76,7 @@ public class LibraryOptionInfoDto {
      * @return defaultEnabled
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_DEFAULT_ENABLED, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getDefaultEnabled() {

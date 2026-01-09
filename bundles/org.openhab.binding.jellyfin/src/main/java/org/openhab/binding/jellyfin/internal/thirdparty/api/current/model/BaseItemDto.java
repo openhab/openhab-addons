@@ -107,614 +107,767 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class BaseItemDto {
     public static final String JSON_PROPERTY_NAME = "Name";
     @org.eclipse.jdt.annotation.Nullable
+
     private String name;
 
     public static final String JSON_PROPERTY_ORIGINAL_TITLE = "OriginalTitle";
     @org.eclipse.jdt.annotation.Nullable
+
     private String originalTitle;
 
     public static final String JSON_PROPERTY_SERVER_ID = "ServerId";
     @org.eclipse.jdt.annotation.Nullable
+
     private String serverId;
 
     public static final String JSON_PROPERTY_ID = "Id";
     @org.eclipse.jdt.annotation.Nullable
+
     private UUID id;
 
     public static final String JSON_PROPERTY_ETAG = "Etag";
     @org.eclipse.jdt.annotation.Nullable
+
     private String etag;
 
     public static final String JSON_PROPERTY_SOURCE_TYPE = "SourceType";
     @org.eclipse.jdt.annotation.Nullable
+
     private String sourceType;
 
     public static final String JSON_PROPERTY_PLAYLIST_ITEM_ID = "PlaylistItemId";
     @org.eclipse.jdt.annotation.Nullable
+
     private String playlistItemId;
 
     public static final String JSON_PROPERTY_DATE_CREATED = "DateCreated";
     @org.eclipse.jdt.annotation.Nullable
+
     private OffsetDateTime dateCreated;
 
     public static final String JSON_PROPERTY_DATE_LAST_MEDIA_ADDED = "DateLastMediaAdded";
     @org.eclipse.jdt.annotation.Nullable
+
     private OffsetDateTime dateLastMediaAdded;
 
     public static final String JSON_PROPERTY_EXTRA_TYPE = "ExtraType";
     @org.eclipse.jdt.annotation.Nullable
+
     private ExtraType extraType;
 
     public static final String JSON_PROPERTY_AIRS_BEFORE_SEASON_NUMBER = "AirsBeforeSeasonNumber";
     @org.eclipse.jdt.annotation.Nullable
+
     private Integer airsBeforeSeasonNumber;
 
     public static final String JSON_PROPERTY_AIRS_AFTER_SEASON_NUMBER = "AirsAfterSeasonNumber";
     @org.eclipse.jdt.annotation.Nullable
+
     private Integer airsAfterSeasonNumber;
 
     public static final String JSON_PROPERTY_AIRS_BEFORE_EPISODE_NUMBER = "AirsBeforeEpisodeNumber";
     @org.eclipse.jdt.annotation.Nullable
+
     private Integer airsBeforeEpisodeNumber;
 
     public static final String JSON_PROPERTY_CAN_DELETE = "CanDelete";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean canDelete;
 
     public static final String JSON_PROPERTY_CAN_DOWNLOAD = "CanDownload";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean canDownload;
 
     public static final String JSON_PROPERTY_HAS_LYRICS = "HasLyrics";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean hasLyrics;
 
     public static final String JSON_PROPERTY_HAS_SUBTITLES = "HasSubtitles";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean hasSubtitles;
 
     public static final String JSON_PROPERTY_PREFERRED_METADATA_LANGUAGE = "PreferredMetadataLanguage";
     @org.eclipse.jdt.annotation.Nullable
+
     private String preferredMetadataLanguage;
 
     public static final String JSON_PROPERTY_PREFERRED_METADATA_COUNTRY_CODE = "PreferredMetadataCountryCode";
     @org.eclipse.jdt.annotation.Nullable
+
     private String preferredMetadataCountryCode;
 
     public static final String JSON_PROPERTY_CONTAINER = "Container";
     @org.eclipse.jdt.annotation.Nullable
+
     private String container;
 
     public static final String JSON_PROPERTY_SORT_NAME = "SortName";
     @org.eclipse.jdt.annotation.Nullable
+
     private String sortName;
 
     public static final String JSON_PROPERTY_FORCED_SORT_NAME = "ForcedSortName";
     @org.eclipse.jdt.annotation.Nullable
+
     private String forcedSortName;
 
     public static final String JSON_PROPERTY_VIDEO3_D_FORMAT = "Video3DFormat";
     @org.eclipse.jdt.annotation.Nullable
+
     private Video3DFormat video3DFormat;
 
     public static final String JSON_PROPERTY_PREMIERE_DATE = "PremiereDate";
     @org.eclipse.jdt.annotation.Nullable
+
     private OffsetDateTime premiereDate;
 
     public static final String JSON_PROPERTY_EXTERNAL_URLS = "ExternalUrls";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<ExternalUrl> externalUrls;
 
     public static final String JSON_PROPERTY_MEDIA_SOURCES = "MediaSources";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<MediaSourceInfo> mediaSources;
 
     public static final String JSON_PROPERTY_CRITIC_RATING = "CriticRating";
     @org.eclipse.jdt.annotation.Nullable
+
     private Float criticRating;
 
     public static final String JSON_PROPERTY_PRODUCTION_LOCATIONS = "ProductionLocations";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<String> productionLocations;
 
     public static final String JSON_PROPERTY_PATH = "Path";
     @org.eclipse.jdt.annotation.Nullable
+
     private String path;
 
     public static final String JSON_PROPERTY_ENABLE_MEDIA_SOURCE_DISPLAY = "EnableMediaSourceDisplay";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean enableMediaSourceDisplay;
 
     public static final String JSON_PROPERTY_OFFICIAL_RATING = "OfficialRating";
     @org.eclipse.jdt.annotation.Nullable
+
     private String officialRating;
 
     public static final String JSON_PROPERTY_CUSTOM_RATING = "CustomRating";
     @org.eclipse.jdt.annotation.Nullable
+
     private String customRating;
 
     public static final String JSON_PROPERTY_CHANNEL_ID = "ChannelId";
     @org.eclipse.jdt.annotation.Nullable
+
     private UUID channelId;
 
     public static final String JSON_PROPERTY_CHANNEL_NAME = "ChannelName";
     @org.eclipse.jdt.annotation.Nullable
+
     private String channelName;
 
     public static final String JSON_PROPERTY_OVERVIEW = "Overview";
     @org.eclipse.jdt.annotation.Nullable
+
     private String overview;
 
     public static final String JSON_PROPERTY_TAGLINES = "Taglines";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<String> taglines;
 
     public static final String JSON_PROPERTY_GENRES = "Genres";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<String> genres;
 
     public static final String JSON_PROPERTY_COMMUNITY_RATING = "CommunityRating";
     @org.eclipse.jdt.annotation.Nullable
+
     private Float communityRating;
 
     public static final String JSON_PROPERTY_CUMULATIVE_RUN_TIME_TICKS = "CumulativeRunTimeTicks";
     @org.eclipse.jdt.annotation.Nullable
+
     private Long cumulativeRunTimeTicks;
 
     public static final String JSON_PROPERTY_RUN_TIME_TICKS = "RunTimeTicks";
     @org.eclipse.jdt.annotation.Nullable
+
     private Long runTimeTicks;
 
     public static final String JSON_PROPERTY_PLAY_ACCESS = "PlayAccess";
     @org.eclipse.jdt.annotation.Nullable
+
     private PlayAccess playAccess;
 
     public static final String JSON_PROPERTY_ASPECT_RATIO = "AspectRatio";
     @org.eclipse.jdt.annotation.Nullable
+
     private String aspectRatio;
 
     public static final String JSON_PROPERTY_PRODUCTION_YEAR = "ProductionYear";
     @org.eclipse.jdt.annotation.Nullable
+
     private Integer productionYear;
 
     public static final String JSON_PROPERTY_IS_PLACE_HOLDER = "IsPlaceHolder";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean isPlaceHolder;
 
     public static final String JSON_PROPERTY_NUMBER = "Number";
     @org.eclipse.jdt.annotation.Nullable
+
     private String number;
 
     public static final String JSON_PROPERTY_CHANNEL_NUMBER = "ChannelNumber";
     @org.eclipse.jdt.annotation.Nullable
+
     private String channelNumber;
 
     public static final String JSON_PROPERTY_INDEX_NUMBER = "IndexNumber";
     @org.eclipse.jdt.annotation.Nullable
+
     private Integer indexNumber;
 
     public static final String JSON_PROPERTY_INDEX_NUMBER_END = "IndexNumberEnd";
     @org.eclipse.jdt.annotation.Nullable
+
     private Integer indexNumberEnd;
 
     public static final String JSON_PROPERTY_PARENT_INDEX_NUMBER = "ParentIndexNumber";
     @org.eclipse.jdt.annotation.Nullable
+
     private Integer parentIndexNumber;
 
     public static final String JSON_PROPERTY_REMOTE_TRAILERS = "RemoteTrailers";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<MediaUrl> remoteTrailers;
 
     public static final String JSON_PROPERTY_PROVIDER_IDS = "ProviderIds";
     @org.eclipse.jdt.annotation.Nullable
+
     private Map<String, String> providerIds;
 
     public static final String JSON_PROPERTY_IS_H_D = "IsHD";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean isHD;
 
     public static final String JSON_PROPERTY_IS_FOLDER = "IsFolder";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean isFolder;
 
     public static final String JSON_PROPERTY_PARENT_ID = "ParentId";
     @org.eclipse.jdt.annotation.Nullable
+
     private UUID parentId;
 
     public static final String JSON_PROPERTY_TYPE = "Type";
     @org.eclipse.jdt.annotation.Nullable
+
     private BaseItemKind type;
 
     public static final String JSON_PROPERTY_PEOPLE = "People";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<BaseItemPerson> people;
 
     public static final String JSON_PROPERTY_STUDIOS = "Studios";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<NameGuidPair> studios;
 
     public static final String JSON_PROPERTY_GENRE_ITEMS = "GenreItems";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<NameGuidPair> genreItems;
 
     public static final String JSON_PROPERTY_PARENT_LOGO_ITEM_ID = "ParentLogoItemId";
     @org.eclipse.jdt.annotation.Nullable
+
     private UUID parentLogoItemId;
 
     public static final String JSON_PROPERTY_PARENT_BACKDROP_ITEM_ID = "ParentBackdropItemId";
     @org.eclipse.jdt.annotation.Nullable
+
     private UUID parentBackdropItemId;
 
     public static final String JSON_PROPERTY_PARENT_BACKDROP_IMAGE_TAGS = "ParentBackdropImageTags";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<String> parentBackdropImageTags;
 
     public static final String JSON_PROPERTY_LOCAL_TRAILER_COUNT = "LocalTrailerCount";
     @org.eclipse.jdt.annotation.Nullable
+
     private Integer localTrailerCount;
 
     public static final String JSON_PROPERTY_USER_DATA = "UserData";
     @org.eclipse.jdt.annotation.Nullable
+
     private UserItemDataDto userData;
 
     public static final String JSON_PROPERTY_RECURSIVE_ITEM_COUNT = "RecursiveItemCount";
     @org.eclipse.jdt.annotation.Nullable
+
     private Integer recursiveItemCount;
 
     public static final String JSON_PROPERTY_CHILD_COUNT = "ChildCount";
     @org.eclipse.jdt.annotation.Nullable
+
     private Integer childCount;
 
     public static final String JSON_PROPERTY_SERIES_NAME = "SeriesName";
     @org.eclipse.jdt.annotation.Nullable
+
     private String seriesName;
 
     public static final String JSON_PROPERTY_SERIES_ID = "SeriesId";
     @org.eclipse.jdt.annotation.Nullable
+
     private UUID seriesId;
 
     public static final String JSON_PROPERTY_SEASON_ID = "SeasonId";
     @org.eclipse.jdt.annotation.Nullable
+
     private UUID seasonId;
 
     public static final String JSON_PROPERTY_SPECIAL_FEATURE_COUNT = "SpecialFeatureCount";
     @org.eclipse.jdt.annotation.Nullable
+
     private Integer specialFeatureCount;
 
     public static final String JSON_PROPERTY_DISPLAY_PREFERENCES_ID = "DisplayPreferencesId";
     @org.eclipse.jdt.annotation.Nullable
+
     private String displayPreferencesId;
 
     public static final String JSON_PROPERTY_STATUS = "Status";
     @org.eclipse.jdt.annotation.Nullable
+
     private String status;
 
     public static final String JSON_PROPERTY_AIR_TIME = "AirTime";
     @org.eclipse.jdt.annotation.Nullable
+
     private String airTime;
 
     public static final String JSON_PROPERTY_AIR_DAYS = "AirDays";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<DayOfWeek> airDays;
 
     public static final String JSON_PROPERTY_TAGS = "Tags";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<String> tags;
 
     public static final String JSON_PROPERTY_PRIMARY_IMAGE_ASPECT_RATIO = "PrimaryImageAspectRatio";
     @org.eclipse.jdt.annotation.Nullable
+
     private Double primaryImageAspectRatio;
 
     public static final String JSON_PROPERTY_ARTISTS = "Artists";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<String> artists;
 
     public static final String JSON_PROPERTY_ARTIST_ITEMS = "ArtistItems";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<NameGuidPair> artistItems;
 
     public static final String JSON_PROPERTY_ALBUM = "Album";
     @org.eclipse.jdt.annotation.Nullable
+
     private String album;
 
     public static final String JSON_PROPERTY_COLLECTION_TYPE = "CollectionType";
     @org.eclipse.jdt.annotation.Nullable
+
     private CollectionType collectionType;
 
     public static final String JSON_PROPERTY_DISPLAY_ORDER = "DisplayOrder";
     @org.eclipse.jdt.annotation.Nullable
+
     private String displayOrder;
 
     public static final String JSON_PROPERTY_ALBUM_ID = "AlbumId";
     @org.eclipse.jdt.annotation.Nullable
+
     private UUID albumId;
 
     public static final String JSON_PROPERTY_ALBUM_PRIMARY_IMAGE_TAG = "AlbumPrimaryImageTag";
     @org.eclipse.jdt.annotation.Nullable
+
     private String albumPrimaryImageTag;
 
     public static final String JSON_PROPERTY_SERIES_PRIMARY_IMAGE_TAG = "SeriesPrimaryImageTag";
     @org.eclipse.jdt.annotation.Nullable
+
     private String seriesPrimaryImageTag;
 
     public static final String JSON_PROPERTY_ALBUM_ARTIST = "AlbumArtist";
     @org.eclipse.jdt.annotation.Nullable
+
     private String albumArtist;
 
     public static final String JSON_PROPERTY_ALBUM_ARTISTS = "AlbumArtists";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<NameGuidPair> albumArtists;
 
     public static final String JSON_PROPERTY_SEASON_NAME = "SeasonName";
     @org.eclipse.jdt.annotation.Nullable
+
     private String seasonName;
 
     public static final String JSON_PROPERTY_MEDIA_STREAMS = "MediaStreams";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<MediaStream> mediaStreams;
 
     public static final String JSON_PROPERTY_VIDEO_TYPE = "VideoType";
     @org.eclipse.jdt.annotation.Nullable
+
     private VideoType videoType;
 
     public static final String JSON_PROPERTY_PART_COUNT = "PartCount";
     @org.eclipse.jdt.annotation.Nullable
+
     private Integer partCount;
 
     public static final String JSON_PROPERTY_MEDIA_SOURCE_COUNT = "MediaSourceCount";
     @org.eclipse.jdt.annotation.Nullable
+
     private Integer mediaSourceCount;
 
     public static final String JSON_PROPERTY_IMAGE_TAGS = "ImageTags";
     @org.eclipse.jdt.annotation.Nullable
+
     private Map<String, String> imageTags;
 
     public static final String JSON_PROPERTY_BACKDROP_IMAGE_TAGS = "BackdropImageTags";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<String> backdropImageTags;
 
     public static final String JSON_PROPERTY_SCREENSHOT_IMAGE_TAGS = "ScreenshotImageTags";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<String> screenshotImageTags;
 
     public static final String JSON_PROPERTY_PARENT_LOGO_IMAGE_TAG = "ParentLogoImageTag";
     @org.eclipse.jdt.annotation.Nullable
+
     private String parentLogoImageTag;
 
     public static final String JSON_PROPERTY_PARENT_ART_ITEM_ID = "ParentArtItemId";
     @org.eclipse.jdt.annotation.Nullable
+
     private UUID parentArtItemId;
 
     public static final String JSON_PROPERTY_PARENT_ART_IMAGE_TAG = "ParentArtImageTag";
     @org.eclipse.jdt.annotation.Nullable
+
     private String parentArtImageTag;
 
     public static final String JSON_PROPERTY_SERIES_THUMB_IMAGE_TAG = "SeriesThumbImageTag";
     @org.eclipse.jdt.annotation.Nullable
+
     private String seriesThumbImageTag;
 
     public static final String JSON_PROPERTY_IMAGE_BLUR_HASHES = "ImageBlurHashes";
     @org.eclipse.jdt.annotation.Nullable
+
     private BaseItemDtoImageBlurHashes imageBlurHashes;
 
     public static final String JSON_PROPERTY_SERIES_STUDIO = "SeriesStudio";
     @org.eclipse.jdt.annotation.Nullable
+
     private String seriesStudio;
 
     public static final String JSON_PROPERTY_PARENT_THUMB_ITEM_ID = "ParentThumbItemId";
     @org.eclipse.jdt.annotation.Nullable
+
     private UUID parentThumbItemId;
 
     public static final String JSON_PROPERTY_PARENT_THUMB_IMAGE_TAG = "ParentThumbImageTag";
     @org.eclipse.jdt.annotation.Nullable
+
     private String parentThumbImageTag;
 
     public static final String JSON_PROPERTY_PARENT_PRIMARY_IMAGE_ITEM_ID = "ParentPrimaryImageItemId";
     @org.eclipse.jdt.annotation.Nullable
+
     private UUID parentPrimaryImageItemId;
 
     public static final String JSON_PROPERTY_PARENT_PRIMARY_IMAGE_TAG = "ParentPrimaryImageTag";
     @org.eclipse.jdt.annotation.Nullable
+
     private String parentPrimaryImageTag;
 
     public static final String JSON_PROPERTY_CHAPTERS = "Chapters";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<ChapterInfo> chapters;
 
     public static final String JSON_PROPERTY_TRICKPLAY = "Trickplay";
     @org.eclipse.jdt.annotation.Nullable
+
     private Map<String, Map<String, TrickplayInfoDto>> trickplay;
 
     public static final String JSON_PROPERTY_LOCATION_TYPE = "LocationType";
     @org.eclipse.jdt.annotation.Nullable
+
     private LocationType locationType;
 
     public static final String JSON_PROPERTY_ISO_TYPE = "IsoType";
     @org.eclipse.jdt.annotation.Nullable
+
     private IsoType isoType;
 
     public static final String JSON_PROPERTY_MEDIA_TYPE = "MediaType";
     @org.eclipse.jdt.annotation.Nullable
+
     private MediaType mediaType = MediaType.UNKNOWN;
 
     public static final String JSON_PROPERTY_END_DATE = "EndDate";
     @org.eclipse.jdt.annotation.Nullable
+
     private OffsetDateTime endDate;
 
     public static final String JSON_PROPERTY_LOCKED_FIELDS = "LockedFields";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<MetadataField> lockedFields;
 
     public static final String JSON_PROPERTY_TRAILER_COUNT = "TrailerCount";
     @org.eclipse.jdt.annotation.Nullable
+
     private Integer trailerCount;
 
     public static final String JSON_PROPERTY_MOVIE_COUNT = "MovieCount";
     @org.eclipse.jdt.annotation.Nullable
+
     private Integer movieCount;
 
     public static final String JSON_PROPERTY_SERIES_COUNT = "SeriesCount";
     @org.eclipse.jdt.annotation.Nullable
+
     private Integer seriesCount;
 
     public static final String JSON_PROPERTY_PROGRAM_COUNT = "ProgramCount";
     @org.eclipse.jdt.annotation.Nullable
+
     private Integer programCount;
 
     public static final String JSON_PROPERTY_EPISODE_COUNT = "EpisodeCount";
     @org.eclipse.jdt.annotation.Nullable
+
     private Integer episodeCount;
 
     public static final String JSON_PROPERTY_SONG_COUNT = "SongCount";
     @org.eclipse.jdt.annotation.Nullable
+
     private Integer songCount;
 
     public static final String JSON_PROPERTY_ALBUM_COUNT = "AlbumCount";
     @org.eclipse.jdt.annotation.Nullable
+
     private Integer albumCount;
 
     public static final String JSON_PROPERTY_ARTIST_COUNT = "ArtistCount";
     @org.eclipse.jdt.annotation.Nullable
+
     private Integer artistCount;
 
     public static final String JSON_PROPERTY_MUSIC_VIDEO_COUNT = "MusicVideoCount";
     @org.eclipse.jdt.annotation.Nullable
+
     private Integer musicVideoCount;
 
     public static final String JSON_PROPERTY_LOCK_DATA = "LockData";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean lockData;
 
     public static final String JSON_PROPERTY_WIDTH = "Width";
     @org.eclipse.jdt.annotation.Nullable
+
     private Integer width;
 
     public static final String JSON_PROPERTY_HEIGHT = "Height";
     @org.eclipse.jdt.annotation.Nullable
+
     private Integer height;
 
     public static final String JSON_PROPERTY_CAMERA_MAKE = "CameraMake";
     @org.eclipse.jdt.annotation.Nullable
+
     private String cameraMake;
 
     public static final String JSON_PROPERTY_CAMERA_MODEL = "CameraModel";
     @org.eclipse.jdt.annotation.Nullable
+
     private String cameraModel;
 
     public static final String JSON_PROPERTY_SOFTWARE = "Software";
     @org.eclipse.jdt.annotation.Nullable
+
     private String software;
 
     public static final String JSON_PROPERTY_EXPOSURE_TIME = "ExposureTime";
     @org.eclipse.jdt.annotation.Nullable
+
     private Double exposureTime;
 
     public static final String JSON_PROPERTY_FOCAL_LENGTH = "FocalLength";
     @org.eclipse.jdt.annotation.Nullable
+
     private Double focalLength;
 
     public static final String JSON_PROPERTY_IMAGE_ORIENTATION = "ImageOrientation";
     @org.eclipse.jdt.annotation.Nullable
+
     private ImageOrientation imageOrientation;
 
     public static final String JSON_PROPERTY_APERTURE = "Aperture";
     @org.eclipse.jdt.annotation.Nullable
+
     private Double aperture;
 
     public static final String JSON_PROPERTY_SHUTTER_SPEED = "ShutterSpeed";
     @org.eclipse.jdt.annotation.Nullable
+
     private Double shutterSpeed;
 
     public static final String JSON_PROPERTY_LATITUDE = "Latitude";
     @org.eclipse.jdt.annotation.Nullable
+
     private Double latitude;
 
     public static final String JSON_PROPERTY_LONGITUDE = "Longitude";
     @org.eclipse.jdt.annotation.Nullable
+
     private Double longitude;
 
     public static final String JSON_PROPERTY_ALTITUDE = "Altitude";
     @org.eclipse.jdt.annotation.Nullable
+
     private Double altitude;
 
     public static final String JSON_PROPERTY_ISO_SPEED_RATING = "IsoSpeedRating";
     @org.eclipse.jdt.annotation.Nullable
+
     private Integer isoSpeedRating;
 
     public static final String JSON_PROPERTY_SERIES_TIMER_ID = "SeriesTimerId";
     @org.eclipse.jdt.annotation.Nullable
+
     private String seriesTimerId;
 
     public static final String JSON_PROPERTY_PROGRAM_ID = "ProgramId";
     @org.eclipse.jdt.annotation.Nullable
+
     private String programId;
 
     public static final String JSON_PROPERTY_CHANNEL_PRIMARY_IMAGE_TAG = "ChannelPrimaryImageTag";
     @org.eclipse.jdt.annotation.Nullable
+
     private String channelPrimaryImageTag;
 
     public static final String JSON_PROPERTY_START_DATE = "StartDate";
     @org.eclipse.jdt.annotation.Nullable
+
     private OffsetDateTime startDate;
 
     public static final String JSON_PROPERTY_COMPLETION_PERCENTAGE = "CompletionPercentage";
     @org.eclipse.jdt.annotation.Nullable
+
     private Double completionPercentage;
 
     public static final String JSON_PROPERTY_IS_REPEAT = "IsRepeat";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean isRepeat;
 
     public static final String JSON_PROPERTY_EPISODE_TITLE = "EpisodeTitle";
     @org.eclipse.jdt.annotation.Nullable
+
     private String episodeTitle;
 
     public static final String JSON_PROPERTY_CHANNEL_TYPE = "ChannelType";
     @org.eclipse.jdt.annotation.Nullable
+
     private ChannelType channelType;
 
     public static final String JSON_PROPERTY_AUDIO = "Audio";
     @org.eclipse.jdt.annotation.Nullable
+
     private ProgramAudio audio;
 
     public static final String JSON_PROPERTY_IS_MOVIE = "IsMovie";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean isMovie;
 
     public static final String JSON_PROPERTY_IS_SPORTS = "IsSports";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean isSports;
 
     public static final String JSON_PROPERTY_IS_SERIES = "IsSeries";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean isSeries;
 
     public static final String JSON_PROPERTY_IS_LIVE = "IsLive";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean isLive;
 
     public static final String JSON_PROPERTY_IS_NEWS = "IsNews";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean isNews;
 
     public static final String JSON_PROPERTY_IS_KIDS = "IsKids";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean isKids;
 
     public static final String JSON_PROPERTY_IS_PREMIERE = "IsPremiere";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean isPremiere;
 
     public static final String JSON_PROPERTY_TIMER_ID = "TimerId";
     @org.eclipse.jdt.annotation.Nullable
+
     private String timerId;
 
     public static final String JSON_PROPERTY_NORMALIZATION_GAIN = "NormalizationGain";
     @org.eclipse.jdt.annotation.Nullable
+
     private Float normalizationGain;
 
     public static final String JSON_PROPERTY_CURRENT_PROGRAM = "CurrentProgram";
     @org.eclipse.jdt.annotation.Nullable
+
     private BaseItemDto currentProgram;
 
     public BaseItemDto() {
@@ -731,6 +884,7 @@ public class BaseItemDto {
      * @return name
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getName() {
@@ -754,6 +908,7 @@ public class BaseItemDto {
      * @return originalTitle
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_ORIGINAL_TITLE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getOriginalTitle() {
@@ -777,6 +932,7 @@ public class BaseItemDto {
      * @return serverId
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_SERVER_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getServerId() {
@@ -800,6 +956,7 @@ public class BaseItemDto {
      * @return id
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public UUID getId() {
@@ -823,6 +980,7 @@ public class BaseItemDto {
      * @return etag
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_ETAG, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getEtag() {
@@ -846,6 +1004,7 @@ public class BaseItemDto {
      * @return sourceType
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_SOURCE_TYPE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getSourceType() {
@@ -869,6 +1028,7 @@ public class BaseItemDto {
      * @return playlistItemId
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_PLAYLIST_ITEM_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getPlaylistItemId() {
@@ -892,6 +1052,7 @@ public class BaseItemDto {
      * @return dateCreated
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_DATE_CREATED, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public OffsetDateTime getDateCreated() {
@@ -915,6 +1076,7 @@ public class BaseItemDto {
      * @return dateLastMediaAdded
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_DATE_LAST_MEDIA_ADDED, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public OffsetDateTime getDateLastMediaAdded() {
@@ -938,6 +1100,7 @@ public class BaseItemDto {
      * @return extraType
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_EXTRA_TYPE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public ExtraType getExtraType() {
@@ -961,6 +1124,7 @@ public class BaseItemDto {
      * @return airsBeforeSeasonNumber
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_AIRS_BEFORE_SEASON_NUMBER, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getAirsBeforeSeasonNumber() {
@@ -984,6 +1148,7 @@ public class BaseItemDto {
      * @return airsAfterSeasonNumber
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_AIRS_AFTER_SEASON_NUMBER, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getAirsAfterSeasonNumber() {
@@ -1007,6 +1172,7 @@ public class BaseItemDto {
      * @return airsBeforeEpisodeNumber
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_AIRS_BEFORE_EPISODE_NUMBER, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getAirsBeforeEpisodeNumber() {
@@ -1030,6 +1196,7 @@ public class BaseItemDto {
      * @return canDelete
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_CAN_DELETE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getCanDelete() {
@@ -1053,6 +1220,7 @@ public class BaseItemDto {
      * @return canDownload
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_CAN_DOWNLOAD, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getCanDownload() {
@@ -1076,6 +1244,7 @@ public class BaseItemDto {
      * @return hasLyrics
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_HAS_LYRICS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getHasLyrics() {
@@ -1099,6 +1268,7 @@ public class BaseItemDto {
      * @return hasSubtitles
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_HAS_SUBTITLES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getHasSubtitles() {
@@ -1123,6 +1293,7 @@ public class BaseItemDto {
      * @return preferredMetadataLanguage
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_PREFERRED_METADATA_LANGUAGE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getPreferredMetadataLanguage() {
@@ -1147,6 +1318,7 @@ public class BaseItemDto {
      * @return preferredMetadataCountryCode
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_PREFERRED_METADATA_COUNTRY_CODE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getPreferredMetadataCountryCode() {
@@ -1171,6 +1343,7 @@ public class BaseItemDto {
      * @return container
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_CONTAINER, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getContainer() {
@@ -1194,6 +1367,7 @@ public class BaseItemDto {
      * @return sortName
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_SORT_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getSortName() {
@@ -1217,6 +1391,7 @@ public class BaseItemDto {
      * @return forcedSortName
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_FORCED_SORT_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getForcedSortName() {
@@ -1240,6 +1415,7 @@ public class BaseItemDto {
      * @return video3DFormat
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_VIDEO3_D_FORMAT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Video3DFormat getVideo3DFormat() {
@@ -1263,6 +1439,7 @@ public class BaseItemDto {
      * @return premiereDate
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_PREMIERE_DATE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public OffsetDateTime getPremiereDate() {
@@ -1294,6 +1471,7 @@ public class BaseItemDto {
      * @return externalUrls
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_EXTERNAL_URLS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<ExternalUrl> getExternalUrls() {
@@ -1325,6 +1503,7 @@ public class BaseItemDto {
      * @return mediaSources
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_MEDIA_SOURCES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<MediaSourceInfo> getMediaSources() {
@@ -1348,6 +1527,7 @@ public class BaseItemDto {
      * @return criticRating
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_CRITIC_RATING, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Float getCriticRating() {
@@ -1379,6 +1559,7 @@ public class BaseItemDto {
      * @return productionLocations
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_PRODUCTION_LOCATIONS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<String> getProductionLocations() {
@@ -1402,6 +1583,7 @@ public class BaseItemDto {
      * @return path
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_PATH, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getPath() {
@@ -1425,6 +1607,7 @@ public class BaseItemDto {
      * @return enableMediaSourceDisplay
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_ENABLE_MEDIA_SOURCE_DISPLAY, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getEnableMediaSourceDisplay() {
@@ -1448,6 +1631,7 @@ public class BaseItemDto {
      * @return officialRating
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_OFFICIAL_RATING, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getOfficialRating() {
@@ -1471,6 +1655,7 @@ public class BaseItemDto {
      * @return customRating
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_CUSTOM_RATING, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getCustomRating() {
@@ -1494,6 +1679,7 @@ public class BaseItemDto {
      * @return channelId
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_CHANNEL_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public UUID getChannelId() {
@@ -1517,6 +1703,7 @@ public class BaseItemDto {
      * @return channelName
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_CHANNEL_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getChannelName() {
@@ -1540,6 +1727,7 @@ public class BaseItemDto {
      * @return overview
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_OVERVIEW, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getOverview() {
@@ -1571,6 +1759,7 @@ public class BaseItemDto {
      * @return taglines
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_TAGLINES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<String> getTaglines() {
@@ -1602,6 +1791,7 @@ public class BaseItemDto {
      * @return genres
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_GENRES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<String> getGenres() {
@@ -1625,6 +1815,7 @@ public class BaseItemDto {
      * @return communityRating
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_COMMUNITY_RATING, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Float getCommunityRating() {
@@ -1648,6 +1839,7 @@ public class BaseItemDto {
      * @return cumulativeRunTimeTicks
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_CUMULATIVE_RUN_TIME_TICKS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Long getCumulativeRunTimeTicks() {
@@ -1671,6 +1863,7 @@ public class BaseItemDto {
      * @return runTimeTicks
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_RUN_TIME_TICKS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Long getRunTimeTicks() {
@@ -1694,6 +1887,7 @@ public class BaseItemDto {
      * @return playAccess
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_PLAY_ACCESS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public PlayAccess getPlayAccess() {
@@ -1717,6 +1911,7 @@ public class BaseItemDto {
      * @return aspectRatio
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_ASPECT_RATIO, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getAspectRatio() {
@@ -1740,6 +1935,7 @@ public class BaseItemDto {
      * @return productionYear
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_PRODUCTION_YEAR, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getProductionYear() {
@@ -1763,6 +1959,7 @@ public class BaseItemDto {
      * @return isPlaceHolder
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_IS_PLACE_HOLDER, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getIsPlaceHolder() {
@@ -1786,6 +1983,7 @@ public class BaseItemDto {
      * @return number
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_NUMBER, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getNumber() {
@@ -1809,6 +2007,7 @@ public class BaseItemDto {
      * @return channelNumber
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_CHANNEL_NUMBER, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getChannelNumber() {
@@ -1832,6 +2031,7 @@ public class BaseItemDto {
      * @return indexNumber
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_INDEX_NUMBER, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getIndexNumber() {
@@ -1855,6 +2055,7 @@ public class BaseItemDto {
      * @return indexNumberEnd
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_INDEX_NUMBER_END, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getIndexNumberEnd() {
@@ -1878,6 +2079,7 @@ public class BaseItemDto {
      * @return parentIndexNumber
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_PARENT_INDEX_NUMBER, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getParentIndexNumber() {
@@ -1909,6 +2111,7 @@ public class BaseItemDto {
      * @return remoteTrailers
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_REMOTE_TRAILERS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<MediaUrl> getRemoteTrailers() {
@@ -1940,6 +2143,7 @@ public class BaseItemDto {
      * @return providerIds
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_PROVIDER_IDS, required = false)
     @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
     public Map<String, String> getProviderIds() {
@@ -1963,6 +2167,7 @@ public class BaseItemDto {
      * @return isHD
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_IS_H_D, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getIsHD() {
@@ -1986,6 +2191,7 @@ public class BaseItemDto {
      * @return isFolder
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_IS_FOLDER, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getIsFolder() {
@@ -2009,6 +2215,7 @@ public class BaseItemDto {
      * @return parentId
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_PARENT_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public UUID getParentId() {
@@ -2032,6 +2239,7 @@ public class BaseItemDto {
      * @return type
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_TYPE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public BaseItemKind getType() {
@@ -2063,6 +2271,7 @@ public class BaseItemDto {
      * @return people
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_PEOPLE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<BaseItemPerson> getPeople() {
@@ -2094,6 +2303,7 @@ public class BaseItemDto {
      * @return studios
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_STUDIOS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<NameGuidPair> getStudios() {
@@ -2125,6 +2335,7 @@ public class BaseItemDto {
      * @return genreItems
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_GENRE_ITEMS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<NameGuidPair> getGenreItems() {
@@ -2148,6 +2359,7 @@ public class BaseItemDto {
      * @return parentLogoItemId
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_PARENT_LOGO_ITEM_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public UUID getParentLogoItemId() {
@@ -2171,6 +2383,7 @@ public class BaseItemDto {
      * @return parentBackdropItemId
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_PARENT_BACKDROP_ITEM_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public UUID getParentBackdropItemId() {
@@ -2203,6 +2416,7 @@ public class BaseItemDto {
      * @return parentBackdropImageTags
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_PARENT_BACKDROP_IMAGE_TAGS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<String> getParentBackdropImageTags() {
@@ -2226,6 +2440,7 @@ public class BaseItemDto {
      * @return localTrailerCount
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_LOCAL_TRAILER_COUNT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getLocalTrailerCount() {
@@ -2249,6 +2464,7 @@ public class BaseItemDto {
      * @return userData
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_USER_DATA, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public UserItemDataDto getUserData() {
@@ -2272,6 +2488,7 @@ public class BaseItemDto {
      * @return recursiveItemCount
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_RECURSIVE_ITEM_COUNT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getRecursiveItemCount() {
@@ -2295,6 +2512,7 @@ public class BaseItemDto {
      * @return childCount
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_CHILD_COUNT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getChildCount() {
@@ -2318,6 +2536,7 @@ public class BaseItemDto {
      * @return seriesName
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_SERIES_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getSeriesName() {
@@ -2341,6 +2560,7 @@ public class BaseItemDto {
      * @return seriesId
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_SERIES_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public UUID getSeriesId() {
@@ -2364,6 +2584,7 @@ public class BaseItemDto {
      * @return seasonId
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_SEASON_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public UUID getSeasonId() {
@@ -2387,6 +2608,7 @@ public class BaseItemDto {
      * @return specialFeatureCount
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_SPECIAL_FEATURE_COUNT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getSpecialFeatureCount() {
@@ -2410,6 +2632,7 @@ public class BaseItemDto {
      * @return displayPreferencesId
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_DISPLAY_PREFERENCES_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getDisplayPreferencesId() {
@@ -2433,6 +2656,7 @@ public class BaseItemDto {
      * @return status
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_STATUS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getStatus() {
@@ -2456,6 +2680,7 @@ public class BaseItemDto {
      * @return airTime
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_AIR_TIME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getAirTime() {
@@ -2487,6 +2712,7 @@ public class BaseItemDto {
      * @return airDays
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_AIR_DAYS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<DayOfWeek> getAirDays() {
@@ -2518,6 +2744,7 @@ public class BaseItemDto {
      * @return tags
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_TAGS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<String> getTags() {
@@ -2541,6 +2768,7 @@ public class BaseItemDto {
      * @return primaryImageAspectRatio
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_PRIMARY_IMAGE_ASPECT_RATIO, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Double getPrimaryImageAspectRatio() {
@@ -2572,6 +2800,7 @@ public class BaseItemDto {
      * @return artists
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_ARTISTS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<String> getArtists() {
@@ -2603,6 +2832,7 @@ public class BaseItemDto {
      * @return artistItems
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_ARTIST_ITEMS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<NameGuidPair> getArtistItems() {
@@ -2626,6 +2856,7 @@ public class BaseItemDto {
      * @return album
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_ALBUM, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getAlbum() {
@@ -2649,6 +2880,7 @@ public class BaseItemDto {
      * @return collectionType
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_COLLECTION_TYPE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public CollectionType getCollectionType() {
@@ -2672,6 +2904,7 @@ public class BaseItemDto {
      * @return displayOrder
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_DISPLAY_ORDER, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getDisplayOrder() {
@@ -2695,6 +2928,7 @@ public class BaseItemDto {
      * @return albumId
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_ALBUM_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public UUID getAlbumId() {
@@ -2718,6 +2952,7 @@ public class BaseItemDto {
      * @return albumPrimaryImageTag
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_ALBUM_PRIMARY_IMAGE_TAG, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getAlbumPrimaryImageTag() {
@@ -2741,6 +2976,7 @@ public class BaseItemDto {
      * @return seriesPrimaryImageTag
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_SERIES_PRIMARY_IMAGE_TAG, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getSeriesPrimaryImageTag() {
@@ -2764,6 +3000,7 @@ public class BaseItemDto {
      * @return albumArtist
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_ALBUM_ARTIST, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getAlbumArtist() {
@@ -2795,6 +3032,7 @@ public class BaseItemDto {
      * @return albumArtists
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_ALBUM_ARTISTS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<NameGuidPair> getAlbumArtists() {
@@ -2818,6 +3056,7 @@ public class BaseItemDto {
      * @return seasonName
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_SEASON_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getSeasonName() {
@@ -2849,6 +3088,7 @@ public class BaseItemDto {
      * @return mediaStreams
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_MEDIA_STREAMS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<MediaStream> getMediaStreams() {
@@ -2872,6 +3112,7 @@ public class BaseItemDto {
      * @return videoType
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_VIDEO_TYPE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public VideoType getVideoType() {
@@ -2895,6 +3136,7 @@ public class BaseItemDto {
      * @return partCount
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_PART_COUNT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getPartCount() {
@@ -2918,6 +3160,7 @@ public class BaseItemDto {
      * @return mediaSourceCount
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_MEDIA_SOURCE_COUNT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getMediaSourceCount() {
@@ -2949,6 +3192,7 @@ public class BaseItemDto {
      * @return imageTags
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_IMAGE_TAGS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Map<String, String> getImageTags() {
@@ -2980,6 +3224,7 @@ public class BaseItemDto {
      * @return backdropImageTags
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_BACKDROP_IMAGE_TAGS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<String> getBackdropImageTags() {
@@ -3011,6 +3256,7 @@ public class BaseItemDto {
      * @return screenshotImageTags
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_SCREENSHOT_IMAGE_TAGS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<String> getScreenshotImageTags() {
@@ -3034,6 +3280,7 @@ public class BaseItemDto {
      * @return parentLogoImageTag
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_PARENT_LOGO_IMAGE_TAG, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getParentLogoImageTag() {
@@ -3057,6 +3304,7 @@ public class BaseItemDto {
      * @return parentArtItemId
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_PARENT_ART_ITEM_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public UUID getParentArtItemId() {
@@ -3080,6 +3328,7 @@ public class BaseItemDto {
      * @return parentArtImageTag
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_PARENT_ART_IMAGE_TAG, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getParentArtImageTag() {
@@ -3103,6 +3352,7 @@ public class BaseItemDto {
      * @return seriesThumbImageTag
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_SERIES_THUMB_IMAGE_TAG, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getSeriesThumbImageTag() {
@@ -3127,6 +3377,7 @@ public class BaseItemDto {
      * @return imageBlurHashes
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_IMAGE_BLUR_HASHES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public BaseItemDtoImageBlurHashes getImageBlurHashes() {
@@ -3150,6 +3401,7 @@ public class BaseItemDto {
      * @return seriesStudio
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_SERIES_STUDIO, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getSeriesStudio() {
@@ -3173,6 +3425,7 @@ public class BaseItemDto {
      * @return parentThumbItemId
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_PARENT_THUMB_ITEM_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public UUID getParentThumbItemId() {
@@ -3196,6 +3449,7 @@ public class BaseItemDto {
      * @return parentThumbImageTag
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_PARENT_THUMB_IMAGE_TAG, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getParentThumbImageTag() {
@@ -3219,6 +3473,7 @@ public class BaseItemDto {
      * @return parentPrimaryImageItemId
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_PARENT_PRIMARY_IMAGE_ITEM_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public UUID getParentPrimaryImageItemId() {
@@ -3242,6 +3497,7 @@ public class BaseItemDto {
      * @return parentPrimaryImageTag
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_PARENT_PRIMARY_IMAGE_TAG, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getParentPrimaryImageTag() {
@@ -3273,6 +3529,7 @@ public class BaseItemDto {
      * @return chapters
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_CHAPTERS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<ChapterInfo> getChapters() {
@@ -3305,6 +3562,7 @@ public class BaseItemDto {
      * @return trickplay
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_TRICKPLAY, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Map<String, Map<String, TrickplayInfoDto>> getTrickplay() {
@@ -3329,6 +3587,7 @@ public class BaseItemDto {
      * @return locationType
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_LOCATION_TYPE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public LocationType getLocationType() {
@@ -3352,6 +3611,7 @@ public class BaseItemDto {
      * @return isoType
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_ISO_TYPE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public IsoType getIsoType() {
@@ -3375,6 +3635,7 @@ public class BaseItemDto {
      * @return mediaType
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_MEDIA_TYPE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public MediaType getMediaType() {
@@ -3398,6 +3659,7 @@ public class BaseItemDto {
      * @return endDate
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_END_DATE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public OffsetDateTime getEndDate() {
@@ -3429,6 +3691,7 @@ public class BaseItemDto {
      * @return lockedFields
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_LOCKED_FIELDS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<MetadataField> getLockedFields() {
@@ -3452,6 +3715,7 @@ public class BaseItemDto {
      * @return trailerCount
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_TRAILER_COUNT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getTrailerCount() {
@@ -3475,6 +3739,7 @@ public class BaseItemDto {
      * @return movieCount
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_MOVIE_COUNT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getMovieCount() {
@@ -3498,6 +3763,7 @@ public class BaseItemDto {
      * @return seriesCount
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_SERIES_COUNT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getSeriesCount() {
@@ -3521,6 +3787,7 @@ public class BaseItemDto {
      * @return programCount
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_PROGRAM_COUNT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getProgramCount() {
@@ -3544,6 +3811,7 @@ public class BaseItemDto {
      * @return episodeCount
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_EPISODE_COUNT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getEpisodeCount() {
@@ -3567,6 +3835,7 @@ public class BaseItemDto {
      * @return songCount
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_SONG_COUNT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getSongCount() {
@@ -3590,6 +3859,7 @@ public class BaseItemDto {
      * @return albumCount
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_ALBUM_COUNT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getAlbumCount() {
@@ -3613,6 +3883,7 @@ public class BaseItemDto {
      * @return artistCount
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_ARTIST_COUNT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getArtistCount() {
@@ -3636,6 +3907,7 @@ public class BaseItemDto {
      * @return musicVideoCount
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_MUSIC_VIDEO_COUNT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getMusicVideoCount() {
@@ -3659,6 +3931,7 @@ public class BaseItemDto {
      * @return lockData
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_LOCK_DATA, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getLockData() {
@@ -3682,6 +3955,7 @@ public class BaseItemDto {
      * @return width
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_WIDTH, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getWidth() {
@@ -3705,6 +3979,7 @@ public class BaseItemDto {
      * @return height
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_HEIGHT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getHeight() {
@@ -3728,6 +4003,7 @@ public class BaseItemDto {
      * @return cameraMake
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_CAMERA_MAKE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getCameraMake() {
@@ -3751,6 +4027,7 @@ public class BaseItemDto {
      * @return cameraModel
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_CAMERA_MODEL, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getCameraModel() {
@@ -3774,6 +4051,7 @@ public class BaseItemDto {
      * @return software
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_SOFTWARE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getSoftware() {
@@ -3797,6 +4075,7 @@ public class BaseItemDto {
      * @return exposureTime
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_EXPOSURE_TIME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Double getExposureTime() {
@@ -3820,6 +4099,7 @@ public class BaseItemDto {
      * @return focalLength
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_FOCAL_LENGTH, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Double getFocalLength() {
@@ -3843,6 +4123,7 @@ public class BaseItemDto {
      * @return imageOrientation
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_IMAGE_ORIENTATION, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public ImageOrientation getImageOrientation() {
@@ -3866,6 +4147,7 @@ public class BaseItemDto {
      * @return aperture
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_APERTURE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Double getAperture() {
@@ -3889,6 +4171,7 @@ public class BaseItemDto {
      * @return shutterSpeed
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_SHUTTER_SPEED, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Double getShutterSpeed() {
@@ -3912,6 +4195,7 @@ public class BaseItemDto {
      * @return latitude
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_LATITUDE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Double getLatitude() {
@@ -3935,6 +4219,7 @@ public class BaseItemDto {
      * @return longitude
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_LONGITUDE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Double getLongitude() {
@@ -3958,6 +4243,7 @@ public class BaseItemDto {
      * @return altitude
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_ALTITUDE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Double getAltitude() {
@@ -3981,6 +4267,7 @@ public class BaseItemDto {
      * @return isoSpeedRating
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_ISO_SPEED_RATING, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getIsoSpeedRating() {
@@ -4004,6 +4291,7 @@ public class BaseItemDto {
      * @return seriesTimerId
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_SERIES_TIMER_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getSeriesTimerId() {
@@ -4027,6 +4315,7 @@ public class BaseItemDto {
      * @return programId
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_PROGRAM_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getProgramId() {
@@ -4050,6 +4339,7 @@ public class BaseItemDto {
      * @return channelPrimaryImageTag
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_CHANNEL_PRIMARY_IMAGE_TAG, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getChannelPrimaryImageTag() {
@@ -4073,6 +4363,7 @@ public class BaseItemDto {
      * @return startDate
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_START_DATE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public OffsetDateTime getStartDate() {
@@ -4096,6 +4387,7 @@ public class BaseItemDto {
      * @return completionPercentage
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_COMPLETION_PERCENTAGE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Double getCompletionPercentage() {
@@ -4119,6 +4411,7 @@ public class BaseItemDto {
      * @return isRepeat
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_IS_REPEAT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getIsRepeat() {
@@ -4142,6 +4435,7 @@ public class BaseItemDto {
      * @return episodeTitle
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_EPISODE_TITLE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getEpisodeTitle() {
@@ -4165,6 +4459,7 @@ public class BaseItemDto {
      * @return channelType
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_CHANNEL_TYPE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public ChannelType getChannelType() {
@@ -4188,6 +4483,7 @@ public class BaseItemDto {
      * @return audio
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_AUDIO, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public ProgramAudio getAudio() {
@@ -4211,6 +4507,7 @@ public class BaseItemDto {
      * @return isMovie
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_IS_MOVIE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getIsMovie() {
@@ -4234,6 +4531,7 @@ public class BaseItemDto {
      * @return isSports
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_IS_SPORTS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getIsSports() {
@@ -4257,6 +4555,7 @@ public class BaseItemDto {
      * @return isSeries
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_IS_SERIES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getIsSeries() {
@@ -4280,6 +4579,7 @@ public class BaseItemDto {
      * @return isLive
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_IS_LIVE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getIsLive() {
@@ -4303,6 +4603,7 @@ public class BaseItemDto {
      * @return isNews
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_IS_NEWS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getIsNews() {
@@ -4326,6 +4627,7 @@ public class BaseItemDto {
      * @return isKids
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_IS_KIDS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getIsKids() {
@@ -4349,6 +4651,7 @@ public class BaseItemDto {
      * @return isPremiere
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_IS_PREMIERE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getIsPremiere() {
@@ -4372,6 +4675,7 @@ public class BaseItemDto {
      * @return timerId
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_TIMER_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getTimerId() {
@@ -4395,6 +4699,7 @@ public class BaseItemDto {
      * @return normalizationGain
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_NORMALIZATION_GAIN, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Float getNormalizationGain() {
@@ -4418,6 +4723,7 @@ public class BaseItemDto {
      * @return currentProgram
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_CURRENT_PROGRAM, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public BaseItemDto getCurrentProgram() {

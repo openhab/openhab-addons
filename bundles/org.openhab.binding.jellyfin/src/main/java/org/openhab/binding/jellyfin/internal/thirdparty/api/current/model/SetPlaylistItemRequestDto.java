@@ -31,6 +31,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class SetPlaylistItemRequestDto {
     public static final String JSON_PROPERTY_PLAYLIST_ITEM_ID = "PlaylistItemId";
     @org.eclipse.jdt.annotation.Nullable
+
     private UUID playlistItemId;
 
     public SetPlaylistItemRequestDto() {
@@ -47,6 +48,7 @@ public class SetPlaylistItemRequestDto {
      * @return playlistItemId
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_PLAYLIST_ITEM_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public UUID getPlaylistItemId() {

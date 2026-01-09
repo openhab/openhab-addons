@@ -30,10 +30,12 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class PathSubstitution {
     public static final String JSON_PROPERTY_FROM = "From";
     @org.eclipse.jdt.annotation.Nullable
+
     private String from;
 
     public static final String JSON_PROPERTY_TO = "To";
     @org.eclipse.jdt.annotation.Nullable
+
     private String to;
 
     public PathSubstitution() {
@@ -50,6 +52,7 @@ public class PathSubstitution {
      * @return from
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_FROM, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getFrom() {
@@ -73,6 +76,7 @@ public class PathSubstitution {
      * @return to
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_TO, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getTo() {

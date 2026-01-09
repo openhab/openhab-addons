@@ -34,22 +34,27 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class AccessSchedule {
     public static final String JSON_PROPERTY_ID = "Id";
     @org.eclipse.jdt.annotation.Nullable
+
     private Integer id;
 
     public static final String JSON_PROPERTY_USER_ID = "UserId";
     @org.eclipse.jdt.annotation.Nullable
+
     private UUID userId;
 
     public static final String JSON_PROPERTY_DAY_OF_WEEK = "DayOfWeek";
     @org.eclipse.jdt.annotation.Nullable
+
     private DynamicDayOfWeek dayOfWeek;
 
     public static final String JSON_PROPERTY_START_HOUR = "StartHour";
     @org.eclipse.jdt.annotation.Nullable
+
     private Double startHour;
 
     public static final String JSON_PROPERTY_END_HOUR = "EndHour";
     @org.eclipse.jdt.annotation.Nullable
+
     private Double endHour;
 
     public AccessSchedule() {
@@ -67,6 +72,7 @@ public class AccessSchedule {
      * @return id
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getId() {
@@ -84,6 +90,7 @@ public class AccessSchedule {
      * @return userId
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_USER_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public UUID getUserId() {
@@ -107,6 +114,7 @@ public class AccessSchedule {
      * @return dayOfWeek
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_DAY_OF_WEEK, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public DynamicDayOfWeek getDayOfWeek() {
@@ -130,6 +138,7 @@ public class AccessSchedule {
      * @return startHour
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_START_HOUR, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Double getStartHour() {
@@ -153,6 +162,7 @@ public class AccessSchedule {
      * @return endHour
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_END_HOUR, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Double getEndHour() {

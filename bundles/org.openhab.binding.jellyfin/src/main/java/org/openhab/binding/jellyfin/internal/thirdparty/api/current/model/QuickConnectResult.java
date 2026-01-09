@@ -34,34 +34,42 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class QuickConnectResult {
     public static final String JSON_PROPERTY_AUTHENTICATED = "Authenticated";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean authenticated;
 
     public static final String JSON_PROPERTY_SECRET = "Secret";
     @org.eclipse.jdt.annotation.Nullable
+
     private String secret;
 
     public static final String JSON_PROPERTY_CODE = "Code";
     @org.eclipse.jdt.annotation.Nullable
+
     private String code;
 
     public static final String JSON_PROPERTY_DEVICE_ID = "DeviceId";
     @org.eclipse.jdt.annotation.Nullable
+
     private String deviceId;
 
     public static final String JSON_PROPERTY_DEVICE_NAME = "DeviceName";
     @org.eclipse.jdt.annotation.Nullable
+
     private String deviceName;
 
     public static final String JSON_PROPERTY_APP_NAME = "AppName";
     @org.eclipse.jdt.annotation.Nullable
+
     private String appName;
 
     public static final String JSON_PROPERTY_APP_VERSION = "AppVersion";
     @org.eclipse.jdt.annotation.Nullable
+
     private String appVersion;
 
     public static final String JSON_PROPERTY_DATE_ADDED = "DateAdded";
     @org.eclipse.jdt.annotation.Nullable
+
     private OffsetDateTime dateAdded;
 
     public QuickConnectResult() {
@@ -78,6 +86,7 @@ public class QuickConnectResult {
      * @return authenticated
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_AUTHENTICATED, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getAuthenticated() {
@@ -101,6 +110,7 @@ public class QuickConnectResult {
      * @return secret
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_SECRET, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getSecret() {
@@ -124,6 +134,7 @@ public class QuickConnectResult {
      * @return code
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_CODE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getCode() {
@@ -147,6 +158,7 @@ public class QuickConnectResult {
      * @return deviceId
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_DEVICE_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getDeviceId() {
@@ -170,6 +182,7 @@ public class QuickConnectResult {
      * @return deviceName
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_DEVICE_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getDeviceName() {
@@ -193,6 +206,7 @@ public class QuickConnectResult {
      * @return appName
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_APP_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getAppName() {
@@ -216,6 +230,7 @@ public class QuickConnectResult {
      * @return appVersion
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_APP_VERSION, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getAppVersion() {
@@ -239,6 +254,7 @@ public class QuickConnectResult {
      * @return dateAdded
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_DATE_ADDED, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public OffsetDateTime getDateAdded() {

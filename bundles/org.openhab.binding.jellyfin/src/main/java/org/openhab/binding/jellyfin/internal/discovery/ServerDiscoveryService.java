@@ -114,8 +114,14 @@ public class ServerDiscoveryService extends AbstractDiscoveryService {
         var systemApi = new SystemApi(client);
         var systemInformation = systemApi.getPublicSystemInfo();
 
-        properties.put(Thing.PROPERTY_SERIAL_NUMBER, systemInformation.getId());
-        properties.put(Thing.PROPERTY_FIRMWARE_VERSION, systemInformation.getVersion());
+        String id = systemInformation.getId();
+        if (id != null) {
+            properties.put(Thing.PROPERTY_SERIAL_NUMBER, id);
+        }
+        String version = systemInformation.getVersion();
+        if (version != null) {
+            properties.put(Thing.PROPERTY_FIRMWARE_VERSION, version);
+        }
         properties.put(Thing.PROPERTY_VENDOR, "https://jellyfin.org");
 
         properties.put(Constants.ServerProperties.SERVER_URI, uri);

@@ -32,18 +32,22 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class CountryInfo {
     public static final String JSON_PROPERTY_NAME = "Name";
     @org.eclipse.jdt.annotation.Nullable
+
     private String name;
 
     public static final String JSON_PROPERTY_DISPLAY_NAME = "DisplayName";
     @org.eclipse.jdt.annotation.Nullable
+
     private String displayName;
 
     public static final String JSON_PROPERTY_TWO_LETTER_I_S_O_REGION_NAME = "TwoLetterISORegionName";
     @org.eclipse.jdt.annotation.Nullable
+
     private String twoLetterISORegionName;
 
     public static final String JSON_PROPERTY_THREE_LETTER_I_S_O_REGION_NAME = "ThreeLetterISORegionName";
     @org.eclipse.jdt.annotation.Nullable
+
     private String threeLetterISORegionName;
 
     public CountryInfo() {
@@ -60,6 +64,7 @@ public class CountryInfo {
      * @return name
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getName() {
@@ -83,6 +88,7 @@ public class CountryInfo {
      * @return displayName
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_DISPLAY_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getDisplayName() {
@@ -106,6 +112,7 @@ public class CountryInfo {
      * @return twoLetterISORegionName
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_TWO_LETTER_I_S_O_REGION_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getTwoLetterISORegionName() {
@@ -129,6 +136,7 @@ public class CountryInfo {
      * @return threeLetterISORegionName
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_THREE_LETTER_I_S_O_REGION_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getThreeLetterISORegionName() {

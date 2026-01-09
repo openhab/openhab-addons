@@ -31,18 +31,22 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class UpdateUserPassword {
     public static final String JSON_PROPERTY_CURRENT_PASSWORD = "CurrentPassword";
     @org.eclipse.jdt.annotation.Nullable
+
     private String currentPassword;
 
     public static final String JSON_PROPERTY_CURRENT_PW = "CurrentPw";
     @org.eclipse.jdt.annotation.Nullable
+
     private String currentPw;
 
     public static final String JSON_PROPERTY_NEW_PW = "NewPw";
     @org.eclipse.jdt.annotation.Nullable
+
     private String newPw;
 
     public static final String JSON_PROPERTY_RESET_PASSWORD = "ResetPassword";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean resetPassword;
 
     public UpdateUserPassword() {
@@ -59,6 +63,7 @@ public class UpdateUserPassword {
      * @return currentPassword
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_CURRENT_PASSWORD, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getCurrentPassword() {
@@ -82,6 +87,7 @@ public class UpdateUserPassword {
      * @return currentPw
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_CURRENT_PW, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getCurrentPw() {
@@ -105,6 +111,7 @@ public class UpdateUserPassword {
      * @return newPw
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_NEW_PW, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getNewPw() {
@@ -128,6 +135,7 @@ public class UpdateUserPassword {
      * @return resetPassword
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_RESET_PASSWORD, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getResetPassword() {

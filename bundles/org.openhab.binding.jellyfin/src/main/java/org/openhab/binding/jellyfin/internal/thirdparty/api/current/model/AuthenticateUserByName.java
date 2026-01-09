@@ -30,10 +30,12 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class AuthenticateUserByName {
     public static final String JSON_PROPERTY_USERNAME = "Username";
     @org.eclipse.jdt.annotation.Nullable
+
     private String username;
 
     public static final String JSON_PROPERTY_PW = "Pw";
     @org.eclipse.jdt.annotation.Nullable
+
     private String pw;
 
     public AuthenticateUserByName() {
@@ -50,6 +52,7 @@ public class AuthenticateUserByName {
      * @return username
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_USERNAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getUsername() {
@@ -73,6 +76,7 @@ public class AuthenticateUserByName {
      * @return pw
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_PW, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getPw() {

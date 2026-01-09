@@ -35,34 +35,42 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class LiveTvServiceInfo {
     public static final String JSON_PROPERTY_NAME = "Name";
     @org.eclipse.jdt.annotation.Nullable
+
     private String name;
 
     public static final String JSON_PROPERTY_HOME_PAGE_URL = "HomePageUrl";
     @org.eclipse.jdt.annotation.Nullable
+
     private String homePageUrl;
 
     public static final String JSON_PROPERTY_STATUS = "Status";
     @org.eclipse.jdt.annotation.Nullable
+
     private LiveTvServiceStatus status;
 
     public static final String JSON_PROPERTY_STATUS_MESSAGE = "StatusMessage";
     @org.eclipse.jdt.annotation.Nullable
+
     private String statusMessage;
 
     public static final String JSON_PROPERTY_VERSION = "Version";
     @org.eclipse.jdt.annotation.Nullable
+
     private String version;
 
     public static final String JSON_PROPERTY_HAS_UPDATE_AVAILABLE = "HasUpdateAvailable";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean hasUpdateAvailable;
 
     public static final String JSON_PROPERTY_IS_VISIBLE = "IsVisible";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean isVisible;
 
     public static final String JSON_PROPERTY_TUNERS = "Tuners";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<String> tuners;
 
     public LiveTvServiceInfo() {
@@ -79,6 +87,7 @@ public class LiveTvServiceInfo {
      * @return name
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getName() {
@@ -102,6 +111,7 @@ public class LiveTvServiceInfo {
      * @return homePageUrl
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_HOME_PAGE_URL, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getHomePageUrl() {
@@ -125,6 +135,7 @@ public class LiveTvServiceInfo {
      * @return status
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_STATUS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public LiveTvServiceStatus getStatus() {
@@ -148,6 +159,7 @@ public class LiveTvServiceInfo {
      * @return statusMessage
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_STATUS_MESSAGE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getStatusMessage() {
@@ -171,6 +183,7 @@ public class LiveTvServiceInfo {
      * @return version
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_VERSION, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getVersion() {
@@ -194,6 +207,7 @@ public class LiveTvServiceInfo {
      * @return hasUpdateAvailable
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_HAS_UPDATE_AVAILABLE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getHasUpdateAvailable() {
@@ -217,6 +231,7 @@ public class LiveTvServiceInfo {
      * @return isVisible
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_IS_VISIBLE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getIsVisible() {
@@ -248,6 +263,7 @@ public class LiveTvServiceInfo {
      * @return tuners
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_TUNERS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<String> getTuners() {

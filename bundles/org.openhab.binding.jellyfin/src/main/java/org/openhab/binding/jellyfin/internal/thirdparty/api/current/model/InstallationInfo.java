@@ -34,30 +34,37 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class InstallationInfo {
     public static final String JSON_PROPERTY_GUID = "Guid";
     @org.eclipse.jdt.annotation.Nullable
+
     private UUID guid;
 
     public static final String JSON_PROPERTY_NAME = "Name";
     @org.eclipse.jdt.annotation.Nullable
+
     private String name;
 
     public static final String JSON_PROPERTY_VERSION = "Version";
     @org.eclipse.jdt.annotation.Nullable
+
     private String version;
 
     public static final String JSON_PROPERTY_CHANGELOG = "Changelog";
     @org.eclipse.jdt.annotation.Nullable
+
     private String changelog;
 
     public static final String JSON_PROPERTY_SOURCE_URL = "SourceUrl";
     @org.eclipse.jdt.annotation.Nullable
+
     private String sourceUrl;
 
     public static final String JSON_PROPERTY_CHECKSUM = "Checksum";
     @org.eclipse.jdt.annotation.Nullable
+
     private String checksum;
 
     public static final String JSON_PROPERTY_PACKAGE_INFO = "PackageInfo";
     @org.eclipse.jdt.annotation.Nullable
+
     private PackageInfo packageInfo;
 
     public InstallationInfo() {
@@ -74,6 +81,7 @@ public class InstallationInfo {
      * @return guid
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_GUID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public UUID getGuid() {
@@ -97,6 +105,7 @@ public class InstallationInfo {
      * @return name
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getName() {
@@ -120,6 +129,7 @@ public class InstallationInfo {
      * @return version
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_VERSION, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getVersion() {
@@ -143,6 +153,7 @@ public class InstallationInfo {
      * @return changelog
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_CHANGELOG, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getChangelog() {
@@ -166,6 +177,7 @@ public class InstallationInfo {
      * @return sourceUrl
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_SOURCE_URL, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getSourceUrl() {
@@ -189,6 +201,7 @@ public class InstallationInfo {
      * @return checksum
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_CHECKSUM, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getChecksum() {
@@ -212,6 +225,7 @@ public class InstallationInfo {
      * @return packageInfo
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_PACKAGE_INFO, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public PackageInfo getPackageInfo() {

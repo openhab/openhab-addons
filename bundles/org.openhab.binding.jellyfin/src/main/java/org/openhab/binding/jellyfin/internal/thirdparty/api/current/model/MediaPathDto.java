@@ -30,15 +30,18 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class MediaPathDto {
     public static final String JSON_PROPERTY_NAME = "Name";
-    @org.eclipse.jdt.annotation.NonNull
+    @org.eclipse.jdt.annotation.Nullable
+
     private String name;
 
     public static final String JSON_PROPERTY_PATH = "Path";
     @org.eclipse.jdt.annotation.Nullable
+
     private String path;
 
     public static final String JSON_PROPERTY_PATH_INFO = "PathInfo";
     @org.eclipse.jdt.annotation.Nullable
+
     private MediaPathInfo pathInfo;
 
     public MediaPathDto() {
@@ -54,7 +57,8 @@ public class MediaPathDto {
      * 
      * @return name
      */
-    @org.eclipse.jdt.annotation.NonNull
+    @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_NAME, required = true)
     @JsonInclude(value = JsonInclude.Include.ALWAYS)
     public String getName() {
@@ -78,6 +82,7 @@ public class MediaPathDto {
      * @return path
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_PATH, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getPath() {
@@ -101,6 +106,7 @@ public class MediaPathDto {
      * @return pathInfo
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_PATH_INFO, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public MediaPathInfo getPathInfo() {

@@ -34,14 +34,17 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class LibraryStorageDto {
     public static final String JSON_PROPERTY_ID = "Id";
     @org.eclipse.jdt.annotation.Nullable
+
     private UUID id;
 
     public static final String JSON_PROPERTY_NAME = "Name";
     @org.eclipse.jdt.annotation.Nullable
+
     private String name;
 
     public static final String JSON_PROPERTY_FOLDERS = "Folders";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<FolderStorageDto> folders = new ArrayList<>();
 
     public LibraryStorageDto() {
@@ -58,6 +61,7 @@ public class LibraryStorageDto {
      * @return id
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public UUID getId() {
@@ -81,6 +85,7 @@ public class LibraryStorageDto {
      * @return name
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getName() {
@@ -112,6 +117,7 @@ public class LibraryStorageDto {
      * @return folders
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_FOLDERS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<FolderStorageDto> getFolders() {

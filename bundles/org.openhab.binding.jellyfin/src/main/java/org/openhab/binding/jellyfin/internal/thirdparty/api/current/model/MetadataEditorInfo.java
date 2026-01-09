@@ -35,26 +35,32 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class MetadataEditorInfo {
     public static final String JSON_PROPERTY_PARENTAL_RATING_OPTIONS = "ParentalRatingOptions";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<ParentalRating> parentalRatingOptions = new ArrayList<>();
 
     public static final String JSON_PROPERTY_COUNTRIES = "Countries";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<CountryInfo> countries = new ArrayList<>();
 
     public static final String JSON_PROPERTY_CULTURES = "Cultures";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<CultureDto> cultures = new ArrayList<>();
 
     public static final String JSON_PROPERTY_EXTERNAL_ID_INFOS = "ExternalIdInfos";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<ExternalIdInfo> externalIdInfos = new ArrayList<>();
 
     public static final String JSON_PROPERTY_CONTENT_TYPE = "ContentType";
     @org.eclipse.jdt.annotation.Nullable
+
     private CollectionType contentType;
 
     public static final String JSON_PROPERTY_CONTENT_TYPE_OPTIONS = "ContentTypeOptions";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<NameValuePair> contentTypeOptions = new ArrayList<>();
 
     public MetadataEditorInfo() {
@@ -80,6 +86,7 @@ public class MetadataEditorInfo {
      * @return parentalRatingOptions
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_PARENTAL_RATING_OPTIONS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<ParentalRating> getParentalRatingOptions() {
@@ -112,6 +119,7 @@ public class MetadataEditorInfo {
      * @return countries
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_COUNTRIES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<CountryInfo> getCountries() {
@@ -143,6 +151,7 @@ public class MetadataEditorInfo {
      * @return cultures
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_CULTURES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<CultureDto> getCultures() {
@@ -175,6 +184,7 @@ public class MetadataEditorInfo {
      * @return externalIdInfos
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_EXTERNAL_ID_INFOS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<ExternalIdInfo> getExternalIdInfos() {
@@ -198,6 +208,7 @@ public class MetadataEditorInfo {
      * @return contentType
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_CONTENT_TYPE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public CollectionType getContentType() {
@@ -230,6 +241,7 @@ public class MetadataEditorInfo {
      * @return contentTypeOptions
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_CONTENT_TYPE_OPTIONS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<NameValuePair> getContentTypeOptions() {

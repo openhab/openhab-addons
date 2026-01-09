@@ -55,142 +55,177 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class SeriesTimerInfoDto {
     public static final String JSON_PROPERTY_ID = "Id";
     @org.eclipse.jdt.annotation.Nullable
+
     private String id;
 
     public static final String JSON_PROPERTY_TYPE = "Type";
     @org.eclipse.jdt.annotation.Nullable
+
     private String type;
 
     public static final String JSON_PROPERTY_SERVER_ID = "ServerId";
     @org.eclipse.jdt.annotation.Nullable
+
     private String serverId;
 
     public static final String JSON_PROPERTY_EXTERNAL_ID = "ExternalId";
     @org.eclipse.jdt.annotation.Nullable
+
     private String externalId;
 
     public static final String JSON_PROPERTY_CHANNEL_ID = "ChannelId";
     @org.eclipse.jdt.annotation.Nullable
+
     private UUID channelId;
 
     public static final String JSON_PROPERTY_EXTERNAL_CHANNEL_ID = "ExternalChannelId";
     @org.eclipse.jdt.annotation.Nullable
+
     private String externalChannelId;
 
     public static final String JSON_PROPERTY_CHANNEL_NAME = "ChannelName";
     @org.eclipse.jdt.annotation.Nullable
+
     private String channelName;
 
     public static final String JSON_PROPERTY_CHANNEL_PRIMARY_IMAGE_TAG = "ChannelPrimaryImageTag";
     @org.eclipse.jdt.annotation.Nullable
+
     private String channelPrimaryImageTag;
 
     public static final String JSON_PROPERTY_PROGRAM_ID = "ProgramId";
     @org.eclipse.jdt.annotation.Nullable
+
     private String programId;
 
     public static final String JSON_PROPERTY_EXTERNAL_PROGRAM_ID = "ExternalProgramId";
     @org.eclipse.jdt.annotation.Nullable
+
     private String externalProgramId;
 
     public static final String JSON_PROPERTY_NAME = "Name";
     @org.eclipse.jdt.annotation.Nullable
+
     private String name;
 
     public static final String JSON_PROPERTY_OVERVIEW = "Overview";
     @org.eclipse.jdt.annotation.Nullable
+
     private String overview;
 
     public static final String JSON_PROPERTY_START_DATE = "StartDate";
     @org.eclipse.jdt.annotation.Nullable
+
     private OffsetDateTime startDate;
 
     public static final String JSON_PROPERTY_END_DATE = "EndDate";
     @org.eclipse.jdt.annotation.Nullable
+
     private OffsetDateTime endDate;
 
     public static final String JSON_PROPERTY_SERVICE_NAME = "ServiceName";
     @org.eclipse.jdt.annotation.Nullable
+
     private String serviceName;
 
     public static final String JSON_PROPERTY_PRIORITY = "Priority";
     @org.eclipse.jdt.annotation.Nullable
+
     private Integer priority;
 
     public static final String JSON_PROPERTY_PRE_PADDING_SECONDS = "PrePaddingSeconds";
     @org.eclipse.jdt.annotation.Nullable
+
     private Integer prePaddingSeconds;
 
     public static final String JSON_PROPERTY_POST_PADDING_SECONDS = "PostPaddingSeconds";
     @org.eclipse.jdt.annotation.Nullable
+
     private Integer postPaddingSeconds;
 
     public static final String JSON_PROPERTY_IS_PRE_PADDING_REQUIRED = "IsPrePaddingRequired";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean isPrePaddingRequired;
 
     public static final String JSON_PROPERTY_PARENT_BACKDROP_ITEM_ID = "ParentBackdropItemId";
     @org.eclipse.jdt.annotation.Nullable
+
     private String parentBackdropItemId;
 
     public static final String JSON_PROPERTY_PARENT_BACKDROP_IMAGE_TAGS = "ParentBackdropImageTags";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<String> parentBackdropImageTags;
 
     public static final String JSON_PROPERTY_IS_POST_PADDING_REQUIRED = "IsPostPaddingRequired";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean isPostPaddingRequired;
 
     public static final String JSON_PROPERTY_KEEP_UNTIL = "KeepUntil";
     @org.eclipse.jdt.annotation.Nullable
+
     private KeepUntil keepUntil;
 
     public static final String JSON_PROPERTY_RECORD_ANY_TIME = "RecordAnyTime";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean recordAnyTime;
 
     public static final String JSON_PROPERTY_SKIP_EPISODES_IN_LIBRARY = "SkipEpisodesInLibrary";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean skipEpisodesInLibrary;
 
     public static final String JSON_PROPERTY_RECORD_ANY_CHANNEL = "RecordAnyChannel";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean recordAnyChannel;
 
     public static final String JSON_PROPERTY_KEEP_UP_TO = "KeepUpTo";
     @org.eclipse.jdt.annotation.Nullable
+
     private Integer keepUpTo;
 
     public static final String JSON_PROPERTY_RECORD_NEW_ONLY = "RecordNewOnly";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean recordNewOnly;
 
     public static final String JSON_PROPERTY_DAYS = "Days";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<DayOfWeek> days;
 
     public static final String JSON_PROPERTY_DAY_PATTERN = "DayPattern";
     @org.eclipse.jdt.annotation.Nullable
+
     private DayPattern dayPattern;
 
     public static final String JSON_PROPERTY_IMAGE_TAGS = "ImageTags";
     @org.eclipse.jdt.annotation.Nullable
+
     private Map<String, String> imageTags;
 
     public static final String JSON_PROPERTY_PARENT_THUMB_ITEM_ID = "ParentThumbItemId";
     @org.eclipse.jdt.annotation.Nullable
+
     private String parentThumbItemId;
 
     public static final String JSON_PROPERTY_PARENT_THUMB_IMAGE_TAG = "ParentThumbImageTag";
     @org.eclipse.jdt.annotation.Nullable
+
     private String parentThumbImageTag;
 
     public static final String JSON_PROPERTY_PARENT_PRIMARY_IMAGE_ITEM_ID = "ParentPrimaryImageItemId";
     @org.eclipse.jdt.annotation.Nullable
+
     private UUID parentPrimaryImageItemId;
 
     public static final String JSON_PROPERTY_PARENT_PRIMARY_IMAGE_TAG = "ParentPrimaryImageTag";
     @org.eclipse.jdt.annotation.Nullable
+
     private String parentPrimaryImageTag;
 
     public SeriesTimerInfoDto() {
@@ -207,6 +242,7 @@ public class SeriesTimerInfoDto {
      * @return id
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getId() {
@@ -230,6 +266,7 @@ public class SeriesTimerInfoDto {
      * @return type
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_TYPE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getType() {
@@ -253,6 +290,7 @@ public class SeriesTimerInfoDto {
      * @return serverId
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_SERVER_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getServerId() {
@@ -276,6 +314,7 @@ public class SeriesTimerInfoDto {
      * @return externalId
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_EXTERNAL_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getExternalId() {
@@ -299,6 +338,7 @@ public class SeriesTimerInfoDto {
      * @return channelId
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_CHANNEL_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public UUID getChannelId() {
@@ -322,6 +362,7 @@ public class SeriesTimerInfoDto {
      * @return externalChannelId
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_EXTERNAL_CHANNEL_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getExternalChannelId() {
@@ -345,6 +386,7 @@ public class SeriesTimerInfoDto {
      * @return channelName
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_CHANNEL_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getChannelName() {
@@ -369,6 +411,7 @@ public class SeriesTimerInfoDto {
      * @return channelPrimaryImageTag
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_CHANNEL_PRIMARY_IMAGE_TAG, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getChannelPrimaryImageTag() {
@@ -392,6 +435,7 @@ public class SeriesTimerInfoDto {
      * @return programId
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_PROGRAM_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getProgramId() {
@@ -415,6 +459,7 @@ public class SeriesTimerInfoDto {
      * @return externalProgramId
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_EXTERNAL_PROGRAM_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getExternalProgramId() {
@@ -438,6 +483,7 @@ public class SeriesTimerInfoDto {
      * @return name
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getName() {
@@ -461,6 +507,7 @@ public class SeriesTimerInfoDto {
      * @return overview
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_OVERVIEW, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getOverview() {
@@ -484,6 +531,7 @@ public class SeriesTimerInfoDto {
      * @return startDate
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_START_DATE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public OffsetDateTime getStartDate() {
@@ -507,6 +555,7 @@ public class SeriesTimerInfoDto {
      * @return endDate
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_END_DATE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public OffsetDateTime getEndDate() {
@@ -530,6 +579,7 @@ public class SeriesTimerInfoDto {
      * @return serviceName
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_SERVICE_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getServiceName() {
@@ -553,6 +603,7 @@ public class SeriesTimerInfoDto {
      * @return priority
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_PRIORITY, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getPriority() {
@@ -576,6 +627,7 @@ public class SeriesTimerInfoDto {
      * @return prePaddingSeconds
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_PRE_PADDING_SECONDS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getPrePaddingSeconds() {
@@ -599,6 +651,7 @@ public class SeriesTimerInfoDto {
      * @return postPaddingSeconds
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_POST_PADDING_SECONDS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getPostPaddingSeconds() {
@@ -622,6 +675,7 @@ public class SeriesTimerInfoDto {
      * @return isPrePaddingRequired
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_IS_PRE_PADDING_REQUIRED, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getIsPrePaddingRequired() {
@@ -645,6 +699,7 @@ public class SeriesTimerInfoDto {
      * @return parentBackdropItemId
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_PARENT_BACKDROP_ITEM_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getParentBackdropItemId() {
@@ -677,6 +732,7 @@ public class SeriesTimerInfoDto {
      * @return parentBackdropImageTags
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_PARENT_BACKDROP_IMAGE_TAGS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<String> getParentBackdropImageTags() {
@@ -701,6 +757,7 @@ public class SeriesTimerInfoDto {
      * @return isPostPaddingRequired
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_IS_POST_PADDING_REQUIRED, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getIsPostPaddingRequired() {
@@ -724,6 +781,7 @@ public class SeriesTimerInfoDto {
      * @return keepUntil
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_KEEP_UNTIL, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public KeepUntil getKeepUntil() {
@@ -747,6 +805,7 @@ public class SeriesTimerInfoDto {
      * @return recordAnyTime
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_RECORD_ANY_TIME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getRecordAnyTime() {
@@ -771,6 +830,7 @@ public class SeriesTimerInfoDto {
      * @return skipEpisodesInLibrary
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_SKIP_EPISODES_IN_LIBRARY, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getSkipEpisodesInLibrary() {
@@ -794,6 +854,7 @@ public class SeriesTimerInfoDto {
      * @return recordAnyChannel
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_RECORD_ANY_CHANNEL, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getRecordAnyChannel() {
@@ -817,6 +878,7 @@ public class SeriesTimerInfoDto {
      * @return keepUpTo
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_KEEP_UP_TO, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getKeepUpTo() {
@@ -840,6 +902,7 @@ public class SeriesTimerInfoDto {
      * @return recordNewOnly
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_RECORD_NEW_ONLY, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getRecordNewOnly() {
@@ -871,6 +934,7 @@ public class SeriesTimerInfoDto {
      * @return days
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_DAYS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<DayOfWeek> getDays() {
@@ -894,6 +958,7 @@ public class SeriesTimerInfoDto {
      * @return dayPattern
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_DAY_PATTERN, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public DayPattern getDayPattern() {
@@ -925,6 +990,7 @@ public class SeriesTimerInfoDto {
      * @return imageTags
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_IMAGE_TAGS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Map<String, String> getImageTags() {
@@ -948,6 +1014,7 @@ public class SeriesTimerInfoDto {
      * @return parentThumbItemId
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_PARENT_THUMB_ITEM_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getParentThumbItemId() {
@@ -971,6 +1038,7 @@ public class SeriesTimerInfoDto {
      * @return parentThumbImageTag
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_PARENT_THUMB_IMAGE_TAG, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getParentThumbImageTag() {
@@ -995,6 +1063,7 @@ public class SeriesTimerInfoDto {
      * @return parentPrimaryImageItemId
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_PARENT_PRIMARY_IMAGE_ITEM_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public UUID getParentPrimaryImageItemId() {
@@ -1018,6 +1087,7 @@ public class SeriesTimerInfoDto {
      * @return parentPrimaryImageTag
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_PARENT_PRIMARY_IMAGE_TAG, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getParentPrimaryImageTag() {

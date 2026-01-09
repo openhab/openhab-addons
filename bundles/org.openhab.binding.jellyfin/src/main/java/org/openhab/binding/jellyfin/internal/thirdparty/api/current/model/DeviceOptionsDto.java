@@ -31,14 +31,17 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class DeviceOptionsDto {
     public static final String JSON_PROPERTY_ID = "Id";
     @org.eclipse.jdt.annotation.Nullable
+
     private Integer id;
 
     public static final String JSON_PROPERTY_DEVICE_ID = "DeviceId";
     @org.eclipse.jdt.annotation.Nullable
+
     private String deviceId;
 
     public static final String JSON_PROPERTY_CUSTOM_NAME = "CustomName";
     @org.eclipse.jdt.annotation.Nullable
+
     private String customName;
 
     public DeviceOptionsDto() {
@@ -55,6 +58,7 @@ public class DeviceOptionsDto {
      * @return id
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getId() {
@@ -78,6 +82,7 @@ public class DeviceOptionsDto {
      * @return deviceId
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_DEVICE_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getDeviceId() {
@@ -101,6 +106,7 @@ public class DeviceOptionsDto {
      * @return customName
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_CUSTOM_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getCustomName() {

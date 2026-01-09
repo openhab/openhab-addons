@@ -29,11 +29,11 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class WakeOnLanInfo {
     public static final String JSON_PROPERTY_MAC_ADDRESS = "MacAddress";
-    @org.eclipse.jdt.annotation.NonNull
+    @org.eclipse.jdt.annotation.Nullable
     private String macAddress;
 
     public static final String JSON_PROPERTY_PORT = "Port";
-    @org.eclipse.jdt.annotation.NonNull
+    @org.eclipse.jdt.annotation.Nullable
     private Integer port;
 
     public WakeOnLanInfo() {
@@ -49,7 +49,7 @@ public class WakeOnLanInfo {
      * 
      * @return macAddress
      */
-    @org.eclipse.jdt.annotation.NonNull
+    @org.eclipse.jdt.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_MAC_ADDRESS)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getMacAddress() {
@@ -72,7 +72,7 @@ public class WakeOnLanInfo {
      * 
      * @return port
      */
-    @org.eclipse.jdt.annotation.NonNull
+    @org.eclipse.jdt.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_PORT)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getPort() {

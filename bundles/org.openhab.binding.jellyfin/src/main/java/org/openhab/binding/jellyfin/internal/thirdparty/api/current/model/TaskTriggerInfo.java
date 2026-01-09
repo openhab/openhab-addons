@@ -32,22 +32,27 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class TaskTriggerInfo {
     public static final String JSON_PROPERTY_TYPE = "Type";
     @org.eclipse.jdt.annotation.Nullable
+
     private TaskTriggerInfoType type;
 
     public static final String JSON_PROPERTY_TIME_OF_DAY_TICKS = "TimeOfDayTicks";
     @org.eclipse.jdt.annotation.Nullable
+
     private Long timeOfDayTicks;
 
     public static final String JSON_PROPERTY_INTERVAL_TICKS = "IntervalTicks";
     @org.eclipse.jdt.annotation.Nullable
+
     private Long intervalTicks;
 
     public static final String JSON_PROPERTY_DAY_OF_WEEK = "DayOfWeek";
     @org.eclipse.jdt.annotation.Nullable
+
     private DayOfWeek dayOfWeek;
 
     public static final String JSON_PROPERTY_MAX_RUNTIME_TICKS = "MaxRuntimeTicks";
     @org.eclipse.jdt.annotation.Nullable
+
     private Long maxRuntimeTicks;
 
     public TaskTriggerInfo() {
@@ -64,6 +69,7 @@ public class TaskTriggerInfo {
      * @return type
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_TYPE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public TaskTriggerInfoType getType() {
@@ -87,6 +93,7 @@ public class TaskTriggerInfo {
      * @return timeOfDayTicks
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_TIME_OF_DAY_TICKS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Long getTimeOfDayTicks() {
@@ -110,6 +117,7 @@ public class TaskTriggerInfo {
      * @return intervalTicks
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_INTERVAL_TICKS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Long getIntervalTicks() {
@@ -133,6 +141,7 @@ public class TaskTriggerInfo {
      * @return dayOfWeek
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_DAY_OF_WEEK, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public DayOfWeek getDayOfWeek() {
@@ -156,6 +165,7 @@ public class TaskTriggerInfo {
      * @return maxRuntimeTicks
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_MAX_RUNTIME_TICKS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Long getMaxRuntimeTicks() {

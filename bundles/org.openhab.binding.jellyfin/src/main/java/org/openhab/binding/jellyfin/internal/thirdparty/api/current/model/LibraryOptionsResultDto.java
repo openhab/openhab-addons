@@ -34,26 +34,32 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class LibraryOptionsResultDto {
     public static final String JSON_PROPERTY_METADATA_SAVERS = "MetadataSavers";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<LibraryOptionInfoDto> metadataSavers = new ArrayList<>();
 
     public static final String JSON_PROPERTY_METADATA_READERS = "MetadataReaders";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<LibraryOptionInfoDto> metadataReaders = new ArrayList<>();
 
     public static final String JSON_PROPERTY_SUBTITLE_FETCHERS = "SubtitleFetchers";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<LibraryOptionInfoDto> subtitleFetchers = new ArrayList<>();
 
     public static final String JSON_PROPERTY_LYRIC_FETCHERS = "LyricFetchers";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<LibraryOptionInfoDto> lyricFetchers = new ArrayList<>();
 
     public static final String JSON_PROPERTY_MEDIA_SEGMENT_PROVIDERS = "MediaSegmentProviders";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<LibraryOptionInfoDto> mediaSegmentProviders = new ArrayList<>();
 
     public static final String JSON_PROPERTY_TYPE_OPTIONS = "TypeOptions";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<LibraryTypeOptionsDto> typeOptions = new ArrayList<>();
 
     public LibraryOptionsResultDto() {
@@ -79,6 +85,7 @@ public class LibraryOptionsResultDto {
      * @return metadataSavers
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_METADATA_SAVERS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<LibraryOptionInfoDto> getMetadataSavers() {
@@ -111,6 +118,7 @@ public class LibraryOptionsResultDto {
      * @return metadataReaders
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_METADATA_READERS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<LibraryOptionInfoDto> getMetadataReaders() {
@@ -143,6 +151,7 @@ public class LibraryOptionsResultDto {
      * @return subtitleFetchers
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_SUBTITLE_FETCHERS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<LibraryOptionInfoDto> getSubtitleFetchers() {
@@ -175,6 +184,7 @@ public class LibraryOptionsResultDto {
      * @return lyricFetchers
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_LYRIC_FETCHERS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<LibraryOptionInfoDto> getLyricFetchers() {
@@ -207,6 +217,7 @@ public class LibraryOptionsResultDto {
      * @return mediaSegmentProviders
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_MEDIA_SEGMENT_PROVIDERS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<LibraryOptionInfoDto> getMediaSegmentProviders() {
@@ -240,6 +251,7 @@ public class LibraryOptionsResultDto {
      * @return typeOptions
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_TYPE_OPTIONS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<LibraryTypeOptionsDto> getTypeOptions() {

@@ -32,10 +32,12 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class ScheduledTasksInfoStartMessage {
     public static final String JSON_PROPERTY_DATA = "Data";
     @org.eclipse.jdt.annotation.Nullable
+
     private String data;
 
     public static final String JSON_PROPERTY_MESSAGE_TYPE = "MessageType";
     @org.eclipse.jdt.annotation.Nullable
+
     private SessionMessageType messageType = SessionMessageType.SCHEDULED_TASKS_INFO_START;
 
     public ScheduledTasksInfoStartMessage() {
@@ -58,6 +60,7 @@ public class ScheduledTasksInfoStartMessage {
      * @return data
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_DATA, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getData() {
@@ -76,6 +79,7 @@ public class ScheduledTasksInfoStartMessage {
      * @return messageType
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_MESSAGE_TYPE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public SessionMessageType getMessageType() {

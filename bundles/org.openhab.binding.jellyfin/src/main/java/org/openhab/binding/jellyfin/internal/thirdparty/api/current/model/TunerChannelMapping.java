@@ -31,18 +31,22 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class TunerChannelMapping {
     public static final String JSON_PROPERTY_NAME = "Name";
     @org.eclipse.jdt.annotation.Nullable
+
     private String name;
 
     public static final String JSON_PROPERTY_PROVIDER_CHANNEL_NAME = "ProviderChannelName";
     @org.eclipse.jdt.annotation.Nullable
+
     private String providerChannelName;
 
     public static final String JSON_PROPERTY_PROVIDER_CHANNEL_ID = "ProviderChannelId";
     @org.eclipse.jdt.annotation.Nullable
+
     private String providerChannelId;
 
     public static final String JSON_PROPERTY_ID = "Id";
     @org.eclipse.jdt.annotation.Nullable
+
     private String id;
 
     public TunerChannelMapping() {
@@ -59,6 +63,7 @@ public class TunerChannelMapping {
      * @return name
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getName() {
@@ -82,6 +87,7 @@ public class TunerChannelMapping {
      * @return providerChannelName
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_PROVIDER_CHANNEL_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getProviderChannelName() {
@@ -105,6 +111,7 @@ public class TunerChannelMapping {
      * @return providerChannelId
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_PROVIDER_CHANNEL_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getProviderChannelId() {
@@ -128,6 +135,7 @@ public class TunerChannelMapping {
      * @return id
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getId() {

@@ -30,10 +30,12 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class MediaUpdateInfoPathDto {
     public static final String JSON_PROPERTY_PATH = "Path";
     @org.eclipse.jdt.annotation.Nullable
+
     private String path;
 
     public static final String JSON_PROPERTY_UPDATE_TYPE = "UpdateType";
     @org.eclipse.jdt.annotation.Nullable
+
     private String updateType;
 
     public MediaUpdateInfoPathDto() {
@@ -50,6 +52,7 @@ public class MediaUpdateInfoPathDto {
      * @return path
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_PATH, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getPath() {
@@ -73,6 +76,7 @@ public class MediaUpdateInfoPathDto {
      * @return updateType
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_UPDATE_TYPE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getUpdateType() {

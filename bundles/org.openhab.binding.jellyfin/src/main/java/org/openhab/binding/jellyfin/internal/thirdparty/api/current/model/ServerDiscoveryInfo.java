@@ -31,18 +31,22 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class ServerDiscoveryInfo {
     public static final String JSON_PROPERTY_ADDRESS = "Address";
     @org.eclipse.jdt.annotation.Nullable
+
     private String address;
 
     public static final String JSON_PROPERTY_ID = "Id";
     @org.eclipse.jdt.annotation.Nullable
+
     private String id;
 
     public static final String JSON_PROPERTY_NAME = "Name";
     @org.eclipse.jdt.annotation.Nullable
+
     private String name;
 
     public static final String JSON_PROPERTY_ENDPOINT_ADDRESS = "EndpointAddress";
     @org.eclipse.jdt.annotation.Nullable
+
     private String endpointAddress;
 
     public ServerDiscoveryInfo() {
@@ -59,6 +63,7 @@ public class ServerDiscoveryInfo {
      * @return address
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_ADDRESS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getAddress() {
@@ -82,6 +87,7 @@ public class ServerDiscoveryInfo {
      * @return id
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getId() {
@@ -105,6 +111,7 @@ public class ServerDiscoveryInfo {
      * @return name
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getName() {
@@ -128,6 +135,7 @@ public class ServerDiscoveryInfo {
      * @return endpointAddress
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_ENDPOINT_ADDRESS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getEndpointAddress() {

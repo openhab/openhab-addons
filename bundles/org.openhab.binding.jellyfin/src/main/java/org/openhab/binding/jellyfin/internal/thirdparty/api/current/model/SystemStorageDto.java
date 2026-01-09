@@ -33,34 +33,42 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class SystemStorageDto {
     public static final String JSON_PROPERTY_PROGRAM_DATA_FOLDER = "ProgramDataFolder";
     @org.eclipse.jdt.annotation.Nullable
+
     private FolderStorageDto programDataFolder;
 
     public static final String JSON_PROPERTY_WEB_FOLDER = "WebFolder";
     @org.eclipse.jdt.annotation.Nullable
+
     private FolderStorageDto webFolder;
 
     public static final String JSON_PROPERTY_IMAGE_CACHE_FOLDER = "ImageCacheFolder";
     @org.eclipse.jdt.annotation.Nullable
+
     private FolderStorageDto imageCacheFolder;
 
     public static final String JSON_PROPERTY_CACHE_FOLDER = "CacheFolder";
     @org.eclipse.jdt.annotation.Nullable
+
     private FolderStorageDto cacheFolder;
 
     public static final String JSON_PROPERTY_LOG_FOLDER = "LogFolder";
     @org.eclipse.jdt.annotation.Nullable
+
     private FolderStorageDto logFolder;
 
     public static final String JSON_PROPERTY_INTERNAL_METADATA_FOLDER = "InternalMetadataFolder";
     @org.eclipse.jdt.annotation.Nullable
+
     private FolderStorageDto internalMetadataFolder;
 
     public static final String JSON_PROPERTY_TRANSCODING_TEMP_FOLDER = "TranscodingTempFolder";
     @org.eclipse.jdt.annotation.Nullable
+
     private FolderStorageDto transcodingTempFolder;
 
     public static final String JSON_PROPERTY_LIBRARIES = "Libraries";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<LibraryStorageDto> libraries = new ArrayList<>();
 
     public SystemStorageDto() {
@@ -77,6 +85,7 @@ public class SystemStorageDto {
      * @return programDataFolder
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_PROGRAM_DATA_FOLDER, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public FolderStorageDto getProgramDataFolder() {
@@ -100,6 +109,7 @@ public class SystemStorageDto {
      * @return webFolder
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_WEB_FOLDER, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public FolderStorageDto getWebFolder() {
@@ -123,6 +133,7 @@ public class SystemStorageDto {
      * @return imageCacheFolder
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_IMAGE_CACHE_FOLDER, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public FolderStorageDto getImageCacheFolder() {
@@ -146,6 +157,7 @@ public class SystemStorageDto {
      * @return cacheFolder
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_CACHE_FOLDER, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public FolderStorageDto getCacheFolder() {
@@ -169,6 +181,7 @@ public class SystemStorageDto {
      * @return logFolder
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_LOG_FOLDER, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public FolderStorageDto getLogFolder() {
@@ -193,6 +206,7 @@ public class SystemStorageDto {
      * @return internalMetadataFolder
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_INTERNAL_METADATA_FOLDER, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public FolderStorageDto getInternalMetadataFolder() {
@@ -218,6 +232,7 @@ public class SystemStorageDto {
      * @return transcodingTempFolder
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_TRANSCODING_TEMP_FOLDER, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public FolderStorageDto getTranscodingTempFolder() {
@@ -249,6 +264,7 @@ public class SystemStorageDto {
      * @return libraries
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_LIBRARIES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<LibraryStorageDto> getLibraries() {

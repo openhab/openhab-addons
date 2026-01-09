@@ -35,14 +35,17 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class RemoveFromPlaylistRequestDto {
     public static final String JSON_PROPERTY_PLAYLIST_ITEM_IDS = "PlaylistItemIds";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<UUID> playlistItemIds = new ArrayList<>();
 
     public static final String JSON_PROPERTY_CLEAR_PLAYLIST = "ClearPlaylist";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean clearPlaylist;
 
     public static final String JSON_PROPERTY_CLEAR_PLAYING_ITEM = "ClearPlayingItem";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean clearPlayingItem;
 
     public RemoveFromPlaylistRequestDto() {
@@ -68,6 +71,7 @@ public class RemoveFromPlaylistRequestDto {
      * @return playlistItemIds
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_PLAYLIST_ITEM_IDS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<UUID> getPlaylistItemIds() {
@@ -91,6 +95,7 @@ public class RemoveFromPlaylistRequestDto {
      * @return clearPlaylist
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_CLEAR_PLAYLIST, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getClearPlaylist() {
@@ -116,6 +121,7 @@ public class RemoveFromPlaylistRequestDto {
      * @return clearPlayingItem
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_CLEAR_PLAYING_ITEM, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getClearPlayingItem() {

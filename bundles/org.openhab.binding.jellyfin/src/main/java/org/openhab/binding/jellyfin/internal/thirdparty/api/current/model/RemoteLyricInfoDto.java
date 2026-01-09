@@ -31,14 +31,17 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class RemoteLyricInfoDto {
     public static final String JSON_PROPERTY_ID = "Id";
     @org.eclipse.jdt.annotation.Nullable
+
     private String id;
 
     public static final String JSON_PROPERTY_PROVIDER_NAME = "ProviderName";
     @org.eclipse.jdt.annotation.Nullable
+
     private String providerName;
 
     public static final String JSON_PROPERTY_LYRICS = "Lyrics";
     @org.eclipse.jdt.annotation.Nullable
+
     private LyricDto lyrics;
 
     public RemoteLyricInfoDto() {
@@ -55,6 +58,7 @@ public class RemoteLyricInfoDto {
      * @return id
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getId() {
@@ -78,6 +82,7 @@ public class RemoteLyricInfoDto {
      * @return providerName
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_PROVIDER_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getProviderName() {
@@ -101,6 +106,7 @@ public class RemoteLyricInfoDto {
      * @return lyrics
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_LYRICS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public LyricDto getLyrics() {

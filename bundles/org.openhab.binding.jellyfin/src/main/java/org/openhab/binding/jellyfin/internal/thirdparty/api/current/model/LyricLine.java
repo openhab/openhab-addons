@@ -32,14 +32,17 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class LyricLine {
     public static final String JSON_PROPERTY_TEXT = "Text";
     @org.eclipse.jdt.annotation.Nullable
+
     private String text;
 
     public static final String JSON_PROPERTY_START = "Start";
     @org.eclipse.jdt.annotation.Nullable
+
     private Long start;
 
     public static final String JSON_PROPERTY_CUES = "Cues";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<LyricLineCue> cues;
 
     public LyricLine() {
@@ -56,6 +59,7 @@ public class LyricLine {
      * @return text
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_TEXT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getText() {
@@ -79,6 +83,7 @@ public class LyricLine {
      * @return start
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_START, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Long getStart() {
@@ -110,6 +115,7 @@ public class LyricLine {
      * @return cues
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_CUES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<LyricLineCue> getCues() {

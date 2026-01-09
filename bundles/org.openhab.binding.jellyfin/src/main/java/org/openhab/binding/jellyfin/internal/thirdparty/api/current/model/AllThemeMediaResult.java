@@ -30,14 +30,17 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class AllThemeMediaResult {
     public static final String JSON_PROPERTY_THEME_VIDEOS_RESULT = "ThemeVideosResult";
     @org.eclipse.jdt.annotation.Nullable
+
     private ThemeMediaResult themeVideosResult;
 
     public static final String JSON_PROPERTY_THEME_SONGS_RESULT = "ThemeSongsResult";
     @org.eclipse.jdt.annotation.Nullable
+
     private ThemeMediaResult themeSongsResult;
 
     public static final String JSON_PROPERTY_SOUNDTRACK_SONGS_RESULT = "SoundtrackSongsResult";
     @org.eclipse.jdt.annotation.Nullable
+
     private ThemeMediaResult soundtrackSongsResult;
 
     public AllThemeMediaResult() {
@@ -55,6 +58,7 @@ public class AllThemeMediaResult {
      * @return themeVideosResult
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_THEME_VIDEOS_RESULT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public ThemeMediaResult getThemeVideosResult() {
@@ -79,6 +83,7 @@ public class AllThemeMediaResult {
      * @return themeSongsResult
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_THEME_SONGS_RESULT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public ThemeMediaResult getThemeSongsResult() {
@@ -103,6 +108,7 @@ public class AllThemeMediaResult {
      * @return soundtrackSongsResult
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_SOUNDTRACK_SONGS_RESULT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public ThemeMediaResult getSoundtrackSongsResult() {

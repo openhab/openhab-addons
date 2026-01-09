@@ -31,14 +31,17 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class ValidatePathDto {
     public static final String JSON_PROPERTY_VALIDATE_WRITABLE = "ValidateWritable";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean validateWritable;
 
     public static final String JSON_PROPERTY_PATH = "Path";
     @org.eclipse.jdt.annotation.Nullable
+
     private String path;
 
     public static final String JSON_PROPERTY_IS_FILE = "IsFile";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean isFile;
 
     public ValidatePathDto() {
@@ -55,6 +58,7 @@ public class ValidatePathDto {
      * @return validateWritable
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_VALIDATE_WRITABLE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getValidateWritable() {
@@ -78,6 +82,7 @@ public class ValidatePathDto {
      * @return path
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_PATH, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getPath() {
@@ -101,6 +106,7 @@ public class ValidatePathDto {
      * @return isFile
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_IS_FILE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getIsFile() {

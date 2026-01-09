@@ -33,18 +33,22 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class ContainerProfile {
     public static final String JSON_PROPERTY_TYPE = "Type";
     @org.eclipse.jdt.annotation.Nullable
+
     private DlnaProfileType type;
 
     public static final String JSON_PROPERTY_CONDITIONS = "Conditions";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<ProfileCondition> conditions = new ArrayList<>();
 
     public static final String JSON_PROPERTY_CONTAINER = "Container";
     @org.eclipse.jdt.annotation.Nullable
+
     private String container;
 
     public static final String JSON_PROPERTY_SUB_CONTAINER = "SubContainer";
     @org.eclipse.jdt.annotation.Nullable
+
     private String subContainer;
 
     public ContainerProfile() {
@@ -61,6 +65,7 @@ public class ContainerProfile {
      * @return type
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_TYPE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public DlnaProfileType getType() {
@@ -92,6 +97,7 @@ public class ContainerProfile {
      * @return conditions
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_CONDITIONS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<ProfileCondition> getConditions() {
@@ -115,6 +121,7 @@ public class ContainerProfile {
      * @return container
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_CONTAINER, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getContainer() {
@@ -138,6 +145,7 @@ public class ContainerProfile {
      * @return subContainer
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_SUB_CONTAINER, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getSubContainer() {

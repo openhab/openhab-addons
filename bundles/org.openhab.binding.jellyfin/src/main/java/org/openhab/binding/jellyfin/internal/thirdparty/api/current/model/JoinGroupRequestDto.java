@@ -31,6 +31,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class JoinGroupRequestDto {
     public static final String JSON_PROPERTY_GROUP_ID = "GroupId";
     @org.eclipse.jdt.annotation.Nullable
+
     private UUID groupId;
 
     public JoinGroupRequestDto() {
@@ -47,6 +48,7 @@ public class JoinGroupRequestDto {
      * @return groupId
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_GROUP_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public UUID getGroupId() {

@@ -28,6 +28,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class LiveStreamResponse {
     public static final String JSON_PROPERTY_MEDIA_SOURCE = "MediaSource";
     @org.eclipse.jdt.annotation.Nullable
+
     private MediaSourceInfo mediaSource;
 
     public LiveStreamResponse() {
@@ -44,6 +45,7 @@ public class LiveStreamResponse {
      * @return mediaSource
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_MEDIA_SOURCE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public MediaSourceInfo getMediaSource() {

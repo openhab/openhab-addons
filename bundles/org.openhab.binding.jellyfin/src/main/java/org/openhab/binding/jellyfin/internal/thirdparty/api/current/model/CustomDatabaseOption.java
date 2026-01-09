@@ -30,10 +30,12 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class CustomDatabaseOption {
     public static final String JSON_PROPERTY_KEY = "Key";
     @org.eclipse.jdt.annotation.Nullable
+
     private String key;
 
     public static final String JSON_PROPERTY_VALUE = "Value";
     @org.eclipse.jdt.annotation.Nullable
+
     private String value;
 
     public CustomDatabaseOption() {
@@ -50,6 +52,7 @@ public class CustomDatabaseOption {
      * @return key
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_KEY, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getKey() {
@@ -73,6 +76,7 @@ public class CustomDatabaseOption {
      * @return value
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_VALUE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getValue() {

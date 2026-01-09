@@ -30,10 +30,12 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class EndPointInfo {
     public static final String JSON_PROPERTY_IS_LOCAL = "IsLocal";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean isLocal;
 
     public static final String JSON_PROPERTY_IS_IN_NETWORK = "IsInNetwork";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean isInNetwork;
 
     public EndPointInfo() {
@@ -50,6 +52,7 @@ public class EndPointInfo {
      * @return isLocal
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_IS_LOCAL, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getIsLocal() {
@@ -73,6 +76,7 @@ public class EndPointInfo {
      * @return isInNetwork
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_IS_IN_NETWORK, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getIsInNetwork() {

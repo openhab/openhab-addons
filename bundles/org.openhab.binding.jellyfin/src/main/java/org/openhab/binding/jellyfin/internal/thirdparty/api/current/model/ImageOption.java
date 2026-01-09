@@ -31,14 +31,17 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class ImageOption {
     public static final String JSON_PROPERTY_TYPE = "Type";
     @org.eclipse.jdt.annotation.Nullable
+
     private ImageType type;
 
     public static final String JSON_PROPERTY_LIMIT = "Limit";
     @org.eclipse.jdt.annotation.Nullable
+
     private Integer limit;
 
     public static final String JSON_PROPERTY_MIN_WIDTH = "MinWidth";
     @org.eclipse.jdt.annotation.Nullable
+
     private Integer minWidth;
 
     public ImageOption() {
@@ -55,6 +58,7 @@ public class ImageOption {
      * @return type
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_TYPE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public ImageType getType() {
@@ -78,6 +82,7 @@ public class ImageOption {
      * @return limit
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_LIMIT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getLimit() {
@@ -101,6 +106,7 @@ public class ImageOption {
      * @return minWidth
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_MIN_WIDTH, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getMinWidth() {

@@ -40,62 +40,77 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class LiveTvOptions {
     public static final String JSON_PROPERTY_GUIDE_DAYS = "GuideDays";
     @org.eclipse.jdt.annotation.Nullable
+
     private Integer guideDays;
 
     public static final String JSON_PROPERTY_RECORDING_PATH = "RecordingPath";
     @org.eclipse.jdt.annotation.Nullable
+
     private String recordingPath;
 
     public static final String JSON_PROPERTY_MOVIE_RECORDING_PATH = "MovieRecordingPath";
     @org.eclipse.jdt.annotation.Nullable
+
     private String movieRecordingPath;
 
     public static final String JSON_PROPERTY_SERIES_RECORDING_PATH = "SeriesRecordingPath";
     @org.eclipse.jdt.annotation.Nullable
+
     private String seriesRecordingPath;
 
     public static final String JSON_PROPERTY_ENABLE_RECORDING_SUBFOLDERS = "EnableRecordingSubfolders";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean enableRecordingSubfolders;
 
     public static final String JSON_PROPERTY_ENABLE_ORIGINAL_AUDIO_WITH_ENCODED_RECORDINGS = "EnableOriginalAudioWithEncodedRecordings";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean enableOriginalAudioWithEncodedRecordings;
 
     public static final String JSON_PROPERTY_TUNER_HOSTS = "TunerHosts";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<TunerHostInfo> tunerHosts;
 
     public static final String JSON_PROPERTY_LISTING_PROVIDERS = "ListingProviders";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<ListingsProviderInfo> listingProviders;
 
     public static final String JSON_PROPERTY_PRE_PADDING_SECONDS = "PrePaddingSeconds";
     @org.eclipse.jdt.annotation.Nullable
+
     private Integer prePaddingSeconds;
 
     public static final String JSON_PROPERTY_POST_PADDING_SECONDS = "PostPaddingSeconds";
     @org.eclipse.jdt.annotation.Nullable
+
     private Integer postPaddingSeconds;
 
     public static final String JSON_PROPERTY_MEDIA_LOCATIONS_CREATED = "MediaLocationsCreated";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<String> mediaLocationsCreated;
 
     public static final String JSON_PROPERTY_RECORDING_POST_PROCESSOR = "RecordingPostProcessor";
     @org.eclipse.jdt.annotation.Nullable
+
     private String recordingPostProcessor;
 
     public static final String JSON_PROPERTY_RECORDING_POST_PROCESSOR_ARGUMENTS = "RecordingPostProcessorArguments";
     @org.eclipse.jdt.annotation.Nullable
+
     private String recordingPostProcessorArguments;
 
     public static final String JSON_PROPERTY_SAVE_RECORDING_N_F_O = "SaveRecordingNFO";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean saveRecordingNFO;
 
     public static final String JSON_PROPERTY_SAVE_RECORDING_IMAGES = "SaveRecordingImages";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean saveRecordingImages;
 
     public LiveTvOptions() {
@@ -112,6 +127,7 @@ public class LiveTvOptions {
      * @return guideDays
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_GUIDE_DAYS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getGuideDays() {
@@ -135,6 +151,7 @@ public class LiveTvOptions {
      * @return recordingPath
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_RECORDING_PATH, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getRecordingPath() {
@@ -158,6 +175,7 @@ public class LiveTvOptions {
      * @return movieRecordingPath
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_MOVIE_RECORDING_PATH, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getMovieRecordingPath() {
@@ -181,6 +199,7 @@ public class LiveTvOptions {
      * @return seriesRecordingPath
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_SERIES_RECORDING_PATH, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getSeriesRecordingPath() {
@@ -205,6 +224,7 @@ public class LiveTvOptions {
      * @return enableRecordingSubfolders
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_ENABLE_RECORDING_SUBFOLDERS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getEnableRecordingSubfolders() {
@@ -229,6 +249,7 @@ public class LiveTvOptions {
      * @return enableOriginalAudioWithEncodedRecordings
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_ENABLE_ORIGINAL_AUDIO_WITH_ENCODED_RECORDINGS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getEnableOriginalAudioWithEncodedRecordings() {
@@ -261,6 +282,7 @@ public class LiveTvOptions {
      * @return tunerHosts
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_TUNER_HOSTS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<TunerHostInfo> getTunerHosts() {
@@ -293,6 +315,7 @@ public class LiveTvOptions {
      * @return listingProviders
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_LISTING_PROVIDERS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<ListingsProviderInfo> getListingProviders() {
@@ -316,6 +339,7 @@ public class LiveTvOptions {
      * @return prePaddingSeconds
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_PRE_PADDING_SECONDS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getPrePaddingSeconds() {
@@ -339,6 +363,7 @@ public class LiveTvOptions {
      * @return postPaddingSeconds
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_POST_PADDING_SECONDS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getPostPaddingSeconds() {
@@ -371,6 +396,7 @@ public class LiveTvOptions {
      * @return mediaLocationsCreated
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_MEDIA_LOCATIONS_CREATED, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<String> getMediaLocationsCreated() {
@@ -394,6 +420,7 @@ public class LiveTvOptions {
      * @return recordingPostProcessor
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_RECORDING_POST_PROCESSOR, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getRecordingPostProcessor() {
@@ -418,6 +445,7 @@ public class LiveTvOptions {
      * @return recordingPostProcessorArguments
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_RECORDING_POST_PROCESSOR_ARGUMENTS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getRecordingPostProcessorArguments() {
@@ -442,6 +470,7 @@ public class LiveTvOptions {
      * @return saveRecordingNFO
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_SAVE_RECORDING_N_F_O, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getSaveRecordingNFO() {
@@ -465,6 +494,7 @@ public class LiveTvOptions {
      * @return saveRecordingImages
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_SAVE_RECORDING_IMAGES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getSaveRecordingImages() {

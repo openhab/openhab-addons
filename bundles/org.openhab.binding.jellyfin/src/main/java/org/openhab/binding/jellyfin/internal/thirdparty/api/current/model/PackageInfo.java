@@ -35,34 +35,42 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class PackageInfo {
     public static final String JSON_PROPERTY_NAME = "name";
     @org.eclipse.jdt.annotation.Nullable
+
     private String name;
 
     public static final String JSON_PROPERTY_DESCRIPTION = "description";
     @org.eclipse.jdt.annotation.Nullable
+
     private String description;
 
     public static final String JSON_PROPERTY_OVERVIEW = "overview";
     @org.eclipse.jdt.annotation.Nullable
+
     private String overview;
 
     public static final String JSON_PROPERTY_OWNER = "owner";
     @org.eclipse.jdt.annotation.Nullable
+
     private String owner;
 
     public static final String JSON_PROPERTY_CATEGORY = "category";
     @org.eclipse.jdt.annotation.Nullable
+
     private String category;
 
     public static final String JSON_PROPERTY_GUID = "guid";
     @org.eclipse.jdt.annotation.Nullable
+
     private UUID guid;
 
     public static final String JSON_PROPERTY_VERSIONS = "versions";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<VersionInfo> versions = new ArrayList<>();
 
     public static final String JSON_PROPERTY_IMAGE_URL = "imageUrl";
     @org.eclipse.jdt.annotation.Nullable
+
     private String imageUrl;
 
     public PackageInfo() {
@@ -79,6 +87,7 @@ public class PackageInfo {
      * @return name
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getName() {
@@ -102,6 +111,7 @@ public class PackageInfo {
      * @return description
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_DESCRIPTION, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getDescription() {
@@ -125,6 +135,7 @@ public class PackageInfo {
      * @return overview
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_OVERVIEW, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getOverview() {
@@ -148,6 +159,7 @@ public class PackageInfo {
      * @return owner
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_OWNER, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getOwner() {
@@ -171,6 +183,7 @@ public class PackageInfo {
      * @return category
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_CATEGORY, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getCategory() {
@@ -195,6 +208,7 @@ public class PackageInfo {
      * @return guid
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_GUID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public UUID getGuid() {
@@ -226,6 +240,7 @@ public class PackageInfo {
      * @return versions
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_VERSIONS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<VersionInfo> getVersions() {
@@ -249,6 +264,7 @@ public class PackageInfo {
      * @return imageUrl
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_IMAGE_URL, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getImageUrl() {

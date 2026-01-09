@@ -34,14 +34,17 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class SeriesTimerInfoDtoQueryResult {
     public static final String JSON_PROPERTY_ITEMS = "Items";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<SeriesTimerInfoDto> items = new ArrayList<>();
 
     public static final String JSON_PROPERTY_TOTAL_RECORD_COUNT = "TotalRecordCount";
     @org.eclipse.jdt.annotation.Nullable
+
     private Integer totalRecordCount;
 
     public static final String JSON_PROPERTY_START_INDEX = "StartIndex";
     @org.eclipse.jdt.annotation.Nullable
+
     private Integer startIndex;
 
     public SeriesTimerInfoDtoQueryResult() {
@@ -66,6 +69,7 @@ public class SeriesTimerInfoDtoQueryResult {
      * @return items
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_ITEMS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<SeriesTimerInfoDto> getItems() {
@@ -90,6 +94,7 @@ public class SeriesTimerInfoDtoQueryResult {
      * @return totalRecordCount
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_TOTAL_RECORD_COUNT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getTotalRecordCount() {
@@ -113,6 +118,7 @@ public class SeriesTimerInfoDtoQueryResult {
      * @return startIndex
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_START_INDEX, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getStartIndex() {

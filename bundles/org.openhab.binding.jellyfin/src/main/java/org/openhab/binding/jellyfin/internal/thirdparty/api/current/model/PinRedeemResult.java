@@ -32,10 +32,12 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class PinRedeemResult {
     public static final String JSON_PROPERTY_SUCCESS = "Success";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean success;
 
     public static final String JSON_PROPERTY_USERS_RESET = "UsersReset";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<String> usersReset = new ArrayList<>();
 
     public PinRedeemResult() {
@@ -52,6 +54,7 @@ public class PinRedeemResult {
      * @return success
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_SUCCESS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getSuccess() {
@@ -83,6 +86,7 @@ public class PinRedeemResult {
      * @return usersReset
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_USERS_RESET, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<String> getUsersReset() {

@@ -36,22 +36,27 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class CultureDto {
     public static final String JSON_PROPERTY_NAME = "Name";
     @org.eclipse.jdt.annotation.Nullable
+
     private String name;
 
     public static final String JSON_PROPERTY_DISPLAY_NAME = "DisplayName";
     @org.eclipse.jdt.annotation.Nullable
+
     private String displayName;
 
     public static final String JSON_PROPERTY_TWO_LETTER_I_S_O_LANGUAGE_NAME = "TwoLetterISOLanguageName";
     @org.eclipse.jdt.annotation.Nullable
+
     private String twoLetterISOLanguageName;
 
     public static final String JSON_PROPERTY_THREE_LETTER_I_S_O_LANGUAGE_NAME = "ThreeLetterISOLanguageName";
     @org.eclipse.jdt.annotation.Nullable
+
     private String threeLetterISOLanguageName;
 
     public static final String JSON_PROPERTY_THREE_LETTER_I_S_O_LANGUAGE_NAMES = "ThreeLetterISOLanguageNames";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<String> threeLetterISOLanguageNames = new ArrayList<>();
 
     public CultureDto() {
@@ -74,6 +79,7 @@ public class CultureDto {
      * @return name
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getName() {
@@ -97,6 +103,7 @@ public class CultureDto {
      * @return displayName
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_DISPLAY_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getDisplayName() {
@@ -120,6 +127,7 @@ public class CultureDto {
      * @return twoLetterISOLanguageName
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_TWO_LETTER_I_S_O_LANGUAGE_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getTwoLetterISOLanguageName() {
@@ -138,6 +146,7 @@ public class CultureDto {
      * @return threeLetterISOLanguageName
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_THREE_LETTER_I_S_O_LANGUAGE_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getThreeLetterISOLanguageName() {
@@ -164,6 +173,7 @@ public class CultureDto {
      * @return threeLetterISOLanguageNames
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_THREE_LETTER_I_S_O_LANGUAGE_NAMES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<String> getThreeLetterISOLanguageNames() {

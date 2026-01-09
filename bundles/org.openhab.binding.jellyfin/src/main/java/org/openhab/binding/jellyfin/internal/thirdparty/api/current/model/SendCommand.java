@@ -34,26 +34,32 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class SendCommand {
     public static final String JSON_PROPERTY_GROUP_ID = "GroupId";
     @org.eclipse.jdt.annotation.Nullable
+
     private UUID groupId;
 
     public static final String JSON_PROPERTY_PLAYLIST_ITEM_ID = "PlaylistItemId";
     @org.eclipse.jdt.annotation.Nullable
+
     private UUID playlistItemId;
 
     public static final String JSON_PROPERTY_WHEN = "When";
     @org.eclipse.jdt.annotation.Nullable
+
     private OffsetDateTime when;
 
     public static final String JSON_PROPERTY_POSITION_TICKS = "PositionTicks";
     @org.eclipse.jdt.annotation.Nullable
+
     private Long positionTicks;
 
     public static final String JSON_PROPERTY_COMMAND = "Command";
     @org.eclipse.jdt.annotation.Nullable
+
     private SendCommandType command;
 
     public static final String JSON_PROPERTY_EMITTED_AT = "EmittedAt";
     @org.eclipse.jdt.annotation.Nullable
+
     private OffsetDateTime emittedAt;
 
     public SendCommand() {
@@ -70,6 +76,7 @@ public class SendCommand {
      * @return groupId
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_GROUP_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public UUID getGroupId() {
@@ -93,6 +100,7 @@ public class SendCommand {
      * @return playlistItemId
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_PLAYLIST_ITEM_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public UUID getPlaylistItemId() {
@@ -116,6 +124,7 @@ public class SendCommand {
      * @return when
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_WHEN, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public OffsetDateTime getWhen() {
@@ -139,6 +148,7 @@ public class SendCommand {
      * @return positionTicks
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_POSITION_TICKS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Long getPositionTicks() {
@@ -162,6 +172,7 @@ public class SendCommand {
      * @return command
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_COMMAND, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public SendCommandType getCommand() {
@@ -185,6 +196,7 @@ public class SendCommand {
      * @return emittedAt
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_EMITTED_AT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public OffsetDateTime getEmittedAt() {

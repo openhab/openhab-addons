@@ -34,38 +34,47 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class VersionInfo {
     public static final String JSON_PROPERTY_VERSION = "version";
     @org.eclipse.jdt.annotation.Nullable
+
     private String version;
 
     public static final String JSON_PROPERTY_VERSION_NUMBER = "VersionNumber";
     @org.eclipse.jdt.annotation.Nullable
+
     private String versionNumber;
 
     public static final String JSON_PROPERTY_CHANGELOG = "changelog";
     @org.eclipse.jdt.annotation.Nullable
+
     private String changelog;
 
     public static final String JSON_PROPERTY_TARGET_ABI = "targetAbi";
     @org.eclipse.jdt.annotation.Nullable
+
     private String targetAbi;
 
     public static final String JSON_PROPERTY_SOURCE_URL = "sourceUrl";
     @org.eclipse.jdt.annotation.Nullable
+
     private String sourceUrl;
 
     public static final String JSON_PROPERTY_CHECKSUM = "checksum";
     @org.eclipse.jdt.annotation.Nullable
+
     private String checksum;
 
     public static final String JSON_PROPERTY_TIMESTAMP = "timestamp";
     @org.eclipse.jdt.annotation.Nullable
+
     private String timestamp;
 
     public static final String JSON_PROPERTY_REPOSITORY_NAME = "repositoryName";
     @org.eclipse.jdt.annotation.Nullable
+
     private String repositoryName;
 
     public static final String JSON_PROPERTY_REPOSITORY_URL = "repositoryUrl";
     @org.eclipse.jdt.annotation.Nullable
+
     private String repositoryUrl;
 
     public VersionInfo() {
@@ -88,6 +97,7 @@ public class VersionInfo {
      * @return version
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_VERSION, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getVersion() {
@@ -106,6 +116,7 @@ public class VersionInfo {
      * @return versionNumber
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_VERSION_NUMBER, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getVersionNumber() {
@@ -123,6 +134,7 @@ public class VersionInfo {
      * @return changelog
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_CHANGELOG, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getChangelog() {
@@ -146,6 +158,7 @@ public class VersionInfo {
      * @return targetAbi
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_TARGET_ABI, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getTargetAbi() {
@@ -169,6 +182,7 @@ public class VersionInfo {
      * @return sourceUrl
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_SOURCE_URL, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getSourceUrl() {
@@ -192,6 +206,7 @@ public class VersionInfo {
      * @return checksum
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_CHECKSUM, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getChecksum() {
@@ -215,6 +230,7 @@ public class VersionInfo {
      * @return timestamp
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_TIMESTAMP, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getTimestamp() {
@@ -238,6 +254,7 @@ public class VersionInfo {
      * @return repositoryName
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_REPOSITORY_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getRepositoryName() {
@@ -261,6 +278,7 @@ public class VersionInfo {
      * @return repositoryUrl
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_REPOSITORY_URL, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getRepositoryUrl() {

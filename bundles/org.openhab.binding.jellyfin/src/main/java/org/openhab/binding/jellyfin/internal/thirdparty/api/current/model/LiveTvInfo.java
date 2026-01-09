@@ -33,14 +33,17 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class LiveTvInfo {
     public static final String JSON_PROPERTY_SERVICES = "Services";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<LiveTvServiceInfo> services = new ArrayList<>();
 
     public static final String JSON_PROPERTY_IS_ENABLED = "IsEnabled";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean isEnabled;
 
     public static final String JSON_PROPERTY_ENABLED_USERS = "EnabledUsers";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<String> enabledUsers = new ArrayList<>();
 
     public LiveTvInfo() {
@@ -65,6 +68,7 @@ public class LiveTvInfo {
      * @return services
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_SERVICES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<LiveTvServiceInfo> getServices() {
@@ -88,6 +92,7 @@ public class LiveTvInfo {
      * @return isEnabled
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_IS_ENABLED, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getIsEnabled() {
@@ -119,6 +124,7 @@ public class LiveTvInfo {
      * @return enabledUsers
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_ENABLED_USERS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<String> getEnabledUsers() {

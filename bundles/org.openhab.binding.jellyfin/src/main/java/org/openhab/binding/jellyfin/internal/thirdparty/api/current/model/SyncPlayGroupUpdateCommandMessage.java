@@ -33,15 +33,15 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class SyncPlayGroupUpdateCommandMessage {
     public static final String JSON_PROPERTY_DATA = "Data";
-    @org.eclipse.jdt.annotation.NonNull
+    @org.eclipse.jdt.annotation.Nullable
     private GroupUpdate data;
 
     public static final String JSON_PROPERTY_MESSAGE_ID = "MessageId";
-    @org.eclipse.jdt.annotation.NonNull
+    @org.eclipse.jdt.annotation.Nullable
     private UUID messageId;
 
     public static final String JSON_PROPERTY_MESSAGE_TYPE = "MessageType";
-    @org.eclipse.jdt.annotation.NonNull
+    @org.eclipse.jdt.annotation.Nullable
     private SessionMessageType messageType = SessionMessageType.SYNC_PLAY_GROUP_UPDATE;
 
     public SyncPlayGroupUpdateCommandMessage() {
@@ -63,7 +63,7 @@ public class SyncPlayGroupUpdateCommandMessage {
      * 
      * @return data
      */
-    @org.eclipse.jdt.annotation.NonNull
+    @org.eclipse.jdt.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_DATA)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public GroupUpdate getData() {
@@ -86,7 +86,7 @@ public class SyncPlayGroupUpdateCommandMessage {
      * 
      * @return messageId
      */
-    @org.eclipse.jdt.annotation.NonNull
+    @org.eclipse.jdt.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_MESSAGE_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public UUID getMessageId() {
@@ -104,7 +104,7 @@ public class SyncPlayGroupUpdateCommandMessage {
      * 
      * @return messageType
      */
-    @org.eclipse.jdt.annotation.NonNull
+    @org.eclipse.jdt.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_MESSAGE_TYPE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public SessionMessageType getMessageType() {

@@ -38,54 +38,67 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class TranscodingInfo {
     public static final String JSON_PROPERTY_AUDIO_CODEC = "AudioCodec";
     @org.eclipse.jdt.annotation.Nullable
+
     private String audioCodec;
 
     public static final String JSON_PROPERTY_VIDEO_CODEC = "VideoCodec";
     @org.eclipse.jdt.annotation.Nullable
+
     private String videoCodec;
 
     public static final String JSON_PROPERTY_CONTAINER = "Container";
     @org.eclipse.jdt.annotation.Nullable
+
     private String container;
 
     public static final String JSON_PROPERTY_IS_VIDEO_DIRECT = "IsVideoDirect";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean isVideoDirect;
 
     public static final String JSON_PROPERTY_IS_AUDIO_DIRECT = "IsAudioDirect";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean isAudioDirect;
 
     public static final String JSON_PROPERTY_BITRATE = "Bitrate";
     @org.eclipse.jdt.annotation.Nullable
+
     private Integer bitrate;
 
     public static final String JSON_PROPERTY_FRAMERATE = "Framerate";
     @org.eclipse.jdt.annotation.Nullable
+
     private Float framerate;
 
     public static final String JSON_PROPERTY_COMPLETION_PERCENTAGE = "CompletionPercentage";
     @org.eclipse.jdt.annotation.Nullable
+
     private Double completionPercentage;
 
     public static final String JSON_PROPERTY_WIDTH = "Width";
     @org.eclipse.jdt.annotation.Nullable
+
     private Integer width;
 
     public static final String JSON_PROPERTY_HEIGHT = "Height";
     @org.eclipse.jdt.annotation.Nullable
+
     private Integer height;
 
     public static final String JSON_PROPERTY_AUDIO_CHANNELS = "AudioChannels";
     @org.eclipse.jdt.annotation.Nullable
+
     private Integer audioChannels;
 
     public static final String JSON_PROPERTY_HARDWARE_ACCELERATION_TYPE = "HardwareAccelerationType";
     @org.eclipse.jdt.annotation.Nullable
+
     private HardwareAccelerationType hardwareAccelerationType;
 
     public static final String JSON_PROPERTY_TRANSCODE_REASONS = "TranscodeReasons";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<TranscodeReason> transcodeReasons = new ArrayList<>();
 
     public TranscodingInfo() {
@@ -102,6 +115,7 @@ public class TranscodingInfo {
      * @return audioCodec
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_AUDIO_CODEC, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getAudioCodec() {
@@ -125,6 +139,7 @@ public class TranscodingInfo {
      * @return videoCodec
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_VIDEO_CODEC, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getVideoCodec() {
@@ -148,6 +163,7 @@ public class TranscodingInfo {
      * @return container
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_CONTAINER, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getContainer() {
@@ -171,6 +187,7 @@ public class TranscodingInfo {
      * @return isVideoDirect
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_IS_VIDEO_DIRECT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getIsVideoDirect() {
@@ -194,6 +211,7 @@ public class TranscodingInfo {
      * @return isAudioDirect
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_IS_AUDIO_DIRECT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getIsAudioDirect() {
@@ -217,6 +235,7 @@ public class TranscodingInfo {
      * @return bitrate
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_BITRATE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getBitrate() {
@@ -240,6 +259,7 @@ public class TranscodingInfo {
      * @return framerate
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_FRAMERATE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Float getFramerate() {
@@ -263,6 +283,7 @@ public class TranscodingInfo {
      * @return completionPercentage
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_COMPLETION_PERCENTAGE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Double getCompletionPercentage() {
@@ -286,6 +307,7 @@ public class TranscodingInfo {
      * @return width
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_WIDTH, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getWidth() {
@@ -309,6 +331,7 @@ public class TranscodingInfo {
      * @return height
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_HEIGHT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getHeight() {
@@ -332,6 +355,7 @@ public class TranscodingInfo {
      * @return audioChannels
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_AUDIO_CHANNELS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getAudioChannels() {
@@ -356,6 +380,7 @@ public class TranscodingInfo {
      * @return hardwareAccelerationType
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_HARDWARE_ACCELERATION_TYPE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public HardwareAccelerationType getHardwareAccelerationType() {
@@ -389,6 +414,7 @@ public class TranscodingInfo {
      * @return transcodeReasons
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_TRANSCODE_REASONS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<TranscodeReason> getTranscodeReasons() {

@@ -37,46 +37,57 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class DeviceInfoDto {
     public static final String JSON_PROPERTY_NAME = "Name";
     @org.eclipse.jdt.annotation.Nullable
+
     private String name;
 
     public static final String JSON_PROPERTY_CUSTOM_NAME = "CustomName";
     @org.eclipse.jdt.annotation.Nullable
+
     private String customName;
 
     public static final String JSON_PROPERTY_ACCESS_TOKEN = "AccessToken";
     @org.eclipse.jdt.annotation.Nullable
+
     private String accessToken;
 
     public static final String JSON_PROPERTY_ID = "Id";
     @org.eclipse.jdt.annotation.Nullable
+
     private String id;
 
     public static final String JSON_PROPERTY_LAST_USER_NAME = "LastUserName";
     @org.eclipse.jdt.annotation.Nullable
+
     private String lastUserName;
 
     public static final String JSON_PROPERTY_APP_NAME = "AppName";
     @org.eclipse.jdt.annotation.Nullable
+
     private String appName;
 
     public static final String JSON_PROPERTY_APP_VERSION = "AppVersion";
     @org.eclipse.jdt.annotation.Nullable
+
     private String appVersion;
 
     public static final String JSON_PROPERTY_LAST_USER_ID = "LastUserId";
     @org.eclipse.jdt.annotation.Nullable
+
     private UUID lastUserId;
 
     public static final String JSON_PROPERTY_DATE_LAST_ACTIVITY = "DateLastActivity";
     @org.eclipse.jdt.annotation.Nullable
+
     private OffsetDateTime dateLastActivity;
 
     public static final String JSON_PROPERTY_CAPABILITIES = "Capabilities";
     @org.eclipse.jdt.annotation.Nullable
+
     private ClientCapabilitiesDto capabilities;
 
     public static final String JSON_PROPERTY_ICON_URL = "IconUrl";
     @org.eclipse.jdt.annotation.Nullable
+
     private String iconUrl;
 
     public DeviceInfoDto() {
@@ -93,6 +104,7 @@ public class DeviceInfoDto {
      * @return name
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getName() {
@@ -116,6 +128,7 @@ public class DeviceInfoDto {
      * @return customName
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_CUSTOM_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getCustomName() {
@@ -139,6 +152,7 @@ public class DeviceInfoDto {
      * @return accessToken
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_ACCESS_TOKEN, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getAccessToken() {
@@ -162,6 +176,7 @@ public class DeviceInfoDto {
      * @return id
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getId() {
@@ -185,6 +200,7 @@ public class DeviceInfoDto {
      * @return lastUserName
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_LAST_USER_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getLastUserName() {
@@ -208,6 +224,7 @@ public class DeviceInfoDto {
      * @return appName
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_APP_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getAppName() {
@@ -231,6 +248,7 @@ public class DeviceInfoDto {
      * @return appVersion
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_APP_VERSION, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getAppVersion() {
@@ -254,6 +272,7 @@ public class DeviceInfoDto {
      * @return lastUserId
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_LAST_USER_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public UUID getLastUserId() {
@@ -277,6 +296,7 @@ public class DeviceInfoDto {
      * @return dateLastActivity
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_DATE_LAST_ACTIVITY, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public OffsetDateTime getDateLastActivity() {
@@ -300,6 +320,7 @@ public class DeviceInfoDto {
      * @return capabilities
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_CAPABILITIES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public ClientCapabilitiesDto getCapabilities() {
@@ -323,6 +344,7 @@ public class DeviceInfoDto {
      * @return iconUrl
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_ICON_URL, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getIconUrl() {

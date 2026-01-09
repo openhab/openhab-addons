@@ -32,22 +32,27 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class FolderStorageDto {
     public static final String JSON_PROPERTY_PATH = "Path";
     @org.eclipse.jdt.annotation.Nullable
+
     private String path;
 
     public static final String JSON_PROPERTY_FREE_SPACE = "FreeSpace";
     @org.eclipse.jdt.annotation.Nullable
+
     private Long freeSpace;
 
     public static final String JSON_PROPERTY_USED_SPACE = "UsedSpace";
     @org.eclipse.jdt.annotation.Nullable
+
     private Long usedSpace;
 
     public static final String JSON_PROPERTY_STORAGE_TYPE = "StorageType";
     @org.eclipse.jdt.annotation.Nullable
+
     private String storageType;
 
     public static final String JSON_PROPERTY_DEVICE_ID = "DeviceId";
     @org.eclipse.jdt.annotation.Nullable
+
     private String deviceId;
 
     public FolderStorageDto() {
@@ -64,6 +69,7 @@ public class FolderStorageDto {
      * @return path
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_PATH, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getPath() {
@@ -88,6 +94,7 @@ public class FolderStorageDto {
      * @return freeSpace
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_FREE_SPACE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Long getFreeSpace() {
@@ -112,6 +119,7 @@ public class FolderStorageDto {
      * @return usedSpace
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_USED_SPACE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Long getUsedSpace() {
@@ -135,6 +143,7 @@ public class FolderStorageDto {
      * @return storageType
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_STORAGE_TYPE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getStorageType() {
@@ -158,6 +167,7 @@ public class FolderStorageDto {
      * @return deviceId
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_DEVICE_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getDeviceId() {

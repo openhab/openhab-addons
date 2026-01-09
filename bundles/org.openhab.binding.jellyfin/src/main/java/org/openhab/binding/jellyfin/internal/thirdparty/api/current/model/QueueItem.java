@@ -31,10 +31,12 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class QueueItem {
     public static final String JSON_PROPERTY_ID = "Id";
     @org.eclipse.jdt.annotation.Nullable
+
     private UUID id;
 
     public static final String JSON_PROPERTY_PLAYLIST_ITEM_ID = "PlaylistItemId";
     @org.eclipse.jdt.annotation.Nullable
+
     private String playlistItemId;
 
     public QueueItem() {
@@ -51,6 +53,7 @@ public class QueueItem {
      * @return id
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public UUID getId() {
@@ -74,6 +77,7 @@ public class QueueItem {
      * @return playlistItemId
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_PLAYLIST_ITEM_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getPlaylistItemId() {

@@ -30,6 +30,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class NewGroupRequestDto {
     public static final String JSON_PROPERTY_GROUP_NAME = "GroupName";
     @org.eclipse.jdt.annotation.Nullable
+
     private String groupName;
 
     public NewGroupRequestDto() {
@@ -46,6 +47,7 @@ public class NewGroupRequestDto {
      * @return groupName
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_GROUP_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getGroupName() {

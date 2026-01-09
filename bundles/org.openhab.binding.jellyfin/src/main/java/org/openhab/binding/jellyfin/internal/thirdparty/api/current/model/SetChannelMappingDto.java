@@ -30,15 +30,18 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class SetChannelMappingDto {
     public static final String JSON_PROPERTY_PROVIDER_ID = "ProviderId";
-    @org.eclipse.jdt.annotation.NonNull
+    @org.eclipse.jdt.annotation.Nullable
+
     private String providerId;
 
     public static final String JSON_PROPERTY_TUNER_CHANNEL_ID = "TunerChannelId";
-    @org.eclipse.jdt.annotation.NonNull
+    @org.eclipse.jdt.annotation.Nullable
+
     private String tunerChannelId;
 
     public static final String JSON_PROPERTY_PROVIDER_CHANNEL_ID = "ProviderChannelId";
-    @org.eclipse.jdt.annotation.NonNull
+    @org.eclipse.jdt.annotation.Nullable
+
     private String providerChannelId;
 
     public SetChannelMappingDto() {
@@ -54,7 +57,8 @@ public class SetChannelMappingDto {
      * 
      * @return providerId
      */
-    @org.eclipse.jdt.annotation.NonNull
+    @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_PROVIDER_ID, required = true)
     @JsonInclude(value = JsonInclude.Include.ALWAYS)
     public String getProviderId() {
@@ -77,7 +81,8 @@ public class SetChannelMappingDto {
      * 
      * @return tunerChannelId
      */
-    @org.eclipse.jdt.annotation.NonNull
+    @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_TUNER_CHANNEL_ID, required = true)
     @JsonInclude(value = JsonInclude.Include.ALWAYS)
     public String getTunerChannelId() {
@@ -100,7 +105,8 @@ public class SetChannelMappingDto {
      * 
      * @return providerChannelId
      */
-    @org.eclipse.jdt.annotation.NonNull
+    @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_PROVIDER_CHANNEL_ID, required = true)
     @JsonInclude(value = JsonInclude.Include.ALWAYS)
     public String getProviderChannelId() {

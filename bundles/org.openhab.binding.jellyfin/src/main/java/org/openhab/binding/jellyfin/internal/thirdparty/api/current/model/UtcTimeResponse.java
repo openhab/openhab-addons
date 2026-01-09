@@ -32,10 +32,12 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class UtcTimeResponse {
     public static final String JSON_PROPERTY_REQUEST_RECEPTION_TIME = "RequestReceptionTime";
     @org.eclipse.jdt.annotation.Nullable
+
     private OffsetDateTime requestReceptionTime;
 
     public static final String JSON_PROPERTY_RESPONSE_TRANSMISSION_TIME = "ResponseTransmissionTime";
     @org.eclipse.jdt.annotation.Nullable
+
     private OffsetDateTime responseTransmissionTime;
 
     public UtcTimeResponse() {
@@ -53,6 +55,7 @@ public class UtcTimeResponse {
      * @return requestReceptionTime
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_REQUEST_RECEPTION_TIME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public OffsetDateTime getRequestReceptionTime() {
@@ -77,6 +80,7 @@ public class UtcTimeResponse {
      * @return responseTransmissionTime
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_RESPONSE_TRANSMISSION_TIME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public OffsetDateTime getResponseTransmissionTime() {

@@ -29,11 +29,13 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class UpdateMediaPathRequestDto {
     public static final String JSON_PROPERTY_NAME = "Name";
-    @org.eclipse.jdt.annotation.NonNull
+    @org.eclipse.jdt.annotation.Nullable
+
     private String name;
 
     public static final String JSON_PROPERTY_PATH_INFO = "PathInfo";
-    @org.eclipse.jdt.annotation.NonNull
+    @org.eclipse.jdt.annotation.Nullable
+
     private MediaPathInfo pathInfo;
 
     public UpdateMediaPathRequestDto() {
@@ -49,7 +51,8 @@ public class UpdateMediaPathRequestDto {
      * 
      * @return name
      */
-    @org.eclipse.jdt.annotation.NonNull
+    @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_NAME, required = true)
     @JsonInclude(value = JsonInclude.Include.ALWAYS)
     public String getName() {
@@ -72,7 +75,8 @@ public class UpdateMediaPathRequestDto {
      * 
      * @return pathInfo
      */
-    @org.eclipse.jdt.annotation.NonNull
+    @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_PATH_INFO, required = true)
     @JsonInclude(value = JsonInclude.Include.ALWAYS)
     public MediaPathInfo getPathInfo() {

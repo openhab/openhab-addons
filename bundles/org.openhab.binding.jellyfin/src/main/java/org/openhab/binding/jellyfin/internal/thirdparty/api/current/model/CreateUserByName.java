@@ -29,11 +29,13 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class CreateUserByName {
     public static final String JSON_PROPERTY_NAME = "Name";
-    @org.eclipse.jdt.annotation.NonNull
+    @org.eclipse.jdt.annotation.Nullable
+
     private String name;
 
     public static final String JSON_PROPERTY_PASSWORD = "Password";
     @org.eclipse.jdt.annotation.Nullable
+
     private String password;
 
     public CreateUserByName() {
@@ -49,7 +51,8 @@ public class CreateUserByName {
      * 
      * @return name
      */
-    @org.eclipse.jdt.annotation.NonNull
+    @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_NAME, required = true)
     @JsonInclude(value = JsonInclude.Include.ALWAYS)
     public String getName() {
@@ -73,6 +76,7 @@ public class CreateUserByName {
      * @return password
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_PASSWORD, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getPassword() {

@@ -47,110 +47,137 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class GetProgramsDto {
     public static final String JSON_PROPERTY_CHANNEL_IDS = "ChannelIds";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<UUID> channelIds;
 
     public static final String JSON_PROPERTY_USER_ID = "UserId";
     @org.eclipse.jdt.annotation.Nullable
+
     private UUID userId;
 
     public static final String JSON_PROPERTY_MIN_START_DATE = "MinStartDate";
     @org.eclipse.jdt.annotation.Nullable
+
     private OffsetDateTime minStartDate;
 
     public static final String JSON_PROPERTY_HAS_AIRED = "HasAired";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean hasAired;
 
     public static final String JSON_PROPERTY_IS_AIRING = "IsAiring";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean isAiring;
 
     public static final String JSON_PROPERTY_MAX_START_DATE = "MaxStartDate";
     @org.eclipse.jdt.annotation.Nullable
+
     private OffsetDateTime maxStartDate;
 
     public static final String JSON_PROPERTY_MIN_END_DATE = "MinEndDate";
     @org.eclipse.jdt.annotation.Nullable
+
     private OffsetDateTime minEndDate;
 
     public static final String JSON_PROPERTY_MAX_END_DATE = "MaxEndDate";
     @org.eclipse.jdt.annotation.Nullable
+
     private OffsetDateTime maxEndDate;
 
     public static final String JSON_PROPERTY_IS_MOVIE = "IsMovie";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean isMovie;
 
     public static final String JSON_PROPERTY_IS_SERIES = "IsSeries";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean isSeries;
 
     public static final String JSON_PROPERTY_IS_NEWS = "IsNews";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean isNews;
 
     public static final String JSON_PROPERTY_IS_KIDS = "IsKids";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean isKids;
 
     public static final String JSON_PROPERTY_IS_SPORTS = "IsSports";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean isSports;
 
     public static final String JSON_PROPERTY_START_INDEX = "StartIndex";
     @org.eclipse.jdt.annotation.Nullable
+
     private Integer startIndex;
 
     public static final String JSON_PROPERTY_LIMIT = "Limit";
     @org.eclipse.jdt.annotation.Nullable
+
     private Integer limit;
 
     public static final String JSON_PROPERTY_SORT_BY = "SortBy";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<ItemSortBy> sortBy;
 
     public static final String JSON_PROPERTY_SORT_ORDER = "SortOrder";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<SortOrder> sortOrder;
 
     public static final String JSON_PROPERTY_GENRES = "Genres";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<String> genres;
 
     public static final String JSON_PROPERTY_GENRE_IDS = "GenreIds";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<UUID> genreIds;
 
     public static final String JSON_PROPERTY_ENABLE_IMAGES = "EnableImages";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean enableImages;
 
     public static final String JSON_PROPERTY_ENABLE_TOTAL_RECORD_COUNT = "EnableTotalRecordCount";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean enableTotalRecordCount = true;
 
     public static final String JSON_PROPERTY_IMAGE_TYPE_LIMIT = "ImageTypeLimit";
     @org.eclipse.jdt.annotation.Nullable
+
     private Integer imageTypeLimit;
 
     public static final String JSON_PROPERTY_ENABLE_IMAGE_TYPES = "EnableImageTypes";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<ImageType> enableImageTypes;
 
     public static final String JSON_PROPERTY_ENABLE_USER_DATA = "EnableUserData";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean enableUserData;
 
     public static final String JSON_PROPERTY_SERIES_TIMER_ID = "SeriesTimerId";
     @org.eclipse.jdt.annotation.Nullable
+
     private String seriesTimerId;
 
     public static final String JSON_PROPERTY_LIBRARY_SERIES_ID = "LibrarySeriesId";
     @org.eclipse.jdt.annotation.Nullable
+
     private UUID librarySeriesId;
 
     public static final String JSON_PROPERTY_FIELDS = "Fields";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<ItemFields> fields;
 
     public GetProgramsDto() {
@@ -175,6 +202,7 @@ public class GetProgramsDto {
      * @return channelIds
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_CHANNEL_IDS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<UUID> getChannelIds() {
@@ -198,6 +226,7 @@ public class GetProgramsDto {
      * @return userId
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_USER_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public UUID getUserId() {
@@ -221,6 +250,7 @@ public class GetProgramsDto {
      * @return minStartDate
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_MIN_START_DATE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public OffsetDateTime getMinStartDate() {
@@ -244,6 +274,7 @@ public class GetProgramsDto {
      * @return hasAired
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_HAS_AIRED, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getHasAired() {
@@ -267,6 +298,7 @@ public class GetProgramsDto {
      * @return isAiring
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_IS_AIRING, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getIsAiring() {
@@ -290,6 +322,7 @@ public class GetProgramsDto {
      * @return maxStartDate
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_MAX_START_DATE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public OffsetDateTime getMaxStartDate() {
@@ -313,6 +346,7 @@ public class GetProgramsDto {
      * @return minEndDate
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_MIN_END_DATE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public OffsetDateTime getMinEndDate() {
@@ -336,6 +370,7 @@ public class GetProgramsDto {
      * @return maxEndDate
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_MAX_END_DATE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public OffsetDateTime getMaxEndDate() {
@@ -359,6 +394,7 @@ public class GetProgramsDto {
      * @return isMovie
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_IS_MOVIE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getIsMovie() {
@@ -382,6 +418,7 @@ public class GetProgramsDto {
      * @return isSeries
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_IS_SERIES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getIsSeries() {
@@ -405,6 +442,7 @@ public class GetProgramsDto {
      * @return isNews
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_IS_NEWS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getIsNews() {
@@ -428,6 +466,7 @@ public class GetProgramsDto {
      * @return isKids
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_IS_KIDS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getIsKids() {
@@ -451,6 +490,7 @@ public class GetProgramsDto {
      * @return isSports
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_IS_SPORTS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getIsSports() {
@@ -474,6 +514,7 @@ public class GetProgramsDto {
      * @return startIndex
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_START_INDEX, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getStartIndex() {
@@ -497,6 +538,7 @@ public class GetProgramsDto {
      * @return limit
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_LIMIT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getLimit() {
@@ -528,6 +570,7 @@ public class GetProgramsDto {
      * @return sortBy
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_SORT_BY, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<ItemSortBy> getSortBy() {
@@ -559,6 +602,7 @@ public class GetProgramsDto {
      * @return sortOrder
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_SORT_ORDER, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<SortOrder> getSortOrder() {
@@ -590,6 +634,7 @@ public class GetProgramsDto {
      * @return genres
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_GENRES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<String> getGenres() {
@@ -621,6 +666,7 @@ public class GetProgramsDto {
      * @return genreIds
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_GENRE_IDS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<UUID> getGenreIds() {
@@ -644,6 +690,7 @@ public class GetProgramsDto {
      * @return enableImages
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_ENABLE_IMAGES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getEnableImages() {
@@ -667,6 +714,7 @@ public class GetProgramsDto {
      * @return enableTotalRecordCount
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_ENABLE_TOTAL_RECORD_COUNT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getEnableTotalRecordCount() {
@@ -690,6 +738,7 @@ public class GetProgramsDto {
      * @return imageTypeLimit
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_IMAGE_TYPE_LIMIT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getImageTypeLimit() {
@@ -721,6 +770,7 @@ public class GetProgramsDto {
      * @return enableImageTypes
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_ENABLE_IMAGE_TYPES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<ImageType> getEnableImageTypes() {
@@ -744,6 +794,7 @@ public class GetProgramsDto {
      * @return enableUserData
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_ENABLE_USER_DATA, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getEnableUserData() {
@@ -767,6 +818,7 @@ public class GetProgramsDto {
      * @return seriesTimerId
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_SERIES_TIMER_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getSeriesTimerId() {
@@ -790,6 +842,7 @@ public class GetProgramsDto {
      * @return librarySeriesId
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_LIBRARY_SERIES_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public UUID getLibrarySeriesId() {
@@ -821,6 +874,7 @@ public class GetProgramsDto {
      * @return fields
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_FIELDS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<ItemFields> getFields() {

@@ -35,50 +35,62 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class ItemCounts {
     public static final String JSON_PROPERTY_MOVIE_COUNT = "MovieCount";
     @org.eclipse.jdt.annotation.Nullable
+
     private Integer movieCount;
 
     public static final String JSON_PROPERTY_SERIES_COUNT = "SeriesCount";
     @org.eclipse.jdt.annotation.Nullable
+
     private Integer seriesCount;
 
     public static final String JSON_PROPERTY_EPISODE_COUNT = "EpisodeCount";
     @org.eclipse.jdt.annotation.Nullable
+
     private Integer episodeCount;
 
     public static final String JSON_PROPERTY_ARTIST_COUNT = "ArtistCount";
     @org.eclipse.jdt.annotation.Nullable
+
     private Integer artistCount;
 
     public static final String JSON_PROPERTY_PROGRAM_COUNT = "ProgramCount";
     @org.eclipse.jdt.annotation.Nullable
+
     private Integer programCount;
 
     public static final String JSON_PROPERTY_TRAILER_COUNT = "TrailerCount";
     @org.eclipse.jdt.annotation.Nullable
+
     private Integer trailerCount;
 
     public static final String JSON_PROPERTY_SONG_COUNT = "SongCount";
     @org.eclipse.jdt.annotation.Nullable
+
     private Integer songCount;
 
     public static final String JSON_PROPERTY_ALBUM_COUNT = "AlbumCount";
     @org.eclipse.jdt.annotation.Nullable
+
     private Integer albumCount;
 
     public static final String JSON_PROPERTY_MUSIC_VIDEO_COUNT = "MusicVideoCount";
     @org.eclipse.jdt.annotation.Nullable
+
     private Integer musicVideoCount;
 
     public static final String JSON_PROPERTY_BOX_SET_COUNT = "BoxSetCount";
     @org.eclipse.jdt.annotation.Nullable
+
     private Integer boxSetCount;
 
     public static final String JSON_PROPERTY_BOOK_COUNT = "BookCount";
     @org.eclipse.jdt.annotation.Nullable
+
     private Integer bookCount;
 
     public static final String JSON_PROPERTY_ITEM_COUNT = "ItemCount";
     @org.eclipse.jdt.annotation.Nullable
+
     private Integer itemCount;
 
     public ItemCounts() {
@@ -95,6 +107,7 @@ public class ItemCounts {
      * @return movieCount
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_MOVIE_COUNT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getMovieCount() {
@@ -118,6 +131,7 @@ public class ItemCounts {
      * @return seriesCount
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_SERIES_COUNT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getSeriesCount() {
@@ -141,6 +155,7 @@ public class ItemCounts {
      * @return episodeCount
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_EPISODE_COUNT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getEpisodeCount() {
@@ -164,6 +179,7 @@ public class ItemCounts {
      * @return artistCount
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_ARTIST_COUNT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getArtistCount() {
@@ -187,6 +203,7 @@ public class ItemCounts {
      * @return programCount
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_PROGRAM_COUNT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getProgramCount() {
@@ -210,6 +227,7 @@ public class ItemCounts {
      * @return trailerCount
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_TRAILER_COUNT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getTrailerCount() {
@@ -233,6 +251,7 @@ public class ItemCounts {
      * @return songCount
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_SONG_COUNT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getSongCount() {
@@ -256,6 +275,7 @@ public class ItemCounts {
      * @return albumCount
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_ALBUM_COUNT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getAlbumCount() {
@@ -279,6 +299,7 @@ public class ItemCounts {
      * @return musicVideoCount
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_MUSIC_VIDEO_COUNT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getMusicVideoCount() {
@@ -302,6 +323,7 @@ public class ItemCounts {
      * @return boxSetCount
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_BOX_SET_COUNT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getBoxSetCount() {
@@ -325,6 +347,7 @@ public class ItemCounts {
      * @return bookCount
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_BOOK_COUNT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getBookCount() {
@@ -348,6 +371,7 @@ public class ItemCounts {
      * @return itemCount
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_ITEM_COUNT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getItemCount() {

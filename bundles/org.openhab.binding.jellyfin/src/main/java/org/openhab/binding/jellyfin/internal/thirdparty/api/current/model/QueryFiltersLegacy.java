@@ -33,18 +33,22 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class QueryFiltersLegacy {
     public static final String JSON_PROPERTY_GENRES = "Genres";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<String> genres;
 
     public static final String JSON_PROPERTY_TAGS = "Tags";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<String> tags;
 
     public static final String JSON_PROPERTY_OFFICIAL_RATINGS = "OfficialRatings";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<String> officialRatings;
 
     public static final String JSON_PROPERTY_YEARS = "Years";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<Integer> years;
 
     public QueryFiltersLegacy() {
@@ -69,6 +73,7 @@ public class QueryFiltersLegacy {
      * @return genres
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_GENRES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<String> getGenres() {
@@ -100,6 +105,7 @@ public class QueryFiltersLegacy {
      * @return tags
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_TAGS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<String> getTags() {
@@ -131,6 +137,7 @@ public class QueryFiltersLegacy {
      * @return officialRatings
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_OFFICIAL_RATINGS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<String> getOfficialRatings() {
@@ -162,6 +169,7 @@ public class QueryFiltersLegacy {
      * @return years
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_YEARS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<Integer> getYears() {

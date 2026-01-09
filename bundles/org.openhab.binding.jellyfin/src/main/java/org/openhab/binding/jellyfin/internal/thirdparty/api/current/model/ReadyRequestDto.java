@@ -33,18 +33,22 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class ReadyRequestDto {
     public static final String JSON_PROPERTY_WHEN = "When";
     @org.eclipse.jdt.annotation.Nullable
+
     private OffsetDateTime when;
 
     public static final String JSON_PROPERTY_POSITION_TICKS = "PositionTicks";
     @org.eclipse.jdt.annotation.Nullable
+
     private Long positionTicks;
 
     public static final String JSON_PROPERTY_IS_PLAYING = "IsPlaying";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean isPlaying;
 
     public static final String JSON_PROPERTY_PLAYLIST_ITEM_ID = "PlaylistItemId";
     @org.eclipse.jdt.annotation.Nullable
+
     private UUID playlistItemId;
 
     public ReadyRequestDto() {
@@ -61,6 +65,7 @@ public class ReadyRequestDto {
      * @return when
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_WHEN, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public OffsetDateTime getWhen() {
@@ -84,6 +89,7 @@ public class ReadyRequestDto {
      * @return positionTicks
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_POSITION_TICKS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Long getPositionTicks() {
@@ -107,6 +113,7 @@ public class ReadyRequestDto {
      * @return isPlaying
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_IS_PLAYING, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getIsPlaying() {
@@ -130,6 +137,7 @@ public class ReadyRequestDto {
      * @return playlistItemId
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_PLAYLIST_ITEM_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public UUID getPlaylistItemId() {

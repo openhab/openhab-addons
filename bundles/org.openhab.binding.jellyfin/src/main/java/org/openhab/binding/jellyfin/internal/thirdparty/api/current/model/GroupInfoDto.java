@@ -36,22 +36,27 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class GroupInfoDto {
     public static final String JSON_PROPERTY_GROUP_ID = "GroupId";
     @org.eclipse.jdt.annotation.Nullable
+
     private UUID groupId;
 
     public static final String JSON_PROPERTY_GROUP_NAME = "GroupName";
     @org.eclipse.jdt.annotation.Nullable
+
     private String groupName;
 
     public static final String JSON_PROPERTY_STATE = "State";
     @org.eclipse.jdt.annotation.Nullable
+
     private GroupStateType state;
 
     public static final String JSON_PROPERTY_PARTICIPANTS = "Participants";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<String> participants = new ArrayList<>();
 
     public static final String JSON_PROPERTY_LAST_UPDATED_AT = "LastUpdatedAt";
     @org.eclipse.jdt.annotation.Nullable
+
     private OffsetDateTime lastUpdatedAt;
 
     public GroupInfoDto() {
@@ -68,6 +73,7 @@ public class GroupInfoDto {
      * @return groupId
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_GROUP_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public UUID getGroupId() {
@@ -91,6 +97,7 @@ public class GroupInfoDto {
      * @return groupName
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_GROUP_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getGroupName() {
@@ -114,6 +121,7 @@ public class GroupInfoDto {
      * @return state
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_STATE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public GroupStateType getState() {
@@ -145,6 +153,7 @@ public class GroupInfoDto {
      * @return participants
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_PARTICIPANTS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<String> getParticipants() {
@@ -168,6 +177,7 @@ public class GroupInfoDto {
      * @return lastUpdatedAt
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_LAST_UPDATED_AT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public OffsetDateTime getLastUpdatedAt() {

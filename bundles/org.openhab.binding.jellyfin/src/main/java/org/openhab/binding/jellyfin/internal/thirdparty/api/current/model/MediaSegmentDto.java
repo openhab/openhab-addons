@@ -33,22 +33,27 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class MediaSegmentDto {
     public static final String JSON_PROPERTY_ID = "Id";
     @org.eclipse.jdt.annotation.Nullable
+
     private UUID id;
 
     public static final String JSON_PROPERTY_ITEM_ID = "ItemId";
     @org.eclipse.jdt.annotation.Nullable
+
     private UUID itemId;
 
     public static final String JSON_PROPERTY_TYPE = "Type";
     @org.eclipse.jdt.annotation.Nullable
+
     private MediaSegmentType type = MediaSegmentType.UNKNOWN;
 
     public static final String JSON_PROPERTY_START_TICKS = "StartTicks";
     @org.eclipse.jdt.annotation.Nullable
+
     private Long startTicks;
 
     public static final String JSON_PROPERTY_END_TICKS = "EndTicks";
     @org.eclipse.jdt.annotation.Nullable
+
     private Long endTicks;
 
     public MediaSegmentDto() {
@@ -65,6 +70,7 @@ public class MediaSegmentDto {
      * @return id
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public UUID getId() {
@@ -88,6 +94,7 @@ public class MediaSegmentDto {
      * @return itemId
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_ITEM_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public UUID getItemId() {
@@ -111,6 +118,7 @@ public class MediaSegmentDto {
      * @return type
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_TYPE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public MediaSegmentType getType() {
@@ -134,6 +142,7 @@ public class MediaSegmentDto {
      * @return startTicks
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_START_TICKS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Long getStartTicks() {
@@ -157,6 +166,7 @@ public class MediaSegmentDto {
      * @return endTicks
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_END_TICKS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Long getEndTicks() {

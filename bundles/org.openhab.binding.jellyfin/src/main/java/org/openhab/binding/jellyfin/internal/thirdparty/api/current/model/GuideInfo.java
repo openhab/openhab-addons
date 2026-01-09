@@ -31,10 +31,12 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class GuideInfo {
     public static final String JSON_PROPERTY_START_DATE = "StartDate";
     @org.eclipse.jdt.annotation.Nullable
+
     private OffsetDateTime startDate;
 
     public static final String JSON_PROPERTY_END_DATE = "EndDate";
     @org.eclipse.jdt.annotation.Nullable
+
     private OffsetDateTime endDate;
 
     public GuideInfo() {
@@ -51,6 +53,7 @@ public class GuideInfo {
      * @return startDate
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_START_DATE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public OffsetDateTime getStartDate() {
@@ -74,6 +77,7 @@ public class GuideInfo {
      * @return endDate
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_END_DATE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public OffsetDateTime getEndDate() {

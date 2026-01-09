@@ -33,10 +33,12 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class QueueRequestDto {
     public static final String JSON_PROPERTY_ITEM_IDS = "ItemIds";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<UUID> itemIds = new ArrayList<>();
 
     public static final String JSON_PROPERTY_MODE = "Mode";
     @org.eclipse.jdt.annotation.Nullable
+
     private GroupQueueMode mode;
 
     public QueueRequestDto() {
@@ -61,6 +63,7 @@ public class QueueRequestDto {
      * @return itemIds
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_ITEM_IDS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<UUID> getItemIds() {
@@ -84,6 +87,7 @@ public class QueueRequestDto {
      * @return mode
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_MODE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public GroupQueueMode getMode() {

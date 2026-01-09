@@ -38,46 +38,57 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class PlaybackStopInfo {
     public static final String JSON_PROPERTY_ITEM = "Item";
     @org.eclipse.jdt.annotation.Nullable
+
     private BaseItemDto item;
 
     public static final String JSON_PROPERTY_ITEM_ID = "ItemId";
     @org.eclipse.jdt.annotation.Nullable
+
     private UUID itemId;
 
     public static final String JSON_PROPERTY_SESSION_ID = "SessionId";
     @org.eclipse.jdt.annotation.Nullable
+
     private String sessionId;
 
     public static final String JSON_PROPERTY_MEDIA_SOURCE_ID = "MediaSourceId";
     @org.eclipse.jdt.annotation.Nullable
+
     private String mediaSourceId;
 
     public static final String JSON_PROPERTY_POSITION_TICKS = "PositionTicks";
     @org.eclipse.jdt.annotation.Nullable
+
     private Long positionTicks;
 
     public static final String JSON_PROPERTY_LIVE_STREAM_ID = "LiveStreamId";
     @org.eclipse.jdt.annotation.Nullable
+
     private String liveStreamId;
 
     public static final String JSON_PROPERTY_PLAY_SESSION_ID = "PlaySessionId";
     @org.eclipse.jdt.annotation.Nullable
+
     private String playSessionId;
 
     public static final String JSON_PROPERTY_FAILED = "Failed";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean failed;
 
     public static final String JSON_PROPERTY_NEXT_MEDIA_TYPE = "NextMediaType";
     @org.eclipse.jdt.annotation.Nullable
+
     private String nextMediaType;
 
     public static final String JSON_PROPERTY_PLAYLIST_ITEM_ID = "PlaylistItemId";
     @org.eclipse.jdt.annotation.Nullable
+
     private String playlistItemId;
 
     public static final String JSON_PROPERTY_NOW_PLAYING_QUEUE = "NowPlayingQueue";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<QueueItem> nowPlayingQueue;
 
     public PlaybackStopInfo() {
@@ -94,6 +105,7 @@ public class PlaybackStopInfo {
      * @return item
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_ITEM, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public BaseItemDto getItem() {
@@ -117,6 +129,7 @@ public class PlaybackStopInfo {
      * @return itemId
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_ITEM_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public UUID getItemId() {
@@ -140,6 +153,7 @@ public class PlaybackStopInfo {
      * @return sessionId
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_SESSION_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getSessionId() {
@@ -163,6 +177,7 @@ public class PlaybackStopInfo {
      * @return mediaSourceId
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_MEDIA_SOURCE_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getMediaSourceId() {
@@ -186,6 +201,7 @@ public class PlaybackStopInfo {
      * @return positionTicks
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_POSITION_TICKS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Long getPositionTicks() {
@@ -209,6 +225,7 @@ public class PlaybackStopInfo {
      * @return liveStreamId
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_LIVE_STREAM_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getLiveStreamId() {
@@ -232,6 +249,7 @@ public class PlaybackStopInfo {
      * @return playSessionId
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_PLAY_SESSION_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getPlaySessionId() {
@@ -255,6 +273,7 @@ public class PlaybackStopInfo {
      * @return failed
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_FAILED, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getFailed() {
@@ -278,6 +297,7 @@ public class PlaybackStopInfo {
      * @return nextMediaType
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_NEXT_MEDIA_TYPE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getNextMediaType() {
@@ -301,6 +321,7 @@ public class PlaybackStopInfo {
      * @return playlistItemId
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_PLAYLIST_ITEM_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getPlaylistItemId() {
@@ -332,6 +353,7 @@ public class PlaybackStopInfo {
      * @return nowPlayingQueue
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_NOW_PLAYING_QUEUE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<QueueItem> getNowPlayingQueue() {

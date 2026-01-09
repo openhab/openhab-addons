@@ -34,26 +34,32 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class TypeOptions {
     public static final String JSON_PROPERTY_TYPE = "Type";
     @org.eclipse.jdt.annotation.Nullable
+
     private String type;
 
     public static final String JSON_PROPERTY_METADATA_FETCHERS = "MetadataFetchers";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<String> metadataFetchers;
 
     public static final String JSON_PROPERTY_METADATA_FETCHER_ORDER = "MetadataFetcherOrder";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<String> metadataFetcherOrder;
 
     public static final String JSON_PROPERTY_IMAGE_FETCHERS = "ImageFetchers";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<String> imageFetchers;
 
     public static final String JSON_PROPERTY_IMAGE_FETCHER_ORDER = "ImageFetcherOrder";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<String> imageFetcherOrder;
 
     public static final String JSON_PROPERTY_IMAGE_OPTIONS = "ImageOptions";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<ImageOption> imageOptions;
 
     public TypeOptions() {
@@ -70,6 +76,7 @@ public class TypeOptions {
      * @return type
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_TYPE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getType() {
@@ -101,6 +108,7 @@ public class TypeOptions {
      * @return metadataFetchers
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_METADATA_FETCHERS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<String> getMetadataFetchers() {
@@ -132,6 +140,7 @@ public class TypeOptions {
      * @return metadataFetcherOrder
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_METADATA_FETCHER_ORDER, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<String> getMetadataFetcherOrder() {
@@ -163,6 +172,7 @@ public class TypeOptions {
      * @return imageFetchers
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_IMAGE_FETCHERS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<String> getImageFetchers() {
@@ -194,6 +204,7 @@ public class TypeOptions {
      * @return imageFetcherOrder
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_IMAGE_FETCHER_ORDER, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<String> getImageFetcherOrder() {
@@ -225,6 +236,7 @@ public class TypeOptions {
      * @return imageOptions
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_IMAGE_OPTIONS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<ImageOption> getImageOptions() {

@@ -37,50 +37,62 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class BookInfo {
     public static final String JSON_PROPERTY_NAME = "Name";
     @org.eclipse.jdt.annotation.Nullable
+
     private String name;
 
     public static final String JSON_PROPERTY_ORIGINAL_TITLE = "OriginalTitle";
     @org.eclipse.jdt.annotation.Nullable
+
     private String originalTitle;
 
     public static final String JSON_PROPERTY_PATH = "Path";
     @org.eclipse.jdt.annotation.Nullable
+
     private String path;
 
     public static final String JSON_PROPERTY_METADATA_LANGUAGE = "MetadataLanguage";
     @org.eclipse.jdt.annotation.Nullable
+
     private String metadataLanguage;
 
     public static final String JSON_PROPERTY_METADATA_COUNTRY_CODE = "MetadataCountryCode";
     @org.eclipse.jdt.annotation.Nullable
+
     private String metadataCountryCode;
 
     public static final String JSON_PROPERTY_PROVIDER_IDS = "ProviderIds";
     @org.eclipse.jdt.annotation.Nullable
+
     private Map<String, String> providerIds;
 
     public static final String JSON_PROPERTY_YEAR = "Year";
     @org.eclipse.jdt.annotation.Nullable
+
     private Integer year;
 
     public static final String JSON_PROPERTY_INDEX_NUMBER = "IndexNumber";
     @org.eclipse.jdt.annotation.Nullable
+
     private Integer indexNumber;
 
     public static final String JSON_PROPERTY_PARENT_INDEX_NUMBER = "ParentIndexNumber";
     @org.eclipse.jdt.annotation.Nullable
+
     private Integer parentIndexNumber;
 
     public static final String JSON_PROPERTY_PREMIERE_DATE = "PremiereDate";
     @org.eclipse.jdt.annotation.Nullable
+
     private OffsetDateTime premiereDate;
 
     public static final String JSON_PROPERTY_IS_AUTOMATED = "IsAutomated";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean isAutomated;
 
     public static final String JSON_PROPERTY_SERIES_NAME = "SeriesName";
     @org.eclipse.jdt.annotation.Nullable
+
     private String seriesName;
 
     public BookInfo() {
@@ -97,6 +109,7 @@ public class BookInfo {
      * @return name
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getName() {
@@ -120,6 +133,7 @@ public class BookInfo {
      * @return originalTitle
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_ORIGINAL_TITLE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getOriginalTitle() {
@@ -143,6 +157,7 @@ public class BookInfo {
      * @return path
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_PATH, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getPath() {
@@ -166,6 +181,7 @@ public class BookInfo {
      * @return metadataLanguage
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_METADATA_LANGUAGE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getMetadataLanguage() {
@@ -189,6 +205,7 @@ public class BookInfo {
      * @return metadataCountryCode
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_METADATA_COUNTRY_CODE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getMetadataCountryCode() {
@@ -220,6 +237,7 @@ public class BookInfo {
      * @return providerIds
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_PROVIDER_IDS, required = false)
     @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
     public Map<String, String> getProviderIds() {
@@ -243,6 +261,7 @@ public class BookInfo {
      * @return year
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_YEAR, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getYear() {
@@ -266,6 +285,7 @@ public class BookInfo {
      * @return indexNumber
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_INDEX_NUMBER, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getIndexNumber() {
@@ -289,6 +309,7 @@ public class BookInfo {
      * @return parentIndexNumber
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_PARENT_INDEX_NUMBER, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getParentIndexNumber() {
@@ -312,6 +333,7 @@ public class BookInfo {
      * @return premiereDate
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_PREMIERE_DATE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public OffsetDateTime getPremiereDate() {
@@ -335,6 +357,7 @@ public class BookInfo {
      * @return isAutomated
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_IS_AUTOMATED, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getIsAutomated() {
@@ -358,6 +381,7 @@ public class BookInfo {
      * @return seriesName
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_SERIES_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getSeriesName() {

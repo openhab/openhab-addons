@@ -33,14 +33,17 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class RemoteImageResult {
     public static final String JSON_PROPERTY_IMAGES = "Images";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<RemoteImageInfo> images;
 
     public static final String JSON_PROPERTY_TOTAL_RECORD_COUNT = "TotalRecordCount";
     @org.eclipse.jdt.annotation.Nullable
+
     private Integer totalRecordCount;
 
     public static final String JSON_PROPERTY_PROVIDERS = "Providers";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<String> providers;
 
     public RemoteImageResult() {
@@ -65,6 +68,7 @@ public class RemoteImageResult {
      * @return images
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_IMAGES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<RemoteImageInfo> getImages() {
@@ -88,6 +92,7 @@ public class RemoteImageResult {
      * @return totalRecordCount
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_TOTAL_RECORD_COUNT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getTotalRecordCount() {
@@ -119,6 +124,7 @@ public class RemoteImageResult {
      * @return providers
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_PROVIDERS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<String> getProviders() {

@@ -33,30 +33,37 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class PublicSystemInfo {
     public static final String JSON_PROPERTY_LOCAL_ADDRESS = "LocalAddress";
     @org.eclipse.jdt.annotation.Nullable
+
     private String localAddress;
 
     public static final String JSON_PROPERTY_SERVER_NAME = "ServerName";
     @org.eclipse.jdt.annotation.Nullable
+
     private String serverName;
 
     public static final String JSON_PROPERTY_VERSION = "Version";
     @org.eclipse.jdt.annotation.Nullable
+
     private String version;
 
     public static final String JSON_PROPERTY_PRODUCT_NAME = "ProductName";
     @org.eclipse.jdt.annotation.Nullable
+
     private String productName;
 
     public static final String JSON_PROPERTY_OPERATING_SYSTEM = "OperatingSystem";
     @org.eclipse.jdt.annotation.Nullable
+
     private String operatingSystem;
 
     public static final String JSON_PROPERTY_ID = "Id";
     @org.eclipse.jdt.annotation.Nullable
+
     private String id;
 
     public static final String JSON_PROPERTY_STARTUP_WIZARD_COMPLETED = "StartupWizardCompleted";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean startupWizardCompleted;
 
     public PublicSystemInfo() {
@@ -73,6 +80,7 @@ public class PublicSystemInfo {
      * @return localAddress
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_LOCAL_ADDRESS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getLocalAddress() {
@@ -96,6 +104,7 @@ public class PublicSystemInfo {
      * @return serverName
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_SERVER_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getServerName() {
@@ -119,6 +128,7 @@ public class PublicSystemInfo {
      * @return version
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_VERSION, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getVersion() {
@@ -142,6 +152,7 @@ public class PublicSystemInfo {
      * @return productName
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_PRODUCT_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getProductName() {
@@ -167,6 +178,7 @@ public class PublicSystemInfo {
      */
     @Deprecated
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_OPERATING_SYSTEM, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getOperatingSystem() {
@@ -190,6 +202,7 @@ public class PublicSystemInfo {
      * @return id
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getId() {
@@ -214,6 +227,7 @@ public class PublicSystemInfo {
      * @return startupWizardCompleted
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_STARTUP_WIZARD_COMPLETED, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getStartupWizardCompleted() {

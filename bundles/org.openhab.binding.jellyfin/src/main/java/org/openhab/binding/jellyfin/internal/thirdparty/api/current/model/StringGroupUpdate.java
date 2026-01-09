@@ -32,15 +32,15 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class StringGroupUpdate {
     public static final String JSON_PROPERTY_GROUP_ID = "GroupId";
-    @org.eclipse.jdt.annotation.NonNull
+    @org.eclipse.jdt.annotation.Nullable
     private UUID groupId;
 
     public static final String JSON_PROPERTY_TYPE = "Type";
-    @org.eclipse.jdt.annotation.NonNull
+    @org.eclipse.jdt.annotation.Nullable
     private GroupUpdateType type;
 
     public static final String JSON_PROPERTY_DATA = "Data";
-    @org.eclipse.jdt.annotation.NonNull
+    @org.eclipse.jdt.annotation.Nullable
     private String data;
 
     public StringGroupUpdate() {
@@ -57,7 +57,7 @@ public class StringGroupUpdate {
      * 
      * @return groupId
      */
-    @org.eclipse.jdt.annotation.NonNull
+    @org.eclipse.jdt.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_GROUP_ID)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public UUID getGroupId() {
@@ -74,7 +74,7 @@ public class StringGroupUpdate {
      * 
      * @return type
      */
-    @org.eclipse.jdt.annotation.NonNull
+    @org.eclipse.jdt.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_TYPE)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public GroupUpdateType getType() {
@@ -97,7 +97,7 @@ public class StringGroupUpdate {
      * 
      * @return data
      */
-    @org.eclipse.jdt.annotation.NonNull
+    @org.eclipse.jdt.annotation.Nullable
     @JsonProperty(JSON_PROPERTY_DATA)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getData() {

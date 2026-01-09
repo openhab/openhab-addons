@@ -38,54 +38,67 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class BaseItemDtoImageBlurHashes {
     public static final String JSON_PROPERTY_PRIMARY = "Primary";
     @org.eclipse.jdt.annotation.Nullable
+
     private Map<String, String> primary = new HashMap<>();
 
     public static final String JSON_PROPERTY_ART = "Art";
     @org.eclipse.jdt.annotation.Nullable
+
     private Map<String, String> art = new HashMap<>();
 
     public static final String JSON_PROPERTY_BACKDROP = "Backdrop";
     @org.eclipse.jdt.annotation.Nullable
+
     private Map<String, String> backdrop = new HashMap<>();
 
     public static final String JSON_PROPERTY_BANNER = "Banner";
     @org.eclipse.jdt.annotation.Nullable
+
     private Map<String, String> banner = new HashMap<>();
 
     public static final String JSON_PROPERTY_LOGO = "Logo";
     @org.eclipse.jdt.annotation.Nullable
+
     private Map<String, String> logo = new HashMap<>();
 
     public static final String JSON_PROPERTY_THUMB = "Thumb";
     @org.eclipse.jdt.annotation.Nullable
+
     private Map<String, String> thumb = new HashMap<>();
 
     public static final String JSON_PROPERTY_DISC = "Disc";
     @org.eclipse.jdt.annotation.Nullable
+
     private Map<String, String> disc = new HashMap<>();
 
     public static final String JSON_PROPERTY_BOX = "Box";
     @org.eclipse.jdt.annotation.Nullable
+
     private Map<String, String> box = new HashMap<>();
 
     public static final String JSON_PROPERTY_SCREENSHOT = "Screenshot";
     @org.eclipse.jdt.annotation.Nullable
+
     private Map<String, String> screenshot = new HashMap<>();
 
     public static final String JSON_PROPERTY_MENU = "Menu";
     @org.eclipse.jdt.annotation.Nullable
+
     private Map<String, String> menu = new HashMap<>();
 
     public static final String JSON_PROPERTY_CHAPTER = "Chapter";
     @org.eclipse.jdt.annotation.Nullable
+
     private Map<String, String> chapter = new HashMap<>();
 
     public static final String JSON_PROPERTY_BOX_REAR = "BoxRear";
     @org.eclipse.jdt.annotation.Nullable
+
     private Map<String, String> boxRear = new HashMap<>();
 
     public static final String JSON_PROPERTY_PROFILE = "Profile";
     @org.eclipse.jdt.annotation.Nullable
+
     private Map<String, String> profile = new HashMap<>();
 
     public BaseItemDtoImageBlurHashes() {
@@ -110,6 +123,7 @@ public class BaseItemDtoImageBlurHashes {
      * @return primary
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_PRIMARY, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Map<String, String> getPrimary() {
@@ -141,6 +155,7 @@ public class BaseItemDtoImageBlurHashes {
      * @return art
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_ART, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Map<String, String> getArt() {
@@ -172,6 +187,7 @@ public class BaseItemDtoImageBlurHashes {
      * @return backdrop
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_BACKDROP, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Map<String, String> getBackdrop() {
@@ -203,6 +219,7 @@ public class BaseItemDtoImageBlurHashes {
      * @return banner
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_BANNER, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Map<String, String> getBanner() {
@@ -234,6 +251,7 @@ public class BaseItemDtoImageBlurHashes {
      * @return logo
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_LOGO, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Map<String, String> getLogo() {
@@ -265,6 +283,7 @@ public class BaseItemDtoImageBlurHashes {
      * @return thumb
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_THUMB, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Map<String, String> getThumb() {
@@ -296,6 +315,7 @@ public class BaseItemDtoImageBlurHashes {
      * @return disc
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_DISC, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Map<String, String> getDisc() {
@@ -327,6 +347,7 @@ public class BaseItemDtoImageBlurHashes {
      * @return box
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_BOX, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Map<String, String> getBox() {
@@ -358,6 +379,7 @@ public class BaseItemDtoImageBlurHashes {
      * @return screenshot
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_SCREENSHOT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Map<String, String> getScreenshot() {
@@ -389,6 +411,7 @@ public class BaseItemDtoImageBlurHashes {
      * @return menu
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_MENU, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Map<String, String> getMenu() {
@@ -420,6 +443,7 @@ public class BaseItemDtoImageBlurHashes {
      * @return chapter
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_CHAPTER, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Map<String, String> getChapter() {
@@ -451,6 +475,7 @@ public class BaseItemDtoImageBlurHashes {
      * @return boxRear
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_BOX_REAR, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Map<String, String> getBoxRear() {
@@ -482,6 +507,7 @@ public class BaseItemDtoImageBlurHashes {
      * @return profile
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_PROFILE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Map<String, String> getProfile() {

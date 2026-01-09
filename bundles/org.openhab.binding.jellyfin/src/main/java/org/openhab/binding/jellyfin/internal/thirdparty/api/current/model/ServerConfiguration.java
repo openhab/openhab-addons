@@ -74,226 +74,282 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class ServerConfiguration {
     public static final String JSON_PROPERTY_LOG_FILE_RETENTION_DAYS = "LogFileRetentionDays";
     @org.eclipse.jdt.annotation.Nullable
+
     private Integer logFileRetentionDays;
 
     public static final String JSON_PROPERTY_IS_STARTUP_WIZARD_COMPLETED = "IsStartupWizardCompleted";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean isStartupWizardCompleted;
 
     public static final String JSON_PROPERTY_CACHE_PATH = "CachePath";
     @org.eclipse.jdt.annotation.Nullable
+
     private String cachePath;
 
     public static final String JSON_PROPERTY_PREVIOUS_VERSION = "PreviousVersion";
     @org.eclipse.jdt.annotation.Nullable
+
     private String previousVersion;
 
     public static final String JSON_PROPERTY_PREVIOUS_VERSION_STR = "PreviousVersionStr";
     @org.eclipse.jdt.annotation.Nullable
+
     private String previousVersionStr;
 
     public static final String JSON_PROPERTY_ENABLE_METRICS = "EnableMetrics";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean enableMetrics;
 
     public static final String JSON_PROPERTY_ENABLE_NORMALIZED_ITEM_BY_NAME_IDS = "EnableNormalizedItemByNameIds";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean enableNormalizedItemByNameIds;
 
     public static final String JSON_PROPERTY_IS_PORT_AUTHORIZED = "IsPortAuthorized";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean isPortAuthorized;
 
     public static final String JSON_PROPERTY_QUICK_CONNECT_AVAILABLE = "QuickConnectAvailable";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean quickConnectAvailable;
 
     public static final String JSON_PROPERTY_ENABLE_CASE_SENSITIVE_ITEM_IDS = "EnableCaseSensitiveItemIds";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean enableCaseSensitiveItemIds;
 
     public static final String JSON_PROPERTY_DISABLE_LIVE_TV_CHANNEL_USER_DATA_NAME = "DisableLiveTvChannelUserDataName";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean disableLiveTvChannelUserDataName;
 
     public static final String JSON_PROPERTY_METADATA_PATH = "MetadataPath";
     @org.eclipse.jdt.annotation.Nullable
+
     private String metadataPath;
 
     public static final String JSON_PROPERTY_PREFERRED_METADATA_LANGUAGE = "PreferredMetadataLanguage";
     @org.eclipse.jdt.annotation.Nullable
+
     private String preferredMetadataLanguage;
 
     public static final String JSON_PROPERTY_METADATA_COUNTRY_CODE = "MetadataCountryCode";
     @org.eclipse.jdt.annotation.Nullable
+
     private String metadataCountryCode;
 
     public static final String JSON_PROPERTY_SORT_REPLACE_CHARACTERS = "SortReplaceCharacters";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<String> sortReplaceCharacters = new ArrayList<>();
 
     public static final String JSON_PROPERTY_SORT_REMOVE_CHARACTERS = "SortRemoveCharacters";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<String> sortRemoveCharacters = new ArrayList<>();
 
     public static final String JSON_PROPERTY_SORT_REMOVE_WORDS = "SortRemoveWords";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<String> sortRemoveWords = new ArrayList<>();
 
     public static final String JSON_PROPERTY_MIN_RESUME_PCT = "MinResumePct";
     @org.eclipse.jdt.annotation.Nullable
+
     private Integer minResumePct;
 
     public static final String JSON_PROPERTY_MAX_RESUME_PCT = "MaxResumePct";
     @org.eclipse.jdt.annotation.Nullable
+
     private Integer maxResumePct;
 
     public static final String JSON_PROPERTY_MIN_RESUME_DURATION_SECONDS = "MinResumeDurationSeconds";
     @org.eclipse.jdt.annotation.Nullable
+
     private Integer minResumeDurationSeconds;
 
     public static final String JSON_PROPERTY_MIN_AUDIOBOOK_RESUME = "MinAudiobookResume";
     @org.eclipse.jdt.annotation.Nullable
+
     private Integer minAudiobookResume;
 
     public static final String JSON_PROPERTY_MAX_AUDIOBOOK_RESUME = "MaxAudiobookResume";
     @org.eclipse.jdt.annotation.Nullable
+
     private Integer maxAudiobookResume;
 
     public static final String JSON_PROPERTY_INACTIVE_SESSION_THRESHOLD = "InactiveSessionThreshold";
     @org.eclipse.jdt.annotation.Nullable
+
     private Integer inactiveSessionThreshold;
 
     public static final String JSON_PROPERTY_LIBRARY_MONITOR_DELAY = "LibraryMonitorDelay";
     @org.eclipse.jdt.annotation.Nullable
+
     private Integer libraryMonitorDelay;
 
     public static final String JSON_PROPERTY_LIBRARY_UPDATE_DURATION = "LibraryUpdateDuration";
     @org.eclipse.jdt.annotation.Nullable
+
     private Integer libraryUpdateDuration;
 
     public static final String JSON_PROPERTY_CACHE_SIZE = "CacheSize";
     @org.eclipse.jdt.annotation.Nullable
+
     private Integer cacheSize;
 
     public static final String JSON_PROPERTY_IMAGE_SAVING_CONVENTION = "ImageSavingConvention";
     @org.eclipse.jdt.annotation.Nullable
+
     private ImageSavingConvention imageSavingConvention;
 
     public static final String JSON_PROPERTY_METADATA_OPTIONS = "MetadataOptions";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<MetadataOptions> metadataOptions = new ArrayList<>();
 
     public static final String JSON_PROPERTY_SKIP_DESERIALIZATION_FOR_BASIC_TYPES = "SkipDeserializationForBasicTypes";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean skipDeserializationForBasicTypes;
 
     public static final String JSON_PROPERTY_SERVER_NAME = "ServerName";
     @org.eclipse.jdt.annotation.Nullable
+
     private String serverName;
 
     public static final String JSON_PROPERTY_UI_CULTURE = "UICulture";
     @org.eclipse.jdt.annotation.Nullable
+
     private String uiCulture;
 
     public static final String JSON_PROPERTY_SAVE_METADATA_HIDDEN = "SaveMetadataHidden";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean saveMetadataHidden;
 
     public static final String JSON_PROPERTY_CONTENT_TYPES = "ContentTypes";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<NameValuePair> contentTypes = new ArrayList<>();
 
     public static final String JSON_PROPERTY_REMOTE_CLIENT_BITRATE_LIMIT = "RemoteClientBitrateLimit";
     @org.eclipse.jdt.annotation.Nullable
+
     private Integer remoteClientBitrateLimit;
 
     public static final String JSON_PROPERTY_ENABLE_FOLDER_VIEW = "EnableFolderView";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean enableFolderView;
 
     public static final String JSON_PROPERTY_ENABLE_GROUPING_MOVIES_INTO_COLLECTIONS = "EnableGroupingMoviesIntoCollections";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean enableGroupingMoviesIntoCollections;
 
     public static final String JSON_PROPERTY_ENABLE_GROUPING_SHOWS_INTO_COLLECTIONS = "EnableGroupingShowsIntoCollections";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean enableGroupingShowsIntoCollections;
 
     public static final String JSON_PROPERTY_DISPLAY_SPECIALS_WITHIN_SEASONS = "DisplaySpecialsWithinSeasons";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean displaySpecialsWithinSeasons;
 
     public static final String JSON_PROPERTY_CODECS_USED = "CodecsUsed";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<String> codecsUsed = new ArrayList<>();
 
     public static final String JSON_PROPERTY_PLUGIN_REPOSITORIES = "PluginRepositories";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<RepositoryInfo> pluginRepositories = new ArrayList<>();
 
     public static final String JSON_PROPERTY_ENABLE_EXTERNAL_CONTENT_IN_SUGGESTIONS = "EnableExternalContentInSuggestions";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean enableExternalContentInSuggestions;
 
     public static final String JSON_PROPERTY_IMAGE_EXTRACTION_TIMEOUT_MS = "ImageExtractionTimeoutMs";
     @org.eclipse.jdt.annotation.Nullable
+
     private Integer imageExtractionTimeoutMs;
 
     public static final String JSON_PROPERTY_PATH_SUBSTITUTIONS = "PathSubstitutions";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<PathSubstitution> pathSubstitutions = new ArrayList<>();
 
     public static final String JSON_PROPERTY_ENABLE_SLOW_RESPONSE_WARNING = "EnableSlowResponseWarning";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean enableSlowResponseWarning;
 
     public static final String JSON_PROPERTY_SLOW_RESPONSE_THRESHOLD_MS = "SlowResponseThresholdMs";
     @org.eclipse.jdt.annotation.Nullable
+
     private Long slowResponseThresholdMs;
 
     public static final String JSON_PROPERTY_CORS_HOSTS = "CorsHosts";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<String> corsHosts = new ArrayList<>();
 
     public static final String JSON_PROPERTY_ACTIVITY_LOG_RETENTION_DAYS = "ActivityLogRetentionDays";
     @org.eclipse.jdt.annotation.Nullable
+
     private Integer activityLogRetentionDays;
 
     public static final String JSON_PROPERTY_LIBRARY_SCAN_FANOUT_CONCURRENCY = "LibraryScanFanoutConcurrency";
     @org.eclipse.jdt.annotation.Nullable
+
     private Integer libraryScanFanoutConcurrency;
 
     public static final String JSON_PROPERTY_LIBRARY_METADATA_REFRESH_CONCURRENCY = "LibraryMetadataRefreshConcurrency";
     @org.eclipse.jdt.annotation.Nullable
+
     private Integer libraryMetadataRefreshConcurrency;
 
     public static final String JSON_PROPERTY_ALLOW_CLIENT_LOG_UPLOAD = "AllowClientLogUpload";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean allowClientLogUpload;
 
     public static final String JSON_PROPERTY_DUMMY_CHAPTER_DURATION = "DummyChapterDuration";
     @org.eclipse.jdt.annotation.Nullable
+
     private Integer dummyChapterDuration;
 
     public static final String JSON_PROPERTY_CHAPTER_IMAGE_RESOLUTION = "ChapterImageResolution";
     @org.eclipse.jdt.annotation.Nullable
+
     private ImageResolution chapterImageResolution;
 
     public static final String JSON_PROPERTY_PARALLEL_IMAGE_ENCODING_LIMIT = "ParallelImageEncodingLimit";
     @org.eclipse.jdt.annotation.Nullable
+
     private Integer parallelImageEncodingLimit;
 
     public static final String JSON_PROPERTY_CAST_RECEIVER_APPLICATIONS = "CastReceiverApplications";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<CastReceiverApplication> castReceiverApplications = new ArrayList<>();
 
     public static final String JSON_PROPERTY_TRICKPLAY_OPTIONS = "TrickplayOptions";
     @org.eclipse.jdt.annotation.Nullable
+
     private TrickplayOptions trickplayOptions;
 
     public static final String JSON_PROPERTY_ENABLE_LEGACY_AUTHORIZATION = "EnableLegacyAuthorization";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean enableLegacyAuthorization;
 
     public ServerConfiguration() {
@@ -310,6 +366,7 @@ public class ServerConfiguration {
      * @return logFileRetentionDays
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_LOG_FILE_RETENTION_DAYS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getLogFileRetentionDays() {
@@ -334,6 +391,7 @@ public class ServerConfiguration {
      * @return isStartupWizardCompleted
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_IS_STARTUP_WIZARD_COMPLETED, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getIsStartupWizardCompleted() {
@@ -357,6 +415,7 @@ public class ServerConfiguration {
      * @return cachePath
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_CACHE_PATH, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getCachePath() {
@@ -380,6 +439,7 @@ public class ServerConfiguration {
      * @return previousVersion
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_PREVIOUS_VERSION, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getPreviousVersion() {
@@ -404,6 +464,7 @@ public class ServerConfiguration {
      * @return previousVersionStr
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_PREVIOUS_VERSION_STR, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getPreviousVersionStr() {
@@ -427,6 +488,7 @@ public class ServerConfiguration {
      * @return enableMetrics
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_ENABLE_METRICS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getEnableMetrics() {
@@ -451,6 +513,7 @@ public class ServerConfiguration {
      * @return enableNormalizedItemByNameIds
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_ENABLE_NORMALIZED_ITEM_BY_NAME_IDS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getEnableNormalizedItemByNameIds() {
@@ -475,6 +538,7 @@ public class ServerConfiguration {
      * @return isPortAuthorized
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_IS_PORT_AUTHORIZED, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getIsPortAuthorized() {
@@ -499,6 +563,7 @@ public class ServerConfiguration {
      * @return quickConnectAvailable
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_QUICK_CONNECT_AVAILABLE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getQuickConnectAvailable() {
@@ -523,6 +588,7 @@ public class ServerConfiguration {
      * @return enableCaseSensitiveItemIds
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_ENABLE_CASE_SENSITIVE_ITEM_IDS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getEnableCaseSensitiveItemIds() {
@@ -547,6 +613,7 @@ public class ServerConfiguration {
      * @return disableLiveTvChannelUserDataName
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_DISABLE_LIVE_TV_CHANNEL_USER_DATA_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getDisableLiveTvChannelUserDataName() {
@@ -571,6 +638,7 @@ public class ServerConfiguration {
      * @return metadataPath
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_METADATA_PATH, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getMetadataPath() {
@@ -595,6 +663,7 @@ public class ServerConfiguration {
      * @return preferredMetadataLanguage
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_PREFERRED_METADATA_LANGUAGE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getPreferredMetadataLanguage() {
@@ -618,6 +687,7 @@ public class ServerConfiguration {
      * @return metadataCountryCode
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_METADATA_COUNTRY_CODE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getMetadataCountryCode() {
@@ -650,6 +720,7 @@ public class ServerConfiguration {
      * @return sortReplaceCharacters
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_SORT_REPLACE_CHARACTERS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<String> getSortReplaceCharacters() {
@@ -682,6 +753,7 @@ public class ServerConfiguration {
      * @return sortRemoveCharacters
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_SORT_REMOVE_CHARACTERS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<String> getSortRemoveCharacters() {
@@ -713,6 +785,7 @@ public class ServerConfiguration {
      * @return sortRemoveWords
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_SORT_REMOVE_WORDS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<String> getSortRemoveWords() {
@@ -736,6 +809,7 @@ public class ServerConfiguration {
      * @return minResumePct
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_MIN_RESUME_PCT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getMinResumePct() {
@@ -760,6 +834,7 @@ public class ServerConfiguration {
      * @return maxResumePct
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_MAX_RESUME_PCT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getMaxResumePct() {
@@ -784,6 +859,7 @@ public class ServerConfiguration {
      * @return minResumeDurationSeconds
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_MIN_RESUME_DURATION_SECONDS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getMinResumeDurationSeconds() {
@@ -807,6 +883,7 @@ public class ServerConfiguration {
      * @return minAudiobookResume
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_MIN_AUDIOBOOK_RESUME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getMinAudiobookResume() {
@@ -831,6 +908,7 @@ public class ServerConfiguration {
      * @return maxAudiobookResume
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_MAX_AUDIOBOOK_RESUME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getMaxAudiobookResume() {
@@ -856,6 +934,7 @@ public class ServerConfiguration {
      * @return inactiveSessionThreshold
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_INACTIVE_SESSION_THRESHOLD, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getInactiveSessionThreshold() {
@@ -881,6 +960,7 @@ public class ServerConfiguration {
      * @return libraryMonitorDelay
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_LIBRARY_MONITOR_DELAY, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getLibraryMonitorDelay() {
@@ -906,6 +986,7 @@ public class ServerConfiguration {
      * @return libraryUpdateDuration
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_LIBRARY_UPDATE_DURATION, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getLibraryUpdateDuration() {
@@ -929,6 +1010,7 @@ public class ServerConfiguration {
      * @return cacheSize
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_CACHE_SIZE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getCacheSize() {
@@ -953,6 +1035,7 @@ public class ServerConfiguration {
      * @return imageSavingConvention
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_IMAGE_SAVING_CONVENTION, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public ImageSavingConvention getImageSavingConvention() {
@@ -986,6 +1069,7 @@ public class ServerConfiguration {
      * @return metadataOptions
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_METADATA_OPTIONS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<MetadataOptions> getMetadataOptions() {
@@ -1010,6 +1094,7 @@ public class ServerConfiguration {
      * @return skipDeserializationForBasicTypes
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_SKIP_DESERIALIZATION_FOR_BASIC_TYPES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getSkipDeserializationForBasicTypes() {
@@ -1034,6 +1119,7 @@ public class ServerConfiguration {
      * @return serverName
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_SERVER_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getServerName() {
@@ -1057,6 +1143,7 @@ public class ServerConfiguration {
      * @return uiCulture
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_UI_CULTURE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getUiCulture() {
@@ -1080,6 +1167,7 @@ public class ServerConfiguration {
      * @return saveMetadataHidden
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_SAVE_METADATA_HIDDEN, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getSaveMetadataHidden() {
@@ -1111,6 +1199,7 @@ public class ServerConfiguration {
      * @return contentTypes
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_CONTENT_TYPES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<NameValuePair> getContentTypes() {
@@ -1135,6 +1224,7 @@ public class ServerConfiguration {
      * @return remoteClientBitrateLimit
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_REMOTE_CLIENT_BITRATE_LIMIT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getRemoteClientBitrateLimit() {
@@ -1158,6 +1248,7 @@ public class ServerConfiguration {
      * @return enableFolderView
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_ENABLE_FOLDER_VIEW, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getEnableFolderView() {
@@ -1182,6 +1273,7 @@ public class ServerConfiguration {
      * @return enableGroupingMoviesIntoCollections
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_ENABLE_GROUPING_MOVIES_INTO_COLLECTIONS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getEnableGroupingMoviesIntoCollections() {
@@ -1207,6 +1299,7 @@ public class ServerConfiguration {
      * @return enableGroupingShowsIntoCollections
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_ENABLE_GROUPING_SHOWS_INTO_COLLECTIONS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getEnableGroupingShowsIntoCollections() {
@@ -1232,6 +1325,7 @@ public class ServerConfiguration {
      * @return displaySpecialsWithinSeasons
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_DISPLAY_SPECIALS_WITHIN_SEASONS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getDisplaySpecialsWithinSeasons() {
@@ -1264,6 +1358,7 @@ public class ServerConfiguration {
      * @return codecsUsed
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_CODECS_USED, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<String> getCodecsUsed() {
@@ -1296,6 +1391,7 @@ public class ServerConfiguration {
      * @return pluginRepositories
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_PLUGIN_REPOSITORIES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<RepositoryInfo> getPluginRepositories() {
@@ -1320,6 +1416,7 @@ public class ServerConfiguration {
      * @return enableExternalContentInSuggestions
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_ENABLE_EXTERNAL_CONTENT_IN_SUGGESTIONS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getEnableExternalContentInSuggestions() {
@@ -1345,6 +1442,7 @@ public class ServerConfiguration {
      * @return imageExtractionTimeoutMs
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_IMAGE_EXTRACTION_TIMEOUT_MS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getImageExtractionTimeoutMs() {
@@ -1377,6 +1475,7 @@ public class ServerConfiguration {
      * @return pathSubstitutions
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_PATH_SUBSTITUTIONS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<PathSubstitution> getPathSubstitutions() {
@@ -1401,6 +1500,7 @@ public class ServerConfiguration {
      * @return enableSlowResponseWarning
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_ENABLE_SLOW_RESPONSE_WARNING, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getEnableSlowResponseWarning() {
@@ -1425,6 +1525,7 @@ public class ServerConfiguration {
      * @return slowResponseThresholdMs
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_SLOW_RESPONSE_THRESHOLD_MS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Long getSlowResponseThresholdMs() {
@@ -1456,6 +1557,7 @@ public class ServerConfiguration {
      * @return corsHosts
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_CORS_HOSTS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<String> getCorsHosts() {
@@ -1480,6 +1582,7 @@ public class ServerConfiguration {
      * @return activityLogRetentionDays
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_ACTIVITY_LOG_RETENTION_DAYS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getActivityLogRetentionDays() {
@@ -1504,6 +1607,7 @@ public class ServerConfiguration {
      * @return libraryScanFanoutConcurrency
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_LIBRARY_SCAN_FANOUT_CONCURRENCY, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getLibraryScanFanoutConcurrency() {
@@ -1529,6 +1633,7 @@ public class ServerConfiguration {
      * @return libraryMetadataRefreshConcurrency
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_LIBRARY_METADATA_REFRESH_CONCURRENCY, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getLibraryMetadataRefreshConcurrency() {
@@ -1553,6 +1658,7 @@ public class ServerConfiguration {
      * @return allowClientLogUpload
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_ALLOW_CLIENT_LOG_UPLOAD, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getAllowClientLogUpload() {
@@ -1576,6 +1682,7 @@ public class ServerConfiguration {
      * @return dummyChapterDuration
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_DUMMY_CHAPTER_DURATION, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getDummyChapterDuration() {
@@ -1600,6 +1707,7 @@ public class ServerConfiguration {
      * @return chapterImageResolution
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_CHAPTER_IMAGE_RESOLUTION, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public ImageResolution getChapterImageResolution() {
@@ -1624,6 +1732,7 @@ public class ServerConfiguration {
      * @return parallelImageEncodingLimit
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_PARALLEL_IMAGE_ENCODING_LIMIT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getParallelImageEncodingLimit() {
@@ -1656,6 +1765,7 @@ public class ServerConfiguration {
      * @return castReceiverApplications
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_CAST_RECEIVER_APPLICATIONS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<CastReceiverApplication> getCastReceiverApplications() {
@@ -1681,6 +1791,7 @@ public class ServerConfiguration {
      * @return trickplayOptions
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_TRICKPLAY_OPTIONS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public TrickplayOptions getTrickplayOptions() {
@@ -1705,6 +1816,7 @@ public class ServerConfiguration {
      * @return enableLegacyAuthorization
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_ENABLE_LEGACY_AUTHORIZATION, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getEnableLegacyAuthorization() {

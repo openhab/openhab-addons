@@ -33,14 +33,17 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class SyncPlayGroupDoesNotExistUpdate {
     public static final String JSON_PROPERTY_GROUP_ID = "GroupId";
     @org.eclipse.jdt.annotation.Nullable
+
     private UUID groupId;
 
     public static final String JSON_PROPERTY_DATA = "Data";
     @org.eclipse.jdt.annotation.Nullable
+
     private String data;
 
     public static final String JSON_PROPERTY_TYPE = "Type";
     @org.eclipse.jdt.annotation.Nullable
+
     private GroupUpdateType type = GroupUpdateType.GROUP_DOES_NOT_EXIST;
 
     public SyncPlayGroupDoesNotExistUpdate() {
@@ -61,6 +64,7 @@ public class SyncPlayGroupDoesNotExistUpdate {
      * @return groupId
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_GROUP_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public UUID getGroupId() {
@@ -73,6 +77,7 @@ public class SyncPlayGroupDoesNotExistUpdate {
      * @return data
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_DATA, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getData() {
@@ -85,6 +90,7 @@ public class SyncPlayGroupDoesNotExistUpdate {
      * @return type
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_TYPE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public GroupUpdateType getType() {

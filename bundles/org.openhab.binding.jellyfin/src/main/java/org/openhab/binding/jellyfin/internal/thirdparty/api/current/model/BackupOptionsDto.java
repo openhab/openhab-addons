@@ -31,18 +31,22 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class BackupOptionsDto {
     public static final String JSON_PROPERTY_METADATA = "Metadata";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean metadata;
 
     public static final String JSON_PROPERTY_TRICKPLAY = "Trickplay";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean trickplay;
 
     public static final String JSON_PROPERTY_SUBTITLES = "Subtitles";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean subtitles;
 
     public static final String JSON_PROPERTY_DATABASE = "Database";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean database;
 
     public BackupOptionsDto() {
@@ -59,6 +63,7 @@ public class BackupOptionsDto {
      * @return metadata
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_METADATA, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getMetadata() {
@@ -82,6 +87,7 @@ public class BackupOptionsDto {
      * @return trickplay
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_TRICKPLAY, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getTrickplay() {
@@ -105,6 +111,7 @@ public class BackupOptionsDto {
      * @return subtitles
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_SUBTITLES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getSubtitles() {
@@ -128,6 +135,7 @@ public class BackupOptionsDto {
      * @return database
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_DATABASE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getDatabase() {

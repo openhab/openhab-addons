@@ -33,10 +33,12 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class UserDataChangeInfo {
     public static final String JSON_PROPERTY_USER_ID = "UserId";
     @org.eclipse.jdt.annotation.Nullable
+
     private UUID userId;
 
     public static final String JSON_PROPERTY_USER_DATA_LIST = "UserDataList";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<UserItemDataDto> userDataList = new ArrayList<>();
 
     public UserDataChangeInfo() {
@@ -53,6 +55,7 @@ public class UserDataChangeInfo {
      * @return userId
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_USER_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public UUID getUserId() {
@@ -84,6 +87,7 @@ public class UserDataChangeInfo {
      * @return userDataList
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_USER_DATA_LIST, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<UserItemDataDto> getUserDataList() {

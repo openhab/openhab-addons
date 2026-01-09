@@ -34,18 +34,22 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class RecommendationDto {
     public static final String JSON_PROPERTY_ITEMS = "Items";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<BaseItemDto> items;
 
     public static final String JSON_PROPERTY_RECOMMENDATION_TYPE = "RecommendationType";
     @org.eclipse.jdt.annotation.Nullable
+
     private RecommendationType recommendationType;
 
     public static final String JSON_PROPERTY_BASELINE_ITEM_NAME = "BaselineItemName";
     @org.eclipse.jdt.annotation.Nullable
+
     private String baselineItemName;
 
     public static final String JSON_PROPERTY_CATEGORY_ID = "CategoryId";
     @org.eclipse.jdt.annotation.Nullable
+
     private UUID categoryId;
 
     public RecommendationDto() {
@@ -70,6 +74,7 @@ public class RecommendationDto {
      * @return items
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_ITEMS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<BaseItemDto> getItems() {
@@ -94,6 +99,7 @@ public class RecommendationDto {
      * @return recommendationType
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_RECOMMENDATION_TYPE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public RecommendationType getRecommendationType() {
@@ -117,6 +123,7 @@ public class RecommendationDto {
      * @return baselineItemName
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_BASELINE_ITEM_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getBaselineItemName() {
@@ -140,6 +147,7 @@ public class RecommendationDto {
      * @return categoryId
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_CATEGORY_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public UUID getCategoryId() {

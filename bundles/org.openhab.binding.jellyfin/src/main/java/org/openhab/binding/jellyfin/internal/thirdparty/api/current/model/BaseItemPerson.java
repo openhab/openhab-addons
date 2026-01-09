@@ -33,26 +33,32 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class BaseItemPerson {
     public static final String JSON_PROPERTY_NAME = "Name";
     @org.eclipse.jdt.annotation.Nullable
+
     private String name;
 
     public static final String JSON_PROPERTY_ID = "Id";
     @org.eclipse.jdt.annotation.Nullable
+
     private UUID id;
 
     public static final String JSON_PROPERTY_ROLE = "Role";
     @org.eclipse.jdt.annotation.Nullable
+
     private String role;
 
     public static final String JSON_PROPERTY_TYPE = "Type";
     @org.eclipse.jdt.annotation.Nullable
+
     private PersonKind type = PersonKind.UNKNOWN;
 
     public static final String JSON_PROPERTY_PRIMARY_IMAGE_TAG = "PrimaryImageTag";
     @org.eclipse.jdt.annotation.Nullable
+
     private String primaryImageTag;
 
     public static final String JSON_PROPERTY_IMAGE_BLUR_HASHES = "ImageBlurHashes";
     @org.eclipse.jdt.annotation.Nullable
+
     private BaseItemPersonImageBlurHashes imageBlurHashes;
 
     public BaseItemPerson() {
@@ -69,6 +75,7 @@ public class BaseItemPerson {
      * @return name
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getName() {
@@ -92,6 +99,7 @@ public class BaseItemPerson {
      * @return id
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public UUID getId() {
@@ -115,6 +123,7 @@ public class BaseItemPerson {
      * @return role
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_ROLE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getRole() {
@@ -138,6 +147,7 @@ public class BaseItemPerson {
      * @return type
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_TYPE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public PersonKind getType() {
@@ -161,6 +171,7 @@ public class BaseItemPerson {
      * @return primaryImageTag
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_PRIMARY_IMAGE_TAG, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getPrimaryImageTag() {
@@ -185,6 +196,7 @@ public class BaseItemPerson {
      * @return imageBlurHashes
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_IMAGE_BLUR_HASHES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public BaseItemPersonImageBlurHashes getImageBlurHashes() {

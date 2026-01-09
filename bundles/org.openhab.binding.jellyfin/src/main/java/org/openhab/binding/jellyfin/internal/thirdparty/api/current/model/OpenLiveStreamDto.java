@@ -40,58 +40,72 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class OpenLiveStreamDto {
     public static final String JSON_PROPERTY_OPEN_TOKEN = "OpenToken";
     @org.eclipse.jdt.annotation.Nullable
+
     private String openToken;
 
     public static final String JSON_PROPERTY_USER_ID = "UserId";
     @org.eclipse.jdt.annotation.Nullable
+
     private UUID userId;
 
     public static final String JSON_PROPERTY_PLAY_SESSION_ID = "PlaySessionId";
     @org.eclipse.jdt.annotation.Nullable
+
     private String playSessionId;
 
     public static final String JSON_PROPERTY_MAX_STREAMING_BITRATE = "MaxStreamingBitrate";
     @org.eclipse.jdt.annotation.Nullable
+
     private Integer maxStreamingBitrate;
 
     public static final String JSON_PROPERTY_START_TIME_TICKS = "StartTimeTicks";
     @org.eclipse.jdt.annotation.Nullable
+
     private Long startTimeTicks;
 
     public static final String JSON_PROPERTY_AUDIO_STREAM_INDEX = "AudioStreamIndex";
     @org.eclipse.jdt.annotation.Nullable
+
     private Integer audioStreamIndex;
 
     public static final String JSON_PROPERTY_SUBTITLE_STREAM_INDEX = "SubtitleStreamIndex";
     @org.eclipse.jdt.annotation.Nullable
+
     private Integer subtitleStreamIndex;
 
     public static final String JSON_PROPERTY_MAX_AUDIO_CHANNELS = "MaxAudioChannels";
     @org.eclipse.jdt.annotation.Nullable
+
     private Integer maxAudioChannels;
 
     public static final String JSON_PROPERTY_ITEM_ID = "ItemId";
     @org.eclipse.jdt.annotation.Nullable
+
     private UUID itemId;
 
     public static final String JSON_PROPERTY_ENABLE_DIRECT_PLAY = "EnableDirectPlay";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean enableDirectPlay;
 
     public static final String JSON_PROPERTY_ENABLE_DIRECT_STREAM = "EnableDirectStream";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean enableDirectStream;
 
     public static final String JSON_PROPERTY_ALWAYS_BURN_IN_SUBTITLE_WHEN_TRANSCODING = "AlwaysBurnInSubtitleWhenTranscoding";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean alwaysBurnInSubtitleWhenTranscoding;
 
     public static final String JSON_PROPERTY_DEVICE_PROFILE = "DeviceProfile";
     @org.eclipse.jdt.annotation.Nullable
+
     private DeviceProfile deviceProfile;
 
     public static final String JSON_PROPERTY_DIRECT_PLAY_PROTOCOLS = "DirectPlayProtocols";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<MediaProtocol> directPlayProtocols = new ArrayList<>();
 
     public OpenLiveStreamDto() {
@@ -108,6 +122,7 @@ public class OpenLiveStreamDto {
      * @return openToken
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_OPEN_TOKEN, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getOpenToken() {
@@ -131,6 +146,7 @@ public class OpenLiveStreamDto {
      * @return userId
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_USER_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public UUID getUserId() {
@@ -154,6 +170,7 @@ public class OpenLiveStreamDto {
      * @return playSessionId
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_PLAY_SESSION_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getPlaySessionId() {
@@ -177,6 +194,7 @@ public class OpenLiveStreamDto {
      * @return maxStreamingBitrate
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_MAX_STREAMING_BITRATE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getMaxStreamingBitrate() {
@@ -200,6 +218,7 @@ public class OpenLiveStreamDto {
      * @return startTimeTicks
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_START_TIME_TICKS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Long getStartTimeTicks() {
@@ -223,6 +242,7 @@ public class OpenLiveStreamDto {
      * @return audioStreamIndex
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_AUDIO_STREAM_INDEX, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getAudioStreamIndex() {
@@ -246,6 +266,7 @@ public class OpenLiveStreamDto {
      * @return subtitleStreamIndex
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_SUBTITLE_STREAM_INDEX, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getSubtitleStreamIndex() {
@@ -269,6 +290,7 @@ public class OpenLiveStreamDto {
      * @return maxAudioChannels
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_MAX_AUDIO_CHANNELS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getMaxAudioChannels() {
@@ -292,6 +314,7 @@ public class OpenLiveStreamDto {
      * @return itemId
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_ITEM_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public UUID getItemId() {
@@ -315,6 +338,7 @@ public class OpenLiveStreamDto {
      * @return enableDirectPlay
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_ENABLE_DIRECT_PLAY, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getEnableDirectPlay() {
@@ -338,6 +362,7 @@ public class OpenLiveStreamDto {
      * @return enableDirectStream
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_ENABLE_DIRECT_STREAM, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getEnableDirectStream() {
@@ -362,6 +387,7 @@ public class OpenLiveStreamDto {
      * @return alwaysBurnInSubtitleWhenTranscoding
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_ALWAYS_BURN_IN_SUBTITLE_WHEN_TRANSCODING, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getAlwaysBurnInSubtitleWhenTranscoding() {
@@ -393,6 +419,7 @@ public class OpenLiveStreamDto {
      * @return deviceProfile
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_DEVICE_PROFILE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public DeviceProfile getDeviceProfile() {
@@ -425,6 +452,7 @@ public class OpenLiveStreamDto {
      * @return directPlayProtocols
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_DIRECT_PLAY_PROTOCOLS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<MediaProtocol> getDirectPlayProtocols() {

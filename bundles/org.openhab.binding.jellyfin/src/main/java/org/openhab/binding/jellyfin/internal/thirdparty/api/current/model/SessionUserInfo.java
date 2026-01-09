@@ -31,10 +31,12 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class SessionUserInfo {
     public static final String JSON_PROPERTY_USER_ID = "UserId";
     @org.eclipse.jdt.annotation.Nullable
+
     private UUID userId;
 
     public static final String JSON_PROPERTY_USER_NAME = "UserName";
     @org.eclipse.jdt.annotation.Nullable
+
     private String userName;
 
     public SessionUserInfo() {
@@ -51,6 +53,7 @@ public class SessionUserInfo {
      * @return userId
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_USER_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public UUID getUserId() {
@@ -74,6 +77,7 @@ public class SessionUserInfo {
      * @return userName
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_USER_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getUserName() {

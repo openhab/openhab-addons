@@ -32,10 +32,12 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class SearchHintResult {
     public static final String JSON_PROPERTY_SEARCH_HINTS = "SearchHints";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<SearchHint> searchHints = new ArrayList<>();
 
     public static final String JSON_PROPERTY_TOTAL_RECORD_COUNT = "TotalRecordCount";
     @org.eclipse.jdt.annotation.Nullable
+
     private Integer totalRecordCount;
 
     public SearchHintResult() {
@@ -60,6 +62,7 @@ public class SearchHintResult {
      * @return searchHints
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_SEARCH_HINTS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<SearchHint> getSearchHints() {
@@ -83,6 +86,7 @@ public class SearchHintResult {
      * @return totalRecordCount
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_TOTAL_RECORD_COUNT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getTotalRecordCount() {

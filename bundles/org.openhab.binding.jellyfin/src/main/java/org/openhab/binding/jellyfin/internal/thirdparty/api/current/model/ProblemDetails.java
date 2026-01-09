@@ -36,22 +36,27 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class ProblemDetails {
     public static final String JSON_PROPERTY_TYPE = "type";
     @org.eclipse.jdt.annotation.Nullable
+
     private String type;
 
     public static final String JSON_PROPERTY_TITLE = "title";
     @org.eclipse.jdt.annotation.Nullable
+
     private String title;
 
     public static final String JSON_PROPERTY_STATUS = "status";
     @org.eclipse.jdt.annotation.Nullable
+
     private Integer status;
 
     public static final String JSON_PROPERTY_DETAIL = "detail";
     @org.eclipse.jdt.annotation.Nullable
+
     private String detail;
 
     public static final String JSON_PROPERTY_INSTANCE = "instance";
     @org.eclipse.jdt.annotation.Nullable
+
     private String instance;
 
     public ProblemDetails() {
@@ -68,6 +73,7 @@ public class ProblemDetails {
      * @return type
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_TYPE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getType() {
@@ -91,6 +97,7 @@ public class ProblemDetails {
      * @return title
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_TITLE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getTitle() {
@@ -114,6 +121,7 @@ public class ProblemDetails {
      * @return status
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_STATUS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getStatus() {
@@ -137,6 +145,7 @@ public class ProblemDetails {
      * @return detail
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_DETAIL, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getDetail() {
@@ -160,6 +169,7 @@ public class ProblemDetails {
      * @return instance
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_INSTANCE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getInstance() {

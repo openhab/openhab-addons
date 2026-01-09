@@ -33,42 +33,52 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class LyricMetadata {
     public static final String JSON_PROPERTY_ARTIST = "Artist";
     @org.eclipse.jdt.annotation.Nullable
+
     private String artist;
 
     public static final String JSON_PROPERTY_ALBUM = "Album";
     @org.eclipse.jdt.annotation.Nullable
+
     private String album;
 
     public static final String JSON_PROPERTY_TITLE = "Title";
     @org.eclipse.jdt.annotation.Nullable
+
     private String title;
 
     public static final String JSON_PROPERTY_AUTHOR = "Author";
     @org.eclipse.jdt.annotation.Nullable
+
     private String author;
 
     public static final String JSON_PROPERTY_LENGTH = "Length";
     @org.eclipse.jdt.annotation.Nullable
+
     private Long length;
 
     public static final String JSON_PROPERTY_BY = "By";
     @org.eclipse.jdt.annotation.Nullable
+
     private String by;
 
     public static final String JSON_PROPERTY_OFFSET = "Offset";
     @org.eclipse.jdt.annotation.Nullable
+
     private Long offset;
 
     public static final String JSON_PROPERTY_CREATOR = "Creator";
     @org.eclipse.jdt.annotation.Nullable
+
     private String creator;
 
     public static final String JSON_PROPERTY_VERSION = "Version";
     @org.eclipse.jdt.annotation.Nullable
+
     private String version;
 
     public static final String JSON_PROPERTY_IS_SYNCED = "IsSynced";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean isSynced;
 
     public LyricMetadata() {
@@ -85,6 +95,7 @@ public class LyricMetadata {
      * @return artist
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_ARTIST, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getArtist() {
@@ -108,6 +119,7 @@ public class LyricMetadata {
      * @return album
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_ALBUM, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getAlbum() {
@@ -131,6 +143,7 @@ public class LyricMetadata {
      * @return title
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_TITLE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getTitle() {
@@ -154,6 +167,7 @@ public class LyricMetadata {
      * @return author
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_AUTHOR, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getAuthor() {
@@ -177,6 +191,7 @@ public class LyricMetadata {
      * @return length
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_LENGTH, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Long getLength() {
@@ -200,6 +215,7 @@ public class LyricMetadata {
      * @return by
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_BY, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getBy() {
@@ -223,6 +239,7 @@ public class LyricMetadata {
      * @return offset
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_OFFSET, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Long getOffset() {
@@ -246,6 +263,7 @@ public class LyricMetadata {
      * @return creator
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_CREATOR, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getCreator() {
@@ -269,6 +287,7 @@ public class LyricMetadata {
      * @return version
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_VERSION, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getVersion() {
@@ -292,6 +311,7 @@ public class LyricMetadata {
      * @return isSynced
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_IS_SYNCED, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getIsSynced() {

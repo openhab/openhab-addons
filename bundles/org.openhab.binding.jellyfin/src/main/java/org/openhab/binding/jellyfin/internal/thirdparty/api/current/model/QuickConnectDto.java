@@ -29,7 +29,8 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class QuickConnectDto {
     public static final String JSON_PROPERTY_SECRET = "Secret";
-    @org.eclipse.jdt.annotation.NonNull
+    @org.eclipse.jdt.annotation.Nullable
+
     private String secret;
 
     public QuickConnectDto() {
@@ -45,7 +46,8 @@ public class QuickConnectDto {
      * 
      * @return secret
      */
-    @org.eclipse.jdt.annotation.NonNull
+    @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_SECRET, required = true)
     @JsonInclude(value = JsonInclude.Include.ALWAYS)
     public String getSecret() {

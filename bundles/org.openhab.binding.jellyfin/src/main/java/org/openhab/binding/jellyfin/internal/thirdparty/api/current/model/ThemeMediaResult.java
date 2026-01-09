@@ -34,18 +34,22 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class ThemeMediaResult {
     public static final String JSON_PROPERTY_ITEMS = "Items";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<BaseItemDto> items = new ArrayList<>();
 
     public static final String JSON_PROPERTY_TOTAL_RECORD_COUNT = "TotalRecordCount";
     @org.eclipse.jdt.annotation.Nullable
+
     private Integer totalRecordCount;
 
     public static final String JSON_PROPERTY_START_INDEX = "StartIndex";
     @org.eclipse.jdt.annotation.Nullable
+
     private Integer startIndex;
 
     public static final String JSON_PROPERTY_OWNER_ID = "OwnerId";
     @org.eclipse.jdt.annotation.Nullable
+
     private UUID ownerId;
 
     public ThemeMediaResult() {
@@ -70,6 +74,7 @@ public class ThemeMediaResult {
      * @return items
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_ITEMS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<BaseItemDto> getItems() {
@@ -93,6 +98,7 @@ public class ThemeMediaResult {
      * @return totalRecordCount
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_TOTAL_RECORD_COUNT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getTotalRecordCount() {
@@ -116,6 +122,7 @@ public class ThemeMediaResult {
      * @return startIndex
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_START_INDEX, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getStartIndex() {
@@ -139,6 +146,7 @@ public class ThemeMediaResult {
      * @return ownerId
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_OWNER_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public UUID getOwnerId() {

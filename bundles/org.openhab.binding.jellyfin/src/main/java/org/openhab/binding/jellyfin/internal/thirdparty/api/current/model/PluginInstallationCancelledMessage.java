@@ -34,14 +34,17 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class PluginInstallationCancelledMessage {
     public static final String JSON_PROPERTY_DATA = "Data";
     @org.eclipse.jdt.annotation.Nullable
+
     private InstallationInfo data;
 
     public static final String JSON_PROPERTY_MESSAGE_ID = "MessageId";
     @org.eclipse.jdt.annotation.Nullable
+
     private UUID messageId;
 
     public static final String JSON_PROPERTY_MESSAGE_TYPE = "MessageType";
     @org.eclipse.jdt.annotation.Nullable
+
     private SessionMessageType messageType = SessionMessageType.PACKAGE_INSTALLATION_CANCELLED;
 
     public PluginInstallationCancelledMessage() {
@@ -65,6 +68,7 @@ public class PluginInstallationCancelledMessage {
      * @return data
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_DATA, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public InstallationInfo getData() {
@@ -88,6 +92,7 @@ public class PluginInstallationCancelledMessage {
      * @return messageId
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_MESSAGE_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public UUID getMessageId() {
@@ -106,6 +111,7 @@ public class PluginInstallationCancelledMessage {
      * @return messageType
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_MESSAGE_TYPE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public SessionMessageType getMessageType() {

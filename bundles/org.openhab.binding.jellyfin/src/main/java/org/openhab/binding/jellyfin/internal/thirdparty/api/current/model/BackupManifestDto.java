@@ -33,22 +33,27 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class BackupManifestDto {
     public static final String JSON_PROPERTY_SERVER_VERSION = "ServerVersion";
     @org.eclipse.jdt.annotation.Nullable
+
     private String serverVersion;
 
     public static final String JSON_PROPERTY_BACKUP_ENGINE_VERSION = "BackupEngineVersion";
     @org.eclipse.jdt.annotation.Nullable
+
     private String backupEngineVersion;
 
     public static final String JSON_PROPERTY_DATE_CREATED = "DateCreated";
     @org.eclipse.jdt.annotation.Nullable
+
     private OffsetDateTime dateCreated;
 
     public static final String JSON_PROPERTY_PATH = "Path";
     @org.eclipse.jdt.annotation.Nullable
+
     private String path;
 
     public static final String JSON_PROPERTY_OPTIONS = "Options";
     @org.eclipse.jdt.annotation.Nullable
+
     private BackupOptionsDto options;
 
     public BackupManifestDto() {
@@ -65,6 +70,7 @@ public class BackupManifestDto {
      * @return serverVersion
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_SERVER_VERSION, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getServerVersion() {
@@ -88,6 +94,7 @@ public class BackupManifestDto {
      * @return backupEngineVersion
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_BACKUP_ENGINE_VERSION, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getBackupEngineVersion() {
@@ -111,6 +118,7 @@ public class BackupManifestDto {
      * @return dateCreated
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_DATE_CREATED, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public OffsetDateTime getDateCreated() {
@@ -134,6 +142,7 @@ public class BackupManifestDto {
      * @return path
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_PATH, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getPath() {
@@ -157,6 +166,7 @@ public class BackupManifestDto {
      * @return options
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_OPTIONS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public BackupOptionsDto getOptions() {

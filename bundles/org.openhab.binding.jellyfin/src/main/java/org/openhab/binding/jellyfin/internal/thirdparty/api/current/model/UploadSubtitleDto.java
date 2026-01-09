@@ -31,23 +31,28 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class UploadSubtitleDto {
     public static final String JSON_PROPERTY_LANGUAGE = "Language";
-    @org.eclipse.jdt.annotation.NonNull
+    @org.eclipse.jdt.annotation.Nullable
+
     private String language;
 
     public static final String JSON_PROPERTY_FORMAT = "Format";
-    @org.eclipse.jdt.annotation.NonNull
+    @org.eclipse.jdt.annotation.Nullable
+
     private String format;
 
     public static final String JSON_PROPERTY_IS_FORCED = "IsForced";
-    @org.eclipse.jdt.annotation.NonNull
+    @org.eclipse.jdt.annotation.Nullable
+
     private Boolean isForced;
 
     public static final String JSON_PROPERTY_IS_HEARING_IMPAIRED = "IsHearingImpaired";
-    @org.eclipse.jdt.annotation.NonNull
+    @org.eclipse.jdt.annotation.Nullable
+
     private Boolean isHearingImpaired;
 
     public static final String JSON_PROPERTY_DATA = "Data";
-    @org.eclipse.jdt.annotation.NonNull
+    @org.eclipse.jdt.annotation.Nullable
+
     private String data;
 
     public UploadSubtitleDto() {
@@ -63,7 +68,8 @@ public class UploadSubtitleDto {
      * 
      * @return language
      */
-    @org.eclipse.jdt.annotation.NonNull
+    @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_LANGUAGE, required = true)
     @JsonInclude(value = JsonInclude.Include.ALWAYS)
     public String getLanguage() {
@@ -86,7 +92,8 @@ public class UploadSubtitleDto {
      * 
      * @return format
      */
-    @org.eclipse.jdt.annotation.NonNull
+    @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_FORMAT, required = true)
     @JsonInclude(value = JsonInclude.Include.ALWAYS)
     public String getFormat() {
@@ -109,7 +116,8 @@ public class UploadSubtitleDto {
      * 
      * @return isForced
      */
-    @org.eclipse.jdt.annotation.NonNull
+    @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_IS_FORCED, required = true)
     @JsonInclude(value = JsonInclude.Include.ALWAYS)
     public Boolean getIsForced() {
@@ -132,7 +140,8 @@ public class UploadSubtitleDto {
      * 
      * @return isHearingImpaired
      */
-    @org.eclipse.jdt.annotation.NonNull
+    @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_IS_HEARING_IMPAIRED, required = true)
     @JsonInclude(value = JsonInclude.Include.ALWAYS)
     public Boolean getIsHearingImpaired() {
@@ -155,7 +164,8 @@ public class UploadSubtitleDto {
      * 
      * @return data
      */
-    @org.eclipse.jdt.annotation.NonNull
+    @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_DATA, required = true)
     @JsonInclude(value = JsonInclude.Include.ALWAYS)
     public String getData() {

@@ -30,6 +30,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class PingRequestDto {
     public static final String JSON_PROPERTY_PING = "Ping";
     @org.eclipse.jdt.annotation.Nullable
+
     private Long ping;
 
     public PingRequestDto() {
@@ -46,6 +47,7 @@ public class PingRequestDto {
      * @return ping
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_PING, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Long getPing() {

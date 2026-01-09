@@ -40,74 +40,92 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class ListingsProviderInfo {
     public static final String JSON_PROPERTY_ID = "Id";
     @org.eclipse.jdt.annotation.Nullable
+
     private String id;
 
     public static final String JSON_PROPERTY_TYPE = "Type";
     @org.eclipse.jdt.annotation.Nullable
+
     private String type;
 
     public static final String JSON_PROPERTY_USERNAME = "Username";
     @org.eclipse.jdt.annotation.Nullable
+
     private String username;
 
     public static final String JSON_PROPERTY_PASSWORD = "Password";
     @org.eclipse.jdt.annotation.Nullable
+
     private String password;
 
     public static final String JSON_PROPERTY_LISTINGS_ID = "ListingsId";
     @org.eclipse.jdt.annotation.Nullable
+
     private String listingsId;
 
     public static final String JSON_PROPERTY_ZIP_CODE = "ZipCode";
     @org.eclipse.jdt.annotation.Nullable
+
     private String zipCode;
 
     public static final String JSON_PROPERTY_COUNTRY = "Country";
     @org.eclipse.jdt.annotation.Nullable
+
     private String country;
 
     public static final String JSON_PROPERTY_PATH = "Path";
     @org.eclipse.jdt.annotation.Nullable
+
     private String path;
 
     public static final String JSON_PROPERTY_ENABLED_TUNERS = "EnabledTuners";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<String> enabledTuners;
 
     public static final String JSON_PROPERTY_ENABLE_ALL_TUNERS = "EnableAllTuners";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean enableAllTuners;
 
     public static final String JSON_PROPERTY_NEWS_CATEGORIES = "NewsCategories";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<String> newsCategories;
 
     public static final String JSON_PROPERTY_SPORTS_CATEGORIES = "SportsCategories";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<String> sportsCategories;
 
     public static final String JSON_PROPERTY_KIDS_CATEGORIES = "KidsCategories";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<String> kidsCategories;
 
     public static final String JSON_PROPERTY_MOVIE_CATEGORIES = "MovieCategories";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<String> movieCategories;
 
     public static final String JSON_PROPERTY_CHANNEL_MAPPINGS = "ChannelMappings";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<NameValuePair> channelMappings;
 
     public static final String JSON_PROPERTY_MOVIE_PREFIX = "MoviePrefix";
     @org.eclipse.jdt.annotation.Nullable
+
     private String moviePrefix;
 
     public static final String JSON_PROPERTY_PREFERRED_LANGUAGE = "PreferredLanguage";
     @org.eclipse.jdt.annotation.Nullable
+
     private String preferredLanguage;
 
     public static final String JSON_PROPERTY_USER_AGENT = "UserAgent";
     @org.eclipse.jdt.annotation.Nullable
+
     private String userAgent;
 
     public ListingsProviderInfo() {
@@ -124,6 +142,7 @@ public class ListingsProviderInfo {
      * @return id
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getId() {
@@ -147,6 +166,7 @@ public class ListingsProviderInfo {
      * @return type
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_TYPE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getType() {
@@ -170,6 +190,7 @@ public class ListingsProviderInfo {
      * @return username
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_USERNAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getUsername() {
@@ -193,6 +214,7 @@ public class ListingsProviderInfo {
      * @return password
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_PASSWORD, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getPassword() {
@@ -216,6 +238,7 @@ public class ListingsProviderInfo {
      * @return listingsId
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_LISTINGS_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getListingsId() {
@@ -239,6 +262,7 @@ public class ListingsProviderInfo {
      * @return zipCode
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_ZIP_CODE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getZipCode() {
@@ -262,6 +286,7 @@ public class ListingsProviderInfo {
      * @return country
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_COUNTRY, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getCountry() {
@@ -285,6 +310,7 @@ public class ListingsProviderInfo {
      * @return path
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_PATH, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getPath() {
@@ -316,6 +342,7 @@ public class ListingsProviderInfo {
      * @return enabledTuners
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_ENABLED_TUNERS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<String> getEnabledTuners() {
@@ -339,6 +366,7 @@ public class ListingsProviderInfo {
      * @return enableAllTuners
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_ENABLE_ALL_TUNERS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getEnableAllTuners() {
@@ -370,6 +398,7 @@ public class ListingsProviderInfo {
      * @return newsCategories
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_NEWS_CATEGORIES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<String> getNewsCategories() {
@@ -401,6 +430,7 @@ public class ListingsProviderInfo {
      * @return sportsCategories
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_SPORTS_CATEGORIES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<String> getSportsCategories() {
@@ -432,6 +462,7 @@ public class ListingsProviderInfo {
      * @return kidsCategories
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_KIDS_CATEGORIES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<String> getKidsCategories() {
@@ -463,6 +494,7 @@ public class ListingsProviderInfo {
      * @return movieCategories
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_MOVIE_CATEGORIES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<String> getMovieCategories() {
@@ -495,6 +527,7 @@ public class ListingsProviderInfo {
      * @return channelMappings
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_CHANNEL_MAPPINGS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<NameValuePair> getChannelMappings() {
@@ -518,6 +551,7 @@ public class ListingsProviderInfo {
      * @return moviePrefix
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_MOVIE_PREFIX, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getMoviePrefix() {
@@ -541,6 +575,7 @@ public class ListingsProviderInfo {
      * @return preferredLanguage
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_PREFERRED_LANGUAGE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getPreferredLanguage() {
@@ -564,6 +599,7 @@ public class ListingsProviderInfo {
      * @return userAgent
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_USER_AGENT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getUserAgent() {

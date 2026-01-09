@@ -31,6 +31,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class ScheduledTasksInfoStopMessage {
     public static final String JSON_PROPERTY_MESSAGE_TYPE = "MessageType";
     @org.eclipse.jdt.annotation.Nullable
+
     private SessionMessageType messageType = SessionMessageType.SCHEDULED_TASKS_INFO_STOP;
 
     public ScheduledTasksInfoStopMessage() {
@@ -48,6 +49,7 @@ public class ScheduledTasksInfoStopMessage {
      * @return messageType
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_MESSAGE_TYPE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public SessionMessageType getMessageType() {

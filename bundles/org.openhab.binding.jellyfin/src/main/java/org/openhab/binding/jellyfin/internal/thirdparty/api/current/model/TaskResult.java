@@ -34,34 +34,42 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class TaskResult {
     public static final String JSON_PROPERTY_START_TIME_UTC = "StartTimeUtc";
     @org.eclipse.jdt.annotation.Nullable
+
     private OffsetDateTime startTimeUtc;
 
     public static final String JSON_PROPERTY_END_TIME_UTC = "EndTimeUtc";
     @org.eclipse.jdt.annotation.Nullable
+
     private OffsetDateTime endTimeUtc;
 
     public static final String JSON_PROPERTY_STATUS = "Status";
     @org.eclipse.jdt.annotation.Nullable
+
     private TaskCompletionStatus status;
 
     public static final String JSON_PROPERTY_NAME = "Name";
     @org.eclipse.jdt.annotation.Nullable
+
     private String name;
 
     public static final String JSON_PROPERTY_KEY = "Key";
     @org.eclipse.jdt.annotation.Nullable
+
     private String key;
 
     public static final String JSON_PROPERTY_ID = "Id";
     @org.eclipse.jdt.annotation.Nullable
+
     private String id;
 
     public static final String JSON_PROPERTY_ERROR_MESSAGE = "ErrorMessage";
     @org.eclipse.jdt.annotation.Nullable
+
     private String errorMessage;
 
     public static final String JSON_PROPERTY_LONG_ERROR_MESSAGE = "LongErrorMessage";
     @org.eclipse.jdt.annotation.Nullable
+
     private String longErrorMessage;
 
     public TaskResult() {
@@ -78,6 +86,7 @@ public class TaskResult {
      * @return startTimeUtc
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_START_TIME_UTC, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public OffsetDateTime getStartTimeUtc() {
@@ -101,6 +110,7 @@ public class TaskResult {
      * @return endTimeUtc
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_END_TIME_UTC, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public OffsetDateTime getEndTimeUtc() {
@@ -124,6 +134,7 @@ public class TaskResult {
      * @return status
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_STATUS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public TaskCompletionStatus getStatus() {
@@ -147,6 +158,7 @@ public class TaskResult {
      * @return name
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getName() {
@@ -170,6 +182,7 @@ public class TaskResult {
      * @return key
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_KEY, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getKey() {
@@ -193,6 +206,7 @@ public class TaskResult {
      * @return id
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getId() {
@@ -216,6 +230,7 @@ public class TaskResult {
      * @return errorMessage
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_ERROR_MESSAGE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getErrorMessage() {
@@ -239,6 +254,7 @@ public class TaskResult {
      * @return longErrorMessage
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_LONG_ERROR_MESSAGE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getLongErrorMessage() {

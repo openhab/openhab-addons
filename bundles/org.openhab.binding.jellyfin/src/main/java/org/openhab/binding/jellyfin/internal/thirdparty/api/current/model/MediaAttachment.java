@@ -33,30 +33,37 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class MediaAttachment {
     public static final String JSON_PROPERTY_CODEC = "Codec";
     @org.eclipse.jdt.annotation.Nullable
+
     private String codec;
 
     public static final String JSON_PROPERTY_CODEC_TAG = "CodecTag";
     @org.eclipse.jdt.annotation.Nullable
+
     private String codecTag;
 
     public static final String JSON_PROPERTY_COMMENT = "Comment";
     @org.eclipse.jdt.annotation.Nullable
+
     private String comment;
 
     public static final String JSON_PROPERTY_INDEX = "Index";
     @org.eclipse.jdt.annotation.Nullable
+
     private Integer index;
 
     public static final String JSON_PROPERTY_FILE_NAME = "FileName";
     @org.eclipse.jdt.annotation.Nullable
+
     private String fileName;
 
     public static final String JSON_PROPERTY_MIME_TYPE = "MimeType";
     @org.eclipse.jdt.annotation.Nullable
+
     private String mimeType;
 
     public static final String JSON_PROPERTY_DELIVERY_URL = "DeliveryUrl";
     @org.eclipse.jdt.annotation.Nullable
+
     private String deliveryUrl;
 
     public MediaAttachment() {
@@ -73,6 +80,7 @@ public class MediaAttachment {
      * @return codec
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_CODEC, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getCodec() {
@@ -96,6 +104,7 @@ public class MediaAttachment {
      * @return codecTag
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_CODEC_TAG, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getCodecTag() {
@@ -119,6 +128,7 @@ public class MediaAttachment {
      * @return comment
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_COMMENT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getComment() {
@@ -142,6 +152,7 @@ public class MediaAttachment {
      * @return index
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_INDEX, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getIndex() {
@@ -165,6 +176,7 @@ public class MediaAttachment {
      * @return fileName
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_FILE_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getFileName() {
@@ -188,6 +200,7 @@ public class MediaAttachment {
      * @return mimeType
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_MIME_TYPE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getMimeType() {
@@ -211,6 +224,7 @@ public class MediaAttachment {
      * @return deliveryUrl
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_DELIVERY_URL, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getDeliveryUrl() {

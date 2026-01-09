@@ -35,50 +35,62 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class PlayerStateInfo {
     public static final String JSON_PROPERTY_POSITION_TICKS = "PositionTicks";
     @org.eclipse.jdt.annotation.Nullable
+
     private Long positionTicks;
 
     public static final String JSON_PROPERTY_CAN_SEEK = "CanSeek";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean canSeek;
 
     public static final String JSON_PROPERTY_IS_PAUSED = "IsPaused";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean isPaused;
 
     public static final String JSON_PROPERTY_IS_MUTED = "IsMuted";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean isMuted;
 
     public static final String JSON_PROPERTY_VOLUME_LEVEL = "VolumeLevel";
     @org.eclipse.jdt.annotation.Nullable
+
     private Integer volumeLevel;
 
     public static final String JSON_PROPERTY_AUDIO_STREAM_INDEX = "AudioStreamIndex";
     @org.eclipse.jdt.annotation.Nullable
+
     private Integer audioStreamIndex;
 
     public static final String JSON_PROPERTY_SUBTITLE_STREAM_INDEX = "SubtitleStreamIndex";
     @org.eclipse.jdt.annotation.Nullable
+
     private Integer subtitleStreamIndex;
 
     public static final String JSON_PROPERTY_MEDIA_SOURCE_ID = "MediaSourceId";
     @org.eclipse.jdt.annotation.Nullable
+
     private String mediaSourceId;
 
     public static final String JSON_PROPERTY_PLAY_METHOD = "PlayMethod";
     @org.eclipse.jdt.annotation.Nullable
+
     private PlayMethod playMethod;
 
     public static final String JSON_PROPERTY_REPEAT_MODE = "RepeatMode";
     @org.eclipse.jdt.annotation.Nullable
+
     private RepeatMode repeatMode;
 
     public static final String JSON_PROPERTY_PLAYBACK_ORDER = "PlaybackOrder";
     @org.eclipse.jdt.annotation.Nullable
+
     private PlaybackOrder playbackOrder;
 
     public static final String JSON_PROPERTY_LIVE_STREAM_ID = "LiveStreamId";
     @org.eclipse.jdt.annotation.Nullable
+
     private String liveStreamId;
 
     public PlayerStateInfo() {
@@ -95,6 +107,7 @@ public class PlayerStateInfo {
      * @return positionTicks
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_POSITION_TICKS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Long getPositionTicks() {
@@ -118,6 +131,7 @@ public class PlayerStateInfo {
      * @return canSeek
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_CAN_SEEK, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getCanSeek() {
@@ -141,6 +155,7 @@ public class PlayerStateInfo {
      * @return isPaused
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_IS_PAUSED, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getIsPaused() {
@@ -164,6 +179,7 @@ public class PlayerStateInfo {
      * @return isMuted
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_IS_MUTED, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getIsMuted() {
@@ -187,6 +203,7 @@ public class PlayerStateInfo {
      * @return volumeLevel
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_VOLUME_LEVEL, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getVolumeLevel() {
@@ -210,6 +227,7 @@ public class PlayerStateInfo {
      * @return audioStreamIndex
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_AUDIO_STREAM_INDEX, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getAudioStreamIndex() {
@@ -233,6 +251,7 @@ public class PlayerStateInfo {
      * @return subtitleStreamIndex
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_SUBTITLE_STREAM_INDEX, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getSubtitleStreamIndex() {
@@ -256,6 +275,7 @@ public class PlayerStateInfo {
      * @return mediaSourceId
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_MEDIA_SOURCE_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getMediaSourceId() {
@@ -279,6 +299,7 @@ public class PlayerStateInfo {
      * @return playMethod
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_PLAY_METHOD, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public PlayMethod getPlayMethod() {
@@ -302,6 +323,7 @@ public class PlayerStateInfo {
      * @return repeatMode
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_REPEAT_MODE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public RepeatMode getRepeatMode() {
@@ -325,6 +347,7 @@ public class PlayerStateInfo {
      * @return playbackOrder
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_PLAYBACK_ORDER, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public PlaybackOrder getPlaybackOrder() {
@@ -348,6 +371,7 @@ public class PlayerStateInfo {
      * @return liveStreamId
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_LIVE_STREAM_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getLiveStreamId() {

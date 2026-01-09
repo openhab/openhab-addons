@@ -45,46 +45,57 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class DeviceProfile {
     public static final String JSON_PROPERTY_NAME = "Name";
     @org.eclipse.jdt.annotation.Nullable
+
     private String name;
 
     public static final String JSON_PROPERTY_ID = "Id";
     @org.eclipse.jdt.annotation.Nullable
+
     private UUID id;
 
     public static final String JSON_PROPERTY_MAX_STREAMING_BITRATE = "MaxStreamingBitrate";
     @org.eclipse.jdt.annotation.Nullable
+
     private Integer maxStreamingBitrate;
 
     public static final String JSON_PROPERTY_MAX_STATIC_BITRATE = "MaxStaticBitrate";
     @org.eclipse.jdt.annotation.Nullable
+
     private Integer maxStaticBitrate;
 
     public static final String JSON_PROPERTY_MUSIC_STREAMING_TRANSCODING_BITRATE = "MusicStreamingTranscodingBitrate";
     @org.eclipse.jdt.annotation.Nullable
+
     private Integer musicStreamingTranscodingBitrate;
 
     public static final String JSON_PROPERTY_MAX_STATIC_MUSIC_BITRATE = "MaxStaticMusicBitrate";
     @org.eclipse.jdt.annotation.Nullable
+
     private Integer maxStaticMusicBitrate;
 
     public static final String JSON_PROPERTY_DIRECT_PLAY_PROFILES = "DirectPlayProfiles";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<DirectPlayProfile> directPlayProfiles = new ArrayList<>();
 
     public static final String JSON_PROPERTY_TRANSCODING_PROFILES = "TranscodingProfiles";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<TranscodingProfile> transcodingProfiles = new ArrayList<>();
 
     public static final String JSON_PROPERTY_CONTAINER_PROFILES = "ContainerProfiles";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<ContainerProfile> containerProfiles = new ArrayList<>();
 
     public static final String JSON_PROPERTY_CODEC_PROFILES = "CodecProfiles";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<CodecProfile> codecProfiles = new ArrayList<>();
 
     public static final String JSON_PROPERTY_SUBTITLE_PROFILES = "SubtitleProfiles";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<SubtitleProfile> subtitleProfiles = new ArrayList<>();
 
     public DeviceProfile() {
@@ -101,6 +112,7 @@ public class DeviceProfile {
      * @return name
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getName() {
@@ -124,6 +136,7 @@ public class DeviceProfile {
      * @return id
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public UUID getId() {
@@ -147,6 +160,7 @@ public class DeviceProfile {
      * @return maxStreamingBitrate
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_MAX_STREAMING_BITRATE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getMaxStreamingBitrate() {
@@ -170,6 +184,7 @@ public class DeviceProfile {
      * @return maxStaticBitrate
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_MAX_STATIC_BITRATE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getMaxStaticBitrate() {
@@ -194,6 +209,7 @@ public class DeviceProfile {
      * @return musicStreamingTranscodingBitrate
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_MUSIC_STREAMING_TRANSCODING_BITRATE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getMusicStreamingTranscodingBitrate() {
@@ -218,6 +234,7 @@ public class DeviceProfile {
      * @return maxStaticMusicBitrate
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_MAX_STATIC_MUSIC_BITRATE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getMaxStaticMusicBitrate() {
@@ -250,6 +267,7 @@ public class DeviceProfile {
      * @return directPlayProfiles
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_DIRECT_PLAY_PROFILES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<DirectPlayProfile> getDirectPlayProfiles() {
@@ -282,6 +300,7 @@ public class DeviceProfile {
      * @return transcodingProfiles
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_TRANSCODING_PROFILES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<TranscodingProfile> getTranscodingProfiles() {
@@ -315,6 +334,7 @@ public class DeviceProfile {
      * @return containerProfiles
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_CONTAINER_PROFILES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<ContainerProfile> getContainerProfiles() {
@@ -346,6 +366,7 @@ public class DeviceProfile {
      * @return codecProfiles
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_CODEC_PROFILES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<CodecProfile> getCodecProfiles() {
@@ -377,6 +398,7 @@ public class DeviceProfile {
      * @return subtitleProfiles
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_SUBTITLE_PROFILES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<SubtitleProfile> getSubtitleProfiles() {

@@ -33,18 +33,22 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class MovieInfoRemoteSearchQuery {
     public static final String JSON_PROPERTY_SEARCH_INFO = "SearchInfo";
     @org.eclipse.jdt.annotation.Nullable
+
     private MovieInfo searchInfo;
 
     public static final String JSON_PROPERTY_ITEM_ID = "ItemId";
     @org.eclipse.jdt.annotation.Nullable
+
     private UUID itemId;
 
     public static final String JSON_PROPERTY_SEARCH_PROVIDER_NAME = "SearchProviderName";
     @org.eclipse.jdt.annotation.Nullable
+
     private String searchProviderName;
 
     public static final String JSON_PROPERTY_INCLUDE_DISABLED_PROVIDERS = "IncludeDisabledProviders";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean includeDisabledProviders;
 
     public MovieInfoRemoteSearchQuery() {
@@ -61,6 +65,7 @@ public class MovieInfoRemoteSearchQuery {
      * @return searchInfo
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_SEARCH_INFO, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public MovieInfo getSearchInfo() {
@@ -84,6 +89,7 @@ public class MovieInfoRemoteSearchQuery {
      * @return itemId
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_ITEM_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public UUID getItemId() {
@@ -108,6 +114,7 @@ public class MovieInfoRemoteSearchQuery {
      * @return searchProviderName
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_SEARCH_PROVIDER_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getSearchProviderName() {
@@ -132,6 +139,7 @@ public class MovieInfoRemoteSearchQuery {
      * @return includeDisabledProviders
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_INCLUDE_DISABLED_PROVIDERS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getIncludeDisabledProviders() {

@@ -145,6 +145,18 @@ done
 
 cd ${ROOT}
 
+echo ""
+echo "🔧 fix @NonNull annotations on fields to @Nullable (builder pattern compatibility)"
+# Replace @NonNull with @Nullable on field declarations in model classes
+# This fixes compilation errors where fields are marked @NonNull but not initialized in default constructor
+find src/main/java/org/openhab/binding/jellyfin/internal/thirdparty/api -name "*.java" -type f -exec sed -i 's/^\([[:space:]]*\)@org\.eclipse\.jdt\.annotation\.NonNull\([[:space:]]*\)$/\1@org.eclipse.jdt.annotation.Nullable\2/g' {} \;
+
+echo "🔧 remove @NonNullByDefault from generated classes (covered by package-info.java)"
+# Remove @NonNullByDefault annotation and import from all generated classes
+# Null-safety is intentionally disabled for generated thirdparty API code via package-info.java
+find src/main/java/org/openhab/binding/jellyfin/internal/thirdparty/api -name "*.java" -type f -exec sed -i '/@NonNullByDefault/d' {} \;
+find src/main/java/org/openhab/binding/jellyfin/internal/thirdparty/api -name "*.java" -type f -exec sed -i '/import org\.eclipse\.jdt\.annotation\.NonNullByDefault;/d' {} \;
+
 MVN_OPT="--quiet"
 echo ""
 echo "🧹 apply formatting to generated code"

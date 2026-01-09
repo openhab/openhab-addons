@@ -39,66 +39,82 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class RemoteSubtitleInfo {
     public static final String JSON_PROPERTY_THREE_LETTER_I_S_O_LANGUAGE_NAME = "ThreeLetterISOLanguageName";
     @org.eclipse.jdt.annotation.Nullable
+
     private String threeLetterISOLanguageName;
 
     public static final String JSON_PROPERTY_ID = "Id";
     @org.eclipse.jdt.annotation.Nullable
+
     private String id;
 
     public static final String JSON_PROPERTY_PROVIDER_NAME = "ProviderName";
     @org.eclipse.jdt.annotation.Nullable
+
     private String providerName;
 
     public static final String JSON_PROPERTY_NAME = "Name";
     @org.eclipse.jdt.annotation.Nullable
+
     private String name;
 
     public static final String JSON_PROPERTY_FORMAT = "Format";
     @org.eclipse.jdt.annotation.Nullable
+
     private String format;
 
     public static final String JSON_PROPERTY_AUTHOR = "Author";
     @org.eclipse.jdt.annotation.Nullable
+
     private String author;
 
     public static final String JSON_PROPERTY_COMMENT = "Comment";
     @org.eclipse.jdt.annotation.Nullable
+
     private String comment;
 
     public static final String JSON_PROPERTY_DATE_CREATED = "DateCreated";
     @org.eclipse.jdt.annotation.Nullable
+
     private OffsetDateTime dateCreated;
 
     public static final String JSON_PROPERTY_COMMUNITY_RATING = "CommunityRating";
     @org.eclipse.jdt.annotation.Nullable
+
     private Float communityRating;
 
     public static final String JSON_PROPERTY_FRAME_RATE = "FrameRate";
     @org.eclipse.jdt.annotation.Nullable
+
     private Float frameRate;
 
     public static final String JSON_PROPERTY_DOWNLOAD_COUNT = "DownloadCount";
     @org.eclipse.jdt.annotation.Nullable
+
     private Integer downloadCount;
 
     public static final String JSON_PROPERTY_IS_HASH_MATCH = "IsHashMatch";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean isHashMatch;
 
     public static final String JSON_PROPERTY_AI_TRANSLATED = "AiTranslated";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean aiTranslated;
 
     public static final String JSON_PROPERTY_MACHINE_TRANSLATED = "MachineTranslated";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean machineTranslated;
 
     public static final String JSON_PROPERTY_FORCED = "Forced";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean forced;
 
     public static final String JSON_PROPERTY_HEARING_IMPAIRED = "HearingImpaired";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean hearingImpaired;
 
     public RemoteSubtitleInfo() {
@@ -116,6 +132,7 @@ public class RemoteSubtitleInfo {
      * @return threeLetterISOLanguageName
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_THREE_LETTER_I_S_O_LANGUAGE_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getThreeLetterISOLanguageName() {
@@ -139,6 +156,7 @@ public class RemoteSubtitleInfo {
      * @return id
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getId() {
@@ -162,6 +180,7 @@ public class RemoteSubtitleInfo {
      * @return providerName
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_PROVIDER_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getProviderName() {
@@ -185,6 +204,7 @@ public class RemoteSubtitleInfo {
      * @return name
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getName() {
@@ -208,6 +228,7 @@ public class RemoteSubtitleInfo {
      * @return format
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_FORMAT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getFormat() {
@@ -231,6 +252,7 @@ public class RemoteSubtitleInfo {
      * @return author
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_AUTHOR, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getAuthor() {
@@ -254,6 +276,7 @@ public class RemoteSubtitleInfo {
      * @return comment
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_COMMENT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getComment() {
@@ -277,6 +300,7 @@ public class RemoteSubtitleInfo {
      * @return dateCreated
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_DATE_CREATED, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public OffsetDateTime getDateCreated() {
@@ -300,6 +324,7 @@ public class RemoteSubtitleInfo {
      * @return communityRating
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_COMMUNITY_RATING, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Float getCommunityRating() {
@@ -323,6 +348,7 @@ public class RemoteSubtitleInfo {
      * @return frameRate
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_FRAME_RATE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Float getFrameRate() {
@@ -346,6 +372,7 @@ public class RemoteSubtitleInfo {
      * @return downloadCount
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_DOWNLOAD_COUNT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getDownloadCount() {
@@ -369,6 +396,7 @@ public class RemoteSubtitleInfo {
      * @return isHashMatch
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_IS_HASH_MATCH, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getIsHashMatch() {
@@ -392,6 +420,7 @@ public class RemoteSubtitleInfo {
      * @return aiTranslated
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_AI_TRANSLATED, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getAiTranslated() {
@@ -415,6 +444,7 @@ public class RemoteSubtitleInfo {
      * @return machineTranslated
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_MACHINE_TRANSLATED, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getMachineTranslated() {
@@ -438,6 +468,7 @@ public class RemoteSubtitleInfo {
      * @return forced
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_FORCED, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getForced() {
@@ -461,6 +492,7 @@ public class RemoteSubtitleInfo {
      * @return hearingImpaired
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_HEARING_IMPAIRED, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getHearingImpaired() {

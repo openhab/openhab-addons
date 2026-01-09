@@ -41,70 +41,87 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class TranscodingProfile {
     public static final String JSON_PROPERTY_CONTAINER = "Container";
     @org.eclipse.jdt.annotation.Nullable
+
     private String container;
 
     public static final String JSON_PROPERTY_TYPE = "Type";
     @org.eclipse.jdt.annotation.Nullable
+
     private DlnaProfileType type;
 
     public static final String JSON_PROPERTY_VIDEO_CODEC = "VideoCodec";
     @org.eclipse.jdt.annotation.Nullable
+
     private String videoCodec;
 
     public static final String JSON_PROPERTY_AUDIO_CODEC = "AudioCodec";
     @org.eclipse.jdt.annotation.Nullable
+
     private String audioCodec;
 
     public static final String JSON_PROPERTY_PROTOCOL = "Protocol";
     @org.eclipse.jdt.annotation.Nullable
+
     private MediaStreamProtocol protocol;
 
     public static final String JSON_PROPERTY_ESTIMATE_CONTENT_LENGTH = "EstimateContentLength";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean estimateContentLength = false;
 
     public static final String JSON_PROPERTY_ENABLE_MPEGTS_M2_TS_MODE = "EnableMpegtsM2TsMode";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean enableMpegtsM2TsMode = false;
 
     public static final String JSON_PROPERTY_TRANSCODE_SEEK_INFO = "TranscodeSeekInfo";
     @org.eclipse.jdt.annotation.Nullable
+
     private TranscodeSeekInfo transcodeSeekInfo = TranscodeSeekInfo.AUTO;
 
     public static final String JSON_PROPERTY_COPY_TIMESTAMPS = "CopyTimestamps";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean copyTimestamps = false;
 
     public static final String JSON_PROPERTY_CONTEXT = "Context";
     @org.eclipse.jdt.annotation.Nullable
+
     private EncodingContext context = EncodingContext.STREAMING;
 
     public static final String JSON_PROPERTY_ENABLE_SUBTITLES_IN_MANIFEST = "EnableSubtitlesInManifest";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean enableSubtitlesInManifest = false;
 
     public static final String JSON_PROPERTY_MAX_AUDIO_CHANNELS = "MaxAudioChannels";
     @org.eclipse.jdt.annotation.Nullable
+
     private String maxAudioChannels;
 
     public static final String JSON_PROPERTY_MIN_SEGMENTS = "MinSegments";
     @org.eclipse.jdt.annotation.Nullable
+
     private Integer minSegments = 0;
 
     public static final String JSON_PROPERTY_SEGMENT_LENGTH = "SegmentLength";
     @org.eclipse.jdt.annotation.Nullable
+
     private Integer segmentLength = 0;
 
     public static final String JSON_PROPERTY_BREAK_ON_NON_KEY_FRAMES = "BreakOnNonKeyFrames";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean breakOnNonKeyFrames = false;
 
     public static final String JSON_PROPERTY_CONDITIONS = "Conditions";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<ProfileCondition> conditions = new ArrayList<>();
 
     public static final String JSON_PROPERTY_ENABLE_AUDIO_VBR_ENCODING = "EnableAudioVbrEncoding";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean enableAudioVbrEncoding = true;
 
     public TranscodingProfile() {
@@ -121,6 +138,7 @@ public class TranscodingProfile {
      * @return container
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_CONTAINER, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getContainer() {
@@ -144,6 +162,7 @@ public class TranscodingProfile {
      * @return type
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_TYPE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public DlnaProfileType getType() {
@@ -167,6 +186,7 @@ public class TranscodingProfile {
      * @return videoCodec
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_VIDEO_CODEC, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getVideoCodec() {
@@ -190,6 +210,7 @@ public class TranscodingProfile {
      * @return audioCodec
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_AUDIO_CODEC, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getAudioCodec() {
@@ -213,6 +234,7 @@ public class TranscodingProfile {
      * @return protocol
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_PROTOCOL, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public MediaStreamProtocol getProtocol() {
@@ -237,6 +259,7 @@ public class TranscodingProfile {
      * @return estimateContentLength
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_ESTIMATE_CONTENT_LENGTH, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getEstimateContentLength() {
@@ -260,6 +283,7 @@ public class TranscodingProfile {
      * @return enableMpegtsM2TsMode
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_ENABLE_MPEGTS_M2_TS_MODE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getEnableMpegtsM2TsMode() {
@@ -284,6 +308,7 @@ public class TranscodingProfile {
      * @return transcodeSeekInfo
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_TRANSCODE_SEEK_INFO, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public TranscodeSeekInfo getTranscodeSeekInfo() {
@@ -307,6 +332,7 @@ public class TranscodingProfile {
      * @return copyTimestamps
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_COPY_TIMESTAMPS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getCopyTimestamps() {
@@ -330,6 +356,7 @@ public class TranscodingProfile {
      * @return context
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_CONTEXT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public EncodingContext getContext() {
@@ -354,6 +381,7 @@ public class TranscodingProfile {
      * @return enableSubtitlesInManifest
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_ENABLE_SUBTITLES_IN_MANIFEST, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getEnableSubtitlesInManifest() {
@@ -377,6 +405,7 @@ public class TranscodingProfile {
      * @return maxAudioChannels
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_MAX_AUDIO_CHANNELS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getMaxAudioChannels() {
@@ -400,6 +429,7 @@ public class TranscodingProfile {
      * @return minSegments
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_MIN_SEGMENTS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getMinSegments() {
@@ -423,6 +453,7 @@ public class TranscodingProfile {
      * @return segmentLength
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_SEGMENT_LENGTH, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getSegmentLength() {
@@ -446,6 +477,7 @@ public class TranscodingProfile {
      * @return breakOnNonKeyFrames
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_BREAK_ON_NON_KEY_FRAMES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getBreakOnNonKeyFrames() {
@@ -477,6 +509,7 @@ public class TranscodingProfile {
      * @return conditions
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_CONDITIONS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<ProfileCondition> getConditions() {
@@ -501,6 +534,7 @@ public class TranscodingProfile {
      * @return enableAudioVbrEncoding
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_ENABLE_AUDIO_VBR_ENCODING, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getEnableAudioVbrEncoding() {

@@ -31,18 +31,22 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class LyricLineCue {
     public static final String JSON_PROPERTY_POSITION = "Position";
     @org.eclipse.jdt.annotation.Nullable
+
     private Integer position;
 
     public static final String JSON_PROPERTY_END_POSITION = "EndPosition";
     @org.eclipse.jdt.annotation.Nullable
+
     private Integer endPosition;
 
     public static final String JSON_PROPERTY_START = "Start";
     @org.eclipse.jdt.annotation.Nullable
+
     private Long start;
 
     public static final String JSON_PROPERTY_END = "End";
     @org.eclipse.jdt.annotation.Nullable
+
     private Long end;
 
     public LyricLineCue() {
@@ -59,6 +63,7 @@ public class LyricLineCue {
      * @return position
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_POSITION, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getPosition() {
@@ -82,6 +87,7 @@ public class LyricLineCue {
      * @return endPosition
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_END_POSITION, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getEndPosition() {
@@ -105,6 +111,7 @@ public class LyricLineCue {
      * @return start
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_START, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Long getStart() {
@@ -128,6 +135,7 @@ public class LyricLineCue {
      * @return end
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_END, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Long getEnd() {

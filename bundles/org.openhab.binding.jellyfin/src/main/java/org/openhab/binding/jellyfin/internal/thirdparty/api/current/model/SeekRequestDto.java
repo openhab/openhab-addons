@@ -30,6 +30,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class SeekRequestDto {
     public static final String JSON_PROPERTY_POSITION_TICKS = "PositionTicks";
     @org.eclipse.jdt.annotation.Nullable
+
     private Long positionTicks;
 
     public SeekRequestDto() {
@@ -46,6 +47,7 @@ public class SeekRequestDto {
      * @return positionTicks
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_POSITION_TICKS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Long getPositionTicks() {

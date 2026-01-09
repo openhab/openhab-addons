@@ -34,18 +34,22 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class ChannelMappingOptionsDto {
     public static final String JSON_PROPERTY_TUNER_CHANNELS = "TunerChannels";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<TunerChannelMapping> tunerChannels = new ArrayList<>();
 
     public static final String JSON_PROPERTY_PROVIDER_CHANNELS = "ProviderChannels";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<NameIdPair> providerChannels = new ArrayList<>();
 
     public static final String JSON_PROPERTY_MAPPINGS = "Mappings";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<NameValuePair> mappings = new ArrayList<>();
 
     public static final String JSON_PROPERTY_PROVIDER_NAME = "ProviderName";
     @org.eclipse.jdt.annotation.Nullable
+
     private String providerName;
 
     public ChannelMappingOptionsDto() {
@@ -71,6 +75,7 @@ public class ChannelMappingOptionsDto {
      * @return tunerChannels
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_TUNER_CHANNELS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<TunerChannelMapping> getTunerChannels() {
@@ -103,6 +108,7 @@ public class ChannelMappingOptionsDto {
      * @return providerChannels
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_PROVIDER_CHANNELS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<NameIdPair> getProviderChannels() {
@@ -134,6 +140,7 @@ public class ChannelMappingOptionsDto {
      * @return mappings
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_MAPPINGS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<NameValuePair> getMappings() {
@@ -157,6 +164,7 @@ public class ChannelMappingOptionsDto {
      * @return providerName
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_PROVIDER_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getProviderName() {

@@ -36,34 +36,42 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class PlayQueueUpdate {
     public static final String JSON_PROPERTY_REASON = "Reason";
     @org.eclipse.jdt.annotation.Nullable
+
     private PlayQueueUpdateReason reason;
 
     public static final String JSON_PROPERTY_LAST_UPDATE = "LastUpdate";
     @org.eclipse.jdt.annotation.Nullable
+
     private OffsetDateTime lastUpdate;
 
     public static final String JSON_PROPERTY_PLAYLIST = "Playlist";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<SyncPlayQueueItem> playlist = new ArrayList<>();
 
     public static final String JSON_PROPERTY_PLAYING_ITEM_INDEX = "PlayingItemIndex";
     @org.eclipse.jdt.annotation.Nullable
+
     private Integer playingItemIndex;
 
     public static final String JSON_PROPERTY_START_POSITION_TICKS = "StartPositionTicks";
     @org.eclipse.jdt.annotation.Nullable
+
     private Long startPositionTicks;
 
     public static final String JSON_PROPERTY_IS_PLAYING = "IsPlaying";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean isPlaying;
 
     public static final String JSON_PROPERTY_SHUFFLE_MODE = "ShuffleMode";
     @org.eclipse.jdt.annotation.Nullable
+
     private GroupShuffleMode shuffleMode;
 
     public static final String JSON_PROPERTY_REPEAT_MODE = "RepeatMode";
     @org.eclipse.jdt.annotation.Nullable
+
     private GroupRepeatMode repeatMode;
 
     public PlayQueueUpdate() {
@@ -80,6 +88,7 @@ public class PlayQueueUpdate {
      * @return reason
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_REASON, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public PlayQueueUpdateReason getReason() {
@@ -103,6 +112,7 @@ public class PlayQueueUpdate {
      * @return lastUpdate
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_LAST_UPDATE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public OffsetDateTime getLastUpdate() {
@@ -134,6 +144,7 @@ public class PlayQueueUpdate {
      * @return playlist
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_PLAYLIST, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<SyncPlayQueueItem> getPlaylist() {
@@ -157,6 +168,7 @@ public class PlayQueueUpdate {
      * @return playingItemIndex
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_PLAYING_ITEM_INDEX, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getPlayingItemIndex() {
@@ -180,6 +192,7 @@ public class PlayQueueUpdate {
      * @return startPositionTicks
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_START_POSITION_TICKS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Long getStartPositionTicks() {
@@ -203,6 +216,7 @@ public class PlayQueueUpdate {
      * @return isPlaying
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_IS_PLAYING, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getIsPlaying() {
@@ -226,6 +240,7 @@ public class PlayQueueUpdate {
      * @return shuffleMode
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_SHUFFLE_MODE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public GroupShuffleMode getShuffleMode() {
@@ -249,6 +264,7 @@ public class PlayQueueUpdate {
      * @return repeatMode
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_REPEAT_MODE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public GroupRepeatMode getRepeatMode() {

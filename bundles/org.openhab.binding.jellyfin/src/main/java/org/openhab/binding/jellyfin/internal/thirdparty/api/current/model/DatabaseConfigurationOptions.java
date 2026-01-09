@@ -32,14 +32,17 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class DatabaseConfigurationOptions {
     public static final String JSON_PROPERTY_DATABASE_TYPE = "DatabaseType";
     @org.eclipse.jdt.annotation.Nullable
+
     private String databaseType;
 
     public static final String JSON_PROPERTY_CUSTOM_PROVIDER_OPTIONS = "CustomProviderOptions";
     @org.eclipse.jdt.annotation.Nullable
+
     private CustomDatabaseOptions customProviderOptions;
 
     public static final String JSON_PROPERTY_LOCKING_BEHAVIOR = "LockingBehavior";
     @org.eclipse.jdt.annotation.Nullable
+
     private DatabaseLockingBehaviorTypes lockingBehavior;
 
     public DatabaseConfigurationOptions() {
@@ -56,6 +59,7 @@ public class DatabaseConfigurationOptions {
      * @return databaseType
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_DATABASE_TYPE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getDatabaseType() {
@@ -80,6 +84,7 @@ public class DatabaseConfigurationOptions {
      * @return customProviderOptions
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_CUSTOM_PROVIDER_OPTIONS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public CustomDatabaseOptions getCustomProviderOptions() {
@@ -106,6 +111,7 @@ public class DatabaseConfigurationOptions {
      * @return lockingBehavior
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_LOCKING_BEHAVIOR, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public DatabaseLockingBehaviorTypes getLockingBehavior() {

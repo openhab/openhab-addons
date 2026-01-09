@@ -31,10 +31,12 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class UpdateLibraryOptionsDto {
     public static final String JSON_PROPERTY_ID = "Id";
     @org.eclipse.jdt.annotation.Nullable
+
     private UUID id;
 
     public static final String JSON_PROPERTY_LIBRARY_OPTIONS = "LibraryOptions";
     @org.eclipse.jdt.annotation.Nullable
+
     private LibraryOptions libraryOptions;
 
     public UpdateLibraryOptionsDto() {
@@ -51,6 +53,7 @@ public class UpdateLibraryOptionsDto {
      * @return id
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public UUID getId() {
@@ -74,6 +77,7 @@ public class UpdateLibraryOptionsDto {
      * @return libraryOptions
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_LIBRARY_OPTIONS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public LibraryOptions getLibraryOptions() {

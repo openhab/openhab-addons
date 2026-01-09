@@ -32,22 +32,27 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class SubtitleProfile {
     public static final String JSON_PROPERTY_FORMAT = "Format";
     @org.eclipse.jdt.annotation.Nullable
+
     private String format;
 
     public static final String JSON_PROPERTY_METHOD = "Method";
     @org.eclipse.jdt.annotation.Nullable
+
     private SubtitleDeliveryMethod method;
 
     public static final String JSON_PROPERTY_DIDL_MODE = "DidlMode";
     @org.eclipse.jdt.annotation.Nullable
+
     private String didlMode;
 
     public static final String JSON_PROPERTY_LANGUAGE = "Language";
     @org.eclipse.jdt.annotation.Nullable
+
     private String language;
 
     public static final String JSON_PROPERTY_CONTAINER = "Container";
     @org.eclipse.jdt.annotation.Nullable
+
     private String container;
 
     public SubtitleProfile() {
@@ -64,6 +69,7 @@ public class SubtitleProfile {
      * @return format
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_FORMAT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getFormat() {
@@ -87,6 +93,7 @@ public class SubtitleProfile {
      * @return method
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_METHOD, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public SubtitleDeliveryMethod getMethod() {
@@ -110,6 +117,7 @@ public class SubtitleProfile {
      * @return didlMode
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_DIDL_MODE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getDidlMode() {
@@ -133,6 +141,7 @@ public class SubtitleProfile {
      * @return language
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_LANGUAGE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getLanguage() {
@@ -156,6 +165,7 @@ public class SubtitleProfile {
      * @return container
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_CONTAINER, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getContainer() {

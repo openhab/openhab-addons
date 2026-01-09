@@ -13,6 +13,7 @@
 package org.openhab.binding.jellyfin.internal.util.client;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;

@@ -34,14 +34,17 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class ActivityLogEntryQueryResult {
     public static final String JSON_PROPERTY_ITEMS = "Items";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<ActivityLogEntry> items = new ArrayList<>();
 
     public static final String JSON_PROPERTY_TOTAL_RECORD_COUNT = "TotalRecordCount";
     @org.eclipse.jdt.annotation.Nullable
+
     private Integer totalRecordCount;
 
     public static final String JSON_PROPERTY_START_INDEX = "StartIndex";
     @org.eclipse.jdt.annotation.Nullable
+
     private Integer startIndex;
 
     public ActivityLogEntryQueryResult() {
@@ -66,6 +69,7 @@ public class ActivityLogEntryQueryResult {
      * @return items
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_ITEMS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<ActivityLogEntry> getItems() {
@@ -89,6 +93,7 @@ public class ActivityLogEntryQueryResult {
      * @return totalRecordCount
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_TOTAL_RECORD_COUNT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getTotalRecordCount() {
@@ -112,6 +117,7 @@ public class ActivityLogEntryQueryResult {
      * @return startIndex
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_START_INDEX, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getStartIndex() {

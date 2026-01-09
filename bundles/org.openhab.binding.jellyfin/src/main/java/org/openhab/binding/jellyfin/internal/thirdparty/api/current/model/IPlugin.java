@@ -34,30 +34,37 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class IPlugin {
     public static final String JSON_PROPERTY_NAME = "Name";
     @org.eclipse.jdt.annotation.Nullable
+
     private String name;
 
     public static final String JSON_PROPERTY_DESCRIPTION = "Description";
     @org.eclipse.jdt.annotation.Nullable
+
     private String description;
 
     public static final String JSON_PROPERTY_ID = "Id";
     @org.eclipse.jdt.annotation.Nullable
+
     private UUID id;
 
     public static final String JSON_PROPERTY_VERSION = "Version";
     @org.eclipse.jdt.annotation.Nullable
+
     private String version;
 
     public static final String JSON_PROPERTY_ASSEMBLY_FILE_PATH = "AssemblyFilePath";
     @org.eclipse.jdt.annotation.Nullable
+
     private String assemblyFilePath;
 
     public static final String JSON_PROPERTY_CAN_UNINSTALL = "CanUninstall";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean canUninstall;
 
     public static final String JSON_PROPERTY_DATA_FOLDER_PATH = "DataFolderPath";
     @org.eclipse.jdt.annotation.Nullable
+
     private String dataFolderPath;
 
     public IPlugin() {
@@ -86,6 +93,7 @@ public class IPlugin {
      * @return name
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getName() {
@@ -98,6 +106,7 @@ public class IPlugin {
      * @return description
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_DESCRIPTION, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getDescription() {
@@ -110,6 +119,7 @@ public class IPlugin {
      * @return id
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public UUID getId() {
@@ -122,6 +132,7 @@ public class IPlugin {
      * @return version
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_VERSION, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getVersion() {
@@ -134,6 +145,7 @@ public class IPlugin {
      * @return assemblyFilePath
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_ASSEMBLY_FILE_PATH, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getAssemblyFilePath() {
@@ -146,6 +158,7 @@ public class IPlugin {
      * @return canUninstall
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_CAN_UNINSTALL, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getCanUninstall() {
@@ -158,6 +171,7 @@ public class IPlugin {
      * @return dataFolderPath
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_DATA_FOLDER_PATH, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getDataFolderPath() {

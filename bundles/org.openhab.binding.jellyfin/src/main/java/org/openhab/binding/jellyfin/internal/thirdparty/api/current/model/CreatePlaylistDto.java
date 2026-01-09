@@ -35,26 +35,32 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class CreatePlaylistDto {
     public static final String JSON_PROPERTY_NAME = "Name";
     @org.eclipse.jdt.annotation.Nullable
+
     private String name;
 
     public static final String JSON_PROPERTY_IDS = "Ids";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<UUID> ids = new ArrayList<>();
 
     public static final String JSON_PROPERTY_USER_ID = "UserId";
     @org.eclipse.jdt.annotation.Nullable
+
     private UUID userId;
 
     public static final String JSON_PROPERTY_MEDIA_TYPE = "MediaType";
     @org.eclipse.jdt.annotation.Nullable
+
     private MediaType mediaType;
 
     public static final String JSON_PROPERTY_USERS = "Users";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<PlaylistUserPermissions> users = new ArrayList<>();
 
     public static final String JSON_PROPERTY_IS_PUBLIC = "IsPublic";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean isPublic;
 
     public CreatePlaylistDto() {
@@ -71,6 +77,7 @@ public class CreatePlaylistDto {
      * @return name
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getName() {
@@ -102,6 +109,7 @@ public class CreatePlaylistDto {
      * @return ids
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_IDS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<UUID> getIds() {
@@ -125,6 +133,7 @@ public class CreatePlaylistDto {
      * @return userId
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_USER_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public UUID getUserId() {
@@ -148,6 +157,7 @@ public class CreatePlaylistDto {
      * @return mediaType
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_MEDIA_TYPE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public MediaType getMediaType() {
@@ -179,6 +189,7 @@ public class CreatePlaylistDto {
      * @return users
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_USERS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<PlaylistUserPermissions> getUsers() {
@@ -202,6 +213,7 @@ public class CreatePlaylistDto {
      * @return isPublic
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_IS_PUBLIC, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getIsPublic() {

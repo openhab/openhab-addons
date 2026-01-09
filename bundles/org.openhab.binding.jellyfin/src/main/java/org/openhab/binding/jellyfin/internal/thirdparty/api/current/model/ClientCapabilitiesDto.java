@@ -37,30 +37,37 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class ClientCapabilitiesDto {
     public static final String JSON_PROPERTY_PLAYABLE_MEDIA_TYPES = "PlayableMediaTypes";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<MediaType> playableMediaTypes = new ArrayList<>();
 
     public static final String JSON_PROPERTY_SUPPORTED_COMMANDS = "SupportedCommands";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<GeneralCommandType> supportedCommands = new ArrayList<>();
 
     public static final String JSON_PROPERTY_SUPPORTS_MEDIA_CONTROL = "SupportsMediaControl";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean supportsMediaControl;
 
     public static final String JSON_PROPERTY_SUPPORTS_PERSISTENT_IDENTIFIER = "SupportsPersistentIdentifier";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean supportsPersistentIdentifier;
 
     public static final String JSON_PROPERTY_DEVICE_PROFILE = "DeviceProfile";
     @org.eclipse.jdt.annotation.Nullable
+
     private DeviceProfile deviceProfile;
 
     public static final String JSON_PROPERTY_APP_STORE_URL = "AppStoreUrl";
     @org.eclipse.jdt.annotation.Nullable
+
     private String appStoreUrl;
 
     public static final String JSON_PROPERTY_ICON_URL = "IconUrl";
     @org.eclipse.jdt.annotation.Nullable
+
     private String iconUrl;
 
     public ClientCapabilitiesDto() {
@@ -86,6 +93,7 @@ public class ClientCapabilitiesDto {
      * @return playableMediaTypes
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_PLAYABLE_MEDIA_TYPES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<MediaType> getPlayableMediaTypes() {
@@ -118,6 +126,7 @@ public class ClientCapabilitiesDto {
      * @return supportedCommands
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_SUPPORTED_COMMANDS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<GeneralCommandType> getSupportedCommands() {
@@ -142,6 +151,7 @@ public class ClientCapabilitiesDto {
      * @return supportsMediaControl
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_SUPPORTS_MEDIA_CONTROL, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getSupportsMediaControl() {
@@ -166,6 +176,7 @@ public class ClientCapabilitiesDto {
      * @return supportsPersistentIdentifier
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_SUPPORTS_PERSISTENT_IDENTIFIER, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getSupportsPersistentIdentifier() {
@@ -190,6 +201,7 @@ public class ClientCapabilitiesDto {
      * @return deviceProfile
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_DEVICE_PROFILE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public DeviceProfile getDeviceProfile() {
@@ -213,6 +225,7 @@ public class ClientCapabilitiesDto {
      * @return appStoreUrl
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_APP_STORE_URL, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getAppStoreUrl() {
@@ -236,6 +249,7 @@ public class ClientCapabilitiesDto {
      * @return iconUrl
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_ICON_URL, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getIconUrl() {

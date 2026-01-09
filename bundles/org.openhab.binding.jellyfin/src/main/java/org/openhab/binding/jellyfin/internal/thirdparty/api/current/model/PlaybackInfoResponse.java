@@ -33,14 +33,17 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class PlaybackInfoResponse {
     public static final String JSON_PROPERTY_MEDIA_SOURCES = "MediaSources";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<MediaSourceInfo> mediaSources = new ArrayList<>();
 
     public static final String JSON_PROPERTY_PLAY_SESSION_ID = "PlaySessionId";
     @org.eclipse.jdt.annotation.Nullable
+
     private String playSessionId;
 
     public static final String JSON_PROPERTY_ERROR_CODE = "ErrorCode";
     @org.eclipse.jdt.annotation.Nullable
+
     private PlaybackErrorCode errorCode;
 
     public PlaybackInfoResponse() {
@@ -65,6 +68,7 @@ public class PlaybackInfoResponse {
      * @return mediaSources
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_MEDIA_SOURCES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<MediaSourceInfo> getMediaSources() {
@@ -88,6 +92,7 @@ public class PlaybackInfoResponse {
      * @return playSessionId
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_PLAY_SESSION_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getPlaySessionId() {
@@ -111,6 +116,7 @@ public class PlaybackInfoResponse {
      * @return errorCode
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_ERROR_CODE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public PlaybackErrorCode getErrorCode() {

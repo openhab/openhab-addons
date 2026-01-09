@@ -35,30 +35,37 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class ConfigImageTypes {
     public static final String JSON_PROPERTY_BACKDROP_SIZES = "BackdropSizes";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<String> backdropSizes;
 
     public static final String JSON_PROPERTY_BASE_URL = "BaseUrl";
     @org.eclipse.jdt.annotation.Nullable
+
     private String baseUrl;
 
     public static final String JSON_PROPERTY_LOGO_SIZES = "LogoSizes";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<String> logoSizes;
 
     public static final String JSON_PROPERTY_POSTER_SIZES = "PosterSizes";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<String> posterSizes;
 
     public static final String JSON_PROPERTY_PROFILE_SIZES = "ProfileSizes";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<String> profileSizes;
 
     public static final String JSON_PROPERTY_SECURE_BASE_URL = "SecureBaseUrl";
     @org.eclipse.jdt.annotation.Nullable
+
     private String secureBaseUrl;
 
     public static final String JSON_PROPERTY_STILL_SIZES = "StillSizes";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<String> stillSizes;
 
     public ConfigImageTypes() {
@@ -83,6 +90,7 @@ public class ConfigImageTypes {
      * @return backdropSizes
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_BACKDROP_SIZES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<String> getBackdropSizes() {
@@ -106,6 +114,7 @@ public class ConfigImageTypes {
      * @return baseUrl
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_BASE_URL, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getBaseUrl() {
@@ -137,6 +146,7 @@ public class ConfigImageTypes {
      * @return logoSizes
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_LOGO_SIZES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<String> getLogoSizes() {
@@ -168,6 +178,7 @@ public class ConfigImageTypes {
      * @return posterSizes
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_POSTER_SIZES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<String> getPosterSizes() {
@@ -199,6 +210,7 @@ public class ConfigImageTypes {
      * @return profileSizes
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_PROFILE_SIZES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<String> getProfileSizes() {
@@ -222,6 +234,7 @@ public class ConfigImageTypes {
      * @return secureBaseUrl
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_SECURE_BASE_URL, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getSecureBaseUrl() {
@@ -253,6 +266,7 @@ public class ConfigImageTypes {
      * @return stillSizes
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_STILL_SIZES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<String> getStillSizes() {

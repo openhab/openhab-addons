@@ -30,11 +30,13 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class StartupRemoteAccessDto {
     public static final String JSON_PROPERTY_ENABLE_REMOTE_ACCESS = "EnableRemoteAccess";
-    @org.eclipse.jdt.annotation.NonNull
+    @org.eclipse.jdt.annotation.Nullable
+
     private Boolean enableRemoteAccess;
 
     public static final String JSON_PROPERTY_ENABLE_AUTOMATIC_PORT_MAPPING = "EnableAutomaticPortMapping";
-    @org.eclipse.jdt.annotation.NonNull
+    @org.eclipse.jdt.annotation.Nullable
+
     private Boolean enableAutomaticPortMapping;
 
     public StartupRemoteAccessDto() {
@@ -50,7 +52,8 @@ public class StartupRemoteAccessDto {
      * 
      * @return enableRemoteAccess
      */
-    @org.eclipse.jdt.annotation.NonNull
+    @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_ENABLE_REMOTE_ACCESS, required = true)
     @JsonInclude(value = JsonInclude.Include.ALWAYS)
     public Boolean getEnableRemoteAccess() {
@@ -76,7 +79,8 @@ public class StartupRemoteAccessDto {
      * @deprecated
      */
     @Deprecated
-    @org.eclipse.jdt.annotation.NonNull
+    @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_ENABLE_AUTOMATIC_PORT_MAPPING, required = true)
     @JsonInclude(value = JsonInclude.Include.ALWAYS)
     public Boolean getEnableAutomaticPortMapping() {

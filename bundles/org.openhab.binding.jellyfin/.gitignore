@@ -1,0 +1,13 @@
+node_modules
+package-lock.json
+package.json
+logs
+/.apt_generated/
+/.apt_generated_tests/
+# Temporary (wip)
+.vscode
+.directory
+.github
+.copilot
+.editorconfig
+project-type.txt

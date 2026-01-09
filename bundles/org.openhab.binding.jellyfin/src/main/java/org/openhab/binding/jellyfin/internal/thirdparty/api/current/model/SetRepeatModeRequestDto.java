@@ -30,6 +30,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class SetRepeatModeRequestDto {
     public static final String JSON_PROPERTY_MODE = "Mode";
     @org.eclipse.jdt.annotation.Nullable
+
     private GroupRepeatMode mode;
 
     public SetRepeatModeRequestDto() {
@@ -46,6 +47,7 @@ public class SetRepeatModeRequestDto {
      * @return mode
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_MODE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public GroupRepeatMode getMode() {

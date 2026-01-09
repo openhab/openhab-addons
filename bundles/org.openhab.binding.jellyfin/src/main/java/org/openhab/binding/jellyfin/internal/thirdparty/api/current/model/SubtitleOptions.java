@@ -38,38 +38,47 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class SubtitleOptions {
     public static final String JSON_PROPERTY_SKIP_IF_EMBEDDED_SUBTITLES_PRESENT = "SkipIfEmbeddedSubtitlesPresent";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean skipIfEmbeddedSubtitlesPresent;
 
     public static final String JSON_PROPERTY_SKIP_IF_AUDIO_TRACK_MATCHES = "SkipIfAudioTrackMatches";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean skipIfAudioTrackMatches;
 
     public static final String JSON_PROPERTY_DOWNLOAD_LANGUAGES = "DownloadLanguages";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<String> downloadLanguages;
 
     public static final String JSON_PROPERTY_DOWNLOAD_MOVIE_SUBTITLES = "DownloadMovieSubtitles";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean downloadMovieSubtitles;
 
     public static final String JSON_PROPERTY_DOWNLOAD_EPISODE_SUBTITLES = "DownloadEpisodeSubtitles";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean downloadEpisodeSubtitles;
 
     public static final String JSON_PROPERTY_OPEN_SUBTITLES_USERNAME = "OpenSubtitlesUsername";
     @org.eclipse.jdt.annotation.Nullable
+
     private String openSubtitlesUsername;
 
     public static final String JSON_PROPERTY_OPEN_SUBTITLES_PASSWORD_HASH = "OpenSubtitlesPasswordHash";
     @org.eclipse.jdt.annotation.Nullable
+
     private String openSubtitlesPasswordHash;
 
     public static final String JSON_PROPERTY_IS_OPEN_SUBTITLE_VIP_ACCOUNT = "IsOpenSubtitleVipAccount";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean isOpenSubtitleVipAccount;
 
     public static final String JSON_PROPERTY_REQUIRE_PERFECT_MATCH = "RequirePerfectMatch";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean requirePerfectMatch;
 
     public SubtitleOptions() {
@@ -87,6 +96,7 @@ public class SubtitleOptions {
      * @return skipIfEmbeddedSubtitlesPresent
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_SKIP_IF_EMBEDDED_SUBTITLES_PRESENT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getSkipIfEmbeddedSubtitlesPresent() {
@@ -112,6 +122,7 @@ public class SubtitleOptions {
      * @return skipIfAudioTrackMatches
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_SKIP_IF_AUDIO_TRACK_MATCHES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getSkipIfAudioTrackMatches() {
@@ -143,6 +154,7 @@ public class SubtitleOptions {
      * @return downloadLanguages
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_DOWNLOAD_LANGUAGES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<String> getDownloadLanguages() {
@@ -166,6 +178,7 @@ public class SubtitleOptions {
      * @return downloadMovieSubtitles
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_DOWNLOAD_MOVIE_SUBTITLES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getDownloadMovieSubtitles() {
@@ -190,6 +203,7 @@ public class SubtitleOptions {
      * @return downloadEpisodeSubtitles
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_DOWNLOAD_EPISODE_SUBTITLES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getDownloadEpisodeSubtitles() {
@@ -213,6 +227,7 @@ public class SubtitleOptions {
      * @return openSubtitlesUsername
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_OPEN_SUBTITLES_USERNAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getOpenSubtitlesUsername() {
@@ -237,6 +252,7 @@ public class SubtitleOptions {
      * @return openSubtitlesPasswordHash
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_OPEN_SUBTITLES_PASSWORD_HASH, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getOpenSubtitlesPasswordHash() {
@@ -261,6 +277,7 @@ public class SubtitleOptions {
      * @return isOpenSubtitleVipAccount
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_IS_OPEN_SUBTITLE_VIP_ACCOUNT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getIsOpenSubtitleVipAccount() {
@@ -284,6 +301,7 @@ public class SubtitleOptions {
      * @return requirePerfectMatch
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_REQUIRE_PERFECT_MATCH, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getRequirePerfectMatch() {

@@ -40,58 +40,72 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class SongInfo {
     public static final String JSON_PROPERTY_NAME = "Name";
     @org.eclipse.jdt.annotation.Nullable
+
     private String name;
 
     public static final String JSON_PROPERTY_ORIGINAL_TITLE = "OriginalTitle";
     @org.eclipse.jdt.annotation.Nullable
+
     private String originalTitle;
 
     public static final String JSON_PROPERTY_PATH = "Path";
     @org.eclipse.jdt.annotation.Nullable
+
     private String path;
 
     public static final String JSON_PROPERTY_METADATA_LANGUAGE = "MetadataLanguage";
     @org.eclipse.jdt.annotation.Nullable
+
     private String metadataLanguage;
 
     public static final String JSON_PROPERTY_METADATA_COUNTRY_CODE = "MetadataCountryCode";
     @org.eclipse.jdt.annotation.Nullable
+
     private String metadataCountryCode;
 
     public static final String JSON_PROPERTY_PROVIDER_IDS = "ProviderIds";
     @org.eclipse.jdt.annotation.Nullable
+
     private Map<String, String> providerIds;
 
     public static final String JSON_PROPERTY_YEAR = "Year";
     @org.eclipse.jdt.annotation.Nullable
+
     private Integer year;
 
     public static final String JSON_PROPERTY_INDEX_NUMBER = "IndexNumber";
     @org.eclipse.jdt.annotation.Nullable
+
     private Integer indexNumber;
 
     public static final String JSON_PROPERTY_PARENT_INDEX_NUMBER = "ParentIndexNumber";
     @org.eclipse.jdt.annotation.Nullable
+
     private Integer parentIndexNumber;
 
     public static final String JSON_PROPERTY_PREMIERE_DATE = "PremiereDate";
     @org.eclipse.jdt.annotation.Nullable
+
     private OffsetDateTime premiereDate;
 
     public static final String JSON_PROPERTY_IS_AUTOMATED = "IsAutomated";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean isAutomated;
 
     public static final String JSON_PROPERTY_ALBUM_ARTISTS = "AlbumArtists";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<String> albumArtists;
 
     public static final String JSON_PROPERTY_ALBUM = "Album";
     @org.eclipse.jdt.annotation.Nullable
+
     private String album;
 
     public static final String JSON_PROPERTY_ARTISTS = "Artists";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<String> artists;
 
     public SongInfo() {
@@ -108,6 +122,7 @@ public class SongInfo {
      * @return name
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getName() {
@@ -131,6 +146,7 @@ public class SongInfo {
      * @return originalTitle
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_ORIGINAL_TITLE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getOriginalTitle() {
@@ -154,6 +170,7 @@ public class SongInfo {
      * @return path
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_PATH, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getPath() {
@@ -177,6 +194,7 @@ public class SongInfo {
      * @return metadataLanguage
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_METADATA_LANGUAGE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getMetadataLanguage() {
@@ -200,6 +218,7 @@ public class SongInfo {
      * @return metadataCountryCode
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_METADATA_COUNTRY_CODE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getMetadataCountryCode() {
@@ -231,6 +250,7 @@ public class SongInfo {
      * @return providerIds
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_PROVIDER_IDS, required = false)
     @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
     public Map<String, String> getProviderIds() {
@@ -254,6 +274,7 @@ public class SongInfo {
      * @return year
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_YEAR, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getYear() {
@@ -277,6 +298,7 @@ public class SongInfo {
      * @return indexNumber
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_INDEX_NUMBER, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getIndexNumber() {
@@ -300,6 +322,7 @@ public class SongInfo {
      * @return parentIndexNumber
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_PARENT_INDEX_NUMBER, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getParentIndexNumber() {
@@ -323,6 +346,7 @@ public class SongInfo {
      * @return premiereDate
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_PREMIERE_DATE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public OffsetDateTime getPremiereDate() {
@@ -346,6 +370,7 @@ public class SongInfo {
      * @return isAutomated
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_IS_AUTOMATED, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getIsAutomated() {
@@ -377,6 +402,7 @@ public class SongInfo {
      * @return albumArtists
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_ALBUM_ARTISTS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<String> getAlbumArtists() {
@@ -400,6 +426,7 @@ public class SongInfo {
      * @return album
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_ALBUM, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getAlbum() {
@@ -431,6 +458,7 @@ public class SongInfo {
      * @return artists
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_ARTISTS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<String> getArtists() {

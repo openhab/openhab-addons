@@ -33,14 +33,17 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class UserUpdatedMessage {
     public static final String JSON_PROPERTY_DATA = "Data";
     @org.eclipse.jdt.annotation.Nullable
+
     private UserDto data;
 
     public static final String JSON_PROPERTY_MESSAGE_ID = "MessageId";
     @org.eclipse.jdt.annotation.Nullable
+
     private UUID messageId;
 
     public static final String JSON_PROPERTY_MESSAGE_TYPE = "MessageType";
     @org.eclipse.jdt.annotation.Nullable
+
     private SessionMessageType messageType = SessionMessageType.USER_UPDATED;
 
     public UserUpdatedMessage() {
@@ -63,6 +66,7 @@ public class UserUpdatedMessage {
      * @return data
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_DATA, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public UserDto getData() {
@@ -86,6 +90,7 @@ public class UserUpdatedMessage {
      * @return messageId
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_MESSAGE_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public UUID getMessageId() {
@@ -104,6 +109,7 @@ public class UserUpdatedMessage {
      * @return messageType
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_MESSAGE_TYPE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public SessionMessageType getMessageType() {

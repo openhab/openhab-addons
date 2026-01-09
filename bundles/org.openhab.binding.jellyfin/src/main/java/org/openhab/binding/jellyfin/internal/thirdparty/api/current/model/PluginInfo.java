@@ -34,34 +34,42 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class PluginInfo {
     public static final String JSON_PROPERTY_NAME = "Name";
     @org.eclipse.jdt.annotation.Nullable
+
     private String name;
 
     public static final String JSON_PROPERTY_VERSION = "Version";
     @org.eclipse.jdt.annotation.Nullable
+
     private String version;
 
     public static final String JSON_PROPERTY_CONFIGURATION_FILE_NAME = "ConfigurationFileName";
     @org.eclipse.jdt.annotation.Nullable
+
     private String configurationFileName;
 
     public static final String JSON_PROPERTY_DESCRIPTION = "Description";
     @org.eclipse.jdt.annotation.Nullable
+
     private String description;
 
     public static final String JSON_PROPERTY_ID = "Id";
     @org.eclipse.jdt.annotation.Nullable
+
     private UUID id;
 
     public static final String JSON_PROPERTY_CAN_UNINSTALL = "CanUninstall";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean canUninstall;
 
     public static final String JSON_PROPERTY_HAS_IMAGE = "HasImage";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean hasImage;
 
     public static final String JSON_PROPERTY_STATUS = "Status";
     @org.eclipse.jdt.annotation.Nullable
+
     private PluginStatus status;
 
     public PluginInfo() {
@@ -78,6 +86,7 @@ public class PluginInfo {
      * @return name
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getName() {
@@ -101,6 +110,7 @@ public class PluginInfo {
      * @return version
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_VERSION, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getVersion() {
@@ -124,6 +134,7 @@ public class PluginInfo {
      * @return configurationFileName
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_CONFIGURATION_FILE_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getConfigurationFileName() {
@@ -147,6 +158,7 @@ public class PluginInfo {
      * @return description
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_DESCRIPTION, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getDescription() {
@@ -170,6 +182,7 @@ public class PluginInfo {
      * @return id
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public UUID getId() {
@@ -193,6 +206,7 @@ public class PluginInfo {
      * @return canUninstall
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_CAN_UNINSTALL, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getCanUninstall() {
@@ -216,6 +230,7 @@ public class PluginInfo {
      * @return hasImage
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_HAS_IMAGE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getHasImage() {
@@ -239,6 +254,7 @@ public class PluginInfo {
      * @return status
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_STATUS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public PluginStatus getStatus() {

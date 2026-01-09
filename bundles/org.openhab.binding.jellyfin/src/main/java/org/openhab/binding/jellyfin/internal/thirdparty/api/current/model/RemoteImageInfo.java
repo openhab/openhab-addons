@@ -34,42 +34,52 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class RemoteImageInfo {
     public static final String JSON_PROPERTY_PROVIDER_NAME = "ProviderName";
     @org.eclipse.jdt.annotation.Nullable
+
     private String providerName;
 
     public static final String JSON_PROPERTY_URL = "Url";
     @org.eclipse.jdt.annotation.Nullable
+
     private String url;
 
     public static final String JSON_PROPERTY_THUMBNAIL_URL = "ThumbnailUrl";
     @org.eclipse.jdt.annotation.Nullable
+
     private String thumbnailUrl;
 
     public static final String JSON_PROPERTY_HEIGHT = "Height";
     @org.eclipse.jdt.annotation.Nullable
+
     private Integer height;
 
     public static final String JSON_PROPERTY_WIDTH = "Width";
     @org.eclipse.jdt.annotation.Nullable
+
     private Integer width;
 
     public static final String JSON_PROPERTY_COMMUNITY_RATING = "CommunityRating";
     @org.eclipse.jdt.annotation.Nullable
+
     private Double communityRating;
 
     public static final String JSON_PROPERTY_VOTE_COUNT = "VoteCount";
     @org.eclipse.jdt.annotation.Nullable
+
     private Integer voteCount;
 
     public static final String JSON_PROPERTY_LANGUAGE = "Language";
     @org.eclipse.jdt.annotation.Nullable
+
     private String language;
 
     public static final String JSON_PROPERTY_TYPE = "Type";
     @org.eclipse.jdt.annotation.Nullable
+
     private ImageType type;
 
     public static final String JSON_PROPERTY_RATING_TYPE = "RatingType";
     @org.eclipse.jdt.annotation.Nullable
+
     private RatingType ratingType;
 
     public RemoteImageInfo() {
@@ -86,6 +96,7 @@ public class RemoteImageInfo {
      * @return providerName
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_PROVIDER_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getProviderName() {
@@ -109,6 +120,7 @@ public class RemoteImageInfo {
      * @return url
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_URL, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getUrl() {
@@ -132,6 +144,7 @@ public class RemoteImageInfo {
      * @return thumbnailUrl
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_THUMBNAIL_URL, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getThumbnailUrl() {
@@ -155,6 +168,7 @@ public class RemoteImageInfo {
      * @return height
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_HEIGHT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getHeight() {
@@ -178,6 +192,7 @@ public class RemoteImageInfo {
      * @return width
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_WIDTH, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getWidth() {
@@ -201,6 +216,7 @@ public class RemoteImageInfo {
      * @return communityRating
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_COMMUNITY_RATING, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Double getCommunityRating() {
@@ -224,6 +240,7 @@ public class RemoteImageInfo {
      * @return voteCount
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_VOTE_COUNT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getVoteCount() {
@@ -247,6 +264,7 @@ public class RemoteImageInfo {
      * @return language
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_LANGUAGE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getLanguage() {
@@ -270,6 +288,7 @@ public class RemoteImageInfo {
      * @return type
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_TYPE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public ImageType getType() {
@@ -293,6 +312,7 @@ public class RemoteImageInfo {
      * @return ratingType
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_RATING_TYPE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public RatingType getRatingType() {

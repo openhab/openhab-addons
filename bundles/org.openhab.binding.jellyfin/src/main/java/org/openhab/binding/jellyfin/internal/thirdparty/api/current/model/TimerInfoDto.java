@@ -47,114 +47,142 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class TimerInfoDto {
     public static final String JSON_PROPERTY_ID = "Id";
     @org.eclipse.jdt.annotation.Nullable
+
     private String id;
 
     public static final String JSON_PROPERTY_TYPE = "Type";
     @org.eclipse.jdt.annotation.Nullable
+
     private String type;
 
     public static final String JSON_PROPERTY_SERVER_ID = "ServerId";
     @org.eclipse.jdt.annotation.Nullable
+
     private String serverId;
 
     public static final String JSON_PROPERTY_EXTERNAL_ID = "ExternalId";
     @org.eclipse.jdt.annotation.Nullable
+
     private String externalId;
 
     public static final String JSON_PROPERTY_CHANNEL_ID = "ChannelId";
     @org.eclipse.jdt.annotation.Nullable
+
     private UUID channelId;
 
     public static final String JSON_PROPERTY_EXTERNAL_CHANNEL_ID = "ExternalChannelId";
     @org.eclipse.jdt.annotation.Nullable
+
     private String externalChannelId;
 
     public static final String JSON_PROPERTY_CHANNEL_NAME = "ChannelName";
     @org.eclipse.jdt.annotation.Nullable
+
     private String channelName;
 
     public static final String JSON_PROPERTY_CHANNEL_PRIMARY_IMAGE_TAG = "ChannelPrimaryImageTag";
     @org.eclipse.jdt.annotation.Nullable
+
     private String channelPrimaryImageTag;
 
     public static final String JSON_PROPERTY_PROGRAM_ID = "ProgramId";
     @org.eclipse.jdt.annotation.Nullable
+
     private String programId;
 
     public static final String JSON_PROPERTY_EXTERNAL_PROGRAM_ID = "ExternalProgramId";
     @org.eclipse.jdt.annotation.Nullable
+
     private String externalProgramId;
 
     public static final String JSON_PROPERTY_NAME = "Name";
     @org.eclipse.jdt.annotation.Nullable
+
     private String name;
 
     public static final String JSON_PROPERTY_OVERVIEW = "Overview";
     @org.eclipse.jdt.annotation.Nullable
+
     private String overview;
 
     public static final String JSON_PROPERTY_START_DATE = "StartDate";
     @org.eclipse.jdt.annotation.Nullable
+
     private OffsetDateTime startDate;
 
     public static final String JSON_PROPERTY_END_DATE = "EndDate";
     @org.eclipse.jdt.annotation.Nullable
+
     private OffsetDateTime endDate;
 
     public static final String JSON_PROPERTY_SERVICE_NAME = "ServiceName";
     @org.eclipse.jdt.annotation.Nullable
+
     private String serviceName;
 
     public static final String JSON_PROPERTY_PRIORITY = "Priority";
     @org.eclipse.jdt.annotation.Nullable
+
     private Integer priority;
 
     public static final String JSON_PROPERTY_PRE_PADDING_SECONDS = "PrePaddingSeconds";
     @org.eclipse.jdt.annotation.Nullable
+
     private Integer prePaddingSeconds;
 
     public static final String JSON_PROPERTY_POST_PADDING_SECONDS = "PostPaddingSeconds";
     @org.eclipse.jdt.annotation.Nullable
+
     private Integer postPaddingSeconds;
 
     public static final String JSON_PROPERTY_IS_PRE_PADDING_REQUIRED = "IsPrePaddingRequired";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean isPrePaddingRequired;
 
     public static final String JSON_PROPERTY_PARENT_BACKDROP_ITEM_ID = "ParentBackdropItemId";
     @org.eclipse.jdt.annotation.Nullable
+
     private String parentBackdropItemId;
 
     public static final String JSON_PROPERTY_PARENT_BACKDROP_IMAGE_TAGS = "ParentBackdropImageTags";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<String> parentBackdropImageTags;
 
     public static final String JSON_PROPERTY_IS_POST_PADDING_REQUIRED = "IsPostPaddingRequired";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean isPostPaddingRequired;
 
     public static final String JSON_PROPERTY_KEEP_UNTIL = "KeepUntil";
     @org.eclipse.jdt.annotation.Nullable
+
     private KeepUntil keepUntil;
 
     public static final String JSON_PROPERTY_STATUS = "Status";
     @org.eclipse.jdt.annotation.Nullable
+
     private RecordingStatus status;
 
     public static final String JSON_PROPERTY_SERIES_TIMER_ID = "SeriesTimerId";
     @org.eclipse.jdt.annotation.Nullable
+
     private String seriesTimerId;
 
     public static final String JSON_PROPERTY_EXTERNAL_SERIES_TIMER_ID = "ExternalSeriesTimerId";
     @org.eclipse.jdt.annotation.Nullable
+
     private String externalSeriesTimerId;
 
     public static final String JSON_PROPERTY_RUN_TIME_TICKS = "RunTimeTicks";
     @org.eclipse.jdt.annotation.Nullable
+
     private Long runTimeTicks;
 
     public static final String JSON_PROPERTY_PROGRAM_INFO = "ProgramInfo";
     @org.eclipse.jdt.annotation.Nullable
+
     private BaseItemDto programInfo;
 
     public TimerInfoDto() {
@@ -171,6 +199,7 @@ public class TimerInfoDto {
      * @return id
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getId() {
@@ -194,6 +223,7 @@ public class TimerInfoDto {
      * @return type
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_TYPE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getType() {
@@ -217,6 +247,7 @@ public class TimerInfoDto {
      * @return serverId
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_SERVER_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getServerId() {
@@ -240,6 +271,7 @@ public class TimerInfoDto {
      * @return externalId
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_EXTERNAL_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getExternalId() {
@@ -263,6 +295,7 @@ public class TimerInfoDto {
      * @return channelId
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_CHANNEL_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public UUID getChannelId() {
@@ -286,6 +319,7 @@ public class TimerInfoDto {
      * @return externalChannelId
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_EXTERNAL_CHANNEL_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getExternalChannelId() {
@@ -309,6 +343,7 @@ public class TimerInfoDto {
      * @return channelName
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_CHANNEL_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getChannelName() {
@@ -332,6 +367,7 @@ public class TimerInfoDto {
      * @return channelPrimaryImageTag
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_CHANNEL_PRIMARY_IMAGE_TAG, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getChannelPrimaryImageTag() {
@@ -355,6 +391,7 @@ public class TimerInfoDto {
      * @return programId
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_PROGRAM_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getProgramId() {
@@ -378,6 +415,7 @@ public class TimerInfoDto {
      * @return externalProgramId
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_EXTERNAL_PROGRAM_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getExternalProgramId() {
@@ -401,6 +439,7 @@ public class TimerInfoDto {
      * @return name
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getName() {
@@ -424,6 +463,7 @@ public class TimerInfoDto {
      * @return overview
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_OVERVIEW, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getOverview() {
@@ -447,6 +487,7 @@ public class TimerInfoDto {
      * @return startDate
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_START_DATE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public OffsetDateTime getStartDate() {
@@ -470,6 +511,7 @@ public class TimerInfoDto {
      * @return endDate
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_END_DATE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public OffsetDateTime getEndDate() {
@@ -493,6 +535,7 @@ public class TimerInfoDto {
      * @return serviceName
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_SERVICE_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getServiceName() {
@@ -516,6 +559,7 @@ public class TimerInfoDto {
      * @return priority
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_PRIORITY, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getPriority() {
@@ -539,6 +583,7 @@ public class TimerInfoDto {
      * @return prePaddingSeconds
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_PRE_PADDING_SECONDS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getPrePaddingSeconds() {
@@ -562,6 +607,7 @@ public class TimerInfoDto {
      * @return postPaddingSeconds
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_POST_PADDING_SECONDS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getPostPaddingSeconds() {
@@ -585,6 +631,7 @@ public class TimerInfoDto {
      * @return isPrePaddingRequired
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_IS_PRE_PADDING_REQUIRED, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getIsPrePaddingRequired() {
@@ -608,6 +655,7 @@ public class TimerInfoDto {
      * @return parentBackdropItemId
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_PARENT_BACKDROP_ITEM_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getParentBackdropItemId() {
@@ -640,6 +688,7 @@ public class TimerInfoDto {
      * @return parentBackdropImageTags
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_PARENT_BACKDROP_IMAGE_TAGS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<String> getParentBackdropImageTags() {
@@ -663,6 +712,7 @@ public class TimerInfoDto {
      * @return isPostPaddingRequired
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_IS_POST_PADDING_REQUIRED, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getIsPostPaddingRequired() {
@@ -686,6 +736,7 @@ public class TimerInfoDto {
      * @return keepUntil
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_KEEP_UNTIL, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public KeepUntil getKeepUntil() {
@@ -709,6 +760,7 @@ public class TimerInfoDto {
      * @return status
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_STATUS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public RecordingStatus getStatus() {
@@ -732,6 +784,7 @@ public class TimerInfoDto {
      * @return seriesTimerId
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_SERIES_TIMER_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getSeriesTimerId() {
@@ -755,6 +808,7 @@ public class TimerInfoDto {
      * @return externalSeriesTimerId
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_EXTERNAL_SERIES_TIMER_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getExternalSeriesTimerId() {
@@ -778,6 +832,7 @@ public class TimerInfoDto {
      * @return runTimeTicks
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_RUN_TIME_TICKS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Long getRunTimeTicks() {
@@ -801,6 +856,7 @@ public class TimerInfoDto {
      * @return programInfo
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_PROGRAM_INFO, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public BaseItemDto getProgramInfo() {

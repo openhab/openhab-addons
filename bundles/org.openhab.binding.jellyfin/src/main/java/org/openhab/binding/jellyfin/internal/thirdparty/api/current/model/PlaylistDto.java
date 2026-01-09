@@ -34,14 +34,17 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class PlaylistDto {
     public static final String JSON_PROPERTY_OPEN_ACCESS = "OpenAccess";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean openAccess;
 
     public static final String JSON_PROPERTY_SHARES = "Shares";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<PlaylistUserPermissions> shares = new ArrayList<>();
 
     public static final String JSON_PROPERTY_ITEM_IDS = "ItemIds";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<UUID> itemIds = new ArrayList<>();
 
     public PlaylistDto() {
@@ -58,6 +61,7 @@ public class PlaylistDto {
      * @return openAccess
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_OPEN_ACCESS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getOpenAccess() {
@@ -89,6 +93,7 @@ public class PlaylistDto {
      * @return shares
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_SHARES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<PlaylistUserPermissions> getShares() {
@@ -120,6 +125,7 @@ public class PlaylistDto {
      * @return itemIds
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_ITEM_IDS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<UUID> getItemIds() {

@@ -31,18 +31,22 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class ProfileCondition {
     public static final String JSON_PROPERTY_CONDITION = "Condition";
     @org.eclipse.jdt.annotation.Nullable
+
     private ProfileConditionType condition;
 
     public static final String JSON_PROPERTY_PROPERTY = "Property";
     @org.eclipse.jdt.annotation.Nullable
+
     private ProfileConditionValue property;
 
     public static final String JSON_PROPERTY_VALUE = "Value";
     @org.eclipse.jdt.annotation.Nullable
+
     private String value;
 
     public static final String JSON_PROPERTY_IS_REQUIRED = "IsRequired";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean isRequired;
 
     public ProfileCondition() {
@@ -59,6 +63,7 @@ public class ProfileCondition {
      * @return condition
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_CONDITION, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public ProfileConditionType getCondition() {
@@ -82,6 +87,7 @@ public class ProfileCondition {
      * @return property
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_PROPERTY, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public ProfileConditionValue getProperty() {
@@ -105,6 +111,7 @@ public class ProfileCondition {
      * @return value
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_VALUE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getValue() {
@@ -128,6 +135,7 @@ public class ProfileCondition {
      * @return isRequired
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_IS_REQUIRED, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getIsRequired() {

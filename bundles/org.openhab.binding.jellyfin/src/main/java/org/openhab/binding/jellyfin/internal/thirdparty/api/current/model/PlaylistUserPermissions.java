@@ -31,10 +31,12 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class PlaylistUserPermissions {
     public static final String JSON_PROPERTY_USER_ID = "UserId";
     @org.eclipse.jdt.annotation.Nullable
+
     private UUID userId;
 
     public static final String JSON_PROPERTY_CAN_EDIT = "CanEdit";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean canEdit;
 
     public PlaylistUserPermissions() {
@@ -51,6 +53,7 @@ public class PlaylistUserPermissions {
      * @return userId
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_USER_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public UUID getUserId() {
@@ -74,6 +77,7 @@ public class PlaylistUserPermissions {
      * @return canEdit
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_CAN_EDIT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getCanEdit() {

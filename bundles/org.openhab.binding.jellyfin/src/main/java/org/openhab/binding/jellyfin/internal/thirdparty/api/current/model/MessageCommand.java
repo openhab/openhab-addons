@@ -31,14 +31,17 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class MessageCommand {
     public static final String JSON_PROPERTY_HEADER = "Header";
     @org.eclipse.jdt.annotation.Nullable
+
     private String header;
 
     public static final String JSON_PROPERTY_TEXT = "Text";
-    @org.eclipse.jdt.annotation.NonNull
+    @org.eclipse.jdt.annotation.Nullable
+
     private String text;
 
     public static final String JSON_PROPERTY_TIMEOUT_MS = "TimeoutMs";
     @org.eclipse.jdt.annotation.Nullable
+
     private Long timeoutMs;
 
     public MessageCommand() {
@@ -55,6 +58,7 @@ public class MessageCommand {
      * @return header
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_HEADER, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getHeader() {
@@ -77,7 +81,8 @@ public class MessageCommand {
      * 
      * @return text
      */
-    @org.eclipse.jdt.annotation.NonNull
+    @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_TEXT, required = true)
     @JsonInclude(value = JsonInclude.Include.ALWAYS)
     public String getText() {
@@ -101,6 +106,7 @@ public class MessageCommand {
      * @return timeoutMs
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_TIMEOUT_MS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Long getTimeoutMs() {

@@ -36,30 +36,37 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class LibraryUpdateInfo {
     public static final String JSON_PROPERTY_FOLDERS_ADDED_TO = "FoldersAddedTo";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<String> foldersAddedTo = new ArrayList<>();
 
     public static final String JSON_PROPERTY_FOLDERS_REMOVED_FROM = "FoldersRemovedFrom";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<String> foldersRemovedFrom = new ArrayList<>();
 
     public static final String JSON_PROPERTY_ITEMS_ADDED = "ItemsAdded";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<String> itemsAdded = new ArrayList<>();
 
     public static final String JSON_PROPERTY_ITEMS_REMOVED = "ItemsRemoved";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<String> itemsRemoved = new ArrayList<>();
 
     public static final String JSON_PROPERTY_ITEMS_UPDATED = "ItemsUpdated";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<String> itemsUpdated = new ArrayList<>();
 
     public static final String JSON_PROPERTY_COLLECTION_FOLDERS = "CollectionFolders";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<String> collectionFolders = new ArrayList<>();
 
     public static final String JSON_PROPERTY_IS_EMPTY = "IsEmpty";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean isEmpty;
 
     public LibraryUpdateInfo() {
@@ -90,6 +97,7 @@ public class LibraryUpdateInfo {
      * @return foldersAddedTo
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_FOLDERS_ADDED_TO, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<String> getFoldersAddedTo() {
@@ -121,6 +129,7 @@ public class LibraryUpdateInfo {
      * @return foldersRemovedFrom
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_FOLDERS_REMOVED_FROM, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<String> getFoldersRemovedFrom() {
@@ -152,6 +161,7 @@ public class LibraryUpdateInfo {
      * @return itemsAdded
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_ITEMS_ADDED, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<String> getItemsAdded() {
@@ -183,6 +193,7 @@ public class LibraryUpdateInfo {
      * @return itemsRemoved
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_ITEMS_REMOVED, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<String> getItemsRemoved() {
@@ -214,6 +225,7 @@ public class LibraryUpdateInfo {
      * @return itemsUpdated
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_ITEMS_UPDATED, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<String> getItemsUpdated() {
@@ -245,6 +257,7 @@ public class LibraryUpdateInfo {
      * @return collectionFolders
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_COLLECTION_FOLDERS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<String> getCollectionFolders() {
@@ -263,6 +276,7 @@ public class LibraryUpdateInfo {
      * @return isEmpty
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_IS_EMPTY, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getIsEmpty() {

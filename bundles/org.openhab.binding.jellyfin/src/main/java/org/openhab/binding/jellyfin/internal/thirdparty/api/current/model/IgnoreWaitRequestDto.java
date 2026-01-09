@@ -30,6 +30,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class IgnoreWaitRequestDto {
     public static final String JSON_PROPERTY_IGNORE_WAIT = "IgnoreWait";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean ignoreWait;
 
     public IgnoreWaitRequestDto() {
@@ -46,6 +47,7 @@ public class IgnoreWaitRequestDto {
      * @return ignoreWait
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_IGNORE_WAIT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getIgnoreWait() {

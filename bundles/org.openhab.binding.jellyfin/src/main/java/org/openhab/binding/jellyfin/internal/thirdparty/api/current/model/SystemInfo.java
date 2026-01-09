@@ -45,110 +45,137 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class SystemInfo {
     public static final String JSON_PROPERTY_LOCAL_ADDRESS = "LocalAddress";
     @org.eclipse.jdt.annotation.Nullable
+
     private String localAddress;
 
     public static final String JSON_PROPERTY_SERVER_NAME = "ServerName";
     @org.eclipse.jdt.annotation.Nullable
+
     private String serverName;
 
     public static final String JSON_PROPERTY_VERSION = "Version";
     @org.eclipse.jdt.annotation.Nullable
+
     private String version;
 
     public static final String JSON_PROPERTY_PRODUCT_NAME = "ProductName";
     @org.eclipse.jdt.annotation.Nullable
+
     private String productName;
 
     public static final String JSON_PROPERTY_OPERATING_SYSTEM = "OperatingSystem";
     @org.eclipse.jdt.annotation.Nullable
+
     private String operatingSystem;
 
     public static final String JSON_PROPERTY_ID = "Id";
     @org.eclipse.jdt.annotation.Nullable
+
     private String id;
 
     public static final String JSON_PROPERTY_STARTUP_WIZARD_COMPLETED = "StartupWizardCompleted";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean startupWizardCompleted;
 
     public static final String JSON_PROPERTY_OPERATING_SYSTEM_DISPLAY_NAME = "OperatingSystemDisplayName";
     @org.eclipse.jdt.annotation.Nullable
+
     private String operatingSystemDisplayName;
 
     public static final String JSON_PROPERTY_PACKAGE_NAME = "PackageName";
     @org.eclipse.jdt.annotation.Nullable
+
     private String packageName;
 
     public static final String JSON_PROPERTY_HAS_PENDING_RESTART = "HasPendingRestart";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean hasPendingRestart;
 
     public static final String JSON_PROPERTY_IS_SHUTTING_DOWN = "IsShuttingDown";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean isShuttingDown;
 
     public static final String JSON_PROPERTY_SUPPORTS_LIBRARY_MONITOR = "SupportsLibraryMonitor";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean supportsLibraryMonitor;
 
     public static final String JSON_PROPERTY_WEB_SOCKET_PORT_NUMBER = "WebSocketPortNumber";
     @org.eclipse.jdt.annotation.Nullable
+
     private Integer webSocketPortNumber;
 
     public static final String JSON_PROPERTY_COMPLETED_INSTALLATIONS = "CompletedInstallations";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<InstallationInfo> completedInstallations;
 
     public static final String JSON_PROPERTY_CAN_SELF_RESTART = "CanSelfRestart";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean canSelfRestart = true;
 
     public static final String JSON_PROPERTY_CAN_LAUNCH_WEB_BROWSER = "CanLaunchWebBrowser";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean canLaunchWebBrowser = false;
 
     public static final String JSON_PROPERTY_PROGRAM_DATA_PATH = "ProgramDataPath";
     @org.eclipse.jdt.annotation.Nullable
+
     private String programDataPath;
 
     public static final String JSON_PROPERTY_WEB_PATH = "WebPath";
     @org.eclipse.jdt.annotation.Nullable
+
     private String webPath;
 
     public static final String JSON_PROPERTY_ITEMS_BY_NAME_PATH = "ItemsByNamePath";
     @org.eclipse.jdt.annotation.Nullable
+
     private String itemsByNamePath;
 
     public static final String JSON_PROPERTY_CACHE_PATH = "CachePath";
     @org.eclipse.jdt.annotation.Nullable
+
     private String cachePath;
 
     public static final String JSON_PROPERTY_LOG_PATH = "LogPath";
     @org.eclipse.jdt.annotation.Nullable
+
     private String logPath;
 
     public static final String JSON_PROPERTY_INTERNAL_METADATA_PATH = "InternalMetadataPath";
     @org.eclipse.jdt.annotation.Nullable
+
     private String internalMetadataPath;
 
     public static final String JSON_PROPERTY_TRANSCODING_TEMP_PATH = "TranscodingTempPath";
     @org.eclipse.jdt.annotation.Nullable
+
     private String transcodingTempPath;
 
     public static final String JSON_PROPERTY_CAST_RECEIVER_APPLICATIONS = "CastReceiverApplications";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<CastReceiverApplication> castReceiverApplications;
 
     public static final String JSON_PROPERTY_HAS_UPDATE_AVAILABLE = "HasUpdateAvailable";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean hasUpdateAvailable = false;
 
     public static final String JSON_PROPERTY_ENCODER_LOCATION = "EncoderLocation";
     @org.eclipse.jdt.annotation.Nullable
+
     private String encoderLocation = "System";
 
     public static final String JSON_PROPERTY_SYSTEM_ARCHITECTURE = "SystemArchitecture";
     @org.eclipse.jdt.annotation.Nullable
+
     private String systemArchitecture = "X64";
 
     public SystemInfo() {
@@ -165,6 +192,7 @@ public class SystemInfo {
      * @return localAddress
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_LOCAL_ADDRESS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getLocalAddress() {
@@ -188,6 +216,7 @@ public class SystemInfo {
      * @return serverName
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_SERVER_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getServerName() {
@@ -211,6 +240,7 @@ public class SystemInfo {
      * @return version
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_VERSION, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getVersion() {
@@ -234,6 +264,7 @@ public class SystemInfo {
      * @return productName
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_PRODUCT_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getProductName() {
@@ -259,6 +290,7 @@ public class SystemInfo {
      */
     @Deprecated
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_OPERATING_SYSTEM, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getOperatingSystem() {
@@ -282,6 +314,7 @@ public class SystemInfo {
      * @return id
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getId() {
@@ -305,6 +338,7 @@ public class SystemInfo {
      * @return startupWizardCompleted
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_STARTUP_WIZARD_COMPLETED, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getStartupWizardCompleted() {
@@ -331,6 +365,7 @@ public class SystemInfo {
      */
     @Deprecated
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_OPERATING_SYSTEM_DISPLAY_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getOperatingSystemDisplayName() {
@@ -354,6 +389,7 @@ public class SystemInfo {
      * @return packageName
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_PACKAGE_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getPackageName() {
@@ -377,6 +413,7 @@ public class SystemInfo {
      * @return hasPendingRestart
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_HAS_PENDING_RESTART, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getHasPendingRestart() {
@@ -400,6 +437,7 @@ public class SystemInfo {
      * @return isShuttingDown
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_IS_SHUTTING_DOWN, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getIsShuttingDown() {
@@ -423,6 +461,7 @@ public class SystemInfo {
      * @return supportsLibraryMonitor
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_SUPPORTS_LIBRARY_MONITOR, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getSupportsLibraryMonitor() {
@@ -446,6 +485,7 @@ public class SystemInfo {
      * @return webSocketPortNumber
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_WEB_SOCKET_PORT_NUMBER, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getWebSocketPortNumber() {
@@ -478,6 +518,7 @@ public class SystemInfo {
      * @return completedInstallations
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_COMPLETED_INSTALLATIONS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<InstallationInfo> getCompletedInstallations() {
@@ -504,6 +545,7 @@ public class SystemInfo {
      */
     @Deprecated
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_CAN_SELF_RESTART, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getCanSelfRestart() {
@@ -529,6 +571,7 @@ public class SystemInfo {
      */
     @Deprecated
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_CAN_LAUNCH_WEB_BROWSER, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getCanLaunchWebBrowser() {
@@ -554,6 +597,7 @@ public class SystemInfo {
      */
     @Deprecated
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_PROGRAM_DATA_PATH, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getProgramDataPath() {
@@ -579,6 +623,7 @@ public class SystemInfo {
      */
     @Deprecated
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_WEB_PATH, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getWebPath() {
@@ -604,6 +649,7 @@ public class SystemInfo {
      */
     @Deprecated
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_ITEMS_BY_NAME_PATH, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getItemsByNamePath() {
@@ -629,6 +675,7 @@ public class SystemInfo {
      */
     @Deprecated
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_CACHE_PATH, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getCachePath() {
@@ -654,6 +701,7 @@ public class SystemInfo {
      */
     @Deprecated
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_LOG_PATH, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getLogPath() {
@@ -679,6 +727,7 @@ public class SystemInfo {
      */
     @Deprecated
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_INTERNAL_METADATA_PATH, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getInternalMetadataPath() {
@@ -704,6 +753,7 @@ public class SystemInfo {
      */
     @Deprecated
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_TRANSCODING_TEMP_PATH, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getTranscodingTempPath() {
@@ -736,6 +786,7 @@ public class SystemInfo {
      * @return castReceiverApplications
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_CAST_RECEIVER_APPLICATIONS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<CastReceiverApplication> getCastReceiverApplications() {
@@ -762,6 +813,7 @@ public class SystemInfo {
      */
     @Deprecated
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_HAS_UPDATE_AVAILABLE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getHasUpdateAvailable() {
@@ -787,6 +839,7 @@ public class SystemInfo {
      */
     @Deprecated
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_ENCODER_LOCATION, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getEncoderLocation() {
@@ -812,6 +865,7 @@ public class SystemInfo {
      */
     @Deprecated
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_SYSTEM_ARCHITECTURE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getSystemArchitecture() {

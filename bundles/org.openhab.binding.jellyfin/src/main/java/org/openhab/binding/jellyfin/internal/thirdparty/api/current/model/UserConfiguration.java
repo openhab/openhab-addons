@@ -44,66 +44,82 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class UserConfiguration {
     public static final String JSON_PROPERTY_AUDIO_LANGUAGE_PREFERENCE = "AudioLanguagePreference";
     @org.eclipse.jdt.annotation.Nullable
+
     private String audioLanguagePreference;
 
     public static final String JSON_PROPERTY_PLAY_DEFAULT_AUDIO_TRACK = "PlayDefaultAudioTrack";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean playDefaultAudioTrack;
 
     public static final String JSON_PROPERTY_SUBTITLE_LANGUAGE_PREFERENCE = "SubtitleLanguagePreference";
     @org.eclipse.jdt.annotation.Nullable
+
     private String subtitleLanguagePreference;
 
     public static final String JSON_PROPERTY_DISPLAY_MISSING_EPISODES = "DisplayMissingEpisodes";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean displayMissingEpisodes;
 
     public static final String JSON_PROPERTY_GROUPED_FOLDERS = "GroupedFolders";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<UUID> groupedFolders = new ArrayList<>();
 
     public static final String JSON_PROPERTY_SUBTITLE_MODE = "SubtitleMode";
     @org.eclipse.jdt.annotation.Nullable
+
     private SubtitlePlaybackMode subtitleMode;
 
     public static final String JSON_PROPERTY_DISPLAY_COLLECTIONS_VIEW = "DisplayCollectionsView";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean displayCollectionsView;
 
     public static final String JSON_PROPERTY_ENABLE_LOCAL_PASSWORD = "EnableLocalPassword";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean enableLocalPassword;
 
     public static final String JSON_PROPERTY_ORDERED_VIEWS = "OrderedViews";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<UUID> orderedViews = new ArrayList<>();
 
     public static final String JSON_PROPERTY_LATEST_ITEMS_EXCLUDES = "LatestItemsExcludes";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<UUID> latestItemsExcludes = new ArrayList<>();
 
     public static final String JSON_PROPERTY_MY_MEDIA_EXCLUDES = "MyMediaExcludes";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<UUID> myMediaExcludes = new ArrayList<>();
 
     public static final String JSON_PROPERTY_HIDE_PLAYED_IN_LATEST = "HidePlayedInLatest";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean hidePlayedInLatest;
 
     public static final String JSON_PROPERTY_REMEMBER_AUDIO_SELECTIONS = "RememberAudioSelections";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean rememberAudioSelections;
 
     public static final String JSON_PROPERTY_REMEMBER_SUBTITLE_SELECTIONS = "RememberSubtitleSelections";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean rememberSubtitleSelections;
 
     public static final String JSON_PROPERTY_ENABLE_NEXT_EPISODE_AUTO_PLAY = "EnableNextEpisodeAutoPlay";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean enableNextEpisodeAutoPlay;
 
     public static final String JSON_PROPERTY_CAST_RECEIVER_ID = "CastReceiverId";
     @org.eclipse.jdt.annotation.Nullable
+
     private String castReceiverId;
 
     public UserConfiguration() {
@@ -121,6 +137,7 @@ public class UserConfiguration {
      * @return audioLanguagePreference
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_AUDIO_LANGUAGE_PREFERENCE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getAudioLanguagePreference() {
@@ -144,6 +161,7 @@ public class UserConfiguration {
      * @return playDefaultAudioTrack
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_PLAY_DEFAULT_AUDIO_TRACK, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getPlayDefaultAudioTrack() {
@@ -168,6 +186,7 @@ public class UserConfiguration {
      * @return subtitleLanguagePreference
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_SUBTITLE_LANGUAGE_PREFERENCE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getSubtitleLanguagePreference() {
@@ -192,6 +211,7 @@ public class UserConfiguration {
      * @return displayMissingEpisodes
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_DISPLAY_MISSING_EPISODES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getDisplayMissingEpisodes() {
@@ -223,6 +243,7 @@ public class UserConfiguration {
      * @return groupedFolders
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_GROUPED_FOLDERS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<UUID> getGroupedFolders() {
@@ -246,6 +267,7 @@ public class UserConfiguration {
      * @return subtitleMode
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_SUBTITLE_MODE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public SubtitlePlaybackMode getSubtitleMode() {
@@ -270,6 +292,7 @@ public class UserConfiguration {
      * @return displayCollectionsView
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_DISPLAY_COLLECTIONS_VIEW, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getDisplayCollectionsView() {
@@ -293,6 +316,7 @@ public class UserConfiguration {
      * @return enableLocalPassword
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_ENABLE_LOCAL_PASSWORD, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getEnableLocalPassword() {
@@ -324,6 +348,7 @@ public class UserConfiguration {
      * @return orderedViews
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_ORDERED_VIEWS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<UUID> getOrderedViews() {
@@ -355,6 +380,7 @@ public class UserConfiguration {
      * @return latestItemsExcludes
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_LATEST_ITEMS_EXCLUDES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<UUID> getLatestItemsExcludes() {
@@ -386,6 +412,7 @@ public class UserConfiguration {
      * @return myMediaExcludes
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_MY_MEDIA_EXCLUDES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<UUID> getMyMediaExcludes() {
@@ -409,6 +436,7 @@ public class UserConfiguration {
      * @return hidePlayedInLatest
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_HIDE_PLAYED_IN_LATEST, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getHidePlayedInLatest() {
@@ -433,6 +461,7 @@ public class UserConfiguration {
      * @return rememberAudioSelections
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_REMEMBER_AUDIO_SELECTIONS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getRememberAudioSelections() {
@@ -457,6 +486,7 @@ public class UserConfiguration {
      * @return rememberSubtitleSelections
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_REMEMBER_SUBTITLE_SELECTIONS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getRememberSubtitleSelections() {
@@ -481,6 +511,7 @@ public class UserConfiguration {
      * @return enableNextEpisodeAutoPlay
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_ENABLE_NEXT_EPISODE_AUTO_PLAY, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getEnableNextEpisodeAutoPlay() {
@@ -504,6 +535,7 @@ public class UserConfiguration {
      * @return castReceiverId
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_CAST_RECEIVER_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getCastReceiverId() {

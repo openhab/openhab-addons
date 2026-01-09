@@ -33,14 +33,17 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class ScheduledTaskEndedMessage {
     public static final String JSON_PROPERTY_DATA = "Data";
     @org.eclipse.jdt.annotation.Nullable
+
     private TaskResult data;
 
     public static final String JSON_PROPERTY_MESSAGE_ID = "MessageId";
     @org.eclipse.jdt.annotation.Nullable
+
     private UUID messageId;
 
     public static final String JSON_PROPERTY_MESSAGE_TYPE = "MessageType";
     @org.eclipse.jdt.annotation.Nullable
+
     private SessionMessageType messageType = SessionMessageType.SCHEDULED_TASK_ENDED;
 
     public ScheduledTaskEndedMessage() {
@@ -63,6 +66,7 @@ public class ScheduledTaskEndedMessage {
      * @return data
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_DATA, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public TaskResult getData() {
@@ -86,6 +90,7 @@ public class ScheduledTaskEndedMessage {
      * @return messageId
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_MESSAGE_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public UUID getMessageId() {
@@ -104,6 +109,7 @@ public class ScheduledTaskEndedMessage {
      * @return messageType
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_MESSAGE_TYPE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public SessionMessageType getMessageType() {

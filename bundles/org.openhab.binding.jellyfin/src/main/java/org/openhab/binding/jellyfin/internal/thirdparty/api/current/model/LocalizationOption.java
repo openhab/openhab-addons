@@ -30,10 +30,12 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class LocalizationOption {
     public static final String JSON_PROPERTY_NAME = "Name";
     @org.eclipse.jdt.annotation.Nullable
+
     private String name;
 
     public static final String JSON_PROPERTY_VALUE = "Value";
     @org.eclipse.jdt.annotation.Nullable
+
     private String value;
 
     public LocalizationOption() {
@@ -50,6 +52,7 @@ public class LocalizationOption {
      * @return name
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getName() {
@@ -73,6 +76,7 @@ public class LocalizationOption {
      * @return value
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_VALUE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getValue() {

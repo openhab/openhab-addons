@@ -30,10 +30,12 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class LyricDto {
     public static final String JSON_PROPERTY_METADATA = "Metadata";
     @org.eclipse.jdt.annotation.Nullable
+
     private LyricMetadata metadata;
 
     public static final String JSON_PROPERTY_LYRICS = "Lyrics";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<LyricLine> lyrics = new ArrayList<>();
 
     public LyricDto() {
@@ -50,6 +52,7 @@ public class LyricDto {
      * @return metadata
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_METADATA, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public LyricMetadata getMetadata() {
@@ -81,6 +84,7 @@ public class LyricDto {
      * @return lyrics
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_LYRICS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<LyricLine> getLyrics() {

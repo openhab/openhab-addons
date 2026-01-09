@@ -30,6 +30,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class BackupRestoreRequestDto {
     public static final String JSON_PROPERTY_ARCHIVE_FILE_NAME = "ArchiveFileName";
     @org.eclipse.jdt.annotation.Nullable
+
     private String archiveFileName;
 
     public BackupRestoreRequestDto() {
@@ -47,6 +48,7 @@ public class BackupRestoreRequestDto {
      * @return archiveFileName
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_ARCHIVE_FILE_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getArchiveFileName() {

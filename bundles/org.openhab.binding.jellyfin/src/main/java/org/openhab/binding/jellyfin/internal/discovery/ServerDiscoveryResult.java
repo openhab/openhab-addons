@@ -13,6 +13,7 @@
 package org.openhab.binding.jellyfin.internal.discovery;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -25,9 +26,9 @@ class ServerDiscoveryResult {
     private String address;
     private String id;
     private String name;
-    private String endpointAddress;
+    private @Nullable String endpointAddress;
 
-    ServerDiscoveryResult(String address, String id, String name, String endpointAddress) {
+    ServerDiscoveryResult(String address, String id, String name, @Nullable String endpointAddress) {
         this.address = address;
         this.id = id;
         this.name = name;
@@ -46,7 +47,7 @@ class ServerDiscoveryResult {
         return name;
     }
 
-    public String getEndpointAddress() {
+    public @Nullable String getEndpointAddress() {
         return endpointAddress;
     }
 

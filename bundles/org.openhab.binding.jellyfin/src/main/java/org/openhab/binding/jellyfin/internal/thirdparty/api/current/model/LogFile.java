@@ -32,18 +32,22 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class LogFile {
     public static final String JSON_PROPERTY_DATE_CREATED = "DateCreated";
     @org.eclipse.jdt.annotation.Nullable
+
     private OffsetDateTime dateCreated;
 
     public static final String JSON_PROPERTY_DATE_MODIFIED = "DateModified";
     @org.eclipse.jdt.annotation.Nullable
+
     private OffsetDateTime dateModified;
 
     public static final String JSON_PROPERTY_SIZE = "Size";
     @org.eclipse.jdt.annotation.Nullable
+
     private Long size;
 
     public static final String JSON_PROPERTY_NAME = "Name";
     @org.eclipse.jdt.annotation.Nullable
+
     private String name;
 
     public LogFile() {
@@ -60,6 +64,7 @@ public class LogFile {
      * @return dateCreated
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_DATE_CREATED, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public OffsetDateTime getDateCreated() {
@@ -83,6 +88,7 @@ public class LogFile {
      * @return dateModified
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_DATE_MODIFIED, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public OffsetDateTime getDateModified() {
@@ -106,6 +112,7 @@ public class LogFile {
      * @return size
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_SIZE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Long getSize() {
@@ -129,6 +136,7 @@ public class LogFile {
      * @return name
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getName() {

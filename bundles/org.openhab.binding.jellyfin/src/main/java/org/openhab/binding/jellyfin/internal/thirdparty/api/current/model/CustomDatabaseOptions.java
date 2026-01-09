@@ -34,18 +34,22 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class CustomDatabaseOptions {
     public static final String JSON_PROPERTY_PLUGIN_NAME = "PluginName";
     @org.eclipse.jdt.annotation.Nullable
+
     private String pluginName;
 
     public static final String JSON_PROPERTY_PLUGIN_ASSEMBLY = "PluginAssembly";
     @org.eclipse.jdt.annotation.Nullable
+
     private String pluginAssembly;
 
     public static final String JSON_PROPERTY_CONNECTION_STRING = "ConnectionString";
     @org.eclipse.jdt.annotation.Nullable
+
     private String connectionString;
 
     public static final String JSON_PROPERTY_OPTIONS = "Options";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<CustomDatabaseOption> options = new ArrayList<>();
 
     public CustomDatabaseOptions() {
@@ -62,6 +66,7 @@ public class CustomDatabaseOptions {
      * @return pluginName
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_PLUGIN_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getPluginName() {
@@ -85,6 +90,7 @@ public class CustomDatabaseOptions {
      * @return pluginAssembly
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_PLUGIN_ASSEMBLY, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getPluginAssembly() {
@@ -108,6 +114,7 @@ public class CustomDatabaseOptions {
      * @return connectionString
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_CONNECTION_STRING, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getConnectionString() {
@@ -139,6 +146,7 @@ public class CustomDatabaseOptions {
      * @return options
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_OPTIONS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<CustomDatabaseOption> getOptions() {

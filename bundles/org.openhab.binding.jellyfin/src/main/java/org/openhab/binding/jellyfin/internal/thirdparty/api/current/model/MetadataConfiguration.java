@@ -30,6 +30,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class MetadataConfiguration {
     public static final String JSON_PROPERTY_USE_FILE_CREATION_TIME_FOR_DATE_ADDED = "UseFileCreationTimeForDateAdded";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean useFileCreationTimeForDateAdded;
 
     public MetadataConfiguration() {
@@ -47,6 +48,7 @@ public class MetadataConfiguration {
      * @return useFileCreationTimeForDateAdded
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_USE_FILE_CREATION_TIME_FOR_DATE_ADDED, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getUseFileCreationTimeForDateAdded() {

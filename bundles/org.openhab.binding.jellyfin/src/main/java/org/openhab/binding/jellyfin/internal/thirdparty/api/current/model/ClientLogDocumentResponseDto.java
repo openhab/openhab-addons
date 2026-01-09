@@ -30,6 +30,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class ClientLogDocumentResponseDto {
     public static final String JSON_PROPERTY_FILE_NAME = "FileName";
     @org.eclipse.jdt.annotation.Nullable
+
     private String fileName;
 
     public ClientLogDocumentResponseDto() {
@@ -46,6 +47,7 @@ public class ClientLogDocumentResponseDto {
      * @return fileName
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_FILE_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getFileName() {

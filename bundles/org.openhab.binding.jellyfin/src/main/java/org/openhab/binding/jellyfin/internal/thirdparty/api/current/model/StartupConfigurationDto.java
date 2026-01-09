@@ -32,18 +32,22 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class StartupConfigurationDto {
     public static final String JSON_PROPERTY_SERVER_NAME = "ServerName";
     @org.eclipse.jdt.annotation.Nullable
+
     private String serverName;
 
     public static final String JSON_PROPERTY_UI_CULTURE = "UICulture";
     @org.eclipse.jdt.annotation.Nullable
+
     private String uiCulture;
 
     public static final String JSON_PROPERTY_METADATA_COUNTRY_CODE = "MetadataCountryCode";
     @org.eclipse.jdt.annotation.Nullable
+
     private String metadataCountryCode;
 
     public static final String JSON_PROPERTY_PREFERRED_METADATA_LANGUAGE = "PreferredMetadataLanguage";
     @org.eclipse.jdt.annotation.Nullable
+
     private String preferredMetadataLanguage;
 
     public StartupConfigurationDto() {
@@ -60,6 +64,7 @@ public class StartupConfigurationDto {
      * @return serverName
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_SERVER_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getServerName() {
@@ -83,6 +88,7 @@ public class StartupConfigurationDto {
      * @return uiCulture
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_UI_CULTURE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getUiCulture() {
@@ -107,6 +113,7 @@ public class StartupConfigurationDto {
      * @return metadataCountryCode
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_METADATA_COUNTRY_CODE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getMetadataCountryCode() {
@@ -131,6 +138,7 @@ public class StartupConfigurationDto {
      * @return preferredMetadataLanguage
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_PREFERRED_METADATA_LANGUAGE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getPreferredMetadataLanguage() {

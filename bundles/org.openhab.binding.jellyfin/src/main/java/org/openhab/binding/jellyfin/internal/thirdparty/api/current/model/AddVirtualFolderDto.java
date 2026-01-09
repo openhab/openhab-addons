@@ -28,6 +28,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class AddVirtualFolderDto {
     public static final String JSON_PROPERTY_LIBRARY_OPTIONS = "LibraryOptions";
     @org.eclipse.jdt.annotation.Nullable
+
     private LibraryOptions libraryOptions;
 
     public AddVirtualFolderDto() {
@@ -44,6 +45,7 @@ public class AddVirtualFolderDto {
      * @return libraryOptions
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_LIBRARY_OPTIONS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public LibraryOptions getLibraryOptions() {

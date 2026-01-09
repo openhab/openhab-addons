@@ -31,18 +31,22 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class DirectPlayProfile {
     public static final String JSON_PROPERTY_CONTAINER = "Container";
     @org.eclipse.jdt.annotation.Nullable
+
     private String container;
 
     public static final String JSON_PROPERTY_AUDIO_CODEC = "AudioCodec";
     @org.eclipse.jdt.annotation.Nullable
+
     private String audioCodec;
 
     public static final String JSON_PROPERTY_VIDEO_CODEC = "VideoCodec";
     @org.eclipse.jdt.annotation.Nullable
+
     private String videoCodec;
 
     public static final String JSON_PROPERTY_TYPE = "Type";
     @org.eclipse.jdt.annotation.Nullable
+
     private DlnaProfileType type;
 
     public DirectPlayProfile() {
@@ -59,6 +63,7 @@ public class DirectPlayProfile {
      * @return container
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_CONTAINER, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getContainer() {
@@ -82,6 +87,7 @@ public class DirectPlayProfile {
      * @return audioCodec
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_AUDIO_CODEC, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getAudioCodec() {
@@ -105,6 +111,7 @@ public class DirectPlayProfile {
      * @return videoCodec
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_VIDEO_CODEC, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getVideoCodec() {
@@ -128,6 +135,7 @@ public class DirectPlayProfile {
      * @return type
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_TYPE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public DlnaProfileType getType() {

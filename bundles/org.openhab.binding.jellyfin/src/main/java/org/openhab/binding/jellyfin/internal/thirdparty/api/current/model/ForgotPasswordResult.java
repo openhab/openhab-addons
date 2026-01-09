@@ -32,14 +32,17 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class ForgotPasswordResult {
     public static final String JSON_PROPERTY_ACTION = "Action";
     @org.eclipse.jdt.annotation.Nullable
+
     private ForgotPasswordAction action;
 
     public static final String JSON_PROPERTY_PIN_FILE = "PinFile";
     @org.eclipse.jdt.annotation.Nullable
+
     private String pinFile;
 
     public static final String JSON_PROPERTY_PIN_EXPIRATION_DATE = "PinExpirationDate";
     @org.eclipse.jdt.annotation.Nullable
+
     private OffsetDateTime pinExpirationDate;
 
     public ForgotPasswordResult() {
@@ -56,6 +59,7 @@ public class ForgotPasswordResult {
      * @return action
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_ACTION, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public ForgotPasswordAction getAction() {
@@ -79,6 +83,7 @@ public class ForgotPasswordResult {
      * @return pinFile
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_PIN_FILE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getPinFile() {
@@ -103,6 +108,7 @@ public class ForgotPasswordResult {
      * @return pinExpirationDate
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_PIN_EXPIRATION_DATE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public OffsetDateTime getPinExpirationDate() {

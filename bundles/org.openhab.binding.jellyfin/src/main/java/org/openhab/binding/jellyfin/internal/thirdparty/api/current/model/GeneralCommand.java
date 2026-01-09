@@ -34,14 +34,17 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class GeneralCommand {
     public static final String JSON_PROPERTY_NAME = "Name";
     @org.eclipse.jdt.annotation.Nullable
+
     private GeneralCommandType name;
 
     public static final String JSON_PROPERTY_CONTROLLING_USER_ID = "ControllingUserId";
     @org.eclipse.jdt.annotation.Nullable
+
     private UUID controllingUserId;
 
     public static final String JSON_PROPERTY_ARGUMENTS = "Arguments";
     @org.eclipse.jdt.annotation.Nullable
+
     private Map<String, String> arguments = new HashMap<>();
 
     public GeneralCommand() {
@@ -58,6 +61,7 @@ public class GeneralCommand {
      * @return name
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public GeneralCommandType getName() {
@@ -81,6 +85,7 @@ public class GeneralCommand {
      * @return controllingUserId
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_CONTROLLING_USER_ID, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public UUID getControllingUserId() {
@@ -112,6 +117,7 @@ public class GeneralCommand {
      * @return arguments
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_ARGUMENTS, required = false)
     @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
     public Map<String, String> getArguments() {

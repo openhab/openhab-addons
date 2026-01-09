@@ -31,14 +31,17 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class ParentalRating {
     public static final String JSON_PROPERTY_NAME = "Name";
     @org.eclipse.jdt.annotation.Nullable
+
     private String name;
 
     public static final String JSON_PROPERTY_VALUE = "Value";
     @org.eclipse.jdt.annotation.Nullable
+
     private Integer value;
 
     public static final String JSON_PROPERTY_RATING_SCORE = "RatingScore";
     @org.eclipse.jdt.annotation.Nullable
+
     private ParentalRatingScore ratingScore;
 
     public ParentalRating() {
@@ -55,6 +58,7 @@ public class ParentalRating {
      * @return name
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getName() {
@@ -78,6 +82,7 @@ public class ParentalRating {
      * @return value
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_VALUE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getValue() {
@@ -101,6 +106,7 @@ public class ParentalRating {
      * @return ratingScore
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_RATING_SCORE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public ParentalRatingScore getRatingScore() {

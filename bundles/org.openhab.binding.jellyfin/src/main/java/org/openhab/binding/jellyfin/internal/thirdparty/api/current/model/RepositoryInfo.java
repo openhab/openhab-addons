@@ -31,14 +31,17 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class RepositoryInfo {
     public static final String JSON_PROPERTY_NAME = "Name";
     @org.eclipse.jdt.annotation.Nullable
+
     private String name;
 
     public static final String JSON_PROPERTY_URL = "Url";
     @org.eclipse.jdt.annotation.Nullable
+
     private String url;
 
     public static final String JSON_PROPERTY_ENABLED = "Enabled";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean enabled;
 
     public RepositoryInfo() {
@@ -55,6 +58,7 @@ public class RepositoryInfo {
      * @return name
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getName() {
@@ -78,6 +82,7 @@ public class RepositoryInfo {
      * @return url
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_URL, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public String getUrl() {
@@ -101,6 +106,7 @@ public class RepositoryInfo {
      * @return enabled
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_ENABLED, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getEnabled() {

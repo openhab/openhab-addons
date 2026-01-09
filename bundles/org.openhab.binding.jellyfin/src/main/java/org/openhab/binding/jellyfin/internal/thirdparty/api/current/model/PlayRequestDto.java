@@ -34,14 +34,17 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class PlayRequestDto {
     public static final String JSON_PROPERTY_PLAYING_QUEUE = "PlayingQueue";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<UUID> playingQueue = new ArrayList<>();
 
     public static final String JSON_PROPERTY_PLAYING_ITEM_POSITION = "PlayingItemPosition";
     @org.eclipse.jdt.annotation.Nullable
+
     private Integer playingItemPosition;
 
     public static final String JSON_PROPERTY_START_POSITION_TICKS = "StartPositionTicks";
     @org.eclipse.jdt.annotation.Nullable
+
     private Long startPositionTicks;
 
     public PlayRequestDto() {
@@ -66,6 +69,7 @@ public class PlayRequestDto {
      * @return playingQueue
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_PLAYING_QUEUE, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<UUID> getPlayingQueue() {
@@ -89,6 +93,7 @@ public class PlayRequestDto {
      * @return playingItemPosition
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_PLAYING_ITEM_POSITION, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Integer getPlayingItemPosition() {
@@ -112,6 +117,7 @@ public class PlayRequestDto {
      * @return startPositionTicks
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_START_POSITION_TICKS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Long getStartPositionTicks() {

@@ -30,6 +30,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class UpdatePlaylistUserDto {
     public static final String JSON_PROPERTY_CAN_EDIT = "CanEdit";
     @org.eclipse.jdt.annotation.Nullable
+
     private Boolean canEdit;
 
     public UpdatePlaylistUserDto() {
@@ -46,6 +47,7 @@ public class UpdatePlaylistUserDto {
      * @return canEdit
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_CAN_EDIT, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public Boolean getCanEdit() {

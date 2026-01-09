@@ -30,6 +30,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class MediaUpdateInfoDto {
     public static final String JSON_PROPERTY_UPDATES = "Updates";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<MediaUpdateInfoPathDto> updates = new ArrayList<>();
 
     public MediaUpdateInfoDto() {
@@ -54,6 +55,7 @@ public class MediaUpdateInfoDto {
      * @return updates
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_UPDATES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<MediaUpdateInfoPathDto> getUpdates() {

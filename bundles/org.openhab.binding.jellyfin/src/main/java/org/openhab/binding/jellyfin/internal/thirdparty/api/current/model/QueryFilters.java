@@ -32,10 +32,12 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class QueryFilters {
     public static final String JSON_PROPERTY_GENRES = "Genres";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<NameGuidPair> genres;
 
     public static final String JSON_PROPERTY_TAGS = "Tags";
     @org.eclipse.jdt.annotation.Nullable
+
     private List<String> tags;
 
     public QueryFilters() {
@@ -60,6 +62,7 @@ public class QueryFilters {
      * @return genres
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_GENRES, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<NameGuidPair> getGenres() {
@@ -91,6 +94,7 @@ public class QueryFilters {
      * @return tags
      */
     @org.eclipse.jdt.annotation.Nullable
+
     @JsonProperty(value = JSON_PROPERTY_TAGS, required = false)
     @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
     public List<String> getTags() {
