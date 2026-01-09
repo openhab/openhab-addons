@@ -80,8 +80,12 @@ public class MoonHandler extends AstroThingHandler {
                 latitude != null ? latitude : 0, longitude != null ? longitude : 0, moon, zone, locale);
 =======
         moonCalc.setPositionalInfo(Calendar.getInstance(zone, locale), latitude != null ? latitude : 0,
+<<<<<<< Upstream, based on main
                 longitude != null ? longitude : 0, moon, zone, locale);
 >>>>>>> 48a7069 Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added unit tests for eclipses
+=======
+                longitude != null ? longitude : 0, moon, zone);
+>>>>>>> bb4de3d Starting to work on transition to Instant for MoonPhase
         this.moon = moon;
 
         publishPlanet();
@@ -193,7 +197,7 @@ public class MoonHandler extends AstroThingHandler {
         Double latitude = thingConfig.latitude;
         Double longitude = thingConfig.longitude;
         moonCalc.setPositionalInfo(GregorianCalendar.from(date), latitude != null ? latitude : 0,
-                longitude != null ? longitude : 0, localMoon, TimeZone.getTimeZone(date.getZone()), Locale.ROOT);
+                longitude != null ? longitude : 0, localMoon, TimeZone.getTimeZone(date.getZone()));
         return localMoon.getPosition();
     }
 }

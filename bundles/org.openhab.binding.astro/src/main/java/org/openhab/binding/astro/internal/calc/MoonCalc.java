@@ -16,7 +16,13 @@ import static org.openhab.binding.astro.internal.util.MathUtils.*;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+<<<<<<< Upstream, based on main
 import java.time.InstantSource;
+=======
+import java.time.Instant;
+import java.time.ZoneId;
+import java.util.Arrays;
+>>>>>>> bb4de3d Starting to work on transition to Instant for MoonPhase
 import java.util.Calendar;
 import java.util.Locale;
 import java.util.Optional;
@@ -156,10 +162,15 @@ public class MoonCalc extends AstroCalc {
         moon.setRise(new Range(rise, rise));
         moon.setSet(new Range(set, set));
 
+<<<<<<< Upstream, based on main
         MoonPhase phase = moon.getPhase();
 <<<<<<< Upstream, based on main
 <<<<<<< Upstream, based on main
+=======
+        MoonPhase moonPhase = moon.getPhase();
+>>>>>>> bb4de3d Starting to work on transition to Instant for MoonPhase
         double julianDateMidnight = DateTimeUtils.midnightDateToJulianDate(calendar);
+<<<<<<< Upstream, based on main
         phase.remarkablePhases().forEach(mp -> phase.setPhase(mp,
                 DateTimeUtils.toCalendar(getPhase(julianDateMidnight, mp, true), zone, locale)));
 =======
@@ -175,6 +186,12 @@ public class MoonCalc extends AstroCalc {
         phase.setThirdQuarter(DateTimeUtils
                 .toCalendar(getNextPhase(calendar, julianDateMidnight, MoonPhaseName.THIRD_QUARTER), zone, locale));
 >>>>>>> 810a1e9 Initial commit for Moon phase revamp
+=======
+        Arrays.stream(MoonPhaseName.values()).filter(phase -> !Double.isNaN(phase.mode)).forEach(phase -> {
+            var next = getNextPhase(julianDateMidnight, phase);
+            moonPhase.setPhase(phase, next);
+        });
+>>>>>>> bb4de3d Starting to work on transition to Instant for MoonPhase
 
 <<<<<<< Upstream, based on main
         double julianDate = DateTimeUtils.dateToJulianDate(calendar);
@@ -203,11 +220,17 @@ public class MoonCalc extends AstroCalc {
     /**
      * Calculates the moon illumination and distance.
      */
+<<<<<<< Upstream, based on main
     public void setPositionalInfo(Calendar calendar, double latitude, double longitude, Moon moon, TimeZone zone,
             Locale locale) {
         setMoonPhase(calendar, moon, zone, locale);
 <<<<<<< Upstream, based on main
 =======
+=======
+    public void setPositionalInfo(Calendar calendar, double latitude, double longitude, Moon moon, TimeZone zone) {
+        double julianDate = DateTimeUtils.dateToJulianDate(calendar);
+        setMoonPhase(julianDate, moon, zone.toZoneId());
+>>>>>>> bb4de3d Starting to work on transition to Instant for MoonPhase
 
         var moonPosition = getMoonPosition(julianDate, latitude, longitude);
         moon.setPosition(moonPosition);
@@ -231,47 +254,59 @@ public class MoonCalc extends AstroCalc {
     /**
      * Calculates the age and the current phase.
      */
-    private void setMoonPhase(Calendar calendar, Moon moon, TimeZone zone, Locale locale) {
+    private void setMoonPhase(double julianDate, Moon moon, ZoneId zone) {
+        double parentNewMoon = getNextPhase(julianDate, MoonPhaseName.NEW) - SYNODIC_MONTH;
+        Instant parentNewMoonCal = DateTimeUtils.jdToInstant(parentNewMoon);
+
         MoonPhase phase = moon.getPhase();
+<<<<<<< Upstream, based on main
         double julianDate = DateTimeUtils.dateToJulianDate(calendar);
 <<<<<<< Upstream, based on main
         double parentNewMoon = getPhase(julianDate, MoonPhaseName.NEW, false);
 =======
         double parentNewMoon = getPreviousPhase(calendar, julianDate, MoonPhaseName.NEW);
 >>>>>>> 810a1e9 Initial commit for Moon phase revamp
+=======
+>>>>>>> bb4de3d Starting to work on transition to Instant for MoonPhase
         double age = Math.abs(parentNewMoon - julianDate);
-        Calendar parentNewMoonCal = DateTimeUtils.toCalendar(parentNewMoon, zone, locale);
-        if (parentNewMoonCal == null) {
-            return;
-        }
         phase.setAge(age);
 
-        long parentNewMoonMillis = parentNewMoonCal.getTimeInMillis();
-        Calendar cal = phase.getNew();
-        if (cal == null) {
+        Instant whenNewMoon = phase.getPhase(MoonPhaseName.NEW);
+        if (whenNewMoon == null) {
             return;
         }
+<<<<<<< Upstream, based on main
         long ageRangeTimeMillis = cal.getTimeInMillis() - parentNewMoonMillis;
         long ageCurrentMillis = instantSource.millis() - parentNewMoonMillis;
+=======
+
+        long parentNewMoonMillis = parentNewMoonCal.toEpochMilli();
+        long ageCurrentMillis = System.currentTimeMillis() - parentNewMoonMillis;
+        long ageRangeTimeMillis = whenNewMoon.toEpochMilli() - parentNewMoonMillis;
+>>>>>>> bb4de3d Starting to work on transition to Instant for MoonPhase
         double agePercent = ageRangeTimeMillis != 0 ? ageCurrentMillis * 100.0 / ageRangeTimeMillis : 0;
         phase.setAgePercent(agePercent);
-        phase.setAgeDegree(3.6 * agePercent);
-        double illumination = getIllumination(julianDate);
+        var illumination = getIllumination(julianDate);
         phase.setIllumination(illumination);
+<<<<<<< Upstream, based on main
 <<<<<<< Upstream, based on main
 
         Optional<MoonPhaseName> remarkablePhase = phase.remarkablePhases()
                 .filter(p -> DateTimeUtils.isSameDay(calendar, phase.getPhaseDate(p))).findFirst();
         phase.setName(remarkablePhase.orElse(MoonPhaseName.fromAgePercent(agePercent / 100)));
 =======
+=======
+
+>>>>>>> bb4de3d Starting to work on transition to Instant for MoonPhase
         boolean isWaxing = age < (SYNODIC_MONTH / 2);
-        if (DateTimeUtils.isSameDay(calendar, phase.getNew())) {
+        Instant calendar = DateTimeUtils.jdToInstant(julianDate);
+        if (DateTimeUtils.isSameDay(calendar, phase.getNew(), zone)) {
             phase.setName(MoonPhaseName.NEW);
-        } else if (DateTimeUtils.isSameDay(calendar, phase.getFirstQuarter())) {
+        } else if (DateTimeUtils.isSameDay(calendar, phase.getFirstQuarter(), zone)) {
             phase.setName(MoonPhaseName.FIRST_QUARTER);
-        } else if (DateTimeUtils.isSameDay(calendar, phase.getThirdQuarter())) {
+        } else if (DateTimeUtils.isSameDay(calendar, phase.getThirdQuarter(), zone)) {
             phase.setName(MoonPhaseName.THIRD_QUARTER);
-        } else if (DateTimeUtils.isSameDay(calendar, phase.getFull())) {
+        } else if (DateTimeUtils.isSameDay(calendar, phase.getFull(), zone)) {
             phase.setName(MoonPhaseName.FULL);
         } else if (illumination >= 0 && illumination < 50) {
             phase.setName(isWaxing ? MoonPhaseName.WAXING_CRESCENT : MoonPhaseName.WANING_CRESCENT);
@@ -612,6 +647,7 @@ public class MoonCalc extends AstroCalc {
      * Calculates the illumination.
      */
     private double getIllumination(double jd) {
+        // TODO : remove sinDeg && codDeg
         double t = DateTimeUtils.toJulianCenturies(jd);
 <<<<<<< Upstream, based on main
 <<<<<<< Upstream, based on main
@@ -643,13 +679,18 @@ public class MoonCalc extends AstroCalc {
      * Searches the next moon phase in a given direction
      */
 <<<<<<< Upstream, based on main
+<<<<<<< Upstream, based on main
     private double getPhase(double jd, MoonPhaseName phase, boolean forward) {
 =======
     private double getNextPhase(Calendar cal, double midnightJd, MoonPhaseName phase) {
 >>>>>>> 810a1e9 Initial commit for Moon phase revamp
+=======
+    private double getNextPhase(double midnightJd, MoonPhaseName phase) {
+>>>>>>> bb4de3d Starting to work on transition to Instant for MoonPhase
         double tz = 0;
         double phaseJd = 0;
         do {
+<<<<<<< Upstream, based on main
 <<<<<<< Upstream, based on main
             double k = varK(jd, tz);
             tz += forward ? 1 : -1;
@@ -657,6 +698,9 @@ public class MoonCalc extends AstroCalc {
         } while (forward ? phaseJd <= jd : phaseJd > jd);
 =======
             double k = varK(cal, tz);
+=======
+            double k = varK(tz);
+>>>>>>> bb4de3d Starting to work on transition to Instant for MoonPhase
             tz += 1;
             phaseJd = calcMoonPhase(k, phase);
         } while (phaseJd <= midnightJd);
@@ -664,6 +708,7 @@ public class MoonCalc extends AstroCalc {
         return phaseJd;
     }
 
+<<<<<<< Upstream, based on main
 <<<<<<< Upstream, based on main
 =======
     /**
@@ -793,6 +838,8 @@ public class MoonCalc extends AstroCalc {
 >>>>>>> 810a1e9 Initial commit for Moon phase revamp
 =======
 >>>>>>> 5ae0857 Rebased. Corrected moon_day dynamic icons Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added unit tests for eclipses Rebased on moon_distance
+=======
+>>>>>>> bb4de3d Starting to work on transition to Instant for MoonPhase
     private double[] calcMoon(double t) {
         double p2 = 6.283185307;
         double arc = 206264.8062;

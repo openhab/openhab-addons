@@ -44,6 +44,7 @@ public final class AstroBindingConstants {
     public static final String EVENT_START = "START";
     public static final String EVENT_END = "END";
 
+<<<<<<< Upstream, based on main
     public static final String EVENT_PHASE_FIRST_QUARTER = "FIRST_QUARTER";
     public static final String EVENT_PHASE_THIRD_QUARTER = "THIRD_QUARTER";
     public static final String EVENT_PHASE_FULL = "FULL";
@@ -146,6 +147,8 @@ public final class AstroBindingConstants {
     public static final String CHANNEL_ID_SUN_CIRCADIAN_BRIGHTNESS = "circadian#brightness";
     public static final String CHANNEL_ID_SUN_CIRCADIAN_TEMPERATURE = "circadian#temperature";
 
+=======
+>>>>>>> bb4de3d Starting to work on transition to Instant for MoonPhase
     // event channelIds
     public static final String EVENT_CHANNEL_ID_MOON_PHASE = "phase#event";
     public static final String EVENT_CHANNEL_ID_ECLIPSE = "eclipse#event";

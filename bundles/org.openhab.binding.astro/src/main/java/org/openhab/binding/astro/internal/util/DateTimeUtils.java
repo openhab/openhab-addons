@@ -15,7 +15,11 @@ package org.openhab.binding.astro.internal.util;
 import static org.openhab.binding.astro.internal.util.MathUtils.mod;
 
 import java.time.Instant;
+<<<<<<< Upstream, based on main
 import java.time.InstantSource;
+=======
+import java.time.ZoneId;
+>>>>>>> bb4de3d Starting to work on transition to Instant for MoonPhase
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Calendar;
@@ -311,6 +315,10 @@ public class DateTimeUtils {
     public static boolean isSameDay(@Nullable ZonedDateTime zdt1, @Nullable ZonedDateTime zdt2) {
         return zdt1 != null && zdt2 != null
                 && zdt1.toLocalDate().equals(zdt2.withZoneSameInstant(zdt1.getZone()).toLocalDate());
+    }
+
+    public static boolean isSameDay(Instant i1, @Nullable Instant i2, ZoneId zone) {
+        return i2 != null && i1.atZone(zone).toLocalDate().equals(i2.atZone(zone).toLocalDate());
     }
 
     /**

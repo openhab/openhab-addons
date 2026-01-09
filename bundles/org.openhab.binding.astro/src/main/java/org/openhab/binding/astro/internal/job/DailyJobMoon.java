@@ -16,6 +16,7 @@ import static org.openhab.binding.astro.internal.AstroBindingConstants.*;
 import static org.openhab.binding.astro.internal.job.Job.scheduleEvent;
 
 import java.time.Instant;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Locale;
 import java.util.Set;
@@ -26,6 +27,7 @@ import org.openhab.binding.astro.internal.handler.AstroThingHandler;
 import org.openhab.binding.astro.internal.model.DistanceType;
 import org.openhab.binding.astro.internal.model.Moon;
 import org.openhab.binding.astro.internal.model.MoonPhase;
+import org.openhab.binding.astro.internal.model.MoonPhaseName;
 import org.openhab.binding.astro.internal.model.Planet;
 
 /**
@@ -76,24 +78,12 @@ public final class DailyJobMoon extends AbstractJob {
             }
 
             MoonPhase moonPhase = moon.getPhase();
-            cal = moonPhase.getFirstQuarter();
-            if (cal != null) {
-                scheduleEvent(handler, cal, EVENT_PHASE_FIRST_QUARTER, EVENT_CHANNEL_ID_MOON_PHASE, false, zone,
-                        locale);
-            }
-            cal = moonPhase.getThirdQuarter();
-            if (cal != null) {
-                scheduleEvent(handler, cal, EVENT_PHASE_THIRD_QUARTER, EVENT_CHANNEL_ID_MOON_PHASE, false, zone,
-                        locale);
-            }
-            cal = moonPhase.getFull();
-            if (cal != null) {
-                scheduleEvent(handler, cal, EVENT_PHASE_FULL, EVENT_CHANNEL_ID_MOON_PHASE, false, zone, locale);
-            }
-            cal = moonPhase.getNew();
-            if (cal != null) {
-                scheduleEvent(handler, cal, EVENT_PHASE_NEW, EVENT_CHANNEL_ID_MOON_PHASE, false, zone, locale);
-            }
+            Arrays.stream(MoonPhaseName.values()).filter(phase -> !Double.isNaN(phase.mode)).forEach(phase -> {
+                if (moonPhase.getPhase(phase) instanceof Instant phaseDate) {
+                    scheduleEvent(handler, phaseDate, phase.toString(), EVENT_CHANNEL_ID_MOON_PHASE, false, zone,
+                            locale);
+                }
+            });
 
 <<<<<<< Upstream, based on main
             moon.getEclipseSet().getEclipses().forEach(eclipse -> {

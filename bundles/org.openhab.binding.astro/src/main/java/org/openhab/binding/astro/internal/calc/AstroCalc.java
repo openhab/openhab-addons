@@ -106,8 +106,13 @@ public class AstroCalc {
                 + .00000000073 * t * t * t * t;
     }
 
+    @Deprecated
     protected static double varK(Calendar cal, double tz) {
         return (cal.get(Calendar.YEAR) + (cal.get(Calendar.DAY_OF_YEAR) + tz) / 365 - 2000) * 12.3685;
 >>>>>>> a1c7d2d Start refactoring Eclipse for sun and moon
+    }
+
+    protected static double varK(double jd) {
+        return (jd - 2451543.5) / 365.25 * 12.3685;
     }
 }
