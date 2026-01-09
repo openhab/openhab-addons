@@ -591,8 +591,6 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
             // http call failed: go offline except for battery devices, which might be in
             // sleep mode. Once the next update is successful the device goes back online
             handleApiException(e);
-        } catch (NullPointerException | IllegalArgumentException e) {
-            logger.debug("{}: Unable to refresh status: {}", thingName, messages.get("statusupdate.failed"), e);
         } finally {
             if (scheduledUpdates > 0) {
                 --scheduledUpdates;
@@ -757,7 +755,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
 
         // Update uptime and WiFi, internal temp
         ShellyComponents.updateDeviceStatus(this, status);
-        stats.wifiRssi = getInteger(status.wifiSta.rssi);
+        stats.wifiRssi = status.wifiSta != null && status.wifiSta.rssi != null ? status.wifiSta.rssi : 0;
 
         if (api.isInitialized()) {
             stats.timeoutErrors = api.getTimeoutErrors();
@@ -777,8 +775,8 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
             alarm = ALARM_TYPE_LOADERR;
         }
         State internalTemp = getChannelValue(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_ITEMP);
-        if (internalTemp != UnDefType.NULL) {
-            int temp = ((Number) internalTemp).intValue();
+        if (internalTemp instanceof Number number) {
+            int temp = number.intValue();
             if (temp > stats.maxInternalTemp) {
                 stats.maxInternalTemp = temp;
             }
