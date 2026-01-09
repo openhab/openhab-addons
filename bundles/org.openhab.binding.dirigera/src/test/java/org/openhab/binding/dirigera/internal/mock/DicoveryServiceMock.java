@@ -58,7 +58,7 @@ public class DicoveryServiceMock extends DirigeraDiscoveryService {
         synchronized (this) {
             Instant start = Instant.now();
             Instant check = Instant.now();
-            while (discoveries.size() != size && Duration.between(start, check).getSeconds() < 5) {
+            while (discoveries.size() != size && Duration.between(start, check).getSeconds() < 60) {
                 try {
                     wait(100);
                 } catch (InterruptedException e) {

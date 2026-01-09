@@ -17,6 +17,7 @@ import static org.openhab.binding.dirigera.internal.Constants.WS_URL;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.HashMap;
@@ -25,6 +26,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
@@ -64,8 +66,8 @@ public class Websocket {
     public static final String MODEL_UPDATE_TIME = "modelUpdateDuration";
     public static final String MODEL_UPDATE_LAST = "lastModelUpdate";
 
-    private Optional<WebSocketClient> websocketClient = Optional.empty();
-    private Optional<Session> session = Optional.empty();
+    private @Nullable WebSocketClient websocketClient;
+    private @Nullable Session session;
     private JSONObject statistics = new JSONObject();
     private HttpClient httpClient;
     private Gateway gateway;
@@ -74,6 +76,32 @@ public class Websocket {
     public Websocket(Gateway gateway, HttpClient httpClient) {
         this.gateway = gateway;
         this.httpClient = httpClient;
+    }
+
+    private synchronized void setWebsocketClient(@Nullable WebSocketClient client) {
+        this.websocketClient = client;
+    }
+
+    private synchronized Optional<WebSocketClient> websocketClient() {
+        WebSocketClient localWebsocketClient = websocketClient;
+        if (localWebsocketClient != null) {
+            return Optional.of(localWebsocketClient);
+        } else {
+            return Optional.empty();
+        }
+    }
+
+    private synchronized void setSession(@Nullable Session session) {
+        this.session = session;
+    }
+
+    private synchronized Optional<Session> session() {
+        Session localSession = session;
+        if (localSession != null) {
+            return Optional.of(localSession);
+        } else {
+            return Optional.empty();
+        }
     }
 
     public void initialize() {
@@ -102,17 +130,18 @@ public class Websocket {
 
             String websocketURL = String.format(WS_URL, gateway.getIpAddress());
             logger.trace("DIRIGERA WS start {}", websocketURL);
-            websocketClient = Optional.of(client);
+            setWebsocketClient(client);
             client.start();
             client.connect(this, new URI(websocketURL), request);
         } catch (Exception t) {
             // catch Exceptions of start stop and declare communication error
+            setWebsocketClient(null);
             logger.warn("DIRIGERA WS handling exception: {}", t.getMessage());
         }
     }
 
     public boolean isRunning() {
-        return websocketClient.isPresent() && session.isPresent() && session.get().isOpen();
+        return websocketClient().isPresent() && session().isPresent() && session().get().isOpen();
     }
 
     public void stop() {
@@ -121,10 +150,10 @@ public class Websocket {
     }
 
     private void internalStop() {
-        session.ifPresent(session -> {
+        session().ifPresent(session -> {
             session.close();
         });
-        websocketClient.ifPresent(client -> {
+        websocketClient().ifPresent(client -> {
             try {
                 client.stop();
                 client.destroy();
@@ -132,8 +161,8 @@ public class Websocket {
                 logger.warn("DIRIGERA WS exception stopping running client");
             }
         });
-        websocketClient = Optional.empty();
-        this.session = Optional.empty();
+        setWebsocketClient(null);
+        setSession(null);
     }
 
     public void dispose() {
@@ -142,12 +171,12 @@ public class Websocket {
     }
 
     public void ping() {
-        session.ifPresentOrElse((session) -> {
+        session().ifPresentOrElse((session) -> {
             try {
                 // build ping message
                 String pingId = UUID.randomUUID().toString();
                 pingPongMap.put(pingId, Instant.now());
-                session.getRemote().sendPing(ByteBuffer.wrap(pingId.getBytes()));
+                session.getRemote().sendPing(ByteBuffer.wrap(pingId.getBytes(StandardCharsets.UTF_8)));
                 increase(PINGS);
             } catch (IOException e) {
                 logger.warn("DIRIGERA WS ping failed with exception {}", e.getMessage());
@@ -175,7 +204,7 @@ public class Websocket {
             for (int i = 0; i < frame.getPayloadLength(); i++) {
                 bytes[i] = buffer.get(i);
             }
-            String paylodString = new String(bytes);
+            String paylodString = new String(bytes, StandardCharsets.UTF_8);
             Instant sent = pingPongMap.remove(paylodString);
             if (sent != null) {
                 long durationMS = Duration.between(sent, Instant.now()).toMillis();
@@ -185,7 +214,7 @@ public class Websocket {
                 logger.debug("DIRIGERA WS receiced pong without ping {}", paylodString);
             }
         } else if (Frame.Type.PING.equals(frame.getType())) {
-            session.ifPresentOrElse((session) -> {
+            session().ifPresentOrElse((session) -> {
                 logger.trace("DIRIGERA onPing ");
                 ByteBuffer buffer = frame.getPayload();
                 try {
@@ -202,7 +231,7 @@ public class Websocket {
     @OnWebSocketConnect
     public void onConnect(Session session) {
         logger.debug("DIRIGERA WS onConnect");
-        this.session = Optional.of(session);
+        setSession(session);
         session.setIdleTimeout(-1);
         gateway.websocketConnected(true, "connected");
     }
@@ -210,7 +239,7 @@ public class Websocket {
     @OnWebSocketClose
     public void onDisconnect(Session session, int statusCode, String reason) {
         logger.debug("DIRIGERA WS onDisconnect Status {} Reason {}", statusCode, reason);
-        this.session = Optional.empty();
+        setSession(null);
         increase(DISCONNECTS);
         gateway.websocketConnected(false, reason);
     }
@@ -219,7 +248,7 @@ public class Websocket {
     public void onError(Throwable t) {
         String message = t.getMessage();
         logger.warn("DIRIGERA WS onError {}", message);
-        this.session = Optional.empty();
+        setSession(null);
         if (message == null) {
             message = "unknown";
         }

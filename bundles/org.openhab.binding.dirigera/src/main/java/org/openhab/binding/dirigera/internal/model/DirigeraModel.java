@@ -14,11 +14,6 @@ package org.openhab.binding.dirigera.internal.model;
 
 import static org.openhab.binding.dirigera.internal.Constants.*;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -26,7 +21,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Scanner;
 import java.util.TreeMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -40,7 +34,6 @@ import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
-import org.osgi.framework.Bundle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,7 +48,6 @@ public class DirigeraModel implements Model {
     private final Logger logger = LoggerFactory.getLogger(DirigeraModel.class);
 
     private Map<String, DiscoveryResult> resultMap = new HashMap<>();
-    private Map<String, String> templates = new HashMap<>();
     private List<String> devices = new ArrayList<>();
     private JSONObject model = new JSONObject();
     private Gateway gateway;
@@ -131,20 +123,23 @@ public class DirigeraModel implements Model {
     @Override
     public synchronized List<String> getResolvedDeviceList() {
         List<String> deviceList = new ArrayList<>();
-        if (!model.isNull(PROPERTY_DEVICES)) {
-            JSONArray devices = model.getJSONArray(PROPERTY_DEVICES);
+        if (!model.isNull(MODEL_KEY_DEVICES)) {
+            JSONArray devices = model.getJSONArray(MODEL_KEY_DEVICES);
             Iterator<Object> entries = devices.iterator();
             while (entries.hasNext()) {
                 JSONObject entry = (JSONObject) entries.next();
-                String deviceId = entry.getString(PROPERTY_DEVICE_ID);
+                String deviceId = entry.getString(JSON_KEY_DEVICE_ID);
                 String relationId = getRelationId(deviceId);
+                String resolvedId;
                 if (!deviceId.equals(relationId)) {
                     TreeMap<String, String> relationMap = getRelations(relationId);
                     // store for complex devices store result with first found id
-                    relationId = relationMap.firstKey();
+                    resolvedId = relationMap.firstKey();
+                } else {
+                    resolvedId = deviceId;
                 }
-                if (!deviceList.contains(relationId)) {
-                    deviceList.add(relationId);
+                if (!deviceList.contains(resolvedId)) {
+                    deviceList.add(resolvedId);
                 }
             }
         }
@@ -159,12 +154,12 @@ public class DirigeraModel implements Model {
     @Override
     public synchronized List<String> getAllDeviceIds() {
         List<String> deviceList = new ArrayList<>();
-        if (!model.isNull(PROPERTY_DEVICES)) {
-            JSONArray devices = model.getJSONArray(PROPERTY_DEVICES);
+        if (!model.isNull(MODEL_KEY_DEVICES)) {
+            JSONArray devices = model.getJSONArray(MODEL_KEY_DEVICES);
             Iterator<Object> entries = devices.iterator();
             while (entries.hasNext()) {
                 JSONObject entry = (JSONObject) entries.next();
-                deviceList.add(entry.getString(PROPERTY_DEVICE_ID));
+                deviceList.add(entry.getString(JSON_KEY_DEVICE_ID));
             }
         }
         return deviceList;
@@ -172,15 +167,15 @@ public class DirigeraModel implements Model {
 
     private List<String> getAllSceneIds() {
         List<String> sceneList = new ArrayList<>();
-        if (!model.isNull(SCENES)) {
-            JSONArray scenes = model.getJSONArray(SCENES);
+        if (!model.isNull(MODEL_KEY_SCENES)) {
+            JSONArray scenes = model.getJSONArray(MODEL_KEY_SCENES);
             Iterator<Object> sceneIterator = scenes.iterator();
             while (sceneIterator.hasNext()) {
                 JSONObject entry = (JSONObject) sceneIterator.next();
-                if (entry.has(PROPERTY_TYPE)) {
-                    if ("userScene".equals(entry.getString(PROPERTY_TYPE))) {
-                        if (entry.has(PROPERTY_DEVICE_ID)) {
-                            String id = entry.getString(PROPERTY_DEVICE_ID);
+                if (entry.has(JSON_KEY_TYPE)) {
+                    if (TYPE_USER_SCENE.equals(entry.getString(JSON_KEY_TYPE))) {
+                        if (entry.has(JSON_KEY_DEVICE_ID)) {
+                            String id = entry.getString(JSON_KEY_DEVICE_ID);
                             sceneList.add(id);
                         }
                     }
@@ -221,14 +216,14 @@ public class DirigeraModel implements Model {
 
     private JSONArray getIdsForType(String type) {
         JSONArray returnArray = new JSONArray();
-        if (!model.isNull(PROPERTY_DEVICES)) {
-            JSONArray devices = model.getJSONArray(PROPERTY_DEVICES);
+        if (!model.isNull(MODEL_KEY_DEVICES)) {
+            JSONArray devices = model.getJSONArray(MODEL_KEY_DEVICES);
             Iterator<Object> entries = devices.iterator();
             while (entries.hasNext()) {
                 JSONObject entry = (JSONObject) entries.next();
-                if (!entry.isNull(PROPERTY_DEVICE_TYPE) && !entry.isNull(PROPERTY_DEVICE_ID)) {
-                    if (type.equals(entry.get(PROPERTY_DEVICE_TYPE))) {
-                        returnArray.put(entry.get(PROPERTY_DEVICE_ID));
+                if (!entry.isNull(JSON_KEY_DEVICE_TYPE) && !entry.isNull(JSON_KEY_DEVICE_ID)) {
+                    if (type.equals(entry.get(JSON_KEY_DEVICE_TYPE))) {
+                        returnArray.put(entry.get(JSON_KEY_DEVICE_ID));
                     }
                 }
             }
@@ -237,9 +232,9 @@ public class DirigeraModel implements Model {
     }
 
     private boolean hasAttribute(String id, String attribute) {
-        JSONObject deviceObject = getAllFor(id, PROPERTY_DEVICES);
-        if (deviceObject.has(ATTRIBUTES)) {
-            JSONObject attributes = deviceObject.getJSONObject(ATTRIBUTES);
+        JSONObject deviceObject = getAllFor(id, MODEL_KEY_DEVICES);
+        if (deviceObject.has(JSON_KEY_ATTRIBUTES)) {
+            JSONObject attributes = deviceObject.getJSONObject(JSON_KEY_ATTRIBUTES);
             return attributes.has(attribute);
         }
         return false;
@@ -253,7 +248,7 @@ public class DirigeraModel implements Model {
             Iterator<Object> entries = devices.iterator();
             while (entries.hasNext()) {
                 JSONObject entry = (JSONObject) entries.next();
-                if (id.equals(entry.get(PROPERTY_DEVICE_ID))) {
+                if (id.equals(entry.get(JSON_KEY_DEVICE_ID))) {
                     return entry;
                 }
             }
@@ -263,28 +258,28 @@ public class DirigeraModel implements Model {
 
     @Override
     public synchronized String getCustonNameFor(String id) {
-        JSONObject deviceObject = getAllFor(id, PROPERTY_DEVICES);
-        if (deviceObject.has(ATTRIBUTES)) {
-            JSONObject attributes = deviceObject.getJSONObject(ATTRIBUTES);
-            if (attributes.has(CUSTOM_NAME)) {
-                String customName = attributes.getString(CUSTOM_NAME);
+        JSONObject deviceObject = getAllFor(id, MODEL_KEY_DEVICES);
+        if (deviceObject.has(JSON_KEY_ATTRIBUTES)) {
+            JSONObject attributes = deviceObject.getJSONObject(JSON_KEY_ATTRIBUTES);
+            if (attributes.has(ATTRIBUTES_KEY_CUSTOM_NAME)) {
+                String customName = attributes.getString(ATTRIBUTES_KEY_CUSTOM_NAME);
                 if (!customName.isBlank()) {
                     return customName;
                 }
             }
-            if (attributes.has(DEVICE_MODEL)) {
-                String deviceModel = attributes.getString(DEVICE_MODEL);
+            if (attributes.has(ATTRIBUTES_KEY_DEVICE_MODEL)) {
+                String deviceModel = attributes.getString(ATTRIBUTES_KEY_DEVICE_MODEL);
                 if (!deviceModel.isBlank()) {
                     return deviceModel;
                 }
             }
-            if (deviceObject.has(DEVICE_TYPE)) {
-                return deviceObject.getString(DEVICE_TYPE);
+            if (deviceObject.has(JSON_KEY_DEVICE_TYPE)) {
+                return deviceObject.getString(JSON_KEY_DEVICE_TYPE);
             }
             // 3 fallback options
         }
         // not found yet - check scenes
-        JSONObject sceneObject = getAllFor(id, PROPERTY_SCENES);
+        JSONObject sceneObject = getAllFor(id, MODEL_KEY_SCENES);
         if (sceneObject.has("info")) {
             JSONObject info = sceneObject.getJSONObject("info");
             if (info.has("name")) {
@@ -301,10 +296,10 @@ public class DirigeraModel implements Model {
     @Override
     public synchronized Map<String, Object> getPropertiesFor(String id) {
         final Map<String, Object> properties = new HashMap<>();
-        JSONObject deviceObject = getAllFor(id, PROPERTY_DEVICES);
+        JSONObject deviceObject = getAllFor(id, MODEL_KEY_DEVICES);
         // get manufacturer, model and version data
-        if (deviceObject.has(ATTRIBUTES)) {
-            JSONObject attributes = deviceObject.getJSONObject(ATTRIBUTES);
+        if (deviceObject.has(JSON_KEY_ATTRIBUTES)) {
+            JSONObject attributes = deviceObject.getJSONObject(JSON_KEY_ATTRIBUTES);
             THING_PROPERTIES.forEach(property -> {
                 if (attributes.has(property)) {
                     properties.put(property, attributes.get(property));
@@ -312,15 +307,15 @@ public class DirigeraModel implements Model {
             });
         }
         // put id in as representation property
-        properties.put(PROPERTY_DEVICE_ID, id);
+        properties.put(JSON_KEY_DEVICE_ID, id);
         // add capabilities
-        if (deviceObject.has(CAPABILITIES)) {
-            JSONObject capabilities = deviceObject.getJSONObject(CAPABILITIES);
-            if (capabilities.has(PROPERTY_CAN_RECEIVE)) {
-                properties.put(PROPERTY_CAN_RECEIVE, capabilities.getJSONArray(PROPERTY_CAN_RECEIVE));
+        if (deviceObject.has(JSON_KEY_CAPABILITIES)) {
+            JSONObject capabilities = deviceObject.getJSONObject(JSON_KEY_CAPABILITIES);
+            if (capabilities.has(CAPABILITIES_KEY_CAN_RECEIVE)) {
+                properties.put(CAPABILITIES_KEY_CAN_RECEIVE, capabilities.getJSONArray(CAPABILITIES_KEY_CAN_RECEIVE));
             }
-            if (capabilities.has(PROPERTY_CAN_SEND)) {
-                properties.put(PROPERTY_CAN_SEND, capabilities.getJSONArray(PROPERTY_CAN_SEND));
+            if (capabilities.has(CAPABILITIES_KEY_CAN_SEND)) {
+                properties.put(CAPABILITIES_KEY_CAN_SEND, capabilities.getJSONArray(CAPABILITIES_KEY_CAN_SEND));
             }
         }
 
@@ -332,12 +327,12 @@ public class DirigeraModel implements Model {
         final TreeMap<String, String> relationsMap = new TreeMap<>();
         List<String> allDevices = getAllDeviceIds();
         allDevices.forEach(deviceId -> {
-            JSONObject data = getAllFor(deviceId, PROPERTY_DEVICES);
-            if (data.has(Model.PROPERTY_RELATION_ID)) {
-                String relation = data.getString(Model.PROPERTY_RELATION_ID);
+            JSONObject data = getAllFor(deviceId, MODEL_KEY_DEVICES);
+            if (data.has(Model.JSON_KEY_RELATION_ID)) {
+                String relation = data.getString(Model.JSON_KEY_RELATION_ID);
                 if (relationId.equals(relation)) {
-                    String relationDeviceId = data.getString(PROPERTY_DEVICE_ID);
-                    String deviceType = data.getString(PROPERTY_DEVICE_TYPE);
+                    String relationDeviceId = data.getString(JSON_KEY_DEVICE_ID);
+                    String deviceType = data.getString(JSON_KEY_DEVICE_TYPE);
                     if (relationDeviceId != null && deviceType != null) {
                         relationsMap.put(relationDeviceId, deviceType);
                     }
@@ -350,23 +345,31 @@ public class DirigeraModel implements Model {
     private @Nullable DiscoveryResult identifiy(String id) {
         ThingTypeUID ttuid = identifyDeviceFromModel(id);
         // don't report gateway, unknown devices and light sensors connected to motion sensors
-        if (!THING_TYPE_GATEWAY.equals(ttuid) && !THING_TYPE_UNKNNOWN.equals(ttuid)
-                && !THING_TYPE_LIGHT_SENSOR.equals(ttuid) && !THING_TYPE_IGNORE.equals(ttuid)) {
-            // check if it's a simple or complex device
-            String relationId = getRelationId(id);
-            String firstDeviceId = id;
-            if (!id.equals(relationId)) {
-                // complex device
-                TreeMap<String, String> relationMap = getRelations(relationId);
-                // take name from first ordered entry
-                firstDeviceId = relationMap.firstKey();
+        if (!IGNORE_THING_TYPES_UIDS.contains(ttuid)) {
+            String discoveryID = id;
+            String customName = getCustonNameFor(discoveryID);
+            // special handling for BILRESA 3 button controller
+            if (THING_TYPE_MATTER_3_BUTTON_CONTROLLER.equals(ttuid)) {
+                discoveryID = id;
+                char controllerGroup = id.charAt(id.length() - 1);
+                int controllerGroupNUmber = Character.getNumericValue(controllerGroup);
+                customName = customName + " Group " + controllerGroupNUmber / 3;
+            } else {
+                // pack all relations into one device
+                String relationId = getRelationId(id);
+                if (!id.equals(relationId)) {
+                    // complex device
+                    TreeMap<String, String> relationMap = getRelations(relationId);
+                    // take name from first ordered entry
+                    discoveryID = relationMap.firstKey();
+                }
             }
             // take name and properties from first found id
-            String customName = getCustonNameFor(firstDeviceId);
-            Map<String, Object> propertiesMap = getPropertiesFor(firstDeviceId);
-            return DiscoveryResultBuilder.create(new ThingUID(ttuid, gateway.getThing().getUID(), firstDeviceId))
+
+            Map<String, Object> propertiesMap = getPropertiesFor(discoveryID);
+            return DiscoveryResultBuilder.create(new ThingUID(ttuid, gateway.getThing().getUID(), discoveryID))
                     .withBridge(gateway.getThing().getUID()).withProperties(propertiesMap)
-                    .withRepresentationProperty(PROPERTY_DEVICE_ID).withLabel(customName).build();
+                    .withRepresentationProperty(JSON_KEY_DEVICE_ID).withLabel(customName).build();
         }
         return null;
     }
@@ -379,33 +382,84 @@ public class DirigeraModel implements Model {
      */
     @Override
     public synchronized ThingTypeUID identifyDeviceFromModel(String id) {
-        JSONObject entry = getAllFor(id, PROPERTY_DEVICES);
-        if (entry.isEmpty()) {
-            entry = getAllFor(id, PROPERTY_SCENES);
+        JSONObject data = getAllFor(id, MODEL_KEY_DEVICES);
+        if (data.isEmpty()) {
+            data = getAllFor(id, MODEL_KEY_SCENES);
         }
-        if (entry.isEmpty()) {
+        if (data.isEmpty()) {
             return THING_TYPE_NOT_FOUND;
         } else {
-            return identifyDeviceFromJSON(id, entry);
+            ThingTypeUID ttUID = identifyMatterDevice(id, data);
+            if (THING_TYPE_UNKNOWN.equals(ttUID)) {
+                // continue with standard device identification if not a matter device
+                ttUID = identifyStandardDevice(id, data);
+            }
+            return ttUID;
         }
     }
 
-    private ThingTypeUID identifyDeviceFromJSON(String id, JSONObject data) {
+    /**
+     * identify Matter device based on deviceType and their relations
+     *
+     * @param id to query
+     * @param data belonging to the deviceId
+     * @return Matter ThingTypeUID or THING_TYPE_UNKNOWN
+     */
+    private ThingTypeUID identifyMatterDevice(String id, JSONObject data) {
+        // attribute qrCode is used to identify new Matter devices
+        if (hasAttribute(id, ATTRIBUTES_KEY_QRCODE)) {
+            String deviceType = data.getString(JSON_KEY_DEVICE_TYPE);
+            return switch (deviceType) {
+                case "occupancySensor" -> THING_TYPE_MATTER_OCCUPANCY_SENSOR;
+                case "lightSensor" -> {
+                    String relationId = getRelationId(id);
+                    Map<String, String> relationMap = getRelations(relationId);
+                    if (relationMap.values().contains("occupancySensor")) {
+                        yield THING_TYPE_MATTER_OCCUPANCY_SENSOR;
+                    } else {
+                        yield THING_TYPE_MATTER_LIGHT_SENSOR;
+                    }
+                }
+                case "environmentSensor" -> THING_TYPE_MATTER_ENVIRONMENT_SENSOR;
+                case "openCloseSensor" -> THING_TYPE_MATTER_OPEN_CLOSE_SENSOR;
+                case "waterSensor" -> THING_TYPE_MATTER_WATER_LEAK_SENSOR;
+                case "genericSwitch" -> {
+                    String relationId = getRelationId(id);
+                    int relations = getRelations(relationId).size();
+                    var detectedType = switch (relations) {
+                        case 2 -> THING_TYPE_MATTER_2_BUTTON_CONTROLLER;
+                        case 3 -> THING_TYPE_MATTER_3_BUTTON_CONTROLLER;
+                        default -> THING_TYPE_MATTER_UNKNOWN;
+                    };
+                    yield detectedType;
+                }
+                case "light" -> THING_TYPE_MATTER_LIGHT;
+                default -> THING_TYPE_MATTER_UNKNOWN;
+            };
+        } else
+
+        {
+            // no qrCode attribute found so no new matter device
+            return THING_TYPE_UNKNOWN;
+        }
+    }
+
+    private ThingTypeUID identifyStandardDevice(String id, JSONObject data) {
         String typeDeviceType = "";
-        if (data.has(Model.PROPERTY_RELATION_ID)) {
-            return identifiyComplexDevice(data.getString(Model.PROPERTY_RELATION_ID));
-        } else if (data.has(PROPERTY_DEVICE_TYPE)) {
-            String deviceType = data.getString(PROPERTY_DEVICE_TYPE);
+        if (data.has(Model.JSON_KEY_RELATION_ID)) {
+            return identifiyComplexDevice(data.getString(Model.JSON_KEY_RELATION_ID));
+        } else if (data.has(JSON_KEY_DEVICE_TYPE)) {
+            String deviceType = data.getString(JSON_KEY_DEVICE_TYPE);
             typeDeviceType = deviceType;
             switch (deviceType) {
                 case DEVICE_TYPE_GATEWAY:
                     return THING_TYPE_GATEWAY;
                 case DEVICE_TYPE_LIGHT:
-                    if (data.has(CAPABILITIES)) {
-                        JSONObject capabilities = data.getJSONObject(CAPABILITIES);
+                    if (data.has(JSON_KEY_CAPABILITIES)) {
+                        JSONObject capabilities = data.getJSONObject(JSON_KEY_CAPABILITIES);
                         List<String> capabilityList = new ArrayList<>();
-                        if (capabilities.has(PROPERTY_CAN_RECEIVE)) {
-                            JSONArray receiveProperties = capabilities.getJSONArray(PROPERTY_CAN_RECEIVE);
+                        if (capabilities.has(CAPABILITIES_KEY_CAN_RECEIVE)) {
+                            JSONArray receiveProperties = capabilities.getJSONArray(CAPABILITIES_KEY_CAN_RECEIVE);
                             receiveProperties.forEach(capability -> {
                                 capabilityList.add(capability.toString());
                             });
@@ -427,8 +481,6 @@ public class DirigeraModel implements Model {
                     break;
                 case DEVICE_TYPE_MOTION_SENSOR:
                     return THING_TYPE_MOTION_SENSOR;
-                case DEVICE_TYPE_LIGHT_SENSOR:
-                    return THING_TYPE_LIGHT_SENSOR;
                 case DEVICE_TYPE_CONTACT_SENSOR:
                     return THING_TYPE_CONTACT_SENSOR;
                 case DEVICE_TYPE_OUTLET:
@@ -462,8 +514,8 @@ public class DirigeraModel implements Model {
             }
         } else {
             // device type is empty, check for scene
-            if (!data.isNull(PROPERTY_TYPE)) {
-                String type = data.getString(PROPERTY_TYPE);
+            if (!data.isNull(JSON_KEY_TYPE)) {
+                String type = data.getString(JSON_KEY_TYPE);
                 typeDeviceType = type + "/" + typeDeviceType; // just for logging
                 switch (type) {
                     case TYPE_USER_SCENE:
@@ -474,7 +526,7 @@ public class DirigeraModel implements Model {
             }
         }
         logger.warn("DIRIGERA MODEL Unsupported device {} with data {} {}", typeDeviceType, data, id);
-        return THING_TYPE_UNKNNOWN;
+        return THING_TYPE_UNKNOWN;
     }
 
     private ThingTypeUID identifiyComplexDevice(String relationId) {
@@ -485,14 +537,14 @@ public class DirigeraModel implements Model {
         } else if (relationsMap.size() == 2 && relationsMap.containsValue("shortcutController")) {
             for (Iterator<String> iterator = relationsMap.keySet().iterator(); iterator.hasNext();) {
                 if (!"shortcutController".equals(relationsMap.get(iterator.next()))) {
-                    return THING_TYPE_UNKNNOWN;
+                    return THING_TYPE_UNKNOWN;
                 }
             }
             return THING_TYPE_DOUBLE_SHORTCUT_CONTROLLER;
         } else if (relationsMap.size() == 1 && relationsMap.containsValue("gatewy")) {
             return THING_TYPE_GATEWAY;
         } else {
-            return THING_TYPE_UNKNNOWN;
+            return THING_TYPE_UNKNOWN;
         }
     }
 
@@ -504,9 +556,24 @@ public class DirigeraModel implements Model {
      */
     @Override
     public synchronized String getRelationId(String id) {
-        JSONObject dataObject = getAllFor(id, PROPERTY_DEVICES);
-        if (dataObject.has(PROPERTY_RELATION_ID)) {
-            return dataObject.getString(PROPERTY_RELATION_ID);
+        JSONObject dataObject = getAllFor(id, MODEL_KEY_DEVICES);
+        if (dataObject.has(JSON_KEY_RELATION_ID)) {
+            return dataObject.getString(JSON_KEY_RELATION_ID);
+        }
+        return id;
+    }
+
+    /**
+     * Get relationId for a given device id
+     *
+     * @param id to check
+     * @return same id if no relations are found or relationId
+     */
+    @Override
+    public synchronized String getDeviceType(String id) {
+        JSONObject dataObject = getAllFor(id, MODEL_KEY_DEVICES);
+        if (dataObject.has(JSON_KEY_DEVICE_TYPE)) {
+            return dataObject.getString(JSON_KEY_DEVICE_TYPE);
         }
         return id;
     }
@@ -520,44 +587,5 @@ public class DirigeraModel implements Model {
     @Override
     public synchronized boolean has(String id) {
         return getAllDeviceIds().contains(id) || getAllSceneIds().contains(id);
-    }
-
-    @Override
-    public String getTemplate(String name) {
-        String template = templates.get(name);
-        if (template == null) {
-            template = getResourceFile(name);
-            if (!template.isBlank()) {
-                templates.put(name, template);
-            } else {
-                logger.warn("DIRIGERA MODEL empty template for {}", name);
-                template = "{}";
-            }
-        }
-        return template;
-    }
-
-    private String getResourceFile(String fileName) {
-        try {
-            Bundle myself = gateway.getBundleContext().getBundle();
-            // do this check for unit tests to avoid NullPointerException
-            if (myself != null) {
-                URL url = myself.getResource(fileName);
-                InputStream input = url.openStream();
-                // https://www.baeldung.com/java-scanner-usedelimiter
-                try (Scanner scanner = new Scanner(input).useDelimiter("\\A")) {
-                    String result = scanner.hasNext() ? scanner.next() : "";
-                    String resultReplaceAll = result.replaceAll("[\\n\\r\\s]", "");
-                    scanner.close();
-                    return resultReplaceAll;
-                }
-            } else {
-                // only unit testing
-                return Files.readString(Paths.get("src/main/resources" + fileName));
-            }
-        } catch (IOException e) {
-            logger.warn("DIRIGERA MODEL no template found for {}", fileName);
-        }
-        return "";
     }
 }

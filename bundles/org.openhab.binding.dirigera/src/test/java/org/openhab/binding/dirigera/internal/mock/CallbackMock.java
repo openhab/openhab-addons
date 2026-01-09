@@ -49,9 +49,9 @@ import org.openhab.core.types.TimeSeries;
  */
 @NonNullByDefault
 public class CallbackMock implements ThingHandlerCallback {
-    private final int STATUS_DURATION_TIMEOUT_SEC = 10;
-    private ThingStatusInfo statusInfo = ThingStatusInfoBuilder.create(ThingStatus.UNINITIALIZED).build();
+    private static final int STATUS_DURATION_TIMEOUT_SEC = 5;
     private @Nullable Bridge bridge;
+    private ThingStatusInfo statusInfo = ThingStatusInfoBuilder.create(ThingStatus.UNINITIALIZED).build();
     public Map<String, State> stateMap = new HashMap<>();
     public Map<String, String> triggerMap = new HashMap<>();
 
