@@ -111,7 +111,7 @@ public class MoonCalc extends AstroCalc {
 
         var moonPosition = getMoonPosition(julianDate, latitude, longitude);
         moon.setPosition(moonPosition);
-        moon.setZodiac(ZodiacCalc.calculate(moonPosition.getMonLon(), null));
+        moon.setZodiac(ZodiacCalc.calculate(moonPosition.getMoonLon(), null));
         moon.setDistance(DistanceType.CURRENT, MoonDistanceCalc.calculate(julianDate));
     }
 

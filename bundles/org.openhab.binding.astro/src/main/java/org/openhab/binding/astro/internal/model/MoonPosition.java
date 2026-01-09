@@ -15,7 +15,7 @@ package org.openhab.binding.astro.internal.model;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Holds informations about the Moon Position
+ * Holds information about the Moon Position
  *
  * @author Gaël L'hopital - Initial contribution
  */
@@ -37,7 +37,7 @@ public class MoonPosition extends Position {
     /**
      * Returns the moon longitude
      */
-    public double getMonLon() {
+    public double getMoonLon() {
         return moonLon;
     }
 }
