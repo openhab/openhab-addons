@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -33,6 +33,7 @@ import javax.ws.rs.core.UriInfo;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.common.registry.RegistryChangeListener;
+import org.openhab.core.events.AbstractEvent;
 import org.openhab.core.events.EventPublisher;
 import org.openhab.core.items.GenericItem;
 import org.openhab.core.items.GroupItem;
@@ -143,10 +144,9 @@ public class LightsAndGroups implements RegistryChangeListener<Item> {
 
     @Override
     public synchronized void added(Item newElement) {
-        if (!(newElement instanceof GenericItem)) {
+        if (!(newElement instanceof GenericItem element)) {
             return;
         }
-        GenericItem element = (GenericItem) newElement;
 
         if (!(element instanceof GroupItem) && !ALLOWED_ITEM_TYPES.contains(element.getType())) {
             return;
@@ -191,8 +191,10 @@ public class LightsAndGroups implements RegistryChangeListener<Item> {
      * The HUE API enforces a Group 0 that contains all lights.
      */
     private void updateGroup0() {
-        cs.ds.groups.get("0").lights = cs.ds.lights.keySet().stream().map(v -> String.valueOf(v))
-                .collect(Collectors.toList());
+        HueGroupEntry group0 = cs.ds.groups.get("0");
+        if (group0 != null) {
+            group0.lights = cs.ds.lights.keySet().stream().map(v -> String.valueOf(v)).toList();
+        }
     }
 
     @Override
@@ -207,21 +209,19 @@ public class LightsAndGroups implements RegistryChangeListener<Item> {
     /**
      * The tags might have changed
      */
-    @SuppressWarnings({ "null", "unused" })
     @Override
     public synchronized void updated(Item oldElement, Item newElement) {
-        if (!(newElement instanceof GenericItem)) {
+        if (!(newElement instanceof GenericItem element)) {
             return;
         }
-        GenericItem element = (GenericItem) newElement;
 
         String hueID = cs.mapItemUIDtoHueID(element);
 
         HueGroupEntry hueGroup = cs.ds.groups.get(hueID);
         if (hueGroup != null) {
             DeviceType t = StateUtils.determineTargetType(cs, element);
-            if (t != null && element instanceof GroupItem) {
-                hueGroup.updateItem((GroupItem) element);
+            if (t != null && element instanceof GroupItem groupElement) {
+                hueGroup.updateItem(groupElement);
             } else {
                 cs.ds.groups.remove(hueID);
             }
@@ -235,8 +235,9 @@ public class LightsAndGroups implements RegistryChangeListener<Item> {
         }
 
         // Check if type can still be determined (tags and category is still sufficient)
+        // and that it's still an allowed item type
         DeviceType t = StateUtils.determineTargetType(cs, element);
-        if (t == null) {
+        if (t == null || !ALLOWED_ITEM_TYPES.contains(element.getType())) {
             removed(element);
             return;
         }
@@ -291,7 +292,6 @@ public class LightsAndGroups implements RegistryChangeListener<Item> {
         return Response.ok(cs.gson.toJson(cs.ds.lights.get(id))).build();
     }
 
-    @SuppressWarnings({ "null", "unused" })
     @DELETE
     @Path("{username}/lights/{id}")
     @Operation(summary = "Deletes the item that is represented by this id", responses = {
@@ -316,7 +316,6 @@ public class LightsAndGroups implements RegistryChangeListener<Item> {
         }
     }
 
-    @SuppressWarnings({ "null", "unused" })
     @PUT
     @Path("{username}/lights/{id}")
     @Operation(summary = "Rename a light", responses = { @ApiResponse(responseCode = "200", description = "OK") })
@@ -333,6 +332,10 @@ public class LightsAndGroups implements RegistryChangeListener<Item> {
 
         final HueChangeRequest changeRequest = cs.gson.fromJson(body, HueChangeRequest.class);
 
+        if (changeRequest == null) {
+            return NetworkUtils.singleError(cs.gson, uri, HueResponse.INVALID_JSON, "Empty body");
+        }
+
         String name = changeRequest.name;
         if (name == null || name.isEmpty()) {
             return NetworkUtils.singleError(cs.gson, uri, HueResponse.INVALID_JSON, "Invalid request: No name set");
@@ -344,7 +347,6 @@ public class LightsAndGroups implements RegistryChangeListener<Item> {
         return NetworkUtils.singleSuccess(cs.gson, name, "/lights/" + id + "/name");
     }
 
-    @SuppressWarnings({ "null", "unused" })
     @PUT
     @Path("{username}/lights/{id}/state")
     @Operation(summary = "Set light state", responses = { @ApiResponse(responseCode = "200", description = "OK") })
@@ -376,8 +378,9 @@ public class LightsAndGroups implements RegistryChangeListener<Item> {
         if (command != null) {
             EventPublisher localEventPublisher = eventPublisher;
             if (localEventPublisher != null) {
-                logger.debug("sending {} to {}", command, itemUID);
-                localEventPublisher.post(ItemEventFactory.createCommandEvent(itemUID, command, "hueemulation"));
+                logger.debug("Sending {} to {}", command, itemUID);
+                localEventPublisher.post(ItemEventFactory.createCommandEvent(itemUID, command,
+                        AbstractEvent.buildSource("org.openhab.io.hueemulation", username)));
             } else {
                 logger.warn("No event publisher. Cannot post item '{}' command!", itemUID);
             }
@@ -389,7 +392,6 @@ public class LightsAndGroups implements RegistryChangeListener<Item> {
         }.getType())).build();
     }
 
-    @SuppressWarnings({ "null", "unused" })
     @PUT
     @Path("{username}/groups/{id}/action")
     @Operation(summary = "Initiate group action", responses = {
@@ -401,11 +403,11 @@ public class LightsAndGroups implements RegistryChangeListener<Item> {
             return NetworkUtils.singleError(cs.gson, uri, HueResponse.UNAUTHORIZED, "Not Authorized");
         }
         HueGroupEntry hueDevice = cs.ds.groups.get(id);
-        GroupItem groupItem = hueDevice.groupItem;
-        if (hueDevice == null || groupItem == null) {
+        if (hueDevice == null || hueDevice.groupItem == null) {
             return NetworkUtils.singleError(cs.gson, uri, HueResponse.NOT_AVAILABLE, "Group not existing");
         }
 
+        GroupItem groupItem = hueDevice.groupItem;
         HueStateChange state = cs.gson.fromJson(body, HueStateChange.class);
         if (state == null) {
             return NetworkUtils.singleError(cs.gson, uri, HueResponse.INVALID_JSON,
@@ -458,7 +460,6 @@ public class LightsAndGroups implements RegistryChangeListener<Item> {
         return Response.ok(cs.gson.toJson(cs.ds.groups.get(id))).build();
     }
 
-    @SuppressWarnings({ "null", "unused" })
     @POST
     @Path("{username}/groups")
     @Operation(summary = "Create a new group", responses = { @ApiResponse(responseCode = "200", description = "OK") })
@@ -485,7 +486,6 @@ public class LightsAndGroups implements RegistryChangeListener<Item> {
             groupItem.addTag("hueroom_" + state.roomclass);
         }
 
-        List<Item> groupItems = new ArrayList<>();
         for (String id : state.lights) {
             Item item = itemRegistry.get(id);
             if (item == null) {
@@ -501,7 +501,6 @@ public class LightsAndGroups implements RegistryChangeListener<Item> {
         return NetworkUtils.singleSuccess(cs.gson, groupid, "id");
     }
 
-    @SuppressWarnings({ "null", "unused" })
     @DELETE
     @Path("{username}/groups/{id}")
     @Operation(summary = "Deletes the item that is represented by this id", responses = {

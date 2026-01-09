@@ -10,7 +10,6 @@
 		<description>The bridge to communicate with the Automower® Connect API</description>
 		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 
-
 		<config-description>
 			<parameter name="appKey" type="text" required="true">
 				<label>Application Key</label>
@@ -33,7 +32,6 @@
 				<description>How often the current Automower® states should be polled using REST API</description>
 			</parameter>
 		</config-description>
-
 	</bridge-type>
 
 	<!-- Automower Thing Type -->
@@ -47,14 +45,13 @@
 		<semantic-equipment-tag>LawnMower</semantic-equipment-tag>
 
 		<channel-groups>
-			<channel-group id="status" typeId="statusType"/>
-			<channel-group id="setting" typeId="settingsType"/>
-			<channel-group id="statistic" typeId="statisticsType"/>
-			<channel-group id="calendartask" typeId="calendarTasksType"/>
-			<channel-group id="stayoutzone" typeId="stayoutZonesType"/>
-			<channel-group id="workarea" typeId="workAreasType"/>
-			<channel-group id="command" typeId="commandsType"/>
-			<channel-group id="message" typeId="messagesType"/>
+			<channel-group id="status" typeId="status-type"/>
+			<channel-group id="setting" typeId="settings-type"/>
+			<channel-group id="statistic" typeId="statistics-type"/>
+			<channel-group id="calendar-task" typeId="calendar-tasks-type"/>
+			<channel-group id="stay-out-zone" typeId="stay-out-zones-type"/>
+			<channel-group id="command" typeId="commands-type"/>
+			<channel-group id="message" typeId="messages-type"/>
 		</channel-groups>
 
 		<properties>
@@ -67,15 +64,10 @@
 			<property name="mowerHasPosition">N/A</property>
 			<property name="mowerHasStayOutZones">N/A</property>
 			<property name="mowerHasWorkAreas">N/A</property>
-			<property name="thingTypeVersion">2</property>
+			<property name="thingTypeVersion">3</property>
 		</properties>
 
 		<config-description>
-			<parameter name="mowerId" type="text" required="true">
-				<label>Automower® Id</label>
-				<description>The Id of an Automower® as used by the Automower® Connect API to identify a Automower®. This is
-					automatically filled when the thing is discovered.</description>
-			</parameter>
 			<parameter name="mowerZoneId" type="text" required="false">
 				<label>TimeZone</label>
 				<description>Time zone of the Automower® (e.g. Europe/Berlin). Default is the time zone configured in openHAB</description>
@@ -83,154 +75,186 @@
 		</config-description>
 	</thing-type>
 
-	<channel-group-type id="statusType">
+	<!-- Automower StayoutZone Type -->
+	<thing-type id="stay-out-zone" listed="false">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+		</supported-bridge-type-refs>
+
+		<label>Automower® StayoutZone</label>
+		<description>An automatic lawn mower stay-out zone</description>
+
+		<channels>
+			<channel id="name" typeId="zone-name-type"/>
+			<channel id="enabled" typeId="zone-enabled-type"/>
+		</channels>
+
+		<properties>
+			<property name="mowerId">N/A</property>
+			<property name="stayoutzoneId">N/A</property>
+			<property name="thingTypeVersion">3</property>
+		</properties>
+	</thing-type>
+
+	<!-- WorkArea Thing Type -->
+	<thing-type id="work-area" listed="false">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+		</supported-bridge-type-refs>
+
+		<label>Automower® WorkArea</label>
+		<description>An automatic lawn mower work-area</description>
+
+		<channel-groups>
+			<channel-group id="work-area" typeId="work-area-type"/>
+			<channel-group id="calendar-task" typeId="calendar-tasks-type"/>
+		</channel-groups>
+
+		<properties>
+			<property name="mowerId">N/A</property>
+			<property name="workareaId">N/A</property>
+			<property name="thingTypeVersion">3</property>
+		</properties>
+	</thing-type>
+
+	<channel-group-type id="status-type">
 		<label>Status</label>
 		<channels>
 			<!-- Status -->
-			<channel id="name" typeId="nameType"/>
-			<channel id="mode" typeId="modeType"/>
-			<channel id="activity" typeId="activityType"/>
-			<channel id="inactive-reason" typeId="inactiveReasonType"/>
-			<channel id="state" typeId="stateType"/>
+			<channel id="name" typeId="name-type"/>
+			<channel id="mode" typeId="mode-type"/>
+			<channel id="activity" typeId="activity-type"/>
+			<channel id="inactive-reason" typeId="inactive-reason-type"/>
+			<channel id="state" typeId="state-type"/>
 			<!-- channels created on demand
-				<channel id="work-area-id" typeId="workAreaIdType"/>
-				<channel id="work-area" typeId="workAreaType"/>
+				<channel id="work-area-id" typeId="work-area-id-type"/>
+				<channel id="work-area" typeId="work-area-type"/>
 			-->
-			<channel id="last-update" typeId="lastUpdateType"/>
-			<channel id="last-poll-update" typeId="lastPollUpdateType"/>
-			<channel id="poll-update" typeId="pollUpdateType"/>
+			<channel id="last-update" typeId="last-update-type"/>
+			<channel id="last-poll-update" typeId="last-poll-update-type"/>
+			<channel id="poll-update" typeId="poll-update-type"/>
 			<channel id="battery" typeId="system.battery-level"/>
-			<channel id="error-code" typeId="errorCodeType"/>
-			<channel id="error-message" typeId="errorMessageType"/>
-			<channel id="error-timestamp" typeId="errorTimestampType"/>
+			<channel id="error-code" typeId="error-code-type"/>
+			<channel id="error-message" typeId="error-message-type"/>
+			<channel id="error-timestamp" typeId="error-timestamp-type"/>
 			<!-- channel created on demand
-				<channel id="error-confirmable" typeId="errorConfirmableType"/>
+				<channel id="error-confirmable" typeId="error-confirmable-type"/>
 			-->
-			<channel id="next-start" typeId="nextStartType"/>
-			<channel id="override-action" typeId="overrideActionType"/>
-			<channel id="restricted-reason" typeId="restrictedReasonType"/>
-			<channel id="external-reason" typeId="externalReasonType"/>
+			<channel id="next-start" typeId="next-start-type"/>
+			<channel id="override-action" typeId="override-action-type"/>
+			<channel id="restricted-reason" typeId="restricted-reason-type"/>
+			<channel id="external-reason" typeId="external-reason-type"/>
 			<!-- channels created on demand
-				<channel id="position" typeId="positionType"/>
+				<channel id="position" typeId="position-type"/>
 			-->
 		</channels>
 	</channel-group-type>
 
 	<!-- Settings -->
-	<channel-group-type id="settingsType">
+	<channel-group-type id="settings-type">
 		<label>Settings</label>
 		<channels>
-			<channel id="cutting-height" typeId="settingCuttingHeightType"/>
+			<channel id="cutting-height" typeId="setting-cutting-height-type"/>
 			<!-- channel created on demand
-				<channel id="headlight-mode" typeId="settingHeadlightModeType"/>
+				<channel id="headlight-mode" typeId="setting-headlight-mode-type"/>
 			-->
 		</channels>
 	</channel-group-type>
 
 	<!-- Statistics -->
-	<channel-group-type id="statisticsType">
+	<channel-group-type id="statistics-type">
 		<label>Statistics</label>
 		<channels>
-			<channel id="cutting-blade-usage-time" typeId="statCuttingBladeUsageTimeType"/>
-			<channel id="down-time" typeId="statDownTimeType"/>
-			<channel id="number-of-charging-cycles" typeId="statNumberOfChargingCyclesType"/>
-			<channel id="number-of-collisions" typeId="statNumberOfCollisionsType"/>
-			<channel id="total-charging-time" typeId="statTotalChargingTimeType"/>
-			<channel id="total-cutting-time" typeId="statTotalCuttingTimeType"/>
-			<channel id="total-cutting-percent" typeId="statTotalCuttingPercentType"/>
-			<channel id="total-drive-distance" typeId="statTotalDriveDistanceType"/>
-			<channel id="total-running-time" typeId="statTotalRunningTimeType"/>
-			<channel id="total-searching-time" typeId="statTotalSearchingTimeType"/>
-			<channel id="total-searching-percent" typeId="statTotalSearchingPercentType"/>
-			<channel id="up-time" typeId="statUpTimeType"/>
+			<channel id="cutting-blade-usage-time" typeId="stat-cutting-blade-usage-time-type"/>
+			<channel id="down-time" typeId="stat-down-time-type"/>
+			<channel id="number-of-charging-cycles" typeId="stat-number-of-charging-cycles-type"/>
+			<channel id="number-of-collisions" typeId="stat-number-of-collisions-type"/>
+			<channel id="total-charging-time" typeId="stat-total-charging-time-type"/>
+			<channel id="total-cutting-time" typeId="stat-total-cutting-time-type"/>
+			<channel id="total-cutting-percent" typeId="stat-total-cutting-percent-type"/>
+			<channel id="total-drive-distance" typeId="stat-total-drive-distance-type"/>
+			<channel id="total-running-time" typeId="stat-total-running-time-type"/>
+			<channel id="total-searching-time" typeId="stat-total-searching-time-type"/>
+			<channel id="total-searching-percent" typeId="stat-total-searching-percent-type"/>
+			<channel id="up-time" typeId="stat-up-time-type"/>
 		</channels>
 	</channel-group-type>
 
 	<!-- Calendar Tasks -->
-	<channel-group-type id="calendarTasksType">
+	<channel-group-type id="calendar-tasks-type">
 		<label>Calendar Tasks</label>
 		<!-- channels created on demand
 			<channels>
-			<channel id="<xx>-start" typeId="calendarTaskStartType"/>
-			<channel id="<xx>-duration" typeId="calendarTaskDurationType"/>
-			<channel id="<xx>-monday" typeId="calendarTaskMondayType"/>
-			<channel id="<xx>-tuesday" typeId="calendarTaskTuesdayType"/>
-			<channel id="<xx>-wednesday" typeId="calendarTaskWednesdayType"/>
-			<channel id="<xx>-thursday" typeId="calendarTaskThursdayType"/>
-			<channel id="<xx>-friday" typeId="calendarTaskFridayType"/>
-			<channel id="<xx>-saturday" typeId="calendarTaskSaturdayType"/>
-			<channel id="<xx>-sunday" typeId="calendarTaskSundayType"/>
-			<channel id="<xx>-workAreaId" typeId="calendarTaskWorkAreaIdType"/>
-			<channel id="<xx>-workArea" typeId="workareaNameType"/>
+			<channel id="<xx>-start" typeId="calendar-task-start-type"/>
+			<channel id="<xx>-duration" typeId="calendar-task-duration-type"/>
+			<channel id="<xx>-monday" typeId="calendar-task-monday-type"/>
+			<channel id="<xx>-tuesday" typeId="calendar-task-tuesday-type"/>
+			<channel id="<xx>-wednesday" typeId="calendar-task-wednesday-type"/>
+			<channel id="<xx>-thursday" typeId="calendar-task-thursday-type"/>
+			<channel id="<xx>-friday" typeId="calendar-task-friday-type"/>
+			<channel id="<xx>-saturday" typeId="calendar-task-saturday-type"/>
+			<channel id="<xx>-sunday" typeId="calendar-task-sunday-type"/>
 			...
 			</channels>
 		-->
 	</channel-group-type>
 
 	<!-- Stayout Zones -->
-	<channel-group-type id="stayoutZonesType">
+	<channel-group-type id="stay-out-zones-type">
 		<label>Stayout Zones</label>
 		<!-- channels created on demand
 			<channels>
-			<channel id="dirty" typeId="zoneDirtyType"/>
-			<channel id="<xx>-id" typeId="zoneIdType"/>
-			<channel id="<xx>-name" typeId="zoneNameType"/>
-			<channel id="<xx>-enabled" typeId="zoneEnabledType"/>
-			...
+			<channel id="dirty" typeId="zone-dirty-type"/>
 			</channels>
 		-->
 	</channel-group-type>
 
 	<!-- Work Areas -->
-	<channel-group-type id="workAreasType">
-		<label>Work Areas</label>
-		<!-- channels created on demand
-			<channels>
-			<channel id="<xx>-id" typeId="workareaIdType"/>
-			<channel id="<xx>-name" typeId="workareaNameType"/>
-			<channel id="<xx>-cutting-height" typeId="workareaCuttingHeightType"/>
-			<channel id="<xx>-enabled" typeId="workareaEnabledType"/>
-			<channel id="<xx>-progress" typeId="workareaProgressType"/>
-			<channel id="<xx>-last-time-completed" typeId="workareaLastTimeCompletedType"/>
-			...
-			</channels>
-		-->
+	<channel-group-type id="work-area-type">
+		<label>Work Area</label>
+		<channels>
+			<channel id="name" typeId="workarea-name-type"/>
+			<channel id="cutting-height" typeId="workarea-cutting-height-type"/>
+			<channel id="enabled" typeId="workarea-enabled-type"/>
+			<channel id="progress" typeId="workarea-progress-type"/>
+			<channel id="last-time-completed" typeId="workarea-last-time-completed-type"/>
+		</channels>
 	</channel-group-type>
 
 	<!-- Messages -->
-	<channel-group-type id="messagesType">
+	<channel-group-type id="messages-type">
 		<label>Messages</label>
 		<channels>
-			<channel id="msg-timestamp" typeId="messageTimeType"/>
-			<channel id="msg-code" typeId="messageCodeType"/>
-			<channel id="msg-text" typeId="messageType"/>
-			<channel id="msg-severity" typeId="messageSeverityType"/>
-			<channel id="msg-gps-position" typeId="messagePositionType"/>
+			<channel id="msg-timestamp" typeId="message-time-type"/>
+			<channel id="msg-code" typeId="message-code-type"/>
+			<channel id="msg-text" typeId="message-type"/>
+			<channel id="msg-severity" typeId="message-severity-type"/>
+			<channel id="msg-gps-position" typeId="message-position-type"/>
 		</channels>
 	</channel-group-type>
 
 	<!-- Commands -->
-	<channel-group-type id="commandsType">
+	<channel-group-type id="commands-type">
 		<label>Commands</label>
 		<channels>
 			<channel id="start" typeId="start"/>
-			<channel id="start_in_work_area" typeId="startInWorkArea"/>
-			<channel id="resume_schedule" typeId="resumeSchedule"/>
+			<channel id="start-in-work-area" typeId="start-in-work-area"/>
+			<channel id="resume-schedule" typeId="resume-schedule"/>
 			<channel id="pause" typeId="pause"/>
 			<channel id="park" typeId="park"/>
-			<channel id="park_until_next_schedule" typeId="parkUntilNextSchedule"/>
-			<channel id="park_until_further_notice" typeId="parkUntilFurtherNotice"/>
+			<channel id="park-until-next-schedule" typeId="park-until-next-schedule"/>
+			<channel id="park-until-further-notice" typeId="park-until-further-notice"/>
 		</channels>
 	</channel-group-type>
 
-	<channel-type id="nameType">
+	<channel-type id="name-type">
 		<item-type>String</item-type>
 		<label>Automower® Name</label>
 		<description>The name of the Automower®</description>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="modeType">
+	<channel-type id="mode-type">
 		<item-type>String</item-type>
 		<label>Mode</label>
 		<description>The current mode</description>
@@ -245,7 +269,7 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="activityType">
+	<channel-type id="activity-type">
 		<item-type>String</item-type>
 		<label>Activity</label>
 		<description>The current activity</description>
@@ -263,7 +287,7 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="inactiveReasonType">
+	<channel-type id="inactive-reason-type">
 		<item-type>String</item-type>
 		<label>Inactive Reason</label>
 		<description>The current reason for being inactive</description>
@@ -276,7 +300,7 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="stateType">
+	<channel-type id="state-type">
 		<item-type>String</item-type>
 		<label>State</label>
 		<description>The current state</description>
@@ -306,78 +330,67 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="workAreaIdType" advanced="true">
+	<channel-type id="work-area-id-type" advanced="true">
 		<item-type>Number</item-type>
 		<label>Work Area Id</label>
 		<description>Id of the active Work Area</description>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="workAreaType">
+	<channel-type id="work-area-type">
 		<item-type>String</item-type>
 		<label>Work Area Name</label>
 		<description>Name of the active Work Area</description>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="lastUpdateType">
+	<channel-type id="last-update-type">
 		<item-type>DateTime</item-type>
 		<label>Last Update</label>
 		<description>The time when the Automower® sent the last update</description>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="lastPollUpdateType" advanced="true">
+	<channel-type id="last-poll-update-type" advanced="true">
 		<item-type>DateTime</item-type>
 		<label>Last Poll Update</label>
 		<description>The time when the binding polled the last update from the cloud</description>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="pollUpdateType" advanced="true">
+	<channel-type id="poll-update-type" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Poll Update</label>
 		<description>Poll Automower® status update from the cloud</description>
 	</channel-type>
 
-	<channel-type id="batteryType">
-		<item-type>Number:Dimensionless</item-type>
-		<label>Battery</label>
-		<description>The battery state of charge in percent</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
-		</tags>
-		<state readOnly="true" pattern="%d %%"/>
-	</channel-type>
-
-	<channel-type id="errorCodeType" advanced="true">
+	<channel-type id="error-code-type" advanced="true">
 		<item-type>Number</item-type>
 		<label>Error Code</label>
 		<description>The current error code</description>
 	</channel-type>
 
-	<channel-type id="errorMessageType">
+	<channel-type id="error-message-type">
 		<item-type>String</item-type>
 		<label>Error Message</label>
 		<description>The current error message</description>
 	</channel-type>
 
-	<channel-type id="errorTimestampType">
+	<channel-type id="error-timestamp-type">
 		<item-type>DateTime</item-type>
 		<label>Error Time</label>
 		<description>The time when the current error occurred</description>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="errorConfirmableType" advanced="true">
+	<channel-type id="error-confirmable-type" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Error Confirmable</label>
 		<description>If the Automower® has an error, this attribute states if the error is confirmable</description>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="nextStartType">
+	<channel-type id="next-start-type">
 		<item-type>DateTime</item-type>
 		<label>Next Start</label>
 		<description>The time for the next scheduled start.
@@ -387,14 +400,14 @@
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="overrideActionType">
+	<channel-type id="override-action-type">
 		<item-type>String</item-type>
 		<label>Override Action</label>
 		<description>The action that overrides the current planner operation</description>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="restrictedReasonType" advanced="true">
+	<channel-type id="restricted-reason-type" advanced="true">
 		<item-type>String</item-type>
 		<label>Restricted Reason</label>
 		<description>The reason that restrics the current planner operation</description>
@@ -413,7 +426,7 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="externalReasonType" advanced="true">
+	<channel-type id="external-reason-type" advanced="true">
 		<item-type>Number</item-type>
 		<label>External Reason</label>
 		<description>An external reason set by i.e. Google Assistant or Amazon Alexa that restrics the current planner
@@ -421,102 +434,102 @@
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="positionType" advanced="false">
+	<channel-type id="position-type">
 		<item-type>Location</item-type>
 		<label>Last GPS Position</label>
 		<description>Last GPS position of the Automower®</description>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="settingCuttingHeightType">
+	<channel-type id="setting-cutting-height-type">
 		<item-type>Number</item-type>
 		<label>Cutting Height</label>
 		<description>Prescaled cutting height, range: 1-9</description>
 	</channel-type>
 
-	<channel-type id="settingHeadlightModeType">
+	<channel-type id="setting-headlight-mode-type">
 		<item-type>String</item-type>
 		<label>Headlight Mode</label>
 	</channel-type>
 
-	<channel-type id="statCuttingBladeUsageTimeType">
+	<channel-type id="stat-cutting-blade-usage-time-type">
 		<item-type>Number:Time</item-type>
 		<label>Cutting Blade Usage Time</label>
 		<description>The time since the last reset of the cutting blade usage counter</description>
 		<state pattern="%.1f h"/>
 	</channel-type>
 
-	<channel-type id="statDownTimeType" advanced="true">
+	<channel-type id="stat-down-time-type" advanced="true">
 		<item-type>Number:Time</item-type>
 		<label>Down Time</label>
 		<description>The time the Automower® has been disconnected from the cloud</description>
 		<state readOnly="true" pattern="%1$tdd:%1$tHh:%1$tMm:%1$tSs"/>
 	</channel-type>
 
-	<channel-type id="statNumberOfChargingCyclesType">
+	<channel-type id="stat-number-of-charging-cycles-type">
 		<item-type>Number</item-type>
 		<label>Number of Charging Cycles</label>
 		<description>Number of charging cycles</description>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="statNumberOfCollisionsType">
+	<channel-type id="stat-number-of-collisions-type">
 		<item-type>Number</item-type>
 		<label>Number of Collisions</label>
 		<description>Total number of collisions</description>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="statTotalChargingTimeType">
+	<channel-type id="stat-total-charging-time-type">
 		<item-type>Number:Time</item-type>
 		<label>Total Charging Time</label>
 		<description>Total charging time</description>
 		<state readOnly="true" pattern="%.1f h"/>
 	</channel-type>
 
-	<channel-type id="statTotalCuttingTimeType">
+	<channel-type id="stat-total-cutting-time-type">
 		<item-type>Number:Time</item-type>
 		<label>Total Cutting Time</label>
 		<description>Total cutting time</description>
 		<state readOnly="true" pattern="%.1f h"/>
 	</channel-type>
 
-	<channel-type id="statTotalCuttingPercentType">
+	<channel-type id="stat-total-cutting-percent-type">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Relative Total Cutting Time</label>
 		<description>Total cutting time in percent</description>
 		<state readOnly="true" pattern="%.1f %%"/>
 	</channel-type>
 
-	<channel-type id="statTotalDriveDistanceType">
+	<channel-type id="stat-total-drive-distance-type">
 		<item-type>Number:Length</item-type>
 		<label>Total Drive Distance</label>
 		<description>Total driven distance</description>
 		<state readOnly="true" pattern="%.1f km"/>
 	</channel-type>
 
-	<channel-type id="statTotalRunningTimeType">
+	<channel-type id="stat-total-running-time-type">
 		<item-type>Number:Time</item-type>
 		<label>Total Running Time</label>
 		<description>The total running time (the wheel motors have been running)</description>
 		<state readOnly="true" pattern="%.1f h"/>
 	</channel-type>
 
-	<channel-type id="statTotalSearchingTimeType">
+	<channel-type id="stat-total-searching-time-type">
 		<item-type>Number:Time</item-type>
 		<label>Total Searching Time</label>
 		<description>The total searching time</description>
 		<state readOnly="true" pattern="%.1f h"/>
 	</channel-type>
 
-	<channel-type id="statTotalSearchingPercentType">
+	<channel-type id="stat-total-searching-percent-type">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Relative Total Searching Time</label>
 		<description>The total searching time in percent</description>
 		<state readOnly="true" pattern="%.1f %%"/>
 	</channel-type>
 
-	<channel-type id="statUpTimeType" advanced="true">
+	<channel-type id="stat-up-time-type" advanced="true">
 		<item-type>Number:Time</item-type>
 		<label>Up Time</label>
 		<description>The time the Automower® has been connected to the cloud</description>
@@ -524,62 +537,56 @@
 	</channel-type>
 
 	<!-- Calendar Tasks -->
-	<channel-type id="calendarTaskStartType" advanced="true">
+	<channel-type id="calendar-task-start-type">
 		<item-type unitHint="min">Number:Time</item-type>
 		<label>Start Time</label>
 		<description>Start time relative to midnight</description>
 		<state pattern="%1$tHh:%1$tMm"/>
 	</channel-type>
-	<channel-type id="calendarTaskDurationType" advanced="true">
+	<channel-type id="calendar-task-duration-type">
 		<item-type unitHint="min">Number:Time</item-type>
 		<label>Duration</label>
 		<description>Duration time</description>
 		<state pattern="%1$tHh:%1$tMm"/>
 	</channel-type>
-	<channel-type id="calendarTaskMondayType" advanced="true">
+	<channel-type id="calendar-task-monday-type">
 		<item-type>Switch</item-type>
 		<label>Enabled on Mondays</label>
 		<description>Enabled on Mondays</description>
 	</channel-type>
-	<channel-type id="calendarTaskTuesdayType" advanced="true">
+	<channel-type id="calendar-task-tuesday-type">
 		<item-type>Switch</item-type>
 		<label>Enabled on Tuesdays</label>
 		<description>Enabled on Tuesdays</description>
 	</channel-type>
-	<channel-type id="calendarTaskWednesdayType" advanced="true">
+	<channel-type id="calendar-task-wednesday-type">
 		<item-type>Switch</item-type>
 		<label>Enabled on Wednesdays</label>
 		<description>Enabled on Wednesdays</description>
 	</channel-type>
-	<channel-type id="calendarTaskThursdayType" advanced="true">
+	<channel-type id="calendar-task-thursday-type">
 		<item-type>Switch</item-type>
 		<label>Enabled on Thursdays</label>
 		<description>Enabled on Thursdays</description>
 	</channel-type>
-	<channel-type id="calendarTaskFridayType" advanced="true">
+	<channel-type id="calendar-task-friday-type">
 		<item-type>Switch</item-type>
 		<label>Enabled on Fridays</label>
 		<description>Enabled on Fridays</description>
 	</channel-type>
-	<channel-type id="calendarTaskSaturdayType" advanced="true">
+	<channel-type id="calendar-task-saturday-type">
 		<item-type>Switch</item-type>
 		<label>Enabled on Saturdays</label>
 		<description>Enabled on Saturdays</description>
 	</channel-type>
-	<channel-type id="calendarTaskSundayType" advanced="true">
+	<channel-type id="calendar-task-sunday-type">
 		<item-type>Switch</item-type>
 		<label>Enabled on Sundays</label>
 		<description>Enabled on Sundays</description>
 	</channel-type>
-	<channel-type id="calendarTaskWorkAreaIdType" advanced="true">
-		<item-type>Number</item-type>
-		<label>Work Area Id of Calendar</label>
-		<description>Work Area Id mapped to this calendar</description>
-		<state readOnly="true"/>
-	</channel-type>
 
 	<!-- Stayout Zones -->
-	<channel-type id="zoneDirtyType" advanced="true">
+	<channel-type id="zone-dirty-type" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Stayout Zones Dirty Flag</label>
 		<description>If the stay-out zones are synchronized with the Husqvarna cloud. If the map is dirty you can not enable
@@ -587,62 +594,48 @@
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="zoneIdType" advanced="true">
+	<channel-type id="zone-name-type">
 		<item-type>String</item-type>
-		<label>Stayout Zone Id</label>
-		<description>Id of the stay-out zone</description>
-		<state readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="zoneNameType" advanced="true">
-		<item-type>String</item-type>
-		<label>Stayout Zone Name</label>
+		<label>Name</label>
 		<description>The name of the stay-out zone</description>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="zoneEnabledType" advanced="true">
+	<channel-type id="zone-enabled-type">
 		<item-type>Switch</item-type>
-		<label>Stayout Zone Enabled</label>
+		<label>Enabled</label>
 		<description>If the stay-out zone is enabled, the Automower® will not access the zone</description>
 	</channel-type>
 
 	<!-- Work Areas -->
-	<channel-type id="workareaIdType" advanced="true">
-		<item-type>Number</item-type>
-		<label>Work Area Id</label>
-		<description>Id of the Work Area</description>
-		<state readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="workareaNameType" advanced="true">
+	<channel-type id="workarea-name-type">
 		<item-type>String</item-type>
-		<label>Work Area Name</label>
+		<label>Name</label>
 		<description>Name of the Work Area</description>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="workareaCuttingHeightType" advanced="true">
+	<channel-type id="workarea-cutting-height-type">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Cutting Height</label>
 		<description>Cutting height of the Work Area, range: 0-100</description>
 		<state pattern="%d %%"/>
 	</channel-type>
 
-	<channel-type id="workareaEnabledType" advanced="true">
+	<channel-type id="workarea-enabled-type">
 		<item-type>Switch</item-type>
-		<label>Work Area Enabled</label>
+		<label>Enabled</label>
 		<description>If the Work Area is enabled or disabled</description>
 	</channel-type>
 
-	<channel-type id="workareaProgressType" advanced="true">
+	<channel-type id="workarea-progress-type" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Work Area Progress</label>
+		<label>Progress</label>
 		<description>The progress on a Work Area. EPOS Automower® and systematic mowing Work Areas only</description>
 		<state readOnly="true" pattern="%d %%"/>
 	</channel-type>
 
-	<channel-type id="workareaLastTimeCompletedType" advanced="true">
+	<channel-type id="workarea-last-time-completed-type" advanced="true">
 		<item-type>DateTime</item-type>
 		<label>Last Time Completed</label>
 		<description>Timestamp when the Work Area was last completed. EPOS Automower® and systematic mowing Work Areas only</description>
@@ -650,35 +643,35 @@
 	</channel-type>
 
 	<!-- Messages -->
-	<channel-type id="messageTimeType" advanced="true">
+	<channel-type id="message-time-type" advanced="true">
 		<item-type>DateTime</item-type>
 		<label>Last Error Time</label>
 		<description>The time when the last error occurred</description>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="messageCodeType" advanced="true">
+	<channel-type id="message-code-type" advanced="true">
 		<item-type>Number</item-type>
 		<label>Last Error Code</label>
 		<description>The last error code</description>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="messageType" advanced="true">
+	<channel-type id="message-type" advanced="true">
 		<item-type>String</item-type>
 		<label>Last Error Message</label>
 		<description>The last error message</description>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="messageSeverityType" advanced="true">
+	<channel-type id="message-severity-type" advanced="true">
 		<item-type>String</item-type>
 		<label>Message Severity</label>
 		<description>The severity of the last error</description>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="messagePositionType" advanced="true">
+	<channel-type id="message-position-type" advanced="true">
 		<item-type>Location</item-type>
 		<label>Message GPS Position</label>
 		<description>GPS position of the last event (if available)</description>
@@ -693,7 +686,7 @@
 		<state pattern="%d min" min="1" max="1440" step="1"/>
 	</channel-type>
 
-	<channel-type id="startInWorkArea">
+	<channel-type id="start-in-work-area">
 		<item-type>Number</item-type>
 		<label>Start in Work Area</label>
 		<description>Start the Automower® in the given Work Area, overriding the schedule. The Automower® will continue
@@ -701,7 +694,7 @@
 		<state pattern="%d"/>
 	</channel-type>
 
-	<channel-type id="resumeSchedule">
+	<channel-type id="resume-schedule">
 		<item-type>Switch</item-type>
 		<label>Resume Schedule</label>
 		<description>Resume the schedule of the Automower®</description>
@@ -720,13 +713,13 @@
 		<state pattern="%d min" min="1" max="1440" step="1"/>
 	</channel-type>
 
-	<channel-type id="parkUntilNextSchedule">
+	<channel-type id="park-until-next-schedule">
 		<item-type>Switch</item-type>
 		<label>Park Until Next Schedule</label>
 		<description>Park the Automower®, fully charge it and start afterwards according to the schedule</description>
 	</channel-type>
 
-	<channel-type id="parkUntilFurtherNotice">
+	<channel-type id="park-until-further-notice">
 		<item-type>Switch</item-type>
 		<label>Park and Pause the Schedule</label>
 		<description>Park the Automower® until it is started again by the start action/command or the schedule gets resumed</description>

@@ -11,7 +11,7 @@
 				<label>Tempo Today Color</label>
 			</channel>
 			<channel id="tempo-info-tomorrow" typeId="tempo-value">
-				<label>Tempo Today Color</label>
+				<label>Tempo Tomorrow Color</label>
 			</channel>
 			<channel id="tempo-info-timeseries" typeId="tempo-value">
 				<label>Tempo Day Information</label>

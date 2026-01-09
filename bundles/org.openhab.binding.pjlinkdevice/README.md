@@ -3,7 +3,7 @@
 This binding allows you to control devices with [PJLink](https://pjlink.jbmia.or.jp/english/) support.
 PJLink is a protocol that was developed to standardize IP control of digital projectors, but can also be used by other device types.
 
-Aspects that can be controlled via PJLink are power on/off, input source selection and volume/mute setting.
+Aspects that can be controlled via PJLink include power on/off, input source selection, and volume/mute.
 
 ## Supported Things
 
@@ -18,11 +18,11 @@ The binding is tested with the PJLink device test tool (PJLinkTEST4CNT) and an A
 
 ## Discovery
 
-Autodiscovery is checking all IP addressess of all class C IPv4 subnets connected to the openHAB system for devices which respond PJLink compliant on the PJLink standard port 4352.
+Autodiscovery scans all Class C IPv4 subnets connected to the openHAB system for devices that respond to PJLink on the standard port 4352.
 
 ## Thing Configuration
 
-The _pjLinkDevice_ thing type has the following parameters:
+The _pjLinkDevice_ Thing type has the following parameters:
 
 | Parameter             | Description                                                                                                                                                  |
 |-----------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------|

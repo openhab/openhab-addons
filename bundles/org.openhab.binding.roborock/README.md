@@ -17,14 +17,16 @@ After (manually) adding a Roborock Account bridge, registered vacuums will be au
 
 ## `account` Bridge Configuration
 
-Account configuration is necessary. 
-The easiest way to do this is from the UI. 
-Just add a new thing, select the Roborock binding, then Roborock Account Binding Thing, and enter the email and password for your Roborock account.
+Account configuration is necessary.
+The easiest way to do this is from the UI.
+Just add a new thing, select the Roborock binding, then Roborock Account Binding Thing, and enter the email for your Roborock account.
+If the email is valid, you will be sent an email with a verification code.
+Once received, update the twofa field and hit save.
 
 | Thing Parameter | Default Value | Required | Advanced | Description                                                                          |
 |-----------------|---------------|----------|----------|--------------------------------------------------------------------------------------|
 | email           | N/A           | Yes      | No       | Email address for your Roborock account                                              |
-| password        | N/A           | Yes      | No       | Password for your Roborock account                                                   |
+| twofa           | N/A           | No       | No       | 2FA code which will be sent to your email once you add the thing                     |
 
 ## `vacuum` Thing Configuration
 
@@ -98,7 +100,7 @@ In case your vacuum does not support one of these commands, it will show "unsupp
 ### `demo.things` Example
 
 ```java
-Bridge roborock:account:account [ email="xxxx", password="xxxx" ] {
+Bridge roborock:account:account [ email="xxxx", twofa="xxxx" ] {
     roborock:vacuum:QrevoS [ refresh=5 ]
 }
 ```

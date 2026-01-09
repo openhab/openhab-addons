@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -30,7 +30,7 @@ public class FTPUser implements User {
     private static Logger logger = LoggerFactory.getLogger(FTPUser.class);
 
     private final String login;
-    private int idleTimeout;
+    private final int idleTimeout;
 
     public FTPUser(String login, int idleTimeout) {
         this.login = login;

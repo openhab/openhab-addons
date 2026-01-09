@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -46,7 +46,8 @@ public enum RobotCapabilities {
     MOP_DRYING("dry_status", "status#is-mop-drying", "roborock:is-mop-drying", ""),
     MOP_DRYING_REMAINING_TIME("dry_status", "status#mop-drying-time", "roborock:mop-drying-time", ""),
     DOCK_STATE("dock_error_status", "status#dock-state", "roborock:dock-state", ""),
-    DOCK_STATE_ID("dock_error_status", "status#dock-state-id", "roborock:dock-state-id", "");
+    DOCK_STATE_ID("dock_error_status", "status#dock-state-id", "roborock:dock-state-id", ""),
+    CLEAN_PERCENT("clean_percent", "status#clean-percent", "roborock:clean-percent", "");
 
     private final String statusFieldName;
     private final String channel;

@@ -45,24 +45,24 @@
 		<config-description>
 			<parameter name="ip" type="text" required="false">
 				<label>IP Address</label>
-				<description>The IP address of the Go-eCharger</description>
+				<description>The IP address of the Go-eCharger.</description>
 				<context>network-address</context>
 			</parameter>
 			<parameter name="serial" type="text" required="false">
 				<label>Serial Number</label>
-				<description>The serial number of the Go-eCharger</description>
+				<description>The serial number of the Go-eCharger.</description>
 			</parameter>
 			<parameter name="token" type="text" required="false">
 				<label>Cloud Access Token</label>
-				<description>The access token for the Go-eCharger Cloud API</description>
+				<description>The access token for the Go-eCharger Cloud API.</description>
 			</parameter>
 			<parameter name="apiVersion" type="integer" required="false" min="1" max="2">
-				<label>API version</label>
-				<description>The API version of the Go-eCharger</description>
+				<label>API Version</label>
+				<description>The API version of the Go-eCharger.</description>
 			</parameter>
 			<parameter name="refreshInterval" type="integer" required="false" unit="s">
 				<label>Refresh Interval</label>
-				<description>Refresh interval for acquiring data from Go-eCharger in seconds</description>
+				<description>Refresh interval for acquiring data from the Go-eCharger, in seconds.</description>
 				<unitLabel>s</unitLabel>
 			</parameter>
 		</config-description>
@@ -89,14 +89,14 @@
 	</channel-type>
 	<channel-type id="maxCurrTmp">
 		<item-type>Number:ElectricCurrent</item-type>
-		<label>Maximum Current Temporary</label>
-		<description>Maximum current temporary (not written to EEPROM)</description>
+		<label>Temporary Maximum Current</label>
+		<description>Temporary maximum current (not written to EEPROM).</description>
 		<state pattern="%d %unit%" readOnly="false"/>
 	</channel-type>
 	<channel-type id="pwm">
 		<item-type>String</item-type>
-		<label>PWM signal status</label>
-		<description>Pulse-width modulation signal status</description>
+		<label>PWM Signal Status</label>
+		<description>Pulse-width modulation signal status.</description>
 		<state readOnly="true">
 			<options>
 				<option value="READY_NO_CAR">Ready (no car)</option>
@@ -214,8 +214,8 @@
 	</channel-type>
 	<channel-type id="pAll">
 		<item-type>Number:Power</item-type>
-		<label>Power All</label>
-		<description>Power All</description>
+		<label>Total Power</label>
+		<description>Total power</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Power</tag>
@@ -225,24 +225,24 @@
 	<channel-type id="pha">
 		<item-type>Number</item-type>
 		<label>Phases</label>
-		<description>Amount of phases currently used for charging</description>
+		<description>Number of phases currently used for charging.</description>
 		<state readOnly="false"/>
 	</channel-type>
 	<channel-type id="fs">
 		<item-type>Number</item-type>
-		<label>Force state</label>
+		<label>Force State</label>
 		<description>Force state (Neutral=0, Off=1, On=2)</description>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="awp">
 		<item-type>Number</item-type>
-		<label>Awatttar Max Price</label>
+		<label>aWATTar Maximum Price</label>
 		<state pattern="%.2f"/>
 	</channel-type>
 	<channel-type id="scl">
 		<item-type>Number:Energy</item-type>
 		<label>Current Session Charge Energy Limit</label>
-		<description>Wallbox stops charging after defined value, deactivate with value 0</description>
+		<description>The wallbox stops charging after the defined value; deactivate with 0.</description>
 		<state pattern="%.1f %unit%" readOnly="false"/>
 	</channel-type>
 	<channel-type id="scs">
@@ -274,19 +274,19 @@
 	<channel-type id="alw">
 		<item-type>Switch</item-type>
 		<label>Allow Charging</label>
-		<description>If true charging is allowed</description>
+		<description>If true, charging is allowed.</description>
 		<state readOnly="false"/>
 	</channel-type>
 	<channel-type id="cbl">
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>Cable Encoding</label>
-		<description>Specifies the max amps that can be charged with that cable</description>
+		<description>Specifies the maximum current the cable supports.</description>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="tmpT2p">
 		<item-type>Number:Temperature</item-type>
-		<label>Temperature type 2 port</label>
-		<description>Temperature of the Go-eCharger on the type 2 port</description>
+		<label>Type 2 Port Temperature</label>
+		<description>Temperature of the Go-eCharger at the Type 2 port.</description>
 		<category>Temperature</category>
 		<tags>
 			<tag>Measurement</tag>
@@ -296,8 +296,8 @@
 	</channel-type>
 	<channel-type id="tmp">
 		<item-type>Number:Temperature</item-type>
-		<label>Temperature circuit board</label>
-		<description>Temperature of the Go-eCharger on circuit board</description>
+		<label>Circuit Board Temperature</label>
+		<description>Temperature of the Go-eCharger on the circuit board.</description>
 		<category>Temperature</category>
 		<tags>
 			<tag>Measurement</tag>
@@ -308,7 +308,7 @@
 	<channel-type id="fmw">
 		<item-type>String</item-type>
 		<label>Firmware</label>
-		<description>Firmware Version</description>
+		<description>Firmware version</description>
 		<state readOnly="true"/>
 	</channel-type>
 </thing:thing-descriptions>

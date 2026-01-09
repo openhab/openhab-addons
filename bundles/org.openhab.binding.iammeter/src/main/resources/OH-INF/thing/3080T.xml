@@ -6,7 +6,7 @@
 
 	<thing-type id="powermeter3080T">
 		<label>Iammeter Power Meter 3080T</label>
-		<description>3 phases PowerMeter for Iammeter 3080T Binding</description>
+		<description>Three-phase power meter for Iammeter 3080T</description>
 		<semantic-equipment-tag>ElectricMeter</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="powerPhaseA" typeId="powerPhaseGroup">
@@ -39,7 +39,7 @@
 	<channel-type id="voltage">
 		<item-type>Number:ElectricPotential</item-type>
 		<label>Voltage</label>
-		<description>voltage for phase A</description>
+		<description>Voltage for phase A</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Voltage</tag>
@@ -49,7 +49,7 @@
 	<channel-type id="current">
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>Current</label>
-		<description>current for phase A</description>
+		<description>Current for phase A</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Current</tag>
@@ -59,7 +59,7 @@
 	<channel-type id="power">
 		<item-type>Number:Power</item-type>
 		<label>Power</label>
-		<description>power for phase A</description>
+		<description>Power for phase A</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Power</tag>
@@ -68,8 +68,8 @@
 	</channel-type>
 	<channel-type id="importenergy">
 		<item-type>Number:Energy</item-type>
-		<label>ImportEnergy</label>
-		<description>importenergy for phase A</description>
+		<label>Import Energy</label>
+		<description>Import energy for phase A</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Energy</tag>
@@ -78,8 +78,8 @@
 	</channel-type>
 	<channel-type id="exportgrid">
 		<item-type>Number:Energy</item-type>
-		<label>Exportgrid</label>
-		<description>exportgrid for phase A</description>
+		<label>Export Energy</label>
+		<description>Export energy for phase A</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Energy</tag>
@@ -89,13 +89,13 @@
 	<channel-type id="frequency" advanced="true">
 		<item-type>Number:Frequency</item-type>
 		<label>Frequency</label>
-		<description>frequency for phase A</description>
+		<description>Frequency for phase A</description>
 		<state pattern="%.2f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="pf" advanced="true">
 		<item-type>Number</item-type>
 		<label>Power Factor</label>
-		<description>power factor for phase A</description>
+		<description>Power factor for phase A</description>
 		<state pattern="%.2f" readOnly="true"></state>
 	</channel-type>
 

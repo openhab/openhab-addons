@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,7 +21,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
+import java.net.URI;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.file.Files;
@@ -166,7 +166,7 @@ public class PiperTTSService extends AbstractCachedTTSService {
         }
         if (!Files.exists(JAR_FILE)) {
             logger.debug("Downloading file: {}", JAR_URL);
-            InputStream in = new URL(JAR_URL).openStream();
+            InputStream in = URI.create(JAR_URL).toURL().openStream();
             Files.copy(in, JAR_FILE, StandardCopyOption.REPLACE_EXISTING);
         }
         try (java.util.jar.JarFile jar = new java.util.jar.JarFile(JAR_FILE.toFile())) {

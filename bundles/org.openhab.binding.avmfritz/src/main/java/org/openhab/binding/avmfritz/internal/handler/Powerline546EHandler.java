@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -127,8 +127,8 @@ public class Powerline546EHandler extends AVMFritzBaseBridgeHandler implements F
 
             updateProperties(device);
 
-            if (device.isPowermeter()) {
-                updatePowermeter(device.getPowermeter());
+            if (device.isPowerMeter()) {
+                updatePowermeter(device.getPowerMeter());
             }
             if (device.isSwitchableOutlet()) {
                 updateSwitchableOutlet(device.getSwitch());

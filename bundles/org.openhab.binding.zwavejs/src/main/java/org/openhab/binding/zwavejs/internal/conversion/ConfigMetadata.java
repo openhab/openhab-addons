@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -46,6 +46,7 @@ public class ConfigMetadata extends BaseMetadata {
     private Type configTypeFromMetadata(MetadataType type, Object value, int commandClass) {
         type = correctedType(type, value, commandClass, null);
         switch (type) {
+            case TIMEOUT:
             case NUMBER:
                 return Type.INTEGER;
             // Might be future cases that require DECIMAL, might depend on scale?

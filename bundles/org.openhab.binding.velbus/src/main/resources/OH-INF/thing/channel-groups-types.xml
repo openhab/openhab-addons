@@ -30,7 +30,7 @@
 	</channel-group-type>
 
 	<channel-group-type id="4channelAnalogOutputModule">
-		<label>Analog Input</label>
+		<label>Analog Output</label>
 		<description>
 			This is a generic analog module with 4 output channels.
 		</description>
@@ -729,6 +729,7 @@
 			<channel id="CH77" typeId="system.color"/>
 			<channel id="CH78" typeId="system.color"/>
 			<channel id="CH79" typeId="system.color"/>
+			<channel id="CH80" typeId="system.color"/>
 			<channel id="CH81" typeId="system.color"/>
 		</channels>
 	</channel-group-type>

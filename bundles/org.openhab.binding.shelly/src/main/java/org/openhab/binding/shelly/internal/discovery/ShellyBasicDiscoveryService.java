@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -151,6 +151,8 @@ public class ShellyBasicDiscoveryService extends AbstractDiscoveryService {
             if (result.isHttpAccessUnauthorized()) {
                 // create shellyunknown thing - will be changed during thing initialization with valid credentials
                 thingUID = ShellyThingCreator.getThingUIDForUnknown(name, model, mode);
+            } else {
+                logger.debug("{}: Unable to discover device: {}", name, e.getMessage());
             }
         } catch (IllegalArgumentException | IOException e) { // maybe some format description was buggy
             logger.debug("Discovery: Unable to discover thing", e);

@@ -7,23 +7,23 @@
 	<!-- API Bridge Type -->
 	<bridge-type id="account">
 		<label>Pixometer Account</label>
-		<description>This Bridge handles your Pixometer account.</description>
+		<description>This bridge manages your Pixometer account.</description>
 		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 		<config-description>
 			<parameter name="user" type="text" required="true">
 				<label>Username</label>
-				<description>Your Pixometer Username.</description>
+				<description>Your Pixometer username.</description>
 				<default></default>
 			</parameter>
 			<parameter name="password" type="text" required="true">
 				<context>password</context>
 				<label>Password</label>
-				<description>Your Pixometer Password.</description>
+				<description>Your Pixometer password.</description>
 				<default></default>
 			</parameter>
 			<parameter name="refresh" type="integer" required="true" min="60">
 				<label>Refresh Time</label>
-				<description>Sets the refresh time. Minimum is 60 Minutes.</description>
+				<description>Sets the refresh interval. Minimum is 60 minutes.</description>
 				<default>240</default>
 			</parameter>
 		</config-description>

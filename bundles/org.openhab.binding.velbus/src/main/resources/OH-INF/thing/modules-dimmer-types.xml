@@ -111,6 +111,10 @@
 			<channel-group id="clockAlarm" typeId="clockAlarm"/>
 		</channel-groups>
 
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
+
 		<config-description-ref uri="thing-type:velbus:81channelDevice"/>
 	</thing-type>
 
@@ -133,6 +137,10 @@
 			<channel-group id="virtual-light" typeId="16channelVirtualLight"/>
 			<channel-group id="clockAlarm" typeId="clockAlarm"/>
 		</channel-groups>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<config-description-ref uri="thing-type:velbus:81channelDevice"/>
 	</thing-type>

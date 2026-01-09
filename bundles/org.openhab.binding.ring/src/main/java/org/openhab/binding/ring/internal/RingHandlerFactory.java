@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,6 +17,7 @@ import static org.openhab.binding.ring.RingBindingConstants.*;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.WWWAuthenticationProtocolHandler;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.openhab.binding.ring.internal.handler.AccountHandler;
 import org.openhab.binding.ring.internal.handler.ChimeHandler;
@@ -81,6 +82,7 @@ public class RingHandlerFactory extends BaseThingHandlerFactory {
 
         httpClient = httpClientFactory.createHttpClient("ring", new SslContextFactory.Client());
         httpClient.start();
+        httpClient.getProtocolHandlers().remove(WWWAuthenticationProtocolHandler.NAME);
     }
 
     @Deactivate

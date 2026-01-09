@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,9 +21,9 @@ import static org.openhab.binding.evcc.internal.EvccBindingConstants.NUMBER_POWE
 import static org.openhab.binding.evcc.internal.EvccBindingConstants.NUMBER_TIME;
 
 import java.util.Arrays;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
-import java.util.StringJoiner;
 
 import javax.measure.Unit;
 
@@ -56,33 +56,13 @@ public class Utils {
     }
 
     /**
-     * This method will capitalize the words of a given string
-     * 
-     * @param input string containing hyphenized words
-     * @return A string with spaces instead of hyphens and the first letter of each word is capitalized
-     */
-    public static String capitalizeWords(String input) {
-        String[] allParts = input.split("-");
-        String[] parts = Arrays.stream(allParts, 1, allParts.length).toArray(String[]::new);
-        StringJoiner joiner = new StringJoiner(" ");
-
-        for (String part : parts) {
-            if (!part.isEmpty()) {
-                joiner.add(Character.toUpperCase(part.charAt(0)) + part.substring(1));
-            }
-        }
-
-        return joiner.toString();
-    }
-
-    /**
      * This method will sanitize a given string for a channel ID
      * 
      * @param input camel case string
      * @return A string that contains hyphens
      */
     public static String sanitizeChannelID(String input) {
-        return input.replaceAll("(?<!^)(?=[A-Z])", "-").toLowerCase();
+        return input.replaceAll("(?<!^)(?=[A-Z])", "-").toLowerCase(Locale.ROOT);
     }
 
     /**
@@ -99,10 +79,10 @@ public class Utils {
         for (int i = 0; i < parts.length; i++) {
             String part = parts[i];
             if (i == 0) {
-                camelCase.append(part.toLowerCase());
+                camelCase.append(part.toLowerCase(Locale.ROOT));
             } else {
-                camelCase.append(part.substring(0, 1).toUpperCase());
-                camelCase.append(part.substring(1).toLowerCase());
+                camelCase.append(part.substring(0, 1).toUpperCase(Locale.ROOT));
+                camelCase.append(part.substring(1).toLowerCase(Locale.ROOT));
             }
         }
 
@@ -121,5 +101,18 @@ public class Utils {
             return new int[] { 0, 0, 0 };
         }
         return Arrays.stream(input.split("\\.")).mapToInt(Integer::parseInt).toArray();
+    }
+
+    /**
+     * Capitalizes the first character of a string.
+     *
+     * @param input The input string.
+     * @return The string with the first character in uppercase.
+     */
+    public static String capitalizeFirstLetter(String input) {
+        if (input.isEmpty()) {
+            return input;
+        }
+        return input.substring(0, 1).toUpperCase(Locale.ROOT) + input.substring(1);
     }
 }

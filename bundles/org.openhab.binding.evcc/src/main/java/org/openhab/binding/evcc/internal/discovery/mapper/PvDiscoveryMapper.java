@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -26,6 +26,7 @@ import org.openhab.binding.evcc.internal.handler.EvccBridgeHandler;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.thing.ThingUID;
+import org.osgi.service.component.annotations.Component;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -35,26 +36,27 @@ import com.google.gson.JsonObject;
  *
  * @author Marcel Goerentz - Initial contribution
  */
+@Component(service = EvccDiscoveryMapper.class)
 @NonNullByDefault
 public class PvDiscoveryMapper implements EvccDiscoveryMapper {
 
     @Override
     public Collection<DiscoveryResult> discover(JsonObject state, EvccBridgeHandler bridgeHandler) {
         List<DiscoveryResult> results = new ArrayList<>();
-        JsonArray pvs = state.getAsJsonArray(JSON_MEMBER_PV);
+        JsonArray pvs = state.getAsJsonArray(JSON_KEY_PV);
         if (pvs == null) {
             return results;
         }
         for (int i = 0; i < pvs.size(); i++) {
             JsonObject pv = pvs.get(i).getAsJsonObject();
-            String title = pv.has("title") ? pv.get("title").getAsString().toLowerCase(Locale.ROOT) : "pv" + i;
+            String title = pv.has(JSON_KEY_TITLE) ? pv.get(JSON_KEY_TITLE).getAsString().toLowerCase(Locale.ROOT)
+                    : JSON_KEY_PV + i;
 
             ThingUID uid = new ThingUID(EvccBindingConstants.THING_TYPE_PV, bridgeHandler.getThing().getUID(),
                     Utils.sanitizeName(title));
             DiscoveryResult result = DiscoveryResultBuilder.create(uid).withLabel(title)
                     .withBridge(bridgeHandler.getThing().getUID()).withProperty(PROPERTY_INDEX, i)
-                    .withProperty(PROPERTY_TYPE, PROPERTY_TYPE_PV).withProperty(PROPERTY_TITLE, title)
-                    .withRepresentationProperty(PROPERTY_TITLE).build();
+                    .withProperty(PROPERTY_TITLE, title).withRepresentationProperty(PROPERTY_TITLE).build();
 
             results.add(result);
         }

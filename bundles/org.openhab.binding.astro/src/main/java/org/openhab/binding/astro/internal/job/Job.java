@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,6 +17,9 @@ import static org.openhab.binding.astro.internal.AstroBindingConstants.*;
 import static org.openhab.binding.astro.internal.util.DateTimeUtils.*;
 
 import java.lang.invoke.MethodHandles;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
@@ -41,7 +44,7 @@ import org.slf4j.LoggerFactory;
 public interface Job extends SchedulerRunnable, Runnable {
 
     /** The {@link Logger} Instance */
-    final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+    final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     /**
      * Schedules the provided {@link Job} instance
@@ -53,12 +56,46 @@ public interface Job extends SchedulerRunnable, Runnable {
     static void schedule(AstroThingHandler astroHandler, Job job, Calendar eventAt, TimeZone zone, Locale locale) {
         try {
             Calendar today = Calendar.getInstance(zone, locale);
-            if (isSameDay(eventAt, today) && isTimeGreaterEquals(eventAt, today)) {
+            boolean sameDay = isSameDay(eventAt, today);
+            if (sameDay && isTimeGreaterEquals(eventAt, today)) {
                 astroHandler.schedule(job, eventAt);
+            } else if (LOGGER.isDebugEnabled()) {
+                if (sameDay) {
+                    LOGGER.debug("Not scheduling {} since it's in the past ({})", job, eventAt.getTime());
+                } else {
+                    LOGGER.debug("Not scheduling {} since it's at another date ({})", job, eventAt.getTime());
+                }
             }
         } catch (Exception ex) {
-            logger.error("{}", ex.getMessage(), ex);
+            LOGGER.error("{}", ex.getMessage(), ex);
         }
+    }
+
+    /**
+     * Schedules the provided {@link Job} instance
+     *
+     * @param astroHandler the {@link AstroThingHandler} instance
+     * @param job the {@link Job} instance to schedule
+     * @param eventAt the {@link Instant} instance denoting scheduled instant
+     */
+    static void schedule(AstroThingHandler astroHandler, Job job, Instant eventAt, ZoneId zone) {
+        ZonedDateTime now = ZonedDateTime.now(zone);
+        ZonedDateTime eventZDT = eventAt.atZone(zone);
+
+        if (isSameDay(eventZDT, now) && isTimeGreaterEquals(eventZDT, now)) {
+            astroHandler.schedule(job, eventAt);
+        }
+    }
+
+    /**
+     * Schedules the provided {@link Job} instance
+     *
+     * @param astroHandler the {@link AstroThingHandler} instance
+     * @param job the {@link Job} instance to schedule
+     * @param eventAt the {@link Instant} instance denoting scheduled instant
+     */
+    static void schedule(AstroThingHandler astroHandler, Job job, Instant eventAt) {
+        astroHandler.schedule(job, eventAt);
     }
 
     /**
@@ -70,6 +107,19 @@ public interface Job extends SchedulerRunnable, Runnable {
      * @param channelId the channel ID
      */
     static void scheduleEvent(AstroThingHandler astroHandler, Calendar eventAt, String event, String channelId,
+            boolean configAlreadyApplied, TimeZone zone, Locale locale) {
+        scheduleEvent(astroHandler, eventAt, List.of(event), channelId, configAlreadyApplied, zone, locale);
+    }
+
+    /**
+     * Schedules an {@link EventJob} instance
+     *
+     * @param astroHandler the {@link AstroThingHandler} instance
+     * @param eventAt the {@link Instant} instance denoting scheduled instant
+     * @param event the event ID
+     * @param channelId the channel ID
+     */
+    static void scheduleEvent(AstroThingHandler astroHandler, Instant eventAt, String event, String channelId,
             boolean configAlreadyApplied, TimeZone zone, Locale locale) {
         scheduleEvent(astroHandler, eventAt, List.of(event), channelId, configAlreadyApplied, zone, locale);
     }
@@ -91,7 +141,7 @@ public interface Job extends SchedulerRunnable, Runnable {
         if (!configAlreadyApplied) {
             final Channel channel = astroHandler.getThing().getChannel(channelId);
             if (channel == null) {
-                logger.warn("Cannot find channel '{}' for thing '{}'.", channelId, astroHandler.getThing().getUID());
+                LOGGER.warn("Cannot find channel '{}' for thing '{}'.", channelId, astroHandler.getThing().getUID());
                 return;
             }
             AstroChannelConfig config = channel.getConfiguration().as(AstroChannelConfig.class);
@@ -101,6 +151,35 @@ public interface Job extends SchedulerRunnable, Runnable {
         }
         List<Job> jobs = events.stream().map(e -> new EventJob(astroHandler, channelId, e)).collect(toList());
         schedule(astroHandler, new CompositeJob(astroHandler, jobs), instant, zone, locale);
+    }
+
+    /**
+     * Schedules an {@link EventJob} instance
+     *
+     * @param astroHandler the {@link AstroThingHandler} instance
+     * @param eventAt the {@link Instant} instance denoting scheduled instant
+     * @param events the event IDs to schedule
+     * @param channelId the channel ID
+     */
+    static void scheduleEvent(AstroThingHandler astroHandler, Instant eventAt, List<String> events, String channelId,
+            boolean configAlreadyApplied, TimeZone zone, Locale locale) {
+        if (events.isEmpty()) {
+            return;
+        }
+        final Instant instant;
+        if (!configAlreadyApplied) {
+            final Channel channel = astroHandler.getThing().getChannel(channelId);
+            if (channel == null) {
+                LOGGER.warn("Cannot find channel '{}' for thing '{}'.", channelId, astroHandler.getThing().getUID());
+                return;
+            }
+            AstroChannelConfig config = channel.getConfiguration().as(AstroChannelConfig.class);
+            instant = applyConfig(eventAt, config);
+        } else {
+            instant = eventAt;
+        }
+        List<Job> jobs = events.stream().map(e -> new EventJob(astroHandler, channelId, e)).collect(toList());
+        schedule(astroHandler, new CompositeJob(astroHandler, jobs), instant, zone.toZoneId());
     }
 
     /**
@@ -114,7 +193,7 @@ public interface Job extends SchedulerRunnable, Runnable {
             Locale locale) {
         final Channel channel = astroHandler.getThing().getChannel(channelId);
         if (channel == null) {
-            logger.warn("Cannot find channel '{}' for thing '{}'.", channelId, astroHandler.getThing().getUID());
+            LOGGER.warn("Cannot find channel '{}' for thing '{}'.", channelId, astroHandler.getThing().getUID());
             return;
         }
         AstroChannelConfig config = channel.getConfiguration().as(AstroChannelConfig.class);
@@ -124,7 +203,7 @@ public interface Job extends SchedulerRunnable, Runnable {
         Calendar end = adjustedRange.getEnd();
 
         if (start == null || end == null) {
-            logger.debug("event was not scheduled as either start or end was null");
+            LOGGER.debug("event was not scheduled as either start or end was null");
             return;
         }
 
@@ -136,11 +215,17 @@ public interface Job extends SchedulerRunnable, Runnable {
         Calendar start = range.getStart();
         Calendar end = range.getEnd();
 
-        if (config.forceEvent && start == null) {
-            start = getAdjustedEarliest(Calendar.getInstance(zone, locale), config);
-        }
-        if (config.forceEvent && end == null) {
-            end = getAdjustedLatest(Calendar.getInstance(zone, locale), config);
+        if (config.forceEvent) {
+            Calendar reference = start != null ? start : end;
+            if (reference == null) {
+                reference = Calendar.getInstance(zone, locale);
+            }
+            if (start == null) {
+                start = getAdjustedEarliest(truncateToMidnight(reference), config);
+            }
+            if (end == null) {
+                end = getAdjustedLatest(endOfDayDate(reference), config);
+            }
         }
 
         // depending on the location and configuration you might not have a valid range for day/night, so skip the
@@ -149,7 +234,7 @@ public interface Job extends SchedulerRunnable, Runnable {
             return range;
         }
 
-        return new Range(truncateToSecond(applyConfig(start, config)), truncateToSecond(applyConfig(end, config)));
+        return new Range(applyConfig(start, config), applyConfig(end, config));
     }
 
     /**
@@ -161,6 +246,17 @@ public interface Job extends SchedulerRunnable, Runnable {
     static void schedulePublishPlanet(AstroThingHandler astroHandler, Calendar eventAt, TimeZone zone, Locale locale) {
         Job publishJob = new PublishPlanetJob(astroHandler);
         schedule(astroHandler, publishJob, eventAt, zone, locale);
+    }
+
+    /**
+     * Schedules Planet events
+     *
+     * @param astroHandler the {@link AstroThingHandler} instance
+     * @param when the {@link Instant} instance denoting scheduled instant
+     */
+    static void schedulePublishPlanet(AstroThingHandler astroHandler, Instant when) {
+        Job publishJob = new PublishPlanetJob(astroHandler);
+        schedule(astroHandler, publishJob, when);
     }
 
     /**

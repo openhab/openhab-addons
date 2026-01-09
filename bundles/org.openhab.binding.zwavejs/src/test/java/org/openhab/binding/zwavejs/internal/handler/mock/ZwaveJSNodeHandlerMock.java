@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -169,7 +169,6 @@ public class ZwaveJSNodeHandlerMock extends ZwaveJSNodeHandler {
 
     // Set inversion for a specific RollerShutterCapability
     public void setRollerShutterInversion(RollerShutterCapability capability, boolean isUpDownInverted) {
-
         // Find the channel config for the roller shutter channel and set inverted
         this.thing.getChannels().stream().filter(c -> c.getUID().getId().equals(capability.rollerShutterChannelId))
                 .findFirst().ifPresent(channel -> {

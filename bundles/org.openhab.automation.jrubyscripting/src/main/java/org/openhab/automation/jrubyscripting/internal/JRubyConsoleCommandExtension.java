@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -410,14 +410,14 @@ public class JRubyConsoleCommandExtension extends AbstractConsoleCommandExtensio
     }
 
     private synchronized void gem(Console console, String[] args) {
-        final String GEM = """
+        final String gem = """
                 require "rubygems/gem_runner"
                 Gem::GemRunner.new.run ARGV
                     """;
 
         executeWithPlainJRuby(console, engine -> {
             engine.put(ScriptEngine.ARGV, args);
-            engine.eval(GEM);
+            engine.eval(gem);
             return null;
         });
     }

@@ -18,7 +18,7 @@ All apps are implemented as separate things under the bridge.
 
 | App               | Thing Type   | Description                                      |
 |-------------------|--------------|--------------------------------------------------|
-| Clock             | clockApp     | Clock that dispays time and date                 |
+| Clock             | clockApp     | Clock that displays time and date                |
 | Timer             | countdownApp | A countdown timer that counts by seconds         |
 | Radio             | radioApp     | Streaming radio player                           |
 | Stopwatch         | stopwatchApp | Stopwatch that counts up by seconds              |
@@ -124,8 +124,8 @@ They exist as one-way communication only.
 
 ## How Tos
 
-The following configuration examples assume the device was added with the thing id `lametrictime:device:demo`.
-Replace the thing id in all the configurations with your real thing id which can be looked up the UI.
+The following configuration examples assume the device was added with the Thing id `lametrictime:device:demo`.
+Replace the Thing id in all the configurations with your real Thing id which can be looked up the UI.
 
 ### Notifications
 

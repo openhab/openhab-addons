@@ -208,6 +208,12 @@
 				<description>(DEPRECATED) Use total channel from price group</description>
 			</update-channel>
 		</instruction-set>
+
+		<instruction-set targetVersion="7">
+			<add-channel id="event" groupIds="price">
+				<type>tibber:event</type>
+			</add-channel>
+		</instruction-set>
 	</thing-type>
 
 </update:update-descriptions>

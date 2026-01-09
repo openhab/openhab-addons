@@ -29,7 +29,7 @@
 		</channel-groups>
 
 		<properties>
-			<property name="thingTypeVersion">3</property>
+			<property name="thingTypeVersion">4</property>
 		</properties>
 
 		<config-description-ref uri="thing-type:mercedesme:hybrid"/>

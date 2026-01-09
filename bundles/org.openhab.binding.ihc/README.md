@@ -28,7 +28,7 @@ The `controller` Thing has the following configuration parameters:
 | timeout                     | Timeout in milliseconds to communicate to IHC / ELKO controller.                                                                                                                            | no       | 5000          |
 | loadProjectFile             | Load project file from controller.                                                                                                                                                          | no       | true          |
 | createChannelsAutomatically | Create channels automatically from project file. Project file loading parameter should be enabled as well.                                                                                  | no       | true          |
-| tlsVersion                  | TLS version used for controller communication. Choose `TLSv1` for older firmware versions and `TLSv1.2` for never versions (since fall 2021). `AUTO` mode try to recognize correct version. | no       | TLSv1         |
+| tlsVersion                  | TLS version used for controller communication. Choose `TLSv1` for older firmware versions and `TLSv1.2` for newer versions (since fall 2021). `AUTO` mode try to recognize correct version. | no       | TLSv1         |
 
 ## Channels
 
@@ -207,4 +207,4 @@ end
 
 ### Thing status
 
-Check thing status for errors.
+Check Thing status for errors.

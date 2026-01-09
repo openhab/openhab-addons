@@ -8,7 +8,7 @@ This binding uses the MEATER Cloud REST API.
 
 ## Supported Things
 
-This binding supports the following thing types:
+This binding supports the following Thing types:
 
 - meaterapi: Bridge - Communicates with the MEATER Cloud REST API.
 
@@ -20,7 +20,7 @@ The binding supports auto-discovery of all MEATER probes belonging to the config
 
 **NOTE**: For The Original MEATER and MEATER Plus you need to have your MEATER app running and the MEATER probe(s) must connected to the cloud (out of the charger box) before you start the discovery.
 
-After the configuration of the Bridge, you need to perform a manual scan and then your MEATER probe(s) will be automatically discovered and placed as a thing(s) in the inbox.
+After the configuration of the Bridge, you need to perform a manual scan and then your MEATER probe(s) will be automatically discovered and placed as a Thing(s) in the inbox.
 
 ## Thing Configuration
 

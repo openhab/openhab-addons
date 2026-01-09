@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -73,8 +73,8 @@ public class PowerSourceConverter extends GenericConverter<PowerSourceCluster> {
                 for (BatChargeLevelEnum mode : BatChargeLevelEnum.values()) {
                     options.add(new StateOption(mode.getValue().toString(), mode.getLabel()));
                 }
-                StateDescription stateDescription = StateDescriptionFragmentBuilder.create().withPattern("%d")
-                        .withOptions(options).build().toStateDescription();
+                StateDescription stateDescription = StateDescriptionFragmentBuilder.create().withOptions(options)
+                        .build().toStateDescription();
                 channels.put(channel, stateDescription);
             }
         }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -272,7 +272,7 @@ public class Shelly2ApiClient extends ShellyHttpClient {
         ShellySettingsRelay rstatus;
         ShellyShortStatusRelay sr;
         if (rs.id == null) { // firmware 1.6.1 returns id = null!
-            rs.id = id;
+            rs.id = id >= 10 ? id - 10 : id; // ids start at 10
         }
         int rIdx = getRelayIdx(profile, rs.id);
         if (profile.hasRelays) {

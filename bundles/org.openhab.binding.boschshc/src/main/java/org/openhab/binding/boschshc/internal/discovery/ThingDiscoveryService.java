@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.ScheduledExecutorService;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -62,17 +63,6 @@ public class ThingDiscoveryService extends AbstractThingHandlerDiscoveryService<
      */
     static final String DEVICE_MODEL_LIGHT_CONTROL_CHILD_DEVICE = "MICROMODULE_LIGHT_ATTACHED";
 
-    protected static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(
-            BoschSHCBindingConstants.THING_TYPE_INWALL_SWITCH, BoschSHCBindingConstants.THING_TYPE_TWINGUARD,
-            BoschSHCBindingConstants.THING_TYPE_WINDOW_CONTACT, BoschSHCBindingConstants.THING_TYPE_WINDOW_CONTACT_2,
-            BoschSHCBindingConstants.THING_TYPE_MOTION_DETECTOR, BoschSHCBindingConstants.THING_TYPE_SHUTTER_CONTROL,
-            BoschSHCBindingConstants.THING_TYPE_THERMOSTAT, BoschSHCBindingConstants.THING_TYPE_CLIMATE_CONTROL,
-            BoschSHCBindingConstants.THING_TYPE_WALL_THERMOSTAT, BoschSHCBindingConstants.THING_TYPE_CAMERA_360,
-            BoschSHCBindingConstants.THING_TYPE_CAMERA_EYES,
-            BoschSHCBindingConstants.THING_TYPE_INTRUSION_DETECTION_SYSTEM,
-            BoschSHCBindingConstants.THING_TYPE_SMART_PLUG_COMPACT, BoschSHCBindingConstants.THING_TYPE_SMART_BULB,
-            BoschSHCBindingConstants.THING_TYPE_SMOKE_DETECTOR);
-
     // @formatter:off
     public static final Map<String, ThingTypeUID> DEVICEMODEL_TO_THINGTYPE_MAP = Map.ofEntries(
             new AbstractMap.SimpleEntry<>("BBL", BoschSHCBindingConstants.THING_TYPE_SHUTTER_CONTROL),
@@ -93,6 +83,7 @@ public class ThingDiscoveryService extends AbstractThingHandlerDiscoveryService<
             new AbstractMap.SimpleEntry<>("SWD", BoschSHCBindingConstants.THING_TYPE_WINDOW_CONTACT),
             new AbstractMap.SimpleEntry<>("SWD2", BoschSHCBindingConstants.THING_TYPE_WINDOW_CONTACT_2),
             new AbstractMap.SimpleEntry<>("SWD2_PLUS", BoschSHCBindingConstants.THING_TYPE_WINDOW_CONTACT_2_PLUS),
+            new AbstractMap.SimpleEntry<>("SWD2_DUAL", BoschSHCBindingConstants.THING_TYPE_WINDOW_CONTACT_2_MATTER),
             new AbstractMap.SimpleEntry<>("TRV", BoschSHCBindingConstants.THING_TYPE_THERMOSTAT),
             new AbstractMap.SimpleEntry<>("WRC2", BoschSHCBindingConstants.THING_TYPE_UNIVERSAL_SWITCH),
             new AbstractMap.SimpleEntry<>("SWITCH2", BoschSHCBindingConstants.THING_TYPE_UNIVERSAL_SWITCH_2),
@@ -113,8 +104,19 @@ public class ThingDiscoveryService extends AbstractThingHandlerDiscoveryService<
             );
     // @formatter:on
 
+    protected static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.copyOf(DEVICEMODEL_TO_THINGTYPE_MAP.values());
+
     public ThingDiscoveryService() {
         super(BridgeHandler.class, SUPPORTED_THING_TYPES, SEARCH_TIME);
+    }
+
+    /**
+     * Constructor for tests only.
+     *
+     * @param scheduler the {@link ScheduledExecutorService} to use during testing.
+     */
+    ThingDiscoveryService(ScheduledExecutorService scheduler) {
+        super(scheduler, BridgeHandler.class, SUPPORTED_THING_TYPES, SEARCH_TIME, true, null, null);
     }
 
     @Override
@@ -255,7 +257,7 @@ public class ThingDiscoveryService extends AbstractThingHandlerDiscoveryService<
      * Translates a Bosch device ID to an openHAB-compliant thing ID.
      * <p>
      * Characters that are not allowed in thing IDs are replaced by underscores.
-     * 
+     *
      * @param deviceId the Bosch device ID
      * @return the translated openHAB-compliant thing ID
      */

@@ -11,7 +11,7 @@
 			<tag>Measurement</tag>
 			<tag>Voltage</tag>
 		</tags>
-		<state pattern="%d %unit%" readOnly="true"/>
+		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="string2-dc-voltage-channel">
 		<item-type>Number:ElectricPotential</item-type>
@@ -21,7 +21,7 @@
 			<tag>Measurement</tag>
 			<tag>Voltage</tag>
 		</tags>
-		<state pattern="%d %unit%" readOnly="true"/>
+		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="string3-dc-voltage-channel">
 		<item-type>Number:ElectricPotential</item-type>
@@ -31,7 +31,7 @@
 			<tag>Measurement</tag>
 			<tag>Voltage</tag>
 		</tags>
-		<state pattern="%d %unit%" readOnly="true"/>
+		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="string1-dc-current-channel">
 		<item-type>Number:ElectricCurrent</item-type>
@@ -71,7 +71,7 @@
 			<tag>Measurement</tag>
 			<tag>Power</tag>
 		</tags>
-		<state pattern="%d %unit%" readOnly="true"/>
+		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="string2-dc-output-channel">
 		<item-type>Number:Power</item-type>
@@ -81,7 +81,7 @@
 			<tag>Measurement</tag>
 			<tag>Power</tag>
 		</tags>
-		<state pattern="%d %unit%" readOnly="true"/>
+		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="string3-dc-output-channel">
 		<item-type>Number:Power</item-type>
@@ -91,6 +91,6 @@
 			<tag>Measurement</tag>
 			<tag>Power</tag>
 		</tags>
-		<state pattern="%d %unit%" readOnly="true"/>
+		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 </thing:thing-descriptions>

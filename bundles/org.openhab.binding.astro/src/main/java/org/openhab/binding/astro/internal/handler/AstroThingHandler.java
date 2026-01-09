@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,11 +18,12 @@ import static org.openhab.core.types.RefreshType.REFRESH;
 
 import java.lang.invoke.MethodHandles;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -73,7 +74,7 @@ public abstract class AstroThingHandler extends BaseThingHandler {
 
     /** Logger Instance */
     private final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-    private final SimpleDateFormat isoFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+    private final SimpleDateFormat loggerFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS", Locale.ROOT);
 
     /** Scheduler to schedule jobs */
     private final CronScheduler cronScheduler;
@@ -181,6 +182,10 @@ public abstract class AstroThingHandler extends BaseThingHandler {
             final Channel channel = getThing().getChannel(channelUID);
             if (channel == null) {
                 logger.error("Cannot find channel for {}", channelUID);
+                return;
+            }
+            if (channel.getKind() == TRIGGER) {
+                // if the channel is a trigger channel, there is no state to publish
                 return;
             }
             try {
@@ -312,20 +317,44 @@ public abstract class AstroThingHandler extends BaseThingHandler {
     /**
      * Adds the provided {@link Job} to the queue (cannot be {@code null})
      */
-    public void schedule(Job job, Calendar eventAt) {
-        long sleepTime;
+    private void schedule(Job job, long sleepTimeMs) {
         monitor.lock();
         try {
             tidyScheduledFutures();
-            sleepTime = eventAt.getTimeInMillis() - new Date().getTime();
-            ScheduledFuture<?> future = scheduler.schedule(job, sleepTime, TimeUnit.MILLISECONDS);
+            ScheduledFuture<?> future = scheduler.schedule(job, sleepTimeMs, TimeUnit.MILLISECONDS);
             scheduledFutures.add(future);
         } finally {
             monitor.unlock();
         }
-        if (logger.isDebugEnabled()) {
-            final String formattedDate = this.isoFormatter.format(eventAt.getTime());
-            logger.debug("Scheduled {} in {}ms (at {})", job, sleepTime, formattedDate);
+    }
+
+    /**
+     * Adds the provided {@link Job} to the queue (cannot be {@code null})
+     */
+    public void schedule(Job job, Calendar eventAt) {
+        long sleepTime = eventAt.getTimeInMillis() - System.currentTimeMillis();
+        if (sleepTime >= 0L) {
+            schedule(job, sleepTime);
+            if (logger.isDebugEnabled()) {
+                final String formattedDate = this.loggerFormatter.format(eventAt.getTime());
+                logger.debug("Scheduled {} in {}ms (at {})", job, sleepTime, formattedDate);
+            }
+        } else if (logger.isDebugEnabled()) {
+            final String formattedDate = this.loggerFormatter.format(eventAt.getTime());
+            logger.debug("Failed to schedule {} in {}ms (at {}) since it's in the past", job, sleepTime, formattedDate);
+        }
+    }
+
+    public void schedule(Job job, Instant eventAt) {
+        long sleepTime = eventAt.toEpochMilli() + 1L - System.currentTimeMillis();
+        if (sleepTime >= 0L) {
+            schedule(job, sleepTime);
+            if (logger.isDebugEnabled()) {
+                logger.debug("Scheduled {} in {}ms (at {})", job, sleepTime, eventAt.atZone(ZoneId.systemDefault()));
+            }
+        } else if (logger.isDebugEnabled()) {
+            logger.debug("Failed to schedule {} in {}ms (at {}) since it's in the past", job, sleepTime,
+                    eventAt.atZone(ZoneId.systemDefault()));
         }
     }
 

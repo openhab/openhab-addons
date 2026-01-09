@@ -1,10 +1,10 @@
 # NTP Binding
 
-The NTP binding is used for displaying the local date and time based update from an NTP server.
+The NTP binding displays the local date and time, updated from an NTP server.
 
 ## Supported Things
 
-This binding supports one ThingType: ntp
+This binding supports one Thing type: ntp
 
 ## Discovery
 
@@ -16,12 +16,12 @@ The binding has no configuration options, all configuration is done at Thing lev
 
 ## Thing Configuration
 
-The thing has a few configuration options:
+The Thing has a few configuration options:
 
 | Option          | Description                                                                                                                                                               |
 | --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | hostname        | The NTP server hostname, e.g. nl.pool.ntp.org                                                                                                                             |
-| refreshInterval | Interval that new time updates are posted to the eventbus in seconds. Default is 60s.                                                                                     |
+| refreshInterval | Interval that new time updates are posted to the event bus in seconds. Default is 60s.                                                                                     |
 | refreshNtp      | Number of updates between querying the NTP server (e.g. with refreshinterval = 60 (seconds) and refreshNtp = 30 the NTP server is queried each half hour). Default is 30. |
 | serverPort      | The port that the NTP server could use. Default is 123.                                                                                                                   |
 | timeZone        | The configured timezone. Can be left blank for using the timezone defined as openHAB configuration setting (or default system timezone if not defined).                   |

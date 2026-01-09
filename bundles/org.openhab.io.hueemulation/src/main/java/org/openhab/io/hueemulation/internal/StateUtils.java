@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -430,30 +430,29 @@ public class StateUtils {
 
         if (lastCommand != null && lastHueChange != null) {
             if (lastCommand instanceof HSBType) {
-                if (hueState instanceof HueStateColorBulb && itemState.as(HSBType.class).equals(lastCommand)) {
-                    HueStateColorBulb c = (HueStateColorBulb) hueState;
-
+                if (hueState instanceof HueStateColorBulb hueStateColorBulb
+                        && lastCommand.equals(itemState.as(HSBType.class))) {
                     if (lastHueChange.bri != null) {
-                        c.bri = lastHueChange.bri;
+                        hueStateColorBulb.bri = lastHueChange.bri;
                     }
                     if (lastHueChange.hue != null) {
-                        c.hue = lastHueChange.hue;
+                        hueStateColorBulb.hue = lastHueChange.hue;
                     }
                     if (lastHueChange.sat != null) {
-                        c.sat = lastHueChange.sat;
+                        hueStateColorBulb.sat = lastHueChange.sat;
                     }
                     // Although we can't set a colour temperature in OH
                     // this keeps Alexa happy when asking to turn a light
                     // to white.
                     if (lastHueChange.ct != null) {
-                        c.ct = lastHueChange.ct;
+                        hueStateColorBulb.ct = lastHueChange.ct;
                     }
                 }
             } else if (lastCommand instanceof PercentType) {
-                if (hueState instanceof HueStateBulb && itemState != null
+                if (hueState instanceof HueStateBulb hueStateBulb
                         && lastCommand.equals(itemState.as(PercentType.class))) {
                     if (lastHueChange.bri != null) {
-                        ((HueStateBulb) hueState).bri = lastHueChange.bri;
+                        hueStateBulb.bri = lastHueChange.bri;
                     }
                 }
             }

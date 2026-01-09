@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -64,7 +64,6 @@ public class NeeoForwardActionsServlet extends HttpServlet {
      */
     NeeoForwardActionsServlet(ScheduledExecutorService scheduler, Consumer<String> callback,
             @Nullable String forwardChain, HttpClient httpClient) {
-
         this.scheduler = scheduler;
         this.callback = callback;
         this.forwardChain = forwardChain;

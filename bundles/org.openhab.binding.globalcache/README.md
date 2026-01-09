@@ -71,7 +71,7 @@ Note that you must set the Active Cable configuration parameter to match how the
 Available options are Infrared, Serial, and Relay/Sensor.
 The default is Infrared.
 
-When the iTach Fles is configured for serial operation, you must use the iTach Flex's web application to set the serial port
+When the iTach Flex is configured for serial operation, you must use the iTach Flex's web application to set the serial port
 parameters for **baud rate**, **flow control**, and **parity** to match the configuration of the end device to which the iTach Flex is connected.
 
 | Parameter      | Parameter ID  | Required/Optional | Description |

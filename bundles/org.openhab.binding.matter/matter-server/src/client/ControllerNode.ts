@@ -66,7 +66,7 @@ export class ControllerNode {
         });
         await this.commissioningController.initializeControllerStore();
 
-        const controllerStore = this.environment.get(ControllerStore);
+        const controllerStore = this.commissioningController.env.get(ControllerStore);
         // TODO: Implement resetStorage
         // if (resetStorage) {
         //     await controllerStore.erase();

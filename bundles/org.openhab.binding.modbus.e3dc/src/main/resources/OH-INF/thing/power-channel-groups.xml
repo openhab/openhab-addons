@@ -9,6 +9,10 @@
 			(Household, Wallbox, ...)</description>
 		<channels>
 			<channel id="pv-power-supply" typeId="pv-power-supply-channel"/>
+			<channel id="pv-perf-ratio" typeId="perf-ratio-channel">
+				<label>PV Performance Ratio</label>
+				<description>Performance ratio of actual energy produced and installed kWp</description>
+			</channel>
 			<channel id="battery-power-supply" typeId="battery-power-supply-channel"/>
 			<channel id="battery-power-consumption" typeId="battery-power-consumption-channel"/>
 			<channel id="household-power-consumption" typeId="household-power-consumption-channel"/>

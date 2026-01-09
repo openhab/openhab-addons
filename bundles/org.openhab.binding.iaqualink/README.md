@@ -9,7 +9,7 @@ This binding supports:
 ## Binding Configuration
 
 The binding requires the iAquaLink user name and password.
-If you have more then one pool system registered to an account, you may optionally specify the pool serial ID/Number to use, otherwise the first pool controller will be used.
+If you have more than one pool system registered to an account, you may optionally specify the pool serial ID/Number to use, otherwise the first pool controller will be used.
 
 ## Manual Thing Configuration
 
@@ -23,7 +23,7 @@ The following is a list of supported channels.
 Auxiliary and OneTouch channels will be dynamically added depending on what a system reports as being supported.
 
 Auxiliary channels that are of a number type represent lighting modes (typically 0-15).
-Auxiliary channels that are dimmer types can set the light value in increments of 25 (0,25,50,750,100).
+Auxiliary channels that are dimmer types can set the light value in increments of 25 (0,25,50,75,100).
 The Auxiliary channel type will be dynamically assigned based on the controller configuration.
 
 Heater status can be OFF (0), Enabled/ON (3), or Heating (1).
@@ -106,7 +106,7 @@ Number:Temperature AquaLinkSpaSetpoint "Spa Setpoint [%d]" (Group_AquaLink) {cha
 Number:Temperature AquaLinkPoolSetpoint "Pool Setpoint [%d]" (Group_AquaLink) {channel="iaqualink:controller:pool:pool_set_point"}
 
 Switch AquaLinkSpaPump "Spa Pump" (Group_AquaLink) {channel="iaqualink:controller:pool:spa_pump"}
-Switch AquaLinkPoolPump"Pool Pump" (Group_AquaLink) {channel="iaqualink:controller:pool:pool_pump"}
+Switch AquaLinkPoolPump "Pool Pump" (Group_AquaLink) {channel="iaqualink:controller:pool:pool_pump"}
 
 Number AquaLinkSpaHeaterStatus "Spa Heater [%s]" (Group_AquaLink) {channel="iaqualink:controller:pool:spa_heater_status"}
 Number AquaLinkPoolHeaterStatus  "Pool Heater [%s]" (Group_AquaLink) {channel="iaqualink:controller:pool:pool_heater_status"}

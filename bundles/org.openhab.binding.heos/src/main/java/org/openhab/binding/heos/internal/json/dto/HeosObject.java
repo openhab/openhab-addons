@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -41,7 +41,6 @@ public abstract class HeosObject {
     }
 
     public @Nullable Long getNumericAttribute(HeosCommunicationAttribute attributeName) {
-        @Nullable
         String attribute = attributes.get(attributeName.getLabel());
 
         if (attribute == null) {

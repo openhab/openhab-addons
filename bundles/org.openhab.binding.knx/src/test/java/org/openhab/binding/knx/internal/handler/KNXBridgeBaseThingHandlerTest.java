@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,6 +17,7 @@ import static org.mockito.Mockito.*;
 
 import java.io.File;
 import java.net.URISyntaxException;
+import java.util.Locale;
 import java.util.Properties;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -25,7 +26,7 @@ import org.openhab.core.OpenHAB;
 import org.openhab.core.net.NetworkAddressService;
 import org.openhab.core.thing.Bridge;
 
-import tuwien.auto.calimero.secure.KnxSecureException;
+import io.calimero.secure.KnxSecureException;
 
 /**
  *
@@ -39,7 +40,8 @@ class KNXBridgeBaseThingHandlerTest {
     void testSecurityHelpers() {
         // now check router settings:
         String bbKeyHex = "D947B12DDECAD528B1D5A88FD347F284";
-        byte[] bbKeyParsedLower = KNXBridgeBaseThingHandler.secHelperParseBackboneKey(bbKeyHex.toLowerCase());
+        byte[] bbKeyParsedLower = KNXBridgeBaseThingHandler
+                .secHelperParseBackboneKey(bbKeyHex.toLowerCase(Locale.ROOT));
         byte[] bbKeyParsedUpper = KNXBridgeBaseThingHandler.secHelperParseBackboneKey(bbKeyHex);
         assertEquals(16, bbKeyParsedUpper.length);
         assertArrayEquals(bbKeyParsedUpper, bbKeyParsedLower);
