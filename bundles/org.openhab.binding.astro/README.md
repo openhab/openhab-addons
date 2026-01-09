@@ -35,6 +35,7 @@ This binding has its own IconProvider and makes available the following list of 
 <<<<<<< Upstream, based on main
 <<<<<<< Upstream, based on main
 <<<<<<< Upstream, based on main
+<<<<<<< Upstream, based on main
 | Icon Name                   | Dynamic | Illustration                                      |
 | --------------------------- | ------- | ------------------------------------------------- |
 | oh:astro:moon_day           | Yes     | ![Moon Age](doc/images/moon_day.svg)              |
@@ -134,6 +135,16 @@ This binding has its own IconProvider and makes available the following list of 
 | oh:astro:moon_day     | Yes     | ![Moon Age](doc/images/moon_day.svg)         |
 >>>>>>> eeae49a Reverting contract modification in Action. lspiel code review adressed.
 >>>>>>> 0c5383c Reverting contract modification in Action. lspiel code review adressed.
+=======
+| Icon Name             | Dynamic | Illustration                                      |
+| ----------------------| ------- | ------------------------------------------------- |
+| oh:astro:zodiac       | Yes     | ![Zodiac](doc/images/zodiac.svg)                  |
+| oh:astro:season       | Yes     | ![Season](doc/images/season.svg)                  |
+| oh:astro:sun_eclipse  | Yes     | ![Sun Eclipse](doc/images/sun_eclipse.svg)        |
+| oh:astro:moon_phase   | Yes     | ![Moon Phase](doc/images/moon_phase.svg)          |
+| oh:astro:moon_eclipse | Yes     | ![Moon Eclipse](doc/images/moon_eclipse.svg)      |
+| oh:astro:moon_day     | Yes     | ![Moon Age](doc/images/moon_day.svg)              |
+>>>>>>> fdd9d6d Reverting contract modification in Action. lspiel code review adressed. Rebased and conflicts resolution
 
 ## Channels
 
