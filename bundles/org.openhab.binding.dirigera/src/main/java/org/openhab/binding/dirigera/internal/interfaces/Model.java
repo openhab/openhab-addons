@@ -42,6 +42,8 @@ public interface Model {
 
     static final String COLOR_TEMPERATURE_CAPABILITY = "colorTemperature";
 
+    static final String ATTRIBUTE_QRCODE = "qrCode";
+
     static final String TEMPLATE_LIGHT_PRESET_BRIGHT = "/json/light-presets/bright.json";
     static final String TEMPLATE_LIGHT_PRESET_SLOWDOWN = "/json/light-presets/slowdown.json";
     static final String TEMPLATE_LIGHT_PRESET_SMOOTH = "/json/light-presets/smooth.json";

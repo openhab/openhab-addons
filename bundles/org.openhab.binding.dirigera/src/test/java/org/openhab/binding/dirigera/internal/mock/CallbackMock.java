@@ -49,6 +49,7 @@ import org.openhab.core.types.TimeSeries;
  */
 @NonNullByDefault
 public class CallbackMock implements ThingHandlerCallback {
+    private static final int STATUS_DURATION_TIMEOUT_SEC = 5;
     private @Nullable Bridge bridge;
     private ThingStatusInfo status = ThingStatusInfoBuilder.create(ThingStatus.OFFLINE).build();
     public Map<String, State> stateMap = new HashMap<>();
@@ -91,9 +92,10 @@ public class CallbackMock implements ThingHandlerCallback {
         synchronized (this) {
             Instant start = Instant.now();
             Instant check = Instant.now();
-            while (!ThingStatus.ONLINE.equals(status.getStatus()) && Duration.between(start, check).getSeconds() < 10) {
+            while (!ThingStatus.ONLINE.equals(status.getStatus())
+                    && Duration.between(start, check).getSeconds() < STATUS_DURATION_TIMEOUT_SEC) {
                 try {
-                    this.wait(1000);
+                    this.wait(000);
                 } catch (InterruptedException e) {
                     fail("Interruppted waiting for ONLINE");
                 }

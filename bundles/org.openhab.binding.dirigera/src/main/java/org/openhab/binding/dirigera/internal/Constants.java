@@ -58,9 +58,14 @@ public class Constants {
     public static final ThingTypeUID THING_TYPE_AIR_QUALITY = new ThingTypeUID(BINDING_ID, "air-quality");
     public static final ThingTypeUID THING_TYPE_WATER_SENSOR = new ThingTypeUID(BINDING_ID, "water-sensor");
     public static final ThingTypeUID THING_TYPE_BLIND = new ThingTypeUID(BINDING_ID, "blind");
-    public static final ThingTypeUID THING_TYPE_UNKNNOWN = new ThingTypeUID(BINDING_ID, "unkown");
+    public static final ThingTypeUID THING_TYPE_UNKNOWN = new ThingTypeUID(BINDING_ID, "unkown");
     public static final ThingTypeUID THING_TYPE_NOT_FOUND = new ThingTypeUID(BINDING_ID, "not-found");
     public static final ThingTypeUID THING_TYPE_IGNORE = new ThingTypeUID(BINDING_ID, "ignore");
+
+    // Generic Thing Type UIDs which will be configured via devices.json
+    public static final ThingTypeUID THING_TYPE_SENSOR = new ThingTypeUID(BINDING_ID, "sensor");
+    public static final ThingTypeUID THING_TYPE_CONTROLLER = new ThingTypeUID(BINDING_ID, "controller");
+    public static final ThingTypeUID THING_TYPE_MATTER_UNKNOWN = new ThingTypeUID(BINDING_ID, "matter-unknown");
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_GATEWAY,
             THING_TYPE_COLOR_LIGHT, THING_TYPE_TEMPERATURE_LIGHT, THING_TYPE_DIMMABLE_LIGHT, THING_TYPE_MOTION_SENSOR,
@@ -68,9 +73,12 @@ public class Constants {
             THING_TYPE_SPEAKER, THING_TYPE_SCENE, THING_TYPE_REPEATER, THING_TYPE_LIGHT_CONTROLLER,
             THING_TYPE_BLIND_CONTROLLER, THING_TYPE_SOUND_CONTROLLER, THING_TYPE_SINGLE_SHORTCUT_CONTROLLER,
             THING_TYPE_DOUBLE_SHORTCUT_CONTROLLER, THING_TYPE_MOTION_LIGHT_SENSOR, THING_TYPE_AIR_QUALITY,
-            THING_TYPE_AIR_PURIFIER, THING_TYPE_WATER_SENSOR, THING_TYPE_BLIND, THING_TYPE_SWITCH_LIGHT);
+            THING_TYPE_AIR_PURIFIER, THING_TYPE_WATER_SENSOR, THING_TYPE_BLIND, THING_TYPE_SWITCH_LIGHT,
+            THING_TYPE_SENSOR, THING_TYPE_CONTROLLER);
 
-    public static final Set<ThingTypeUID> IGNORE_THING_TYPES_UIDS = Set.of(THING_TYPE_LIGHT_SENSOR, THING_TYPE_IGNORE);
+    // Thing types to be ignored for discovery
+    public static final Set<ThingTypeUID> IGNORE_THING_TYPES_UIDS = Set.of(THING_TYPE_LIGHT_SENSOR, THING_TYPE_IGNORE,
+            THING_TYPE_MATTER_UNKNOWN, THING_TYPE_GATEWAY, THING_TYPE_UNKNOWN);
 
     public static final List<String> THING_PROPERTIES = List.of("model", "manufacturer", "firmwareVersion",
             "hardwareVersion", "serialNumber", "productCode");

@@ -1,0 +1,73 @@
+[
+	{"thingType":"environmentSensor", 
+		"identification": {
+			"type": "sensor",
+			"deviceType": "environmentSensor"
+		},
+		"status": {
+			"batteryPercentage": {
+				"channel": "battery-level",
+				"channelType": "system.battery-level"
+			},
+			"currentTemperature": "Number",
+			"currentRH": "Number"
+		},
+		"control": {
+			"customName": "String",
+			"advanced": {
+				"windowOpen": "Boolean"
+			}
+		},
+		"links": {
+			
+		}
+	},
+	{"thingType":"occupancySensor"
+		"identification": {
+			"type": "sensor",
+			"deviceType": "occupancySensor"
+		},
+		"status": {
+			"isDetected": "Boolean"
+		},
+		"control": {
+			"customName": "String",
+			"advanced": {
+				"windowOpen": "Boolean"
+			}
+		},
+		"links": {
+			
+		}
+	},
+	{"thingType":"lightSensor"
+		"identification": {
+			"type": "controller",
+			"deviceType": "genericSwitch"
+		},
+		"status": {
+			"ota": null
+		},
+		"control": {
+			
+		},
+		"links": {
+			
+		}
+	},
+	{"thingType":"bilresa-scroll-wheel"
+		"identification": {
+			"type": "controller",
+			"deviceType": "genericSwitch"
+		},
+		"status": {
+			
+		},
+		"control": {
+			
+		},
+		"links": {
+			
+		}
+	}
+]

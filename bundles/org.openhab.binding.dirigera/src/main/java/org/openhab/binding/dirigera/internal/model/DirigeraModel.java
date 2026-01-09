@@ -350,8 +350,7 @@ public class DirigeraModel implements Model {
     private @Nullable DiscoveryResult identifiy(String id) {
         ThingTypeUID ttuid = identifyDeviceFromModel(id);
         // don't report gateway, unknown devices and light sensors connected to motion sensors
-        if (!THING_TYPE_GATEWAY.equals(ttuid) && !THING_TYPE_UNKNNOWN.equals(ttuid)
-                && !THING_TYPE_LIGHT_SENSOR.equals(ttuid) && !THING_TYPE_IGNORE.equals(ttuid)) {
+        if (!IGNORE_THING_TYPES_UIDS.contains(ttuid)) {
             // check if it's a simple or complex device
             String relationId = getRelationId(id);
             String firstDeviceId = id;
@@ -379,18 +378,43 @@ public class DirigeraModel implements Model {
      */
     @Override
     public synchronized ThingTypeUID identifyDeviceFromModel(String id) {
-        JSONObject entry = getAllFor(id, PROPERTY_DEVICES);
-        if (entry.isEmpty()) {
-            entry = getAllFor(id, PROPERTY_SCENES);
+        JSONObject data = getAllFor(id, PROPERTY_DEVICES);
+        if (data.isEmpty()) {
+            data = getAllFor(id, PROPERTY_SCENES);
         }
-        if (entry.isEmpty()) {
+        if (data.isEmpty()) {
             return THING_TYPE_NOT_FOUND;
         } else {
-            return identifyDeviceFromJSON(id, entry);
+            ThingTypeUID ttUID = identifyMatterDevice(id, data);
+            if (THING_TYPE_UNKNOWN.equals(ttUID)) {
+                // continue with standard device identification if not a matter device
+                ttUID = identifyStandardDevice(id, data);
+            }
+            return ttUID;
         }
     }
 
-    private ThingTypeUID identifyDeviceFromJSON(String id, JSONObject data) {
+    private ThingTypeUID identifyMatterDevice(String id, JSONObject data) {
+        // attribute qrCode is used to identify new Matter devices
+        if (hasAttribute(id, ATTRIBUTE_QRCODE)) {
+            String type = data.getString(PROPERTY_TYPE);
+            String deviceType = data.getString(PROPERTY_DEVICE_TYPE);
+            return switch (type) {
+                case "sensor" -> THING_TYPE_SENSOR;
+                case "controller" -> THING_TYPE_CONTROLLER;
+                case "unknown" -> switch (deviceType) {
+                    case "lightSensor" -> THING_TYPE_SENSOR;
+                    default -> THING_TYPE_MATTER_UNKNOWN;
+                };
+                default -> THING_TYPE_MATTER_UNKNOWN;
+            };
+        } else {
+            // no qrCode attribute found so no new matter device
+            return THING_TYPE_UNKNOWN;
+        }
+    }
+
+    private ThingTypeUID identifyStandardDevice(String id, JSONObject data) {
         String typeDeviceType = "";
         if (data.has(Model.PROPERTY_RELATION_ID)) {
             return identifiyComplexDevice(data.getString(Model.PROPERTY_RELATION_ID));
@@ -474,7 +498,7 @@ public class DirigeraModel implements Model {
             }
         }
         logger.warn("DIRIGERA MODEL Unsupported device {} with data {} {}", typeDeviceType, data, id);
-        return THING_TYPE_UNKNNOWN;
+        return THING_TYPE_UNKNOWN;
     }
 
     private ThingTypeUID identifiyComplexDevice(String relationId) {
@@ -485,14 +509,14 @@ public class DirigeraModel implements Model {
         } else if (relationsMap.size() == 2 && relationsMap.containsValue("shortcutController")) {
             for (Iterator<String> iterator = relationsMap.keySet().iterator(); iterator.hasNext();) {
                 if (!"shortcutController".equals(relationsMap.get(iterator.next()))) {
-                    return THING_TYPE_UNKNNOWN;
+                    return THING_TYPE_UNKNOWN;
                 }
             }
             return THING_TYPE_DOUBLE_SHORTCUT_CONTROLLER;
         } else if (relationsMap.size() == 1 && relationsMap.containsValue("gatewy")) {
             return THING_TYPE_GATEWAY;
         } else {
-            return THING_TYPE_UNKNNOWN;
+            return THING_TYPE_UNKNOWN;
         }
     }
 

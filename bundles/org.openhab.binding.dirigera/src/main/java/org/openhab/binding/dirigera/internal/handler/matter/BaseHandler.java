@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.dirigera.internal.handler;
+package org.openhab.binding.dirigera.internal.handler.matter;
 
 import static org.openhab.binding.dirigera.internal.Constants.*;
 

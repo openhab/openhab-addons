@@ -1,0 +1,11 @@
+ {
+	"data": {
+		"id": "040bf20b-b1b0-463b-af4b-1227a711d70e_2",
+		"clickPattern": "longPress"
+	},
+	"specversion": "1.1.0",
+	"id": "d76756a2-20fc-4bfc-8484-7b01e43a9b41",
+	"source": "hub",
+	"time": "2026-01-03T19:26:39.651Z",
+	"type": "remotePressEvent"
+}

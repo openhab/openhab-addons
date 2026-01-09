@@ -14,6 +14,7 @@ package org.openhab.binding.dirigera.internal.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.dirigera.internal.interfaces.BaseDevice;
 
 /**
  * The {@link DeviceUpdate} element handled in device update queue
@@ -29,11 +30,11 @@ public class DeviceUpdate {
         LINKS;
     }
 
-    public @Nullable BaseHandler handler;
+    public @Nullable BaseDevice handler;
     public String deviceId;
     public Action action;
 
-    public DeviceUpdate(@Nullable BaseHandler handler, String deviceId, Action action) {
+    public DeviceUpdate(@Nullable BaseDevice handler, String deviceId, Action action) {
         this.handler = handler;
         this.deviceId = deviceId;
         this.action = action;
@@ -50,8 +51,8 @@ public class DeviceUpdate {
         boolean result = false;
         if (other instanceof DeviceUpdate otherDeviceUpdate) {
             result = this.action.equals(otherDeviceUpdate.action) && this.deviceId.equals(otherDeviceUpdate.deviceId);
-            BaseHandler thisProxyHandler = this.handler;
-            BaseHandler otherProxyHandler = otherDeviceUpdate.handler;
+            BaseDevice thisProxyHandler = this.handler;
+            BaseDevice otherProxyHandler = otherDeviceUpdate.handler;
             if (result && thisProxyHandler != null && otherProxyHandler != null) {
                 result = thisProxyHandler.equals(otherProxyHandler);
             }

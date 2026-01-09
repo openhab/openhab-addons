@@ -49,6 +49,7 @@ import org.openhab.binding.dirigera.internal.config.DirigeraConfiguration;
 import org.openhab.binding.dirigera.internal.discovery.DirigeraDiscoveryService;
 import org.openhab.binding.dirigera.internal.exception.ApiException;
 import org.openhab.binding.dirigera.internal.exception.ModelException;
+import org.openhab.binding.dirigera.internal.interfaces.BaseDevice;
 import org.openhab.binding.dirigera.internal.interfaces.DebugHandler;
 import org.openhab.binding.dirigera.internal.interfaces.DirigeraAPI;
 import org.openhab.binding.dirigera.internal.interfaces.Gateway;
@@ -86,6 +87,7 @@ import org.slf4j.LoggerFactory;
  * sent to one of the channels.
  *
  * @author Bernd Weymann - Initial contribution
+ * @author Bernd Weymann - Allow device tree to connect a device id with more than one handler
  */
 @NonNullByDefault
 public class DirigeraHandler extends BaseBridgeHandler implements Gateway, DebugHandler {
@@ -96,7 +98,7 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway, Debug
     protected Map<String, State> channelStateMap = new HashMap<>();
     protected Class<?> apiProvider = DirigeraAPIImpl.class;
 
-    private final Map<String, BaseHandler> deviceTree = new HashMap<>();
+    private final Map<String, List<BaseDevice>> deviceTree = new HashMap<>();
     private final DirigeraDiscoveryService discoveryService;
     private final DirigeraCommandProvider commandProvider;
     private final BundleContext bundleContext;
@@ -469,7 +471,7 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway, Debug
             }
         }
         if (deviceUpdate != null) {
-            BaseHandler handler = deviceUpdate.handler;
+            BaseDevice handler = deviceUpdate.handler;
             try {
                 switch (deviceUpdate.action) {
                     case ADD:
@@ -529,7 +531,7 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway, Debug
     }
 
     @Override
-    public void registerDevice(BaseHandler deviceHandler, String deviceId) {
+    public void registerDevice(BaseDevice deviceHandler, String deviceId) {
         synchronized (deviceModificationQueue) {
             deviceModificationQueue.add(new DeviceUpdate(deviceHandler, deviceId, DeviceUpdate.Action.ADD));
         }
@@ -539,7 +541,7 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway, Debug
     /**
      * register a running device
      */
-    private void doRegisterDevice(BaseHandler deviceHandler, String deviceId) {
+    private void doRegisterDevice(BaseDevice deviceHandler, String deviceId) {
         if (!deviceId.isBlank()) {
             // if id isn't known yet - store it
             if (!knownDevices.contains(deviceId)) {
@@ -547,11 +549,18 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway, Debug
                 storeKnownDevices();
             }
         }
-        deviceTree.put(deviceId, deviceHandler);
+        List<BaseDevice> handlerList = getHandlersForDeviceId(deviceId);
+        if (handlerList.isEmpty()) {
+            handlerList = new ArrayList<>();
+        }
+        if (!handlerList.contains(deviceHandler)) {
+            handlerList.add(deviceHandler);
+        }
+        deviceTree.put(deviceId, handlerList);
     }
 
     @Override
-    public void unregisterDevice(BaseHandler deviceHandler, String deviceId) {
+    public void unregisterDevice(BaseDevice deviceHandler, String deviceId) {
         synchronized (deviceModificationQueue) {
             deviceModificationQueue.add(new DeviceUpdate(deviceHandler, deviceId, DeviceUpdate.Action.DISPOSE));
         }
@@ -561,13 +570,13 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway, Debug
     /**
      * unregister device, not running but still available
      */
-    private void doUnregisterDevice(BaseHandler deviceHandler, String deviceId) {
+    private void doUnregisterDevice(BaseDevice deviceHandler, String deviceId) {
         // unregister from dispose but don't remove it from known devices
         deviceTree.remove(deviceId);
     }
 
     @Override
-    public void deleteDevice(BaseHandler deviceHandler, String deviceId) {
+    public void deleteDevice(BaseDevice deviceHandler, String deviceId) {
         synchronized (deviceModificationQueue) {
             deviceModificationQueue.add(new DeviceUpdate(deviceHandler, deviceId, DeviceUpdate.Action.REMOVE));
         }
@@ -577,7 +586,7 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway, Debug
     /**
      * Called by all device on handleRe
      */
-    private void doDeleteDevice(BaseHandler deviceHandler, String deviceId) {
+    private void doDeleteDevice(BaseDevice deviceHandler, String deviceId) {
         deviceTree.remove(deviceId);
         // removal of handler - store known devices
         knownDevices.remove(deviceId);
@@ -603,11 +612,11 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway, Debug
      */
     @Override
     public void deleteDevice(String deviceId) {
-        BaseHandler activeHandler = deviceTree.remove(deviceId);
-        if (activeHandler != null) {
-            // if a handler is attached the check will fail and update the status to GONE
-            activeHandler.checkHandler();
-        }
+        // if a handler is attached the check will fail and update the status to GONE
+        getHandlersForDeviceId(deviceId).forEach(handler -> {
+            handler.checkHandler();
+        });
+        deviceTree.remove(deviceId);
         // removal of handler - store new known devices
         if (knownDevices.contains(deviceId)) {
             knownDevices.remove(deviceId);
@@ -672,35 +681,37 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway, Debug
     private void doUpdateLinks() {
         // first clear start update cycle, softlinks are cleared before
         synchronized (deviceTree) {
-            deviceTree.forEach((id, handler) -> {
-                handler.updateLinksStart();
+            deviceTree.forEach((id, handlerList) -> {
+                handlerList.forEach(handler -> {
+                    handler.updateLinksStart();
+                });
             });
             // then update all links
-            deviceTree.forEach((id, handler) -> {
-                List<String> links = handler.getLinks();
-                if (!links.isEmpty()) {
-                    if (customDebug) {
-                        logger.info("DIRIGERA HANDLER links found for {} {}", handler.getThing().getLabel(),
-                                links.size());
-                    }
-                }
-                links.forEach(link -> {
-                    // assure investigated handler is different from target handler
-                    if (!id.equals(link)) {
-                        BaseHandler targetHandler = deviceTree.get(link);
-                        if (targetHandler != null) {
-                            targetHandler.addSoftlink(id);
-                        } else {
-                            if (customDebug) {
-                                logger.info("DIRIGERA HANDLER no targethandler found to link {} to {}", id, link);
-                            }
+            deviceTree.forEach((id, handlerList) -> {
+                handlerList.forEach(handler -> {
+                    List<String> links = handler.getLinks();
+                    if (!links.isEmpty()) {
+                        if (customDebug) {
+                            logger.info("DIRIGERA HANDLER links found for {} {}", handler.getThing().getLabel(),
+                                    links.size());
                         }
                     }
+                    links.forEach(link -> {
+                        // assure investigated handler is different from target handler
+                        if (!id.equals(link)) {
+                            List<BaseDevice> linkHandlerList = getHandlersForDeviceId(link);
+                            linkHandlerList.forEach(targetHandler -> {
+                                targetHandler.addSoftlink(id);
+                            });
+                        }
+                    });
                 });
             });
             // finish update cycle so handler can update states
-            deviceTree.forEach((id, handler) -> {
-                handler.updateLinksDone();
+            deviceTree.forEach((id, handlerList) -> {
+                handlerList.forEach(handler -> {
+                    handler.updateLinksDone();
+                });
             });
         }
     }
@@ -863,9 +874,11 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway, Debug
                         if (targetId.equals(config.id)) {
                             this.handleUpdate(data);
                         } else {
-                            BaseHandler targetHandler = deviceTree.get(targetId);
-                            if (targetHandler != null) {
-                                targetHandler.handleUpdate(data);
+                            List<BaseDevice> handlerList = getHandlersForDeviceId(targetId);
+                            if (!handlerList.isEmpty()) {
+                                handlerList.forEach(targetHandler -> {
+                                    targetHandler.handleUpdate(data);
+                                });
                             } else {
                                 // special case: if custom name is changed in attributes force model update
                                 // in order to present the updated name in discovery
@@ -1039,10 +1052,26 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway, Debug
     public void setDebug(boolean debug, boolean all) {
         customDebug = debug;
         if (all) {
-            deviceTree.forEach((key, handler) -> {
-                handler.setDebug(debug, false);
+            deviceTree.forEach((key, handlerList) -> {
+                handlerList.forEach(handler -> {
+                    handler.setDebug(debug, false);
+                });
             });
         }
+    }
+
+    /**
+     * Get handler(s) for device id
+     *
+     * @param deviceId for query
+     * @return List with all connected handlers, empty if no connected handler available
+     */
+    private List<BaseDevice> getHandlersForDeviceId(String deviceId) {
+        List<BaseDevice> handlerList = deviceTree.get(deviceId);
+        if (handlerList == null) {
+            return List.of();
+        }
+        return handlerList;
     }
 
     @Override

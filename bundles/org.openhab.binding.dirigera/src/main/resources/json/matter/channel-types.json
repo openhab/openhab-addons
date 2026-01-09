@@ -1,0 +1,22 @@
+{
+	"dirigera:temperature-measure": {
+		"item": "Number",
+		"dimension": "Temperature",
+		"unitHint": "°C",
+		"pattern": "%.1f",
+		"label": "Temperature",
+		"description": "The current temperature measured by the device.",
+		"category": "measurement",
+		"tags": ["temperature"]
+	},
+	"dirigera:relative-humidty-measure": {
+		"item": "Number",
+		"dimension": "Dimensionless",
+		"unitHint": "%",
+		"pattern": "%.0f",
+        "label": "Relative Humidity",
+        "description": "The current relative humidity measured by the device.",
+        "category": "measurement",
+        "tags": ["humidity"]
+	}
+}

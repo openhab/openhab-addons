@@ -20,7 +20,6 @@ import org.openhab.binding.dirigera.internal.DirigeraCommandProvider;
 import org.openhab.binding.dirigera.internal.discovery.DirigeraDiscoveryService;
 import org.openhab.binding.dirigera.internal.exception.ApiException;
 import org.openhab.binding.dirigera.internal.exception.ModelException;
-import org.openhab.binding.dirigera.internal.handler.BaseHandler;
 import org.openhab.core.thing.Thing;
 import org.osgi.framework.BundleContext;
 
@@ -77,7 +76,7 @@ public interface Gateway {
      * @param deviceHandler handler of this binding
      * @param deviceId connected device id
      */
-    void registerDevice(BaseHandler deviceHandler, String deviceId);
+    void registerDevice(BaseDevice deviceHandler, String deviceId);
 
     /**
      * Unregister a handler associated with the given deviceId reflecting a device or scene. Shall be called
@@ -88,7 +87,7 @@ public interface Gateway {
      * @param deviceHandler handler of this binding
      * @param deviceId connected device id
      */
-    void unregisterDevice(BaseHandler deviceHandler, String deviceId);
+    void unregisterDevice(BaseDevice deviceHandler, String deviceId);
 
     /**
      * Deletes an openHAB handler associated with the given deviceId reflecting a device or scene. Shall be called
@@ -99,7 +98,7 @@ public interface Gateway {
      * @param deviceHandler handler of this binding
      * @param deviceId connected device id
      */
-    void deleteDevice(BaseHandler deviceHandler, String deviceId);
+    void deleteDevice(BaseDevice deviceHandler, String deviceId);
 
     /**
      * Deletes a device or scene detected by the model. A device can be deleted without openHAB interaction in IKEA Home
