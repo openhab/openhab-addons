@@ -32,93 +32,14 @@ This is done by setting `useMeteorologicalSeason` to true in the advanced settin
 
 This binding has its own IconProvider and makes available the following list of icons
 
-<<<<<<< Upstream, based on main
-<<<<<<< Upstream, based on main
-<<<<<<< Upstream, based on main
-| Icon Name                   | Dynamic | Illustration                                      |
-| --------------------------- | ------- | ------------------------------------------------- |
-| oh:astro:zodiac             | Yes     | ![Zodiac](doc/images/zodiac.svg)                  |
-| oh:astro:season             | Yes     | ![Season](doc/images/season.svg)                  |
-| oh:astro:sun_eclipse        | Yes     | ![Sun Eclipse](doc/images/sun_eclipse.svg)        |
-
-=======
-<<<<<<< Upstream, based on main
-| Icon Name                   | Dynamic | Illustration |
-|-----------------------------|---------|--------------|
-| oh:astro:zodiac             |   Yes   | ![Zodiac](doc/images/zodiac.svg) |
-| oh:astro:zodiac-aquarius    |   Yes   | ![Aquarius](doc/images/zodiac-aquarius.svg) |
-| oh:astro:zodiac-aries       |   Yes   | ![Aries](doc/images/zodiac-aries.svg) |
-| oh:astro:zodiac-cancer      |   Yes   | ![Cancer](doc/images/zodiac-cancer.svg) |
-| oh:astro:zodiac-capricorn   |   Yes   | ![Capricorn](doc/images/zodiac-capricorn.svg) |
-| oh:astro:zodiac-gemini      |   Yes   | ![Gemini](doc/images/zodiac-gemini.svg) |
-| oh:astro:zodiac-leo         |   Yes   | ![Leo](doc/images/zodiac-leo.svg) |
-| oh:astro:zodiac-libra       |   Yes   | ![Libra](doc/images/zodiac-libra.svg) |
-| oh:astro:zodiac-pisces      |   Yes   | ![Pisces](doc/images/zodiac-pisces.svg) |
-| oh:astro:zodiac-sagittarius |   Yes   | ![Sagittarius](doc/images/zodiac-sagittarius.svg) |
-| oh:astro:zodiac-scorpio     |   Yes   | ![Scorpio](doc/images/zodiac-scorpio.svg) |
-| oh:astro:zodiac-taurus      |   Yes   | ![Taurus](doc/images/zodiac-taurus.svg) |
-| oh:astro:zodiac-virgo       |   Yes   | ![Virgo](doc/images/zodiac-virgo.svg) |
-| oh:astro:season             |   Yes   | ![Season](doc/images/season.svg) |
-| oh:astro:season-autumn      |   Yes   | ![Autumn](doc/images/season-autumn.svg) |
-| oh:astro:season-spring      |   Yes   | ![Spring](doc/images/season-spring.svg) |
-| oh:astro:season-summer      |   Yes   | ![Summer](doc/images/season-summer.svg) |
-| oh:astro:season-winter      |   Yes   | ![Winter](doc/images/season-winter.svg) |
-=======
-| Icon Name                           | Dynamic | Illustration |
-|-------------------------------------|---------|--------------|
-| oh:astro:zodiac                     |   Yes   | ![Zodiac](doc/images/zodiac.svg) |
-| oh:astro:zodiac-aquarius            |   Yes   | ![Aquarius](doc/images/zodiac-aquarius.svg) |
-| oh:astro:zodiac-aries               |   Yes   | ![Aries](doc/images/zodiac-aries.svg) |
-| oh:astro:zodiac-cancer              |   Yes   | ![Cancer](doc/images/zodiac-cancer.svg) |
-| oh:astro:zodiac-capricorn           |   Yes   | ![Capricorn](doc/images/zodiac-capricorn.svg) |
-| oh:astro:zodiac-gemini              |   Yes   | ![Gemini](doc/images/zodiac-gemini.svg) |
-| oh:astro:zodiac-leo                 |   Yes   | ![Leo](doc/images/zodiac-leo.svg) |
-| oh:astro:zodiac-libra               |   Yes   | ![Libra](doc/images/zodiac-libra.svg) |
-| oh:astro:zodiac-pisces              |   Yes   | ![Pisces](doc/images/zodiac-pisces.svg) |
-| oh:astro:zodiac-sagittarius         |   Yes   | ![Sagittarius](doc/images/zodiac-sagittarius.svg) |
-| oh:astro:zodiac-scorpio             |   Yes   | ![Scorpio](doc/images/zodiac-scorpio.svg) |
-| oh:astro:zodiac-taurus              |   Yes   | ![Taurus](doc/images/zodiac-taurus.svg) |
-| oh:astro:zodiac-virgo               |   Yes   | ![Virgo](doc/images/zodiac-virgo.svg) |
-| oh:astro:moon_phase                 |   Yes   | ![Moon Phase](doc/images/moon_phase.svg) |
-| oh:astro:moon_phase-first_quarter   |   Yes   | ![First Quarter](doc/images/moon_phase-first_quarter.svg) |
-| oh:astro:moon_phase-full            |   Yes   | ![Full Moon](doc/images/moon_phase-full.svg) |
-| oh:astro:moon_phase-new             |   Yes   | ![New Moon](doc/images/moon_phase-new.svg) |
-| oh:astro:moon_phase-third_quarter   |   Yes   | ![Third Quarter](doc/images/moon_phase-third_quarter.svg) |
-| oh:astro:moon_phase-waning_crescent |   Yes   | ![Waning Crescent](doc/images/moon_phase-waning_crescent.svg) |
-| oh:astro:moon_phase-waning_gibbous  |   Yes   | ![Waning Gibbous](doc/images/moon_phase-waning_gibbous.svg) |
-| oh:astro:moon_phase-waxing_crescent |   Yes   | ![Waxing Crescent](doc/images/moon_phase-waxing_crescent.svg) |
-| oh:astro:moon_phase-waxing_gibbous  |   Yes   | ![Waxing Gibbous](doc/images/moon_phase-waxing_gibbous.svg) |
-| oh:astro:moon_eclipse               |   Yes   | ![Moon Eclipse](doc/images/moon_eclipse.svg) |
-| oh:astro:moon_eclipse-total         |   Yes   | ![Total Moon Eclipse](doc/images/moon_eclipse-total.svg) |
-| oh:astro:moon_eclipse-partial       |   Yes   | ![Partial Moon Eclipse](doc/images/moon_eclipse-partial.svg) |
-<<<<<<< Upstream, based on main
->>>>>>> 11e99dd Initial commit for Moon phase revamp
-<<<<<<< Upstream, based on main
->>>>>>> 0e1ea37 Initial commit for Moon phase revamp
-=======
-=======
-| oh:astro:moon_day                   |   Yes   | ![Moon Age](doc/images/moon_day.svg) |
-
->>>>>>> 8573003 Adds moon-day icon set. Rebased.
->>>>>>> cbf0ca8 Adds moon-day icon set. Rebased.
-=======
-| Icon Name             | Dynamic | Illustration |
-|-----------------------|---------|--------------|
-| oh:astro:zodiac       |   Yes   | ![Zodiac](doc/images/zodiac.svg) |
-| oh:astro:season       |   Yes   | ![Season](doc/images/season.svg) |
-| oh:astro:moon_phase   |   Yes   | ![Moon Phase](doc/images/moon_day.svg) |
-| oh:astro:moon_eclipse |   Yes   | ![Moon Eclipse](doc/images/moon_eclipse.svg) |
-| oh:astro:moon_day     |   Yes   | ![Moon Age](doc/images/moon_day.svg) |
->>>>>>> a0ec0ce Resolved conflicting files Adds moon-day icon set. Rebased.
-=======
-| Icon Name             | Dynamic | Illustration                                 |
-| --------------------- | ------- | -------------------------------------------- |
-| oh:astro:zodiac       | Yes     | ![Zodiac](doc/images/zodiac.svg)             |
-| oh:astro:season       | Yes     | ![Season](doc/images/season.svg)             |
-| oh:astro:moon_phase   | Yes     | ![Moon Phase](doc/images/moon_day.svg)       |
-| oh:astro:moon_eclipse | Yes     | ![Moon Eclipse](doc/images/moon_eclipse.svg) |
-| oh:astro:moon_day     | Yes     | ![Moon Age](doc/images/moon_day.svg)         |
->>>>>>> eeae49a Reverting contract modification in Action. lspiel code review adressed.
+| Icon Name             | Dynamic | Illustration                                      |
+| ----------------------| ------- | ------------------------------------------------- |
+| oh:astro:zodiac       | Yes     | ![Zodiac](doc/images/zodiac.svg)                  |
+| oh:astro:season       | Yes     | ![Season](doc/images/season.svg)                  |
+| oh:astro:sun_eclipse  | Yes     | ![Sun Eclipse](doc/images/sun_eclipse.svg)        |
+| oh:astro:moon_phase   | Yes     | ![Moon Phase](doc/images/moon_phase.svg)          |
+| oh:astro:moon_eclipse | Yes     | ![Moon Eclipse](doc/images/moon_eclipse.svg)      |
+| oh:astro:moon_day     | Yes     | ![Moon Age](doc/images/moon_day.svg)              |
 
 ## Channels
 
