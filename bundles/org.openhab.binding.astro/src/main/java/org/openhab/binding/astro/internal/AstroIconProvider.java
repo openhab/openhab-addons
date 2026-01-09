@@ -14,11 +14,9 @@ package org.openhab.binding.astro.internal;
 
 import static org.openhab.binding.astro.internal.AstroBindingConstants.BINDING_ID;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.util.Locale;
 import java.util.Set;
 
@@ -131,12 +129,12 @@ public class AstroIconProvider implements IconProvider {
     }
 
     private @Nullable InputStream getResource(String iconName) {
-        URL iconResource = bundle.getEntry(iconName.toLowerCase(Locale.ROOT));
-        try (InputStream stream = iconResource.openStream()) {
-            String result = new String(stream.readAllBytes(), StandardCharsets.UTF_8);
-            return new ByteArrayInputStream(result.getBytes(StandardCharsets.UTF_8));
-        } catch (IOException e) {
-            logger.warn("Unable to load resource '{}': {}", iconResource.getPath(), e.getMessage());
+        if (bundle.getEntry(iconName.toLowerCase(Locale.ROOT)) instanceof URL iconResource) {
+            try {
+                return iconResource.openStream();
+            } catch (IOException e) {
+                logger.warn("Unable to load resource '{}': {}", iconResource.getPath(), e.getMessage());
+            }
         }
         return null;
     }
