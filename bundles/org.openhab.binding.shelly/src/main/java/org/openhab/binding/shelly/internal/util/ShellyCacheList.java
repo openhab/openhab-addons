@@ -37,7 +37,7 @@ public class ShellyCacheList<K, V> {
     private static final long EXPIRY_IN_SEC = 15 * 60; // 15min
     private long experyInSec;
 
-    private record CacheEntry<V> (Long created, V value) {
+    private record CacheEntry<V>(Long created, V value) {
     }
 
     // Non-thread-safe HashMap: all access to 'storage' is synchronized on this instance
@@ -76,12 +76,11 @@ public class ShellyCacheList<K, V> {
     }
 
     private void cleanupMap() {
-        long currentTime = System.currentTimeMillis();
         Entry<K, CacheEntry<V>> entry;
         synchronized (this) {
             for (Iterator<Entry<K, CacheEntry<V>>> iterator = storage.entrySet().iterator(); iterator.hasNext();) {
                 entry = iterator.next();
-                if (currentTime > (entry.getValue().created.longValue() + experyInSec * 1000)) {
+                if (isExpired(entry)) {
                     iterator.remove();
                 }
             }
@@ -90,6 +89,10 @@ public class ShellyCacheList<K, V> {
                 cancelJob(); // stop background cleanup
             }
         }
+    }
+
+    public boolean isExpired(Entry<K, CacheEntry<V>> entry) {
+        return System.currentTimeMillis() > (entry.getValue().created.longValue() + experyInSec * 1000);
     }
 
     private synchronized void cancelJob() {

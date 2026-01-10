@@ -129,8 +129,7 @@ public class ShellyBasicDiscoveryService extends AbstractDiscoveryService {
         try {
             ShellyThingConfiguration config = fillConfig(bindingConfig, ipAddress, name);
             api = gen2 ? new Shelly2ApiRpc(name, config, httpClient) : new Shelly1HttpApi(name, config, httpClient);
-            api.setConfig(name, config);
-            api.initialize();
+            api.initialize(name, config);
             devInfo = api.getDeviceInfo();
             mac = getString(devInfo.mac);
             model = getString(devInfo.type);
