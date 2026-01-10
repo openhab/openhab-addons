@@ -114,11 +114,11 @@
 			<channel id="wiper-blade-heater" typeId="wiper-blade-heater"/>
 		</channels>
 
-		<representation-property>publicID</representation-property>
-
 		<properties>
 			<property name="thingTypeVersion">2</property>
 		</properties>
+
+		<representation-property>publicID</representation-property>
 
 		<config-description>
 			<parameter name="publicID" type="text" required="true">
