@@ -18,9 +18,9 @@ import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 import static org.openhab.core.thing.Thing.PROPERTY_MODEL_ID;
 
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-import java.util.TreeMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -112,7 +112,7 @@ public class ShellyThingCreator {
     public static void addBluThing(String gateway, Shelly2NotifyBluEventData data, ShellyThingTable thingTable) {
         String model = getString(data.name);
         String bluClass = substringBefore(model, "-").toUpperCase(Locale.ROOT);
-        String mac = getString(data.addr).replaceAll(":", "");
+        String mac = getString(data.addr).replace(":", "").toLowerCase(Locale.ROOT);
 
         ThingTypeUID thingTypeUID = THING_TYPE_BY_DEVICE_TYPE.get(model);
         if (thingTypeUID == null) {
@@ -123,18 +123,22 @@ public class ShellyThingCreator {
             return;
         }
 
-        String serviceName = getBluServiceName(getString(data.name), mac);
-        Map<String, Object> properties = new TreeMap<>();
-        addProperty(properties, PROPERTY_MODEL_ID, model);
-        addProperty(properties, PROPERTY_SERVICE_NAME, serviceName);
-        addProperty(properties, PROPERTY_DEV_NAME, data.name);
-        addProperty(properties, PROPERTY_DEV_TYPE, thingTypeUID.getId());
-        addProperty(properties, PROPERTY_DEV_GEN, "BLU");
-        addProperty(properties, PROPERTY_GW_DEVICE, gateway);
-        addProperty(properties, CONFIG_DEVICEADDRESS, mac);
+        try {
+            String serviceName = getBluServiceName(getString(data.name), mac);
+            Map<String, Object> properties = new HashMap<>();
+            addProperty(properties, PROPERTY_MODEL_ID, model);
+            addProperty(properties, PROPERTY_SERVICE_NAME, serviceName);
+            addProperty(properties, PROPERTY_DEV_NAME, data.name);
+            addProperty(properties, PROPERTY_DEV_TYPE, thingTypeUID.getId());
+            addProperty(properties, PROPERTY_DEV_GEN, "BLU");
+            addProperty(properties, PROPERTY_GW_DEVICE, gateway);
+            addProperty(properties, CONFIG_DEVICEADDRESS, mac);
 
-        LOGGER.debug("{}: Create thing {} for BLU device {} / {}", gateway, thingTypeUID, model, mac);
-        thingTable.discoveredResult(thingTypeUID, model, serviceName, mac, properties);
+            LOGGER.debug("{}: Create thing {} for BLU device {} / {}", gateway, thingTypeUID, model, mac);
+            thingTable.discoveredResult(thingTypeUID, model, serviceName, mac, properties);
+        } catch (IllegalArgumentException e) {
+            LOGGER.debug("{}: {} (BLU class={}, model={}, MAC: {})", gateway, e.getMessage(), bluClass, model, mac);
+        }
     }
 
     private static void addProperty(Map<String, Object> properties, String key, @Nullable String value) {
