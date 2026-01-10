@@ -258,6 +258,7 @@ Second generation radiator thermostat.
 | child-lock            | Switch               | yes      | Indicates if child lock is active.                                                                                                                                                                                          |
 | battery-level         | Number               | no       | Current battery level percentage as integer number. Bosch-specific battery levels are mapped to numbers as follows: `OK`: 100, `LOW_BATTERY`: 10, `CRITICAL_LOW`: 1, `CRITICALLY_LOW_BATTERY`: 1, `NOT_AVAILABLE`: `UNDEF`. |
 | low-battery           | Switch               | no       | Indicates whether the battery is low (`ON`) or OK (`OFF`).                                                                                                                                                                  |
+| display-direction     | Switch               | yes      | Configures the display direction. `OFF` coressponds to `NORMAL` and `ON` corresponds to `REVERSED`.                                                                                                                         |
 
 ### Radiator Thermostat II [+M]
 
@@ -272,6 +273,7 @@ Second generation radiator thermostat with Matter support.
 | child-lock            | Switch               | yes      | Indicates if child lock is active.                                                                                                                                                                                          |
 | battery-level         | Number               | no       | Current battery level percentage as integer number. Bosch-specific battery levels are mapped to numbers as follows: `OK`: 100, `LOW_BATTERY`: 10, `CRITICAL_LOW`: 1, `CRITICALLY_LOW_BATTERY`: 1, `NOT_AVAILABLE`: `UNDEF`. |
 | low-battery           | Switch               | no       | Indicates whether the battery is low (`ON`) or OK (`OFF`).                                                                                                                                                                  |
+| display-direction     | Switch               | yes      | Configures the display direction. `OFF` coressponds to `NORMAL` and `ON` corresponds to `REVERSED`.                                                                                                                         |
 
 ### Climate Control
 

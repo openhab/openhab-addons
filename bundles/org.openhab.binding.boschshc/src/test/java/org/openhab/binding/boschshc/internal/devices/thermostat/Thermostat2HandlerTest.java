@@ -12,9 +12,28 @@
  */
 package org.openhab.binding.boschshc.internal.devices.thermostat;
 
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
+
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants;
+import org.openhab.binding.boschshc.internal.services.displaydirection.dto.DisplayDirectionServiceState;
+import org.openhab.binding.boschshc.internal.services.displaydirection.dto.DisplayDirectionState;
+import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingTypeUID;
+
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 
 /**
  * Unit tests for {@link Thermostat2Handler}.
@@ -23,7 +42,10 @@ import org.openhab.core.thing.ThingTypeUID;
  *
  */
 @NonNullByDefault
-public class Thermostat2HandlerTest extends AbstractThermostatHandlerTest<Thermostat2Handler> {
+@ExtendWith(MockitoExtension.class)
+class Thermostat2HandlerTest extends AbstractThermostatHandlerTest<Thermostat2Handler> {
+
+    private @Captor @NonNullByDefault({}) ArgumentCaptor<DisplayDirectionServiceState> displayDirectionServiceStateCaptor;
 
     @Override
     protected Thermostat2Handler createFixture() {
@@ -38,5 +60,28 @@ public class Thermostat2HandlerTest extends AbstractThermostatHandlerTest<Thermo
     @Override
     protected ThingTypeUID getThingTypeUID() {
         return BoschSHCBindingConstants.THING_TYPE_THERMOSTAT_2;
+    }
+
+    @Test
+    void testUpdateChannelsDisplayDirectionService() {
+        JsonElement jsonObject = JsonParser.parseString("""
+                {
+                    "@type": "displayDirectionState",
+                    "direction": "REVERSED"
+                }\
+                """);
+        getFixture().processUpdate("DisplayDirection", jsonObject);
+        verify(getCallback()).stateUpdated(
+                new ChannelUID(getThing().getUID(), BoschSHCBindingConstants.CHANNEL_DISPLAY_DIRECTION), OnOffType.ON);
+    }
+
+    @Test
+    void testHandleCommandDisplayDirectionService() throws InterruptedException, TimeoutException, ExecutionException {
+        getFixture().handleCommand(
+                new ChannelUID(getThing().getUID(), BoschSHCBindingConstants.CHANNEL_DISPLAY_DIRECTION), OnOffType.ON);
+        verify(getBridgeHandler()).putState(eq(getDeviceID()), eq("DisplayDirection"),
+                displayDirectionServiceStateCaptor.capture());
+        DisplayDirectionServiceState state = displayDirectionServiceStateCaptor.getValue();
+        assertSame(DisplayDirectionState.REVERSED, state.direction);
     }
 }

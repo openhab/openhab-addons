@@ -12,8 +12,17 @@
  */
 package org.openhab.binding.boschshc.internal.devices.thermostat;
 
+import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.CHANNEL_DISPLAY_DIRECTION;
+
+import java.util.List;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.boschshc.internal.exceptions.BoschSHCException;
+import org.openhab.binding.boschshc.internal.services.displaydirection.DisplayDirectionService;
+import org.openhab.binding.boschshc.internal.services.displaydirection.dto.DisplayDirectionServiceState;
+import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
+import org.openhab.core.types.Command;
 
 /**
  * Handler for Thermostat II devices (including Thermostat II [+M] with Matter support).
@@ -23,7 +32,31 @@ import org.openhab.core.thing.Thing;
  */
 @NonNullByDefault
 public class Thermostat2Handler extends AbstractThermostatHandler {
+
+    private DisplayDirectionService displayDirectionService;
+
     public Thermostat2Handler(Thing thing) {
         super(thing);
+        this.displayDirectionService = new DisplayDirectionService();
+    }
+
+    @Override
+    protected void initializeServices() throws BoschSHCException {
+        super.initializeServices();
+
+        this.registerService(this.displayDirectionService, this::updateChannels, List.of(CHANNEL_DISPLAY_DIRECTION));
+    }
+
+    private void updateChannels(DisplayDirectionServiceState displayDirectionServiceState) {
+        super.updateState(CHANNEL_DISPLAY_DIRECTION, displayDirectionServiceState.direction.toOnOffCommand());
+    }
+
+    @Override
+    public void handleCommand(ChannelUID channelUID, Command command) {
+        super.handleCommand(channelUID, command);
+
+        if (CHANNEL_DISPLAY_DIRECTION.equals(channelUID.getId())) {
+            this.handleServiceCommand(this.displayDirectionService, command);
+        }
     }
 }

@@ -299,9 +299,9 @@
 			<channel id="temperature" typeId="temperature"/>
 			<channel id="valve-tappet-position" typeId="valve-tappet-position"/>
 			<channel id="child-lock" typeId="child-lock"/>
-			<channel id="silent-mode" typeId="silent-mode"/>
 			<channel id="battery-level" typeId="system.battery-level"/>
 			<channel id="low-battery" typeId="system.low-battery"/>
+			<channel id="display-direction" typeId="display-direction"/>
 		</channels>
 
 		<config-description-ref uri="thing-type:boschshc:device"/>
@@ -321,9 +321,9 @@
 			<channel id="temperature" typeId="temperature"/>
 			<channel id="valve-tappet-position" typeId="valve-tappet-position"/>
 			<channel id="child-lock" typeId="child-lock"/>
-			<channel id="silent-mode" typeId="silent-mode"/>
 			<channel id="battery-level" typeId="system.battery-level"/>
 			<channel id="low-battery" typeId="system.low-battery"/>
+			<channel id="display-direction" typeId="display-direction"/>
 		</channels>
 
 		<config-description-ref uri="thing-type:boschshc:device"/>
@@ -1164,6 +1164,21 @@
 			<options>
 				<option value="ON">Enabled</option>
 				<option value="OFF">Disabled</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="display-direction">
+		<item-type>Switch</item-type>
+		<label>Display Direction</label>
+		<description>Configures the display direction (NORMAL or REVERSED).</description>
+		<tags>
+			<tag>Switch</tag>
+		</tags>
+		<state readOnly="false">
+			<options>
+				<option value="ON">Reversed</option>
+				<option value="OFF">Normal</option>
 			</options>
 		</state>
 	</channel-type>

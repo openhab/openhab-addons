@@ -130,6 +130,8 @@ public class BoschSHCBindingConstants {
     public static final String CHANNEL_VIBRATION_SENSOR_SENSITIVITY = "vibration-sensor-sensitivity";
     public static final String CHANNEL_VIBRATION_SENSOR_STATE = "vibration-sensor-state";
     public static final String CHANNEL_PRESENCE_SIMULATION_ENABLED = "presence-simulation-enabled";
+    public static final String CHANNEL_DISPLAY_DIRECTION = "display-direction";
+
     // numbered channels
     // the rationale for introducing numbered channels was discussed in
     // https://github.com/openhab/openhab-addons/pull/16400
