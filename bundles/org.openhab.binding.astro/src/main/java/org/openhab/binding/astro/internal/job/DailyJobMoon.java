@@ -107,7 +107,7 @@ public final class DailyJobMoon extends AbstractJob {
 
             Set.of(DistanceType.APOGEE, DistanceType.PERIGEE).forEach(type -> {
                 if (moon.getDistanceType(type).getDate() instanceof Instant theMoment) {
-                    scheduleEvent(handler, theMoment, type.toString(), type.eventName(), false, zone, locale);
+                    scheduleEvent(handler, theMoment, type.toString(), type.eventName(), false, zone.toZoneId());
                 }
             });
         } catch (Exception e) {
