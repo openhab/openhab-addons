@@ -66,9 +66,15 @@ public class SinopeThermostatHandler extends BaseThingHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (getSinopeGatewayHandler() != null) {
             try {
+                logger.debug("Command received {} --> {} [{}]", channelUID, command,
+                        command.getClass().getSimpleName());
                 if (SinopeBindingConstants.CHANNEL_SETTEMP.equals(channelUID.getId())
                         && command instanceof QuantityType quantityCommand) {
                     setSetpointTemp(quantityCommand.floatValue());
+                }
+                if (SinopeBindingConstants.CHANNEL_SETTEMP.equals(channelUID.getId())
+                        && command instanceof DecimalType decimalCommand) {
+                    setSetpointTemp(decimalCommand.floatValue());
                 }
                 if (SinopeBindingConstants.CHANNEL_SETMODE.equals(channelUID.getId())
                         && command instanceof DecimalType decimalCommand) {

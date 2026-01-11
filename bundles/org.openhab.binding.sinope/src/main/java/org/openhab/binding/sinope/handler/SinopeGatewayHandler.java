@@ -58,6 +58,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class SinopeGatewayHandler extends ConfigStatusBridgeHandler {
 
+    public static final int TIMEOUT = 20000;
     private static final int FIRST_POLL_INTERVAL = 1; // In second
     private final Logger logger = LoggerFactory.getLogger(SinopeGatewayHandler.class);
     private @Nullable ScheduledFuture<?> pollFuture;
@@ -154,6 +155,7 @@ public class SinopeGatewayHandler extends ConfigStatusBridgeHandler {
         SinopeConfig config = getConfigAs(SinopeConfig.class);
         if (this.clientSocket == null || !this.clientSocket.isConnected() || this.clientSocket.isClosed()) {
             this.clientSocket = new Socket(config.hostname, config.port);
+            this.clientSocket.setSoTimeout(TIMEOUT);
             SinopeApiLoginRequest loginRequest = new SinopeApiLoginRequest(SinopeConfig.convert(config.gatewayId),
                     SinopeConfig.convert(config.apiKey));
             SinopeApiLoginAnswer loginAnswer = (SinopeApiLoginAnswer) execute(loginRequest);
