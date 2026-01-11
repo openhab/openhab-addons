@@ -75,12 +75,12 @@ public class DummyKNXNetworkLink implements KNXNetworkLink {
         return 0;
     }
 
-    public void sendRequest(@Nullable KNXAddress dst, @Nullable Priority p, byte @Nullable [] nsdu)
+    public void sendRequest(@Nullable KNXAddress dst, @Nullable Priority p, byte @Nullable... nsdu)
             throws KNXTimeoutException, KNXLinkClosedException {
         sendRequestWait(dst, p, nsdu);
     }
 
-    public void sendRequestWait(@Nullable KNXAddress dst, @Nullable Priority p, byte @Nullable [] nsdu)
+    public void sendRequestWait(@Nullable KNXAddress dst, @Nullable Priority p, byte @Nullable... nsdu)
             throws KNXTimeoutException, KNXLinkClosedException {
         if (nsdu == null) {
             return;
