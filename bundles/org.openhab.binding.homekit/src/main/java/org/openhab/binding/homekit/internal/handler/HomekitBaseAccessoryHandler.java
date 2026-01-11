@@ -875,7 +875,8 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
 
     /**
      * Refreshes the snapshot channel image if it exists. Executes an HTTP POST request to fetch the IP camera
-     * snapshot image bytes for this accessory. According to the Apple specification the results are JPEG's.
+     * snapshot image bytes for this accessory, according to the Apple specification chapter 11.5 Image Snapshot.
+     * The request body is a json SnapshotImageRequest object, and the response body results are JPEG's.
      */
     protected void refreshSnapshot() {
         if (thing.getChannel(CHANNEL_SNAPSHOT) instanceof Channel snapshotChannel) {

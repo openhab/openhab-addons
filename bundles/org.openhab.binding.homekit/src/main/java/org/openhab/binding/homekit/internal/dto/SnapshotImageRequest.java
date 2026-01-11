@@ -18,7 +18,8 @@ import com.google.gson.annotations.SerializedName;
 
 /**
  * HomeKit resource DTO used for making a POST /resource request to fetch an IP camera snapshot image
- * with a pre-filled resource type plus standard definition 16:9 image width and height parameters.
+ * according to the Apple specification chapter 11.5 Image Snapshots. The resource type and standard
+ * definition 16:9 image width and height parameters are pre-filled.
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
