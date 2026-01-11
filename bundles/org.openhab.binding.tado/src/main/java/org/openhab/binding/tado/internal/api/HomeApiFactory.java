@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,6 +13,7 @@
 package org.openhab.binding.tado.internal.api;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.tado.internal.handler.TadoHomeHandler;
 import org.openhab.binding.tado.swagger.codegen.api.GsonBuilderFactory;
 import org.openhab.binding.tado.swagger.codegen.api.client.HomeApi;
 import org.openhab.binding.tado.swagger.codegen.api.client.OAuthorizerV2;
@@ -29,9 +30,9 @@ import com.google.gson.Gson;
 @NonNullByDefault
 public class HomeApiFactory {
 
-    public HomeApi create(OAuthClientService oAuthClientService, String baseUrl) {
+    public HomeApi create(OAuthClientService oAuthClientService, String baseUrl, TadoHomeHandler homeHandler) {
         Gson gson = GsonBuilderFactory.defaultGsonBuilder().create();
         OAuthorizerV2 authorizer = new OAuthorizerV2(oAuthClientService);
-        return new HomeApi(gson, authorizer, baseUrl);
+        return new HomeApi(gson, authorizer, baseUrl, homeHandler);
     }
 }

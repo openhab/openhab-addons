@@ -22,7 +22,7 @@
 			<parameter name="url" type="text" required="true">
 				<label>openHAB URL</label>
 				<default>http://localhost:8080</default>
-				<description>The URL of the openHAB instance. Required for the redirect during oAuth2 flow</description>
+				<description>The URL of the openHAB instance. Required for the redirect during OAuth2 flow</description>
 				<context>network-address</context>
 			</parameter>
 			<parameter name="refreshInterval" type="integer" required="false" unit="s" min="1">
@@ -112,8 +112,8 @@
 			</channel>
 			<channel id="ph-low" typeId="ph-low-high"/>
 			<channel id="ph-high" typeId="ph-low-high">
-				<label>Maximum PH Level</label>
-				<description>Maximum PH level</description>
+				<label>Maximum pH Level</label>
+				<description>Maximum pH level</description>
 			</channel>
 			<channel id="orp-low" typeId="orp-low-high"/>
 			<channel id="orp-high" typeId="orp-low-high">
@@ -166,8 +166,8 @@
 	</channel-type>
 	<channel-type id="ph">
 		<item-type>Number</item-type>
-		<label>PH Level</label>
-		<description>PH level</description>
+		<label>pH Level</label>
+		<description>pH level</description>
 		<tags>
 			<tag>Measurement</tag>
 		</tags>
@@ -175,8 +175,8 @@
 	</channel-type>
 	<channel-type id="ph-trend" advanced="true">
 		<item-type>Number</item-type>
-		<label>PH Level Delta</label>
-		<description>Change in PH level since last measure</description>
+		<label>pH Level Delta</label>
+		<description>Change in pH level since last measure</description>
 		<tags>
 			<tag>Measurement</tag>
 		</tags>
@@ -345,8 +345,8 @@
 	</channel-type>
 	<channel-type id="ph-low-high" advanced="true">
 		<item-type>Number</item-type>
-		<label>Minimum PH Level</label>
-		<description>Minimum PH level</description>
+		<label>Minimum pH Level</label>
+		<description>Minimum pH level</description>
 		<tags>
 			<tag>Setpoint</tag>
 		</tags>

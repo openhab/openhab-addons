@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -333,7 +333,7 @@ public class JdbcConfiguration {
                         warn += "\tMariaDB:   version >= 3.5.5 from              https://mvnrepository.com/artifact/org.mariadb.jdbc/mariadb-java-client\n";
                         break;
                     case "mysql":
-                        warn += "\tMySQL:     version >= 9.4.0 from              https://mvnrepository.com/artifact/com.mysql/mysql-connector-j\n";
+                        warn += "\tMySQL:     version >= 9.5.0 from              https://mvnrepository.com/artifact/com.mysql/mysql-connector-j\n";
                         break;
                     case "postgresql":
                         warn += "\tPostgreSQL:version >= 42.7.7 from             https://mvnrepository.com/artifact/org.postgresql/postgresql\n";

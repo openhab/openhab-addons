@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -52,8 +52,8 @@ public final class CompositeJob extends AbstractJob {
             try {
                 j.run();
             } catch (Exception e) {
-                logger.warn("Job execution of \"{}\" failed: {}", j, e.getMessage());
-                logger.trace("", e);
+                LOGGER.warn("Job execution of \"{}\" failed: {}", j, e.getMessage());
+                LOGGER.trace("", e);
             }
         });
     }

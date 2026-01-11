@@ -6,7 +6,7 @@
 
 	<!-- Player PLAY:1 Thing Type -->
 	<thing-type id="PLAY1" listed="false">
-		<!-- Label without column (:) because of device pairing name restrictions -->
+		<!-- Label without colon (:) because of device pairing name restrictions -->
 		<label>PLAY 1</label>
 		<description>Represents SONOS PLAY:1 speaker</description>
 		<semantic-equipment-tag>Speaker</semantic-equipment-tag>

@@ -42,12 +42,11 @@ In addition to periodic polling, the binding also receives event-triggered notif
 
 `work-area:`
 
- - none
+- none
 
 `stay-out-zone:`
 
 - none
-
 
 ## Channels
 

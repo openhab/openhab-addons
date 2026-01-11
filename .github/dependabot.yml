@@ -50,3 +50,4 @@ updates:
       - dependency-name: "*graalvm*" # do not touch graalvm related stuff
       - dependency-name: "org.openapitools:openapi*" # updated togeter with openapi generator
       - dependency-name: "org.apache.openjpa:openjpa*" # should be done with openjpa upgrades"
+      - dependency-name: "org.apache.karaf.*" # Karaf updates are done manually

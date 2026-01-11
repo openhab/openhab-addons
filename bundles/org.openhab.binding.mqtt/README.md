@@ -105,7 +105,7 @@ This behaviour can be controlled with a configuration parameter.
 
 - **enableDiscovery**: If set to true, enables discovery on this broker; if set to false, disables discovery services on this broker.
 
-## Supported Channels
+## Broker Channels
 
 You can extend your broker connection bridges with a channel:
 

@@ -435,8 +435,8 @@
 		<item-type>Number</item-type>
 		<label>Moon Phase</label>
 		<description>Moon phase for the given day. 0 and 1 are 'new moon', 0.25 is 'first quarter moon', 0.5 is 'full moon'
-			and 0.75 is 'last quarter moon'. The periods in between are called 'waxing crescent', 'waxing gibous', 'waning
-			gibous', and 'waning crescent', respectively.</description>
+			and 0.75 is 'last quarter moon'. The periods in between are called 'waxing crescent', 'waxing gibbous', 'waning
+			gibbous', and 'waning crescent', respectively.</description>
 		<category>Moon</category>
 		<tags>
 			<tag>Forecast</tag>
@@ -913,8 +913,8 @@
 
 	<channel-type id="forecasted-particulate-matter-10">
 		<item-type>Number:Density</item-type>
-		<label>Particulate Matter - PM10</label>
-		<description>Current density of particles less than 10 µm in diameter.</description>
+		<label>Forecasted Particulate Matter - PM10</label>
+		<description>Forecasted density of particles less than 10 µm in diameter.</description>
 		<tags>
 			<tag>Forecast</tag>
 			<tag>ParticulateMatter</tag>
@@ -924,8 +924,8 @@
 
 	<channel-type id="particulate-matter-10">
 		<item-type>Number:Density</item-type>
-		<label>Forecasted Particulate Matter - PM10</label>
-		<description>Forecasted density of particles less than 10 µm in diameter.</description>
+		<label>Particulate Matter - PM10</label>
+		<description>Current density of particles less than 10 µm in diameter.</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>ParticulateMatter</tag>

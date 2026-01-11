@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -24,5 +24,10 @@ public enum SeasonName {
     SPRING,
     SUMMER,
     AUTUMN,
-    WINTER
+    WINTER;
+
+    public SeasonName next() {
+        SeasonName[] values = values();
+        return values[(this.ordinal() + 1) % values.length];
+    }
 }

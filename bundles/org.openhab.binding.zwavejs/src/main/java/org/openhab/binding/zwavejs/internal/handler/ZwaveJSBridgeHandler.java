@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -167,9 +167,11 @@ public class ZwaveJSBridgeHandler extends BaseBridgeHandler implements ZwaveEven
             return;
         }
 
+        ZwaveNodeListener nodeListener;
+
         if (message instanceof EventMessage eventMsg && eventMsg.event != null) {
             String eventType = eventMsg.event.event;
-            ZwaveNodeListener nodeListener = nodeListeners.get(eventMsg.event.nodeId);
+            nodeListener = nodeListeners.get(eventMsg.event.nodeId);
             switch (eventType) {
                 case "notification":
                     if (nodeListener != null) {
@@ -204,10 +206,14 @@ public class ZwaveJSBridgeHandler extends BaseBridgeHandler implements ZwaveEven
                         discovery.addNodeDiscovery(eventMsg.event.node);
                     }
                     break;
+                case "statistics updated":
+                    if (nodeListener != null && eventMsg.event.statistics != null) {
+                        nodeListener.onStatisticsUpdated(eventMsg.event.statistics);
+                    }
+                    break;
                 default:
                     logger.trace("Unhandled event type: {}", eventType);
             }
-            return;
         }
     }
 

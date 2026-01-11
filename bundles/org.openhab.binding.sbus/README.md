@@ -2,7 +2,7 @@
 
 This binding integrates Sbus-compatible hardware with openHAB, allowing control and monitoring over UDP networks.
 Sbus is a protocol used for home automation that communicates via UDP broadcast messages.
-The binding supports various thing types including RGB/RGBW controllers, temperature sensors, switch controllers, and multiple sensor types.
+The binding supports various Thing types including RGB/RGBW controllers, temperature sensors, switch controllers, and multiple sensor types.
 
 ## Supported Things
 
@@ -32,29 +32,29 @@ _note_ If openHAB is deployed in a Docker container, you must set the `network_m
 
 The Sbus Bridge has the following configuration parameters:
 
-| Name    | Type    | Description                                          | Default | Required | Advanced  |
-|:--------|:--------|:-----------------------------------------------------|:-------:|:--------:|:---------:|
-| host    | text    | IP address for Sbus communication (typically broadcast) | N/A     | yes      | no        |
-| port    | integer | UDP port number                                      | 6000    | no       | no        |
-| timeout | integer | Response timeout in milliseconds                     | 3000    | no       | yes       |
+| Name    | Type    | Description                                              | Default | Required | Advanced |
+|---------|---------|----------------------------------------------------------|---------|----------|----------|
+| host    | text    | IP address for Sbus communication (typically broadcast). | N/A     | yes      | no       |
+| port    | integer | UDP port number                                          | 6000    | no       | no       |
+| timeout | integer | Response timeout in milliseconds.                        | 3000    | no       | yes      |
 
 ### Thing Configuration
 
-Most thing types share the same basic configuration parameters:
+Most Thing types share the same basic configuration parameters:
 
-| Name    | Type    | Description                                          | Default | Required | Advanced  |
-|:--------|:--------|:-----------------------------------------------------|:-------:|:--------:|:---------:|
-| subnetId| integer | Subnet ID                                            | 1       | yes      | no        |
-| id      | integer | Unit ID                                              | N/A     | yes      | no        |
-| refresh | integer | Refresh interval in seconds (0 = listen-only mode)   | 30      | no       | yes       |
+| Name     | Type    | Description                                         | Default | Required | Advanced |
+|----------|---------|-----------------------------------------------------|---------|----------|----------|
+| subnetId | integer | Subnet ID.                                          | 1       | yes      | no       |
+| id       | integer | Unit ID.                                            | N/A     | yes      | no       |
+| refresh  | integer | Refresh interval in seconds (0 = listen-only mode). | 30      | no       | yes      |
 
 **Contact Sensor Additional Configuration:**
 
-The `contact-sensor` thing type has an additional `type` parameter:
+The `contact-sensor` Thing type has an additional `type` parameter:
 
-| Name    | Type    | Description                                          | Default | Required | Advanced  |
-|:--------|:--------|:-----------------------------------------------------|:-------:|:--------:|:---------:|
-| type    | text    | Sensor type: `012c` (dry contact) or `02ca` (multi-sensor) | 012c    | no       | no        |
+| Name | Type | Description                                                 | Default | Required | Advanced |
+|------|------|-------------------------------------------------------------|---------|----------|----------|
+| type | text | Sensor type: `012c` (dry contact) or `02ca` (multi-sensor). | 012c    | no       | no       |
 
 **Listen-Only Mode:** Setting `refresh=0` enables listen-only mode where the binding only processes broadcast messages without actively polling. This is useful for sensors that automatically broadcast their status updates.
 
@@ -62,49 +62,49 @@ The `contact-sensor` thing type has an additional `type` parameter:
 
 ### RGBW Controller Channels
 
-| Channel | Type   | Read/Write | Description                                                |
-|:--------|:-------|:----------:|:-----------------------------------------------------------|
+| Channel | Type   | Read/Write | Description                                                                                              |
+|---------|--------|------------|----------------------------------------------------------------------------------------------------------|
 | color   | Color  | RW         | HSB color picker that controls RGBW components (0-100%). Can be configured to disable the white channel. |
-| switch  | Switch | RW         | On/Off control for the RGBW output with optional timer     |
+| switch  | Switch | RW         | On/Off control for the RGBW output with optional timer.                                                  |
 
 The color channel of RGBW controllers supports these additional parameters:
 
-| Parameter   | Type    | Description                                          | Default | Required | Advanced  |
-|:------------|:--------|:-----------------------------------------------------|:-------:|:--------:|:---------:|
-| channelNumber | integer | The physical channel number                        | N/A     | yes      | no        |
-| enableWhite | boolean | Controls the white component support for RGB palette | true    | no       | yes       |
+| Parameter     | Type    | Description                                           | Default | Required | Advanced |
+|---------------|---------|-------------------------------------------------------|---------|----------|----------|
+| channelNumber | integer | The physical channel number.                          | N/A     | yes      | no       |
+| enableWhite   | boolean | Controls the white component support for RGB palette. | true    | no       | yes      |
 
 ### Temperature Sensor Channels
 
-| Channel     | Type                | Read/Write | Description                    |
-|:------------|:--------------------|:----------:|:-------------------------------|
-| temperature | Number:Temperature  | R          | Current temperature reading. Can be configured to use Celsius (default) or Fahrenheit units    |
+| Channel     | Type               | Read/Write | Description                                                                                  |
+|-------------|--------------------|------------|----------------------------------------------------------------------------------------------|
+| temperature | Number:Temperature | R          | Current temperature reading. Can be configured to use Celsius (default) or Fahrenheit units. |
 
 ### Switch Controller Channels
 
-| Channel | Type           | Read/Write | Description                                               |
-|:--------|:---------------|:----------:|:----------------------------------------------------------|
-| switch  | Switch         | RW         | Basic ON/OFF state control                                |
-| dimmer  | Dimmer         | RW         | ON/OFF state with timer transition                        |
-| paired  | Rollershutter  | RW         | UP/DOWN/STOP control for two paired channels (e.g., rollershutters)|
+| Channel | Type          | Read/Write | Description                                                          |
+|---------|---------------|------------|----------------------------------------------------------------------|
+| switch  | Switch        | RW         | Basic ON/OFF state control.                                          |
+| dimmer  | Dimmer        | RW         | ON/OFF state with timer transition.                                  |
+| paired  | Rollershutter | RW         | UP/DOWN/STOP control for two paired channels (e.g., rollershutters). |
 
 ### Contact Sensor Channels
 
-| Channel | Type    | Read/Write | Description                                               |
-|:--------|:--------|:----------:|:----------------------------------------------------------|
-| contact | Contact | R          | Contact state (OPEN/CLOSED)                               |
+| Channel | Type    | Read/Write | Description                  |
+|---------|---------|------------|------------------------------|
+| contact | Contact | R          | Contact state (OPEN/CLOSED). |
 
 ### Motion Sensor Channels
 
-| Channel | Type    | Read/Write | Description                                               |
-|:--------|:--------|:----------:|:----------------------------------------------------------|
-| motion  | Switch  | R          | Motion detection state (ON=motion detected, OFF=no motion)|
+| Channel | Type   | Read/Write | Description                                                 |
+|---------|--------|------------|-------------------------------------------------------------|
+| motion  | Switch | R          | Motion detection state (ON=motion detected, OFF=no motion). |
 
 ### Lux Sensor Channels
 
-| Channel | Type    | Read/Write | Description                                               |
-|:--------|:--------|:----------:|:----------------------------------------------------------|
-| lux     | Number  | R          | Light level in LUX units                                  |
+| Channel | Type   | Read/Write | Description               |
+|---------|--------|------------|---------------------------|
+| lux     | Number | R          | Light level in LUX units. |
 
 **Note:** All sensor channels require a `channelNumber` parameter to specify the physical channel number.
 
@@ -190,8 +190,8 @@ Number Lux_Sensor "Light Level [%.0f lux]" <sun> { channel="sbus:lux-sensor:mybr
 9-in-1 sensors are multi-function sensors that combine motion detection, light level measurement, and dry contact monitoring in a single physical unit. To configure a 9-in-1 sensor in openHAB, you need to create **three separate things** that all reference the same physical sensor:
 
 1. **contact-sensor** (type: `02ca`) - For dry contact channels
-2. **motion-sensor** - For motion detection
-3. **lux-sensor** - For light level sensing
+1. **motion-sensor** - For motion detection
+1. **lux-sensor** - For light level sensing
 
 All three things must use the **same subnet ID and unit ID** to represent the same physical sensor.
 
@@ -217,17 +217,17 @@ Thing lux-sensor sensor_lux [ id=85, refresh=0 ] {
 
 **Benefits of this approach:**
 
-- Clear separation of concerns - each thing handles one sensor type
+- Clear separation of concerns - each Thing handles one sensor type
 - Flexible configuration - only create the things you need
-- Follows openHAB best practices for thing organization
-- Each thing can be configured independently
+- Follows openHAB best practices for Thing organization
+- Each Thing can be configured independently
 
 ### Contact Sensor Types
 
-The `contact-sensor` thing type supports two different sensor types via the `type` parameter:
+The `contact-sensor` Thing type supports two different sensor types via the `type` parameter:
 
-- **`012c`** (default): 012C dry contact sensors 
-- **`02ca`**: 02CA multi-sensor dry contacts 
+- **`012c`** (default): 012C dry contact sensors
+- **`02ca`**: 02CA multi-sensor dry contacts
 
 Choose the appropriate type based on your hardware.
 
@@ -247,6 +247,7 @@ This is useful for:
 ### Color Control and On/Off Functionality
 
 The Color item type in openHAB inherently supports both color selection and on/off functionality:
+
 - The color picker controls hue and saturation
 - The brightness component (0-100%) functions as the on/off control
   - When brightness is 0%, the light is OFF

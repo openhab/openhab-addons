@@ -22,10 +22,10 @@ While cloud mode is theoretically possible, it is not supported by the addon dev
    }
    ```
 
-* `00ABCDEFG123456` → Serial number
-* `12345678` → Access code
+   - `00ABCDEFG123456` → Serial number
+   - `12345678` → Access code
 
-2. **Enter the details in openHAB**
+1. **Enter the details in openHAB**
 
    - **Serial number** → Enter the serial number from the config file
    - **Access code** → Enter the access code from the config file
@@ -50,9 +50,9 @@ Use this value as the `username` in the configuration (advanced field) with the 
 
 To obtain an access token, you can use the `requestLoginCode` and `requestAccessCode` actions available on the printer thing.
 
-1.  **Request Login Code**: Use the `requestLoginCode` action with your Bambu Lab username (email) and password. This will send a 6-digit verification code to your email address.
+1. **Request Login Code**: Use the `requestLoginCode` action with your Bambu Lab username (email) and password. This will send a 6-digit verification code to your email address.
     ![Request Login Code](doc/RequestLoginCode.png)
-2.  **Request Access Code**: Once you receive the verification code, use the `requestAccessCode` action with your Bambu Lab username (email) and the received 6-digit code. This will retrieve the access token and automatically update the printer thing's configuration with the new `accessCode` and set the `hostname` to `us.mqtt.bambulab.com`.
+1. **Request Access Code**: Once you receive the verification code, use the `requestAccessCode` action with your Bambu Lab username (email) and the received 6-digit code. This will retrieve the access token and automatically update the printer thing's configuration with the new `accessCode` and set the `hostname` to `us.mqtt.bambulab.com`.
     ![Request Access Code](doc/RequestAccessCode.png)
 
 Alternatively, you can use the `bambu.sh` script as described below:

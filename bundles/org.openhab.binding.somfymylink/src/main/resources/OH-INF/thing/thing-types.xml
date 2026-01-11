@@ -68,7 +68,7 @@
 		<item-type>String</item-type>
 		<label>Scene List</label>
 		<description>Comma-separated list of scenes of form sceneId=sceneName</description>
-		<state pattern="%s"></state>
+		<state pattern="%s" readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="shadeControl">

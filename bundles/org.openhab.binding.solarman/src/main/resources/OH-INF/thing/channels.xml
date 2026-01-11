@@ -20,8 +20,8 @@
 
 	<channel-type id="datetime">
 		<item-type>DateTime</item-type>
-		<label>Datetime Value</label>
-		<description>Channel used to represent a datetime value</description>
+		<label>DateTime Value</label>
+		<description>Channel used to represent a date-time value</description>
 		<config-description-ref uri="channel-type-config:solarman:dynamic-channel"/>
 	</channel-type>
 

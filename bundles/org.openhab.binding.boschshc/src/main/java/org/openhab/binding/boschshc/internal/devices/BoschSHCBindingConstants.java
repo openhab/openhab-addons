@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -43,6 +43,8 @@ public class BoschSHCBindingConstants {
     public static final ThingTypeUID THING_TYPE_WINDOW_CONTACT_2 = new ThingTypeUID(BINDING_ID, "window-contact-2");
     public static final ThingTypeUID THING_TYPE_WINDOW_CONTACT_2_PLUS = new ThingTypeUID(BINDING_ID,
             "window-contact-2-plus");
+    public static final ThingTypeUID THING_TYPE_WINDOW_CONTACT_2_MATTER = new ThingTypeUID(BINDING_ID,
+            "window-contact-2-matter");
     public static final ThingTypeUID THING_TYPE_MOTION_DETECTOR = new ThingTypeUID(BINDING_ID, "motion-detector");
     public static final ThingTypeUID THING_TYPE_SHUTTER_CONTROL = new ThingTypeUID(BINDING_ID, "shutter-control");
     public static final ThingTypeUID THING_TYPE_SHUTTER_CONTROL_2 = new ThingTypeUID(BINDING_ID, "shutter-control-2");

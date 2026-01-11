@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -28,11 +28,12 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.astro.internal.model.Eclipse;
 import org.openhab.binding.astro.internal.model.EclipseType;
 import org.openhab.binding.astro.internal.model.Position;
-import org.openhab.binding.astro.internal.model.Radiation;
 import org.openhab.binding.astro.internal.model.Range;
+import org.openhab.binding.astro.internal.model.Season;
 import org.openhab.binding.astro.internal.model.Sun;
 import org.openhab.binding.astro.internal.model.SunPhaseName;
 import org.openhab.binding.astro.internal.util.DateTimeUtils;
+import org.openhab.binding.astro.internal.util.MathUtils;
 
 /**
  * Calculates the SunPosition (azimuth, elevation) and Sun data.
@@ -43,31 +44,24 @@ import org.openhab.binding.astro.internal.util.DateTimeUtils;
  */
 @NonNullByDefault
 public class SunCalc {
-    private static final double J2000 = 2451545.0;
-    private static final double SC = 1367; // Solar constant in W/m²
-    public static final double DEG2RAD = Math.PI / 180;
-    public static final double RAD2DEG = 180. / Math.PI;
-
-    private static final double M0 = 357.5291 * DEG2RAD;
-    private static final double M1 = 0.98560028 * DEG2RAD;
+    private static final double M0 = Math.toRadians(357.5291);
+    private static final double M1 = Math.toRadians(0.98560028);
     private static final double J0 = 0.0009;
     private static final double J1 = 0.0053;
     private static final double J2 = -0.0069;
-    private static final double C1 = 1.9148 * DEG2RAD;
-    private static final double C2 = 0.0200 * DEG2RAD;
-    private static final double C3 = 0.0003 * DEG2RAD;
-    private static final double P = 102.9372 * DEG2RAD;
-    private static final double E = 23.45 * DEG2RAD;
-    private static final double TH0 = 280.1600 * DEG2RAD;
-    private static final double TH1 = 360.9856235 * DEG2RAD;
+    private static final double C1 = Math.toRadians(1.9148);
+    private static final double C2 = Math.toRadians(0.0200);
+    private static final double C3 = Math.toRadians(0.0003);
+    private static final double P = Math.toRadians(102.9372);
+    private static final double E = Math.toRadians(23.45);
+    private static final double TH0 = Math.toRadians(280.1600);
+    private static final double TH1 = Math.toRadians(360.9856235);
     private static final double SUN_ANGLE = -0.83;
-    private static final double SUN_DIAMETER = 0.53 * DEG2RAD; // sun diameter
-    private static final double H0 = SUN_ANGLE * DEG2RAD;
-    private static final double H1 = -6.0 * DEG2RAD; // nautical twilight angle
-    private static final double H2 = -12.0 * DEG2RAD; // astronomical twilight
-                                                      // angle
-    private static final double H3 = -18.0 * DEG2RAD; // darkness angle
-    private static final double MINUTES_PER_DAY = 60 * 24;
+    private static final double SUN_DIAMETER = Math.toRadians(0.53); // sun diameter
+    private static final double H0 = Math.toRadians(SUN_ANGLE);
+    private static final double H1 = Math.toRadians(-6.0); // nautical twilight angle
+    private static final double H2 = Math.toRadians(-12.0); // astronomical twilight angle
+    private static final double H3 = Math.toRadians(-18.0); // darkness angle
     private static final int CURVE_TIME_INTERVAL = 20; // 20 minutes
     private static final double JD_ONE_MINUTE_FRACTION = 1.0 / 60 / 24;
 
@@ -76,8 +70,8 @@ public class SunCalc {
      */
     public void setPositionalInfo(Calendar calendar, double latitude, double longitude, @Nullable Double altitude,
             Sun sun) {
-        double lw = -longitude * DEG2RAD;
-        double phi = latitude * DEG2RAD;
+        double lw = Math.toRadians(-longitude);
+        double phi = Math.toRadians(latitude);
 
         double j = DateTimeUtils.dateToJulianDate(calendar);
         double m = getSolarMeanAnomaly(j);
@@ -87,54 +81,25 @@ public class SunCalc {
         double a = getRightAscension(lsun);
         double th = getSiderealTime(j, lw);
 
-        double azimuth = getAzimuth(th, a, phi, d) / DEG2RAD;
-        double elevation = getElevation(th, a, phi, d) / DEG2RAD;
+        double azimuth = Math.toDegrees(getAzimuth(th, a, phi, d));
+        double elevation = Math.toDegrees(getElevation(th, a, phi, d));
         double shadeLength = getShadeLength(elevation);
 
         Position position = sun.getPosition();
         position.setAzimuth(azimuth + 180);
         position.setElevation(elevation);
         position.setShadeLength(shadeLength);
-
-        setRadiationInfo(calendar, elevation, altitude, sun);
-    }
-
-    /**
-     * Calculates sun radiation data.
-     */
-    private void setRadiationInfo(Calendar calendar, double elevation, @Nullable Double altitude, Sun sun) {
-        double sinAlpha = Math.sin(DEG2RAD * elevation);
-
-        int dayOfYear = calendar.get(Calendar.DAY_OF_YEAR);
-        int daysInYear = calendar.getActualMaximum(Calendar.DAY_OF_YEAR);
-
-        // Direct Solar Radiation (in W/m²) at the atmosphere entry
-        // At sunrise/sunset - calculations limits are reached
-        double rOut = (elevation > 3) ? SC * (0.034 * Math.cos(DEG2RAD * (360 * dayOfYear / daysInYear)) + 1) : 0;
-        double altitudeRatio = (altitude != null) ? 1 / Math.pow((1 - (6.5 / 288) * (altitude / 1000.0)), 5.256) : 1;
-        double m = (Math.sqrt(1229 + Math.pow(614 * sinAlpha, 2)) - 614 * sinAlpha) * altitudeRatio;
-
-        // Direct radiation after atmospheric layer
-        // 0.6 = Coefficient de transmissivité
-        double rDir = rOut * Math.pow(0.6, m) * sinAlpha;
-
-        // Diffuse Radiation
-        double rDiff = rOut * (0.271 - 0.294 * Math.pow(0.6, m)) * sinAlpha;
-        double rTot = rDir + rDiff;
-
-        Radiation radiation = sun.getRadiation();
-        radiation.setDirect(rDir);
-        radiation.setDiffuse(rDiff);
-        radiation.setTotal(rTot);
     }
 
     /**
      * Returns true, if the sun is up all day (no rise and set).
      */
     private boolean isSunUpAllDay(Calendar calendar, double latitude, double longitude, @Nullable Double altitude) {
-        Calendar cal = DateTimeUtils.truncateToMidnight(calendar);
         Sun sun = new Sun();
-        for (int minutes = 0; minutes <= MINUTES_PER_DAY; minutes += CURVE_TIME_INTERVAL) {
+        Calendar start = DateTimeUtils.truncateToMidnight(calendar);
+        Calendar cal = (Calendar) start.clone();
+        var numberOfSamples = 24 * 60 / CURVE_TIME_INTERVAL;
+        for (int i = 0; i <= numberOfSamples; i++) {
             setPositionalInfo(cal, latitude, longitude, altitude, sun);
             if (sun.getPosition().getElevationAsDouble() < SUN_ANGLE) {
                 return false;
@@ -154,8 +119,8 @@ public class SunCalc {
 
     private Sun getSunInfo(Calendar calendar, double latitude, double longitude, @Nullable Double altitude,
             boolean onlyAstro, boolean useMeteorologicalSeason, TimeZone zone, Locale locale) {
-        double lw = -longitude * DEG2RAD;
-        double phi = latitude * DEG2RAD;
+        double lw = Math.toRadians(-longitude);
+        double phi = Math.toRadians(latitude);
         double j = DateTimeUtils.midnightDateToJulianDate(calendar) + 0.5;
         double n = getJulianCycle(j, lw);
         double js = getApproxSolarTransit(0, lw, n);
@@ -271,11 +236,13 @@ public class SunCalc {
             }
         });
 
-        SunZodiacCalc zodiacCalc = new SunZodiacCalc(zone, locale);
-        zodiacCalc.getZodiac(calendar).ifPresent(z -> sun.setZodiac(z));
+        sun.setZodiac(ZodiacCalc.calculate(lsun, calendar.toInstant()));
 
-        SeasonCalc seasonCalc = new SeasonCalc();
-        sun.setSeason(seasonCalc.getSeason(calendar, latitude, useMeteorologicalSeason, zone, locale));
+        Season season = sun.getSeason();
+        var year = calendar.get(Calendar.YEAR);
+        if (season == null || season.getYear() != year) {
+            sun.setSeason(SeasonCalc.calculate(year, latitude, useMeteorologicalSeason, zone));
+        }
 
         // phase
         for (Entry<SunPhaseName, Range> rangeEntry : sortByValue(sun.getAllRanges()).entrySet()) {
@@ -304,15 +271,15 @@ public class SunCalc {
     // all the following methods are translated to java based on the javascript
     // calculations of http://www.suncalc.net
     private double getJulianCycle(double j, double lw) {
-        return Math.round(j - J2000 - J0 - lw / (2 * Math.PI));
+        return Math.round(j - DateTimeUtils.JD_J2000 - J0 - lw / MathUtils.TWO_PI);
     }
 
     private double getApproxSolarTransit(double ht, double lw, double n) {
-        return J2000 + J0 + (ht + lw) / (2 * Math.PI) + n;
+        return DateTimeUtils.JD_J2000 + J0 + (ht + lw) / MathUtils.TWO_PI + n;
     }
 
     private double getSolarMeanAnomaly(double js) {
-        return M0 + M1 * (js - J2000);
+        return M0 + M1 * (js - DateTimeUtils.JD_J2000);
     }
 
     private double getEquationOfCenter(double m) {
@@ -336,7 +303,7 @@ public class SunCalc {
     }
 
     private double getSiderealTime(double j, double lw) {
-        return TH0 + TH1 * (j - J2000) - lw;
+        return TH0 + TH1 * (j - DateTimeUtils.JD_J2000) - lw;
     }
 
     private double getAzimuth(double th, double a, double phi, double d) {
@@ -349,7 +316,7 @@ public class SunCalc {
     }
 
     private double getShadeLength(double elevation) {
-        return 1 / Math.tan(elevation * DEG2RAD);
+        return 1 / MathUtils.tanDeg(elevation);
     }
 
     private double getHourAngle(double h, double phi, double d) {

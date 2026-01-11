@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="bluelink"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="account">
+		<label>Bluelink Account</label>
+		<description>Bluelink account for accessing connected vehicle services</description>
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
+
+		<config-description>
+			<parameter name="username" type="text" required="true">
+				<label>Username</label>
+				<description>Your Bluelink account email address</description>
+			</parameter>
+			<parameter name="password" type="text" required="true">
+				<label>Password</label>
+				<description>Your Bluelink account password</description>
+				<context>password</context>
+			</parameter>
+			<parameter name="pin" type="text" required="false">
+				<label>PIN</label>
+				<description>Your Bluelink service PIN (required for lock/unlock commands)</description>
+				<context>password</context>
+			</parameter>
+			<parameter name="region" type="text" required="false">
+				<advanced>true</advanced>
+				<label>Region</label>
+				<description>API region. If not set, auto-detected from system locale.</description>
+				<options>
+					<option value="US">United States</option>
+				</options>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+</thing:thing-descriptions>

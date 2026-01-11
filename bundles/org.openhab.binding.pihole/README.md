@@ -8,7 +8,7 @@ The Pi-hole Binding allows you to monitor Pi-hole statistics and control its fun
 
 ## Features
 
-- Real-time Statistics: Monitor key metrics such as the number of domains being blocked, DNS queries made today, ads blocked today, and more.
+- Real-time Statistics: Monitor key metrics such as the number of domains being blocked, DNS queries made today, and ads blocked today.
 - Control: Enable or disable Pi-hole's blocking functionality, configure blocking options, and adjust privacy settings directly from openHAB.
 - Integration: Seamlessly integrate Pi-hole data and controls with other openHAB items and rules to create advanced automation scenarios.
 - Version 6 of piHole is supported (configured via the `serverVersion` configuration parameter) starting with version 6.3 (6.2 will not work).
@@ -21,12 +21,11 @@ The Pi-hole Binding allows you to monitor Pi-hole statistics and control its fun
 
 ### `server` Thing Configuration
 
-| Name            | Type    | Description                                                                               | Default | Required | Advanced |
-|-----------------|---------|-------------------------------------------------------------------------------------------|---------|----------|----------|
-| hostname        | text    | URL (hostname or IP address) of the pihole web server                                     | N/A     | yes      | no       |
-| token           | text    | Token to access the device. To generate token go to `settings` > `API` > `Show API token` | N/A     | yes      | no       |
-| refreshInterval | integer | Interval the device is polled in sec                                                      | 600     | no       | yes      |
-| serverVersion   | text    | Defines the API to be used with this server                                               | v5      | no       | no      |
+| Name            | Type    | Description                                                                                | Default | Required | Advanced |
+|-----------------|---------|--------------------------------------------------------------------------------------------|---------|----------|----------|
+| hostname        | text    | URL (hostname or IP address) of the pihole web server                                      | N/A     | yes      | no       |
+| token           | text    | Token to access the device. To generate token, go to `settings` > `API` > `Show API token` | N/A     | yes      | no       |
+| refreshInterval | integer | Interval the device is polled in sec                                                       | 600     | no       | yes      |
 
 ## Channels
 
@@ -61,7 +60,7 @@ The Pi-hole Binding allows you to monitor Pi-hole statistics and control its fun
 | enabled                 | Switch               | RO         | The current status of blocking                             |
 | disable-enable          | String               | RW         | Is blocking enabled/disabled                               |
 | gravity-last-update     | DateTime             | RO         | Last update of gravity                                     |
-| gravity-file-exists     | DateTime             | RO         | Does gravity file exists                                   |
+| gravity-file-exists     | Switch               | RO         | Does gravity file exists                                   |
 
 ## Full Example
 
@@ -141,7 +140,7 @@ String disable_enable "Disable Blocking" { channel="pihole:server:a4a077edb8:dis
 
 ### Actions
 
-Pi-hole binding provides actions to use in rules:
+The Pi-hole binding provides actions to use in rules:
 
 ```java
 import java.util.concurrent.TimeUnit

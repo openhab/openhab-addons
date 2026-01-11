@@ -1,4 +1,6 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
 
@@ -34,6 +36,7 @@
     <module>org.openhab.transform.basicprofiles</module>
     <module>org.openhab.transform.bin2json</module>
     <module>org.openhab.transform.exec</module>
+    <module>org.openhab.transform.geocoding</module>
     <module>org.openhab.transform.jinja</module>
     <module>org.openhab.transform.jsonpath</module>
     <module>org.openhab.transform.map</module>
@@ -72,6 +75,7 @@
     <module>org.openhab.binding.bambulab</module>
     <module>org.openhab.binding.benqprojector</module>
     <module>org.openhab.binding.bigassfan</module>
+    <module>org.openhab.binding.bluelink</module>
     <module>org.openhab.binding.bluetooth</module>
     <module>org.openhab.binding.bluetooth.airthings</module>
     <module>org.openhab.binding.bluetooth.am43</module>
@@ -362,6 +366,7 @@
     <module>org.openhab.binding.radiobrowser</module>
     <module>org.openhab.binding.radiothermostat</module>
     <module>org.openhab.binding.regoheatpump</module>
+    <module>org.openhab.binding.remehaheating</module>
     <module>org.openhab.binding.revogi</module>
     <module>org.openhab.binding.remoteopenhab</module>
     <module>org.openhab.binding.renault</module>
@@ -593,7 +598,7 @@
         <plugin>
           <groupId>org.apache.karaf.tooling</groupId>
           <artifactId>karaf-maven-plugin</artifactId>
-          <version>${karaf.version}</version>
+          <version>${karaf.maven.plugin.version}</version>
           <extensions>true</extensions>
           <configuration>
             <startLevel>80</startLevel>

@@ -113,6 +113,7 @@
 		<item-type>DateTime</item-type>
 		<label>Start Time</label>
 		<description>The start time of the event</description>
+		<category>calendar</category>
 		<tags>
 			<tag>Calculation</tag>
 			<tag>Timestamp</tag>
@@ -125,6 +126,7 @@
 		<item-type>DateTime</item-type>
 		<label>End Time</label>
 		<description>The end time of the event</description>
+		<category>calendar</category>
 		<tags>
 			<tag>Calculation</tag>
 			<tag>Timestamp</tag>
@@ -172,6 +174,7 @@
 		<item-type>String</item-type>
 		<label>Sign</label>
 		<description>The sign of the zodiac</description>
+		<category>oh:astro:zodiac</category>
 		<tags>
 			<tag>Status</tag>
 			<tag>Info</tag>
@@ -219,6 +222,7 @@
 		<item-type>String</item-type>
 		<label>Season Name</label>
 		<description>The name of the current season</description>
+		<category>oh:astro:season</category>
 		<tags>
 			<tag>Status</tag>
 			<tag>Info</tag>
@@ -237,6 +241,7 @@
 		<item-type>DateTime</item-type>
 		<label>Spring</label>
 		<description>The beginning of spring</description>
+		<category>calendar</category>
 		<tags>
 			<tag>Calculation</tag>
 			<tag>Timestamp</tag>
@@ -248,6 +253,7 @@
 		<item-type>DateTime</item-type>
 		<label>Summer</label>
 		<description>The beginning of summer</description>
+		<category>calendar</category>
 		<tags>
 			<tag>Calculation</tag>
 			<tag>Timestamp</tag>
@@ -259,6 +265,7 @@
 		<item-type>DateTime</item-type>
 		<label>Autumn</label>
 		<description>The beginning of autumn</description>
+		<category>calendar</category>
 		<tags>
 			<tag>Calculation</tag>
 			<tag>Timestamp</tag>
@@ -270,6 +277,7 @@
 		<item-type>DateTime</item-type>
 		<label>Winter</label>
 		<description>The beginning of winter</description>
+		<category>calendar</category>
 		<tags>
 			<tag>Calculation</tag>
 			<tag>Timestamp</tag>
@@ -292,10 +300,21 @@
 		</channels>
 	</channel-group-type>
 
+	<!-- Circadian cycle -->
+	<channel-group-type id="circadian">
+		<label>Circadian Cycle</label>
+		<description>Circadian cycle computed values</description>
+		<channels>
+			<channel id="brightness" typeId="system.brightness"/>
+			<channel id="temperature" typeId="system.color-temperature-abs"/>
+		</channels>
+	</channel-group-type>
+
 	<channel-type id="total">
 		<item-type>DateTime</item-type>
 		<label>Total Eclipse</label>
 		<description>The DateTime of the next total eclipse</description>
+		<category>Calendar</category>
 		<tags>
 			<tag>Calculation</tag>
 			<tag>Timestamp</tag>
@@ -307,6 +326,7 @@
 		<item-type>DateTime</item-type>
 		<label>Partial Eclipse</label>
 		<description>The DateTime of the next partial eclipse</description>
+		<category>Calendar</category>
 		<tags>
 			<tag>Calculation</tag>
 			<tag>Timestamp</tag>
@@ -318,6 +338,7 @@
 		<item-type>DateTime</item-type>
 		<label>Ring Eclipse</label>
 		<description>The DateTime of the next ring eclipse</description>
+		<category>Calendar</category>
 		<tags>
 			<tag>Calculation</tag>
 			<tag>Timestamp</tag>
@@ -329,6 +350,7 @@
 		<kind>trigger</kind>
 		<label>Sun Eclipse Event</label>
 		<description>Sun eclipse event</description>
+		<category>oh:astro:sun_eclipse</category>
 		<event>
 			<options>
 				<option value="TOTAL">total</option>
@@ -395,6 +417,7 @@
 		<item-type>DateTime</item-type>
 		<label>First Quarter</label>
 		<description>The DateTime the moon is in the first quarter</description>
+		<category>calendar</category>
 		<tags>
 			<tag>Calculation</tag>
 			<tag>Timestamp</tag>
@@ -406,6 +429,7 @@
 		<item-type>DateTime</item-type>
 		<label>Third Quarter</label>
 		<description>The DateTime the moon is in the third quarter</description>
+		<category>calendar</category>
 		<tags>
 			<tag>Calculation</tag>
 			<tag>Timestamp</tag>
@@ -417,6 +441,7 @@
 		<item-type>DateTime</item-type>
 		<label>Full Moon</label>
 		<description>The DateTime for full moon</description>
+		<category>calendar</category>
 		<tags>
 			<tag>Calculation</tag>
 			<tag>Timestamp</tag>
@@ -428,6 +453,7 @@
 		<item-type>DateTime</item-type>
 		<label>New Moon</label>
 		<description>The DateTime for new moon</description>
+		<category>calendar</category>
 		<tags>
 			<tag>Calculation</tag>
 			<tag>Timestamp</tag>
@@ -554,6 +580,7 @@
 		<item-type>DateTime</item-type>
 		<label>Date</label>
 		<description>The DateTime when the distance is reached</description>
+		<category>calendar</category>
 		<tags>
 			<tag>Calculation</tag>
 			<tag>Timestamp</tag>

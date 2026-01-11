@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -50,6 +50,8 @@ public class HeatpumpBlockParser extends AbstractBaseParser {
         block.heatpumpRelaisState = extractInt16(raw, 19, (short) 0);
         block.heatpumpVdAE = extractInt32(raw, 20, (long) 0);
         block.heatpumpVdAQ = extractInt32(raw, 22, (long) 0);
+        block.heatpumpVdAEswap = extractInt32Swap(raw, 20, (long) 0);
+        block.heatpumpVdAQswap = extractInt32Swap(raw, 22, (long) 0);
         return block;
     }
 }

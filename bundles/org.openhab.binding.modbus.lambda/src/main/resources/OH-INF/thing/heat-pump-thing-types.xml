@@ -70,6 +70,8 @@
 			<channel id="heat-pump-relais-state" typeId="heat-pump-relais-state"/>
 			<channel id="heat-pump-vdae" typeId="heat-pump-vdae"/>
 			<channel id="heat-pump-vdaq" typeId="heat-pump-vdaq"/>
+			<channel id="heat-pump-vdae-swap" typeId="heat-pump-vdae-swap"/>
+			<channel id="heat-pump-vdaq-swap" typeId="heat-pump-vdaq-swap"/>
 		</channels>
 	</channel-group-type>
 
@@ -266,6 +268,18 @@
 	<channel-type id="heat-pump-vdaq">
 		<item-type>Number:Energy</item-type>
 		<label>Heatpump VdA Q since last reset</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="heat-pump-vdae-swap">
+		<item-type>Number:Energy</item-type>
+		<label>Heatpump VdA E since last reset (DWord swapped)</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="heat-pump-vdaq-swap">
+		<item-type>Number:Energy</item-type>
+		<label>Heatpump VdA Q since last reset (DWord swapped)</label>
 		<state readOnly="true"/>
 	</channel-type>
 
