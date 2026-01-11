@@ -609,8 +609,8 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
             for (Shelly2APClient client : profile.status.rangeExtender.apClients) {
                 String secondaryIp = config.deviceIp + ":" + client.mport.toString();
                 String name = SERVICE_NAME_SHELLYPLUSRANGE_PREFIX + "-" + client.mac.replaceAll(":", "");
-                DiscoveryResult result = ShellyBasicDiscoveryService.createResult(true, name, secondaryIp,
-                        bindingConfig, httpClient, messages);
+                DiscoveryResult result = ShellyBasicDiscoveryService.createResult(true, name, secondaryIp, config,
+                        httpClient, messages);
                 if (result != null) {
                     thingTable.discoveredResult(result);
                 }

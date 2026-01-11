@@ -17,7 +17,6 @@ import static org.openhab.binding.shelly.internal.ShellyDevices.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 import static org.openhab.core.thing.Thing.*;
 
-import java.io.IOException;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.TreeMap;
@@ -62,7 +61,7 @@ public class ShellyBasicDiscoveryService extends AbstractDiscoveryService {
     private final BundleContext bundleContext;
     private final ShellyThingTable thingTable;
     private static final int TIMEOUT = 10;
-    private @Nullable ServiceRegistration<?> discoveryService;
+    private volatile @Nullable ServiceRegistration<?> discoveryService;
 
     public ShellyBasicDiscoveryService(BundleContext bundleContext, ShellyThingTable thingTable) {
         super(SUPPORTED_THING_TYPES, TIMEOUT);
@@ -70,9 +69,14 @@ public class ShellyBasicDiscoveryService extends AbstractDiscoveryService {
         this.thingTable = thingTable;
     }
 
-    public void registerDeviceDiscoveryService() {
+    public synchronized void registerDeviceDiscoveryService() {
         if (discoveryService == null) {
-            discoveryService = bundleContext.registerService(DiscoveryService.class.getName(), this, new Hashtable<>());
+            try {
+                discoveryService = bundleContext.registerService(DiscoveryService.class.getName(), this,
+                        new Hashtable<>());
+            } catch (IllegalStateException e) {
+                logger.warn("Failed to register Shelly Discovery Service: {}", e.getMessage());
+            }
         }
     }
 
@@ -97,21 +101,30 @@ public class ShellyBasicDiscoveryService extends AbstractDiscoveryService {
         thingDiscovered(result);
     }
 
-    public void unregisterDeviceDiscoveryService() {
-        ServiceRegistration<?> discoveryService = this.discoveryService;
-        if (discoveryService != null) {
-            discoveryService.unregister();
+    public synchronized void unregisterDeviceDiscoveryService() {
+        ServiceRegistration<?> service = this.discoveryService;
+        if (service != null) {
+            try {
+                service.unregister();
+            } catch (IllegalStateException e) {
+                logger.debug("Discovery service already unregistered");
+            } finally {
+                this.discoveryService = null;
+            }
         }
     }
 
     @Override
     public void deactivate() {
-        super.deactivate();
-        unregisterDeviceDiscoveryService();
+        try {
+            unregisterDeviceDiscoveryService();
+        } finally {
+            super.deactivate();
+        }
     }
 
     public static @Nullable DiscoveryResult createResult(boolean gen2, String hostname, String ipAddress,
-            ShellyBindingConfiguration bindingConfig, HttpClient httpClient, ShellyTranslationProvider messages) {
+            ShellyThingConfiguration config, HttpClient httpClient, ShellyTranslationProvider messages) {
         Logger logger = LoggerFactory.getLogger(ShellyBasicDiscoveryService.class);
         ThingUID thingUID = null;
         ShellyDeviceProfile profile;
@@ -127,7 +140,6 @@ public class ShellyBasicDiscoveryService extends AbstractDiscoveryService {
         Map<String, Object> properties = new TreeMap<>();
 
         try {
-            ShellyThingConfiguration config = fillConfig(bindingConfig, ipAddress, name);
             api = gen2 ? new Shelly2ApiRpc(name, config, httpClient) : new Shelly1HttpApi(name, config, httpClient);
             api.initialize(name, config);
             devInfo = api.getDeviceInfo();
@@ -154,7 +166,7 @@ public class ShellyBasicDiscoveryService extends AbstractDiscoveryService {
             } else {
                 logger.debug("{}: Unable to discover device: {}", name, e.getMessage());
             }
-        } catch (IllegalArgumentException | IOException e) { // maybe some format description was buggy
+        } catch (IllegalArgumentException e) { // maybe some format description was buggy
             logger.debug("Discovery: Unable to discover thing", e);
         } finally {
             if (api != null) {
@@ -175,7 +187,8 @@ public class ShellyBasicDiscoveryService extends AbstractDiscoveryService {
 
             String thingLabel = deviceName.isEmpty() ? name + " - " + ipAddress
                     : deviceName + " (" + name + "@" + ipAddress + ")";
-            logger.debug("{}: Adding Thing to Inbox (type {}, model {}, mode={})", name, thingType, model, mode);
+            logger.debug("{}: Adding Thing to Inbox (type {}, model {}, mode={}), ip={}", name, thingType, model, mode,
+                    ipAddress);
             return DiscoveryResultBuilder.create(thingUID).withProperties(properties).withLabel(thingLabel)
                     .withRepresentationProperty(PROPERTY_SERVICE_NAME).build();
         }
@@ -184,12 +197,13 @@ public class ShellyBasicDiscoveryService extends AbstractDiscoveryService {
     }
 
     public static ShellyThingConfiguration fillConfig(ShellyBindingConfiguration bindingConfig, String address,
-            String serviceName) throws IOException {
+            String serviceName) {
         ShellyThingConfiguration config = new ShellyThingConfiguration();
         config.serviceName = serviceName;
         config.deviceIp = address;
         config.userId = bindingConfig.defaultUserId;
         config.password = bindingConfig.defaultPassword;
+        config.localIp = bindingConfig.localIP;
         return config;
     }
 

@@ -21,6 +21,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -98,7 +100,8 @@ public class Shelly2ApiClient extends ShellyHttpClient {
     protected final ArrayList<ShellyRollerStatus> rollerStatus = new ArrayList<>();
     protected @Nullable ShellyThingInterface thing;
     protected @Nullable Shelly2AuthRsp authReq;
-    private int requestId = 0;
+
+    private static final AtomicInteger REQUEST_ID = new AtomicInteger(ThreadLocalRandom.current().nextInt());
 
     public Shelly2ApiClient(String thingName, ShellyThingInterface thing) {
         super(thingName, thing);
@@ -997,9 +1000,7 @@ public class Shelly2ApiClient extends ShellyHttpClient {
     protected Shelly2RpcBaseMessage buildRequest(String method, @Nullable Object params) throws ShellyApiException {
         Shelly2RpcBaseMessage request = new Shelly2RpcBaseMessage();
         request.jsonrpc = SHELLY2_JSONRPC_VERSION;
-        synchronized (this) {
-            request.id = ++requestId; // Math.abs(random.nextInt());
-        }
+        request.id = REQUEST_ID.getAndIncrement();
         request.src = "ohshelly-" + config.localIp; // use a unique identifier;
         request.method = !method.contains(".") ? SHELLYRPC_METHOD_CLASS_SHELLY + "." + method : method;
         request.params = params;

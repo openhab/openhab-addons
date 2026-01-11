@@ -181,6 +181,7 @@ public class Shelly2RpcSocket {
         Session session = this.session;
         if (session != null) {
             try {
+                logger.trace("{}: Send API request {}", thingName, str);
                 connectLatch.await();
                 session.getRemote().sendString(str);
                 return;

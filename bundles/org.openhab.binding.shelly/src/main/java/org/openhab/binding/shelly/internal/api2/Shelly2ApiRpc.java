@@ -1278,7 +1278,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     private void asyncApiRequest(String method) throws ShellyApiException {
         Shelly2RpcBaseMessage request = buildRequest(method, null);
         reconnect();
-        rpcSocket.sendMessage(gson.toJson(request)); // submit, result wull be async
+        rpcSocket.sendMessage(gson.toJson(request)); // submit, result will be async
     }
 
     public <T> T apiRequest(String method, @Nullable Object params, Class<T> classOfT) throws ShellyApiException {
