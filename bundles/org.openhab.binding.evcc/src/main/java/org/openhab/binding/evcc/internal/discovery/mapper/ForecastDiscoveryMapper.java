@@ -51,23 +51,23 @@ public class ForecastDiscoveryMapper implements EvccDiscoveryMapper {
     @Override
     public Collection<DiscoveryResult> discover(JsonObject state, EvccBridgeHandler bridgeHandler) {
         List<DiscoveryResult> results = new ArrayList<>();
-        JsonObject vehicles = state.getAsJsonObject(JSON_KEY_FORECAST);
-        if (vehicles == null) {
+        JsonObject forecasts = state.getAsJsonObject(JSON_KEY_FORECAST);
+        if (forecasts == null) {
             return results;
         }
-        for (Map.Entry<String, JsonElement> entry : vehicles.entrySet()) {
+        for (Map.Entry<String, JsonElement> entry : forecasts.entrySet()) {
             String forecastType = entry.getKey();
             ThingUID uid = new ThingUID(THING_TYPE_FORECAST, bridgeHandler.getThing().getUID(),
                     Utils.sanitizeName(forecastType));
-            String lable = "Forecast " + capitalizeFirstLetter(forecastType);
+            String label = "Forecast " + capitalizeFirstLetter(forecastType);
             String id = "";
             try {
-                id = createIdString(lable);
+                id = createIdString(label);
             } catch (NoSuchAlgorithmException e) {
                 // should not happen
                 logger.warn("Could not get hash algorithm instance");
             }
-            DiscoveryResult result = DiscoveryResultBuilder.create(uid).withLabel(lable)
+            DiscoveryResult result = DiscoveryResultBuilder.create(uid).withLabel(label)
                     .withBridge(bridgeHandler.getThing().getUID()).withProperty(PROPERTY_TYPE, forecastType)
                     .withProperty(PROPERTY_ID, id).withRepresentationProperty(PROPERTY_ID).build();
             results.add(result);

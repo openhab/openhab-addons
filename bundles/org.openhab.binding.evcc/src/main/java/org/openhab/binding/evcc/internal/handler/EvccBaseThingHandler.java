@@ -77,7 +77,6 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
     protected boolean isInitialized = false;
     protected String endpoint = "";
     protected String smartCostType = "";
-    protected @Nullable StateResolver stateResolver = StateResolver.getInstance();
 
     public EvccBaseThingHandler(Thing thing, ChannelTypeRegistry channelTypeRegistry) {
         super(thing);
@@ -154,12 +153,10 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
                 JsonObject jsonState = getStateFromCachedState(handler.getCachedEvccState());
                 if (!jsonState.isEmpty()) {
                     JsonElement value = jsonState.get(key);
-                    Optional.ofNullable(stateResolver).ifPresent(resolver -> {
-                        State state = resolver.resolveState(key, value);
-                        if (null != state) {
-                            updateState(channelUID, state);
-                        }
-                    });
+                    State state = StateResolver.getInstance().resolveState(key, value);
+                    if (null != state) {
+                        updateState(channelUID, state);
+                    }
                 }
             });
         }
@@ -249,12 +246,10 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
     }
 
     protected void resolveAndUpdateState(ChannelUID channelUID, String key, JsonElement value) {
-        Optional.ofNullable(stateResolver).ifPresent(resolver -> {
-            State state = resolver.resolveState(key, value);
-            if (null != state) {
-                updateState(channelUID, state);
-            }
-        });
+        State state = StateResolver.getInstance().resolveState(key, value);
+        if (null != state) {
+            updateState(channelUID, state);
+        }
     }
 
     protected void performApiRequest(String url, String method, JsonElement payload) {

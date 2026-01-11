@@ -65,7 +65,7 @@
 	</channel-type>
 	<channel-type id="forecast-today">
 		<item-type unitHint="Wh">Number:Energy</item-type>
-		<label>Today's Forecast </label>
+		<label>Today's Forecast</label>
 		<description>Accumulated forecast for today</description>
 		<tags>
 			<tag>Forecast</tag>

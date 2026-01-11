@@ -86,6 +86,10 @@ public class EvccForecastHandler extends EvccBaseThingHandler {
                 handler.register(this);
                 updateStatus(ThingStatus.ONLINE);
                 prepareApiResponseForChannelStateUpdate(stateOpt);
+            } else {
+                logger.warn("Forecast data for type {} is not available in the evcc state.", subType);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "Unknown forecast type: " + subType);
             }
 
         });
@@ -93,6 +97,10 @@ public class EvccForecastHandler extends EvccBaseThingHandler {
 
     @Override
     public void prepareApiResponseForChannelStateUpdate(JsonObject state) {
+        if (state.isJsonNull() || state.isEmpty()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
+            return;
+        }
         JsonArray forecastArray = new JsonArray();
         switch (subType) {
             case JSON_KEY_CO2, JSON_KEY_FEED_IN, JSON_KEY_GRID -> forecastArray = extractCorrespondingForecast(state);
@@ -105,11 +113,7 @@ public class EvccForecastHandler extends EvccBaseThingHandler {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
             }
         }
-        if (state.isJsonNull() || state.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
-        } else {
-            propagateForecastArrayToChannel(forecastArray);
-        }
+        propagateForecastArrayToChannel(forecastArray);
     }
 
     private JsonArray extractCorrespondingForecast(JsonObject state) {
@@ -128,20 +132,13 @@ public class EvccForecastHandler extends EvccBaseThingHandler {
     }
 
     private void modifyJSON(JsonObject state) {
-        if (state.has(JSON_KEY_TODAY)) {
-            if (state.getAsJsonObject(JSON_KEY_TODAY).get("complete").getAsBoolean()) {
-                state.add(JSON_KEY_TODAY, state.getAsJsonObject(JSON_KEY_TODAY).get(JSON_KEY_ENERGY));
-            }
-        }
-        if (state.has(JSON_KEY_TOMORROW)) {
-            if (state.getAsJsonObject(JSON_KEY_TOMORROW).get("complete").getAsBoolean()) {
-                state.add(JSON_KEY_TOMORROW, state.getAsJsonObject(JSON_KEY_TOMORROW).get(JSON_KEY_ENERGY));
-            }
-        }
-        if (state.has(JSON_KEY_DAY_AFTER_TOMORROW)) {
-            if (state.getAsJsonObject(JSON_KEY_DAY_AFTER_TOMORROW).get("complete").getAsBoolean()) {
-                state.add(JSON_KEY_DAY_AFTER_TOMORROW,
-                        state.getAsJsonObject(JSON_KEY_DAY_AFTER_TOMORROW).get(JSON_KEY_ENERGY));
+        for (String key : List.of(JSON_KEY_TODAY, JSON_KEY_TOMORROW, JSON_KEY_DAY_AFTER_TOMORROW)) {
+            if (state.has(key) && state.get(key) instanceof JsonObject obj) {
+                JsonElement completeEl = obj.get("complete");
+                if (completeEl instanceof JsonPrimitive primitive && primitive.isBoolean()
+                        && primitive.getAsBoolean()) {
+                    state.add(key, obj.get(JSON_KEY_ENERGY));
+                }
             }
         }
     }
@@ -155,24 +152,11 @@ public class EvccForecastHandler extends EvccBaseThingHandler {
         }
         for (JsonElement data : forecastArray) {
             if (data instanceof JsonObject dataObj) {
-                Optional.ofNullable(stateResolver).ifPresent(resolver -> {
-                    State value = null;
-                    String timestamp = "";
-                    switch (subType) {
-                        case JSON_KEY_CO2, JSON_KEY_FEED_IN, JSON_KEY_GRID -> {
-                            value = resolver.resolveState(thingKey, dataObj.get("value"));
-                            timestamp = dataObj.get("start").getAsString();
-                        }
-                        case JSON_KEY_SOLAR -> {
-                            value = resolver.resolveState(thingKey, dataObj.get("val"));
-                            timestamp = dataObj.get("ts").getAsString();
-                        }
-                    }
-                    if (!timestamp.isEmpty() && value != null) {
-                        Instant time = OffsetDateTime.parse(timestamp).toInstant();
-                        timeSeries.add(time, value);
-                    }
-                });
+                ForecastData parsedData = parseForecast(dataObj, thingKey);
+                if (parsedData != null && !parsedData.timestamp().isEmpty()) {
+                    Instant time = OffsetDateTime.parse(parsedData.timestamp()).toInstant();
+                    timeSeries.add(time, parsedData.value());
+                }
             }
         }
         if (timeSeries.size() > 0) {
@@ -186,10 +170,41 @@ public class EvccForecastHandler extends EvccBaseThingHandler {
         sendTimeSeries(channelUID, timeSeries);
     }
 
+    @Nullable
+    private ForecastData parseForecast(JsonObject dataObj, String thingKey) {
+        StateResolver stateResolver = StateResolver.getInstance();
+        return switch (subType) {
+            case JSON_KEY_CO2, JSON_KEY_FEED_IN, JSON_KEY_GRID -> {
+                if (dataObj.has("value") && dataObj.has("start")) {
+                    State value = stateResolver.resolveState(thingKey, dataObj.get("value"));
+                    String ts = dataObj.get("start").getAsString();
+                    if (value != null) {
+                        yield new ForecastData(value, ts);
+                    }
+                }
+                yield null;
+            }
+            case JSON_KEY_SOLAR -> {
+                if (dataObj.has("val") && dataObj.has("ts")) {
+                    State value = stateResolver.resolveState(thingKey, dataObj.get("val"));
+                    String ts = dataObj.get("ts").getAsString();
+                    if (value != null) {
+                        yield new ForecastData(value, ts);
+                    }
+                }
+                yield null;
+            }
+            default -> null;
+        };
+    }
+
     @Override
     public JsonObject getStateFromCachedState(JsonObject state) {
         return state.has(JSON_KEY_FORECAST) ? state.getAsJsonObject(JSON_KEY_FORECAST).has(subType)
                 ? state.getAsJsonObject(JSON_KEY_FORECAST).getAsJsonObject(subType)
                 : new JsonObject() : new JsonObject();
+    }
+
+    private record ForecastData(State value, String timestamp) {
     }
 }

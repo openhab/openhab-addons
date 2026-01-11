@@ -115,16 +115,17 @@ String               Evcc_Battery_Title "Title [%s]"                       { cha
 
 #### Forecast
 
-```java
-import org.openhab.core.library.dimension.EmissionIntensity;
+evcc:forecast:d88c9ac957:solar:forecast-today
 
+```java
 Number:Energy            Evcc_Forecast_Solar                     "Forecast Solar"  { channel="evcc:forecast:demo-server:solar:forecast-solar" }
-Number:Energy            Evcc_Forecast_Solar_Today               "Forecast Solar"  { channel="evcc:forecast:demo-server:solar:forecast-solar" }
-Number:Energy            Evcc_Forecast_Solar_Tomorrow            "Forecast Solar"  { channel="evcc:forecast:demo-server:solar:forecast-solar" }
-Number:Energy            Evcc_Forecast_Solar_Day_After_Tomorrow  "Forecast Solar"  { channel="evcc:forecast:demo-server:solar:forecast-solar" }
+Number                   Evcc_Forecast_Solar_Scale               "Forecast Solar Scale"  { channel="evcc:forecast:demo-server:solar:forecast-scale" }
+Number:Energy            Evcc_Forecast_Solar_Today               "Forecast Solar Accumulated Today"  { channel="evcc:forecast:demo-server:solar:forecast-today" }
+Number:Energy            Evcc_Forecast_Solar_Tomorrow            "Forecast Solar"  { channel="evcc:forecast:demo-server:solar:forecast-tomorrow" }
+Number:Energy            Evcc_Forecast_Solar_Day_After_Tomorrow  "Forecast Solar"  { channel="evcc:forecast:demo-server:solar:forecast-day-after-tomorrow" }
 Number:EmissionIntensity Evcc_Forecast_Co2                       "Forecast Co2"    { channel="evcc:forecast:demo-server:co2:forecast-co2" }
-Number:Price             Evcc_Forecast_FeedIn                    "Forecast FeedIn" { channel="evcc:forecast:demo-server:feedin:forecast-feedin" }
-Number:Price             Evcc_Forecast_Grid                      "Forecast Grid"   { channel="evcc:forecast:demo-server:grid:forecast-grid" }
+Number:EnergyPrice             Evcc_Forecast_FeedIn                    "Forecast FeedIn" { channel="evcc:forecast:demo-server:feedin:forecast-feedin" }
+Number:EnergyPrice             Evcc_Forecast_Grid                      "Forecast Grid"   { channel="evcc:forecast:demo-server:grid:forecast-grid" }
 ```
 
 #### Loadpoint and Heating
