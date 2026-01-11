@@ -138,7 +138,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
     public HomeData refreshHomeData() {
         try {
             Home home = homeCache.getValue();
-            if (home == null) {
+            if (home == null || home.data == null) {
                 return new HomeData();
             }
             return webTargets.getHomeData(Integer.toString(home.data.rrHomeId), rriot);
