@@ -153,7 +153,7 @@ public class EvccForecastHandler extends EvccBaseThingHandler {
         for (JsonElement data : forecastArray) {
             if (data instanceof JsonObject dataObj) {
                 ForecastData parsedData = parseForecast(dataObj, thingKey);
-                if (parsedData != null && !parsedData.timestamp().isEmpty()) {
+                if (parsedData != null) {
                     Instant time = OffsetDateTime.parse(parsedData.timestamp()).toInstant();
                     timeSeries.add(time, parsedData.value());
                 }
@@ -172,30 +172,30 @@ public class EvccForecastHandler extends EvccBaseThingHandler {
 
     @Nullable
     private ForecastData parseForecast(JsonObject dataObj, String thingKey) {
-        StateResolver stateResolver = StateResolver.getInstance();
         return switch (subType) {
-            case JSON_KEY_CO2, JSON_KEY_FEED_IN, JSON_KEY_GRID -> {
-                if (dataObj.has("value") && dataObj.has("start")) {
-                    State value = stateResolver.resolveState(thingKey, dataObj.get("value"));
-                    String ts = dataObj.get("start").getAsString();
-                    if (value != null) {
-                        yield new ForecastData(value, ts);
-                    }
-                }
-                yield null;
-            }
-            case JSON_KEY_SOLAR -> {
-                if (dataObj.has("val") && dataObj.has("ts")) {
-                    State value = stateResolver.resolveState(thingKey, dataObj.get("val"));
-                    String ts = dataObj.get("ts").getAsString();
-                    if (value != null) {
-                        yield new ForecastData(value, ts);
-                    }
-                }
-                yield null;
-            }
+            case JSON_KEY_CO2, JSON_KEY_FEED_IN, JSON_KEY_GRID ->
+                parseValueAndTimestamp(dataObj.get("value"), dataObj.get("start"), thingKey);
+            case JSON_KEY_SOLAR -> parseValueAndTimestamp(dataObj.get("val"), dataObj.get("ts"), thingKey);
             default -> null;
         };
+    }
+
+    @Nullable
+    private ForecastData parseValueAndTimestamp(@Nullable JsonElement valEl, @Nullable JsonElement tsEl,
+            String thingKey) {
+        if (valEl == null || valEl.isJsonNull() || tsEl == null || tsEl.isJsonNull()) {
+            return null;
+        }
+        StateResolver resolver = StateResolver.getInstance();
+        State value = resolver.resolveState(thingKey, valEl);
+        if (value == null) {
+            return null;
+        }
+        String ts = tsEl.getAsString();
+        if (ts.isEmpty()) {
+            return null;
+        }
+        return new ForecastData(value, ts);
     }
 
     @Override
