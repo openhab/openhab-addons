@@ -47,6 +47,7 @@ import org.openhab.binding.homekit.internal.dto.Accessories;
 import org.openhab.binding.homekit.internal.dto.Accessory;
 import org.openhab.binding.homekit.internal.dto.Characteristic;
 import org.openhab.binding.homekit.internal.dto.Service;
+import org.openhab.binding.homekit.internal.dto.SnapshotImageRequest;
 import org.openhab.binding.homekit.internal.enums.ServiceType;
 import org.openhab.binding.homekit.internal.hapservices.CharacteristicReadWriteClient;
 import org.openhab.binding.homekit.internal.hapservices.PairRemoveClient;
@@ -57,7 +58,9 @@ import org.openhab.binding.homekit.internal.persistence.HomekitTypeProvider;
 import org.openhab.binding.homekit.internal.session.EventListener;
 import org.openhab.binding.homekit.internal.transport.IpTransport;
 import org.openhab.core.i18n.TranslationProvider;
+import org.openhab.core.library.types.RawType;
 import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
@@ -679,6 +682,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
      * Called periodically by the refresh task and on-demand when RefreshType.REFRESH is called.
      */
     private synchronized void refresh() {
+        refreshSnapshot(); // refresh the camera snapshot image channel (if any)
         List<String> queries = getPolledCharacteristics().values().stream().filter(c -> c.iid != null && c.aid != null)
                 .map(c -> "%s.%s".formatted(c.aid, c.iid)).toList();
         if (queries.isEmpty()) {
@@ -868,4 +872,25 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
      * Subclasses MUST override this to perform any extra processing required.
      */
     protected abstract void initializeNotReadyThings();
+
+    /**
+     * Refreshes the snapshot channel image if it exists. Executes an HTTP POST request to fetch the IP camera
+     * snapshot image bytes for this accessory. According to the Apple specification the results are JPEG's.
+     */
+    protected void refreshSnapshot() {
+        if (thing.getChannel(CHANNEL_SNAPSHOT) instanceof Channel snapshotChannel) {
+            try {
+                byte[] snapshotRequest = GSON.toJson(new SnapshotImageRequest()).getBytes(StandardCharsets.UTF_8);
+                byte[] snapshotBytes = getIpTransport().post(ENDPOINT_RESOURCE, CONTENT_TYPE_HAP, snapshotRequest);
+                if (snapshotBytes != null && snapshotBytes.length > 0) {
+                    updateState(snapshotChannel.getUID(), new RawType(snapshotBytes, CONTENT_TYPE_JPEG));
+                } else {
+                    logger.warn("{} missing or empty image", thing.getUID());
+                }
+            } catch (IllegalStateException | IllegalAccessException | IOException | InterruptedException
+                    | ExecutionException | TimeoutException e) {
+                logger.warn("{} error '{}' fetching image", thing.getUID(), e.getMessage(), e);
+            }
+        }
+    }
 }

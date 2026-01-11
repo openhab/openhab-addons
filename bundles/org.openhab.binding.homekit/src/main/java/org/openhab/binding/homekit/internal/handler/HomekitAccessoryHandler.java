@@ -392,6 +392,7 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
             }
         });
 
+        snapshotChannelFinalize(accessory, uniqueChannelsMap);
         lightModelFinalize(accessory, uniqueChannelsMap);
         stopMoveFinalize(accessory, uniqueChannelsMap);
         eventingPollingFinalize(accessory, uniqueChannelsMap);
@@ -1004,5 +1005,21 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
     protected void initializeNotReadyThings() {
         notReadyThings.clear();
         notReadyThings.add(thing); // a self connected accessory requires only itself to be ready
+    }
+
+    /**
+     * Create the IP camera snapshot channel if required
+     */
+    private void snapshotChannelFinalize(Accessory accessory, Map<String, Channel> channels) {
+        if (accessory.getAccessoryType() == AccessoryCategory.IP_CAMERA) {
+            Channel channel = ChannelBuilder
+                    .create(new ChannelUID(thing.getUID(), CHANNEL_SNAPSHOT), CoreItemFactory.IMAGE)
+                    .withType(CHANNEL_TYPE_SNAPSHOT).build();
+            channels.put(CHANNEL_SNAPSHOT, channel); // add to channels map
+            logger.trace(
+                    "{}     Channel acceptedItemType:{}, defaultTags:{}, description:{}, kind:{}, label:{}, properties:{}, uid:{}",
+                    thing.getUID(), channel.getAcceptedItemType(), channel.getDefaultTags(), channel.getDescription(),
+                    channel.getKind(), channel.getLabel(), channel.getProperties(), channel.getUID());
+        }
     }
 }

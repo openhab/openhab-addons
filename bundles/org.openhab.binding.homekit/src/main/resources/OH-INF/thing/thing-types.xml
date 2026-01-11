@@ -35,4 +35,11 @@
 		</config-description>
 	</thing-type>
 
+	<channel-type id="snapshot">
+		<item-type>Image</item-type>
+		<label>Camera Snapshot</label>
+		<description>Last image snapshot from the IP camera.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
 </thing:thing-descriptions>
