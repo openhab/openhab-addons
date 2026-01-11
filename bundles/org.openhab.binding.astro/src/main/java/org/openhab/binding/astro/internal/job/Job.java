@@ -19,7 +19,6 @@ import static org.openhab.binding.astro.internal.util.DateTimeUtils.*;
 import java.lang.invoke.MethodHandles;
 import java.time.Instant;
 import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
@@ -52,6 +51,8 @@ public interface Job extends SchedulerRunnable, Runnable {
      * @param astroHandler the {@link AstroThingHandler} instance
      * @param job the {@link Job} instance to schedule
      * @param eventAt the {@link Calendar} instance denoting scheduled instant
+     * @param zone the configured time zone
+     * @param locale the configured locale
      */
     static void schedule(AstroThingHandler astroHandler, Job job, Calendar eventAt, TimeZone zone, Locale locale) {
         try {
@@ -77,25 +78,20 @@ public interface Job extends SchedulerRunnable, Runnable {
      * @param astroHandler the {@link AstroThingHandler} instance
      * @param job the {@link Job} instance to schedule
      * @param eventAt the {@link Instant} instance denoting scheduled instant
+     * @param zone the configured time zone
      */
     static void schedule(AstroThingHandler astroHandler, Job job, Instant eventAt, ZoneId zone) {
-        ZonedDateTime now = ZonedDateTime.now(zone);
-        ZonedDateTime eventZDT = eventAt.atZone(zone);
-
-        if (isSameDay(eventZDT, now) && isTimeGreaterEquals(eventZDT, now)) {
+        Instant now = Instant.now();
+        boolean sameDay = isSameDay(eventAt.atZone(zone), now.atZone(zone));
+        if (sameDay && !eventAt.isBefore(now)) {
             astroHandler.schedule(job, eventAt);
+        } else if (LOGGER.isDebugEnabled()) {
+            if (sameDay) {
+                LOGGER.debug("Not scheduling {} since it's in the past ({})", job, eventAt.atZone(zone));
+            } else {
+                LOGGER.debug("Not scheduling {} since it's at another date ({})", job, eventAt.atZone(zone));
+            }
         }
-    }
-
-    /**
-     * Schedules the provided {@link Job} instance
-     *
-     * @param astroHandler the {@link AstroThingHandler} instance
-     * @param job the {@link Job} instance to schedule
-     * @param eventAt the {@link Instant} instance denoting scheduled instant
-     */
-    static void schedule(AstroThingHandler astroHandler, Job job, Instant eventAt) {
-        astroHandler.schedule(job, eventAt);
     }
 
     /**
@@ -105,6 +101,9 @@ public interface Job extends SchedulerRunnable, Runnable {
      * @param eventAt the {@link Calendar} instance denoting scheduled instant
      * @param event the event ID
      * @param channelId the channel ID
+     * @param configAlreadyApplied whether the configuration has already been "applied"
+     * @param zone the configured time zone
+     * @param locale the configured locale
      */
     static void scheduleEvent(AstroThingHandler astroHandler, Calendar eventAt, String event, String channelId,
             boolean configAlreadyApplied, TimeZone zone, Locale locale) {
@@ -118,10 +117,12 @@ public interface Job extends SchedulerRunnable, Runnable {
      * @param eventAt the {@link Instant} instance denoting scheduled instant
      * @param event the event ID
      * @param channelId the channel ID
+     * @param configAlreadyApplied whether the configuration has already been "applied"
+     * @param zone the configured time zone
      */
     static void scheduleEvent(AstroThingHandler astroHandler, Instant eventAt, String event, String channelId,
-            boolean configAlreadyApplied, TimeZone zone, Locale locale) {
-        scheduleEvent(astroHandler, eventAt, List.of(event), channelId, configAlreadyApplied, zone, locale);
+            boolean configAlreadyApplied, ZoneId zone) {
+        scheduleEvent(astroHandler, eventAt, List.of(event), channelId, configAlreadyApplied, zone);
     }
 
     /**
@@ -131,6 +132,9 @@ public interface Job extends SchedulerRunnable, Runnable {
      * @param eventAt the {@link Calendar} instance denoting scheduled instant
      * @param events the event IDs to schedule
      * @param channelId the channel ID
+     * @param configAlreadyApplied whether the configuration has already been "applied"
+     * @param zone the configured time zone
+     * @param locale the configured locale
      */
     static void scheduleEvent(AstroThingHandler astroHandler, Calendar eventAt, List<String> events, String channelId,
             boolean configAlreadyApplied, TimeZone zone, Locale locale) {
@@ -160,9 +164,11 @@ public interface Job extends SchedulerRunnable, Runnable {
      * @param eventAt the {@link Instant} instance denoting scheduled instant
      * @param events the event IDs to schedule
      * @param channelId the channel ID
+     * @param configAlreadyApplied whether the configuration has already been "applied"
+     * @param zone the configured time zone
      */
     static void scheduleEvent(AstroThingHandler astroHandler, Instant eventAt, List<String> events, String channelId,
-            boolean configAlreadyApplied, TimeZone zone, Locale locale) {
+            boolean configAlreadyApplied, ZoneId zone) {
         if (events.isEmpty()) {
             return;
         }
@@ -179,7 +185,7 @@ public interface Job extends SchedulerRunnable, Runnable {
             instant = eventAt;
         }
         List<Job> jobs = events.stream().map(e -> new EventJob(astroHandler, channelId, e)).collect(toList());
-        schedule(astroHandler, new CompositeJob(astroHandler, jobs), instant, zone.toZoneId());
+        schedule(astroHandler, new CompositeJob(astroHandler, jobs), instant, zone);
     }
 
     /**
@@ -242,6 +248,8 @@ public interface Job extends SchedulerRunnable, Runnable {
      *
      * @param astroHandler the {@link AstroThingHandler} instance
      * @param eventAt the {@link Calendar} instance denoting scheduled instant
+     * @param zone the configured time zone
+     * @param locale the configured locale
      */
     static void schedulePublishPlanet(AstroThingHandler astroHandler, Calendar eventAt, TimeZone zone, Locale locale) {
         Job publishJob = new PublishPlanetJob(astroHandler);
@@ -253,10 +261,11 @@ public interface Job extends SchedulerRunnable, Runnable {
      *
      * @param astroHandler the {@link AstroThingHandler} instance
      * @param when the {@link Instant} instance denoting scheduled instant
+     * @param zone the configured time zone
      */
-    static void schedulePublishPlanet(AstroThingHandler astroHandler, Instant when) {
+    static void schedulePublishPlanet(AstroThingHandler astroHandler, Instant when, ZoneId zone) {
         Job publishJob = new PublishPlanetJob(astroHandler);
-        schedule(astroHandler, publishJob, when);
+        schedule(astroHandler, publishJob, when, zone);
     }
 
     /**
