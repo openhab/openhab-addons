@@ -69,11 +69,11 @@ public class IpTransport implements AutoCloseable {
     private final SynchronousQueue<byte[][]> responseQueue = new SynchronousQueue<>();
 
     /**
-     * SpotBugs makes a brain dead assertion that SynchronousQueue.poll() can never return a null result. This is wrong.
-     * According to the JavaDoc the method clearly returns null if the specified waiting time elapses before an element
-     * is available. So this is a silly wrapper around the call to trick SpotBugs into not making such false assertion.
+     * SpotBugs incorrectly assumes that {@link SynchronousQueue#poll(long, TimeUnit)} never returns {@code null}.
+     * According to the Javadoc, the method returns {@code null} if the specified waiting time elapses before an
+     * element becomes available.
      */
-    private static byte @Nullable [][] sillySynchronousQueuePoll(SynchronousQueue<byte[][]> queue, long timeout,
+    private static byte @Nullable [][] synchronousQueuePollNullable(SynchronousQueue<byte[][]> queue, long timeout,
             TimeUnit unit) throws InterruptedException {
         return queue.poll(timeout, unit);
     }
