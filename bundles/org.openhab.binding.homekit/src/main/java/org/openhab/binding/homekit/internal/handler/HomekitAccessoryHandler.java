@@ -55,6 +55,7 @@ import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.types.UpDownType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.semantics.SemanticTag;
+import org.openhab.core.semantics.model.DefaultSemanticTags.Equipment;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -391,7 +392,6 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
             }
         });
 
-        snapshotChannelFinalize(accessory, uniqueChannelsMap);
         lightModelFinalize(accessory, uniqueChannelsMap);
         stopMoveFinalize(accessory, uniqueChannelsMap);
         eventingPollingFinalize(accessory, uniqueChannelsMap);
@@ -410,20 +410,32 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
             newProperties = null;
         }
 
+        SemanticTag newEquipmentTag = accessory.getSemanticEquipmentTag();
+        if (newEquipmentTag == null && oldProperties.get(PROPERTY_ACCESSORY_CATEGORY) instanceof String catProperty
+                && AccessoryCategory.from(catProperty) instanceof AccessoryCategory category
+                && AccessoryCategory.OTHER != category) {
+            newEquipmentTag = accessory.getSemanticEquipmentTag(category);
+        }
+        if (newEquipmentTag == null) {
+            newEquipmentTag = accessory.getSemanticEquipmentTagFromServices();
+        }
+
+        // add camera snapshot channel if applicable
+        if (Equipment.CAMERA == newEquipmentTag) {
+            ChannelBuilder builder = ChannelBuilder
+                    .create(new ChannelUID(thing.getUID(), CHANNEL_SNAPSHOT), CoreItemFactory.IMAGE)
+                    .withType(CHANNEL_TYPE_SNAPSHOT);
+            Channel channel = builder.build();
+            uniqueChannelsMap.put(CHANNEL_SNAPSHOT, channel);
+            logger.trace(
+                    "{}     Channel acceptedItemType:{}, defaultTags:{}, description:{}, kind:{}, label:{}, properties:{}, uid:{}",
+                    thing.getUID(), channel.getAcceptedItemType(), channel.getDefaultTags(), channel.getDescription(),
+                    channel.getKind(), channel.getLabel(), channel.getProperties(), channel.getUID());
+        }
+
         String oldEquipmentTag = thing.getSemanticEquipmentTag();
-        SemanticTag newEquipmentTag;
-        if (oldEquipmentTag != null && oldEquipmentTag.isEmpty()) {
+        if (oldEquipmentTag != null && !oldEquipmentTag.isEmpty()) {
             newEquipmentTag = null;
-        } else {
-            newEquipmentTag = accessory.getSemanticEquipmentTag();
-            if (newEquipmentTag == null && oldProperties.get(PROPERTY_ACCESSORY_CATEGORY) instanceof String catProperty
-                    && AccessoryCategory.from(catProperty) instanceof AccessoryCategory category
-                    && AccessoryCategory.OTHER != category) {
-                newEquipmentTag = accessory.getSemanticEquipmentTag(category);
-            }
-            if (newEquipmentTag == null) {
-                newEquipmentTag = accessory.getSemanticEquipmentTagFromServices();
-            }
         }
 
         if (newLabel != null || newChannels != null || newProperties != null || newEquipmentTag != null) {
@@ -1004,21 +1016,5 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
     protected void initializeNotReadyThings() {
         notReadyThings.clear();
         notReadyThings.add(thing); // a self connected accessory requires only itself to be ready
-    }
-
-    /**
-     * Create the IP camera snapshot channel if required
-     */
-    private void snapshotChannelFinalize(Accessory accessory, Map<String, Channel> channels) {
-        if (accessory.getAccessoryType() == AccessoryCategory.IP_CAMERA) {
-            Channel channel = ChannelBuilder
-                    .create(new ChannelUID(thing.getUID(), CHANNEL_SNAPSHOT), CoreItemFactory.IMAGE)
-                    .withType(CHANNEL_TYPE_SNAPSHOT).build();
-            channels.put(CHANNEL_SNAPSHOT, channel); // add to channels map
-            logger.trace(
-                    "{}     Channel acceptedItemType:{}, defaultTags:{}, description:{}, kind:{}, label:{}, properties:{}, uid:{}",
-                    thing.getUID(), channel.getAcceptedItemType(), channel.getDefaultTags(), channel.getDescription(),
-                    channel.getKind(), channel.getLabel(), channel.getProperties(), channel.getUID());
-        }
     }
 }

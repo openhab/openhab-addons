@@ -683,37 +683,31 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
      * Called periodically by the refresh task and on-demand when RefreshType.REFRESH is called.
      */
     private synchronized void refresh() {
+        List<String> queries = getPolledCharacteristics().values().stream().filter(c -> c.iid != null && c.aid != null)
+                .map(c -> "%s.%s".formatted(c.aid, c.iid)).toList();
+        if (queries.isEmpty()) {
+            return;
+        }
+        final CharacteristicReadWriteClient rwService = this.rwService;
+        if (rwService == null) {
+            throw new IllegalStateException("Read/write service not initialized");
+        }
         try {
-            List<String> queries = getPolledCharacteristics().values().stream()
-                    .filter(c -> c.iid != null && c.aid != null).map(c -> "%s.%s".formatted(c.aid, c.iid)).toList();
-            if (queries.isEmpty()) {
-                return;
+            String json = throttler.call(() -> rwService.readCharacteristics(String.join(",", queries)));
+            onEvent(json);
+            refreshSnapshot(); // refresh camera snapshot channel (if any)
+        } catch (Exception e) {
+            if (isCommunicationException(e)) {
+                // communication exception; log at debug and try to reconnect
+                logger.debug("{} communication error '{}' polling accessories, reconnecting..", thing.getUID(),
+                        e.getMessage(), e);
+                scheduleConnectionAttempt();
+            } else {
+                // other exception; log at warn and don't try to reconnect
+                logger.warn("{} unexpected error '{}' polling accessories", thing.getUID(), e.getMessage(), e);
             }
-            final CharacteristicReadWriteClient rwService = this.rwService;
-            if (rwService == null) {
-                throw new IllegalStateException("Read/write service not initialized");
-            }
-            try {
-                String json = throttler.call(() -> rwService.readCharacteristics(String.join(",", queries)));
-                onEvent(json);
-            } catch (Exception e) {
-                if (isCommunicationException(e)) {
-                    // communication exception; log at debug and try to reconnect
-                    logger.debug("{} communication error '{}' polling accessories, reconnecting..", thing.getUID(),
-                            e.getMessage(), e);
-                    scheduleConnectionAttempt();
-                } else {
-                    // other exception; log at warn and don't try to reconnect
-                    logger.warn("{} unexpected error '{}' polling accessories", thing.getUID(), e.getMessage(), e);
-                }
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        THING_STATUS_FMT.formatted("error.polling-error", e.getMessage()));
-            }
-        } finally {
-            // asynchronously refresh camera snapshot channel (if any)
-            if (thing.getChannel(CHANNEL_SNAPSHOT) instanceof Channel snapshotChannel) {
-                scheduler.submit(() -> refreshSnapshot(snapshotChannel));
-            }
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    THING_STATUS_FMT.formatted("error.polling-error", e.getMessage()));
         }
     }
 
@@ -886,23 +880,23 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
      * The request body is a JSON SnapshotImageRequest object, and the response body results are JPEG's. If the
      * image is successfully fetched, the snapshot channel state is updated with a RawType. And if an error
      * occurs it is updated to UnDefType.UNDEF/NULL accordingly.
-     * 
-     * @param snapshotChannel the snapshot channel
      */
-    protected void refreshSnapshot(Channel snapshotChannel) {
-        try {
-            byte[] snapshotRequest = GSON.toJson(new SnapshotImageRequest()).getBytes(StandardCharsets.UTF_8);
-            byte[] snapshotBytes = getIpTransport().post(ENDPOINT_RESOURCE, CONTENT_TYPE_HAP, snapshotRequest);
-            if (snapshotBytes.length > 0) {
-                updateState(snapshotChannel.getUID(), new RawType(snapshotBytes, CONTENT_TYPE_JPEG));
-            } else {
-                logger.warn("{} fetched an empty snapshot", thing.getUID());
-                updateState(snapshotChannel.getUID(), UnDefType.NULL);
+    protected void refreshSnapshot() {
+        if (thing.getChannel(CHANNEL_SNAPSHOT) instanceof Channel snapshotChannel) {
+            try {
+                byte[] snapshotRequest = GSON.toJson(new SnapshotImageRequest()).getBytes(StandardCharsets.UTF_8);
+                byte[] snapshotBytes = getIpTransport().post(ENDPOINT_RESOURCE, CONTENT_TYPE_HAP, snapshotRequest);
+                if (snapshotBytes.length > 0) {
+                    updateState(snapshotChannel.getUID(), new RawType(snapshotBytes, CONTENT_TYPE_JPEG));
+                } else {
+                    logger.warn("{} fetched an empty snapshot", thing.getUID());
+                    updateState(snapshotChannel.getUID(), UnDefType.NULL);
+                }
+            } catch (IllegalStateException | IllegalAccessException | IOException | InterruptedException
+                    | ExecutionException | TimeoutException e) {
+                logger.warn("{} error '{}' fetching snapshot", thing.getUID(), e.getMessage(), e);
+                updateState(snapshotChannel.getUID(), UnDefType.UNDEF);
             }
-        } catch (IllegalStateException | IllegalAccessException | IOException | InterruptedException
-                | ExecutionException | TimeoutException e) {
-            logger.warn("{} error '{}' fetching snapshot", thing.getUID(), e.getMessage(), e);
-            updateState(snapshotChannel.getUID(), UnDefType.UNDEF);
         }
     }
 }
