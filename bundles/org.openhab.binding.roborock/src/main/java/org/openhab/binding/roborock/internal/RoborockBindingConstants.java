@@ -46,6 +46,7 @@ public class RoborockBindingConstants {
     public static final String GET_HOME_DATA_PATH = "/user/homes/";
     public static final String GET_HOME_DATA_V3_PATH = "/v3/user/homes/";
     public static final String GET_ROUTINES_PATH = "/user/scene/device/";
+    public static final String REQUEST_CODE_V1 = "/api/v1/sendEmailCode";
     public static final String REQUEST_CODE_V4 = "/api/v4/email/code/send";
     public static final String SET_ROUTINE_PATH = "/user/scene/";
     public static final String SET_ROUTINE_PATH_SUFFIX = "/execute";

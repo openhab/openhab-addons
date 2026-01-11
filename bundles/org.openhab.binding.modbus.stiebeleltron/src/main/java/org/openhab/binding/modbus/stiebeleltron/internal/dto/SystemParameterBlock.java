@@ -28,9 +28,9 @@ public class SystemParameterBlock {
 
     @Override
     public String toString() {
-        return "SystemParameterBlock {" + "  operationMode=" + operationMode + ",\n  comfortTemperatureHeating="
+        return "SystemParameterBlock {" + "\n  operationMode=" + operationMode + ",\n  comfortTemperatureHeating="
                 + comfortTemperatureHeating + ",\n  ecoTemperatureHeating=" + ecoTemperatureHeating
                 + ",\n  comfortTemperatureWater=" + comfortTemperatureWater + ",\n  ecoTemperatureWater="
-                + ecoTemperatureWater + "}\n";
+                + ecoTemperatureWater + "\n}\n";
     }
 }

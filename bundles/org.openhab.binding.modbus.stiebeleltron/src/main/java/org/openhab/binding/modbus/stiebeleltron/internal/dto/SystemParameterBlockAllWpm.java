@@ -58,6 +58,6 @@ public class SystemParameterBlockAllWpm extends SystemParameterBlock {
                 + "\n  flowTemperatureFanCooling=" + flowTemperatureFanCooling
                 + "\n  flowTemperatureHysteresisFanCooling=" + flowTemperatureHysteresisFanCooling
                 + "\n  roomTemperatureFanCooling=" + roomTemperatureFanCooling + "\n  reset=" + reset
-                + "\n  restartIsg=" + restartIsg + "\n}";
+                + "\n  restartIsg=" + restartIsg + "\n}" + "\n" + super.toString();
     }
 }

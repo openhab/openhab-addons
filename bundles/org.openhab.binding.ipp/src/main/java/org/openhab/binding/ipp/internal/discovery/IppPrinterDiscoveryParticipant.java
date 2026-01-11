@@ -95,6 +95,13 @@ public class IppPrinterDiscoveryParticipant implements MDNSDiscoveryParticipant 
             int port = service.getPort();
             String uuid = service.getPropertyString("UUID");
 
+            if (uuid == null) {
+                logger.debug(
+                        "Discovered ipp printer with missing UUID, ignoring: uid: {}, inetAddress: {}, port: {}, rp: {}",
+                        uid, inetAddress, port, rp);
+                return null;
+            }
+
             Map<String, Object> properties = Map.of( //
                     PRINTER_PARAMETER_URL, "http://" + inetAddress + ":" + port + "/" + rp, //
                     PRINTER_PARAMETER_NAME, label, //
