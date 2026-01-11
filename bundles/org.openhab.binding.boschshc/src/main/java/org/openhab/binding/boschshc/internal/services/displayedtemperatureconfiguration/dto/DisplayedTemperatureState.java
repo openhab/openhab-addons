@@ -27,7 +27,7 @@ public enum DisplayedTemperatureState {
     SETPOINT;
 
     public OnOffType toOnOffCommand() {
-        return this == SETPOINT ? OnOffType.ON : OnOffType.OFF;
+        return OnOffType.from(this == SETPOINT);
     }
 
     public static DisplayedTemperatureState fromOnOffCommand(OnOffType onOffCommand) {
