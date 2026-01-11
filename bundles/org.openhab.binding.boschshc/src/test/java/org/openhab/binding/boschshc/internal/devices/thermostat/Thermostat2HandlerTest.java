@@ -28,6 +28,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants;
 import org.openhab.binding.boschshc.internal.services.displaydirection.dto.DisplayDirectionServiceState;
 import org.openhab.binding.boschshc.internal.services.displaydirection.dto.DisplayDirectionState;
+import org.openhab.binding.boschshc.internal.services.displayedtemperatureconfiguration.dto.DisplayedTemperatureConfigurationServiceState;
+import org.openhab.binding.boschshc.internal.services.displayedtemperatureconfiguration.dto.DisplayedTemperatureState;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingTypeUID;
@@ -46,6 +48,7 @@ import com.google.gson.JsonParser;
 class Thermostat2HandlerTest extends AbstractThermostatHandlerTest<Thermostat2Handler> {
 
     private @Captor @NonNullByDefault({}) ArgumentCaptor<DisplayDirectionServiceState> displayDirectionServiceStateCaptor;
+    private @Captor @NonNullByDefault({}) ArgumentCaptor<DisplayedTemperatureConfigurationServiceState> displayedTemperatureConfigurationStateCaptor;
 
     @Override
     protected Thermostat2Handler createFixture() {
@@ -83,5 +86,31 @@ class Thermostat2HandlerTest extends AbstractThermostatHandlerTest<Thermostat2Ha
                 displayDirectionServiceStateCaptor.capture());
         DisplayDirectionServiceState state = displayDirectionServiceStateCaptor.getValue();
         assertSame(DisplayDirectionState.REVERSED, state.direction);
+    }
+
+    @Test
+    void testUpdateChannelsDisplayedTemperatureConfigurationService() {
+        JsonElement jsonObject = JsonParser.parseString("""
+                {
+                    "@type": "displayedTemperatureConfigurationState",
+                    "displayedTemperature": "SETPOINT"
+                }\
+                """);
+        getFixture().processUpdate("DisplayedTemperatureConfiguration", jsonObject);
+        verify(getCallback()).stateUpdated(
+                new ChannelUID(getThing().getUID(), BoschSHCBindingConstants.CHANNEL_DISPLAYED_TEMPERATURE),
+                OnOffType.ON);
+    }
+
+    @Test
+    void testHandleCommandDisplayedTemperatureConfigurationService()
+            throws InterruptedException, TimeoutException, ExecutionException {
+        getFixture().handleCommand(
+                new ChannelUID(getThing().getUID(), BoschSHCBindingConstants.CHANNEL_DISPLAYED_TEMPERATURE),
+                OnOffType.ON);
+        verify(getBridgeHandler()).putState(eq(getDeviceID()), eq("DisplayedTemperatureConfiguration"),
+                displayedTemperatureConfigurationStateCaptor.capture());
+        DisplayedTemperatureConfigurationServiceState state = displayedTemperatureConfigurationStateCaptor.getValue();
+        assertSame(DisplayedTemperatureState.SETPOINT, state.displayedTemperature);
     }
 }

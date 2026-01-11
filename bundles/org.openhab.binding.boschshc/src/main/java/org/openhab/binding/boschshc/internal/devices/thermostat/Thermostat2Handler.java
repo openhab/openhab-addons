@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.boschshc.internal.devices.thermostat;
 
-import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.CHANNEL_DISPLAY_DIRECTION;
+import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.*;
 
 import java.util.List;
 
@@ -20,6 +20,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.boschshc.internal.exceptions.BoschSHCException;
 import org.openhab.binding.boschshc.internal.services.displaydirection.DisplayDirectionService;
 import org.openhab.binding.boschshc.internal.services.displaydirection.dto.DisplayDirectionServiceState;
+import org.openhab.binding.boschshc.internal.services.displayedtemperatureconfiguration.DisplayedTemperatureConfigurationService;
+import org.openhab.binding.boschshc.internal.services.displayedtemperatureconfiguration.dto.DisplayedTemperatureConfigurationServiceState;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
@@ -34,10 +36,12 @@ import org.openhab.core.types.Command;
 public class Thermostat2Handler extends AbstractThermostatHandler {
 
     private DisplayDirectionService displayDirectionService;
+    private DisplayedTemperatureConfigurationService displayedTemperatureConfigurationService;
 
     public Thermostat2Handler(Thing thing) {
         super(thing);
         this.displayDirectionService = new DisplayDirectionService();
+        this.displayedTemperatureConfigurationService = new DisplayedTemperatureConfigurationService();
     }
 
     @Override
@@ -45,10 +49,17 @@ public class Thermostat2Handler extends AbstractThermostatHandler {
         super.initializeServices();
 
         this.registerService(this.displayDirectionService, this::updateChannels, List.of(CHANNEL_DISPLAY_DIRECTION));
+        this.registerService(this.displayedTemperatureConfigurationService, this::updateChannels,
+                List.of(CHANNEL_DISPLAYED_TEMPERATURE));
     }
 
     private void updateChannels(DisplayDirectionServiceState displayDirectionServiceState) {
         super.updateState(CHANNEL_DISPLAY_DIRECTION, displayDirectionServiceState.direction.toOnOffCommand());
+    }
+
+    private void updateChannels(DisplayedTemperatureConfigurationServiceState displayedTemperatureConfigurationState) {
+        super.updateState(CHANNEL_DISPLAYED_TEMPERATURE,
+                displayedTemperatureConfigurationState.displayedTemperature.toOnOffCommand());
     }
 
     @Override
@@ -57,6 +68,8 @@ public class Thermostat2Handler extends AbstractThermostatHandler {
 
         if (CHANNEL_DISPLAY_DIRECTION.equals(channelUID.getId())) {
             this.handleServiceCommand(this.displayDirectionService, command);
+        } else if (CHANNEL_DISPLAYED_TEMPERATURE.equals(channelUID.getId())) {
+            this.handleServiceCommand(this.displayedTemperatureConfigurationService, command);
         }
     }
 }

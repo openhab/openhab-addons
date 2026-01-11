@@ -131,6 +131,7 @@ public class BoschSHCBindingConstants {
     public static final String CHANNEL_VIBRATION_SENSOR_STATE = "vibration-sensor-state";
     public static final String CHANNEL_PRESENCE_SIMULATION_ENABLED = "presence-simulation-enabled";
     public static final String CHANNEL_DISPLAY_DIRECTION = "display-direction";
+    public static final String CHANNEL_DISPLAYED_TEMPERATURE = "displayed-temperature";
 
     // numbered channels
     // the rationale for introducing numbered channels was discussed in
