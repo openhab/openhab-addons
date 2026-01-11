@@ -27,7 +27,7 @@ public enum DisplayDirectionState {
     REVERSED;
 
     public OnOffType toOnOffCommand() {
-        return this == REVERSED ? OnOffType.ON : OnOffType.OFF;
+        return OnOffType.from(this == REVERSED);
     }
 
     public static DisplayDirectionState fromOnOffCommand(OnOffType command) {
