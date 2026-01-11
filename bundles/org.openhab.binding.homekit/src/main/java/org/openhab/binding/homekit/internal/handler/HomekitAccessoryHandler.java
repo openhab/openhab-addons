@@ -73,7 +73,6 @@ import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.StateDescription;
-import org.openhab.core.types.StateDescriptionFragment;
 import org.openhab.core.types.StateOption;
 import org.openhab.core.types.UnDefType;
 import org.openhab.core.types.util.UnitUtils;
@@ -293,7 +292,7 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
                     if (acceptedItemType.startsWith(CoreItemFactory.NUMBER)) {
                         String[] itemTypeParts = acceptedItemType.split(":");
                         if (itemTypeParts.length > 1
-                                && getStateDescription(channel) instanceof StateDescriptionFragment stateDescription
+                                && getStateDescription(channel) instanceof StateDescription stateDescription
                                 && UnitUtils.parseUnit(stateDescription.getPattern()) instanceof Unit<?> channelUnit
                                 && itemTypeParts[1].equalsIgnoreCase(UnitUtils.getDimensionName(channelUnit))) {
                             yield QuantityType.valueOf(value.getAsNumber().doubleValue(), channelUnit);
