@@ -70,7 +70,7 @@ Fragment-Host: org.openhab.binding.max
 	org.openhab.core.test;version='[5.2.0,5.2.1)',\
 	org.openhab.core.thing;version='[5.2.0,5.2.1)',\
 	org.openhab.core.transform;version='[5.2.0,5.2.1)',\
-	biz.aQute.tester.junit-platform;version='[7.1.0,7.1.1)',\
+	biz.aQute.tester.junit-platform;version='[7.2.1,7.2.2)',\
 	org.osgi.service.cm;version='[1.6.1,1.6.2)',\
 	jakarta.annotation-api;version='[2.1.1,2.1.2)',\
 	org.openhab.core.semantics;version='[5.2.0,5.2.1)'
