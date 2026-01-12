@@ -331,7 +331,9 @@ public class Shelly2RpcSocket implements WriteCallback {
                         Shelly2RpcNotifyEvent events = fromJson(gson, receivedMessage, Shelly2RpcNotifyEvent.class);
                         events.src = message.src;
                         if (events.params == null || events.params.events == null) {
-                            logger.debug("{}: Malformed event data: {}", thingName, receivedMessage);
+                            if (logger.isDebugEnabled()) {
+                                logger.debug("{}: Malformed event data: {}", thingName, receivedMessage);
+                            }
                         } else {
                             for (Shelly2NotifyEvent e : events.params.events) {
                                 if (getString(e.event).startsWith(SHELLY2_EVENT_BLUPREFIX)) {
@@ -347,9 +349,11 @@ public class Shelly2RpcSocket implements WriteCallback {
                                         if (SHELLY2_EVENT_BLUSCAN.equals(e.event)) {
                                             addBluThing(getString(message.src), e.blu, thingTable);
                                         } else {
-                                            logger.debug(
-                                                    "{}: NotifyEvent {} for unknown BLU device {} or Thing in Inbox",
-                                                    message.src, e.event, e.blu.addr);
+                                            if (logger.isDebugEnabled()) {
+                                                logger.debug(
+                                                        "{}: NotifyEvent {} for unknown BLU device {} or Thing in Inbox",
+                                                        message.src, e.event, e.blu.addr);
+                                            }
                                         }
                                     }
                                 } else {
@@ -368,7 +372,9 @@ public class Shelly2RpcSocket implements WriteCallback {
                 }
             }
         } catch (ShellyApiException | IllegalArgumentException e) {
-            logger.debug("{}: Unable to process Rpc message ({}): {}", thingName, e.getMessage(), receivedMessage);
+            if (logger.isDebugEnabled()) {
+                logger.debug("{}: Unable to process Rpc message ({}): {}", thingName, e.getMessage(), receivedMessage);
+            }
         }
     }
 

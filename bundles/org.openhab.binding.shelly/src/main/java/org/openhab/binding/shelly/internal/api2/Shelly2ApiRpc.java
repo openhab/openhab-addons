@@ -142,6 +142,9 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
             logger.debug("{}: Disconnect Rpc Socket on initialize", thingName);
             disconnect();
         }
+
+        logger.debug("{}: Initialize APIv2 (tname={}", thingName, Thread.currentThread().getName());
+
         Shelly2RpcSocket rpcSocket = this.rpcSocket;
         if (rpcSocket != null) {
             rpcSocket.disconnect();
@@ -1259,7 +1262,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         Shelly2RpcBaseMessage request = buildRequest(method, null);
         reconnect();
         Shelly2RpcSocket rpcSocket = this.rpcSocket;
-        if (rpcSocket != null) {
+        if (rpcSocket != null && rpcSocket.isConnected()) {
             rpcSocket.sendMessage(gson.toJson(request)); // submit, result will be async
         } else {
             throw new ShellyApiException("RPC socket isn't connected, cannot send async request");
