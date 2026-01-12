@@ -681,32 +681,27 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     }
 
     private void handleGetRoomMapping(String response) {
-        for (RobotCapabilities cmd : FEATURES_CHANNELS) {
-            if (COMMAND_GET_ROOM_MAPPING.equals(cmd.getCommand())) {
-                JsonArray rooms = JsonParser.parseString(response).getAsJsonObject().get("result").getAsJsonArray();
-                if (rooms.size() > 0) {
-                    JsonArray mappedRoom = new JsonArray();
-                    String name = "Not found";
-                    for (JsonElement roomE : rooms) {
-                        JsonArray room = roomE.getAsJsonArray();
-                        for (int i = 0; i < homeRooms.length; i++) {
-                            if (room.get(1).getAsString().equals(Integer.toString(homeRooms[i].id))) {
-                                name = homeRooms[i].name;
-                                break;
-                            }
-                        }
-                        room.set(1, new JsonPrimitive(name));
-                        if (room.size() == 3) {
-                            room.remove(2);
-                        }
-                        mappedRoom.add(room);
+        JsonArray rooms = JsonParser.parseString(response).getAsJsonObject().get("result").getAsJsonArray();
+        if (rooms.size() > 0) {
+            JsonArray mappedRoom = new JsonArray();
+            String name = "Not found";
+            for (JsonElement roomE : rooms) {
+                JsonArray room = roomE.getAsJsonArray();
+                for (int i = 0; i < homeRooms.length; i++) {
+                    if (room.get(1).getAsString().equals(Integer.toString(homeRooms[i].id))) {
+                        name = homeRooms[i].name;
+                        break;
                     }
-                    updateState(cmd.getChannel(), new StringType(mappedRoom.toString()));
-                } else {
-                    updateState(cmd.getChannel(), new StringType(response));
                 }
-                break;
+                room.set(1, new JsonPrimitive(name));
+                if (room.size() == 3) {
+                    room.remove(2);
+                }
+                mappedRoom.add(room);
             }
+            updateState(CHANNEL_ROOM_MAPPING, new StringType(mappedRoom.toString()));
+        } else {
+            updateState(CHANNEL_ROOM_MAPPING, new StringType(response));
         }
     }
 
