@@ -124,7 +124,7 @@ class TestEnvironmentSensor {
         assertNotNull(temperature);
         assertTrue(temperature instanceof QuantityType);
         assertTrue(((QuantityType<?>) temperature).getUnit().equals(SIUnits.CELSIUS));
-        assertEquals(19.96, ((QuantityType<?>) temperature).doubleValue(), 0.001, "Temperature");
+        assertEquals(22.22, ((QuantityType<?>) temperature).doubleValue(), 0.001, "Temperature");
 
         // State otaState = callback.getState("dirigera:air-purifier:test-device:ota-state");
         // assertNotNull(otaState);

@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.dirigera.internal.handler.matter;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -27,6 +29,8 @@ import org.json.JSONObject;
 import org.openhab.binding.dirigera.internal.ResourceReader;
 import org.openhab.binding.dirigera.internal.interfaces.Model;
 import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.types.Command;
@@ -68,7 +72,9 @@ public class BaseMatterConfiguration {
     public BaseMatterConfiguration(BaseMatterHandler handler) {
         this.handler = handler;
         if (matterDeviceConfig.isEmpty()) {
+            Instant startTime = Instant.now();
             loadDeviceConfig();
+            logger.trace("BaseMatterConfiguration took {} ms", Duration.between(startTime, Instant.now()).toMillis());
         }
         addDeviceType(TYPE_BASE);
     }
@@ -183,6 +189,22 @@ public class BaseMatterConfiguration {
         return updateProperties(id);
     }
 
+    public List<String> getLinkCandidates() {
+        List<String> linkCandidates = new ArrayList<>();
+        deviceTypes.forEach(deviceType -> {
+            JSONObject deviceConfig = matterDeviceConfig.optJSONObject(deviceType);
+            if (deviceConfig != null) {
+                deviceConfig.getJSONArray(PROPERTY_LINK_CANDIDATE_TYPES).forEach(entry -> {
+                    String candidateType = entry.toString();
+                    if (!linkCandidates.contains(candidateType)) {
+                        linkCandidates.add(candidateType);
+                    }
+                });
+            }
+        });
+        return linkCandidates;
+    }
+
     /**
      * Merge DIRIGERA updates to receive all attributes and capabilities
      *
@@ -277,20 +299,48 @@ public class BaseMatterConfiguration {
     private @Nullable State getState(Object value, JSONObject config) {
         System.out.println(value.getClass().getSimpleName() + " value: " + value);
         String transformation = config.getString(KEY_TRANSFORMATION);
-        var transformedString = switch (transformation) {
-            case "raw" -> value.toString();
-            case "format" -> String.format(Locale.US, config.getString("format"), value);
-            case "mapping" -> map(value.toString(), config.getJSONObject("mapping"));
+
+        var correctedValue = value;
+        // convert numbers in order to have either Int od Double values
+        if (config.has("inValue") && value instanceof Number num) {
+            System.out.println("CONVERSION Apply inValue conversion for " + value + " to " + config.getString("inValue")
+                    + " " + value.getClass().getSimpleName());
+            String inValue = config.getString("inValue");
+            switch (inValue) {
+                case "Integer" -> correctedValue = num.intValue();
+                case "Float" -> correctedValue = num.floatValue();
+            }
+            System.out.println(
+                    "CONVERSION Converted value: " + correctedValue + " " + correctedValue.getClass().getSimpleName());
+        }
+
+        // correction for numeric values
+        if (config.has("correction") && correctedValue instanceof Number num) {
+            double correction = config.getDouble("correction");
+            correctedValue = num.floatValue() * correction;
+        }
+
+        // apply transformation
+        var transformed = switch (transformation) {
+            case "code" -> null; // will be handled´by java code
+            case "raw" -> correctedValue.toString();
+            case "format" -> String.format(Locale.US, config.getString("format"), correctedValue);
+            case "mapping" -> map(correctedValue.toString(), config.getJSONObject("mapping"));
             default -> null;
         };
-        if (transformedString == null) {
-            return UnDefType.NULL;
+        if (transformed == null) {
+            return null;
         }
+
+        // convert into state type
         String outValue = config.getString("outValue");
         var state = switch (outValue) {
-            case "DecimalType" -> new DecimalType(transformedString);
-            case "StringType" -> new StringType(transformedString);
-            case "QuantityType" -> QuantityType.valueOf(transformedString);
+            case "DecimalType" -> new DecimalType(transformed);
+            case "StringType" -> new StringType(transformed);
+            case "QuantityType" -> QuantityType.valueOf(transformed);
+            case "OnOffType" -> OnOffType.from(transformed);
+            case "OpenClosedType" ->
+                ("true".equalsIgnoreCase(transformed)) ? OpenClosedType.OPEN : OpenClosedType.CLOSED;
             default -> UnDefType.NULL;
         };
         return state;

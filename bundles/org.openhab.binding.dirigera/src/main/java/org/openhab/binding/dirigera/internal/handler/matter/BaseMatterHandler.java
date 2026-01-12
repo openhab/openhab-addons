@@ -14,6 +14,8 @@ package org.openhab.binding.dirigera.internal.handler.matter;
 
 import static org.openhab.binding.dirigera.internal.Constants.*;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -95,14 +97,16 @@ public class BaseMatterHandler extends BaseThingHandler implements BaseDevice, D
     protected BaseDeviceConfiguration config;
     protected boolean disposed = true;
     protected boolean online = false;
-    protected boolean customDebug = false;
+    protected boolean customDebug = true;
 
     public BaseMatterHandler(final Thing thing) {
         super(thing);
+        Instant startTime = Instant.now();
         child = this;
         config = new BaseDeviceConfiguration();
         matterConfig = new BaseMatterConfiguration(this);
         initializeCache();
+        logger.trace("BaseMatterHandler constructor took {} ms", Duration.between(startTime, Instant.now()).toMillis());
     }
 
     /**
@@ -130,6 +134,7 @@ public class BaseMatterHandler extends BaseThingHandler implements BaseDevice, D
 
     @Override
     public void initialize() {
+        Instant startTime = Instant.now();
         disposed = false;
         config = getConfigAs(BaseDeviceConfiguration.class);
 
@@ -142,15 +147,23 @@ public class BaseMatterHandler extends BaseThingHandler implements BaseDevice, D
             // if handler doesn't match model status will be set to offline and it will stay until correction
             return;
         }
+
+        JSONArray deviceUpdates = new JSONArray();
         matterConfig.collectDevices(config.id).forEach(deviceId -> {
-            System.out.println("DIRIGERA BASE_MATTER_HANDLER " + thing.getUID() + " register device " + deviceId);
-            gateway().registerDevice(child, deviceId);
             JSONObject values = gateway().api().readDevice(deviceId);
+            deviceUpdates.put(values);
             createChannels(values);
-            handleUpdate(values);
         });
+        deviceUpdates.forEach(update -> {
+            JSONObject updateJson = (JSONObject) update;
+            String deviceId = updateJson.getString(PROPERTY_DEVICE_ID);
+            gateway().registerDevice(child, deviceId);
+            handleUpdate(updateJson);
+        });
+        linkCandidateTypes = matterConfig.getLinkCandidates();
         // set thing properties
         setThingProprties();
+        logger.trace("BaseMatterHandler initialize took {} ms", Duration.between(startTime, Instant.now()).toMillis());
     }
 
     protected void setThingProprties() {
@@ -248,7 +261,12 @@ public class BaseMatterHandler extends BaseThingHandler implements BaseDevice, D
                     break;
             }
             JSONObject apiRequest = matterConfig.getRequestJson(targetChannel, command);
-            sendPatch(apiRequest);
+            if (!apiRequest.isEmpty()) {
+                sendPatch(apiRequest);
+            } else {
+                logger.debug("DIRIGERA BASE_MATTER_HANDLER {} no API request for channel {} command {}", thing.getUID(),
+                        targetChannel, command.toFullString());
+            }
         }
     }
 
@@ -305,8 +323,14 @@ public class BaseMatterHandler extends BaseThingHandler implements BaseDevice, D
         }
         // now check attributes for updates
         Map<String, State> updates = matterConfig.getAttributeUpdates(update);
+        logger.trace("DIRIGERA BASE_MATTER_HANDLER {} attribute updates {}", thing.getUID(), updates);
         updates.forEach((channel, state) -> {
-            updateState(new ChannelUID(thing.getUID(), channel), state);
+            if (UnDefType.NULL.equals(state)) {
+                logger.debug("DIRIGERA BASE_MATTER_HANDLER {} ignoring NULL state for channel {}", thing.getUID(),
+                        channel);
+            } else {
+                updateState(new ChannelUID(thing.getUID(), channel), state);
+            }
         });
     }
 
@@ -529,6 +553,8 @@ public class BaseMatterHandler extends BaseThingHandler implements BaseDevice, D
      */
     @Override
     public void updateLinksDone() {
+        logger.trace("DIRIGERA BASE_MATTER_HANDLER {} updateLinksDone hardLinks {} softLinks {}", thing.getLabel(),
+                hardLinks, softLinks);
         if (hasLinksOrCandidates()) {
             createChannelIfNecessary(CHANNEL_LINKS, CHANNEL_LINKS, CoreItemFactory.STRING);
             createChannelIfNecessary(CHANNEL_LINK_CANDIDATES, CHANNEL_LINK_CANDIDATES, CoreItemFactory.STRING);

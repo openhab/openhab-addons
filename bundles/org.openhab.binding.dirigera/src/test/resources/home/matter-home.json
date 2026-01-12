@@ -16,7 +16,7 @@
         "deviceType": "gateway",
         "createdAt": "2024-03-08T06:39:04.019Z",
         "isReachable": true,
-        "lastSeen": "2026-01-09T23:54:00.471Z",
+        "lastSeen": "2026-01-11T22:57:00.317Z",
         "attributes": {
             "customName": "Townhouse",
             "model": "DIRIGERA Hub for smart products",
@@ -51,8 +51,8 @@
             "logLevel": 3,
             "coredump": false,
             "timezone": "Europe/Berlin",
-            "nextSunSet": "2026-01-10T15:14:00.000Z",
-            "nextSunRise": "2026-01-10T07:15:00.000Z",
+            "nextSunSet": "2026-01-12T15:17:00.000Z",
+            "nextSunRise": "2026-01-12T07:13:00.000Z",
             "homestate": "home",
             "countryCode": "EN",
             "coordinates": {
@@ -205,7 +205,7 @@
             "deviceType": "light",
             "createdAt": "2025-01-04T19:44:37.000Z",
             "isReachable": true,
-            "lastSeen": "2026-01-09T23:50:59.000Z",
+            "lastSeen": "2026-01-11T19:28:42.000Z",
             "customIcon": "products_led_bulb",
             "attributes": {
                 "customName": "Bedroom Desk Left",
@@ -217,7 +217,7 @@
                 "productCode": "LED2101G4",
                 "isOn": false,
                 "startupOnOff": "startOn",
-                "lightLevel": 50,
+                "lightLevel": 30,
                 "startUpCurrentLevel": -1,
                 "colorTemperature": 2202,
                 "colorTemperatureMin": 4000,
@@ -324,7 +324,7 @@
             "deviceType": "genericSwitch",
             "createdAt": "2026-01-03T18:43:10.000Z",
             "isReachable": true,
-            "lastSeen": "2026-01-09T13:28:42.000Z",
+            "lastSeen": "2026-01-11T22:48:14.000Z",
             "customIcon": "products_rotary_remote",
             "attributes": {
                 "identifyStarted": "2025-12-11T14:53:30.000Z",
@@ -349,7 +349,7 @@
                 "otaPolicy": "autoUpdate",
                 "otaScheduleStart": "00:00",
                 "otaScheduleEnd": "00:00",
-                "batteryPercentage": 61,
+                "batteryPercentage": 60,
                 "controlMode": "light"
             },
             "capabilities": {
@@ -378,7 +378,7 @@
             "deviceType": "genericSwitch",
             "createdAt": "2026-01-03T18:43:10.000Z",
             "isReachable": true,
-            "lastSeen": "2026-01-09T13:28:42.000Z",
+            "lastSeen": "2026-01-11T22:48:14.000Z",
             "attributes": {
                 "identifyStarted": "2025-12-11T14:53:30.000Z",
                 "identifyPeriod": 0,
@@ -402,7 +402,7 @@
                 "otaPolicy": "autoUpdate",
                 "otaScheduleStart": "00:00",
                 "otaScheduleEnd": "00:00",
-                "batteryPercentage": 61,
+                "batteryPercentage": 60,
                 "controlMode": "light"
             },
             "capabilities": {
@@ -425,7 +425,7 @@
             "deviceType": "genericSwitch",
             "createdAt": "2026-01-03T18:43:10.000Z",
             "isReachable": true,
-            "lastSeen": "2026-01-09T13:28:42.000Z",
+            "lastSeen": "2026-01-11T22:48:14.000Z",
             "attributes": {
                 "identifyStarted": "2025-12-11T14:53:30.000Z",
                 "identifyPeriod": 0,
@@ -449,7 +449,7 @@
                 "otaPolicy": "autoUpdate",
                 "otaScheduleStart": "00:00",
                 "otaScheduleEnd": "00:00",
-                "batteryPercentage": 61,
+                "batteryPercentage": 60,
                 "controlMode": "shortcut"
             },
             "capabilities": {
@@ -471,7 +471,7 @@
             "deviceType": "outlet",
             "createdAt": "2024-12-21T15:29:24.000Z",
             "isReachable": true,
-            "lastSeen": "2026-01-09T20:46:01.000Z",
+            "lastSeen": "2026-01-11T04:32:01.000Z",
             "attributes": {
                 "customName": "Loft Shelf",
                 "model": "TRETAKT Smart plug",
@@ -522,7 +522,7 @@
             "deviceType": "light",
             "createdAt": "2024-10-04T17:41:34.000Z",
             "isReachable": true,
-            "lastSeen": "2026-01-09T14:37:32.000Z",
+            "lastSeen": "2026-01-11T19:42:47.000Z",
             "customIcon": "lighting_pendant_light",
             "attributes": {
                 "customName": "Dining Rear Lamp",
@@ -532,7 +532,7 @@
                 "hardwareVersion": "1",
                 "serialNumber": "7CC6B6FFFE5FFFA2",
                 "productCode": "LED2109G6",
-                "isOn": true,
+                "isOn": false,
                 "startupOnOff": "startOn",
                 "lightLevel": 40,
                 "startUpCurrentLevel": 20,
@@ -587,7 +587,7 @@
             "deviceType": "outlet",
             "createdAt": "2024-12-10T13:13:45.000Z",
             "isReachable": true,
-            "lastSeen": "2026-01-09T23:33:54.000Z",
+            "lastSeen": "2026-01-11T20:34:22.000Z",
             "attributes": {
                 "customName": "Kitchen Work",
                 "model": "TRETAKT Smart plug",
@@ -596,7 +596,7 @@
                 "hardwareVersion": "1",
                 "serialNumber": "F84477FFFED485D5",
                 "productCode": "E2204",
-                "isOn": false,
+                "isOn": true,
                 "startupOnOff": "startPrevious",
                 "lightLevel": 51,
                 "startUpCurrentLevel": -1,
@@ -641,7 +641,7 @@
             "deviceType": "genericSwitch",
             "createdAt": "2026-01-03T18:57:30.000Z",
             "isReachable": true,
-            "lastSeen": "2026-01-09T19:10:21.000Z",
+            "lastSeen": "2026-01-11T19:12:45.000Z",
             "customIcon": "products_dual_button_remote",
             "attributes": {
                 "identifyStarted": "2025-12-11T14:53:30.000Z",
@@ -696,7 +696,7 @@
             "deviceType": "genericSwitch",
             "createdAt": "2026-01-03T18:57:30.000Z",
             "isReachable": true,
-            "lastSeen": "2026-01-09T19:10:21.000Z",
+            "lastSeen": "2026-01-11T19:12:45.000Z",
             "attributes": {
                 "identifyStarted": "2025-12-11T14:53:30.000Z",
                 "identifyPeriod": 0,
@@ -744,7 +744,7 @@
             "deviceType": "motionSensor",
             "createdAt": "2025-01-09T20:16:37.000Z",
             "isReachable": true,
-            "lastSeen": "2026-01-09T23:32:02.000Z",
+            "lastSeen": "2026-01-11T21:32:30.000Z",
             "attributes": {
                 "customName": "Lobby Motion",
                 "model": "VALLHORN Wireless Motion Sensor",
@@ -797,7 +797,7 @@
             "deviceType": "lightSensor",
             "createdAt": "2025-01-09T20:16:37.000Z",
             "isReachable": true,
-            "lastSeen": "2026-01-09T23:32:02.000Z",
+            "lastSeen": "2026-01-11T21:32:30.000Z",
             "attributes": {
                 "customName": "",
                 "model": "VALLHORN Wireless Motion Sensor",
@@ -827,7 +827,7 @@
             "deviceType": "openCloseSensor",
             "createdAt": "2024-10-10T14:00:00.000Z",
             "isReachable": true,
-            "lastSeen": "2026-01-09T20:52:18.000Z",
+            "lastSeen": "2026-01-11T22:18:30.000Z",
             "customIcon": "placement_door",
             "attributes": {
                 "customName": "Door Dining Room",
@@ -837,7 +837,7 @@
                 "hardwareVersion": "1",
                 "serialNumber": "D44867FFFEB36824",
                 "productCode": "E2013",
-                "batteryPercentage": 25,
+                "batteryPercentage": 26,
                 "identifyStarted": "2000-01-01T00:00:00.000Z",
                 "identifyPeriod": 0,
                 "isOpen": false,
@@ -865,7 +865,7 @@
             "deviceType": "light",
             "createdAt": "2025-01-04T20:14:07.000Z",
             "isReachable": false,
-            "lastSeen": "2026-01-09T15:33:35.000Z",
+            "lastSeen": "2026-01-11T15:59:39.000Z",
             "attributes": {
                 "customName": "Bedroom Light",
                 "model": "TRADFRI bulb E27 WW G95 CL 470lm",
@@ -917,7 +917,7 @@
             "deviceType": "light",
             "createdAt": "2025-01-04T19:47:07.000Z",
             "isReachable": true,
-            "lastSeen": "2026-01-09T23:50:59.000Z",
+            "lastSeen": "2026-01-11T19:28:42.000Z",
             "customIcon": "products_led_bulb",
             "attributes": {
                 "customName": "Bedroom Desk Right",
@@ -929,7 +929,7 @@
                 "productCode": "LED2101G4",
                 "isOn": false,
                 "startupOnOff": "startOn",
-                "lightLevel": 50,
+                "lightLevel": 30,
                 "startUpCurrentLevel": -1,
                 "colorTemperature": 2202,
                 "colorTemperatureMin": 4000,
@@ -976,7 +976,7 @@
             "deviceType": "speaker",
             "createdAt": "2024-10-04T17:21:49.446Z",
             "isReachable": true,
-            "lastSeen": "2026-01-08T16:31:14.335Z",
+            "lastSeen": "2026-01-11T10:47:22.892Z",
             "attributes": {
                 "customName": "Loft",
                 "model": "SYMFONISK Bookshelf S21",
@@ -1029,7 +1029,7 @@
                     "repeat": "off",
                     "shuffle": false
                 },
-                "volume": 13,
+                "volume": 25,
                 "isMuted": false,
                 "audioGroup": "039ccb87-ee96-4eb8-958b-e8bddfc0b6ba"
             },
@@ -1121,7 +1121,7 @@
             "deviceType": "repeater",
             "createdAt": "2024-10-10T10:10:37.000Z",
             "isReachable": true,
-            "lastSeen": "2026-01-09T08:03:15.000Z",
+            "lastSeen": "2026-01-11T08:03:17.000Z",
             "attributes": {
                 "customName": "Repeater",
                 "model": "TRADFRI Signal Repeater",
@@ -1162,7 +1162,7 @@
             "deviceType": "openCloseSensor",
             "createdAt": "2024-10-10T14:05:20.000Z",
             "isReachable": true,
-            "lastSeen": "2026-01-09T17:23:15.000Z",
+            "lastSeen": "2026-01-11T22:52:40.000Z",
             "customIcon": "placement_door",
             "attributes": {
                 "customName": "Entry Door",
@@ -1172,7 +1172,7 @@
                 "hardwareVersion": "1",
                 "serialNumber": "F84477FFFEDC7871",
                 "productCode": "E2013",
-                "batteryPercentage": 34,
+                "batteryPercentage": 32,
                 "identifyStarted": "2000-01-01T00:00:00.000Z",
                 "identifyPeriod": 0,
                 "isOpen": false,
@@ -1200,7 +1200,7 @@
             "deviceType": "outlet",
             "createdAt": "2024-10-17T21:17:45.000Z",
             "isReachable": true,
-            "lastSeen": "2026-01-09T23:38:44.000Z",
+            "lastSeen": "2026-01-11T22:45:11.000Z",
             "attributes": {
                 "customName": "Bathroom Light Plug",
                 "model": "TRETAKT Smart plug",
@@ -1209,7 +1209,7 @@
                 "hardwareVersion": "1",
                 "serialNumber": "D44867FFFE140EDE",
                 "productCode": "E2204",
-                "isOn": false,
+                "isOn": true,
                 "startupOnOff": "startPrevious",
                 "lightLevel": 100,
                 "startUpCurrentLevel": -1,
@@ -1254,7 +1254,7 @@
             "deviceType": "motionSensor",
             "createdAt": "2024-10-10T14:24:07.000Z",
             "isReachable": true,
-            "lastSeen": "2026-01-09T23:33:46.000Z",
+            "lastSeen": "2026-01-11T22:52:35.000Z",
             "attributes": {
                 "customName": "Bathroom Motion",
                 "model": "VALLHORN Wireless Motion Sensor",
@@ -1266,7 +1266,7 @@
                 "batteryPercentage": 87,
                 "isOn": false,
                 "motionDetectedDelay": 20,
-                "isDetected": false,
+                "isDetected": true,
                 "identifyStarted": "2000-01-01T00:00:00.000Z",
                 "identifyPeriod": 0,
                 "permittingJoin": false,
@@ -1307,7 +1307,7 @@
             "deviceType": "lightSensor",
             "createdAt": "2024-10-10T14:24:07.000Z",
             "isReachable": true,
-            "lastSeen": "2026-01-09T23:33:46.000Z",
+            "lastSeen": "2026-01-11T22:52:35.000Z",
             "attributes": {
                 "customName": "",
                 "model": "VALLHORN Wireless Motion Sensor",
@@ -1316,7 +1316,7 @@
                 "hardwareVersion": "1",
                 "serialNumber": "8C65A3FFFE355FB0",
                 "productCode": "E2134",
-                "illuminance": 0,
+                "illuminance": 10413,
                 "identifyStarted": "2000-01-01T00:00:00.000Z",
                 "identifyPeriod": 0,
                 "permittingJoin": false
@@ -1337,7 +1337,7 @@
             "deviceType": "speaker",
             "createdAt": "2024-11-01T11:17:39.306Z",
             "isReachable": true,
-            "lastSeen": "2026-01-09T15:32:56.602Z",
+            "lastSeen": "2026-01-11T12:28:25.729Z",
             "attributes": {
                 "customName": "Terrasse",
                 "model": "SYMFONISK Bookshelf S21",
@@ -1349,7 +1349,7 @@
                 "identifyStarted": "2024-11-01T11:17:39.306Z",
                 "identifyPeriod": 0,
                 "playback": "playbackPaused",
-                "playbackLastChangedTimestamp": "2026-01-09T15:32:56.601Z",
+                "playbackLastChangedTimestamp": "2026-01-11T12:28:25.728Z",
                 "playbackAudio": {
                     "serviceType": "sonos",
                     "providerType": "Mixcloud",
@@ -1359,25 +1359,25 @@
                         "imageURL": "https://app.mixcloud.com/media/images/sonos/icons/feed_legacy.png"
                     },
                     "playItem": {
-                        "id": "eyJhY2NvdW50VHlwZSI6InNvbm9zIiwiY29udGVudFR5cGUiOiJjb250YWluZXIiLCJjb250ZW50Ijp7ImNvbnRhaW5lciI6eyJhY2NvdW50SWQiOiJzbl8zIiwib2JqZWN0SWQiOiJjbG91ZGNhc3Q6MjE4NzQxMTA1OSIsInNlcnZpY2VJZCI6IjE4MSIsInR5cGUiOiJ0cmFjayJ9fX0=",
-                        "title": "TRANSITION Ep.4 - Alan Ritchie - 40 years of Acid House 1986 - 2026 Part 1 - Vinyl + Digital 3 deck",
-                        "artist": "souljazzfunksters",
-                        "album": "Feed",
-                        "imageURL": "http://192.168.1.96:1400/getaa?s=1&u=x-sonosapi-hls-static%3acloudcast%253a2187411059%3fsid%3d181%26flags%3d8232%26sn%3d3",
-                        "duration": 10811000
-                    },
-                    "nextPlayItem": {
                         "id": "eyJhY2NvdW50VHlwZSI6InNvbm9zIiwiY29udGVudFR5cGUiOiJjb250YWluZXIiLCJjb250ZW50Ijp7ImNvbnRhaW5lciI6eyJhY2NvdW50SWQiOiJzbl8zIiwib2JqZWN0SWQiOiJjbG91ZGNhc3Q6MjE4NzQxMDkyNSIsInNlcnZpY2VJZCI6IjE4MSIsInR5cGUiOiJ0cmFjayJ9fX0=",
                         "title": "Adult Contemporary Soulful Tracks",
                         "artist": "TAKANOME",
                         "album": "Feed",
                         "imageURL": "http://192.168.1.96:1400/getaa?s=1&u=x-sonosapi-hls-static%3acloudcast%253a2187410925%3fsid%3d181%26flags%3d8232%26sn%3d3",
                         "duration": 7381000
+                    },
+                    "nextPlayItem": {
+                        "id": "eyJhY2NvdW50VHlwZSI6InNvbm9zIiwiY29udGVudFR5cGUiOiJjb250YWluZXIiLCJjb250ZW50Ijp7ImNvbnRhaW5lciI6eyJhY2NvdW50SWQiOiJzbl8zIiwib2JqZWN0SWQiOiJjbG91ZGNhc3Q6MjE4NzM1MDAwOCIsInNlcnZpY2VJZCI6IjE4MSIsInR5cGUiOiJ0cmFjayJ9fX0=",
+                        "title": "Some Kinda Feeling",
+                        "artist": "VioMB",
+                        "album": "Feed",
+                        "imageURL": "http://192.168.1.96:1400/getaa?s=1&u=x-sonosapi-hls-static%3acloudcast%253a2187350008%3fsid%3d181%26flags%3d8232%26sn%3d3",
+                        "duration": 3102000
                     }
                 },
                 "playbackPosition": {
-                    "position": 120952,
-                    "timestamp": "2026-01-09T15:32:56.600Z"
+                    "position": 2442553,
+                    "timestamp": "2026-01-11T12:28:25.727Z"
                 },
                 "playbackAvailableActions": {
                     "crossfade": true,
@@ -1397,7 +1397,7 @@
                     "repeat": "off",
                     "shuffle": false
                 },
-                "volume": 12,
+                "volume": 20,
                 "isMuted": false,
                 "audioGroup": "4bcc0c49-1531-4990-986a-6ae04d3fbdd7"
             },
@@ -1427,7 +1427,7 @@
             "deviceType": "motionSensor",
             "createdAt": "2024-12-08T15:10:08.000Z",
             "isReachable": true,
-            "lastSeen": "2026-01-09T23:40:16.000Z",
+            "lastSeen": "2026-01-11T22:44:56.000Z",
             "customIcon": "products_motion_sensor_2",
             "attributes": {
                 "customName": "Bedroom Motion ",
@@ -1481,7 +1481,7 @@
             "deviceType": "lightSensor",
             "createdAt": "2024-12-08T15:10:08.000Z",
             "isReachable": true,
-            "lastSeen": "2026-01-09T23:40:16.000Z",
+            "lastSeen": "2026-01-11T22:44:56.000Z",
             "attributes": {
                 "customName": "",
                 "model": "VALLHORN Wireless Motion Sensor",
@@ -1511,7 +1511,7 @@
             "deviceType": "waterSensor",
             "createdAt": "2024-10-17T12:38:02.000Z",
             "isReachable": true,
-            "lastSeen": "2026-01-09T16:30:40.000Z",
+            "lastSeen": "2026-01-11T16:19:22.000Z",
             "attributes": {
                 "customName": "HWR Water Leak",
                 "model": "BADRING Water Leakage Sensor",
@@ -1552,7 +1552,7 @@
             "deviceType": "motionSensor",
             "createdAt": "2024-10-10T14:56:23.000Z",
             "isReachable": true,
-            "lastSeen": "2026-01-09T21:49:43.000Z",
+            "lastSeen": "2026-01-11T22:37:30.000Z",
             "attributes": {
                 "customName": "HWR Motion",
                 "model": "TRADFRI motion sensor",
@@ -1561,7 +1561,7 @@
                 "hardwareVersion": "1",
                 "serialNumber": "BC33ACFFFE8739CC",
                 "productCode": "E1745",
-                "batteryPercentage": 90,
+                "batteryPercentage": 100,
                 "isOn": false,
                 "lightLevel": 1,
                 "permittingJoin": false,
@@ -1611,7 +1611,7 @@
             "deviceType": "light",
             "createdAt": "2025-04-28T15:09:52.000Z",
             "isReachable": false,
-            "lastSeen": "2026-01-08T16:30:33.000Z",
+            "lastSeen": "2026-01-10T23:09:31.000Z",
             "customIcon": "lighting_wall_lamp",
             "attributes": {
                 "customName": "Terrace Kitchen",
@@ -1681,7 +1681,7 @@
             "deviceType": "motionSensor",
             "createdAt": "2024-12-09T09:27:56.000Z",
             "isReachable": true,
-            "lastSeen": "2026-01-09T23:39:53.000Z",
+            "lastSeen": "2026-01-11T22:55:48.000Z",
             "customIcon": "products_motion_sensor_2",
             "attributes": {
                 "customName": "Loft Motion ",
@@ -1691,7 +1691,7 @@
                 "hardwareVersion": "1",
                 "serialNumber": "8C65A3FFFE3DD0AD",
                 "productCode": "E2134",
-                "batteryPercentage": 46,
+                "batteryPercentage": 48,
                 "isOn": false,
                 "motionDetectedDelay": 20,
                 "isDetected": false,
@@ -1735,7 +1735,7 @@
             "deviceType": "lightSensor",
             "createdAt": "2024-12-09T09:27:56.000Z",
             "isReachable": true,
-            "lastSeen": "2026-01-09T23:39:53.000Z",
+            "lastSeen": "2026-01-11T22:55:48.000Z",
             "attributes": {
                 "customName": "",
                 "model": "VALLHORN Wireless Motion Sensor",
@@ -1765,7 +1765,7 @@
             "deviceType": "light",
             "createdAt": "2024-10-04T18:00:31.000Z",
             "isReachable": true,
-            "lastSeen": "2026-01-09T14:37:32.000Z",
+            "lastSeen": "2026-01-11T19:42:47.000Z",
             "customIcon": "lighting_cone_pendant",
             "attributes": {
                 "customName": "Dining Front Lamp",
@@ -1775,7 +1775,7 @@
                 "hardwareVersion": "1",
                 "serialNumber": "8C65A3FFFEC9113D",
                 "productCode": "LED2109G6",
-                "isOn": true,
+                "isOn": false,
                 "startupOnOff": "startOn",
                 "lightLevel": 35,
                 "startUpCurrentLevel": -1,
@@ -1869,7 +1869,7 @@
             "deviceType": "motionSensor",
             "createdAt": "2024-10-09T17:29:53.000Z",
             "isReachable": true,
-            "lastSeen": "2026-01-09T18:01:15.000Z",
+            "lastSeen": "2026-01-11T16:58:10.000Z",
             "attributes": {
                 "customName": "Lavatory Motion",
                 "model": "VALLHORN Wireless Motion Sensor",
@@ -1953,7 +1953,7 @@
             "deviceType": "lightSensor",
             "createdAt": "2024-10-09T17:29:53.000Z",
             "isReachable": true,
-            "lastSeen": "2026-01-09T18:01:15.000Z",
+            "lastSeen": "2026-01-11T16:58:10.000Z",
             "attributes": {
                 "customName": "",
                 "model": "VALLHORN Wireless Motion Sensor",
@@ -1983,7 +1983,7 @@
             "deviceType": "outlet",
             "createdAt": "2024-10-08T20:43:31.000Z",
             "isReachable": true,
-            "lastSeen": "2026-01-09T23:54:01.000Z",
+            "lastSeen": "2026-01-11T22:56:59.000Z",
             "attributes": {
                 "customName": "Loft Smart Plug",
                 "model": "INSPELNING Smart plug",
@@ -1996,11 +1996,11 @@
                 "startupOnOff": "startPrevious",
                 "lightLevel": 1,
                 "startUpCurrentLevel": -1,
-                "currentVoltage": 234.60000610351562,
+                "currentVoltage": 233,
                 "currentAmps": 0.02500000037252903,
                 "currentActivePower": 0.30000001192092896,
-                "totalEnergyConsumed": 141.1699981689453,
-                "totalEnergyConsumedLastUpdated": "2026-01-09T23:53:38.000Z",
+                "totalEnergyConsumed": 141.99899291992188,
+                "totalEnergyConsumedLastUpdated": "2026-01-11T22:56:59.000Z",
                 "energyConsumedAtLastReset": 0.5170000195503235,
                 "timeOfLastEnergyReset": "2024-11-25T07:48:03.000Z",
                 "childLock": false,
@@ -2049,7 +2049,7 @@
             "deviceType": "environmentSensor",
             "createdAt": "2024-10-17T08:00:25.000Z",
             "isReachable": true,
-            "lastSeen": "2026-01-09T23:54:32.000Z",
+            "lastSeen": "2026-01-11T22:57:44.000Z",
             "attributes": {
                 "customName": "Loft Air Sensor",
                 "model": "VINDSTYRKA",
@@ -2058,12 +2058,12 @@
                 "hardwareVersion": "1",
                 "serialNumber": "28DBA7FFFEDFFBF6",
                 "productCode": "E2112",
-                "currentTemperature": 22,
-                "currentRH": 56,
-                "currentPM25": 62,
+                "currentTemperature": 23,
+                "currentRH": 48,
+                "currentPM25": 21,
                 "maxMeasuredPM25": 999,
                 "minMeasuredPM25": 0,
-                "vocIndex": 92,
+                "vocIndex": 138,
                 "identifyStarted": "2000-01-01T00:00:00.000Z",
                 "identifyPeriod": 0,
                 "permittingJoin": false,
@@ -2095,8 +2095,8 @@
             "type": "light",
             "deviceType": "light",
             "createdAt": "2025-10-24T15:04:56.000Z",
-            "isReachable": true,
-            "lastSeen": "2026-01-09T23:52:22.000Z",
+            "isReachable": false,
+            "lastSeen": "2026-01-11T11:46:16.000Z",
             "customIcon": "lighting_cone_pendant",
             "attributes": {
                 "customName": "Maurice Light",
@@ -2106,7 +2106,7 @@
                 "hardwareVersion": "1",
                 "serialNumber": "680AE2FFFEAFA92F",
                 "productCode": "LED1732G11E27",
-                "isOn": false,
+                "isOn": true,
                 "startupOnOff": "startOn",
                 "lightLevel": 100,
                 "startUpCurrentLevel": -1,
@@ -2157,7 +2157,7 @@
             "deviceType": "light",
             "createdAt": "2024-10-09T18:04:54.000Z",
             "isReachable": true,
-            "lastSeen": "2026-01-09T17:40:25.000Z",
+            "lastSeen": "2026-01-11T16:58:08.000Z",
             "attributes": {
                 "customName": "Lavatory Right",
                 "model": "TRADFRI bulb E14 WS candle 470lm",
@@ -2224,7 +2224,7 @@
             "deviceType": "shortcutController",
             "createdAt": "2024-12-08T15:42:24.000Z",
             "isReachable": true,
-            "lastSeen": "2026-01-09T22:37:00.000Z",
+            "lastSeen": "2026-01-11T18:14:03.000Z",
             "customIcon": "products_shortcut_remote_2",
             "attributes": {
                 "customName": "Shortcut Kitchen",
@@ -2234,7 +2234,7 @@
                 "hardwareVersion": "1",
                 "serialNumber": "6CFD22FFFEF2723A",
                 "productCode": "E2213",
-                "batteryPercentage": 30,
+                "batteryPercentage": 27,
                 "switchLabel": "Shortcut 1",
                 "isOn": false,
                 "lightLevel": 1,
@@ -2273,7 +2273,7 @@
             "deviceType": "shortcutController",
             "createdAt": "2024-12-08T15:42:24.000Z",
             "isReachable": true,
-            "lastSeen": "2026-01-09T22:37:00.000Z",
+            "lastSeen": "2026-01-11T18:14:03.000Z",
             "attributes": {
                 "customName": "",
                 "model": "SOMRIG shortcut button",
@@ -2313,7 +2313,7 @@
             "deviceType": "openCloseSensor",
             "createdAt": "2025-01-09T20:20:39.000Z",
             "isReachable": true,
-            "lastSeen": "2026-01-09T22:30:31.000Z",
+            "lastSeen": "2026-01-11T22:36:39.000Z",
             "customIcon": "products_door_window_sensor",
             "attributes": {
                 "customName": "Winecooler Door",
@@ -2350,8 +2350,8 @@
             "type": "light",
             "deviceType": "light",
             "createdAt": "2024-10-10T13:46:04.000Z",
-            "isReachable": false,
-            "lastSeen": "2026-01-09T23:09:08.000Z",
+            "isReachable": true,
+            "lastSeen": "2026-01-11T22:52:30.000Z",
             "customIcon": "lighting_cone_pendant",
             "attributes": {
                 "customName": "Bathroom Panel",
@@ -2411,7 +2411,7 @@
             "deviceType": "shortcutController",
             "createdAt": "2025-03-17T03:27:04.000Z",
             "isReachable": true,
-            "lastSeen": "2026-01-09T13:12:46.000Z",
+            "lastSeen": "2026-01-11T22:08:55.000Z",
             "attributes": {
                 "customName": "",
                 "model": "SOMRIG shortcut button",
@@ -2453,7 +2453,7 @@
             "deviceType": "shortcutController",
             "createdAt": "2025-03-17T03:27:04.000Z",
             "isReachable": true,
-            "lastSeen": "2026-01-09T13:12:46.000Z",
+            "lastSeen": "2026-01-11T22:08:55.000Z",
             "attributes": {
                 "customName": "",
                 "model": "SOMRIG shortcut button",
@@ -2494,7 +2494,7 @@
             "deviceType": "gateway",
             "createdAt": "2024-03-08T06:39:04.019Z",
             "isReachable": true,
-            "lastSeen": "2026-01-09T23:54:00.471Z",
+            "lastSeen": "2026-01-11T22:57:00.317Z",
             "attributes": {
                 "customName": "Townhouse",
                 "model": "DIRIGERA Hub for smart products",
@@ -2529,8 +2529,8 @@
                 "logLevel": 3,
                 "coredump": false,
                 "timezone": "Europe/Berlin",
-                "nextSunSet": "2026-01-10T15:14:00.000Z",
-                "nextSunRise": "2026-01-10T07:15:00.000Z",
+                "nextSunSet": "2026-01-12T15:17:00.000Z",
+                "nextSunRise": "2026-01-12T07:13:00.000Z",
                 "homestate": "home",
                 "countryCode": "EN",
                 "coordinates": {
@@ -2638,7 +2638,7 @@
             "deviceType": "light",
             "createdAt": "2024-10-29T19:07:08.000Z",
             "isReachable": true,
-            "lastSeen": "2026-01-09T23:53:31.000Z",
+            "lastSeen": "2026-01-11T09:46:24.000Z",
             "customIcon": "lighting_table_lamp",
             "attributes": {
                 "customName": "Bee Light",
@@ -2699,7 +2699,7 @@
             "deviceType": "outlet",
             "createdAt": "2024-12-10T13:21:26.000Z",
             "isReachable": true,
-            "lastSeen": "2026-01-09T23:33:54.000Z",
+            "lastSeen": "2026-01-11T20:34:22.000Z",
             "attributes": {
                 "customName": "Kitchen Ambience",
                 "model": "TRETAKT Smart plug",
@@ -2708,7 +2708,7 @@
                 "hardwareVersion": "1",
                 "serialNumber": "F84477FFFED9E5C0",
                 "productCode": "E2204",
-                "isOn": false,
+                "isOn": true,
                 "startupOnOff": "startPrevious",
                 "lightLevel": 52,
                 "startUpCurrentLevel": -1,
@@ -2752,7 +2752,7 @@
             "deviceType": "light",
             "createdAt": "2025-01-09T20:13:54.000Z",
             "isReachable": true,
-            "lastSeen": "2026-01-09T21:54:37.000Z",
+            "lastSeen": "2026-01-11T19:44:05.000Z",
             "customIcon": "products_led_bulb",
             "attributes": {
                 "customName": "Lobby Light",
@@ -2813,7 +2813,7 @@
             "deviceType": "lightController",
             "createdAt": "2024-10-29T17:22:01.000Z",
             "isReachable": true,
-            "lastSeen": "2026-01-09T21:34:03.000Z",
+            "lastSeen": "2026-01-11T21:01:45.000Z",
             "customIcon": "products_remote_control_2",
             "attributes": {
                 "customName": "Maurice Light Control",
@@ -2823,7 +2823,7 @@
                 "hardwareVersion": "1",
                 "serialNumber": "804B50FFFEFC6250",
                 "productCode": "E1810",
-                "batteryPercentage": 100,
+                "batteryPercentage": 90,
                 "isOn": false,
                 "lightLevel": 1,
                 "permittingJoin": false,
@@ -2860,7 +2860,7 @@
             "deviceType": "outlet",
             "createdAt": "2024-12-10T21:49:42.000Z",
             "isReachable": true,
-            "lastSeen": "2026-01-09T23:45:16.000Z",
+            "lastSeen": "2026-01-11T22:49:56.000Z",
             "attributes": {
                 "customName": "Bedlight",
                 "model": "TRETAKT Smart plug",
@@ -2913,7 +2913,7 @@
             "deviceType": "light",
             "createdAt": "2024-10-09T18:09:58.000Z",
             "isReachable": true,
-            "lastSeen": "2026-01-09T17:40:24.000Z",
+            "lastSeen": "2026-01-11T16:58:07.000Z",
             "attributes": {
                 "customName": "Lavatory Left",
                 "model": "TRADFRI bulb E14 WS candle 470lm",
@@ -2979,7 +2979,7 @@
             "deviceType": "light",
             "createdAt": "2024-10-09T17:38:43.000Z",
             "isReachable": true,
-            "lastSeen": "2026-01-09T15:47:40.000Z",
+            "lastSeen": "2026-01-11T19:42:46.000Z",
             "attributes": {
                 "customName": "LED Strip Sideboard",
                 "model": "ORMANAS LED Strip",
@@ -2988,12 +2988,12 @@
                 "hardwareVersion": "1",
                 "serialNumber": "7CC6B6FFFE66D457",
                 "productCode": "L2112",
-                "isOn": true,
+                "isOn": false,
                 "startupOnOff": "startOn",
                 "lightLevel": 65,
                 "startUpCurrentLevel": -1,
-                "colorHue": 40.001220703125,
-                "colorSaturation": 0.7992125984251969,
+                "colorHue": 35.778990058090585,
+                "colorSaturation": 0.9993227502669005,
                 "colorTemperature": 4000,
                 "colorTemperatureMin": 4000,
                 "colorTemperatureMax": 2202,
@@ -3049,7 +3049,7 @@
             "deviceType": "light",
             "createdAt": "2024-10-10T13:48:44.000Z",
             "isReachable": true,
-            "lastSeen": "2026-01-09T21:54:43.000Z",
+            "lastSeen": "2026-01-11T19:44:11.000Z",
             "customIcon": "lighting_spot_chandelier",
             "attributes": {
                 "customName": "HWR Panel",
@@ -3156,7 +3156,7 @@
             "deviceType": "lightController",
             "createdAt": "2024-10-29T09:55:27.000Z",
             "isReachable": true,
-            "lastSeen": "2026-01-09T18:29:27.000Z",
+            "lastSeen": "2026-01-11T10:51:06.000Z",
             "customIcon": "products_dimmer_remote_2",
             "attributes": {
                 "customName": "Kitchen Switch",
@@ -3166,7 +3166,7 @@
                 "hardwareVersion": "1",
                 "serialNumber": "08DDEBFFFEE227B9",
                 "productCode": "E2201",
-                "batteryPercentage": 84,
+                "batteryPercentage": 83,
                 "isOn": false,
                 "lightLevel": 1,
                 "permittingJoin": false,
@@ -3203,9 +3203,9 @@
             "deviceType": "speaker",
             "createdAt": "2024-10-06T09:06:12.272Z",
             "isReachable": true,
-            "lastSeen": "2026-01-09T20:33:48.626Z",
+            "lastSeen": "2026-01-10T16:57:20.645Z",
             "attributes": {
-                "customName": "Maurice",
+                "customName": "Moritz",
                 "model": "SYMFONISK Table lamp S20",
                 "manufacturer": "Sonos, Inc.",
                 "firmwareVersion": "86.2-70230",
@@ -3263,12 +3263,12 @@
             "deviceType": "environmentSensor",
             "createdAt": "2026-01-09T10:48:53.000Z",
             "isReachable": true,
-            "lastSeen": "2026-01-09T23:50:15.000Z",
+            "lastSeen": "2026-01-11T22:57:45.000Z",
             "customIcon": "products_environment_sensor",
             "attributes": {
                 "identifyPeriod": 0,
                 "identifyStarted": "2026-01-08T16:30:27.000Z",
-                "currentTemperature": 19.959999084472656,
+                "currentTemperature": 22.219999313354492,
                 "customName": "TIMMERFLOTTE temp/hmd sen",
                 "firmwareVersion": "1.0.21",
                 "hardwareVersion": "P2.1",
@@ -3313,11 +3313,11 @@
             "deviceType": "environmentSensor",
             "createdAt": "2026-01-09T10:48:53.000Z",
             "isReachable": true,
-            "lastSeen": "2026-01-09T23:50:15.000Z",
+            "lastSeen": "2026-01-11T22:57:45.000Z",
             "attributes": {
                 "identifyPeriod": 0,
                 "identifyStarted": "2026-01-08T16:30:27.000Z",
-                "currentRH": 56,
+                "currentRH": 46,
                 "customName": "TIMMERFLOTTE temp/hmd sensor",
                 "firmwareVersion": "1.0.21",
                 "hardwareVersion": "P2.1",
@@ -3356,11 +3356,11 @@
             "deviceType": "lightSensor",
             "createdAt": "2026-01-09T12:24:38.000Z",
             "isReachable": true,
-            "lastSeen": "2026-01-09T23:39:50.000Z",
+            "lastSeen": "2026-01-11T22:56:11.000Z",
             "attributes": {
                 "identifyPeriod": 0,
                 "identifyStarted": "2026-01-08T16:30:27.000Z",
-                "illuminance": 0,
+                "illuminance": 12345,
                 "maxIlluminance": 40001,
                 "minIlluminance": 1,
                 "customName": "MYGGSPRAY wrlss mtn sensor",
@@ -3401,7 +3401,7 @@
             "deviceType": "occupancySensor",
             "createdAt": "2026-01-09T12:24:38.000Z",
             "isReachable": true,
-            "lastSeen": "2026-01-09T23:39:50.000Z",
+            "lastSeen": "2026-01-11T22:56:11.000Z",
             "customIcon": "products_matter_wrlss_mtn_sensor",
             "attributes": {
                 "identifyPeriod": 0,
@@ -3454,12 +3454,12 @@
             "deviceType": "openCloseSensor",
             "createdAt": "2026-01-09T12:48:08.000Z",
             "isReachable": true,
-            "lastSeen": "2026-01-09T19:24:22.000Z",
+            "lastSeen": "2026-01-11T12:48:44.000Z",
             "customIcon": "placement_cabinet",
             "attributes": {
                 "identifyPeriod": 0,
                 "identifyStarted": "2026-01-08T16:30:27.000Z",
-                "isOpen": true,
+                "isOpen": false,
                 "customName": "MYGGBETT door/window sens",
                 "firmwareVersion": "1.0.9",
                 "hardwareVersion": "P2.0",
@@ -3503,12 +3503,12 @@
             "deviceType": "light",
             "createdAt": "2026-01-09T14:53:26.000Z",
             "isReachable": true,
-            "lastSeen": "2026-01-09T19:21:20.000Z",
+            "lastSeen": "2026-01-11T15:29:13.000Z",
             "customIcon": "products_led_bulb",
             "attributes": {
                 "identifyPeriod": 0,
                 "identifyStarted": "2026-01-08T16:30:27.000Z",
-                "isOn": true,
+                "isOn": false,
                 "startupOnOff": "startOn",
                 "lightLevel": 53,
                 "startUpCurrentLevel": -1,
@@ -3566,6 +3566,96 @@
         }
     ],
     "users": [
+        {
+            "uid": "ec555340-5f7c-4226-a8ec-5cab6d4ad56d",
+            "name": "Google, Pixel 7 Pro",
+            "audience": "homesmart.local",
+            "email": "",
+            "createdTimestamp": "2024-10-04T17:23:54.000Z",
+            "verifiedUid": "6b370a03-e17e-52f8-b78f-843afb531f2a",
+            "role": "home_member",
+            "remoteUser": 0
+        },
+        {
+            "uid": "6b370a03-e17e-52f8-b78f-843afb531f2a",
+            "name": "Google, Pixel 7 Pro",
+            "audience": "homesmart.global",
+            "email": "bernd.w@ymann.de",
+            "createdTimestamp": "2024-10-05T12:25:16.000Z",
+            "verifiedUid": "",
+            "role": "host",
+            "remoteUser": 0
+        },
+        {
+            "uid": "05780211-9db3-4bbd-8277-6b8df0d45f30",
+            "name": "openHAB",
+            "audience": "homesmart.local",
+            "email": "",
+            "createdTimestamp": "2024-10-26T17:23:35.000Z",
+            "verifiedUid": "",
+            "role": "home_member",
+            "remoteUser": 0
+        },
+        {
+            "uid": "914335ac-1654-467f-8a24-777b077f4ce5",
+            "name": "openHAB",
+            "audience": "homesmart.local",
+            "email": "",
+            "createdTimestamp": "2024-11-07T12:24:09.000Z",
+            "verifiedUid": "",
+            "role": "home_member",
+            "remoteUser": 0
+        },
+        {
+            "uid": "5f52c2b8-b541-45b2-94a7-a60e253236b3",
+            "name": "openHAB",
+            "audience": "homesmart.local",
+            "email": "",
+            "createdTimestamp": "2025-03-07T12:06:31.000Z",
+            "verifiedUid": "",
+            "role": "home_member",
+            "remoteUser": 0
+        },
+        {
+            "uid": "a803fc39-fc15-4151-ac36-c8a47a8db632",
+            "name": "openHAB",
+            "audience": "homesmart.local",
+            "email": "",
+            "createdTimestamp": "2025-04-15T09:41:06.000Z",
+            "verifiedUid": "",
+            "role": "home_member",
+            "remoteUser": 0
+        },
+        {
+            "uid": "086cadc0-8b69-4b68-8192-3870e20e9ead",
+            "name": "iPhone",
+            "audience": "homesmart.local",
+            "email": "",
+            "createdTimestamp": "2025-10-24T09:43:31.000Z",
+            "verifiedUid": "",
+            "role": "home_member",
+            "remoteUser": 0
+        },
+        {
+            "uid": "4ffbf972-7a3c-414b-bc97-014a251b7d2c",
+            "name": "openHAB",
+            "audience": "homesmart.local",
+            "email": "",
+            "createdTimestamp": "2025-11-02T11:35:24.000Z",
+            "verifiedUid": "",
+            "role": "home_member",
+            "remoteUser": 0
+        },
+        {
+            "uid": "1aa5c8e9-741c-4513-8a7b-a53e73e91724",
+            "name": "openHAB",
+            "audience": "homesmart.local",
+            "email": "",
+            "createdTimestamp": "2026-01-03T23:11:30.000Z",
+            "verifiedUid": "",
+            "role": "home_member",
+            "remoteUser": 0
+        }
     ],
     "scenes": [
         {
@@ -3632,7 +3722,7 @@
                 {
                     "id": "5c9cbc1d-efdb-4c93-8f5c-b5604cac8540",
                     "type": "app",
-                    "triggeredAt": "2026-01-09T14:37:32.388Z",
+                    "triggeredAt": "2026-01-11T15:38:31.448Z",
                     "disabled": false
                 }
             ],
@@ -3688,8 +3778,8 @@
             ],
             "commands": [],
             "createdAt": "2024-11-06T13:09:28.708Z",
-            "lastCompleted": "2026-01-09T14:37:32.797Z",
-            "lastTriggered": "2026-01-09T14:37:32.797Z",
+            "lastCompleted": "2026-01-11T15:38:31.461Z",
+            "lastTriggered": "2026-01-11T15:38:31.461Z",
             "undoAllowedDuration": 30,
             "lastUndo": "2026-01-04T15:56:50.628Z"
         },
@@ -4096,11 +4186,231 @@
         }
     ],
     "rooms": [
-   ],
+        {
+            "id": "2abdfb7b-d080-4b00-b576-0c6fb73e9b3b",
+            "name": "Lobby HWR",
+            "color": "ikea_pink_no_4",
+            "icon": "rooms_drill"
+        },
+        {
+            "id": "b449bb98-fd76-4d4c-9e84-2ef9fe867822",
+            "name": "Terrace",
+            "color": "ikea_green_no_65",
+            "icon": "rooms_flower"
+        },
+        {
+            "id": "4328471f-03cd-4372-aa1e-e3e9f3be3da4",
+            "name": "Schlafzimmer ",
+            "color": "ikea_beige_no_3",
+            "icon": "rooms_bed"
+        },
+        {
+            "id": "893d50e0-f4bb-46ba-978d-e9280c6e299d",
+            "name": "Loft",
+            "color": "ikea_green_no_65",
+            "icon": "rooms_sofa"
+        },
+        {
+            "id": "921edb07-e344-4c70-a09e-11935c727f58",
+            "name": "Esszimmer",
+            "color": "ikea_yellow_no_31",
+            "icon": "rooms_cutlery"
+        },
+        {
+            "id": "0b84f41e-163c-4411-8b7c-cebb1e41bb9e",
+            "name": "Maurice",
+            "color": "ncs_s_1020_r10b",
+            "icon": "rooms_book_case"
+        },
+        {
+            "id": "b3021c3e-c8ac-4e66-b1c0-fee5f8b69afd",
+            "name": "Bee",
+            "color": "ncs_s_1020_r10b",
+            "icon": "rooms_pot_plant"
+        },
+        {
+            "id": "7bc86420-cf4a-4a58-beff-7dcf462258da",
+            "name": "Badezimmer",
+            "color": "ikea_blue_no_58",
+            "icon": "rooms_bathtub"
+        },
+        {
+            "id": "88f27266-14a8-4d66-8e4f-e10a3318868e",
+            "name": "Küche",
+            "color": "ikea_red_no_39",
+            "icon": "rooms_kitchen"
+        },
+        {
+            "id": "c9e407e5-5bfa-4e73-aaf3-c0258d9ccb5f",
+            "name": "Gäste WC",
+            "color": "ikea_blue_no_58",
+            "icon": "rooms_sink"
+        }
+    ],
     "deviceSets": [
+        {
+            "id": "cff0e225-eb44-452d-bdae-774811f814c8",
+            "name": "Test Set",
+            "icon": "lighting_chandelier"
+        },
+        {
+            "id": "bdd6537d-7ec1-4215-a5e5-149ae681ce44",
+            "name": "Terrace Lights",
+            "icon": "lighting_chandelier"
+        },
+        {
+            "id": "e24f112a-5988-458e-958c-02ad031873e6",
+            "name": "Lavatory Lights",
+            "icon": "lighting_led_strip"
+        }
     ],
     "music": {
+        "playlists": [
+            {
+                "id": "eyJhY2NvdW50VHlwZSI6InNvbm9zIiwiY29udGVudFR5cGUiOiJwbGF5bGlzdCIsImNvbnRlbnQiOnsicGxheWxpc3QiOiIzIn19",
+                "title": "Ritzen für Intellektuelle",
+                "playItems": [
+                    {
+                        "title": "Ritzen für Intellektuelle",
+                        "artist": "",
+                        "album": "Apokalypse & Filterkaffee"
+                    }
+                ]
+            }
+        ],
+        "favorites": [
+            {
+                "id": "eyJhY2NvdW50VHlwZSI6InNvbm9zIiwiY29udGVudFR5cGUiOiJmYXZvcml0ZSIsImNvbnRlbnQiOnsiZmF2b3JpdGUiOiIyIn19",
+                "title": "80s80s Radio",
+                "type": "STREAM",
+                "imageURL": "http://cdn-radiotime-logos.tunein.com/s255597q.png"
+            },
+            {
+                "id": "eyJhY2NvdW50VHlwZSI6InNvbm9zIiwiY29udGVudFR5cGUiOiJmYXZvcml0ZSIsImNvbnRlbnQiOnsiZmF2b3JpdGUiOiIxNyJ9fQ==",
+                "title": "ANTENNE BAYERN 103.0 (Adult Contemporary)",
+                "type": "STREAM"
+            },
+            {
+                "id": "eyJhY2NvdW50VHlwZSI6InNvbm9zIiwiY29udGVudFR5cGUiOiJmYXZvcml0ZSIsImNvbnRlbnQiOnsiZmF2b3JpdGUiOiIxIn19",
+                "title": "Antenne Frankfurt",
+                "type": "STREAM",
+                "imageURL": "http://cdn-radiotime-logos.tunein.com/s202726q.png"
+            },
+            {
+                "id": "eyJhY2NvdW50VHlwZSI6InNvbm9zIiwiY29udGVudFR5cGUiOiJmYXZvcml0ZSIsImNvbnRlbnQiOnsiZmF2b3JpdGUiOiI4In19",
+                "title": "Cocktail Hour",
+                "type": "PROGRAM",
+                "imageURL": "https://sonosradio.imgix.net/placeholders/b41fe048fdceccddf08cb84461ee72a5_09.png?w=200&auto=format,compress"
+            },
+            {
+                "id": "eyJhY2NvdW50VHlwZSI6InNvbm9zIiwiY29udGVudFR5cGUiOiJmYXZvcml0ZSIsImNvbnRlbnQiOnsiZmF2b3JpdGUiOiIxMyJ9fQ==",
+                "title": "Deep House Cat Show - Flowering Dogwood Mix - with Alex B. Groove",
+                "type": "TRACK",
+                "imageURL": "https://thumbnailer.mixcloud.com/unsafe/300x300/extaudio/7/4/5/a/953f-7a99-4673-b34a-abb706028c69"
+            },
+            {
+                "id": "eyJhY2NvdW50VHlwZSI6InNvbm9zIiwiY29udGVudFR5cGUiOiJmYXZvcml0ZSIsImNvbnRlbnQiOnsiZmF2b3JpdGUiOiIxOCJ9fQ==",
+                "title": "Feed",
+                "type": "PLAYLIST",
+                "imageURL": "https://app.mixcloud.com/media/images/sonos/icons/feed_legacy.png"
+            },
+            {
+                "id": "eyJhY2NvdW50VHlwZSI6InNvbm9zIiwiY29udGVudFR5cGUiOiJmYXZvcml0ZSIsImNvbnRlbnQiOnsiZmF2b3JpdGUiOiIyMCJ9fQ==",
+                "title": "Funk - Soul  - Jazz",
+                "type": "PLAYLIST",
+                "imageURL": "https://app.mixcloud.com/media/images/sonos/icons/tag_detail_legacy.png"
+            },
+            {
+                "id": "eyJhY2NvdW50VHlwZSI6InNvbm9zIiwiY29udGVudFR5cGUiOiJmYXZvcml0ZSIsImNvbnRlbnQiOnsiZmF2b3JpdGUiOiI5In19",
+                "title": "German Zeitgeist",
+                "type": "PROGRAM",
+                "imageURL": "https://sonosradio.imgix.net/placeholders/b942fe0202941b29b404901b60c72679_09.png?w=200&auto=format,compress"
+            },
+            {
+                "id": "eyJhY2NvdW50VHlwZSI6InNvbm9zIiwiY29udGVudFR5cGUiOiJmYXZvcml0ZSIsImNvbnRlbnQiOnsiZmF2b3JpdGUiOiIyMiJ9fQ==",
+                "title": "Guido's Lounge Cafe Broadcast 0294 Jazz it Up a Little (20171020)",
+                "type": "TRACK",
+                "imageURL": "https://thumbnailer.mixcloud.com/unsafe/300x300/extaudio/2/3/3/6/438b-3ef6-4859-b8f5-553c1be89719"
+            },
+            {
+                "id": "eyJhY2NvdW50VHlwZSI6InNvbm9zIiwiY29udGVudFR5cGUiOiJmYXZvcml0ZSIsImNvbnRlbnQiOnsiZmF2b3JpdGUiOiI0In19",
+                "title": "Katzenpuff",
+                "type": ""
+            },
+            {
+                "id": "eyJhY2NvdW50VHlwZSI6InNvbm9zIiwiY29udGVudFR5cGUiOiJmYXZvcml0ZSIsImNvbnRlbnQiOnsiZmF2b3JpdGUiOiIxOSJ9fQ==",
+                "title": "LoFi House",
+                "type": "PLAYLIST",
+                "imageURL": "https://app.mixcloud.com/media/images/sonos/icons/tag_detail_legacy.png"
+            },
+            {
+                "id": "eyJhY2NvdW50VHlwZSI6InNvbm9zIiwiY29udGVudFR5cGUiOiJmYXZvcml0ZSIsImNvbnRlbnQiOnsiZmF2b3JpdGUiOiIxMCJ9fQ==",
+                "title": "Neue Elektronische",
+                "type": "PROGRAM",
+                "imageURL": "https://sonosradio.imgix.net/station-images/775f1afe-d621-42c2-99bf-5dcb1d4b9742.png?w=200&auto=format,compress"
+            },
+            {
+                "id": "eyJhY2NvdW50VHlwZSI6InNvbm9zIiwiY29udGVudFR5cGUiOiJmYXZvcml0ZSIsImNvbnRlbnQiOnsiZmF2b3JpdGUiOiI2In19",
+                "title": "planet radio",
+                "type": "STREAM",
+                "imageURL": "https://d1uner0r1fcap8.cloudfront.net/image?w=60&image=https%3A%2F%2Fcdn-profiles.tunein.com%2Fs2726%2Fimages%2Flogog.jpg&partnerId=tunein"
+            },
+            {
+                "id": "eyJhY2NvdW50VHlwZSI6InNvbm9zIiwiY29udGVudFR5cGUiOiJmYXZvcml0ZSIsImNvbnRlbnQiOnsiZmF2b3JpdGUiOiIyMSJ9fQ==",
+                "title": "The Anjunadeep Edition 550 with Marsh (Live at Explorations)",
+                "type": "TRACK",
+                "imageURL": "https://thumbnailer.mixcloud.com/unsafe/300x300/extaudio/6/3/f/1/a771-5656-4d46-9152-684883ae4ca4"
+            },
+            {
+                "id": "eyJhY2NvdW50VHlwZSI6InNvbm9zIiwiY29udGVudFR5cGUiOiJmYXZvcml0ZSIsImNvbnRlbnQiOnsiZmF2b3JpdGUiOiIyNCJ9fQ==",
+                "title": "The Anjunadeep Edition 566 with Because of Art (Live at Explorations)",
+                "type": "TRACK",
+                "imageURL": "https://thumbnailer.mixcloud.com/unsafe/300x300/extaudio/7/4/c/0/9c42-0451-4c94-9fcd-6d230a87bf9f"
+            },
+            {
+                "id": "eyJhY2NvdW50VHlwZSI6InNvbm9zIiwiY29udGVudFR5cGUiOiJmYXZvcml0ZSIsImNvbnRlbnQiOnsiZmF2b3JpdGUiOiIyMyJ9fQ==",
+                "title": "The Deep Jazz House Session (Guido's Lounge Cafe)",
+                "type": "TRACK",
+                "imageURL": "https://thumbnailer.mixcloud.com/unsafe/300x300/extaudio/4/e/4/e/c7fb-f1a5-4c84-8964-7f1ddc6b0063.jpg"
+            }
+        ],
+        "authorized": true
     },
     "adaptiveProfiles": [
-   ]
+        {
+            "id": "f7fd67f5-4c3f-401b-9dea-211fba48a844",
+            "adaptiveSchedule": [
+                {
+                    "startTime": "07:00",
+                    "lightLevel": 25,
+                    "colorTemperature": 3000
+                },
+                {
+                    "startTime": "09:00",
+                    "lightLevel": 75,
+                    "colorTemperature": 3900
+                },
+                {
+                    "startTime": "13:00",
+                    "lightLevel": 100,
+                    "colorTemperature": 4000
+                },
+                {
+                    "startTime": "17:00",
+                    "lightLevel": 70,
+                    "colorTemperature": 4000
+                },
+                {
+                    "startTime": "20:00",
+                    "lightLevel": 20,
+                    "colorTemperature": 3900
+                },
+                {
+                    "startTime": "22:00",
+                    "lightLevel": 1,
+                    "colorTemperature": 3000
+                }
+            ]
+        }
+    ]
 }

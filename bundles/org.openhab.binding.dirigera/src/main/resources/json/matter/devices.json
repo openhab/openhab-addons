@@ -7,7 +7,7 @@
 				"attribute": "batteryPercentage",
 				"channel": "battery-level",
 				"channelType": "system.battery-level",
-				"itemType": "Number",
+				"itemType": "Number:Dimensionless",
 				"inValue": "Integer",
 				"outValue": "QuantityType",
 				"transformation": "format",
@@ -48,20 +48,20 @@
 					"batteryCheckFailed": 10
 				}
 			},
-            {
-                "attribute": "otaProgress",
-                "channel": "ota-progress",
-                "channelType": "ota-progress",
-                "itemType": "Number",
-                "inValue": "Integer",
-                "outValue": "QuantityType",
-                "transformation": "format",
-                "format": "%d %%"
-            },
+			{
+				"attribute": "otaProgress",
+				"channel": "ota-progress",
+				"channelType": "ota-percent",
+				"itemType": "Number:Dimensionless",
+				"inValue": "Integer",
+				"outValue": "QuantityType",
+				"transformation": "format",
+				"format": "%d %%"
+			},
 			{
 				"attribute": "customName",
 				"channel": "custom-name",
-				"channelType": "text",
+				"channelType": "custom-name",
 				"itemType": "String",
 				"inValue": "String",
 				"outValue": "StringType",
@@ -76,7 +76,7 @@
 				"inValue": "String",
 				"outValue": "String",
 				"transformation": "raw",
-                "json": "attribute"
+				"json": "attribute"
 			}
 		],
 		"linkCandidates": [],
@@ -104,8 +104,8 @@
 				"attribute": "currentTemperature",
 				"channel": "temperature",
 				"channelType": "system.indoor-temperature",
-				"itemType": "Number",
-				"inValue": "Integer",
+				"itemType": "Number:Temperature",
+				"inValue": "Float",
 				"outValue": "QuantityType",
 				"transformation": "format",
 				"format": "%f °C"
@@ -114,7 +114,7 @@
 				"attribute": "currentRH",
 				"channel": "humidity",
 				"channelType": "system.atmospheric-humidity",
-				"itemType": "Number",
+				"itemType": "Number:Dimensionless",
 				"inValue": "Integer",
 				"outValue": "QuantityType",
 				"transformation": "format",
@@ -123,6 +123,78 @@
 		],
 		"controlProperties": [],
 		"linkCandidates": [],
+		"thingProperties": []
+	},
+	{
+		"thingType": "openCloseSensor",
+		"identification": {
+			"type": "sensor",
+			"deviceType": "openCloseSensor"
+		},
+		"statusProperties": [
+			{
+				"attribute": "isOpen",
+				"channel": "contact",
+				"channelType": "contact",
+				"itemType": "Contact",
+				"inValue": "Boolean",
+				"outValue": "OpenClosedType",
+				"transformation": "raw"
+			}
+		],
+		"controlProperties": [],
+		"linkCandidates": [],
+		"thingProperties": []
+	},
+	{
+		"thingType": "lightSensor",
+		"identification": {
+			"type": "unknown",
+			"deviceType": "lightSensor"
+		},
+		"statusProperties": [
+			{
+				"attribute": "illuminance",
+				"channel": "illuminance",
+				"channelType": "illuminance",
+				"itemType": "Number:Illuminance",
+				"inValue": "Integer",
+				"outValue": "QuantityType",
+				"correction": 0.01,
+				"transformation": "format",
+				"format": "%f lx"
+			}
+		],
+		"controlProperties": [],
+		"linkCandidates": [],
+		"thingProperties": [
+			"minIlluminance",
+			"maxIlluminance"
+		]
+	},
+	{
+		"thingType": "occupancySensor",
+		"identification": {
+			"type": "sensor",
+			"deviceType": "occupancySensor"
+		},
+		"statusProperties": [
+			{
+				"attribute": "isDetected",
+				"channel": "motion",
+				"channelType": "system.motion",
+				"itemType": "Switch",
+				"inValue": "Boolean",
+				"outValue": "OnOffType",
+				"transformation": "mapping",
+				"mapping": {
+					"true": "ON",
+					"false": "OFF"
+				}
+			}
+		],
+		"controlProperties": [],
+		"linkCandidates": ["light","outlet"],
 		"thingProperties": []
 	}
 ]
