@@ -118,6 +118,8 @@
 			<property name="thingTypeVersion">2</property>
 		</properties>
 
+		<representation-property>publicID</representation-property>
+
 		<config-description>
 			<parameter name="publicID" type="text" required="true">
 				<label>Vehicle Public ID</label>
