@@ -303,4 +303,11 @@ public class Accessory {
     public String toString() {
         return getAccessoryType().toString();
     }
+
+    /**
+     * Returns true if any of the services is a camera RTP stream management service.
+     */
+    public boolean hasCameraService() {
+        return services.stream().anyMatch(s -> s.getServiceType() == ServiceType.CAMERA_RTP_STREAM_MANAGEMENT);
+    }
 }

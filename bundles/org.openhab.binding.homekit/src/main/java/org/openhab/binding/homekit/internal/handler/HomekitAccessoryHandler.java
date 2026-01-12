@@ -55,7 +55,6 @@ import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.types.UpDownType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.semantics.SemanticTag;
-import org.openhab.core.semantics.model.DefaultSemanticTags.Equipment;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -101,6 +100,10 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
     private static final Set<CharacteristicType> LIGHT_MODEL_RELEVANT_TYPES = Set.of(CharacteristicType.HUE,
             CharacteristicType.SATURATION, CharacteristicType.BRIGHTNESS, CharacteristicType.COLOR_TEMPERATURE,
             CharacteristicType.ON);
+
+    // Accessory Categories relevant for snapshot channel
+    private static final Set<AccessoryCategory> CAMERA_ACCESSORY_CATEGORIES = Set.of(AccessoryCategory.IP_CAMERA,
+            AccessoryCategory.VIDEO_DOORBELL);
 
     private final Logger logger = LoggerFactory.getLogger(HomekitAccessoryHandler.class);
     private final ChannelTypeRegistry channelTypeRegistry;
@@ -411,17 +414,27 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
         }
 
         SemanticTag newEquipmentTag = accessory.getSemanticEquipmentTag();
-        if (newEquipmentTag == null && oldProperties.get(PROPERTY_ACCESSORY_CATEGORY) instanceof String catProperty
+        boolean createSnapshotChannel = CAMERA_ACCESSORY_CATEGORIES.contains(accessory.getAccessoryType());
+        if ((newEquipmentTag == null || !createSnapshotChannel)
+                && oldProperties.get(PROPERTY_ACCESSORY_CATEGORY) instanceof String catProperty
                 && AccessoryCategory.from(catProperty) instanceof AccessoryCategory category
                 && AccessoryCategory.OTHER != category) {
+            createSnapshotChannel = CAMERA_ACCESSORY_CATEGORIES.contains(category);
             newEquipmentTag = accessory.getSemanticEquipmentTag(category);
         }
         if (newEquipmentTag == null) {
             newEquipmentTag = accessory.getSemanticEquipmentTagFromServices();
         }
+        if (!createSnapshotChannel) {
+            createSnapshotChannel = accessory.hasCameraService();
+        }
 
-        // add camera snapshot channel if applicable
-        if (Equipment.CAMERA == newEquipmentTag) {
+        String oldEquipmentTag = thing.getSemanticEquipmentTag();
+        if (oldEquipmentTag != null && !oldEquipmentTag.isEmpty()) {
+            newEquipmentTag = null;
+        }
+
+        if (createSnapshotChannel) {
             ChannelBuilder builder = ChannelBuilder
                     .create(new ChannelUID(thing.getUID(), CHANNEL_SNAPSHOT), CoreItemFactory.IMAGE)
                     .withType(CHANNEL_TYPE_SNAPSHOT);
@@ -431,11 +444,6 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
                     "{}     Channel acceptedItemType:{}, defaultTags:{}, description:{}, kind:{}, label:{}, properties:{}, uid:{}",
                     thing.getUID(), channel.getAcceptedItemType(), channel.getDefaultTags(), channel.getDescription(),
                     channel.getKind(), channel.getLabel(), channel.getProperties(), channel.getUID());
-        }
-
-        String oldEquipmentTag = thing.getSemanticEquipmentTag();
-        if (oldEquipmentTag != null && !oldEquipmentTag.isEmpty()) {
-            newEquipmentTag = null;
         }
 
         if (newLabel != null || newChannels != null || newProperties != null || newEquipmentTag != null) {
