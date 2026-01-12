@@ -71,7 +71,7 @@ public class IpTransport implements AutoCloseable {
     /**
      * SpotBugs incorrectly assumes that {@link SynchronousQueue#poll(long, TimeUnit)} never returns {@code null}.
      * According to the Javadoc, the method returns {@code null} if the specified waiting time elapses before an
-     * element becomes available.
+     * element becomes available. So this wrapper method correctly annotates the return value as nullable.
      */
     private static byte @Nullable [][] synchronousQueuePollNullable(SynchronousQueue<byte[][]> queue, long timeout,
             TimeUnit unit) throws InterruptedException {
@@ -222,7 +222,7 @@ public class IpTransport implements AutoCloseable {
                 });
                 // wait for both write and read to complete
                 writeFuture.get(TIMEOUT_MILLI_SECONDS, TimeUnit.MILLISECONDS);
-                response = sillySynchronousQueuePoll(responseQueue, TIMEOUT_MILLI_SECONDS, TimeUnit.MILLISECONDS);
+                response = synchronousQueuePollNullable(responseQueue, TIMEOUT_MILLI_SECONDS, TimeUnit.MILLISECONDS);
                 if (response == null) {
                     throw new TimeoutException("Timed out waiting for HTTP response");
                 }
