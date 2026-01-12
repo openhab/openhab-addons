@@ -36,14 +36,14 @@ import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 
 /**
- * {@link TestContactSensor} Tests device handler creation, initializing and refresh of channels
+ * {@link TestOpenCloseSensor} Tests device handler creation, initializing and refresh of channels
  *
  * @author Bernd Weymann - Initial Contribution
  */
 @NonNullByDefault
-class TestContactSensor {
+class TestOpenCloseSensor {
     private static String deviceId = "efc4ca33-9e96-443c-9930-97a1588854ad_1";
-    private static ThingTypeUID thingTypeUID = THING_TYPE_MATTER_SENSOR;
+    private static ThingTypeUID thingTypeUID = THING_TYPE_MATTER_OPEN_CLOSE_SENSOR;
 
     private static MatterSensor handler = mock(MatterSensor.class);
     private static CallbackMock callback = mock(CallbackMock.class);
@@ -93,13 +93,13 @@ class TestContactSensor {
     }
 
     void checkEnvironmentSensorStates(CallbackMock callback) {
-        State batteryLevel = callback.getState("dirigera:sensor:test-device:battery-level");
+        State batteryLevel = callback.getState("dirigera:open-close-sensor:test-device:battery-level");
         assertNotNull(batteryLevel);
         assertTrue(batteryLevel instanceof QuantityType);
         assertTrue(((QuantityType<?>) batteryLevel).getUnit().equals(Units.PERCENT));
         assertEquals(52, ((QuantityType<?>) batteryLevel).intValue(), "Battery Level");
 
-        State isOpen = callback.getState("dirigera:sensor:test-device:contact");
+        State isOpen = callback.getState("dirigera:open-close-sensor:test-device:contact");
         assertNotNull(isOpen);
         assertTrue(isOpen instanceof OpenClosedType);
         assertEquals(OpenClosedType.CLOSED, (isOpen), "Open/Closed State");

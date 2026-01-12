@@ -45,7 +45,7 @@ import org.openhab.core.types.State;
 @NonNullByDefault
 class TestEnvironmentSensor {
     private static String deviceId = "94f3d9d7-95ee-496d-9b83-2d5de9a7c2c1_1";
-    private static ThingTypeUID thingTypeUID = THING_TYPE_MATTER_SENSOR;
+    private static ThingTypeUID thingTypeUID = THING_TYPE_MATTER_ENVIRONMENT_SENSOR;
 
     private static MatterSensor handler = mock(MatterSensor.class);
     private static CallbackMock callback = mock(CallbackMock.class);
@@ -96,16 +96,6 @@ class TestEnvironmentSensor {
         String patch = DirigeraAPISimu.patchMap.get(deviceId);
         assertNotNull(patch);
         assertEquals("{\"attributes\":{\"customName\":\"" + command + "\"}}", patch, "Fan Mode on");
-
-        // handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_PURIFIER_FAN_SPEED), new PercentType(23));
-        // patch = DirigeraAPISimu.patchMap.get(deviceId);
-        // assertNotNull(patch);
-        // assertEquals("{\"attributes\":{\"motorState\":12}}", patch, "Fan Speed");
-        //
-        // handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_PURIFIER_FAN_SPEED), new PercentType(100));
-        // patch = DirigeraAPISimu.patchMap.get(deviceId);
-        // assertNotNull(patch);
-        // assertEquals("{\"attributes\":{\"motorState\":50}}", patch, "Fan Speed");
     }
 
     void testDump() {
@@ -114,64 +104,16 @@ class TestEnvironmentSensor {
     }
 
     void checkEnvironmentSensorStates(CallbackMock callback) {
-        State batteryLevel = callback.getState("dirigera:sensor:test-device:battery-level");
+        State batteryLevel = callback.getState("dirigera:environment-sensor:test-device:battery-level");
         assertNotNull(batteryLevel);
         assertTrue(batteryLevel instanceof QuantityType);
         assertTrue(((QuantityType<?>) batteryLevel).getUnit().equals(Units.PERCENT));
         assertEquals(95, ((QuantityType<?>) batteryLevel).intValue(), "Battery Level");
 
-        State temperature = callback.getState("dirigera:sensor:test-device:temperature");
+        State temperature = callback.getState("dirigera:environment-sensor:test-device:temperature");
         assertNotNull(temperature);
         assertTrue(temperature instanceof QuantityType);
         assertTrue(((QuantityType<?>) temperature).getUnit().equals(SIUnits.CELSIUS));
         assertEquals(22.22, ((QuantityType<?>) temperature).doubleValue(), 0.001, "Temperature");
-
-        // State otaState = callback.getState("dirigera:air-purifier:test-device:ota-state");
-        // assertNotNull(otaState);
-        // assertTrue(otaState instanceof DecimalType);
-        // assertEquals(0, ((DecimalType) otaState).intValue(), "OTA State");
-        // State otaProgess = callback.getState("dirigera:air-purifier:test-device:ota-progress");
-        // assertNotNull(otaProgess);
-        // assertTrue(otaProgess instanceof QuantityType);
-        // assertTrue(((QuantityType<?>) otaProgess).getUnit().equals(Units.PERCENT));
-        // assertEquals(0, ((QuantityType<?>) otaProgess).intValue(), "OTA Progress");
-        //
-        // State disableLightState = callback.getState("dirigera:air-purifier:test-device:disable-status-light");
-        // assertNotNull(disableLightState);
-        // assertTrue(disableLightState instanceof OnOffType);
-        // assertTrue(OnOffType.ON.equals((disableLightState)), "Status Light Disabled");
-        // State childlockState = callback.getState("dirigera:air-purifier:test-device:child-lock");
-        // assertNotNull(childlockState);
-        // assertTrue(childlockState instanceof OnOffType);
-        // assertTrue(OnOffType.OFF.equals((childlockState)), "Child Lock enabled");
-        //
-        // State filterAlarmState = callback.getState("dirigera:air-purifier:test-device:filter-alarm");
-        // assertNotNull(filterAlarmState);
-        // assertTrue(filterAlarmState instanceof OnOffType);
-        // assertTrue(OnOffType.OFF.equals((filterAlarmState)), "Filter Alarm");
-        // State filterElapsedState = callback.getState("dirigera:air-purifier:test-device:filter-elapsed");
-        // assertNotNull(filterElapsedState);
-        // assertTrue(filterElapsedState instanceof QuantityType);
-        // assertEquals(Units.MINUTE, ((QuantityType<?>) filterElapsedState).getUnit());
-        // assertEquals(193540, ((QuantityType<?>) filterElapsedState).intValue());
-        // State filterLifetimedState = callback.getState("dirigera:air-purifier:test-device:filter-lifetime");
-        // assertNotNull(filterLifetimedState);
-        // assertTrue(filterLifetimedState instanceof QuantityType);
-        // assertEquals(Units.MINUTE, ((QuantityType<?>) filterLifetimedState).getUnit());
-        // assertEquals(259200, ((QuantityType<?>) filterLifetimedState).intValue());
-        //
-        // State motorRuntimeState = callback.getState("dirigera:air-purifier:test-device:fan-runtime");
-        // assertNotNull(motorRuntimeState);
-        // assertTrue(motorRuntimeState instanceof QuantityType);
-        // assertEquals(Units.MINUTE, ((QuantityType<?>) motorRuntimeState).getUnit());
-        // assertEquals(472283, ((QuantityType<?>) motorRuntimeState).intValue());
-        // State fanSpeedState = callback.getState("dirigera:air-purifier:test-device:fan-speed");
-        // assertNotNull(fanSpeedState);
-        // assertTrue(fanSpeedState instanceof PercentType);
-        // assertEquals(20, ((PercentType) fanSpeedState).intValue());
-        // State fanModeState = callback.getState("dirigera:air-purifier:test-device:fan-mode");
-        // assertNotNull(fanModeState);
-        // assertTrue(fanModeState instanceof DecimalType);
-        // assertEquals(0, ((DecimalType) fanModeState).intValue());
     }
 }

@@ -386,21 +386,76 @@ public class DirigeraModel implements Model {
         }
     }
 
+    /**
+     * identify Matter device based on deviceType and their relations
+     *
+     * @param id to query
+     * @param data belonging to the deviceId
+     * @return Matter ThingTypeUID or THING_TYPE_UNKNOWN
+     */
     private ThingTypeUID identifyMatterDevice(String id, JSONObject data) {
         // attribute qrCode is used to identify new Matter devices
         if (hasAttribute(id, ATTRIBUTE_QRCODE)) {
-            String type = data.getString(PROPERTY_TYPE);
             String deviceType = data.getString(PROPERTY_DEVICE_TYPE);
-            return switch (type) {
-                case "sensor" -> THING_TYPE_MATTER_SENSOR;
-                case "controller" -> THING_TYPE_MATTER_CONTROLLER;
-                case "unknown" -> switch (deviceType) {
-                    case "lightSensor" -> THING_TYPE_MATTER_SENSOR;
-                    default -> THING_TYPE_MATTER_UNKNOWN;
-                };
+            return switch (deviceType) {
+                case "occuoancySensor" -> {
+                    String relationId = getRelationId(id);
+                    Map<String, String> relationMap = getRelations(relationId);
+                    if (relationMap.values().contains("lightSensor")) {
+                        yield THING_TYPE_MATTER_OCCUPANCY_LIGHT_SENSOR;
+                    } else {
+                        yield THING_TYPE_MATTER_OCCUPANCY_SENSOR;
+                    }
+                }
+                case "lightSensor" -> {
+                    String relationId = getRelationId(id);
+                    Map<String, String> relationMap = getRelations(relationId);
+                    if (relationMap.values().contains("occupancySensor")) {
+                        yield THING_TYPE_MATTER_OCCUPANCY_LIGHT_SENSOR;
+                    } else {
+                        yield THING_TYPE_MATTER_LIGHT_SENSOR;
+                    }
+                }
+                case "environmentSensor" -> THING_TYPE_MATTER_ENVIRONMENT_SENSOR;
+                case "openCloseSensor" -> THING_TYPE_MATTER_OPEN_CLOSE_SENSOR;
+                case "waterSensor" -> THING_TYPE_MATTER_WATER_LEAK_SENSOR;
+                case "genericSwitch" -> {
+                    String relationId = getRelationId(id);
+                    int relations = getRelations(relationId).size();
+                    var detectedType = switch (relations) {
+                        case 2 -> THING_TYPE_MATTER_2_BUTTON_CONTROLLER;
+                        case 3 -> THING_TYPE_MATTER_3_BUTTON_CONTROLLER;
+                        default -> THING_TYPE_MATTER_UNKNOWN;
+                    };
+                    yield detectedType;
+                }
+                case "light" -> {
+                    if (data.has(CAPABILITIES)) {
+                        JSONObject capabilities = data.getJSONObject(CAPABILITIES);
+                        List<String> capabilityList = new ArrayList<>();
+                        if (capabilities.has(PROPERTY_CAN_RECEIVE)) {
+                            JSONArray receiveProperties = capabilities.getJSONArray(PROPERTY_CAN_RECEIVE);
+                            receiveProperties.forEach(capability -> {
+                                capabilityList.add(capability.toString());
+                            });
+                        }
+                        if (capabilityList.contains("colorHue")) {
+                            yield THING_TYPE_MATTER_COLOR_LIGHT;
+                        } else if (capabilityList.contains("colorTemperature")) {
+                            yield THING_TYPE_MATTER_TEMPERATURE_LIGHT;
+                        } else {
+                            logger.warn("DIRIGERA MODEL cannot identify light {}", data);
+                        }
+                    } else {
+                        logger.warn("DIRIGERA MODEL cannot identify light {}", data);
+                    }
+                    yield THING_TYPE_MATTER_UNKNOWN;
+                }
                 default -> THING_TYPE_MATTER_UNKNOWN;
             };
-        } else {
+        } else
+
+        {
             // no qrCode attribute found so no new matter device
             return THING_TYPE_UNKNOWN;
         }
@@ -443,8 +498,6 @@ public class DirigeraModel implements Model {
                     break;
                 case DEVICE_TYPE_MOTION_SENSOR:
                     return THING_TYPE_MOTION_SENSOR;
-                case DEVICE_TYPE_LIGHT_SENSOR:
-                    return THING_TYPE_LIGHT_SENSOR;
                 case DEVICE_TYPE_CONTACT_SENSOR:
                     return THING_TYPE_CONTACT_SENSOR;
                 case DEVICE_TYPE_OUTLET:

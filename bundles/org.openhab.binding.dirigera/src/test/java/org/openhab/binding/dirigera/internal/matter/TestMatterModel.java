@@ -13,7 +13,7 @@
 package org.openhab.binding.dirigera.internal.matter;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.openhab.binding.dirigera.internal.Constants.THING_TYPE_MATTER_SENSOR;
+import static org.openhab.binding.dirigera.internal.Constants.THING_TYPE_MATTER_ENVIRONMENT_SENSOR;
 
 import java.util.List;
 
@@ -27,7 +27,6 @@ import org.openhab.binding.dirigera.internal.ResourceReader;
 import org.openhab.binding.dirigera.internal.handler.DirigeraBridgeProvider;
 import org.openhab.binding.dirigera.internal.handler.matter.BaseMatterConfiguration;
 import org.openhab.binding.dirigera.internal.interfaces.Gateway;
-import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ThingTypeUID;
 
@@ -55,7 +54,7 @@ class TestMatterModel {
         // TIMMERFLOTTE environment sensor
         String timmerflotteId = "94f3d9d7-95ee-496d-9b83-2d5de9a7c2c1_1";
         ThingTypeUID environmentSensorId = gateway.model().identifyDeviceFromModel(timmerflotteId);
-        assertEquals(THING_TYPE_MATTER_SENSOR, environmentSensorId, "TIMMERFLOTTE TTUID");
+        assertEquals(THING_TYPE_MATTER_ENVIRONMENT_SENSOR, environmentSensorId, "TIMMERFLOTTE TTUID");
     }
 
     @Test
@@ -66,11 +65,5 @@ class TestMatterModel {
         JSONObject target = new JSONObject();
         BaseMatterConfiguration.merge(updates.getJSONObject(0), target);
         BaseMatterConfiguration.merge(updates.getJSONObject(1), target);
-    }
-
-    @Test
-    void justTest() {
-        System.out.println(OnOffType.from(true));
-        System.out.println(OnOffType.from(false));
     }
 }

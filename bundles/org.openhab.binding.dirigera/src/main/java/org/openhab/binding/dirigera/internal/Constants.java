@@ -37,7 +37,6 @@ public class Constants {
     public static final ThingTypeUID THING_TYPE_DIMMABLE_LIGHT = new ThingTypeUID(BINDING_ID, "dimmable-light");
     public static final ThingTypeUID THING_TYPE_SWITCH_LIGHT = new ThingTypeUID(BINDING_ID, "switch-light");
     public static final ThingTypeUID THING_TYPE_MOTION_SENSOR = new ThingTypeUID(BINDING_ID, "motion-sensor");
-    public static final ThingTypeUID THING_TYPE_LIGHT_SENSOR = new ThingTypeUID(BINDING_ID, "light-sensor");
     public static final ThingTypeUID THING_TYPE_MOTION_LIGHT_SENSOR = new ThingTypeUID(BINDING_ID,
             "motion-light-sensor");
     public static final ThingTypeUID THING_TYPE_CONTACT_SENSOR = new ThingTypeUID(BINDING_ID, "contact-sensor");
@@ -63,8 +62,24 @@ public class Constants {
     public static final ThingTypeUID THING_TYPE_IGNORE = new ThingTypeUID(BINDING_ID, "ignore");
 
     // Generic Thing Type UIDs which will be configured via devices.json
-    public static final ThingTypeUID THING_TYPE_MATTER_SENSOR = new ThingTypeUID(BINDING_ID, "sensor");
-    public static final ThingTypeUID THING_TYPE_MATTER_CONTROLLER = new ThingTypeUID(BINDING_ID, "controller");
+    public static final ThingTypeUID THING_TYPE_MATTER_OCCUPANCY_SENSOR = new ThingTypeUID(BINDING_ID,
+            "occupancy-sensor");
+    public static final ThingTypeUID THING_TYPE_MATTER_OCCUPANCY_LIGHT_SENSOR = new ThingTypeUID(BINDING_ID,
+            "occupancy-light-sensor");
+    public static final ThingTypeUID THING_TYPE_MATTER_LIGHT_SENSOR = new ThingTypeUID(BINDING_ID, "light-sensor");
+    public static final ThingTypeUID THING_TYPE_MATTER_ENVIRONMENT_SENSOR = new ThingTypeUID(BINDING_ID,
+            "environment-sensor");
+    public static final ThingTypeUID THING_TYPE_MATTER_OPEN_CLOSE_SENSOR = new ThingTypeUID(BINDING_ID,
+            "open-close-sensor");
+    public static final ThingTypeUID THING_TYPE_MATTER_WATER_LEAK_SENSOR = new ThingTypeUID(BINDING_ID,
+            "water-leak-sensor");
+    public static final ThingTypeUID THING_TYPE_MATTER_2_BUTTON_CONTROLLER = new ThingTypeUID(BINDING_ID,
+            "2-button-controller");
+    public static final ThingTypeUID THING_TYPE_MATTER_3_BUTTON_CONTROLLER = new ThingTypeUID(BINDING_ID,
+            "3-button-controller");
+    public static final ThingTypeUID THING_TYPE_MATTER_COLOR_LIGHT = new ThingTypeUID(BINDING_ID, "matter-color-light");
+    public static final ThingTypeUID THING_TYPE_MATTER_TEMPERATURE_LIGHT = new ThingTypeUID(BINDING_ID,
+            "matter-temperature-light");
     public static final ThingTypeUID THING_TYPE_MATTER_UNKNOWN = new ThingTypeUID(BINDING_ID, "matter-unknown");
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_GATEWAY,
@@ -74,11 +89,14 @@ public class Constants {
             THING_TYPE_BLIND_CONTROLLER, THING_TYPE_SOUND_CONTROLLER, THING_TYPE_SINGLE_SHORTCUT_CONTROLLER,
             THING_TYPE_DOUBLE_SHORTCUT_CONTROLLER, THING_TYPE_MOTION_LIGHT_SENSOR, THING_TYPE_AIR_QUALITY,
             THING_TYPE_AIR_PURIFIER, THING_TYPE_WATER_SENSOR, THING_TYPE_BLIND, THING_TYPE_SWITCH_LIGHT,
-            THING_TYPE_MATTER_SENSOR, THING_TYPE_MATTER_CONTROLLER);
+            THING_TYPE_MATTER_OCCUPANCY_SENSOR, THING_TYPE_MATTER_OCCUPANCY_LIGHT_SENSOR,
+            THING_TYPE_MATTER_LIGHT_SENSOR, THING_TYPE_MATTER_ENVIRONMENT_SENSOR, THING_TYPE_MATTER_OPEN_CLOSE_SENSOR,
+            THING_TYPE_MATTER_WATER_LEAK_SENSOR, THING_TYPE_MATTER_2_BUTTON_CONTROLLER,
+            THING_TYPE_MATTER_3_BUTTON_CONTROLLER, THING_TYPE_MATTER_COLOR_LIGHT, THING_TYPE_MATTER_TEMPERATURE_LIGHT);
 
     // Thing types to be ignored for discovery
-    public static final Set<ThingTypeUID> IGNORE_THING_TYPES_UIDS = Set.of(THING_TYPE_LIGHT_SENSOR, THING_TYPE_IGNORE,
-            THING_TYPE_MATTER_UNKNOWN, THING_TYPE_GATEWAY, THING_TYPE_UNKNOWN);
+    public static final Set<ThingTypeUID> IGNORE_THING_TYPES_UIDS = Set.of(THING_TYPE_IGNORE, THING_TYPE_MATTER_UNKNOWN,
+            THING_TYPE_GATEWAY, THING_TYPE_UNKNOWN);
 
     public static final List<String> THING_PROPERTIES = List.of("model", "manufacturer", "firmwareVersion",
             "hardwareVersion", "serialNumber", "productCode");

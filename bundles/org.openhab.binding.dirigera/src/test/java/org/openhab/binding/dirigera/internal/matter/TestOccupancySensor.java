@@ -21,6 +21,7 @@ import java.util.List;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.dirigera.internal.handler.DirigeraBridgeProvider;
+import org.openhab.binding.dirigera.internal.handler.DirigeraHandler;
 import org.openhab.binding.dirigera.internal.handler.matter.MatterSensor;
 import org.openhab.binding.dirigera.internal.mock.CallbackMock;
 import org.openhab.core.library.types.OnOffType;
@@ -43,7 +44,7 @@ import org.openhab.core.types.State;
 @NonNullByDefault
 class TestOccupancySensor {
     private static String deviceId = "d6ee92fc-682a-4af0-9097-c73ed70b59fd_1";
-    private static ThingTypeUID thingTypeUID = THING_TYPE_MATTER_SENSOR;
+    private static ThingTypeUID thingTypeUID = THING_TYPE_MATTER_OCCUPANCY_LIGHT_SENSOR;
 
     private static MatterSensor handler = mock(MatterSensor.class);
     private static CallbackMock callback = mock(CallbackMock.class);
@@ -53,6 +54,8 @@ class TestOccupancySensor {
     void testHandlerCreation() {
         Bridge hubBridge = DirigeraBridgeProvider.prepareSimuBridge("src/test/resources/home/matter-home.json", false,
                 List.of());
+        System.out.println(((DirigeraHandler) hubBridge.getHandler()).model().identifyDeviceFromModel(deviceId));
+
         ThingHandler factoryHandler = DirigeraBridgeProvider.createHandler(thingTypeUID, hubBridge, deviceId);
         assertTrue(factoryHandler instanceof MatterSensor);
         handler = (MatterSensor) factoryHandler;
@@ -94,12 +97,12 @@ class TestOccupancySensor {
     }
 
     void checkEnvironmentSensorStates(CallbackMock callback) {
-        State motionDetected = callback.getState("dirigera:sensor:test-device:motion");
+        State motionDetected = callback.getState("dirigera:occupancy-light-sensor:test-device:motion");
         assertNotNull(motionDetected);
         assertTrue(motionDetected instanceof OnOffType);
         assertEquals(OnOffType.OFF, motionDetected, "Motion Detected");
 
-        State illuminance = callback.getState("dirigera:sensor:test-device:illuminance");
+        State illuminance = callback.getState("dirigera:occupancy-light-sensor:test-device:illuminance");
         assertNotNull(illuminance);
         assertTrue(illuminance instanceof QuantityType);
         assertTrue(((QuantityType<?>) illuminance).getUnit().equals(Units.LUX));

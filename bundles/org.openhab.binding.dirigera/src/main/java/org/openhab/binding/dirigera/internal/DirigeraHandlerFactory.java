@@ -32,6 +32,7 @@ import org.openhab.binding.dirigera.internal.handler.light.ColorLightHandler;
 import org.openhab.binding.dirigera.internal.handler.light.DimmableLightHandler;
 import org.openhab.binding.dirigera.internal.handler.light.SwitchLightHandler;
 import org.openhab.binding.dirigera.internal.handler.light.TemperatureLightHandler;
+import org.openhab.binding.dirigera.internal.handler.matter.MatterController;
 import org.openhab.binding.dirigera.internal.handler.matter.MatterSensor;
 import org.openhab.binding.dirigera.internal.handler.plug.PowerPlugHandler;
 import org.openhab.binding.dirigera.internal.handler.plug.SimplePlugHandler;
@@ -167,11 +168,24 @@ public class DirigeraHandlerFactory extends BaseThingHandlerFactory {
             return new BlindHandler(thing, BLINDS_MAP);
         } else if (THING_TYPE_AIR_PURIFIER.equals(thingTypeUID)) {
             return new AirPurifierHandler(thing, AIR_PURIFIER_MAP);
-        } else if (THING_TYPE_MATTER_SENSOR.equals(thingTypeUID)) {
+        } else if (THING_TYPE_MATTER_OCCUPANCY_SENSOR.equals(thingTypeUID)
+                || THING_TYPE_MATTER_OCCUPANCY_LIGHT_SENSOR.equals(thingTypeUID)
+                || THING_TYPE_MATTER_LIGHT_SENSOR.equals(thingTypeUID)
+                || THING_TYPE_MATTER_ENVIRONMENT_SENSOR.equals(thingTypeUID)
+                || THING_TYPE_MATTER_OPEN_CLOSE_SENSOR.equals(thingTypeUID)
+                || THING_TYPE_MATTER_WATER_LEAK_SENSOR.equals(thingTypeUID)) {
             return new MatterSensor(thing);
+        } else if (THING_TYPE_MATTER_2_BUTTON_CONTROLLER.equals(thingTypeUID)
+                || THING_TYPE_MATTER_3_BUTTON_CONTROLLER.equals(thingTypeUID)) {
+            return new MatterController(thing);
+        } else if (THING_TYPE_MATTER_COLOR_LIGHT.equals(thingTypeUID)) {
+            return new ColorLightHandler(thing, COLOR_LIGHT_MAP, stateProvider);
+        } else if (THING_TYPE_MATTER_TEMPERATURE_LIGHT.equals(thingTypeUID)) {
+            return new TemperatureLightHandler(thing, TEMPERATURE_LIGHT_MAP, stateProvider);
         } else {
             logger.debug("DIRIGERA FACTORY Request for {} doesn't match {}", thingTypeUID, THING_TYPE_GATEWAY);
             return null;
         }
+
     }
 }
