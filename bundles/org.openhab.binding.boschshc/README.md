@@ -261,7 +261,7 @@ Second generation radiator thermostat.
 | display-direction     | Switch               | yes      | Configures the display direction. `OFF` corresponds to `NORMAL` and `ON` corresponds to `REVERSED`.                                                                                                                         |
 | displayed-temperature | Switch               | yes      | Configures whether the measured temperature or the setpoint temperature is displayed. `OFF` corresponds to `MEASURED` and `ON` corresponds to `SETPOINT`.                                                                   |
 
-### Radiator Thermostat II [+M]
+### Radiator Thermostat II [+M]<a id="radiator-thermostat-ii-m"></a>
 
 Second generation radiator thermostat with Matter support.
 
