@@ -163,7 +163,7 @@ public class HomekitMdnsDiscoveryParticipant implements MDNSDiscoveryParticipant
      * @return the HomeKit HTTP HAP Host header name.
      */
     private String getHostName(ServiceInfo service) {
-        String hostName = service.getServer(); //
+        String hostName = service.getServer();
         hostName = hostName.endsWith(".") ? hostName.substring(0, hostName.length() - 1) : hostName;
         int port = service.getPort();
         if (port != 80 && port != 0) {
