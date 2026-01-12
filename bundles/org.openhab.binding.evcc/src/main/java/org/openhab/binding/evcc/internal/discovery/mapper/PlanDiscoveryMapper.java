@@ -14,8 +14,6 @@ package org.openhab.binding.evcc.internal.discovery.mapper;
 
 import static org.openhab.binding.evcc.internal.EvccBindingConstants.*;
 
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -24,13 +22,13 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.evcc.internal.EvccBindingConstants;
+import org.openhab.binding.evcc.internal.discovery.Utils;
 import org.openhab.binding.evcc.internal.handler.EvccBridgeHandler;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.thing.ThingUID;
-import org.openhab.core.util.HexUtils;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -94,14 +92,16 @@ public class PlanDiscoveryMapper implements EvccDiscoveryMapper {
             String localizedLabel = tp.getText(ctx.getBundle(), "discovery.evcc.plan.one-time.label",
                     "One-time charging plan for {0}", lp.getLocale(), title);
             String label = localizedLabel == null ? "One-time charging plan for " + title : localizedLabel;
-            results.add(createPlanDiscoveryResult(label, createIdString(id, 0), 0, id, bridgeHandler));
+            results.add(createPlanDiscoveryResult(label, Utils.createIdString(List.of(id, "Plan", String.valueOf(0))),
+                    0, id, bridgeHandler));
         }
         if (vehicle.has(JSON_KEY_REPEATING_PLANS) && vehicle.get(JSON_KEY_REPEATING_PLANS).isJsonArray()) {
             for (int index = 1; index <= vehicle.get(JSON_KEY_REPEATING_PLANS).getAsJsonArray().size(); index++) {
                 String localizedLabel = tp.getText(ctx.getBundle(), "discovery.evcc.plan.repeating.label",
                         "Repeating plan {0} for {1}", lp.getLocale(), index, title);
                 String label = localizedLabel == null ? "Repeating plan " + index + " for " + title : localizedLabel;
-                results.add(createPlanDiscoveryResult(label, createIdString(id, index), index, id, bridgeHandler));
+                results.add(createPlanDiscoveryResult(label,
+                        Utils.createIdString(List.of(id, "Plan", String.valueOf(index))), index, id, bridgeHandler));
             }
         }
         return results;
@@ -113,12 +113,5 @@ public class PlanDiscoveryMapper implements EvccDiscoveryMapper {
         return DiscoveryResultBuilder.create(uid).withLabel(label).withBridge(bridgeHandler.getThing().getUID())
                 .withProperty(PROPERTY_ID, planID).withProperty(PROPERTY_VEHICLE_ID, vehicleID)
                 .withProperty(PROPERTY_INDEX, String.valueOf(index)).withRepresentationProperty(PROPERTY_ID).build();
-    }
-
-    private String createIdString(String id, int index) throws NoSuchAlgorithmException {
-        MessageDigest md = MessageDigest.getInstance("SHA-256");
-        byte[] digest = md.digest((id + "Plan" + index).getBytes(StandardCharsets.UTF_8));
-        // Use first 10 hex chars of the SHA to generate a stable, compact plan ID
-        return HexUtils.bytesToHex(digest).substring(0, 10);
     }
 }

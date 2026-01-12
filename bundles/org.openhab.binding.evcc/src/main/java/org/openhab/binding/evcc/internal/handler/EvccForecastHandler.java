@@ -165,6 +165,7 @@ public class EvccForecastHandler extends EvccBaseThingHandler {
                     .sorted(Comparator.comparing(TimeSeries.Entry::timestamp)).toList();
             TimeSeries.Entry currentEntry = entries.stream().filter(e -> !e.timestamp().isAfter(now))
                     .reduce((a, b) -> b).orElse(entries.get(0));
+            // Should not be necessary, but to be sure that the currentEntry is not null
             Optional.ofNullable(currentEntry).ifPresent(e -> updateState(channelUID, e.state()));
         }
         sendTimeSeries(channelUID, timeSeries);

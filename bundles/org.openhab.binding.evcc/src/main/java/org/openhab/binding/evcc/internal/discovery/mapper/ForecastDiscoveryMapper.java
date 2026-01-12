@@ -15,8 +15,6 @@ package org.openhab.binding.evcc.internal.discovery.mapper;
 import static org.openhab.binding.evcc.internal.EvccBindingConstants.*;
 import static org.openhab.binding.evcc.internal.handler.Utils.capitalizeFirstLetter;
 
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -29,7 +27,6 @@ import org.openhab.binding.evcc.internal.handler.EvccBridgeHandler;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.thing.ThingUID;
-import org.openhab.core.util.HexUtils;
 import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,7 +59,7 @@ public class ForecastDiscoveryMapper implements EvccDiscoveryMapper {
             String label = "Forecast " + capitalizeFirstLetter(forecastType);
             String id = "";
             try {
-                id = createIdString(label);
+                id = Utils.createIdString(List.of(label));
             } catch (NoSuchAlgorithmException e) {
                 // should not happen
                 logger.warn("Could not get hash algorithm instance");
@@ -73,12 +70,5 @@ public class ForecastDiscoveryMapper implements EvccDiscoveryMapper {
             results.add(result);
         }
         return results;
-    }
-
-    private String createIdString(String label) throws NoSuchAlgorithmException {
-        MessageDigest md = MessageDigest.getInstance("SHA-256");
-        byte[] digest = md.digest((label).getBytes(StandardCharsets.UTF_8));
-        // Use first 10 hex chars of the SHA to generate a stable, compact plan ID
-        return HexUtils.bytesToHex(digest).substring(0, 10);
     }
 }
