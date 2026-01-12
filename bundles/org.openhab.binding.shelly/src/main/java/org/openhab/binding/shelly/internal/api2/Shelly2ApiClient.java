@@ -101,7 +101,9 @@ public class Shelly2ApiClient extends ShellyHttpClient {
     protected @Nullable ShellyThingInterface thing;
     protected @Nullable Shelly2AuthRsp authReq;
 
-    private static final AtomicInteger REQUEST_ID = new AtomicInteger(ThreadLocalRandom.current().nextInt());
+    private static String RPC_SRC_PREFIX = "ohshelly-";
+    private static final int MAX_ID = 10000;
+    private final AtomicInteger REQUEST_ID = new AtomicInteger(ThreadLocalRandom.current().nextInt(1, MAX_ID + 1));
 
     public Shelly2ApiClient(String thingName, ShellyThingInterface thing) {
         super(thingName, thing);
@@ -999,13 +1001,24 @@ public class Shelly2ApiClient extends ShellyHttpClient {
 
     protected Shelly2RpcBaseMessage buildRequest(String method, @Nullable Object params) throws ShellyApiException {
         Shelly2RpcBaseMessage request = new Shelly2RpcBaseMessage();
+        request.id = nextId();
+        String suffix = "";
+        if (thing != null) {
+            String uid = thing.getThing().getUID().getAsString();
+            suffix = substringAfterLast(uid, ":");
+        } else {
+            suffix = config.localIp; // use a unique identifier;
+        }
         request.jsonrpc = SHELLY2_JSONRPC_VERSION;
-        request.id = REQUEST_ID.getAndIncrement();
-        request.src = "ohshelly-" + config.localIp; // use a unique identifier;
+        request.src = RPC_SRC_PREFIX + suffix + "-" + request.id; // use a unique identifier;
         request.method = !method.contains(".") ? SHELLYRPC_METHOD_CLASS_SHELLY + "." + method : method;
         request.params = params;
         request.auth = authReq;
         return request;
+    }
+
+    private int nextId() {
+        return REQUEST_ID.updateAndGet(id -> (id >= MAX_ID) ? 1 : id + 1);
     }
 
     protected String mapValue(Map<String, String> map, String key) {

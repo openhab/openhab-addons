@@ -133,7 +133,7 @@ public class ShellyMDNSDiscoveryParticipant implements MDNSDiscoveryParticipant 
                     bindingConfig.updateFromProperties(serviceConfig.getProperties());
                 }
 
-                if (bindingConfig.localIP == null || bindingConfig.localIP.isBlank()) {
+                if (bindingConfig.localIP.isBlank()) {
                     String primary = networkAddressService.getPrimaryIpv4HostAddress();
                     if (primary != null && !primary.isBlank()) {
                         bindingConfig.localIP = primary;

@@ -38,7 +38,7 @@ public class ShellyCacheList<K, V> {
     private static final long EXPIRY_IN_SEC = 15 * 60; // 15min
     private final long expiryInSec;
 
-    private record CacheEntry<V>(Long created, V value) {
+    private record CacheEntry<V> (Long created, V value) {
     }
 
     // Non-thread-safe HashMap: all access to 'storage' is synchronized on this instance
