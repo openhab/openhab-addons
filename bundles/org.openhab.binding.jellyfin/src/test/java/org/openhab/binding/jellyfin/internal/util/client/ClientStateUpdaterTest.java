@@ -20,10 +20,10 @@ import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.jellyfin.internal.Constants;
-import org.openhab.binding.jellyfin.internal.api.generated.current.model.BaseItemDto;
-import org.openhab.binding.jellyfin.internal.api.generated.current.model.BaseItemKind;
-import org.openhab.binding.jellyfin.internal.api.generated.current.model.PlayerStateInfo;
-import org.openhab.binding.jellyfin.internal.api.generated.current.model.SessionInfoDto;
+import org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.BaseItemDto;
+import org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.BaseItemKind;
+import org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.PlayerStateInfo;
+import org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.SessionInfoDto;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.PlayPauseType;

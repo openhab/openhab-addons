@@ -131,9 +131,14 @@ public class ClientHandler extends BaseThingHandler implements SessionEventListe
         }
 
         // Subscribe to event bus for session updates
+        String localDeviceId = deviceId;
+        if (localDeviceId == null) {
+            logger.warn("Device ID is null, cannot subscribe to event bus");
+            return;
+        }
         SessionEventBus eventBus = serverHandler.getSessionEventBus();
-        eventBus.subscribe(deviceId, this);
-        logger.debug("ClientHandler subscribed to event bus for device ID: {}", deviceId);
+        eventBus.subscribe(localDeviceId, this);
+        logger.debug("ClientHandler subscribed to event bus for device ID: {}", localDeviceId);
 
         // Client is ready - will receive session updates via event bus
         updateStatus(ThingStatus.ONLINE);
@@ -145,12 +150,13 @@ public class ClientHandler extends BaseThingHandler implements SessionEventListe
         logger.debug("Disposing ClientHandler for thing {}", thing.getUID());
 
         // Unsubscribe from event bus
-        if (deviceId != null) {
+        String localDeviceId = deviceId;
+        if (localDeviceId != null) {
             ServerHandler serverHandler = getServerHandler();
             if (serverHandler != null) {
                 SessionEventBus eventBus = serverHandler.getSessionEventBus();
-                eventBus.unsubscribe(deviceId, this);
-                logger.debug("ClientHandler unsubscribed from event bus for device ID: {}", deviceId);
+                eventBus.unsubscribe(localDeviceId, this);
+                logger.debug("ClientHandler unsubscribed from event bus for device ID: {}", localDeviceId);
             }
         }
 
@@ -268,6 +274,10 @@ public class ClientHandler extends BaseThingHandler implements SessionEventListe
                 if (command instanceof org.openhab.core.library.types.StringType) {
                     var uuidS = ((org.openhab.core.library.types.StringType) command).toString();
                     java.util.UUID id = parseItemUUID(uuidS);
+                    if (id == null) {
+                        logger.warn("Cannot run item by id - invalid UUID: {}", uuidS);
+                        return;
+                    }
                     PlayCommand playCommand = PlayCommand.PLAY_NOW;
                     if (Constants.PLAY_NEXT_BY_ID_CHANNEL.equals(channelId)) {
                         playCommand = PlayCommand.PLAY_NEXT;
@@ -461,6 +471,10 @@ public class ClientHandler extends BaseThingHandler implements SessionEventListe
             logger.warn("Cannot run item by id - server handler not available");
             return;
         }
+        if (playCommand == null) {
+            logger.warn("Cannot run item by id - play command is null");
+            return;
+        }
         try {
             serverHandler.playItem(currentSession == null ? null : currentSession.getId(), playCommand, id.toString(),
                     null);
@@ -483,7 +497,7 @@ public class ClientHandler extends BaseThingHandler implements SessionEventListe
         }
     }
 
-    private java.util.UUID parseItemUUID(String id) {
+    private java.util.@Nullable UUID parseItemUUID(String id) {
         if (id == null || id.isBlank()) {
             return null;
         }
@@ -695,21 +709,27 @@ public class ClientHandler extends BaseThingHandler implements SessionEventListe
             sendPlayStateCommand(PlaystateCommand.STOP);
 
             cancelDelayedCommand();
-            delayedCommand = scheduler.schedule(() -> {
-                try {
-                    serverHandler.browseToItem(sessionId, item.getId().toString(), item.getType(), item.getName());
-                    logger.debug("Browsed to item: {}", item.getName());
-                } catch (Exception e) {
-                    logger.warn("Failed to browse to item after delay: {}", e.getMessage(), e);
-                }
-            }, 3, TimeUnit.SECONDS);
+            BaseItemKind itemType = item.getType();
+            if (itemType != null) {
+                delayedCommand = scheduler.schedule(() -> {
+                    try {
+                        serverHandler.browseToItem(sessionId, item.getId().toString(), itemType, item.getName());
+                        logger.debug("Browsed to item: {}", item.getName());
+                    } catch (Exception e) {
+                        logger.warn("Failed to browse to item after delay: {}", e.getMessage(), e);
+                    }
+                }, 3, TimeUnit.SECONDS);
+            }
         } else {
             // Browse immediately if not playing
-            try {
-                serverHandler.browseToItem(sessionId, item.getId().toString(), item.getType(), item.getName());
-                logger.debug("Browsed to item: {}", item.getName());
-            } catch (Exception e) {
-                logger.warn("Failed to browse to item: {}", e.getMessage(), e);
+            BaseItemKind itemType = item.getType();
+            if (itemType != null) {
+                try {
+                    serverHandler.browseToItem(sessionId, item.getId().toString(), itemType, item.getName());
+                    logger.debug("Browsed to item: {}", item.getName());
+                } catch (Exception e) {
+                    logger.warn("Failed to browse to item: {}", e.getMessage(), e);
+                }
             }
         }
     }

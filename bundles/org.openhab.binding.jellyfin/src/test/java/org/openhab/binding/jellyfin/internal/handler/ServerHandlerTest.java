@@ -294,13 +294,13 @@ class ServerHandlerTest {
                 mockTaskManager);
 
         // Create SystemInfo with new values
-        var systemInfo = new org.openhab.binding.jellyfin.internal.api.generated.current.model.SystemInfo();
+        var systemInfo = new org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.SystemInfo();
         systemInfo.setServerName("MyJellyfinServer");
         systemInfo.setLocalAddress("new-hostname");
 
         // Use reflection to call updateConfiguration(SystemInfo)
         var updateConfigMethod = ServerHandler.class.getDeclaredMethod("updateConfiguration",
-                org.openhab.binding.jellyfin.internal.api.generated.current.model.SystemInfo.class);
+                org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.SystemInfo.class);
         updateConfigMethod.setAccessible(true);
 
         // Act
@@ -335,13 +335,13 @@ class ServerHandlerTest {
                 mockTaskManager);
 
         // Create SystemInfo with different server name
-        var systemInfo = new org.openhab.binding.jellyfin.internal.api.generated.current.model.SystemInfo();
+        var systemInfo = new org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.SystemInfo();
         systemInfo.setServerName("ServerAutoName");
         systemInfo.setLocalAddress("new-hostname");
 
         // Use reflection to call updateConfiguration(SystemInfo)
         var updateConfigMethod = ServerHandler.class.getDeclaredMethod("updateConfiguration",
-                org.openhab.binding.jellyfin.internal.api.generated.current.model.SystemInfo.class);
+                org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.SystemInfo.class);
         updateConfigMethod.setAccessible(true);
 
         // Act
@@ -377,13 +377,13 @@ class ServerHandlerTest {
                 mockTaskManager);
 
         // Create SystemInfo with same values (hostname matches, serverName will be preserved since it's set)
-        var systemInfo = new org.openhab.binding.jellyfin.internal.api.generated.current.model.SystemInfo();
+        var systemInfo = new org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.SystemInfo();
         systemInfo.setServerName("DifferentName"); // This won't be applied since config.serverName is not empty
         systemInfo.setLocalAddress("existing-hostname"); // This matches
 
         // Use reflection to call updateConfiguration(SystemInfo)
         var updateConfigMethod = ServerHandler.class.getDeclaredMethod("updateConfiguration",
-                org.openhab.binding.jellyfin.internal.api.generated.current.model.SystemInfo.class);
+                org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.SystemInfo.class);
         updateConfigMethod.setAccessible(true);
 
         // Spy on the thing to verify updateConfiguration is NOT called

@@ -67,7 +67,10 @@ public class ClientScanTask extends AbstractTask {
             var devicesApi = new DevicesApi(client);
             DeviceInfoDtoQueryResult devices = devicesApi.getDevices(userId);
 
-            this.devicesHandler.accept(devices.getItems());
+            var items = devices.getItems();
+            if (items != null) {
+                this.devicesHandler.accept(items);
+            }
         } catch (Exception e) {
             this.exceptionHandler.handle(e);
         }

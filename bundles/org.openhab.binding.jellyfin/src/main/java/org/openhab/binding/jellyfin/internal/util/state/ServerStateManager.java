@@ -15,6 +15,7 @@ package org.openhab.binding.jellyfin.internal.util.state;
 import java.net.URI;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.jellyfin.internal.Configuration;
 import org.openhab.binding.jellyfin.internal.Constants;
 import org.openhab.binding.jellyfin.internal.types.ServerState;
@@ -36,7 +37,7 @@ public class ServerStateManager {
     /**
      * State determination result containing the determined state and any relevant context.
      */
-    public record StateAnalysis(ServerState recommendedState, String reason, URI serverUri) {
+    public record StateAnalysis(ServerState recommendedState, String reason, @Nullable URI serverUri) {
     }
 
     /**

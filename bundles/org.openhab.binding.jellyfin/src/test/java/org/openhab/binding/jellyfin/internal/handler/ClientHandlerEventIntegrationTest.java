@@ -18,10 +18,10 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
-import org.openhab.binding.jellyfin.internal.api.generated.current.model.BaseItemDto;
-import org.openhab.binding.jellyfin.internal.api.generated.current.model.PlayerStateInfo;
-import org.openhab.binding.jellyfin.internal.api.generated.current.model.SessionInfoDto;
 import org.openhab.binding.jellyfin.internal.events.SessionEventBus;
+import org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.BaseItemDto;
+import org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.PlayerStateInfo;
+import org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.SessionInfoDto;
 
 /**
  * Integration tests for ClientHandler event bus integration.

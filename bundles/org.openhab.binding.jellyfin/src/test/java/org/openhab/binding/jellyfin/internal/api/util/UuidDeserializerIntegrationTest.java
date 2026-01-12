@@ -20,7 +20,7 @@ import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.jellyfin.internal.api.ApiClient;
-import org.openhab.binding.jellyfin.internal.api.generated.current.model.UserDto;
+import org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.UserDto;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 

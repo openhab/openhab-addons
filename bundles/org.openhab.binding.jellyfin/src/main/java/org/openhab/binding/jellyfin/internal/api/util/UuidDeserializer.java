@@ -15,27 +15,23 @@ package org.openhab.binding.jellyfin.internal.api.util;
 import java.io.IOException;
 import java.util.UUID;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
-
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 
 /**
  * Custom UUID deserializer for Jellyfin API responses.
- * 
+ *
  * Jellyfin servers return UUIDs as 32-character strings without hyphens,
  * but Jackson's default UUID deserializer expects the standard 36-character
  * format with hyphens. This deserializer handles both formats.
  *
  * @author Patrik Gfeller - Initial contribution
  */
-@NonNullByDefault
 public class UuidDeserializer extends JsonDeserializer<UUID> {
 
     @Override
-    public @Nullable UUID deserialize(JsonParser parser, DeserializationContext context) throws IOException {
+    public UUID deserialize(JsonParser parser, DeserializationContext context) throws IOException {
         String value = parser.getValueAsString();
         if (value == null || value.isEmpty()) {
             return null;

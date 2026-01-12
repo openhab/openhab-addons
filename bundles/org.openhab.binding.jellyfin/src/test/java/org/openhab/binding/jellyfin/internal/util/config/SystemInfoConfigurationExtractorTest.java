@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.jellyfin.internal.Configuration;
-import org.openhab.binding.jellyfin.internal.api.generated.current.model.SystemInfo;
+import org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.SystemInfo;
 
 /**
  * Unit tests for {@link SystemInfoConfigurationExtractor}.

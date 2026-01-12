@@ -53,7 +53,7 @@ class ServerDiscoveryResult {
 
     /**
      * Parse JSON string into a ServerDiscoveryResult object
-     * 
+     *
      * @param jsonData The JSON formatted string to parse
      * @return ServerDiscoveryResult instance with parsed values
      */

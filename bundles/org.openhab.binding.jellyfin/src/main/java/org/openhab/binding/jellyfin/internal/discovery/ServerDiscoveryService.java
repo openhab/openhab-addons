@@ -37,7 +37,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * The {@link ServerDiscoveryService} discover Jellyfin servers in the network.
- * 
+ *
  * @author Miguel Álvarez - Initial contribution
  * @author Patrik Gfeller - Adjustments to work independently of the Android SDK
  *         and respective runtime
@@ -99,7 +99,7 @@ public class ServerDiscoveryService extends AbstractDiscoveryService {
 
     /**
      * Get properties of the Jellyfin server.
-     * 
+     *
      * @param server The discovered server
      * @return Map of server properties
      * @throws ApiException If the API call to get additional server information fails
@@ -135,7 +135,7 @@ public class ServerDiscoveryService extends AbstractDiscoveryService {
      * If the version string is empty or cannot be parsed as a semantic version, this method will assume the version is
      * supported.
      * This non-standard behavior is intended to avoid false negatives due to unexpected version formats.
-     * 
+     *
      * @param version The version string to check
      * @return true if the version is equal to or newer than 10.10.7, or if parsing fails; false otherwise
      */

@@ -198,7 +198,9 @@ public class ServerHandler extends BaseBridgeHandler implements ErrorEventListen
             if (timeoutMs != null) {
                 msg.setTimeoutMs(timeoutMs.longValue());
             }
-            sessionApi.sendMessageCommand(sessionId, msg);
+            if (sessionId != null) {
+                sessionApi.sendMessageCommand(sessionId, msg);
+            }
         } catch (Exception e) {
             logger.warn("Failed to send device message to session {}: {}", sessionId, e.getMessage());
         }
@@ -209,6 +211,10 @@ public class ServerHandler extends BaseBridgeHandler implements ErrorEventListen
      */
     public void sendPlayStateCommand(@Nullable String sessionId, PlaystateCommand command,
             @Nullable Long seekPositionTicks, @Nullable String controllingUserId) {
+        if (sessionId == null) {
+            logger.warn("Cannot send playstate command - session ID is null");
+            return;
+        }
         try {
             SessionApi sessionApi = new SessionApi(apiClient);
             // controllingUserId may be null
@@ -231,6 +237,10 @@ public class ServerHandler extends BaseBridgeHandler implements ErrorEventListen
      * Send a general command to a session (shuffle, repeat, quality, audio track, subtitle, etc.).
      */
     public void sendGeneralCommand(@Nullable String sessionId, Object generalCommand) {
+        if (sessionId == null) {
+            logger.warn("Cannot send general command - session ID is null");
+            return;
+        }
         try {
             org.openhab.binding.jellyfin.internal.thirdparty.api.current.SessionApi sessionApi = new org.openhab.binding.jellyfin.internal.thirdparty.api.current.SessionApi(
                     apiClient);
@@ -253,6 +263,10 @@ public class ServerHandler extends BaseBridgeHandler implements ErrorEventListen
         try {
             SessionApi sessionApi = new SessionApi(apiClient);
             // play API expects item ids as UUID list
+            if (sessionId == null) {
+                logger.warn("Cannot play item - session ID is null");
+                return;
+            }
             java.util.List<java.util.UUID> items = new java.util.ArrayList<>();
             try {
                 items.add(java.util.UUID.fromString(itemId));
@@ -382,6 +396,10 @@ public class ServerHandler extends BaseBridgeHandler implements ErrorEventListen
      */
     public void browseToItem(@Nullable String sessionId, String itemId, BaseItemKind itemType,
             @Nullable String itemName) {
+        if (sessionId == null) {
+            logger.warn("Cannot browse to item - session ID is null");
+            throw new IllegalArgumentException("Session ID cannot be null");
+        }
         try {
             SessionApi sessionApi = new SessionApi(apiClient);
             sessionApi.displayContent(sessionId, itemType, itemId, itemName != null ? itemName : "");
@@ -653,7 +671,10 @@ public class ServerHandler extends BaseBridgeHandler implements ErrorEventListen
 
     private Object handleConnection(SystemInfo systemInfo) {
         try {
-            this.updateThingProperty(Constants.ServerProperties.SERVER_VERSION, systemInfo.getVersion());
+            String version = systemInfo.getVersion();
+            if (version != null) {
+                this.updateThingProperty(Constants.ServerProperties.SERVER_VERSION, version);
+            }
             this.updateConfiguration(systemInfo);
 
             // Update state to connected
@@ -669,7 +690,7 @@ public class ServerHandler extends BaseBridgeHandler implements ErrorEventListen
                     "handleConnection");
             errorEventBus.publishEvent(event);
         }
-        return null;
+        return new Object(); // Return dummy object to satisfy CompletableFuture contract
     }
 
     /**
