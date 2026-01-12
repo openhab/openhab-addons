@@ -16,6 +16,7 @@ import static org.openhab.binding.evcc.internal.EvccBindingConstants.*;
 import static org.openhab.core.util.StringUtils.capitalize;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -29,14 +30,10 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.thing.Bridge;
@@ -116,6 +113,21 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
         isInitialized = true;
         Optional.ofNullable(bridgeHandler).ifPresentOrElse(handler -> handler.register(this),
                 () -> logger.error("No bridgeHandler present when initializing the thing"));
+    }
+
+    protected String getPropertyOrConfigValue(String propertyName) {
+        Object value = thing.getConfiguration().get(propertyName);
+        if (value instanceof String s) {
+            return s;
+        } else if (value instanceof BigDecimal bd) {
+            return bd.toString();
+        } else {
+            return switch (propertyName) {
+                case PROPERTY_INDEX -> thing.getProperties().getOrDefault(propertyName, "0");
+                case PROPERTY_VEHICLE_ID -> thing.getProperties().getOrDefault(propertyName, "");
+                default -> "";
+            };
+        }
     }
 
     @Override
@@ -245,37 +257,37 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
         });
     }
 
-    protected boolean sendCommand(String url) {
-        AtomicBoolean successful = new AtomicBoolean(false);
+    protected void performApiRequest(String url, String method, JsonElement payload) {
         Optional.ofNullable(bridgeHandler).ifPresent(handler -> {
-            HttpClient httpClient = handler.getHttpClient();
-            try {
-                ContentResponse response = httpClient.newRequest(url).timeout(5, TimeUnit.SECONDS)
-                        .method(HttpMethod.POST).header(HttpHeader.ACCEPT, "application/json").send();
-
-                if (response.getStatus() == 200) {
-                    logger.debug("Sending command was successful");
-                    successful.set(true);
-                } else {
-                    @Nullable
-                    JsonObject responseJson = gson.fromJson(response.getContentAsString(), JsonObject.class);
-                    Optional.ofNullable(responseJson).ifPresent(json -> {
-                        if (json.has("error")) {
-                            logger.debug("Sending command was unsuccessful, got this error:\n {}",
-                                    json.get("error").getAsString());
-                            updateStatus(getThing().getStatus(), ThingStatusDetail.COMMUNICATION_ERROR,
-                                    json.get("error").getAsString());
-                        } else {
-                            updateStatus(getThing().getStatus(), ThingStatusDetail.COMMUNICATION_ERROR);
-                            logger.warn("evcc API error: HTTP {}", response.getStatus());
-                        }
-                    });
-                }
-            } catch (Exception e) {
-                logger.warn("evcc bridge couldn't call the API", e);
-            }
+            HttpMethod httpMethod = HttpMethod.valueOf(method);
+            handler.enqueueRequest(url, httpMethod, payload, this::checkResponse, error -> {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            });
         });
-        return successful.get();
+    }
+
+    private void checkResponse(ContentResponse response) {
+        if (response.getStatus() == 200) {
+            logger.debug("Sending command was successful");
+        } else {
+            try {
+                @Nullable
+                JsonObject responseJson = gson.fromJson(response.getContentAsString(), JsonObject.class);
+                Optional.ofNullable(responseJson).ifPresent(json -> {
+                    if (json.has("error")) {
+                        logger.debug("Sending command was unsuccessful, got this error:\n {}",
+                                json.get("error").getAsString());
+                        updateStatus(getThing().getStatus(), ThingStatusDetail.COMMUNICATION_ERROR,
+                                json.get("error").getAsString());
+                    } else {
+                        updateStatus(getThing().getStatus(), ThingStatusDetail.COMMUNICATION_ERROR);
+                        logger.warn("evcc API error: HTTP {}", response.getStatus());
+                    }
+                });
+            } catch (Exception e) {
+                logger.warn("evcc bridge couldn't parse the API error response", e);
+            }
+        }
     }
 
     private ChannelUID channelUID(String id) {

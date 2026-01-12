@@ -136,8 +136,9 @@ public class ViessmannGatewayHandler extends BaseBridgeHandler implements Bridge
     public void dispose() {
         disposed = true;
 
-        if (initJob != null) {
-            initJob.cancel(true);
+        ScheduledFuture<?> currentInitJob = initJob;
+        if (currentInitJob != null) {
+            currentInitJob.cancel(true);
             initJob = null;
         }
 
@@ -164,6 +165,8 @@ public class ViessmannGatewayHandler extends BaseBridgeHandler implements Bridge
 
         this.gatewaySerial = config.gatewaySerial;
         this.installationId = config.installationId;
+
+        disposed = false;
 
         migrateChannelIds();
 

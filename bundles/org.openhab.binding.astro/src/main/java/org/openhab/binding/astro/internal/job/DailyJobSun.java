@@ -126,11 +126,11 @@ public final class DailyJobSun extends AbstractJob {
 
             // schedule republish jobs
             if (sun.getZodiac().getEnd() instanceof Instant when) {
-                schedulePublishPlanet(handler, when);
+                schedulePublishPlanet(handler, when, zone.toZoneId());
             }
 
             if (sun.getSeason() instanceof Season season) {
-                schedulePublishPlanet(handler, season.getNextSeason());
+                schedulePublishPlanet(handler, season.getNextSeason(), zone.toZoneId());
             }
 
             // schedule phase jobs

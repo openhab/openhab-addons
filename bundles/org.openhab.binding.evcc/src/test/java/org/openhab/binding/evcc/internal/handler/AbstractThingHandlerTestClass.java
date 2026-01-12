@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Locale;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -28,11 +29,15 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.openhab.core.config.core.Configuration;
+import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.type.ChannelTypeRegistry;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -73,7 +78,6 @@ public abstract class AbstractThingHandlerTestClass<T extends EvccBaseThingHandl
             String json = new String(is.readAllBytes(), StandardCharsets.UTF_8);
             exampleResponse = JsonParser.parseString(json).getAsJsonObject();
             verifyObject = exampleResponse.deepCopy();
-
         } catch (IOException e) {
             fail("Failed to read example response file", e);
         }
@@ -106,6 +110,14 @@ public abstract class AbstractThingHandlerTestClass<T extends EvccBaseThingHandl
             EvccBridgeHandler bridgeHandler = mock(EvccBridgeHandler.class);
             handler.bridgeHandler = bridgeHandler;
             when(bridgeHandler.getCachedEvccState()).thenReturn(new JsonObject());
+            LocaleProvider lp = mock(LocaleProvider.class);
+            TranslationProvider tp = mock(TranslationProvider.class);
+            Bundle bundle = mock(Bundle.class);
+            BundleContext ctx = mock(BundleContext.class);
+            when(lp.getLocale()).thenReturn(Locale.ENGLISH);
+            when(bridgeHandler.getLocaleProvider()).thenReturn(lp);
+            when(bridgeHandler.getI18nProvider()).thenReturn(tp);
+            when(bundle.getBundleContext()).thenReturn(ctx);
 
             handler.initialize();
             assertEquals(ThingStatus.OFFLINE, lastThingStatus);
