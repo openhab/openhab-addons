@@ -14,11 +14,6 @@ package org.openhab.binding.dirigera.internal.model;
 
 import static org.openhab.binding.dirigera.internal.Constants.*;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -26,7 +21,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Scanner;
 import java.util.TreeMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -40,7 +34,6 @@ import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
-import org.osgi.framework.Bundle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,7 +48,6 @@ public class DirigeraModel implements Model {
     private final Logger logger = LoggerFactory.getLogger(DirigeraModel.class);
 
     private Map<String, DiscoveryResult> resultMap = new HashMap<>();
-    private Map<String, String> templates = new HashMap<>();
     private List<String> devices = new ArrayList<>();
     private JSONObject model = new JSONObject();
     private Gateway gateway;
@@ -400,10 +392,10 @@ public class DirigeraModel implements Model {
             String type = data.getString(PROPERTY_TYPE);
             String deviceType = data.getString(PROPERTY_DEVICE_TYPE);
             return switch (type) {
-                case "sensor" -> THING_TYPE_SENSOR;
-                case "controller" -> THING_TYPE_CONTROLLER;
+                case "sensor" -> THING_TYPE_MATTER_SENSOR;
+                case "controller" -> THING_TYPE_MATTER_CONTROLLER;
                 case "unknown" -> switch (deviceType) {
-                    case "lightSensor" -> THING_TYPE_SENSOR;
+                    case "lightSensor" -> THING_TYPE_MATTER_SENSOR;
                     default -> THING_TYPE_MATTER_UNKNOWN;
                 };
                 default -> THING_TYPE_MATTER_UNKNOWN;
@@ -536,6 +528,21 @@ public class DirigeraModel implements Model {
     }
 
     /**
+     * Get relationId for a given device id
+     *
+     * @param id to check
+     * @return same id if no relations are found or relationId
+     */
+    @Override
+    public synchronized String getDeviceType(String id) {
+        JSONObject dataObject = getAllFor(id, PROPERTY_DEVICES);
+        if (dataObject.has(PROPERTY_DEVICE_TYPE)) {
+            return dataObject.getString(PROPERTY_DEVICE_TYPE);
+        }
+        return id;
+    }
+
+    /**
      * Check if given id is present in devices or scenes
      *
      * @param id to check
@@ -544,44 +551,5 @@ public class DirigeraModel implements Model {
     @Override
     public synchronized boolean has(String id) {
         return getAllDeviceIds().contains(id) || getAllSceneIds().contains(id);
-    }
-
-    @Override
-    public String getTemplate(String name) {
-        String template = templates.get(name);
-        if (template == null) {
-            template = getResourceFile(name);
-            if (!template.isBlank()) {
-                templates.put(name, template);
-            } else {
-                logger.warn("DIRIGERA MODEL empty template for {}", name);
-                template = "{}";
-            }
-        }
-        return template;
-    }
-
-    private String getResourceFile(String fileName) {
-        try {
-            Bundle myself = gateway.getBundleContext().getBundle();
-            // do this check for unit tests to avoid NullPointerException
-            if (myself != null) {
-                URL url = myself.getResource(fileName);
-                InputStream input = url.openStream();
-                // https://www.baeldung.com/java-scanner-usedelimiter
-                try (Scanner scanner = new Scanner(input).useDelimiter("\\A")) {
-                    String result = scanner.hasNext() ? scanner.next() : "";
-                    String resultReplaceAll = result.replaceAll("[\\n\\r\\s]", "");
-                    scanner.close();
-                    return resultReplaceAll;
-                }
-            } else {
-                // only unit testing
-                return Files.readString(Paths.get("src/main/resources" + fileName));
-            }
-        } catch (IOException e) {
-            logger.warn("DIRIGERA MODEL no template found for {}", fileName);
-        }
-        return "";
     }
 }

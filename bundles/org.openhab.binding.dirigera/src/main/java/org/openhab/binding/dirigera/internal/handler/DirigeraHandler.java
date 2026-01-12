@@ -45,6 +45,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.openhab.binding.dirigera.internal.DirigeraCommandProvider;
+import org.openhab.binding.dirigera.internal.ResourceReader;
 import org.openhab.binding.dirigera.internal.config.DirigeraConfiguration;
 import org.openhab.binding.dirigera.internal.discovery.DirigeraDiscoveryService;
 import org.openhab.binding.dirigera.internal.exception.ApiException;
@@ -171,7 +172,7 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway, Debug
                 coordinatesPoint = point;
             } else if (command instanceof StringType string) {
                 if (string.toFullString().isBlank()) {
-                    String nullCoordinates = model().getTemplate(Model.TEMPLATE_NULL_COORDINATES);
+                    String nullCoordinates = ResourceReader.getResource(Model.TEMPLATE_NULL_COORDINATES);
                     JSONObject patchCoordinates = new JSONObject(nullCoordinates);
                     if (customDebug) {
                         logger.info("DIRIGERA HANDLER send null coordinates {}", patchCoordinates);
@@ -187,7 +188,7 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway, Debug
                 }
             }
             if (coordinatesPoint != null) {
-                String coordinatesTemplate = model().getTemplate(Model.TEMPLATE_COORDINATES);
+                String coordinatesTemplate = ResourceReader.getResource(Model.TEMPLATE_COORDINATES);
                 String coordinates = String.format(coordinatesTemplate, coordinatesPoint.getLatitude().toFullString(),
                         coordinatesPoint.getLongitude().toFullString());
                 if (customDebug) {

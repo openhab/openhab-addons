@@ -21,6 +21,7 @@ import java.util.Map;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.openhab.binding.dirigera.internal.ResourceReader;
 import org.openhab.binding.dirigera.internal.handler.BaseHandler;
 import org.openhab.binding.dirigera.internal.interfaces.Model;
 import org.openhab.core.library.types.StringType;
@@ -66,20 +67,19 @@ public class LightControllerHandler extends BaseHandler {
                             // fine - array stays empty
                             break;
                         case "Warm":
-                            presetValues = new JSONArray(
-                                    gateway().model().getTemplate(Model.TEMPLATE_LIGHT_PRESET_WARM));
+                            presetValues = new JSONArray(ResourceReader.getResource(Model.TEMPLATE_LIGHT_PRESET_WARM));
                             break;
                         case "Slowdown":
                             presetValues = new JSONArray(
-                                    gateway().model().getTemplate(Model.TEMPLATE_LIGHT_PRESET_SLOWDOWN));
+                                    ResourceReader.getResource(Model.TEMPLATE_LIGHT_PRESET_SLOWDOWN));
                             break;
                         case "Smooth":
                             presetValues = new JSONArray(
-                                    gateway().model().getTemplate(Model.TEMPLATE_LIGHT_PRESET_SMOOTH));
+                                    ResourceReader.getResource(Model.TEMPLATE_LIGHT_PRESET_SMOOTH));
                             break;
                         case "Bright":
                             presetValues = new JSONArray(
-                                    gateway().model().getTemplate(Model.TEMPLATE_LIGHT_PRESET_BRIGHT));
+                                    ResourceReader.getResource(Model.TEMPLATE_LIGHT_PRESET_BRIGHT));
                             break;
                         default:
                             presetValues = new JSONArray(string.toFullString());

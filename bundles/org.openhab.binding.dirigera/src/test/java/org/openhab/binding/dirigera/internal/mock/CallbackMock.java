@@ -65,6 +65,7 @@ public class CallbackMock implements ThingHandlerCallback {
 
     @Override
     public void stateUpdated(ChannelUID channelUID, State state) {
+        System.out.println("CallbackMock: stateUpdated " + channelUID + " to " + state);
         stateMap.put(channelUID.getAsString(), state);
     }
 
@@ -95,7 +96,7 @@ public class CallbackMock implements ThingHandlerCallback {
             while (!ThingStatus.ONLINE.equals(status.getStatus())
                     && Duration.between(start, check).getSeconds() < STATUS_DURATION_TIMEOUT_SEC) {
                 try {
-                    this.wait(000);
+                    this.wait(100);
                 } catch (InterruptedException e) {
                     fail("Interruppted waiting for ONLINE");
                 }

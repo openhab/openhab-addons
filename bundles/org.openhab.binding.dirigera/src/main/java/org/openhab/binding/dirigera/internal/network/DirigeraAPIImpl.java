@@ -32,6 +32,7 @@ import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.openhab.binding.dirigera.internal.ResourceReader;
 import org.openhab.binding.dirigera.internal.interfaces.DirigeraAPI;
 import org.openhab.binding.dirigera.internal.interfaces.Gateway;
 import org.openhab.binding.dirigera.internal.interfaces.Model;
@@ -224,7 +225,7 @@ public class DirigeraAPIImpl implements DirigeraAPI {
     @Override
     public String createScene(String uuid, String clickPattern, String controllerId) {
         String url = String.format(SCENES_URL, gateway.getIpAddress());
-        String sceneTemplate = gateway.model().getTemplate(Model.TEMPLATE_CLICK_SCENE);
+        String sceneTemplate = ResourceReader.getResource(Model.TEMPLATE_CLICK_SCENE);
         String payload = String.format(sceneTemplate, uuid, "openHAB Shortcut Proxy", clickPattern, "0", controllerId);
         StringContentProvider stringProvider = new StringContentProvider("application/json", payload,
                 StandardCharsets.UTF_8);

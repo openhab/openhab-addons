@@ -141,6 +141,14 @@ public interface Model {
     String getRelationId(String id);
 
     /**
+     * Get device type for a given device id
+     *
+     * @param id to query
+     * @return device type as String
+     */
+    String getDeviceType(String id);
+
+    /**
      * Identify device which is present in model with openHAB ThingTypeUID.
      *
      * @param id to identify
@@ -171,13 +179,4 @@ public interface Model {
      * @return Map with attributes for Thing properties
      */
     Map<String, Object> getPropertiesFor(String id);
-
-    /**
-     * Read a resource file from this bundle. Some presets and commands sent to API shall not be implemented
-     * in code if they are just needing minor String replacements.
-     * Root path in project is src/main/resources. Line breaks and white spaces will
-     *
-     * @return
-     */
-    String getTemplate(String name);
 }

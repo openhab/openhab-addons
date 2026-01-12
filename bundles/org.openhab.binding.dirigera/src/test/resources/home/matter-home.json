@@ -1,0 +1,4106 @@
+{
+    "user": {
+        "uid": "05780211-9db3-4bbd-8277-6b8df0d45f30",
+        "name": "openHAB",
+        "audience": "homesmart.local",
+        "email": "",
+        "createdTimestamp": "2024-10-26T17:23:35.000Z",
+        "verifiedUid": "",
+        "role": "home_member",
+        "remoteUser": 0
+    },
+    "hub": {
+        "id": "594197c3-23c9-4dc7-a6ca-1fe6a8455d29_1",
+        "relationId": "594197c3-23c9-4dc7-a6ca-1fe6a8455d29",
+        "type": "gateway",
+        "deviceType": "gateway",
+        "createdAt": "2024-03-08T06:39:04.019Z",
+        "isReachable": true,
+        "lastSeen": "2026-01-09T23:54:00.471Z",
+        "attributes": {
+            "customName": "Townhouse",
+            "model": "DIRIGERA Hub for smart products",
+            "manufacturer": "IKEA of Sweden",
+            "firmwareVersion": "2.866.4",
+            "hardwareVersion": "P2.5",
+            "serialNumber": "594197c3-23c9-4dc7-a6ca-1fe6a8455d29",
+            "identifyStarted": "2000-01-01T00:00:00.000Z",
+            "identifyPeriod": 0,
+            "otaStatus": "upToDate",
+            "otaState": "readyToCheck",
+            "otaProgress": 100,
+            "otaPolicy": "autoDownload",
+            "otaScheduleStart": "00:00",
+            "otaScheduleEnd": "00:00",
+            "permittingJoin": false,
+            "backendConnected": true,
+            "backendConnectionPersistent": true,
+            "backendOnboardingComplete": true,
+            "backendRegion": "eu-central-1",
+            "backendCountryCode": "DE",
+            "userConsents": [
+                {
+                    "name": "analytics",
+                    "value": "disabled"
+                },
+                {
+                    "name": "diagnostics",
+                    "value": "enabled"
+                }
+            ],
+            "logLevel": 3,
+            "coredump": false,
+            "timezone": "Europe/Berlin",
+            "nextSunSet": "2026-01-10T15:14:00.000Z",
+            "nextSunRise": "2026-01-10T07:15:00.000Z",
+            "homestate": "home",
+            "countryCode": "EN",
+            "coordinates": {
+                "latitude": 52.523936309592116,
+                "longitude": 13.39035669463384,
+                "accuracy": -1
+            },
+            "isOn": false
+        },
+        "capabilities": {
+            "canSend": [],
+            "canReceive": [
+                "customName",
+                "permittingJoin",
+                "userConsents",
+                "logLevel",
+                "time",
+                "timezone",
+                "countryCode",
+                "coordinates"
+            ]
+        },
+        "deviceSet": [],
+        "remoteLinks": [],
+        "dynamicFeatures": [
+            {
+                "type": "matterControllerEnabled",
+                "enabled": true,
+                "featureVersion": "1.0"
+            }
+        ],
+        "environment": "prod"
+    },
+    "devices": [
+        {
+            "id": "891790db-8c17-483a-a1a6-c85bffd3a373_1",
+            "type": "light",
+            "deviceType": "light",
+            "createdAt": "2024-10-04T18:20:43.000Z",
+            "isReachable": false,
+            "lastSeen": "2026-01-09T14:20:22.000Z",
+            "attributes": {
+                "customName": "Loft Floor Lamp",
+                "model": "TRADFRI bulb E27 CWS opal 600lm",
+                "manufacturer": "IKEA of Sweden",
+                "firmwareVersion": "2.3.086",
+                "hardwareVersion": "1",
+                "serialNumber": "EC1BBDFFFEC17EA1",
+                "productCode": "LED1624G9E27EU",
+                "isOn": false,
+                "startupOnOff": "startOn",
+                "lightLevel": 62,
+                "startUpCurrentLevel": -1,
+                "colorHue": 40.001220703125,
+                "colorSaturation": 0.7992125984251969,
+                "colorMode": "color",
+                "identifyStarted": "2000-01-01T00:00:00.000Z",
+                "identifyPeriod": 0,
+                "permittingJoin": false,
+                "otaStatus": "upToDate",
+                "otaState": "readyToCheck",
+                "otaProgress": 0,
+                "otaPolicy": "autoUpdate",
+                "otaScheduleStart": "00:00",
+                "otaScheduleEnd": "00:00",
+                "deviceOnBehavior": {
+                    "behavior": "lastValue",
+                    "profileId": ""
+                }
+            },
+            "capabilities": {
+                "canSend": [],
+                "canReceive": [
+                    "customName",
+                    "isOn",
+                    "lightLevel",
+                    "colorHue",
+                    "colorSaturation"
+                ]
+            },
+            "room": {
+                "id": "893d50e0-f4bb-46ba-978d-e9280c6e299d",
+                "name": "Loft",
+                "color": "ikea_green_no_65",
+                "icon": "rooms_sofa"
+            },
+            "deviceSet": [
+                {
+                    "id": "cff0e225-eb44-452d-bdae-774811f814c8",
+                    "name": "Test Set",
+                    "icon": "lighting_chandelier"
+                }
+            ],
+            "remoteLinks": [
+                "22e4b77b-9a60-4727-944b-0d5e3e33b58f_1"
+            ],
+            "isHidden": false,
+            "adaptiveProfile": {}
+        },
+        {
+            "id": "9e9cb6b1-7981-443a-bd1e-5301815a25bd_1",
+            "type": "controller",
+            "deviceType": "lightController",
+            "createdAt": "2024-10-13T20:09:35.000Z",
+            "isReachable": false,
+            "lastSeen": "2026-01-08T16:30:32.000Z",
+            "customIcon": "products_remote_control_2",
+            "attributes": {
+                "customName": "Bee Light Control",
+                "model": "TRADFRI remote control",
+                "manufacturer": "IKEA of Sweden",
+                "firmwareVersion": "24.4.5",
+                "hardwareVersion": "1",
+                "serialNumber": "BC33ACFFFE9B308C",
+                "productCode": "E1810",
+                "batteryPercentage": 1,
+                "isOn": false,
+                "lightLevel": 1,
+                "permittingJoin": false,
+                "otaStatus": "upToDate",
+                "otaState": "readyToCheck",
+                "otaProgress": 0,
+                "otaPolicy": "autoUpdate",
+                "otaScheduleStart": "00:00",
+                "otaScheduleEnd": "00:00",
+                "circadianPresets": []
+            },
+            "capabilities": {
+                "canSend": [
+                    "isOn",
+                    "lightLevel"
+                ],
+                "canReceive": [
+                    "customName"
+                ]
+            },
+            "room": {
+                "id": "b3021c3e-c8ac-4e66-b1c0-fee5f8b69afd",
+                "name": "Bee",
+                "color": "ncs_s_1020_r10b",
+                "icon": "rooms_pot_plant"
+            },
+            "deviceSet": [],
+            "remoteLinks": [],
+            "isHidden": false
+        },
+        {
+            "id": "be352051-baf8-4497-af1f-eec471574ee7_1",
+            "type": "light",
+            "deviceType": "light",
+            "createdAt": "2025-01-04T19:44:37.000Z",
+            "isReachable": true,
+            "lastSeen": "2026-01-09T23:50:59.000Z",
+            "customIcon": "products_led_bulb",
+            "attributes": {
+                "customName": "Bedroom Desk Left",
+                "model": "TRADFRI bulb E14 WS globe 470lm",
+                "manufacturer": "IKEA of Sweden",
+                "firmwareVersion": "1.1.20",
+                "hardwareVersion": "1",
+                "serialNumber": "44E2F8FFFE0059F2",
+                "productCode": "LED2101G4",
+                "isOn": false,
+                "startupOnOff": "startOn",
+                "lightLevel": 50,
+                "startUpCurrentLevel": -1,
+                "colorTemperature": 2202,
+                "colorTemperatureMin": 4000,
+                "colorTemperatureMax": 2202,
+                "startupTemperature": -1,
+                "colorMode": "temperature",
+                "identifyStarted": "2000-01-01T00:00:00.000Z",
+                "identifyPeriod": 0,
+                "permittingJoin": false,
+                "otaStatus": "upToDate",
+                "otaState": "readyToCheck",
+                "otaProgress": 0,
+                "otaPolicy": "autoUpdate",
+                "otaScheduleStart": "00:00",
+                "otaScheduleEnd": "00:00",
+                "deviceOnBehavior": {
+                    "behavior": "lastValue",
+                    "profileId": ""
+                }
+            },
+            "capabilities": {
+                "canSend": [],
+                "canReceive": [
+                    "customName",
+                    "isOn",
+                    "lightLevel",
+                    "colorTemperature"
+                ]
+            },
+            "room": {
+                "id": "4328471f-03cd-4372-aa1e-e3e9f3be3da4",
+                "name": "Schlafzimmer ",
+                "color": "ikea_beige_no_3",
+                "icon": "rooms_bed"
+            },
+            "deviceSet": [],
+            "remoteLinks": [],
+            "isHidden": false,
+            "adaptiveProfile": {}
+        },
+        {
+            "id": "5fc4e211-7e20-48bb-a385-a121d2f80bf4_1",
+            "type": "outlet",
+            "deviceType": "outlet",
+            "createdAt": "2024-12-10T13:45:37.000Z",
+            "isReachable": false,
+            "lastSeen": "2026-01-08T16:30:32.000Z",
+            "attributes": {
+                "customName": "Smart Hopper",
+                "model": "INSPELNING Smart plug",
+                "manufacturer": "IKEA of Sweden",
+                "firmwareVersion": "2.4.45",
+                "hardwareVersion": "1",
+                "serialNumber": "8C65A3FFFE10617B",
+                "productCode": "E2206",
+                "isOn": true,
+                "startupOnOff": "startPrevious",
+                "lightLevel": 41,
+                "startUpCurrentLevel": -1,
+                "currentVoltage": 231.8000030517578,
+                "currentAmps": 0.050999999046325684,
+                "currentActivePower": 6.800000190734863,
+                "totalEnergyConsumed": 2.3010001182556152,
+                "totalEnergyConsumedLastUpdated": "2025-01-02T12:19:28.000Z",
+                "energyConsumedAtLastReset": 0,
+                "timeOfLastEnergyReset": "2024-12-10T13:11:45.000Z",
+                "childLock": false,
+                "statusLight": false,
+                "identifyStarted": "2000-01-01T00:00:00.000Z",
+                "identifyPeriod": 0,
+                "permittingJoin": false,
+                "otaStatus": "upToDate",
+                "otaState": "readyToCheck",
+                "otaProgress": 0,
+                "otaPolicy": "autoUpdate",
+                "otaScheduleStart": "00:00",
+                "otaScheduleEnd": "00:00"
+            },
+            "capabilities": {
+                "canSend": [],
+                "canReceive": [
+                    "customName",
+                    "isOn",
+                    "lightLevel",
+                    "energyConsumedAtLastReset",
+                    "childLock",
+                    "statusLight"
+                ]
+            },
+            "room": {
+                "id": "893d50e0-f4bb-46ba-978d-e9280c6e299d",
+                "name": "Loft",
+                "color": "ikea_green_no_65",
+                "icon": "rooms_sofa"
+            },
+            "deviceSet": [],
+            "remoteLinks": [],
+            "isHidden": false
+        },
+        {
+            "id": "4fec48cd-6da8-4075-af78-09fff0423f78_3",
+            "relationId": "4fec48cd-6da8-4075-af78-09fff0423f78",
+            "type": "controller",
+            "deviceType": "genericSwitch",
+            "createdAt": "2026-01-03T18:43:10.000Z",
+            "isReachable": true,
+            "lastSeen": "2026-01-09T13:28:42.000Z",
+            "customIcon": "products_rotary_remote",
+            "attributes": {
+                "identifyStarted": "2025-12-11T14:53:30.000Z",
+                "identifyPeriod": 0,
+                "switchLabel": "button",
+                "switchGroup": 1,
+                "customName": "Matter Scroll Controller",
+                "model": "BILRESA scroll wheel",
+                "manufacturer": "IKEA of Sweden",
+                "firmwareVersion": "1.8.7",
+                "hardwareVersion": "P2.0",
+                "serialNumber": "UNKNOWN_SERIAL_NUMBER",
+                "productCode": "E2490",
+                "permittingJoin": false,
+                "windowOpen": false,
+                "setupCode": "",
+                "discriminator": -1,
+                "qrCode": "",
+                "otaStatus": "upToDate",
+                "otaState": "readyToCheck",
+                "otaProgress": 0,
+                "otaPolicy": "autoUpdate",
+                "otaScheduleStart": "00:00",
+                "otaScheduleEnd": "00:00",
+                "batteryPercentage": 61,
+                "controlMode": "light"
+            },
+            "capabilities": {
+                "canSend": [],
+                "canReceive": [
+                    "customName",
+                    "windowOpen",
+                    "controlModeLight",
+                    "controlModeSpeaker"
+                ]
+            },
+            "room": {
+                "id": "893d50e0-f4bb-46ba-978d-e9280c6e299d",
+                "name": "Loft",
+                "color": "ikea_green_no_65",
+                "icon": "rooms_sofa"
+            },
+            "deviceSet": [],
+            "remoteLinks": [],
+            "isHidden": false
+        },
+        {
+            "id": "4fec48cd-6da8-4075-af78-09fff0423f78_6",
+            "relationId": "4fec48cd-6da8-4075-af78-09fff0423f78",
+            "type": "controller",
+            "deviceType": "genericSwitch",
+            "createdAt": "2026-01-03T18:43:10.000Z",
+            "isReachable": true,
+            "lastSeen": "2026-01-09T13:28:42.000Z",
+            "attributes": {
+                "identifyStarted": "2025-12-11T14:53:30.000Z",
+                "identifyPeriod": 0,
+                "switchLabel": "button",
+                "switchGroup": 2,
+                "customName": "BILRESA scroll wheel",
+                "model": "BILRESA scroll wheel",
+                "manufacturer": "IKEA of Sweden",
+                "firmwareVersion": "1.8.7",
+                "hardwareVersion": "P2.0",
+                "serialNumber": "UNKNOWN_SERIAL_NUMBER",
+                "productCode": "E2490",
+                "permittingJoin": false,
+                "windowOpen": false,
+                "setupCode": "",
+                "discriminator": -1,
+                "qrCode": "",
+                "otaStatus": "upToDate",
+                "otaState": "readyToCheck",
+                "otaProgress": 0,
+                "otaPolicy": "autoUpdate",
+                "otaScheduleStart": "00:00",
+                "otaScheduleEnd": "00:00",
+                "batteryPercentage": 61,
+                "controlMode": "light"
+            },
+            "capabilities": {
+                "canSend": [],
+                "canReceive": [
+                    "customName",
+                    "windowOpen",
+                    "controlModeLight",
+                    "controlModeSpeaker"
+                ]
+            },
+            "deviceSet": [],
+            "remoteLinks": [],
+            "isHidden": false
+        },
+        {
+            "id": "4fec48cd-6da8-4075-af78-09fff0423f78_9",
+            "relationId": "4fec48cd-6da8-4075-af78-09fff0423f78",
+            "type": "controller",
+            "deviceType": "genericSwitch",
+            "createdAt": "2026-01-03T18:43:10.000Z",
+            "isReachable": true,
+            "lastSeen": "2026-01-09T13:28:42.000Z",
+            "attributes": {
+                "identifyStarted": "2025-12-11T14:53:30.000Z",
+                "identifyPeriod": 0,
+                "switchLabel": "button",
+                "switchGroup": 3,
+                "customName": "BILRESA scroll wheel",
+                "model": "BILRESA scroll wheel",
+                "manufacturer": "IKEA of Sweden",
+                "firmwareVersion": "1.8.7",
+                "hardwareVersion": "P2.0",
+                "serialNumber": "UNKNOWN_SERIAL_NUMBER",
+                "productCode": "E2490",
+                "permittingJoin": false,
+                "windowOpen": false,
+                "setupCode": "",
+                "discriminator": -1,
+                "qrCode": "",
+                "otaStatus": "upToDate",
+                "otaState": "readyToCheck",
+                "otaProgress": 0,
+                "otaPolicy": "autoUpdate",
+                "otaScheduleStart": "00:00",
+                "otaScheduleEnd": "00:00",
+                "batteryPercentage": 61,
+                "controlMode": "shortcut"
+            },
+            "capabilities": {
+                "canSend": [],
+                "canReceive": [
+                    "customName",
+                    "windowOpen",
+                    "controlModeLight",
+                    "controlModeSpeaker"
+                ]
+            },
+            "deviceSet": [],
+            "remoteLinks": [],
+            "isHidden": false
+        },
+        {
+            "id": "a600a703-d73c-4b79-b9ab-72073db5cd79_1",
+            "type": "outlet",
+            "deviceType": "outlet",
+            "createdAt": "2024-12-21T15:29:24.000Z",
+            "isReachable": true,
+            "lastSeen": "2026-01-09T20:46:01.000Z",
+            "attributes": {
+                "customName": "Loft Shelf",
+                "model": "TRETAKT Smart plug",
+                "manufacturer": "IKEA of Sweden",
+                "firmwareVersion": "2.4.4",
+                "hardwareVersion": "1",
+                "serialNumber": "F84477FFFED9DAD9",
+                "productCode": "E2204",
+                "isOn": false,
+                "startupOnOff": "startPrevious",
+                "lightLevel": 100,
+                "startUpCurrentLevel": -1,
+                "childLock": false,
+                "statusLight": true,
+                "identifyStarted": "2000-01-01T00:00:00.000Z",
+                "identifyPeriod": 0,
+                "permittingJoin": false,
+                "otaStatus": "upToDate",
+                "otaState": "readyToCheck",
+                "otaProgress": 0,
+                "otaPolicy": "autoUpdate",
+                "otaScheduleStart": "00:00",
+                "otaScheduleEnd": "00:00"
+            },
+            "capabilities": {
+                "canSend": [],
+                "canReceive": [
+                    "customName",
+                    "isOn",
+                    "lightLevel",
+                    "childLock",
+                    "statusLight"
+                ]
+            },
+            "room": {
+                "id": "893d50e0-f4bb-46ba-978d-e9280c6e299d",
+                "name": "Loft",
+                "color": "ikea_green_no_65",
+                "icon": "rooms_sofa"
+            },
+            "deviceSet": [],
+            "remoteLinks": [],
+            "isHidden": false
+        },
+        {
+            "id": "3c8b0049-eb5c-4ea1-9da3-cdedc50366ef_1",
+            "type": "light",
+            "deviceType": "light",
+            "createdAt": "2024-10-04T17:41:34.000Z",
+            "isReachable": true,
+            "lastSeen": "2026-01-09T14:37:32.000Z",
+            "customIcon": "lighting_pendant_light",
+            "attributes": {
+                "customName": "Dining Rear Lamp",
+                "model": "TRADFRI bulb E27 CWS globe 806lm",
+                "manufacturer": "IKEA of Sweden",
+                "firmwareVersion": "1.0.38",
+                "hardwareVersion": "1",
+                "serialNumber": "7CC6B6FFFE5FFFA2",
+                "productCode": "LED2109G6",
+                "isOn": true,
+                "startupOnOff": "startOn",
+                "lightLevel": 40,
+                "startUpCurrentLevel": 20,
+                "colorHue": 35.38637719224283,
+                "colorSaturation": 0.9994141260492038,
+                "colorTemperature": 2202,
+                "colorTemperatureMin": 4000,
+                "colorTemperatureMax": 2202,
+                "startupTemperature": -1,
+                "colorMode": "color",
+                "identifyStarted": "2000-01-01T00:00:00.000Z",
+                "identifyPeriod": 0,
+                "permittingJoin": false,
+                "otaStatus": "upToDate",
+                "otaState": "readyToCheck",
+                "otaProgress": 0,
+                "otaPolicy": "autoUpdate",
+                "otaScheduleStart": "00:00",
+                "otaScheduleEnd": "00:00",
+                "deviceOnBehavior": {
+                    "behavior": "lastValue",
+                    "profileId": ""
+                }
+            },
+            "capabilities": {
+                "canSend": [],
+                "canReceive": [
+                    "customName",
+                    "isOn",
+                    "lightLevel",
+                    "colorTemperature",
+                    "colorHue",
+                    "colorSaturation"
+                ]
+            },
+            "room": {
+                "id": "921edb07-e344-4c70-a09e-11935c727f58",
+                "name": "Esszimmer",
+                "color": "ikea_yellow_no_31",
+                "icon": "rooms_cutlery"
+            },
+            "deviceSet": [],
+            "remoteLinks": [
+                "22e4b77b-9a60-4727-944b-0d5e3e33b58f_1"
+            ],
+            "isHidden": false,
+            "adaptiveProfile": {}
+        },
+        {
+            "id": "a452a7fe-8601-444e-bc02-90986ffce6d7_1",
+            "type": "outlet",
+            "deviceType": "outlet",
+            "createdAt": "2024-12-10T13:13:45.000Z",
+            "isReachable": true,
+            "lastSeen": "2026-01-09T23:33:54.000Z",
+            "attributes": {
+                "customName": "Kitchen Work",
+                "model": "TRETAKT Smart plug",
+                "manufacturer": "IKEA of Sweden",
+                "firmwareVersion": "2.4.4",
+                "hardwareVersion": "1",
+                "serialNumber": "F84477FFFED485D5",
+                "productCode": "E2204",
+                "isOn": false,
+                "startupOnOff": "startPrevious",
+                "lightLevel": 51,
+                "startUpCurrentLevel": -1,
+                "childLock": false,
+                "statusLight": true,
+                "identifyStarted": "2000-01-01T00:00:00.000Z",
+                "identifyPeriod": 0,
+                "permittingJoin": false,
+                "otaStatus": "upToDate",
+                "otaState": "readyToCheck",
+                "otaProgress": 0,
+                "otaPolicy": "autoUpdate",
+                "otaScheduleStart": "00:00",
+                "otaScheduleEnd": "00:00"
+            },
+            "capabilities": {
+                "canSend": [],
+                "canReceive": [
+                    "customName",
+                    "isOn",
+                    "lightLevel",
+                    "childLock",
+                    "statusLight"
+                ]
+            },
+            "room": {
+                "id": "88f27266-14a8-4d66-8e4f-e10a3318868e",
+                "name": "Küche",
+                "color": "ikea_red_no_39",
+                "icon": "rooms_kitchen"
+            },
+            "deviceSet": [],
+            "remoteLinks": [
+                "aba66147-8d7f-4a42-8852-ee3525df693c_1"
+            ],
+            "isHidden": false
+        },
+        {
+            "id": "040bf20b-b1b0-463b-af4b-1227a711d70e_1",
+            "relationId": "040bf20b-b1b0-463b-af4b-1227a711d70e",
+            "type": "controller",
+            "deviceType": "genericSwitch",
+            "createdAt": "2026-01-03T18:57:30.000Z",
+            "isReachable": true,
+            "lastSeen": "2026-01-09T19:10:21.000Z",
+            "customIcon": "products_dual_button_remote",
+            "attributes": {
+                "identifyStarted": "2025-12-11T14:53:30.000Z",
+                "identifyPeriod": 0,
+                "switchLabel": "button 1",
+                "customName": "Matter dual button",
+                "model": "BILRESA dual button",
+                "manufacturer": "IKEA of Sweden",
+                "firmwareVersion": "1.8.5",
+                "hardwareVersion": "P2.0",
+                "serialNumber": "UNKNOWN_SERIAL_NUMBER",
+                "productCode": "E2489",
+                "permittingJoin": false,
+                "windowOpen": false,
+                "setupCode": "",
+                "discriminator": -1,
+                "qrCode": "",
+                "otaStatus": "upToDate",
+                "otaState": "readyToCheck",
+                "otaProgress": 0,
+                "otaPolicy": "autoUpdate",
+                "otaScheduleStart": "00:00",
+                "otaScheduleEnd": "00:00",
+                "batteryPercentage": 61,
+                "controlMode": "shortcut"
+            },
+            "capabilities": {
+                "canSend": [],
+                "canReceive": [
+                    "customName",
+                    "windowOpen",
+                    "controlModeLight",
+                    "controlModeSpeaker",
+                    "controlModeBlind",
+                    "controlModeShortcutController"
+                ]
+            },
+            "room": {
+                "id": "893d50e0-f4bb-46ba-978d-e9280c6e299d",
+                "name": "Loft",
+                "color": "ikea_green_no_65",
+                "icon": "rooms_sofa"
+            },
+            "deviceSet": [],
+            "remoteLinks": [],
+            "isHidden": false
+        },
+        {
+            "id": "040bf20b-b1b0-463b-af4b-1227a711d70e_2",
+            "relationId": "040bf20b-b1b0-463b-af4b-1227a711d70e",
+            "type": "controller",
+            "deviceType": "genericSwitch",
+            "createdAt": "2026-01-03T18:57:30.000Z",
+            "isReachable": true,
+            "lastSeen": "2026-01-09T19:10:21.000Z",
+            "attributes": {
+                "identifyStarted": "2025-12-11T14:53:30.000Z",
+                "identifyPeriod": 0,
+                "switchLabel": "button 2",
+                "customName": "BILRESA dual button",
+                "model": "BILRESA dual button",
+                "manufacturer": "IKEA of Sweden",
+                "firmwareVersion": "1.8.5",
+                "hardwareVersion": "P2.0",
+                "serialNumber": "UNKNOWN_SERIAL_NUMBER",
+                "productCode": "E2489",
+                "permittingJoin": false,
+                "windowOpen": false,
+                "setupCode": "",
+                "discriminator": -1,
+                "qrCode": "",
+                "otaStatus": "upToDate",
+                "otaState": "readyToCheck",
+                "otaProgress": 0,
+                "otaPolicy": "autoUpdate",
+                "otaScheduleStart": "00:00",
+                "otaScheduleEnd": "00:00",
+                "batteryPercentage": 61,
+                "controlMode": "shortcut"
+            },
+            "capabilities": {
+                "canSend": [],
+                "canReceive": [
+                    "customName",
+                    "windowOpen",
+                    "controlModeLight",
+                    "controlModeSpeaker",
+                    "controlModeBlind",
+                    "controlModeShortcutController"
+                ]
+            },
+            "deviceSet": [],
+            "remoteLinks": [],
+            "isHidden": false
+        },
+        {
+            "id": "46f70859-a60d-4be6-84c0-e0e40e50c0dd_1",
+            "relationId": "46f70859-a60d-4be6-84c0-e0e40e50c0dd",
+            "type": "sensor",
+            "deviceType": "motionSensor",
+            "createdAt": "2025-01-09T20:16:37.000Z",
+            "isReachable": true,
+            "lastSeen": "2026-01-09T23:32:02.000Z",
+            "attributes": {
+                "customName": "Lobby Motion",
+                "model": "VALLHORN Wireless Motion Sensor",
+                "manufacturer": "IKEA of Sweden",
+                "firmwareVersion": "1.0.64",
+                "hardwareVersion": "1",
+                "serialNumber": "6CFD22FFFE7FFBB8",
+                "productCode": "E2134",
+                "batteryPercentage": 64,
+                "isOn": false,
+                "motionDetectedDelay": 20,
+                "isDetected": false,
+                "identifyStarted": "2000-01-01T00:00:00.000Z",
+                "identifyPeriod": 0,
+                "permittingJoin": false,
+                "sensorConfig": {
+                    "scheduleOn": false,
+                    "onDuration": 300,
+                    "schedule": {
+                        "onCondition": {
+                            "time": "20:00"
+                        },
+                        "offCondition": {
+                            "time": "07:00"
+                        }
+                    }
+                },
+                "circadianPresets": []
+            },
+            "capabilities": {
+                "canSend": [],
+                "canReceive": [
+                    "customName"
+                ]
+            },
+            "room": {
+                "id": "2abdfb7b-d080-4b00-b576-0c6fb73e9b3b",
+                "name": "Lobby HWR",
+                "color": "ikea_pink_no_4",
+                "icon": "rooms_drill"
+            },
+            "deviceSet": [],
+            "remoteLinks": [],
+            "isHidden": false
+        },
+        {
+            "id": "46f70859-a60d-4be6-84c0-e0e40e50c0dd_3",
+            "relationId": "46f70859-a60d-4be6-84c0-e0e40e50c0dd",
+            "type": "unknown",
+            "deviceType": "lightSensor",
+            "createdAt": "2025-01-09T20:16:37.000Z",
+            "isReachable": true,
+            "lastSeen": "2026-01-09T23:32:02.000Z",
+            "attributes": {
+                "customName": "",
+                "model": "VALLHORN Wireless Motion Sensor",
+                "manufacturer": "IKEA of Sweden",
+                "firmwareVersion": "1.0.64",
+                "hardwareVersion": "1",
+                "serialNumber": "6CFD22FFFE7FFBB8",
+                "productCode": "E2134",
+                "illuminance": 0,
+                "identifyStarted": "2000-01-01T00:00:00.000Z",
+                "identifyPeriod": 0,
+                "permittingJoin": false
+            },
+            "capabilities": {
+                "canSend": [],
+                "canReceive": [
+                    "customName"
+                ]
+            },
+            "deviceSet": [],
+            "remoteLinks": [],
+            "isHidden": false
+        },
+        {
+            "id": "3267c0f3-069a-4894-b5d0-a30d26386af8_1",
+            "type": "sensor",
+            "deviceType": "openCloseSensor",
+            "createdAt": "2024-10-10T14:00:00.000Z",
+            "isReachable": true,
+            "lastSeen": "2026-01-09T20:52:18.000Z",
+            "customIcon": "placement_door",
+            "attributes": {
+                "customName": "Door Dining Room",
+                "model": "PARASOLL Door/Window Sensor",
+                "manufacturer": "IKEA of Sweden",
+                "firmwareVersion": "1.0.19",
+                "hardwareVersion": "1",
+                "serialNumber": "D44867FFFEB36824",
+                "productCode": "E2013",
+                "batteryPercentage": 25,
+                "identifyStarted": "2000-01-01T00:00:00.000Z",
+                "identifyPeriod": 0,
+                "isOpen": false,
+                "permittingJoin": false
+            },
+            "capabilities": {
+                "canSend": [],
+                "canReceive": [
+                    "customName"
+                ]
+            },
+            "room": {
+                "id": "921edb07-e344-4c70-a09e-11935c727f58",
+                "name": "Esszimmer",
+                "color": "ikea_yellow_no_31",
+                "icon": "rooms_cutlery"
+            },
+            "deviceSet": [],
+            "remoteLinks": [],
+            "isHidden": false
+        },
+        {
+            "id": "b9c5584d-bc2e-45e5-b9f5-5d3264c93423_1",
+            "type": "light",
+            "deviceType": "light",
+            "createdAt": "2025-01-04T20:14:07.000Z",
+            "isReachable": false,
+            "lastSeen": "2026-01-09T15:33:35.000Z",
+            "attributes": {
+                "customName": "Bedroom Light",
+                "model": "TRADFRI bulb E27 WW G95 CL 470lm",
+                "manufacturer": "IKEA of Sweden",
+                "firmwareVersion": "1.1.4",
+                "hardwareVersion": "1",
+                "serialNumber": "44E2F8FFFE5D17B5",
+                "productCode": "LED2102G3",
+                "isOn": true,
+                "startupOnOff": "startOn",
+                "lightLevel": 100,
+                "startUpCurrentLevel": -1,
+                "identifyStarted": "2000-01-01T00:00:00.000Z",
+                "identifyPeriod": 0,
+                "permittingJoin": false,
+                "otaStatus": "upToDate",
+                "otaState": "readyToCheck",
+                "otaProgress": 0,
+                "otaPolicy": "autoUpdate",
+                "otaScheduleStart": "00:00",
+                "otaScheduleEnd": "00:00",
+                "deviceOnBehavior": {
+                    "behavior": "lastValue",
+                    "profileId": ""
+                }
+            },
+            "capabilities": {
+                "canSend": [],
+                "canReceive": [
+                    "customName",
+                    "isOn",
+                    "lightLevel"
+                ]
+            },
+            "room": {
+                "id": "4328471f-03cd-4372-aa1e-e3e9f3be3da4",
+                "name": "Schlafzimmer ",
+                "color": "ikea_beige_no_3",
+                "icon": "rooms_bed"
+            },
+            "deviceSet": [],
+            "remoteLinks": [],
+            "isHidden": false,
+            "adaptiveProfile": {}
+        },
+        {
+            "id": "92e6e04a-0ed7-4358-9c2d-d1d1e6834f35_1",
+            "type": "light",
+            "deviceType": "light",
+            "createdAt": "2025-01-04T19:47:07.000Z",
+            "isReachable": true,
+            "lastSeen": "2026-01-09T23:50:59.000Z",
+            "customIcon": "products_led_bulb",
+            "attributes": {
+                "customName": "Bedroom Desk Right",
+                "model": "TRADFRI bulb E14 WS globe 470lm",
+                "manufacturer": "IKEA of Sweden",
+                "firmwareVersion": "1.1.20",
+                "hardwareVersion": "1",
+                "serialNumber": "44E2F8FFFE0B3267",
+                "productCode": "LED2101G4",
+                "isOn": false,
+                "startupOnOff": "startOn",
+                "lightLevel": 50,
+                "startUpCurrentLevel": -1,
+                "colorTemperature": 2202,
+                "colorTemperatureMin": 4000,
+                "colorTemperatureMax": 2202,
+                "startupTemperature": -1,
+                "colorMode": "temperature",
+                "identifyStarted": "2000-01-01T00:00:00.000Z",
+                "identifyPeriod": 0,
+                "permittingJoin": false,
+                "otaStatus": "upToDate",
+                "otaState": "readyToCheck",
+                "otaProgress": 0,
+                "otaPolicy": "autoUpdate",
+                "otaScheduleStart": "00:00",
+                "otaScheduleEnd": "00:00",
+                "deviceOnBehavior": {
+                    "behavior": "lastValue",
+                    "profileId": ""
+                }
+            },
+            "capabilities": {
+                "canSend": [],
+                "canReceive": [
+                    "customName",
+                    "isOn",
+                    "lightLevel",
+                    "colorTemperature"
+                ]
+            },
+            "room": {
+                "id": "4328471f-03cd-4372-aa1e-e3e9f3be3da4",
+                "name": "Schlafzimmer ",
+                "color": "ikea_beige_no_3",
+                "icon": "rooms_bed"
+            },
+            "deviceSet": [],
+            "remoteLinks": [],
+            "isHidden": false,
+            "adaptiveProfile": {}
+        },
+        {
+            "id": "338bb721-35bb-4775-8cd0-ba70fc37ab10_1",
+            "type": "speaker",
+            "deviceType": "speaker",
+            "createdAt": "2024-10-04T17:21:49.446Z",
+            "isReachable": true,
+            "lastSeen": "2026-01-08T16:31:14.335Z",
+            "attributes": {
+                "customName": "Loft",
+                "model": "SYMFONISK Bookshelf S21",
+                "manufacturer": "Sonos, Inc.",
+                "firmwareVersion": "86.2-70230",
+                "hardwareVersion": "1.20.3.3-2.0",
+                "serialNumber": "34-7E-5C-F5-45-88:F",
+                "productCode": "S21",
+                "identifyStarted": "2024-10-04T17:21:49.447Z",
+                "identifyPeriod": 0,
+                "playback": "playbackIdle",
+                "playbackLastChangedTimestamp": "2026-01-05T18:09:50.045Z",
+                "playbackAudio": {
+                    "serviceType": "sonos",
+                    "providerType": "Mixcloud",
+                    "playItem": {
+                        "id": "eyJhY2NvdW50VHlwZSI6InNvbm9zIiwiY29udGVudFR5cGUiOiJjb250YWluZXIiLCJjb250ZW50Ijp7ImNvbnRhaW5lciI6eyJhY2NvdW50SWQiOiJzbl8zIiwib2JqZWN0SWQiOiJjbG91ZGNhc3Q6MjE4NzA1MTM5MSIsInNlcnZpY2VJZCI6IjE4MSIsInR5cGUiOiJ0cmFjayJ9fX0=",
+                        "title": "Toolroom Radio EP822: ESSEL",
+                        "artist": "Toolroom",
+                        "imageURL": "http://192.168.1.95:1400/getaa?s=1&u=x-sonos-http%3acloudcast%253a2187051391.unknown%3fsid%3d181%26flags%3d0%26sn%3d3",
+                        "duration": 7200000
+                    },
+                    "nextPlayItem": {
+                        "id": "eyJhY2NvdW50VHlwZSI6InNvbm9zIiwiY29udGVudFR5cGUiOiJjb250YWluZXIiLCJjb250ZW50Ijp7ImNvbnRhaW5lciI6eyJhY2NvdW50SWQiOiJzbl8zIiwib2JqZWN0SWQiOiJjbG91ZGNhc3Q6MjE4NzAyNTgyMyIsInNlcnZpY2VJZCI6IjE4MSIsInR5cGUiOiJ0cmFjayJ9fX0=",
+                        "title": "In The Zone - December 2025 (Guido's Lounge Cafe)",
+                        "artist": "Guido's Lounge Café",
+                        "imageURL": "http://192.168.1.95:1400/getaa?s=1&u=x-sonosapi-hls-static%3acloudcast%253a2187025823%3fsid%3d181%26flags%3d8232%26sn%3d3",
+                        "duration": 7335000
+                    }
+                },
+                "playbackPosition": {
+                    "position": 0,
+                    "timestamp": "2026-01-05T19:09:49.954Z"
+                },
+                "playbackAvailableActions": {
+                    "crossfade": true,
+                    "pause": true,
+                    "repeat": [
+                        "off",
+                        "playItem",
+                        "playlist"
+                    ],
+                    "seek": true,
+                    "shuffle": true,
+                    "playbackNext": true,
+                    "playbackPrev": false
+                },
+                "playbackModes": {
+                    "crossfade": false,
+                    "repeat": "off",
+                    "shuffle": false
+                },
+                "volume": 13,
+                "isMuted": false,
+                "audioGroup": "039ccb87-ee96-4eb8-958b-e8bddfc0b6ba"
+            },
+            "capabilities": {
+                "canSend": [],
+                "canReceive": [
+                    "playback",
+                    "playbackAudio",
+                    "volume",
+                    "isMuted"
+                ]
+            },
+            "room": {
+                "id": "893d50e0-f4bb-46ba-978d-e9280c6e299d",
+                "name": "Loft",
+                "color": "ikea_green_no_65",
+                "icon": "rooms_sofa"
+            },
+            "deviceSet": [],
+            "remoteLinks": [],
+            "isHidden": false
+        },
+        {
+            "id": "cc5a8c1a-415c-4860-b0b2-535447545ae7_1",
+            "type": "light",
+            "deviceType": "light",
+            "createdAt": "2025-04-27T14:26:23.000Z",
+            "isReachable": false,
+            "lastSeen": "2026-01-08T16:30:33.000Z",
+            "customIcon": "lighting_nightstand_light",
+            "attributes": {
+                "customName": "Dining Table Light",
+                "model": "TRADFRI bulb E27 CWS globe 806lm",
+                "manufacturer": "IKEA of Sweden",
+                "firmwareVersion": "1.0.38",
+                "hardwareVersion": "1",
+                "serialNumber": "403059FFFE4D45BD",
+                "productCode": "LED2109G6",
+                "isOn": true,
+                "startupOnOff": "startOn",
+                "lightLevel": 22,
+                "startUpCurrentLevel": -1,
+                "colorHue": 0,
+                "colorSaturation": 0.7913385826771654,
+                "colorTemperature": 3003,
+                "colorTemperatureMin": 4000,
+                "colorTemperatureMax": 2202,
+                "startupTemperature": -1,
+                "colorMode": "temperature",
+                "identifyStarted": "2000-01-01T00:00:00.000Z",
+                "identifyPeriod": 0,
+                "permittingJoin": false,
+                "otaStatus": "upToDate",
+                "otaState": "readyToCheck",
+                "otaProgress": 0,
+                "otaPolicy": "autoUpdate",
+                "otaScheduleStart": "00:00",
+                "otaScheduleEnd": "00:00",
+                "deviceOnBehavior": {
+                    "behavior": "lastValue",
+                    "profileId": ""
+                }
+            },
+            "capabilities": {
+                "canSend": [],
+                "canReceive": [
+                    "customName",
+                    "isOn",
+                    "lightLevel",
+                    "colorTemperature",
+                    "colorHue",
+                    "colorSaturation"
+                ]
+            },
+            "room": {
+                "id": "921edb07-e344-4c70-a09e-11935c727f58",
+                "name": "Esszimmer",
+                "color": "ikea_yellow_no_31",
+                "icon": "rooms_cutlery"
+            },
+            "deviceSet": [],
+            "remoteLinks": [],
+            "isHidden": false,
+            "adaptiveProfile": {}
+        },
+        {
+            "id": "044b63e7-999d-4caa-8a76-fb8cfd32b381_1",
+            "type": "repeater",
+            "deviceType": "repeater",
+            "createdAt": "2024-10-10T10:10:37.000Z",
+            "isReachable": true,
+            "lastSeen": "2026-01-09T08:03:15.000Z",
+            "attributes": {
+                "customName": "Repeater",
+                "model": "TRADFRI Signal Repeater",
+                "manufacturer": "IKEA of Sweden",
+                "firmwareVersion": "2.3.086",
+                "hardwareVersion": "1",
+                "serialNumber": "14B457FFFEF8DC61",
+                "productCode": "E1746",
+                "identifyStarted": "2000-01-01T00:00:00.000Z",
+                "identifyPeriod": 0,
+                "permittingJoin": false,
+                "otaStatus": "upToDate",
+                "otaState": "readyToCheck",
+                "otaProgress": 0,
+                "otaPolicy": "autoUpdate",
+                "otaScheduleStart": "00:00",
+                "otaScheduleEnd": "00:00"
+            },
+            "capabilities": {
+                "canSend": [],
+                "canReceive": [
+                    "customName"
+                ]
+            },
+            "room": {
+                "id": "88f27266-14a8-4d66-8e4f-e10a3318868e",
+                "name": "Küche",
+                "color": "ikea_red_no_39",
+                "icon": "rooms_kitchen"
+            },
+            "deviceSet": [],
+            "remoteLinks": [],
+            "isHidden": false
+        },
+        {
+            "id": "bab217dc-5d46-42af-a3a4-6a53b9a953da_1",
+            "type": "sensor",
+            "deviceType": "openCloseSensor",
+            "createdAt": "2024-10-10T14:05:20.000Z",
+            "isReachable": true,
+            "lastSeen": "2026-01-09T17:23:15.000Z",
+            "customIcon": "placement_door",
+            "attributes": {
+                "customName": "Entry Door",
+                "model": "PARASOLL Door/Window Sensor",
+                "manufacturer": "IKEA of Sweden",
+                "firmwareVersion": "1.0.19",
+                "hardwareVersion": "1",
+                "serialNumber": "F84477FFFEDC7871",
+                "productCode": "E2013",
+                "batteryPercentage": 34,
+                "identifyStarted": "2000-01-01T00:00:00.000Z",
+                "identifyPeriod": 0,
+                "isOpen": false,
+                "permittingJoin": false
+            },
+            "capabilities": {
+                "canSend": [],
+                "canReceive": [
+                    "customName"
+                ]
+            },
+            "room": {
+                "id": "2abdfb7b-d080-4b00-b576-0c6fb73e9b3b",
+                "name": "Lobby HWR",
+                "color": "ikea_pink_no_4",
+                "icon": "rooms_drill"
+            },
+            "deviceSet": [],
+            "remoteLinks": [],
+            "isHidden": false
+        },
+        {
+            "id": "339a37ea-791d-4b5d-8a1d-21d068578421_1",
+            "type": "outlet",
+            "deviceType": "outlet",
+            "createdAt": "2024-10-17T21:17:45.000Z",
+            "isReachable": true,
+            "lastSeen": "2026-01-09T23:38:44.000Z",
+            "attributes": {
+                "customName": "Bathroom Light Plug",
+                "model": "TRETAKT Smart plug",
+                "manufacturer": "IKEA of Sweden",
+                "firmwareVersion": "2.4.4",
+                "hardwareVersion": "1",
+                "serialNumber": "D44867FFFE140EDE",
+                "productCode": "E2204",
+                "isOn": false,
+                "startupOnOff": "startPrevious",
+                "lightLevel": 100,
+                "startUpCurrentLevel": -1,
+                "childLock": false,
+                "statusLight": true,
+                "identifyStarted": "2000-01-01T00:00:00.000Z",
+                "identifyPeriod": 0,
+                "permittingJoin": false,
+                "otaStatus": "upToDate",
+                "otaState": "readyToCheck",
+                "otaProgress": 0,
+                "otaPolicy": "autoUpdate",
+                "otaScheduleStart": "00:00",
+                "otaScheduleEnd": "00:00"
+            },
+            "capabilities": {
+                "canSend": [],
+                "canReceive": [
+                    "customName",
+                    "isOn",
+                    "lightLevel",
+                    "childLock",
+                    "statusLight"
+                ]
+            },
+            "room": {
+                "id": "7bc86420-cf4a-4a58-beff-7dcf462258da",
+                "name": "Badezimmer",
+                "color": "ikea_blue_no_58",
+                "icon": "rooms_bathtub"
+            },
+            "deviceSet": [],
+            "remoteLinks": [
+                "ca856a7d-a715-42f7-84a1-7caae41e6ff2_1"
+            ],
+            "isHidden": false
+        },
+        {
+            "id": "ca856a7d-a715-42f7-84a1-7caae41e6ff2_1",
+            "relationId": "ca856a7d-a715-42f7-84a1-7caae41e6ff2",
+            "type": "sensor",
+            "deviceType": "motionSensor",
+            "createdAt": "2024-10-10T14:24:07.000Z",
+            "isReachable": true,
+            "lastSeen": "2026-01-09T23:33:46.000Z",
+            "attributes": {
+                "customName": "Bathroom Motion",
+                "model": "VALLHORN Wireless Motion Sensor",
+                "manufacturer": "IKEA of Sweden",
+                "firmwareVersion": "1.0.64",
+                "hardwareVersion": "1",
+                "serialNumber": "8C65A3FFFE355FB0",
+                "productCode": "E2134",
+                "batteryPercentage": 87,
+                "isOn": false,
+                "motionDetectedDelay": 20,
+                "isDetected": false,
+                "identifyStarted": "2000-01-01T00:00:00.000Z",
+                "identifyPeriod": 0,
+                "permittingJoin": false,
+                "sensorConfig": {
+                    "scheduleOn": false,
+                    "onDuration": 300,
+                    "schedule": {
+                        "onCondition": {
+                            "time": "20:00"
+                        },
+                        "offCondition": {
+                            "time": "07:00"
+                        }
+                    }
+                },
+                "circadianPresets": []
+            },
+            "capabilities": {
+                "canSend": [],
+                "canReceive": [
+                    "customName"
+                ]
+            },
+            "room": {
+                "id": "7bc86420-cf4a-4a58-beff-7dcf462258da",
+                "name": "Badezimmer",
+                "color": "ikea_blue_no_58",
+                "icon": "rooms_bathtub"
+            },
+            "deviceSet": [],
+            "remoteLinks": [],
+            "isHidden": false
+        },
+        {
+            "id": "ca856a7d-a715-42f7-84a1-7caae41e6ff2_3",
+            "relationId": "ca856a7d-a715-42f7-84a1-7caae41e6ff2",
+            "type": "unknown",
+            "deviceType": "lightSensor",
+            "createdAt": "2024-10-10T14:24:07.000Z",
+            "isReachable": true,
+            "lastSeen": "2026-01-09T23:33:46.000Z",
+            "attributes": {
+                "customName": "",
+                "model": "VALLHORN Wireless Motion Sensor",
+                "manufacturer": "IKEA of Sweden",
+                "firmwareVersion": "1.0.64",
+                "hardwareVersion": "1",
+                "serialNumber": "8C65A3FFFE355FB0",
+                "productCode": "E2134",
+                "illuminance": 0,
+                "identifyStarted": "2000-01-01T00:00:00.000Z",
+                "identifyPeriod": 0,
+                "permittingJoin": false
+            },
+            "capabilities": {
+                "canSend": [],
+                "canReceive": [
+                    "customName"
+                ]
+            },
+            "deviceSet": [],
+            "remoteLinks": [],
+            "isHidden": false
+        },
+        {
+            "id": "b3f1af6e-90ab-4690-b379-113a4b1b4429_1",
+            "type": "speaker",
+            "deviceType": "speaker",
+            "createdAt": "2024-11-01T11:17:39.306Z",
+            "isReachable": true,
+            "lastSeen": "2026-01-09T15:32:56.602Z",
+            "attributes": {
+                "customName": "Terrasse",
+                "model": "SYMFONISK Bookshelf S21",
+                "manufacturer": "Sonos, Inc.",
+                "firmwareVersion": "86.2-70230",
+                "hardwareVersion": "1.20.3.3-2.0",
+                "serialNumber": "34-7E-5C-36-A9-64:7",
+                "productCode": "S21",
+                "identifyStarted": "2024-11-01T11:17:39.306Z",
+                "identifyPeriod": 0,
+                "playback": "playbackPaused",
+                "playbackLastChangedTimestamp": "2026-01-09T15:32:56.601Z",
+                "playbackAudio": {
+                    "serviceType": "sonos",
+                    "providerType": "Mixcloud",
+                    "playlist": {
+                        "id": "eyJhY2NvdW50VHlwZSI6InNvbm9zIiwiY29udGVudFR5cGUiOiJjb250YWluZXIiLCJjb250ZW50Ijp7ImNvbnRhaW5lciI6eyJhY2NvdW50SWQiOiJzbl8zIiwib2JqZWN0SWQiOiJmZWVkIiwic2VydmljZUlkIjoiMTgxIiwidHlwZSI6InBsYXlsaXN0In19fQ==",
+                        "title": "Feed",
+                        "imageURL": "https://app.mixcloud.com/media/images/sonos/icons/feed_legacy.png"
+                    },
+                    "playItem": {
+                        "id": "eyJhY2NvdW50VHlwZSI6InNvbm9zIiwiY29udGVudFR5cGUiOiJjb250YWluZXIiLCJjb250ZW50Ijp7ImNvbnRhaW5lciI6eyJhY2NvdW50SWQiOiJzbl8zIiwib2JqZWN0SWQiOiJjbG91ZGNhc3Q6MjE4NzQxMTA1OSIsInNlcnZpY2VJZCI6IjE4MSIsInR5cGUiOiJ0cmFjayJ9fX0=",
+                        "title": "TRANSITION Ep.4 - Alan Ritchie - 40 years of Acid House 1986 - 2026 Part 1 - Vinyl + Digital 3 deck",
+                        "artist": "souljazzfunksters",
+                        "album": "Feed",
+                        "imageURL": "http://192.168.1.96:1400/getaa?s=1&u=x-sonosapi-hls-static%3acloudcast%253a2187411059%3fsid%3d181%26flags%3d8232%26sn%3d3",
+                        "duration": 10811000
+                    },
+                    "nextPlayItem": {
+                        "id": "eyJhY2NvdW50VHlwZSI6InNvbm9zIiwiY29udGVudFR5cGUiOiJjb250YWluZXIiLCJjb250ZW50Ijp7ImNvbnRhaW5lciI6eyJhY2NvdW50SWQiOiJzbl8zIiwib2JqZWN0SWQiOiJjbG91ZGNhc3Q6MjE4NzQxMDkyNSIsInNlcnZpY2VJZCI6IjE4MSIsInR5cGUiOiJ0cmFjayJ9fX0=",
+                        "title": "Adult Contemporary Soulful Tracks",
+                        "artist": "TAKANOME",
+                        "album": "Feed",
+                        "imageURL": "http://192.168.1.96:1400/getaa?s=1&u=x-sonosapi-hls-static%3acloudcast%253a2187410925%3fsid%3d181%26flags%3d8232%26sn%3d3",
+                        "duration": 7381000
+                    }
+                },
+                "playbackPosition": {
+                    "position": 120952,
+                    "timestamp": "2026-01-09T15:32:56.600Z"
+                },
+                "playbackAvailableActions": {
+                    "crossfade": true,
+                    "pause": true,
+                    "repeat": [
+                        "off",
+                        "playItem",
+                        "playlist"
+                    ],
+                    "seek": true,
+                    "shuffle": true,
+                    "playbackNext": true,
+                    "playbackPrev": true
+                },
+                "playbackModes": {
+                    "crossfade": false,
+                    "repeat": "off",
+                    "shuffle": false
+                },
+                "volume": 12,
+                "isMuted": false,
+                "audioGroup": "4bcc0c49-1531-4990-986a-6ae04d3fbdd7"
+            },
+            "capabilities": {
+                "canSend": [],
+                "canReceive": [
+                    "playback",
+                    "playbackAudio",
+                    "volume",
+                    "isMuted"
+                ]
+            },
+            "room": {
+                "id": "893d50e0-f4bb-46ba-978d-e9280c6e299d",
+                "name": "Loft",
+                "color": "ikea_green_no_65",
+                "icon": "rooms_sofa"
+            },
+            "deviceSet": [],
+            "remoteLinks": [],
+            "isHidden": false
+        },
+        {
+            "id": "c9c63616-3be0-4a5a-83af-325999d16b5f_1",
+            "relationId": "c9c63616-3be0-4a5a-83af-325999d16b5f",
+            "type": "sensor",
+            "deviceType": "motionSensor",
+            "createdAt": "2024-12-08T15:10:08.000Z",
+            "isReachable": true,
+            "lastSeen": "2026-01-09T23:40:16.000Z",
+            "customIcon": "products_motion_sensor_2",
+            "attributes": {
+                "customName": "Bedroom Motion ",
+                "model": "VALLHORN Wireless Motion Sensor",
+                "manufacturer": "IKEA of Sweden",
+                "firmwareVersion": "1.0.64",
+                "hardwareVersion": "1",
+                "serialNumber": "8C65A3FFFE3DCE8C",
+                "productCode": "E2134",
+                "batteryPercentage": 59,
+                "isOn": false,
+                "motionDetectedDelay": 20,
+                "isDetected": false,
+                "identifyStarted": "2000-01-01T00:00:00.000Z",
+                "identifyPeriod": 0,
+                "permittingJoin": false,
+                "sensorConfig": {
+                    "scheduleOn": false,
+                    "onDuration": 300,
+                    "schedule": {
+                        "onCondition": {
+                            "time": "20:00"
+                        },
+                        "offCondition": {
+                            "time": "07:00"
+                        }
+                    }
+                },
+                "circadianPresets": []
+            },
+            "capabilities": {
+                "canSend": [],
+                "canReceive": [
+                    "customName"
+                ]
+            },
+            "room": {
+                "id": "4328471f-03cd-4372-aa1e-e3e9f3be3da4",
+                "name": "Schlafzimmer ",
+                "color": "ikea_beige_no_3",
+                "icon": "rooms_bed"
+            },
+            "deviceSet": [],
+            "remoteLinks": [],
+            "isHidden": false
+        },
+        {
+            "id": "c9c63616-3be0-4a5a-83af-325999d16b5f_3",
+            "relationId": "c9c63616-3be0-4a5a-83af-325999d16b5f",
+            "type": "unknown",
+            "deviceType": "lightSensor",
+            "createdAt": "2024-12-08T15:10:08.000Z",
+            "isReachable": true,
+            "lastSeen": "2026-01-09T23:40:16.000Z",
+            "attributes": {
+                "customName": "",
+                "model": "VALLHORN Wireless Motion Sensor",
+                "manufacturer": "IKEA of Sweden",
+                "firmwareVersion": "1.0.64",
+                "hardwareVersion": "1",
+                "serialNumber": "8C65A3FFFE3DCE8C",
+                "productCode": "E2134",
+                "illuminance": 0,
+                "identifyStarted": "2000-01-01T00:00:00.000Z",
+                "identifyPeriod": 0,
+                "permittingJoin": false
+            },
+            "capabilities": {
+                "canSend": [],
+                "canReceive": [
+                    "customName"
+                ]
+            },
+            "deviceSet": [],
+            "remoteLinks": [],
+            "isHidden": false
+        },
+        {
+            "id": "9af826ad-a8ad-40bf-8aed-125300bccd20_1",
+            "type": "sensor",
+            "deviceType": "waterSensor",
+            "createdAt": "2024-10-17T12:38:02.000Z",
+            "isReachable": true,
+            "lastSeen": "2026-01-09T16:30:40.000Z",
+            "attributes": {
+                "customName": "HWR Water Leak",
+                "model": "BADRING Water Leakage Sensor",
+                "manufacturer": "IKEA of Sweden",
+                "firmwareVersion": "1.0.7",
+                "hardwareVersion": "1",
+                "serialNumber": "D44867FFFE147386",
+                "productCode": "E2202",
+                "batteryPercentage": 15,
+                "waterLeakDetected": false,
+                "permittingJoin": false,
+                "otaStatus": "upToDate",
+                "otaState": "readyToCheck",
+                "otaProgress": 0,
+                "otaPolicy": "autoUpdate",
+                "otaScheduleStart": "00:00",
+                "otaScheduleEnd": "00:00"
+            },
+            "capabilities": {
+                "canSend": [],
+                "canReceive": [
+                    "customName"
+                ]
+            },
+            "room": {
+                "id": "2abdfb7b-d080-4b00-b576-0c6fb73e9b3b",
+                "name": "Lobby HWR",
+                "color": "ikea_pink_no_4",
+                "icon": "rooms_drill"
+            },
+            "deviceSet": [],
+            "remoteLinks": [],
+            "isHidden": false
+        },
+        {
+            "id": "ee61c57f-8efa-44f4-ba8a-d108ae054138_1",
+            "type": "sensor",
+            "deviceType": "motionSensor",
+            "createdAt": "2024-10-10T14:56:23.000Z",
+            "isReachable": true,
+            "lastSeen": "2026-01-09T21:49:43.000Z",
+            "attributes": {
+                "customName": "HWR Motion",
+                "model": "TRADFRI motion sensor",
+                "manufacturer": "IKEA of Sweden",
+                "firmwareVersion": "24.4.5",
+                "hardwareVersion": "1",
+                "serialNumber": "BC33ACFFFE8739CC",
+                "productCode": "E1745",
+                "batteryPercentage": 90,
+                "isOn": false,
+                "lightLevel": 1,
+                "permittingJoin": false,
+                "isDetected": false,
+                "otaStatus": "upToDate",
+                "otaState": "readyToCheck",
+                "otaProgress": 0,
+                "otaPolicy": "autoUpdate",
+                "otaScheduleStart": "00:00",
+                "otaScheduleEnd": "00:00",
+                "sensorConfig": {
+                    "scheduleOn": false,
+                    "onDuration": 300,
+                    "schedule": {
+                        "onCondition": {
+                            "time": "20:00"
+                        },
+                        "offCondition": {
+                            "time": "07:00"
+                        }
+                    }
+                },
+                "circadianPresets": []
+            },
+            "capabilities": {
+                "canSend": [
+                    "isOn",
+                    "lightLevel"
+                ],
+                "canReceive": [
+                    "customName"
+                ]
+            },
+            "room": {
+                "id": "2abdfb7b-d080-4b00-b576-0c6fb73e9b3b",
+                "name": "Lobby HWR",
+                "color": "ikea_pink_no_4",
+                "icon": "rooms_drill"
+            },
+            "deviceSet": [],
+            "remoteLinks": [],
+            "isHidden": false
+        },
+        {
+            "id": "8c305bb1-4b3b-4101-b40e-2d684f595a23_1",
+            "type": "light",
+            "deviceType": "light",
+            "createdAt": "2025-04-28T15:09:52.000Z",
+            "isReachable": false,
+            "lastSeen": "2026-01-08T16:30:33.000Z",
+            "customIcon": "lighting_wall_lamp",
+            "attributes": {
+                "customName": "Terrace Kitchen",
+                "model": "TRADFRI bulb E27 CWS globe 806lm",
+                "manufacturer": "IKEA of Sweden",
+                "firmwareVersion": "1.0.38",
+                "hardwareVersion": "1",
+                "serialNumber": "403059FFFE4CEF43",
+                "productCode": "LED2109G6",
+                "isOn": true,
+                "startupOnOff": "startOn",
+                "lightLevel": 45,
+                "startUpCurrentLevel": -1,
+                "colorHue": 29.566120351731797,
+                "colorSaturation": 0.9993372179119,
+                "colorTemperature": 2702,
+                "colorTemperatureMin": 4000,
+                "colorTemperatureMax": 2202,
+                "startupTemperature": -1,
+                "colorMode": "color",
+                "identifyStarted": "2000-01-01T00:00:00.000Z",
+                "identifyPeriod": 0,
+                "permittingJoin": false,
+                "otaStatus": "upToDate",
+                "otaState": "readyToCheck",
+                "otaProgress": 0,
+                "otaPolicy": "autoUpdate",
+                "otaScheduleStart": "00:00",
+                "otaScheduleEnd": "00:00",
+                "deviceOnBehavior": {
+                    "behavior": "lastValue",
+                    "profileId": ""
+                }
+            },
+            "capabilities": {
+                "canSend": [],
+                "canReceive": [
+                    "customName",
+                    "isOn",
+                    "lightLevel",
+                    "colorTemperature",
+                    "colorHue",
+                    "colorSaturation"
+                ]
+            },
+            "room": {
+                "id": "b449bb98-fd76-4d4c-9e84-2ef9fe867822",
+                "name": "Terrace",
+                "color": "ikea_green_no_65",
+                "icon": "rooms_flower"
+            },
+            "deviceSet": [
+                {
+                    "id": "bdd6537d-7ec1-4215-a5e5-149ae681ce44",
+                    "name": "Terrace Lights",
+                    "icon": "lighting_chandelier"
+                }
+            ],
+            "remoteLinks": [],
+            "isHidden": false,
+            "adaptiveProfile": {}
+        },
+        {
+            "id": "9c57826c-91c6-468f-8693-6f4300e11a3d_1",
+            "relationId": "9c57826c-91c6-468f-8693-6f4300e11a3d",
+            "type": "sensor",
+            "deviceType": "motionSensor",
+            "createdAt": "2024-12-09T09:27:56.000Z",
+            "isReachable": true,
+            "lastSeen": "2026-01-09T23:39:53.000Z",
+            "customIcon": "products_motion_sensor_2",
+            "attributes": {
+                "customName": "Loft Motion ",
+                "model": "VALLHORN Wireless Motion Sensor",
+                "manufacturer": "IKEA of Sweden",
+                "firmwareVersion": "1.0.64",
+                "hardwareVersion": "1",
+                "serialNumber": "8C65A3FFFE3DD0AD",
+                "productCode": "E2134",
+                "batteryPercentage": 46,
+                "isOn": false,
+                "motionDetectedDelay": 20,
+                "isDetected": false,
+                "identifyStarted": "2000-01-01T00:00:00.000Z",
+                "identifyPeriod": 0,
+                "permittingJoin": false,
+                "sensorConfig": {
+                    "scheduleOn": false,
+                    "onDuration": 180,
+                    "schedule": {
+                        "onCondition": {
+                            "time": "20:00"
+                        },
+                        "offCondition": {
+                            "time": "07:00"
+                        }
+                    }
+                },
+                "circadianPresets": []
+            },
+            "capabilities": {
+                "canSend": [],
+                "canReceive": [
+                    "customName"
+                ]
+            },
+            "room": {
+                "id": "893d50e0-f4bb-46ba-978d-e9280c6e299d",
+                "name": "Loft",
+                "color": "ikea_green_no_65",
+                "icon": "rooms_sofa"
+            },
+            "deviceSet": [],
+            "remoteLinks": [],
+            "isHidden": false
+        },
+        {
+            "id": "9c57826c-91c6-468f-8693-6f4300e11a3d_3",
+            "relationId": "9c57826c-91c6-468f-8693-6f4300e11a3d",
+            "type": "unknown",
+            "deviceType": "lightSensor",
+            "createdAt": "2024-12-09T09:27:56.000Z",
+            "isReachable": true,
+            "lastSeen": "2026-01-09T23:39:53.000Z",
+            "attributes": {
+                "customName": "",
+                "model": "VALLHORN Wireless Motion Sensor",
+                "manufacturer": "IKEA of Sweden",
+                "firmwareVersion": "1.0.64",
+                "hardwareVersion": "1",
+                "serialNumber": "8C65A3FFFE3DD0AD",
+                "productCode": "E2134",
+                "illuminance": 0,
+                "identifyStarted": "2000-01-01T00:00:00.000Z",
+                "identifyPeriod": 0,
+                "permittingJoin": false
+            },
+            "capabilities": {
+                "canSend": [],
+                "canReceive": [
+                    "customName"
+                ]
+            },
+            "deviceSet": [],
+            "remoteLinks": [],
+            "isHidden": false
+        },
+        {
+            "id": "d791dc18-9180-45c7-92fc-604481a34f15_1",
+            "type": "light",
+            "deviceType": "light",
+            "createdAt": "2024-10-04T18:00:31.000Z",
+            "isReachable": true,
+            "lastSeen": "2026-01-09T14:37:32.000Z",
+            "customIcon": "lighting_cone_pendant",
+            "attributes": {
+                "customName": "Dining Front Lamp",
+                "model": "TRADFRI bulb E27 CWS globe 806lm",
+                "manufacturer": "IKEA of Sweden",
+                "firmwareVersion": "1.0.38",
+                "hardwareVersion": "1",
+                "serialNumber": "8C65A3FFFEC9113D",
+                "productCode": "LED2109G6",
+                "isOn": true,
+                "startupOnOff": "startOn",
+                "lightLevel": 35,
+                "startUpCurrentLevel": -1,
+                "colorHue": 35.38637719224283,
+                "colorSaturation": 0.9994141260492038,
+                "colorTemperature": 2202,
+                "colorTemperatureMin": 4000,
+                "colorTemperatureMax": 2202,
+                "startupTemperature": -1,
+                "colorMode": "color",
+                "identifyStarted": "2000-01-01T00:00:00.000Z",
+                "identifyPeriod": 0,
+                "permittingJoin": false,
+                "otaStatus": "upToDate",
+                "otaState": "readyToCheck",
+                "otaProgress": 0,
+                "otaPolicy": "autoUpdate",
+                "otaScheduleStart": "00:00",
+                "otaScheduleEnd": "00:00",
+                "deviceOnBehavior": {
+                    "behavior": "lastValue",
+                    "profileId": ""
+                }
+            },
+            "capabilities": {
+                "canSend": [],
+                "canReceive": [
+                    "customName",
+                    "isOn",
+                    "lightLevel",
+                    "colorTemperature",
+                    "colorHue",
+                    "colorSaturation"
+                ]
+            },
+            "room": {
+                "id": "921edb07-e344-4c70-a09e-11935c727f58",
+                "name": "Esszimmer",
+                "color": "ikea_yellow_no_31",
+                "icon": "rooms_cutlery"
+            },
+            "deviceSet": [],
+            "remoteLinks": [
+                "22e4b77b-9a60-4727-944b-0d5e3e33b58f_1"
+            ],
+            "isHidden": false,
+            "adaptiveProfile": {}
+        },
+        {
+            "id": "07cca6c2-f2b6-4f57-bfd9-a788a16d1eef_1",
+            "type": "sensor",
+            "deviceType": "openCloseSensor",
+            "createdAt": "2024-10-09T21:23:19.000Z",
+            "isReachable": false,
+            "lastSeen": "2026-01-08T16:30:31.000Z",
+            "customIcon": "placement_door",
+            "attributes": {
+                "customName": "Door Kitchen",
+                "model": "PARASOLL Door/Window Sensor",
+                "manufacturer": "IKEA of Sweden",
+                "firmwareVersion": "1.0.19",
+                "hardwareVersion": "1",
+                "serialNumber": "D44867FFFEC2D1F0",
+                "productCode": "E2013",
+                "batteryPercentage": 54,
+                "identifyStarted": "2000-01-01T00:00:00.000Z",
+                "identifyPeriod": 0,
+                "isOpen": false,
+                "permittingJoin": false
+            },
+            "capabilities": {
+                "canSend": [],
+                "canReceive": [
+                    "customName"
+                ]
+            },
+            "room": {
+                "id": "88f27266-14a8-4d66-8e4f-e10a3318868e",
+                "name": "Küche",
+                "color": "ikea_red_no_39",
+                "icon": "rooms_kitchen"
+            },
+            "deviceSet": [],
+            "remoteLinks": [],
+            "isHidden": false
+        },
+        {
+            "id": "5ac5e131-44a4-4d75-be78-759a095d31fb_1",
+            "relationId": "5ac5e131-44a4-4d75-be78-759a095d31fb",
+            "type": "sensor",
+            "deviceType": "motionSensor",
+            "createdAt": "2024-10-09T17:29:53.000Z",
+            "isReachable": true,
+            "lastSeen": "2026-01-09T18:01:15.000Z",
+            "attributes": {
+                "customName": "Lavatory Motion",
+                "model": "VALLHORN Wireless Motion Sensor",
+                "manufacturer": "IKEA of Sweden",
+                "firmwareVersion": "1.0.64",
+                "hardwareVersion": "1",
+                "serialNumber": "8C65A3FFFE35C8D4",
+                "productCode": "E2134",
+                "batteryPercentage": 50,
+                "isOn": false,
+                "motionDetectedDelay": 20,
+                "isDetected": false,
+                "identifyStarted": "2000-01-01T00:00:00.000Z",
+                "identifyPeriod": 0,
+                "permittingJoin": false,
+                "sensorConfig": {
+                    "scheduleOn": false,
+                    "onDuration": 180,
+                    "schedule": {
+                        "onCondition": {
+                            "time": "20:00"
+                        },
+                        "offCondition": {
+                            "time": "07:00"
+                        }
+                    }
+                },
+                "circadianPresets": [
+                    {
+                        "startTime": "05:00",
+                        "lightLevel": 100,
+                        "colorTemperature": 4000
+                    },
+                    {
+                        "startTime": "10:00",
+                        "lightLevel": 100,
+                        "colorTemperature": 3800
+                    },
+                    {
+                        "startTime": "17:00",
+                        "lightLevel": 75,
+                        "colorTemperature": 3500
+                    },
+                    {
+                        "startTime": "20:00",
+                        "lightLevel": 45,
+                        "colorTemperature": 3000
+                    },
+                    {
+                        "startTime": "22:00",
+                        "lightLevel": 20,
+                        "colorTemperature": 2400
+                    },
+                    {
+                        "startTime": "23:00",
+                        "lightLevel": 1,
+                        "colorTemperature": 2200
+                    }
+                ]
+            },
+            "capabilities": {
+                "canSend": [],
+                "canReceive": [
+                    "customName"
+                ]
+            },
+            "room": {
+                "id": "c9e407e5-5bfa-4e73-aaf3-c0258d9ccb5f",
+                "name": "Gäste WC",
+                "color": "ikea_blue_no_58",
+                "icon": "rooms_sink"
+            },
+            "deviceSet": [],
+            "remoteLinks": [],
+            "isHidden": false
+        },
+        {
+            "id": "5ac5e131-44a4-4d75-be78-759a095d31fb_3",
+            "relationId": "5ac5e131-44a4-4d75-be78-759a095d31fb",
+            "type": "unknown",
+            "deviceType": "lightSensor",
+            "createdAt": "2024-10-09T17:29:53.000Z",
+            "isReachable": true,
+            "lastSeen": "2026-01-09T18:01:15.000Z",
+            "attributes": {
+                "customName": "",
+                "model": "VALLHORN Wireless Motion Sensor",
+                "manufacturer": "IKEA of Sweden",
+                "firmwareVersion": "1.0.64",
+                "hardwareVersion": "1",
+                "serialNumber": "8C65A3FFFE35C8D4",
+                "productCode": "E2134",
+                "illuminance": 0,
+                "identifyStarted": "2000-01-01T00:00:00.000Z",
+                "identifyPeriod": 0,
+                "permittingJoin": false
+            },
+            "capabilities": {
+                "canSend": [],
+                "canReceive": [
+                    "customName"
+                ]
+            },
+            "deviceSet": [],
+            "remoteLinks": [],
+            "isHidden": false
+        },
+        {
+            "id": "ec549fa8-4e35-4f27-90e9-bb67e68311f2_1",
+            "type": "outlet",
+            "deviceType": "outlet",
+            "createdAt": "2024-10-08T20:43:31.000Z",
+            "isReachable": true,
+            "lastSeen": "2026-01-09T23:54:01.000Z",
+            "attributes": {
+                "customName": "Loft Smart Plug",
+                "model": "INSPELNING Smart plug",
+                "manufacturer": "IKEA of Sweden",
+                "firmwareVersion": "2.4.45",
+                "hardwareVersion": "1",
+                "serialNumber": "ECF64CFFFEF28EC3",
+                "productCode": "E2206",
+                "isOn": true,
+                "startupOnOff": "startPrevious",
+                "lightLevel": 1,
+                "startUpCurrentLevel": -1,
+                "currentVoltage": 234.60000610351562,
+                "currentAmps": 0.02500000037252903,
+                "currentActivePower": 0.30000001192092896,
+                "totalEnergyConsumed": 141.1699981689453,
+                "totalEnergyConsumedLastUpdated": "2026-01-09T23:53:38.000Z",
+                "energyConsumedAtLastReset": 0.5170000195503235,
+                "timeOfLastEnergyReset": "2024-11-25T07:48:03.000Z",
+                "childLock": false,
+                "statusLight": false,
+                "colorHue": 29.728890713406543,
+                "colorSaturation": 0.7095952773290123,
+                "colorTemperature": 3816,
+                "colorMode": "temperature",
+                "identifyStarted": "2000-01-01T00:00:00.000Z",
+                "identifyPeriod": 0,
+                "permittingJoin": false,
+                "otaStatus": "upToDate",
+                "otaState": "readyToCheck",
+                "otaProgress": 0,
+                "otaPolicy": "autoUpdate",
+                "otaScheduleStart": "00:00",
+                "otaScheduleEnd": "00:00"
+            },
+            "capabilities": {
+                "canSend": [],
+                "canReceive": [
+                    "customName",
+                    "isOn",
+                    "lightLevel",
+                    "energyConsumedAtLastReset",
+                    "childLock",
+                    "statusLight",
+                    "colorTemperature",
+                    "colorHue",
+                    "colorSaturation"
+                ]
+            },
+            "room": {
+                "id": "893d50e0-f4bb-46ba-978d-e9280c6e299d",
+                "name": "Loft",
+                "color": "ikea_green_no_65",
+                "icon": "rooms_sofa"
+            },
+            "deviceSet": [],
+            "remoteLinks": [],
+            "isHidden": false
+        },
+        {
+            "id": "f80cac12-65a4-47b4-9f68-a0456a349a43_1",
+            "type": "sensor",
+            "deviceType": "environmentSensor",
+            "createdAt": "2024-10-17T08:00:25.000Z",
+            "isReachable": true,
+            "lastSeen": "2026-01-09T23:54:32.000Z",
+            "attributes": {
+                "customName": "Loft Air Sensor",
+                "model": "VINDSTYRKA",
+                "manufacturer": "IKEA of Sweden",
+                "firmwareVersion": "1.0.11",
+                "hardwareVersion": "1",
+                "serialNumber": "28DBA7FFFEDFFBF6",
+                "productCode": "E2112",
+                "currentTemperature": 22,
+                "currentRH": 56,
+                "currentPM25": 62,
+                "maxMeasuredPM25": 999,
+                "minMeasuredPM25": 0,
+                "vocIndex": 92,
+                "identifyStarted": "2000-01-01T00:00:00.000Z",
+                "identifyPeriod": 0,
+                "permittingJoin": false,
+                "otaStatus": "upToDate",
+                "otaState": "readyToCheck",
+                "otaProgress": 0,
+                "otaPolicy": "autoUpdate",
+                "otaScheduleStart": "00:00",
+                "otaScheduleEnd": "00:00"
+            },
+            "capabilities": {
+                "canSend": [],
+                "canReceive": [
+                    "customName"
+                ]
+            },
+            "room": {
+                "id": "893d50e0-f4bb-46ba-978d-e9280c6e299d",
+                "name": "Loft",
+                "color": "ikea_green_no_65",
+                "icon": "rooms_sofa"
+            },
+            "deviceSet": [],
+            "remoteLinks": [],
+            "isHidden": false
+        },
+        {
+            "id": "8e4e013f-349a-479b-9866-75bdfe0cc76b_1",
+            "type": "light",
+            "deviceType": "light",
+            "createdAt": "2025-10-24T15:04:56.000Z",
+            "isReachable": true,
+            "lastSeen": "2026-01-09T23:52:22.000Z",
+            "customIcon": "lighting_cone_pendant",
+            "attributes": {
+                "customName": "Maurice Light",
+                "model": "TRADFRI bulb E27 WS opal 1000lm",
+                "manufacturer": "IKEA of Sweden",
+                "firmwareVersion": "2.3.095",
+                "hardwareVersion": "1",
+                "serialNumber": "680AE2FFFEAFA92F",
+                "productCode": "LED1732G11E27",
+                "isOn": false,
+                "startupOnOff": "startOn",
+                "lightLevel": 100,
+                "startUpCurrentLevel": -1,
+                "colorTemperature": 2702,
+                "colorTemperatureMin": 4000,
+                "colorTemperatureMax": 2202,
+                "startupTemperature": -1,
+                "colorMode": "temperature",
+                "identifyStarted": "2000-01-01T00:00:00.000Z",
+                "identifyPeriod": 0,
+                "permittingJoin": false,
+                "otaStatus": "upToDate",
+                "otaState": "readyToCheck",
+                "otaProgress": 0,
+                "otaPolicy": "autoUpdate",
+                "otaScheduleStart": "00:00",
+                "otaScheduleEnd": "00:00",
+                "deviceOnBehavior": {
+                    "behavior": "lastValue",
+                    "profileId": ""
+                }
+            },
+            "capabilities": {
+                "canSend": [],
+                "canReceive": [
+                    "customName",
+                    "isOn",
+                    "lightLevel",
+                    "colorTemperature"
+                ]
+            },
+            "room": {
+                "id": "0b84f41e-163c-4411-8b7c-cebb1e41bb9e",
+                "name": "Maurice",
+                "color": "ncs_s_1020_r10b",
+                "icon": "rooms_book_case"
+            },
+            "deviceSet": [],
+            "remoteLinks": [
+                "5c26221d-a80e-4847-9807-000780b20df1_1"
+            ],
+            "isHidden": false,
+            "adaptiveProfile": {}
+        },
+        {
+            "id": "5ffa4a1e-6fe2-4a24-b0af-b216937c4e8c_1",
+            "type": "light",
+            "deviceType": "light",
+            "createdAt": "2024-10-09T18:04:54.000Z",
+            "isReachable": true,
+            "lastSeen": "2026-01-09T17:40:25.000Z",
+            "attributes": {
+                "customName": "Lavatory Right",
+                "model": "TRADFRI bulb E14 WS candle 470lm",
+                "manufacturer": "IKEA of Sweden",
+                "firmwareVersion": "3.0.21",
+                "hardwareVersion": "1",
+                "serialNumber": "30FB10FFFEE44843",
+                "productCode": "LED2107C4",
+                "isOn": false,
+                "startupOnOff": "startOn",
+                "lightLevel": 75,
+                "startUpCurrentLevel": -1,
+                "colorTemperature": 3521,
+                "colorTemperatureMin": 4000,
+                "colorTemperatureMax": 2202,
+                "startupTemperature": -1,
+                "colorMode": "temperature",
+                "identifyStarted": "2000-01-01T00:00:00.000Z",
+                "identifyPeriod": 0,
+                "permittingJoin": false,
+                "otaStatus": "upToDate",
+                "otaState": "readyToCheck",
+                "otaProgress": 0,
+                "otaPolicy": "autoUpdate",
+                "otaScheduleStart": "00:00",
+                "otaScheduleEnd": "00:00",
+                "deviceOnBehavior": {
+                    "behavior": "lastValue",
+                    "profileId": ""
+                }
+            },
+            "capabilities": {
+                "canSend": [],
+                "canReceive": [
+                    "customName",
+                    "isOn",
+                    "lightLevel",
+                    "colorTemperature"
+                ]
+            },
+            "room": {
+                "id": "c9e407e5-5bfa-4e73-aaf3-c0258d9ccb5f",
+                "name": "Gäste WC",
+                "color": "ikea_blue_no_58",
+                "icon": "rooms_sink"
+            },
+            "deviceSet": [
+                {
+                    "id": "e24f112a-5988-458e-958c-02ad031873e6",
+                    "name": "Lavatory Lights",
+                    "icon": "lighting_led_strip"
+                }
+            ],
+            "remoteLinks": [
+                "5ac5e131-44a4-4d75-be78-759a095d31fb_1"
+            ],
+            "isHidden": false,
+            "adaptiveProfile": {}
+        },
+        {
+            "id": "fdf76cbe-e758-4521-81ba-0295e9c6c68c_1",
+            "relationId": "fdf76cbe-e758-4521-81ba-0295e9c6c68c",
+            "type": "controller",
+            "deviceType": "shortcutController",
+            "createdAt": "2024-12-08T15:42:24.000Z",
+            "isReachable": true,
+            "lastSeen": "2026-01-09T22:37:00.000Z",
+            "customIcon": "products_shortcut_remote_2",
+            "attributes": {
+                "customName": "Shortcut Kitchen",
+                "model": "SOMRIG shortcut button",
+                "manufacturer": "IKEA of Sweden",
+                "firmwareVersion": "1.0.21",
+                "hardwareVersion": "1",
+                "serialNumber": "6CFD22FFFEF2723A",
+                "productCode": "E2213",
+                "batteryPercentage": 30,
+                "switchLabel": "Shortcut 1",
+                "isOn": false,
+                "lightLevel": 1,
+                "permittingJoin": false,
+                "otaStatus": "upToDate",
+                "otaState": "readyToCheck",
+                "otaProgress": 0,
+                "otaPolicy": "autoUpdate",
+                "otaScheduleStart": "00:00",
+                "otaScheduleEnd": "00:00"
+            },
+            "capabilities": {
+                "canSend": [
+                    "singlePress",
+                    "longPress",
+                    "doublePress"
+                ],
+                "canReceive": [
+                    "customName"
+                ]
+            },
+            "room": {
+                "id": "88f27266-14a8-4d66-8e4f-e10a3318868e",
+                "name": "Küche",
+                "color": "ikea_red_no_39",
+                "icon": "rooms_kitchen"
+            },
+            "deviceSet": [],
+            "remoteLinks": [],
+            "isHidden": false
+        },
+        {
+            "id": "fdf76cbe-e758-4521-81ba-0295e9c6c68c_2",
+            "relationId": "fdf76cbe-e758-4521-81ba-0295e9c6c68c",
+            "type": "controller",
+            "deviceType": "shortcutController",
+            "createdAt": "2024-12-08T15:42:24.000Z",
+            "isReachable": true,
+            "lastSeen": "2026-01-09T22:37:00.000Z",
+            "attributes": {
+                "customName": "",
+                "model": "SOMRIG shortcut button",
+                "manufacturer": "IKEA of Sweden",
+                "firmwareVersion": "1.0.21",
+                "hardwareVersion": "1",
+                "serialNumber": "6CFD22FFFEF2723A",
+                "productCode": "E2213",
+                "switchLabel": "Shortcut 2",
+                "isOn": false,
+                "lightLevel": 1,
+                "permittingJoin": false,
+                "otaStatus": "upToDate",
+                "otaState": "readyToCheck",
+                "otaProgress": 0,
+                "otaPolicy": "autoUpdate",
+                "otaScheduleStart": "00:00",
+                "otaScheduleEnd": "00:00"
+            },
+            "capabilities": {
+                "canSend": [
+                    "singlePress",
+                    "longPress",
+                    "doublePress"
+                ],
+                "canReceive": [
+                    "customName"
+                ]
+            },
+            "deviceSet": [],
+            "remoteLinks": [],
+            "isHidden": false
+        },
+        {
+            "id": "31825a91-ca5d-4a70-a3b6-ea00248ab686_1",
+            "type": "sensor",
+            "deviceType": "openCloseSensor",
+            "createdAt": "2025-01-09T20:20:39.000Z",
+            "isReachable": true,
+            "lastSeen": "2026-01-09T22:30:31.000Z",
+            "customIcon": "products_door_window_sensor",
+            "attributes": {
+                "customName": "Winecooler Door",
+                "model": "PARASOLL Door/Window Sensor",
+                "manufacturer": "IKEA of Sweden",
+                "firmwareVersion": "1.0.19",
+                "hardwareVersion": "1",
+                "serialNumber": "D44867FFFED44038",
+                "productCode": "E2013",
+                "batteryPercentage": 36,
+                "identifyStarted": "2000-01-01T00:00:00.000Z",
+                "identifyPeriod": 0,
+                "isOpen": false,
+                "permittingJoin": false
+            },
+            "capabilities": {
+                "canSend": [],
+                "canReceive": [
+                    "customName"
+                ]
+            },
+            "room": {
+                "id": "88f27266-14a8-4d66-8e4f-e10a3318868e",
+                "name": "Küche",
+                "color": "ikea_red_no_39",
+                "icon": "rooms_kitchen"
+            },
+            "deviceSet": [],
+            "remoteLinks": [],
+            "isHidden": false
+        },
+        {
+            "id": "a1e1eacc-2dcf-45bd-9f93-62a436b6a7ed_1",
+            "type": "light",
+            "deviceType": "light",
+            "createdAt": "2024-10-10T13:46:04.000Z",
+            "isReachable": false,
+            "lastSeen": "2026-01-09T23:09:08.000Z",
+            "customIcon": "lighting_cone_pendant",
+            "attributes": {
+                "customName": "Bathroom Panel",
+                "model": "FLOALT panel WS 30x90",
+                "manufacturer": "IKEA of Sweden",
+                "firmwareVersion": "2.3.087",
+                "hardwareVersion": "1",
+                "serialNumber": "804B50FFFEF79502",
+                "productCode": "",
+                "isOn": true,
+                "startupOnOff": "startOn",
+                "lightLevel": 49,
+                "startUpCurrentLevel": -1,
+                "colorTemperature": 4000,
+                "colorTemperatureMin": 4000,
+                "colorTemperatureMax": 2202,
+                "startupTemperature": -1,
+                "colorMode": "temperature",
+                "identifyStarted": "2000-01-01T00:00:00.000Z",
+                "identifyPeriod": 0,
+                "permittingJoin": false,
+                "otaStatus": "upToDate",
+                "otaState": "readyToCheck",
+                "otaProgress": 0,
+                "otaPolicy": "autoUpdate",
+                "otaScheduleStart": "00:00",
+                "otaScheduleEnd": "00:00",
+                "deviceOnBehavior": {
+                    "behavior": "lastValue",
+                    "profileId": ""
+                }
+            },
+            "capabilities": {
+                "canSend": [],
+                "canReceive": [
+                    "customName",
+                    "isOn",
+                    "lightLevel",
+                    "colorTemperature"
+                ]
+            },
+            "room": {
+                "id": "7bc86420-cf4a-4a58-beff-7dcf462258da",
+                "name": "Badezimmer",
+                "color": "ikea_blue_no_58",
+                "icon": "rooms_bathtub"
+            },
+            "deviceSet": [],
+            "remoteLinks": [],
+            "isHidden": false,
+            "adaptiveProfile": {}
+        },
+        {
+            "id": "8e92a454-1f31-4238-b1cd-6e67c697a93c_1",
+            "relationId": "8e92a454-1f31-4238-b1cd-6e67c697a93c",
+            "type": "controller",
+            "deviceType": "shortcutController",
+            "createdAt": "2025-03-17T03:27:04.000Z",
+            "isReachable": true,
+            "lastSeen": "2026-01-09T13:12:46.000Z",
+            "attributes": {
+                "customName": "",
+                "model": "SOMRIG shortcut button",
+                "manufacturer": "IKEA of Sweden",
+                "firmwareVersion": "1.0.21",
+                "hardwareVersion": "1",
+                "serialNumber": "ECF64CFFFE1EE52F",
+                "productCode": "E2213",
+                "batteryPercentage": 19,
+                "switchLabel": "Shortcut 1",
+                "isOn": false,
+                "lightLevel": 1,
+                "permittingJoin": false,
+                "otaStatus": "upToDate",
+                "otaState": "readyToCheck",
+                "otaProgress": 0,
+                "otaPolicy": "autoUpdate",
+                "otaScheduleStart": "00:00",
+                "otaScheduleEnd": "00:00"
+            },
+            "capabilities": {
+                "canSend": [
+                    "singlePress",
+                    "longPress",
+                    "doublePress"
+                ],
+                "canReceive": [
+                    "customName"
+                ]
+            },
+            "deviceSet": [],
+            "remoteLinks": [],
+            "isHidden": false
+        },
+        {
+            "id": "8e92a454-1f31-4238-b1cd-6e67c697a93c_2",
+            "relationId": "8e92a454-1f31-4238-b1cd-6e67c697a93c",
+            "type": "controller",
+            "deviceType": "shortcutController",
+            "createdAt": "2025-03-17T03:27:04.000Z",
+            "isReachable": true,
+            "lastSeen": "2026-01-09T13:12:46.000Z",
+            "attributes": {
+                "customName": "",
+                "model": "SOMRIG shortcut button",
+                "manufacturer": "IKEA of Sweden",
+                "firmwareVersion": "1.0.21",
+                "hardwareVersion": "1",
+                "serialNumber": "ECF64CFFFE1EE52F",
+                "productCode": "E2213",
+                "switchLabel": "Shortcut 2",
+                "isOn": false,
+                "lightLevel": 1,
+                "permittingJoin": false,
+                "otaStatus": "upToDate",
+                "otaState": "readyToCheck",
+                "otaProgress": 0,
+                "otaPolicy": "autoUpdate",
+                "otaScheduleStart": "00:00",
+                "otaScheduleEnd": "00:00"
+            },
+            "capabilities": {
+                "canSend": [
+                    "singlePress",
+                    "longPress",
+                    "doublePress"
+                ],
+                "canReceive": [
+                    "customName"
+                ]
+            },
+            "deviceSet": [],
+            "remoteLinks": [],
+            "isHidden": false
+        },
+        {
+            "id": "594197c3-23c9-4dc7-a6ca-1fe6a8455d29_1",
+            "relationId": "594197c3-23c9-4dc7-a6ca-1fe6a8455d29",
+            "type": "gateway",
+            "deviceType": "gateway",
+            "createdAt": "2024-03-08T06:39:04.019Z",
+            "isReachable": true,
+            "lastSeen": "2026-01-09T23:54:00.471Z",
+            "attributes": {
+                "customName": "Townhouse",
+                "model": "DIRIGERA Hub for smart products",
+                "manufacturer": "IKEA of Sweden",
+                "firmwareVersion": "2.866.4",
+                "hardwareVersion": "P2.5",
+                "serialNumber": "594197c3-23c9-4dc7-a6ca-1fe6a8455d29",
+                "identifyStarted": "2000-01-01T00:00:00.000Z",
+                "identifyPeriod": 0,
+                "otaStatus": "upToDate",
+                "otaState": "readyToCheck",
+                "otaProgress": 100,
+                "otaPolicy": "autoDownload",
+                "otaScheduleStart": "00:00",
+                "otaScheduleEnd": "00:00",
+                "permittingJoin": false,
+                "backendConnected": true,
+                "backendConnectionPersistent": true,
+                "backendOnboardingComplete": true,
+                "backendRegion": "eu-central-1",
+                "backendCountryCode": "DE",
+                "userConsents": [
+                    {
+                        "name": "analytics",
+                        "value": "disabled"
+                    },
+                    {
+                        "name": "diagnostics",
+                        "value": "enabled"
+                    }
+                ],
+                "logLevel": 3,
+                "coredump": false,
+                "timezone": "Europe/Berlin",
+                "nextSunSet": "2026-01-10T15:14:00.000Z",
+                "nextSunRise": "2026-01-10T07:15:00.000Z",
+                "homestate": "home",
+                "countryCode": "EN",
+                "coordinates": {
+                    "latitude": 52.523936309592116,
+                    "longitude": 13.39035669463384,
+                    "accuracy": -1
+                },
+                "isOn": false
+            },
+            "capabilities": {
+                "canSend": [],
+                "canReceive": [
+                    "customName",
+                    "permittingJoin",
+                    "userConsents",
+                    "logLevel",
+                    "time",
+                    "timezone",
+                    "countryCode",
+                    "coordinates"
+                ]
+            },
+            "deviceSet": [],
+            "remoteLinks": [],
+            "dynamicFeatures": [
+                {
+                    "type": "matterControllerEnabled",
+                    "enabled": true,
+                    "featureVersion": "1.0"
+                }
+            ]
+        },
+        {
+            "id": "58b01386-0ac5-46f2-a1fc-7702edef67bc_1",
+            "type": "light",
+            "deviceType": "light",
+            "createdAt": "2025-04-28T15:13:17.000Z",
+            "isReachable": false,
+            "lastSeen": "2026-01-08T16:30:33.000Z",
+            "customIcon": "lighting_wall_lamp",
+            "attributes": {
+                "customName": "Terrace Dining",
+                "model": "TRADFRI bulb E27 CWS globe 806lm",
+                "manufacturer": "IKEA of Sweden",
+                "firmwareVersion": "1.0.38",
+                "hardwareVersion": "1",
+                "serialNumber": "403059FFFED4E160",
+                "productCode": "LED2109G6",
+                "isOn": true,
+                "startupOnOff": "startOn",
+                "lightLevel": 43,
+                "startUpCurrentLevel": -1,
+                "colorHue": 29.566120351731797,
+                "colorSaturation": 0.9993372179119,
+                "colorTemperature": 3003,
+                "colorTemperatureMin": 4000,
+                "colorTemperatureMax": 2202,
+                "startupTemperature": -1,
+                "colorMode": "color",
+                "identifyStarted": "2000-01-01T00:00:00.000Z",
+                "identifyPeriod": 0,
+                "permittingJoin": false,
+                "otaStatus": "upToDate",
+                "otaState": "readyToCheck",
+                "otaProgress": 0,
+                "otaPolicy": "autoUpdate",
+                "otaScheduleStart": "00:00",
+                "otaScheduleEnd": "00:00",
+                "deviceOnBehavior": {
+                    "behavior": "lastValue",
+                    "profileId": ""
+                }
+            },
+            "capabilities": {
+                "canSend": [],
+                "canReceive": [
+                    "customName",
+                    "isOn",
+                    "lightLevel",
+                    "colorTemperature",
+                    "colorHue",
+                    "colorSaturation"
+                ]
+            },
+            "room": {
+                "id": "b449bb98-fd76-4d4c-9e84-2ef9fe867822",
+                "name": "Terrace",
+                "color": "ikea_green_no_65",
+                "icon": "rooms_flower"
+            },
+            "deviceSet": [
+                {
+                    "id": "bdd6537d-7ec1-4215-a5e5-149ae681ce44",
+                    "name": "Terrace Lights",
+                    "icon": "lighting_chandelier"
+                }
+            ],
+            "remoteLinks": [],
+            "isHidden": false,
+            "adaptiveProfile": {}
+        },
+        {
+            "id": "517d75d3-c410-447b-b830-bd09b874988d_1",
+            "type": "light",
+            "deviceType": "light",
+            "createdAt": "2024-10-29T19:07:08.000Z",
+            "isReachable": true,
+            "lastSeen": "2026-01-09T23:53:31.000Z",
+            "customIcon": "lighting_table_lamp",
+            "attributes": {
+                "customName": "Bee Light",
+                "model": "TRADFRI bulb E27 WS opal 1000lm",
+                "manufacturer": "IKEA of Sweden",
+                "firmwareVersion": "2.3.095",
+                "hardwareVersion": "1",
+                "serialNumber": "680AE2FFFE160B58",
+                "productCode": "LED1732G11E27",
+                "isOn": true,
+                "startupOnOff": "startOn",
+                "lightLevel": 35,
+                "startUpCurrentLevel": -1,
+                "colorTemperature": 2202,
+                "colorTemperatureMin": 4000,
+                "colorTemperatureMax": 2202,
+                "startupTemperature": -1,
+                "colorMode": "temperature",
+                "identifyStarted": "2000-01-01T00:00:00.000Z",
+                "identifyPeriod": 0,
+                "permittingJoin": false,
+                "otaStatus": "upToDate",
+                "otaState": "readyToCheck",
+                "otaProgress": 0,
+                "otaPolicy": "autoUpdate",
+                "otaScheduleStart": "00:00",
+                "otaScheduleEnd": "00:00",
+                "deviceOnBehavior": {
+                    "behavior": "lastValue",
+                    "profileId": ""
+                }
+            },
+            "capabilities": {
+                "canSend": [],
+                "canReceive": [
+                    "customName",
+                    "isOn",
+                    "lightLevel",
+                    "colorTemperature"
+                ]
+            },
+            "room": {
+                "id": "b3021c3e-c8ac-4e66-b1c0-fee5f8b69afd",
+                "name": "Bee",
+                "color": "ncs_s_1020_r10b",
+                "icon": "rooms_pot_plant"
+            },
+            "deviceSet": [],
+            "remoteLinks": [
+                "9e9cb6b1-7981-443a-bd1e-5301815a25bd_1"
+            ],
+            "isHidden": false,
+            "adaptiveProfile": {}
+        },
+        {
+            "id": "32be5dd8-ea75-4c75-997e-124a162ee30b_1",
+            "type": "outlet",
+            "deviceType": "outlet",
+            "createdAt": "2024-12-10T13:21:26.000Z",
+            "isReachable": true,
+            "lastSeen": "2026-01-09T23:33:54.000Z",
+            "attributes": {
+                "customName": "Kitchen Ambience",
+                "model": "TRETAKT Smart plug",
+                "manufacturer": "IKEA of Sweden",
+                "firmwareVersion": "2.4.4",
+                "hardwareVersion": "1",
+                "serialNumber": "F84477FFFED9E5C0",
+                "productCode": "E2204",
+                "isOn": false,
+                "startupOnOff": "startPrevious",
+                "lightLevel": 52,
+                "startUpCurrentLevel": -1,
+                "childLock": false,
+                "statusLight": true,
+                "identifyStarted": "2000-01-01T00:00:00.000Z",
+                "identifyPeriod": 0,
+                "permittingJoin": false,
+                "otaStatus": "upToDate",
+                "otaState": "readyToCheck",
+                "otaProgress": 0,
+                "otaPolicy": "autoUpdate",
+                "otaScheduleStart": "00:00",
+                "otaScheduleEnd": "00:00"
+            },
+            "capabilities": {
+                "canSend": [],
+                "canReceive": [
+                    "customName",
+                    "isOn",
+                    "lightLevel",
+                    "childLock",
+                    "statusLight"
+                ]
+            },
+            "room": {
+                "id": "88f27266-14a8-4d66-8e4f-e10a3318868e",
+                "name": "Küche",
+                "color": "ikea_red_no_39",
+                "icon": "rooms_kitchen"
+            },
+            "deviceSet": [],
+            "remoteLinks": [
+                "aba66147-8d7f-4a42-8852-ee3525df693c_1"
+            ],
+            "isHidden": false
+        },
+        {
+            "id": "729e4705-147a-4c6a-abd6-ee966c2eaca5_1",
+            "type": "light",
+            "deviceType": "light",
+            "createdAt": "2025-01-09T20:13:54.000Z",
+            "isReachable": true,
+            "lastSeen": "2026-01-09T21:54:37.000Z",
+            "customIcon": "products_led_bulb",
+            "attributes": {
+                "customName": "Lobby Light",
+                "model": "TRADFRI bulb E14 WS globe 470lm",
+                "manufacturer": "IKEA of Sweden",
+                "firmwareVersion": "1.1.20",
+                "hardwareVersion": "1",
+                "serialNumber": "08DDEBFFFEB37924",
+                "productCode": "LED2101G4",
+                "isOn": false,
+                "startupOnOff": "startOn",
+                "lightLevel": 47,
+                "startUpCurrentLevel": -1,
+                "colorTemperature": 2403,
+                "colorTemperatureMin": 4000,
+                "colorTemperatureMax": 2202,
+                "startupTemperature": -1,
+                "colorMode": "temperature",
+                "identifyStarted": "2000-01-01T00:00:00.000Z",
+                "identifyPeriod": 0,
+                "permittingJoin": false,
+                "otaStatus": "upToDate",
+                "otaState": "readyToCheck",
+                "otaProgress": 0,
+                "otaPolicy": "autoUpdate",
+                "otaScheduleStart": "00:00",
+                "otaScheduleEnd": "00:00",
+                "deviceOnBehavior": {
+                    "behavior": "lastValue",
+                    "profileId": ""
+                }
+            },
+            "capabilities": {
+                "canSend": [],
+                "canReceive": [
+                    "customName",
+                    "isOn",
+                    "lightLevel",
+                    "colorTemperature"
+                ]
+            },
+            "room": {
+                "id": "2abdfb7b-d080-4b00-b576-0c6fb73e9b3b",
+                "name": "Lobby HWR",
+                "color": "ikea_pink_no_4",
+                "icon": "rooms_drill"
+            },
+            "deviceSet": [],
+            "remoteLinks": [
+                "46f70859-a60d-4be6-84c0-e0e40e50c0dd_1"
+            ],
+            "isHidden": false,
+            "adaptiveProfile": {}
+        },
+        {
+            "id": "5c26221d-a80e-4847-9807-000780b20df1_1",
+            "type": "controller",
+            "deviceType": "lightController",
+            "createdAt": "2024-10-29T17:22:01.000Z",
+            "isReachable": true,
+            "lastSeen": "2026-01-09T21:34:03.000Z",
+            "customIcon": "products_remote_control_2",
+            "attributes": {
+                "customName": "Maurice Light Control",
+                "model": "TRADFRI remote control",
+                "manufacturer": "IKEA of Sweden",
+                "firmwareVersion": "24.4.5",
+                "hardwareVersion": "1",
+                "serialNumber": "804B50FFFEFC6250",
+                "productCode": "E1810",
+                "batteryPercentage": 100,
+                "isOn": false,
+                "lightLevel": 1,
+                "permittingJoin": false,
+                "otaStatus": "upToDate",
+                "otaState": "readyToCheck",
+                "otaProgress": 0,
+                "otaPolicy": "autoUpdate",
+                "otaScheduleStart": "00:00",
+                "otaScheduleEnd": "00:00",
+                "circadianPresets": []
+            },
+            "capabilities": {
+                "canSend": [
+                    "isOn",
+                    "lightLevel"
+                ],
+                "canReceive": [
+                    "customName"
+                ]
+            },
+            "room": {
+                "id": "0b84f41e-163c-4411-8b7c-cebb1e41bb9e",
+                "name": "Maurice",
+                "color": "ncs_s_1020_r10b",
+                "icon": "rooms_book_case"
+            },
+            "deviceSet": [],
+            "remoteLinks": [],
+            "isHidden": false
+        },
+        {
+            "id": "31ac061d-2dc4-4581-9d4c-54079e82f283_1",
+            "type": "outlet",
+            "deviceType": "outlet",
+            "createdAt": "2024-12-10T21:49:42.000Z",
+            "isReachable": true,
+            "lastSeen": "2026-01-09T23:45:16.000Z",
+            "attributes": {
+                "customName": "Bedlight",
+                "model": "TRETAKT Smart plug",
+                "manufacturer": "IKEA of Sweden",
+                "firmwareVersion": "2.4.4",
+                "hardwareVersion": "1",
+                "serialNumber": "6CFD22FFFE800219",
+                "productCode": "E2204",
+                "isOn": false,
+                "startupOnOff": "startPrevious",
+                "lightLevel": 100,
+                "startUpCurrentLevel": -1,
+                "childLock": false,
+                "statusLight": true,
+                "identifyStarted": "2000-01-01T00:00:00.000Z",
+                "identifyPeriod": 0,
+                "permittingJoin": false,
+                "otaStatus": "upToDate",
+                "otaState": "readyToCheck",
+                "otaProgress": 0,
+                "otaPolicy": "autoUpdate",
+                "otaScheduleStart": "00:00",
+                "otaScheduleEnd": "00:00"
+            },
+            "capabilities": {
+                "canSend": [],
+                "canReceive": [
+                    "customName",
+                    "isOn",
+                    "lightLevel",
+                    "childLock",
+                    "statusLight"
+                ]
+            },
+            "room": {
+                "id": "4328471f-03cd-4372-aa1e-e3e9f3be3da4",
+                "name": "Schlafzimmer ",
+                "color": "ikea_beige_no_3",
+                "icon": "rooms_bed"
+            },
+            "deviceSet": [],
+            "remoteLinks": [
+                "c9c63616-3be0-4a5a-83af-325999d16b5f_1"
+            ],
+            "isHidden": false
+        },
+        {
+            "id": "45165c60-0c1a-4b9f-ae09-c4a6220d1420_1",
+            "type": "light",
+            "deviceType": "light",
+            "createdAt": "2024-10-09T18:09:58.000Z",
+            "isReachable": true,
+            "lastSeen": "2026-01-09T17:40:24.000Z",
+            "attributes": {
+                "customName": "Lavatory Left",
+                "model": "TRADFRI bulb E14 WS candle 470lm",
+                "manufacturer": "IKEA of Sweden",
+                "firmwareVersion": "3.0.21",
+                "hardwareVersion": "1",
+                "serialNumber": "881A14FFFE479E82",
+                "productCode": "LED2107C4",
+                "isOn": false,
+                "startupOnOff": "startOn",
+                "lightLevel": 75,
+                "startUpCurrentLevel": -1,
+                "colorTemperature": 3521,
+                "colorTemperatureMin": 4000,
+                "colorTemperatureMax": 2202,
+                "startupTemperature": -1,
+                "colorMode": "temperature",
+                "identifyStarted": "2000-01-01T00:00:00.000Z",
+                "identifyPeriod": 0,
+                "permittingJoin": false,
+                "otaStatus": "upToDate",
+                "otaState": "readyToCheck",
+                "otaProgress": 0,
+                "otaPolicy": "autoUpdate",
+                "otaScheduleStart": "00:00",
+                "otaScheduleEnd": "00:00",
+                "deviceOnBehavior": {
+                    "behavior": "lastValue",
+                    "profileId": ""
+                }
+            },
+            "capabilities": {
+                "canSend": [],
+                "canReceive": [
+                    "customName",
+                    "isOn",
+                    "lightLevel",
+                    "colorTemperature"
+                ]
+            },
+            "room": {
+                "id": "c9e407e5-5bfa-4e73-aaf3-c0258d9ccb5f",
+                "name": "Gäste WC",
+                "color": "ikea_blue_no_58",
+                "icon": "rooms_sink"
+            },
+            "deviceSet": [
+                {
+                    "id": "e24f112a-5988-458e-958c-02ad031873e6",
+                    "name": "Lavatory Lights",
+                    "icon": "lighting_led_strip"
+                }
+            ],
+            "remoteLinks": [
+                "5ac5e131-44a4-4d75-be78-759a095d31fb_1"
+            ],
+            "isHidden": false,
+            "adaptiveProfile": {}
+        },
+        {
+            "id": "c27faa27-4c18-464f-81a0-a31ce57d83d5_1",
+            "type": "light",
+            "deviceType": "light",
+            "createdAt": "2024-10-09T17:38:43.000Z",
+            "isReachable": true,
+            "lastSeen": "2026-01-09T15:47:40.000Z",
+            "attributes": {
+                "customName": "LED Strip Sideboard",
+                "model": "ORMANAS LED Strip",
+                "manufacturer": "IKEA of Sweden",
+                "firmwareVersion": "1.1.10",
+                "hardwareVersion": "1",
+                "serialNumber": "7CC6B6FFFE66D457",
+                "productCode": "L2112",
+                "isOn": true,
+                "startupOnOff": "startOn",
+                "lightLevel": 65,
+                "startUpCurrentLevel": -1,
+                "colorHue": 40.001220703125,
+                "colorSaturation": 0.7992125984251969,
+                "colorTemperature": 4000,
+                "colorTemperatureMin": 4000,
+                "colorTemperatureMax": 2202,
+                "startupTemperature": -1,
+                "colorMode": "color",
+                "identifyStarted": "2000-01-01T00:00:00.000Z",
+                "identifyPeriod": 0,
+                "permittingJoin": false,
+                "otaStatus": "upToDate",
+                "otaState": "readyToCheck",
+                "otaProgress": 0,
+                "otaPolicy": "autoUpdate",
+                "otaScheduleStart": "00:00",
+                "otaScheduleEnd": "00:00",
+                "deviceOnBehavior": {
+                    "behavior": "lastValue",
+                    "profileId": ""
+                }
+            },
+            "capabilities": {
+                "canSend": [],
+                "canReceive": [
+                    "customName",
+                    "isOn",
+                    "lightLevel",
+                    "colorTemperature",
+                    "colorHue",
+                    "colorSaturation"
+                ]
+            },
+            "room": {
+                "id": "893d50e0-f4bb-46ba-978d-e9280c6e299d",
+                "name": "Loft",
+                "color": "ikea_green_no_65",
+                "icon": "rooms_sofa"
+            },
+            "deviceSet": [
+                {
+                    "id": "cff0e225-eb44-452d-bdae-774811f814c8",
+                    "name": "Test Set",
+                    "icon": "lighting_chandelier"
+                }
+            ],
+            "remoteLinks": [
+                "22e4b77b-9a60-4727-944b-0d5e3e33b58f_1"
+            ],
+            "isHidden": false,
+            "adaptiveProfile": {}
+        },
+        {
+            "id": "073b40df-e6a0-486d-99a3-6134effe4c59_1",
+            "type": "light",
+            "deviceType": "light",
+            "createdAt": "2024-10-10T13:48:44.000Z",
+            "isReachable": true,
+            "lastSeen": "2026-01-09T21:54:43.000Z",
+            "customIcon": "lighting_spot_chandelier",
+            "attributes": {
+                "customName": "HWR Panel",
+                "model": "FLOALT panel WS 30x30",
+                "manufacturer": "IKEA of Sweden",
+                "firmwareVersion": "2.3.087",
+                "hardwareVersion": "1",
+                "serialNumber": "BC33ACFFFE9761AA",
+                "productCode": "",
+                "isOn": false,
+                "startupOnOff": "startOn",
+                "lightLevel": 100,
+                "startUpCurrentLevel": -1,
+                "colorTemperature": 4000,
+                "colorTemperatureMin": 4000,
+                "colorTemperatureMax": 2202,
+                "startupTemperature": -1,
+                "colorMode": "temperature",
+                "identifyStarted": "2000-01-01T00:00:00.000Z",
+                "identifyPeriod": 0,
+                "permittingJoin": false,
+                "otaStatus": "upToDate",
+                "otaState": "readyToCheck",
+                "otaProgress": 0,
+                "otaPolicy": "autoUpdate",
+                "otaScheduleStart": "00:00",
+                "otaScheduleEnd": "00:00",
+                "deviceOnBehavior": {
+                    "behavior": "lastValue",
+                    "profileId": ""
+                }
+            },
+            "capabilities": {
+                "canSend": [],
+                "canReceive": [
+                    "customName",
+                    "isOn",
+                    "lightLevel",
+                    "colorTemperature"
+                ]
+            },
+            "room": {
+                "id": "2abdfb7b-d080-4b00-b576-0c6fb73e9b3b",
+                "name": "Lobby HWR",
+                "color": "ikea_pink_no_4",
+                "icon": "rooms_drill"
+            },
+            "deviceSet": [],
+            "remoteLinks": [
+                "ee61c57f-8efa-44f4-ba8a-d108ae054138_1"
+            ],
+            "isHidden": false,
+            "adaptiveProfile": {}
+        },
+        {
+            "id": "22e4b77b-9a60-4727-944b-0d5e3e33b58f_1",
+            "type": "controller",
+            "deviceType": "lightController",
+            "createdAt": "2024-10-11T11:33:27.000Z",
+            "isReachable": false,
+            "lastSeen": "2026-01-09T12:45:39.000Z",
+            "attributes": {
+                "customName": "Remote Control Loft",
+                "model": "Remote Control N2",
+                "manufacturer": "IKEA of Sweden",
+                "firmwareVersion": "2.4.16",
+                "hardwareVersion": "1",
+                "serialNumber": "94B216FFFE6F9BA6",
+                "productCode": "E2001",
+                "batteryPercentage": 55,
+                "isOn": false,
+                "lightLevel": 1,
+                "permittingJoin": false,
+                "otaStatus": "upToDate",
+                "otaState": "readyToCheck",
+                "otaProgress": 0,
+                "otaPolicy": "autoUpdate",
+                "otaScheduleStart": "00:00",
+                "otaScheduleEnd": "00:00",
+                "circadianPresets": []
+            },
+            "capabilities": {
+                "canSend": [
+                    "isOn",
+                    "lightLevel"
+                ],
+                "canReceive": [
+                    "customName"
+                ]
+            },
+            "room": {
+                "id": "893d50e0-f4bb-46ba-978d-e9280c6e299d",
+                "name": "Loft",
+                "color": "ikea_green_no_65",
+                "icon": "rooms_sofa"
+            },
+            "deviceSet": [],
+            "remoteLinks": [],
+            "isHidden": false
+        },
+        {
+            "id": "aba66147-8d7f-4a42-8852-ee3525df693c_1",
+            "type": "controller",
+            "deviceType": "lightController",
+            "createdAt": "2024-10-29T09:55:27.000Z",
+            "isReachable": true,
+            "lastSeen": "2026-01-09T18:29:27.000Z",
+            "customIcon": "products_dimmer_remote_2",
+            "attributes": {
+                "customName": "Kitchen Switch",
+                "model": "RODRET Dimmer",
+                "manufacturer": "IKEA of Sweden",
+                "firmwareVersion": "1.0.57",
+                "hardwareVersion": "1",
+                "serialNumber": "08DDEBFFFEE227B9",
+                "productCode": "E2201",
+                "batteryPercentage": 84,
+                "isOn": false,
+                "lightLevel": 1,
+                "permittingJoin": false,
+                "otaStatus": "upToDate",
+                "otaState": "readyToCheck",
+                "otaProgress": 0,
+                "otaPolicy": "autoUpdate",
+                "otaScheduleStart": "00:00",
+                "otaScheduleEnd": "00:00",
+                "circadianPresets": []
+            },
+            "capabilities": {
+                "canSend": [
+                    "isOn",
+                    "lightLevel"
+                ],
+                "canReceive": [
+                    "customName"
+                ]
+            },
+            "room": {
+                "id": "893d50e0-f4bb-46ba-978d-e9280c6e299d",
+                "name": "Loft",
+                "color": "ikea_green_no_65",
+                "icon": "rooms_sofa"
+            },
+            "deviceSet": [],
+            "remoteLinks": [],
+            "isHidden": false
+        },
+        {
+            "id": "03c716a9-900e-4bb0-8694-eaf837bfa3fb_1",
+            "type": "speaker",
+            "deviceType": "speaker",
+            "createdAt": "2024-10-06T09:06:12.272Z",
+            "isReachable": true,
+            "lastSeen": "2026-01-09T20:33:48.626Z",
+            "attributes": {
+                "customName": "Maurice",
+                "model": "SYMFONISK Table lamp S20",
+                "manufacturer": "Sonos, Inc.",
+                "firmwareVersion": "86.2-70230",
+                "hardwareVersion": "1.20.2.3-2.0",
+                "serialNumber": "78-28-CA-81-8E-F2:1",
+                "productCode": "S20",
+                "identifyStarted": "2024-10-06T09:06:12.272Z",
+                "identifyPeriod": 0,
+                "playback": "playbackIdle",
+                "playbackLastChangedTimestamp": "2025-12-26T01:17:57.584Z",
+                "playbackAudio": {},
+                "playbackPosition": {
+                    "position": 0,
+                    "timestamp": "2025-12-26T01:17:57.584Z"
+                },
+                "playbackAvailableActions": {
+                    "crossfade": true,
+                    "pause": false,
+                    "repeat": [
+                        "off",
+                        "playItem",
+                        "playlist"
+                    ],
+                    "seek": false,
+                    "shuffle": true,
+                    "playbackNext": false,
+                    "playbackPrev": false
+                },
+                "playbackModes": {
+                    "crossfade": false,
+                    "repeat": "off",
+                    "shuffle": false
+                },
+                "volume": 37,
+                "isMuted": false,
+                "audioGroup": "71aa115c-fadd-4c43-aaf7-d537fa939638"
+            },
+            "capabilities": {
+                "canSend": [],
+                "canReceive": [
+                    "playback",
+                    "playbackAudio",
+                    "volume",
+                    "isMuted"
+                ]
+            },
+            "deviceSet": [],
+            "remoteLinks": [],
+            "isHidden": true
+        },
+        {
+            "id": "94f3d9d7-95ee-496d-9b83-2d5de9a7c2c1_1",
+            "relationId": "94f3d9d7-95ee-496d-9b83-2d5de9a7c2c1",
+            "type": "sensor",
+            "deviceType": "environmentSensor",
+            "createdAt": "2026-01-09T10:48:53.000Z",
+            "isReachable": true,
+            "lastSeen": "2026-01-09T23:50:15.000Z",
+            "customIcon": "products_environment_sensor",
+            "attributes": {
+                "identifyPeriod": 0,
+                "identifyStarted": "2026-01-08T16:30:27.000Z",
+                "currentTemperature": 19.959999084472656,
+                "customName": "TIMMERFLOTTE temp/hmd sen",
+                "firmwareVersion": "1.0.21",
+                "hardwareVersion": "P2.1",
+                "manufacturer": "IKEA of Sweden",
+                "model": "TIMMERFLOTTE temp/hmd sensor",
+                "productCode": "E2314",
+                "serialNumber": "UNKNOWN_SERIAL_NUMBER",
+                "discriminator": -1,
+                "permittingJoin": false,
+                "qrCode": "",
+                "setupCode": "",
+                "windowOpen": false,
+                "otaPolicy": "autoUpdate",
+                "otaProgress": 0,
+                "otaScheduleEnd": "00:00",
+                "otaScheduleStart": "00:00",
+                "otaState": "readyToCheck",
+                "otaStatus": "upToDate",
+                "batteryPercentage": 95
+            },
+            "capabilities": {
+                "canSend": [],
+                "canReceive": [
+                    "customName",
+                    "windowOpen"
+                ]
+            },
+            "room": {
+                "id": "2abdfb7b-d080-4b00-b576-0c6fb73e9b3b",
+                "name": "Lobby HWR",
+                "color": "ikea_pink_no_4",
+                "icon": "rooms_drill"
+            },
+            "deviceSet": [],
+            "remoteLinks": [],
+            "isHidden": false
+        },
+        {
+            "id": "94f3d9d7-95ee-496d-9b83-2d5de9a7c2c1_2",
+            "relationId": "94f3d9d7-95ee-496d-9b83-2d5de9a7c2c1",
+            "type": "sensor",
+            "deviceType": "environmentSensor",
+            "createdAt": "2026-01-09T10:48:53.000Z",
+            "isReachable": true,
+            "lastSeen": "2026-01-09T23:50:15.000Z",
+            "attributes": {
+                "identifyPeriod": 0,
+                "identifyStarted": "2026-01-08T16:30:27.000Z",
+                "currentRH": 56,
+                "customName": "TIMMERFLOTTE temp/hmd sensor",
+                "firmwareVersion": "1.0.21",
+                "hardwareVersion": "P2.1",
+                "manufacturer": "IKEA of Sweden",
+                "model": "TIMMERFLOTTE temp/hmd sensor",
+                "productCode": "E2314",
+                "serialNumber": "UNKNOWN_SERIAL_NUMBER",
+                "discriminator": -1,
+                "permittingJoin": false,
+                "qrCode": "",
+                "setupCode": "",
+                "windowOpen": false,
+                "otaPolicy": "autoUpdate",
+                "otaProgress": 0,
+                "otaScheduleEnd": "00:00",
+                "otaScheduleStart": "00:00",
+                "otaState": "readyToCheck",
+                "otaStatus": "upToDate",
+                "batteryPercentage": 95
+            },
+            "capabilities": {
+                "canSend": [],
+                "canReceive": [
+                    "customName",
+                    "windowOpen"
+                ]
+            },
+            "deviceSet": [],
+            "remoteLinks": [],
+            "isHidden": false
+        },
+        {
+            "id": "d6ee92fc-682a-4af0-9097-c73ed70b59fd_1",
+            "relationId": "d6ee92fc-682a-4af0-9097-c73ed70b59fd",
+            "type": "unknown",
+            "deviceType": "lightSensor",
+            "createdAt": "2026-01-09T12:24:38.000Z",
+            "isReachable": true,
+            "lastSeen": "2026-01-09T23:39:50.000Z",
+            "attributes": {
+                "identifyPeriod": 0,
+                "identifyStarted": "2026-01-08T16:30:27.000Z",
+                "illuminance": 0,
+                "maxIlluminance": 40001,
+                "minIlluminance": 1,
+                "customName": "MYGGSPRAY wrlss mtn sensor",
+                "firmwareVersion": "1.0.7",
+                "hardwareVersion": "P2.0",
+                "manufacturer": "IKEA of Sweden",
+                "model": "MYGGSPRAY wrlss mtn sensor",
+                "productCode": "E2494",
+                "serialNumber": "UNKNOWN_SERIAL_NUMBER",
+                "discriminator": -1,
+                "permittingJoin": false,
+                "qrCode": "",
+                "setupCode": "",
+                "windowOpen": false,
+                "otaPolicy": "autoUpdate",
+                "otaProgress": 0,
+                "otaScheduleEnd": "00:00",
+                "otaScheduleStart": "00:00",
+                "otaState": "readyToCheck",
+                "otaStatus": "upToDate",
+                "batteryPercentage": 96
+            },
+            "capabilities": {
+                "canSend": [],
+                "canReceive": [
+                    "customName",
+                    "windowOpen"
+                ]
+            },
+            "deviceSet": [],
+            "remoteLinks": [],
+            "isHidden": false
+        },
+        {
+            "id": "d6ee92fc-682a-4af0-9097-c73ed70b59fd_2",
+            "relationId": "d6ee92fc-682a-4af0-9097-c73ed70b59fd",
+            "type": "sensor",
+            "deviceType": "occupancySensor",
+            "createdAt": "2026-01-09T12:24:38.000Z",
+            "isReachable": true,
+            "lastSeen": "2026-01-09T23:39:50.000Z",
+            "customIcon": "products_matter_wrlss_mtn_sensor",
+            "attributes": {
+                "identifyPeriod": 0,
+                "identifyStarted": "2026-01-08T16:30:27.000Z",
+                "isDetected": false,
+                "customName": "MYGGSPRAY wrlss mtn senso",
+                "firmwareVersion": "1.0.7",
+                "hardwareVersion": "P2.0",
+                "manufacturer": "IKEA of Sweden",
+                "model": "MYGGSPRAY wrlss mtn sensor",
+                "productCode": "E2494",
+                "serialNumber": "UNKNOWN_SERIAL_NUMBER",
+                "discriminator": -1,
+                "permittingJoin": false,
+                "qrCode": "",
+                "setupCode": "",
+                "windowOpen": false,
+                "otaPolicy": "autoUpdate",
+                "otaProgress": 0,
+                "otaScheduleEnd": "00:00",
+                "otaScheduleStart": "00:00",
+                "otaState": "readyToCheck",
+                "otaStatus": "upToDate",
+                "batteryPercentage": 96,
+                "sensorConfig": {
+                    "scheduleOn": false,
+                    "onDuration": 0
+                }
+            },
+            "capabilities": {
+                "canSend": [],
+                "canReceive": [
+                    "customName",
+                    "windowOpen"
+                ]
+            },
+            "room": {
+                "id": "2abdfb7b-d080-4b00-b576-0c6fb73e9b3b",
+                "name": "Lobby HWR",
+                "color": "ikea_pink_no_4",
+                "icon": "rooms_drill"
+            },
+            "deviceSet": [],
+            "remoteLinks": [],
+            "isHidden": false
+        },
+        {
+            "id": "efc4ca33-9e96-443c-9930-97a1588854ad_1",
+            "type": "sensor",
+            "deviceType": "openCloseSensor",
+            "createdAt": "2026-01-09T12:48:08.000Z",
+            "isReachable": true,
+            "lastSeen": "2026-01-09T19:24:22.000Z",
+            "customIcon": "placement_cabinet",
+            "attributes": {
+                "identifyPeriod": 0,
+                "identifyStarted": "2026-01-08T16:30:27.000Z",
+                "isOpen": true,
+                "customName": "MYGGBETT door/window sens",
+                "firmwareVersion": "1.0.9",
+                "hardwareVersion": "P2.0",
+                "manufacturer": "IKEA of Sweden",
+                "model": "MYGGBETT door/window sensor",
+                "productCode": "E2492",
+                "serialNumber": "UNKNOWN_SERIAL_NUMBER",
+                "discriminator": -1,
+                "permittingJoin": false,
+                "qrCode": "",
+                "setupCode": "",
+                "windowOpen": false,
+                "otaPolicy": "autoUpdate",
+                "otaProgress": 0,
+                "otaScheduleEnd": "00:00",
+                "otaScheduleStart": "00:00",
+                "otaState": "readyToCheck",
+                "otaStatus": "upToDate",
+                "batteryPercentage": 52
+            },
+            "capabilities": {
+                "canSend": [],
+                "canReceive": [
+                    "customName",
+                    "windowOpen"
+                ]
+            },
+            "room": {
+                "id": "2abdfb7b-d080-4b00-b576-0c6fb73e9b3b",
+                "name": "Lobby HWR",
+                "color": "ikea_pink_no_4",
+                "icon": "rooms_drill"
+            },
+            "deviceSet": [],
+            "remoteLinks": [],
+            "isHidden": false
+        },
+        {
+            "id": "8d89e4f6-cb60-443b-9c68-3094fc15e0e6_1",
+            "type": "light",
+            "deviceType": "light",
+            "createdAt": "2026-01-09T14:53:26.000Z",
+            "isReachable": true,
+            "lastSeen": "2026-01-09T19:21:20.000Z",
+            "customIcon": "products_led_bulb",
+            "attributes": {
+                "identifyPeriod": 0,
+                "identifyStarted": "2026-01-08T16:30:27.000Z",
+                "isOn": true,
+                "startupOnOff": "startOn",
+                "lightLevel": 53,
+                "startUpCurrentLevel": -1,
+                "colorMode": "temperature",
+                "colorHue": 29.6596622467041,
+                "colorSaturation": 0.346354603767395,
+                "colorTemperature": 2450,
+                "colorTemperatureMax": 555,
+                "colorTemperatureMin": 153,
+                "customName": "KAJPLATS E27 CWS globe 10",
+                "firmwareVersion": "1.1.0",
+                "hardwareVersion": "P2.0",
+                "manufacturer": "IKEA of Sweden",
+                "model": "KAJPLATS E27 CWS globe 1055lm",
+                "productCode": "LED2405G8",
+                "serialNumber": "UNKNOWN_SERIAL_NUMBER",
+                "discriminator": -1,
+                "permittingJoin": false,
+                "qrCode": "",
+                "setupCode": "",
+                "windowOpen": false,
+                "otaPolicy": "autoUpdate",
+                "otaProgress": 0,
+                "otaScheduleEnd": "00:00",
+                "otaScheduleStart": "00:00",
+                "otaState": "readyToCheck",
+                "otaStatus": "upToDate",
+                "deviceOnBehavior": {
+                    "behavior": "lastValue",
+                    "profileId": ""
+                }
+            },
+            "capabilities": {
+                "canSend": [],
+                "canReceive": [
+                    "isOn",
+                    "lightLevel",
+                    "colorHue",
+                    "colorSaturation",
+                    "colorTemperature",
+                    "customName",
+                    "windowOpen"
+                ]
+            },
+            "room": {
+                "id": "893d50e0-f4bb-46ba-978d-e9280c6e299d",
+                "name": "Loft",
+                "color": "ikea_green_no_65",
+                "icon": "rooms_sofa"
+            },
+            "deviceSet": [],
+            "remoteLinks": [],
+            "isHidden": false,
+            "adaptiveProfile": {}
+        }
+    ],
+    "users": [
+    ],
+    "scenes": [
+        {
+            "id": "a41b9dc3-2226-4eec-9309-cfd0c28c57d7",
+            "info": {
+                "name": "Custom sensor water scene @9af",
+                "icon": "scenes_arrive_home"
+            },
+            "type": "customScene",
+            "triggers": [
+                {
+                    "id": "20c38c05-2c11-4bd7-8c07-b42bb617542d",
+                    "type": "event",
+                    "triggeredAt": "2024-12-08T16:42:24.608Z",
+                    "disabled": false,
+                    "trigger": {
+                        "days": [],
+                        "deviceId": "9af826ad-a8ad-40bf-8aed-125300bccd20_1",
+                        "filter": {
+                            "attribute": {
+                                "waterLeakDetected": true
+                            }
+                        }
+                    }
+                },
+                {
+                    "id": "217a6146-fd96-4a8c-9068-44999c0f5042",
+                    "type": "event",
+                    "triggeredAt": "2024-12-08T16:42:25.434Z",
+                    "disabled": false,
+                    "trigger": {
+                        "days": [],
+                        "undo": true,
+                        "deviceId": "9af826ad-a8ad-40bf-8aed-125300bccd20_1",
+                        "filter": {
+                            "attribute": {
+                                "waterLeakDetected": false
+                            }
+                        }
+                    }
+                },
+                {
+                    "id": "7648c8a5-e538-4d41-8aa4-11d7b272a2d6",
+                    "type": "app",
+                    "disabled": false
+                }
+            ],
+            "actions": [],
+            "commands": [],
+            "createdAt": "2024-10-31T23:17:04.496Z",
+            "lastCompleted": "2024-12-08T16:42:24.736Z",
+            "lastTriggered": "2024-12-08T16:42:24.736Z",
+            "undoAllowedDuration": 1,
+            "lastUndo": "2024-12-08T16:42:25.449Z"
+        },
+        {
+            "id": "8baf3b52-f2b0-4f80-abeb-d2e938efbc85",
+            "info": {
+                "name": "Lightmode Warm",
+                "icon": "scenes_brightness_up"
+            },
+            "type": "userScene",
+            "triggers": [
+                {
+                    "id": "5c9cbc1d-efdb-4c93-8f5c-b5604cac8540",
+                    "type": "app",
+                    "triggeredAt": "2026-01-09T14:37:32.388Z",
+                    "disabled": false
+                }
+            ],
+            "actions": [
+                {
+                    "id": "891790db-8c17-483a-a1a6-c85bffd3a373_1",
+                    "type": "device",
+                    "deviceId": "891790db-8c17-483a-a1a6-c85bffd3a373_1",
+                    "enabled": true,
+                    "attributes": {
+                        "isOn": true,
+                        "lightLevel": 62,
+                        "colorHue": 34.99695,
+                        "colorSaturation": 1
+                    }
+                },
+                {
+                    "id": "c27faa27-4c18-464f-81a0-a31ce57d83d5_1",
+                    "type": "device",
+                    "deviceId": "c27faa27-4c18-464f-81a0-a31ce57d83d5_1",
+                    "enabled": true,
+                    "attributes": {
+                        "isOn": true,
+                        "lightLevel": 65,
+                        "colorHue": 35.397984,
+                        "colorSaturation": 0.99981654
+                    }
+                },
+                {
+                    "id": "3c8b0049-eb5c-4ea1-9da3-cdedc50366ef_1",
+                    "type": "device",
+                    "deviceId": "3c8b0049-eb5c-4ea1-9da3-cdedc50366ef_1",
+                    "enabled": true,
+                    "attributes": {
+                        "isOn": true,
+                        "lightLevel": 40,
+                        "colorHue": 34.99695,
+                        "colorSaturation": 1
+                    }
+                },
+                {
+                    "id": "d791dc18-9180-45c7-92fc-604481a34f15_1",
+                    "type": "device",
+                    "deviceId": "d791dc18-9180-45c7-92fc-604481a34f15_1",
+                    "enabled": true,
+                    "attributes": {
+                        "isOn": true,
+                        "lightLevel": 35,
+                        "colorHue": 34.99695,
+                        "colorSaturation": 1
+                    }
+                }
+            ],
+            "commands": [],
+            "createdAt": "2024-11-06T13:09:28.708Z",
+            "lastCompleted": "2026-01-09T14:37:32.797Z",
+            "lastTriggered": "2026-01-09T14:37:32.797Z",
+            "undoAllowedDuration": 30,
+            "lastUndo": "2026-01-04T15:56:50.628Z"
+        },
+        {
+            "id": "086f4a37-ebe8-4fd4-9a25-a0220a1e5f58",
+            "info": {
+                "name": "Lightmode Christmas",
+                "icon": "scenes_tree"
+            },
+            "type": "userScene",
+            "triggers": [
+                {
+                    "id": "3e681693-a35d-4069-a48b-d84e926f7333",
+                    "type": "app",
+                    "triggeredAt": "2025-10-20T06:03:52.891Z",
+                    "disabled": false
+                }
+            ],
+            "actions": [
+                {
+                    "id": "c27faa27-4c18-464f-81a0-a31ce57d83d5_1",
+                    "type": "device",
+                    "deviceId": "c27faa27-4c18-464f-81a0-a31ce57d83d5_1",
+                    "enabled": true,
+                    "attributes": {
+                        "isOn": true,
+                        "lightLevel": 100,
+                        "colorHue": 0,
+                        "colorSaturation": 1
+                    }
+                },
+                {
+                    "id": "891790db-8c17-483a-a1a6-c85bffd3a373_1",
+                    "type": "device",
+                    "deviceId": "891790db-8c17-483a-a1a6-c85bffd3a373_1",
+                    "enabled": true,
+                    "attributes": {
+                        "isOn": true,
+                        "lightLevel": 100,
+                        "colorHue": 90,
+                        "colorSaturation": 1
+                    }
+                },
+                {
+                    "id": "d791dc18-9180-45c7-92fc-604481a34f15_1",
+                    "type": "device",
+                    "deviceId": "d791dc18-9180-45c7-92fc-604481a34f15_1",
+                    "enabled": true,
+                    "attributes": {
+                        "isOn": true,
+                        "lightLevel": 100,
+                        "colorHue": 90,
+                        "colorSaturation": 1
+                    }
+                },
+                {
+                    "id": "3c8b0049-eb5c-4ea1-9da3-cdedc50366ef_1",
+                    "type": "device",
+                    "deviceId": "3c8b0049-eb5c-4ea1-9da3-cdedc50366ef_1",
+                    "enabled": true,
+                    "attributes": {
+                        "isOn": true,
+                        "lightLevel": 100,
+                        "colorHue": 90,
+                        "colorSaturation": 1
+                    }
+                }
+            ],
+            "commands": [],
+            "createdAt": "2024-10-15T11:13:42.273Z",
+            "lastCompleted": "2025-10-20T06:03:53.240Z",
+            "lastTriggered": "2025-10-20T06:03:53.240Z",
+            "undoAllowedDuration": 30
+        },
+        {
+            "id": "bdd52cde-e892-4176-a9a4-18b3c32c5c8f",
+            "info": {
+                "name": "GenericSwitchTest",
+                "icon": "scenes_briefcase"
+            },
+            "type": "userScene",
+            "triggers": [
+                {
+                    "id": "a2a5bd12-8774-4868-9dc4-114ae905d4ce",
+                    "type": "controller",
+                    "disabled": false,
+                    "trigger": {
+                        "days": [
+                            "Mon",
+                            "Tue",
+                            "Wed",
+                            "Thu",
+                            "Fri",
+                            "Sat",
+                            "Sun"
+                        ],
+                        "controllerType": "shortcutController",
+                        "clickPattern": "singlePress",
+                        "buttonIndex": 0,
+                        "deviceId": "8e92a454-1f31-4238-b1cd-6e67c697a93c_1"
+                    }
+                },
+                {
+                    "id": "29882639-d6da-48f4-a578-ef5633a94e2d",
+                    "type": "app",
+                    "disabled": false
+                }
+            ],
+            "actions": [
+                {
+                    "id": "be352051-baf8-4497-af1f-eec471574ee7_1",
+                    "type": "device",
+                    "deviceId": "be352051-baf8-4497-af1f-eec471574ee7_1",
+                    "enabled": true,
+                    "attributes": {
+                        "isOn": true,
+                        "lightLevel": 29,
+                        "colorTemperature": 4000
+                    }
+                }
+            ],
+            "commands": [],
+            "createdAt": "2026-01-04T01:30:12.614Z",
+            "undoAllowedDuration": 30
+        },
+        {
+            "id": "3090ba82-3f5e-442f-8e49-f3eac9b7b0eb",
+            "info": {
+                "name": "Lightmode off",
+                "icon": "scenes_home_filled"
+            },
+            "type": "userScene",
+            "triggers": [
+                {
+                    "id": "7b87b5c5-3a1d-4e97-aa84-cab556e7013d",
+                    "type": "controller",
+                    "disabled": false,
+                    "trigger": {
+                        "days": [
+                            "Mon",
+                            "Tue",
+                            "Wed",
+                            "Thu",
+                            "Fri",
+                            "Sat",
+                            "Sun"
+                        ],
+                        "controllerType": "shortcutController",
+                        "clickPattern": "singlePress",
+                        "buttonIndex": 0,
+                        "deviceId": "040bf20b-b1b0-463b-af4b-1227a711d70e_1"
+                    }
+                },
+                {
+                    "id": "827d7a10-9f72-4522-8266-c2eb63a4177b",
+                    "type": "app",
+                    "triggeredAt": "2026-01-04T15:57:05.911Z",
+                    "disabled": false
+                }
+            ],
+            "actions": [
+                {
+                    "id": "d791dc18-9180-45c7-92fc-604481a34f15_1",
+                    "type": "device",
+                    "deviceId": "d791dc18-9180-45c7-92fc-604481a34f15_1",
+                    "enabled": true,
+                    "attributes": {
+                        "isOn": false,
+                        "lightLevel": 100,
+                        "colorHue": 89.681786,
+                        "colorSaturation": 0.99900264
+                    }
+                },
+                {
+                    "id": "3c8b0049-eb5c-4ea1-9da3-cdedc50366ef_1",
+                    "type": "device",
+                    "deviceId": "3c8b0049-eb5c-4ea1-9da3-cdedc50366ef_1",
+                    "enabled": true,
+                    "attributes": {
+                        "isOn": false,
+                        "lightLevel": 100,
+                        "colorHue": 89.681786,
+                        "colorSaturation": 0.99900264
+                    }
+                }
+            ],
+            "commands": [],
+            "createdAt": "2024-10-15T23:14:12.399Z",
+            "lastCompleted": "2026-01-04T15:57:05.928Z",
+            "lastTriggered": "2026-01-04T15:57:05.928Z",
+            "undoAllowedDuration": 30
+        },
+        {
+            "id": "f39bbcbc-3349-4eb3-ade1-e0abc01e5ae7",
+            "info": {
+                "name": "Custom sensor close scene @07c",
+                "icon": "scenes_arrive_home"
+            },
+            "type": "customScene",
+            "triggers": [
+                {
+                    "id": "ec9e7175-fe75-44bc-a7f9-e8302c94fbb2",
+                    "type": "event",
+                    "triggeredAt": "2025-06-14T12:17:23.080Z",
+                    "disabled": false,
+                    "trigger": {
+                        "days": [],
+                        "deviceId": "07cca6c2-f2b6-4f57-bfd9-a788a16d1eef_1",
+                        "filter": {
+                            "attribute": {
+                                "isOpen": false
+                            }
+                        }
+                    }
+                },
+                {
+                    "id": "2d9f713d-00f7-488c-a330-ec061ffef316",
+                    "type": "app",
+                    "disabled": false
+                }
+            ],
+            "actions": [],
+            "commands": [],
+            "createdAt": "2024-10-31T21:32:36.126Z",
+            "lastCompleted": "2025-06-14T12:17:23.098Z",
+            "lastTriggered": "2025-06-14T12:17:23.098Z",
+            "undoAllowedDuration": 1
+        },
+        {
+            "id": "f341d8fb-25da-406e-882d-1395d817f0f5",
+            "info": {
+                "name": "Lightmode Iron Man",
+                "icon": "scenes_brightness_up"
+            },
+            "type": "userScene",
+            "triggers": [
+                {
+                    "id": "68887b23-e37f-4a98-8bd8-3f21d23a0718",
+                    "type": "app",
+                    "triggeredAt": "2026-01-04T15:56:59.756Z",
+                    "disabled": false
+                }
+            ],
+            "actions": [
+                {
+                    "id": "d791dc18-9180-45c7-92fc-604481a34f15_1",
+                    "type": "device",
+                    "deviceId": "d791dc18-9180-45c7-92fc-604481a34f15_1",
+                    "enabled": true,
+                    "attributes": {
+                        "isOn": true,
+                        "lightLevel": 100,
+                        "colorHue": 0,
+                        "colorSaturation": 1
+                    }
+                },
+                {
+                    "id": "3c8b0049-eb5c-4ea1-9da3-cdedc50366ef_1",
+                    "type": "device",
+                    "deviceId": "3c8b0049-eb5c-4ea1-9da3-cdedc50366ef_1",
+                    "enabled": true,
+                    "attributes": {
+                        "isOn": true,
+                        "lightLevel": 100,
+                        "colorHue": 0,
+                        "colorSaturation": 1
+                    }
+                },
+                {
+                    "id": "c27faa27-4c18-464f-81a0-a31ce57d83d5_1",
+                    "type": "device",
+                    "deviceId": "c27faa27-4c18-464f-81a0-a31ce57d83d5_1",
+                    "enabled": true,
+                    "attributes": {
+                        "isOn": true,
+                        "lightLevel": 100,
+                        "colorHue": 35,
+                        "colorSaturation": 0.8
+                    }
+                },
+                {
+                    "id": "891790db-8c17-483a-a1a6-c85bffd3a373_1",
+                    "type": "device",
+                    "deviceId": "891790db-8c17-483a-a1a6-c85bffd3a373_1",
+                    "enabled": true,
+                    "attributes": {
+                        "isOn": true,
+                        "lightLevel": 100,
+                        "colorHue": 0,
+                        "colorSaturation": 1
+                    }
+                }
+            ],
+            "commands": [],
+            "createdAt": "2024-11-05T13:49:55.673Z",
+            "lastCompleted": "2026-01-04T15:56:59.958Z",
+            "lastTriggered": "2026-01-04T15:56:59.958Z",
+            "undoAllowedDuration": 30
+        },
+        {
+            "id": "4e80aadf-2b34-4c4f-8fa4-1c9d9440d9bd",
+            "info": {
+                "name": "Custom sensor open scene @07c",
+                "icon": "scenes_arrive_home"
+            },
+            "type": "customScene",
+            "triggers": [
+                {
+                    "id": "2818e401-3f88-4245-9c30-1595c501dea5",
+                    "type": "event",
+                    "triggeredAt": "2025-06-14T12:04:00.410Z",
+                    "disabled": false,
+                    "trigger": {
+                        "days": [],
+                        "deviceId": "07cca6c2-f2b6-4f57-bfd9-a788a16d1eef_1",
+                        "filter": {
+                            "attribute": {
+                                "isOpen": true
+                            }
+                        }
+                    }
+                },
+                {
+                    "id": "6a231404-5bbb-42ba-93c2-4e006986d376",
+                    "type": "event",
+                    "triggeredAt": "2025-06-14T12:17:23.081Z",
+                    "disabled": false,
+                    "trigger": {
+                        "days": [],
+                        "undo": true,
+                        "deviceId": "07cca6c2-f2b6-4f57-bfd9-a788a16d1eef_1",
+                        "filter": {
+                            "attribute": {
+                                "isOpen": false
+                            }
+                        }
+                    }
+                },
+                {
+                    "id": "cb7f8f6a-e71e-4eb4-a63b-72d9fa7f9c71",
+                    "type": "app",
+                    "disabled": false
+                }
+            ],
+            "actions": [],
+            "commands": [],
+            "createdAt": "2024-10-31T21:32:35.891Z",
+            "lastCompleted": "2025-06-14T12:04:00.426Z",
+            "lastTriggered": "2025-06-14T12:04:00.426Z",
+            "undoAllowedDuration": 1,
+            "lastUndo": "2025-06-14T12:17:23.113Z"
+        },
+        {
+            "id": "3f90176d-ca0e-4c2f-950a-4d4c96142f79",
+            "info": {
+                "name": "OH Test",
+                "icon": "scenes_briefcase"
+            },
+            "type": "userScene",
+            "triggers": [
+                {
+                    "id": "24607660-0bfc-4c84-a5bc-a32b82eab4fb",
+                    "type": "controller",
+                    "disabled": false,
+                    "trigger": {
+                        "days": [
+                            "Mon",
+                            "Tue",
+                            "Wed",
+                            "Thu",
+                            "Fri",
+                            "Sat",
+                            "Sun"
+                        ],
+                        "controllerType": "shortcutController",
+                        "clickPattern": "singlePress",
+                        "buttonIndex": 0,
+                        "deviceId": "4fec48cd-6da8-4075-af78-09fff0423f78_9"
+                    }
+                },
+                {
+                    "id": "29882639-d6da-48f4-a578-ef5633a94e2d",
+                    "type": "app",
+                    "disabled": false
+                }
+            ],
+            "actions": [
+                {
+                    "id": "d791dc18-9180-45c7-92fc-604481a34f15_1",
+                    "type": "device",
+                    "deviceId": "d791dc18-9180-45c7-92fc-604481a34f15_1",
+                    "enabled": true,
+                    "attributes": {
+                        "isOn": false,
+                        "lightLevel": 100,
+                        "colorHue": 89.681786,
+                        "colorSaturation": 0.99900264
+                    }
+                }
+            ],
+            "commands": [],
+            "createdAt": "2026-01-04T02:22:58.319Z",
+            "undoAllowedDuration": 30
+        }
+    ],
+    "rooms": [
+   ],
+    "deviceSets": [
+    ],
+    "music": {
+    },
+    "adaptiveProfiles": [
+   ]
+}

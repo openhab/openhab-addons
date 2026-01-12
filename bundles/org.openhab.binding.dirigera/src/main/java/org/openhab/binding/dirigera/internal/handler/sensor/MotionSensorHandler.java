@@ -24,6 +24,7 @@ import java.util.Map;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.openhab.binding.dirigera.internal.ResourceReader;
 import org.openhab.binding.dirigera.internal.handler.BaseHandler;
 import org.openhab.binding.dirigera.internal.interfaces.Model;
 import org.openhab.core.library.types.DateTimeType;
@@ -84,8 +85,8 @@ public class MotionSensorHandler extends BaseHandler {
                     }
                 }
                 if (seconds > 0) {
-                    String updateData = String
-                            .format(gateway().model().getTemplate(Model.TEMPLATE_SENSOR_DURATION_UPDATE), seconds);
+                    String updateData = String.format(ResourceReader.getResource(Model.TEMPLATE_SENSOR_DURATION_UPDATE),
+                            seconds);
                     sendPatch(new JSONObject(updateData));
                 }
                 break;
@@ -94,14 +95,14 @@ public class MotionSensorHandler extends BaseHandler {
                     switch (decimal.intValue()) {
                         case 0:
                             gateway().api().sendPatch(config.id,
-                                    new JSONObject(gateway().model().getTemplate(Model.TEMPLATE_SENSOR_ALWQAYS_ON)));
+                                    new JSONObject(ResourceReader.getResource(Model.TEMPLATE_SENSOR_ALWQAYS_ON)));
                             break;
                         case 1:
                             gateway().api().sendPatch(config.id,
-                                    new JSONObject(gateway().model().getTemplate(Model.TEMPLATE_SENSOR_FOLLOW_SUN)));
+                                    new JSONObject(ResourceReader.getResource(Model.TEMPLATE_SENSOR_FOLLOW_SUN)));
                             break;
                         case 2:
-                            String template = gateway().model().getTemplate(Model.TEMPLATE_SENSOR_SCHEDULE_ON);
+                            String template = ResourceReader.getResource(Model.TEMPLATE_SENSOR_SCHEDULE_ON);
                             gateway().api().sendPatch(config.id,
                                     new JSONObject(String.format(template, startTime, endTime)));
                             break;
@@ -109,7 +110,7 @@ public class MotionSensorHandler extends BaseHandler {
                 }
                 break;
             case CHANNEL_SCHEDULE_START:
-                String startSchedule = gateway().model().getTemplate(Model.TEMPLATE_SENSOR_SCHEDULE_ON);
+                String startSchedule = ResourceReader.getResource(Model.TEMPLATE_SENSOR_SCHEDULE_ON);
                 if (command instanceof StringType string) {
                     // take string as it is, no consistency check
                     startTime = string.toFullString();
@@ -119,7 +120,7 @@ public class MotionSensorHandler extends BaseHandler {
                 gateway().api().sendPatch(config.id, new JSONObject(String.format(startSchedule, startTime, endTime)));
                 break;
             case CHANNEL_SCHEDULE_END:
-                String endSchedule = gateway().model().getTemplate(Model.TEMPLATE_SENSOR_SCHEDULE_ON);
+                String endSchedule = ResourceReader.getResource(Model.TEMPLATE_SENSOR_SCHEDULE_ON);
                 if (command instanceof StringType string) {
                     endTime = string.toFullString();
                     // take string as it is, no consistency check
@@ -137,20 +138,19 @@ public class MotionSensorHandler extends BaseHandler {
                             // fine - array stays empty
                             break;
                         case "Warm":
-                            presetValues = new JSONArray(
-                                    gateway().model().getTemplate(Model.TEMPLATE_LIGHT_PRESET_WARM));
+                            presetValues = new JSONArray(ResourceReader.getResource(Model.TEMPLATE_LIGHT_PRESET_WARM));
                             break;
                         case "Slowdown":
                             presetValues = new JSONArray(
-                                    gateway().model().getTemplate(Model.TEMPLATE_LIGHT_PRESET_SLOWDOWN));
+                                    ResourceReader.getResource(Model.TEMPLATE_LIGHT_PRESET_SLOWDOWN));
                             break;
                         case "Smooth":
                             presetValues = new JSONArray(
-                                    gateway().model().getTemplate(Model.TEMPLATE_LIGHT_PRESET_SMOOTH));
+                                    ResourceReader.getResource(Model.TEMPLATE_LIGHT_PRESET_SMOOTH));
                             break;
                         case "Bright":
                             presetValues = new JSONArray(
-                                    gateway().model().getTemplate(Model.TEMPLATE_LIGHT_PRESET_BRIGHT));
+                                    ResourceReader.getResource(Model.TEMPLATE_LIGHT_PRESET_BRIGHT));
                             break;
                         default:
                             presetValues = new JSONArray(string.toFullString());

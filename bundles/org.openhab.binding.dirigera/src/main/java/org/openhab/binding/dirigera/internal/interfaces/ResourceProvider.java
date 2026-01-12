@@ -10,23 +10,16 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.dirigera.internal.handler.matter;
+package org.openhab.binding.dirigera.internal.interfaces;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.core.thing.Thing;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
- * The {@link MatterSensor} is configured by devices.json
+ * {@link ResourceProvider} interface provides methods to access resource files from main/resources
  *
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
-public class MatterSensor extends BaseMatterHandler {
-    private final Logger logger = LoggerFactory.getLogger(MatterSensor.class);
-
-    public MatterSensor(Thing thing) {
-        super(thing);
-    }
+public interface ResourceProvider {
+    String getResourceFile(String resourcePath);
 }
