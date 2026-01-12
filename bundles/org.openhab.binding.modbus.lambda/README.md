@@ -43,8 +43,9 @@ If you need the binding before the next official release, you can build it manua
    ```
 
 4. Copy the JAR file to your openHAB addons folder:
-   - Linux/macOS: `/usr/share/openhab/addons/` or `$OPENHAB_HOME/addons/`
-   - Windows: `C:\openHAB\addons\`
+   - Linux: `$OPENHAB_HOME/addons/` (typically `/usr/share/openhab/addons/` for package installations or `/opt/openhab/addons/` for manual installations)
+   - macOS: `$OPENHAB_HOME/addons/`
+   - Windows: `%OPENHAB_HOME%\addons\` (typically `C:\openHAB\addons\` or your custom installation path)
 
 5. The binding should automatically load. Check the openHAB log for any errors.
 
