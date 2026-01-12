@@ -17,9 +17,11 @@ There are several ways to install it:
 
 ### Official Release
 
-Once this binding is included in an official openHAB release (version 5.2.0 or later), it will be available for installation through the openHAB UI:
+Once this binding is included in an official openHAB release (expected in version 5.2.0 or later), it will be available for installation through the openHAB UI:
 
 In the openHAB UI, go to **Settings → Add-ons → Bindings**, search for "Lambda", and install the "Lambda Heat Pump Binding".
+
+**Note**: As of January 2026, this binding is still in development and has not yet been included in an official release.
 
 ### Manual Build from Source
 
@@ -36,7 +38,7 @@ If you need the binding before the next official release, you can build it manua
    mvn clean install -pl :org.openhab.binding.modbus.lambda -DskipChecks
    ```
    
-   Note: `-DskipChecks` skips code style validation to speed up the build. For a full validation build, omit this flag.
+   Note: `-DskipChecks` skips code style validation to speed up the build for development/testing purposes. For production or contribution builds, omit this flag to ensure full validation.
 
 3. The compiled JAR file will be created in:
    ```
@@ -56,7 +58,7 @@ If you need the binding before the next official release, you can build it manua
 ### Prerequisites
 
 Before using this binding, ensure you have:
-- openHAB 5.2.0 or later installed
+- openHAB 4.2.0 or later installed (the binding targets openHAB 5.2.0 but may work with earlier versions)
 - The Modbus binding installed
 - Java 21 or later (for building from source)
 - Maven 3.x (for building from source)
