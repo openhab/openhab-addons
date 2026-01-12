@@ -17,10 +17,9 @@ There are several ways to install it:
 
 ### Official Release
 
-Once this binding is included in an official openHAB release (version 5.2.0 or later), it will be available through:
+Once this binding is included in an official openHAB release (version 5.2.0 or later), it will be available for installation through the openHAB UI:
 
-- **UI Installation**: In the openHAB UI, go to Settings → Add-ons → Bindings, search for "Lambda", and install the "Lambda Heat Pump Binding"
-- **Automatic Distribution**: The binding will be included in openHAB distributions and can be installed via the add-ons UI
+In the openHAB UI, go to **Settings → Add-ons → Bindings**, search for "Lambda", and install the "Lambda Heat Pump Binding".
 
 ### Manual Build from Source
 
@@ -36,16 +35,19 @@ If you need the binding before the next official release, you can build it manua
    ```shell
    mvn clean install -pl :org.openhab.binding.modbus.lambda -DskipChecks
    ```
+   
+   Note: `-DskipChecks` skips code style validation to speed up the build. For a full validation build, omit this flag.
 
 3. The compiled JAR file will be created in:
    ```
    bundles/org.openhab.binding.modbus.lambda/target/org.openhab.binding.modbus.lambda-<version>.jar
    ```
 
-4. Copy the JAR file to your openHAB addons folder:
-   - Linux: `$OPENHAB_HOME/addons/` (typically `/usr/share/openhab/addons/` for package installations or `/opt/openhab/addons/` for manual installations)
-   - macOS: `$OPENHAB_HOME/addons/`
-   - Windows: `%OPENHAB_HOME%\addons\` (typically `C:\openHAB\addons\` or your custom installation path)
+4. Copy the JAR file to your openHAB addons folder. Common locations are:
+   - Linux (package install): `/usr/share/openhab/addons/`
+   - Linux (manual install): `/opt/openhab/addons/`
+   - Linux/macOS (custom): `$OPENHAB_HOME/addons/` (if you've set this environment variable)
+   - Windows: `C:\openHAB\addons\` or `%OPENHAB_HOME%\addons\` (if you've set this environment variable)
 
 5. The binding should automatically load. Check the openHAB log for any errors.
 
