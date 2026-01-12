@@ -10,6 +10,54 @@ E-Meter Messpunkt:                  E-Eintrag
 
 Other configurations of the E-Manager are not supported (yet).
 
+## Installation
+
+This binding is part of the openHAB add-ons repository.
+There are several ways to install it:
+
+### Official Release
+
+Once this binding is included in an official openHAB release (version 5.2.0 or later), it will be available through:
+
+- **UI Installation**: In the openHAB UI, go to Settings → Add-ons → Bindings, search for "Lambda", and install the "Lambda Heat Pump Binding"
+- **Automatic Distribution**: The binding will be included in openHAB distributions and can be installed via the add-ons UI
+
+### Manual Build from Source
+
+If you need the binding before the next official release, you can build it manually:
+
+1. Clone the openHAB add-ons repository:
+   ```shell
+   git clone https://github.com/openhab/openhab-addons.git
+   cd openhab-addons
+   ```
+
+2. Build the Lambda binding:
+   ```shell
+   mvn clean install -pl :org.openhab.binding.modbus.lambda -DskipChecks
+   ```
+
+3. The compiled JAR file will be created in:
+   ```
+   bundles/org.openhab.binding.modbus.lambda/target/org.openhab.binding.modbus.lambda-<version>.jar
+   ```
+
+4. Copy the JAR file to your openHAB addons folder:
+   - Linux/macOS: `/usr/share/openhab/addons/` or `$OPENHAB_HOME/addons/`
+   - Windows: `C:\openHAB\addons\`
+
+5. The binding should automatically load. Check the openHAB log for any errors.
+
+**Note**: The Modbus binding (`org.openhab.binding.modbus`) must also be installed, as it is a required dependency.
+
+### Prerequisites
+
+Before using this binding, ensure you have:
+- openHAB 5.2.0 or later installed
+- The Modbus binding installed
+- Java 21 or later (for building from source)
+- Maven 3.x (for building from source)
+
 ## Supported Things
 
 This bundle adds the following Thing types to the Modbus binding.
