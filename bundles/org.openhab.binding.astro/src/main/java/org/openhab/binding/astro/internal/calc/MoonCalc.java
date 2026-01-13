@@ -57,10 +57,10 @@ public class MoonCalc {
     /**
      * Creates a new instance using the specified {@link InstantSource}.
      *
-     * @param instantSouce the source of the current time.
+     * @param instantSource the source of the current time.
      */
-    public MoonCalc(InstantSource instantSouce) {
-        this.instantSource = instantSouce;
+    public MoonCalc(InstantSource instantSource) {
+        this.instantSource = instantSource;
     }
 
     /**
