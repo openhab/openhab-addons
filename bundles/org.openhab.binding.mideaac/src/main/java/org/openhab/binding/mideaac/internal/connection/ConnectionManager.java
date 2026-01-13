@@ -32,9 +32,9 @@ import org.openhab.binding.mideaac.internal.cloud.CloudProvider;
 import org.openhab.binding.mideaac.internal.connection.exception.MideaAuthenticationException;
 import org.openhab.binding.mideaac.internal.connection.exception.MideaConnectionException;
 import org.openhab.binding.mideaac.internal.connection.exception.MideaException;
-import org.openhab.binding.mideaac.internal.devices.A1CommandBase;
 import org.openhab.binding.mideaac.internal.devices.CommandBase;
 import org.openhab.binding.mideaac.internal.devices.Packet;
+import org.openhab.binding.mideaac.internal.devices.a1.A1CommandBase;
 import org.openhab.binding.mideaac.internal.devices.a1.A1CommandSet;
 import org.openhab.binding.mideaac.internal.devices.a1.A1Response;
 import org.openhab.binding.mideaac.internal.devices.ac.ACCommandSet;
@@ -101,6 +101,7 @@ public class ConnectionManager {
      * @param deviceId Device ID
      * @param version Device version
      * @param promptTone Tone after command true or false
+     * @param deviceType Device type a1 or ac
      */
     public ConnectionManager(String ipAddress, int ipPort, int timeout, String key, String token, String cloud,
             String email, String password, String deviceId, int version, boolean promptTone, String deviceType) {
@@ -450,7 +451,7 @@ public class ConnectionManager {
                 Utils.bytesToBinary(data));
 
         // Validate the proper length
-        if (data.length < 21) {
+        if (data.length < 21 && (bodyType != (byte) 0x1E || bodyType != (byte) 0xB5)) {
             logger.warn("Response data is {} long, minimum is 21!", data.length);
             return;
         }
@@ -460,7 +461,7 @@ public class ConnectionManager {
                 logger.warn("Error response 0x1E received {} from IP Address:{}", bodyType, ipAddress);
                 return;
 
-            case (byte) 0xB5: // Possible same for 0xB1 ?
+            case (byte) 0xB5: // Possible same for 0xB1 - future?
                 try {
                     logger.debug("Capabilities response detected with bodyType 0xB5.");
                     CapabilitiesResponse capabilitiesResponse = new CapabilitiesResponse(data);
@@ -492,18 +493,35 @@ public class ConnectionManager {
                 return;
 
             case (byte) 0xA0:
-                try {
-                    logger.debug("Response detected with bodyType 0xA0. Data length: {}", data.length);
-                    HumidityResponse humidityResponse = new HumidityResponse(data);
-                    if (callback != null) {
-                        callback.updateChannels(humidityResponse);
-                    } else {
-                        logger.debug("Callback is null for unsolicited 0xA0 humidity response, channels not updated.");
+                if ("ac".equals(deviceType)) {
+                    try {
+                        logger.debug("Response detected with bodyType 0xA0. Data length: {}", data.length);
+                        HumidityResponse humidityResponse = new HumidityResponse(data);
+                        if (callback != null) {
+                            callback.updateChannels(humidityResponse);
+                        } else {
+                            logger.debug(
+                                    "Callback is null for unsolicited 0xA0 humidity response, channels not updated.");
+                        }
+                    } catch (Exception ex) {
+                        logger.debug("Unsolicited 0xA0 response exception: {}", ex.getMessage());
+                        throw new MideaException(ex);
                     }
-                } catch (Exception ex) {
-                    logger.debug("Unsolicited 0xA0 response exception: {}", ex.getMessage());
-                    throw new MideaException(ex);
+                    return;
+                } else if ("a1".equals(deviceType)) {
+                    lastA1Response = new A1Response(data);
+                    try {
+                        logger.trace("Data length is {}, dehumidifier, IP address is {}", data.length, ipAddress);
+                        if (callback != null) {
+                            callback.updateChannels(lastA1Response);
+                        }
+                    } catch (Exception ex) {
+                        logger.debug("Dehumidifer Poll response exception: {}", ex.getMessage());
+                        throw new MideaException(ex);
+                    }
+                    return;
                 }
+                logger.debug("0xA0 response received for unknown device type: {}", deviceType);
                 return;
 
             case (byte) 0xA1:
