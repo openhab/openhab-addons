@@ -68,6 +68,7 @@ public class Position {
      * Returns the shade length ratio.
      */
     public State getShadeLength() {
-        return Double.isNaN(elevation) ? UnDefType.NULL : new DecimalType(1d / MathUtils.tanDeg(elevation));
+        return Double.isNaN(elevation) ? UnDefType.UNDEF
+                : elevation <= 0 ? UnDefType.NULL : new DecimalType(1d / MathUtils.tanDeg(elevation));
     }
 }
