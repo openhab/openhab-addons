@@ -30,7 +30,7 @@ public class HumidityResponseTest {
     @org.jupnp.registry.event.Before
 
     // From OH forum; Midea topic July 2025
-    byte[] data = HexFormat.of().parseHex("A01240660000003C00000000003600000000000000004234EA");
+    byte[] data = HexFormat.of().parseHex("A01240640000003C00000000003600000000000000004234EA");
     HumidityResponse response = new HumidityResponse(data);
 
     /**
@@ -70,7 +70,7 @@ public class HumidityResponseTest {
      */
     @Test
     public void testFanSpeed() {
-        assertEquals(CommandBase.FanSpeed.AUTO3, response.getFanSpeed());
+        assertEquals("HIGH", response.getFanSpeed().toString());
     }
 
     /**
