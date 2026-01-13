@@ -50,7 +50,7 @@ public class Position {
     }
 
     public double getAzimuthAsDouble() {
-        return elevation;
+        return azimuth;
     }
 
     /**
