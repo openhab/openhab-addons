@@ -232,11 +232,15 @@ public class Shelly2RpcSocket {
         } catch (WebSocketException | AsynchronousCloseException e) {
             // Channel was closed intentionally, ignore
         } catch (Exception e) {
-            if (logger.isDebugEnabled()) {
-                if (e.getCause() instanceof InterruptedException) {
-                    logger.debug("{}: Unable to close socket - interrupted", thingName); // e.g. device was rebooted
-                } else {
-                    logger.debug("{}: Unable to close socket", thingName, e);
+            if (e.getCause() instanceof AsynchronousCloseException) {
+
+            } else {
+                if (logger.isDebugEnabled()) {
+                    if (e.getCause() instanceof InterruptedException) {
+                        logger.debug("{}: Unable to close socket - interrupted", thingName); // e.g. device was rebooted
+                    } else {
+                        logger.debug("{}: Unable to close socket", thingName, e);
+                    }
                 }
             }
         } finally {
@@ -246,8 +250,8 @@ public class Shelly2RpcSocket {
                 if (client != null) {
                     client.stop();
                 }
-            } catch (WebSocketException | IOException e) {
-             // expected during disconnect, ignore
+            } catch (WebSocketException | AsynchronousCloseException e) {
+                // expected, ignore
             } catch (Exception e) {
                 if (logger.isDebugEnabled()) {
                     logger.debug("{}: Unable to close Web Socket", thingName, e);
