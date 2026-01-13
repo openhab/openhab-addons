@@ -22,8 +22,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.openhab.binding.mideaac.internal.callbacks.Callback;
-import org.openhab.binding.mideaac.internal.devices.A1CommandBase;
 import org.openhab.binding.mideaac.internal.devices.CommandBase;
+import org.openhab.binding.mideaac.internal.devices.a1.A1CommandBase;
 
 /**
  * The {@link ConnectionManagerTest} tests the methods in the ConnectionManager

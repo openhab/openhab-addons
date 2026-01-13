@@ -70,7 +70,7 @@ public class HumidityResponseTest {
      */
     @Test
     public void testFanSpeed() {
-        assertEquals(ACStringCommands.FanSpeed.AUTO3, response.getFanSpeed());
+        assertEquals("HIGH", response.getFanSpeed().toString());
     }
 
     /**

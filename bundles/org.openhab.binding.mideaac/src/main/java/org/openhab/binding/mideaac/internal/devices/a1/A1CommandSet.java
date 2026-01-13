@@ -13,7 +13,6 @@
 package org.openhab.binding.mideaac.internal.devices.a1;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.mideaac.internal.devices.A1CommandBase;
 import org.openhab.binding.mideaac.internal.devices.Timer.TimerData;
 import org.openhab.binding.mideaac.internal.devices.a1.A1StringCommands.A1FanSpeed;
 import org.openhab.binding.mideaac.internal.devices.a1.A1StringCommands.A1OperationalMode;
@@ -99,6 +98,7 @@ public class A1CommandSet extends A1CommandBase {
      * @param state on or off
      */
     public void setPowerState(boolean state) {
+        data[0x0b] &= ~0x80; // Clear leading bit
         if (!state) {
             data[0x0b] &= ~0x01;
         } else {
