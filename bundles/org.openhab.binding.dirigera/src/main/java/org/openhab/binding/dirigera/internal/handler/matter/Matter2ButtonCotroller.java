@@ -18,15 +18,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link MatterController} is configured by devices.json
+ * The {@link Matter2ButtonCotroller} is configured by devices.json
  *
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
-public class MatterController extends BaseMatterHandler {
-    private final Logger logger = LoggerFactory.getLogger(MatterController.class);
+public class Matter2ButtonCotroller extends BaseMatterHandler {
+    private final Logger logger = LoggerFactory.getLogger(Matter2ButtonCotroller.class);
 
-    public MatterController(Thing thing) {
+    public Matter2ButtonCotroller(Thing thing) {
         super(thing);
     }
 }

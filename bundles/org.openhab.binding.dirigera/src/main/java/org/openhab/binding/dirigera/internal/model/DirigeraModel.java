@@ -409,11 +409,11 @@ public class DirigeraModel implements Model {
                 }
                 case "lightSensor" -> {
                     String relationId = getRelationId(id);
-                    Map<String, String> relationMap = getRelations(relationId);
-                    if (relationMap.values().contains("occupancySensor")) {
-                        yield THING_TYPE_MATTER_OCCUPANCY_LIGHT_SENSOR;
-                    } else {
+                    ;
+                    if (getRelations(relationId).size() == 1) {
                         yield THING_TYPE_MATTER_LIGHT_SENSOR;
+                    } else {
+                        yield THING_TYPE_MATTER_OCCUPANCY_LIGHT_SENSOR;
                     }
                 }
                 case "environmentSensor" -> THING_TYPE_MATTER_ENVIRONMENT_SENSOR;

@@ -160,9 +160,10 @@
 				"itemType": "Number:Illuminance",
 				"inValue": "Integer",
 				"outValue": "QuantityType",
-				"correction": 0.01,
+                "correction": "factor",
+				"factor": 0.01,
 				"transformation": "format",
-				"format": "%f lx"
+				"format": "%d lx"
 			}
 		],
 		"controlProperties": [],
@@ -191,10 +192,31 @@
 					"true": "ON",
 					"false": "OFF"
 				}
+			},
+			{
+				"attribute": "circadianPresets",
+				"channel": "light-preset",
+				"channelType": "light-preset",
+				"itemType": "String",
+				"inValue": "String",
+				"outValue": "String",
+				"transformation": "raw"
 			}
 		],
-		"controlProperties": [],
-		"linkCandidates": ["light","outlet"],
+		"controlProperties": [
+			{
+				"attribute": "circadianPresets",
+				"channel": "light-preset",
+				"itemType": "String",
+				"inValue": "String",
+				"outValue": "String",
+				"transformation": "code"
+			}
+		],
+		"linkCandidates": [
+			"light",
+			"outlet"
+		],
 		"thingProperties": []
 	}
 ]

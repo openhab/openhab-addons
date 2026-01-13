@@ -127,9 +127,6 @@ public class BaseMatterHandler extends BaseThingHandler implements BaseDevice, D
         matterConfig.getStatusProperties().forEach((key, value) -> {
             channelStateMap.put(value.getString(BaseMatterConfiguration.KEY_CHANNEL), UnDefType.UNDEF);
         });
-        matterConfig.getControlProperties().forEach((key, value) -> {
-            channelStateMap.put(value.getString(BaseMatterConfiguration.KEY_CHANNEL), UnDefType.UNDEF);
-        });
     }
 
     @Override
@@ -260,9 +257,12 @@ public class BaseMatterHandler extends BaseThingHandler implements BaseDevice, D
                     }
                     break;
             }
-            JSONObject apiRequest = matterConfig.getRequestJson(targetChannel, command);
-            if (!apiRequest.isEmpty()) {
-                sendPatch(apiRequest);
+            Map<String, JSONObject> requests = matterConfig.getRequestJson(targetChannel, command);
+            System.out.println("DIRIGERA BASE_MATTER_HANDLER " + thing.getUID() + " requests " + requests);
+            if (!requests.isEmpty()) {
+                requests.forEach((deviceId, request) -> {
+                    sendPatch(deviceId, request);
+                });
             } else {
                 logger.debug("DIRIGERA BASE_MATTER_HANDLER {} no API request for channel {} command {}", thing.getUID(),
                         targetChannel, command.toFullString());
@@ -276,8 +276,8 @@ public class BaseMatterHandler extends BaseThingHandler implements BaseDevice, D
      * @param attributes
      * @return status
      */
-    protected int sendPatch(JSONObject patch) {
-        int status = gateway().api().sendPatch(config.id, patch);
+    protected int sendPatch(String deviceId, JSONObject patch) {
+        int status = gateway().api().sendPatch(deviceId, patch);
         if (customDebug) {
             logger.info("DIRIGERA BASE_MATTER_HANDLER {} API call: Status {} payload {}", thing.getUID(), status,
                     patch);

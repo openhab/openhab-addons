@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="dirigera"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="occupancy-sensor">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="gateway"/>
+		</supported-bridge-type-refs>
+
+		<label>Occupancy Sensor</label>
+		<description>Sensor to detect motion</description>
+
+		<config-description-ref uri="thing-type:dirigera:base-device"/>
+	</thing-type>
+
+	<thing-type id="occupancy-light-sensor">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="gateway"/>
+		</supported-bridge-type-refs>
+
+		<label>Occupancy Light Sensor</label>
+		<description>Sensor to detect motion and measures illuminance</description>
+
+		<config-description-ref uri="thing-type:dirigera:base-device"/>
+	</thing-type>
+
+	<thing-type id="light-sensor">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="gateway"/>
+		</supported-bridge-type-refs>
+
+		<label>Light Sensor</label>
+		<description>Sensor providing illuminance measures</description>
+
+		<config-description-ref uri="thing-type:dirigera:base-device"/>
+	</thing-type>
+
+	<thing-type id="environment-sensor">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="gateway"/>
+		</supported-bridge-type-refs>
+
+		<label>Environment Sensor</label>
+		<description>Sensor measuring temperature, humidity and pollution. Measuring capabilities depends on hardware</description>
+
+		<config-description-ref uri="thing-type:dirigera:base-device"/>
+	</thing-type>
+
+	<thing-type id="open-close-sensor">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="gateway"/>
+		</supported-bridge-type-refs>
+
+		<label>Open Close Sensor</label>
+		<description>Contact sensor detecting open/closed doors, windows or drawers</description>
+
+		<config-description-ref uri="thing-type:dirigera:base-device"/>
+	</thing-type>
+
+	<thing-type id="water-leak-sensor">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="gateway"/>
+		</supported-bridge-type-refs>
+
+		<label>Water Leak Sensor</label>
+		<description>Sensor detecting water leaks</description>
+
+		<config-description-ref uri="thing-type:dirigera:base-device"/>
+	</thing-type>
+
+	<thing-type id="2-button-controller">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="gateway"/>
+		</supported-bridge-type-refs>
+
+		<label>2 Button Controller</label>
+		<description>Controller with 2 programmable buttons</description>
+
+		<config-description-ref uri="thing-type:dirigera:base-device"/>
+	</thing-type>
+
+	<thing-type id="3-button-controller">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="gateway"/>
+		</supported-bridge-type-refs>
+
+		<label>3 Button Controller</label>
+		<description>Controller with 3 programmable buttons</description>
+
+		<config-description-ref uri="thing-type:dirigera:base-device"/>
+	</thing-type>
+
+	<thing-type id="matter-color-light">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="gateway"/>
+		</supported-bridge-type-refs>
+
+		<label>Color Light (Matter)</label>
+		<description>Color light (based on Matter standard)</description>
+
+		<config-description-ref uri="thing-type:dirigera:base-device"/>
+	</thing-type>
+
+	<thing-type id="matter-temperature-light">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="gateway"/>
+		</supported-bridge-type-refs>
+
+		<label>Temperature Light (Matter)</label>
+		<description>Color light (based on Matter standard)</description>
+
+		<config-description-ref uri="thing-type:dirigera:base-device"/>
+	</thing-type>
+</thing:thing-descriptions>

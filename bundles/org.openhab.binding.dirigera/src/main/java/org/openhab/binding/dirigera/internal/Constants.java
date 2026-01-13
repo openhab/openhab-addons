@@ -148,6 +148,8 @@ public class Constants {
     public static final String DEVICE_TYPE_ENVIRONMENT_SENSOR = "environmentSensor";
     public static final String DEVICE_TYPE_WATER_SENSOR = "waterSensor";
     public static final String DEVICE_TYPE_OUTLET = "outlet";
+    public static final String DEVICE_TYPE_OCCUPANCY_SENSOR = "occupancySensor";
+    public static final String DEVICE_TYPE_GENERIC_SWITCH = "genericSwitch";
 
     public static final String DEVICE_TYPE_LIGHT_CONTROLLER = "lightController";
     public static final String DEVICE_TYPE_BLIND_CONTROLLER = "blindsController";

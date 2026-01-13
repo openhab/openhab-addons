@@ -55,7 +55,8 @@ public class BaseLight extends BaseHandler implements PowerListener {
         super(thing, mapping);
         super.setChildHandler(this);
         // links of types which can be established towards this device
-        linkCandidateTypes = List.of(DEVICE_TYPE_LIGHT_CONTROLLER, DEVICE_TYPE_MOTION_SENSOR);
+        linkCandidateTypes = List.of(DEVICE_TYPE_LIGHT_CONTROLLER, DEVICE_TYPE_MOTION_SENSOR,
+                DEVICE_TYPE_OCCUPANCY_SENSOR, DEVICE_TYPE_GENERIC_SWITCH);
     }
 
     @Override

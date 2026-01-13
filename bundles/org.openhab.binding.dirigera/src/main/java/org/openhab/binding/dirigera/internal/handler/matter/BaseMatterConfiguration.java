@@ -63,11 +63,12 @@ public class BaseMatterConfiguration {
     private final BaseMatterHandler handler;
     private static JSONObject matterDeviceConfig = new JSONObject();
 
-    private List<String> types = new ArrayList<>();
-    private List<String> deviceTypes = new ArrayList<>();
-    private List<String> thingProperties = new ArrayList<>();
+    // holds for each deviceId the mapping of channelName to control property configuration
+    private Map<String, Map<String, JSONObject>> controlPropertiesMapping = new HashMap<>();
     private Map<String, JSONObject> statusProperties = new HashMap<>();
-    private Map<String, JSONObject> controlProperties = new HashMap<>();
+    private Map<String, String> deviceTypes = new HashMap<>();
+    private List<String> thingProperties = new ArrayList<>();
+    private List<String> types = new ArrayList<>();
 
     public BaseMatterConfiguration(BaseMatterHandler handler) {
         this.handler = handler;
@@ -76,15 +77,24 @@ public class BaseMatterConfiguration {
             loadDeviceConfig();
             logger.trace("BaseMatterConfiguration took {} ms", Duration.between(startTime, Instant.now()).toMillis());
         }
-        addDeviceType(TYPE_BASE);
+        addDeviceType("*", TYPE_BASE);
     }
 
-    private void addDeviceType(String deviceType) {
+    private void addDeviceType(String deviceId, String deviceType) {
         JSONObject deviceConfig = matterDeviceConfig.optJSONObject(deviceType);
         if (deviceConfig == null) {
             logger.warn("No configuration found for device type {}", deviceType);
             return;
         }
+
+        // collect control configuration - item2handler
+        Map<String, JSONObject> controlProperties = new HashMap<>();
+        deviceConfig.getJSONArray(PROPERTY_CONTROL_PROPERTIES).forEach(entry -> {
+            JSONObject controlEntry = (JSONObject) entry;
+            String channelName = controlEntry.getString(KEY_CHANNEL);
+            controlProperties.put(channelName, controlEntry);
+            controlPropertiesMapping.put(deviceId, controlProperties);
+        });
 
         // collect identification properties
         JSONObject identificatonPRoperties = deviceConfig.optJSONObject(KEY_IDENTIFICATION);
@@ -93,30 +103,18 @@ public class BaseMatterConfiguration {
             if (!types.contains(typeString)) {
                 types.add(typeString);
             }
-            String deviceTypeString = identificatonPRoperties.optString(KEY_DEVICE_TYPE);
-            if (deviceTypes.contains(deviceTypeString)) {
-                // id deviceTyoe is already present don't add it again
-                return;
-            }
-            deviceTypes.add(deviceTypeString);
         }
 
         // collect thing properties
         thingProperties.addAll(
                 deviceConfig.getJSONArray(PROPERTY_THING_PROPERTIES).toList().stream().map(Object::toString).toList());
 
+        deviceTypes.put(deviceId, deviceType);
         // collect status configurations - handler2item
         deviceConfig.getJSONArray(PROPERTY_STATUS_PROPERTIES).forEach(entry -> {
             JSONObject statusEntry = (JSONObject) entry;
             String propertyName = statusEntry.getString(KEY_ATTRIBUTE);
             statusProperties.put(propertyName, statusEntry);
-        });
-
-        // collect control configuration - item2handler
-        deviceConfig.getJSONArray(PROPERTY_CONTROL_PROPERTIES).forEach(entry -> {
-            JSONObject controlEntry = (JSONObject) entry;
-            String channelName = controlEntry.getString(KEY_CHANNEL);
-            controlProperties.put(channelName, controlEntry);
         });
     }
 
@@ -128,12 +126,12 @@ public class BaseMatterConfiguration {
         if (id.equals(relationId)) {
             String deviceType = handler.gateway().model().getDeviceType(id);
             connections.add(id);
-            addDeviceType(deviceType);
+            addDeviceType(id, deviceType);
         } else {
             Map<String, String> connectedDevices = handler.gateway().model().getRelations(relationId);
             connectedDevices.forEach((key, value) -> {
                 connections.add(key);
-                addDeviceType(value);
+                addDeviceType(key, value);
             });
         }
         return connections;
@@ -181,17 +179,13 @@ public class BaseMatterConfiguration {
         return statusProperties;
     }
 
-    public Map<String, JSONObject> getControlProperties() {
-        return controlProperties;
-    }
-
     public Map<String, String> getThingProperties(String id) {
         return updateProperties(id);
     }
 
     public List<String> getLinkCandidates() {
         List<String> linkCandidates = new ArrayList<>();
-        deviceTypes.forEach(deviceType -> {
+        deviceTypes.forEach((deviceId, deviceType) -> {
             JSONObject deviceConfig = matterDeviceConfig.optJSONObject(deviceType);
             if (deviceConfig != null) {
                 deviceConfig.getJSONArray(PROPERTY_LINK_CANDIDATE_TYPES).forEach(entry -> {
@@ -301,23 +295,31 @@ public class BaseMatterConfiguration {
         String transformation = config.getString(KEY_TRANSFORMATION);
 
         var correctedValue = value;
+        // correction for numeric values
+        String correctionType = config.optString("correction");
+        System.out.println(value.getClass().getSimpleName() + " value: " + value + " correction " + correctionType);
+        if (!correctionType.isBlank() && value instanceof Number num) {
+            double correctionValue = config.getDouble(correctionType);
+            System.out.println(value.getClass().getSimpleName() + " value: " + value + " correction " + correctionType
+                    + " " + correctionValue);
+            switch (correctionType) {
+                case "factor" -> correctedValue = num.doubleValue() * correctionValue;
+                case "offset" -> correctedValue = num.doubleValue() + correctionValue;
+            }
+            System.out.println(value.getClass().getSimpleName() + " correctedValue: " + correctedValue);
+        }
+
         // convert numbers in order to have either Int od Double values
-        if (config.has("inValue") && value instanceof Number num) {
-            System.out.println("CONVERSION Apply inValue conversion for " + value + " to " + config.getString("inValue")
-                    + " " + value.getClass().getSimpleName());
+        if (config.has("inValue") && correctedValue instanceof Number num) {
+            System.out.println("CONVERSION Apply inValue conversion for " + correctedValue + " to "
+                    + config.getString("inValue") + " " + value.getClass().getSimpleName());
             String inValue = config.getString("inValue");
             switch (inValue) {
                 case "Integer" -> correctedValue = num.intValue();
-                case "Float" -> correctedValue = num.floatValue();
+                case "Float" -> correctedValue = num.doubleValue();
             }
             System.out.println(
                     "CONVERSION Converted value: " + correctedValue + " " + correctedValue.getClass().getSimpleName());
-        }
-
-        // correction for numeric values
-        if (config.has("correction") && correctedValue instanceof Number num) {
-            double correction = config.getDouble("correction");
-            correctedValue = num.floatValue() * correction;
         }
 
         // apply transformation
@@ -352,34 +354,57 @@ public class BaseMatterConfiguration {
      * @param channel
      * @param command
      */
-    public JSONObject getRequestJson(String targetChannel, Command command) {
-        System.out.println("Get request JSON for channel " + targetChannel + " and command " + command + " Config "
-                + controlProperties.toString());
-        JSONObject controlConfig = controlProperties.get(targetChannel);
-        if (controlConfig != null) {
-            String targetAttribute = controlConfig.getString(KEY_ATTRIBUTE);
-            String transformation = controlConfig.getString(KEY_TRANSFORMATION);
-            var commandValue = switch (transformation) {
-                case "raw" -> command.toString();
-                default -> null;
-            };
-            if (commandValue == null) {
-                return new JSONObject();
-            }
-            String outValue = controlConfig.getString("json");
-            var json = switch (outValue) {
-                case KEY_ATTRIBUTE -> {
-                    JSONObject attributes = (new JSONObject()).put(targetAttribute, commandValue);
-                    JSONObject patch = (new JSONObject()).put(Model.ATTRIBUTES, attributes);
-                    yield patch;
+    public Map<String, JSONObject> getRequestJson(String targetChannel, Command command) {
+        // evaluate which target device to use
+        Map<String, JSONObject> requests = new HashMap<>();
+        System.out.println("Check " + controlPropertiesMapping.size() + " control properties for channel "
+                + targetChannel + " and command " + command);
+        System.out.println("Device types: " + deviceTypes.size());
+        controlPropertiesMapping.forEach((deviceId, controlProperties) -> {
+            System.out.println("Check control properties for device " + deviceId + " " + controlProperties);
+            JSONObject channelConfig = controlProperties.get(targetChannel);
+            if (channelConfig != null) {
+                JSONObject request = getRequest(command, channelConfig);
+                if (!request.isEmpty()) {
+                    if (deviceId.equals("*")) {
+                        // apply to all devices
+                        deviceTypes.keySet().forEach(devId -> {
+                            System.out.println("Add request for: " + devId);
+                            if (!"*".equals(devId)) {
+                                requests.put(devId, request);
+                                System.out.println("Requests now: " + requests);
+                            }
+                        });
+                    } else {
+                        requests.put(deviceId, request);
+                    }
                 }
-                default -> new JSONObject();
-            };
-            return json;
-        } else {
-            System.out.println("No control configuration found for channel " + targetChannel);
+            }
+        });
+        System.out.println("Requests: " + requests);
+        return requests;
+    }
+
+    private JSONObject getRequest(Command command, JSONObject config) {
+        String targetAttribute = config.getString(KEY_ATTRIBUTE);
+        String transformation = config.getString(KEY_TRANSFORMATION);
+        var commandValue = switch (transformation) {
+            case "raw" -> command.toString();
+            default -> null;
+        };
+        if (commandValue == null) {
+            return new JSONObject();
         }
-        return new JSONObject();
+        String outValue = config.getString("json");
+        var json = switch (outValue) {
+            case KEY_ATTRIBUTE -> {
+                JSONObject attributes = (new JSONObject()).put(targetAttribute, commandValue);
+                JSONObject patch = (new JSONObject()).put(Model.ATTRIBUTES, attributes);
+                yield patch;
+            }
+            default -> new JSONObject();
+        };
+        return json;
     }
 
     private String map(String value, JSONObject mapping) {
@@ -400,5 +425,21 @@ public class BaseMatterConfiguration {
             String tt = ((JSONObject) device).getString("thingType");
             matterDeviceConfig.put(tt, device);
         });
+    }
+
+    public boolean hasType(String deviceType) {
+        return deviceTypes.values().contains(deviceType);
+    }
+
+    public List<String> getIdsFor(String deviceType) {
+        System.out.println("Get IDs for device type " + deviceType + " from " + deviceTypes);
+        List<String> deviceIds = new ArrayList<>();
+        deviceTypes.forEach((deviceId, type) -> {
+            if (type.equals(deviceType)) {
+                deviceIds.add(deviceId);
+            }
+        });
+        System.out.println("Get IDs for device type " + deviceIds + " from " + deviceTypes);
+        return deviceIds;
     }
 }

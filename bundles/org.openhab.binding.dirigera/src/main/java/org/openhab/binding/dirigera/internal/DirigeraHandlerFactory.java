@@ -32,7 +32,7 @@ import org.openhab.binding.dirigera.internal.handler.light.ColorLightHandler;
 import org.openhab.binding.dirigera.internal.handler.light.DimmableLightHandler;
 import org.openhab.binding.dirigera.internal.handler.light.SwitchLightHandler;
 import org.openhab.binding.dirigera.internal.handler.light.TemperatureLightHandler;
-import org.openhab.binding.dirigera.internal.handler.matter.MatterController;
+import org.openhab.binding.dirigera.internal.handler.matter.Matter2ButtonCotroller;
 import org.openhab.binding.dirigera.internal.handler.matter.MatterSensor;
 import org.openhab.binding.dirigera.internal.handler.plug.PowerPlugHandler;
 import org.openhab.binding.dirigera.internal.handler.plug.SimplePlugHandler;
@@ -177,7 +177,7 @@ public class DirigeraHandlerFactory extends BaseThingHandlerFactory {
             return new MatterSensor(thing);
         } else if (THING_TYPE_MATTER_2_BUTTON_CONTROLLER.equals(thingTypeUID)
                 || THING_TYPE_MATTER_3_BUTTON_CONTROLLER.equals(thingTypeUID)) {
-            return new MatterController(thing);
+            return new Matter2ButtonCotroller(thing);
         } else if (THING_TYPE_MATTER_COLOR_LIGHT.equals(thingTypeUID)) {
             return new ColorLightHandler(thing, COLOR_LIGHT_MAP, stateProvider);
         } else if (THING_TYPE_MATTER_TEMPERATURE_LIGHT.equals(thingTypeUID)) {
@@ -186,6 +186,5 @@ public class DirigeraHandlerFactory extends BaseThingHandlerFactory {
             logger.debug("DIRIGERA FACTORY Request for {} doesn't match {}", thingTypeUID, THING_TYPE_GATEWAY);
             return null;
         }
-
     }
 }

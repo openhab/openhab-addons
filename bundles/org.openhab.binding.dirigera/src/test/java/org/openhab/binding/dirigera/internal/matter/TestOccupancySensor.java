@@ -24,6 +24,8 @@ import org.openhab.binding.dirigera.internal.handler.DirigeraBridgeProvider;
 import org.openhab.binding.dirigera.internal.handler.DirigeraHandler;
 import org.openhab.binding.dirigera.internal.handler.matter.MatterSensor;
 import org.openhab.binding.dirigera.internal.mock.CallbackMock;
+import org.openhab.binding.dirigera.internal.mock.DirigeraAPISimu;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
@@ -64,14 +66,6 @@ class TestOccupancySensor {
         assertNotNull(proxyCallback);
         assertTrue(proxyCallback instanceof CallbackMock);
         callback = (CallbackMock) proxyCallback;
-        System.out.println("thing channels: " + thing.getChannels().size());
-        thing.getChannels().forEach(channel -> {
-            System.out.println(" Channel: " + channel.getUID() + " type: " + channel.getChannelTypeUID());
-        });
-        System.out.println("Properties: " + thing.getProperties().size());
-        thing.getProperties().forEach((key, value) -> {
-            System.out.println(" Property: " + key + " value: " + value);
-        });
         assertEquals(12, thing.getProperties().size(), "Matter Occupancy Sensor");
         callback.waitForOnline();
     }
@@ -94,6 +88,16 @@ class TestOccupancySensor {
     void testDump() {
         testHandlerCreation();
         assertEquals("unit-test", handler.getToken());
+    }
+
+    void testCommands() {
+        testHandlerCreation();
+        String command = "HollaDieWaldfee";
+        handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_SCHEDULE), new DecimalType(1));
+        System.out.println("Patch Map: " + DirigeraAPISimu.patchMap);
+        String patch = DirigeraAPISimu.patchMap.get(deviceId);
+        assertNotNull(patch);
+        assertEquals("{\"attributes\":{\"customName\":\"" + command + "\"}}", patch, "Fan Mode on");
     }
 
     void checkEnvironmentSensorStates(CallbackMock callback) {
