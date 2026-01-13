@@ -247,7 +247,7 @@ public class Shelly2RpcSocket {
                     client.stop();
                 }
             } catch (WebSocketException | IOException e) {
-                // expected during disconnect, ignore
+             // expected during disconnect, ignore
             } catch (Exception e) {
                 if (logger.isDebugEnabled()) {
                     logger.debug("{}: Unable to close Web Socket", thingName, e);
