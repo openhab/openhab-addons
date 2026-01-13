@@ -22,6 +22,7 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.astro.internal.model.EclipseKind;
 import org.openhab.binding.astro.internal.model.MoonPhaseName;
 import org.openhab.binding.astro.internal.model.SeasonName;
 import org.openhab.binding.astro.internal.model.ZodiacSign;
@@ -102,6 +103,7 @@ public class AstroIconProvider implements IconProvider {
             String iconState = switch (category) {
                 case SEASON_SET -> SeasonName.valueOf(state).name();
                 case ZODIAC_SET -> ZodiacSign.valueOf(state).name();
+                case SUN_ECLIPSE_SET -> EclipseKind.valueOf(state).name();
                 case MOON_PHASE_SET -> {
                     yield Integer.toString(MoonPhaseName.valueOf(state).ageDays);
                 }
