@@ -250,9 +250,6 @@ public class MoonCalc {
      * Calculates the moon phase.
      */
     private double calcMoonPhase(double k, MoonPhaseName phase) {
-        if (Double.isNaN(phase.mode)) {
-            throw new IllegalArgumentException("calcMoonPhase called for unhandled phase: %s".formatted(phase.name()));
-        }
         double kMod = Math.floor(k) + phase.mode;
         double t = kMod / 1236.85;
         double e = varE(t);
@@ -395,6 +392,9 @@ public class MoonCalc {
      * Calculates the next moon phase.
      */
     private double getNextPhase(Calendar cal, double midnightJd, MoonPhaseName phase) {
+        if (Double.isNaN(phase.mode)) {
+            throw new IllegalArgumentException("calcMoonPhase called for unhandled phase: %s".formatted(phase.name()));
+        }
         double tz = 0;
         double phaseJd = 0;
         do {
