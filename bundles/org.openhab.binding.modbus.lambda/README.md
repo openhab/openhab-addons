@@ -60,13 +60,13 @@ Heat Pump, Boiler, Buffer and Heating Circuit things use another parameter Subin
 | --------- | ------- | -------- | ------------------ | -------------------------------------------------------------------------- |
 | Subindex  | integer | yes      | 0                  | Subindex for things of the same Thing type, starting with 0                |
 
-| Thing Type       | Range   | 
-| ---------------- | ------- | 
-| Heatpump         | 0..2    | 
-| Boiler           | 0..4    | 
-| Buffer           | 0..4    | 
-| Solar            | 0..2    | 
-| Heating Circuit  | 0..11   | 
+| Thing Type       | Range   |
+| ---------------- | ------- |
+| Heatpump         | 0..2    |
+| Boiler           | 0..4    |
+| Buffer           | 0..4    |
+| Solar            | 0..2    |
+| Heating Circuit  | 0..11   |
 
 ## Channels
 
@@ -101,30 +101,30 @@ This group contains parameters signaling the PV excess to the heat pump.
 
 This group contains general operational information about the heat pump itself.
 
-| Channel ID                     | Item Type                 | Read only | Description                                                             |
-| -------------------------------| --------------------------| --------- | ----------------------------------------------------------------------- |
-| heat-pump-error-state          | Number                    | true      | Error state  (0 = NONE, 1 = MESSAGE, 2 = WARNING, 3 = ALARM, 4 = FAULT) |
-| heat-pump-error-number         | Number                    | true      | Error number: scrolling through all active error numbers (1..99)        |
-| heat-pump-state                | Number                    | true      | State: See Modbus description manual, link above                        |
-| heat-pump-operating-state      | Number                    | true      | Operating State: See Modbus description manual, link above              |
-| heat-pump-t-flow               | Number:Temperature        | true      | Flow line termperature                                                  |
-| heat-pump-t-return             | Number:Temperature        | true      | Return line temperature                                                 |
-| heat-pump-vol-sink             | Number:VolumetricFlowRate | true      | Volume flow heat sink                                                   |
-| heat-pump-t-eqin               | Number:Temperature        | true      | Energy source inlet temperature                                         |
-| heat-pump-t-eqout              | Number:Temperature        | true      | Energy source outlet temperature                                        |
-| heat-pump-vol-source           | Number:VolumetricFlowRate | true      | Volume flow energy source                                               |
-| heat-pump-compressor-rating    | Number                    | true      | Compressor unit rating                                                  |
-| heat-pump-qp-heating           | Number:Power              | true      | Actual heating capacity                                                 |
-| heat-pump-fi-power-consumption | Number:Power              | true      | Frequency inverter actual power consumption                             |
-| heat-pump-cop                  | Number                    | true      | Coefficient of performance                                              |
-| heat-pump-request-password     | Number                    | false     | Password register to release modbus request registers                   |
-| heat-pump-request-type         | Number:                   | false     | Request Type                                                            |
-| heat-pump-request-t-flow       | Number:Temperature        | false     | Requested flow line termperature                                        |
-| heat-pump-request-t-return     | Number:Temperature        | false     | Requested return line temperature                                       |
-| heat-pump-request-heat-sink    | Number:Temperature        | false     | Requested temperature difference between flow and return line           |
-| heat-pump-relais-state         | Number:Temperature        | true      | Heatpump Relais State for 2nd heating stage                             |
-| heat-pump-vdae                 | Number:Energy             | true      | Accumulated electrical energy consumption of compressor unit            |
-| heat-pump-vdaq                 | Number:Energy             | true      | Accumulated thermal energy output of compressor unit                    |
+| Channel ID                     | Item Type                 | Read only | Description                                                                  |
+|--------------------------------|---------------------------|-----------|------------------------------------------------------------------------------|
+| heat-pump-error-state          | Number                    | true      | Error state  (0 = NONE, 1 = MESSAGE, 2 = WARNING, 3 = ALARM, 4 = FAULT)      |
+| heat-pump-error-number         | Number                    | true      | Error number: scrolling through all active error numbers (1..99)             |
+| heat-pump-state                | Number                    | true      | State: See Modbus description manual, link above                             |
+| heat-pump-operating-state      | Number                    | true      | Operating State: See Modbus description manual, link above                   |
+| heat-pump-t-flow               | Number:Temperature        | true      | Flow line termperature                                                       |
+| heat-pump-t-return             | Number:Temperature        | true      | Return line temperature                                                      |
+| heat-pump-vol-sink             | Number:VolumetricFlowRate | true      | Volume flow heat sink                                                        |
+| heat-pump-t-eqin               | Number:Temperature        | true      | Energy source inlet temperature                                              |
+| heat-pump-t-eqout              | Number:Temperature        | true      | Energy source outlet temperature                                             |
+| heat-pump-vol-source           | Number:VolumetricFlowRate | true      | Volume flow energy source                                                    |
+| heat-pump-compressor-rating    | Number                    | true      | Compressor unit rating                                                       |
+| heat-pump-qp-heating           | Number:Power              | true      | Actual heating capacity                                                      |
+| heat-pump-fi-power-consumption | Number:Power              | true      | Frequency inverter actual power consumption                                  |
+| heat-pump-cop                  | Number                    | true      | Coefficient of performance                                                   |
+| heat-pump-request-password     | Number                    | false     | Password register to release modbus request registers                        |
+| heat-pump-request-type         | Number:                   | false     | Request Type                                                                 |
+| heat-pump-request-t-flow       | Number:Temperature        | false     | Requested flow line termperature                                             |
+| heat-pump-request-t-return     | Number:Temperature        | false     | Requested return line temperature                                            |
+| heat-pump-request-heat-sink    | Number:Temperature        | false     | Requested temperature difference between flow and return line                |
+| heat-pump-relais-state         | Number:Temperature        | true      | Heatpump Relais State for 2nd heating stage                                  |
+| heat-pump-vdae                 | Number:Energy             | true      | Accumulated electrical energy consumption of compressor unit                 |
+| heat-pump-vdaq                 | Number:Energy             | true      | Accumulated thermal energy output of compressor unit                         |
 | heat-pump-vdae-swap            | Number:Energy             | true      | Accumulated electrical energy consumption of compressor unit (DWord swapped) |
 | heat-pump-vdaq-swap            | Number:Energy             | true      | Accumulated thermal energy output of compressor unit (DWord swapped)         |
 
@@ -162,16 +162,16 @@ This group contains information about the buffer for the heating circuit.
 
 This group contains information about the solar thermic component.
 
-| Channel ID                     | Item Type          | Read only | Description                                                         |
-| ------------------------------ | ------------------ | --------- | ------------------------------------------------------------------- |
-| solar-error-number            | Number             | true      | Solar Error Number (0 = No error)                                  |
-| solar-operating-state         | Number             | true      | Solar Operating State: See Modbus description manual, link above   |
-| solar-collector-temperature   | Number:Temperature | true      | Temperature of the solar collector                                |
-| solar-storage-temperature     | Number:Temperature | true      | Temperature of the solar storage                                  |
-| solar-pump-speed             | Number             | true      | Speed of the solar pump                                          |
-| solar-heat-quantity          | Number:Energy      | true      | Heat quantity produced by solar                                  |
-| solar-power-output           | Number:Power       | true      | Current power output of solar                                    |
-| solar-operating-hours        | Number             | true      | Operating hours of solar component                               |
+| Channel ID                  | Item Type          | Read only | Description                                                      |
+|-----------------------------|--------------------|-----------|------------------------------------------------------------------|
+| solar-error-number          | Number             | true      | Solar Error Number (0 = No error)                                |
+| solar-operating-state       | Number             | true      | Solar Operating State: See Modbus description manual, link above |
+| solar-collector-temperature | Number:Temperature | true      | Temperature of the solar collector                               |
+| solar-storage-temperature   | Number:Temperature | true      | Temperature of the solar storage                                 |
+| solar-pump-speed            | Number             | true      | Speed of the solar pump                                          |
+| solar-heat-quantity         | Number:Energy      | true      | Heat quantity produced by solar                                  |
+| solar-power-output          | Number:Power       | true      | Current power output of solar                                    |
+| solar-operating-hours       | Number             | true      | Operating hours of solar component                               |
 
 ### Heating Circuit Group
 
@@ -184,7 +184,7 @@ This group contains general operational information about the heating circuit.
 | heating-circuit-flow-line-temperature          | Number:Temperature | true      | Actual temperature flow line sensor                         |
 | heating-circuit-return-line-temperature        | Number:Temperature | true      | Actual temperature return line sensor                       |
 | heating-circuit-room-device-temperature        | Number:Temperature | false     | Actual temperature room device sensor                       |
-| heating-circuit-setpoint-flow-line-temperature | Number:Temperature | false     | Setpoint temperature flow line                              | 
+| heating-circuit-setpoint-flow-line-temperature | Number:Temperature | false     | Setpoint temperature flow line                              |
 | heating-circuit-operating-mode                 | Number             | false     | Operating Mode: See Modbus description manual, link above   |
 | heating-circuit-target-temperature-flow-line   | Number:Temperature | false     | Setpoin temperature flow line  (min = 15.0°C; max = 65.0°C) |
 | heating-circuit-offset-flow-line-temperature   | Number:Temperature | false     | Setting for flow line temperature setpoint offset           |
@@ -314,4 +314,3 @@ var int power_to_heat-pump = 1000
 
   lambdaemanager_actualpower.sendCommand(power_to_heat-pump)
 '''
-
