@@ -11,9 +11,9 @@
 		<description>A forecast configured in your evcc instance</description>
 		<representation-property>id</representation-property>
 		<config-description>
-			<parameter name="type" type="text">
+			<parameter name="subType" type="text">
 				<label>Type</label>
-				<description>Forecast type (solar, co2, feedIn, grid)</description>
+				<description>Forecast type (solar, co2, feedin, grid)</description>
 			</parameter>
 		</config-description>
 	</thing-type>

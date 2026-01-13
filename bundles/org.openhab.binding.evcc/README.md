@@ -115,8 +115,6 @@ String               Evcc_Battery_Title "Title [%s]"                       { cha
 
 #### Forecast
 
-evcc:forecast:d88c9ac957:solar:forecast-today
-
 ```java
 Number:Energy            Evcc_Forecast_Solar                     "Forecast Solar"                { channel="evcc:forecast:demo-server:solar:forecast-solar" }
 Number                   Evcc_Forecast_Solar_Scale               "Forecast Solar Scale"          { channel="evcc:forecast:demo-server:solar:forecast-scale" }

@@ -141,6 +141,7 @@ public class EvccForecastHandler extends EvccBaseThingHandler {
         for (String key : List.of(JSON_KEY_TODAY, JSON_KEY_TOMORROW, JSON_KEY_DAY_AFTER_TOMORROW)) {
             if (state.has(key) && state.get(key) instanceof JsonObject obj) {
                 JsonElement completeEl = obj.get("complete");
+                // If "complete" is false, drop the accumulated energy data for that day since it is incomplete
                 if (completeEl instanceof JsonPrimitive primitive && primitive.isBoolean()
                         && primitive.getAsBoolean()) {
                     state.add(key, obj.get(JSON_KEY_ENERGY));
