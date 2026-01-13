@@ -108,7 +108,7 @@ The Twinguard smoke detector warns you in case of fire and constantly monitors t
 | low-battery        | Switch               | no       | Indicates whether the battery is low (`ON`) or OK (`OFF`). |
 | smoke-check        | String               | yes      | State of the smoke check. Also used to request a new smoke check.                                 |
 
-### Door/Window Contact
+### Door/Window Contact<a id="door-window-contact"></a>
 
 Detects open windows and doors.
 
@@ -120,7 +120,7 @@ Detects open windows and doors.
 | battery-level | Number    | no       | Current battery level percentage as integer number. Bosch-specific battery levels are mapped to numbers as follows: `OK`: 100, `LOW_BATTERY`: 10, `CRITICAL_LOW`: 1, `CRITICALLY_LOW_BATTERY`: 1, `NOT_AVAILABLE`: `UNDEF`. |
 | low-battery   | Switch    | no       | Indicates whether the battery is low (`ON`) or OK (`OFF`). |
 
-### Door/Window Contact II
+### Door/Window Contact II<a id="door-window-contact-ii"></a>
 
 Detects open windows and doors and features an additional button.
 
@@ -134,7 +134,7 @@ Detects open windows and doors and features an additional button.
 | bypass          | Switch    | no       | Indicates whether the device is currently bypassed. Possible values are `ON`,`OFF` and `UNDEF` if the bypass state cannot be determined.                                                                                    |
 | signal-strength | Number    | no       | Communication quality between the device and the Smart Home Controller. Possible values range between 0 (unknown) and 4 (best signal strength).                                                                             |
 
-### Door/Window Contact II Plus
+### Door/Window Contact II Plus<a id="door-window-contact-ii-plus"></a>
 
 Detects open windows and doors, provides a configurable button and a vibration sensor.
 
@@ -151,7 +151,7 @@ Detects open windows and doors, provides a configurable button and a vibration s
 | vibration-sensor-sensitivity | String    | yes      | The sensitivity of the vibration sensor. Possible values are `VERY_HIGH`, `HIGH`, `MEDIUM`, `LOW` and `VERY_LOW`.                                                                                                           |
 | vibration-sensor-state       | String    | no       | Indicates whether vibrations were detected by the sensor. Possible values are `NO_VIBRATION`, `VIBRATION_DETECTED` and `UNKNOWN`.                                                                                           |
 
-### Door/Window Contact II [+M]
+### Door/Window Contact II [+M]<a id="door-window-contact-ii-m"></a>
 
 Detects open windows and doors and features an additional button. This version of the sensor supports the Matter standard.
 

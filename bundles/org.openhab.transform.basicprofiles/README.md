@@ -94,7 +94,7 @@ It can be used to debounce Item States/Commands or prevent excessive load on net
 Number:Temperature debouncedSetpoint { channel="xxx" [profile="basic-profiles:debounce-time", toHandlerDelay=1000] }
 ```
 
-## Invert / Negate Profile
+## Invert / Negate Profile<a id="invert-negate-profile"></a>
 
 The Invert / Negate Profile inverts or negates a Command / State.
 It requires no specific configuration.
