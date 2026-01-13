@@ -82,7 +82,6 @@ public class RoborockBindingConstants {
     public static final String CHANNEL_MOP_TOTAL_DRYTIME = "status#mop-drying-time";
     public static final String CHANNEL_CLEAN_PERCENT = "status#clean-percent";
 
-    public static final String CHANNEL_ROOM_MAPPING = "info#room-mapping";
     public static final String CHANNEL_ROUTINES = "info#routine-mapping";
 
     public static final String CHANNEL_CONTROL = "actions#control";
