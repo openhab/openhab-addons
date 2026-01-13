@@ -16,18 +16,22 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.heos.internal.json.payload.BrowseResult;
 import org.openhab.binding.heos.internal.json.payload.Media;
 import org.openhab.binding.heos.internal.json.payload.YesNoEnum;
+import org.openhab.core.events.EventPublisher;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.binding.BaseDynamicStateDescriptionProvider;
+import org.openhab.core.thing.i18n.ChannelTypeI18nLocalizationService;
+import org.openhab.core.thing.link.ItemChannelLinkRegistry;
 import org.openhab.core.thing.type.DynamicStateDescriptionProvider;
 import org.openhab.core.types.StateOption;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * Dynamically create the users list of favorites and playlists.
@@ -37,6 +41,15 @@ import org.osgi.service.component.annotations.Component;
 @Component(service = { DynamicStateDescriptionProvider.class, HeosDynamicStateDescriptionProvider.class })
 @NonNullByDefault
 public class HeosDynamicStateDescriptionProvider extends BaseDynamicStateDescriptionProvider {
+
+    @Activate
+    public HeosDynamicStateDescriptionProvider(final @Reference EventPublisher eventPublisher,
+            final @Reference ItemChannelLinkRegistry itemChannelLinkRegistry,
+            final @Reference ChannelTypeI18nLocalizationService channelTypeI18nLocalizationService) {
+        this.eventPublisher = eventPublisher;
+        this.itemChannelLinkRegistry = itemChannelLinkRegistry;
+        this.channelTypeI18nLocalizationService = channelTypeI18nLocalizationService;
+    }
 
     String getValueByLabel(ChannelUID channelUID, String input) {
         List<StateOption> options = channelOptionsMap.get(channelUID);
@@ -57,27 +70,21 @@ public class HeosDynamicStateDescriptionProvider extends BaseDynamicStateDescrip
         setBrowseResultList(channelUID, playLists, d -> d.containerId);
     }
 
-    private void setBrowseResultList(ChannelUID channelUID, List<BrowseResult> playlists,
+    private void setBrowseResultList(ChannelUID channelUID, List<BrowseResult> browseResults,
             Function<BrowseResult, @Nullable String> function) {
         setStateOptions(channelUID,
-                playlists.stream().filter(browseResult -> browseResult.playable == YesNoEnum.YES)
-                        .map(browseResult -> getStateOption(function, browseResult)).filter(Optional::isPresent)
-                        .map(Optional::get).collect(Collectors.toList()));
+                browseResults.stream().filter(browseResult -> browseResult.playable == YesNoEnum.YES)
+                        .flatMap(browseResult -> getStateOption(function, browseResult).stream()).toList());
     }
 
     private Optional<StateOption> getStateOption(Function<BrowseResult, @Nullable String> function,
             BrowseResult browseResult) {
-        String identifier = function.apply(browseResult);
-        if (identifier != null) {
-            return Optional.of(new StateOption(identifier, browseResult.name));
-        } else {
-            return Optional.empty();
-        }
+        return Optional.ofNullable(function.apply(browseResult))
+                .map(value -> new StateOption(value, browseResult.name));
     }
 
     public void setQueue(ChannelUID channelUID, List<Media> queue) {
         setStateOptions(channelUID,
-                queue.stream().map(m -> new StateOption(String.valueOf(m.queueId), m.combinedSongArtist()))
-                        .collect(Collectors.toList()));
+                queue.stream().map(m -> new StateOption(String.valueOf(m.queueId), m.combinedSongArtist())).toList());
     }
 }
