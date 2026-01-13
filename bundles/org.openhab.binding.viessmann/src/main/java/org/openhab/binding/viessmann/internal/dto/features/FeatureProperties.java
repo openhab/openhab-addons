@@ -14,6 +14,8 @@ package org.openhab.binding.viessmann.internal.dto.features;
 
 import java.util.ArrayList;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 /**
  * The {@link FeatureProperties} provides properties of features
  *
@@ -61,6 +63,7 @@ public class FeatureProperties {
     public FeatureDouble currentYear;
     public FeatureDouble lastYear;
 
+    @JsonIgnore
     public ArrayList<String> getUsedEntries() {
         ArrayList<String> list = new ArrayList<>();
 

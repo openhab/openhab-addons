@@ -466,6 +466,7 @@ public class ViessmannAccountHandler extends BaseBridgeHandler implements ApiInt
                 List<FeatureDataDTO> featuresData = allFeatures.data;
                 if (featuresData != null && !featuresData.isEmpty()) {
                     for (FeatureDataDTO featureDataDTO : featuresData) {
+                        featureDataDTO.setInstallationId(installationId);
                         handler.handleUpdate(featureDataDTO);
                     }
                 } else {

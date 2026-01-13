@@ -32,8 +32,6 @@ import org.openhab.binding.viessmann.internal.config.GatewayConfiguration;
 import org.openhab.binding.viessmann.internal.dto.device.DeviceDTO;
 import org.openhab.binding.viessmann.internal.dto.device.DeviceData;
 import org.openhab.binding.viessmann.internal.dto.events.EventsDTO;
-import org.openhab.binding.viessmann.internal.dto.features.FeatureDataDTO;
-import org.openhab.binding.viessmann.internal.dto.features.FeaturesDTO;
 import org.openhab.binding.viessmann.internal.interfaces.BridgeInterface;
 import org.openhab.binding.viessmann.internal.util.ViessmannUtil;
 import org.openhab.core.library.types.OnOffType;
@@ -360,36 +358,10 @@ public class ViessmannGatewayHandler extends BaseBridgeHandler implements Bridge
 
     @Override
     public void updateFeaturesOfDevice(@Nullable DeviceHandler handler) {
-        String deviceId = "";
         if (handler != null) {
-            deviceId = handler.getDeviceId();
-            logger.debug("Loading features from Device ID: {}", deviceId);
-            try {
-                FeaturesDTO allFeatures = null;
-
-                BridgeHandler bridgeHandler = getBridgeHandler();
-                if (bridgeHandler != null) {
-                    allFeatures = ((ViessmannAccountHandler) bridgeHandler).getAllFeatures(deviceId, installationId,
-                            gatewaySerial);
-                }
-                if (allFeatures != null) {
-                    List<FeatureDataDTO> featuresData = allFeatures.data;
-                    if (featuresData != null && !featuresData.isEmpty()) {
-                        for (FeatureDataDTO featureDataDTO : featuresData) {
-                            handler.handleUpdate(featureDataDTO);
-                        }
-                    } else {
-                        logger.warn("Features of Device ID \"{}\" is empty.", deviceId);
-                        String statusMessage = String.format("@text/offline.comm-error.features-empty [%s]", deviceId);
-                        handler.updateThingStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, statusMessage);
-                    }
-                }
-            } catch (ViessmannCommunicationException e) {
-                String statusMessage = String.format("@text/offline.comm-error.device-not-reachable [%s]",
-                        e.getMessage());
-                handler.updateThingStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, statusMessage);
-            } catch (JsonSyntaxException | IllegalStateException e) {
-                logger.warn("Parsing Viessmann response fails: {}", e.getMessage());
+            BridgeHandler bridgeHandler = getBridgeHandler();
+            if (bridgeHandler != null) {
+                ((ViessmannAccountHandler) bridgeHandler).updateFeaturesOfDevice(handler);
             }
         }
     }

@@ -813,8 +813,8 @@ public class DeviceHandler extends ViessmannThingHandler {
                         subChannelType = SUB_CHANNEL_TYPE_MAP.getOrDefault(viUnit, "");
                         if (unit == null) {
                             logger.warn(
-                                    "Unknown unit. Could not parse unit: {} of Feature: {} - Please open an issue on GitHub.",
-                                    viUnit, featureDataDTO.feature);
+                                    "Unknown unit. Could not parse unit: {} of Feature: {} - Please create an issue on GitHub with this anonymized detailed JSON:\r\n{}",
+                                    viUnit, featureDataDTO.feature, featureDataDTO.toPrettyJson());
                             return;
                         }
                     }
