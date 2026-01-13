@@ -17,9 +17,10 @@ import static org.openhab.binding.shelly.internal.ShellyDevices.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 import static org.openhab.core.thing.Thing.*;
 
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
-import java.util.TreeMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -48,7 +49,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Device discovery creates a thing in the inbox for each vehicle
+ * Device discovery creates a thing in the inbox for each discovered Shelly
  * found in the data received from {@link ShellyBasicDiscoveryService}.
  *
  * @author Markus Michels - Initial Contribution
@@ -63,6 +64,9 @@ public class ShellyBasicDiscoveryService extends AbstractDiscoveryService {
     private static final int TIMEOUT = 10;
     private volatile @Nullable ServiceRegistration<?> discoveryService;
 
+    private final AtomicBoolean active = new AtomicBoolean(false);
+    private final Object lifecycleLock = new Object();
+
     public ShellyBasicDiscoveryService(BundleContext bundleContext, ShellyThingTable thingTable) {
         super(SUPPORTED_THING_TYPES, TIMEOUT);
         this.bundleContext = bundleContext;
@@ -70,12 +74,16 @@ public class ShellyBasicDiscoveryService extends AbstractDiscoveryService {
     }
 
     public synchronized void registerDeviceDiscoveryService() {
-        if (discoveryService == null) {
-            try {
-                discoveryService = bundleContext.registerService(DiscoveryService.class.getName(), this,
-                        new Hashtable<>());
-            } catch (IllegalStateException e) {
-                logger.warn("Failed to register Shelly Discovery Service: {}", e.getMessage());
+        synchronized (lifecycleLock) {
+            if (!active.get() && discoveryService == null) {
+                try {
+                    active.set(true);
+                    discoveryService = bundleContext.registerService(DiscoveryService.class.getName(), this,
+                            new Hashtable<>());
+                } catch (IllegalStateException e) {
+                    active.set(false);
+                    logger.warn("Failed to register Shelly Discovery Service: {}", e.getMessage());
+                }
             }
         }
     }
@@ -86,41 +94,61 @@ public class ShellyBasicDiscoveryService extends AbstractDiscoveryService {
         thingTable.startScan();
     }
 
-    public void discoveredResult(ThingTypeUID tuid, String model, String serviceName, String address,
+    public void discoveredResult(ThingTypeUID tuid, String model, String serviceName, String macAddress,
             Map<String, Object> properties) {
+        if (!active.get()) {
+            logger.debug("{}: Discovery Service is stopping, ignore new result", serviceName);
+            return;
+        }
+
+        // TO-DO: tuid is passed, but never used
         ThingUID uid = ShellyThingCreator.getThingUID(serviceName, model, "");
-        logger.debug("Adding discovered thing with id {}", uid.toString());
-        properties.put(PROPERTY_MAC_ADDRESS, address);
+        logger.debug("Adding discovered thing with id {}/{}", uid, tuid);
+
+        Map<String, Object> props = new HashMap<>(properties);
+        props.put(PROPERTY_MAC_ADDRESS, macAddress);
+
         String thingLabel = "Shelly BLU " + model + " (" + serviceName + ")";
-        DiscoveryResult result = DiscoveryResultBuilder.create(uid).withProperties(properties)
+        DiscoveryResult result = DiscoveryResultBuilder.create(uid).withProperties(props)
                 .withRepresentationProperty(PROPERTY_DEV_NAME).withLabel(thingLabel).build();
-        thingDiscovered(result);
+        discoveredResult(result);
     }
 
     public void discoveredResult(DiscoveryResult result) {
-        thingDiscovered(result);
+        synchronized (lifecycleLock) {
+            if (!active.get()) {
+                logger.debug("Discovery Service is stopping, ignore new result");
+                return;
+            }
+            thingDiscovered(result);
+        }
     }
 
-    public synchronized void unregisterDeviceDiscoveryService() {
-        ServiceRegistration<?> service = this.discoveryService;
-        if (service != null) {
+    public void unregisterDeviceDiscoveryService() {
+        ServiceRegistration<?> serviceToUnregister;
+        synchronized (lifecycleLock) {
+            if (!active.get() && discoveryService == null) {
+                return;
+            }
+            active.set(false);
+            serviceToUnregister = discoveryService;
+            discoveryService = null;
+        }
+
+        // Unregister outside the synchronized block to avoid deadlocks
+        if (serviceToUnregister != null) {
             try {
-                service.unregister();
+                serviceToUnregister.unregister();
             } catch (IllegalStateException e) {
                 logger.debug("Discovery service already unregistered");
-            } finally {
-                this.discoveryService = null;
             }
         }
     }
 
     @Override
     public void deactivate() {
-        try {
-            unregisterDeviceDiscoveryService();
-        } finally {
-            super.deactivate();
-        }
+        unregisterDeviceDiscoveryService();
+        super.deactivate();
     }
 
     public static @Nullable DiscoveryResult createResult(boolean gen2, String hostname, String ipAddress,
@@ -137,7 +165,7 @@ public class ShellyBasicDiscoveryService extends AbstractDiscoveryService {
         String name = hostname;
         String deviceName = "";
         String thingType = "";
-        Map<String, Object> properties = new TreeMap<>();
+        Map<String, Object> properties;
 
         try {
             api = gen2 ? new Shelly2ApiRpc(name, config, httpClient) : new Shelly1HttpApi(name, config, httpClient);
@@ -147,17 +175,34 @@ public class ShellyBasicDiscoveryService extends AbstractDiscoveryService {
             model = getString(devInfo.type);
             auth = getBool(devInfo.auth);
             if (name.isEmpty() || name.startsWith(SERVICE_NAME_SHELLYPLUSRANGE_PREFIX)) {
-                name = devInfo.hostname;
+                name = getString(devInfo.hostname);
             }
 
-            thingType = substringBeforeLast(name, "-");
-            mode = devInfo.mode;
+            thingType = name.contains("-") ? substringBeforeLast(name, "-") : name;
+            mode = getString(devInfo.mode);
             profile = api.getDeviceProfile(ShellyThingCreator.getThingTypeUID(name, model, mode), devInfo);
             deviceName = profile.name;
-            properties = ShellyBaseHandler.fillDeviceProperties(profile);
+            properties = new HashMap<>(ShellyBaseHandler.fillDeviceProperties(profile));
 
             // get thing type from device name
             thingUID = ShellyThingCreator.getThingUID(name, model, mode);
+
+            addProperty(properties, PROPERTY_MAC_ADDRESS, mac);
+            addProperty(properties, CONFIG_DEVICEIP, ipAddress);
+            addProperty(properties, PROPERTY_MODEL_ID, model);
+            addProperty(properties, PROPERTY_SERVICE_NAME, name);
+            addProperty(properties, PROPERTY_DEV_NAME, deviceName);
+            addProperty(properties, PROPERTY_DEV_TYPE, thingType);
+            addProperty(properties, PROPERTY_DEV_GEN, gen2 ? "2" : "1");
+            addProperty(properties, PROPERTY_DEV_MODE, mode);
+            addProperty(properties, PROPERTY_DEV_AUTH, auth ? "yes" : "no");
+
+            String thingLabel = deviceName.isEmpty() ? name + " - " + ipAddress
+                    : deviceName + " (" + name + "@" + ipAddress + ")";
+            logger.debug("{}: Adding Thing to Inbox (type {}, model {}, mode={}), ip={}, mac={}", name, thingType,
+                    model, mode, ipAddress, mac);
+            return DiscoveryResultBuilder.create(thingUID).withProperties(properties).withLabel(thingLabel)
+                    .withRepresentationProperty(PROPERTY_SERVICE_NAME).build();
         } catch (ShellyApiException e) {
             ShellyApiResult result = e.getApiResult();
             if (result.isHttpAccessUnauthorized()) {
@@ -172,25 +217,6 @@ public class ShellyBasicDiscoveryService extends AbstractDiscoveryService {
             if (api != null) {
                 api.close();
             }
-        }
-
-        if (thingUID != null) {
-            addProperty(properties, PROPERTY_MAC_ADDRESS, mac);
-            addProperty(properties, CONFIG_DEVICEIP, ipAddress);
-            addProperty(properties, PROPERTY_MODEL_ID, model);
-            addProperty(properties, PROPERTY_SERVICE_NAME, name);
-            addProperty(properties, PROPERTY_DEV_NAME, deviceName);
-            addProperty(properties, PROPERTY_DEV_TYPE, thingType);
-            addProperty(properties, PROPERTY_DEV_GEN, gen2 ? "2" : "1");
-            addProperty(properties, PROPERTY_DEV_MODE, mode);
-            addProperty(properties, PROPERTY_DEV_AUTH, auth ? "yes" : "no");
-
-            String thingLabel = deviceName.isEmpty() ? name + " - " + ipAddress
-                    : deviceName + " (" + name + "@" + ipAddress + ")";
-            logger.debug("{}: Adding Thing to Inbox (type {}, model {}, mode={}), ip={}", name, thingType, model, mode,
-                    ipAddress);
-            return DiscoveryResultBuilder.create(thingUID).withProperties(properties).withLabel(thingLabel)
-                    .withRepresentationProperty(PROPERTY_SERVICE_NAME).build();
         }
 
         return null;

@@ -20,6 +20,7 @@ import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.channels.AsynchronousCloseException;
 import java.util.concurrent.CountDownLatch;
 
 import javax.ws.rs.core.HttpHeaders;
@@ -28,6 +29,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.StatusCode;
+import org.eclipse.jetty.websocket.api.WebSocketException;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketError;
@@ -227,6 +229,8 @@ public class Shelly2RpcSocket {
                 session.close(StatusCode.NORMAL, "Socket closed");
                 this.session = null;
             }
+        } catch (WebSocketException | AsynchronousCloseException e) {
+            // Channel was closed intentionally, ignore
         } catch (Exception e) {
             if (logger.isDebugEnabled()) {
                 if (e.getCause() instanceof InterruptedException) {
@@ -242,6 +246,8 @@ public class Shelly2RpcSocket {
                 if (client != null) {
                     client.stop();
                 }
+            } catch (WebSocketException | IOException e) {
+                // expected during disconnect, ignore
             } catch (Exception e) {
                 if (logger.isDebugEnabled()) {
                     logger.debug("{}: Unable to close Web Socket", thingName, e);

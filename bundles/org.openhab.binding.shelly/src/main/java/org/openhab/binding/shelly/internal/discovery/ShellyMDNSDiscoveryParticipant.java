@@ -18,6 +18,7 @@ import static org.openhab.binding.shelly.internal.util.ShellyUtils.getString;
 
 import java.io.IOException;
 import java.net.Inet4Address;
+import java.util.Dictionary;
 import java.util.Locale;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -43,6 +44,7 @@ import org.osgi.service.cm.ConfigurationAdmin;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Modified;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
@@ -126,21 +128,23 @@ public class ShellyMDNSDiscoveryParticipant implements MDNSDiscoveryParticipant 
     private void updateBindingConfig(final ComponentContext componentContext) {
         synchronized (bindingConfig) {
             try {
-                bindingConfig.updateFromProperties(componentContext.getProperties());
-                // Get device settings
-                Configuration serviceConfig = configurationAdmin.getConfiguration("binding." + BINDING_ID);
-                if (serviceConfig.getProperties() != null) {
-                    bindingConfig.updateFromProperties(serviceConfig.getProperties());
+                Dictionary<String, Object> properties = componentContext.getProperties();
+                if (properties != null) {
+                    bindingConfig.updateFromProperties(properties);
                 }
 
+                Configuration serviceConfig = configurationAdmin.getConfiguration("binding." + BINDING_ID);
+                if (serviceConfig != null && serviceConfig.getProperties() != null) {
+                    bindingConfig.updateFromProperties(serviceConfig.getProperties());
+                }
                 if (bindingConfig.localIP.isBlank()) {
                     String primary = networkAddressService.getPrimaryIpv4HostAddress();
                     if (primary != null && !primary.isBlank()) {
                         bindingConfig.localIP = primary;
                     }
                 }
-            } catch (IOException e) {
-                logger.debug("ShellyMDNSDiscoveryParticipant: Unable to initialize bindingConfig");
+            } catch (IOException | IllegalStateException e) {
+                logger.debug("Failed to update binding configuration", e);
             }
         }
     }
@@ -148,7 +152,7 @@ public class ShellyMDNSDiscoveryParticipant implements MDNSDiscoveryParticipant 
     @Override
     public @Nullable DiscoveryResult createResult(final ServiceInfo service) {
         // Shelly Duo: Name starts with "Shelly" rather than "shelly"
-        String serviceName = service.getName().toLowerCase(Locale.ROOT);
+        String serviceName = getString(service.getName()).toLowerCase(Locale.ROOT);
 
         if (logger.isTraceEnabled()) {
             logger.trace("{}: mDNS Service Info: {}", serviceName, service.getNiceTextString());
@@ -207,10 +211,20 @@ public class ShellyMDNSDiscoveryParticipant implements MDNSDiscoveryParticipant 
         if (serviceName == null) {
             return null;
         }
+        serviceName = serviceName.toLowerCase(Locale.ROOT);
         if (!isValidShellyServiceName(serviceName)) {
             logger.debug("{} is not a valid Shelly service name", serviceName);
             return null;
         }
         return ShellyThingCreator.getThingUID(serviceName);
+    }
+
+    @Deactivate
+    protected void deactivate() {
+        try {
+            MDNSCache.dispose();
+        } catch (Exception e) {
+            logger.debug("Error during deactivation", e);
+        }
     }
 }

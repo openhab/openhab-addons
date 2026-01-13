@@ -34,7 +34,7 @@ import org.osgi.service.component.annotations.Deactivate;
 @NonNullByDefault
 @Component(service = ShellyThingTable.class, configurationPolicy = ConfigurationPolicy.OPTIONAL)
 public class ShellyThingTable {
-    private final Map<String, ShellyThingInterface> thingTable = new ConcurrentHashMap<>();
+    private Map<String, ShellyThingInterface> thingTable = new ConcurrentHashMap<>();
     private @Nullable ShellyBasicDiscoveryService discoveryService;
 
     public void addThing(String key, ShellyThingInterface thing) {
@@ -102,11 +102,11 @@ public class ShellyThingTable {
         }
     }
 
-    public void discoveredResult(ThingTypeUID uid, String model, String serviceName, String address,
+    public void discoveredResult(ThingTypeUID tuid, String model, String serviceName, String address,
             Map<String, Object> properties) {
         ShellyBasicDiscoveryService discoveryService = this.discoveryService;
         if (discoveryService != null) {
-            discoveryService.discoveredResult(uid, model, serviceName, address, properties);
+            discoveryService.discoveredResult(tuid, model, serviceName, address, properties);
         }
     }
 

@@ -101,7 +101,7 @@ public class Shelly2ApiClient extends ShellyHttpClient {
     protected @Nullable ShellyThingInterface thing;
     protected @Nullable Shelly2AuthRsp authReq;
 
-    private static String RPC_SRC_PREFIX = "ohshelly-";
+    private static final String RPC_SRC_PREFIX = "ohshelly-";
     private static final int MAX_ID = 10000;
     private final AtomicInteger REQUEST_ID = new AtomicInteger(ThreadLocalRandom.current().nextInt(1, MAX_ID + 1));
 
@@ -1032,7 +1032,6 @@ public class Shelly2ApiClient extends ShellyHttpClient {
                     map);
             return "";
         }
-        logger.trace("{}: API value was mapped to '{}'", thingName, value);
         return value;
     }
 
@@ -1043,7 +1042,6 @@ public class Shelly2ApiClient extends ShellyHttpClient {
                     map);
             return "";
         }
-        logger.trace("{}: API value '{}' was mapped to '{}'", thingName, key, value);
         return value;
     }
 
