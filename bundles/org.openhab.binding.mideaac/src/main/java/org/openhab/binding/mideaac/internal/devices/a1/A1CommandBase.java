@@ -10,9 +10,10 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.mideaac.internal.devices;
+package org.openhab.binding.mideaac.internal.devices.a1;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.mideaac.internal.devices.CommandBase;
 
 /**
  * The {@link A1CommandBase} builds the base command frame for A1-style devices.

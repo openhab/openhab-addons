@@ -215,8 +215,6 @@ public abstract class AbstractMideaHandler extends BaseThingHandler implements D
     private void pollJob() {
         try {
             refreshDeviceState(); // Delegate to subclass
-            // If we reach here, the device is online.
-            updateStatus(ThingStatus.ONLINE);
         } catch (Exception e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
         }

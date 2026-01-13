@@ -46,6 +46,23 @@ public class A1CommandSetTest {
     }
 
     /**
+     * Dehumidifier Power test- Should the 8 be removed?
+     * 
+     */
+    @Test
+    public void testHandleA1Power() {
+        A1CommandSet commandSet = new A1CommandSet();
+        commandSet.setPowerState(true);
+        byte[] frame = commandSet.getData();
+
+        // Device type byte
+        assertEquals((byte) 0x01, frame[0x0b]);
+
+        // Power bit should be ON (bit 1 = 0x01)
+        assertEquals((byte) 0x01, frame[0x0b] & 0x01);
+    }
+
+    /**
      * Dehumidifier Operational mode test
      */
     @Test

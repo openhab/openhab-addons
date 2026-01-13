@@ -115,6 +115,8 @@ public class MideaACHandler extends AbstractMideaHandler implements ACCallback {
     protected void refreshDeviceState() {
         try {
             connectionManager.getStatus(this);
+            // If we reach here, the device is online.
+            updateStatus(ThingStatus.ONLINE);
         } catch (MideaAuthenticationException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
         } catch (MideaConnectionException | MideaException e) {
