@@ -73,26 +73,31 @@ public class AstroActions implements ThingActions {
         return handler;
     }
 
+    @SuppressWarnings("unchecked")
     @RuleAction(label = "get the azimuth", description = "Get the azimuth for a given time.")
     public @Nullable @ActionOutput(name = "result", label = "Azimuth", type = "org.openhab.core.library.types.QuantityType<javax.measure.quantity.Angle>") QuantityType<Angle> getAzimuth(
             @ActionInput(name = "date", label = "Date", required = false, description = "Considered date") @Nullable ZonedDateTime date) {
         logger.debug("Astro action 'getAzimuth' called");
         AstroThingHandler theHandler = this.handler;
         if (theHandler != null) {
-            return theHandler.getAzimuth(date != null ? date : ZonedDateTime.now(timeZoneProvider.getTimeZone()));
+            var result = theHandler.getAzimuth(date != null ? date : ZonedDateTime.now(timeZoneProvider.getTimeZone()));
+            return result instanceof QuantityType qtt ? qtt : null;
         } else {
             logger.info("Astro Action service ThingHandler is null!");
         }
         return null;
     }
 
+    @SuppressWarnings("unchecked")
     @RuleAction(label = "get the elevation", description = "Get the elevation for a given time.")
     public @Nullable @ActionOutput(name = "result", label = "Elevation", type = "org.openhab.core.library.types.QuantityType<javax.measure.quantity.Angle>") QuantityType<Angle> getElevation(
             @ActionInput(name = "date", label = "Date", required = false, description = "Considered date") @Nullable ZonedDateTime date) {
         logger.debug("Astro action 'getElevation' called");
         AstroThingHandler theHandler = this.handler;
         if (theHandler != null) {
-            return theHandler.getElevation(date != null ? date : ZonedDateTime.now(timeZoneProvider.getTimeZone()));
+            var result = theHandler
+                    .getElevation(date != null ? date : ZonedDateTime.now(timeZoneProvider.getTimeZone()));
+            return result instanceof QuantityType qtt ? qtt : null;
         } else {
             logger.info("Astro Action service ThingHandler is null!");
         }

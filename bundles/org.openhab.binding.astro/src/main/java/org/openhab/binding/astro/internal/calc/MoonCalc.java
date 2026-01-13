@@ -29,6 +29,7 @@ import org.openhab.binding.astro.internal.model.EclipseType;
 import org.openhab.binding.astro.internal.model.Moon;
 import org.openhab.binding.astro.internal.model.MoonPhase;
 import org.openhab.binding.astro.internal.model.MoonPhaseName;
+import org.openhab.binding.astro.internal.model.MoonPosition;
 import org.openhab.binding.astro.internal.model.Position;
 import org.openhab.binding.astro.internal.model.Range;
 import org.openhab.binding.astro.internal.util.DateTimeUtils;
@@ -92,7 +93,7 @@ public class MoonCalc {
             double jdate = getEclipse(calendar, EclipseType.MOON, julianDateMidnight, eclipseKind);
             Calendar eclipseDate = DateTimeUtils.toCalendar(jdate, zone, locale);
             if (eclipseDate != null) {
-                eclipse.set(eclipseKind, eclipseDate, new Position());
+                eclipse.set(eclipseKind, eclipseDate, Position.NULL);
             }
         });
 
@@ -600,10 +601,8 @@ public class MoonCalc {
         double[] raDecTopo = geoEqu2TopoEqu(raDec, distance, lat, lmst);
         double[] azAlt = equ2AzAlt(raDecTopo[0], raDecTopo[1], lat, lmst);
 
-        Position position = moon.getPosition();
-        position.setAzimuth(Math.toDegrees(azAlt[0]));
-        position.setElevation(Math.toDegrees(azAlt[1]) + refraction(azAlt[1]));
-
+        moon.setPosition(
+                new MoonPosition(Math.toDegrees(azAlt[0]), Math.toDegrees(azAlt[1]) + refraction(azAlt[1]), moonLon));
         moon.setZodiac(ZodiacCalc.calculate(moonLon, null));
     }
 
