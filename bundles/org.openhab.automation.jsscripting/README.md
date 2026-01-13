@@ -388,17 +388,17 @@ Anywhere a native openHAB `Item` is required, the runtime will automatically con
 See [openhab-js : items](https://openhab.github.io/openhab-js/items.html) for full API documentation.
 
 - items : `object`
-    - .NAME ⇒ `Item`
-    - .existsItem(name) ⇒ `boolean`
-    - .getItem(name, nullIfMissing) ⇒ `Item`
-    - .getItems() ⇒ `Array[Item]`
-    - .getItemsByTag(...tagNames) ⇒ `Array[Item]`
-    - .addItem([itemConfig](#itemconfig), persist) ⇒ `Item`
-    - .removeItem(itemOrItemName) ⇒ `Item|null`
-    - .replaceItem([itemConfig](#itemconfig)) ⇒ `Item|null`
-    - .safeItemName(s) ⇒ `string`
-    - .metadata ⇒ [`items.metadata` namespace](https://openhab.github.io/openhab-js/items.metadata.html): Manage metadata directly without the need of going "through" the Item
-    - .itemChannelLink ⇒ [`items.itemChannelLink` namespace](https://openhab.github.io/openhab-js/items.itemChannelLink.html): Manage Item -> channel links
+  - .NAME ⇒ `Item`
+  - .existsItem(name) ⇒ `boolean`
+  - .getItem(name, nullIfMissing) ⇒ `Item`
+  - .getItems() ⇒ `Array[Item]`
+  - .getItemsByTag(...tagNames) ⇒ `Array[Item]`
+  - .addItem([itemConfig](#itemconfig), persist) ⇒ `Item`
+  - .removeItem(itemOrItemName) ⇒ `Item|null`
+  - .replaceItem([itemConfig](#itemconfig)) ⇒ `Item|null`
+  - .safeItemName(s) ⇒ `string`
+  - .metadata ⇒ [`items.metadata` namespace](https://openhab.github.io/openhab-js/items.metadata.html): Manage metadata directly without the need of going "through" the Item
+  - .itemChannelLink ⇒ [`items.itemChannelLink` namespace](https://openhab.github.io/openhab-js/items.itemChannelLink.html): Manage Item -> channel links
 
 ```javascript
 var item = items.KitchenLight;
@@ -410,46 +410,47 @@ console.log("Kitchen Light State", item.state);
 Calling `getItem(...)` or `...` returns an `Item` object with the following properties:
 
 - Item : `object`
-    - .rawItem ⇒ `HostItem`
-    - .persistence ⇒ [`ItemPersistence`](#itempersistence)
-    - .semantics ⇒ [`ItemSemantics`](https://openhab.github.io/openhab-js/items.ItemSemantics.html)
-    - .type ⇒ `string`
-    - .groupType ⇒ `string|null`
-    - .name ⇒ `string`
-    - .label ⇒ `string`
-    - .state ⇒ `string`
-    - .numericState ⇒ `number|null`: State as number, if state can be represented as number, or `null` if that's not the case
-    - .quantityState ⇒ [`Quantity|null`](#quantity): Item state as Quantity or `null` if state is not Quantity-compatible or without unit
-    - .boolState ⇒ `boolean|null`: Item state as boolean or `null` if not boolean-compatible or is NULL or UNDEF, see below for mapping of state to boolean
-    - .rawState ⇒ `HostState`
-    - .previousState ⇒ `string|null`: Previous state as string, or `null` if not available
-    - .previousNumericState ⇒ `number|null`: Previous state as number, if state can be represented as number, or `null` if that's not the case or not available
-    - .previousQuantityState ⇒ [`Quantity|null`](#quantity): Previous item state as Quantity or `null` if state is not Quantity-compatible, without unit, or not available
-    - .previousRawState ⇒ `HostState`
-    - .lastStateUpdateTimestamp ⇒ [`time.ZonedDateTime`](#time): The time the state was last updated as ZonedDateTime or `null` if not available
-    - .lastStateUpdateInstant ⇒ [`time.Instant`](#time): The time the state was last updated as Instant or `null` if not available
-    - .lastStateChangeTimestamp ⇒ [`time.ZonedDateTime`](#time): The time the state was last changed as ZonedDateTime or `null` if not available
-    - .lastStateChangeInstant ⇒ [`time.Instant`](#time): The time the state was last changed as Instant or `null` if not available
-    - .members ⇒ `Array[Item]`
-    - .descendents ⇒ `Array[Item]`
-    - .isUninitialized ⇒ `boolean`
-    - .groupNames ⇒ `Array[string]`
-    - .tags ⇒ `Array[string]`
-    - .getMetadata(namespace) ⇒ `object|null`
-    - .replaceMetadata(namespace, value, configuration) ⇒ `object`
-    - .removeMetadata(namespace) ⇒ `object|null`
-    - .sendCommand(value): `value` can be a string, a number, a [`time.ZonedDateTime`](#time), a [`time.Instant`](#time), or a [`Quantity`](#quantity)
-    - .sendCommand(value, expire): `expire` is a [`time.Duration`](#time), this will return the Item to its previous state after the given `expire` duration
-    - .sendCommand(value, expire, onExpire): `onExpire` can be the same type as `value`, this will return the Item to the given `onExpire` value after the given `expire` duration
-    - .sendCommandIfDifferent(value) ⇒ `boolean`: `value` can be a string, a number, a [`time.ZonedDateTime`](#time), a [`time.Instant`](#time), or a [`Quantity`](#quantity)
-    - .sendIncreaseCommand(value) ⇒ `boolean`: `value` can be a number, or a [`Quantity`](#quantity)
-    - .sendDecreaseCommand(value) ⇒ `boolean`: `value` can be a number, or a [`Quantity`](#quantity)
-    - .sendToggleCommand(): Sends a command to flip the Item's state (e.g. if it is `ON`, an `OFF` command is sent).
-    - .postUpdate(value): `value` can be a string, a [`time.ZonedDateTime`](#time), or a [`Quantity`](#quantity)
-    - .addGroups(...groupNamesOrItems)
-    - .removeGroups(...groupNamesOrItems)
-    - .addTags(...tagNames)
-    - .removeTags(...tagNames)
+  - .rawItem ⇒ `HostItem`
+  - .persistence ⇒ [`ItemPersistence`](#itempersistence)
+  - .semantics ⇒ [`ItemSemantics`](https://openhab.github.io/openhab-js/items.ItemSemantics.html)
+  - .type ⇒ `string`
+  - .groupType ⇒ `string|null`
+  - .name ⇒ `string`
+  - .label ⇒ `string`
+  - .state ⇒ `string`
+  - .numericState ⇒ `number|null`: State as number, if state can be represented as number, or `null` if that's not the case
+  - .quantityState ⇒ [`Quantity|null`](#quantity): Item state as Quantity or `null` if state is not Quantity-compatible or without unit
+  - .boolState ⇒ `boolean|null`: Item state as boolean or `null` if not boolean-compatible or is NULL or UNDEF, see below for mapping of state to boolean
+  - .rawState ⇒ `HostState`
+  - .previousState ⇒ `string|null`: Previous state as string, or `null` if not available
+  - .previousNumericState ⇒ `number|null`: Previous state as number, if state can be represented as number, or `null` if that's not the case or not available
+  - .previousQuantityState ⇒ [`Quantity|null`](#quantity): Previous item state as Quantity or `null` if state is not Quantity-compatible, without unit, or not available
+  - .previousRawState ⇒ `HostState`
+  - .lastStateUpdateTimestamp ⇒ [`time.ZonedDateTime`](#time): The time the state was last updated as ZonedDateTime or `null` if not available
+  - .lastStateUpdateInstant ⇒ [`time.Instant`](#time): The time the state was last updated as Instant or `null` if not available
+  - .lastStateChangeTimestamp ⇒ [`time.ZonedDateTime`](#time): The time the state was last changed as ZonedDateTime or `null` if not available
+  - .lastStateChangeInstant ⇒ [`time.Instant`](#time): The time the state was last changed as Instant or `null` if not available
+  - .members ⇒ `Array[Item]`
+  - .descendents ⇒ `Array[Item]`
+  - .isInitialized ⇒ `boolean`
+  - ~~.isUninitialized ⇒ `boolean`~~ use `.isInitialized` instead
+  - .groupNames ⇒ `Array[string]`
+  - .tags ⇒ `Array[string]`
+  - .getMetadata(namespace) ⇒ `object|null`
+  - .replaceMetadata(namespace, value, configuration) ⇒ `object`
+  - .removeMetadata(namespace) ⇒ `object|null`
+  - .sendCommand(value): `value` can be a string, a number, a [`time.ZonedDateTime`](#time), a [`time.Instant`](#time), or a [`Quantity`](#quantity)
+  - .sendCommand(value, expire): `expire` is a [`time.Duration`](#time), this will return the Item to its previous state after the given `expire` duration
+  - .sendCommand(value, expire, onExpire): `onExpire` can be the same type as `value`, this will return the Item to the given `onExpire` value after the given `expire` duration
+  - .sendCommandIfDifferent(value) ⇒ `boolean`: `value` can be a string, a number, a [`time.ZonedDateTime`](#time), a [`time.Instant`](#time), or a [`Quantity`](#quantity)
+  - .sendIncreaseCommand(value) ⇒ `boolean`: `value` can be a number, or a [`Quantity`](#quantity)
+  - .sendDecreaseCommand(value) ⇒ `boolean`: `value` can be a number, or a [`Quantity`](#quantity)
+  - .sendToggleCommand(): Sends a command to flip the Item's state (e.g. if it is `ON`, an `OFF` command is sent).
+  - .postUpdate(value): `value` can be a string, a [`time.ZonedDateTime`](#time), or a [`Quantity`](#quantity)
+  - .addGroups(...groupNamesOrItems)
+  - .removeGroups(...groupNamesOrItems)
+  - .addTags(...tagNames)
+  - .removeTags(...tagNames)
 
 ```javascript
 // Equivalent to items.KitchenLight
@@ -488,25 +489,25 @@ See [openhab-js : Item](https://openhab.github.io/openhab-js/items.Item.html) fo
 Calling `addItem(itemConfig)` or `replaceItem(itemConfig)` requires the `itemConfig` object with the following properties:
 
 - itemConfig : `object`
-    - .type ⇒ `string`: required, e.g. `Switch` or `Group`
-    - .name ⇒ `string`: required
-    - .label ⇒ `string`: optional
-    - .category (icon) ⇒ `string`: optional
-    - .groups ⇒ `Array[string]`: optional names of groups to be a member of
-    - .tags ⇒ `Array[string]`: optional
-    - .group ⇒ `object`: optional additional config if Item is group Item
-        - .type ⇒ `string`: optional type of the group, e.g. `Switch`
-        - .function ⇒ `string`: optional aggregation function, e.g. `AND`
-        - .parameters ⇒ `Array[string]`: parameters possibly required by aggregation function, e.g. `ON` and `OFF`
-    - .channels ⇒ `string | Object { channeluid: { config } }`
-    - .metadata ⇒ `Object { namespace: 'value' } | Object { namespace: { value: '' , configuration: { ... } } }`
+  - .type ⇒ `string`: required, e.g. `Switch` or `Group`
+  - .name ⇒ `string`: required
+  - .label ⇒ `string`: optional
+  - .category (icon) ⇒ `string`: optional
+  - .groups ⇒ `Array[string]`: optional names of groups to be a member of
+  - .tags ⇒ `Array[string]`: optional
+  - .group ⇒ `object`: optional additional config if Item is group Item
+    - .type ⇒ `string`: optional type of the group, e.g. `Switch`
+    - .function ⇒ `string`: optional aggregation function, e.g. `AND`
+    - .parameters ⇒ `Array[string]`: parameters possibly required by aggregation function, e.g. `ON` and `OFF`
+  - .channels ⇒ `string | Object { channeluid: { config } }`
+  - .metadata ⇒ `Object { namespace: 'value' } | Object { namespace: { value: '' , configuration: { ... } } }`
 
 There are a few short forms for common metadata available:
 
 - itemConfig : `object`
-    - .format ⇒ `string`: short form for `stateDescription` metadata's pattern configuration
-    - .unit ⇒ `string`: short form for the `unit` metadata
-    - .autoupdate ⇒ `boolean`: short form for the `autoupdate` metadata
+  - .format ⇒ `string`: short form for `stateDescription` metadata's pattern configuration
+  - .unit ⇒ `string`: short form for the `unit` metadata
+  - .autoupdate ⇒ `boolean`: short form for the `autoupdate` metadata
 
 Note: `.type` and `.name` are required.
 Basic UI and the mobile apps need `metadata.stateDescription.configuration.pattern` to render the state of an Item.
@@ -577,62 +578,62 @@ See [openhab-js : Item](https://openhab.github.io/openhab-js/items.html#.addItem
 Calling `Item.persistence` returns an `ItemPersistence` object with the following functions:
 
 - ItemPersistence :`object`
-    - .averageSince(timestamp, riemannType, serviceId) ⇒ `PersistedState | null`
-    - .averageUntil(timestamp, riemannType, serviceId) ⇒ `PersistedState | null`
-    - .averageBetween(begin, end, riemannType, serviceId) ⇒ `PersistedState | null`
-    - .changedSince(timestamp, serviceId) ⇒ `boolean`
-    - .changedUntil(timestamp, serviceId) ⇒ `boolean`
-    - .changedBetween(begin, end, serviceId) ⇒ `boolean`
-    - .countSince(timestamp, serviceId) ⇒ `number`
-    - .countUntil(timestamp, serviceId) ⇒ `number`
-    - .countBetween(begin, end, serviceId) ⇒ `number`
-    - .countStateChangesSince(timestamp, serviceId) ⇒ `number`
-    - .countStateChangesUntil(timestamp, serviceId) ⇒ `number`
-    - .countStateChangesBetween(begin, end, serviceId) ⇒ `number`
-    - .deltaSince(timestamp, serviceId) ⇒ `PersistedState | null`
-    - .deltaUntil(timestamp, serviceId) ⇒ `PersistedState | null`
-    - .deltaBetween(begin, end, serviceId) ⇒ `PersistedState | null`
-    - .deviationSince(timestamp, riemannType, serviceId) ⇒ `PersistedState | null`
-    - .deviationUntil(timestamp, riemannType, serviceId) ⇒ `PersistedState | null`
-    - .deviationBetween(begin, end, riemannType, serviceId) ⇒ `PersistedState | null`
-    - .evolutionRateSince(timestamp, riemannType, serviceId) ⇒ `number | null`
-    - .evolutionRateUntil(timestamp, riemannType, serviceId) ⇒ `number | null`
-    - .evolutionRateBetween(begin, end, riemannType, serviceId) ⇒ `number | null`
-    - .getAllStatesSince(timestamp, serviceId)  ⇒ `Array[PersistedItem]`
-    - .getAllStatesUntil(timestamp, serviceId)  ⇒ `Array[PersistedItem]`
-    - .getAllStatesBetween(begin, end, serviceId)  ⇒ `Array[PersistedItem]`
-    - .lastUpdate(serviceId) ⇒ `ZonedDateTime | null`
-    - .nextUpdate(serviceId) ⇒ `ZonedDateTime | null`
-    - .lastChange(serviceId) ⇒ `ZonedDateTime | null`
-    - .nextChange(serviceId) ⇒ `ZonedDateTime | null`
-    - .maximumSince(timestamp, serviceId) ⇒ `PersistedItem | null`
-    - .maximumUntil(timestamp, serviceId) ⇒ `PersistedItem | null`
-    - .maximumBetween(begin, end, serviceId) ⇒ `PersistedItem | null`
-    - .minimumSince(timestamp, serviceId) ⇒ `PersistedItem | null`
-    - .minimumUntil(timestamp, serviceId) ⇒ `PersistedItem | null`
-    - .minimumBetween(begin, end, serviceId) ⇒ `PersistedItem | null`
-    - .medianSince(timestamp, serviceId) ⇒ `PersistedState | null`
-    - .medianUntil(timestamp, serviceId) ⇒ `PersistedState | null`
-    - .medianBetween(begin, end, serviceId) ⇒ `PersistedState | null`
-    - .persist(serviceId): Tells the persistence service to store the current Item state, which is then done asynchronously.
-      **Warning:** This has the side effect, that if the Item state changes shortly after `.persist` has been called, the new Item state will be persisted. See [JSDoc](https://openhab.github.io/openhab-js/items.ItemPersistence.html#persist) for a possible work-around.
-    - .persist(timestamp, state, serviceId): Tells the persistence service to store the given state at the given timestamp, which is then done asynchronously.
-    - .persist(timeSeries, serviceId): Tells the persistence service to store the given [`TimeSeries`](#timeseries), which is then done asynchronously.
-    - .persistedState(timestamp, serviceId) ⇒ `PersistedItem | null`
-    - .previousState(skipEqual, serviceId) ⇒ `PersistedItem | null`
-    - .nextState(skipEqual, serviceId) ⇒ `PersistedItem | null`
-    - .riemannSumSince(timestamp, riemannType, serviceId)  ⇒ `PersistedState | null`
-    - .riemannSumUntil(timestamp, riemannType, serviceId)  ⇒ `PersistedState | null`
-    - .riemannSumBetween(begin, end, riemannType, serviceId)  ⇒ `PersistedState | null`
-    - .sumSince(timestamp, serviceId) ⇒ `PersistedState | null`
-    - .sumUntil(timestamp, serviceId) ⇒ `PersistedState | null`
-    - .sumBetween(begin, end, serviceId) ⇒ `PersistedState | null`
-    - .updatedSince(timestamp, serviceId) ⇒ `boolean`
-    - .updatedUntil(timestamp, serviceId) ⇒ `boolean`
-    - .updatedBetween(begin, end, serviceId) ⇒ `boolean`
-    - .varianceSince(timestamp, serviceId) ⇒ `PersistedState | null`
-    - .varianceUntil(timestamp, serviceId) ⇒ `PersistedState | null`
-    - .varianceBetween(begin, end, serviceId) ⇒ `PersistedState | null`
+  - .averageSince(timestamp, riemannType, serviceId) ⇒ `PersistedState | null`
+  - .averageUntil(timestamp, riemannType, serviceId) ⇒ `PersistedState | null`
+  - .averageBetween(begin, end, riemannType, serviceId) ⇒ `PersistedState | null`
+  - .changedSince(timestamp, serviceId) ⇒ `boolean`
+  - .changedUntil(timestamp, serviceId) ⇒ `boolean`
+  - .changedBetween(begin, end, serviceId) ⇒ `boolean`
+  - .countSince(timestamp, serviceId) ⇒ `number`
+  - .countUntil(timestamp, serviceId) ⇒ `number`
+  - .countBetween(begin, end, serviceId) ⇒ `number`
+  - .countStateChangesSince(timestamp, serviceId) ⇒ `number`
+  - .countStateChangesUntil(timestamp, serviceId) ⇒ `number`
+  - .countStateChangesBetween(begin, end, serviceId) ⇒ `number`
+  - .deltaSince(timestamp, serviceId) ⇒ `PersistedState | null`
+  - .deltaUntil(timestamp, serviceId) ⇒ `PersistedState | null`
+  - .deltaBetween(begin, end, serviceId) ⇒ `PersistedState | null`
+  - .deviationSince(timestamp, riemannType, serviceId) ⇒ `PersistedState | null`
+  - .deviationUntil(timestamp, riemannType, serviceId) ⇒ `PersistedState | null`
+  - .deviationBetween(begin, end, riemannType, serviceId) ⇒ `PersistedState | null`
+  - .evolutionRateSince(timestamp, riemannType, serviceId) ⇒ `number | null`
+  - .evolutionRateUntil(timestamp, riemannType, serviceId) ⇒ `number | null`
+  - .evolutionRateBetween(begin, end, riemannType, serviceId) ⇒ `number | null`
+  - .getAllStatesSince(timestamp, serviceId)  ⇒ `Array[PersistedItem]`
+  - .getAllStatesUntil(timestamp, serviceId)  ⇒ `Array[PersistedItem]`
+  - .getAllStatesBetween(begin, end, serviceId)  ⇒ `Array[PersistedItem]`
+  - .lastUpdate(serviceId) ⇒ `ZonedDateTime | null`
+  - .nextUpdate(serviceId) ⇒ `ZonedDateTime | null`
+  - .lastChange(serviceId) ⇒ `ZonedDateTime | null`
+  - .nextChange(serviceId) ⇒ `ZonedDateTime | null`
+  - .maximumSince(timestamp, serviceId) ⇒ `PersistedItem | null`
+  - .maximumUntil(timestamp, serviceId) ⇒ `PersistedItem | null`
+  - .maximumBetween(begin, end, serviceId) ⇒ `PersistedItem | null`
+  - .minimumSince(timestamp, serviceId) ⇒ `PersistedItem | null`
+  - .minimumUntil(timestamp, serviceId) ⇒ `PersistedItem | null`
+  - .minimumBetween(begin, end, serviceId) ⇒ `PersistedItem | null`
+  - .medianSince(timestamp, serviceId) ⇒ `PersistedState | null`
+  - .medianUntil(timestamp, serviceId) ⇒ `PersistedState | null`
+  - .medianBetween(begin, end, serviceId) ⇒ `PersistedState | null`
+  - .persist(serviceId): Tells the persistence service to store the current Item state, which is then done asynchronously.
+    **Warning:** This has the side effect, that if the Item state changes shortly after `.persist` has been called, the new Item state will be persisted. See [JSDoc](https://openhab.github.io/openhab-js/items.ItemPersistence.html#persist) for a possible work-around.
+  - .persist(timestamp, state, serviceId): Tells the persistence service to store the given state at the given timestamp, which is then done asynchronously.
+  - .persist(timeSeries, serviceId): Tells the persistence service to store the given [`TimeSeries`](#timeseries), which is then done asynchronously.
+  - .persistedState(timestamp, serviceId) ⇒ `PersistedItem | null`
+  - .previousState(skipEqual, serviceId) ⇒ `PersistedItem | null`
+  - .nextState(skipEqual, serviceId) ⇒ `PersistedItem | null`
+  - .riemannSumSince(timestamp, riemannType, serviceId)  ⇒ `PersistedState | null`
+  - .riemannSumUntil(timestamp, riemannType, serviceId)  ⇒ `PersistedState | null`
+  - .riemannSumBetween(begin, end, riemannType, serviceId)  ⇒ `PersistedState | null`
+  - .sumSince(timestamp, serviceId) ⇒ `PersistedState | null`
+  - .sumUntil(timestamp, serviceId) ⇒ `PersistedState | null`
+  - .sumBetween(begin, end, serviceId) ⇒ `PersistedState | null`
+  - .updatedSince(timestamp, serviceId) ⇒ `boolean`
+  - .updatedUntil(timestamp, serviceId) ⇒ `boolean`
+  - .updatedBetween(begin, end, serviceId) ⇒ `boolean`
+  - .varianceSince(timestamp, serviceId) ⇒ `PersistedState | null`
+  - .varianceUntil(timestamp, serviceId) ⇒ `PersistedState | null`
+  - .varianceBetween(begin, end, serviceId) ⇒ `PersistedState | null`
 
 `riemannType` is an optional argument for methods that require calculating an approximation of the integral value.
 The approximation is calculated using a Riemann sum, with left, right, trapezoidal or midpoint value approximations.
@@ -712,26 +713,26 @@ The Things namespace allows interacting with openHAB Things.
 See [openhab-js : things](https://openhab.github.io/openhab-js/things.html) for full API documentation.
 
 - things : <code>object</code>
-    - .getThing(uid) ⇒ <code>Thing|null</code>
-    - .getThings() ⇒ <code>Array[Thing]</code>
+  - .getThing(uid) ⇒ <code>Thing|null</code>
+  - .getThings() ⇒ <code>Array[Thing]</code>
 
 #### `getThing(uid, nullIfMissing)`
 
 Calling `getThing(uid)` returns a `Thing` object with the following properties:
 
 - Thing : <code>object</code>
-    - .bridgeUID ⇒ <code>String</code>
-    - .label ⇒ <code>String</code>
-    - .location ⇒ <code>String</code>
-    - .status ⇒ <code>String</code>
-    - .statusInfo ⇒ <code>String</code>
-    - .thingTypeUID ⇒ <code>String</code>
-    - .uid ⇒ <code>String</code>
-    - .isEnabled ⇒ <code>Boolean</code>
-    - .setLabel(label)
-    - .setLocation(location)
-    - .setProperty(name, value)
-    - .setEnabled(enabled)
+  - .bridgeUID ⇒ <code>String</code>
+  - .label ⇒ <code>String</code>
+  - .location ⇒ <code>String</code>
+  - .status ⇒ <code>String</code>
+  - .statusInfo ⇒ <code>String</code>
+  - .thingTypeUID ⇒ <code>String</code>
+  - .uid ⇒ <code>String</code>
+  - .isEnabled ⇒ <code>Boolean</code>
+  - .setLabel(label)
+  - .setLocation(location)
+  - .setProperty(name, value)
+  - .setEnabled(enabled)
 
 ```javascript
 var thing = things.getThing('astro:moon:home');
@@ -986,16 +987,16 @@ The ids of timers and intervals as created by `setTimeout` and `setInterval` can
 See [openhab-js : cache](https://openhab.github.io/openhab-js/cache.html) for full API documentation.
 
 - cache : <code>object</code>
-    - .private
-        - .get(key, defaultSupplier) ⇒ <code>* | null</code>
-        - .put(key, value) ⇒ <code>Previous * | null</code>
-        - .remove(key) ⇒ <code>Previous * | null</code>
-        - .exists(key) ⇒ <code>boolean</code>
-    - .shared
-        - .get(key, defaultSupplier) ⇒ <code>* | null</code>
-        - .put(key, value) ⇒ <code>Previous * | null</code>
-        - .remove(key) ⇒ <code>Previous * | null</code>
-        - .exists(key) ⇒ <code>boolean</code>
+  - .private
+    - .get(key, defaultSupplier) ⇒ <code>* | null</code>
+    - .put(key, value) ⇒ <code>Previous * | null</code>
+    - .remove(key) ⇒ <code>Previous * | null</code>
+    - .exists(key) ⇒ <code>boolean</code>
+  - .shared
+    - .get(key, defaultSupplier) ⇒ <code>* | null</code>
+    - .put(key, value) ⇒ <code>Previous * | null</code>
+    - .remove(key) ⇒ <code>Previous * | null</code>
+    - .exists(key) ⇒ <code>boolean</code>
 
 The `defaultSupplier` provided function will return a default value if a specified key is not already associated with a value.
 
@@ -1466,47 +1467,47 @@ See [Examples](#rule-builder-examples) for further patterns.
 
 - `when()`
 - `or()`
-    - `.channel(channelName)`: Specifies a channel event as a source for the rule to fire.
-        - `.triggered(event)`: Trigger on a specific event name
-    - `.cron(cronExpression)`: Specifies a cron schedule for the rule to fire.
-    - `.timeOfDay(time)`: Specifies a time of day in `HH:mm` for the rule to fire.
-    - `.item(itemName)`: Specifies an Item as the source of changes to trigger a rule.
-        - `.receivedCommand()`, `.receivedUpdate()`, `.changed()` allows to define the received command/update, respective new state:
-            - `.of(command)`
-            - `.to(state)`
-            - `.toOn()`
-            - `.toOff()`
-        - `.changed()` allows to define the previous state and a duration for which the Item must have changed:
-            - `.from(state)`
-            - `.fromOn()`
-            - `.fromOff()`
-            - `.for(duration)` where duration is in milliseconds
-    - `.memberOf(groupName)`: Specifies a group Item as the source of changes to trigger the rule.
-        - `.receivedCommand()`, `.receivedUpdate()`, `.changed()` allows to define the received command/update, respective new state:
-            - `.of(command)`
-            - `.to(state)`
-            - `.toOn()`
-            - `.toOff()`
-        - `.changed()` allows to define the previous state and a duration for which the Item must have changed:
-            - `.from(state)`
-            - `.fromOn()`
-            - `.fromOff()`
-            - `.for(duration)` where duration is in milliseconds
-    - `.system()`: Specifies a system event as a source for the rule to fire.
-        - `.ruleEngineStarted()`
-        - `.rulesLoaded()`
-        - `.startupComplete()`
-        - `.thingsInitialized()`
-        - `.userInterfacesStarted()`
-        - `.startLevel(level)`
-    - `.thing(thingName)`: Specifies a Thing event as a source for the rule to fire.
-        - `changed()`
-            - `from(state)`
-            - `to(state)`
-        - `updated()`
-    - `.dateTime(itemName)`: Specifies a DateTime Item whose (optional) date and time schedule the rule to fire.
-        - `.timeOnly()`: Only the time of the Item should be compared, the date should be ignored.
-        - `.withOffset(offset)`: The offset in seconds to add to the time of the DateTime Item.
+  - `.channel(channelName)`: Specifies a channel event as a source for the rule to fire.
+    - `.triggered(event)`: Trigger on a specific event name
+  - `.cron(cronExpression)`: Specifies a cron schedule for the rule to fire.
+  - `.timeOfDay(time)`: Specifies a time of day in `HH:mm` for the rule to fire.
+  - `.item(itemName)`: Specifies an Item as the source of changes to trigger a rule.
+    - `.receivedCommand()`, `.receivedUpdate()`, `.changed()` allows to define the received command/update, respective new state:
+      - `.of(command)`
+      - `.to(state)`
+      - `.toOn()`
+      - `.toOff()`
+    - `.changed()` allows to define the previous state and a duration for which the Item must have changed:
+      - `.from(state)`
+      - `.fromOn()`
+      - `.fromOff()`
+      - `.for(duration)` where duration is in milliseconds
+  - `.memberOf(groupName)`: Specifies a group Item as the source of changes to trigger the rule.
+    - `.receivedCommand()`, `.receivedUpdate()`, `.changed()` allows to define the received command/update, respective new state:
+      - `.of(command)`
+      - `.to(state)`
+      - `.toOn()`
+      - `.toOff()`
+    - `.changed()` allows to define the previous state and a duration for which the Item must have changed:
+      - `.from(state)`
+      - `.fromOn()`
+      - `.fromOff()`
+      - `.for(duration)` where duration is in milliseconds
+  - `.system()`: Specifies a system event as a source for the rule to fire.
+    - `.ruleEngineStarted()`
+    - `.rulesLoaded()`
+    - `.startupComplete()`
+    - `.thingsInitialized()`
+    - `.userInterfacesStarted()`
+    - `.startLevel(level)`
+  - `.thing(thingName)`: Specifies a Thing event as a source for the rule to fire.
+    - `changed()`
+      - `from(state)`
+      - `to(state)`
+    - `updated()`
+  - `.dateTime(itemName)`: Specifies a DateTime Item whose (optional) date and time schedule the rule to fire.
+    - `.timeOnly()`: Only the time of the Item should be compared, the date should be ignored.
+    - `.withOffset(offset)`: The offset in seconds to add to the time of the DateTime Item.
 
 Additionally, all the above triggers have the following functions:
 
@@ -1517,26 +1518,26 @@ Additionally, all the above triggers have the following functions:
 #### Rule Builder Conditions
 
 - `if(optionalFunction)`
-    - `.stateOfItem(itemName)`
-        - `is(state)`
-        - `isOn()`
-        - `isOff()`
-        - `in(state...)`
+  - `.stateOfItem(itemName)`
+    - `is(state)`
+    - `isOn()`
+    - `isOff()`
+    - `in(state...)`
 
 #### Rule Builder Operations
 
 - `then(optionalFunction)`
-    - `.build(name, description, tags, id)`
-    - `.copyAndSendState()`
-    - `.copyState()`
-    - `.inGroup(groupName)`
-    - `.postIt()`
-    - `.postUpdate(state)`
-    - `.send(command)`
-    - `.sendIt()`
-    - `.sendOff()`
-    - `.sendOn()`
-    - `.sendToggle()`
+  - `.build(name, description, tags, id)`
+  - `.copyAndSendState()`
+  - `.copyState()`
+  - `.inGroup(groupName)`
+  - `.postIt()`
+  - `.postUpdate(state)`
+  - `.send(command)`
+  - `.sendIt()`
+  - `.sendOff()`
+  - `.sendOn()`
+  - `.sendToggle()`
 
 #### Rule Builder Examples
 
