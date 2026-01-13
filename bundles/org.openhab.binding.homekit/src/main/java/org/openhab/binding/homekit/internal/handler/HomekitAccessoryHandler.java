@@ -35,6 +35,7 @@ import org.openhab.binding.homekit.internal.dto.Service;
 import org.openhab.binding.homekit.internal.enums.AccessoryCategory;
 import org.openhab.binding.homekit.internal.enums.CharacteristicType;
 import org.openhab.binding.homekit.internal.enums.DataFormatType;
+import org.openhab.binding.homekit.internal.enums.ServiceType;
 import org.openhab.binding.homekit.internal.enums.StatusCode;
 import org.openhab.binding.homekit.internal.persistence.HomekitKeyStore;
 import org.openhab.binding.homekit.internal.persistence.HomekitTypeProvider;
@@ -383,12 +384,6 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
                             Optional.ofNullable(chanDef.getDescription()).ifPresent(builder::withDescription);
                             Channel channel = builder.build();
                             uniqueChannelsMap.put(channelId, channel);
-
-                            logger.trace(
-                                    "{}     Channel acceptedItemType:{}, defaultTags:{}, description:{}, kind:{}, label:{}, properties:{}, uid:{}",
-                                    thing.getUID(), channel.getAcceptedItemType(), channel.getDefaultTags(),
-                                    channel.getDescription(), channel.getKind(), channel.getLabel(),
-                                    channel.getProperties(), channel.getUID());
                         }
                     }
                 });
@@ -398,10 +393,6 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
         lightModelFinalize(accessory, uniqueChannelsMap);
         stopMoveFinalize(accessory, uniqueChannelsMap);
         eventingPollingFinalize(accessory, uniqueChannelsMap);
-
-        String oldLabel = thing.getLabel();
-        String newLabel = oldLabel == null || oldLabel.isEmpty() ? accessory.getAccessoryInstanceLabel() : null;
-        List<Channel> newChannels = !uniqueChannelsMap.isEmpty() ? uniqueChannelsMap.values().stream().toList() : null;
 
         Map<String, String> oldProperties = new HashMap<>(thing.getProperties());
         Map<String, String> getProperties = accessory.getProperties(thing.getUID(), typeProvider, i18nProvider, bundle);
@@ -414,19 +405,13 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
         }
 
         SemanticTag newEquipmentTag = accessory.getSemanticEquipmentTag();
-        boolean createSnapshotChannel = CAMERA_ACCESSORY_CATEGORIES.contains(accessory.getAccessoryType());
-        if ((newEquipmentTag == null || !createSnapshotChannel)
-                && oldProperties.get(PROPERTY_ACCESSORY_CATEGORY) instanceof String catProperty
+        if (newEquipmentTag == null && oldProperties.get(PROPERTY_ACCESSORY_CATEGORY) instanceof String catProperty
                 && AccessoryCategory.from(catProperty) instanceof AccessoryCategory category
                 && AccessoryCategory.OTHER != category) {
-            createSnapshotChannel = CAMERA_ACCESSORY_CATEGORIES.contains(category);
             newEquipmentTag = accessory.getSemanticEquipmentTag(category);
         }
         if (newEquipmentTag == null) {
             newEquipmentTag = accessory.getSemanticEquipmentTagFromServices();
-        }
-        if (!createSnapshotChannel) {
-            createSnapshotChannel = accessory.hasCameraService();
         }
 
         String oldEquipmentTag = thing.getSemanticEquipmentTag();
@@ -434,16 +419,23 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
             newEquipmentTag = null;
         }
 
-        if (createSnapshotChannel) {
+        if (isCamera(accessory)) {
             ChannelBuilder builder = ChannelBuilder
                     .create(new ChannelUID(thing.getUID(), CHANNEL_SNAPSHOT), CoreItemFactory.IMAGE)
                     .withType(CHANNEL_TYPE_SNAPSHOT);
             Channel channel = builder.build();
             uniqueChannelsMap.put(CHANNEL_SNAPSHOT, channel);
-            logger.trace(
+        }
+
+        String oldLabel = thing.getLabel();
+        String newLabel = oldLabel == null || oldLabel.isEmpty() ? accessory.getAccessoryInstanceLabel() : null;
+        List<Channel> newChannels = !uniqueChannelsMap.isEmpty() ? uniqueChannelsMap.values().stream().toList() : null;
+
+        if (logger.isTraceEnabled() && newChannels != null) {
+            newChannels.forEach(channel -> logger.trace(
                     "{}     Channel acceptedItemType:{}, defaultTags:{}, description:{}, kind:{}, label:{}, properties:{}, uid:{}",
                     thing.getUID(), channel.getAcceptedItemType(), channel.getDefaultTags(), channel.getDescription(),
-                    channel.getKind(), channel.getLabel(), channel.getProperties(), channel.getUID());
+                    channel.getKind(), channel.getLabel(), channel.getProperties(), channel.getUID()));
         }
 
         if (newLabel != null || newChannels != null || newProperties != null || newEquipmentTag != null) {
@@ -720,10 +712,6 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
         Channel channel = ChannelBuilder.create(uid, CoreItemFactory.COLOR)
                 .withType(DefaultSystemChannelTypeProvider.SYSTEM_CHANNEL_TYPE_UID_COLOR).build();
         channels.put(uid.getId(), channel); // add to channels map
-        logger.trace(
-                "{}     Channel acceptedItemType:{}, defaultTags:{}, description:{}, kind:{}, label:{}, properties:{}, uid:{}",
-                thing.getUID(), channel.getAcceptedItemType(), channel.getDefaultTags(), channel.getDescription(),
-                channel.getKind(), channel.getLabel(), channel.getProperties(), channel.getUID());
         lightModelClientHSBTypeChannel = uid;
     }
 
@@ -1024,5 +1012,44 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
     protected void initializeNotReadyThings() {
         notReadyThings.clear();
         notReadyThings.add(thing); // a self connected accessory requires only itself to be ready
+    }
+
+    /**
+     * Returns true if the given accessory has camera like functions;
+     * <p>
+     * <li>its category as declared in its JSON is a camera category</li>
+     * <li>its category as discovered by mDNS is a camera category</li>
+     * <li>one of its JSON services supports camera RTP stream management</li>
+     * <li>one of its JSON characteristics supports video stream configuration</li>
+     * <p>
+     * 
+     * @param accessory the accessory to check
+     * @return true if the accessory is a camera, false otherwise
+     */
+    private boolean isCamera(Accessory accessory) {
+        if (CAMERA_ACCESSORY_CATEGORIES.contains(accessory.getAccessoryType())) {
+            return true;
+        }
+        if (thing.getProperties().get(PROPERTY_ACCESSORY_CATEGORY) instanceof String catProperty
+                && AccessoryCategory.from(catProperty) instanceof AccessoryCategory category
+                && CAMERA_ACCESSORY_CATEGORIES.contains(category)) {
+            return true;
+        }
+        if (accessory.services instanceof List<Service> services) {
+            for (Service service : services) {
+                if (ServiceType.CAMERA_RTP_STREAM_MANAGEMENT == service.getServiceType()) {
+                    return true;
+                }
+                if (service.characteristics instanceof List<Characteristic> characteristics) {
+                    for (Characteristic characteristic : characteristics) {
+                        if (CharacteristicType.SUPPORTED_VIDEO_STREAM_CONFIGURATION == characteristic
+                                .getCharacteristicType()) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        return false;
     }
 }
