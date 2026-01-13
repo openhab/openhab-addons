@@ -21,7 +21,7 @@ import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 
 /**
- * Holds the calculated azimuth and elevation.
+ * Immutable class holding calculated azimuth and elevation.
  *
  * @author Gerhard Riegler - Initial contribution
  * @author Gaël L'hopital - Added shade length

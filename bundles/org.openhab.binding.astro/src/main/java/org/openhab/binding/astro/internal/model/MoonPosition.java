@@ -15,7 +15,7 @@ package org.openhab.binding.astro.internal.model;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Holds information about the Moon Position
+ * Immutable class holding Moon Position information
  *
  * @author Gaël L'hopital - Initial contribution
  */
