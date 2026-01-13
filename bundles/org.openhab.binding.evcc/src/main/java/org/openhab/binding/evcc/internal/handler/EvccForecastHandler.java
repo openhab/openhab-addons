@@ -53,7 +53,7 @@ public class EvccForecastHandler extends EvccBaseThingHandler {
 
     public EvccForecastHandler(Thing thing, ChannelTypeRegistry channelTypeRegistry) {
         super(thing, channelTypeRegistry);
-        subType = getPropertyOrConfigValue(PROPERTY_TYPE);
+        subType = getPropertyOrConfigValue(PROPERTY_SUBTYPE);
         type = PROPERTY_FORECAST;
     }
 
@@ -61,6 +61,12 @@ public class EvccForecastHandler extends EvccBaseThingHandler {
     public void initialize() {
         super.initialize();
         Optional.ofNullable(bridgeHandler).ifPresent(handler -> {
+            if (!SUPPORTED_FORECAST_TYPES.contains(subType)) {
+                logger.warn("Unsupported forecast type: {}", subType);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "Unsupported forecast type: " + subType);
+                return;
+            }
             JsonObject stateOpt = handler.getCachedEvccState().deepCopy();
             if (stateOpt.isEmpty()) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
@@ -89,7 +95,7 @@ public class EvccForecastHandler extends EvccBaseThingHandler {
             } else {
                 logger.warn("Forecast data for type {} is not available in the evcc state.", subType);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "Unknown forecast type: " + subType);
+                        "Unavailable forecast type: " + subType);
             }
 
         });
@@ -97,7 +103,7 @@ public class EvccForecastHandler extends EvccBaseThingHandler {
 
     @Override
     public void prepareApiResponseForChannelStateUpdate(JsonObject state) {
-        if (state.isJsonNull() || state.isEmpty()) {
+        if (!isInitialized || state.isJsonNull() || state.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
             return;
         }
@@ -169,6 +175,7 @@ public class EvccForecastHandler extends EvccBaseThingHandler {
             Optional.ofNullable(currentEntry).ifPresent(e -> updateState(channelUID, e.state()));
         }
         sendTimeSeries(channelUID, timeSeries);
+        updateStatus(ThingStatus.ONLINE);
     }
 
     @Nullable

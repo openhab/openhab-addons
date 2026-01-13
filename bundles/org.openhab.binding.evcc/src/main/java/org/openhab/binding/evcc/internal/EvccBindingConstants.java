@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.evcc.internal;
 
+import java.util.List;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -44,11 +45,14 @@ public class EvccBindingConstants {
             THING_TYPE_HEATING, THING_TYPE_LOADPOINT, THING_TYPE_PLAN, THING_TYPE_PV, THING_TYPE_SITE,
             THING_TYPE_STATISTICS, THING_TYPE_VEHICLE);
 
+    public static final List<String> SUPPORTED_FORECAST_TYPES = List.of("co2", "feedin", "grid", "solar");
+
     // Properties
     public static final String PROPERTY_FORECAST = "forecast";
     public static final String PROPERTY_ID = "id";
     public static final String PROPERTY_INDEX = "index";
     public static final String PROPERTY_SITE_TITLE = "siteTitle";
+    public static final String PROPERTY_SUBTYPE = "subType";
     public static final String PROPERTY_TITLE = "title";
     public static final String PROPERTY_TYPE = "type";
     public static final String PROPERTY_VEHICLE_ID = "vehicleId";

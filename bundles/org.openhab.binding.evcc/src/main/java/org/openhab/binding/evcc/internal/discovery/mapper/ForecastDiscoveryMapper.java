@@ -54,6 +54,9 @@ public class ForecastDiscoveryMapper implements EvccDiscoveryMapper {
         }
         for (Map.Entry<String, JsonElement> entry : forecasts.entrySet()) {
             String forecastType = entry.getKey();
+            if (!SUPPORTED_FORECAST_TYPES.contains(forecastType)) {
+                continue;
+            }
             ThingUID uid = new ThingUID(THING_TYPE_FORECAST, bridgeHandler.getThing().getUID(),
                     Utils.sanitizeName(forecastType));
             String label = "Forecast " + capitalizeFirstLetter(forecastType);
@@ -65,8 +68,9 @@ public class ForecastDiscoveryMapper implements EvccDiscoveryMapper {
                 logger.warn("Could not get hash algorithm instance");
             }
             DiscoveryResult result = DiscoveryResultBuilder.create(uid).withLabel(label)
-                    .withBridge(bridgeHandler.getThing().getUID()).withProperty(PROPERTY_TYPE, forecastType)
-                    .withProperty(PROPERTY_ID, id).withRepresentationProperty(PROPERTY_ID).build();
+                    .withBridge(bridgeHandler.getThing().getUID()).withProperty(PROPERTY_TYPE, PROPERTY_FORECAST)
+                    .withProperty(PROPERTY_SUBTYPE, forecastType).withProperty(PROPERTY_ID, id)
+                    .withRepresentationProperty(PROPERTY_ID).build();
             results.add(result);
         }
         return results;

@@ -52,6 +52,7 @@ import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
@@ -106,12 +107,18 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
             }
         }
 
-        newChannels.sort(Comparator.comparing(channel -> channel.getUID().getId()));
-        updateThing(editThing().withChannels(newChannels).build());
+        if (!newChannels.isEmpty()) {
+            newChannels.sort(Comparator.comparing(channel -> channel.getUID().getId()));
+            updateThing(editThing().withChannels(newChannels).build());
+        }
         updateStatus(ThingStatus.ONLINE);
         isInitialized = true;
         Optional.ofNullable(bridgeHandler).ifPresentOrElse(handler -> handler.register(this),
                 () -> logger.error("No bridgeHandler present when initializing the thing"));
+        // Initialize all channels to UNDEF first to avoid stale data
+        getThing().getChannels().forEach(channel -> {
+            updateState(channel.getUID(), UnDefType.UNDEF);
+        });
     }
 
     protected String getPropertyOrConfigValue(String propertyName) {
@@ -226,7 +233,7 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
             }
 
             String thingKey = getThingKey(key);
-            ChannelUID channelUID = channelUID(thingKey);
+            ChannelUID channelUID = new ChannelUID(getThing().getUID(), thingKey);
             Channel existingChannel = getThing().getChannel(channelUID.getId());
             if (existingChannel == null) {
                 ThingBuilder builder = editThing();
@@ -283,10 +290,6 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
                 logger.warn("evcc bridge couldn't parse the API error response", e);
             }
         }
-    }
-
-    private ChannelUID channelUID(String id) {
-        return new ChannelUID(getThing().getUID(), id);
     }
 
     @Override

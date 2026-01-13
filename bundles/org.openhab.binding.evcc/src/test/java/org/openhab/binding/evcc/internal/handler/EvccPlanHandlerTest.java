@@ -159,10 +159,6 @@ public class EvccPlanHandlerTest extends AbstractThingHandlerTestClass<EvccPlanH
     @Test
     void updatingOneTimePlanShouldNormalizeTimeAndBuildUrl() {
         handler.initialize();
-        assertTrue(updateStateCalled);
-        assertEquals(4, updateStateCounter);
-        updateStateCalled = false;
-        updateStateCounter = 0;
 
         handler.prepareApiResponseForChannelStateUpdate(exampleResponse.deepCopy());
 
