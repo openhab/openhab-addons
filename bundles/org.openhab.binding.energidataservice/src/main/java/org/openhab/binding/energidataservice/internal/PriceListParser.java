@@ -13,9 +13,9 @@
 package org.openhab.binding.energidataservice.internal;
 
 import java.math.BigDecimal;
-import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
+import java.time.InstantSource;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
@@ -39,14 +39,14 @@ import org.openhab.binding.energidataservice.internal.provider.cache.Electricity
 @NonNullByDefault
 public class PriceListParser {
 
-    private final Clock clock;
+    private final InstantSource instantSource;
 
     public PriceListParser() {
-        this(Clock.system(EnergiDataServiceBindingConstants.DATAHUB_TIMEZONE));
+        this(InstantSource.system());
     }
 
-    public PriceListParser(Clock clock) {
-        this.clock = clock;
+    public PriceListParser(InstantSource instantSource) {
+        this.instantSource = instantSource;
     }
 
     public Map<Instant, BigDecimal> toHourly(Collection<DatahubPricelistRecord> records) {
@@ -59,11 +59,10 @@ public class PriceListParser {
     }
 
     private Map<Instant, BigDecimal> toResolution(Collection<DatahubPricelistRecord> records, Duration resolution) {
+        Instant now = instantSource.instant();
         Instant firstStart = truncateToResolution(
-                Instant.now(clock).minus(ElectricityPriceSubscriptionCache.NUMBER_OF_HISTORIC_HOURS, ChronoUnit.HOURS),
-                resolution);
-        Instant lastStart = Instant.now(clock).truncatedTo(ChronoUnit.HOURS).plus(2, ChronoUnit.DAYS)
-                .truncatedTo(ChronoUnit.DAYS);
+                now.minus(ElectricityPriceSubscriptionCache.NUMBER_OF_HISTORIC_HOURS, ChronoUnit.HOURS), resolution);
+        Instant lastStart = now.truncatedTo(ChronoUnit.HOURS).plus(2, ChronoUnit.DAYS).truncatedTo(ChronoUnit.DAYS);
 
         return toResolution(records, firstStart, lastStart, resolution);
     }
