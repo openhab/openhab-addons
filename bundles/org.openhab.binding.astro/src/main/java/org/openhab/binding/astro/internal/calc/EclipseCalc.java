@@ -16,6 +16,7 @@ package org.openhab.binding.astro.internal.calc;
 
 import static org.openhab.binding.astro.internal.util.MathUtils.*;
 
+<<<<<<< Upstream, based on main
 import java.time.Instant;
 import java.util.List;
 import java.util.Set;
@@ -126,6 +127,8 @@ import static org.openhab.binding.astro.internal.util.MathUtils.*;
 
 import java.util.Calendar;
 
+=======
+>>>>>>> f203b2c Finalized modifications at this step
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.astro.internal.model.EclipseKind;
 
@@ -138,11 +141,11 @@ import org.openhab.binding.astro.internal.model.EclipseKind;
 @NonNullByDefault
 public abstract class EclipseCalc extends AstroCalc {
 
-    public double calculate(Calendar cal, double midnightJd, EclipseKind eclipse) {
+    public double calculate(double midnightJd, EclipseKind eclipse) {
         double tz = 0;
         double eclipseJd = 0;
         do {
-            double k = varK(cal, tz);
+            double k = varK(midnightJd, tz);
             tz += 1;
             eclipseJd = getEclipse(Math.floor(k) + getJDAjust(), eclipse);
         } while (eclipseJd <= midnightJd);

@@ -32,7 +32,7 @@ public class AstroConstants {
     public static final double SOLAR_MEAN_MOTION_PER_SECOND = MathUtils.TWO_PI / AstroConstants.TROPICAL_YEAR_SECONDS;
 >>>>>>> a1c7d2d Start refactoring Eclipse for sun and moon
     public static final double EARTH_EQUATORIAL_RADIUS = 6378.137; // WGS-84 reference in km
-
+    public static final double SYNODIC_MONTH = 29.530588853;
     /** Constant term of the E5 angle. */
     public static final double E05_0 = 357.52910918;
 

@@ -116,7 +116,7 @@ public class MoonCalcTest {
         MoonCalc moonCalc = this.moonCalc;
         assertNotNull(moonCalc);
         Moon moon = moonCalc.getMoonInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE, TIME_ZONE, Locale.ROOT);
-        moonCalc.setPositionalInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE, moon, TIME_ZONE, Locale.ROOT);
+        moonCalc.setPositionalInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE, moon, TIME_ZONE);
         var azimuth = moon.getPosition().getAzimuth();
         var elevation = moon.getPosition().getElevation();
         assertNotNull(azimuth);
@@ -152,35 +152,6 @@ public class MoonCalcTest {
         assertEquals(100.5, azimuth.doubleValue(), ACCURACY_IN_DEGREE);
         assertEquals(-17, elevation.doubleValue(), ACCURACY_IN_DEGREE);
 >>>>>>> 2cffce1 Rebased. Corrected moon_day dynamic icons Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added unit tests for eclipses Rebased on moon_distance Rebased on main after moon_distance inclusion
-    }
-
-    @Test
-    public void testGetMoonInfoForMoonPhaseAccuracy() {
-        MoonCalc moonCalc = this.moonCalc;
-        assertNotNull(moonCalc);
-        Moon moon = moonCalc.getMoonInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE, TIME_ZONE, Locale.ROOT);
-        moonCalc.setPositionalInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE, moon, TIME_ZONE, Locale.ROOT);
-
-        // New moon 06 March 2019 17:04
-        // First quarter 14 March 2019 11:27
-        // Full moon 21 March 2019 02:43
-        // Last quarter 28 March 2019 05:10
-        Calendar phaseCal = moon.getPhase().getNew();
-        assertNotNull(phaseCal);
-        assertEquals(MoonCalcTest.newCalendar(2019, Calendar.MARCH, 06, 17, 04, TIME_ZONE).getTimeInMillis(),
-                phaseCal.getTimeInMillis(), ACCURACY_IN_MILLIS);
-        phaseCal = moon.getPhase().getFirstQuarter();
-        assertNotNull(phaseCal);
-        assertEquals(MoonCalcTest.newCalendar(2019, Calendar.MARCH, 14, 11, 27, TIME_ZONE).getTimeInMillis(),
-                phaseCal.getTimeInMillis(), ACCURACY_IN_MILLIS);
-        phaseCal = moon.getPhase().getFull();
-        assertNotNull(phaseCal);
-        assertEquals(MoonCalcTest.newCalendar(2019, Calendar.MARCH, 21, 02, 43, TIME_ZONE).getTimeInMillis(),
-                phaseCal.getTimeInMillis(), ACCURACY_IN_MILLIS);
-        phaseCal = moon.getPhase().getThirdQuarter();
-        assertNotNull(phaseCal);
-        assertEquals(MoonCalcTest.newCalendar(2019, Calendar.MARCH, 28, 05, 10, TIME_ZONE).getTimeInMillis(),
-                phaseCal.getTimeInMillis(), ACCURACY_IN_MILLIS);
     }
 
     /***

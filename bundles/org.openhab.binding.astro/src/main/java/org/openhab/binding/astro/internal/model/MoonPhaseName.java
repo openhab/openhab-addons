@@ -12,10 +12,16 @@
  */
 package org.openhab.binding.astro.internal.model;
 
+<<<<<<< Upstream, based on main
 import static org.openhab.binding.astro.internal.util.AstroConstants.LUNAR_SYNODIC_MONTH_DAYS;
 
 import java.util.Arrays;
 import java.util.Comparator;
+=======
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.stream.Stream;
+>>>>>>> f203b2c Finalized modifications at this step
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -92,5 +98,14 @@ public enum MoonPhaseName {
 =======
         this.ageDays = ageDays;
 >>>>>>> 5a82fe5 Nadahar code review adressed
+    }
+
+    public double getMode() {
+        return mode;
+    }
+
+    public static Stream<MoonPhaseName> steps() {
+        return Arrays.stream(values()).filter(mp -> !Double.isNaN(mp.mode))
+                .sorted(Comparator.comparing(MoonPhaseName::getMode));
     }
 }

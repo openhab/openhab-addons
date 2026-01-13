@@ -63,7 +63,7 @@ public class MoonZodiacCalcTest {
         MoonCalc moonCalc = this.moonCalc;
         assertNotNull(moonCalc);
         Moon moon = moonCalc.getMoonInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE, TIME_ZONE, Locale.ROOT);
-        moonCalc.setPositionalInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE, moon, TIME_ZONE, Locale.ROOT);
+        moonCalc.setPositionalInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE, moon, TIME_ZONE);
 
         assertEquals(ZodiacSign.SAGITTARIUS, moon.getZodiac().getSign());
     }

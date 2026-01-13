@@ -29,6 +29,7 @@ public class Moon extends RiseSet implements Planet {
     private final Map<DistanceType, MoonDistance> distances = new HashMap<>(DistanceType.values().length);
     private final Eclipse eclipse = new Eclipse(EclipseKind.PARTIAL, EclipseKind.TOTAL);
 
+<<<<<<< Upstream, based on main
     private EclipseSet eclipseSet = EclipseSet.NONE;
     private MoonPhase phase = new MoonPhase();
 <<<<<<< Upstream, based on main
@@ -49,6 +50,9 @@ public class Moon extends RiseSet implements Planet {
 =======
 =======
 >>>>>>> 5ae0857 Rebased. Corrected moon_day dynamic icons Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added unit tests for eclipses Rebased on moon_distance
+=======
+    private MoonPhase phase = MoonPhase.DEFAULT;
+>>>>>>> f203b2c Finalized modifications at this step
     private Position position = MoonPosition.NULL;
     private Zodiac zodiac = Zodiac.NULL;
 >>>>>>> 48a7069 Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added unit tests for eclipses

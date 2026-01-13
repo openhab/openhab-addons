@@ -53,7 +53,7 @@ public class EclipseCalcTest {
         double midnightJd = DateTimeUtils.midnightDateToJulianDate(calendar);
 
         assertNotNull(moonEclipseCalc);
-        double eclipseJd2 = moonEclipseCalc.calculate(calendar, midnightJd, EclipseKind.TOTAL);
+        double eclipseJd2 = moonEclipseCalc.calculate(midnightJd, EclipseKind.TOTAL);
         assertNotNull(eclipseJd2);
         Calendar eclipseDate = DateTimeUtils.toCalendar(eclipseJd2, UTC, Locale.US);
 
@@ -73,7 +73,7 @@ public class EclipseCalcTest {
         double midnightJd = DateTimeUtils.midnightDateToJulianDate(calendar);
 
         assertNotNull(sunEclipseCalc);
-        double eclipseJd2 = sunEclipseCalc.calculate(calendar, midnightJd, EclipseKind.TOTAL);
+        double eclipseJd2 = sunEclipseCalc.calculate(midnightJd, EclipseKind.TOTAL);
         Calendar eclipseDate = DateTimeUtils.toCalendar(eclipseJd2, UTC, Locale.US);
 
         assertNotNull(eclipseDate);
@@ -92,7 +92,7 @@ public class EclipseCalcTest {
         double midnightJd = DateTimeUtils.midnightDateToJulianDate(calendar);
 
         assertNotNull(sunEclipseCalc);
-        double eclipseJd = sunEclipseCalc.calculate(calendar, midnightJd, EclipseKind.PARTIAL);
+        double eclipseJd = sunEclipseCalc.calculate(midnightJd, EclipseKind.PARTIAL);
         Calendar eclipseDate = DateTimeUtils.toCalendar(eclipseJd, UTC, Locale.US);
 
         assertNotNull(eclipseDate);
@@ -109,7 +109,7 @@ public class EclipseCalcTest {
         double midnightJd = DateTimeUtils.midnightDateToJulianDate(calendar);
 
         assertNotNull(moonEclipseCalc);
-        double eclipseJd = moonEclipseCalc.calculate(calendar, midnightJd, EclipseKind.PARTIAL);
+        double eclipseJd = moonEclipseCalc.calculate(midnightJd, EclipseKind.PARTIAL);
         Calendar eclipseDate = DateTimeUtils.toCalendar(eclipseJd, UTC, Locale.US);
 
         assertNotNull(eclipseDate);
@@ -126,7 +126,7 @@ public class EclipseCalcTest {
         double midnightJd = DateTimeUtils.midnightDateToJulianDate(calendar);
         assertNotNull(calendar);
         assertNotNull(sunEclipseCalc);
-        double eclipseJd = sunEclipseCalc.calculate(calendar, midnightJd, EclipseKind.RING);
+        double eclipseJd = sunEclipseCalc.calculate(midnightJd, EclipseKind.RING);
         assertNotNull(eclipseJd);
         Calendar eclipseDate = DateTimeUtils.toCalendar(eclipseJd, UTC, Locale.US);
 

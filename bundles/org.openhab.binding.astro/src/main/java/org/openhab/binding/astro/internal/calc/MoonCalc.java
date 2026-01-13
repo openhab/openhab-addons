@@ -17,12 +17,15 @@ import static org.openhab.binding.astro.internal.util.MathUtils.*;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 <<<<<<< Upstream, based on main
+<<<<<<< Upstream, based on main
 import java.time.InstantSource;
 =======
 import java.time.Instant;
 import java.time.ZoneId;
 import java.util.Arrays;
 >>>>>>> bb4de3d Starting to work on transition to Instant for MoonPhase
+=======
+>>>>>>> f203b2c Finalized modifications at this step
 import java.util.Calendar;
 import java.util.Locale;
 import java.util.Optional;
@@ -37,8 +40,6 @@ import org.openhab.binding.astro.internal.model.EclipseSet;
 import org.openhab.binding.astro.internal.model.Eclipse;
 >>>>>>> a1c7d2d Start refactoring Eclipse for sun and moon
 import org.openhab.binding.astro.internal.model.Moon;
-import org.openhab.binding.astro.internal.model.MoonPhase;
-import org.openhab.binding.astro.internal.model.MoonPhaseName;
 import org.openhab.binding.astro.internal.model.MoonPosition;
 import org.openhab.binding.astro.internal.model.Range;
 <<<<<<< Upstream, based on main
@@ -112,7 +113,6 @@ public class MoonCalc {
 >>>>>>> 810a1e9 Initial commit for Moon phase revamp
 =======
 public class MoonCalc extends AstroCalc {
-    private static final double SYNODIC_MONTH = 29.530588853;
     private static final double FL = 1.0 - AstroConstants.WGS84_EARTH_FLATTENING;
     private static final EclipseCalc ECLIPSE_CALC = new MoonEclipseCalc();
 <<<<<<< Upstream, based on main
@@ -163,13 +163,17 @@ public class MoonCalc extends AstroCalc {
         moon.setSet(new Range(set, set));
 
 <<<<<<< Upstream, based on main
+<<<<<<< Upstream, based on main
         MoonPhase phase = moon.getPhase();
 <<<<<<< Upstream, based on main
 <<<<<<< Upstream, based on main
 =======
         MoonPhase moonPhase = moon.getPhase();
 >>>>>>> bb4de3d Starting to work on transition to Instant for MoonPhase
+=======
+>>>>>>> f203b2c Finalized modifications at this step
         double julianDateMidnight = DateTimeUtils.midnightDateToJulianDate(calendar);
+<<<<<<< Upstream, based on main
 <<<<<<< Upstream, based on main
         phase.remarkablePhases().forEach(mp -> phase.setPhase(mp,
                 DateTimeUtils.toCalendar(getPhase(julianDateMidnight, mp, true), zone, locale)));
@@ -201,10 +205,12 @@ public class MoonCalc extends AstroCalc {
                     .map(eclipse -> eclipse.withPosition(getMoonPosition(eclipse.when(), latitude, longitude)))));
         }
 =======
+=======
+>>>>>>> f203b2c Finalized modifications at this step
         Eclipse eclipse = moon.getEclipse();
 
         eclipse.getKinds().forEach(eclipseKind -> {
-            double jdate = ECLIPSE_CALC.calculate(calendar, julianDateMidnight, eclipseKind);
+            double jdate = ECLIPSE_CALC.calculate(julianDateMidnight, eclipseKind);
             var moonPosition = getMoonPosition(jdate, latitude, longitude);
             eclipse.set(eclipseKind, jdate, moonPosition.getElevationAsDouble());
         });
@@ -229,8 +235,12 @@ public class MoonCalc extends AstroCalc {
 =======
     public void setPositionalInfo(Calendar calendar, double latitude, double longitude, Moon moon, TimeZone zone) {
         double julianDate = DateTimeUtils.dateToJulianDate(calendar);
+<<<<<<< Upstream, based on main
         setMoonPhase(julianDate, moon, zone.toZoneId());
 >>>>>>> bb4de3d Starting to work on transition to Instant for MoonPhase
+=======
+        moon.setPhase(MoonPhaseCalc.calculate(julianDate, moon.getPhase(), zone.toZoneId()));
+>>>>>>> f203b2c Finalized modifications at this step
 
         var moonPosition = getMoonPosition(julianDate, latitude, longitude);
         moon.setPosition(moonPosition);
@@ -252,6 +262,7 @@ public class MoonCalc extends AstroCalc {
     }
 
     /**
+<<<<<<< Upstream, based on main
      * Calculates the age and the current phase.
      */
     private void setMoonPhase(double julianDate, Moon moon, ZoneId zone) {
@@ -317,6 +328,8 @@ public class MoonCalc extends AstroCalc {
     }
 
     /**
+=======
+>>>>>>> f203b2c Finalized modifications at this step
      * Calculates moonrise and moonset.
      */
     private double[] getRiseSet(Calendar calendar, double latitude, double longitude) {
@@ -406,6 +419,7 @@ public class MoonCalc extends AstroCalc {
         return bd.doubleValue();
     }
 
+<<<<<<< Upstream, based on main
     /**
      * Calculates the moon phase.
      */
@@ -840,6 +854,8 @@ public class MoonCalc extends AstroCalc {
 >>>>>>> 5ae0857 Rebased. Corrected moon_day dynamic icons Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added unit tests for eclipses Rebased on moon_distance
 =======
 >>>>>>> bb4de3d Starting to work on transition to Instant for MoonPhase
+=======
+>>>>>>> f203b2c Finalized modifications at this step
     private double[] calcMoon(double t) {
         double p2 = 6.283185307;
         double arc = 206264.8062;
@@ -938,6 +954,7 @@ public class MoonCalc extends AstroCalc {
 
 <<<<<<< Upstream, based on main
 <<<<<<< Upstream, based on main
+<<<<<<< Upstream, based on main
 =======
 <<<<<<< Upstream, based on main
     private double varO(double k, double t) {
@@ -987,6 +1004,8 @@ public class MoonCalc extends AstroCalc {
         return ret;
     }
 
+=======
+>>>>>>> f203b2c Finalized modifications at this step
     /**
      * Sets the azimuth, elevation and zodiac in the moon object.
      */

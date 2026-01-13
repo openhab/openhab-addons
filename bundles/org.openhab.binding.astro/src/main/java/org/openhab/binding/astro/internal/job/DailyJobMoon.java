@@ -16,9 +16,9 @@ import static org.openhab.binding.astro.internal.AstroBindingConstants.*;
 import static org.openhab.binding.astro.internal.job.Job.scheduleEvent;
 
 import java.time.Instant;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 import java.util.TimeZone;
 
@@ -78,11 +78,9 @@ public final class DailyJobMoon extends AbstractJob {
             }
 
             MoonPhase moonPhase = moon.getPhase();
-            Arrays.stream(MoonPhaseName.values()).filter(phase -> !Double.isNaN(phase.mode)).forEach(phase -> {
-                if (moonPhase.getPhase(phase) instanceof Instant phaseDate) {
-                    scheduleEvent(handler, phaseDate, phase.toString(), EVENT_CHANNEL_ID_MOON_PHASE, false, zone,
-                            locale);
-                }
+            MoonPhaseName.steps().map(phase -> Map.entry(phase, moonPhase.getPhase(phase))).forEach(e -> {
+                scheduleEvent(handler, e.getValue(), e.getKey().toString(), EVENT_CHANNEL_ID_MOON_PHASE, false, zone,
+                        locale);
             });
 
 <<<<<<< Upstream, based on main

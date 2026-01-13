@@ -14,6 +14,7 @@
  */
 package org.openhab.binding.astro.internal.calc;
 
+<<<<<<< Upstream, based on main
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.astro.internal.util.DateTimeUtils;
 
@@ -71,6 +72,8 @@ package org.openhab.binding.astro.internal.calc;
 
 import java.util.Calendar;
 
+=======
+>>>>>>> f203b2c Finalized modifications at this step
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
@@ -106,13 +109,18 @@ public class AstroCalc {
                 + .00000000073 * t * t * t * t;
     }
 
+<<<<<<< Upstream, based on main
     @Deprecated
     protected static double varK(Calendar cal, double tz) {
         return (cal.get(Calendar.YEAR) + (cal.get(Calendar.DAY_OF_YEAR) + tz) / 365 - 2000) * 12.3685;
 >>>>>>> a1c7d2d Start refactoring Eclipse for sun and moon
     }
+=======
+    protected static double varK(double jd, double tz) {
+        // JD du 1er janvier 2000 à 00:00 UTC
+        final double JD_2000_01_01 = 2451544.5;
+>>>>>>> f203b2c Finalized modifications at this step
 
-    protected static double varK(double jd) {
-        return (jd - 2451543.5) / 365.25 * 12.3685;
+        return ((jd + tz - JD_2000_01_01) / 365.0) * 12.3685;
     }
 }

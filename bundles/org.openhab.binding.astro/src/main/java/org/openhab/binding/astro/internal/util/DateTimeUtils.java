@@ -88,7 +88,7 @@ public class DateTimeUtils {
 
     private static final double J1970 = JD_UNIX_EPOCH + 0.5; // 1970-01-01 12:00 UTC (julian solar noon)
     private static final double SECONDS_PER_DAY = 60 * 60 * 24;
-    public static final int JULIAN_CENTURY_DAYS = 36525; // Length of a Julian Century in days
+    public static final int JULIAN_CENTURY_DAYS = 36525;
 
     /**
      * Convert julian date to greenwich mean sidereal time.
@@ -579,6 +579,13 @@ public class DateTimeUtils {
         }
 
         return Instant.ofEpochSecond(epochSeconds, nanos);
+    }
+
+    public static double instantToJulianDay(Instant instant) {
+        double seconds = instant.getEpochSecond();
+        double nanos = instant.getNano() / 1_000_000_000.0;
+
+        return JD_UNIX_EPOCH + (seconds + nanos) / SECONDS_PER_DAY;
     }
 
     public static Instant atMidnightOfFirstMonthDay(Instant instant, TimeZone zone) {
