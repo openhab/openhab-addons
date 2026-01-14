@@ -12,8 +12,9 @@
  */
 package org.openhab.binding.shelly.internal.handler;
 
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -27,32 +28,39 @@ import org.osgi.service.component.annotations.Deactivate;
 
 /***
  * The{@link ShellyThingTable} implements a simple table to allow dispatching incoming events to the proper thing
- * handler
+ * handler.
+ * <p>
+ * <b>Note:</b> This class is a component and is supposed to be a singleton. Therefore, do <b>not</b> construct it
+ * using the construction directly.
  *
  * @author Markus Michels - Initial contribution
  */
 @NonNullByDefault
 @Component(service = ShellyThingTable.class, configurationPolicy = ConfigurationPolicy.OPTIONAL)
 public class ShellyThingTable {
-    private Map<String, ShellyThingInterface> thingTable = new ConcurrentHashMap<>();
+
+    // All access must be guarded by "this"
+    private final Map<String, ShellyThingInterface> table = new HashMap<>();
+
+    // All access must be guarded by "this"
     private @Nullable ShellyBasicDiscoveryService discoveryService;
 
-    public void addThing(String key, ShellyThingInterface thing) {
-        if (thingTable.containsKey(key)) {
-            thingTable.remove(key);
-        }
-        thingTable.put(key, thing);
+    public synchronized @Nullable ShellyThingInterface addThing(String key, ShellyThingInterface thing) {
+        return table.put(key, thing);
     }
 
     public @Nullable ShellyThingInterface findThing(String key) {
-        ShellyThingInterface t = thingTable.get(key);
-        if (t != null) {
-            return t;
+        List<ShellyThingInterface> values;
+        synchronized (this) {
+            ShellyThingInterface result = table.get(key);
+            if (result != null) {
+                return result;
+            }
+            values = List.copyOf(table.values());
         }
-        for (Map.Entry<String, ShellyThingInterface> entry : thingTable.entrySet()) {
-            t = entry.getValue();
-            if (t.checkRepresentation(key)) {
-                return t;
+        for (ShellyThingInterface thingInterface : values) {
+            if (thingInterface.checkRepresentation(key)) {
+                return thingInterface;
             }
         }
         return null;
@@ -66,52 +74,67 @@ public class ShellyThingTable {
         return t;
     }
 
-    public void removeThing(String key) {
-        if (thingTable.containsKey(key)) {
-            thingTable.remove(key);
-        }
+    public synchronized @Nullable ShellyThingInterface removeThing(String key) {
+        return table.remove(key);
     }
 
-    public Map<String, ShellyThingInterface> getTable() {
-        return thingTable;
+    public synchronized Map<String, ShellyThingInterface> getAll() {
+        return Map.copyOf(table);
     }
 
-    public int size() {
-        return thingTable.size();
+    public synchronized int size() {
+        return table.size();
     }
 
     public void startDiscoveryService(BundleContext bundleContext) {
-        if (discoveryService == null) {
-            ShellyBasicDiscoveryService discoveryService = this.discoveryService = new ShellyBasicDiscoveryService(
-                    bundleContext, this);
-            discoveryService.registerDeviceDiscoveryService();
+        ShellyBasicDiscoveryService discoveryService;
+        synchronized (this) {
+            discoveryService = this.discoveryService;
+            if (discoveryService != null) {
+                return;
+            }
+            this.discoveryService = discoveryService = new ShellyBasicDiscoveryService(bundleContext, this);
         }
+        discoveryService.registerDeviceDiscoveryService();
     }
 
     public void startScan() {
-        for (Map.Entry<String, ShellyThingInterface> thing : thingTable.entrySet()) {
-            (thing.getValue()).startScan();
+        List<ShellyThingInterface> values;
+        synchronized (this) {
+            values = List.copyOf(table.values());
+        }
+        for (ShellyThingInterface thingInterface : values) {
+            thingInterface.startScan();
         }
     }
 
     public void stopDiscoveryService() {
-        ShellyBasicDiscoveryService discoveryService = this.discoveryService;
+        ShellyBasicDiscoveryService discoveryService;
+        synchronized (this) {
+            discoveryService = this.discoveryService;
+            this.discoveryService = null;
+        }
         if (discoveryService != null) {
             discoveryService.unregisterDeviceDiscoveryService();
-            this.discoveryService = null;
         }
     }
 
     public void discoveredResult(ThingTypeUID uid, String model, String serviceName, String address,
             Map<String, Object> properties) {
-        ShellyBasicDiscoveryService discoveryService = this.discoveryService;
+        ShellyBasicDiscoveryService discoveryService;
+        synchronized (this) {
+            discoveryService = this.discoveryService;
+        }
         if (discoveryService != null) {
             discoveryService.discoveredResult(uid, model, serviceName, address, properties);
         }
     }
 
     public void discoveredResult(DiscoveryResult result) {
-        ShellyBasicDiscoveryService discoveryService = this.discoveryService;
+        ShellyBasicDiscoveryService discoveryService;
+        synchronized (this) {
+            discoveryService = this.discoveryService;
+        }
         if (discoveryService != null) {
             discoveryService.discoveredResult(result);
         }

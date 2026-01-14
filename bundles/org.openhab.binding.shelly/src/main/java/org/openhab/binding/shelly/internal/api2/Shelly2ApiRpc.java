@@ -138,10 +138,11 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
      * @param config Thing Configuration
      * @param httpClient HTTP Client to be passed to ShellyHttpClient
      */
-    public Shelly2ApiRpc(String thingName, ShellyThingConfiguration config, HttpClient httpClient) {
+    public Shelly2ApiRpc(String thingName, ShellyThingTable thingTable, ShellyThingConfiguration config,
+            HttpClient httpClient) {
         super(thingName, config, httpClient);
         this.thingName = thingName;
-        this.thingTable = new ShellyThingTable(); // create empty table;
+        this.thingTable = thingTable;
         this.discovery = true;
     }
 
