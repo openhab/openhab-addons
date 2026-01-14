@@ -10,6 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
+
 package org.openhab.binding.ddwrt.internal.api;
 
 import java.io.ByteArrayOutputStream;
@@ -26,12 +27,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link SshRunner} executing command in a ssh session.
+ * Executes commands on an existing authenticated {@link ClientSession}.
  *
+ * Important: This class does NOT own the session lifecycle. It opens and closes only per-command channels.
+ * Session lifecycle is owned by {@link SshAuthSession}.
+ * 
  * @author Lee Ballard - Initial contribution
  */
 @NonNullByDefault
-public class SshRunner implements AutoCloseable {
+public class SshRunner {
+
     private final ClientSession session;
     private final Duration defaultTimeout;
 
@@ -63,10 +68,5 @@ public class SshRunner implements AutoCloseable {
 
     public String exec(String command) throws IOException {
         return exec(command, defaultTimeout);
-    }
-
-    @Override
-    public void close() throws Exception {
-        session.close();
     }
 }

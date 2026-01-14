@@ -19,7 +19,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -61,8 +60,9 @@ public class DDWRTNetwork {
             devCfg.refreshInterval = netCfg.refreshInterval;
 
             // Parse hostnames from config
+
             final List<String> hosts = Arrays.stream(netCfg.hostnames.split(",")).map(String::trim)
-                    .filter(s -> !s.isEmpty()).collect(Collectors.toList());
+                    .filter(s -> !s.isEmpty()).toList();
 
             hosts.forEach(host -> {
                 try {
