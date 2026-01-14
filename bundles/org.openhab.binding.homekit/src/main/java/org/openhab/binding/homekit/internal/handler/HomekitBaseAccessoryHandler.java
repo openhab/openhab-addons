@@ -57,6 +57,7 @@ import org.openhab.binding.homekit.internal.persistence.HomekitKeyStore;
 import org.openhab.binding.homekit.internal.persistence.HomekitTypeProvider;
 import org.openhab.binding.homekit.internal.session.EventListener;
 import org.openhab.binding.homekit.internal.transport.IpTransport;
+import org.openhab.core.config.core.Configuration;
 import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.library.types.RawType;
 import org.openhab.core.thing.Bridge;
@@ -878,32 +879,53 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
      * Refreshes the snapshot channel image if the Channel exists and it is linked to an Item. Executes an
      * HTTP POST request to fetch the IP camera snapshot image for this accessory, according to the Apple
      * specification chapter '11.5 Image Snapshot'. The requested image size is taken from the channel
-     * properties CONFIG_SNAPSHOT_WIDTH and CONFIG_SNAPSHOT_HEIGHT, defaulting to 640x360 if not provided.
-     * The request body is a JSON SnapshotImageRequest object, and the response body results are JPEGs.
-     * If the image is successfully fetched, the snapshot channel state is updated with a RawType. And if an
-     * error occurs it is updated to UnDefType.UNDEF / UnDefType.NULL accordingly.
+     * configuration parameters CONFIG_SNAPSHOT_WIDTH and CONFIG_SNAPSHOT_HEIGHT, defaulting to 640x360 if
+     * not provided. The request body is a JSON SnapshotImageRequest object, and the response body results
+     * are JPEGs. If the image is successfully fetched, the snapshot channel state is updated with a RawType.
+     * And if an error occurs it is updated to UnDefType.UNDEF / UnDefType.NULL accordingly.
      */
     protected void refreshSnapshot() {
         if (thing.getChannel(CHANNEL_SNAPSHOT) instanceof Channel channel && isLinked(channel.getUID())
                 && getAccessoryId() instanceof Long aid) {
             try {
-                Map.Entry<Long, Long> requestSize = Map.entry(
-                        Long.valueOf(channel.getProperties().getOrDefault(CONFIG_SNAPSHOT_WIDTH, "640")),
-                        Long.valueOf(channel.getProperties().getOrDefault(CONFIG_SNAPSHOT_HEIGHT, "360")));
-                ImageResourceDescription requestDescription = new ImageResourceDescription(aid, requestSize);
-                byte[] request = GSON.toJson(requestDescription).getBytes(StandardCharsets.UTF_8);
-                byte[] response = getIpTransport().post(ENDPOINT_RESOURCE, CONTENT_TYPE_HAP, request);
-                if (response.length > 0) {
-                    updateState(channel.getUID(), new RawType(response, CONTENT_TYPE_JPEG));
+                Configuration conf = channel.getConfiguration();
+                Map.Entry<Long, Long> imageSize = Map.entry( //
+                        getConfigurationLong(conf, CONFIG_SNAPSHOT_WIDTH, 640L),
+                        getConfigurationLong(conf, CONFIG_SNAPSHOT_HEIGHT, 360L));
+                ImageResourceDescription request = new ImageResourceDescription(aid, imageSize);
+                byte[] requestBytes = GSON.toJson(request).getBytes(StandardCharsets.UTF_8);
+                byte[] responseBytes = getIpTransport().post(ENDPOINT_RESOURCE, CONTENT_TYPE_HAP, requestBytes);
+                if (responseBytes.length > 0) {
+                    updateState(channel.getUID(), new RawType(responseBytes, CONTENT_TYPE_JPEG));
                 } else {
                     logger.warn("{} snapshot is empty", thing.getUID());
                     updateState(channel.getUID(), UnDefType.NULL);
                 }
-            } catch (IllegalStateException | IllegalAccessException | IOException | InterruptedException
-                    | ExecutionException | TimeoutException e) {
+            } catch (NumberFormatException | IllegalStateException | IllegalAccessException | IOException
+                    | InterruptedException | ExecutionException | TimeoutException e) {
                 logger.warn("{} error '{}' fetching snapshot", thing.getUID(), e.getMessage(), e);
                 updateState(channel.getUID(), UnDefType.UNDEF);
             }
         }
+    }
+
+    /**
+     * Get a long configuration parameter from a (channel) configuration.
+     * 
+     * @param cfg the configuration
+     * @param key the configuration key
+     * @param def the default value
+     * 
+     * @return the long value
+     * @throws NumberFormatException if the value cannot be parsed as a long
+     */
+    private Long getConfigurationLong(Configuration cfg, String key, long def) throws NumberFormatException {
+        Object object = cfg.get(key);
+        if (object instanceof Number number) {
+            return number.longValue();
+        } else if (object != null) {
+            return Long.parseLong(object.toString());
+        }
+        return def;
     }
 }
