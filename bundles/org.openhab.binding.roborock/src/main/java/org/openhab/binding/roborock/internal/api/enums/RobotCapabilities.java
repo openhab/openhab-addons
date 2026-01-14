@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.roborock.internal.api.enums;
 
+import static org.openhab.binding.roborock.internal.RoborockBindingConstants.*;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.type.ChannelTypeUID;
 
@@ -38,7 +40,8 @@ public enum RobotCapabilities {
     FW_FEATURES("", "info#fw-features", "roborock:fw-features", COMMAND_GET_FW_FEATURES),
     ROOM_MAPPING("", "info#room-mapping", "roborock:room-mapping", COMMAND_GET_ROOM_MAPPING),
     MULTI_MAP_LIST("", "info#multi-maps-list", "roborock:multi-maps-list", COMMAND_GET_MULTI_MAP_LIST),
-    CUSTOMIZE_CLEAN_MODE("", "info#customize-clean-mode", "roborock:customize-clean-mode", COMMAND_GET_CUSTOMIZE_CLEAN_MODE),
+    CUSTOMIZE_CLEAN_MODE("", "info#customize-clean-mode", "roborock:customize-clean-mode",
+            COMMAND_GET_CUSTOMIZE_CLEAN_MODE),
     SEGMENT_CLEAN("", "actions#segment", "roborock:segment", ""),
     COLLECT_DUST("auto_dust_collection", "actions#collect-dust", "roborock:collect-dust", ""),
     CLEAN_MOP_START("dry_status", "actions#clean-mop-start", "roborock:clean-mop-start", ""),
