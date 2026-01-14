@@ -111,7 +111,8 @@ public class ShellyBasicDiscoveryService extends AbstractDiscoveryService {
     }
 
     public static @Nullable DiscoveryResult createResult(boolean gen2, String hostname, String ipAddress,
-            ShellyBindingConfiguration bindingConfig, HttpClient httpClient, ShellyTranslationProvider messages) {
+            ShellyBindingConfiguration bindingConfig, HttpClient httpClient, ShellyTranslationProvider messages,
+            ShellyThingTable thingTable) {
         Logger logger = LoggerFactory.getLogger(ShellyBasicDiscoveryService.class);
         ThingUID thingUID = null;
         ShellyDeviceProfile profile;
@@ -128,7 +129,8 @@ public class ShellyBasicDiscoveryService extends AbstractDiscoveryService {
 
         try {
             ShellyThingConfiguration config = fillConfig(bindingConfig, ipAddress);
-            api = gen2 ? new Shelly2ApiRpc(name, config, httpClient) : new Shelly1HttpApi(name, config, httpClient);
+            api = gen2 ? new Shelly2ApiRpc(name, thingTable, config, httpClient)
+                    : new Shelly1HttpApi(name, config, httpClient);
             api.initialize();
             devInfo = api.getDeviceInfo();
             mac = getString(devInfo.mac);
