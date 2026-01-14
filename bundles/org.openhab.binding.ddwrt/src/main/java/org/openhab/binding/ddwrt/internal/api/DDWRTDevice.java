@@ -10,12 +10,12 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
+
 package org.openhab.binding.ddwrt.internal.api;
 
 import java.time.Duration;
 import java.util.Objects;
 
-import org.apache.sshd.client.session.ClientSession;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.ddwrt.internal.DDWRTDeviceConfiguration;
@@ -47,10 +47,10 @@ public class DDWRTDevice {
     private String hostname = "";
     private String model = "";
     private String firmware = "";
+    private String welcomeBanner = "";
 
-    // Optional: keep a session handle (depends on your SshRunner API). If used, caller must manage lifecycle.
-    private @Nullable ClientSession session;
-    private @Nullable SshRunner runner;
+    // Persistent SSH session owned by this device
+    private @Nullable SshAuthSession authSession;
 
     // // ---- autonomous refresh state ----
     // private volatile long intervalSeconds = 0;
@@ -85,18 +85,24 @@ public class DDWRTDevice {
     public static DDWRTDevice upsertDeviceInNetwork(DDWRTNetwork net, DDWRTDeviceConfiguration cfg) {
         DDWRTDevice d = new DDWRTDevice(cfg);
 
-        try (SshRunner ssh = SshClientManager.getInstance().openRunner(Objects.requireNonNull(cfg.hostname), cfg.port,
-                Objects.requireNonNull(cfg.user), cfg.password, null, null,
+        try (SshAuthSession ssh = SshClientManager.getInstance().openAuthSession(Objects.requireNonNull(cfg.hostname),
+                cfg.port, Objects.requireNonNull(cfg.user), cfg.password, null, null,
                 Objects.requireNonNull(Duration.ofSeconds(2)))) {
+
+            // Capture banner for later inspection
+            String banner = safeTrim(ssh.getWelcomeBanner());
+            if (!banner.isEmpty()) {
+                d.welcomeBanner = banner;
+                logger.debug("Welcome banner:\n{}", banner);
+            }
+
+            SshRunner runner = ssh.createRunner();
+
             // Example DD-WRT commands (adjust to environment as needed)
-            // Primary MAC address
-            String mac = safeTrim(ssh.exec("nvram get lan_hwaddr"));
-            // Hostname (WAN hostname or router name)
-            String hostname = safeTrim(ssh.exec("hostname"));
-            // Model/board or CPU info
-            String model = safeTrim(ssh.exec(" grep -i 'Board:' /tmp/loginprompt | cut -d' ' -f 2-"));
-            // Firmware / build version
-            String fw = safeTrim(ssh.exec("grep -i DD-WRT /tmp/loginprompt | cut -d' ' -f-2"));
+            String mac = safeTrim(runner.exec("nvram get lan_hwaddr"));
+            String hostname = safeTrim(runner.exec("hostname"));
+            String model = safeTrim(runner.exec("grep -i 'Board:' /tmp/loginprompt | cut -d' ' -f 2-"));
+            String fw = safeTrim(runner.exec("grep -i DD-WRT /tmp/loginprompt | cut -d' ' -f-2"));
 
             if (!hostname.isEmpty()) {
                 d.hostname = hostname;
@@ -109,13 +115,15 @@ public class DDWRTDevice {
             }
             if (!mac.isEmpty()) {
                 d.mac = mac.toLowerCase();
+                // KEEP the session
+                d.attachSession(ssh);
                 net.upsertDeviceByMac(d.mac, d);
             }
 
-            // If you want to persist a session, attach it here (not recommended for long-lived sessions):
-            // d.attachSession(ssh); // WARNING: using try-with-resources will close ssh at the end of the block.
+            // NOTE: if you want to KEEP the session, don't use try-with-resources here; call d.attachSession(ssh).
+            // In discovery we usually *don't* persist; device handler would.
+
         } catch (Exception e) {
-            // Device is still returned; caller can retry via refreshBasic/refreshDeep
             logger.warn("Failed to initialize device at host {}: {}", cfg.hostname, e.getMessage(), e);
         }
 
@@ -331,17 +339,24 @@ public class DDWRTDevice {
      * 
      */
 
-    // -------------------- Session management (optional) --------------------
-
-    /** Attach a persistent session to this device (caller manages lifecycle). */
-    public void attachSession(SshRunner ssh) {
+    // -------------------- Session management --------------------
+    /** Attach a persistent authenticated session to this device (device owns lifecycle). */
+    public void attachSession(SshAuthSession ssh) {
+        closeSessionQuietly();
+        this.authSession = ssh;
     }
 
-    /** Close and clear any attached session. */
     public void closeSessionQuietly() {
+        SshAuthSession s = this.authSession;
+        this.authSession = null;
+        if (s != null) {
+            try {
+                s.close();
+            } catch (Exception ignore) {
+                // no-op
+            }
+        }
     }
-
-    // -------------------- Utility --------------------
 
     private static String safeTrim(@Nullable String s) {
         return s == null ? "" : s.trim();
@@ -369,16 +384,8 @@ public class DDWRTDevice {
         return firmware;
     }
 
-    public void setHostname(String hostname) {
-        this.hostname = hostname;
-    }
-
-    public void setModel(String model) {
-        this.model = model;
-    }
-
-    public void setFirmware(String firmware) {
-        this.firmware = firmware;
+    public String getWelcomeBanner() {
+        return welcomeBanner;
     }
 
     public void refresh() {
