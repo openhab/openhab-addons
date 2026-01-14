@@ -800,7 +800,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     @Override
     public void onError(Throwable cause) {
         String message = "WebSocket error: " + getString(cause.getMessage());
-        if (cause instanceof AsynchronousCloseException || message.equals("Shutdown")) {
+        if (cause instanceof AsynchronousCloseException || "Shutdown".equals(message)) {
             // could happen on shutdown, ignore
         } else {
             logger.debug("{}: {}", thingName, message, cause);
