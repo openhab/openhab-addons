@@ -13,6 +13,9 @@
 package org.openhab.binding.astro.internal.model;
 
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.stream.Stream;
 
 import javax.measure.quantity.Angle;
 import javax.measure.quantity.Dimensionless;
@@ -31,10 +34,8 @@ import org.openhab.core.library.unit.Units;
  */
 @NonNullByDefault
 public class MoonPhase {
-    private @Nullable Calendar firstQuarter;
-    private @Nullable Calendar full;
-    private @Nullable Calendar thirdQuarter;
-    private @Nullable Calendar newCalendar;
+    private final Map<MoonPhaseName, @Nullable Calendar> phases = new HashMap<>(MoonPhaseName.values().length);
+
     private double age;
     private double illumination;
     private double agePercent;
@@ -42,19 +43,19 @@ public class MoonPhase {
 
     private @Nullable MoonPhaseName name;
 
+    public MoonPhase() {
+        phases.put(MoonPhaseName.FIRST_QUARTER, null);
+        phases.put(MoonPhaseName.FULL, null);
+        phases.put(MoonPhaseName.THIRD_QUARTER, null);
+        phases.put(MoonPhaseName.NEW, null);
+    }
+
     /**
      * Returns the date at which the moon is in the first quarter.
      */
     @Nullable
     public Calendar getFirstQuarter() {
-        return firstQuarter;
-    }
-
-    /**
-     * Sets the date at which the moon is in the first quarter.
-     */
-    public void setFirstQuarter(@Nullable Calendar firstQuarter) {
-        this.firstQuarter = firstQuarter;
+        return getPhaseDate(MoonPhaseName.FIRST_QUARTER);
     }
 
     /**
@@ -62,14 +63,7 @@ public class MoonPhase {
      */
     @Nullable
     public Calendar getFull() {
-        return full;
-    }
-
-    /**
-     * Sets the date of the full moon.
-     */
-    public void setFull(@Nullable Calendar full) {
-        this.full = full;
+        return getPhaseDate(MoonPhaseName.FULL);
     }
 
     /**
@@ -77,14 +71,7 @@ public class MoonPhase {
      */
     @Nullable
     public Calendar getThirdQuarter() {
-        return thirdQuarter;
-    }
-
-    /**
-     * Sets the date at which the moon is in the third quarter.
-     */
-    public void setThirdQuarter(@Nullable Calendar thirdQuarter) {
-        this.thirdQuarter = thirdQuarter;
+        return getPhaseDate(MoonPhaseName.THIRD_QUARTER);
     }
 
     /**
@@ -92,14 +79,26 @@ public class MoonPhase {
      */
     @Nullable
     public Calendar getNew() {
-        return newCalendar;
+        return getPhaseDate(MoonPhaseName.NEW);
     }
 
-    /**
-     * Sets the date of the new moon.
-     */
-    public void setNew(@Nullable Calendar newCalendar) {
-        this.newCalendar = newCalendar;
+    @Nullable
+    public Calendar getPhaseDate(MoonPhaseName moonPhase) {
+        if (!phases.containsKey(moonPhase)) {
+            throw new IllegalArgumentException("MoonPhase does not handle %s".formatted(moonPhase.toString()));
+        }
+        return phases.get(moonPhase);
+    }
+
+    public void setPhase(MoonPhaseName moonPhase, @Nullable Calendar calendar) {
+        if (!phases.containsKey(moonPhase)) {
+            throw new IllegalArgumentException("MoonPhase does not handle %s".formatted(moonPhase.toString()));
+        }
+        phases.put(moonPhase, calendar);
+    }
+
+    public Stream<MoonPhaseName> remarkablePhases() {
+        return phases.keySet().stream();
     }
 
     /**

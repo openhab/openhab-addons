@@ -18,6 +18,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Calendar;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.Set;
 import java.util.TimeZone;
 
@@ -76,14 +77,8 @@ public class MoonCalc {
         moon.setSet(new Range(set, set));
 
         MoonPhase phase = moon.getPhase();
-        phase.setNew(DateTimeUtils.toCalendar(getPhase(calendar, julianDateMidnight, MoonPhaseName.NEW, true), zone,
-                locale));
-        phase.setFirstQuarter(DateTimeUtils
-                .toCalendar(getPhase(calendar, julianDateMidnight, MoonPhaseName.FIRST_QUARTER, true), zone, locale));
-        phase.setFull(DateTimeUtils.toCalendar(getPhase(calendar, julianDateMidnight, MoonPhaseName.FULL, true), zone,
-                locale));
-        phase.setThirdQuarter(DateTimeUtils
-                .toCalendar(getPhase(calendar, julianDateMidnight, MoonPhaseName.THIRD_QUARTER, true), zone, locale));
+        phase.remarkablePhases().forEach(mp -> phase.setPhase(mp,
+                DateTimeUtils.toCalendar(getPhase(calendar, julianDateMidnight, mp, true), zone, locale)));
 
         Eclipse eclipse = moon.getEclipse();
         eclipse.getKinds().forEach(eclipseKind -> {
@@ -138,20 +133,10 @@ public class MoonCalc {
         phase.setAgeDegree(3.6 * agePercent);
         double illumination = getIllumination(julianDate);
         phase.setIllumination(illumination);
-        boolean isWaxing = age < (29.530588853 / 2);
-        if (DateTimeUtils.isSameDay(calendar, phase.getNew())) {
-            phase.setName(MoonPhaseName.NEW);
-        } else if (DateTimeUtils.isSameDay(calendar, phase.getFirstQuarter())) {
-            phase.setName(MoonPhaseName.FIRST_QUARTER);
-        } else if (DateTimeUtils.isSameDay(calendar, phase.getThirdQuarter())) {
-            phase.setName(MoonPhaseName.THIRD_QUARTER);
-        } else if (DateTimeUtils.isSameDay(calendar, phase.getFull())) {
-            phase.setName(MoonPhaseName.FULL);
-        } else if (illumination >= 0 && illumination < 50) {
-            phase.setName(isWaxing ? MoonPhaseName.WAXING_CRESCENT : MoonPhaseName.WANING_CRESCENT);
-        } else if (illumination >= 50 && illumination < 100) {
-            phase.setName(isWaxing ? MoonPhaseName.WAXING_GIBBOUS : MoonPhaseName.WANING_GIBBOUS);
-        }
+
+        Optional<MoonPhaseName> remarkablePhase = phase.remarkablePhases()
+                .filter(p -> DateTimeUtils.isSameDay(calendar, phase.getPhaseDate(p))).findFirst();
+        phase.setName(remarkablePhase.orElse(MoonPhaseName.fromAgePercent(agePercent / 100)));
     }
 
     /**
