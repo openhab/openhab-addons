@@ -38,10 +38,7 @@ This binding has its own IconProvider and makes available the following list of 
 | oh:astro:moon_phase         | Yes     | ![Moon Phase](doc/images/moon_day.svg)            |
 | oh:astro:season             | Yes     | ![Season](doc/images/season.svg)                  |
 | oh:astro:sun_eclipse        | Yes     | ![Sun Eclipse](doc/images/sun_eclipse.svg)        |
-<<<<<<< Upstream, based on main
-=======
 | oh:astro:zodiac             | Yes     | ![Zodiac](doc/images/zodiac.svg)                  |
->>>>>>> e06bce3 Adds Moon Day and Phase icon sets
 
 ## Channels
 

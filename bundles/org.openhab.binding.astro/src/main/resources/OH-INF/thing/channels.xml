@@ -462,9 +462,9 @@
 	</channel-type>
 
 	<channel-type id="age">
-		<item-type>Number:Time</item-type>
+		<item-type unitHint="d">Number:Time</item-type>
 		<label>Moon Age</label>
-		<description>The age of the moon in days</description>
+		<description>The age of the moon</description>
 		<category>oh:astro:moon_day</category>
 		<tags>
 			<tag>Calculation</tag>
