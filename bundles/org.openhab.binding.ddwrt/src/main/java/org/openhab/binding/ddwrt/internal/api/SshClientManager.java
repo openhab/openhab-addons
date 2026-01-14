@@ -21,6 +21,7 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.apache.sshd.client.SshClient;
 import org.apache.sshd.client.auth.keyboard.UserInteraction;
@@ -73,8 +74,42 @@ public class SshClientManager {
         return home != null ? Paths.get(home, ".ssh") : null;
     }
 
-    // :TODO: change this to openAuthSession()
-    public SshRunner openRunner(String host, int port, String user, @Nullable String password,
+    // Disable NonNullByDefault on this class to match Apache SSHD’s UserInteraction
+    @NonNullByDefault({})
+    private static final class BannerCapturingUserInteraction implements UserInteraction {
+        private final Logger logger = LoggerFactory.getLogger(BannerCapturingUserInteraction.class);
+        private final AtomicReference<@Nullable String> bannerRef;
+
+        private BannerCapturingUserInteraction(AtomicReference<@Nullable String> bannerRef) {
+            this.bannerRef = bannerRef;
+        }
+
+        @Override
+        public boolean isInteractionAllowed(ClientSession session) {
+            return true;
+        }
+
+        @Override
+        public void welcome(ClientSession session, String banner, String lang) {
+            logger.debug("{} Banner:\n{}", session.getRemoteAddress(), banner);
+            if (banner != null && !banner.isBlank()) {
+                bannerRef.set(banner);
+            }
+        }
+
+        @Override
+        public String[] interactive(ClientSession session, String name, String instruction, String lang,
+                String[] prompts, boolean[] echo) {
+            return new String[0];
+        }
+
+        @Override
+        public String getUpdatedPassword(ClientSession session, String prompt, String lang) {
+            return "";
+        }
+    }
+
+    public SshAuthSession openAuthSession(String host, int port, String user, @Nullable String password,
             @Nullable String privateKeyRef, @Nullable String pinnedFingerprint, Duration defaultTimeout)
             throws IOException {
 
@@ -84,34 +119,10 @@ public class SshClientManager {
         cf.verify();
         ClientSession cs = cf.getSession();
 
+        AtomicReference<@Nullable String> bannerRef = new AtomicReference<>(null);
+
         // :TODO: ballle98/openhab-addons#14 Add support for openwrt and tomato
-        // :TODO: save the welcome banner into the device to use for device type
-        cs.setUserInteraction(new UserInteraction() {
-            @Override
-            public boolean isInteractionAllowed(ClientSession session) {
-                return true;
-            }
-
-            @Override
-            public void welcome(ClientSession session, String banner, String lang) {
-                System.out.println("=== USERAUTH BANNER ===");
-                System.out.println("lang=" + lang);
-                System.out.println(banner); // banner text from server
-                System.out.println("========================");
-            }
-
-            @Override
-            public String[] interactive(ClientSession session, String name, String instruction, String lang,
-                    String[] prompts, boolean[] echo) {
-                // Not used here
-                return new String[0];
-            }
-
-            @Override
-            public String getUpdatedPassword(ClientSession session, String prompt, String lang) {
-                return null;
-            }
-        });
+        cs.setUserInteraction(new BannerCapturingUserInteraction(bannerRef));
 
         if (password != null && !password.isBlank()) {
             cs.addPasswordIdentity(password);
@@ -160,6 +171,8 @@ public class SshClientManager {
         logger.debug("Connected to the server {}:{} as {}", host, port, user);
         logger.debug("Server Ident {}", cs.getServerVersion());
 
-        return new SshRunner(cs, defaultTimeout);
+        @Nullable
+        String banner = bannerRef.get();
+        return new SshAuthSession(cs, defaultTimeout, (banner == null || banner.isBlank()) ? null : banner);
     }
 }
