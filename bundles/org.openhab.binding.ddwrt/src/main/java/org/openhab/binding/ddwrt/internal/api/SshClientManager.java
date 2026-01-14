@@ -29,6 +29,7 @@ import org.apache.sshd.client.future.ConnectFuture;
 import org.apache.sshd.client.keyverifier.AcceptAllServerKeyVerifier;
 import org.apache.sshd.client.session.ClientSession;
 import org.apache.sshd.common.config.keys.FilePasswordProvider;
+import org.apache.sshd.common.future.CancelOption;
 import org.apache.sshd.common.keyprovider.FileKeyPairProvider;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -116,7 +117,7 @@ public class SshClientManager {
         File ohPrivateKeyDir = new File(ohPrivateKeyDirString);
 
         ConnectFuture cf = client.connect(user, host, port);
-        cf.verify();
+        cf.verify(Duration.ofMillis(1000), CancelOption.CANCEL_ON_TIMEOUT);
         ClientSession cs = cf.getSession();
 
         AtomicReference<@Nullable String> bannerRef = new AtomicReference<>(null);
@@ -166,7 +167,7 @@ public class SshClientManager {
             }
         }
 
-        cs.auth().verify();
+        cs.auth().verify(Duration.ofMillis(1000), CancelOption.CANCEL_ON_TIMEOUT);
 
         logger.debug("Connected to the server {}:{} as {}", host, port, user);
         logger.debug("Server Ident {}", cs.getServerVersion());
