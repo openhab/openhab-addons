@@ -56,6 +56,9 @@ class TestHostnameRegex {
     void invalidHostnamesShouldNotMatch() {
         String[] invalidHosts = {
                 // @formatter:off
+                ".local", // missing name prefix  
+                "foobar._hap._tcp", // missing .local suffix  
+                "foobar:1234", // missing .local suffix  
                 "foobar.local:123456", // port too large
                 "foobar(2).local", // parentheses not allowed
                 "foo bar.local", // spaces not allowed
