@@ -14,6 +14,7 @@ package org.openhab.binding.astro.internal;
 
 import static org.openhab.binding.astro.internal.AstroBindingConstants.BINDING_ID;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -105,7 +106,7 @@ public class AstroIconProvider implements IconProvider {
                 case ZODIAC_SET -> ZodiacSign.valueOf(state).name();
                 case SUN_ECLIPSE_SET -> EclipseKind.valueOf(state).name();
                 case MOON_PHASE_SET -> {
-                    yield Integer.toString(MoonPhaseName.valueOf(state).ageDays);
+                    yield Integer.toString(MoonPhaseName.valueOf(state).getAgeDays());
                 }
                 case MOON_DAY_SET -> {
                     try {
@@ -128,12 +129,12 @@ public class AstroIconProvider implements IconProvider {
     }
 
     private @Nullable InputStream getResource(String iconName) {
-        if (bundle.getEntry(iconName.toLowerCase(Locale.ROOT)) instanceof URL iconResource) {
-            try {
-                return iconResource.openStream();
-            } catch (IOException e) {
-                logger.warn("Unable to load resource '{}': {}", iconResource.getPath(), e.getMessage());
-            }
+        URL iconResource = bundle.getEntry(iconName.toLowerCase(Locale.ROOT));
+        try (InputStream stream = iconResource.openStream()) {
+            byte[] icon = stream.readAllBytes();
+            return new ByteArrayInputStream(icon);
+        } catch (IOException e) {
+            logger.warn("Unable to load resource '{}': {}", iconResource.getPath(), e.getMessage());
         }
         return null;
     }

@@ -31,7 +31,6 @@ import org.openhab.binding.astro.internal.model.MoonPhase;
 import org.openhab.binding.astro.internal.model.MoonPhaseName;
 import org.openhab.binding.astro.internal.model.Position;
 import org.openhab.binding.astro.internal.model.Range;
-import org.openhab.binding.astro.internal.util.AstroConstants;
 import org.openhab.binding.astro.internal.util.DateTimeUtils;
 
 /**
@@ -77,14 +76,14 @@ public class MoonCalc {
         moon.setSet(new Range(set, set));
 
         MoonPhase phase = moon.getPhase();
-        phase.setNew(
-                DateTimeUtils.toCalendar(getNextPhase(calendar, julianDateMidnight, MoonPhaseName.NEW), zone, locale));
+        phase.setNew(DateTimeUtils.toCalendar(getPhase(calendar, julianDateMidnight, MoonPhaseName.NEW, true), zone,
+                locale));
         phase.setFirstQuarter(DateTimeUtils
-                .toCalendar(getNextPhase(calendar, julianDateMidnight, MoonPhaseName.FIRST_QUARTER), zone, locale));
-        phase.setFull(
-                DateTimeUtils.toCalendar(getNextPhase(calendar, julianDateMidnight, MoonPhaseName.FULL), zone, locale));
+                .toCalendar(getPhase(calendar, julianDateMidnight, MoonPhaseName.FIRST_QUARTER, true), zone, locale));
+        phase.setFull(DateTimeUtils.toCalendar(getPhase(calendar, julianDateMidnight, MoonPhaseName.FULL, true), zone,
+                locale));
         phase.setThirdQuarter(DateTimeUtils
-                .toCalendar(getNextPhase(calendar, julianDateMidnight, MoonPhaseName.THIRD_QUARTER), zone, locale));
+                .toCalendar(getPhase(calendar, julianDateMidnight, MoonPhaseName.THIRD_QUARTER, true), zone, locale));
 
         Eclipse eclipse = moon.getEclipse();
         eclipse.getKinds().forEach(eclipseKind -> {
@@ -119,7 +118,7 @@ public class MoonCalc {
     private void setMoonPhase(Calendar calendar, Moon moon, TimeZone zone, Locale locale) {
         MoonPhase phase = moon.getPhase();
         double julianDate = DateTimeUtils.dateToJulianDate(calendar);
-        double parentNewMoon = getNextPhase(calendar, julianDate, MoonPhaseName.NEW) - AstroConstants.SYNODIC_MONTH;
+        double parentNewMoon = getPhase(calendar, julianDate, MoonPhaseName.NEW, false);
         double age = Math.abs(parentNewMoon - julianDate);
         Calendar parentNewMoonCal = DateTimeUtils.toCalendar(parentNewMoon, zone, locale);
         if (parentNewMoonCal == null) {
@@ -250,7 +249,7 @@ public class MoonCalc {
      * Calculates the moon phase.
      */
     private double calcMoonPhase(double k, MoonPhaseName phase) {
-        double kMod = Math.floor(k) + phase.mode;
+        double kMod = Math.floor(k) + phase.cycleProgressPercentage;
         double t = kMod / 1236.85;
         double e = varE(t);
         double m = varM(kMod, t);
@@ -389,19 +388,16 @@ public class MoonCalc {
     }
 
     /**
-     * Calculates the next moon phase.
+     * Searches the next moon phase in a given direction
      */
-    private double getNextPhase(Calendar cal, double midnightJd, MoonPhaseName phase) {
-        if (Double.isNaN(phase.mode)) {
-            throw new IllegalArgumentException("calcMoonPhase called for unhandled phase: %s".formatted(phase.name()));
-        }
+    private double getPhase(Calendar cal, double jd, MoonPhaseName phase, boolean forward) {
         double tz = 0;
         double phaseJd = 0;
         do {
             double k = varK(cal, tz);
-            tz += 1;
+            tz += forward ? 1 : -1;
             phaseJd = calcMoonPhase(k, phase);
-        } while (phaseJd <= midnightJd);
+        } while (forward ? phaseJd <= jd : phaseJd > jd);
         return phaseJd;
     }
 

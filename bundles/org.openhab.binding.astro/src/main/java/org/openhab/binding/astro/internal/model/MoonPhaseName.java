@@ -13,29 +13,32 @@
 package org.openhab.binding.astro.internal.model;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.astro.internal.util.AstroConstants;
 
 /**
  * All moon phases.
  *
  * @author Gerhard Riegler - Initial contribution
- * @author Gaël L'hopital - added age equivalence & mode
+ * @author Gaël L'hopital - added age equivalence in days & cycleProgressPercentage
  */
 @NonNullByDefault
 public enum MoonPhaseName {
-    NEW(1, 0),
-    WAXING_CRESCENT(4, Double.NaN),
-    FIRST_QUARTER(8, 0.25),
-    WAXING_GIBBOUS(11, Double.NaN),
-    FULL(15, 0.5),
-    WANING_GIBBOUS(18, Double.NaN),
-    THIRD_QUARTER(22, 0.75), // also called last quarter
-    WANING_CRESCENT(26, Double.NaN);
+    NEW(0),
+    WAXING_CRESCENT(0.125),
+    FIRST_QUARTER(0.25),
+    WAXING_GIBBOUS(0.375),
+    FULL(0.5),
+    WANING_GIBBOUS(0.625),
+    THIRD_QUARTER(0.75), // also called last quarter
+    WANING_CRESCENT(0.875);
 
-    public final double mode;
-    public final int ageDays;
+    public final double cycleProgressPercentage;
 
-    MoonPhaseName(int ageDays, double mode) {
-        this.mode = mode;
-        this.ageDays = ageDays;
+    MoonPhaseName(double cycleProgressPercentage) {
+        this.cycleProgressPercentage = cycleProgressPercentage;
+    }
+
+    public int getAgeDays() {
+        return (int) ((AstroConstants.LUNAR_SYNODIC_MONTH_DAYS - 1) * cycleProgressPercentage + 1);
     }
 }
