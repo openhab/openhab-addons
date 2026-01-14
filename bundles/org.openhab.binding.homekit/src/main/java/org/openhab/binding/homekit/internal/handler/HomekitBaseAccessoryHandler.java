@@ -879,7 +879,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
      * HTTP POST request to fetch the IP camera snapshot image for this accessory, according to the Apple
      * specification chapter '11.5 Image Snapshot'. The requested image size is taken from the channel
      * properties CONFIG_SNAPSHOT_WIDTH and CONFIG_SNAPSHOT_HEIGHT, defaulting to 640x360 if not provided.
-     * The request body is a JSON SnapshotImageRequest object, and the response body results are JPEG's.
+     * The request body is a JSON SnapshotImageRequest object, and the response body results are JPEGs.
      * If the image is successfully fetched, the snapshot channel state is updated with a RawType. And if an
      * error occurs it is updated to UnDefType.UNDEF / UnDefType.NULL accordingly.
      */

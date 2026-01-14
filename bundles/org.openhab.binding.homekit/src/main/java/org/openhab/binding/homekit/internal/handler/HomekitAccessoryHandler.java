@@ -741,7 +741,7 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
      * Finalizes the polled and evented characteristics by identifying which characteristics are linked
      * and adding them to the polledCharacteristics list, and which subset of those are evented and adding
      * them also to the eventedCharacteristics list. In case of the special light model HSB channel then we
-     * also add the component HUE, SATURATION, BRIGHTNESS, ON, and color temperature characteristsics to
+     * also add the component HUE, SATURATION, BRIGHTNESS, ON, and color temperature characteristics to
      * the list of polled and evented characteristics. The camera snapshot channel is not included.
      *
      * @param accessory the accessory containing the characteristics
@@ -1019,12 +1019,12 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
 
     /**
      * Returns true if the given accessory has camera like functions;
-     * <p>
+     * <ul>
      * <li>its category as declared in its JSON is a camera category</li>
      * <li>its category as discovered by mDNS is a camera category</li>
      * <li>one of its JSON services supports camera RTP stream management</li>
      * <li>one of its JSON characteristics supports video stream configuration</li>
-     * <p>
+     * </ul>
      * 
      * @param accessory the accessory to check
      * @return true if the accessory is a camera, false otherwise
