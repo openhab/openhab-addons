@@ -33,6 +33,7 @@ import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.thing.binding.ThingActions;
 import org.openhab.core.thing.binding.ThingActionsScope;
 import org.openhab.core.thing.binding.ThingHandler;
+import org.openhab.core.types.State;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -77,9 +78,14 @@ public class AstroActions implements ThingActions {
     public @Nullable @ActionOutput(name = "result", label = "Azimuth", type = "org.openhab.core.library.types.QuantityType<javax.measure.quantity.Angle>") QuantityType<Angle> getAzimuth(
             @ActionInput(name = "date", label = "Date", required = false, description = "Considered date") @Nullable ZonedDateTime date) {
         logger.debug("Astro action 'getAzimuth' called");
-        AstroThingHandler theHandler = this.handler;
-        if (theHandler != null) {
-            return theHandler.getAzimuth(date != null ? date : ZonedDateTime.now(timeZoneProvider.getTimeZone()));
+        if (handler instanceof AstroThingHandler local) {
+            State result = local.getAzimuth(date != null ? date : ZonedDateTime.now(timeZoneProvider.getTimeZone()));
+            if (result instanceof QuantityType<?>) {
+                @SuppressWarnings("unchecked")
+                QuantityType<Angle> qta = (QuantityType<Angle>) result;
+                return qta;
+            }
+            return null;
         } else {
             logger.info("Astro Action service ThingHandler is null!");
         }
@@ -90,9 +96,14 @@ public class AstroActions implements ThingActions {
     public @Nullable @ActionOutput(name = "result", label = "Elevation", type = "org.openhab.core.library.types.QuantityType<javax.measure.quantity.Angle>") QuantityType<Angle> getElevation(
             @ActionInput(name = "date", label = "Date", required = false, description = "Considered date") @Nullable ZonedDateTime date) {
         logger.debug("Astro action 'getElevation' called");
-        AstroThingHandler theHandler = this.handler;
-        if (theHandler != null) {
-            return theHandler.getElevation(date != null ? date : ZonedDateTime.now(timeZoneProvider.getTimeZone()));
+        if (handler instanceof AstroThingHandler local) {
+            State result = local.getElevation(date != null ? date : ZonedDateTime.now(timeZoneProvider.getTimeZone()));
+            if (result instanceof QuantityType<?>) {
+                @SuppressWarnings("unchecked")
+                QuantityType<Angle> qta = (QuantityType<Angle>) result;
+                return qta;
+            }
+            return null;
         } else {
             logger.info("Astro Action service ThingHandler is null!");
         }
