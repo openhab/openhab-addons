@@ -386,21 +386,11 @@ class ServerHandlerTest {
                 org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.SystemInfo.class);
         updateConfigMethod.setAccessible(true);
 
-        // Spy on the thing to verify updateConfiguration is NOT called
-        Thing spyThing = spy(mockThing);
-        try {
-            java.lang.reflect.Field thingField = org.openhab.core.thing.binding.BaseThingHandler.class
-                    .getDeclaredField("thing");
-            thingField.setAccessible(true);
-            thingField.set(testHandler, spyThing);
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to set thing field", e);
-        }
-
         // Act
         updateConfigMethod.invoke(testHandler, systemInfo);
 
-        // Assert - verify updateConfiguration was not called (no changes detected)
-        verify(spyThing, never()).getConfiguration();
+        // Assert - verify updateConfiguration was not called on the thing (no changes detected)
+        // Since configuration values match, getConfiguration should not be called to update
+        verify(mockThing, never()).getConfiguration();
     }
 }
