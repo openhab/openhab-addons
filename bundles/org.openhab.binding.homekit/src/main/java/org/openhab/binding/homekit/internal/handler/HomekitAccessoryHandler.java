@@ -742,7 +742,7 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
      * and adding them to the polledCharacteristics list, and which subset of those are evented and adding
      * them also to the eventedCharacteristics list. In case of the special light model HSB channel then we
      * also add the component HUE, SATURATION, BRIGHTNESS, ON, and color temperature characteristsics to
-     * the list of polled and evented characteristics.
+     * the list of polled and evented characteristics. The camera snapshot channel is not included.
      *
      * @param accessory the accessory containing the characteristics
      * @param channels the list of channels to check for polled and evented characteristics
@@ -758,6 +758,9 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
 
         for (Channel channel : channels.values()) {
             final ChannelUID channelUID = channel.getUID();
+            if (CHANNEL_SNAPSHOT.equals(channelUID.getId())) {
+                continue; // skip camera snapshot channel
+            }
             if (isLinked(channelUID)) {
                 Long iid = 0L;
                 boolean checkChannelLinkByIID = !channelUID.equals(lightModelClientHSBTypeChannel);

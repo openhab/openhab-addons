@@ -95,6 +95,9 @@ public class HomekitBindingConstants {
     public static final String CONTENT_TYPE_HAP = "application/hap+json";
     public static final String CONTENT_TYPE_JPEG = "image/jpeg";
 
+    public static final String CONFIG_SNAPSHOT_WIDTH = "width";
+    public static final String CONFIG_SNAPSHOT_HEIGHT = "height";
+
     // pattern matcher for pairing code XXX-XX-XXX or XXXX-XXXX or XXXXXXXX
     public static final Pattern PAIRING_CODE_PATTERN = Pattern.compile("\\d{3}-\\d{2}-\\d{3}|\\d{4}-\\d{4}|\\d{8}");
 

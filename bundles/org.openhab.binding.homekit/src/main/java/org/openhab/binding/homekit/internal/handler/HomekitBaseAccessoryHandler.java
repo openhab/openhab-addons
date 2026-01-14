@@ -46,8 +46,8 @@ import org.openhab.binding.homekit.internal.action.HomekitPairingActions;
 import org.openhab.binding.homekit.internal.dto.Accessories;
 import org.openhab.binding.homekit.internal.dto.Accessory;
 import org.openhab.binding.homekit.internal.dto.Characteristic;
+import org.openhab.binding.homekit.internal.dto.ImageResourceDescription;
 import org.openhab.binding.homekit.internal.dto.Service;
-import org.openhab.binding.homekit.internal.dto.SnapshotImageRequest;
 import org.openhab.binding.homekit.internal.enums.ServiceType;
 import org.openhab.binding.homekit.internal.hapservices.CharacteristicReadWriteClient;
 import org.openhab.binding.homekit.internal.hapservices.PairRemoveClient;
@@ -875,27 +875,34 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
     protected abstract void initializeNotReadyThings();
 
     /**
-     * Refreshes the snapshot channel image if it exists. Executes an HTTP POST request to fetch the IP camera
-     * snapshot image bytes for this accessory, according to the Apple specification chapter 11.5 Image Snapshot.
-     * The request body is a JSON SnapshotImageRequest object, and the response body results are JPEG's. If the
-     * image is successfully fetched, the snapshot channel state is updated with a RawType. And if an error
-     * occurs it is updated to UnDefType.UNDEF/NULL accordingly.
+     * Refreshes the snapshot channel image if the Channel exists and it is linked to an Item. Executes an
+     * HTTP POST request to fetch the IP camera snapshot image for this accessory, according to the Apple
+     * specification chapter '11.5 Image Snapshot'. The requested image size is taken from the channel
+     * properties CONFIG_SNAPSHOT_WIDTH and CONFIG_SNAPSHOT_HEIGHT, defaulting to 640x360 if not provided.
+     * The request body is a JSON SnapshotImageRequest object, and the response body results are JPEG's.
+     * If the image is successfully fetched, the snapshot channel state is updated with a RawType. And if an
+     * error occurs it is updated to UnDefType.UNDEF / UnDefType.NULL accordingly.
      */
     protected void refreshSnapshot() {
-        if (thing.getChannel(CHANNEL_SNAPSHOT) instanceof Channel snapshotChannel) {
+        if (thing.getChannel(CHANNEL_SNAPSHOT) instanceof Channel channel && isLinked(channel.getUID())
+                && getAccessoryId() instanceof Long aid) {
             try {
-                byte[] snapshotRequest = GSON.toJson(new SnapshotImageRequest()).getBytes(StandardCharsets.UTF_8);
-                byte[] snapshotBytes = getIpTransport().post(ENDPOINT_RESOURCE, CONTENT_TYPE_HAP, snapshotRequest);
-                if (snapshotBytes.length > 0) {
-                    updateState(snapshotChannel.getUID(), new RawType(snapshotBytes, CONTENT_TYPE_JPEG));
+                Map.Entry<Long, Long> requestSize = Map.entry(
+                        Long.valueOf(channel.getProperties().getOrDefault(CONFIG_SNAPSHOT_WIDTH, "640")),
+                        Long.valueOf(channel.getProperties().getOrDefault(CONFIG_SNAPSHOT_HEIGHT, "360")));
+                ImageResourceDescription requestDescription = new ImageResourceDescription(aid, requestSize);
+                byte[] request = GSON.toJson(requestDescription).getBytes(StandardCharsets.UTF_8);
+                byte[] response = getIpTransport().post(ENDPOINT_RESOURCE, CONTENT_TYPE_HAP, request);
+                if (response.length > 0) {
+                    updateState(channel.getUID(), new RawType(response, CONTENT_TYPE_JPEG));
                 } else {
-                    logger.warn("{} fetched an empty snapshot", thing.getUID());
-                    updateState(snapshotChannel.getUID(), UnDefType.NULL);
+                    logger.warn("{} snapshot is empty", thing.getUID());
+                    updateState(channel.getUID(), UnDefType.NULL);
                 }
             } catch (IllegalStateException | IllegalAccessException | IOException | InterruptedException
                     | ExecutionException | TimeoutException e) {
                 logger.warn("{} error '{}' fetching snapshot", thing.getUID(), e.getMessage(), e);
-                updateState(snapshotChannel.getUID(), UnDefType.UNDEF);
+                updateState(channel.getUID(), UnDefType.UNDEF);
             }
         }
     }
