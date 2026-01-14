@@ -384,6 +384,7 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
                             Optional.ofNullable(chanDef.getDescription()).ifPresent(builder::withDescription);
                             Channel channel = builder.build();
                             uniqueChannelsMap.put(channelId, channel);
+                            logChannelInformation(channel);
                         }
                     }
                 });
@@ -425,18 +426,12 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
                     .withType(CHANNEL_TYPE_SNAPSHOT);
             Channel channel = builder.build();
             uniqueChannelsMap.put(CHANNEL_SNAPSHOT, channel);
+            logChannelInformation(channel);
         }
 
         String oldLabel = thing.getLabel();
         String newLabel = oldLabel == null || oldLabel.isEmpty() ? accessory.getAccessoryInstanceLabel() : null;
         List<Channel> newChannels = !uniqueChannelsMap.isEmpty() ? uniqueChannelsMap.values().stream().toList() : null;
-
-        if (logger.isTraceEnabled() && newChannels != null) {
-            newChannels.forEach(channel -> logger.trace(
-                    "{}     Channel acceptedItemType:{}, defaultTags:{}, description:{}, kind:{}, label:{}, properties:{}, uid:{}",
-                    thing.getUID(), channel.getAcceptedItemType(), channel.getDefaultTags(), channel.getDescription(),
-                    channel.getKind(), channel.getLabel(), channel.getProperties(), channel.getUID()));
-        }
 
         if (newLabel != null || newChannels != null || newProperties != null || newEquipmentTag != null) {
             ThingBuilder builder = editThing();
@@ -712,6 +707,7 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
         Channel channel = ChannelBuilder.create(uid, CoreItemFactory.COLOR)
                 .withType(DefaultSystemChannelTypeProvider.SYSTEM_CHANNEL_TYPE_UID_COLOR).build();
         channels.put(uid.getId(), channel); // add to channels map
+        logChannelInformation(channel);
         lightModelClientHSBTypeChannel = uid;
     }
 
@@ -1015,6 +1011,18 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
     protected void initializeNotReadyThings() {
         notReadyThings.clear();
         notReadyThings.add(thing); // a self connected accessory requires only itself to be ready
+    }
+
+    /**
+     * Logs detailed trace information about the given channel if trace logging is enabled.
+     */
+    private void logChannelInformation(Channel channel) {
+        if (logger.isTraceEnabled()) {
+            logger.trace(
+                    "{}     Channel acceptedItemType:{}, defaultTags:{}, description:{}, kind:{}, label:{}, properties:{}, uid:{}",
+                    thing.getUID(), channel.getAcceptedItemType(), channel.getDefaultTags(), channel.getDescription(),
+                    channel.getKind(), channel.getLabel(), channel.getProperties(), channel.getUID());
+        }
     }
 
     /**
