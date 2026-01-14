@@ -117,7 +117,7 @@ public class HomeWizardBindingConstants {
 
     // Batteries
     public static final String CHANNEL_BATTERIES_MODE = "batteries_mode";
-    public static final String CHANNEL_BATTERIES_COUNT = "batteries_count";
+    public static final String CHANNEL_BATTERIES_COUNT = "batteries_battery_count";
     public static final String CHANNEL_BATTERIES_POWER = "batteries_power";
     public static final String CHANNEL_BATTERIES_TARGET_POWER = "batteries_target_power";
     public static final String CHANNEL_BATTERIES_MAX_CONSUMPTION = "batteries_max_consumption";
