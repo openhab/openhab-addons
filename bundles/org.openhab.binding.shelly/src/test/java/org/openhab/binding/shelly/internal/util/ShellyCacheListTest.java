@@ -14,6 +14,8 @@ package org.openhab.binding.shelly.internal.util;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
@@ -24,15 +26,17 @@ import org.junit.jupiter.api.Timeout;
  * @author Markus Michels - Initial contribution
  */
 @Timeout(10)
+@NonNullByDefault
 public class ShellyCacheListTest {
     private static final int TEST_TTL_SECONDS = 1; // Short TTL for testing
-    private ShellyCacheList<String, String> cache;
+    private @Nullable ShellyCacheList<String, String> cache;
 
     @BeforeEach
     public void setUp() {
         cache = new ShellyCacheList<>(TEST_TTL_SECONDS);
     }
 
+    @SuppressWarnings("null")
     @Test
     public void testPutAndGet() {
         // Test basic put and get operations
@@ -42,11 +46,13 @@ public class ShellyCacheListTest {
         assertEquals("value2", cache.get("key1"));
     }
 
+    @SuppressWarnings("null")
     @Test
     public void testGetNonExistent() {
         assertNull(cache.get("nonexistent"));
     }
 
+    @SuppressWarnings("null")
     @Test
     public void testExpiration() throws InterruptedException {
         // Test that entries expire after TTL
@@ -60,6 +66,7 @@ public class ShellyCacheListTest {
         assertNull(cache.get("key1"), "Entry should be null after TTL expires");
     }
 
+    @SuppressWarnings("null")
     @Test
     public void testPutIfAbsentOrSame() {
         // Test with new key - should add the entry
@@ -83,6 +90,7 @@ public class ShellyCacheListTest {
                 "Should return true for expired entry");
     }
 
+    @SuppressWarnings("null")
     @Test
     public void testPutIfAbsentOrSameWithDifferentComparators() {
         // Test with case-insensitive comparison
@@ -121,9 +129,11 @@ public class ShellyCacheListTest {
                         String value = "value-" + threadId + "-" + j;
 
                         // Only one thread should succeed in adding each key
+                        @SuppressWarnings("null")
                         boolean added = cache.putIfAbsent(key, value, (v1, v2) -> false);
                         if (added) {
                             // Verify we can read back the value we just added
+                            @SuppressWarnings("null")
                             String result = cache.get(key);
                             assertNotNull(result, "Added value should be retrievable");
                             assertTrue(result.startsWith("value-" + threadId + "-"));
@@ -144,12 +154,14 @@ public class ShellyCacheListTest {
         // Verify final state
         for (int i = 0; i < THREAD_COUNT; i++) {
             String key = "key-" + i;
+            @SuppressWarnings("null")
             String value = cache.get(key);
             assertNotNull(value, "Each thread should have set at least one value for its key");
             assertTrue(value.startsWith("value-" + i + "-"), "Value should match the thread that set it");
         }
     }
 
+    @SuppressWarnings("null")
     @Test
     public void testCleanup() throws InterruptedException {
         // Add an entry and verify it's there
@@ -167,6 +179,7 @@ public class ShellyCacheListTest {
         assertNotNull(cache.get("key2"), "New entry should exist");
     }
 
+    @SuppressWarnings("null")
     @Test
     public void testDispose() {
         // Add some entries
@@ -181,6 +194,7 @@ public class ShellyCacheListTest {
         assertNull(cache.get("key2"));
     }
 
+    @SuppressWarnings("null")
     @Test
     public void testNullHandling() {
         // Test null key
@@ -190,6 +204,7 @@ public class ShellyCacheListTest {
         assertThrows(NullPointerException.class, () -> cache.put("key", null));
     }
 
+    @SuppressWarnings("null")
     @Test
     public void testLargeNumberOfEntries() {
         // Test with a larger number of entries
@@ -197,6 +212,7 @@ public class ShellyCacheListTest {
         for (int i = 0; i < ENTRY_COUNT; i++) {
             String key = "key-" + i;
             String value = "value-" + i;
+            @SuppressWarnings("null")
             boolean added = cache.putIfAbsent(key, value, (v1, v2) -> false);
             assertTrue(added, "Should add new entry: " + key);
         }
