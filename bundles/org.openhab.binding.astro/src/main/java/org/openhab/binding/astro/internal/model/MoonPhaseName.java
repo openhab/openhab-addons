@@ -37,21 +37,19 @@ public enum MoonPhaseName {
     THIRD_QUARTER(0.75), // also called last quarter
     WANING_CRESCENT(0.875);
 
-    public final double cycleProgressPercentage;
+    public final double cycleProgress;
 
-    MoonPhaseName(double cycleProgressPercentage) {
-        this.cycleProgressPercentage = cycleProgressPercentage;
+    MoonPhaseName(double cycleProgress) {
+        this.cycleProgress = cycleProgress;
     }
 
     public int getAgeDays() {
-        return (int) ((LUNAR_SYNODIC_MONTH_DAYS - 1) * cycleProgressPercentage + 1);
+        return (int) ((LUNAR_SYNODIC_MONTH_DAYS - 1) * cycleProgress + 1);
     }
 
     public @Nullable static MoonPhaseName fromAgePercent(double agePercent) {
-        return (agePercent >= 0.0 && agePercent <= 1.0)
-                ? Arrays.stream(values())
-                        .min(Comparator.comparingDouble(p -> circularDistance(agePercent, p.cycleProgressPercentage)))
-                        .orElseThrow() // impossible
+        return (agePercent >= 0.0 && agePercent <= 1.0) ? Arrays.stream(values())
+                .min(Comparator.comparingDouble(p -> circularDistance(agePercent, p.cycleProgress))).orElseThrow() // impossible
                 : null;
     }
 

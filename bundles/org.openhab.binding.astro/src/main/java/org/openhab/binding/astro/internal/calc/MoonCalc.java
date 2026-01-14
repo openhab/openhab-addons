@@ -234,7 +234,7 @@ public class MoonCalc {
      * Calculates the moon phase.
      */
     private double calcMoonPhase(double k, MoonPhaseName phase) {
-        double kMod = Math.floor(k) + phase.cycleProgressPercentage;
+        double kMod = Math.floor(k) + phase.cycleProgress;
         double t = kMod / 1236.85;
         double e = varE(t);
         double m = varM(kMod, t);
