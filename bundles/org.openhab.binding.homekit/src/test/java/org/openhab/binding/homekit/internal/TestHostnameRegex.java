@@ -30,13 +30,19 @@ class TestHostnameRegex {
         String[] validHosts = {
                 // @formatter:off
                 "foobar.local", 
+                "foobar-1234-FOOBAR.local", 
                 "foobar.local:1234", 
                 "foobar-2.local", 
                 "foobar-3.local:1234",
                 "foobar._hap._tcp.local",
                 "foobar._hap._tcp.local:12345", 
                 "foo\\032bar.local",
-                "foo\\032bar-2.local:1234" 
+                "foo\\032bar-2.local:1234",
+                "PlusPMMini._http._tcp.local",
+                "shellypmmini-543204828114._http._tcp.local",
+                "ShellyPMMini-543204828114.local",
+                "Miele-0025DC69B9AF.local",
+                "DS-2CD2145FWD-I20191029AAWRD79222689.local"
                 // @formatter:on
         };
 
@@ -52,12 +58,12 @@ class TestHostnameRegex {
                 // @formatter:off
                 "foobar.local:123456", // port too large
                 "foobar(2).local", // parentheses not allowed
+                "foo bar.local", // spaces not allowed
                 "foo\\033bar.local", // invalid escape sequence
-                "foobar.foo.bar.local", // multiple dots not allowed
-                "foobar._foo._bar.local", // arbitrary service labels not allowed
-                "foobar._hap._udp.local", // wrong service type
-                "foobar._hap._tcp.local.", // trailing dot disallowed
-                "foobar._hap._tcp.local.:12345" // trailing dot before port disallowed
+                "foobar.hap.tcp.local", // service type parts without _ prefix
+                "foobar._hap.local", // incomplete service type parts 
+                "foobar.local.", // trailing dot not allowed
+                "foobar.local.:12345" // trailing dot before port not allowed
                 // @formatter:on
         };
 

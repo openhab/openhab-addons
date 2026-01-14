@@ -94,8 +94,8 @@ public class HomekitBindingConstants {
             "^(((25[0-5]|2[0-4]\\d|1\\d{2}|[1-9]?\\d)\\.){3}(25[0-5]|2[0-4]\\d|1\\d{2}|[1-9]?\\d)):(6553[0-5]|655[0-2]\\d|65[0-4]\\d{2}|6[0-4]\\d{3}|[1-5]?\\d{1,4})$");
 
     // pattern matcher for a host name header like foobar-2.local or foo\032bar._hap._tcp.local:12345
-    public static final Pattern HOST_PATTERN = Pattern.compile(
-            "^(?:[a-zA-Z0-9_-]|\\\\032)+\\.local(?::\\d{1,5})?$|^(?:[a-zA-Z0-9_-]|\\\\032)+\\._hap\\._tcp\\.local(?::\\d{1,5})?$");
+    public static final Pattern HOST_PATTERN = Pattern
+            .compile("^(?:[A-Za-z0-9_-]|\\\\032)+(?:\\._[A-Za-z]+\\._[A-Za-z]+)?\\.local(?::\\d{1,5})?$");
 
     // result messages for ThingActions; !! DO NOT LOCALIZE !!
     public static final String ACTION_RESULT_OK = "OK";
