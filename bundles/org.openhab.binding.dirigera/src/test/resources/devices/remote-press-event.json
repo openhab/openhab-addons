@@ -1,0 +1,11 @@
+{
+    "data": {
+        "id": "040bf20b-b1b0-463b-af4b-1227a711d70e_2",
+        "clickPattern": "singlePress"
+    },
+    "specversion": "1.1.0",
+    "id": "5981ec51-16d8-4a1c-a22c-21933d3e31f9",
+    "source": "hub",
+    "time": "2026-01-13T17:32:46.060Z",
+    "type": "remotePressEvent"
+}

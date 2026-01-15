@@ -19,14 +19,13 @@ import static org.openhab.binding.dirigera.internal.Constants.*;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
+import org.openhab.binding.dirigera.internal.FileReader;
 import org.openhab.binding.dirigera.internal.handler.DirigeraBridgeProvider;
-import org.openhab.binding.dirigera.internal.handler.matter.MatterSensor;
+import org.openhab.binding.dirigera.internal.handler.matter.Matter2ButtonCotroller;
 import org.openhab.binding.dirigera.internal.mock.CallbackMock;
-import org.openhab.binding.dirigera.internal.mock.DirigeraAPISimu;
 import org.openhab.core.library.types.QuantityType;
-import org.openhab.core.library.types.StringType;
-import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
@@ -38,16 +37,16 @@ import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 
 /**
- * {@link TestEnvironmentSensor} Tests device handler creation, initializing and refresh of channels
+ * {@link Test2ButtonController} Tests device handler creation, initializing and refresh of channels
  *
  * @author Bernd Weymann - Initial Contribution
  */
 @NonNullByDefault
-class TestEnvironmentSensor {
-    private static String deviceId = "94f3d9d7-95ee-496d-9b83-2d5de9a7c2c1_1";
-    private static ThingTypeUID thingTypeUID = THING_TYPE_MATTER_ENVIRONMENT_SENSOR;
+class Test2ButtonController {
+    private static String deviceId = "040bf20b-b1b0-463b-af4b-1227a711d70e_1";
+    private static ThingTypeUID thingTypeUID = THING_TYPE_MATTER_2_BUTTON_CONTROLLER;
 
-    private static MatterSensor handler = mock(MatterSensor.class);
+    private static Matter2ButtonCotroller handler = mock(Matter2ButtonCotroller.class);
     private static CallbackMock callback = mock(CallbackMock.class);
     private static Thing thing = mock(Thing.class);
 
@@ -56,15 +55,14 @@ class TestEnvironmentSensor {
         Bridge hubBridge = DirigeraBridgeProvider.prepareSimuBridge("src/test/resources/home/matter-home.json", false,
                 List.of());
         ThingHandler factoryHandler = DirigeraBridgeProvider.createHandler(thingTypeUID, hubBridge, deviceId);
-        assertTrue(factoryHandler instanceof MatterSensor);
-        handler = (MatterSensor) factoryHandler;
+        assertTrue(factoryHandler instanceof Matter2ButtonCotroller);
+        handler = (Matter2ButtonCotroller) factoryHandler;
         thing = handler.getThing();
         ThingHandlerCallback proxyCallback = handler.getCallback();
         assertNotNull(proxyCallback);
         assertTrue(proxyCallback instanceof CallbackMock);
         callback = (CallbackMock) proxyCallback;
         callback.waitForOnline();
-        assertEquals(10, thing.getProperties().size());
     }
 
     @Test
@@ -73,41 +71,28 @@ class TestEnvironmentSensor {
         assertNotNull(handler);
         assertNotNull(thing);
         assertNotNull(callback);
-        checkEnvironmentSensorStates(callback);
+        checkDeviceStatus(callback);
 
         callback.clear();
         handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_BATTERY_LEVEL), RefreshType.REFRESH);
-        handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_TEMPERATURE), RefreshType.REFRESH);
-        checkEnvironmentSensorStates(callback);
+        checkDeviceStatus(callback);
     }
 
     @Test
-    void testCommands() {
+    void testTrigger() {
+        String remotePressEvent = FileReader.readFileInString("src/test/resources/devices/remote-press-event.json");
         testHandlerCreation();
-        String command = "HollaDieWaldfee";
-        handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_CUSTOM_NAME), new StringType(command));
-        System.out.println("Patch Map: " + DirigeraAPISimu.patchMap);
-        String patch = DirigeraAPISimu.patchMap.get(deviceId);
-        assertNotNull(patch);
-        assertEquals("{\"attributes\":{\"customName\":\"" + command + "\"}}", patch, "Fan Mode on");
+        handler.handleUpdate(new JSONObject(remotePressEvent));
+        String trigger1 = callback.triggerMap.get("dirigera:2-button-controller:test-device:button2");
+        assertNotNull(trigger1);
+        assertEquals("SINGLE_PRESS", trigger1, "Button 2 Single Press");
     }
 
-    void testDump() {
-        testHandlerCreation();
-        assertEquals("unit-test", handler.getToken());
-    }
-
-    void checkEnvironmentSensorStates(CallbackMock callback) {
-        State batteryLevel = callback.getState("dirigera:environment-sensor:test-device:battery-level");
+    void checkDeviceStatus(CallbackMock callback) {
+        State batteryLevel = callback.getState("dirigera:2-button-controller:test-device:battery-level");
         assertNotNull(batteryLevel);
         assertTrue(batteryLevel instanceof QuantityType);
         assertTrue(((QuantityType<?>) batteryLevel).getUnit().equals(Units.PERCENT));
-        assertEquals(95, ((QuantityType<?>) batteryLevel).intValue(), "Battery Level");
-
-        State temperature = callback.getState("dirigera:environment-sensor:test-device:temperature");
-        assertNotNull(temperature);
-        assertTrue(temperature instanceof QuantityType);
-        assertTrue(((QuantityType<?>) temperature).getUnit().equals(SIUnits.CELSIUS));
-        assertEquals(22.22, ((QuantityType<?>) temperature).doubleValue(), 0.001, "Temperature");
+        assertEquals(61, ((QuantityType<?>) batteryLevel).intValue(), "Battery Level");
     }
 }

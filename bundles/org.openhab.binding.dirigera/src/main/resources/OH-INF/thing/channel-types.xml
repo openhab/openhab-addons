@@ -219,7 +219,8 @@
 	</channel-type>
 	<channel-type id="voc">
 		<item-type>Number</item-type>
-		<label>VOC Index</label>
+	      <label>VOC Index</label>
+	      <description>Relative VOC intensity compared to recent history</description>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="time">
@@ -346,4 +347,9 @@
 		<description>Candidates which can be linked</description>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
+	<channel-type id="co2" advanced="false">
+        <item-type unitHint="ppm">Number:Dimensionless</item-type>
+        <label>Carbon Dioxide (CO₂)</label>
+        <state readOnly="true" pattern="%.0f %unit%"/>
+    </channel-type>
 </thing:thing-descriptions>

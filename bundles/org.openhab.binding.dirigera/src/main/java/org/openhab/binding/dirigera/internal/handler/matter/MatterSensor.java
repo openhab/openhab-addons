@@ -56,7 +56,7 @@ public class MatterSensor extends BaseMatterHandler {
     @Override
     public void initialize() {
         super.initialize();
-        if (matterConfig.hasType(DEVICE_TYPE_OCCUPANCY_SENSOR)) {
+        if (super.hasType(DEVICE_TYPE_OCCUPANCY_SENSOR)) {
             createSensorConfigChannels();
         }
     }
@@ -64,7 +64,7 @@ public class MatterSensor extends BaseMatterHandler {
     @Override
     public void handleUpdate(JSONObject update) {
         super.handleUpdate(update);
-        if (matterConfig.hasType(DEVICE_TYPE_OCCUPANCY_SENSOR)) {
+        if (super.hasType(DEVICE_TYPE_OCCUPANCY_SENSOR)) {
             JSONObject attributes = update.getJSONObject(Model.ATTRIBUTES);
             if (attributes != null) {
                 JSONObject sensorConfig = attributes.optJSONObject("sensorConfig");
@@ -93,7 +93,7 @@ public class MatterSensor extends BaseMatterHandler {
                 if (seconds > 0) {
                     String updateData = String.format(ResourceReader.getResource(Model.TEMPLATE_SENSOR_DURATION_UPDATE),
                             seconds);
-                    matterConfig.getIdsFor(DEVICE_TYPE_OCCUPANCY_SENSOR).forEach(deviceId -> {
+                    super.getIdsFor(DEVICE_TYPE_OCCUPANCY_SENSOR).forEach(deviceId -> {
                         gateway().api().sendPatch(deviceId, new JSONObject(updateData));
                     });
                 }
@@ -102,20 +102,20 @@ public class MatterSensor extends BaseMatterHandler {
                 if (command instanceof DecimalType decimal) {
                     switch (decimal.intValue()) {
                         case 0:
-                            matterConfig.getIdsFor(DEVICE_TYPE_OCCUPANCY_SENSOR).forEach(deviceId -> {
+                            super.getIdsFor(DEVICE_TYPE_OCCUPANCY_SENSOR).forEach(deviceId -> {
                                 gateway().api().sendPatch(deviceId,
                                         new JSONObject(ResourceReader.getResource(Model.TEMPLATE_SENSOR_ALWQAYS_ON)));
                             });
                             break;
                         case 1:
-                            matterConfig.getIdsFor(DEVICE_TYPE_OCCUPANCY_SENSOR).forEach(deviceId -> {
+                            super.getIdsFor(DEVICE_TYPE_OCCUPANCY_SENSOR).forEach(deviceId -> {
                                 gateway().api().sendPatch(deviceId,
                                         new JSONObject(ResourceReader.getResource(Model.TEMPLATE_SENSOR_FOLLOW_SUN)));
                             });
                             break;
                         case 2:
                             String template = ResourceReader.getResource(Model.TEMPLATE_SENSOR_SCHEDULE_ON);
-                            matterConfig.getIdsFor(DEVICE_TYPE_OCCUPANCY_SENSOR).forEach(deviceId -> {
+                            super.getIdsFor(DEVICE_TYPE_OCCUPANCY_SENSOR).forEach(deviceId -> {
                                 gateway().api().sendPatch(deviceId,
                                         new JSONObject(String.format(template, startTime, endTime)));
                             });
@@ -131,7 +131,7 @@ public class MatterSensor extends BaseMatterHandler {
                 } else if (command instanceof DateTimeType dateTime) {
                     startTime = dateTime.format(timeFormat, ZoneId.systemDefault());
                 }
-                matterConfig.getIdsFor(DEVICE_TYPE_OCCUPANCY_SENSOR).forEach(deviceId -> {
+                super.getIdsFor(DEVICE_TYPE_OCCUPANCY_SENSOR).forEach(deviceId -> {
                     gateway().api().sendPatch(deviceId,
                             new JSONObject(String.format(startSchedule, startTime, endTime)));
                 });
@@ -144,7 +144,7 @@ public class MatterSensor extends BaseMatterHandler {
                 } else if (command instanceof DateTimeType dateTime) {
                     endTime = dateTime.format(timeFormat, ZoneId.systemDefault());
                 }
-                matterConfig.getIdsFor(DEVICE_TYPE_OCCUPANCY_SENSOR).forEach(deviceId -> {
+                super.getIdsFor(DEVICE_TYPE_OCCUPANCY_SENSOR).forEach(deviceId -> {
                     gateway().api().sendPatch(deviceId, new JSONObject(String.format(endSchedule, startTime, endTime)));
                 });
                 break;
@@ -175,7 +175,7 @@ public class MatterSensor extends BaseMatterHandler {
                             presetValues = new JSONArray(string.toFullString());
                     }
                     JSONObject preset = (new JSONObject()).put("circadianPresets", presetValues);
-                    matterConfig.getIdsFor(DEVICE_TYPE_OCCUPANCY_SENSOR).forEach(deviceId -> {
+                    super.getIdsFor(DEVICE_TYPE_OCCUPANCY_SENSOR).forEach(deviceId -> {
                         super.sendPatch(deviceId, (new JSONObject()).put(Model.ATTRIBUTES, preset));
                     });
                 }
