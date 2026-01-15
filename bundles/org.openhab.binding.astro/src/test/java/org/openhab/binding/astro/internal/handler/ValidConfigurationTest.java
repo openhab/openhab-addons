@@ -10,17 +10,17 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.astro.handler.test;
+package org.openhab.binding.astro.internal.handler;
 
 import static org.mockito.Mockito.*;
 import static org.openhab.binding.astro.internal.AstroBindingConstants.THING_TYPE_SUN;
-import static org.openhab.binding.astro.test.cases.AstroBindingTestsData.*;
+import static org.openhab.binding.astro.internal.CommonTestConstants.*;
 
+import java.time.Instant;
+import java.time.InstantSource;
 import java.time.ZoneId;
 
 import org.junit.jupiter.api.Test;
-import org.openhab.binding.astro.internal.handler.AstroThingHandler;
-import org.openhab.binding.astro.internal.handler.SunHandler;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TimeZoneProvider;
@@ -42,7 +42,7 @@ import org.openhab.core.thing.binding.ThingHandlerCallback;
  * @author Svilen Valkanov - Reworked to plain unit tests, removed irrelevant tests
  * @author Christoph Weitkamp - Migrated tests to pure Java
  */
-public class AstroValidConfigurationTest {
+public class ValidConfigurationTest {
 
     private static final String NULL_LONGITUDE = "51.2,null";
     private static final String NULL_LATITUDE = "null,25.4";
@@ -150,7 +150,8 @@ public class AstroValidConfigurationTest {
         TimeZoneProvider timeZoneProvider = mock(TimeZoneProvider.class);
         LocaleProvider localeProvider = mock(LocaleProvider.class);
         when(timeZoneProvider.getTimeZone()).thenReturn(ZoneId.systemDefault());
-        ThingHandler sunHandler = new SunHandler(thing, cronScheduler, timeZoneProvider, localeProvider);
+        ThingHandler sunHandler = new SunHandler(thing, cronScheduler, timeZoneProvider, localeProvider,
+                InstantSource.fixed(Instant.ofEpochMilli(1645671600000L)));
         sunHandler.setCallback(callback);
 
         sunHandler.initialize();

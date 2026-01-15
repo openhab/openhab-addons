@@ -14,6 +14,8 @@ package org.openhab.binding.astro.internal.calc;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.time.Instant;
+import java.time.InstantSource;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.Locale;
@@ -54,7 +56,7 @@ public class MoonCalcTest {
 
     @BeforeEach
     public void init() {
-        moonCalc = new MoonCalc();
+        moonCalc = new MoonCalc(InstantSource.fixed(Instant.ofEpochMilli(1645671600000L)));
     }
 
     @Test

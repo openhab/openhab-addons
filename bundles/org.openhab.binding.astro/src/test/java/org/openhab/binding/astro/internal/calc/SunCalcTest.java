@@ -14,6 +14,8 @@ package org.openhab.binding.astro.internal.calc;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.time.Instant;
+import java.time.InstantSource;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.Locale;
@@ -61,7 +63,7 @@ public class SunCalcTest {
 
     @BeforeEach
     public void init() {
-        sunCalc = new SunCalc();
+        sunCalc = new SunCalc(InstantSource.fixed(Instant.ofEpochMilli(1645671600000L)));
     }
 
     @Test

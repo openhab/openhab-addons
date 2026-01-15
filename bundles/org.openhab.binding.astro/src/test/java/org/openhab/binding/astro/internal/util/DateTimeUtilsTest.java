@@ -15,6 +15,7 @@ package org.openhab.binding.astro.internal.util;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.time.Instant;
+import java.time.InstantSource;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.Locale;
@@ -65,17 +66,18 @@ public class DateTimeUtilsTest {
 
     @Test
     public void testCreateCalendarForToday() {
-        Calendar cal = DateTimeUtils.createCalendarForToday(8, 0, TIME_ZONE, Locale.ROOT);
+        InstantSource is = InstantSource.fixed(Instant.ofEpochMilli(1645671600000L));
+        Calendar cal = DateTimeUtils.createCalendarForToday(8, 0, TIME_ZONE, Locale.ROOT, is);
         assertEquals(8, cal.get(Calendar.HOUR_OF_DAY));
         assertEquals(0, cal.get(Calendar.MINUTE));
         assertEquals(0, cal.get(Calendar.SECOND));
         assertEquals(0, cal.get(Calendar.MILLISECOND));
-        cal = DateTimeUtils.createCalendarForToday(22, 59, TIME_ZONE, Locale.ROOT);
+        cal = DateTimeUtils.createCalendarForToday(22, 59, TIME_ZONE, Locale.ROOT, is);
         assertEquals(22, cal.get(Calendar.HOUR_OF_DAY));
         assertEquals(59, cal.get(Calendar.MINUTE));
         assertEquals(0, cal.get(Calendar.SECOND));
         assertEquals(0, cal.get(Calendar.MILLISECOND));
-        cal = DateTimeUtils.createCalendarForToday(0, 0, TIME_ZONE, Locale.ROOT);
+        cal = DateTimeUtils.createCalendarForToday(0, 0, TIME_ZONE, Locale.ROOT, is);
         assertEquals(0, cal.get(Calendar.HOUR_OF_DAY));
         assertEquals(0, cal.get(Calendar.MINUTE));
         assertEquals(0, cal.get(Calendar.SECOND));
