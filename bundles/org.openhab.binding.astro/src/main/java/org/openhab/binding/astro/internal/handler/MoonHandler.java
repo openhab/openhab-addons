@@ -26,6 +26,8 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.astro.internal.calc.MoonCalc;
 import org.openhab.binding.astro.internal.job.DailyJobMoon;
 import org.openhab.binding.astro.internal.job.Job;
+import org.openhab.binding.astro.internal.model.DistanceType;
+import org.openhab.binding.astro.internal.model.EclipseKind;
 import org.openhab.binding.astro.internal.model.Moon;
 import org.openhab.binding.astro.internal.model.Planet;
 import org.openhab.binding.astro.internal.model.Position;
@@ -75,8 +77,6 @@ public class MoonHandler extends AstroThingHandler {
         Double longitude = thingConfig.longitude;
         moonCalc.setPositionalInfo(DateTimeUtils.calFromInstantSource(instantSource, zone, locale),
                 latitude != null ? latitude : 0, longitude != null ? longitude : 0, moon, zone, locale);
-
-        moon.getEclipse().setElevations(this, timeZoneProvider);
         this.moon = moon;
 
         publishPlanet();
@@ -131,25 +131,25 @@ public class MoonHandler extends AstroThingHandler {
             case CHANNEL_ID_MOON_PHASE_NAME:
                 return toState(moon.getPhase().getName(), channel);
             case CHANNEL_ID_MOON_ECLIPSE_TOTAL:
-                return toState(moon.getEclipse().getTotal(), channel);
+                return toState(moon.getEclipse().getDate(EclipseKind.TOTAL), channel);
             case CHANNEL_ID_MOON_ECLIPSE_TOTAL_ELEVATION:
-                return toState(moon.getEclipse().getTotalElevation(), channel);
+                return toState(moon.getEclipse().getElevation(EclipseKind.TOTAL), channel);
             case CHANNEL_ID_MOON_ECLIPSE_PARTIAL:
-                return toState(moon.getEclipse().getPartial(), channel);
+                return toState(moon.getEclipse().getDate(EclipseKind.PARTIAL), channel);
             case CHANNEL_ID_MOON_ECLIPSE_PARTIAL_ELEVATION:
-                return toState(moon.getEclipse().getPartialElevation(), channel);
+                return toState(moon.getEclipse().getElevation(EclipseKind.PARTIAL), channel);
             case CHANNEL_ID_MOON_DISTANCE_DATE:
-                return toState(moon.getDistance().getDate(), channel);
+                return toState(moon.getDistanceType(DistanceType.CURRENT).getDate(), channel);
             case CHANNEL_ID_MOON_DISTANCE_DISTANCE:
-                return toState(moon.getDistance().getDistance(), channel);
+                return toState(moon.getDistanceType(DistanceType.CURRENT).getDistance(), channel);
             case CHANNEL_ID_MOON_PERIGEE_DATE:
-                return toState(moon.getPerigee().getDate(), channel);
+                return toState(moon.getDistanceType(DistanceType.PERIGEE).getDate(), channel);
             case CHANNEL_ID_MOON_PERIGEE_DISTANCE:
-                return toState(moon.getPerigee().getDistance(), channel);
+                return toState(moon.getDistanceType(DistanceType.PERIGEE).getDistance(), channel);
             case CHANNEL_ID_MOON_APOGEE_DATE:
-                return toState(moon.getApogee().getDate(), channel);
+                return toState(moon.getDistanceType(DistanceType.APOGEE).getDate(), channel);
             case CHANNEL_ID_MOON_APOGEE_DISTANCE:
-                return toState(moon.getApogee().getDistance(), channel);
+                return toState(moon.getDistanceType(DistanceType.APOGEE).getDistance(), channel);
             case CHANNEL_ID_MOON_POSITION_AZIMUTH:
                 return toState(moon.getPosition().getAzimuth(), channel);
             case CHANNEL_ID_MOON_POSITION_ELEVATION:
@@ -183,7 +183,7 @@ public class MoonHandler extends AstroThingHandler {
     }
 
     @Override
-    public @Nullable Position getPositionAt(ZonedDateTime date) {
+    public Position getPositionAt(ZonedDateTime date) {
         Moon localMoon = getMoonAt(date, Locale.ROOT);
         Double latitude = thingConfig.latitude;
         Double longitude = thingConfig.longitude;

@@ -29,6 +29,7 @@ import org.openhab.binding.astro.internal.calc.RadiationCalc;
 import org.openhab.binding.astro.internal.calc.SunCalc;
 import org.openhab.binding.astro.internal.job.DailyJobSun;
 import org.openhab.binding.astro.internal.job.Job;
+import org.openhab.binding.astro.internal.model.EclipseKind;
 import org.openhab.binding.astro.internal.model.Planet;
 import org.openhab.binding.astro.internal.model.Position;
 import org.openhab.binding.astro.internal.model.Radiation;
@@ -84,8 +85,6 @@ public class SunHandler extends AstroThingHandler {
         Calendar calendar = DateTimeUtils.calFromInstantSource(instantSource, zone, locale);
         sunCalc.setPositionalInfo(calendar, latitude != null ? latitude : 0, longitude != null ? longitude : 0,
                 altitude != null ? altitude : 0, sun);
-
-        sun.getEclipse().setElevations(this, timeZoneProvider);
 
         sun.setCircadian(CircadianCalc.calculate(calendar, sun.getRise(), sun.getSet(), sun.getNoon()));
         sun.setRadiation(RadiationCalc.calculate(now, sun.getPosition().getElevationAsDouble(), altitude));
@@ -266,17 +265,17 @@ public class SunHandler extends AstroThingHandler {
                 s = sun.getSeason();
                 return s == null ? UnDefType.UNDEF : toState(s.getTimeLeft(), channel);
             case CHANNEL_ID_SUN_ECLIPSE_TOTAL:
-                return toState(sun.getEclipse().getTotal(), channel);
+                return toState(sun.getEclipse().getDate(EclipseKind.TOTAL), channel);
             case CHANNEL_ID_SUN_ECLIPSE_TOTAL_ELEVATION:
-                return toState(sun.getEclipse().getTotalElevation(), channel);
+                return toState(sun.getEclipse().getElevation(EclipseKind.TOTAL), channel);
             case CHANNEL_ID_SUN_ECLIPSE_PARTIAL:
-                return toState(sun.getEclipse().getPartial(), channel);
+                return toState(sun.getEclipse().getDate(EclipseKind.PARTIAL), channel);
             case CHANNEL_ID_SUN_ECLIPSE_PARTIAL_ELEVATION:
-                return toState(sun.getEclipse().getPartialElevation(), channel);
+                return toState(sun.getEclipse().getElevation(EclipseKind.PARTIAL), channel);
             case CHANNEL_ID_SUN_ECLIPSE_RING:
-                return toState(sun.getEclipse().getRing(), channel);
+                return toState(sun.getEclipse().getDate(EclipseKind.RING), channel);
             case CHANNEL_ID_SUN_ECLIPSE_RING_ELEVATION:
-                return toState(sun.getEclipse().getRingElevation(), channel);
+                return toState(sun.getEclipse().getElevation(EclipseKind.RING), channel);
             case CHANNEL_ID_SUN_PHASE_NAME:
                 return toState(sun.getPhase().getName(), channel);
             case CHANNEL_ID_SUN_CIRCADIAN_BRIGHTNESS:
@@ -330,9 +329,8 @@ public class SunHandler extends AstroThingHandler {
     }
 
     @Override
-    public @Nullable Position getPositionAt(ZonedDateTime date) {
-        Sun localSun = getPositionedSunAt(date);
-        return localSun.getPosition();
+    public Position getPositionAt(ZonedDateTime date) {
+        return getPositionedSunAt(date).getPosition();
     }
 
     public @Nullable Radiation getRadiationAt(ZonedDateTime date) {

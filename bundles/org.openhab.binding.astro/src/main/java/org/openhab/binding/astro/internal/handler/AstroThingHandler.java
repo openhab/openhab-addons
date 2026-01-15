@@ -420,16 +420,14 @@ public abstract class AstroThingHandler extends BaseThingHandler {
      */
     protected abstract Job getDailyJob(TimeZone zone, Locale locale);
 
-    public abstract @Nullable Position getPositionAt(ZonedDateTime date);
+    public abstract Position getPositionAt(ZonedDateTime date);
 
     public State getAzimuth(ZonedDateTime date) {
-        Position position = getPositionAt(date);
-        return position != null ? position.getAzimuth() : UnDefType.NULL;
+        return getPositionAt(date).getAzimuth();
     }
 
     public State getElevation(ZonedDateTime date) {
-        Position position = getPositionAt(date);
-        return position != null ? position.getElevation() : UnDefType.NULL;
+        return getPositionAt(date).getElevation();
     }
 
     @Override

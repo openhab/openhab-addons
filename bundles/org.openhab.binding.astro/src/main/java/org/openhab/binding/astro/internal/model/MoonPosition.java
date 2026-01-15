@@ -21,7 +21,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class MoonPosition extends Position {
-    public static final Position NULL = new MoonPosition();
+    public static final MoonPosition NULL = new MoonPosition();
     private final double longitude;
 
     private MoonPosition() {

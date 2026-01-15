@@ -27,9 +27,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class Moon extends RiseSet implements Planet {
     private final Map<DistanceType, MoonDistance> distances = new HashMap<>(DistanceType.values().length);
+    private final Eclipse eclipse = new Eclipse(EclipseKind.PARTIAL, EclipseKind.TOTAL);
 
     private MoonPhase phase = new MoonPhase();
-    private Eclipse eclipse = new Eclipse(EclipseKind.PARTIAL, EclipseKind.TOTAL);
     private Position position = MoonPosition.NULL;
     private Zodiac zodiac = Zodiac.NULL;
 
@@ -55,20 +55,6 @@ public class Moon extends RiseSet implements Planet {
         return Objects.requireNonNull(distances.get(type));
     }
 
-    /**
-     * Returns the apogee.
-     */
-    public MoonDistance getApogee() {
-        return getDistanceType(DistanceType.APOGEE);
-    }
-
-    /**
-     * Returns the perigee.
-     */
-    public MoonDistance getPerigee() {
-        return getDistanceType(DistanceType.PERIGEE);
-    }
-
     public void setDistance(DistanceType type, MoonDistance moonDistance) {
         distances.put(type, moonDistance);
     }
@@ -78,20 +64,6 @@ public class Moon extends RiseSet implements Planet {
      */
     public Eclipse getEclipse() {
         return eclipse;
-    }
-
-    /**
-     * Sets the eclipses.
-     */
-    public void setEclipse(Eclipse eclipse) {
-        this.eclipse = eclipse;
-    }
-
-    /**
-     * Returns the current distance.
-     */
-    public MoonDistance getDistance() {
-        return getDistanceType(DistanceType.CURRENT);
     }
 
     /**

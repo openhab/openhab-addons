@@ -22,17 +22,18 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.TimeZone;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.astro.internal.model.Eclipse;
-import org.openhab.binding.astro.internal.model.EclipseType;
 import org.openhab.binding.astro.internal.model.Position;
 import org.openhab.binding.astro.internal.model.Range;
 import org.openhab.binding.astro.internal.model.Season;
 import org.openhab.binding.astro.internal.model.Sun;
 import org.openhab.binding.astro.internal.model.SunPhaseName;
+import org.openhab.binding.astro.internal.util.AstroConstants;
 import org.openhab.binding.astro.internal.util.DateTimeUtils;
 import org.openhab.binding.astro.internal.util.MathUtils;
 
@@ -56,7 +57,7 @@ public class SunCalc {
     private static final double P = Math.toRadians(102.9372);
     private static final double E = Math.toRadians(23.45);
     private static final double TH0 = Math.toRadians(280.1600);
-    private static final double TH1 = Math.toRadians(360.9856235);
+    private static final double TH1 = Math.toRadians(AstroConstants.W_DOT);
     private static final double SUN_ANGLE = -0.83;
     private static final double SUN_DIAMETER = Math.toRadians(0.53); // sun diameter
     private static final double H0 = Math.toRadians(SUN_ANGLE);
@@ -64,7 +65,7 @@ public class SunCalc {
     private static final double H2 = Math.toRadians(-12.0); // astronomical twilight angle
     private static final double H3 = Math.toRadians(-18.0); // darkness angle
     private static final int CURVE_TIME_INTERVAL = 20; // 20 minutes
-    private static final double JD_ONE_MINUTE_FRACTION = 1.0 / 60 / 24;
+    private static final EclipseCalc ECLIPSE_CALC = new SunEclipseCalc();
 
     private final InstantSource instantSource;
 
@@ -82,6 +83,11 @@ public class SunCalc {
      */
     public void setPositionalInfo(Calendar calendar, double latitude, double longitude, @Nullable Double altitude,
             Sun sun) {
+        Position sunPosition = getPosition(calendar, latitude, longitude, altitude);
+        sun.setPosition(sunPosition);
+    }
+
+    public Position getPosition(Calendar calendar, double latitude, double longitude, @Nullable Double altitude) {
         double lw = Math.toRadians(-longitude);
         double phi = Math.toRadians(latitude);
 
@@ -95,8 +101,7 @@ public class SunCalc {
 
         double azimuth = Math.toDegrees(getAzimuth(th, a, phi, d));
         double elevation = Math.toDegrees(getElevation(th, a, phi, d));
-
-        sun.setPosition(new Position(azimuth + 180, elevation));
+        return new Position(azimuth, elevation);
     }
 
     /**
@@ -165,7 +170,7 @@ public class SunCalc {
         }
 
         sun.setNoon(new Range(DateTimeUtils.toCalendar(jtransit, zone, locale),
-                DateTimeUtils.toCalendar(jtransit + JD_ONE_MINUTE_FRACTION, zone, locale)));
+                DateTimeUtils.toCalendar(jtransit + DateTimeUtils.JD_ONE_MINUTE_FRACTION, zone, locale)));
         sun.setRise(new Range(DateTimeUtils.toCalendar(jrise, zone, locale),
                 DateTimeUtils.toCalendar(jriseend, zone, locale)));
         sun.setSet(new Range(DateTimeUtils.toCalendar(jsetstart, zone, locale),
@@ -234,14 +239,12 @@ public class SunCalc {
 
         // eclipse
         Eclipse eclipse = sun.getEclipse();
-        MoonCalc mc = new MoonCalc(instantSource);
 
         eclipse.getKinds().forEach(eclipseKind -> {
-            double jdate = mc.getEclipse(calendar, EclipseType.SUN, j, eclipseKind);
-            Calendar eclipseDate = DateTimeUtils.toCalendar(jdate, zone, locale);
-            if (eclipseDate != null) {
-                eclipse.set(eclipseKind, eclipseDate, Position.NULL);
-            }
+            double jdate = ECLIPSE_CALC.calculate(calendar, j, eclipseKind);
+            Calendar eclipseCal = Objects.requireNonNull(DateTimeUtils.toCalendar(jdate, zone, locale));
+            Position sunPosition = getPosition(eclipseCal, latitude, longitude, altitude);
+            eclipse.set(eclipseKind, jdate, sunPosition.getElevationAsDouble());
         });
 
         sun.setZodiac(ZodiacCalc.calculate(lsun, calendar.toInstant()));

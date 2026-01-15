@@ -26,15 +26,14 @@ import java.util.TimeZone;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.astro.internal.model.DistanceType;
 import org.openhab.binding.astro.internal.model.Eclipse;
-import org.openhab.binding.astro.internal.model.EclipseKind;
-import org.openhab.binding.astro.internal.model.EclipseType;
 import org.openhab.binding.astro.internal.model.Moon;
 import org.openhab.binding.astro.internal.model.MoonPhase;
 import org.openhab.binding.astro.internal.model.MoonPhaseName;
 import org.openhab.binding.astro.internal.model.MoonPosition;
-import org.openhab.binding.astro.internal.model.Position;
 import org.openhab.binding.astro.internal.model.Range;
+import org.openhab.binding.astro.internal.util.AstroConstants;
 import org.openhab.binding.astro.internal.util.DateTimeUtils;
+import org.openhab.binding.astro.internal.util.MathUtils;
 
 /**
  * Calculates the phase, eclipse, rise, set, distance, illumination and age of
@@ -47,7 +46,9 @@ import org.openhab.binding.astro.internal.util.DateTimeUtils;
  *           zodiac based on http://lexikon.astronomie.info/java/sunmoon/
  */
 @NonNullByDefault
-public class MoonCalc {
+public class MoonCalc extends AstroCalc {
+    private static final double FL = 1.0 - AstroConstants.WGS84_EARTH_FLATTENING;
+    private static final EclipseCalc ECLIPSE_CALC = new MoonEclipseCalc();
 
     private final InstantSource instantSource;
 
@@ -65,9 +66,6 @@ public class MoonCalc {
      */
     public Moon getMoonInfo(Calendar calendar, double latitude, double longitude, TimeZone zone, Locale locale) {
         Moon moon = new Moon();
-
-        double julianDate = DateTimeUtils.dateToJulianDate(calendar);
-        double julianDateMidnight = DateTimeUtils.midnightDateToJulianDate(calendar);
 
         double[] riseSet = getRiseSet(calendar, latitude, longitude);
         Calendar rise = DateTimeUtils.timeToCalendar(calendar, riseSet[0]);
@@ -90,18 +88,18 @@ public class MoonCalc {
         moon.setSet(new Range(set, set));
 
         MoonPhase phase = moon.getPhase();
+        double julianDateMidnight = DateTimeUtils.midnightDateToJulianDate(calendar);
         phase.remarkablePhases().forEach(mp -> phase.setPhase(mp,
                 DateTimeUtils.toCalendar(getPhase(calendar, julianDateMidnight, mp, true), zone, locale)));
 
         Eclipse eclipse = moon.getEclipse();
         eclipse.getKinds().forEach(eclipseKind -> {
-            double jdate = getEclipse(calendar, EclipseType.MOON, julianDateMidnight, eclipseKind);
-            Calendar eclipseDate = DateTimeUtils.toCalendar(jdate, zone, locale);
-            if (eclipseDate != null) {
-                eclipse.set(eclipseKind, eclipseDate, Position.NULL);
-            }
+            double jdate = ECLIPSE_CALC.calculate(calendar, julianDateMidnight, eclipseKind);
+            MoonPosition moonPosition = getMoonPosition(jdate, latitude, longitude);
+            eclipse.set(eclipseKind, jdate, moonPosition.getElevationAsDouble());
         });
 
+        double julianDate = DateTimeUtils.dateToJulianDate(calendar);
         Set.of(DistanceType.APOGEE, DistanceType.PERIGEE)
                 .forEach(type -> moon.setDistance(type, MoonDistanceCalc.get(type, julianDate)));
 
@@ -113,9 +111,12 @@ public class MoonCalc {
      */
     public void setPositionalInfo(Calendar calendar, double latitude, double longitude, Moon moon, TimeZone zone,
             Locale locale) {
-        double julianDate = DateTimeUtils.dateToJulianDate(calendar);
         setMoonPhase(calendar, moon, zone, locale);
-        setAzimuthElevationZodiac(julianDate, latitude, longitude, moon);
+
+        double julianDate = DateTimeUtils.dateToJulianDate(calendar);
+        MoonPosition moonPosition = getMoonPosition(julianDate, latitude, longitude);
+        moon.setPosition(moonPosition);
+        moon.setZodiac(ZodiacCalc.calculate(moonPosition.getLongitude(), null));
 
         moon.setDistance(DistanceType.CURRENT, MoonDistanceCalc.calculate(julianDate));
     }
@@ -186,8 +187,7 @@ public class MoonCalc {
                 } else {
                     utset = hour + quadRet[1];
                 }
-            }
-            if (quadRet[3] == 2) {
+            } else if (quadRet[3] == 2) {
                 if (quadRet[0] < 0) {
                     utrise = hour + quadRet[2];
                     utset = hour + quadRet[1];
@@ -299,87 +299,16 @@ public class MoonCalc {
     }
 
     /**
-     * Calculates the eclipse.
-     */
-    private double getEclipse(double k, EclipseType typ, EclipseKind eclipse) {
-        double kMod = Math.floor(k) + ((typ == EclipseType.SUN) ? 0 : 0.5);
-        double t = kMod / 1236.85;
-        double f = varF(kMod, t);
-        double jd = 0;
-        double ringTest = 0;
-        if (sinDeg(Math.abs(f)) <= .36) {
-            double o = varO(kMod, t);
-            double f1 = f - .02665 * sinDeg(o);
-            double a1 = 299.77 + .107408 * kMod - .009173 * t * t;
-            double e = varE(t);
-            double m = varM(kMod, t);
-            double m1 = varM1(kMod, t);
-            double p = .207 * e * sinDeg(m) + .0024 * e * sinDeg(2 * m) - .0392 * sinDeg(m1) + .0116 * sinDeg(2 * m1)
-                    - .0073 * e * sinDeg(m1 + m) + .0067 * e * sinDeg(m1 - m) + .0118 * sinDeg(2 * f1);
-            double q = 5.2207 - .0048 * e * cosDeg(m) + .002 * e * cosDeg(2 * m) - .3299 * cosDeg(m1)
-                    - .006 * e * cosDeg(m1 + m) + .0041 * e * cosDeg(m1 - m);
-            double g = (p * cosDeg(f1) + q * sinDeg(f1)) * (1 - .0048 * cosDeg(Math.abs(f1)));
-            double u = .0059 + .0046 * e * cosDeg(m) - .0182 * cosDeg(m1) + .0004 * cosDeg(2 * m1)
-                    - .0005 * cosDeg(m + m1);
-            jd = varJde(kMod, t);
-            jd += (typ == EclipseType.MOON) ? -.4065 * sinDeg(m1) + .1727 * e * sinDeg(m)
-                    : -.4075 * sinDeg(m1) + .1721 * e * sinDeg(m);
-
-            jd += .0161 * sinDeg(2 * m1) - .0097 * sinDeg(2 * f1) + .0073 * e * sinDeg(m1 - m)
-                    - .005 * e * sinDeg(m1 + m) - .0023 * sinDeg(m1 - 2 * f1) + .0021 * e * sinDeg(2 * m);
-            jd += .0012 * sinDeg(m1 + 2 * f1) + .0006 * e * sinDeg(2 * m1 + m) - .0004 * sinDeg(3 * m1)
-                    - .0003 * e * sinDeg(m + 2 * f1) + .0003 * sinDeg(a1) - .0002 * e * sinDeg(m - 2 * f1)
-                    - .0002 * e * sinDeg(2 * m1 - m) - .0002 * sinDeg(o);
-            switch (typ) {
-                case MOON:
-                    if ((1.0248 - u - Math.abs(g)) / .545 <= 0) {
-                        jd = 0; // no moon eclipse
-                    }
-                    if (eclipse == EclipseKind.PARTIAL && (1.0128 - u - Math.abs(g)) / .545 > 0
-                            && (.4678 - u) * (.4678 - u) - g * g > 0) {
-                        jd = 0; // no partial moon eclipse
-                    }
-                    if (eclipse == EclipseKind.TOTAL
-                            && ((1.0128 - u - Math.abs(g)) / .545 <= 0 != (.4678 - u) * (.4678 - u) - g * g <= 0)) {
-                        jd = 0; // no total moon eclipse
-                    }
-                    break;
-                case SUN:
-                    if (Math.abs(g) > 1.5433 + u) {
-                        jd = 0; // no sun eclipse
-                    }
-                    if (eclipse == EclipseKind.PARTIAL && ((g >= -.9972 && g <= .9972)
-                            || (Math.abs(g) >= .9972 && Math.abs(g) < .9972 + Math.abs(u)))) {
-                        jd = 0; // no partial sun eclipse
-                    }
-                    if (eclipse != EclipseKind.PARTIAL) {
-                        if ((g < -.9972 || g > .9972) || (Math.abs(g) < .9972 && Math.abs(g) > .9972 + Math.abs(u))) {
-                            jd = 0; // no ring or total sun eclipse
-                        }
-                        if (u > .0047 || u >= .00464 * Math.sqrt(1 - g * g)) {
-                            ringTest = 1; // no total sun eclipse
-                        }
-                        if (ringTest == 1 && eclipse == EclipseKind.TOTAL) {
-                            jd = 0;
-                        }
-                        if (ringTest == 0 && eclipse == EclipseKind.RING) {
-                            jd = 0;
-                        }
-                    }
-                    break;
-            }
-        }
-        return jd;
-    }
-
-    /**
      * Calculates the illumination.
      */
     private double getIllumination(double jd) {
-        double t = (jd - 2451545) / 36525;
-        double d = 297.8502042 + 445267.11151686 * t - .00163 * t * t + t * t * t / 545868 - t * t * t * t / 113065000;
-        double m = 357.5291092 + 35999.0502909 * t - .0001536 * t * t + t * t * t / 24490000;
-        double m1 = 134.9634114 + 477198.8676313 * t + .008997 * t * t + t * t * t / 69699 - t * t * t * t / 14712000;
+        double t = DateTimeUtils.toJulianCenturies(jd);
+        double t2 = t * t;
+        double t3 = t2 * t;
+        double t4 = t3 * t;
+        double d = 297.8502042 + 445267.11151686 * t - .00163 * t2 + t3 / 545868 - t4 / 113065000;
+        double m = AstroConstants.E05_0 + 35999.0502909 * t - .0001536 * t2 + t3 / 24490000;
+        double m1 = 134.9634114 + 477198.8676313 * t + .008997 * t2 + t3 / 69699 - t4 / 14712000;
         double i = 180 - d - 6.289 * sinDeg(m1) + 2.1 * sinDeg(m) - 1.274 * sinDeg(2 * d - m1) - .658 * sinDeg(2 * d)
                 - .241 * sinDeg(2 * m1) - .110 * sinDeg(d);
         return (1 + cosDeg(i)) / 2 * 100.0;
@@ -397,20 +326,6 @@ public class MoonCalc {
             phaseJd = calcMoonPhase(k, phase);
         } while (forward ? phaseJd <= jd : phaseJd > jd);
         return phaseJd;
-    }
-
-    /**
-     * Calculates the next eclipse.
-     */
-    protected double getEclipse(Calendar cal, EclipseType type, double midnightJd, EclipseKind eclipse) {
-        double tz = 0;
-        double eclipseJd = 0;
-        do {
-            double k = varK(cal, tz);
-            tz += 1;
-            eclipseJd = getEclipse(k, type, eclipse);
-        } while (eclipseJd <= midnightJd);
-        return eclipseJd;
     }
 
     private double[] calcMoon(double t) {
@@ -450,7 +365,7 @@ public class MoonCalc {
 
     private double sinAlt(double moonJd, int hour, double lambda, double cphi, double sphi) {
         double jdo = moonJd + hour / 24.0;
-        double t = (jdo - 51544.5) / 36525.0;
+        double t = (jdo - DateTimeUtils.MJD_JD2000) / DateTimeUtils.JULIAN_CENTURY_DAYS;
         double[] decra = calcMoon(t);
         double tau = 15.0 * (localMeanSiderealTime(jdo, lambda) - decra[1]);
         return sphi * sinDeg(decra[0]) + cphi * cosDeg(decra[0]) * cosDeg(tau);
@@ -459,27 +374,18 @@ public class MoonCalc {
     private double localMeanSiderealTime(double moonJd, double lambda) {
         double moonJdo = Math.floor(moonJd);
         double ut = (moonJd - moonJdo) * 24.0;
-        double t = (moonJdo - 51544.5) / 36525.0;
+        double t = (moonJdo - DateTimeUtils.MJD_JD2000) / DateTimeUtils.JULIAN_CENTURY_DAYS;
         double gmst = 6.697374558 + 1.0027379093 * ut + (8640184.812866 + (.093104 - .0000062 * t) * t) * t / 3600.0;
         return 24.0 * frac((gmst - lambda / 15.0) / 24.0);
-    }
-
-    private double frac(double x) {
-        double ret = x - (int) (x);
-        if (ret < 0) {
-            ret += 1;
-        }
-        return ret;
     }
 
     private double[] quad(double yminus, double yo, double yplus) {
         double nz = 0;
         double a = .5 * (yminus + yplus) - yo;
         double b = .5 * (yplus - yminus);
-        double c = yo;
         double xe = -b / (2 * a);
-        double ye = (a * xe + b) * xe + c;
-        double dis = b * b - 4 * a * c;
+        double ye = (a * xe + b) * xe + yo;
+        double dis = b * b - 4 * a * yo;
         double zero1 = 0;
         double zero2 = 0;
         if (dis >= 0) {
@@ -499,35 +405,6 @@ public class MoonCalc {
         return new double[] { ye, zero1, zero2, nz };
     }
 
-    private double varO(double k, double t) {
-        return 124.7746 - 1.5637558 * k + .0020691 * t * t + .00000215 * t * t * t;
-    }
-
-    private double varF(double k, double t) {
-        return 160.7108 + 390.67050274 * k - .0016341 * t * t - .00000227 * t * t * t + .000000011 * t * t * t * t;
-    }
-
-    private double varM1(double k, double t) {
-        return 201.5643 + 385.81693528 * k + .1017438 * t * t + .00001239 * t * t * t - .000000058 * t * t * t * t;
-    }
-
-    private double varM(double k, double t) {
-        return 2.5534 + 29.10535669 * k - .0000218 * t * t - .00000011 * t * t * t;
-    }
-
-    private double varE(double t) {
-        return 1 - .002516 * t - .0000074 * t * t;
-    }
-
-    private double varJde(double k, double t) {
-        return 2451550.09765 + 29.530588853 * k + .0001337 * t * t - .00000015 * t * t * t
-                + .00000000073 * t * t * t * t;
-    }
-
-    private double varK(Calendar cal, double tz) {
-        return (cal.get(Calendar.YEAR) + (cal.get(Calendar.DAY_OF_YEAR) + tz) / 365 - 2000) * 12.3685;
-    }
-
     private double moonCorrection(double jd, double t, double k) {
         double ret = jd;
         ret += .000325 * sinDeg(299.77 + .107408 * k - .009173 * t * t) + .000165 * sinDeg(251.88 + .016321 * k)
@@ -544,16 +421,17 @@ public class MoonCalc {
     /**
      * Sets the azimuth, elevation and zodiac in the moon object.
      */
-    private void setAzimuthElevationZodiac(double julianDate, double latitude, double longitude, Moon moon) {
+    private MoonPosition getMoonPosition(double julianDate, double latitude, double longitude) {
         double lat = Math.toRadians(latitude);
         double lon = Math.toRadians(longitude);
 
-        double gmst = toGMST(julianDate);
-        double lmst = toLMST(gmst, lon) * Math.toRadians(15);
+        double gmst = DateTimeUtils.toGMST(julianDate);
+        double lmst = DateTimeUtils.toLMST(gmst, lon) * Math.toRadians(15);
 
         double d = julianDate - 2447891.5;
-        double anomalyMean = Math.toRadians(360) / 365.242191 * d + 4.87650757829735 - 4.935239984568769;
-        double nu = anomalyMean + Math.toRadians(360.0) / Math.PI * 0.016713 * Math.sin(anomalyMean);
+        double anomalyMean = MathUtils.TWO_PI / AstroConstants.TROPICAL_YEAR_DAYS * d + 4.87650757829735
+                - 4.935239984568769;
+        double nu = anomalyMean + Math.PI * 0.016713 * Math.sin(anomalyMean);
         double sunLon = mod2Pi(nu + 4.935239984568769);
 
         double l0 = Math.toRadians(318.351648);
@@ -585,17 +463,7 @@ public class MoonCalc {
         double[] raDecTopo = geoEqu2TopoEqu(raDec, distance, lat, lmst);
         double[] azAlt = equ2AzAlt(raDecTopo[0], raDecTopo[1], lat, lmst);
 
-        moon.setPosition(
-                new MoonPosition(Math.toDegrees(azAlt[0]), Math.toDegrees(azAlt[1]) + refraction(azAlt[1]), moonLon));
-        moon.setZodiac(ZodiacCalc.calculate(moonLon, null));
-    }
-
-    private double mod2Pi(double x) {
-        return (mod(x, 2. * Math.PI));
-    }
-
-    private double mod(double a, double b) {
-        return (a - Math.floor(a / b) * b);
+        return new MoonPosition(Math.toDegrees(azAlt[0]), Math.toDegrees(azAlt[1]) + refraction(azAlt[1]), moonLon);
     }
 
     /**
@@ -607,11 +475,10 @@ public class MoonCalc {
         double sindec = Math.sin(dec);
         double lha = lmst - ra;
         double coslha = Math.cos(lha);
-        double sinlha = Math.sin(lha);
         double coslat = Math.cos(geolat);
         double sinlat = Math.sin(geolat);
 
-        double n = -cosdec * sinlha;
+        double n = -cosdec * Math.sin(lha);
         double d = sindec * coslat - cosdec * coslha * sinlat;
         double az = mod2Pi(Math.atan2(n, d));
         double alt = Math.asin(sindec * sinlat + cosdec * coslha * coslat);
@@ -624,7 +491,7 @@ public class MoonCalc {
      * (ra/dec)
      */
     private double[] ecl2Equ(double lat, double lon, double jd) {
-        double t = (jd - 2451545.0) / 36525.0;
+        double t = DateTimeUtils.toJulianCenturies(jd);
         double eps = Math
                 .toRadians(23. + (26 + 21.45 / 60.) / 60. + t * (-46.815 + t * (-0.0006 + t * 0.00181)) / 3600.);
         double coseps = Math.cos(eps);
@@ -643,16 +510,12 @@ public class MoonCalc {
      */
     private double[] geoEqu2TopoEqu(double[] raDec, double distance, double observerLat, double lmst) {
         double cosdec = Math.cos(raDec[1]);
-        double sindec = Math.sin(raDec[1]);
-        double coslst = Math.cos(lmst);
-        double sinlst = Math.sin(lmst);
         double coslat = Math.cos(observerLat);
-        double sinlat = Math.sin(observerLat);
         double rho = getCenterDistance(observerLat);
 
-        double x = distance * cosdec * Math.cos(raDec[0]) - rho * coslat * coslst;
-        double y = distance * cosdec * Math.sin(raDec[0]) - rho * coslat * sinlst;
-        double z = distance * sindec - rho * sinlat;
+        double x = distance * cosdec * Math.cos(raDec[0]) - rho * coslat * Math.cos(lmst);
+        double y = distance * cosdec * Math.sin(raDec[0]) - rho * coslat * Math.sin(lmst);
+        double z = distance * Math.sin(raDec[1]) - rho * Math.sin(observerLat);
 
         double distanceTopocentric = Math.sqrt(x * x + y * y + z * z);
         double raTopo = mod2Pi(Math.atan2(y, x));
@@ -662,36 +525,17 @@ public class MoonCalc {
     }
 
     /**
-     * Convert julian date to greenwich mean sidereal time.
-     */
-    private double toGMST(double jd) {
-        double ut = (jd - 0.5 - Math.floor(jd - 0.5)) * 24.;
-        double jdMod = Math.floor(jd - 0.5) + 0.5;
-        double t = (jdMod - 2451545.0) / 36525.0;
-        double t0 = 6.697374558 + t * (2400.051336 + t * 0.000025862);
-        return (mod(t0 + ut * 1.002737909, 24.));
-    }
-
-    /**
-     * Convert greenwich mean sidereal time to local mean sidereal time.
-     */
-    private double toLMST(double gmst, double lon) {
-        return mod(gmst + Math.toDegrees(lon) / 15., 24.);
-    }
-
-    /**
      * Returns geocentric distance from earth center.
      */
     private double getCenterDistance(double lat) {
         double co = Math.cos(lat);
+        co = co * co;
         double si = Math.sin(lat);
-        double fl = 1.0 - 1.0 / 298.257223563;
-        fl = fl * fl;
-        si = si * si;
-        double u = 1.0 / Math.sqrt(co * co + fl * si);
-        double a = 6378.137 * u;
-        double b = 6378.137 * fl * u;
-        return Math.sqrt(a * a * co * co + b * b * si);
+        double fl = FL * FL;
+        double u = 1.0 / Math.sqrt(co + fl * si);
+        double a = AstroConstants.EARTH_EQUATORIAL_RADIUS * u;
+        double b = AstroConstants.EARTH_EQUATORIAL_RADIUS * u * fl;
+        return Math.sqrt(a * a * co + b * b * si);
     }
 
     /**
@@ -705,9 +549,7 @@ public class MoonCalc {
 
         if (altdeg < -2 || altdeg >= 90) {
             return 0;
-        }
-
-        if (altdeg > 15) {
+        } else if (altdeg > 15) {
             return 0.00452 * pressure / ((273 + temperature) * Math.tan(alt));
         }
 
