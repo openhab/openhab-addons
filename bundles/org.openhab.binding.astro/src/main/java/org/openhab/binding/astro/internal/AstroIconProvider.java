@@ -129,12 +129,13 @@ public class AstroIconProvider implements IconProvider {
     }
 
     private @Nullable InputStream getResource(String iconName) {
-        URL iconResource = bundle.getEntry(iconName.toLowerCase(Locale.ROOT));
-        try (InputStream stream = iconResource.openStream()) {
-            byte[] icon = stream.readAllBytes();
-            return new ByteArrayInputStream(icon);
-        } catch (IOException e) {
-            logger.warn("Unable to load resource '{}': {}", iconResource.getPath(), e.getMessage());
+        if (bundle.getEntry(iconName.toLowerCase(Locale.ROOT)) instanceof URL iconResource) {
+            try (InputStream stream = iconResource.openStream()) {
+                byte[] icon = stream.readAllBytes();
+                return new ByteArrayInputStream(icon);
+            } catch (IOException e) {
+                logger.warn("Unable to load resource '{}': {}", iconResource.getPath(), e.getMessage());
+            }
         }
         return null;
     }
