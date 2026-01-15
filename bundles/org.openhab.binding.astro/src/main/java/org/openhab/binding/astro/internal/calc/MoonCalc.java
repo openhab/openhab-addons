@@ -19,6 +19,7 @@ import java.math.RoundingMode;
 import java.time.InstantSource;
 import java.util.Calendar;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.Set;
 import java.util.TimeZone;
 
@@ -47,10 +48,6 @@ import org.openhab.binding.astro.internal.util.DateTimeUtils;
  */
 @NonNullByDefault
 public class MoonCalc {
-    private static final double NEW_MOON = 0;
-    private static final double FULL_MOON = 0.5;
-    private static final double FIRST_QUARTER = 0.25;
-    private static final double LAST_QUARTER = 0.75;
 
     private final InstantSource instantSource;
 
@@ -93,12 +90,8 @@ public class MoonCalc {
         moon.setSet(new Range(set, set));
 
         MoonPhase phase = moon.getPhase();
-        phase.setNew(DateTimeUtils.toCalendar(getNextPhase(calendar, julianDateMidnight, NEW_MOON), zone, locale));
-        phase.setFirstQuarter(
-                DateTimeUtils.toCalendar(getNextPhase(calendar, julianDateMidnight, FIRST_QUARTER), zone, locale));
-        phase.setFull(DateTimeUtils.toCalendar(getNextPhase(calendar, julianDateMidnight, FULL_MOON), zone, locale));
-        phase.setThirdQuarter(
-                DateTimeUtils.toCalendar(getNextPhase(calendar, julianDateMidnight, LAST_QUARTER), zone, locale));
+        phase.remarkablePhases().forEach(mp -> phase.setPhase(mp,
+                DateTimeUtils.toCalendar(getPhase(calendar, julianDateMidnight, mp, true), zone, locale)));
 
         Eclipse eclipse = moon.getEclipse();
         eclipse.getKinds().forEach(eclipseKind -> {
@@ -133,7 +126,7 @@ public class MoonCalc {
     private void setMoonPhase(Calendar calendar, Moon moon, TimeZone zone, Locale locale) {
         MoonPhase phase = moon.getPhase();
         double julianDate = DateTimeUtils.dateToJulianDate(calendar);
-        double parentNewMoon = getPreviousPhase(calendar, julianDate, NEW_MOON);
+        double parentNewMoon = getPhase(calendar, julianDate, MoonPhaseName.NEW, false);
         double age = Math.abs(parentNewMoon - julianDate);
         Calendar parentNewMoonCal = DateTimeUtils.toCalendar(parentNewMoon, zone, locale);
         if (parentNewMoonCal == null) {
@@ -153,20 +146,10 @@ public class MoonCalc {
         phase.setAgeDegree(3.6 * agePercent);
         double illumination = getIllumination(julianDate);
         phase.setIllumination(illumination);
-        boolean isWaxing = age < (29.530588853 / 2);
-        if (DateTimeUtils.isSameDay(calendar, phase.getNew())) {
-            phase.setName(MoonPhaseName.NEW);
-        } else if (DateTimeUtils.isSameDay(calendar, phase.getFirstQuarter())) {
-            phase.setName(MoonPhaseName.FIRST_QUARTER);
-        } else if (DateTimeUtils.isSameDay(calendar, phase.getThirdQuarter())) {
-            phase.setName(MoonPhaseName.THIRD_QUARTER);
-        } else if (DateTimeUtils.isSameDay(calendar, phase.getFull())) {
-            phase.setName(MoonPhaseName.FULL);
-        } else if (illumination >= 0 && illumination < 50) {
-            phase.setName(isWaxing ? MoonPhaseName.WAXING_CRESCENT : MoonPhaseName.WANING_CRESCENT);
-        } else if (illumination >= 50 && illumination < 100) {
-            phase.setName(isWaxing ? MoonPhaseName.WAXING_GIBBOUS : MoonPhaseName.WANING_GIBBOUS);
-        }
+
+        Optional<MoonPhaseName> remarkablePhase = phase.remarkablePhases()
+                .filter(p -> DateTimeUtils.isSameDay(calendar, phase.getPhaseDate(p))).findFirst();
+        phase.setName(remarkablePhase.orElse(MoonPhaseName.fromAgePercent(agePercent / 100)));
     }
 
     /**
@@ -263,8 +246,8 @@ public class MoonCalc {
     /**
      * Calculates the moon phase.
      */
-    private double calcMoonPhase(double k, double mode) {
-        double kMod = Math.floor(k) + mode;
+    private double calcMoonPhase(double k, MoonPhaseName phase) {
+        double kMod = Math.floor(k) + phase.cycleProgress;
         double t = kMod / 1236.85;
         double e = varE(t);
         double m = varM(kMod, t);
@@ -272,42 +255,45 @@ public class MoonCalc {
         double f = varF(kMod, t);
         double o = varO(kMod, t);
         double jd = varJde(kMod, t);
-        if (mode == NEW_MOON) {
-            jd += -.4072 * sinDeg(m1) + .17241 * e * sinDeg(m) + .01608 * sinDeg(2 * m1) + .01039 * sinDeg(2 * f)
-                    + .00739 * e * sinDeg(m1 - m) - .00514 * e * sinDeg(m1 + m) + .00208 * e * e * sinDeg(2 * m)
-                    - .00111 * sinDeg(m1 - 2 * f) - .00057 * sinDeg(m1 + 2 * f);
-            jd += .00056 * e * sinDeg(2 * m1 + m) - .00042 * sinDeg(3 * m1) + .00042 * e * sinDeg(m + 2 * f)
-                    + .00038 * e * sinDeg(m - 2 * f) - .00024 * e * sinDeg(2 * m1 - m) - .00017 * sinDeg(o)
-                    - .00007 * sinDeg(m1 + 2 * m) + .00004 * sinDeg(2 * m1 - 2 * f);
-            jd += .00004 * sinDeg(3 * m) + .00003 * sinDeg(m1 + m - 2 * f) + .00003 * sinDeg(2 * m1 + 2 * f)
-                    - .00003 * sinDeg(m1 + m + 2 * f) + .00003 * sinDeg(m1 - m + 2 * f)
-                    - .00002 * sinDeg(m1 - m - 2 * f) - .00002 * sinDeg(3 * m1 + m);
-            jd += .00002 * sinDeg(4 * m1);
-        } else if (mode == FULL_MOON) {
-            jd += -.40614 * sinDeg(m1) + .17302 * e * sinDeg(m) + .01614 * sinDeg(2 * m1) + .01043 * sinDeg(2 * f)
-                    + .00734 * e * sinDeg(m1 - m) - .00515 * e * sinDeg(m1 + m) + .00209 * e * e * sinDeg(2 * m)
-                    - .00111 * sinDeg(m1 - 2 * f) - .00057 * sinDeg(m1 + 2 * f);
-            jd += .00056 * e * sinDeg(2 * m1 + m) - .00042 * sinDeg(3 * m1) + .00042 * e * sinDeg(m + 2 * f)
-                    + .00038 * e * sinDeg(m - 2 * f) - .00024 * e * sinDeg(2 * m1 - m) - .00017 * sinDeg(o)
-                    - .00007 * sinDeg(m1 + 2 * m) + .00004 * sinDeg(2 * m1 - 2 * f);
-            jd += .00004 * sinDeg(3 * m) + .00003 * sinDeg(m1 + m - 2 * f) + .00003 * sinDeg(2 * m1 + 2 * f)
-                    - .00003 * sinDeg(m1 + m + 2 * f) + .00003 * sinDeg(m1 - m + 2 * f)
-                    - .00002 * sinDeg(m1 - m - 2 * f) - .00002 * sinDeg(3 * m1 + m);
-            jd += .00002 * sinDeg(4 * m1);
-        } else {
-            jd += -.62801 * sinDeg(m1) + .17172 * e * sinDeg(m) - .01183 * e * sinDeg(m1 + m) + .00862 * sinDeg(2 * m1)
-                    + .00804 * sinDeg(2 * f) + .00454 * e * sinDeg(m1 - m) + .00204 * e * e * sinDeg(2 * m)
-                    - .0018 * sinDeg(m1 - 2 * f) - .0007 * sinDeg(m1 + 2 * f);
-            jd += -.0004 * sinDeg(3 * m1) - .00034 * e * sinDeg(2 * m1 - m) + .00032 * e * sinDeg(m + 2 * f)
-                    + .00032 * e * sinDeg(m - 2 * f) - .00028 * e * e * sinDeg(m1 + 2 * m)
-                    + .00027 * e * sinDeg(2 * m1 + m) - .00017 * sinDeg(o);
-            jd += -.00005 * sinDeg(m1 - m - 2 * f) + .00004 * sinDeg(2 * m1 + 2 * f) - .00004 * sinDeg(m1 + m + 2 * f)
-                    + .00004 * sinDeg(m1 - 2 * m) + .00003 * sinDeg(m1 + m - 2 * f) + .00003 * sinDeg(3 * m)
-                    + .00002 * sinDeg(2 * m1 - 2 * f);
-            jd += .00002 * sinDeg(m1 - m + 2 * f) - .00002 * sinDeg(3 * m1 + m);
-            double w = .00306 - .00038 * e * cosDeg(m) + .00026 * cosDeg(m1) - .00002 * cosDeg(m1 - m)
-                    + .00002 * cosDeg(m1 + m) + .00002 * cosDeg(2 * f);
-            jd += (mode == FIRST_QUARTER) ? w : -w;
+        switch (phase) {
+            case NEW:
+                jd += -.4072 * sinDeg(m1) + .17241 * e * sinDeg(m) + .01608 * sinDeg(2 * m1) + .01039 * sinDeg(2 * f)
+                        + .00739 * e * sinDeg(m1 - m) - .00514 * e * sinDeg(m1 + m) + .00208 * e * e * sinDeg(2 * m)
+                        - .00111 * sinDeg(m1 - 2 * f) - .00057 * sinDeg(m1 + 2 * f);
+                jd += .00056 * e * sinDeg(2 * m1 + m) - .00042 * sinDeg(3 * m1) + .00042 * e * sinDeg(m + 2 * f)
+                        + .00038 * e * sinDeg(m - 2 * f) - .00024 * e * sinDeg(2 * m1 - m) - .00017 * sinDeg(o)
+                        - .00007 * sinDeg(m1 + 2 * m) + .00004 * sinDeg(2 * m1 - 2 * f);
+                jd += .00004 * sinDeg(3 * m) + .00003 * sinDeg(m1 + m - 2 * f) + .00003 * sinDeg(2 * m1 + 2 * f)
+                        - .00003 * sinDeg(m1 + m + 2 * f) + .00003 * sinDeg(m1 - m + 2 * f)
+                        - .00002 * sinDeg(m1 - m - 2 * f) - .00002 * sinDeg(3 * m1 + m);
+                jd += .00002 * sinDeg(4 * m1);
+                break;
+            case FULL:
+                jd += -.40614 * sinDeg(m1) + .17302 * e * sinDeg(m) + .01614 * sinDeg(2 * m1) + .01043 * sinDeg(2 * f)
+                        + .00734 * e * sinDeg(m1 - m) - .00515 * e * sinDeg(m1 + m) + .00209 * e * e * sinDeg(2 * m)
+                        - .00111 * sinDeg(m1 - 2 * f) - .00057 * sinDeg(m1 + 2 * f);
+                jd += .00056 * e * sinDeg(2 * m1 + m) - .00042 * sinDeg(3 * m1) + .00042 * e * sinDeg(m + 2 * f)
+                        + .00038 * e * sinDeg(m - 2 * f) - .00024 * e * sinDeg(2 * m1 - m) - .00017 * sinDeg(o)
+                        - .00007 * sinDeg(m1 + 2 * m) + .00004 * sinDeg(2 * m1 - 2 * f);
+                jd += .00004 * sinDeg(3 * m) + .00003 * sinDeg(m1 + m - 2 * f) + .00003 * sinDeg(2 * m1 + 2 * f)
+                        - .00003 * sinDeg(m1 + m + 2 * f) + .00003 * sinDeg(m1 - m + 2 * f)
+                        - .00002 * sinDeg(m1 - m - 2 * f) - .00002 * sinDeg(3 * m1 + m);
+                jd += .00002 * sinDeg(4 * m1);
+                break;
+            default:
+                jd += -.62801 * sinDeg(m1) + .17172 * e * sinDeg(m) - .01183 * e * sinDeg(m1 + m)
+                        + .00862 * sinDeg(2 * m1) + .00804 * sinDeg(2 * f) + .00454 * e * sinDeg(m1 - m)
+                        + .00204 * e * e * sinDeg(2 * m) - .0018 * sinDeg(m1 - 2 * f) - .0007 * sinDeg(m1 + 2 * f);
+                jd += -.0004 * sinDeg(3 * m1) - .00034 * e * sinDeg(2 * m1 - m) + .00032 * e * sinDeg(m + 2 * f)
+                        + .00032 * e * sinDeg(m - 2 * f) - .00028 * e * e * sinDeg(m1 + 2 * m)
+                        + .00027 * e * sinDeg(2 * m1 + m) - .00017 * sinDeg(o);
+                jd += -.00005 * sinDeg(m1 - m - 2 * f) + .00004 * sinDeg(2 * m1 + 2 * f)
+                        - .00004 * sinDeg(m1 + m + 2 * f) + .00004 * sinDeg(m1 - 2 * m)
+                        + .00003 * sinDeg(m1 + m - 2 * f) + .00003 * sinDeg(3 * m) + .00002 * sinDeg(2 * m1 - 2 * f);
+                jd += .00002 * sinDeg(m1 - m + 2 * f) - .00002 * sinDeg(3 * m1 + m);
+                double w = .00306 - .00038 * e * cosDeg(m) + .00026 * cosDeg(m1) - .00002 * cosDeg(m1 - m)
+                        + .00002 * cosDeg(m1 + m) + .00002 * cosDeg(2 * f);
+                jd += MoonPhaseName.FIRST_QUARTER.equals(phase) ? w : -w;
         }
         return moonCorrection(jd, t, kMod);
     }
@@ -400,30 +386,16 @@ public class MoonCalc {
     }
 
     /**
-     * Calculates the next moon phase.
+     * Searches the next moon phase in a given direction
      */
-    private double getNextPhase(Calendar cal, double midnightJd, double mode) {
+    private double getPhase(Calendar cal, double jd, MoonPhaseName phase, boolean forward) {
         double tz = 0;
         double phaseJd = 0;
         do {
             double k = varK(cal, tz);
-            tz += 1;
-            phaseJd = calcMoonPhase(k, mode);
-        } while (phaseJd <= midnightJd);
-        return phaseJd;
-    }
-
-    /**
-     * Calculates the previous moon phase.
-     */
-    private double getPreviousPhase(Calendar cal, double jd, double mode) {
-        double tz = 0;
-        double phaseJd = 0;
-        do {
-            double k = varK(cal, tz);
-            tz -= 1;
-            phaseJd = calcMoonPhase(k, mode);
-        } while (phaseJd > jd);
+            tz += forward ? 1 : -1;
+            phaseJd = calcMoonPhase(k, phase);
+        } while (forward ? phaseJd <= jd : phaseJd > jd);
         return phaseJd;
     }
 

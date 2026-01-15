@@ -25,7 +25,8 @@ public class AstroConstants {
     public static final double MILLISECONDS_PER_DAY = 1000 * SECONDS_PER_DAY;
     public static final double TROPICAL_YEAR_DAYS = 365.242189;
     public static final double TROPICAL_YEAR_SECONDS = TROPICAL_YEAR_DAYS * SECONDS_PER_DAY;
-    public static final double SOLAR_MEAN_MOTION_PER_SECOND = MathUtils.TWO_PI / AstroConstants.TROPICAL_YEAR_SECONDS;
+    public static final double SOLAR_MEAN_MOTION_PER_SECOND = MathUtils.TWO_PI / TROPICAL_YEAR_SECONDS;
+    public static final double LUNAR_SYNODIC_MONTH_DAYS = 29.530588853;
 
     /** Constant term of the E5 angle. */
     public static final double E05_0 = 357.52910918;
