@@ -32,6 +32,8 @@ import java.util.TimeZone;
 
 import javax.measure.Unit;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -63,6 +65,7 @@ import org.openhab.core.types.State;
  */
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
+@NonNullByDefault
 public class StateTest {
 
     // These test result timestamps are adapted for the +03:00 time zone
@@ -70,11 +73,11 @@ public class StateTest {
     private static final ZoneId ZONE_ID = TIME_ZONE.toZoneId();
     private static final Locale LOCALE = Locale.of("ar", "iq");
 
-    private @Mock TimeZoneProvider timeZoneProvider;
-    private @Mock Thing thing;
-    private @Mock CronScheduler scheduler;
-    private @Mock LocaleProvider localeProvider;
-    private @Mock Channel channel;
+    private @Mock @NonNullByDefault({}) TimeZoneProvider timeZoneProvider;
+    private @Mock @NonNullByDefault({}) Thing thing;
+    private @Mock @NonNullByDefault({}) CronScheduler scheduler;
+    private @Mock @NonNullByDefault({}) LocaleProvider localeProvider;
+    private @Mock @NonNullByDefault({}) Channel channel;
 
     @BeforeEach
     public void init() {
@@ -100,6 +103,9 @@ public class StateTest {
 
     private void assertStateUpdate(String thingID, String channelId, State expectedState) throws Exception {
         AstroThingHandler handler = getHandler(thingID);
+        if (handler == null) {
+            throw new IllegalStateException("hander should not be null");
+        }
 
         when(channel.getUID()).thenReturn(new ChannelUID(getThingUID(thingID), channelId));
         when(channel.getConfiguration()).thenReturn(new Configuration());
@@ -124,11 +130,11 @@ public class StateTest {
             case (TEST_MOON_THING_ID):
                 return new ThingUID(THING_TYPE_MOON, thingID);
             default:
-                return null;
+                return new ThingUID("error");
         }
     }
 
-    private AstroThingHandler getHandler(String thingID) {
+    private @Nullable AstroThingHandler getHandler(String thingID) {
         LocalDateTime time = LocalDateTime.of(TEST_YEAR, TEST_MONTH, TEST_DAY, 0, 0);
         ZonedDateTime zonedTime = ZonedDateTime.ofLocal(time, ZONE_ID, null);
         InstantSource instantSource = InstantSource.fixed(zonedTime.toInstant());

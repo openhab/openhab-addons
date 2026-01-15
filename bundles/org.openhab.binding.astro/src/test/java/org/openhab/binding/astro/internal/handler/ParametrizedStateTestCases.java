@@ -17,6 +17,7 @@ import static org.openhab.binding.astro.internal.CommonTestConstants.*;
 import java.util.Arrays;
 import java.util.List;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
@@ -31,6 +32,7 @@ import org.openhab.core.library.unit.Units;
  * @author Erdoan Hadzhiyusein - Adapted the class to work with the new DateTimeType
  * @author Christoph Weitkamp - Introduced UoM and migrated tests to pure Java
  */
+@NonNullByDefault
 public final class ParametrizedStateTestCases {
 
     public static final double TEST_LATITUDE = 22.4343;

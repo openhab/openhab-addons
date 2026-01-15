@@ -21,6 +21,7 @@ import java.time.Instant;
 import java.time.InstantSource;
 import java.time.ZoneId;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.astro.internal.model.Sun;
 import org.openhab.core.config.core.Configuration;
@@ -45,6 +46,7 @@ import org.openhab.core.types.State;
  * @author Svilen Valkanov - Reworked to plain unit tests
  * @author Christoph Weitkamp - Migrated tests to pure Java
  */
+@NonNullByDefault
 public class CommandTest {
 
     @Test

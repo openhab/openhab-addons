@@ -14,12 +14,15 @@ package org.openhab.binding.astro.internal;
 
 import java.math.BigDecimal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Contains some test data used across different tests
  *
  * @author Svilen Valkanov - Initial contribution
  * @author Christoph Weitkamp - Migrated tests to pure Java
  */
+@NonNullByDefault
 public final class CommonTestConstants {
 
     public static final String TEST_SUN_THING_ID = "testSunThingId";
