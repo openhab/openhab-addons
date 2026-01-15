@@ -14,8 +14,6 @@ package org.openhab.binding.astro.internal.calc;
 
 import static org.openhab.binding.astro.internal.util.MathUtils.*;
 
-import java.util.Calendar;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.astro.internal.model.EclipseKind;
 
@@ -28,11 +26,11 @@ import org.openhab.binding.astro.internal.model.EclipseKind;
 @NonNullByDefault
 public abstract class EclipseCalc extends AstroCalc {
 
-    public double calculate(Calendar cal, double midnightJd, EclipseKind eclipse) {
+    public double calculate(double midnightJd, EclipseKind eclipse) {
         double tz = 0;
         double eclipseJd = 0;
         do {
-            double k = varK(cal, tz);
+            double k = varK(midnightJd, tz);
             tz += 1;
             eclipseJd = getEclipse(Math.floor(k) + getJDAjust(), eclipse);
         } while (eclipseJd <= midnightJd);
@@ -41,8 +39,7 @@ public abstract class EclipseCalc extends AstroCalc {
 
     protected abstract double getJDAjust();
 
-    protected abstract double astroAdjust(EclipseKind eclipse, double e, double m, double m1, double g, double u,
-            double jd);
+    protected abstract double astroAdjust(EclipseKind ek, double e, double m, double m1, double g, double u, double jd);
 
     /**
      * Calculates the eclipse.

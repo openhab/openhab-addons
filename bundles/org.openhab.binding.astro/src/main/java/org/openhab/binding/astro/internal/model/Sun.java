@@ -33,7 +33,7 @@ public class Sun extends RiseSet implements Planet {
 
     private @Nullable Season season = null;
 
-    private Eclipse eclipse = new Eclipse(EclipseKind.PARTIAL, EclipseKind.TOTAL, EclipseKind.RING);
+    private Eclipse eclipses = new Eclipse(EclipseKind.PARTIAL, EclipseKind.TOTAL, EclipseKind.RING);
 
     private Radiation radiation = Radiation.NULL;
 
@@ -281,15 +281,8 @@ public class Sun extends RiseSet implements Planet {
     /**
      * Returns the eclipses.
      */
-    public Eclipse getEclipse() {
-        return eclipse;
-    }
-
-    /**
-     * Sets the eclipses.
-     */
-    public void setEclipse(Eclipse eclipse) {
-        this.eclipse = eclipse;
+    public Eclipse getEclipses() {
+        return eclipses;
     }
 
     /**

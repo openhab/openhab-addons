@@ -121,8 +121,8 @@ public final class DailyJobSun extends AbstractJob {
                 scheduleRange(handler, range, EVENT_CHANNEL_ID_DAYLIGHT, zone, locale, instantSource);
             }
 
-            Eclipse eclipse = sun.getEclipse();
-            eclipse.getKinds().forEach(eclipseKind -> {
+            Eclipse eclipse = sun.getEclipses();
+            eclipse.getEclipseKinds().forEach(eclipseKind -> {
                 if (eclipse.getDate(eclipseKind) instanceof Instant eclipseDate) {
                     scheduleEvent(handler, eclipseDate, eclipseKind.toString(), EVENT_CHANNEL_ID_ECLIPSE, false,
                             zone.toZoneId());

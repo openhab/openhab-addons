@@ -27,7 +27,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class Moon extends RiseSet implements Planet {
     private final Map<DistanceType, MoonDistance> distances = new HashMap<>(DistanceType.values().length);
-    private final Eclipse eclipse = new Eclipse(EclipseKind.PARTIAL, EclipseKind.TOTAL);
+    private final Eclipse eclipses = new Eclipse(EclipseKind.PARTIAL, EclipseKind.TOTAL);
 
     private MoonPhase phase = new MoonPhase();
     private Position position = MoonPosition.NULL;
@@ -62,8 +62,8 @@ public class Moon extends RiseSet implements Planet {
     /**
      * Returns the eclipses.
      */
-    public Eclipse getEclipse() {
-        return eclipse;
+    public Eclipse getEclipses() {
+        return eclipses;
     }
 
     /**

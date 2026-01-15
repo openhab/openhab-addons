@@ -265,17 +265,17 @@ public class SunHandler extends AstroThingHandler {
                 s = sun.getSeason();
                 return s == null ? UnDefType.UNDEF : toState(s.getTimeLeft(), channel);
             case CHANNEL_ID_SUN_ECLIPSE_TOTAL:
-                return toState(sun.getEclipse().getDate(EclipseKind.TOTAL), channel);
+                return toState(sun.getEclipses().getDate(EclipseKind.TOTAL), channel);
             case CHANNEL_ID_SUN_ECLIPSE_TOTAL_ELEVATION:
-                return toState(sun.getEclipse().getElevation(EclipseKind.TOTAL), channel);
+                return toState(sun.getEclipses().getElevation(EclipseKind.TOTAL), channel);
             case CHANNEL_ID_SUN_ECLIPSE_PARTIAL:
-                return toState(sun.getEclipse().getDate(EclipseKind.PARTIAL), channel);
+                return toState(sun.getEclipses().getDate(EclipseKind.PARTIAL), channel);
             case CHANNEL_ID_SUN_ECLIPSE_PARTIAL_ELEVATION:
-                return toState(sun.getEclipse().getElevation(EclipseKind.PARTIAL), channel);
+                return toState(sun.getEclipses().getElevation(EclipseKind.PARTIAL), channel);
             case CHANNEL_ID_SUN_ECLIPSE_RING:
-                return toState(sun.getEclipse().getDate(EclipseKind.RING), channel);
+                return toState(sun.getEclipses().getDate(EclipseKind.RING), channel);
             case CHANNEL_ID_SUN_ECLIPSE_RING_ELEVATION:
-                return toState(sun.getEclipse().getElevation(EclipseKind.RING), channel);
+                return toState(sun.getEclipses().getElevation(EclipseKind.RING), channel);
             case CHANNEL_ID_SUN_PHASE_NAME:
                 return toState(sun.getPhase().getName(), channel);
             case CHANNEL_ID_SUN_CIRCADIAN_BRIGHTNESS:

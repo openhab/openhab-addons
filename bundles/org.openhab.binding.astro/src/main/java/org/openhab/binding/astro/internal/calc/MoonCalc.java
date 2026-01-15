@@ -90,11 +90,11 @@ public class MoonCalc extends AstroCalc {
         MoonPhase phase = moon.getPhase();
         double julianDateMidnight = DateTimeUtils.midnightDateToJulianDate(calendar);
         phase.remarkablePhases().forEach(mp -> phase.setPhase(mp,
-                DateTimeUtils.toCalendar(getPhase(calendar, julianDateMidnight, mp, true), zone, locale)));
+                DateTimeUtils.toCalendar(getPhase(julianDateMidnight, mp, true), zone, locale)));
 
-        Eclipse eclipse = moon.getEclipse();
-        eclipse.getKinds().forEach(eclipseKind -> {
-            double jdate = ECLIPSE_CALC.calculate(calendar, julianDateMidnight, eclipseKind);
+        Eclipse eclipse = moon.getEclipses();
+        eclipse.getEclipseKinds().forEach(eclipseKind -> {
+            double jdate = ECLIPSE_CALC.calculate(julianDateMidnight, eclipseKind);
             MoonPosition moonPosition = getMoonPosition(jdate, latitude, longitude);
             eclipse.set(eclipseKind, jdate, moonPosition.getElevationAsDouble());
         });
@@ -117,7 +117,6 @@ public class MoonCalc extends AstroCalc {
         MoonPosition moonPosition = getMoonPosition(julianDate, latitude, longitude);
         moon.setPosition(moonPosition);
         moon.setZodiac(ZodiacCalc.calculate(moonPosition.getLongitude(), null));
-
         moon.setDistance(DistanceType.CURRENT, MoonDistanceCalc.calculate(julianDate));
     }
 
@@ -127,7 +126,7 @@ public class MoonCalc extends AstroCalc {
     private void setMoonPhase(Calendar calendar, Moon moon, TimeZone zone, Locale locale) {
         MoonPhase phase = moon.getPhase();
         double julianDate = DateTimeUtils.dateToJulianDate(calendar);
-        double parentNewMoon = getPhase(calendar, julianDate, MoonPhaseName.NEW, false);
+        double parentNewMoon = getPhase(julianDate, MoonPhaseName.NEW, false);
         double age = Math.abs(parentNewMoon - julianDate);
         Calendar parentNewMoonCal = DateTimeUtils.toCalendar(parentNewMoon, zone, locale);
         if (parentNewMoonCal == null) {
@@ -317,11 +316,11 @@ public class MoonCalc extends AstroCalc {
     /**
      * Searches the next moon phase in a given direction
      */
-    private double getPhase(Calendar cal, double jd, MoonPhaseName phase, boolean forward) {
+    private double getPhase(double jd, MoonPhaseName phase, boolean forward) {
         double tz = 0;
         double phaseJd = 0;
         do {
-            double k = varK(cal, tz);
+            double k = varK(jd, tz);
             tz += forward ? 1 : -1;
             phaseJd = calcMoonPhase(k, phase);
         } while (forward ? phaseJd <= jd : phaseJd > jd);

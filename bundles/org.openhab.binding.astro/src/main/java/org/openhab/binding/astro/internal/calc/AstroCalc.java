@@ -12,9 +12,8 @@
  */
 package org.openhab.binding.astro.internal.calc;
 
-import java.util.Calendar;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.astro.internal.util.DateTimeUtils;
 
 /**
  * Calculates the eclipses for the astro object
@@ -49,7 +48,7 @@ public class AstroCalc {
                 + .00000000073 * t * t * t * t;
     }
 
-    protected static double varK(Calendar cal, double tz) {
-        return (cal.get(Calendar.YEAR) + (cal.get(Calendar.DAY_OF_YEAR) + tz) / 365 - 2000) * 12.3685;
+    protected static double varK(double jd, double tz) {
+        return ((jd + tz - DateTimeUtils.JD_2000_01_01) / 365.0) * 12.3685;
     }
 }

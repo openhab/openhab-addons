@@ -131,13 +131,13 @@ public class MoonHandler extends AstroThingHandler {
             case CHANNEL_ID_MOON_PHASE_NAME:
                 return toState(moon.getPhase().getName(), channel);
             case CHANNEL_ID_MOON_ECLIPSE_TOTAL:
-                return toState(moon.getEclipse().getDate(EclipseKind.TOTAL), channel);
+                return toState(moon.getEclipses().getDate(EclipseKind.TOTAL), channel);
             case CHANNEL_ID_MOON_ECLIPSE_TOTAL_ELEVATION:
-                return toState(moon.getEclipse().getElevation(EclipseKind.TOTAL), channel);
+                return toState(moon.getEclipses().getElevation(EclipseKind.TOTAL), channel);
             case CHANNEL_ID_MOON_ECLIPSE_PARTIAL:
-                return toState(moon.getEclipse().getDate(EclipseKind.PARTIAL), channel);
+                return toState(moon.getEclipses().getDate(EclipseKind.PARTIAL), channel);
             case CHANNEL_ID_MOON_ECLIPSE_PARTIAL_ELEVATION:
-                return toState(moon.getEclipse().getElevation(EclipseKind.PARTIAL), channel);
+                return toState(moon.getEclipses().getElevation(EclipseKind.PARTIAL), channel);
             case CHANNEL_ID_MOON_DISTANCE_DATE:
                 return toState(moon.getDistanceType(DistanceType.CURRENT).getDate(), channel);
             case CHANNEL_ID_MOON_DISTANCE_DISTANCE:

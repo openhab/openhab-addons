@@ -39,7 +39,7 @@ public class Eclipse {
         Arrays.stream(EclipseKind.values()).forEach(ek -> entries.put(ek, null));
     }
 
-    public Set<EclipseKind> getKinds() {
+    public Set<EclipseKind> getEclipseKinds() {
         return entries.keySet();
     }
 

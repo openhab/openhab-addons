@@ -193,7 +193,7 @@ public class SunCalc {
         if (sun.getRise().getStart() == null && sun.getRise().getEnd() == null) {
             if (isSunUpAllDay) {
                 daylightRange = new Range(DateTimeUtils.truncateToMidnight(calendar),
-                        DateTimeUtils.truncateToMidnight(addDays(calendar, 1)));
+                        DateTimeUtils.truncateToMidnight(DateTimeUtils.addDays(calendar, 1)));
             }
         } else {
             daylightRange = new Range(sun.getRise().getEnd(), sun.getSet().getStart());
@@ -201,7 +201,7 @@ public class SunCalc {
         sun.setDaylight(daylightRange);
 
         // morning night
-        Sun sunYesterday = getSunInfo(addDays(calendar, -1), latitude, longitude, altitude, true,
+        Sun sunYesterday = getSunInfo(DateTimeUtils.addDays(calendar, -1), latitude, longitude, altitude, true,
                 useMeteorologicalSeason, zone, locale);
         Range morningNightRange = null;
         Range range, range2;
@@ -221,7 +221,8 @@ public class SunCalc {
         Range eveningNightRange = null;
         if ((range = sun.getAstroDusk()) != null && range.getEnd() != null
                 && DateTimeUtils.isSameDay(range.getEnd(), calendar)) {
-            eveningNightRange = new Range(range.getEnd(), DateTimeUtils.truncateToMidnight(addDays(calendar, 1)));
+            eveningNightRange = new Range(range.getEnd(),
+                    DateTimeUtils.truncateToMidnight(DateTimeUtils.addDays(calendar, 1)));
         } else {
             eveningNightRange = new Range();
         }
@@ -231,17 +232,16 @@ public class SunCalc {
         if (isSunUpAllDay) {
             sun.setNight(new Range());
         } else {
-            Sun sunTomorrow = getSunInfo(addDays(calendar, 1), latitude, longitude, altitude, true,
+            Sun sunTomorrow = getSunInfo(DateTimeUtils.addDays(calendar, 1), latitude, longitude, altitude, true,
                     useMeteorologicalSeason, zone, locale);
             sun.setNight(new Range((range = sun.getAstroDusk()) == null ? null : range.getEnd(),
                     (range2 = sunTomorrow.getAstroDawn()) == null ? null : range2.getStart()));
         }
 
         // eclipse
-        Eclipse eclipse = sun.getEclipse();
-
-        eclipse.getKinds().forEach(eclipseKind -> {
-            double jdate = ECLIPSE_CALC.calculate(calendar, j, eclipseKind);
+        Eclipse eclipse = sun.getEclipses();
+        eclipse.getEclipseKinds().forEach(eclipseKind -> {
+            double jdate = ECLIPSE_CALC.calculate(j, eclipseKind);
             Calendar eclipseCal = Objects.requireNonNull(DateTimeUtils.toCalendar(jdate, zone, locale));
             Position sunPosition = getPosition(eclipseCal, latitude, longitude, altitude);
             eclipse.set(eclipseKind, jdate, sunPosition.getElevationAsDouble());
@@ -268,15 +268,6 @@ public class SunCalc {
         }
 
         return sun;
-    }
-
-    /**
-     * Adds the specified days to the calendar.
-     */
-    private Calendar addDays(Calendar calendar, int days) {
-        Calendar cal = (Calendar) calendar.clone();
-        cal.add(Calendar.DAY_OF_MONTH, days);
-        return cal;
     }
 
     // all the following methods are translated to java based on the javascript
