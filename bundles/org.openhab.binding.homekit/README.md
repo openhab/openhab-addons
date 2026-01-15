@@ -31,7 +31,7 @@ The following table shows the Thing configuration parameters for `bridge` and `a
 | Name              | Type    | Description                                          | Default   | Required | Advanced |
 |-------------------|---------|------------------------------------------------------|-----------|----------|----------|
 | `ipAddress`       | text    | IP v4 address of the HomeKit accessory.              | see below | yes      | no       |
-| `httpHostHeader`  | text    | The fully qualified host name as discovered by mDNS. | see below | yes      | yes      |
+| `httpHostHeader`  | text    | The server (host) name as discovered by mDNS.        | see below | no       | yes      |
 | `uniqueId`        | text    | Unique accessory identifier as discovered by mDNS.   | see below | yes      | yes      |
 | `refreshInterval` | integer | Interval at which the accessory is polled in sec.    | 60        | no       | yes      |
 
@@ -39,8 +39,10 @@ NOTE: as a general rule, if you create the Things via the Inbox from the mDNS di
 
 `ipAddress` must match the format `123.123.123.123:4567` representing its IP v4 address and port.
 
-`httpHostHeader` is required for the 'Host:' header of HTTP requests sent to the `accessory` or `bridge`.
-It must be the fully qualified host name (e.g. `foobar._hap._tcp.local.` or, if the port is not 0 or 80, `foobar._hap._tcp.local.:1234`) as found manually via (say) an mDNS discovery app.
+Some `accessory` or `bridge` devices specifically require a `httpHostHeader` for the 'Host:' header in HTTP requests.
+If you have a device that fails to work due to a missing or wrong 'Host:' header then you may need to enter or edit this manually.
+In general it must be a server name (e.g. `foobar.local` or, if the port is not 0 or 80, `foobar.local:1234`) as found manually via (say) an mDNS discovery app.
+And spaces in the server name like `foo bar.local` have to be escaped as `foo\032bar.local`.
 
 `uniqueId` must be the unique accessory identifier as found manually via (say) an mDNS discovery app.
 Typically it takes the form `00:1A:2B:3C:4D:5E` which is similar to (or the same as) a MAC address.
@@ -113,7 +115,7 @@ Things are automatically configured when they are discovered.
 So for this reason it is difficult to create Things via a '.things' file, and therefore not recommended.
 
 ```java
-Bridge homekit:bridge:velux "VELUX Gateway" [ ipAddress="192.168.0.235:5001", uniqueId="XX:XX:XX:XX:XX:XX", httpHostHeader="foobar._hap._tcp.local.", refreshInterval=60 ] {
+Bridge homekit:bridge:velux "VELUX Gateway" [ ipAddress="192.168.0.235:5001", uniqueId="XX:XX:XX:XX:XX:XX", refreshInterval=60 ] {
     Thing bridged-accessory sensor "VELUX Sensor" @ "Hallway" [ accessoryID=2 ]
     Thing bridged-accessory skylight_hallway "VELUX Window" @ "Hallway" [ accessoryID=3 ]
     Thing bridged-accessory skylight_bathroom "VELUX Window" @ "Bathroom" [ accessoryID=4 ]
