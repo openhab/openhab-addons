@@ -21,7 +21,7 @@ import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.types.Command;
 
 /**
- * Service to configure whether the measure temperature or the setpoint temperature is displayed.
+ * Service to configure whether the measured temperature or the setpoint temperature is displayed.
  * 
  * @author David Pace - Initial contribution
  *

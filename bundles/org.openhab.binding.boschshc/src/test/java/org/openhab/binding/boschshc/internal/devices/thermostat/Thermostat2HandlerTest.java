@@ -14,7 +14,7 @@ package org.openhab.binding.boschshc.internal.devices.thermostat;
 
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
@@ -30,6 +30,7 @@ import org.openhab.binding.boschshc.internal.services.displaydirection.dto.Displ
 import org.openhab.binding.boschshc.internal.services.displaydirection.dto.DisplayDirectionState;
 import org.openhab.binding.boschshc.internal.services.displayedtemperatureconfiguration.dto.DisplayedTemperatureConfigurationServiceState;
 import org.openhab.binding.boschshc.internal.services.displayedtemperatureconfiguration.dto.DisplayedTemperatureState;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingTypeUID;
@@ -47,8 +48,8 @@ import com.google.gson.JsonParser;
 @ExtendWith(MockitoExtension.class)
 class Thermostat2HandlerTest extends AbstractThermostatHandlerTest<Thermostat2Handler> {
 
-    private @Captor @NonNullByDefault({}) ArgumentCaptor<DisplayDirectionServiceState> displayDirectionServiceStateCaptor;
-    private @Captor @NonNullByDefault({}) ArgumentCaptor<DisplayedTemperatureConfigurationServiceState> displayedTemperatureConfigurationStateCaptor;
+    private @Captor @NonNullByDefault({}) ArgumentCaptor<DisplayDirectionServiceState> displayDirectionCaptor;
+    private @Captor @NonNullByDefault({}) ArgumentCaptor<DisplayedTemperatureConfigurationServiceState> temperatureConfigurationCaptor;
 
     @Override
     protected Thermostat2Handler createFixture() {
@@ -83,9 +84,18 @@ class Thermostat2HandlerTest extends AbstractThermostatHandlerTest<Thermostat2Ha
         getFixture().handleCommand(
                 new ChannelUID(getThing().getUID(), BoschSHCBindingConstants.CHANNEL_DISPLAY_DIRECTION), OnOffType.ON);
         verify(getBridgeHandler()).putState(eq(getDeviceID()), eq("DisplayDirection"),
-                displayDirectionServiceStateCaptor.capture());
-        DisplayDirectionServiceState state = displayDirectionServiceStateCaptor.getValue();
+                displayDirectionCaptor.capture());
+        DisplayDirectionServiceState state = displayDirectionCaptor.getValue();
         assertSame(DisplayDirectionState.REVERSED, state.direction);
+    }
+
+    @Test
+    void testHandleCommandDisplayDirectionServiceInvalidCommand()
+            throws InterruptedException, TimeoutException, ExecutionException {
+        getFixture().handleCommand(
+                new ChannelUID(getThing().getUID(), BoschSHCBindingConstants.CHANNEL_DISPLAY_DIRECTION),
+                DecimalType.ZERO);
+        verify(getBridgeHandler(), times(0)).putState(eq(getDeviceID()), eq("DisplayDirection"), any());
     }
 
     @Test
@@ -109,8 +119,18 @@ class Thermostat2HandlerTest extends AbstractThermostatHandlerTest<Thermostat2Ha
                 new ChannelUID(getThing().getUID(), BoschSHCBindingConstants.CHANNEL_DISPLAYED_TEMPERATURE),
                 OnOffType.ON);
         verify(getBridgeHandler()).putState(eq(getDeviceID()), eq("DisplayedTemperatureConfiguration"),
-                displayedTemperatureConfigurationStateCaptor.capture());
-        DisplayedTemperatureConfigurationServiceState state = displayedTemperatureConfigurationStateCaptor.getValue();
+                temperatureConfigurationCaptor.capture());
+        DisplayedTemperatureConfigurationServiceState state = temperatureConfigurationCaptor.getValue();
         assertSame(DisplayedTemperatureState.SETPOINT, state.displayedTemperature);
+    }
+
+    @Test
+    void testHandleCommandDisplayedTemperatureConfigurationServiceInvalidCommand()
+            throws InterruptedException, TimeoutException, ExecutionException {
+        getFixture().handleCommand(
+                new ChannelUID(getThing().getUID(), BoschSHCBindingConstants.CHANNEL_DISPLAYED_TEMPERATURE),
+                DecimalType.ZERO);
+        verify(getBridgeHandler(), times(0)).putState(eq(getDeviceID()), eq("DisplayedTemperatureConfiguration"),
+                any());
     }
 }
