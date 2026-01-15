@@ -17,16 +17,9 @@ import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConst
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.boschshc.internal.devices.AbstractBatteryPoweredDeviceHandler;
 import org.openhab.binding.boschshc.internal.exceptions.BoschSHCException;
-import org.openhab.binding.boschshc.internal.services.childlock.ChildLockService;
-import org.openhab.binding.boschshc.internal.services.childlock.dto.ChildLockServiceState;
 import org.openhab.binding.boschshc.internal.services.silentmode.SilentModeService;
 import org.openhab.binding.boschshc.internal.services.silentmode.dto.SilentModeServiceState;
-import org.openhab.binding.boschshc.internal.services.temperaturelevel.TemperatureLevelService;
-import org.openhab.binding.boschshc.internal.services.temperaturelevel.dto.TemperatureLevelServiceState;
-import org.openhab.binding.boschshc.internal.services.valvetappet.ValveTappetService;
-import org.openhab.binding.boschshc.internal.services.valvetappet.dto.ValveTappetServiceState;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
@@ -38,14 +31,12 @@ import org.openhab.core.types.Command;
  * @author David Pace - Added silent mode service
  */
 @NonNullByDefault
-public final class ThermostatHandler extends AbstractBatteryPoweredDeviceHandler {
+public final class ThermostatHandler extends AbstractThermostatHandler {
 
-    private ChildLockService childLockService;
     private SilentModeService silentModeService;
 
     public ThermostatHandler(Thing thing) {
         super(thing);
-        this.childLockService = new ChildLockService();
         this.silentModeService = new SilentModeService();
     }
 
@@ -53,9 +44,6 @@ public final class ThermostatHandler extends AbstractBatteryPoweredDeviceHandler
     protected void initializeServices() throws BoschSHCException {
         super.initializeServices();
 
-        this.createService(TemperatureLevelService::new, this::updateChannels, List.of(CHANNEL_TEMPERATURE));
-        this.createService(ValveTappetService::new, this::updateChannels, List.of(CHANNEL_VALVE_TAPPET_POSITION));
-        this.registerService(this.childLockService, this::updateChannels, List.of(CHANNEL_CHILD_LOCK));
         this.registerService(this.silentModeService, this::updateChannels, List.of(CHANNEL_SILENT_MODE));
     }
 
@@ -63,44 +51,9 @@ public final class ThermostatHandler extends AbstractBatteryPoweredDeviceHandler
     public void handleCommand(ChannelUID channelUID, Command command) {
         super.handleCommand(channelUID, command);
 
-        switch (channelUID.getId()) {
-            case CHANNEL_CHILD_LOCK:
-                this.handleServiceCommand(this.childLockService, command);
-                break;
-            case CHANNEL_SILENT_MODE:
-                this.handleServiceCommand(this.silentModeService, command);
-                break;
+        if (CHANNEL_SILENT_MODE.equals(channelUID.getId())) {
+            this.handleServiceCommand(this.silentModeService, command);
         }
-    }
-
-    /**
-     * Updates the channels which are linked to the {@link TemperatureLevelService}
-     * of the device.
-     *
-     * @param state Current state of {@link TemperatureLevelService}.
-     */
-    private void updateChannels(TemperatureLevelServiceState state) {
-        super.updateState(CHANNEL_TEMPERATURE, state.getTemperatureState());
-    }
-
-    /**
-     * Updates the channels which are linked to the {@link ValveTappetService} of
-     * the device.
-     *
-     * @param state Current state of {@link ValveTappetService}.
-     */
-    private void updateChannels(ValveTappetServiceState state) {
-        super.updateState(CHANNEL_VALVE_TAPPET_POSITION, state.getPositionState());
-    }
-
-    /**
-     * Updates the channels which are linked to the {@link ChildLockService} of the
-     * device.
-     *
-     * @param state Current state of {@link ChildLockService}.
-     */
-    private void updateChannels(ChildLockServiceState state) {
-        super.updateState(CHANNEL_CHILD_LOCK, state.getActiveState());
     }
 
     /**
