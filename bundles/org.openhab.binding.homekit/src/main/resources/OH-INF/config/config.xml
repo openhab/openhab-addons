@@ -17,7 +17,7 @@
 		</parameter>
 		<parameter name="httpHostHeader" type="text" required="false">
 			<label>HTTP Host Header</label>
-			<description>The device fully qualified host name as discovered by mDNS (needed for HTTP Host headers).</description>
+			<description>The server name as discovered by mDNS (needed for HTTP Host headers).</description>
 			<default></default>
 			<advanced>true</advanced>
 		</parameter>
