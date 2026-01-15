@@ -136,4 +136,3 @@ public class EclipseCalcTest {
         assertEquals(26, eclipseDate.get(Calendar.DAY_OF_MONTH));
     }
 }
-
