@@ -28,6 +28,7 @@ import org.openhab.binding.astro.internal.model.Planet;
 import org.openhab.binding.astro.internal.model.Range;
 import org.openhab.binding.astro.internal.model.Season;
 import org.openhab.binding.astro.internal.model.Sun;
+import org.openhab.binding.astro.internal.util.DateTimeUtils;
 
 /**
  * Daily scheduled jobs For Sun planet
@@ -73,15 +74,29 @@ public final class DailyJobSun extends AbstractJob {
                 return;
             }
             Sun sun = (Sun) planet;
+
             scheduleRange(handler, sun.getRise(), EVENT_CHANNEL_ID_RISE, zone, locale, instantSource);
             scheduleRange(handler, sun.getSet(), EVENT_CHANNEL_ID_SET, zone, locale, instantSource);
-            Range range = sun.getNoon();
+
+            Calendar cal;
+            Range range = sun.getNight();
+            if (range != null) {
+                cal = range.getStart();
+                if (cal != null) {
+                    scheduleEvent(handler, cal, EVENT_START, EVENT_CHANNEL_ID_NIGHT, false, zone, locale);
+                }
+                Range range2 = sun.getAstroDawn();
+                if (range2 == null || (cal = range2.getStart()) == null
+                        || cal.before(DateTimeUtils.calFromInstantSource(instantSource, zone, locale))) {
+                    cal = range.getEnd();
+                }
+                if (cal != null) {
+                    scheduleEvent(handler, cal, EVENT_END, EVENT_CHANNEL_ID_NIGHT, false, zone, locale);
+                }
+            }
+            range = sun.getNoon();
             if (range != null) {
                 scheduleRange(handler, range, EVENT_CHANNEL_ID_NOON, zone, locale, instantSource);
-            }
-            range = sun.getNight();
-            if (range != null) {
-                scheduleRange(handler, range, EVENT_CHANNEL_ID_NIGHT, zone, locale, instantSource);
             }
             range = sun.getMorningNight();
             if (range != null) {
@@ -135,7 +150,7 @@ public final class DailyJobSun extends AbstractJob {
             }
 
             // schedule phase jobs
-            Calendar cal = sun.getRise().getStart();
+            cal = sun.getRise().getStart();
             if (cal != null) {
                 scheduleSunPhase(handler, SUN_RISE.name(), SUN_RISE, cal, zone, locale);
             }
