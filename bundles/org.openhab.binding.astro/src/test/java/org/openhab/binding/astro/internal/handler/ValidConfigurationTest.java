@@ -20,6 +20,7 @@ import java.time.Instant;
 import java.time.InstantSource;
 import java.time.ZoneId;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.i18n.LocaleProvider;
@@ -42,13 +43,14 @@ import org.openhab.core.thing.binding.ThingHandlerCallback;
  * @author Svilen Valkanov - Reworked to plain unit tests, removed irrelevant tests
  * @author Christoph Weitkamp - Migrated tests to pure Java
  */
+@NonNullByDefault
 public class ValidConfigurationTest {
 
     private static final String NULL_LONGITUDE = "51.2,null";
     private static final String NULL_LATITUDE = "null,25.4";
 
     @Test
-    public void testIfGeolocationIsProvidedForASunThing_theThingStatusBecomesONLINE() {
+    public void testIfGeolocationIsProvidedForASunThingTheThingStatusBecomesONLINE() {
         Configuration thingConfiguration = new Configuration();
         thingConfiguration.put(GEOLOCATION_PROPERTY, GEOLOCATION_VALUE);
         thingConfiguration.put(INTERVAL_PROPERTY, INTERVAL_DEFAULT_VALUE);
@@ -56,7 +58,7 @@ public class ValidConfigurationTest {
     }
 
     @Test
-    public void testIfGeolocationIsProvidedForAMoonThing_theThingStatusBecomesONLINE() {
+    public void testIfGeolocationIsProvidedForAMoonThingTheThingStatusBecomesONLINE() {
         Configuration thingConfiguration = new Configuration();
         thingConfiguration.put(GEOLOCATION_PROPERTY, GEOLOCATION_VALUE);
         thingConfiguration.put(INTERVAL_PROPERTY, INTERVAL_DEFAULT_VALUE);
@@ -64,49 +66,49 @@ public class ValidConfigurationTest {
     }
 
     @Test
-    public void testIfGeolocationForASunThingIsNull_theThingStatusBecomesOFFLINE() {
+    public void testIfGeolocationForASunThingIsNullTheThingStatusBecomesOFFLINE() {
         Configuration thingConfiguration = new Configuration();
         thingConfiguration.put(GEOLOCATION_PROPERTY, null);
         assertThingStatus(thingConfiguration, ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
     }
 
     @Test
-    public void testIfGeolocationForAMoonThingIsNull_theThingStatusBecomesOFFLINE() {
+    public void testIfGeolocationForAMoonThingIsNullTheThingStatusBecomesOFFLINE() {
         Configuration thingConfiguration = new Configuration();
         thingConfiguration.put(GEOLOCATION_PROPERTY, null);
         assertThingStatus(thingConfiguration, ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
     }
 
     @Test
-    public void testIfTheLatitudeForASunThingIsNull_theThingStatusBecomesOFFLINE() {
+    public void testIfTheLatitudeForASunThingIsNullTheThingStatusBecomesOFFLINE() {
         Configuration thingConfiguration = new Configuration();
         thingConfiguration.put(GEOLOCATION_PROPERTY, NULL_LATITUDE);
         assertThingStatus(thingConfiguration, ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
     }
 
     @Test
-    public void testIfTheLatitudeForAMoonThingIsNull_theThingStatusBecomesOFFLINE() {
+    public void testIfTheLatitudeForAMoonThingIsNullTheThingStatusBecomesOFFLINE() {
         Configuration thingConfiguration = new Configuration();
         thingConfiguration.put(GEOLOCATION_PROPERTY, NULL_LATITUDE);
         assertThingStatus(thingConfiguration, ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
     }
 
     @Test
-    public void testIfTheLongitudeForASunThingIsNull_theThingStatusBecomesOFFLINE() {
+    public void testIfTheLongitudeForASunThingIsNullTheThingStatusBecomesOFFLINE() {
         Configuration thingConfiguration = new Configuration();
         thingConfiguration.put(GEOLOCATION_PROPERTY, NULL_LONGITUDE);
         assertThingStatus(thingConfiguration, ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
     }
 
     @Test
-    public void testIfTheLongitudeForAMoonThingIsNull_theThingStatusBecomesOFFLINE() {
+    public void testIfTheLongitudeForAMoonThingIsNullTheThingStatusBecomesOFFLINE() {
         Configuration thingConfiguration = new Configuration();
         thingConfiguration.put(GEOLOCATION_PROPERTY, NULL_LONGITUDE);
         assertThingStatus(thingConfiguration, ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
     }
 
     @Test
-    public void testIfTheIntervalForASunThingIsLessThan1_theThingStatusBecomesOFFLINE() {
+    public void testIfTheIntervalForASunThingIsLessThan1TheThingStatusBecomesOFFLINE() {
         Configuration thingConfiguration = new Configuration();
         thingConfiguration.put(GEOLOCATION_PROPERTY, GEOLOCATION_VALUE);
         thingConfiguration.put(INTERVAL_PROPERTY, Integer.valueOf(0));
@@ -114,7 +116,7 @@ public class ValidConfigurationTest {
     }
 
     @Test
-    public void testIfTheIntervalForAMoonThingIsLessThan1_theThingStatusBecomesOFFLINE() {
+    public void testIfTheIntervalForAMoonThingIsLessThan1TheThingStatusBecomesOFFLINE() {
         Configuration thingConfiguration = new Configuration();
         thingConfiguration.put(GEOLOCATION_PROPERTY, GEOLOCATION_VALUE);
         thingConfiguration.put(INTERVAL_PROPERTY, Integer.valueOf(0));
@@ -122,7 +124,7 @@ public class ValidConfigurationTest {
     }
 
     @Test
-    public void testIfTheIntervalForASunThingIsGreaterThan86400_theThingStatusBecomesOFFLINE() {
+    public void testIfTheIntervalForASunThingIsGreaterThan86400TheThingStatusBecomesOFFLINE() {
         Configuration thingConfiguration = new Configuration();
         thingConfiguration.put(GEOLOCATION_PROPERTY, GEOLOCATION_VALUE);
         thingConfiguration.put(INTERVAL_PROPERTY, Integer.valueOf(86401));
@@ -130,7 +132,7 @@ public class ValidConfigurationTest {
     }
 
     @Test
-    public void testIfTheIntervalForAMoonThingIsGreaterThan86400_theThingStatusBecomesOFFLINE() {
+    public void testIfTheIntervalForAMoonThingIsGreaterThan86400TheThingStatusBecomesOFFLINE() {
         Configuration thingConfiguration = new Configuration();
         thingConfiguration.put(GEOLOCATION_PROPERTY, GEOLOCATION_VALUE);
         thingConfiguration.put(INTERVAL_PROPERTY, Integer.valueOf(86401));
