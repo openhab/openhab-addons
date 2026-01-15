@@ -397,7 +397,7 @@
 			reflect the latched state.</description>
 		<tags>
 			<tag>Status</tag>
-			<tag>OpenState</tag>
+			<tag>LockState</tag>
 		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
