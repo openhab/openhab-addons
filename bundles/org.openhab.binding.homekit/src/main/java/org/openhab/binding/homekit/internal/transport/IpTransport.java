@@ -266,7 +266,7 @@ public class IpTransport implements AutoCloseable {
     private byte[] buildRequest(String method, String endpoint, String contentType, byte[] content) throws IOException {
         StringBuilder sb = new StringBuilder();
         sb.append(method).append(" ").append(endpoint).append(" HTTP/1.1\r\n");
-        if (!hostName.isEmpty()) {
+        if (!hostName.isBlank()) {
             sb.append("Host: ").append(hostName).append("\r\n");
         }
         if (!contentIsEmpty(method)) {
