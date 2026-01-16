@@ -12,21 +12,114 @@
  */
 package org.openhab.binding.dirigera.internal.handler.matter;
 
+import static org.openhab.binding.dirigera.internal.Constants.*;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.json.JSONObject;
+import org.openhab.binding.dirigera.internal.config.BaseDeviceConfiguration;
+import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.thing.Thing;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link Matter3ButtonCotroller} is configured by devices.json
+ * The {@link Matter3ButtonCotroller} is the custom handling for BILRESA 3-Button with 3 groups. For each group a
+ * separate handler is created to handle the complexity.
  *
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
 public class Matter3ButtonCotroller extends BaseMatterHandler {
+    private static final Map<String, String> TRIGGER_MAPPING = Map.of("singlePress", "SINGLE_PRESS", "doublePress",
+            "DOUBLE_PRESS", "longPress", "LONG_PRESS");
     private final Logger logger = LoggerFactory.getLogger(Matter3ButtonCotroller.class);
+    private final Map<String, List<String>> modeLinkCandidateMapping = Map.of("light",
+            List.of(DEVICE_TYPE_LIGHT, DEVICE_TYPE_OUTLET), "speaker", List.of(DEVICE_TYPE_SPEAKER));
+    private Map<String, String> triggerChannelMapping = new HashMap<>();
 
     public Matter3ButtonCotroller(Thing thing) {
         super(thing);
+        super.setChildHandler(this);
+    }
+
+    @Override
+    public void initialize() {
+        config = getConfigAs(BaseDeviceConfiguration.class);
+        if (!getGateway()) {
+            return;
+        }
+        configure();
+        super.initialize();
+        // for controller 100% needed
+        createChannelIfNecessary(CHANNEL_LINKS, CHANNEL_LINKS, CoreItemFactory.STRING);
+        createChannelIfNecessary(CHANNEL_LINK_CANDIDATES, CHANNEL_LINK_CANDIDATES, CoreItemFactory.STRING);
+    }
+
+    @Override
+    protected void configure() {
+        int subDeviceId = Character.getNumericValue(config.id.charAt(config.id.length() - 1));
+        int controllerGroupNUmber = subDeviceId / 3;
+        String relationId = gateway().model().getRelationId(config.id);
+        for (int i = subDeviceId; i > subDeviceId - 3; i--) {
+            String deviceId = relationId + "_" + i;
+            System.out.println("Configuring deviceId: " + deviceId);
+            configMap.put(deviceId, new BaseMatterConfiguration(this, deviceId, thing.getThingTypeUID().getId()));
+            triggerChannelMapping.put(deviceId, createTriggerChannel(i));
+        }
+    }
+
+    private String createTriggerChannel(int i) {
+        var buttonName = switch (i) {
+            case 1 -> "Scroll Down";
+            case 2 -> "Scroll Up";
+            case 3 -> "Press";
+            default -> "Button " + i;
+        };
+        String triggerChannelName = buttonName.toLowerCase().replace(" ", "-");
+        createChannelIfNecessary(triggerChannelName, "system.button", null, buttonName,
+                "Triggers for button " + buttonName);
+        return triggerChannelName;
+    }
+
+    @Override
+    public void handleUpdate(JSONObject update) {
+        super.handleUpdate(update);
+
+        // handle remotePress events
+        String channelName = triggerChannelMapping.get(update.optString("id"));
+        String clickPattern = TRIGGER_MAPPING.get(update.optString("clickPattern"));
+        if (channelName != null && clickPattern != null) {
+            logger.warn("Button {} pressed: {}", channelName, clickPattern);
+            triggerChannel(channelName, clickPattern);
+        }
+
+        // change link candidates id control-mode switched
+        JSONObject attributes = update.optJSONObject("attributes");
+        if (attributes != null) {
+            String controlMode = attributes.optString("controlMode");
+            System.out.println("Control Mode: " + controlMode);
+            if (!controlMode.isBlank()) {
+                List<String> candidateTypes = modeLinkCandidateMapping.get(controlMode);
+                System.out.println("Candidate Types: " + candidateTypes);
+                if (candidateTypes != null) {
+                    if (!candidateTypes.equals(linkCandidateTypes)) {
+                        System.out.println("Updating link candidate types for control mode " + controlMode);
+                        linkCandidateTypes.clear();
+                        linkCandidateTypes.addAll(candidateTypes);
+                        System.out.println("New Link Candidate Types: " + linkCandidateTypes);
+                        logger.info("Link candidate types for control-mode {}: {}", controlMode, linkCandidateTypes);
+                        gateway().updateLinks();
+                    }
+                } else {
+                    linkCandidateTypes.clear();
+                    gateway().updateLinks();
+                    logger.warn("No link candidate types found for control-mode {}", controlMode);
+                }
+            }
+        }
     }
 }

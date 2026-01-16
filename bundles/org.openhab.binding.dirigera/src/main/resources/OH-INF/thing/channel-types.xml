@@ -354,7 +354,7 @@
 		<description>CO₂ concentration</description>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
-	<channel-type id="control-mode-3" advanced="true">
+	<channel-type id="mode-3-options" advanced="true">
 		<item-type>Number</item-type>
 		<label>Control Mode</label>
 		<description>Select which device type shall be controlled</description>
@@ -363,6 +363,17 @@
 				<option value="0">Lights and outlets</option>
 				<option value="1">Speakers</option>
 				<option value="2">Blinds</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="mode-2-options" advanced="true">
+		<item-type>Number</item-type>
+		<label>Control Mode</label>
+		<description>Select which device type shall be controlled</description>
+		<state readOnly="false">
+			<options>
+				<option value="0">Lights and outlets</option>
+				<option value="1">Speakers</option>
 			</options>
 		</state>
 	</channel-type>

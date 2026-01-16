@@ -18,17 +18,16 @@ import static org.openhab.binding.dirigera.internal.Constants.THING_TYPE_MATTER_
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.json.JSONArray;
-import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.dirigera.internal.FileReader;
 import org.openhab.binding.dirigera.internal.ResourceReader;
 import org.openhab.binding.dirigera.internal.handler.DirigeraBridgeProvider;
-import org.openhab.binding.dirigera.internal.handler.matter.BaseMatterConfiguration;
 import org.openhab.binding.dirigera.internal.interfaces.Gateway;
 import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingTypeUID;
+import org.openhab.core.thing.internal.ThingImpl;
 
 /**
  * {@link TestMatterModel} some basic tests
@@ -58,12 +57,9 @@ class TestMatterModel {
     }
 
     @Test
-    void testJsonMerge() {
-        String timmerflotteDeviceUpdates = FileReader
-                .readFileInString("src/test/resources/devices/matter-timmerflotte.json");
-        JSONArray updates = new JSONArray(timmerflotteDeviceUpdates);
-        JSONObject target = new JSONObject();
-        BaseMatterConfiguration.merge(updates.getJSONObject(0), target);
-        BaseMatterConfiguration.merge(updates.getJSONObject(1), target);
+    void testChannelGroup() {
+        ThingImpl thing = new ThingImpl(new ThingTypeUID("binding", "ttuid"), "thing");
+        ChannelUID group = new ChannelUID(thing.getUID(), "group#channel");
+        System.out.println("Channel Group: " + group.getGroupId());
     }
 }

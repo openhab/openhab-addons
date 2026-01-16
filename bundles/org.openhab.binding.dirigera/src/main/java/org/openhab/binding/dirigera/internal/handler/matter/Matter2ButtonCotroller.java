@@ -50,9 +50,14 @@ public class Matter2ButtonCotroller extends BaseMatterHandler {
         super.initialize();
         configMap.forEach((deviceId, config) -> {
             char buttonNumber = deviceId.charAt(deviceId.length() - 1);
-            String triggerChannelName = "button" + buttonNumber;
+            var buttonName = switch (buttonNumber) {
+                case '1' -> "Top Button";
+                case '2' -> "Lower Button";
+                default -> "Button " + buttonNumber;
+            };
+            String triggerChannelName = buttonName.toLowerCase().replace(" ", "-");
             triggerChannelMapping.put(deviceId, triggerChannelName);
-            createChannelIfNecessary(triggerChannelName, "system.button", null, "Button " + buttonNumber,
+            createChannelIfNecessary(triggerChannelName, "system.button", null, buttonName,
                     "Press triggers for button " + buttonNumber);
         });
         // for controller 100% needed

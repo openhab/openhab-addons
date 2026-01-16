@@ -343,19 +343,29 @@ public class DirigeraModel implements Model {
         ThingTypeUID ttuid = identifyDeviceFromModel(id);
         // don't report gateway, unknown devices and light sensors connected to motion sensors
         if (!IGNORE_THING_TYPES_UIDS.contains(ttuid)) {
-            // check if it's a simple or complex device
-            String relationId = getRelationId(id);
-            String firstDeviceId = id;
-            if (!id.equals(relationId)) {
-                // complex device
-                TreeMap<String, String> relationMap = getRelations(relationId);
-                // take name from first ordered entry
-                firstDeviceId = relationMap.firstKey();
+
+            String discoveryID = id;
+            String customName = getCustonNameFor(discoveryID);
+            // special handling for BILRESA 3 button controller
+            if (THING_TYPE_MATTER_3_BUTTON_CONTROLLER.equals(ttuid)) {
+                discoveryID = id;
+                char controllerGroup = id.charAt(id.length() - 1);
+                int controllerGroupNUmber = Character.getNumericValue(controllerGroup);
+                customName = customName + " Group " + controllerGroupNUmber % 3;
+            } else {
+                // pack all relations into one device
+                String relationId = getRelationId(id);
+                if (!id.equals(relationId)) {
+                    // complex device
+                    TreeMap<String, String> relationMap = getRelations(relationId);
+                    // take name from first ordered entry
+                    discoveryID = relationMap.firstKey();
+                }
             }
             // take name and properties from first found id
-            String customName = getCustonNameFor(firstDeviceId);
-            Map<String, Object> propertiesMap = getPropertiesFor(firstDeviceId);
-            return DiscoveryResultBuilder.create(new ThingUID(ttuid, gateway.getThing().getUID(), firstDeviceId))
+
+            Map<String, Object> propertiesMap = getPropertiesFor(discoveryID);
+            return DiscoveryResultBuilder.create(new ThingUID(ttuid, gateway.getThing().getUID(), discoveryID))
                     .withBridge(gateway.getThing().getUID()).withProperties(propertiesMap)
                     .withRepresentationProperty(PROPERTY_DEVICE_ID).withLabel(customName).build();
         }
@@ -398,22 +408,14 @@ public class DirigeraModel implements Model {
         if (hasAttribute(id, ATTRIBUTE_QRCODE)) {
             String deviceType = data.getString(PROPERTY_DEVICE_TYPE);
             return switch (deviceType) {
-                case "occuoancySensor" -> {
-                    String relationId = getRelationId(id);
-                    Map<String, String> relationMap = getRelations(relationId);
-                    if (relationMap.values().contains("lightSensor")) {
-                        yield THING_TYPE_MATTER_OCCUPANCY_LIGHT_SENSOR;
-                    } else {
-                        yield THING_TYPE_MATTER_OCCUPANCY_SENSOR;
-                    }
-                }
+                case "occupancySensor" -> THING_TYPE_MATTER_OCCUPANCY_SENSOR;
                 case "lightSensor" -> {
                     String relationId = getRelationId(id);
-                    ;
-                    if (getRelations(relationId).size() == 1) {
-                        yield THING_TYPE_MATTER_LIGHT_SENSOR;
+                    Map<String, String> relationMap = getRelations(relationId);
+                    if (relationMap.values().contains("occupancySensor")) {
+                        yield THING_TYPE_MATTER_OCCUPANCY_SENSOR;
                     } else {
-                        yield THING_TYPE_MATTER_OCCUPANCY_LIGHT_SENSOR;
+                        yield THING_TYPE_MATTER_LIGHT_SENSOR;
                     }
                 }
                 case "environmentSensor" -> THING_TYPE_MATTER_ENVIRONMENT_SENSOR;

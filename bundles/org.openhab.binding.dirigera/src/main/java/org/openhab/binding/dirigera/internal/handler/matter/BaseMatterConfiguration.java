@@ -124,42 +124,28 @@ public class BaseMatterConfiguration {
         });
     }
 
-    // renove
-    public List<String> collectDevices(String id) {
-        // adjust thing properties if needed, then apply them
-        // add all configs from attached devices
-        List<String> connections = new ArrayList<>();
-        String relationId = handler.gateway().model().getRelationId(id);
-        if (id.equals(relationId)) {
-            String deviceType = handler.gateway().model().getDeviceType(id);
-            connections.add(id);
-            addDeviceType(id, deviceType);
-        } else {
-            Map<String, String> connectedDevices = handler.gateway().model().getRelations(relationId);
-            connectedDevices.forEach((key, value) -> {
-                connections.add(key);
-                addDeviceType(key, value);
-            });
-        }
-        return connections;
+    public List<String> getTypes() {
+        return types;
     }
 
-    // remove
-    public Map<String, String> updateProperties(String id) {
-        final JSONObject cumulatedUpadte = new JSONObject();
-        collectDevices(id).forEach(deviceId -> {
-            JSONObject values = handler.gateway().api().readDevice(deviceId);
-            merge(values, cumulatedUpadte);
-        });
+    public Map<String, JSONObject> getStatusProperties() {
+        return statusProperties;
+    }
 
+    // public Map<String, String> getThingProperties(String id) {
+    // return updateProperties(id);
+    // }
+
+    // remove
+    public Map<String, String> getThingProperties(JSONObject update) {
         TreeMap<String, String> handlerProperties = new TreeMap<>();
         thingProperties.forEach(property -> {
             String propertyKey = property;
-            if (cumulatedUpadte.has(propertyKey)) {
-                handlerProperties.put(propertyKey, cumulatedUpadte.get(propertyKey).toString());
+            if (update.has(propertyKey)) {
+                handlerProperties.put(propertyKey, update.get(propertyKey).toString());
             }
-            if (cumulatedUpadte.has(Model.CAPABILITIES)) {
-                JSONObject capabilities = cumulatedUpadte.getJSONObject(Model.CAPABILITIES);
+            if (update.has(Model.CAPABILITIES)) {
+                JSONObject capabilities = update.getJSONObject(Model.CAPABILITIES);
                 if (capabilities.has(Model.PROPERTY_CAN_RECEIVE)) {
                     handlerProperties.put(Model.PROPERTY_CAN_RECEIVE,
                             capabilities.get(Model.PROPERTY_CAN_RECEIVE).toString());
@@ -169,26 +155,14 @@ public class BaseMatterConfiguration {
                             capabilities.get(Model.PROPERTY_CAN_SEND).toString());
                 }
             }
-            if (cumulatedUpadte.has(Model.ATTRIBUTES)) {
-                JSONObject attributes = cumulatedUpadte.getJSONObject(Model.ATTRIBUTES);
+            if (update.has(Model.ATTRIBUTES)) {
+                JSONObject attributes = update.getJSONObject(Model.ATTRIBUTES);
                 if (attributes.has(propertyKey)) {
                     handlerProperties.put(propertyKey, attributes.get(propertyKey).toString());
                 }
             }
         });
         return handlerProperties;
-    }
-
-    public List<String> getTypes() {
-        return types;
-    }
-
-    public Map<String, JSONObject> getStatusProperties() {
-        return statusProperties;
-    }
-
-    public Map<String, String> getThingProperties(String id) {
-        return updateProperties(id);
     }
 
     public List<String> getLinkCandidates() {
@@ -203,51 +177,6 @@ public class BaseMatterConfiguration {
             });
         }
         return linkCandidates;
-    }
-
-    /**
-     * Merge DIRIGERA updates to receive all attributes and capabilities
-     *
-     * @param one
-     * @param two
-     * @return
-     */
-    public static void merge(JSONObject source, JSONObject target) {
-        source.keySet().forEach(key -> {
-            switch (key) {
-                case Model.ATTRIBUTES:
-                    if (!target.has(Model.ATTRIBUTES)) {
-                        target.put(Model.ATTRIBUTES, new JSONObject());
-                    }
-                    JSONObject targetAttributes = target.getJSONObject(Model.ATTRIBUTES);
-                    merge(source.getJSONObject(Model.ATTRIBUTES), targetAttributes);
-                    target.put(Model.ATTRIBUTES, targetAttributes);
-                    break;
-                case Model.CAPABILITIES:
-                    JSONObject capabilities = new JSONObject();
-                    if (target.has(Model.CAPABILITIES)) {
-                        capabilities.put("canSend",
-                                mergeLists(target.getJSONObject(Model.CAPABILITIES).getJSONArray("canSend"),
-                                        source.getJSONObject(Model.CAPABILITIES).getJSONArray("canSend")));
-                        capabilities.put("canReceive",
-                                mergeLists(target.getJSONObject(Model.CAPABILITIES).getJSONArray("canReceive"),
-                                        source.getJSONObject(Model.CAPABILITIES).getJSONArray("canSend")));
-                    } else {
-                        capabilities = source.getJSONObject(Model.CAPABILITIES);
-                    }
-                    target.put(Model.CAPABILITIES, capabilities);
-                    break;
-                case "remoteLinks":
-                    if (!target.has("remoteLinks")) {
-                        target.put("remoteLinks", new JSONArray());
-                    }
-                    target.put(key, target.getJSONArray(key).putAll(source.getJSONArray(key)));
-                    break;
-                default:
-                    target.put(key, source.get(key));
-                    break;
-            }
-        });
     }
 
     private static JSONArray mergeLists(JSONArray source, JSONArray target) {
@@ -413,7 +342,7 @@ public class BaseMatterConfiguration {
     private String map(String value, JSONObject mapping) {
         Object mappingValue = mapping.opt(value);
         if (mappingValue == null) {
-            return "";
+            return "-1";
         }
         return mappingValue.toString();
     }

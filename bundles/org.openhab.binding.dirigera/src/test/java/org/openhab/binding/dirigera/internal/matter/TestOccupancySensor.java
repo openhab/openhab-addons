@@ -46,7 +46,7 @@ import org.openhab.core.types.State;
 @NonNullByDefault
 class TestOccupancySensor {
     private static String deviceId = "d6ee92fc-682a-4af0-9097-c73ed70b59fd_1";
-    private static ThingTypeUID thingTypeUID = THING_TYPE_MATTER_OCCUPANCY_LIGHT_SENSOR;
+    private static ThingTypeUID thingTypeUID = THING_TYPE_MATTER_OCCUPANCY_SENSOR;
 
     private static MatterSensor handler = mock(MatterSensor.class);
     private static CallbackMock callback = mock(CallbackMock.class);
@@ -101,12 +101,12 @@ class TestOccupancySensor {
     }
 
     void checkEnvironmentSensorStates(CallbackMock callback) {
-        State motionDetected = callback.getState("dirigera:occupancy-light-sensor:test-device:motion");
+        State motionDetected = callback.getState("dirigera:occupancy-sensor:test-device:motion");
         assertNotNull(motionDetected);
         assertTrue(motionDetected instanceof OnOffType);
         assertEquals(OnOffType.OFF, motionDetected, "Motion Detected");
 
-        State illuminance = callback.getState("dirigera:occupancy-light-sensor:test-device:illuminance");
+        State illuminance = callback.getState("dirigera:occupancy-sensor:test-device:illuminance");
         assertNotNull(illuminance);
         assertTrue(illuminance instanceof QuantityType);
         assertTrue(((QuantityType<?>) illuminance).getUnit().equals(Units.LUX));

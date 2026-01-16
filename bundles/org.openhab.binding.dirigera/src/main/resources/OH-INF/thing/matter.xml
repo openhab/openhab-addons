@@ -15,17 +15,6 @@
 		<config-description-ref uri="thing-type:dirigera:base-device"/>
 	</thing-type>
 
-	<thing-type id="occupancy-light-sensor">
-		<supported-bridge-type-refs>
-			<bridge-type-ref id="gateway"/>
-		</supported-bridge-type-refs>
-
-		<label>Occupancy Light Sensor</label>
-		<description>Sensor to detect motion and measures illuminance</description>
-
-		<config-description-ref uri="thing-type:dirigera:base-device"/>
-	</thing-type>
-
 	<thing-type id="light-sensor">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="gateway"/>
@@ -70,7 +59,7 @@
 		<config-description-ref uri="thing-type:dirigera:base-device"/>
 	</thing-type>
 
-	<thing-type id="two-button-controller">
+	<thing-type id="two-button-switch">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="gateway"/>
 		</supported-bridge-type-refs>
@@ -81,7 +70,7 @@
 		<config-description-ref uri="thing-type:dirigera:base-device"/>
 	</thing-type>
 
-	<thing-type id="three-button-controller">
+	<thing-type id="three-button-switch">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="gateway"/>
 		</supported-bridge-type-refs>

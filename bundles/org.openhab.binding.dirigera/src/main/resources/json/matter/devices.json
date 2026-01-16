@@ -363,13 +363,56 @@
         "thingType": "genericSwitch",
         "identification": {
             "type": "sensor",
-            "deviceType": "openCloseSensor"
+            "deviceType": "genericSwitch"
         },
         "statusProperties": [
             {
                 "attribute": "controlMode",
                 "channel": "control-mode",
-                "channelType": "control-mode-3",
+                "channelType": "mode-3-options",
+                "itemType": "Number",
+                "inValue": "String",
+                "outValue": "DecimalType",
+                "transformation": "mapping",
+                "mapping": {
+                    "light": 0,
+                    "speaker": 1,
+                    "blind": 2
+                }
+            }
+        ],
+        "controlProperties": [
+            {
+                "attribute": "controlMode",
+                "channel": "control-mode",
+                "itemType": "Number",
+                "inValue": "Number",
+                "outValue": "String",
+                "transformation": "mapping",
+                "mapping": {
+                    "0": "light",
+                    "1": "speaker",
+                    "2": "blind"
+                },
+                "json": "attribute"
+            }
+        ],
+        "linkCandidates": [
+        ],
+        "thingProperties": [
+        ]
+    },
+        {
+        "thingType": "three-button-switch",
+        "identification": {
+            "type": "sensor",
+            "deviceType": "genericSwitch"
+        },
+        "statusProperties": [
+            {
+                "attribute": "controlMode",
+                "channel": "control-mode",
+                "channelType": "mode-2-options",
                 "itemType": "Number",
                 "inValue": "String",
                 "outValue": "DecimalType",
@@ -402,4 +445,5 @@
         "thingProperties": [
         ]
     }
+    
 ]

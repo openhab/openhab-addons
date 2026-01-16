@@ -170,7 +170,6 @@ public class DirigeraHandlerFactory extends BaseThingHandlerFactory {
         } else if (THING_TYPE_AIR_PURIFIER.equals(thingTypeUID)) {
             return new AirPurifierHandler(thing, AIR_PURIFIER_MAP);
         } else if (THING_TYPE_MATTER_OCCUPANCY_SENSOR.equals(thingTypeUID)
-                || THING_TYPE_MATTER_OCCUPANCY_LIGHT_SENSOR.equals(thingTypeUID)
                 || THING_TYPE_MATTER_LIGHT_SENSOR.equals(thingTypeUID)
                 || THING_TYPE_MATTER_ENVIRONMENT_SENSOR.equals(thingTypeUID)
                 || THING_TYPE_MATTER_OPEN_CLOSE_SENSOR.equals(thingTypeUID)

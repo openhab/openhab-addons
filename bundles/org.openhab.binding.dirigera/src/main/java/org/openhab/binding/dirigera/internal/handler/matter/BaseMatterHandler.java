@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -81,7 +82,7 @@ public class BaseMatterHandler extends BaseThingHandler implements BaseDevice, D
      */
     protected List<String> hardLinks = new ArrayList<>(Arrays.asList("undef"));
     protected List<String> softLinks = new ArrayList<>();
-    protected List<String> linkCandidateTypes = new ArrayList<>();
+    protected final List<String> linkCandidateTypes = new CopyOnWriteArrayList<>();
 
     /**
      * Lists for canReceive and can Send capabilities
@@ -129,22 +130,25 @@ public class BaseMatterHandler extends BaseThingHandler implements BaseDevice, D
 
         configure();
         initializeCache();
-        initChannels();
+        JSONArray allDeviceUpadtes = initChannels();
         initLinks();
-        initThingProperties();
+        initThingProperties(allDeviceUpadtes);
         logger.trace("BaseMatterHandler initialize took {} ms", Duration.between(startTime, Instant.now()).toMillis());
     }
 
-    private void configure() {
-        String relationId = gateway().model().getRelationId(config.id);
-        if (config.id.equals(relationId)) {
-            String deviceType = gateway().model().getDeviceType(config.id);
-            configMap.put(config.id, new BaseMatterConfiguration(this, config.id, deviceType));
-        } else {
-            Map<String, String> connectedDevices = gateway().model().getRelations(relationId);
-            connectedDevices.forEach((key, value) -> {
-                configMap.put(key, new BaseMatterConfiguration(this, key, value));
-            });
+    protected void configure() {
+        // check if devie is already configured
+        if (configMap.isEmpty()) {
+            String relationId = gateway().model().getRelationId(config.id);
+            if (config.id.equals(relationId)) {
+                String deviceType = gateway().model().getDeviceType(config.id);
+                configMap.put(config.id, new BaseMatterConfiguration(this, config.id, deviceType));
+            } else {
+                Map<String, String> connectedDevices = gateway().model().getRelations(relationId);
+                connectedDevices.forEach((key, value) -> {
+                    configMap.put(key, new BaseMatterConfiguration(this, key, value));
+                });
+            }
         }
     }
 
@@ -161,13 +165,18 @@ public class BaseMatterHandler extends BaseThingHandler implements BaseDevice, D
         });
     }
 
-    private void initChannels() {
+    private JSONArray initChannels() {
+        JSONArray allUpdates = new JSONArray();
+        System.out.println("COnfig Map " + configMap);
         configMap.forEach((deviceId, config) -> {
             JSONObject deviceUpdate = gateway().api().readDevice(deviceId);
+            allUpdates.put(deviceUpdate);
             createChannels(deviceUpdate);
+            System.out.println("DIRIGERA BASE_MATTER_HANDLER " + thing.getUID() + " register device " + deviceId);
             gateway().registerDevice(child, deviceId);
             handleUpdate(deviceUpdate);
         });
+        return allUpdates;
     }
 
     private void initLinks() {
@@ -181,10 +190,15 @@ public class BaseMatterHandler extends BaseThingHandler implements BaseDevice, D
         });
     }
 
-    private void initThingProperties() {
+    private void initThingProperties(JSONArray updates) {
         Map<String, String> properties = editProperties();
         configMap.forEach((deviceId, config) -> {
-            properties.putAll(config.getThingProperties(deviceId));
+            updates.forEach(update -> {
+                JSONObject updateJson = (JSONObject) update;
+                if (deviceId.equals(updateJson.optString("id"))) {
+                    properties.putAll(config.getThingProperties(updateJson));
+                }
+            });
         });
         updateProperties(properties);
     }
@@ -211,7 +225,7 @@ public class BaseMatterHandler extends BaseThingHandler implements BaseDevice, D
         }
     }
 
-    private boolean getGateway() {
+    protected boolean getGateway() {
         Bridge bridge = getBridge();
         if (bridge != null) {
             updateStatus(ThingStatus.UNKNOWN);
