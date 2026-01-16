@@ -13,6 +13,7 @@
 package org.openhab.binding.astro.internal.util;
 
 import java.time.Instant;
+import java.time.InstantSource;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Calendar;
@@ -217,8 +218,9 @@ public class DateTimeUtils {
     /**
      * Returns the next Calendar from today.
      */
-    public static Calendar getNextFromToday(TimeZone zone, Locale locale, Calendar... calendars) {
-        Calendar now = Calendar.getInstance(zone, locale);
+    public static Calendar getNextFromToday(TimeZone zone, Locale locale, InstantSource instantSource,
+            Calendar... calendars) {
+        Calendar now = calFromInstantSource(instantSource, zone, locale);
         Calendar result = getNext(now, calendars);
         return result == null ? now : result;
     }
@@ -400,8 +402,9 @@ public class DateTimeUtils {
         return (jd - JD_J2000) / JULIAN_CENTURY_DAYS;
     }
 
-    public static Calendar createCalendarForToday(int hour, int minute, TimeZone zone, Locale locale) {
-        return DateTimeUtils.adjustTime(Calendar.getInstance(zone, locale), hour * 60 + minute);
+    public static Calendar createCalendarForToday(int hour, int minute, TimeZone zone, Locale locale,
+            InstantSource instantSource) {
+        return adjustTime(calFromInstantSource(instantSource, zone, locale), hour * 60 + minute);
     }
 
     /**
@@ -449,5 +452,20 @@ public class DateTimeUtils {
 
     public static Instant atMidnightOfFirstMonthDay(Instant instant, TimeZone zone) {
         return instant.atZone(zone.toZoneId()).withDayOfMonth(1).truncatedTo(ChronoUnit.DAYS).toInstant();
+    }
+
+    /**
+     * Creates a new {@link Calendar} instance with the specified time zone and locale, with the specified
+     * {@link InstantSource} as the time source.
+     *
+     * @param instantSource the time source.
+     * @param zone the {@link TimeZone} to use.
+     * @param locale the {@link Locale} to use.
+     * @return The new {@link Calendar} instance.
+     */
+    public static Calendar calFromInstantSource(InstantSource instantSource, TimeZone zone, Locale locale) {
+        Calendar result = Calendar.getInstance(zone, locale);
+        result.setTimeInMillis(instantSource.millis());
+        return result;
     }
 }

@@ -912,11 +912,6 @@
     },
     {
         "modelName": "DEEBOT T30S PRO OMNI",
-        "deviceClass": "czjwet",
-        "deviceClassLink": "z4lvk7"
-    },
-    {
-        "modelName": "DEEBOT T30S PRO OMNI",
         "deviceClass": "elrxgb",
         "deviceClassLink": "z4lvk7"
     },
@@ -949,6 +944,31 @@
         "modelName": "DEEBOT N30 PRO OMNI",
         "deviceClass": "87swps",
         "deviceClassLink": "z4lvk7"
+    },
+
+    {
+        "modelName": "DEEBOT T50 PRO OMNI",
+        "deviceClass": "czjwet",
+        "protoVersion": "json_v2",
+        "usesMqtt": true,
+        "capabilities": [
+            "mopping_system",
+            "main_brush",
+            "spot_area_cleaning",
+            "custom_area_cleaning",
+            "scenario_cleaning",
+            "clean_speed_control",
+            "voice_reporting",
+            "read_network_info",
+            "unit_care_lifespan",
+            "round_mop_lifespan",
+            "true_detect_3d",
+            "mapping",
+            "auto_empty_station",
+            "air_drying",
+            "uses_clean_results_log_api",
+            "custom_water_amount"
+        ]
     },
 
     {

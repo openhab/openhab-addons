@@ -475,8 +475,9 @@ public class LightsAndGroups implements RegistryChangeListener<Item> {
                     "Invalid request: No state change data received!");
         }
 
-        String groupid = cs.ds.nextGroupID();
-        GroupItem groupItem = new GroupItem(groupid);
+        String groupId = cs.ds.nextGroupID();
+        GroupItem groupItem = new GroupItem(groupId);
+        groupItem.setLabel(state.name);
 
         if (!HueGroupEntry.TypeEnum.LightGroup.name().equals(state.type)) {
             groupItem.addTag("huetype_" + state.type);
@@ -487,18 +488,18 @@ public class LightsAndGroups implements RegistryChangeListener<Item> {
         }
 
         for (String id : state.lights) {
-            Item item = itemRegistry.get(id);
-            if (item == null) {
-                logger.debug("Could not create group {}. Item {} not existing!", state.name, id);
+            HueLightEntry hueDevice = cs.ds.lights.get(id);
+            if (hueDevice == null) {
+                logger.debug("Could not create group {}. Light {} does not exist", state.name, id);
                 return NetworkUtils.singleError(cs.gson, uri, HueResponse.ARGUMENTS_INVALID,
-                        "Invalid request: Item not existing");
+                        "Invalid request: Light does not exist");
             }
-            groupItem.addMember(item);
+            groupItem.addMember(hueDevice.item);
         }
 
         itemRegistry.add(groupItem);
 
-        return NetworkUtils.singleSuccess(cs.gson, groupid, "id");
+        return NetworkUtils.singleSuccess(cs.gson, groupId, "id");
     }
 
     @DELETE
@@ -513,12 +514,12 @@ public class LightsAndGroups implements RegistryChangeListener<Item> {
             return NetworkUtils.singleError(cs.gson, uri, HueResponse.UNAUTHORIZED, "Not Authorized");
         }
 
-        HueLightEntry hueDevice = cs.ds.lights.get(id);
+        HueGroupEntry hueDevice = cs.ds.groups.get(id);
         if (hueDevice == null) {
             return NetworkUtils.singleError(cs.gson, uri, HueResponse.NOT_AVAILABLE, "Group does not exist");
         }
 
-        if (itemRegistry.remove(id) != null) {
+        if (itemRegistry.remove(hueDevice.groupItem.getUID()) != null) {
             return NetworkUtils.singleSuccess(cs.gson, "/groups/" + id + " deleted.");
         } else {
             return NetworkUtils.singleError(cs.gson, uri, HueResponse.NOT_AVAILABLE, "Group does not exist");

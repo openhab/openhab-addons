@@ -16,7 +16,6 @@ This bundle provides a list of useful Profiles:
 | [Inactivity Profile](#inactivity-profile)                       | Sets the linked Item On or Off depending whether the Channel has recently produced data      |
 | [Time-weighted Average Profile](#time-weighted-average-profile) | Collects updates for given duration to calculate time-weighted average value                 |
 
-
 ## Generic Command Profile
 
 This Profile can be used to send a Command towards the Item when one event of a specified event list is triggered.
@@ -83,10 +82,10 @@ It can be used to debounce Item States/Commands or prevent excessive load on net
 
 ### Debounce (Time) Profile Configuration
 
-| Configuration Parameter | Type    | Description                                   |
-|-------------------------|---------|-----------------------------------------------|
-| `toItemDelay`           | integer | Timespan in ms before a received value is send to the item. |
-| `toHandlerDelay`        | integer | Timespan in ms before a received command is passed to the handler. |
+| Configuration Parameter | Type    | Description                                                                                                                            |
+|-------------------------|---------|----------------------------------------------------------------------------------------------------------------------------------------|
+| `toItemDelay`           | integer | Timespan in ms before a received value is send to the item.                                                                            |
+| `toHandlerDelay`        | integer | Timespan in ms before a received command is passed to the handler.                                                                     |
 | `mode`                  | text    | `FIRST` (sends the first value received and discards later values), `LAST` (sends the last value received, discarding earlier values). |
 
 ### Debounce (Time) Profile Example
@@ -95,7 +94,7 @@ It can be used to debounce Item States/Commands or prevent excessive load on net
 Number:Temperature debouncedSetpoint { channel="xxx" [profile="basic-profiles:debounce-time", toHandlerDelay=1000] }
 ```
 
-## Invert / Negate Profile
+## Invert / Negate Profile<a id="invert-negate-profile"></a>
 
 The Invert / Negate Profile inverts or negates a Command / State.
 It requires no specific configuration.
@@ -370,18 +369,18 @@ This profile aggregates all state updates within the configured duration and out
 It is useful for reducing high frequency data before it reaches your persistence database, such as measurements from:
 
 - inverters
-- smart meters 
+- smart meters
 - power plugs with electric measurement
 
 This profile is only applicable to numeric channels, with or without unit metadata.
 The average is calculated solely from state updates sent from the handler to the item.
 Commands and item updates originating from rules or the UI are not affected.
-Check the semantics of the channel if this profile fits. 
+Check the semantics of the channel if this profile fits.
 E.g. a channel providing _power measurement_ values is a valid candidate to build averages.
 A channel providing a status or accumulated value like _total energy production today_ is not a good candidate.
 
 The optional `delta` parameter is used to identify increases / decreases of state values above or equal the configured delta.
-This will break the steady time frame but reports rapid changes e.g. for power consumption immediately. 
+This will break the steady time frame but reports rapid changes e.g. for power consumption immediately.
 
 ### Time-weighted Average Profile Configuration
 
