@@ -18,6 +18,7 @@ import static org.openhab.binding.astro.internal.util.DateTimeUtils.*;
 
 import java.lang.invoke.MethodHandles;
 import java.time.Instant;
+import java.time.InstantSource;
 import java.time.ZoneId;
 import java.util.Calendar;
 import java.util.List;
@@ -29,6 +30,7 @@ import org.openhab.binding.astro.internal.config.AstroChannelConfig;
 import org.openhab.binding.astro.internal.handler.AstroThingHandler;
 import org.openhab.binding.astro.internal.model.Range;
 import org.openhab.binding.astro.internal.model.SunPhaseName;
+import org.openhab.binding.astro.internal.util.DateTimeUtils;
 import org.openhab.core.scheduler.SchedulerRunnable;
 import org.openhab.core.thing.Channel;
 import org.slf4j.Logger;
@@ -56,6 +58,7 @@ public interface Job extends SchedulerRunnable, Runnable {
      */
     static void schedule(AstroThingHandler astroHandler, Job job, Calendar eventAt, TimeZone zone, Locale locale) {
         try {
+            // Don't use InstantSource here, because we always want to schedule relative to the system clock
             Calendar today = Calendar.getInstance(zone, locale);
             boolean sameDay = isSameDay(eventAt, today);
             if (sameDay && isTimeGreaterEquals(eventAt, today)) {
@@ -81,6 +84,7 @@ public interface Job extends SchedulerRunnable, Runnable {
      * @param zone the configured time zone
      */
     static void schedule(AstroThingHandler astroHandler, Job job, Instant eventAt, ZoneId zone) {
+        // Don't use InstantSource here, because we always want to schedule relative to the system clock
         Instant now = Instant.now();
         boolean sameDay = isSameDay(eventAt.atZone(zone), now.atZone(zone));
         if (sameDay && !eventAt.isBefore(now)) {
@@ -196,14 +200,14 @@ public interface Job extends SchedulerRunnable, Runnable {
      * @param channelId the channel ID
      */
     static void scheduleRange(AstroThingHandler astroHandler, Range range, String channelId, TimeZone zone,
-            Locale locale) {
+            Locale locale, InstantSource instantSource) {
         final Channel channel = astroHandler.getThing().getChannel(channelId);
         if (channel == null) {
             LOGGER.warn("Cannot find channel '{}' for thing '{}'.", channelId, astroHandler.getThing().getUID());
             return;
         }
         AstroChannelConfig config = channel.getConfiguration().as(AstroChannelConfig.class);
-        Range adjustedRange = adjustRangeToConfig(range, config, zone, locale);
+        Range adjustedRange = adjustRangeToConfig(range, config, zone, locale, instantSource);
 
         Calendar start = adjustedRange.getStart();
         Calendar end = adjustedRange.getEnd();
@@ -217,14 +221,15 @@ public interface Job extends SchedulerRunnable, Runnable {
         scheduleEvent(astroHandler, end, EVENT_END, channelId, true, zone, locale);
     }
 
-    static Range adjustRangeToConfig(Range range, AstroChannelConfig config, TimeZone zone, Locale locale) {
+    static Range adjustRangeToConfig(Range range, AstroChannelConfig config, TimeZone zone, Locale locale,
+            InstantSource instantSource) {
         Calendar start = range.getStart();
         Calendar end = range.getEnd();
 
         if (config.forceEvent) {
             Calendar reference = start != null ? start : end;
             if (reference == null) {
-                reference = Calendar.getInstance(zone, locale);
+                reference = DateTimeUtils.calFromInstantSource(instantSource, zone, locale);
             }
             if (start == null) {
                 start = getAdjustedEarliest(truncateToMidnight(reference), config);

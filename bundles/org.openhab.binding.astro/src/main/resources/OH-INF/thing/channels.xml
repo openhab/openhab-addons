@@ -462,9 +462,10 @@
 	</channel-type>
 
 	<channel-type id="age">
-		<item-type>Number:Time</item-type>
+		<item-type unitHint="d">Number:Time</item-type>
 		<label>Moon Age</label>
-		<description>The age of the moon in days</description>
+		<description>The age of the moon</description>
+		<category>oh:astro:moon_day</category>
 		<tags>
 			<tag>Calculation</tag>
 			<tag>Duration</tag>
@@ -506,6 +507,7 @@
 		<item-type>String</item-type>
 		<label>Moon Phase Name</label>
 		<description>The name of the current moon phase</description>
+		<category>oh:astro:moon_phase</category>
 		<tags>
 			<tag>Status</tag>
 		</tags>
@@ -615,6 +617,7 @@
 	<channel-group-type id="moonZodiac">
 		<label>Zodiac</label>
 		<description>The zodiac of the moon</description>
+		<category>oh:astro:zodiac</category>
 		<channels>
 			<channel id="sign" typeId="sign"/>
 		</channels>

@@ -17,13 +17,17 @@ import static org.openhab.core.thing.type.ChannelKind.TRIGGER;
 import static org.openhab.core.types.RefreshType.REFRESH;
 
 import java.lang.invoke.MethodHandles;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
+import java.time.InstantSource;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -35,8 +39,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import javax.measure.quantity.Angle;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.astro.internal.action.AstroActions;
@@ -46,10 +48,12 @@ import org.openhab.binding.astro.internal.job.Job;
 import org.openhab.binding.astro.internal.job.PositionalJob;
 import org.openhab.binding.astro.internal.model.Planet;
 import org.openhab.binding.astro.internal.model.Position;
-import org.openhab.binding.astro.internal.util.PropertyUtils;
+import org.openhab.binding.astro.internal.util.DateTimeUtils;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TimeZoneProvider;
-import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.types.DateTimeType;
+import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.scheduler.CronScheduler;
 import org.openhab.core.scheduler.ScheduledCompletableFuture;
 import org.openhab.core.thing.Channel;
@@ -59,6 +63,8 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -96,12 +102,16 @@ public abstract class AstroThingHandler extends BaseThingHandler {
     // All access must be guarded by "monitor"
     private @Nullable ScheduledCompletableFuture<?> dailyJob;
 
+    /** The source of the current time */
+    protected final InstantSource instantSource;
+
     public AstroThingHandler(Thing thing, final CronScheduler scheduler, final TimeZoneProvider timeZoneProvider,
-            LocaleProvider localeProvider) {
+            LocaleProvider localeProvider, InstantSource instantSource) {
         super(thing);
         this.cronScheduler = scheduler;
         this.timeZoneProvider = timeZoneProvider;
         this.localeProvider = localeProvider;
+        this.instantSource = instantSource;
     }
 
     @Override
@@ -189,14 +199,22 @@ public abstract class AstroThingHandler extends BaseThingHandler {
                 return;
             }
             try {
-                AstroChannelConfig config = channel.getConfiguration().as(AstroChannelConfig.class);
-                updateState(channelUID, PropertyUtils.getState(channelUID, config, planet,
-                        TimeZone.getTimeZone(timeZoneProvider.getTimeZone())));
-            } catch (Exception ex) {
-                logger.error("Can't update state for channel {} : {}", channelUID, ex.getMessage(), ex);
+                updateState(channelUID, getState(channel));
+            } catch (IllegalArgumentException e) {
+                logger.warn("Can't retrieve the state for channel '{}': {}", channelUID, e.getMessage());
+                logger.trace("", e);
             }
         }
     }
+
+    /**
+     * Retrieve the channel state and convert it to an appropriate {@link State} instance.
+     *
+     * @param channel the {@link Channel} whose {@link State} to get.
+     * @return The resulting channel {@link State}.
+     * @throws IllegalArgumentException If the channel has a state of an unsupported type.
+     */
+    protected abstract State getState(Channel channel);
 
     /**
      * Schedules a positional and a daily job at midnight for Astro calculation and starts it immediately too. Removes
@@ -332,6 +350,7 @@ public abstract class AstroThingHandler extends BaseThingHandler {
      * Adds the provided {@link Job} to the queue (cannot be {@code null})
      */
     public void schedule(Job job, Calendar eventAt) {
+        // We don't use instantSource here, because we always want to schedule relative to the system clock
         long sleepTime = eventAt.getTimeInMillis() - System.currentTimeMillis();
         if (sleepTime >= 0L) {
             schedule(job, sleepTime);
@@ -346,6 +365,7 @@ public abstract class AstroThingHandler extends BaseThingHandler {
     }
 
     public void schedule(Job job, Instant eventAt) {
+        // We don't use instantSource here, because we always want to schedule relative to the system clock
         long sleepTime = eventAt.toEpochMilli() + 1L - System.currentTimeMillis();
         if (sleepTime >= 0L) {
             schedule(job, sleepTime);
@@ -402,18 +422,49 @@ public abstract class AstroThingHandler extends BaseThingHandler {
 
     public abstract @Nullable Position getPositionAt(ZonedDateTime date);
 
-    public @Nullable QuantityType<Angle> getAzimuth(ZonedDateTime date) {
+    public State getAzimuth(ZonedDateTime date) {
         Position position = getPositionAt(date);
-        return position != null ? position.getAzimuth() : null;
+        return position != null ? position.getAzimuth() : UnDefType.NULL;
     }
 
-    public @Nullable QuantityType<Angle> getElevation(ZonedDateTime date) {
+    public State getElevation(ZonedDateTime date) {
         Position position = getPositionAt(date);
-        return position != null ? position.getElevation() : null;
+        return position != null ? position.getElevation() : UnDefType.NULL;
     }
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
         return List.of(AstroActions.class);
+    }
+
+    /**
+     * Convert an untyped value into the appropriate {@link State} type for the specified {@link Channel}.
+     *
+     * @param value the {@link Object} to convert.
+     * @param channel the {@link Channel} whose type to convert to.
+     * @return The appropriate {@link State} instance.
+     * @throws IllegalArgumentException If {@code value} is of an unsupported type.
+     */
+    protected State toState(@Nullable Object value, Channel channel) {
+        if (value == null) {
+            return UnDefType.UNDEF;
+        } else if (value instanceof State state) {
+            return state;
+        } else if (value instanceof Calendar cal) {
+            cal.setTimeZone(TimeZone.getTimeZone(timeZoneProvider.getTimeZone()));
+            GregorianCalendar gregorianCal = (GregorianCalendar) DateTimeUtils.applyConfig(cal,
+                    channel.getConfiguration().as(AstroChannelConfig.class));
+            return new DateTimeType(gregorianCal.toInstant());
+        } else if (value instanceof Instant instant) {
+            return new DateTimeType(
+                    DateTimeUtils.applyConfig(instant, channel.getConfiguration().as(AstroChannelConfig.class)));
+        } else if (value instanceof Number) {
+            BigDecimal decimalValue = new BigDecimal(value.toString()).setScale(2, RoundingMode.HALF_UP);
+            return new DecimalType(decimalValue);
+        } else if (value instanceof String || value instanceof Enum) {
+            return new StringType(value.toString());
+        } else {
+            throw new IllegalArgumentException("Unsupported value type " + value.getClass().getSimpleName());
+        }
     }
 }
