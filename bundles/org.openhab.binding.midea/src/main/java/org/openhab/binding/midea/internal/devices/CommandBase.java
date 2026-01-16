@@ -13,7 +13,6 @@
 package org.openhab.binding.midea.internal.devices;
 
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.Arrays;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -99,7 +98,7 @@ public class CommandBase {
     }
 
     protected void applyTimestamp() {
-        LocalDateTime now = LocalDateTime.now(ZoneId.systemDefault());
+        LocalDateTime now = LocalDateTime.now();
         data[data.length - 1] = (byte) now.getSecond();
     }
 

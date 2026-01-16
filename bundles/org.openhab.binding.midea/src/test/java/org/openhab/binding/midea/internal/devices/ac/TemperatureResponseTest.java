@@ -27,7 +27,6 @@ import org.junit.jupiter.api.Test;
  */
 @NonNullByDefault
 public class TemperatureResponseTest {
-    @org.jupnp.registry.event.Before
 
     // From OH forum; Midea topic July 2025
     byte[] data = HexFormat.of().parseHex("A10000000000000000000A0A0A64FF000031050000000000000000000000003CD5DB");

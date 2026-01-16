@@ -451,7 +451,7 @@ public class ConnectionManager {
                 Utils.bytesToBinary(data));
 
         // Validate the proper length
-        if (data.length < 21 && (bodyType != (byte) 0x1E || bodyType != (byte) 0xB5)) {
+        if (data.length < 21 && bodyType != (byte) 0xB5 && bodyType != (byte) 0xE1) {
             logger.warn("Response data is {} long, minimum is 21!", data.length);
             return;
         }

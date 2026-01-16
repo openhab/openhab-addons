@@ -167,7 +167,7 @@ public class A1CommandHelper {
     /**
      * Handle A1 Dehumidifier Anion
      * 
-     * @param command Anoin
+     * @param command Anion
      */
     public static A1CommandSet handleA1Anion(Command command, A1Response lastResponse)
             throws UnsupportedOperationException {

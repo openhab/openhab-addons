@@ -124,7 +124,6 @@ public class MideaACHandler extends AbstractMideaHandler implements ACCallback {
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
-        return;
     }
 
     @Override
@@ -140,7 +139,6 @@ public class MideaACHandler extends AbstractMideaHandler implements ACCallback {
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
-        return;
     }
 
     private void humidityUpdate() {

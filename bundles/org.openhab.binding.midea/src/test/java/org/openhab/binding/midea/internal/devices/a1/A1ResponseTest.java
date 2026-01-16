@@ -27,7 +27,6 @@ import org.junit.jupiter.api.Test;
  */
 @NonNullByDefault
 public class A1ResponseTest {
-    @org.jupnp.registry.event.Before
 
     byte[] data = HexFormat.of().parseHex("C80104507F7F003700000000000000001E64000000003A67C2");
     A1Response response = new A1Response(data);

@@ -31,7 +31,6 @@ import org.openhab.binding.midea.internal.devices.ac.ACStringCommands.SwingMode;
  */
 @NonNullByDefault
 public class ResponseTest {
-    @org.jupnp.registry.event.Before
 
     byte[] data = HexFormat.of().parseHex("C00042668387123C00000460FF0C7000000000320000F9ECDB");
     private int version = 3;
