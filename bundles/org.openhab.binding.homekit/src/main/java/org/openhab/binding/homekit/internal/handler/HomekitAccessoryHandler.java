@@ -62,7 +62,6 @@ import org.openhab.core.thing.DefaultSystemChannelTypeProvider;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
-import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.thing.type.ChannelGroupType;
@@ -916,13 +915,6 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
 
     @Override
     protected void onConnectedThingAccessoriesLoaded() {
-        if (THING_TYPE_ACCESSORY.equals(thing.getThingTypeUID()) && getAccessories().size() > 1) {
-            // if an 'accessory' Thing has child accessories, convert it to a 'bridge'
-            logger.info("Thing '{}' has child accessories; converting it to '{}'", thing.getUID(),
-                    new ThingUID(THING_TYPE_BRIDGE, thing.getUID().getId()));
-            changeThingType(THING_TYPE_BRIDGE, getConfig());
-            return;
-        }
         createProperties();
         createChannels();
         markAsReady(thing);
