@@ -92,7 +92,7 @@ public class StateTest {
 
         AstroThingHandler handler = getHandler(testCase.thingId(), testCase.testMoment());
         if (handler == null) {
-            throw new IllegalStateException("hander should not be null");
+            throw new IllegalStateException("handler should not be null");
         }
 
         when(channel.getUID()).thenReturn(new ChannelUID(getThingUID(testCase.thingId()), testCase.channelId()));
