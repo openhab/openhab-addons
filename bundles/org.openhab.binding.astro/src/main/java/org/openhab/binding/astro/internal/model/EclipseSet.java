@@ -13,11 +13,11 @@
 package org.openhab.binding.astro.internal.model;
 
 import java.time.Instant;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.astro.internal.calc.EclipseCalc.LocalizedEclipse;
 import org.openhab.binding.astro.internal.util.DateTimeUtils;
 
 /**
@@ -29,41 +29,35 @@ import org.openhab.binding.astro.internal.util.DateTimeUtils;
 @NonNullByDefault
 public class EclipseSet {
     public static final EclipseSet NONE = new EclipseSet();
-    private final List<EclipseData> eclipses;
-
-    public record EclipseData(EclipseKind eclipseKind, Instant when, double elevation) {
-        public EclipseData(EclipseKind eclipseKind, double jdInstant, Position position) {
-            this(eclipseKind, DateTimeUtils.jdToInstant(jdInstant), position.getElevationAsDouble());
-        }
-    }
+    private final List<LocalizedEclipse> eclipses;
 
     private EclipseSet() {
         this.eclipses = List.of();
     }
 
-    public EclipseSet(EclipseData[] comingEclipses) {
-        this.eclipses = Arrays.asList(comingEclipses);
+    public EclipseSet(Stream<LocalizedEclipse> eclipseDatas) {
+        this.eclipses = eclipseDatas.toList();
     }
 
     public boolean needsRecalc(double jdNow) {
         Instant now = DateTimeUtils.jdToInstant(jdNow);
-        return eclipses.isEmpty() || eclipses.stream().map(EclipseData::when).anyMatch(when -> when.isAfter(now));
+        return eclipses.isEmpty() || eclipses.stream().map(LocalizedEclipse::when).anyMatch(when -> when.isBefore(now));
     }
 
-    public Stream<EclipseData> getEclipses() {
+    public Stream<LocalizedEclipse> getEclipses() {
         return eclipses.stream();
     }
 
-    private EclipseData internalGet(EclipseKind eclipseKind) {
-        return getEclipses().filter(ed -> ed.eclipseKind.equals(eclipseKind)).findFirst().orElseThrow(
+    private LocalizedEclipse internalGet(EclipseKind eclipseKind) {
+        return getEclipses().filter(ed -> ed.matches(eclipseKind)).findFirst().orElseThrow(
                 () -> new IllegalArgumentException("This EclipseSet does not contain %s".formatted(eclipseKind)));
     }
 
     public Instant getDate(EclipseKind eclipseKind) {
-        return internalGet(eclipseKind).when;
+        return internalGet(eclipseKind).when();
     }
 
     public Double getElevation(EclipseKind eclipseKind) {
-        return internalGet(eclipseKind).elevation;
+        return internalGet(eclipseKind).elevation();
     }
 }

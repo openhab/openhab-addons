@@ -17,7 +17,6 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.astro.internal.model.EclipseSet.EclipseData;
 
 /**
  * Holds the calculated sun data.
@@ -284,8 +283,8 @@ public class Sun extends RiseSet implements Planet {
         return eclipseSet;
     }
 
-    public void setEclipseSet(EclipseData[] result) {
-        this.eclipseSet = new EclipseSet(result);
+    public void setEclipseSet(EclipseSet eclipseSet) {
+        this.eclipseSet = eclipseSet;
     }
 
     /**

@@ -239,14 +239,12 @@ public class SunCalc {
         }
 
         // eclipse
+
         if (sun.getEclipseSet().needsRecalc(j)) {
-            EclipseSet.EclipseData[] result = ECLIPSE_CALC.validEclipses().map(ek -> {
-                double jdate = ECLIPSE_CALC.calculate(j, ek);
-                Calendar eclipseCal = Objects.requireNonNull(DateTimeUtils.toCalendar(jdate, zone, locale));
-                Position sunPosition = getPosition(eclipseCal, latitude, longitude, altitude);
-                return new EclipseSet.EclipseData(ek, jdate, sunPosition);
-            }).toArray(EclipseSet.EclipseData[]::new);
-            sun.setEclipseSet(result);
+            sun.setEclipseSet(new EclipseSet(ECLIPSE_CALC.getNextEclipses(j).map(eclipse -> {
+                Calendar eclipseCal = Objects.requireNonNull(DateTimeUtils.toCalendar(eclipse.when(), zone, locale));
+                return eclipse.withPosition(getPosition(eclipseCal, latitude, longitude, altitude));
+            })));
         }
 
         sun.setZodiac(ZodiacCalc.calculate(lsun, calendar.toInstant()));

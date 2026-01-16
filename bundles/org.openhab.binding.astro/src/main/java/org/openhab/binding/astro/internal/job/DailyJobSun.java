@@ -121,8 +121,8 @@ public final class DailyJobSun extends AbstractJob {
             }
 
             sun.getEclipseSet().getEclipses().forEach(eclipse -> {
-                scheduleEvent(handler, eclipse.when(), eclipse.eclipseKind().toString(), EVENT_CHANNEL_ID_ECLIPSE,
-                        false, zone.toZoneId());
+                scheduleEvent(handler, eclipse.when(), eclipse.kind().toString(), EVENT_CHANNEL_ID_ECLIPSE, false,
+                        zone.toZoneId());
             });
 
             // schedule republish jobs

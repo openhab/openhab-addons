@@ -57,7 +57,7 @@ public class SunEclipseCalc extends EclipseCalc {
     }
 
     @Override
-    public Stream<EclipseKind> validEclipses() {
+    protected Stream<EclipseKind> validEclipses() {
         return Set.of(EclipseKind.PARTIAL, EclipseKind.TOTAL, EclipseKind.RING).stream();
     }
 }

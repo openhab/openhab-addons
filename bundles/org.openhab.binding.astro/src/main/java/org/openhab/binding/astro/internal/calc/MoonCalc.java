@@ -95,11 +95,8 @@ public class MoonCalc extends AstroCalc {
         double julianDate = DateTimeUtils.dateToJulianDate(calendar);
 
         if (moon.getEclipseSet().needsRecalc(julianDate)) {
-            EclipseSet.EclipseData[] result = ECLIPSE_CALC.validEclipses().map(ek -> {
-                double jdate = ECLIPSE_CALC.calculate(julianDateMidnight, ek);
-                return new EclipseSet.EclipseData(ek, jdate, getMoonPosition(jdate, latitude, longitude));
-            }).toArray(EclipseSet.EclipseData[]::new);
-            moon.setEclipseSet(result);
+            moon.setEclipseSet(new EclipseSet(ECLIPSE_CALC.getNextEclipses(julianDate)
+                    .map(eclipse -> eclipse.withPosition(getMoonPosition(eclipse.when(), latitude, longitude)))));
         }
 
         Set.of(DistanceType.APOGEE, DistanceType.PERIGEE)

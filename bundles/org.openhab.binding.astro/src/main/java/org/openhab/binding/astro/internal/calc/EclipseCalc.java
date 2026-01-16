@@ -14,10 +14,13 @@ package org.openhab.binding.astro.internal.calc;
 
 import static org.openhab.binding.astro.internal.util.MathUtils.*;
 
+import java.time.Instant;
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.astro.internal.model.EclipseKind;
+import org.openhab.binding.astro.internal.model.Position;
+import org.openhab.binding.astro.internal.util.DateTimeUtils;
 
 /**
  * Calculates the eclipses for the astro object
@@ -27,6 +30,29 @@ import org.openhab.binding.astro.internal.model.EclipseKind;
  */
 @NonNullByDefault
 public abstract class EclipseCalc extends AstroCalc {
+    public record Eclipse(EclipseKind kind, double when) {
+        public LocalizedEclipse withPosition(Position position) {
+            return new LocalizedEclipse(this, position.getElevationAsDouble());
+        }
+    }
+
+    public record LocalizedEclipse(Eclipse eclipse, double elevation) {
+        public Instant when() {
+            return DateTimeUtils.jdToInstant(eclipse.when);
+        }
+
+        public EclipseKind kind() {
+            return eclipse.kind;
+        }
+
+        public boolean matches(EclipseKind otherKind) {
+            return kind().equals(otherKind);
+        }
+    }
+
+    public Stream<Eclipse> getNextEclipses(double startJd) {
+        return validEclipses().map(ek -> new Eclipse(ek, calculate(startJd, ek)));
+    }
 
     public double calculate(double midnightJd, EclipseKind eclipse) {
         double tz = 0;
@@ -43,7 +69,7 @@ public abstract class EclipseCalc extends AstroCalc {
 
     protected abstract double astroAdjust(EclipseKind ek, double e, double m, double m1, double g, double u, double jd);
 
-    public abstract Stream<EclipseKind> validEclipses();
+    protected abstract Stream<EclipseKind> validEclipses();
 
     /**
      * Calculates the eclipse.
