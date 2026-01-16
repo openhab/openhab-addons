@@ -98,27 +98,27 @@
 
     <oh.bndDefaults><![CDATA[Bundle-SymbolicName: ${project.artifactId}
 Automatic-Module-Name: ${def;bsn}
-Import-Package: \\
-  io.swagger.v3.oas.annotations.*;resolution:=optional,\\
-  javax.annotation.security.*;resolution:=optional,\\
-  org.eclipse.jdt.annotation.*;resolution:=optional,\\
-  org.openhab.core.automation.annotation.*;resolution:=optional;version=!,\\
-  org.openhab.*;version=!,\\
-  com.google.common.*;version="14.0",\\
-  ${bnd.importpackage},\\
+Import-Package: \
+  io.swagger.v3.oas.annotations.*;resolution:=optional,\
+  javax.annotation.security.*;resolution:=optional,\
+  org.eclipse.jdt.annotation.*;resolution:=optional,\
+  org.openhab.core.automation.annotation.*;resolution:=optional;version=!,\
+  org.openhab.*;version=!,\
+  com.google.common.*;version="14.0",\
+  ${bnd.importpackage},\
   *
--exportcontents: \\
-  !*.internal.*,\\
-  !*.impl.*, \\
-  org.openhab.*, \\
+-exportcontents: \
+  !*.internal.*,\
+  !*.impl.*, \
+  org.openhab.*, \
   ${bnd.exportpackage}
 -noimportjava: true
 -sources: false
 -contract: *
 -includeresource: ${bnd.includeresource}
--fixupmessages: \\
-  'Unused Import-Package instructions';is:=ignore,\\
-  'Unused Export-Package instructions';is:=ignore,\\
+-fixupmessages: \
+  'Unused Import-Package instructions';is:=ignore,\
+  'Unused Export-Package instructions';is:=ignore,\
   ${bnd.fixupmessages}]]></oh.bndDefaults>
   </properties>
 
