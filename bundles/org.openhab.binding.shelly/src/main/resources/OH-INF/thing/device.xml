@@ -158,7 +158,7 @@
 	<channel-type id="deviceFirmware" advanced="true">
 		<item-type>String</item-type>
 		<label>@text/channel-type.shelly.deviceFirmware.label</label>
-		<description>@text/channel-type.shelly.firmware.description</description>
+		<description>@text/channel-type.shelly.deviceFirmware.description</description>
 		<state pattern="%s" readOnly="true">
 		</state>
 	</channel-type>
