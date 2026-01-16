@@ -27,7 +27,6 @@ import org.junit.jupiter.api.Test;
  */
 @NonNullByDefault
 public class HumidityResponseTest {
-    @org.jupnp.registry.event.Before
 
     // From OH forum; Midea topic July 2025
     byte[] data = HexFormat.of().parseHex("A01240640000003C00000000003600000000000000004234EA");

@@ -35,7 +35,7 @@ public class MideaBindingConstants {
     private static final String BINDING_ID = "midea";
 
     /**
-     * Thing Type
+     * Thing Types
      */
     public static final ThingTypeUID THING_TYPE_AC = new ThingTypeUID(BINDING_ID, "ac");
     public static final ThingTypeUID THING_TYPE_DEHUMIDIFIER = new ThingTypeUID(BINDING_ID, "a1");

@@ -172,7 +172,7 @@
 	<channel-type id="indoor-temperature">
 		<item-type>Number:Temperature</item-type>
 		<label>Indoor Temperature</label>
-		<description>Indoor temperature measured by the internal unit. Not frequent when unit is off</description>
+		<description>Indoor temperature measured by the internal unit.</description>
 		<category>Temperature</category>
 		<tags>
 			<tag>Measurement</tag>
@@ -276,7 +276,7 @@
 		<description>Purifier Modes (ON, OFF or AUTO)</description>
 		<tags>
 			<tag>Control</tag>
-			<tag>Heating</tag>
+			<tag>Mode</tag>
 		</tags>
 		<state>
 			<options>
@@ -342,7 +342,7 @@
 		<label>Tank Water Level</label>
 		<tags>
 			<tag>Measurement</tag>
-			<tag>Humidity</tag>
+			<tag>Level</tag>
 		</tags>
 		<state readOnly="true" pattern="%d%%"/>
 	</channel-type>
@@ -351,7 +351,7 @@
 		<label>Dehumidifier Tank Setpoint</label>
 		<tags>
 			<tag>Setpoint</tag>
-			<tag>Humidity</tag>
+			<tag>Level</tag>
 		</tags>
 		<state>
 			<options>
@@ -365,11 +365,11 @@
 	<channel-type id="dehumidifier-swing">
 		<item-type>Switch</item-type>
 		<label>Dehumidifer Swing</label>
-		<description>Louver Movement. </description>
+		<description>Louver Movement.</description>
 		<category>Switch</category>
 		<tags>
 			<tag>Switch</tag>
-			<tag>Humidity</tag>
+			<tag>Mode</tag>
 		</tags>
 	</channel-type>
 	<channel-type id="humidity">
@@ -383,25 +383,14 @@
 		</tags>
 		<state readOnly="true" pattern="%d%%"/>
 	</channel-type>
-	<channel-type id="indoor-temperature">
-		<item-type>Number:Temperature</item-type>
-		<label>Indoor Temperature</label>
-		<description>Indoor temperature measured by the internal unit.</description>
-		<category>Temperature</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
-		</tags>
-		<state readOnly="true" pattern="%.1f %unit%"/>
-	</channel-type>
 	<channel-type id="child-lock" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Child Lock</label>
-		<description>Lock Controls. </description>
+		<description>Lock Controls.</description>
 		<category>Switch</category>
 		<tags>
 			<tag>Switch</tag>
-			<tag>Humidity</tag>
+			<tag>LockState</tag>
 		</tags>
 	</channel-type>
 	<channel-type id="anion" advanced="true">
@@ -410,7 +399,7 @@
 		<category>Switch</category>
 		<tags>
 			<tag>Switch</tag>
-			<tag>Humidity</tag>
+			<tag>Enabled</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -420,7 +409,7 @@
 		<description>Set Maximum Humidity level.</description>
 		<category>Humidity</category>
 		<tags>
-			<tag>Control</tag>
+			<tag>Setpoint</tag>
 			<tag>Humidity</tag>
 		</tags>
 		<state pattern="%d%%"/>

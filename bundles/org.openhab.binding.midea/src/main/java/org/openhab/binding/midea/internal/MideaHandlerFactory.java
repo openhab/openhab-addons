@@ -42,8 +42,8 @@ public class MideaHandlerFactory extends BaseThingHandlerFactory {
 
     private final HttpClientFactory httpClientFactory;
     private final UnitProvider unitProvider;
-    private static final ThingTypeUID THING_TYPE_AC = new ThingTypeUID("midea", "ac");
-    private static final ThingTypeUID THING_TYPE_DEHUMIDIFIER = new ThingTypeUID("midea", "dehumidifier");
+    private static final ThingTypeUID THING_TYPE_AC = MideaBindingConstants.THING_TYPE_AC;
+    private static final ThingTypeUID THING_TYPE_DEHUMIDIFIER = MideaBindingConstants.THING_TYPE_DEHUMIDIFIER;
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
