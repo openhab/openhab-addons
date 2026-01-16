@@ -13,6 +13,8 @@
 package org.openhab.binding.midea.internal.devices;
 
 import java.math.BigInteger;
+import java.time.Instant;
+import java.time.InstantSource;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 
@@ -40,6 +42,10 @@ public class Packet {
      * @param security the Security class
      */
     public Packet(CommandBase command, String deviceId, Security security) {
+        this(command, deviceId, security, InstantSource.system());
+    }
+
+    public Packet(CommandBase command, String deviceId, Security security, InstantSource instantSource) {
         this.command = command;
         this.security = security;
 
@@ -61,10 +67,13 @@ public class Packet {
                 // 14 bytes
                 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
 
-        LocalDateTime now = LocalDateTime.now(ZoneId.systemDefault());
-        byte[] datetimeBytes = { (byte) (now.getYear() / 100), (byte) (now.getYear() % 100), (byte) now.getMonthValue(),
-                (byte) now.getDayOfMonth(), (byte) now.getHour(), (byte) now.getMinute(), (byte) now.getSecond(),
-                (byte) System.currentTimeMillis() };
+        Instant now = instantSource.instant();
+        LocalDateTime ldt = LocalDateTime.ofInstant(now, ZoneId.systemDefault());
+        long millis = now.toEpochMilli();
+
+        byte[] datetimeBytes = { (byte) (ldt.getYear() / 100), (byte) (ldt.getYear() % 100), (byte) ldt.getMonthValue(),
+                (byte) ldt.getDayOfMonth(), (byte) ldt.getHour(), (byte) ldt.getMinute(), (byte) ldt.getSecond(),
+                (byte) millis };
 
         System.arraycopy(datetimeBytes, 0, packet, 12, 8);
 

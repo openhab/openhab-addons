@@ -265,6 +265,9 @@ public abstract class AbstractMideaHandler extends BaseThingHandler implements D
         logger.trace("Property Version in Handler {}", bigDecimalVersion.intValue());
         configuration.put(CONFIG_VERSION, bigDecimalVersion.intValue());
 
+        Object propertyType = Objects.requireNonNull(discoveryProps.get(CONFIG_DEVICE_TYPE));
+        properties.put(CONFIG_DEVICE_TYPE, propertyType.toString());
+
         updateConfiguration(configuration);
 
         properties = editProperties();
@@ -274,9 +277,6 @@ public abstract class AbstractMideaHandler extends BaseThingHandler implements D
 
         Object propertySSID = Objects.requireNonNull(discoveryProps.get(PROPERTY_SSID));
         properties.put(PROPERTY_SSID, propertySSID.toString());
-
-        Object propertyType = Objects.requireNonNull(discoveryProps.get(CONFIG_DEVICE_TYPE));
-        properties.put(CONFIG_DEVICE_TYPE, propertyType.toString());
 
         updateProperties(properties);
         initialize();
