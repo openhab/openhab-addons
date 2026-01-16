@@ -138,7 +138,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
     public HomeData refreshHomeData() {
         try {
             Home home = homeCache.getValue();
-            if (home == null) {
+            if (home == null || home.data == null) {
                 return new HomeData();
             }
             return webTargets.getHomeData(Integer.toString(home.data.rrHomeId), rriot);
@@ -248,20 +248,24 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
             logger.debug("No available token or rriot values from sessionStorage, logging in");
             try {
                 if (localConfig.twofa.isBlank()) {
-                    String response = webTargets.requestCodeV4(baseUri, localConfig.email);
+                    if (country != null && !country.isBlank()) {
+                        webTargets.requestCodeV4(baseUri, localConfig.email);
+                    } else {
+                        webTargets.requestCode(baseUri, localConfig.email);
+                    }
                     updateStatus(ThingStatus.UNKNOWN);
                     return;
                 } else {
                     String response = "";
-                    if (!country.isBlank()) {
+                    if (country != null && !country.isBlank()) {
                         response = webTargets.doLoginV4(baseUri, country, countryCode, localConfig.email,
                                 localConfig.twofa);
-                        Configuration configuration = editConfiguration();
-                        configuration.put("twofa", "");
-                        updateConfiguration(configuration);
                     } else {
                         response = webTargets.doLogin(baseUri, localConfig.email, localConfig.twofa);
                     }
+                    Configuration configuration = editConfiguration();
+                    configuration.put("twofa", "");
+                    updateConfiguration(configuration);
                     int code = 0;
                     String message = "";
                     if (response != null && !response.isEmpty()

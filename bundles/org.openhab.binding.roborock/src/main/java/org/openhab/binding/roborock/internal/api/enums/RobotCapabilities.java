@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.roborock.internal.api.enums;
 
+import static org.openhab.binding.roborock.internal.RoborockBindingConstants.*;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.type.ChannelTypeUID;
 
@@ -31,14 +33,15 @@ public enum RobotCapabilities {
             "roborock:water-box-carriage-status", ""),
     MOP_FORBIDDEN("mop_forbidden_enable", "status#mop-forbidden-enable", "roborock:mop-forbidden-enable", ""),
     LOCATING("is_locating", "status#is-locating", "roborock:is-locating", ""),
-    SEGMENT_STATUS("", "status#segment-status", "roborock:segment-status", "get-segment-status"),
-    MAP_STATUS("", "status#map-status", "roborock:map-status", "get-map-status"),
-    LED_STATUS("", "status#led-status", "roborock:led-status", "get-led-status"),
-    CARPET_MODE("", "info#carpet-mode", "roborock:carpet-mode", "get-carpet-mode"),
-    FW_FEATURES("", "info#fw-features", "roborock:fw-features", "get-fw-features"),
-    ROOM_MAPPING("", "info#room-mapping", "roborock:room-mapping", "get-room-mapping"),
-    MULTI_MAP_LIST("", "info#multi-maps-list", "roborock:multi-maps-list", "get-multi-maps-list"),
-    CUSTOMIZE_CLEAN_MODE("", "info#customize-clean-mode", "roborock:customize-clean-mode", "get-customize-clean-mode"),
+    SEGMENT_STATUS("", "status#segment-status", "roborock:segment-status", COMMAND_GET_SEGMENT_STATUS),
+    MAP_STATUS("", "status#map-status", "roborock:map-status", COMMAND_GET_MAP_STATUS),
+    LED_STATUS("", "status#led-status", "roborock:led-status", COMMAND_GET_LED_STATUS),
+    CARPET_MODE("", "info#carpet-mode", "roborock:carpet-mode", COMMAND_GET_CARPET_MODE),
+    FW_FEATURES("", "info#fw-features", "roborock:fw-features", COMMAND_GET_FW_FEATURES),
+    ROOM_MAPPING("", "info#room-mapping", "roborock:room-mapping", COMMAND_GET_ROOM_MAPPING),
+    MULTI_MAP_LIST("", "info#multi-maps-list", "roborock:multi-maps-list", COMMAND_GET_MULTI_MAP_LIST),
+    CUSTOMIZE_CLEAN_MODE("", "info#customize-clean-mode", "roborock:customize-clean-mode",
+            COMMAND_GET_CUSTOMIZE_CLEAN_MODE),
     SEGMENT_CLEAN("", "actions#segment", "roborock:segment", ""),
     COLLECT_DUST("auto_dust_collection", "actions#collect-dust", "roborock:collect-dust", ""),
     CLEAN_MOP_START("dry_status", "actions#clean-mop-start", "roborock:clean-mop-start", ""),

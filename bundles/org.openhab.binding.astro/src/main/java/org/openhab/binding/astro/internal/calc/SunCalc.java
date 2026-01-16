@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.astro.internal.calc;
 
+import java.time.InstantSource;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -65,6 +66,17 @@ public class SunCalc {
     private static final int CURVE_TIME_INTERVAL = 20; // 20 minutes
     private static final double JD_ONE_MINUTE_FRACTION = 1.0 / 60 / 24;
 
+    private final InstantSource instantSource;
+
+    /**
+     * Creates a new instance using the specified {@link InstantSource}.
+     *
+     * @param instantSource the source of the current time.
+     */
+    public SunCalc(InstantSource instantSource) {
+        this.instantSource = instantSource;
+    }
+
     /**
      * Calculates the sun position (azimuth and elevation).
      */
@@ -83,12 +95,8 @@ public class SunCalc {
 
         double azimuth = Math.toDegrees(getAzimuth(th, a, phi, d));
         double elevation = Math.toDegrees(getElevation(th, a, phi, d));
-        double shadeLength = getShadeLength(elevation);
 
-        Position position = sun.getPosition();
-        position.setAzimuth(azimuth + 180);
-        position.setElevation(elevation);
-        position.setShadeLength(shadeLength);
+        sun.setPosition(new Position(azimuth + 180, elevation));
     }
 
     /**
@@ -226,13 +234,13 @@ public class SunCalc {
 
         // eclipse
         Eclipse eclipse = sun.getEclipse();
-        MoonCalc mc = new MoonCalc();
+        MoonCalc mc = new MoonCalc(instantSource);
 
         eclipse.getKinds().forEach(eclipseKind -> {
             double jdate = mc.getEclipse(calendar, EclipseType.SUN, j, eclipseKind);
             Calendar eclipseDate = DateTimeUtils.toCalendar(jdate, zone, locale);
             if (eclipseDate != null) {
-                eclipse.set(eclipseKind, eclipseDate, new Position());
+                eclipse.set(eclipseKind, eclipseDate, Position.NULL);
             }
         });
 
@@ -241,7 +249,7 @@ public class SunCalc {
         Season season = sun.getSeason();
         var year = calendar.get(Calendar.YEAR);
         if (season == null || season.getYear() != year) {
-            sun.setSeason(SeasonCalc.calculate(year, latitude, useMeteorologicalSeason, zone));
+            sun.setSeason(SeasonCalc.calculate(year, latitude, useMeteorologicalSeason, zone, instantSource));
         }
 
         // phase
@@ -313,10 +321,6 @@ public class SunCalc {
 
     private double getElevation(double th, double a, double phi, double d) {
         return Math.asin(Math.sin(phi) * Math.sin(d) + Math.cos(phi) * Math.cos(d) * Math.cos(th - a));
-    }
-
-    private double getShadeLength(double elevation) {
-        return 1 / MathUtils.tanDeg(elevation);
     }
 
     private double getHourAngle(double h, double phi, double d) {

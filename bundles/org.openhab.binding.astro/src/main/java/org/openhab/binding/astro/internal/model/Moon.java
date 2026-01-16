@@ -30,7 +30,7 @@ public class Moon extends RiseSet implements Planet {
 
     private MoonPhase phase = new MoonPhase();
     private Eclipse eclipse = new Eclipse(EclipseKind.PARTIAL, EclipseKind.TOTAL);
-    private Position position = new Position();
+    private Position position = MoonPosition.NULL;
     private Zodiac zodiac = Zodiac.NULL;
 
     public Moon() {

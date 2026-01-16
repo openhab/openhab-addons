@@ -17,6 +17,7 @@ import static org.openhab.binding.astro.internal.job.Job.*;
 import static org.openhab.binding.astro.internal.model.SunPhaseName.*;
 
 import java.time.Instant;
+import java.time.InstantSource;
 import java.util.Calendar;
 import java.util.Locale;
 import java.util.TimeZone;
@@ -40,18 +41,23 @@ public final class DailyJobSun extends AbstractJob {
 
     private final TimeZone zone;
     private final Locale locale;
+    private final InstantSource instantSource;
 
     /**
      * Constructor
      *
      * @param handler the {@link AstroThingHandler} instance
+     * @param zone the {@link TimeZone} to use.
+     * @param locale the {@link Locale} to use.
+     * @param instantSource the time source to use.
      * @throws IllegalArgumentException
      *             if {@code thingUID} or {@code handler} is {@code null}
      */
-    public DailyJobSun(AstroThingHandler handler, TimeZone zone, Locale locale) {
+    public DailyJobSun(AstroThingHandler handler, TimeZone zone, Locale locale, InstantSource instantSource) {
         super(handler);
         this.zone = zone;
         this.locale = locale;
+        this.instantSource = instantSource;
     }
 
     @Override
@@ -68,51 +74,51 @@ public final class DailyJobSun extends AbstractJob {
                 return;
             }
             Sun sun = (Sun) planet;
-            scheduleRange(handler, sun.getRise(), EVENT_CHANNEL_ID_RISE, zone, locale);
-            scheduleRange(handler, sun.getSet(), EVENT_CHANNEL_ID_SET, zone, locale);
+            scheduleRange(handler, sun.getRise(), EVENT_CHANNEL_ID_RISE, zone, locale, instantSource);
+            scheduleRange(handler, sun.getSet(), EVENT_CHANNEL_ID_SET, zone, locale, instantSource);
             Range range = sun.getNoon();
             if (range != null) {
-                scheduleRange(handler, range, EVENT_CHANNEL_ID_NOON, zone, locale);
+                scheduleRange(handler, range, EVENT_CHANNEL_ID_NOON, zone, locale, instantSource);
             }
             range = sun.getNight();
             if (range != null) {
-                scheduleRange(handler, range, EVENT_CHANNEL_ID_NIGHT, zone, locale);
+                scheduleRange(handler, range, EVENT_CHANNEL_ID_NIGHT, zone, locale, instantSource);
             }
             range = sun.getMorningNight();
             if (range != null) {
-                scheduleRange(handler, range, EVENT_CHANNEL_ID_MORNING_NIGHT, zone, locale);
+                scheduleRange(handler, range, EVENT_CHANNEL_ID_MORNING_NIGHT, zone, locale, instantSource);
             }
             range = sun.getAstroDawn();
             if (range != null) {
-                scheduleRange(handler, range, EVENT_CHANNEL_ID_ASTRO_DAWN, zone, locale);
+                scheduleRange(handler, range, EVENT_CHANNEL_ID_ASTRO_DAWN, zone, locale, instantSource);
             }
             range = sun.getNauticDawn();
             if (range != null) {
-                scheduleRange(handler, range, EVENT_CHANNEL_ID_NAUTIC_DAWN, zone, locale);
+                scheduleRange(handler, range, EVENT_CHANNEL_ID_NAUTIC_DAWN, zone, locale, instantSource);
             }
             range = sun.getCivilDawn();
             if (range != null) {
-                scheduleRange(handler, range, EVENT_CHANNEL_ID_CIVIL_DAWN, zone, locale);
+                scheduleRange(handler, range, EVENT_CHANNEL_ID_CIVIL_DAWN, zone, locale, instantSource);
             }
             range = sun.getAstroDusk();
             if (range != null) {
-                scheduleRange(handler, range, EVENT_CHANNEL_ID_ASTRO_DUSK, zone, locale);
+                scheduleRange(handler, range, EVENT_CHANNEL_ID_ASTRO_DUSK, zone, locale, instantSource);
             }
             range = sun.getNauticDusk();
             if (range != null) {
-                scheduleRange(handler, range, EVENT_CHANNEL_ID_NAUTIC_DUSK, zone, locale);
+                scheduleRange(handler, range, EVENT_CHANNEL_ID_NAUTIC_DUSK, zone, locale, instantSource);
             }
             range = sun.getCivilDusk();
             if (range != null) {
-                scheduleRange(handler, range, EVENT_CHANNEL_ID_CIVIL_DUSK, zone, locale);
+                scheduleRange(handler, range, EVENT_CHANNEL_ID_CIVIL_DUSK, zone, locale, instantSource);
             }
             range = sun.getEveningNight();
             if (range != null) {
-                scheduleRange(handler, range, EVENT_CHANNEL_ID_EVENING_NIGHT, zone, locale);
+                scheduleRange(handler, range, EVENT_CHANNEL_ID_EVENING_NIGHT, zone, locale, instantSource);
             }
             range = sun.getDaylight();
             if (range != null) {
-                scheduleRange(handler, range, EVENT_CHANNEL_ID_DAYLIGHT, zone, locale);
+                scheduleRange(handler, range, EVENT_CHANNEL_ID_DAYLIGHT, zone, locale, instantSource);
             }
 
             Eclipse eclipse = sun.getEclipse();
@@ -126,11 +132,11 @@ public final class DailyJobSun extends AbstractJob {
 
             // schedule republish jobs
             if (sun.getZodiac().getEnd() instanceof Instant when) {
-                schedulePublishPlanet(handler, when);
+                schedulePublishPlanet(handler, when, zone.toZoneId());
             }
 
             if (sun.getSeason() instanceof Season season) {
-                schedulePublishPlanet(handler, season.getNextSeason());
+                schedulePublishPlanet(handler, season.getNextSeason(), zone.toZoneId());
             }
 
             // schedule phase jobs

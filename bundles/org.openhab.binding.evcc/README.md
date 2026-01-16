@@ -97,7 +97,7 @@ Here you will find items examples sorted by thing.
 
 #### Battery
 
-```java 
+```java
 Number:Energy        Evcc_Battery_Capacity "Battery Capacity [%s]"         { channel="evcc:battery:demo-server:demo-battery:battery-capacity" }
 Switch               Evcc_Battery_Controllable "Battery Controllable [%s]" { channel="evcc:battery:demo-server:demo-battery:battery-controllable" }
 Number:Power         Evcc_Battery_Power "Battery Power [%s]"               { channel="evcc:battery:demo-server:demo-battery:battery-power" }
@@ -191,7 +191,7 @@ Switch                   Evcc_Loadpoint_Vehicle_Welcome_Active             "Vehi
 
 #### Plan
 
-Channels plan-weekdays and plan-tz are only available for repeating plans. 
+Channels plan-weekdays and plan-tz are only available for repeating plans.
 
 ```java
 Number:Dimensionless Evcc_Plan_Soc            "Plan SoC [%s]"            { channel="evcc:battery:demo-server:demo-battery:plan-soc" }

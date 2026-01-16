@@ -14,6 +14,8 @@ package org.openhab.binding.astro.internal.calc;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.time.Instant;
+import java.time.InstantSource;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.Locale;
@@ -54,7 +56,7 @@ public class MoonCalcTest {
 
     @BeforeEach
     public void init() {
-        moonCalc = new MoonCalc();
+        moonCalc = new MoonCalc(InstantSource.fixed(Instant.ofEpochMilli(1645671600000L)));
     }
 
     @Test
@@ -110,8 +112,8 @@ public class MoonCalcTest {
         moonCalc.setPositionalInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE, moon, TIME_ZONE, Locale.ROOT);
 
         // expected result from heavens-above.com is Azimuth: 100.5, altitude -17
-        assertEquals(100.5, moon.getPosition().getAzimuth().doubleValue(), ACCURACY_IN_DEGREE);
-        assertEquals(-17, moon.getPosition().getElevation().doubleValue(), ACCURACY_IN_DEGREE);
+        assertEquals(100.5, moon.getPosition().getAzimuthAsDouble(), ACCURACY_IN_DEGREE);
+        assertEquals(-17, moon.getPosition().getElevationAsDouble(), ACCURACY_IN_DEGREE);
     }
 
     @Test

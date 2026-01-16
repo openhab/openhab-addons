@@ -75,6 +75,7 @@ public class ViessmannBindingConstants {
             entry("liter", Units.LITRE.toString()), //
             entry("liter/minute", Units.LITRE_PER_MINUTE.toString()), //
             entry("cubicMeter", SIUnits.CUBIC_METRE.toString()), //
+            entry("cubicMeter/hour", Units.CUBICMETRE_PER_HOUR.toString()), //
             entry("watt", Units.WATT.toString()), //
             entry("gas-cubicMeter", SIUnits.CUBIC_METRE.toString()), //
             entry("bar", Units.BAR.toString()), //
