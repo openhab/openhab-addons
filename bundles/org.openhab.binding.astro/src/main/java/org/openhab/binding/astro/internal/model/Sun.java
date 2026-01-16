@@ -17,6 +17,7 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.astro.internal.model.EclipseSet.EclipseData;
 
 /**
  * Holds the calculated sun data.
@@ -28,18 +29,16 @@ public class Sun extends RiseSet implements Planet {
 
     private Map<SunPhaseName, Range> ranges = new HashMap<>();
 
-    private Position position = Position.NULL;
-    private Zodiac zodiac = Zodiac.NULL;
+    private Position position = Position.NONE;
+    private Zodiac zodiac = Zodiac.NONE;
+    private EclipseSet eclipseSet = EclipseSet.NONE;
+    private Radiation radiation = Radiation.NONE;
 
     private @Nullable Season season = null;
 
-    private Eclipse eclipses = new Eclipse(EclipseKind.PARTIAL, EclipseKind.TOTAL, EclipseKind.RING);
-
-    private Radiation radiation = Radiation.NULL;
-
     private SunPhase phase = new SunPhase();
 
-    private Circadian circadian = Circadian.DEFAULT;
+    private Circadian circadian = Circadian.NONE;
 
     /**
      * Returns the astro dawn range.
@@ -281,8 +280,12 @@ public class Sun extends RiseSet implements Planet {
     /**
      * Returns the eclipses.
      */
-    public Eclipse getEclipses() {
-        return eclipses;
+    public EclipseSet getEclipseSet() {
+        return eclipseSet;
+    }
+
+    public void setEclipseSet(EclipseData[] result) {
+        this.eclipseSet = new EclipseSet(result);
     }
 
     /**

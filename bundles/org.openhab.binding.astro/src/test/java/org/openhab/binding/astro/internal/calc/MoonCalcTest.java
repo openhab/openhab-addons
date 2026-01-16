@@ -69,7 +69,7 @@ public class MoonCalcTest {
         assertNotNull(moon.getDistanceType(DistanceType.PERIGEE));
         assertNotNull(moon.getDistanceType(DistanceType.CURRENT));
 
-        assertNotNull(moon.getEclipses());
+        assertNotNull(moon.getEclipseSet());
 
         assertNotNull(moon.getPhase());
         assertNotNull(moon.getPosition());

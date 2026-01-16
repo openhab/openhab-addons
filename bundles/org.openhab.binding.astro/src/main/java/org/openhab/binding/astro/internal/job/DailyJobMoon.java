@@ -24,7 +24,6 @@ import java.util.TimeZone;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.astro.internal.handler.AstroThingHandler;
 import org.openhab.binding.astro.internal.model.DistanceType;
-import org.openhab.binding.astro.internal.model.Eclipse;
 import org.openhab.binding.astro.internal.model.Moon;
 import org.openhab.binding.astro.internal.model.MoonPhase;
 import org.openhab.binding.astro.internal.model.Planet;
@@ -96,12 +95,9 @@ public final class DailyJobMoon extends AbstractJob {
                 scheduleEvent(handler, cal, EVENT_PHASE_NEW, EVENT_CHANNEL_ID_MOON_PHASE, false, zone, locale);
             }
 
-            Eclipse eclipse = moon.getEclipses();
-            eclipse.getEclipseKinds().forEach(eclipseKind -> {
-                if (eclipse.getDate(eclipseKind) instanceof Instant eclipseDate) {
-                    scheduleEvent(handler, eclipseDate, eclipseKind.toString(), EVENT_CHANNEL_ID_ECLIPSE, false,
-                            zone.toZoneId());
-                }
+            moon.getEclipseSet().getEclipses().forEach(eclipse -> {
+                scheduleEvent(handler, eclipse.when(), eclipse.eclipseKind().toString(), EVENT_CHANNEL_ID_ECLIPSE,
+                        false, zone.toZoneId());
             });
 
             Set.of(DistanceType.APOGEE, DistanceType.PERIGEE).forEach(type -> {

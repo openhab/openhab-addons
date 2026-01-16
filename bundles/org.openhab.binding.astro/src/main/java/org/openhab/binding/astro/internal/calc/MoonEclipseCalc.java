@@ -14,6 +14,9 @@ package org.openhab.binding.astro.internal.calc;
 
 import static org.openhab.binding.astro.internal.util.MathUtils.sinDeg;
 
+import java.util.Set;
+import java.util.stream.Stream;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.astro.internal.model.EclipseKind;
 
@@ -45,5 +48,10 @@ public class MoonEclipseCalc extends EclipseCalc {
     @Override
     protected double getJDAjust() {
         return 0.5;
+    }
+
+    @Override
+    public Stream<EclipseKind> validEclipses() {
+        return Set.of(EclipseKind.PARTIAL, EclipseKind.TOTAL).stream();
     }
 }

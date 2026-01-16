@@ -18,6 +18,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.astro.internal.model.EclipseSet.EclipseData;
 
 /**
  * Holds the calculated moon data.
@@ -27,14 +28,14 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class Moon extends RiseSet implements Planet {
     private final Map<DistanceType, MoonDistance> distances = new HashMap<>(DistanceType.values().length);
-    private final Eclipse eclipses = new Eclipse(EclipseKind.PARTIAL, EclipseKind.TOTAL);
 
+    private EclipseSet eclipseSet = EclipseSet.NONE;
     private MoonPhase phase = new MoonPhase();
-    private Position position = MoonPosition.NULL;
-    private Zodiac zodiac = Zodiac.NULL;
+    private Position position = MoonPosition.NONE;
+    private Zodiac zodiac = Zodiac.NONE;
 
     public Moon() {
-        EnumSet.allOf(DistanceType.class).forEach(d -> distances.put(d, MoonDistance.NULL));
+        EnumSet.allOf(DistanceType.class).forEach(d -> distances.put(d, MoonDistance.NONE));
     }
 
     /**
@@ -62,8 +63,12 @@ public class Moon extends RiseSet implements Planet {
     /**
      * Returns the eclipses.
      */
-    public Eclipse getEclipses() {
-        return eclipses;
+    public EclipseSet getEclipseSet() {
+        return eclipseSet;
+    }
+
+    public void setEclipseSet(EclipseData[] result) {
+        this.eclipseSet = new EclipseSet(result);
     }
 
     /**

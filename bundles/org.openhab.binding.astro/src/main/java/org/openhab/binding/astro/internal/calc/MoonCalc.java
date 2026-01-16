@@ -25,7 +25,7 @@ import java.util.TimeZone;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.astro.internal.model.DistanceType;
-import org.openhab.binding.astro.internal.model.Eclipse;
+import org.openhab.binding.astro.internal.model.EclipseSet;
 import org.openhab.binding.astro.internal.model.Moon;
 import org.openhab.binding.astro.internal.model.MoonPhase;
 import org.openhab.binding.astro.internal.model.MoonPhaseName;
@@ -92,14 +92,16 @@ public class MoonCalc extends AstroCalc {
         phase.remarkablePhases().forEach(mp -> phase.setPhase(mp,
                 DateTimeUtils.toCalendar(getPhase(julianDateMidnight, mp, true), zone, locale)));
 
-        Eclipse eclipse = moon.getEclipses();
-        eclipse.getEclipseKinds().forEach(eclipseKind -> {
-            double jdate = ECLIPSE_CALC.calculate(julianDateMidnight, eclipseKind);
-            MoonPosition moonPosition = getMoonPosition(jdate, latitude, longitude);
-            eclipse.set(eclipseKind, jdate, moonPosition.getElevationAsDouble());
-        });
-
         double julianDate = DateTimeUtils.dateToJulianDate(calendar);
+
+        if (moon.getEclipseSet().needsRecalc(julianDate)) {
+            EclipseSet.EclipseData[] result = ECLIPSE_CALC.validEclipses().map(ek -> {
+                double jdate = ECLIPSE_CALC.calculate(julianDateMidnight, ek);
+                return new EclipseSet.EclipseData(ek, jdate, getMoonPosition(jdate, latitude, longitude));
+            }).toArray(EclipseSet.EclipseData[]::new);
+            moon.setEclipseSet(result);
+        }
+
         Set.of(DistanceType.APOGEE, DistanceType.PERIGEE)
                 .forEach(type -> moon.setDistance(type, MoonDistanceCalc.get(type, julianDate)));
 
@@ -530,10 +532,11 @@ public class MoonCalc extends AstroCalc {
         double co = Math.cos(lat);
         co = co * co;
         double si = Math.sin(lat);
+        si = si * si;
         double fl = FL * FL;
         double u = 1.0 / Math.sqrt(co + fl * si);
         double a = AstroConstants.EARTH_EQUATORIAL_RADIUS * u;
-        double b = AstroConstants.EARTH_EQUATORIAL_RADIUS * u * fl;
+        double b = a * fl;
         return Math.sqrt(a * a * co + b * b * si);
     }
 
@@ -548,7 +551,9 @@ public class MoonCalc extends AstroCalc {
 
         if (altdeg < -2 || altdeg >= 90) {
             return 0;
-        } else if (altdeg > 15) {
+        }
+
+        if (altdeg > 15) {
             return 0.00452 * pressure / ((273 + temperature) * Math.tan(alt));
         }
 

@@ -24,7 +24,6 @@ import java.util.TimeZone;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.astro.internal.handler.AstroThingHandler;
-import org.openhab.binding.astro.internal.model.Eclipse;
 import org.openhab.binding.astro.internal.model.Planet;
 import org.openhab.binding.astro.internal.model.Range;
 import org.openhab.binding.astro.internal.model.Season;
@@ -121,12 +120,9 @@ public final class DailyJobSun extends AbstractJob {
                 scheduleRange(handler, range, EVENT_CHANNEL_ID_DAYLIGHT, zone, locale, instantSource);
             }
 
-            Eclipse eclipse = sun.getEclipses();
-            eclipse.getEclipseKinds().forEach(eclipseKind -> {
-                if (eclipse.getDate(eclipseKind) instanceof Instant eclipseDate) {
-                    scheduleEvent(handler, eclipseDate, eclipseKind.toString(), EVENT_CHANNEL_ID_ECLIPSE, false,
-                            zone.toZoneId());
-                }
+            sun.getEclipseSet().getEclipses().forEach(eclipse -> {
+                scheduleEvent(handler, eclipse.when(), eclipse.eclipseKind().toString(), EVENT_CHANNEL_ID_ECLIPSE,
+                        false, zone.toZoneId());
             });
 
             // schedule republish jobs

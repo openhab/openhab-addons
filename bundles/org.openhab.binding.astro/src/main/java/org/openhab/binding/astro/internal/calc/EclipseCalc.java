@@ -14,6 +14,8 @@ package org.openhab.binding.astro.internal.calc;
 
 import static org.openhab.binding.astro.internal.util.MathUtils.*;
 
+import java.util.stream.Stream;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.astro.internal.model.EclipseKind;
 
@@ -40,6 +42,8 @@ public abstract class EclipseCalc extends AstroCalc {
     protected abstract double getJDAjust();
 
     protected abstract double astroAdjust(EclipseKind ek, double e, double m, double m1, double g, double u, double jd);
+
+    public abstract Stream<EclipseKind> validEclipses();
 
     /**
      * Calculates the eclipse.
