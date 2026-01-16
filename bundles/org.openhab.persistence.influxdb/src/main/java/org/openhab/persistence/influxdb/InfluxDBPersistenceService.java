@@ -173,9 +173,13 @@ public class InfluxDBPersistenceService implements ModifiablePersistenceService 
     }
 
     @Override
-    public Set<PersistenceItemInfo> getItemInfo() {
+    public @Nullable Set<PersistenceItemInfo> getItemInfo() {
         if (checkConnection()) {
-            return influxDBRepository.getStoredItemsCount().entrySet().stream().map(InfluxDBPersistentItemInfo::new)
+            Map<String, Integer> storedItems = influxDBRepository.getStoredItemsCount();
+            if (storedItems == null) {
+                return null;
+            }
+            return storedItems.entrySet().stream().map(InfluxDBPersistentItemInfo::new)
                     .collect(Collectors.toUnmodifiableSet());
         } else {
             logger.info("getItemInfo ignored, InfluxDB is not connected");

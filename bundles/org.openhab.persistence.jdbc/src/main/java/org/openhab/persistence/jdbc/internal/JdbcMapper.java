@@ -15,9 +15,11 @@ package org.openhab.persistence.jdbc.internal;
 import java.sql.SQLInvalidAuthorizationSpecException;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -29,6 +31,7 @@ import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.items.Item;
 import org.openhab.core.items.ItemUtil;
 import org.openhab.core.persistence.FilterCriteria;
+import org.openhab.core.persistence.FilterCriteria.Ordering;
 import org.openhab.core.persistence.HistoricItem;
 import org.openhab.core.persistence.PersistenceItemInfo;
 import org.openhab.core.types.State;
@@ -477,7 +480,30 @@ public class JdbcMapper {
         // TODO: in general it would be possible to query the count, earliest and latest values for each item too but it
         // would be a very costly operation
         return itemNameToTableNameMap.keySet().stream().map(itemName -> new JdbcPersistenceItemInfo(itemName))
-                .collect(Collectors.<PersistenceItemInfo> toSet());
+                .collect(Collectors.<PersistenceItemInfo>toSet());
+    }
+
+    protected PersistenceItemInfo getItem(Item item, @Nullable String alias) {
+        String itemName = item.getName();
+        String localAlias = alias != null ? alias : itemName;
+        String tableName = itemNameToTableNameMap.get(localAlias);
+
+        Integer count = null;
+        Date earliest = null;
+        Date latest = null;
+        if (tableName != null) {
+            try {
+                count = Math.toIntExact(getRowCount(tableName));
+                FilterCriteria filter = new FilterCriteria().setItemName(localAlias).setPageSize(1);
+                filter.setOrdering(Ordering.DESCENDING);
+                latest = Date.from(getHistItemFilterQuery(filter, count, tableName, item).getFirst().getInstant());
+                filter.setOrdering(Ordering.ASCENDING);
+                earliest = Date.from(getHistItemFilterQuery(filter, count, tableName, item).getFirst().getInstant());
+            } catch (JdbcSQLException | ArithmeticException | NoSuchElementException e) {
+                // Keep null values for what we could not retrieve, don't check others after failure
+            }
+        }
+        return new JdbcPersistenceItemInfo(localAlias, count, earliest, latest);
     }
 
     /*****************

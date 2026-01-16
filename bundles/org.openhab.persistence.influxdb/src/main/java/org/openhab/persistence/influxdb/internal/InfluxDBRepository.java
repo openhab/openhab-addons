@@ -56,8 +56,9 @@ public interface InfluxDBRepository {
     /**
      * Return all stored item names with its count of stored points
      *
-     * @return Map with {@code <ItemName,ItemCount>} entries
+     * @return Map with {@code <ItemName,ItemCount>} entries, null if not supported
      */
+    @Nullable
     Map<String, Integer> getStoredItemsCount();
 
     /**

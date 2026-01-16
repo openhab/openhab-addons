@@ -181,8 +181,38 @@ public class JdbcPersistenceService extends JdbcMapper implements ModifiablePers
     }
 
     @Override
-    public Set<PersistenceItemInfo> getItemInfo() {
+    public @Nullable Set<PersistenceItemInfo> getItemInfo() {
         return getItems();
+    }
+
+    @Override
+    public @Nullable PersistenceItemInfo getItemInfo(String itemName, @Nullable String alias) {
+        Item item = itemRegistry.get(itemName);
+        if (item == null) {
+            return new PersistenceItemInfo() {
+
+                @Override
+                public String getName() {
+                    return alias != null ? alias : itemName;
+                }
+
+                @Override
+                public @Nullable Integer getCount() {
+                    return null;
+                }
+
+                @Override
+                public @Nullable Date getEarliest() {
+                    return null;
+                }
+
+                @Override
+                public @Nullable Date getLatest() {
+                    return null;
+                }
+            };
+        }
+        return getItem(item, alias);
     }
 
     /**

@@ -111,8 +111,40 @@ public class InMemoryPersistenceService implements ModifiablePersistenceService 
     }
 
     @Override
-    public Set<PersistenceItemInfo> getItemInfo() {
+    public @Nullable Set<PersistenceItemInfo> getItemInfo() {
         return persistMap.entrySet().stream().map(this::toItemInfo).collect(Collectors.toSet());
+    }
+
+    @Override
+    public @Nullable PersistenceItemInfo getItemInfo(String itemName, @Nullable String alias) {
+        String finalName = Objects.requireNonNullElse(alias, itemName);
+        PersistItem item = persistMap.get(finalName);
+        if (item == null) {
+            return new PersistenceItemInfo() {
+
+                @Override
+                public String getName() {
+                    return finalName;
+                }
+
+                @Override
+                public @Nullable Integer getCount() {
+                    return 0;
+                }
+
+                @Override
+                public @Nullable Date getEarliest() {
+                    return null;
+                }
+
+                @Override
+                public @Nullable Date getLatest() {
+                    return null;
+                }
+
+            };
+        }
+        return toItemInfo(Map.entry(finalName, item));
     }
 
     @Override
