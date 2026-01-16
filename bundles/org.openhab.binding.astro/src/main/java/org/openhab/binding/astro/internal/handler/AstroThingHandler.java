@@ -77,6 +77,8 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public abstract class AstroThingHandler extends BaseThingHandler {
     private static final String DAILY_MIDNIGHT = "30 0 0 * * ? *";
+    private static final long MIN_TIME_TO_SCHEDULE = 10L;
+    private static final long MAX_SCHEDULE_DIFFERENCE_MS = 20L;
 
     /** Logger Instance */
     private final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
@@ -335,8 +337,9 @@ public abstract class AstroThingHandler extends BaseThingHandler {
             if (future != null && !future.isDone()) {
                 // The event is already scheduled
                 long delay;
-                if ((delay = future.getDelay(TimeUnit.MILLISECONDS)) < 10L && Math.abs(delay - sleepTimeMs) <= 20L) {
-                    // if the previously scheduled event is about to run very soon and their scheduled are similar,
+                if ((delay = future.getDelay(TimeUnit.MILLISECONDS)) < MIN_TIME_TO_SCHEDULE
+                        && Math.abs(delay - sleepTimeMs) <= MAX_SCHEDULE_DIFFERENCE_MS) {
+                    // if the previously scheduled event is about to run very soon and their schedules are similar,
                     // we don't know if we can cancel it in time, so we let it run and don't schedule the new one.
                     return;
                 }

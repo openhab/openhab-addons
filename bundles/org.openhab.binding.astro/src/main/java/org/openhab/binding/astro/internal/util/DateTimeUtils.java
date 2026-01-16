@@ -49,6 +49,7 @@ public class DateTimeUtils {
     public static final double JD_ONE_MINUTE_FRACTION = 1.0 / 60 / 24;
     private static final double J1970 = JD_UNIX_EPOCH + 0.5; // 1970-01-01 12:00 UTC (julian solar noon)
     private static final double SECONDS_PER_DAY = 60 * 60 * 24;
+    private static final long MILLISECONDS_PER_DAY = 60L * 60L * 24L * 1000L;
 
     /**
      * Convert julian date to greenwich mean sidereal time.
@@ -257,8 +258,8 @@ public class DateTimeUtils {
     public static boolean isWithinTimeWindow(Calendar cal, Calendar from, long duration, TimeUnit timeUnit) {
         Calendar to = (Calendar) from.clone();
         long spanMS = TimeUnit.MILLISECONDS.convert(duration, timeUnit);
-        to.add(Calendar.DAY_OF_MONTH, (int) (spanMS / 86400000));
-        to.add(Calendar.MILLISECOND, (int) (spanMS % 86400000));
+        to.add(Calendar.DAY_OF_MONTH, (int) (spanMS / MILLISECONDS_PER_DAY));
+        to.add(Calendar.MILLISECOND, (int) (spanMS % MILLISECONDS_PER_DAY));
         return cal.compareTo(from) >= 0 && cal.compareTo(to) <= 0;
     }
 
@@ -269,11 +270,11 @@ public class DateTimeUtils {
      * @param instant the point in time to evaluate.
      * @param from the start of the time window (inclusive).
      * @param duration the duration of the time window.
-     * @param timeUnit the {@link TimeUnit} of {@code duration}.
-     * @return {@code true} if {@code cal} is within the defined time window, {@code false} otherwise.
+     * @param chronoUnit the {@link ChronoUnit} of {@code duration}.
+     * @return {@code true} if {@code instant} is within the defined time window, {@code false} otherwise.
      */
-    public static boolean isWithinTimeWindow(Instant instant, Instant from, long duration, TimeUnit timeUnit) {
-        Instant to = Instant.ofEpochMilli(from.toEpochMilli() + TimeUnit.MILLISECONDS.convert(duration, timeUnit));
+    public static boolean isWithinTimeWindow(Instant instant, Instant from, long duration, ChronoUnit chronoUnit) {
+        Instant to = from.plus(duration, chronoUnit);
         return !instant.isBefore(from) && !instant.isAfter(to);
     }
 

@@ -19,6 +19,7 @@ import java.lang.invoke.MethodHandles;
 import java.time.Instant;
 import java.time.InstantSource;
 import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
 import java.util.Calendar;
 import java.util.Locale;
 import java.util.TimeZone;
@@ -45,6 +46,7 @@ public interface Job extends SchedulerRunnable, Runnable {
 
     final int DAILY_SCHEDULE_TIME_WINDOW_LENGTH = 25;
     final TimeUnit DAILY_SCHEDULE_TIME_WINDOW_UNIT = TimeUnit.HOURS;
+    final ChronoUnit DAILY_SCHEDULE_TIME_WINDOW_CHRONOUNIT = ChronoUnit.HOURS;
 
     /** The {@link Logger} Instance */
     final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
@@ -70,7 +72,7 @@ public interface Job extends SchedulerRunnable, Runnable {
                 if (eventAt.before(today)) {
                     LOGGER.debug("Not scheduling {} because it's in the past ({})", job, eventAt.getTime());
                 } else {
-                    LOGGER.debug("Not scheduling {} because it's in outside the schedulable time window ({})", job,
+                    LOGGER.debug("Not scheduling {} because it's outside the schedulable time window ({})", job,
                             eventAt.getTime());
                 }
             }
@@ -90,13 +92,14 @@ public interface Job extends SchedulerRunnable, Runnable {
     static void schedule(AstroThingHandler astroHandler, String identifier, Job job, Instant eventAt, ZoneId zone) {
         // Don't use InstantSource here, because we always want to schedule relative to the system clock
         Instant now = Instant.now();
-        if (isWithinTimeWindow(eventAt, now, DAILY_SCHEDULE_TIME_WINDOW_LENGTH, DAILY_SCHEDULE_TIME_WINDOW_UNIT)) {
+        if (isWithinTimeWindow(eventAt, now, DAILY_SCHEDULE_TIME_WINDOW_LENGTH,
+                DAILY_SCHEDULE_TIME_WINDOW_CHRONOUNIT)) {
             astroHandler.schedule(identifier, job, eventAt);
         } else if (LOGGER.isDebugEnabled()) {
             if (eventAt.isBefore(now)) {
                 LOGGER.debug("Not scheduling {} because it's in the past ({})", job, eventAt.atZone(zone));
             } else {
-                LOGGER.debug("Not scheduling {} because it's in outside the schedulable time window ({})", job,
+                LOGGER.debug("Not scheduling {} because it's outside the schedulable time window ({})", job,
                         eventAt.atZone(zone));
             }
         }
