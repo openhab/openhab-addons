@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import javax.measure.Unit;
 import javax.measure.format.MeasurementParseException;
@@ -42,6 +43,7 @@ import org.openhab.binding.homekit.internal.temporary.LightModel;
 import org.openhab.binding.homekit.internal.temporary.LightModel.LightCapabilities;
 import org.openhab.binding.homekit.internal.temporary.LightModel.RgbDataType;
 import org.openhab.binding.homekit.internal.transport.IpTransport;
+import org.openhab.core.config.core.Configuration;
 import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.library.types.DateTimeType;
@@ -60,9 +62,11 @@ import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.DefaultSystemChannelTypeProvider;
 import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingRegistry;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingUID;
+import org.openhab.core.thing.binding.builder.BridgeBuilder;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.thing.type.ChannelGroupType;
@@ -102,9 +106,12 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
             CharacteristicType.SATURATION, CharacteristicType.BRIGHTNESS, CharacteristicType.COLOR_TEMPERATURE,
             CharacteristicType.ON);
 
+    private static final int THING_CONVERSION_TASK_DELAY_SECONDS = 1; // delay before starting thing conversion
+
     private final Logger logger = LoggerFactory.getLogger(HomekitAccessoryHandler.class);
     private final ChannelTypeRegistry channelTypeRegistry;
     private final ChannelGroupTypeRegistry channelGroupTypeRegistry;
+    private final ThingRegistry thingRegistry;
 
     /*
      * Light model to manage combined light characteristics (hue, saturation, brightness, color temperature).
@@ -130,10 +137,11 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
 
     public HomekitAccessoryHandler(Thing thing, HomekitTypeProvider typeProvider,
             ChannelTypeRegistry channelTypeRegistry, ChannelGroupTypeRegistry channelGroupTypeRegistry,
-            HomekitKeyStore keyStore, TranslationProvider i18nProvider, Bundle bundle) {
+            HomekitKeyStore keyStore, TranslationProvider i18nProvider, Bundle bundle, ThingRegistry thingRegistry) {
         super(thing, typeProvider, keyStore, i18nProvider, bundle);
         this.channelTypeRegistry = channelTypeRegistry;
         this.channelGroupTypeRegistry = channelGroupTypeRegistry;
+        this.thingRegistry = thingRegistry;
     }
 
     /**
@@ -916,14 +924,11 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
 
     @Override
     protected void onConnectedThingAccessoriesLoaded() {
+        createProperties(); // must have the properties before eventual accessory to bridge conversion
         if (THING_TYPE_ACCESSORY.equals(thing.getThingTypeUID()) && getAccessories().size() > 1) {
-            // if an 'accessory' Thing has child accessories, convert it to a 'bridge'
-            logger.info("Thing '{}' has child accessories; converting it to '{}'", thing.getUID(),
-                    new ThingUID(THING_TYPE_BRIDGE, thing.getUID().getId()));
-            changeThingType(THING_TYPE_BRIDGE, getConfig());
-            return;
+            convertAccessoryToBridge();
+            return; // stop further initialization of this handler as it will anyway be disposed
         }
-        createProperties();
         createChannels();
         markAsReady(thing);
     }
@@ -1011,5 +1016,44 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
     protected void initializeNotReadyThings() {
         notReadyThings.clear();
         notReadyThings.add(thing); // a self connected accessory requires only itself to be ready
+    }
+
+    /**
+     * Converts an accessory Thing to a Bridge. Removes the current Thing from the registry and creates a
+     * new Bridge that inherits the current Thing's attributes -- except for its channels and tags which are
+     * recreated dynamically (with new ChannelUIDs) by the new Bridge handler.
+     */
+    private void convertAccessoryToBridge() {
+        ThingUID oldUID = thing.getUID();
+        ThingUID newUID = new ThingUID(THING_TYPE_BRIDGE, oldUID.getId());
+
+        logger.info("Thing '{}' has {} child accessories; converting to Bridge '{}'", oldUID,
+                getAccessories().size() - 1, newUID);
+
+        // Schedule the conversion asynchronously
+        scheduler.schedule(() -> {
+            try {
+                // Cache the old Thing attributes prior to its removal
+                Configuration oldConfiguration = thing.getConfiguration();
+                Map<String, String> oldProperties = thing.getProperties();
+                String oldLabel = thing.getLabel();
+                String oldLocation = thing.getLocation();
+
+                // Create new the Bridge using the old Thing's attributes
+                Bridge newBridge = BridgeBuilder.create(THING_TYPE_BRIDGE, newUID).withConfiguration(oldConfiguration)
+                        .withProperties(oldProperties).withLabel(oldLabel).withLocation(oldLocation).build();
+
+                // Remove the old Thing from the registry, and add the new Bridge to it
+                thingRegistry.remove(oldUID);
+                thingRegistry.add(newBridge);
+
+                logger.info("Successfully converted Thing '{}' to Bridge '{}'", oldUID, newUID);
+            } catch (Exception e) {
+                logger.error("Failed to convert Thing '{}' to Bridge:  {}", oldUID, e.getMessage(), e);
+            }
+        }, THING_CONVERSION_TASK_DELAY_SECONDS, TimeUnit.SECONDS);
+
+        // Set the status of this handler to indicate that conversion is in progress
+        updateStatus(ThingStatus.REMOVING, ThingStatusDetail.NONE, "@text/error.converting-accessory-to-bridge");
     }
 }
