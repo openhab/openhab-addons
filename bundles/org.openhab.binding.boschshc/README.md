@@ -17,7 +17,9 @@ Binding for Bosch Smart Home devices.
     - [Presence Simulation](#presence-simulation)
     - [Shutter Control](#shutter-control)
     - [Shutter Control II](#shutter-control-ii)
-    - [Thermostat](#thermostat)
+    - [Radiator Thermostat](#radiator-thermostat)
+    - [Radiator Thermostat II](#radiator-thermostat-ii)
+    - [Radiator Thermostat II [+M]](#radiator-thermostat-ii-m)
     - [Climate Control](#climate-control)
     - [Wall Thermostat](#wall-thermostat)
     - [Relay](#relay)
@@ -108,7 +110,7 @@ The Twinguard smoke detector warns you in case of fire and constantly monitors t
 | low-battery        | Switch               | no       | Indicates whether the battery is low (`ON`) or OK (`OFF`). |
 | smoke-check        | String               | yes      | State of the smoke check. Also used to request a new smoke check.                                 |
 
-### Door/Window Contact
+### Door/Window Contact<a id="door-window-contact"></a>
 
 Detects open windows and doors.
 
@@ -120,7 +122,7 @@ Detects open windows and doors.
 | battery-level | Number    | no       | Current battery level percentage as integer number. Bosch-specific battery levels are mapped to numbers as follows: `OK`: 100, `LOW_BATTERY`: 10, `CRITICAL_LOW`: 1, `CRITICALLY_LOW_BATTERY`: 1, `NOT_AVAILABLE`: `UNDEF`. |
 | low-battery   | Switch    | no       | Indicates whether the battery is low (`ON`) or OK (`OFF`). |
 
-### Door/Window Contact II
+### Door/Window Contact II<a id="door-window-contact-ii"></a>
 
 Detects open windows and doors and features an additional button.
 
@@ -134,7 +136,7 @@ Detects open windows and doors and features an additional button.
 | bypass          | Switch    | no       | Indicates whether the device is currently bypassed. Possible values are `ON`,`OFF` and `UNDEF` if the bypass state cannot be determined.                                                                                    |
 | signal-strength | Number    | no       | Communication quality between the device and the Smart Home Controller. Possible values range between 0 (unknown) and 4 (best signal strength).                                                                             |
 
-### Door/Window Contact II Plus
+### Door/Window Contact II Plus<a id="door-window-contact-ii-plus"></a>
 
 Detects open windows and doors, provides a configurable button and a vibration sensor.
 
@@ -151,7 +153,7 @@ Detects open windows and doors, provides a configurable button and a vibration s
 | vibration-sensor-sensitivity | String    | yes      | The sensitivity of the vibration sensor. Possible values are `VERY_HIGH`, `HIGH`, `MEDIUM`, `LOW` and `VERY_LOW`.                                                                                                           |
 | vibration-sensor-state       | String    | no       | Indicates whether vibrations were detected by the sensor. Possible values are `NO_VIBRATION`, `VIBRATION_DETECTED` and `UNKNOWN`.                                                                                           |
 
-### Door/Window Contact II [+M]
+### Door/Window Contact II [+M]<a id="door-window-contact-ii-m"></a>
 
 Detects open windows and doors and features an additional button. This version of the sensor supports the Matter standard.
 
@@ -228,20 +230,52 @@ This thing type is used if Light/Shutter Control II devices are configured as sh
 | power-consumption  | Number:Power  | no       | Current power consumption (W) of the device.      |
 | energy-consumption | Number:Energy | no       | Cumulated energy consumption (Wh) of the device.  |
 
-### Thermostat
+### Radiator Thermostat
 
-Radiator thermostat
+First generation radiator thermostat.
 
 **Thing Type ID**: `thermostat`
 
-| Channel ID            | Item Type            | Writable | Description                                    |
-| --------------------- | -------------------- | :------: | ---------------------------------------------- |
-| temperature           | Number:Temperature   | no       | Current measured temperature.                  |
-| valve-tappet-position | Number:Dimensionless | no       | Current open ratio of valve tappet (0 to 100). |
-| child-lock            | Switch               | yes      | Indicates if child lock is active.             |
-| silent-mode           | Switch               | yes      | Enables or disables silent mode on thermostats. When enabled, the battery usage is higher. |
+| Channel ID            | Item Type            | Writable | Description                                                                                                                                                                                                                 |
+| --------------------- | -------------------- | :------: | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| temperature           | Number:Temperature   | no       | Current measured temperature.                                                                                                                                                                                               |
+| valve-tappet-position | Number:Dimensionless | no       | Current open ratio of valve tappet (0 to 100).                                                                                                                                                                              |
+| child-lock            | Switch               | yes      | Indicates if child lock is active.                                                                                                                                                                                          |
+| silent-mode           | Switch               | yes      | Enables or disables silent mode on thermostats. When enabled, the battery usage is higher.                                                                                                                                  |
 | battery-level         | Number               | no       | Current battery level percentage as integer number. Bosch-specific battery levels are mapped to numbers as follows: `OK`: 100, `LOW_BATTERY`: 10, `CRITICAL_LOW`: 1, `CRITICALLY_LOW_BATTERY`: 1, `NOT_AVAILABLE`: `UNDEF`. |
-| low-battery           | Switch               | no       | Indicates whether the battery is low (`ON`) or OK (`OFF`). |
+| low-battery           | Switch               | no       | Indicates whether the battery is low (`ON`) or OK (`OFF`).                                                                                                                                                                  |
+
+### Radiator Thermostat II
+
+Second generation radiator thermostat.
+
+**Thing Type ID**: `thermostat-2`
+
+| Channel ID            | Item Type            | Writable | Description                                                                                                                                                                                                                 |
+| --------------------- | -------------------- | :------: | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| temperature           | Number:Temperature   | no       | Current measured temperature.                                                                                                                                                                                               |
+| valve-tappet-position | Number:Dimensionless | no       | Current open ratio of valve tappet (0 to 100).                                                                                                                                                                              |
+| child-lock            | Switch               | yes      | Indicates if child lock is active.                                                                                                                                                                                          |
+| battery-level         | Number               | no       | Current battery level percentage as integer number. Bosch-specific battery levels are mapped to numbers as follows: `OK`: 100, `LOW_BATTERY`: 10, `CRITICAL_LOW`: 1, `CRITICALLY_LOW_BATTERY`: 1, `NOT_AVAILABLE`: `UNDEF`. |
+| low-battery           | Switch               | no       | Indicates whether the battery is low (`ON`) or OK (`OFF`).                                                                                                                                                                  |
+| display-direction     | Switch               | yes      | Configures the display direction. `OFF` corresponds to `NORMAL` and `ON` corresponds to `REVERSED`.                                                                                                                         |
+| displayed-temperature | Switch               | yes      | Configures whether the measured temperature or the setpoint temperature is displayed. `OFF` corresponds to `MEASURED` and `ON` corresponds to `SETPOINT`.                                                                   |
+
+### Radiator Thermostat II [+M]<a id="radiator-thermostat-ii-m"></a>
+
+Second generation radiator thermostat with Matter support.
+
+**Thing Type ID**: `thermostat-2-matter`
+
+| Channel ID            | Item Type            | Writable | Description                                                                                                                                                                                                                 |
+| --------------------- | -------------------- | :------: | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| temperature           | Number:Temperature   | no       | Current measured temperature.                                                                                                                                                                                               |
+| valve-tappet-position | Number:Dimensionless | no       | Current open ratio of valve tappet (0 to 100).                                                                                                                                                                              |
+| child-lock            | Switch               | yes      | Indicates if child lock is active.                                                                                                                                                                                          |
+| battery-level         | Number               | no       | Current battery level percentage as integer number. Bosch-specific battery levels are mapped to numbers as follows: `OK`: 100, `LOW_BATTERY`: 10, `CRITICAL_LOW`: 1, `CRITICALLY_LOW_BATTERY`: 1, `NOT_AVAILABLE`: `UNDEF`. |
+| low-battery           | Switch               | no       | Indicates whether the battery is low (`ON`) or OK (`OFF`).                                                                                                                                                                  |
+| display-direction     | Switch               | yes      | Configures the display direction. `OFF` corresponds to `NORMAL` and `ON` corresponds to `REVERSED`.                                                                                                                         |
+| displayed-temperature | Switch               | yes      | Configures whether the measured temperature or the setpoint temperature is displayed. `OFF` corresponds to `MEASURED` and `ON` corresponds to `SETPOINT`.                                                                   |
 
 ### Climate Control
 

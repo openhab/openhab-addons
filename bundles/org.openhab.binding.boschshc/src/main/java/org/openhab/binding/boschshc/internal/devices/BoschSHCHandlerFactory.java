@@ -36,6 +36,7 @@ import org.openhab.binding.boschshc.internal.devices.shuttercontrol.ShutterContr
 import org.openhab.binding.boschshc.internal.devices.smartbulb.SmartBulbHandler;
 import org.openhab.binding.boschshc.internal.devices.smokedetector.SmokeDetector2Handler;
 import org.openhab.binding.boschshc.internal.devices.smokedetector.SmokeDetectorHandler;
+import org.openhab.binding.boschshc.internal.devices.thermostat.Thermostat2Handler;
 import org.openhab.binding.boschshc.internal.devices.thermostat.ThermostatHandler;
 import org.openhab.binding.boschshc.internal.devices.twinguard.TwinguardHandler;
 import org.openhab.binding.boschshc.internal.devices.universalswitch.UniversalSwitch2Handler;
@@ -91,6 +92,8 @@ public class BoschSHCHandlerFactory extends BaseThingHandlerFactory {
             new ThingTypeHandlerMapping(THING_TYPE_SHUTTER_CONTROL, ShutterControlHandler::new),
             new ThingTypeHandlerMapping(THING_TYPE_SHUTTER_CONTROL_2, ShutterControl2Handler::new),
             new ThingTypeHandlerMapping(THING_TYPE_THERMOSTAT, ThermostatHandler::new),
+            new ThingTypeHandlerMapping(THING_TYPE_THERMOSTAT_2, Thermostat2Handler::new),
+            new ThingTypeHandlerMapping(THING_TYPE_THERMOSTAT_2_MATTER, Thermostat2Handler::new),
             new ThingTypeHandlerMapping(THING_TYPE_CLIMATE_CONTROL, ClimateControlHandler::new),
             new ThingTypeHandlerMapping(THING_TYPE_WALL_THERMOSTAT, WallThermostatHandler::new),
             new ThingTypeHandlerMapping(THING_TYPE_CAMERA_360, CameraHandler::new),
