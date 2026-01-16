@@ -86,9 +86,6 @@ public class VelbusClockAlarm {
     }
 
     public boolean hasDefaultValues() {
-        if (enabled && isLocal && wakeupHour == 0 && wakeupMinute == 0 && bedtimeHour == 0 && bedtimeMinute == 0) {
-            return true;
-        }
-        return false;
+        return enabled && isLocal && wakeupHour == 0 && wakeupMinute == 0 && bedtimeHour == 0 && bedtimeMinute == 0;
     }
 }

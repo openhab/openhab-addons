@@ -39,7 +39,7 @@ public class VelbusVMBSIGHandler extends VelbusThingHandler {
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<>(
             Arrays.asList(THING_TYPE_VMBSIG, THING_TYPE_VMBSIG_20, THING_TYPE_VMBSIG_21));
 
-    private final ChannelUID statusChannel = new ChannelUID(thing.getUID(), CHANNEL_STATUS);
+    private final ChannelUID statusChannel;
 
     private static final StringType UNKNOWN = new StringType("UNKNOWN");
     private static final StringType NORMAL = new StringType("NORMAL");
@@ -53,6 +53,8 @@ public class VelbusVMBSIGHandler extends VelbusThingHandler {
 
     public VelbusVMBSIGHandler(Thing thing, int numberOfSubAddresses) {
         super(thing, numberOfSubAddresses);
+
+        statusChannel = new ChannelUID(thing.getUID(), CHANNEL_STATUS);
     }
 
     @Override
