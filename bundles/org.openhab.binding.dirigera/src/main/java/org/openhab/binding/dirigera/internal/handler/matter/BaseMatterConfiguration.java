@@ -65,14 +65,16 @@ public class BaseMatterConfiguration {
     private final String deviceType;;
 
     // holds for each deviceId the mapping of channelName to control property configuration
-    private Map<String, Map<String, JSONObject>> controlPropertiesMapping = new HashMap<>();
+    private Map<String, JSONObject> controlPropertiesMapping = new HashMap<>();
     private Map<String, JSONObject> statusProperties = new HashMap<>();
     private List<String> thingProperties = new ArrayList<>();
     private List<String> types = new ArrayList<>();
+    private String deviceId;
 
     private final BaseMatterHandler handler;
 
     public BaseMatterConfiguration(BaseMatterHandler handler, String deviceId, String deviceType) {
+        this.deviceId = deviceId;
         this.handler = handler;
         this.deviceType = deviceType;
         if (matterDeviceConfig.isEmpty()) {
@@ -80,6 +82,7 @@ public class BaseMatterConfiguration {
             loadDeviceConfig();
             logger.trace("BaseMatterConfiguration took {} ms", Duration.between(startTime, Instant.now()).toMillis());
         }
+
         addDeviceType(deviceId, TYPE_BASE);
         addDeviceType(deviceId, deviceType);
     }
@@ -92,12 +95,12 @@ public class BaseMatterConfiguration {
         }
 
         // collect control configuration - item2handler
-        Map<String, JSONObject> controlProperties = new HashMap<>();
         deviceConfig.getJSONArray(PROPERTY_CONTROL_PROPERTIES).forEach(entry -> {
             JSONObject controlEntry = (JSONObject) entry;
             String channelName = controlEntry.getString(KEY_CHANNEL);
-            controlProperties.put(channelName, controlEntry);
-            controlPropertiesMapping.put(deviceId, controlProperties);
+            controlPropertiesMapping.put(channelName, controlEntry);
+            System.out
+                    .println("Control entry for device " + deviceId + " channel " + channelName + " : " + controlEntry);
         });
 
         // collect identification properties
@@ -367,17 +370,18 @@ public class BaseMatterConfiguration {
         Map<String, JSONObject> requests = new HashMap<>();
         System.out.println("Check " + controlPropertiesMapping.size() + " control properties for channel "
                 + targetChannel + " and command " + command);
-        controlPropertiesMapping.forEach((deviceId, controlProperties) -> {
-            System.out.println("Check control properties for device " + deviceId + " " + controlProperties);
-            JSONObject channelConfig = controlProperties.get(targetChannel);
-            if (channelConfig != null) {
-                JSONObject request = getRequest(command, channelConfig);
+        controlPropertiesMapping.forEach((channel, config) -> {
+            System.out.println("Check control properties for device " + targetChannel + " " + config);
+            if (channel.equals(targetChannel)) {
+                JSONObject request = getRequest(command, config);
                 if (!request.isEmpty()) {
                     requests.put(deviceId, request);
                 }
+            } else {
+                System.out.println("No match for channel " + channel + " vs " + targetChannel);
             }
         });
-        System.out.println("Requests: " + requests);
+        System.out.println("Request: " + requests);
         return requests;
     }
 
@@ -386,8 +390,11 @@ public class BaseMatterConfiguration {
         String transformation = config.getString(KEY_TRANSFORMATION);
         var commandValue = switch (transformation) {
             case "raw" -> command.toString();
+            case "mapping" -> map(command.toString(), config.getJSONObject("mapping"));
             default -> null;
         };
+        System.out.println(
+                "Command " + command + " transformed to " + commandValue + " for attribute " + targetAttribute);
         if (commandValue == null) {
             return new JSONObject();
         }

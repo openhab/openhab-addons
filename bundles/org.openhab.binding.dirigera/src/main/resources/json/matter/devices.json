@@ -369,10 +369,10 @@
             {
                 "attribute": "controlMode",
                 "channel": "control-mode",
-                "channelType": "control-mode",
+                "channelType": "control-mode-3",
                 "itemType": "Number",
                 "inValue": "String",
-                "outValue": "Number",
+                "outValue": "DecimalType",
                 "transformation": "mapping",
                 "mapping": {
                     "light": 0,
@@ -398,7 +398,6 @@
             }
         ],
         "linkCandidates": [
-           "light","outlet","speaker","blind"
         ],
         "thingProperties": [
         ]

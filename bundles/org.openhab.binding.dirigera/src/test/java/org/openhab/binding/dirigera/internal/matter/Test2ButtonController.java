@@ -25,7 +25,10 @@ import org.openhab.binding.dirigera.internal.FileReader;
 import org.openhab.binding.dirigera.internal.handler.DirigeraBridgeProvider;
 import org.openhab.binding.dirigera.internal.handler.matter.Matter2ButtonCotroller;
 import org.openhab.binding.dirigera.internal.mock.CallbackMock;
+import org.openhab.binding.dirigera.internal.mock.DirigeraAPISimu;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
@@ -63,6 +66,10 @@ class Test2ButtonController {
         assertTrue(proxyCallback instanceof CallbackMock);
         callback = (CallbackMock) proxyCallback;
         callback.waitForOnline();
+        thing.getChannels().forEach(channel -> {
+            System.out.println("Channels: " + channel.getUID().toString());
+        });
+        assertEquals(10, thing.getChannels().size(), "Number of channels");
     }
 
     @Test
@@ -75,24 +82,55 @@ class Test2ButtonController {
 
         callback.clear();
         handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_BATTERY_LEVEL), RefreshType.REFRESH);
+        handler.handleCommand(new ChannelUID(thing.getUID(), "control-mode"), RefreshType.REFRESH);
         checkDeviceStatus(callback);
+    }
+
+    @Test
+    void testControlMode() {
+        testHandlerCreation();
+        handler.handleCommand(new ChannelUID(thing.getUID(), "control-mode"), new DecimalType(0));
+        System.out.println("Patch Map: " + DirigeraAPISimu.patchMap);
+        String patch = DirigeraAPISimu.patchMap.get(deviceId);
+        assertNotNull(patch);
+        assertEquals("{\"attributes\":{\"controlMode\":\"light\"}}", patch, "Light attributes");
+
+        DirigeraAPISimu.patchMap.clear();
+        String command = "HollaDieWaldfee";
+        handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_CUSTOM_NAME), new StringType(command));
+        System.out.println("Patch Map: " + DirigeraAPISimu.patchMap);
+        patch = DirigeraAPISimu.patchMap.get(deviceId);
+        assertNotNull(patch);
+        assertEquals("{\"attributes\":{\"customName\":\"" + command + "\"}}", patch, "Custom Name");
     }
 
     @Test
     void testTrigger() {
         String remotePressEvent = FileReader.readFileInString("src/test/resources/devices/remote-press-event.json");
+        JSONObject eventObj = new JSONObject(remotePressEvent);
         testHandlerCreation();
-        handler.handleUpdate(new JSONObject(remotePressEvent));
-        String trigger1 = callback.triggerMap.get("dirigera:2-button-controller:test-device:button2");
+        handler.handleUpdate(eventObj.getJSONObject("data"));
+        String trigger1 = callback.triggerMap.get("dirigera:two-button-controller:test-device:button2");
+        System.out.println("Trigger Map: " + callback.triggerMap);
         assertNotNull(trigger1);
         assertEquals("SINGLE_PRESS", trigger1, "Button 2 Single Press");
     }
 
+    @Test
+    void testLinks() {
+        testHandlerCreation();
+        System.out.println("--start update ");
+        handler.updateCandidateLinks();
+    }
+
     void checkDeviceStatus(CallbackMock callback) {
-        State batteryLevel = callback.getState("dirigera:2-button-controller:test-device:battery-level");
+        State batteryLevel = callback.getState("dirigera:two-button-controller:test-device:battery-level");
         assertNotNull(batteryLevel);
         assertTrue(batteryLevel instanceof QuantityType);
         assertTrue(((QuantityType<?>) batteryLevel).getUnit().equals(Units.PERCENT));
         assertEquals(61, ((QuantityType<?>) batteryLevel).intValue(), "Battery Level");
+
+        State controlMode = callback.getState("dirigera:two-button-controller:test-device:control-mode");
+        assertNotNull(controlMode);
     }
 }

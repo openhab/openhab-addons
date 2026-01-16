@@ -666,7 +666,7 @@
                 "otaScheduleStart": "00:00",
                 "otaScheduleEnd": "00:00",
                 "batteryPercentage": 61,
-                "controlMode": "shortcut"
+                "controlMode": "light"
             },
             "capabilities": {
                 "canSend": [],
@@ -720,7 +720,7 @@
                 "otaScheduleStart": "00:00",
                 "otaScheduleEnd": "00:00",
                 "batteryPercentage": 61,
-                "controlMode": "shortcut"
+                "controlMode": "light"
             },
             "capabilities": {
                 "canSend": [],

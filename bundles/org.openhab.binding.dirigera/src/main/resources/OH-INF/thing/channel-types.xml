@@ -214,13 +214,14 @@
 	</channel-type>
 	<channel-type id="pm25">
 		<item-type unitHint="µg/m³">Number:Density</item-type>
-		<label>Particulate Matter category 2.5</label>
+		<label>Particulate Matter</label>
+		<description>Category 2.5 particulate matter</description>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="voc">
 		<item-type>Number</item-type>
-	      <label>VOC Index</label>
-	      <description>Relative VOC intensity compared to recent history</description>
+		<label>VOC Index</label>
+		<description>Relative VOC intensity compared to recent history</description>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="time">
@@ -348,8 +349,21 @@
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="co2" advanced="false">
-        <item-type unitHint="ppm">Number:Dimensionless</item-type>
-        <label>Carbon Dioxide (CO₂)</label>
-        <state readOnly="true" pattern="%.0f %unit%"/>
-    </channel-type>
+		<item-type unitHint="ppm">Number:Dimensionless</item-type>
+		<label>Carbon Dioxide</label>
+		<description>CO₂ concentration</description>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+	<channel-type id="control-mode-3" advanced="true">
+		<item-type>Number</item-type>
+		<label>Control Mode</label>
+		<description>Select which device type shall be controlled</description>
+		<state readOnly="false">
+			<options>
+				<option value="0">Lights and outlets</option>
+				<option value="1">Speakers</option>
+				<option value="2">Blinds</option>
+			</options>
+		</state>
+	</channel-type>
 </thing:thing-descriptions>

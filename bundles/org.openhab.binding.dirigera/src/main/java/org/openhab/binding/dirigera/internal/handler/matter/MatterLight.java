@@ -37,7 +37,6 @@ public class MatterLight extends ColorLightHandler {
             DirigeraStateDescriptionProvider stateProvider) {
         super(thing, COLOR_LIGHT_MAP, stateProvider);
         // matterConfig = new BaseMatterConfiguration(this);
-
     }
 
     @Override

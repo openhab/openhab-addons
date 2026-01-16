@@ -74,9 +74,9 @@ public class Constants {
     public static final ThingTypeUID THING_TYPE_MATTER_WATER_LEAK_SENSOR = new ThingTypeUID(BINDING_ID,
             "water-leak-sensor");
     public static final ThingTypeUID THING_TYPE_MATTER_2_BUTTON_CONTROLLER = new ThingTypeUID(BINDING_ID,
-            "2-button-controller");
+            "two-button-controller");
     public static final ThingTypeUID THING_TYPE_MATTER_3_BUTTON_CONTROLLER = new ThingTypeUID(BINDING_ID,
-            "3-button-controller");
+            "three-button-controller");
     public static final ThingTypeUID THING_TYPE_MATTER_COLOR_LIGHT = new ThingTypeUID(BINDING_ID, "matter-color-light");
     public static final ThingTypeUID THING_TYPE_MATTER_TEMPERATURE_LIGHT = new ThingTypeUID(BINDING_ID,
             "matter-temperature-light");
@@ -246,6 +246,7 @@ public class Constants {
     public static final String EVENT_TYPE_DEVICE_ADDED = "deviceAdded";
     public static final String EVENT_TYPE_DEVICE_CHANGE = "deviceStateChanged";
     public static final String EVENT_TYPE_DEVICE_REMOVED = "deviceRemoved";
+    public static final String EVENT_TYPE_REMOTE_PRESS = "remotePressEvent";
 
     public static final String EVENT_TYPE_SCENE_CREATED = "sceneCreated";
     public static final String EVENT_TYPE_SCENE_UPDATE = "sceneUpdated";

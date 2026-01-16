@@ -89,7 +89,7 @@ class TestEnvironmentSensor {
         System.out.println("Patch Map: " + DirigeraAPISimu.patchMap);
         String patch = DirigeraAPISimu.patchMap.get(deviceId);
         assertNotNull(patch);
-        assertEquals("{\"attributes\":{\"customName\":\"" + command + "\"}}", patch, "Fan Mode on");
+        assertEquals("{\"attributes\":{\"customName\":\"" + command + "\"}}", patch, "Custom Name");
     }
 
     void testDump() {

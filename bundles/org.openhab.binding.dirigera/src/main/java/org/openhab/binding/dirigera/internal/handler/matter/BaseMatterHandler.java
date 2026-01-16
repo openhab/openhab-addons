@@ -369,7 +369,7 @@ public class BaseMatterHandler extends BaseThingHandler implements BaseDevice, D
     }
 
     protected synchronized void createChannelIfNecessary(String channelId, String channelTypeUID,
-            @Nullable String itemType) {
+            @Nullable String itemType, @Nullable String label, @Nullable String description) {
         if (thing.getChannel(channelId) == null) {
             if (customDebug) {
                 logger.info("DIRIGERA BASE_MATTER_HANDLER {} create Channel {} {} {}", thing.getUID(), channelId,
@@ -388,15 +388,26 @@ public class BaseMatterHandler extends BaseThingHandler implements BaseDevice, D
             }
 
             // check for trigger channel without item as trigger channel
-            ChannelBuilder hannelBuilder = ChannelBuilder.create(new ChannelUID(thing.getUID(), channelId))
+            ChannelBuilder channelBuilder = ChannelBuilder.create(new ChannelUID(thing.getUID(), channelId))
                     .withType(channelType);
-            if (itemType == null) {
-                hannelBuilder = hannelBuilder.withKind(ChannelKind.TRIGGER);
-            } else {
-                hannelBuilder = hannelBuilder.withAcceptedItemType(itemType);
+            if (label != null) {
+                channelBuilder = channelBuilder.withLabel(label);
             }
-            updateThing(thingBuilder.withChannel(hannelBuilder.build()).build());
+            if (description != null) {
+                channelBuilder = channelBuilder.withDescription(description);
+            }
+            if (itemType == null) {
+                channelBuilder = channelBuilder.withKind(ChannelKind.TRIGGER);
+            } else {
+                channelBuilder = channelBuilder.withAcceptedItemType(itemType);
+            }
+            updateThing(thingBuilder.withChannel(channelBuilder.build()).build());
         }
+    }
+
+    protected synchronized void createChannelIfNecessary(String channelId, String channelTypeUID,
+            @Nullable String itemType) {
+        createChannelIfNecessary(channelId, channelTypeUID, itemType, null, null);
     }
 
     protected boolean isPowered() {
@@ -423,7 +434,6 @@ public class BaseMatterHandler extends BaseThingHandler implements BaseDevice, D
             }
         }
         channelStateMap.put(channelUID.getIdWithoutGroup(), state);
-        linkCandidateTypes.clear();
         if (!disposed) {
             if (customDebug) {
                 logger.info("DIRIGERA {} updateState {} {}", thing.getUID(), channelUID, state);
@@ -627,8 +637,12 @@ public class BaseMatterHandler extends BaseThingHandler implements BaseDevice, D
         updateState(channelUUID, StringType.valueOf(display.toString()));
     }
 
-    protected void updateCandidateLinks() {
+    public void updateCandidateLinks() {
+        System.out.println(
+                "DIRIGERA BASE_MATTER_HANDLER " + thing.getUID() + " linkCandidateTypes " + linkCandidateTypes);
         List<String> possibleCandidates = gateway().model().getDevicesForTypes(linkCandidateTypes);
+        System.out.println(
+                "DIRIGERA BASE_MATTER_HANDLER " + thing.getUID() + " possibleCandidates " + possibleCandidates);
         List<String> candidates = new ArrayList<>();
         possibleCandidates.forEach(entry -> {
             if (!hardLinks.contains(entry) && !softLinks.contains(entry)) {

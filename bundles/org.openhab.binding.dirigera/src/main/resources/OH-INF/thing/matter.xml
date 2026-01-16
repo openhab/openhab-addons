@@ -70,7 +70,7 @@
 		<config-description-ref uri="thing-type:dirigera:base-device"/>
 	</thing-type>
 
-	<thing-type id="2-button-controller">
+	<thing-type id="two-button-controller">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="gateway"/>
 		</supported-bridge-type-refs>
@@ -81,7 +81,7 @@
 		<config-description-ref uri="thing-type:dirigera:base-device"/>
 	</thing-type>
 
-	<thing-type id="3-button-controller">
+	<thing-type id="three-button-controller">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="gateway"/>
 		</supported-bridge-type-refs>

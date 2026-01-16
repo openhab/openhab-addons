@@ -899,6 +899,16 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway, Debug
                         }
                     }
                     break;
+                case EVENT_TYPE_REMOTE_PRESS:
+                    if (targetId != null) {
+                        List<BaseDevice> handlerList = getHandlersForDeviceId(targetId);
+                        if (!handlerList.isEmpty()) {
+                            handlerList.forEach(targetHandler -> {
+                                targetHandler.handleUpdate(data);
+                            });
+                        }
+                    }
+                    break;
                 default:
                     logger.debug("DIRIGERA HANDLER unkown type {} for websocket update {}", type, update);
             }
