@@ -15,7 +15,8 @@ package org.openhab.binding.astro.internal.calc;
 import static org.openhab.binding.astro.internal.util.MathUtils.*;
 
 import java.time.Instant;
-import java.util.stream.Stream;
+import java.util.List;
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.astro.internal.model.EclipseKind;
@@ -46,12 +47,12 @@ public abstract class EclipseCalc extends AstroCalc {
         }
 
         public boolean matches(EclipseKind otherKind) {
-            return kind().equals(otherKind);
+            return eclipse.kind.equals(otherKind);
         }
     }
 
-    public Stream<Eclipse> getNextEclipses(double startJd) {
-        return validEclipses().map(ek -> new Eclipse(ek, calculate(startJd, ek)));
+    public List<Eclipse> getNextEclipses(double startJd) {
+        return validEclipses().stream().map(ek -> new Eclipse(ek, calculate(startJd, ek))).toList();
     }
 
     public double calculate(double midnightJd, EclipseKind eclipse) {
@@ -69,7 +70,7 @@ public abstract class EclipseCalc extends AstroCalc {
 
     protected abstract double astroAdjust(EclipseKind ek, double e, double m, double m1, double g, double u, double jd);
 
-    protected abstract Stream<EclipseKind> validEclipses();
+    protected abstract Set<EclipseKind> validEclipses();
 
     /**
      * Calculates the eclipse.

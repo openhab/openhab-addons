@@ -241,7 +241,7 @@ public class SunCalc {
         // eclipse
 
         if (sun.getEclipseSet().needsRecalc(j)) {
-            sun.setEclipseSet(new EclipseSet(ECLIPSE_CALC.getNextEclipses(j).map(eclipse -> {
+            sun.setEclipseSet(new EclipseSet(ECLIPSE_CALC.getNextEclipses(j).stream().map(eclipse -> {
                 Calendar eclipseCal = Objects.requireNonNull(DateTimeUtils.toCalendar(eclipse.when(), zone, locale));
                 return eclipse.withPosition(getPosition(eclipseCal, latitude, longitude, altitude));
             })));

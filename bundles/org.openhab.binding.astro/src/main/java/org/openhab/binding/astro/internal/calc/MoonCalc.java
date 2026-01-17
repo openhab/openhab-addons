@@ -95,7 +95,7 @@ public class MoonCalc extends AstroCalc {
         double julianDate = DateTimeUtils.dateToJulianDate(calendar);
 
         if (moon.getEclipseSet().needsRecalc(julianDate)) {
-            moon.setEclipseSet(new EclipseSet(ECLIPSE_CALC.getNextEclipses(julianDate)
+            moon.setEclipseSet(new EclipseSet(ECLIPSE_CALC.getNextEclipses(julianDate).stream()
                     .map(eclipse -> eclipse.withPosition(getMoonPosition(eclipse.when(), latitude, longitude)))));
         }
 
