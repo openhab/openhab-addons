@@ -66,7 +66,7 @@ public class ShellyMDNSDiscoveryParticipant implements MDNSDiscoveryParticipant 
      * <code>_shelly._tcp.local.</code> as well.
      */
     private static final String SERVICE_TYPE = "_http._tcp.local.";
-    private static final long MDNS_CACHE_TIMEOUT_SEC = 15;
+    private static final long MDNS_CACHE_TIMEOUT_SEC = 10;
 
     private final Logger logger = LoggerFactory.getLogger(ShellyMDNSDiscoveryParticipant.class);
     private final ShellyBindingConfiguration bindingConfig = new ShellyBindingConfiguration();
@@ -177,13 +177,11 @@ public class ShellyMDNSDiscoveryParticipant implements MDNSDiscoveryParticipant 
         boolean newEntry = MDNSCache.putIfAbsent(serviceName, new MDNSCacheEntry(address),
                 (oldV, newV) -> oldV.ipAddress.equals(newV.ipAddress));
         if (!newEntry) {
-            logger.trace("{}: Discovered  device with IP address {} is already known (tname={})", serviceName, address,
-                    Thread.currentThread().getName());
+            logger.trace("{}: Discovered  device with IP address {} is already known", serviceName, address);
             return null;
         }
 
-        logger.debug("{}: Shelly device with IP address {} discovered (tname={})", serviceName, address,
-                Thread.currentThread().getName());
+        logger.debug("{}: Shelly device with IP address {} discovered)", serviceName, address);
 
         try {
             // Get device settings

@@ -56,7 +56,6 @@ import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSe
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellySensorBat;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellySensorHum;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellySensorLux;
-import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2AuthRsp;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2CBStatus;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceConfig.Shelly2DevConfigCover;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceConfig.Shelly2DevConfigInput;
@@ -98,12 +97,11 @@ public class Shelly2ApiClient extends ShellyHttpClient {
     protected final ShellyStatusRelay relayStatus = new ShellyStatusRelay();
     protected final ShellyStatusSensor sensorData = new ShellyStatusSensor();
     protected final ArrayList<ShellyRollerStatus> rollerStatus = new ArrayList<>();
-    protected @Nullable ShellyThingInterface thing;
-    protected @Nullable Shelly2AuthRsp authReq;
+    protected volatile @Nullable ShellyThingInterface thing;
 
     private static final String RPC_SRC_PREFIX = "ohshelly-";
     private static final int MAX_ID = 10000;
-    private final AtomicInteger REQUEST_ID = new AtomicInteger(ThreadLocalRandom.current().nextInt(1, MAX_ID + 1));
+    private final AtomicInteger requestId = new AtomicInteger(ThreadLocalRandom.current().nextInt(1, MAX_ID + 1));
 
     public Shelly2ApiClient(String thingName, ShellyThingInterface thing) {
         super(thingName, thing);
@@ -1001,8 +999,9 @@ public class Shelly2ApiClient extends ShellyHttpClient {
 
     protected Shelly2RpcBaseMessage buildRequest(String method, @Nullable Object params) throws ShellyApiException {
         Shelly2RpcBaseMessage request = new Shelly2RpcBaseMessage();
-        request.id = nextId();
+        request.id = getNextRequestId();
         String suffix = "";
+        ShellyThingInterface thing = this.thing;
         if (thing != null) {
             String uid = thing.getThing().getUID().getAsString();
             suffix = substringAfterLast(uid, ":");
@@ -1013,12 +1012,11 @@ public class Shelly2ApiClient extends ShellyHttpClient {
         request.src = RPC_SRC_PREFIX + suffix + "-" + request.id; // use a unique identifier;
         request.method = !method.contains(".") ? SHELLYRPC_METHOD_CLASS_SHELLY + "." + method : method;
         request.params = params;
-        request.auth = authReq;
         return request;
     }
 
-    private int nextId() {
-        return REQUEST_ID.updateAndGet(id -> (id >= MAX_ID) ? 1 : id + 1);
+    private int getNextRequestId() {
+        return requestId.updateAndGet(id -> id >= MAX_ID ? 1 : id + 1);
     }
 
     protected String mapValue(Map<String, String> map, String key) {
@@ -1050,9 +1048,9 @@ public class Shelly2ApiClient extends ShellyHttpClient {
     }
 
     protected ShellyThingInterface getThing() throws ShellyApiException {
-        ShellyThingInterface t = thing;
-        if (t != null) {
-            return t;
+        ShellyThingInterface thing = this.thing;
+        if (thing != null) {
+            return thing;
         }
         throw new ShellyApiException("Thing/profile not initialized!");
     }
@@ -1062,6 +1060,7 @@ public class Shelly2ApiClient extends ShellyHttpClient {
         if (thing != null) {
             return thing.getProfile();
         }
+
         throw new ShellyApiException("Unable to get profile, thing not initialized!");
     }
 }
