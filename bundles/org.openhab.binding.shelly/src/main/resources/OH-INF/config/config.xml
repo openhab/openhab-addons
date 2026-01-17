@@ -249,7 +249,7 @@
 			<context>password</context>
 		</parameter>
 		<parameter name="lowBattery" type="integer" required="false">
-			<label>Low Battery Treshold (%)</label>
+			<label>Low Battery Threshold (%)</label>
 			<description>An alarm is triggered when the device reports a battery charge lower than this threshold. Default: 20%</description>
 			<default>20</default>
 			<unitLabel>%</unitLabel>
