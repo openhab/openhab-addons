@@ -11,24 +11,26 @@
 	<config-description>
 		<parameter name="defaultUserId" type="text">
 			<default>admin</default>
-			<label>@text/addon.shelly.config.defaultUserId.label</label>
-			<description>@text/addon.shelly.config.defaultUserId.description</description>
+			<label>Default UserId</label>
+			<description>This default user id will be used for device access if no one is specified in the thing configuration.</description>
 		</parameter>
 		<parameter name="defaultPassword" type="text">
 			<default>admin</default>
-			<label>@text/addon.shelly.config.defaultPassword.label</label>
-			<description>@text/addon.shelly.config.defaultPassword.description</description>
+			<label>Default Password</label>
+			<description>Default password for device access if none is specified in the thing configuration.</description>
 			<context>password</context>
 		</parameter>
 		<parameter name="localIP" type="text">
-			<label>@text/addon.shelly.config.localIP.label</label>
-			<description>@text/addon.shelly.config.localIP.description</description>
-			<default></default>
+			<label>Host Interface IP</label>
+			<description>This interface will be used to setup CoIoT listen and build Action URLs. openHAB's network configuration
+				will be used if this is not set (recommended)</description>
+			<default/>
 		</parameter>
 		<parameter name="autoCoIoT" type="boolean">
 			<default>true</default>
-			<label>@text/addon.shelly.config.autoCoIoT.label</label>
-			<description>@text/addon.shelly.config.autoCoIoT.description</description>
+			<label>Auto-CoIoT</label>
+			<description>If enabled CoIoT will be automatically used when the devices runs a firmware version 1.6 or newer;
+				false: Use thing configuration to enabled/disable CoIoT events.</description>
 		</parameter>
 	</config-description>
 
