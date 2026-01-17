@@ -1,7 +1,0 @@
-{
-	"battery-level": {
-		"label": "Battery Charge Level",
-		"description": "Battery charge level in percent",
-		"typeId": "system.battery-level"
-	}
-}

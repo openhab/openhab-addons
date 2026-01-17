@@ -1547,6 +1547,48 @@
             "isHidden": false
         },
         {
+            "id": "9bf826ad-a8ad-40bf-8aed-125300bccd20_1",
+            "type": "sensor",
+            "deviceType": "waterSensor",
+            "createdAt": "2024-10-17T12:38:02.000Z",
+            "isReachable": true,
+            "lastSeen": "2026-01-11T16:19:22.000Z",
+            "attributes": {
+                "customName": "HWR Water Leak",
+                "model": "BADRING Water Leakage Sensor",
+                "manufacturer": "IKEA of Sweden",
+                "firmwareVersion": "1.0.7",
+                "hardwareVersion": "1",
+                "serialNumber": "D44867FFFE147386",
+                "productCode": "E2202",
+                "qrCode": "",
+                "batteryPercentage": 15,
+                "waterLeakDetected": false,
+                "permittingJoin": false,
+                "otaStatus": "upToDate",
+                "otaState": "readyToCheck",
+                "otaProgress": 0,
+                "otaPolicy": "autoUpdate",
+                "otaScheduleStart": "00:00",
+                "otaScheduleEnd": "00:00"
+            },
+            "capabilities": {
+                "canSend": [],
+                "canReceive": [
+                    "customName"
+                ]
+            },
+            "room": {
+                "id": "2abdfb7b-d080-4b00-b576-0c6fb73e9b3b",
+                "name": "Lobby HWR",
+                "color": "ikea_pink_no_4",
+                "icon": "rooms_drill"
+            },
+            "deviceSet": [],
+            "remoteLinks": [],
+            "isHidden": false
+        },
+        {
             "id": "ee61c57f-8efa-44f4-ba8a-d108ae054138_1",
             "type": "sensor",
             "deviceType": "motionSensor",

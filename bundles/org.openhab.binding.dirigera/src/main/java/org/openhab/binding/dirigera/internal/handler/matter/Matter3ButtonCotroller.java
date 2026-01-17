@@ -62,13 +62,14 @@ public class Matter3ButtonCotroller extends BaseMatterHandler {
     @Override
     protected void configure() {
         int subDeviceId = Character.getNumericValue(config.id.charAt(config.id.length() - 1));
-        int controllerGroupNUmber = subDeviceId / 3;
         String relationId = gateway().model().getRelationId(config.id);
+        int j = 1;
         for (int i = subDeviceId; i > subDeviceId - 3; i--) {
             String deviceId = relationId + "_" + i;
             System.out.println("Configuring deviceId: " + deviceId);
             configMap.put(deviceId, new BaseMatterConfiguration(this, deviceId, thing.getThingTypeUID().getId()));
-            triggerChannelMapping.put(deviceId, createTriggerChannel(i));
+            triggerChannelMapping.put(deviceId, createTriggerChannel(j));
+            j++;
         }
     }
 

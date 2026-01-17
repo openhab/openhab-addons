@@ -172,11 +172,41 @@
             {
                 "attribute": "isOpen",
                 "channel": "contact",
+                "channelLabel": "Contact State",
+                "channelDescription": "State if door or window is open or closed",
                 "channelType": "contact",
                 "itemType": "Contact",
                 "inValue": "Boolean",
                 "outValue": "OpenClosedType",
                 "transformation": "raw"
+            }
+        ],
+        "controlProperties": [
+        ],
+        "linkCandidates": [
+        ],
+        "thingProperties": [
+        ]
+    },
+    {
+        "thingType": "waterSensor",
+        "identification": {
+            "type": "sensor",
+            "deviceType": "waterSensor"
+        },
+        "statusProperties": [
+            {
+                "attribute": "waterLeakDetected",
+                "channel": "leak",
+                "channelType": "alarm",
+                "itemType": "Switch",
+                "inValue": "Boolean",
+                "outValue": "OnOffType",
+                "transformation": "mapping",
+                 "mapping": {
+                     "true": "ON",
+                     "false": "OFF"
+                 }
             }
         ],
         "controlProperties": [
@@ -294,6 +324,7 @@
             {
                 "attribute": "colorTemperature",
                 "channel": "color-temperature-abs",
+                "channelLabel": "Color Temperature Kelvin",
                 "channelType": "system.color-temperature-abs",
                 "itemType": "Number:Temperature",
                 "inValue": "Integer",

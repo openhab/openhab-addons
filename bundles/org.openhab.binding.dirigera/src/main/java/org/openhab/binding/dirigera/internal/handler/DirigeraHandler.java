@@ -301,7 +301,8 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway, Debug
 
     @Override
     public void handleRemoval() {
-        storage.remove(config.ipAddress);
+        // todo cleanup storage on removal
+        // storage.remove(config.ipAddress);
         super.handleRemoval();
     }
 

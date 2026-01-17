@@ -68,6 +68,8 @@ public class ColorLightHandler extends TemperatureLightHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        logger.debug("DIRIGERA COLOR_LIGHT {} handle command {} for channel {}", thing.getLabel(), command,
+                channelUID.getIdWithoutGroup());
         super.handleCommand(channelUID, command);
         String channel = channelUID.getIdWithoutGroup();
         if (CHANNEL_LIGHT_COLOR.equals(channel)) {
@@ -175,7 +177,7 @@ public class ColorLightHandler extends TemperatureLightHandler {
                                     deliverHSB = true;
                                     break;
                                 case "colorSaturation":
-                                    int saturationValue = Math.round(attributes.getFloat(key) * 100);
+                                    int saturationValue = Math.min(Math.round(attributes.getFloat(key) * 100), 100);
                                     hsbDevice = new HSBType(hsbDevice.getHue(), new PercentType(saturationValue),
                                             hsbDevice.getBrightness());
                                     hsbStateReflection = new HSBType(hsbStateReflection.getHue(),

@@ -22,4 +22,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public interface ResourceProvider {
     String getResourceFile(String resourcePath);
+
+    String getResourceFileUncompressed(String resourcePath);
 }

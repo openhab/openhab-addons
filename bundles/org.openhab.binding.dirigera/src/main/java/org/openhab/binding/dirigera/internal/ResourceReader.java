@@ -12,12 +12,15 @@
  */
 package org.openhab.binding.dirigera.internal;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.dirigera.internal.interfaces.ResourceProvider;
@@ -42,12 +45,15 @@ public class ResourceReader implements ResourceProvider {
         return provider.getResourceFile(resourcePath);
     }
 
+    public static String getResourceUncopressed(String resourcePath) {
+        return provider.getResourceFileUncompressed(resourcePath);
+    }
+
     @Override
     public String getResourceFile(String resourcePath) {
-        Thread.dumpStack();
         String template = TEMPLATES.get(resourcePath);
         if (template == null) {
-            template = getBundleResource(resourcePath);
+            template = getBundleResource(resourcePath, true);
             if (!template.isBlank()) {
                 TEMPLATES.put(resourcePath, template);
             } else {
@@ -58,19 +64,30 @@ public class ResourceReader implements ResourceProvider {
         return template;
     }
 
-    private String getBundleResource(String fileName) {
+    @Override
+    public String getResourceFileUncompressed(String resourcePath) {
+        return getBundleResource(resourcePath, false);
+    }
+
+    private String getBundleResource(String fileName, boolean compressed) {
         try {
             Bundle myself = FrameworkUtil.getBundle(ResourceReader.class);
             // do this check for unit tests to avoid NullPointerException
             if (myself != null) {
                 URL url = myself.getResource(fileName);
                 InputStream input = url.openStream();
-                // https://www.baeldung.com/java-scanner-usedelimiter
-                try (Scanner scanner = new Scanner(input).useDelimiter("\\A")) {
-                    String result = scanner.hasNext() ? scanner.next() : "";
-                    String resultReplaceAll = result.replaceAll("[\\n\\r\\s]", "");
-                    scanner.close();
-                    return resultReplaceAll;
+                if (compressed) {
+                    // https://www.baeldung.com/java-scanner-usedelimiter
+                    try (Scanner scanner = new Scanner(input).useDelimiter("\\A")) {
+                        String result = scanner.hasNext() ? scanner.next() : "";
+                        String resultReplaceAll = result.replaceAll("[\\n\\r\\s]", "");
+                        scanner.close();
+                        return resultReplaceAll;
+                    }
+                } else {
+                    try (BufferedReader reader = new BufferedReader(new InputStreamReader(input))) {
+                        return reader.lines().collect(Collectors.joining("\n"));
+                    }
                 }
             }
         } catch (IOException e) {

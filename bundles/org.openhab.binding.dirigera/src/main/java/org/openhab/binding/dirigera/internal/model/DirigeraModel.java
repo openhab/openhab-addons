@@ -130,13 +130,20 @@ public class DirigeraModel implements Model {
                 JSONObject entry = (JSONObject) entries.next();
                 String deviceId = entry.getString(PROPERTY_DEVICE_ID);
                 String relationId = getRelationId(deviceId);
-                if (!deviceId.equals(relationId)) {
+                ThingTypeUID ttUid = identifyDeviceFromModel(deviceId);
+                String resolvedId;
+                if (THING_TYPE_MATTER_3_BUTTON_CONTROLLER.equals(ttUid)) {
+                    // special case - don't resolve!
+                    resolvedId = deviceId;
+                } else if (!deviceId.equals(relationId)) {
                     TreeMap<String, String> relationMap = getRelations(relationId);
                     // store for complex devices store result with first found id
-                    relationId = relationMap.firstKey();
+                    resolvedId = relationMap.firstKey();
+                } else {
+                    resolvedId = deviceId;
                 }
-                if (!deviceList.contains(relationId)) {
-                    deviceList.add(relationId);
+                if (!deviceList.contains(resolvedId)) {
+                    deviceList.add(resolvedId);
                 }
             }
         }
@@ -351,7 +358,7 @@ public class DirigeraModel implements Model {
                 discoveryID = id;
                 char controllerGroup = id.charAt(id.length() - 1);
                 int controllerGroupNUmber = Character.getNumericValue(controllerGroup);
-                customName = customName + " Group " + controllerGroupNUmber % 3;
+                customName = customName + " Group " + controllerGroupNUmber / 3;
             } else {
                 // pack all relations into one device
                 String relationId = getRelationId(id);
@@ -431,28 +438,7 @@ public class DirigeraModel implements Model {
                     };
                     yield detectedType;
                 }
-                case "light" -> {
-                    if (data.has(CAPABILITIES)) {
-                        JSONObject capabilities = data.getJSONObject(CAPABILITIES);
-                        List<String> capabilityList = new ArrayList<>();
-                        if (capabilities.has(PROPERTY_CAN_RECEIVE)) {
-                            JSONArray receiveProperties = capabilities.getJSONArray(PROPERTY_CAN_RECEIVE);
-                            receiveProperties.forEach(capability -> {
-                                capabilityList.add(capability.toString());
-                            });
-                        }
-                        if (capabilityList.contains("colorHue")) {
-                            yield THING_TYPE_MATTER_COLOR_LIGHT;
-                        } else if (capabilityList.contains("colorTemperature")) {
-                            yield THING_TYPE_MATTER_TEMPERATURE_LIGHT;
-                        } else {
-                            logger.warn("DIRIGERA MODEL cannot identify light {}", data);
-                        }
-                    } else {
-                        logger.warn("DIRIGERA MODEL cannot identify light {}", data);
-                    }
-                    yield THING_TYPE_MATTER_UNKNOWN;
-                }
+                case "light" -> THING_TYPE_MATTER_LIGHT;
                 default -> THING_TYPE_MATTER_UNKNOWN;
             };
         } else

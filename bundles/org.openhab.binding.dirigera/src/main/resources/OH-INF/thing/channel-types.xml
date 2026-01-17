@@ -216,12 +216,20 @@
 		<item-type unitHint="µg/m³">Number:Density</item-type>
 		<label>Particulate Matter</label>
 		<description>Category 2.5 particulate matter</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>ParticulateMatter</tag>
+		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="voc">
 		<item-type>Number</item-type>
 		<label>VOC Index</label>
 		<description>Relative VOC intensity compared to recent history</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>VOC</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="time">
@@ -352,6 +360,10 @@
 		<item-type unitHint="ppm">Number:Dimensionless</item-type>
 		<label>Carbon Dioxide</label>
 		<description>CO₂ concentration</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>CO2</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="mode-3-options" advanced="true">

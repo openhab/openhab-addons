@@ -27,6 +27,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.openhab.binding.dirigera.internal.ResourceReader;
+import org.openhab.binding.dirigera.internal.interfaces.BaseDevice;
 import org.openhab.binding.dirigera.internal.interfaces.Model;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -62,7 +63,7 @@ public class BaseMatterConfiguration {
     private static JSONObject matterDeviceConfig = new JSONObject();
 
     private final Logger logger = LoggerFactory.getLogger(BaseMatterConfiguration.class);
-    private final String deviceType;;
+    private final String deviceType;
 
     // holds for each deviceId the mapping of channelName to control property configuration
     private Map<String, JSONObject> controlPropertiesMapping = new HashMap<>();
@@ -71,9 +72,9 @@ public class BaseMatterConfiguration {
     private List<String> types = new ArrayList<>();
     private String deviceId;
 
-    private final BaseMatterHandler handler;
+    private final BaseDevice handler;
 
-    public BaseMatterConfiguration(BaseMatterHandler handler, String deviceId, String deviceType) {
+    public BaseMatterConfiguration(BaseDevice handler, String deviceId, String deviceType) {
         this.deviceId = deviceId;
         this.handler = handler;
         this.deviceType = deviceType;
@@ -351,7 +352,7 @@ public class BaseMatterConfiguration {
      * Read complete device configuration for all Matter devices from resource file
      */
     public static void loadDeviceConfig() {
-        String deviceConfig = ResourceReader.getResource("/json/matter/devices.json");
+        String deviceConfig = ResourceReader.getResourceUncopressed("/json/matter/devices.json");
         JSONArray devices = new JSONArray(deviceConfig);
         devices.forEach(device -> {
             String tt = ((JSONObject) device).getString("thingType");

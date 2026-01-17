@@ -40,7 +40,6 @@ import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
-import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -51,6 +50,7 @@ import org.openhab.core.thing.binding.BridgeHandler;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
+import org.openhab.core.thing.type.ChannelKind;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.CommandOption;
@@ -416,7 +416,8 @@ public class BaseHandler extends BaseThingHandler implements BaseDevice, DebugHa
         }
     }
 
-    protected synchronized void createChannelIfNecessary(String channelId, String channelTypeUID, String itemType) {
+    protected synchronized void createChannelIfNecessary(String channelId, String channelTypeUID,
+            @Nullable String itemType, @Nullable String label, @Nullable String description) {
         if (thing.getChannel(channelId) == null) {
             if (customDebug) {
                 logger.info("DIRIGERA BASE_HANDLER {} create Channel {} {} {}", thing.getUID(), channelId,
@@ -425,10 +426,33 @@ public class BaseHandler extends BaseThingHandler implements BaseDevice, DebugHa
             // https://www.openhab.org/docs/developer/bindings/#updating-the-thing-structure
             ThingBuilder thingBuilder = editThing();
             // channel type UID needs to be defined in channel-types.xml
-            Channel channel = ChannelBuilder.create(new ChannelUID(thing.getUID(), channelId), itemType)
-                    .withType(new ChannelTypeUID(BINDING_ID, channelTypeUID)).build();
-            updateThing(thingBuilder.withChannel(channel).build());
+            ChannelTypeUID channelType;
+            String[] channelTypeParts = channelTypeUID.split("\\.");
+            if (channelTypeParts.length > 1) {
+                channelType = new ChannelTypeUID(channelTypeParts[0], channelTypeParts[1]);
+            } else {
+                channelType = new ChannelTypeUID(BINDING_ID, channelTypeParts[0]);
+            }
+            // check for trigger channel without item as trigger channel
+            ChannelBuilder channelBuilder = ChannelBuilder.create(new ChannelUID(thing.getUID(), channelId))
+                    .withType(channelType);
+            if (label != null) {
+                channelBuilder = channelBuilder.withLabel(label);
+            }
+            if (description != null) {
+                channelBuilder = channelBuilder.withDescription(description);
+            }
+            if (itemType == null) {
+                channelBuilder = channelBuilder.withKind(ChannelKind.TRIGGER);
+            } else {
+                channelBuilder = channelBuilder.withAcceptedItemType(itemType);
+            }
+            updateThing(thingBuilder.withChannel(channelBuilder.build()).build());
         }
+    }
+
+    protected synchronized void createChannelIfNecessary(String channelId, String channelTypeUID, String itemType) {
+        createChannelIfNecessary(channelId, channelTypeUID, itemType, null, null);
     }
 
     protected boolean isPowered() {

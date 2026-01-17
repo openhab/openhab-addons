@@ -32,6 +32,8 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.StateDescriptionFragment;
 import org.openhab.core.types.StateDescriptionFragmentBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * {@link TemperatureLightHandler} for lights with brightness and color temperature
@@ -40,6 +42,7 @@ import org.openhab.core.types.StateDescriptionFragmentBuilder;
  */
 @NonNullByDefault
 public class TemperatureLightHandler extends DimmableLightHandler {
+    private final Logger logger = LoggerFactory.getLogger(TemperatureLightHandler.class);
     private PercentType currentColorTemp = new PercentType();
 
     protected final DirigeraStateDescriptionProvider stateProvider;
@@ -68,12 +71,31 @@ public class TemperatureLightHandler extends DimmableLightHandler {
                 String key = attributesIterator.next();
                 if ("colorTemperatureMin".equals(key)) {
                     colorTemperatureMin = attributes.getInt(key);
-                    properties.put("colorTemperatureMin", String.valueOf(colorTemperatureMin));
                 } else if ("colorTemperatureMax".equals(key)) {
                     colorTemperatureMax = attributes.getInt(key);
-                    properties.put("colorTemperatureMax", String.valueOf(colorTemperatureMax));
                 }
             }
+
+            // KAJPLATS is delivering color temperature in Mired https://en.wikipedia.org/wiki/Mired
+            if (colorTemperatureMin - colorTemperatureMax < 0) {
+                properties.put("colorTemperatureMin", String.valueOf(colorTemperatureMin) + "M");
+                properties.put("colorTemperatureMax", String.valueOf(colorTemperatureMax) + "M");
+                colorTemperatureMin = 1000000 / colorTemperatureMin;
+                colorTemperatureMax = 1000000 / colorTemperatureMax;
+            } else {
+                properties.put("colorTemperatureMin", String.valueOf(colorTemperatureMin) + "K");
+                properties.put("colorTemperatureMax", String.valueOf(colorTemperatureMax) + "K");
+            }
+
+            // now check if config overrides values
+            if (lightConfig.colorTemperatureMin > 0) {
+                colorTemperatureMin = lightConfig.colorTemperatureMin;
+            }
+            if (lightConfig.colorTemperatureMax > 0) {
+                colorTemperatureMax = lightConfig.colorTemperatureMax;
+            }
+            range = colorTemperatureMin - colorTemperatureMax;
+
             StateDescriptionFragment fragment = StateDescriptionFragmentBuilder.create()
                     .withMinimum(BigDecimal.valueOf(colorTemperatureMax))
                     .withMaximum(BigDecimal.valueOf(colorTemperatureMin)).withStep(BigDecimal.valueOf(100))
@@ -87,6 +109,8 @@ public class TemperatureLightHandler extends DimmableLightHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        logger.debug("DIRIGERA COLOR_LIGHT {} handle command {} for channel {}", thing.getLabel(), command,
+                channelUID.getIdWithoutGroup());
         super.handleCommand(channelUID, command);
         String channel = channelUID.getIdWithoutGroup();
         String targetProperty = channel2PropertyMap.get(channel);
@@ -99,6 +123,7 @@ public class TemperatureLightHandler extends DimmableLightHandler {
                 if (command instanceof PercentType percent) {
                     percentValue = percent.intValue();
                     kelvinValue = getKelvin(percent.intValue());
+                    logger.warn("Handle command COLOR TEMPERATURE percent {} -> kelvin {}", percentValue, kelvinValue);
                 } else if (command instanceof QuantityType number) {
                     kelvinValue = number.intValue();
                     percentValue = getPercent(kelvinValue);
@@ -155,6 +180,8 @@ public class TemperatureLightHandler extends DimmableLightHandler {
     }
 
     protected long getKelvin(int percent) {
+        logger.warn("Get Kelvin for percent {} with min {} max {} range {}", percent, colorTemperatureMin,
+                colorTemperatureMax, range);
         return Math.round(colorTemperatureMin - (range * percent / 100));
     }
 

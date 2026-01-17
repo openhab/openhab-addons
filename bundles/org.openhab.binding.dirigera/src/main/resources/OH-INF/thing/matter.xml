@@ -64,7 +64,7 @@
 			<bridge-type-ref id="gateway"/>
 		</supported-bridge-type-refs>
 
-		<label>2 Button Controller</label>
+		<label>Two Button Switch</label>
 		<description>Controller with 2 programmable buttons</description>
 
 		<config-description-ref uri="thing-type:dirigera:base-device"/>
@@ -75,31 +75,21 @@
 			<bridge-type-ref id="gateway"/>
 		</supported-bridge-type-refs>
 
-		<label>3 Button Controller</label>
+		<label>Three Button Switch</label>
 		<description>Controller with 3 programmable buttons</description>
 
 		<config-description-ref uri="thing-type:dirigera:base-device"/>
 	</thing-type>
 
-	<thing-type id="matter-color-light">
+	<thing-type id="matter-light">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="gateway"/>
 		</supported-bridge-type-refs>
 
-		<label>Color Light (Matter)</label>
-		<description>Color light (based on Matter standard)</description>
+		<label>Light (Matter)</label>
+		<description>LED light (based on Matter standard)</description>
 
-		<config-description-ref uri="thing-type:dirigera:base-device"/>
+		<config-description-ref uri="thing-type:dirigera:color-light"/>
 	</thing-type>
 
-	<thing-type id="matter-temperature-light">
-		<supported-bridge-type-refs>
-			<bridge-type-ref id="gateway"/>
-		</supported-bridge-type-refs>
-
-		<label>Temperature Light (Matter)</label>
-		<description>Color light (based on Matter standard)</description>
-
-		<config-description-ref uri="thing-type:dirigera:base-device"/>
-	</thing-type>
 </thing:thing-descriptions>

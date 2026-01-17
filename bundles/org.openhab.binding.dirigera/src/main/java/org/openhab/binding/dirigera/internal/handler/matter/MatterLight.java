@@ -15,11 +15,18 @@ package org.openhab.binding.dirigera.internal.handler.matter;
 import static org.openhab.binding.dirigera.internal.Constants.COLOR_LIGHT_MAP;
 
 import java.util.Map;
+import java.util.TreeMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.json.JSONObject;
 import org.openhab.binding.dirigera.internal.DirigeraStateDescriptionProvider;
+import org.openhab.binding.dirigera.internal.config.ColorLightConfiguration;
 import org.openhab.binding.dirigera.internal.handler.light.ColorLightHandler;
+import org.openhab.binding.dirigera.internal.interfaces.Model;
+import org.openhab.core.library.CoreItemFactory;
+import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
+import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,23 +38,68 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class MatterLight extends ColorLightHandler {
     private final Logger logger = LoggerFactory.getLogger(MatterLight.class);
-    // protected BaseMatterConfiguration matterConfig;;
+    protected Map<String, BaseMatterConfiguration> configMap = new TreeMap<>();
 
     public MatterLight(Thing thing, Map<String, String> stateChannelMapping,
             DirigeraStateDescriptionProvider stateProvider) {
         super(thing, COLOR_LIGHT_MAP, stateProvider);
-        // matterConfig = new BaseMatterConfiguration(this);
+        super.setChildHandler(this);
     }
 
     @Override
     public void initialize() {
         logger.debug("Initializing Matter Light handler for thing {}", getThing().getUID());
-        // JSONArray deviceUpdates = new JSONArray();
-        // matterConfig.collectDevices(config.id).forEach(deviceId -> {
-        // JSONObject values = gateway().api().readDevice(deviceId);
-        // deviceUpdates.put(values);
-        // // createChannels(values);
-        // });
+        lightConfig = getConfigAs(ColorLightConfiguration.class);
+        configMap.put(lightConfig.id, new BaseMatterConfiguration(this, lightConfig.id, "light"));
         super.initialize();
+        JSONObject update = gateway().api().readDevice(lightConfig.id);
+        createChannels(update);
+        super.handleUpdate(update);
+    }
+
+    private void createChannels(JSONObject values) {
+        if (values.has(Model.ATTRIBUTES)) {
+            JSONObject attributes = values.getJSONObject(Model.ATTRIBUTES);
+            configMap.forEach((deviceId, matterConfig) -> {
+                matterConfig.getStatusProperties().forEach((statusPropertyKey, statusPropertyJson) -> {
+                    System.out.println("DIRIGERA BASE_MATTER_HANDLER " + thing.getUID() + " check status property "
+                            + statusPropertyKey);
+                    String deviceAttribute = statusPropertyJson.getString(BaseMatterConfiguration.KEY_ATTRIBUTE);
+                    if (attributes.has(deviceAttribute)) {
+                        String channel = statusPropertyJson.getString("channel");
+                        String channelType = statusPropertyJson.getString("channelType");
+                        String itemType = "String";
+                        if (statusPropertyJson.has("itemType")) {
+                            itemType = statusPropertyJson.getString("itemType");
+                        }
+                        String channelLabel = (statusPropertyJson.optString("channelLabel").isBlank()) ? null
+                                : statusPropertyJson.getString("channelLabel");
+                        String channelDescription = (statusPropertyJson.optString("label").isBlank()) ? null
+                                : statusPropertyJson.getString("channelDescription");
+
+                        logger.warn(" Matter Light thing channels with label {}", channelLabel);
+                        logger.warn(" Matter Light thing channels with label {}",
+                                statusPropertyJson.optString("channelLabel"));
+                        logger.warn(" Matter Light thing channels with label {}", statusPropertyJson);
+
+                        createChannelIfNecessary(channel, channelType, itemType, channelLabel, channelDescription);
+                        if ("colorTemperature".equals(deviceAttribute)) {
+                            // add additional channel for color temperature in percent
+                            createChannelIfNecessary("color-temperature", "system.color-temperature",
+                                    CoreItemFactory.DIMMER);
+                        }
+                    }
+                });
+            });
+        }
+        thing.getChannels().forEach(channel -> {
+            logger.warn(" Matter Light thing channels:  {} type: {}", channel.getUID(), channel.getLabel());
+        });
+    }
+
+    @Override
+    public void handleCommand(ChannelUID channelUID, Command command) {
+        logger.warn("MatterLight handleCommand called for channel {} with command {}", channelUID, command);
+        super.handleCommand(channelUID, command);
     }
 }
