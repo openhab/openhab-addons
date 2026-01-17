@@ -247,7 +247,7 @@ public class DateTimeUtils {
 
     /**
      * Evaluates whether the specified {@link Calendar} is within the time window starting with {@code from}
-     * (inclusive) and ending with {@code from + duration} (inclusive).
+     * (inclusive) and ending with {@code from + duration} (both boundaries are inclusive).
      *
      * @param cal the point in time to evaluate.
      * @param from the start of the time window (inclusive).
