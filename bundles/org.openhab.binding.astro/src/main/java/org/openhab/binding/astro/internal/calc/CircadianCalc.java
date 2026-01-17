@@ -88,7 +88,7 @@ public class CircadianCalc {
             return Circadian.DEFAULT;
         }
         double a = (y - k) / (dx * dx);
-        double percentage = a * Math.pow(now - h, 2) + k;
+        double percentage = Math.max(Math.min(a * Math.pow(now - h, 2) + k, 100.0), 0.0);
         double colorTemp = percentage > 0 ? (DELTA_TEMP * percentage / 100) + MIN_COLOR_TEMP : MIN_COLOR_TEMP;
 
         LOGGER.debug("Percentage: {}, ColorTemp: {}", percentage, colorTemp);
