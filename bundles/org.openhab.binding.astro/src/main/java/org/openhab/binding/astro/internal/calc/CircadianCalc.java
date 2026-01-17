@@ -93,6 +93,6 @@ public class CircadianCalc {
 
         LOGGER.debug("Percentage: {}, ColorTemp: {}", percentage, colorTemp);
 
-        return new Circadian(Math.min(100, Math.abs(percentage)), colorTemp);
+        return new Circadian(percentage, colorTemp);
     }
 }
