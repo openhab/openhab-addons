@@ -147,7 +147,7 @@ public class Shelly2RpcSocket implements WriteCallback {
             // Start and connect outside lock
             newClient.start();
             newClient.setConnectTimeout(5000);
-            newClient.setStopTimeout(1000);
+            newClient.setStopTimeout(3000);
             newClient.connect(this, uri, request);
 
         } catch (URISyntaxException e) {

@@ -292,6 +292,11 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         cache.clear();
         resetStats();
 
+        if (getThingStatusDetail().equals(ThingStatusDetail.CONFIGURATION_ERROR)) {
+            logger.debug("{}: Thing configuration error, cancel initialization", thingName);
+            return false;
+        }
+
         profile.initFromThingType(thing.getThingTypeUID());
         logger.debug(
                 "{}: Start initializing for thing {}, type {}, Device address {}, Gen2: {}, isBlu: {}, alwaysOn: {}, hasBattery: {}, CoIoT: {}",

@@ -35,6 +35,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.http.HttpStatus;
+import org.eclipse.jetty.io.EofException;
 import org.eclipse.jetty.websocket.api.StatusCode;
 import org.openhab.binding.shelly.internal.api.ShellyApiException;
 import org.openhab.binding.shelly.internal.api.ShellyApiInterface;
@@ -824,7 +825,8 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     @Override
     public void onError(Throwable cause) {
         String message = "WebSocket error: " + getString(cause.getMessage());
-        if (cause instanceof AsynchronousCloseException || "Shutdown".equals(message)) {
+        if (cause instanceof AsynchronousCloseException || cause instanceof EofException
+                || "Shutdown".equals(message)) {
             // could happen on shutdown, ignore
         } else {
             logger.debug("{}: {}", thingName, message, cause);
