@@ -66,7 +66,7 @@
 
 	<thing-type id="shellybluht">
 		<label>Shelly BLU H&amp;T</label>
-		<description>Shelly BLU Shelly H&amp;amp;T: Detect Humidity and Temperature, has a single button</description>
+		<description>Shelly BLU Shelly H&amp;T: Detect Humidity and Temperature, has a single button</description>
 		<category>Sensor</category>
 		<semantic-equipment-tag>TemperatureSensor</semantic-equipment-tag>
 		<channel-groups>

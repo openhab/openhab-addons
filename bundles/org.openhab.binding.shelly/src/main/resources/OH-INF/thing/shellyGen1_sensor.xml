@@ -6,7 +6,7 @@
 
 	<thing-type id="shellyht">
 		<label>Shelly H&amp;T</label>
-		<description>Shelly H&amp;amp;T (Humidity &amp;amp; Temperature Sensor)</description>
+		<description>Shelly H&amp;T (Humidity &amp; Temperature Sensor)</description>
 		<category>Sensor</category>
 		<semantic-equipment-tag>Sensor</semantic-equipment-tag>
 		<channel-groups>
