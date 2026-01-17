@@ -21,7 +21,7 @@ import org.openhab.binding.astro.internal.calc.EclipseCalc.LocalizedEclipse;
 import org.openhab.binding.astro.internal.util.DateTimeUtils;
 
 /**
- * Holds eclipse informations.
+ * Holds eclipse information.
  *
  * @author Gerhard Riegler - Initial contribution
  * @author Gaël L'hopital - Immutable and Instant
