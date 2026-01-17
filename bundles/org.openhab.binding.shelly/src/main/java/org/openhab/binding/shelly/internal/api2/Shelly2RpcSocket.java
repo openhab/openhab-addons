@@ -497,7 +497,7 @@ public class Shelly2RpcSocket implements WriteCallback {
     public static WebSocketClient createWebSocketClient(WebSocketFactory webSocketFactory, String consumerName) {
         WebSocketClient client = webSocketFactory.createWebSocketClient(consumerName);
         client.setConnectTimeout(SHELLY_API_TIMEOUT_MS);
-        client.setStopTimeout(1000);
+        client.setStopTimeout(3000);
         return client;
     }
 }
