@@ -415,7 +415,7 @@
 	<channel-type id="motionActive" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Motion Active</label>
-		<description>channel-type.shelly.motionActive.description</description>
+		<description>Indicates if motion sensor is active or within sleep time</description>
 		<category>Contact</category>
 		<state readOnly="true">
 		</state>
