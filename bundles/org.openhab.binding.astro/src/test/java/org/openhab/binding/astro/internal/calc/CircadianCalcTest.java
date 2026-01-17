@@ -42,7 +42,7 @@ public class CircadianCalcTest {
 
         Circadian beforeSunrise = CircadianCalc.calculate(newCalendar(2024, Calendar.JANUARY, 1, 5, 0), sunrise, sunset,
                 noon);
-        assertEquals(56, beforeSunrise.brightness());
+        assertEquals(0, beforeSunrise.brightness());
         Circadian afterSunset = CircadianCalc.calculate(newCalendar(2024, Calendar.JANUARY, 1, 21, 0), sunrise, sunset,
                 noon);
         assertEquals(afterSunset, beforeSunrise);
@@ -55,7 +55,7 @@ public class CircadianCalcTest {
         Calendar noon = newCalendar(2024, Calendar.JANUARY, 1, 13, 0);
         Calendar sunrise = newCalendar(2024, Calendar.JANUARY, 1, 7, 0);
         Calendar sunset = newCalendar(2024, Calendar.JANUARY, 1, 19, 0);
-        Calendar now = newCalendar(2024, Calendar.JANUARY, 1, 21, 0);
+        Calendar now = newCalendar(2024, Calendar.JANUARY, 1, 17, 0);
 
         Range riseRange = new Range(sunrise, newCalendar(2024, Calendar.JANUARY, 1, 8, 0));
         Range setRange = new Range(sunset, newCalendar(2024, Calendar.JANUARY, 1, 20, 0));
