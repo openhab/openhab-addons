@@ -238,7 +238,7 @@ public class DateTimeUtils {
      *
      * @param zdt1 the first date to evaluate.
      * @param zdt2 the second date to evaluate.
-     * @return {@code true} if {@code zdt2} in within the same date as {@code zdt1} in {@code zdt1}'s time zone.
+     * @return {@code true} if {@code zdt2} is within the same date as {@code zdt1} in {@code zdt1}'s time zone.
      */
     public static boolean isSameDay(@Nullable ZonedDateTime zdt1, @Nullable ZonedDateTime zdt2) {
         return zdt1 != null && zdt2 != null
@@ -258,7 +258,17 @@ public class DateTimeUtils {
     public static boolean isWithinTimeWindow(Calendar cal, Calendar from, long duration, TimeUnit timeUnit) {
         Calendar to = (Calendar) from.clone();
         long spanMS = TimeUnit.MILLISECONDS.convert(duration, timeUnit);
-        to.add(Calendar.DAY_OF_MONTH, (int) (spanMS / MILLISECONDS_PER_DAY));
+        long daysToAdd = spanMS / MILLISECONDS_PER_DAY;
+
+        // Add days in chunks that fit into an int to avoid overflow when casting
+        int delta;
+        while (daysToAdd > 0) {
+            delta = (int) Math.min(daysToAdd, Integer.MAX_VALUE);
+            to.add(Calendar.DAY_OF_MONTH, delta);
+            daysToAdd -= delta;
+        }
+
+        // This is less than MILLISECONDS_PER_DAY and safely fits into an int
         to.add(Calendar.MILLISECOND, (int) (spanMS % MILLISECONDS_PER_DAY));
         return cal.compareTo(from) >= 0 && cal.compareTo(to) <= 0;
     }

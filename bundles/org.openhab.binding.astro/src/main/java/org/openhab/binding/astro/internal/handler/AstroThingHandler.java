@@ -71,13 +71,71 @@ import org.slf4j.LoggerFactory;
 /**
  * Base ThingHandler for all Astro handlers.
  *
+ * @implNote
+ *           The scheduling of events allows graceful handling of scheduling an event that is already scheduled,
+ *           to allow scheduling to take place at any time of day, even when while the rescheduling itself takes place.
+ *           <p>
+ *           This is achieved by storing all scheduled events in {@link #scheduledFutures}, which identifies "which
+ *           event" it is using a string identifier.
+ *           <p>
+ *           If an event is being scheduled and the same event already exists in {@link #scheduledFutures}, the
+ *           following
+ *           logic applies:
+ *           <ul>
+ *           <li>If the existing/old event is {@link ScheduledFuture#isDone()}, which means either completed or
+ *           cancelled,
+ *           the new event will be scheduled without further due.</li>
+ *           <li>If the existing/old event hasn't yet fired, it will be decided whether the existing/old event should
+ *           remain
+ *           scheduled, or if the new one should be scheduled. Under no circumstances will both be allowed. Which one
+ *           "wins"
+ *           is decided by the following logic:</li>
+ *           <ul>
+ *           <li>If the existing/old event is scheduled to fire at or later than {@link #MIN_TIME_TO_SCHEDULE_MS} from
+ *           the moment
+ *           the evaluation takes place, the existing/old event will be cancelled and the new one scheduled in its
+ *           place.</li>
+ *           <li>If the existing/old event is scheduled to fire in less than {@link #MIN_TIME_TO_SCHEDULE_MS} <i>and</i>
+ *           the
+ *           difference in scheduled time for the old and the new event is less than or equal to
+ *           {@link #MAX_SCHEDULE_DIFFERENCE_MS},
+ *           the existing/old event is allowed to remain scheduled and the new event is discarded. This is to make sure
+ *           that the
+ *           event doesn't fire twice in case the cancellation can't be executed in time to prevent execution. But, if
+ *           the
+ *           difference between the two schedules is too large, the existing/old schedule might be scheduled too
+ *           inaccurately,
+ *           in which case a (desperate) attempt it made at cancelling the old one regardless. This is an extremely
+ *           unlikely
+ *           scenario to actually occur.</li>
+ *           <li>In any other case, the existing/old event is cancelled and the new one scheduled instead.</li>
+ *           </ul>
+ *           </ul>
+ *
  * @author Gerhard Riegler - Initial contribution
  * @author Amit Kumar Mondal - Implementation to be compliant with ESH Scheduler
+ * @author Ravi Nadahar - Refactored scheduling
  */
 @NonNullByDefault
 public abstract class AstroThingHandler extends BaseThingHandler {
     private static final String DAILY_MIDNIGHT = "30 0 0 * * ? *";
-    private static final long MIN_TIME_TO_SCHEDULE = 10L;
+
+    /**
+     * Minimum delay (in milliseconds) that must remain until a job is executed before it will be
+     * scheduled. This prevents attempting to schedule jobs that would effectively execute "now" or
+     * in the past due to clock skew, rounding, or scheduler latency. The value is intentionally
+     * very small compared to astro event intervals, while still providing a safety margin over
+     * typical scheduler/resolution jitter.
+     */
+    private static final long MIN_TIME_TO_SCHEDULE_MS = 10L;
+
+    /**
+     * Maximum time difference (in milliseconds) between two candidate execution times for them to
+     * be considered equivalent in the schedule deduplication logic. If two schedules differ by at
+     * most this amount, they are treated as the same schedule and a new job is not created. This
+     * tolerance compensates for small rounding differences and minor time calculation jitter
+     * without affecting the semantics of astro events, where relevant time spans are much larger.
+     */
     private static final long MAX_SCHEDULE_DIFFERENCE_MS = 20L;
 
     /** Logger Instance */
@@ -337,7 +395,7 @@ public abstract class AstroThingHandler extends BaseThingHandler {
             if (future != null && !future.isDone()) {
                 // The event is already scheduled
                 long delay;
-                if ((delay = future.getDelay(TimeUnit.MILLISECONDS)) < MIN_TIME_TO_SCHEDULE
+                if ((delay = future.getDelay(TimeUnit.MILLISECONDS)) < MIN_TIME_TO_SCHEDULE_MS
                         && Math.abs(delay - sleepTimeMs) <= MAX_SCHEDULE_DIFFERENCE_MS) {
                     // if the previously scheduled event is about to run very soon and their schedules are similar,
                     // we don't know if we can cancel it in time, so we let it run and don't schedule the new one.
