@@ -25,9 +25,9 @@ import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.TreeMap;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -58,6 +58,7 @@ import org.openhab.binding.dirigera.internal.interfaces.Model;
 import org.openhab.binding.dirigera.internal.model.DirigeraModel;
 import org.openhab.binding.dirigera.internal.network.DirigeraAPIImpl;
 import org.openhab.binding.dirigera.internal.network.Websocket;
+import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.i18n.LocationProvider;
 import org.openhab.core.i18n.TimeZoneProvider;
@@ -95,7 +96,8 @@ import org.slf4j.LoggerFactory;
 public class DirigeraHandler extends BaseBridgeHandler implements Gateway, DebugHandler {
 
     private final Logger logger = LoggerFactory.getLogger(DirigeraHandler.class);
-
+    private final ScheduledExecutorService scheduler = ThreadPoolManager
+            .getPoolBasedSequentialScheduledExecutorService("dirigera", "handler");
     // Can be overwritten by Unit test for mocking API
     protected Map<String, State> channelStateMap = new HashMap<>();
     protected Class<?> apiProvider = DirigeraAPIImpl.class;
@@ -107,13 +109,15 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway, Debug
     private final BundleContext bundleContext;
     private final Websocket websocket;
 
-    private Optional<DirigeraAPI> api = Optional.empty();
-    private Optional<Model> model = Optional.empty();
-    private Optional<ScheduledFuture<?>> watchdog = Optional.empty();
-    private Optional<ScheduledFuture<?>> updater = Optional.empty();
-    private Optional<ScheduledFuture<?>> detectionSchedule = Optional.empty();
+    @Nullable
+    private DirigeraAPI api;
+    @Nullable
+    private Model model;
+    @Nullable
+    private ScheduledFuture<?> watchdog;
+    @Nullable
+    private ScheduledFuture<?> updater;
 
-    // private ScheduledExecutorService sequentialScheduler;
     private List<Object> knownDevices = new ArrayList<>();
     private ArrayList<String> websocketQueue = new ArrayList<>();
     private ArrayList<DeviceUpdate> deviceModificationQueue = new ArrayList<>();
@@ -260,7 +264,7 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway, Debug
                 DirigeraAPI apiProviderInstance = (DirigeraAPI) apiProvider
                         .getConstructor(HttpClient.class, Gateway.class).newInstance(httpClient, this);
                 if (apiProviderInstance != null) {
-                    api = Optional.of(apiProviderInstance);
+                    api = apiProviderInstance;
                 } else {
                     throw (new InstantiationException(apiProvider.descriptorString()));
                 }
@@ -272,17 +276,16 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway, Debug
                         "@text/dirigera.gateway.status.api-error" + " [\"" + apiProvider.descriptorString() + "\"]");
                 return;
             }
-            Model houseModel = new DirigeraModel(this);
-            model = Optional.of(houseModel);
+            model = new DirigeraModel(this);
             modelUpdate(); // initialize model
             websocket.initialize();
             // checks API access and starts websocket
             // status will be set ONLINE / OFFLINE based on the connection result
             connectGateway();
             // start watchdog to check gateway connection and start recovery if necessary
-            watchdog = Optional.of(scheduler.scheduleWithFixedDelay(this::watchdog, 15, 15, TimeUnit.SECONDS));
+            watchdog = scheduler.scheduleWithFixedDelay(this::watchdog, 15, 15, TimeUnit.SECONDS);
             // infrequent updates for gateway itself
-            updater = Optional.of(scheduler.scheduleWithFixedDelay(this::updateGateway, 1, 15, TimeUnit.MINUTES));
+            updater = scheduler.scheduleWithFixedDelay(this::updateGateway, 1, 15, TimeUnit.MINUTES);
         } else {
             // status "retry pairing" if token is still blank
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NOT_YET_READY,
@@ -293,12 +296,16 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway, Debug
     @Override
     public void dispose() {
         super.dispose();
-        watchdog.ifPresent(watchdogSchedule -> {
-            watchdogSchedule.cancel(false);
-        });
-        updater.ifPresent(refresher -> {
-            refresher.cancel(false);
-        });
+        ScheduledFuture<?> localWatchDog = watchdog;
+        if (localWatchDog != null) {
+            localWatchDog.cancel(true);
+            watchdog = null;
+        }
+        ScheduledFuture<?> localUpdater = updater;
+        if (localUpdater != null) {
+            localUpdater.cancel(true);
+            updater = null;
+        }
         websocket.dispose();
     }
 
@@ -598,16 +605,7 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway, Debug
         storeKnownDevices();
         // before new detection the handler needs to be removed - now were in removing state
         // for complex devices several removes are done so don't trigger detection every time
-        detectionSchedule.ifPresentOrElse(previousSchedule -> {
-            if (!previousSchedule.isDone()) {
-                previousSchedule.cancel(true);
-            }
-            detectionSchedule = Optional
-                    .of(scheduler.schedule(model.get()::detection, detectionTimeSeonds, TimeUnit.SECONDS));
-        }, () -> {
-            detectionSchedule = Optional
-                    .of(scheduler.schedule(model.get()::detection, detectionTimeSeonds, TimeUnit.SECONDS));
-        });
+        scheduler.schedule(model()::detection, detectionTimeSeonds, TimeUnit.SECONDS);
     }
 
     /**
@@ -629,18 +627,20 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway, Debug
 
     @Override
     public DirigeraAPI api() throws ApiException {
-        if (api.isEmpty()) {
+        DirigeraAPI localApi = api;
+        if (localApi == null) {
             throw new ApiException("No API available yet");
         }
-        return api.get();
+        return localApi;
     }
 
     @Override
     public Model model() throws ModelException {
-        if (model.isEmpty()) {
+        Model localModel = model;
+        if (localModel == null) {
             throw new ModelException("No Model available yet");
         }
-        return model.get();
+        return localModel;
     }
 
     @Override
@@ -723,13 +723,10 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway, Debug
 
     private void watchdog() {
         // check updater is still active - maybe an exception caused termination
-        updater.ifPresentOrElse(refresher -> {
-            if (refresher.isDone()) {
-                updater = Optional.of(scheduler.scheduleWithFixedDelay(this::updateGateway, 1, 15, TimeUnit.MINUTES));
-            }
-        }, () -> {
-            updater = Optional.of(scheduler.scheduleWithFixedDelay(this::updateGateway, 1, 15, TimeUnit.MINUTES));
-        });
+        ScheduledFuture<?> localUpdater = updater;
+        if (localUpdater != null && !localUpdater.isCancelled() && localUpdater.isDone()) {
+            updater = scheduler.scheduleWithFixedDelay(this::updateGateway, 1, 15, TimeUnit.MINUTES);
+        }
         // check websocket
         if (websocket.isRunning()) {
             Map<String, Instant> pingPongMap = websocket.getPingPongMap();

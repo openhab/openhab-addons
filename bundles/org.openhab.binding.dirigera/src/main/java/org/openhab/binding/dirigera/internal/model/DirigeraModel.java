@@ -350,7 +350,6 @@ public class DirigeraModel implements Model {
         ThingTypeUID ttuid = identifyDeviceFromModel(id);
         // don't report gateway, unknown devices and light sensors connected to motion sensors
         if (!IGNORE_THING_TYPES_UIDS.contains(ttuid)) {
-
             String discoveryID = id;
             String customName = getCustonNameFor(discoveryID);
             // special handling for BILRESA 3 button controller

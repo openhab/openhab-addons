@@ -19,6 +19,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -538,7 +539,8 @@ public class BaseHandler extends BaseThingHandler implements BaseDevice, DebugHa
      * @return boolean
      */
     protected boolean isControllerOrSensor() {
-        return deviceType.toLowerCase().contains("sensor") || deviceType.toLowerCase().contains("controller");
+        return deviceType.toLowerCase(Locale.US).contains("sensor")
+                || deviceType.toLowerCase(Locale.US).contains("controller");
     }
 
     /**

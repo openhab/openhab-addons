@@ -16,6 +16,7 @@ import static org.openhab.binding.dirigera.internal.Constants.*;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -55,7 +56,7 @@ public class Matter2ButtonCotroller extends BaseMatterHandler {
                 case '2' -> "Lower Button";
                 default -> "Button " + buttonNumber;
             };
-            String triggerChannelName = buttonName.toLowerCase().replace(" ", "-");
+            String triggerChannelName = buttonName.toLowerCase(Locale.US).replace(" ", "-");
             triggerChannelMapping.put(deviceId, triggerChannelName);
             createChannelIfNecessary(triggerChannelName, "system.button", "", buttonName,
                     "Press triggers for button " + buttonNumber);

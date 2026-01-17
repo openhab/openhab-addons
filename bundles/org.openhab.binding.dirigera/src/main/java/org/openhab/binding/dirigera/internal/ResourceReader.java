@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
@@ -78,14 +79,15 @@ public class ResourceReader implements ResourceProvider {
                 InputStream input = url.openStream();
                 if (compressed) {
                     // https://www.baeldung.com/java-scanner-usedelimiter
-                    try (Scanner scanner = new Scanner(input).useDelimiter("\\A")) {
+                    try (Scanner scanner = new Scanner(input, StandardCharsets.UTF_8).useDelimiter("\\A")) {
                         String result = scanner.hasNext() ? scanner.next() : "";
                         String resultReplaceAll = result.replaceAll("[\\n\\r\\s]", "");
                         scanner.close();
                         return resultReplaceAll;
                     }
                 } else {
-                    try (BufferedReader reader = new BufferedReader(new InputStreamReader(input))) {
+                    try (BufferedReader reader = new BufferedReader(
+                            new InputStreamReader(input, StandardCharsets.UTF_8))) {
                         return reader.lines().collect(Collectors.joining("\n"));
                     }
                 }

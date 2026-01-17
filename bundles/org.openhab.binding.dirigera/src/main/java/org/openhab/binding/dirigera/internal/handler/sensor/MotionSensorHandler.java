@@ -15,8 +15,8 @@ package org.openhab.binding.dirigera.internal.handler.sensor;
 import static org.openhab.binding.dirigera.internal.Constants.*;
 
 import java.time.Instant;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -115,7 +115,7 @@ public class MotionSensorHandler extends BaseHandler {
                     // take string as it is, no consistency check
                     startTime = string.toFullString();
                 } else if (command instanceof DateTimeType dateTime) {
-                    startTime = dateTime.format(timeFormat, ZoneId.systemDefault());
+                    startTime = dateTime.format(timeFormat, gateway().getTimeZoneProvider().getTimeZone());
                 }
                 gateway().api().sendPatch(config.id, new JSONObject(String.format(startSchedule, startTime, endTime)));
                 break;
@@ -125,7 +125,7 @@ public class MotionSensorHandler extends BaseHandler {
                     endTime = string.toFullString();
                     // take string as it is, no consistency check
                 } else if (command instanceof DateTimeType dateTime) {
-                    endTime = dateTime.format(timeFormat, ZoneId.systemDefault());
+                    endTime = dateTime.format(timeFormat, gateway().getTimeZoneProvider().getTimeZone());
                 }
                 gateway().api().sendPatch(config.id, new JSONObject(String.format(endSchedule, startTime, endTime)));
                 break;
@@ -252,10 +252,13 @@ public class MotionSensorHandler extends BaseHandler {
                                                         int offMinute = Integer.parseInt(offHourMinute[1]);
                                                         updateState(new ChannelUID(thing.getUID(), CHANNEL_SCHEDULE),
                                                                 new DecimalType(2));
-                                                        ZonedDateTime on = ZonedDateTime.now().withHour(onHour)
-                                                                .withMinute(onMinute);
-                                                        ZonedDateTime off = ZonedDateTime.now().withHour(offHour)
-                                                                .withMinute(offMinute);
+                                                        ZonedDateTime on = Instant.now().truncatedTo(ChronoUnit.MINUTES)
+                                                                .atZone(gateway().getTimeZoneProvider().getTimeZone())
+                                                                .withHour(onHour).withMinute(onMinute);
+                                                        ZonedDateTime off = Instant.now()
+                                                                .truncatedTo(ChronoUnit.MINUTES)
+                                                                .atZone(gateway().getTimeZoneProvider().getTimeZone())
+                                                                .withHour(offHour).withMinute(offMinute);
                                                         updateState(
                                                                 new ChannelUID(thing.getUID(), CHANNEL_SCHEDULE_START),
                                                                 new DateTimeType(on));
