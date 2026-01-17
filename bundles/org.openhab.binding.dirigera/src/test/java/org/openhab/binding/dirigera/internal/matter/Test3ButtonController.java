@@ -76,9 +76,6 @@ class Test3ButtonController {
         assertTrue(proxyCallback instanceof CallbackMock);
         callback = (CallbackMock) proxyCallback;
         callback.waitForOnline();
-        thing.getChannels().forEach(channel -> {
-            System.out.println("Channels: " + channel.getUID().toString());
-        });
         assertEquals(11, thing.getChannels().size(), "Number of channels");
     }
 
@@ -100,7 +97,6 @@ class Test3ButtonController {
     void testControlMode() {
         testHandlerCreation();
         handler.handleCommand(new ChannelUID(thing.getUID(), "control-mode"), new DecimalType(0));
-        System.out.println("Patch Map: " + DirigeraAPISimu.patchMap);
         String patch = DirigeraAPISimu.patchMap.get(deviceId);
         assertNotNull(patch);
         assertEquals("{\"attributes\":{\"controlMode\":\"light\"}}", patch, "Light attributes");
@@ -108,7 +104,6 @@ class Test3ButtonController {
         DirigeraAPISimu.patchMap.clear();
         String command = "HollaDieWaldfee";
         handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_CUSTOM_NAME), new StringType(command));
-        System.out.println("Patch Map: " + DirigeraAPISimu.patchMap);
         patch = DirigeraAPISimu.patchMap.get(deviceId);
         assertNotNull(patch);
         assertEquals("{\"attributes\":{\"customName\":\"" + command + "\"}}", patch, "Custom Name");
@@ -122,7 +117,6 @@ class Test3ButtonController {
         testHandlerCreation();
         handler.handleUpdate(eventObj.getJSONObject("data"));
         String trigger1 = callback.triggerMap.get("dirigera:three-button-switch:test-device:scroll-up");
-        System.out.println("Trigger Map: " + callback.triggerMap);
         assertNotNull(trigger1);
         assertEquals("SINGLE_PRESS", trigger1, "Scroll Up Press");
     }
@@ -130,7 +124,6 @@ class Test3ButtonController {
     @Test
     void testLinks() {
         testHandlerCreation();
-        System.out.println("--start update ");
         handler.updateCandidateLinks();
     }
 

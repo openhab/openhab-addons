@@ -37,7 +37,7 @@ public class DirigeraHandlerManipulator extends DirigeraHandler {
     public DirigeraHandlerManipulator(Bridge bridge, HttpClient insecureClient, Storage<String> bindingStorage,
             DirigeraDiscoveryService discoveryService) {
         super(bridge, insecureClient, bindingStorage, discoveryService, mock(LocationProvider.class),
-                mock(DirigeraCommandProvider.class), mock(BundleContext.class));
+                mock(DirigeraCommandProvider.class), mock(BundleContext.class), HandlerFactoryMock.timeZoneProvider);
         // Changes the class of the provider. During initialize this class will be used for instantiation
         super.apiProvider = DirigeraAPISimu.class;
     }

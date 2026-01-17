@@ -63,14 +63,6 @@ class TestMatterLight {
         assertNotNull(proxyCallback);
         assertTrue(proxyCallback instanceof CallbackMock);
         callback = (CallbackMock) proxyCallback;
-        System.out.println("thing channels: " + thing.getChannels().size());
-        thing.getChannels().forEach(channel -> {
-            System.out.println(" Channel: " + channel.getUID() + " type: " + channel.getLabel());
-        });
-        System.out.println("Properties: " + thing.getProperties().size());
-        thing.getProperties().forEach((key, value) -> {
-            System.out.println(" Property: " + key + " value: " + value);
-        });
         callback.waitForOnline();
     }
 
@@ -96,7 +88,8 @@ class TestMatterLight {
     void testCommand() {
         testHandlerCreation();
         handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_LIGHT_TEMPERATURE), new PercentType(50));
-        System.out.println("After command COLOR TEMPERATURE " + DirigeraAPISimu.patchMap);
+        String patch = DirigeraAPISimu.patchMap.get("8d89e4f6-cb60-443b-9c68-3094fc15e0e6_1");
+        assertEquals("{\"attributes\":{\"colorTemperature\":4168}}", patch, "Light Temperature command");
     }
 
     void checkEnvironmentSensorStates(CallbackMock callback) {

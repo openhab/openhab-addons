@@ -21,7 +21,6 @@ import java.util.List;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.dirigera.internal.handler.DirigeraBridgeProvider;
-import org.openhab.binding.dirigera.internal.handler.DirigeraHandler;
 import org.openhab.binding.dirigera.internal.handler.matter.MatterSensor;
 import org.openhab.binding.dirigera.internal.mock.CallbackMock;
 import org.openhab.binding.dirigera.internal.mock.DirigeraAPISimu;
@@ -56,8 +55,6 @@ class TestOccupancySensor {
     void testHandlerCreation() {
         Bridge hubBridge = DirigeraBridgeProvider.prepareSimuBridge("src/test/resources/home/matter-home.json", false,
                 List.of());
-        System.out.println(((DirigeraHandler) hubBridge.getHandler()).model().identifyDeviceFromModel(deviceId));
-
         ThingHandler factoryHandler = DirigeraBridgeProvider.createHandler(thingTypeUID, hubBridge, deviceId);
         assertTrue(factoryHandler instanceof MatterSensor);
         handler = (MatterSensor) factoryHandler;
@@ -84,17 +81,10 @@ class TestOccupancySensor {
         checkEnvironmentSensorStates(callback);
     }
 
-    @Test
-    void testDump() {
-        testHandlerCreation();
-        assertEquals("unit-test", handler.getToken());
-    }
-
     void testCommands() {
         testHandlerCreation();
         String command = "HollaDieWaldfee";
         handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_SCHEDULE), new DecimalType(1));
-        System.out.println("Patch Map: " + DirigeraAPISimu.patchMap);
         String patch = DirigeraAPISimu.patchMap.get(deviceId);
         assertNotNull(patch);
         assertEquals("{\"attributes\":{\"customName\":\"" + command + "\"}}", patch, "Fan Mode on");

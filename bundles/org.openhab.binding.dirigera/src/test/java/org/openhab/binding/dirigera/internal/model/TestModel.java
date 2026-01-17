@@ -294,14 +294,9 @@ class TestModel {
         assertNotNull(gateway);
         List<String> all = gateway.model().getAllDeviceIds();
         List<String> resolved = gateway.model().getResolvedDeviceList();
-        resolved.forEach(deviceId -> {
-            System.out.println("Resolved device: " + gateway.model().getCustonNameFor(deviceId) + ": " + deviceId);
-        });
-        System.out.println("All devices:");
         DicoveryServiceMock discovery = (DicoveryServiceMock) gateway.discovery();
-        discovery.discoveries.forEach((deviceId, discoveryResult) -> {
-            System.out.println(" Discovered device: " + discoveryResult.getLabel() + ": " + deviceId);
-        });
-        // assertEquals(27, discovery.discoveries.size(), "Initial discoveries");
+        assertEquals(66, all.size(), "All Devices");
+        assertEquals(56, resolved.size(), "All Resolved Devices");
+        assertEquals(61, discovery.discoveries.size(), "Discovery Devices");
     }
 }

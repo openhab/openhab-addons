@@ -36,8 +36,8 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class ResourceReader implements ResourceProvider {
-    private static final Logger LOGGER = LoggerFactory.getLogger(ResourceReader.class);
     private static final Map<String, String> TEMPLATES = new HashMap<>();
+    private final Logger logger = LoggerFactory.getLogger(ResourceReader.class);
 
     private static ResourceProvider provider = new ResourceReader();
 
@@ -57,7 +57,7 @@ public class ResourceReader implements ResourceProvider {
             if (!template.isBlank()) {
                 TEMPLATES.put(resourcePath, template);
             } else {
-                LOGGER.warn("DIRIGERA MODEL empty template for {}", resourcePath);
+                logger.warn("DIRIGERA MODEL empty template for {}", resourcePath);
                 template = "{}";
             }
         }
@@ -91,9 +91,9 @@ public class ResourceReader implements ResourceProvider {
                 }
             }
         } catch (IOException e) {
-            LOGGER.warn("DIRIGERA MODEL no template found for {}", fileName);
+            logger.warn("DIRIGERA MODEL no template found for {}", fileName);
         }
-        LOGGER.warn("DIRIGERA MODEL resource file  {} cannot be provided", fileName);
+        logger.warn("DIRIGERA MODEL resource file  {} cannot be provided", fileName);
         return "";
     }
 

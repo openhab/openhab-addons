@@ -17,6 +17,7 @@ import static org.openhab.binding.dirigera.internal.Constants.*;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.json.JSONArray;
@@ -31,6 +32,7 @@ import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,15 +66,141 @@ public class MatterSensor extends BaseMatterHandler {
     @Override
     public void handleUpdate(JSONObject update) {
         super.handleUpdate(update);
-        if (super.hasType(DEVICE_TYPE_OCCUPANCY_SENSOR)) {
-            JSONObject attributes = update.getJSONObject(Model.ATTRIBUTES);
-            if (attributes != null) {
-                JSONObject sensorConfig = attributes.optJSONObject("sensorConfig");
-                if (sensorConfig != null) {
-                    decodeSensorConfig(sensorConfig);
-                }
+        if (!getSchedule(Model.ATTRIBUTES + "/sensorConfig", update).isBlank()) {
+            String scheduleOn = getSchedule(Model.ATTRIBUTES + "/sensorConfig/scheduleOn", update);
+            String duration = getSchedule(Model.ATTRIBUTES + "/sensorConfig/onDuration", update);
+            String onCondition = getSchedule(Model.ATTRIBUTES + "/sensorConfig/schedule/onCondition/time", update);
+            String offCondition = getSchedule(Model.ATTRIBUTES + "/sensorConfig/schedule/offCondition/time", update);
+
+            updateState(new ChannelUID(thing.getUID(), CHANNEL_ACTIVE_DURATION),
+                    QuantityType.valueOf(Integer.parseInt(duration), Units.SECOND));
+            updateState(new ChannelUID(thing.getUID(), CHANNEL_SCHEDULE),
+                    getScheduleType(scheduleOn, onCondition, offCondition));
+            updateState(new ChannelUID(thing.getUID(), CHANNEL_SCHEDULE_START), getDateTime(onCondition));
+            updateState(new ChannelUID(thing.getUID(), CHANNEL_SCHEDULE_END), getDateTime(offCondition));
+        }
+    }
+
+    private State getDateTime(String time) {
+
+        if ("sunset".equals(time)) {
+            Instant sunset = gateway().getSunsetDateTime();
+            if (sunset != null) {
+                return new DateTimeType(sunset);
+            }
+            return new DateTimeType();
+        } else if ("sunrise".equals(time)) {
+            Instant sunrise = gateway().getSunriseDateTime();
+            if (sunrise != null) {
+                return new DateTimeType(sunrise);
+            }
+        } else {
+            String[] timeSplit = time.split(":");
+            if (timeSplit.length == 2) {
+                int onHour = Integer.parseInt(timeSplit[0]);
+                int onMinute = Integer.parseInt(timeSplit[1]);
+                return new DateTimeType(Instant.now().truncatedTo(ChronoUnit.MINUTES)
+                        .atZone(gateway().getTimeZoneProvider().getTimeZone()).withHour(onHour).withMinute(onMinute));
             }
         }
+        return UnDefType.UNDEF;
+    }
+
+    private DecimalType getScheduleType(String scheduleOn, String onCondition, String offCondition) {
+        if ("true".equals(scheduleOn)) {
+            if ("sunset".equals(onCondition) && "sunrise".equals(offCondition)) {
+                return new DecimalType(1);
+            } else {
+                return new DecimalType(2);
+            }
+        } else {
+            return new DecimalType(0);
+        }
+    }
+
+    private void decodeSensorConfig(JSONObject sensorConfig) {
+        if (sensorConfig.has("onDuration")) {
+            int duration = sensorConfig.getInt("onDuration");
+            updateState(new ChannelUID(thing.getUID(), CHANNEL_ACTIVE_DURATION),
+                    QuantityType.valueOf(duration, Units.SECOND));
+        }
+        if (sensorConfig.has("scheduleOn")) {
+            boolean scheduled = sensorConfig.getBoolean("scheduleOn");
+            if (scheduled) {
+                // examine schedule
+                if (sensorConfig.has("schedule")) {
+                    JSONObject schedule = sensorConfig.getJSONObject("schedule");
+                    if (schedule.has("onCondition") && schedule.has("offCondition")) {
+                        JSONObject onCondition = schedule.getJSONObject("onCondition");
+                        JSONObject offCondition = schedule.getJSONObject("offCondition");
+                        if (onCondition.has("time")) {
+                            String onTime = onCondition.getString("time");
+                            String offTime = offCondition.getString("time");
+                            if ("sunset".equals(onTime)) {
+                                // finally it's identified to follow the sun
+                                updateState(new ChannelUID(thing.getUID(), CHANNEL_SCHEDULE), new DecimalType(1));
+                                Instant sunsetDateTime = gateway().getSunsetDateTime();
+                                if (sunsetDateTime != null) {
+                                    updateState(new ChannelUID(thing.getUID(), CHANNEL_SCHEDULE_START),
+                                            new DateTimeType(sunsetDateTime));
+                                } else {
+                                    updateState(new ChannelUID(thing.getUID(), CHANNEL_SCHEDULE_START),
+                                            UnDefType.UNDEF);
+                                    logger.warn("MOTION_SENSOR Location not activated in IKEA App - cannot follow sun");
+                                }
+                                Instant sunriseDateTime = gateway().getSunriseDateTime();
+                                if (sunriseDateTime != null) {
+                                    updateState(new ChannelUID(thing.getUID(), CHANNEL_SCHEDULE_END),
+                                            new DateTimeType(sunriseDateTime));
+                                } else {
+                                    updateState(new ChannelUID(thing.getUID(), CHANNEL_SCHEDULE_END), UnDefType.UNDEF);
+                                    logger.warn("MOTION_SENSOR Location not activated in IKEA App - cannot follow sun");
+                                }
+                            } else {
+                                // custom times - even worse parsing
+                                String[] onHourMinute = onTime.split(":");
+                                String[] offHourMinute = offTime.split(":");
+                                if (onHourMinute.length == 2 && offHourMinute.length == 2) {
+                                    int onHour = Integer.parseInt(onHourMinute[0]);
+                                    int onMinute = Integer.parseInt(onHourMinute[1]);
+                                    int offHour = Integer.parseInt(offHourMinute[0]);
+                                    int offMinute = Integer.parseInt(offHourMinute[1]);
+                                    updateState(new ChannelUID(thing.getUID(), CHANNEL_SCHEDULE), new DecimalType(2));
+                                    ZonedDateTime on = ZonedDateTime.now().withHour(onHour).withMinute(onMinute);
+                                    ZonedDateTime off = ZonedDateTime.now().withHour(offHour).withMinute(offMinute);
+                                    updateState(new ChannelUID(thing.getUID(), CHANNEL_SCHEDULE_START),
+                                            new DateTimeType(on));
+                                    updateState(new ChannelUID(thing.getUID(), CHANNEL_SCHEDULE_END),
+                                            new DateTimeType(off));
+                                }
+                            }
+                        }
+                    }
+                }
+            } else {
+                // always active
+                updateState(new ChannelUID(thing.getUID(), CHANNEL_SCHEDULE), new DecimalType(0));
+                updateState(new ChannelUID(thing.getUID(), CHANNEL_SCHEDULE_START), UnDefType.UNDEF);
+                updateState(new ChannelUID(thing.getUID(), CHANNEL_SCHEDULE_END), UnDefType.UNDEF);
+            }
+        }
+    }
+
+    private String getSchedule(String path, JSONObject source) {
+        String[] keys = path.split("/");
+        // System.out.println("Getting schedule for path: " + path + " keys.length=" + keys.length);
+        JSONObject iterator = source;
+        for (int i = 0; i < keys.length - 1; i++) {
+            // System.out.println("####Key: '" + keys[i] + "' on " + iterator.toString(2));
+            iterator = iterator.optJSONObject(keys[i]);
+            // System.out.println("####Iterator after opt: " + (iterator != null ? iterator.toString(2) : "null"));
+            if (iterator == null) {
+                // System.out.println("Returning empty string on " + keys[i] + "- iterator is null");
+                return "";
+            }
+        }
+        // System.out.println("Final Key: " + keys[keys.length - 1] + " on " + iterator);
+        return iterator.optString(keys[keys.length - 1]).toString();
     }
 
     @Override
@@ -187,73 +315,5 @@ public class MatterSensor extends BaseMatterHandler {
         createChannelIfNecessary(CHANNEL_SCHEDULE, "sensor-schedule", "Number");
         createChannelIfNecessary(CHANNEL_SCHEDULE_START, "schedule-start-time", "DateTime");
         createChannelIfNecessary(CHANNEL_SCHEDULE_END, "schedule-end-time", "DateTime");
-    }
-
-    public void decodeSensorConfig(JSONObject sensorConfig) {
-        if (sensorConfig.has("onDuration")) {
-            int duration = sensorConfig.getInt("onDuration");
-            updateState(new ChannelUID(thing.getUID(), CHANNEL_ACTIVE_DURATION),
-                    QuantityType.valueOf(duration, Units.SECOND));
-        }
-        if (sensorConfig.has("scheduleOn")) {
-            boolean scheduled = sensorConfig.getBoolean("scheduleOn");
-            if (scheduled) {
-                // examine schedule
-                if (sensorConfig.has("schedule")) {
-                    JSONObject schedule = sensorConfig.getJSONObject("schedule");
-                    if (schedule.has("onCondition") && schedule.has("offCondition")) {
-                        JSONObject onCondition = schedule.getJSONObject("onCondition");
-                        JSONObject offCondition = schedule.getJSONObject("offCondition");
-                        if (onCondition.has("time")) {
-                            String onTime = onCondition.getString("time");
-                            String offTime = offCondition.getString("time");
-                            if ("sunset".equals(onTime)) {
-                                // finally it's identified to follow the sun
-                                updateState(new ChannelUID(thing.getUID(), CHANNEL_SCHEDULE), new DecimalType(1));
-                                Instant sunsetDateTime = gateway().getSunsetDateTime();
-                                if (sunsetDateTime != null) {
-                                    updateState(new ChannelUID(thing.getUID(), CHANNEL_SCHEDULE_START),
-                                            new DateTimeType(sunsetDateTime));
-                                } else {
-                                    updateState(new ChannelUID(thing.getUID(), CHANNEL_SCHEDULE_START),
-                                            UnDefType.UNDEF);
-                                    logger.warn("MOTION_SENSOR Location not activated in IKEA App - cannot follow sun");
-                                }
-                                Instant sunriseDateTime = gateway().getSunriseDateTime();
-                                if (sunriseDateTime != null) {
-                                    updateState(new ChannelUID(thing.getUID(), CHANNEL_SCHEDULE_END),
-                                            new DateTimeType(sunriseDateTime));
-                                } else {
-                                    updateState(new ChannelUID(thing.getUID(), CHANNEL_SCHEDULE_END), UnDefType.UNDEF);
-                                    logger.warn("MOTION_SENSOR Location not activated in IKEA App - cannot follow sun");
-                                }
-                            } else {
-                                // custom times - even worse parsing
-                                String[] onHourMinute = onTime.split(":");
-                                String[] offHourMinute = offTime.split(":");
-                                if (onHourMinute.length == 2 && offHourMinute.length == 2) {
-                                    int onHour = Integer.parseInt(onHourMinute[0]);
-                                    int onMinute = Integer.parseInt(onHourMinute[1]);
-                                    int offHour = Integer.parseInt(offHourMinute[0]);
-                                    int offMinute = Integer.parseInt(offHourMinute[1]);
-                                    updateState(new ChannelUID(thing.getUID(), CHANNEL_SCHEDULE), new DecimalType(2));
-                                    ZonedDateTime on = ZonedDateTime.now().withHour(onHour).withMinute(onMinute);
-                                    ZonedDateTime off = ZonedDateTime.now().withHour(offHour).withMinute(offMinute);
-                                    updateState(new ChannelUID(thing.getUID(), CHANNEL_SCHEDULE_START),
-                                            new DateTimeType(on));
-                                    updateState(new ChannelUID(thing.getUID(), CHANNEL_SCHEDULE_END),
-                                            new DateTimeType(off));
-                                }
-                            }
-                        }
-                    }
-                }
-            } else {
-                // always active
-                updateState(new ChannelUID(thing.getUID(), CHANNEL_SCHEDULE), new DecimalType(0));
-                updateState(new ChannelUID(thing.getUID(), CHANNEL_SCHEDULE_START), UnDefType.UNDEF);
-                updateState(new ChannelUID(thing.getUID(), CHANNEL_SCHEDULE_END), UnDefType.UNDEF);
-            }
-        }
     }
 }

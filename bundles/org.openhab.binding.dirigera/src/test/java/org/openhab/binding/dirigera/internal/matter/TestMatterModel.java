@@ -25,9 +25,7 @@ import org.openhab.binding.dirigera.internal.ResourceReader;
 import org.openhab.binding.dirigera.internal.handler.DirigeraBridgeProvider;
 import org.openhab.binding.dirigera.internal.interfaces.Gateway;
 import org.openhab.core.thing.Bridge;
-import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingTypeUID;
-import org.openhab.core.thing.internal.ThingImpl;
 
 /**
  * {@link TestMatterModel} some basic tests
@@ -54,12 +52,5 @@ class TestMatterModel {
         String timmerflotteId = "94f3d9d7-95ee-496d-9b83-2d5de9a7c2c1_1";
         ThingTypeUID environmentSensorId = gateway.model().identifyDeviceFromModel(timmerflotteId);
         assertEquals(THING_TYPE_MATTER_ENVIRONMENT_SENSOR, environmentSensorId, "TIMMERFLOTTE TTUID");
-    }
-
-    @Test
-    void testChannelGroup() {
-        ThingImpl thing = new ThingImpl(new ThingTypeUID("binding", "ttuid"), "thing");
-        ChannelUID group = new ChannelUID(thing.getUID(), "group#channel");
-        System.out.println("Channel Group: " + group.getGroupId());
     }
 }

@@ -69,11 +69,10 @@ import org.slf4j.LoggerFactory;
 public class BaseMatterHandler extends BaseThingHandler implements BaseDevice, DebugHandler {
     private final Logger logger = LoggerFactory.getLogger(BaseMatterHandler.class);
     private List<PowerListener> powerListeners = new ArrayList<>();
-    // private JSONObject deviceConfig = new JSONObject();
     private @Nullable Gateway gateway;
 
     // cache to handle each refresh command properly
-    protected Map<String, BaseMatterConfiguration> configMap = new TreeMap<>();
+    protected Map<String, DeviceConfig> deviceConfigMap = new TreeMap<>();
     protected Map<String, State> channelStateMap = new HashMap<>();
 
     /*
@@ -83,12 +82,6 @@ public class BaseMatterHandler extends BaseThingHandler implements BaseDevice, D
     protected List<String> hardLinks = new ArrayList<>(Arrays.asList("undef"));
     protected List<String> softLinks = new ArrayList<>();
     protected final List<String> linkCandidateTypes = new CopyOnWriteArrayList<>();
-
-    /**
-     * Lists for canReceive and can Send capabilities
-     */
-    protected List<String> receiveCapabilities = new ArrayList<>();
-    protected List<String> sendCapabilities = new ArrayList<>();
 
     protected BaseDeviceConfiguration config = new BaseDeviceConfiguration();
     protected State requestedPowerState = UnDefType.UNDEF;
@@ -137,16 +130,16 @@ public class BaseMatterHandler extends BaseThingHandler implements BaseDevice, D
     }
 
     protected void configure() {
-        // check if devie is already configured
-        if (configMap.isEmpty()) {
+        // check if device is already configured
+        if (deviceConfigMap.isEmpty()) {
             String relationId = gateway().model().getRelationId(config.id);
             if (config.id.equals(relationId)) {
                 String deviceType = gateway().model().getDeviceType(config.id);
-                configMap.put(config.id, new BaseMatterConfiguration(this, config.id, deviceType));
+                deviceConfigMap.put(config.id, new DeviceConfig(config.id, deviceType));
             } else {
                 Map<String, String> connectedDevices = gateway().model().getRelations(relationId);
                 connectedDevices.forEach((key, value) -> {
-                    configMap.put(key, new BaseMatterConfiguration(this, key, value));
+                    deviceConfigMap.put(key, new DeviceConfig(key, value));
                 });
             }
         }
@@ -158,21 +151,19 @@ public class BaseMatterHandler extends BaseThingHandler implements BaseDevice, D
      * @param properties array with channel definitions
      */
     private void initializeCache() {
-        configMap.forEach((deviceId, matterConfig) -> {
+        deviceConfigMap.forEach((deviceId, matterConfig) -> {
             matterConfig.getStatusProperties().forEach((key, value) -> {
-                channelStateMap.put(value.getString(BaseMatterConfiguration.KEY_CHANNEL), UnDefType.UNDEF);
+                channelStateMap.put(value.getString(DeviceConfig.KEY_CHANNEL), UnDefType.UNDEF);
             });
         });
     }
 
     private JSONArray initChannels() {
         JSONArray allUpdates = new JSONArray();
-        System.out.println("COnfig Map " + configMap);
-        configMap.forEach((deviceId, config) -> {
+        deviceConfigMap.forEach((deviceId, config) -> {
             JSONObject deviceUpdate = gateway().api().readDevice(deviceId);
             allUpdates.put(deviceUpdate);
             createChannels(deviceUpdate);
-            System.out.println("DIRIGERA BASE_MATTER_HANDLER " + thing.getUID() + " register device " + deviceId);
             gateway().registerDevice(child, deviceId);
             handleUpdate(deviceUpdate);
         });
@@ -180,7 +171,7 @@ public class BaseMatterHandler extends BaseThingHandler implements BaseDevice, D
     }
 
     private void initLinks() {
-        configMap.forEach((deviceId, config) -> {
+        deviceConfigMap.forEach((deviceId, config) -> {
             List<String> candidates = config.getLinkCandidates();
             if (!candidates.isEmpty()) {
                 createChannelIfNecessary(CHANNEL_LINKS, CHANNEL_LINKS, CoreItemFactory.STRING);
@@ -192,10 +183,10 @@ public class BaseMatterHandler extends BaseThingHandler implements BaseDevice, D
 
     private void initThingProperties(JSONArray updates) {
         Map<String, String> properties = editProperties();
-        configMap.forEach((deviceId, config) -> {
+        deviceConfigMap.forEach((deviceId, config) -> {
             updates.forEach(update -> {
                 JSONObject updateJson = (JSONObject) update;
-                if (deviceId.equals(updateJson.optString("id"))) {
+                if (deviceId.equals(updateJson.optString(PROPERTY_DEVICE_ID))) {
                     properties.putAll(config.getThingProperties(updateJson));
                 }
             });
@@ -206,19 +197,14 @@ public class BaseMatterHandler extends BaseThingHandler implements BaseDevice, D
     private void createChannels(JSONObject values) {
         if (values.has(Model.ATTRIBUTES)) {
             JSONObject attributes = values.getJSONObject(Model.ATTRIBUTES);
-            configMap.forEach((deviceId, matterConfig) -> {
+            deviceConfigMap.forEach((deviceId, matterConfig) -> {
                 matterConfig.getStatusProperties().forEach((statusPropertyKey, statusPropertyJson) -> {
-                    System.out.println("DIRIGERA BASE_MATTER_HANDLER " + thing.getUID() + " check status property "
-                            + statusPropertyKey);
-                    String deviceAttribute = statusPropertyJson.getString(BaseMatterConfiguration.KEY_ATTRIBUTE);
+                    String deviceAttribute = statusPropertyJson.getString(DeviceConfig.KEY_ATTRIBUTE);
                     if (attributes.has(deviceAttribute)) {
-                        String channel = statusPropertyJson.getString("channel");
-                        String channelType = statusPropertyJson.getString("channelType");
-                        String itemType = null;
-                        if (statusPropertyJson.has("itemType")) {
-                            itemType = statusPropertyJson.getString("itemType");
-                        }
-                        createChannelIfNecessary(channel, channelType, itemType);
+                        createChannelIfNecessary(statusPropertyJson.optString("channel"),
+                                statusPropertyJson.optString("channelType"), statusPropertyJson.optString("itemType"),
+                                statusPropertyJson.optString("channelLabel"),
+                                statusPropertyJson.optString("channelDescription"));
                     }
                 });
             });
@@ -296,13 +282,11 @@ public class BaseMatterHandler extends BaseThingHandler implements BaseDevice, D
                     break;
             }
             Map<String, JSONObject> requests = new HashMap<>();
-            configMap.forEach((deviceId, matterConfig) -> {
+            deviceConfigMap.forEach((deviceId, matterConfig) -> {
                 Map<String, JSONObject> deviceUpdates = matterConfig.getRequestJson(targetChannel, command);
-                System.out.println("DIRIGERA BASE_MATTER_HANDLER " + deviceId + " delivered " + deviceUpdates);
                 requests.putAll(deviceUpdates);
             });
 
-            System.out.println("DIRIGERA BASE_MATTER_HANDLER " + thing.getUID() + " requests " + requests);
             if (!requests.isEmpty()) {
                 requests.forEach((deviceId, request) -> {
                     sendPatch(deviceId, request);
@@ -367,7 +351,7 @@ public class BaseMatterHandler extends BaseThingHandler implements BaseDevice, D
         }
         // now check attributes for updates
         Map<String, State> updates = new HashMap<>();
-        configMap.forEach((deviceId, matterConfig) -> {
+        deviceConfigMap.forEach((deviceId, matterConfig) -> {
             Map<String, State> deviceUpdates = matterConfig.getAttributeUpdates(update);
             updates.putAll(deviceUpdates);
         });
@@ -382,8 +366,8 @@ public class BaseMatterHandler extends BaseThingHandler implements BaseDevice, D
         });
     }
 
-    protected synchronized void createChannelIfNecessary(String channelId, String channelTypeUID,
-            @Nullable String itemType, @Nullable String label, @Nullable String description) {
+    protected synchronized void createChannelIfNecessary(String channelId, String channelTypeUID, String itemType,
+            String label, String description) {
         if (thing.getChannel(channelId) == null) {
             if (customDebug) {
                 logger.info("DIRIGERA BASE_MATTER_HANDLER {} create Channel {} {} {}", thing.getUID(), channelId,
@@ -404,24 +388,23 @@ public class BaseMatterHandler extends BaseThingHandler implements BaseDevice, D
             // check for trigger channel without item as trigger channel
             ChannelBuilder channelBuilder = ChannelBuilder.create(new ChannelUID(thing.getUID(), channelId))
                     .withType(channelType);
-            if (label != null) {
+            if (!label.isBlank()) {
                 channelBuilder = channelBuilder.withLabel(label);
             }
-            if (description != null) {
+            if (!description.isBlank()) {
                 channelBuilder = channelBuilder.withDescription(description);
             }
-            if (itemType == null) {
-                channelBuilder = channelBuilder.withKind(ChannelKind.TRIGGER);
-            } else {
+            if (!itemType.isBlank()) {
                 channelBuilder = channelBuilder.withAcceptedItemType(itemType);
+            } else {
+                channelBuilder = channelBuilder.withKind(ChannelKind.TRIGGER);
             }
             updateThing(thingBuilder.withChannel(channelBuilder.build()).build());
         }
     }
 
-    protected synchronized void createChannelIfNecessary(String channelId, String channelTypeUID,
-            @Nullable String itemType) {
-        createChannelIfNecessary(channelId, channelTypeUID, itemType, null, null);
+    protected synchronized void createChannelIfNecessary(String channelId, String channelTypeUID, String itemType) {
+        createChannelIfNecessary(channelId, channelTypeUID, itemType, "", "");
     }
 
     protected boolean isPowered() {
@@ -507,7 +490,7 @@ public class BaseMatterHandler extends BaseThingHandler implements BaseDevice, D
      * @return boolean
      */
     protected boolean isControllerOrSensor() {
-        for (BaseMatterConfiguration matterConfig : configMap.values()) {
+        for (DeviceConfig matterConfig : deviceConfigMap.values()) {
             if (matterConfig.getTypes().contains("sensor") || matterConfig.getTypes().contains("controller")) {
                 return true;
             }
@@ -652,11 +635,7 @@ public class BaseMatterHandler extends BaseThingHandler implements BaseDevice, D
     }
 
     public void updateCandidateLinks() {
-        System.out.println(
-                "DIRIGERA BASE_MATTER_HANDLER " + thing.getUID() + " linkCandidateTypes " + linkCandidateTypes);
         List<String> possibleCandidates = gateway().model().getDevicesForTypes(linkCandidateTypes);
-        System.out.println(
-                "DIRIGERA BASE_MATTER_HANDLER " + thing.getUID() + " possibleCandidates " + possibleCandidates);
         List<String> candidates = new ArrayList<>();
         possibleCandidates.forEach(entry -> {
             if (!hardLinks.contains(entry) && !softLinks.contains(entry)) {
@@ -681,9 +660,9 @@ public class BaseMatterHandler extends BaseThingHandler implements BaseDevice, D
         updateState(channelUUID, StringType.valueOf(display.toString()));
     }
 
-    protected boolean hasType(String deviceTypeOccupancySensor) {
-        for (BaseMatterConfiguration matterConfig : configMap.values()) {
-            if (matterConfig.getTypes().contains(deviceTypeOccupancySensor)) {
+    protected boolean hasType(String queryDeviceType) {
+        for (DeviceConfig matterConfig : deviceConfigMap.values()) {
+            if (matterConfig.getDeviceType().equals(queryDeviceType)) {
                 return true;
             }
         }
@@ -692,7 +671,7 @@ public class BaseMatterHandler extends BaseThingHandler implements BaseDevice, D
 
     protected List<String> getIdsFor(String deviceTypeOccupancySensor) {
         List<String> ids = new ArrayList<>();
-        configMap.forEach((deviceId, matterConfig) -> {
+        deviceConfigMap.forEach((deviceId, matterConfig) -> {
             if (matterConfig.getDeviceType().equals(deviceTypeOccupancySensor)) {
                 ids.add(deviceId);
             }

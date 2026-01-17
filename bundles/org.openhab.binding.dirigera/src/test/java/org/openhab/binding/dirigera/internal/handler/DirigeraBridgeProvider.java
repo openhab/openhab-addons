@@ -58,7 +58,6 @@ public class DirigeraBridgeProvider {
      * @return Bridge
      */
     public static Bridge prepareSimuBridge(String homeFile, boolean discovery, List<String> knownDevicesd) {
-        System.out.println("Prepare simulated bridge with home file: " + homeFile);
         ResourceReader.setProvider(new FileReader());
         String ipAddress = "1.2.3.4";
         HttpClient httpMock = mock(HttpClient.class);

@@ -48,6 +48,7 @@ import org.openhab.binding.dirigera.internal.handler.sensor.MotionSensorHandler;
 import org.openhab.binding.dirigera.internal.handler.sensor.WaterSensorHandler;
 import org.openhab.binding.dirigera.internal.handler.speaker.SpeakerHandler;
 import org.openhab.core.i18n.LocationProvider;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.storage.Storage;
 import org.openhab.core.storage.StorageService;
 import org.openhab.core.thing.Bridge;
@@ -76,6 +77,7 @@ public class DirigeraHandlerFactory extends BaseThingHandlerFactory {
     private final DirigeraStateDescriptionProvider stateProvider;
     private final DirigeraDiscoveryService discoveryService;
     private final DirigeraCommandProvider commandProvider;
+    private final TimeZoneProvider timezoneProvider;
     private final LocationProvider locationProvider;
     private final Storage<String> bindingStorage;
     private final HttpClient insecureClient;
@@ -83,9 +85,11 @@ public class DirigeraHandlerFactory extends BaseThingHandlerFactory {
     @Activate
     public DirigeraHandlerFactory(@Reference StorageService storageService,
             final @Reference DirigeraDiscoveryService discovery, final @Reference LocationProvider locationProvider,
+            final @Reference TimeZoneProvider timeZoneProvider,
             final @Reference DirigeraCommandProvider commandProvider,
             final @Reference DirigeraStateDescriptionProvider stateProvider) {
         this.locationProvider = locationProvider;
+        this.timezoneProvider = timeZoneProvider;
         this.commandProvider = commandProvider;
         this.discoveryService = discovery;
         this.stateProvider = stateProvider;
@@ -123,7 +127,7 @@ public class DirigeraHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (THING_TYPE_GATEWAY.equals(thingTypeUID)) {
             return new DirigeraHandler((Bridge) thing, insecureClient, bindingStorage, discoveryService,
-                    locationProvider, commandProvider, bundleContext);
+                    locationProvider, commandProvider, bundleContext, timezoneProvider);
         } else if (THING_TYPE_COLOR_LIGHT.equals(thingTypeUID)) {
             return new ColorLightHandler(thing, COLOR_LIGHT_MAP, stateProvider);
         } else if (THING_TYPE_TEMPERATURE_LIGHT.equals(thingTypeUID)) {

@@ -86,15 +86,9 @@ class TestEnvironmentSensor {
         testHandlerCreation();
         String command = "HollaDieWaldfee";
         handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_CUSTOM_NAME), new StringType(command));
-        System.out.println("Patch Map: " + DirigeraAPISimu.patchMap);
         String patch = DirigeraAPISimu.patchMap.get(deviceId);
         assertNotNull(patch);
         assertEquals("{\"attributes\":{\"customName\":\"" + command + "\"}}", patch, "Custom Name");
-    }
-
-    void testDump() {
-        testHandlerCreation();
-        assertEquals("unit-test", handler.getToken());
     }
 
     void checkEnvironmentSensorStates(CallbackMock callback) {

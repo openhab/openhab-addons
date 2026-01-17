@@ -20,6 +20,7 @@ import org.openhab.binding.dirigera.internal.DirigeraCommandProvider;
 import org.openhab.binding.dirigera.internal.discovery.DirigeraDiscoveryService;
 import org.openhab.binding.dirigera.internal.exception.ApiException;
 import org.openhab.binding.dirigera.internal.exception.ModelException;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.thing.Thing;
 import org.osgi.framework.BundleContext;
 
@@ -59,6 +60,13 @@ public interface Gateway {
      * @return DirigeraCommandProvider as DynamicCommandDescriptionProvider
      */
     DirigeraCommandProvider getCommandProvider();
+
+    /**
+     * Get TimeZoneProvider to evaluate correct time zone information.
+     *
+     * @return TimeZoneProvider
+     */
+    TimeZoneProvider getTimeZoneProvider();
 
     /**
      * Returns the configuration setting if discovery is enabled.

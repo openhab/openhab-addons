@@ -27,7 +27,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.openhab.binding.dirigera.internal.ResourceReader;
-import org.openhab.binding.dirigera.internal.interfaces.BaseDevice;
 import org.openhab.binding.dirigera.internal.interfaces.Model;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -41,12 +40,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link BaseMatterConfiguration} holds the configuration for one BasMatterHandler
+ * The {@link DeviceConfig} holds the configuration for a specific deviceId
  *
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
-public class BaseMatterConfiguration {
+public class DeviceConfig {
     public static final String TYPE_BASE = "baseDevice";
     public static final String PROPERTY_THING_PROPERTIES = "thingProperties";
     public static final String PROPERTY_STATUS_PROPERTIES = "statusProperties";
@@ -62,7 +61,7 @@ public class BaseMatterConfiguration {
 
     private static JSONObject matterDeviceConfig = new JSONObject();
 
-    private final Logger logger = LoggerFactory.getLogger(BaseMatterConfiguration.class);
+    private final Logger logger = LoggerFactory.getLogger(DeviceConfig.class);
     private final String deviceType;
 
     // holds for each deviceId the mapping of channelName to control property configuration
@@ -72,11 +71,8 @@ public class BaseMatterConfiguration {
     private List<String> types = new ArrayList<>();
     private String deviceId;
 
-    private final BaseDevice handler;
-
-    public BaseMatterConfiguration(BaseDevice handler, String deviceId, String deviceType) {
+    public DeviceConfig(String deviceId, String deviceType) {
         this.deviceId = deviceId;
-        this.handler = handler;
         this.deviceType = deviceType;
         if (matterDeviceConfig.isEmpty()) {
             Instant startTime = Instant.now();
@@ -100,8 +96,6 @@ public class BaseMatterConfiguration {
             JSONObject controlEntry = (JSONObject) entry;
             String channelName = controlEntry.getString(KEY_CHANNEL);
             controlPropertiesMapping.put(channelName, controlEntry);
-            System.out
-                    .println("Control entry for device " + deviceId + " channel " + channelName + " : " + controlEntry);
         });
 
         // collect identification properties
@@ -133,11 +127,6 @@ public class BaseMatterConfiguration {
         return statusProperties;
     }
 
-    // public Map<String, String> getThingProperties(String id) {
-    // return updateProperties(id);
-    // }
-
-    // remove
     public Map<String, String> getThingProperties(JSONObject update) {
         TreeMap<String, String> handlerProperties = new TreeMap<>();
         thingProperties.forEach(property -> {
@@ -180,16 +169,6 @@ public class BaseMatterConfiguration {
         return linkCandidates;
     }
 
-    private static JSONArray mergeLists(JSONArray source, JSONArray target) {
-        List<Object> list = target.toList();
-        for (Object obj : source.toList()) {
-            if (!list.contains(obj)) {
-                list.add(obj);
-            }
-        }
-        return new JSONArray(list);
-    }
-
     /**
      * Process status update from DIRIGERA
      *
@@ -216,12 +195,8 @@ public class BaseMatterConfiguration {
             String channel = statusConfig.optString(KEY_CHANNEL);
             State state = getState(value, statusConfig);
             if (channel != null && state != null) {
-                System.out.println("Status update for key " + key + " with value " + value + " updates " + channel
-                        + " to state " + state);
                 return Map.entry(channel, state);
             }
-        } else {
-            // System.out.println("No status configuration found for key " + key);
         }
         return null;
     }
@@ -231,47 +206,38 @@ public class BaseMatterConfiguration {
     }
 
     private @Nullable State getState(Object value, JSONObject config) {
-        System.out.println(value.getClass().getSimpleName() + " value: " + value);
         String transformation = config.getString(KEY_TRANSFORMATION);
 
         var correctedValue = value;
         // correction for numeric values
         String correctionType = config.optString("correction");
-        System.out.println(value.getClass().getSimpleName() + " value: " + value + " correction " + correctionType);
         if (!correctionType.isBlank() && value instanceof Number num) {
             double correctionValue = config.getDouble(correctionType);
-            System.out.println(value.getClass().getSimpleName() + " value: " + value + " correction " + correctionType
-                    + " " + correctionValue);
             switch (correctionType) {
                 case "factor" -> correctedValue = num.doubleValue() * correctionValue;
                 case "offset" -> correctedValue = num.doubleValue() + correctionValue;
             }
-            System.out.println(value.getClass().getSimpleName() + " correctedValue: " + correctedValue);
         }
 
-        // convert numbers in order to have either Int od Double values
+        // convert numbers in order to have either Integer or Double values
         if (config.has("inValue") && correctedValue instanceof Number num) {
-            System.out.println("CONVERSION Apply inValue conversion for " + correctedValue + " to "
-                    + config.getString("inValue") + " " + value.getClass().getSimpleName());
             String inValue = config.getString("inValue");
             switch (inValue) {
                 case "Integer" -> correctedValue = num.intValue();
                 case "Float" -> correctedValue = num.doubleValue();
                 case "Doublce" -> correctedValue = num.doubleValue();
             }
-            System.out.println(
-                    "CONVERSION Converted value: " + correctedValue + " " + correctedValue.getClass().getSimpleName());
         }
 
         // apply transformation
         var transformed = switch (transformation) {
-            case "code" -> null; // will be handled´by java code
+            case "code" -> ""; // will be handled´by java code
             case "raw" -> correctedValue.toString();
             case "format" -> String.format(Locale.US, config.getString("format"), correctedValue);
             case "mapping" -> map(correctedValue.toString(), config.getJSONObject("mapping"));
-            default -> null;
+            default -> "";
         };
-        if (transformed == null) {
+        if (transformed.isBlank()) {
             return null;
         }
 
@@ -298,20 +264,14 @@ public class BaseMatterConfiguration {
     public Map<String, JSONObject> getRequestJson(String targetChannel, Command command) {
         // evaluate which target device to use
         Map<String, JSONObject> requests = new HashMap<>();
-        System.out.println("Check " + controlPropertiesMapping.size() + " control properties for channel "
-                + targetChannel + " and command " + command);
         controlPropertiesMapping.forEach((channel, config) -> {
-            System.out.println("Check control properties for device " + targetChannel + " " + config);
             if (channel.equals(targetChannel)) {
                 JSONObject request = getRequest(command, config);
                 if (!request.isEmpty()) {
                     requests.put(deviceId, request);
                 }
-            } else {
-                System.out.println("No match for channel " + channel + " vs " + targetChannel);
             }
         });
-        System.out.println("Request: " + requests);
         return requests;
     }
 
@@ -321,11 +281,9 @@ public class BaseMatterConfiguration {
         var commandValue = switch (transformation) {
             case "raw" -> command.toString();
             case "mapping" -> map(command.toString(), config.getJSONObject("mapping"));
-            default -> null;
+            default -> "";
         };
-        System.out.println(
-                "Command " + command + " transformed to " + commandValue + " for attribute " + targetAttribute);
-        if (commandValue == null) {
+        if (commandValue.isBlank()) {
             return new JSONObject();
         }
         String outValue = config.getString("json");

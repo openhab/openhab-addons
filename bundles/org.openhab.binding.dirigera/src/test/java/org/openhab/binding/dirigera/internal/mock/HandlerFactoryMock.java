@@ -14,6 +14,8 @@ package org.openhab.binding.dirigera.internal.mock;
 
 import static org.mockito.Mockito.mock;
 
+import java.time.ZoneId;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.dirigera.internal.DirigeraCommandProvider;
@@ -21,6 +23,7 @@ import org.openhab.binding.dirigera.internal.DirigeraHandlerFactory;
 import org.openhab.binding.dirigera.internal.DirigeraStateDescriptionProvider;
 import org.openhab.core.events.EventPublisher;
 import org.openhab.core.i18n.LocationProvider;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.storage.StorageService;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.binding.ThingHandler;
@@ -34,8 +37,16 @@ import org.openhab.core.thing.link.ItemChannelLinkRegistry;
  */
 @NonNullByDefault
 public class HandlerFactoryMock extends DirigeraHandlerFactory {
+
+    public static TimeZoneProvider timeZoneProvider = new TimeZoneProvider() {
+        @Override
+        public ZoneId getTimeZone() {
+            return ZoneId.systemDefault();
+        }
+    };
+
     public HandlerFactoryMock(StorageService storageService) {
-        super(storageService, new DicoveryServiceMock(), mock(LocationProvider.class),
+        super(storageService, new DicoveryServiceMock(), mock(LocationProvider.class), timeZoneProvider,
                 mock(DirigeraCommandProvider.class), new DirigeraStateDescriptionProvider(mock(EventPublisher.class),
                         mock(ItemChannelLinkRegistry.class), mock(ChannelTypeI18nLocalizationService.class)));
     }

@@ -59,14 +59,6 @@ class TestWaterSensor {
         assertNotNull(proxyCallback);
         assertTrue(proxyCallback instanceof CallbackMock);
         callback = (CallbackMock) proxyCallback;
-        System.out.println("thing channels: " + thing.getChannels().size());
-        thing.getChannels().forEach(channel -> {
-            System.out.println(" Channel: " + channel.getUID() + " type: " + channel.getChannelTypeUID());
-        });
-        System.out.println("Properties: " + thing.getProperties().size());
-        thing.getProperties().forEach((key, value) -> {
-            System.out.println(" Property: " + key + " value: " + value);
-        });
         callback.waitForOnline();
     }
 

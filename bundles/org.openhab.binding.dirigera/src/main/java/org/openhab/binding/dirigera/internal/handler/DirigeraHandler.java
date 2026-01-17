@@ -60,6 +60,7 @@ import org.openhab.binding.dirigera.internal.network.DirigeraAPIImpl;
 import org.openhab.binding.dirigera.internal.network.Websocket;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.i18n.LocationProvider;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -102,6 +103,7 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway, Debug
     private final Map<String, List<BaseDevice>> deviceTree = new HashMap<>();
     private final DirigeraDiscoveryService discoveryService;
     private final DirigeraCommandProvider commandProvider;
+    private final TimeZoneProvider timezoneProvider;
     private final BundleContext bundleContext;
     private final Websocket websocket;
 
@@ -132,13 +134,14 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway, Debug
 
     public DirigeraHandler(Bridge bridge, HttpClient insecureClient, Storage<String> bindingStorage,
             DirigeraDiscoveryService discoveryManager, LocationProvider locationProvider,
-            DirigeraCommandProvider commandProvider, BundleContext bundleContext) {
+            DirigeraCommandProvider commandProvider, BundleContext bundleContext, TimeZoneProvider timezoneProvider) {
         super(bridge);
         this.discoveryService = discoveryManager;
         this.httpClient = insecureClient;
         this.storage = bindingStorage;
         this.commandProvider = commandProvider;
         this.bundleContext = bundleContext;
+        this.timezoneProvider = timezoneProvider;
         config = new DirigeraConfiguration();
         websocket = new Websocket(this, insecureClient);
 
@@ -593,10 +596,8 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway, Debug
         // removal of handler - store known devices
         knownDevices.remove(deviceId);
         storeKnownDevices();
-        // before new detection the handler needs to be removed - now were in removing
-        // state
-        // for complex devices several removes are done so don't trigger detection every
-        // time
+        // before new detection the handler needs to be removed - now were in removing state
+        // for complex devices several removes are done so don't trigger detection every time
         detectionSchedule.ifPresentOrElse(previousSchedule -> {
             if (!previousSchedule.isDone()) {
                 previousSchedule.cancel(true);
@@ -846,7 +847,7 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway, Debug
             try {
                 update = new JSONObject(json);
                 data = update.getJSONObject("data");
-                targetId = data.getString("id");
+                targetId = data.getString(PROPERTY_DEVICE_ID);
             } catch (JSONException exception) {
                 logger.debug("DIRIGERA HANDLER cannot decode update {} {}", exception.getMessage(), json);
                 return;
@@ -1091,5 +1092,10 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway, Debug
     @Override
     public String getDeviceId() {
         return config.id;
+    }
+
+    @Override
+    public TimeZoneProvider getTimeZoneProvider() {
+        return timezoneProvider;
     }
 }

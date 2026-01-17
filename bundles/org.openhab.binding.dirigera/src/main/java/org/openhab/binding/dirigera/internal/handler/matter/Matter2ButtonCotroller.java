@@ -48,7 +48,7 @@ public class Matter2ButtonCotroller extends BaseMatterHandler {
     @Override
     public void initialize() {
         super.initialize();
-        configMap.forEach((deviceId, config) -> {
+        deviceConfigMap.forEach((deviceId, config) -> {
             char buttonNumber = deviceId.charAt(deviceId.length() - 1);
             var buttonName = switch (buttonNumber) {
                 case '1' -> "Top Button";
@@ -57,7 +57,7 @@ public class Matter2ButtonCotroller extends BaseMatterHandler {
             };
             String triggerChannelName = buttonName.toLowerCase().replace(" ", "-");
             triggerChannelMapping.put(deviceId, triggerChannelName);
-            createChannelIfNecessary(triggerChannelName, "system.button", null, buttonName,
+            createChannelIfNecessary(triggerChannelName, "system.button", "", buttonName,
                     "Press triggers for button " + buttonNumber);
         });
         // for controller 100% needed
@@ -70,7 +70,7 @@ public class Matter2ButtonCotroller extends BaseMatterHandler {
         super.handleUpdate(update);
 
         // handle remotePress events
-        String channelName = triggerChannelMapping.get(update.optString("id"));
+        String channelName = triggerChannelMapping.get(update.optString(PROPERTY_DEVICE_ID));
         String clickPattern = TRIGGER_MAPPING.get(update.optString("clickPattern"));
         if (channelName != null && clickPattern != null) {
             logger.warn("Button {} pressed: {}", channelName, clickPattern);
@@ -81,23 +81,17 @@ public class Matter2ButtonCotroller extends BaseMatterHandler {
         JSONObject attributes = update.optJSONObject("attributes");
         if (attributes != null) {
             String controlMode = attributes.optString("controlMode");
-            System.out.println("Control Mode: " + controlMode);
             if (!controlMode.isBlank()) {
                 List<String> candidateTypes = modeLinkCandidateMapping.get(controlMode);
-                System.out.println("Candidate Types: " + candidateTypes);
                 if (candidateTypes != null) {
                     if (!candidateTypes.equals(linkCandidateTypes)) {
-                        System.out.println("Updating link candidate types for control mode " + controlMode);
                         linkCandidateTypes.clear();
                         linkCandidateTypes.addAll(candidateTypes);
-                        System.out.println("New Link Candidate Types: " + linkCandidateTypes);
-                        logger.info("Link candidate types for control-mode {}: {}", controlMode, linkCandidateTypes);
                         gateway().updateLinks();
                     }
                 } else {
                     linkCandidateTypes.clear();
                     gateway().updateLinks();
-                    logger.warn("No link candidate types found for control-mode {}", controlMode);
                 }
             }
         }

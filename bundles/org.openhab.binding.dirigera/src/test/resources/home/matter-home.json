@@ -3469,8 +3469,16 @@
                 "otaStatus": "upToDate",
                 "batteryPercentage": 96,
                 "sensorConfig": {
-                    "scheduleOn": false,
-                    "onDuration": 0
+                    "scheduleOn": true,
+                    "onDuration": 600,
+                        "schedule": {
+                            "onCondition": {
+                                "time": "20:00"
+                            },
+                            "offCondition": {
+                                "time": "07:00"
+                            }
+                        }
                 }
             },
             "capabilities": {

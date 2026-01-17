@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class MatterLight extends ColorLightHandler {
     private final Logger logger = LoggerFactory.getLogger(MatterLight.class);
-    protected Map<String, BaseMatterConfiguration> configMap = new TreeMap<>();
+    protected Map<String, DeviceConfig> configMap = new TreeMap<>();
 
     public MatterLight(Thing thing, Map<String, String> stateChannelMapping,
             DirigeraStateDescriptionProvider stateProvider) {
@@ -48,9 +48,8 @@ public class MatterLight extends ColorLightHandler {
 
     @Override
     public void initialize() {
-        logger.debug("Initializing Matter Light handler for thing {}", getThing().getUID());
         lightConfig = getConfigAs(ColorLightConfiguration.class);
-        configMap.put(lightConfig.id, new BaseMatterConfiguration(this, lightConfig.id, "light"));
+        configMap.put(lightConfig.id, new DeviceConfig(lightConfig.id, "light"));
         super.initialize();
         JSONObject update = gateway().api().readDevice(lightConfig.id);
         createChannels(update);
@@ -62,27 +61,12 @@ public class MatterLight extends ColorLightHandler {
             JSONObject attributes = values.getJSONObject(Model.ATTRIBUTES);
             configMap.forEach((deviceId, matterConfig) -> {
                 matterConfig.getStatusProperties().forEach((statusPropertyKey, statusPropertyJson) -> {
-                    System.out.println("DIRIGERA BASE_MATTER_HANDLER " + thing.getUID() + " check status property "
-                            + statusPropertyKey);
-                    String deviceAttribute = statusPropertyJson.getString(BaseMatterConfiguration.KEY_ATTRIBUTE);
+                    String deviceAttribute = statusPropertyJson.optString(DeviceConfig.KEY_ATTRIBUTE);
                     if (attributes.has(deviceAttribute)) {
-                        String channel = statusPropertyJson.getString("channel");
-                        String channelType = statusPropertyJson.getString("channelType");
-                        String itemType = "String";
-                        if (statusPropertyJson.has("itemType")) {
-                            itemType = statusPropertyJson.getString("itemType");
-                        }
-                        String channelLabel = (statusPropertyJson.optString("channelLabel").isBlank()) ? null
-                                : statusPropertyJson.getString("channelLabel");
-                        String channelDescription = (statusPropertyJson.optString("label").isBlank()) ? null
-                                : statusPropertyJson.getString("channelDescription");
-
-                        logger.warn(" Matter Light thing channels with label {}", channelLabel);
-                        logger.warn(" Matter Light thing channels with label {}",
-                                statusPropertyJson.optString("channelLabel"));
-                        logger.warn(" Matter Light thing channels with label {}", statusPropertyJson);
-
-                        createChannelIfNecessary(channel, channelType, itemType, channelLabel, channelDescription);
+                        createChannelIfNecessary(statusPropertyJson.optString("channel"),
+                                statusPropertyJson.optString("channelType"), statusPropertyJson.optString("itemType"),
+                                statusPropertyJson.optString("channelLabel"),
+                                statusPropertyJson.optString("channelDescription"));
                         if ("colorTemperature".equals(deviceAttribute)) {
                             // add additional channel for color temperature in percent
                             createChannelIfNecessary("color-temperature", "system.color-temperature",
