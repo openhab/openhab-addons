@@ -147,6 +147,21 @@ public final class ParametrizedStateTestCases {
                         new DateTimeType("2016-02-29T23:00:00+03:00"), BAGHDAD_ZONE, SHAYBAH_LOC),
                 new StateTestCase(TEST_MOON_THING_ID, "rise#duration", LEAP_DAY_2016_SA,
                         new QuantityType<>(0, Units.MINUTE), BAGHDAD_ZONE, SHAYBAH_LOC),
+                // Total Solar Eclipse on August 21, 2017
+                new StateTestCase(TEST_SUN_THING_ID, "eclipse#total", Instant.parse("2017-01-01T00:00:00Z"),
+                        new DateTimeType("2017-08-21T18:27:10+00:00"), BAGHDAD_ZONE, SHAYBAH_LOC),
+                // Partial Solar Eclipse on August 11, 2018
+                new StateTestCase(TEST_SUN_THING_ID, "eclipse#partial", Instant.parse("2018-07-15T00:00:00Z"),
+                        new DateTimeType("2018-08-11T11:47:57+02:00"), BAGHDAD_ZONE, SHAYBAH_LOC),
+                // Ring Solar Eclipse on December 26, 2019
+                new StateTestCase(TEST_SUN_THING_ID, "eclipse#ring", Instant.parse("2019-11-01T00:00:00Z"),
+                        new DateTimeType("2019-12-26T06:19:23+01:00"), BAGHDAD_ZONE, SHAYBAH_LOC),
+                // Total Lunar Eclipse on January 21, 2019
+                new StateTestCase(TEST_MOON_THING_ID, "eclipse#total", Instant.parse("2018-12-01T00:00:00Z"),
+                        new DateTimeType("2019-01-21T05:13:02+00:00"), BAGHDAD_ZONE, SHAYBAH_LOC),
+                // Partial Lunar Eclipse on July 16, 2019
+                new StateTestCase(TEST_MOON_THING_ID, "eclipse#partial", Instant.parse("2019-06-01T00:00:00Z"),
+                        new DateTimeType("2019-07-16T23:31:59+02:00"), BAGHDAD_ZONE, SHAYBAH_LOC),
                 new StateTestCase(TEST_SUN_THING_ID, CHANNEL_ID_SUN_CIRCADIAN_BRIGHTNESS, MARCH_16_2022_UA,
                         new PercentType(93), KYIV_ZONE, MARIUPOL_LOC),
                 new StateTestCase(TEST_SUN_THING_ID, CHANNEL_ID_SUN_CIRCADIAN_TEMPERATURE, MARCH_16_2022_UA,

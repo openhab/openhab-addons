@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.astro.internal.util;
 
+import static org.openhab.binding.astro.internal.util.MathUtils.mod;
+
 import java.time.Instant;
 import java.time.InstantSource;
 import java.time.ZonedDateTime;
@@ -38,11 +40,32 @@ public class DateTimeUtils {
     private static final Logger LOGGER = LoggerFactory.getLogger(DateTimeUtils.class);
     private static final Pattern HHMM_PATTERN = Pattern.compile("^([0-1][0-9]|2[0-3])(:[0-5][0-9])$");
 
+    public static final double JD_2000_01_01 = 2451544.5; // JD on January 1st 2000 00:00 UTC
+    public static final double MJD_JD2000 = 51544.5;
     public static final double JD_J2000 = 2451545.0; // 2000-01-01 12:00
     public static final double JD_UNIX_EPOCH = 2440587.5; // 1970-01-01 00:00 UTC
+    public static final int JULIAN_CENTURY_DAYS = 36525; // Length of a Julian Century in days
+    public static final double JD_ONE_MINUTE_FRACTION = 1.0 / 60 / 24;
     private static final double J1970 = JD_UNIX_EPOCH + 0.5; // 1970-01-01 12:00 UTC (julian solar noon)
-    private static final int JULIAN_CENTURY_DAYS = 36525; // Length of a Julian Century in days
     private static final double SECONDS_PER_DAY = 60 * 60 * 24;
+
+    /**
+     * Convert julian date to greenwich mean sidereal time.
+     */
+    public static double toGMST(double jd) {
+        double ut = (jd - 0.5 - Math.floor(jd - 0.5)) * 24.;
+        double jdMod = Math.floor(jd - 0.5) + 0.5;
+        double t = toJulianCenturies(jdMod);
+        double t0 = 6.697374558 + t * (2400.051336 + t * 0.000025862);
+        return mod(t0 + ut * 1.002737909, 24.);
+    }
+
+    /**
+     * Convert greenwich mean sidereal time to local mean sidereal time.
+     */
+    public static double toLMST(double gmst, double lon) {
+        return mod(gmst + Math.toDegrees(lon) / 15., 24.);
+    }
 
     /** Constructor */
     private DateTimeUtils() {
@@ -467,5 +490,14 @@ public class DateTimeUtils {
         Calendar result = Calendar.getInstance(zone, locale);
         result.setTimeInMillis(instantSource.millis());
         return result;
+    }
+
+    /**
+     * Adds the specified days to the calendar.
+     */
+    public static Calendar addDays(Calendar calendar, int days) {
+        Calendar cal = (Calendar) calendar.clone();
+        cal.add(Calendar.DAY_OF_MONTH, days);
+        return cal;
     }
 }

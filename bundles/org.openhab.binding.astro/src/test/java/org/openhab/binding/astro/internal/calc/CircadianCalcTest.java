@@ -68,7 +68,7 @@ public class CircadianCalcTest {
         assertNotEquals(CircadianCalc.calculate(now, sunrise, sunrise, noon), actual);
 
         actual = CircadianCalc.calculate(now, new Range(), new Range(), null);
-        assertEquals(Circadian.DEFAULT, actual);
+        assertEquals(Circadian.NONE, actual);
     }
 
     private static Calendar newCalendar(int year, int month, int day, int hour, int minute) {

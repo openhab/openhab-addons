@@ -29,7 +29,7 @@ import org.openhab.core.types.UnDefType;
  */
 @NonNullByDefault
 public class Position {
-    public static final Position NULL = new Position();
+    public static final Position NONE = new Position();
     private final double azimuth;
     private final double elevation;
 

@@ -26,6 +26,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.openhab.binding.astro.internal.model.DistanceType;
 import org.openhab.binding.astro.internal.model.Moon;
 import org.openhab.binding.astro.internal.util.DateTimeUtils;
 
@@ -64,11 +65,11 @@ public class MoonCalcTest {
         Moon moon = Objects.requireNonNull(moonCalc).getMoonInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE,
                 TIME_ZONE, Locale.ROOT);
 
-        assertNotNull(moon.getApogee());
-        assertNotNull(moon.getPerigee());
+        assertNotNull(moon.getDistanceType(DistanceType.APOGEE));
+        assertNotNull(moon.getDistanceType(DistanceType.PERIGEE));
+        assertNotNull(moon.getDistanceType(DistanceType.CURRENT));
 
-        assertNotNull(moon.getDistance());
-        assertNotNull(moon.getEclipse());
+        assertNotNull(moon.getEclipseSet());
 
         assertNotNull(moon.getPhase());
         assertNotNull(moon.getPosition());
@@ -110,6 +111,11 @@ public class MoonCalcTest {
         assertNotNull(moonCalc);
         Moon moon = moonCalc.getMoonInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE, TIME_ZONE, Locale.ROOT);
         moonCalc.setPositionalInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE, moon, TIME_ZONE, Locale.ROOT);
+
+        var azimuth = moon.getPosition().getAzimuth();
+        var elevation = moon.getPosition().getElevation();
+        assertNotNull(azimuth);
+        assertNotNull(elevation);
 
         // expected result from heavens-above.com is Azimuth: 100.5, altitude -17
         assertEquals(100.5, moon.getPosition().getAzimuthAsDouble(), ACCURACY_IN_DEGREE);
