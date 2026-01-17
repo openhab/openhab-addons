@@ -108,13 +108,15 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterface, Shelly2RpctInterface {
+    private final AtomicBoolean initialized = new AtomicBoolean(false);
     private final Logger logger = LoggerFactory.getLogger(Shelly2ApiRpc.class);
     private final ShellyThingTable thingTable;
 
-    private final AtomicBoolean initialized = new AtomicBoolean(false);
+    private final Object stateLock = new Object();
+    private AtomicBoolean discovery = new AtomicBoolean(false);
+    private @Nullable Shelly2RpcSocket rpcSocket; // TODO: Must be made thread-safe
+    private @Nullable Shelly2AuthChallenge authInfo; // TODO: Must be made thread-safe
 
-    private @Nullable Shelly2RpcSocket rpcSocket;
-    private @Nullable Shelly2AuthChallenge authInfo;
     private final WebSocketClient client;
 
     // Plus devices support up to 3 scripts, Pro devices up to 10
@@ -131,27 +133,25 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     public Shelly2ApiRpc(String thingName, ShellyThingTable thingTable, ShellyThingInterface thing,
             WebSocketClient webSocketClient) {
         super(thingName, thing);
-        this.thingTable = thingTable;
+        synchronized (stateLock) {
+            this.thingTable = thingTable;
+        }
         this.client = webSocketClient;
     }
 
     @Override
     public void initialize(String thingName, ShellyThingConfiguration config) throws ShellyApiException {
-        setConfig(thingName, config);
-        if (isInitialized()) {
-            logger.debug("{}: Disconnect Rpc Socket on initialize", thingName);
-            disconnect();
-        }
-
-        logger.debug("{}: Initialize APIv2 (tname={}", thingName, Thread.currentThread().getName());
-
         Shelly2RpcSocket rpcSocket = this.rpcSocket;
         if (rpcSocket != null) {
+            logger.debug("{}: Disconnect RPC Socket on initialize", thingName);
             rpcSocket.disconnect();
         }
         rpcSocket = new Shelly2RpcSocket(thingName, thingTable, config.deviceIp, client);
         rpcSocket.addMessageHandler(this);
-        this.rpcSocket = rpcSocket;
+        synchronized (stateLock) {
+            this.rpcSocket = rpcSocket;
+        }
+
         initialized.set(true);
     }
 
@@ -598,36 +598,34 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
 
     @Override
     public void onConnect(String deviceIp, boolean connected) {
-        thing = thingTable.getThing(deviceIp);
-        logger.debug("{}: Get thing from thingTable", thingName);
+        logger.debug("{}: Connected, get thing from thingTable", thingName);
+        ShellyThingTable thingTable;
+        synchronized (stateLock) {
+            thingTable = this.thingTable;
+            thing = thingTable.getThing(deviceIp);
+        }
     }
 
     @Override
     public void onNotifyStatus(Shelly2RpcNotifyStatus message) throws ShellyApiException {
         logger.debug("{}: NotifyStatus update received: {}", thingName, gson.toJson(message));
-        ShellyThingInterface t = thing;
-        if (t == null) {
-            logger.debug("{}: No matching thing on NotifyStatus for {}, ignore (src={}, dst={})", thingName, thingName,
-                    message.src, message.dst);
-            return;
-        }
-        if (t.isStopping()) {
-            logger.debug("{}: Thing is shutting down, ignore WebSocket message", thingName);
-            return;
-        }
-        if (!t.isThingOnline() && t.getThingStatusDetail() != ThingStatusDetail.CONFIGURATION_PENDING) {
-            logger.debug("{}: Thing is not in online state/connectable, ignore NotifyStatus", thingName);
+
+        ShellyThingInterface thing = this.thing;
+        // checkThingStatusAndRestartWatchdog() display a message on null
+        if (!checkThingStatusAndRestartWatchdog(message.src, "n/a") || thing == null) {
             return;
         }
 
-        getThing().incProtMessages();
         if (message.error != null) {
             if (message.error.code == HttpStatus.UNAUTHORIZED_401 && !getString(message.error.message).isEmpty()) {
                 // Save nonce for notification
+                // TODO: synchronize
                 Shelly2AuthChallenge auth = gson.fromJson(message.error.message, Shelly2AuthChallenge.class);
                 if (auth != null && auth.realm == null) {
                     logger.debug("{}: Authentication data received: {}", thingName, message.error.message);
-                    authInfo = auth;
+                    synchronized (stateLock) {
+                        authInfo = auth;
+                    }
                 }
             } else {
                 logger.debug("{}: Error status received - {} {}", thingName, message.error.code, message.error.message);
@@ -637,8 +635,8 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
 
         Shelly2NotifyStatus params = message.params;
         if (params != null) {
-            if (getThing().getThingStatusDetail() != ThingStatusDetail.FIRMWARE_UPDATING) {
-                getThing().setThingOnline();
+            if (thing.getThingStatusDetail() != ThingStatusDetail.FIRMWARE_UPDATING) {
+                thing.setThingOnline();
             }
 
             boolean updated = false;
@@ -662,9 +660,10 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                 }
             }
 
+            // TODO synchronize
             profile.status = status;
             if (updated) {
-                getThing().restartWatchdog();
+                thing.restartWatchdog();
             }
         }
     }
@@ -675,8 +674,11 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         ShellyDeviceProfile profile = getProfile();
         Shelly2RpcNotifyEvent message = fromJson(gson, eventJSON, Shelly2RpcNotifyEvent.class);
 
-        getThing().incProtMessages();
-        getThing().restartWatchdog();
+        ShellyThingInterface thing = this.thing;
+        // checkThingStatusAndRestartWatchdog() display a message on null
+        if (!checkThingStatusAndRestartWatchdog(message.src, "n/a") || thing == null) {
+            return;
+        }
 
         for (Shelly2NotifyEvent e : message.params.events) {
             switch (e.event) {
@@ -685,7 +687,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                     String bgroup = getProfile().getInputGroup(e.id);
                     updateChannel(bgroup, CHANNEL_INPUT + profile.getInputSuffix(e.id),
                             getOnOff(SHELLY2_EVENT_BTNDOWN.equals(getString(e.event))));
-                    getThing().triggerButton(profile.getInputGroup(e.id), e.id, mapValue(MAP_INPUT_EVENT_ID, e.event));
+                    thing.triggerButton(profile.getInputGroup(e.id), e.id, mapValue(MAP_INPUT_EVENT_ID, e.event));
                     break;
 
                 case SHELLY2_EVENT_1PUSH:
@@ -698,6 +700,8 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                         ShellyInputState input = relayStatus.inputs.get(e.id);
                         input.event = getString(MAP_INPUT_EVENT_TYPE.get(e.event));
                         input.eventCount = getInteger(input.eventCount) + 1;
+
+                        // TODO: synchronize
                         relayStatus.inputs.set(e.id, input);
                         profile.status.inputs.set(e.id, input);
 
@@ -706,18 +710,17 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                                 getStringType(input.event));
                         updateChannel(group, CHANNEL_STATUS_EVENTCOUNT + profile.getInputSuffix(e.id),
                                 getDecimal(input.eventCount));
-                        getThing().triggerButton(profile.getInputGroup(e.id), e.id,
-                                mapValue(MAP_INPUT_EVENT_ID, e.event));
+                        thing.triggerButton(profile.getInputGroup(e.id), e.id, mapValue(MAP_INPUT_EVENT_ID, e.event));
                     }
                     break;
                 case SHELLY2_EVENT_CFGCHANGED:
                     logger.debug("{}: Configuration update detected, re-initialize", thingName);
-                    getThing().requestUpdates(1, true); // refresh config
+                    thing.requestUpdates(1, true); // refresh config
                     break;
 
                 case SHELLY2_EVENT_OTASTART:
                     logger.debug("{}: Firmware update started: {}", thingName, getString(e.msg));
-                    getThing().setThingStatus(ThingStatus.OFFLINE, ThingStatusDetail.FIRMWARE_UPDATING,
+                    thing.setThingStatus(ThingStatus.OFFLINE, ThingStatusDetail.FIRMWARE_UPDATING,
                             "offline.status-error-fwupgrade");
                     break;
                 case SHELLY2_EVENT_OTAPROGRESS:
@@ -725,30 +728,50 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                     break;
                 case SHELLY2_EVENT_OTADONE:
                     logger.debug("{}: Firmware update completed with status {}", thingName, getString(e.msg));
-                    getThing().setThingStatus(ThingStatus.OFFLINE, ThingStatusDetail.DUTY_CYCLE,
+                    thing.setThingStatus(ThingStatus.OFFLINE, ThingStatusDetail.DUTY_CYCLE,
                             "message.offline.status-error-fwcompleted");
                     break;
                 case SHELLY2_EVENT_RESTART:
                     logger.debug("{}: Device was restarted: {}", thingName, getString(e.msg));
-                    getThing().setThingStatus(ThingStatus.OFFLINE, ThingStatusDetail.DUTY_CYCLE,
+                    thing.setThingStatus(ThingStatus.OFFLINE, ThingStatusDetail.DUTY_CYCLE,
                             "offline.status-error-restarted");
-                    getThing().postEvent(ALARM_TYPE_RESTARTED, true);
+                    thing.postEvent(ALARM_TYPE_RESTARTED, true);
                     break;
                 case SHELLY2_EVENT_SLEEP:
                     logger.debug("{}: Connection terminated, e.g. device in sleep mode", thingName);
                     break;
                 case SHELLY2_EVENT_WIFICONNFAILED:
                     logger.debug("{}: WiFi connect failed, check setup, reason {}", thingName, getInteger(e.reason));
-                    getThing().postEvent(e.event, false);
+                    thing.postEvent(e.event, false);
                     break;
                 case SHELLY2_EVENT_WIFIDISCONNECTED:
                     logger.debug("{}: WiFi disconnected, reason {}", thingName, getInteger(e.reason));
-                    getThing().postEvent(e.event, false);
+                    thing.postEvent(e.event, false);
                     break;
                 default:
                     logger.debug("{}: Event {} was not handled", thingName, e.event);
             }
         }
+    }
+
+    private boolean checkThingStatusAndRestartWatchdog(String src, String dst) {
+        ShellyThingInterface thing = this.thing;
+        if (thing == null) {
+            logger.debug("{}: No matching thing, ignore message (dst={}, discovery={}", src, dst, discovery.get());
+            return false;
+        }
+        if (thing.isStopping()) {
+            logger.debug("{}: Thing is shutting down, ignore WebSocket message", thingName);
+            return false;
+        }
+        if (!thing.isThingOnline() && thing.getThingStatusDetail() != ThingStatusDetail.CONFIGURATION_PENDING) {
+            logger.debug("{}: Thing is not in online state/connectable, ignore NotifyStatus", thingName);
+            return false;
+        }
+
+        thing.incProtMessages();
+        thing.restartWatchdog();
+        return true;
     }
 
     @Override
@@ -764,7 +787,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
             logger.debug("{}: WebSocket connection closed, status = {}/{}", thingName, statusCode, reason);
             if ("Bye".equalsIgnoreCase(reason)) {
                 logger.debug("{}: Device went to sleep mode or was restarted", thingName);
-            } else if (statusCode == StatusCode.ABNORMAL && getProfile().alwaysOn) {
+            } else if (statusCode == StatusCode.ABNORMAL && !discovery.get() && getProfile().alwaysOn) {
                 // e.g. device rebooted
                 if (getThing().getThingStatusDetail() != ThingStatusDetail.DUTY_CYCLE) {
                     thingOffline("WebSocket connection closed abnormally");
@@ -787,6 +810,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                 logger.debug("{}: {}", thingName, message, cause);
             }
         }
+
         ShellyThingInterface thing = this.thing;
         if (thing != null && thing.getProfile().alwaysOn) {
             thingOffline(message);
@@ -878,6 +902,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
             // Update status when not yet initialized
             getStatus();
         }
+        // TODO: Return copy?
         return relayStatus;
     }
 
@@ -1149,16 +1174,6 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         return ""; // Gen2 uses WS to publish debug log
     }
 
-    /*
-     * The following API calls are not yet relevant, because currently there a no Plus/Pro (Gen2) devices of those
-     * categories (e.g. bulbs)
-     */
-
-    @Override
-    public void setLightParm(int lightIndex, String parm, String value) throws ShellyApiException {
-        throw new ShellyApiException("API call not implemented");
-    }
-
     @Override
     public void setLightParms(int lightIndex, Map<String, String> parameters) throws ShellyApiException {
         Shelly2RpcRequestParams params = new Shelly2RpcRequestParams();
@@ -1184,6 +1199,16 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
 
             apiRequest(SHELLYRPC_METHOD_RGBW_SET, params, String.class);
         }
+        throw new ShellyApiException("API call not implemented");
+    }
+
+    /*
+     * The following API calls are not yet relevant, because currently there a no Plus/Pro (Gen2) devices of those
+     * categories (e.g. bulbs)
+     */
+
+    @Override
+    public void setLightParm(int lightIndex, String parm, String value) throws ShellyApiException {
         throw new ShellyApiException("API call not implemented");
     }
 
@@ -1259,9 +1284,13 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     }
 
     private void asyncApiRequest(String method) throws ShellyApiException {
-        Shelly2RpcBaseMessage request = buildRequest(method, null);
         reconnect();
-        Shelly2RpcSocket rpcSocket = this.rpcSocket;
+
+        Shelly2RpcBaseMessage request = buildRequest(method, null);
+        Shelly2RpcSocket rpcSocket;
+        synchronized (stateLock) {
+            rpcSocket = this.rpcSocket;
+        }
         if (rpcSocket != null && rpcSocket.isConnected()) {
             rpcSocket.sendMessage(gson.toJson(request)); // submit, result will be async
         } else {
@@ -1281,25 +1310,28 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
             String auth = getString(res.authChallenge);
             if (res.isHttpAccessUnauthorized() && !auth.isEmpty()) {
                 String[] options = auth.split(",");
-                Shelly2AuthChallenge authInfo = this.authInfo = new Shelly2AuthChallenge();
-                for (String o : options) {
-                    String key = substringBefore(o, "=").stripLeading().trim();
-                    String value = substringAfter(o, "=").replace("\"", "").trim();
-                    switch (key) {
-                        case "Digest qop":
-                            authInfo.authType = SHELLY2_AUTHTTYPE_DIGEST;
-                            break;
-                        case "realm":
-                            authInfo.realm = value;
-                            break;
-                        case "nonce":
-                            // authInfo.nonce = Long.parseLong(value, 16);
-                            authInfo.nonce = value;
-                            break;
-                        case "algorithm":
-                            authInfo.algorithm = value;
-                            break;
+                synchronized (stateLock) {
+                    Shelly2AuthChallenge authInfo = new Shelly2AuthChallenge();
+                    for (String o : options) {
+                        String key = substringBefore(o, "=").stripLeading().trim();
+                        String value = substringAfter(o, "=").replace("\"", "").trim();
+                        switch (key) {
+                            case "Digest qop":
+                                authInfo.authType = SHELLY2_AUTHTTYPE_DIGEST;
+                                break;
+                            case "realm":
+                                authInfo.realm = value;
+                                break;
+                            case "nonce":
+                                // authInfo.nonce = Long.parseLong(value, 16);
+                                authInfo.nonce = value;
+                                break;
+                            case "algorithm":
+                                authInfo.algorithm = value;
+                                break;
+                        }
                     }
+                    this.authInfo = authInfo;
                 }
                 req = buildRequest(method, params); // update RPC message id
                 json = rpcPost(gson.toJson(req));
@@ -1337,22 +1369,29 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     }
 
     private String rpcPost(String postData) throws ShellyApiException {
+        Shelly2AuthChallenge authInfo;
+        synchronized (stateLock) {
+            authInfo = this.authInfo;
+        }
         return httpPost(authInfo, postData);
     }
 
     private void reconnect() throws ShellyApiException {
-        Shelly2RpcSocket rpcSocket = this.rpcSocket;
+        Shelly2RpcSocket rpcSocket;
+        synchronized (stateLock) {
+            rpcSocket = this.rpcSocket;
+        }
         if (rpcSocket != null) {
             if (!rpcSocket.isConnected()) {
-                logger.debug("{}: Connect RPC Socket", thingName);
+                logger.debug("{}: Connect RPC Socket (discovery = {})", thingName, discovery);
                 rpcSocket.connect();
             }
         } else {
-            throw new ShellyApiException("RPC socket is not connected");
+            throw new ShellyApiException("rpcSocket is not connected");
         }
     }
 
-    private void disconnect() {
+    private void disconnect() throws ShellyApiException {
         Shelly2RpcSocket rpcSocket = this.rpcSocket;
         if (rpcSocket == null) {
             return;
@@ -1378,18 +1417,23 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
 
     @Override
     public void close() {
-        Shelly2RpcSocket rpcSocket = this.rpcSocket;
-        if (rpcSocket == null) {
-            logger.debug("{}: Cannot close RPC socket since it's null", thingName);
+        try {
+            Shelly2RpcSocket rpcSocket = this.rpcSocket;
+            if (rpcSocket == null) {
+                // socket already closed
+                return;
+            }
+
+            if (logger.isDebugEnabled()) {
+                logger.debug("{}: Closing Rpc API (socket is {}, discovery={})", thingName,
+                        rpcSocket.isConnected() ? "connected" : "disconnected", discovery);
+            }
+            disconnect();
+        } catch (Exception e) {
+            logger.warn("{}: Closing socket failed, poteltial resource leak", thingName, e);
+        } finally {
             initialized.set(false);
-            return;
         }
-        if (initialized.get() || rpcSocket.isConnected()) {
-            logger.debug("{}: Closing Rpc API (socket is {})", thingName,
-                    rpcSocket.isConnected() ? "connected" : "disconnected");
-        }
-        disconnect();
-        initialized.set(false);
     }
 
     private void incProtErrors() {

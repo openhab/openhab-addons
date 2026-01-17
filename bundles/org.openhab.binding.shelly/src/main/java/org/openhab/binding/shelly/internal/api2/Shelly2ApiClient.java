@@ -108,7 +108,7 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
     protected final ShellyStatusRelay relayStatus = new ShellyStatusRelay();
     protected final ShellyStatusSensor sensorData = new ShellyStatusSensor();
     protected final ArrayList<ShellyRollerStatus> rollerStatus = new ArrayList<>();
-    protected @Nullable ShellyThingInterface thing;
+    protected volatile @Nullable ShellyThingInterface thing;
 
     private static final String RPC_SRC_PREFIX = "ohshelly-";
     private static final AtomicInteger REQUEST_ID = new AtomicInteger(1);

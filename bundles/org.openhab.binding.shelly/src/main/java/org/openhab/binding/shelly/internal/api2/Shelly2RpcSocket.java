@@ -337,25 +337,7 @@ public class Shelly2RpcSocket implements WriteCallback {
                         } else {
                             for (Shelly2NotifyEvent e : events.params.events) {
                                 if (getString(e.event).startsWith(SHELLY2_EVENT_BLUPREFIX)) {
-                                    String address = getString(e.blu != null ? e.blu.addr : "").replace(":", "");
-                                    if (thingTable.findThing(address) != null) {
-                                        // known device
-                                        ShellyThingInterface thing = thingTable.getThing(address);
-                                        Shelly2ApiRpc api = (Shelly2ApiRpc) thing.getApi();
-                                        handler = api.getRpcHandler();
-                                        handler.onNotifyEvent(receivedMessage);
-                                    } else {
-                                        // new device
-                                        if (SHELLY2_EVENT_BLUSCAN.equals(e.event)) {
-                                            addBluThing(getString(message.src), e.blu, thingTable);
-                                        } else {
-                                            if (logger.isDebugEnabled()) {
-                                                logger.debug(
-                                                        "{}: NotifyEvent {} for unknown BLU device {} or Thing in Inbox",
-                                                        message.src, e.event, e.blu.addr);
-                                            }
-                                        }
-                                    }
+                                    handleBluEvent(e, message, receivedMessage);
                                 } else {
                                     handler.onNotifyEvent(receivedMessage);
                                 }
@@ -374,6 +356,29 @@ public class Shelly2RpcSocket implements WriteCallback {
         } catch (ShellyApiException | IllegalArgumentException e) {
             if (logger.isDebugEnabled()) {
                 logger.debug("{}: Unable to process Rpc message ({}): {}", thingName, e.getMessage(), receivedMessage);
+            }
+        }
+    }
+
+    private void handleBluEvent(Shelly2NotifyEvent e, Shelly2RpcBaseMessage message, String receivedMessage)
+            throws ShellyApiException {
+        ShellyThingTable thingTable = this.thingTable;
+        String address = getString(e.blu != null ? e.blu.addr : "").replace(":", "");
+        if (thingTable.findThing(address) != null) {
+            // known device
+            ShellyThingInterface thing = thingTable.getThing(address);
+            Shelly2ApiRpc api = (Shelly2ApiRpc) thing.getApi();
+            Shelly2RpctInterface bluHandler = api.getRpcHandler();
+            bluHandler.onNotifyEvent(receivedMessage);
+        } else {
+            // new device
+            if (SHELLY2_EVENT_BLUSCAN.equals(e.event)) {
+                addBluThing(message.src, e.blu, thingTable);
+            } else {
+                if (logger.isDebugEnabled()) {
+                    logger.debug("{}: NotifyEvent {} for unknown BLU device {} or Thing in Inbox", message.src, e.event,
+                            e.blu != null ? e.blu.addr : "");
+                }
             }
         }
     }
