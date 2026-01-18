@@ -75,8 +75,7 @@ public class RokuDiscoveryParticipant implements UpnpDiscoveryParticipant {
             String label;
 
             try {
-                final RokuCommunicator communicator = new RokuCommunicator(httpClient, host, port);
-                final DeviceInfo deviceInfo = communicator.getDeviceInfo();
+                final DeviceInfo deviceInfo = new RokuCommunicator(httpClient, host, port).getDeviceInfo();
 
                 // replace extraneous characters with spaces and remove any consecutive spaces
                 label = (deviceInfo.getFriendlyModelName() + " " + deviceInfo.getUserDeviceLocation())
