@@ -1312,6 +1312,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                             break;
                     }
                 }
+                req = buildRequest(method, params); // update RPC message id
                 json = rpcPost(gson.toJson(req));
             } else {
                 throw e;
