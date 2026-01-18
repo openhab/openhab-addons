@@ -13,6 +13,7 @@
 package org.openhab.binding.dirigera.internal.handler;
 
 import static org.openhab.binding.dirigera.internal.Constants.*;
+import static org.openhab.binding.dirigera.internal.interfaces.Model.*;
 
 import java.lang.reflect.InvocationTargetException;
 import java.nio.charset.StandardCharsets;
@@ -124,7 +125,7 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway, Debug
     private DirigeraConfiguration config;
     private Storage<String> storage;
     private HttpClient httpClient;
-    private String token = PROPERTY_EMPTY;
+    private String token = "";
     private Instant sunriseInstant = Instant.MAX;
     private Instant sunsetInstant = Instant.MIN;
     private Instant peakRecognitionTime = Instant.MIN;
@@ -171,7 +172,7 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway, Debug
             }
         } else if (CHANNEL_PAIRING.equals(channel)) {
             JSONObject permissionAttributes = new JSONObject();
-            permissionAttributes.put(PROPERTY_PERMIT_JOIN, OnOffType.ON.equals(command));
+            permissionAttributes.put(ATTRIBUTES_KEY_PERMIT_JOIN, OnOffType.ON.equals(command));
             api().sendAttributes(config.id, permissionAttributes);
         } else if (CHANNEL_LOCATION.equals(channel)) {
             PointType coordinatesPoint = null;
@@ -333,7 +334,7 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway, Debug
                 return token;
             }
         }
-        return PROPERTY_EMPTY;
+        return "";
     }
 
     private void storeToken(String token) {
@@ -346,8 +347,8 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway, Debug
 
     private void getKnownDevicesFromStorage() {
         JSONObject gatewayStorageJson = getStorageJson();
-        if (gatewayStorageJson.has(PROPERTY_DEVICES)) {
-            String knownDeviceString = gatewayStorageJson.getString(PROPERTY_DEVICES);
+        if (gatewayStorageJson.has(MODEL_KEY_DEVICES)) {
+            String knownDeviceString = gatewayStorageJson.getString(MODEL_KEY_DEVICES);
             JSONArray arr = new JSONArray(knownDeviceString);
             knownDevices = arr.toList();
         }
@@ -356,7 +357,7 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway, Debug
     private void storeKnownDevices() {
         JSONObject gatewayStorageJson = getStorageJson();
         JSONArray toStoreArray = new JSONArray(knownDevices);
-        gatewayStorageJson.put(PROPERTY_DEVICES, toStoreArray.toString());
+        gatewayStorageJson.put(MODEL_KEY_DEVICES, toStoreArray.toString());
         storage.put(config.ipAddress, gatewayStorageJson.toString());
     }
 
@@ -799,7 +800,7 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway, Debug
             } else {
                 String id = gatewayList.get(0);
                 Configuration configUpdate = editConfiguration();
-                configUpdate.put(PROPERTY_DEVICE_ID, id);
+                configUpdate.put(JSON_KEY_DEVICE_ID, id);
                 updateConfiguration(configUpdate);
                 // get fresh config after update
                 config = getConfigAs(DirigeraConfiguration.class);
@@ -811,6 +812,7 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway, Debug
     @Override
     public void websocketConnected(boolean connected, String reason) {
         if (connected) {
+            logger.trace("DIRIGERA HANDLER ONLINE!");
             updateStatus(ThingStatus.ONLINE);
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
@@ -844,18 +846,18 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway, Debug
             try {
                 update = new JSONObject(json);
                 data = update.getJSONObject("data");
-                targetId = data.getString(PROPERTY_DEVICE_ID);
+                targetId = data.getString(JSON_KEY_DEVICE_ID);
             } catch (JSONException exception) {
                 logger.debug("DIRIGERA HANDLER cannot decode update {} {}", exception.getMessage(), json);
                 return;
             }
 
-            String type = update.getString(PROPERTY_TYPE);
+            String type = update.getString(JSON_KEY_TYPE);
             switch (type) {
                 case EVENT_TYPE_SCENE_CREATED:
                 case EVENT_TYPE_SCENE_DELETED:
-                    if (data.has(PROPERTY_TYPE)) {
-                        String dataType = data.getString(PROPERTY_TYPE);
+                    if (data.has(JSON_KEY_TYPE)) {
+                        String dataType = data.getString(JSON_KEY_TYPE);
                         if (dataType.equals(TYPE_CUSTOM_SCENE)) {
                             // don't handle custom scenes so break
                             break;
@@ -884,12 +886,12 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway, Debug
                             } else {
                                 // special case: if custom name is changed in attributes force model update
                                 // in order to present the updated name in discovery
-                                if (data.has(PROPERTY_ATTRIBUTES)) {
-                                    JSONObject attributes = data.getJSONObject(PROPERTY_ATTRIBUTES);
-                                    if (attributes.has(Model.CUSTOM_NAME)) {
+                                if (data.has(JSON_KEY_ATTRIBUTES)) {
+                                    JSONObject attributes = data.getJSONObject(JSON_KEY_ATTRIBUTES);
+                                    if (attributes.has(Model.ATTRIBUTES_KEY_CUSTOM_NAME)) {
                                         if (customDebug) {
                                             logger.info("DIRIGERA HANDLER possible name change detected {}",
-                                                    attributes.getString(Model.CUSTOM_NAME));
+                                                    attributes.getString(Model.ATTRIBUTES_KEY_CUSTOM_NAME));
                                         }
                                         modelUpdate();
                                     }
@@ -933,8 +935,6 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway, Debug
         websocket.increase(Websocket.MODEL_UPDATES);
         websocket.getStatistics().put(Websocket.MODEL_UPDATE_TIME, durationUpdateTime + " ms");
         websocket.getStatistics().put(Websocket.MODEL_UPDATE_LAST, Instant.now());
-        // updateState(new ChannelUID(thing.getUID(), CHANNEL_JSON),
-        // StringType.valueOf(model().getModelString()));
         configureGateway();
         updateGateway();
     }
@@ -944,16 +944,16 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway, Debug
         updateState(new ChannelUID(thing.getUID(), CHANNEL_STATISTICS),
                 StringType.valueOf(websocket.getStatistics().toString()));
 
-        if (data.has(Model.ATTRIBUTES)) {
-            JSONObject attributes = data.getJSONObject(Model.ATTRIBUTES);
+        if (data.has(Model.JSON_KEY_ATTRIBUTES)) {
+            JSONObject attributes = data.getJSONObject(Model.JSON_KEY_ATTRIBUTES);
             // check ota for each device
-            if (attributes.has(PROPERTY_CUSTOM_NAME)) {
+            if (attributes.has(ATTRIBUTES_KEY_CUSTOM_NAME)) {
                 updateState(new ChannelUID(thing.getUID(), CHANNEL_CUSTOM_NAME),
-                        StringType.valueOf(attributes.getString(PROPERTY_CUSTOM_NAME)));
+                        StringType.valueOf(attributes.getString(ATTRIBUTES_KEY_CUSTOM_NAME)));
             }
-            if (attributes.has(PROPERTY_PERMIT_JOIN)) {
+            if (attributes.has(ATTRIBUTES_KEY_PERMIT_JOIN)) {
                 updateState(new ChannelUID(thing.getUID(), CHANNEL_PAIRING),
-                        OnOffType.from(attributes.getBoolean(PROPERTY_PERMIT_JOIN)));
+                        OnOffType.from(attributes.getBoolean(ATTRIBUTES_KEY_PERMIT_JOIN)));
             }
             if (!attributes.isNull("coordinates")) {
                 JSONObject coordinates = attributes.getJSONObject("coordinates");
@@ -967,8 +967,8 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway, Debug
             } else {
                 updateState(new ChannelUID(thing.getUID(), CHANNEL_LOCATION), UnDefType.UNDEF);
             }
-            if (attributes.has(PROPERTY_OTA_STATUS)) {
-                String otaStatusString = attributes.getString(PROPERTY_OTA_STATUS);
+            if (attributes.has(ATTRIBUTES_KEY_OTA_STATUS)) {
+                String otaStatusString = attributes.getString(ATTRIBUTES_KEY_OTA_STATUS);
                 Integer otaStatus = OTA_STATUS_MAP.get(otaStatusString);
                 if (otaStatus != null) {
                     updateState(new ChannelUID(thing.getUID(), CHANNEL_OTA_STATUS), new DecimalType(otaStatus));
@@ -976,8 +976,8 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway, Debug
                     logger.warn("DIRIGERA HANDLER {} Cannot decode ota status {}", thing.getLabel(), otaStatusString);
                 }
             }
-            if (attributes.has(PROPERTY_OTA_STATE)) {
-                String otaStateString = attributes.getString(PROPERTY_OTA_STATE);
+            if (attributes.has(ATTRIBUTES_KEY_OTA_STATE)) {
+                String otaStateString = attributes.getString(ATTRIBUTES_KEY_OTA_STATE);
                 if (OTA_STATE_MAP.containsKey(otaStateString)) {
                     Integer otaState = OTA_STATE_MAP.get(otaStateString);
                     if (otaState != null) {
@@ -993,9 +993,9 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway, Debug
                     logger.debug("DIRIGERA HANDLER {} Cannot decode ota state {}", thing.getLabel(), otaStateString);
                 }
             }
-            if (attributes.has(PROPERTY_OTA_PROGRESS)) {
+            if (attributes.has(ATTRIBUTES_KEY_OTA_PROGRESS)) {
                 updateState(new ChannelUID(thing.getUID(), CHANNEL_OTA_PROGRESS),
-                        QuantityType.valueOf(attributes.getInt(PROPERTY_OTA_PROGRESS), Units.PERCENT));
+                        QuantityType.valueOf(attributes.getInt(ATTRIBUTES_KEY_OTA_PROGRESS), Units.PERCENT));
             }
             // sunrise & sunset
             if (!attributes.isNull("nextSunRise")) {

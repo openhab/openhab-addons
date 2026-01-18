@@ -87,7 +87,7 @@ public class DirigeraCommandExtension extends AbstractConsoleCommandExtension {
             if (args.length == 0 || args.length > 3) {
                 return;
             }
-            command = args[0].toLowerCase(Locale.US);
+            command = args[0].toLowerCase(Locale.ENGLISH);
             if (!COMMANDS.contains(command)) {
                 return;
             }
@@ -102,15 +102,15 @@ public class DirigeraCommandExtension extends AbstractConsoleCommandExtension {
                 case CMD_JSON:
                     // Take second parameter for device ID or 'all'
                     if (args.length == 2) {
-                        target = args[1].toLowerCase(Locale.US);
+                        target = args[1].toLowerCase(Locale.ENGLISH);
                         valid = true;
                     }
                     break;
                 case CMD_DEBUG:
                     // Three parameters expected for debug command, second as target and third as boolean
                     if (args.length == 3) {
-                        target = args[1].toLowerCase(Locale.US);
-                        String booleanCandidate = args[2].toLowerCase(Locale.US);
+                        target = args[1].toLowerCase(Locale.ENGLISH);
+                        String booleanCandidate = args[2].toLowerCase(Locale.ENGLISH);
                         if (Boolean.TRUE.toString().equalsIgnoreCase(booleanCandidate)
                                 || Boolean.FALSE.toString().equalsIgnoreCase(booleanCandidate)) {
                             enable = Boolean.valueOf(booleanCandidate);

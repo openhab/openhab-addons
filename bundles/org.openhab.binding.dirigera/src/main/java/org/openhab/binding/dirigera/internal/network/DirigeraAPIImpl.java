@@ -13,6 +13,7 @@
 package org.openhab.binding.dirigera.internal.network;
 
 import static org.openhab.binding.dirigera.internal.Constants.*;
+import static org.openhab.binding.dirigera.internal.interfaces.Model.JSON_KEY_DEVICE_ID;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Set;
@@ -140,7 +141,7 @@ public class DirigeraAPIImpl implements DirigeraAPI {
     @Override
     public int sendAttributes(String id, JSONObject attributes) {
         JSONObject data = new JSONObject();
-        data.put(Model.ATTRIBUTES, attributes);
+        data.put(Model.JSON_KEY_ATTRIBUTES, attributes);
         return sendPatch(id, data);
     }
 
@@ -246,7 +247,7 @@ public class DirigeraAPIImpl implements DirigeraAPI {
                         logger.debug("DIRIGERA API send {} to {} delivered", payload, url);
                         String responseString = response.getContentAsString();
                         JSONObject responseJSON = new JSONObject(responseString);
-                        responseUUID = responseJSON.getString(PROPERTY_DEVICE_ID);
+                        responseUUID = responseJSON.getString(JSON_KEY_DEVICE_ID);
                         break;
                     } else {
                         logger.warn("DIRIGERA API send {} to {} failed with status {}", payload, url,

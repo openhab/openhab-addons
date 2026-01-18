@@ -15,6 +15,7 @@ package org.openhab.binding.dirigera.internal.handler;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.openhab.binding.dirigera.internal.Constants.*;
+import static org.openhab.binding.dirigera.internal.interfaces.Model.MODEL_KEY_DEVICES;
 
 import java.util.HashMap;
 import java.util.List;
@@ -72,7 +73,7 @@ public class DirigeraBridgeProvider {
         JSONObject storageObject = new JSONObject();
         JSONArray knownDevices = new JSONArray(knownDevicesd);
         knownDevices.put("594197c3-23c9-4dc7-a6ca-1fe6a8455d29_1");
-        storageObject.put(PROPERTY_DEVICES, knownDevices.toString());
+        storageObject.put(MODEL_KEY_DEVICES, knownDevices.toString());
         storageObject.put(PROPERTY_TOKEN, "unit-test");
         mockStorage.put(ipAddress, storageObject.toString());
 

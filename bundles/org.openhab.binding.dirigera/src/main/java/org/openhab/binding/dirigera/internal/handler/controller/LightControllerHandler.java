@@ -12,7 +12,8 @@
  */
 package org.openhab.binding.dirigera.internal.handler.controller;
 
-import static org.openhab.binding.dirigera.internal.Constants.*;
+import static org.openhab.binding.dirigera.internal.Constants.CHANNEL_LIGHT_PRESET;
+import static org.openhab.binding.dirigera.internal.interfaces.Model.*;
 
 import java.util.Iterator;
 import java.util.List;
@@ -94,8 +95,8 @@ public class LightControllerHandler extends BaseHandler {
     @Override
     public void handleUpdate(JSONObject update) {
         super.handleUpdate(update);
-        if (update.has(Model.ATTRIBUTES)) {
-            JSONObject attributes = update.getJSONObject(Model.ATTRIBUTES);
+        if (update.has(Model.JSON_KEY_ATTRIBUTES)) {
+            JSONObject attributes = update.getJSONObject(Model.JSON_KEY_ATTRIBUTES);
             Iterator<String> attributesIterator = attributes.keys();
             while (attributesIterator.hasNext()) {
                 String key = attributesIterator.next();

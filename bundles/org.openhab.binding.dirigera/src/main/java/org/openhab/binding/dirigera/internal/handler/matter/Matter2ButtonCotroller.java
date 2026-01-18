@@ -13,6 +13,7 @@
 package org.openhab.binding.dirigera.internal.handler.matter;
 
 import static org.openhab.binding.dirigera.internal.Constants.*;
+import static org.openhab.binding.dirigera.internal.interfaces.Model.*;
 
 import java.util.HashMap;
 import java.util.List;
@@ -56,7 +57,7 @@ public class Matter2ButtonCotroller extends BaseMatterHandler {
                 case '2' -> "Lower Button";
                 default -> "Button " + buttonNumber;
             };
-            String triggerChannelName = buttonName.toLowerCase(Locale.US).replace(" ", "-");
+            String triggerChannelName = buttonName.toLowerCase(Locale.ENGLISH).replace(" ", "-");
             triggerChannelMapping.put(deviceId, triggerChannelName);
             createChannelIfNecessary(triggerChannelName, "system.button", "", buttonName,
                     "Press triggers for button " + buttonNumber);
@@ -71,17 +72,17 @@ public class Matter2ButtonCotroller extends BaseMatterHandler {
         super.handleUpdate(update);
 
         // handle remotePress events
-        String channelName = triggerChannelMapping.get(update.optString(PROPERTY_DEVICE_ID));
-        String clickPattern = TRIGGER_MAPPING.get(update.optString("clickPattern"));
+        String channelName = triggerChannelMapping.get(update.optString(JSON_KEY_DEVICE_ID));
+        String clickPattern = TRIGGER_MAPPING.get(update.optString(EVENT_KEY_CLICK_PATTER));
         if (channelName != null && clickPattern != null) {
             logger.warn("Button {} pressed: {}", channelName, clickPattern);
             triggerChannel(channelName, clickPattern);
         }
 
         // change link candidates id control-mode switched
-        JSONObject attributes = update.optJSONObject("attributes");
+        JSONObject attributes = update.optJSONObject(JSON_KEY_ATTRIBUTES);
         if (attributes != null) {
-            String controlMode = attributes.optString("controlMode");
+            String controlMode = attributes.optString(ATTRIBUTES_KEY_CONTROL_MODE);
             if (!controlMode.isBlank()) {
                 List<String> candidateTypes = modeLinkCandidateMapping.get(controlMode);
                 if (candidateTypes != null) {

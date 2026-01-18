@@ -111,7 +111,7 @@ class TestMatterLight {
         State colorTemperatureStateAbs = callback.getState("dirigera:matter-light:test-device:color-temperature-abs");
         assertNotNull(colorTemperatureStateAbs);
         assertTrue(colorTemperatureStateAbs instanceof QuantityType);
-        assertEquals(2450, ((QuantityType) colorTemperatureStateAbs).intValue(), "Color Temperature Absolute");
+        assertEquals(2450, ((QuantityType<?>) colorTemperatureStateAbs).intValue(), "Color Temperature Absolute");
 
         State hsbState = callback.getState("dirigera:matter-light:test-device:color");
         assertNotNull(hsbState);

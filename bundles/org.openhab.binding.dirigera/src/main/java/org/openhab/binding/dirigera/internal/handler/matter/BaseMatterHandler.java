@@ -13,6 +13,8 @@
 package org.openhab.binding.dirigera.internal.handler.matter;
 
 import static org.openhab.binding.dirigera.internal.Constants.*;
+import static org.openhab.binding.dirigera.internal.interfaces.Model.*;
+import static org.openhab.binding.dirigera.internal.model.MatterModel.*;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -36,6 +38,7 @@ import org.openhab.binding.dirigera.internal.interfaces.DebugHandler;
 import org.openhab.binding.dirigera.internal.interfaces.Gateway;
 import org.openhab.binding.dirigera.internal.interfaces.Model;
 import org.openhab.binding.dirigera.internal.interfaces.PowerListener;
+import org.openhab.binding.dirigera.internal.model.MatterModel;
 import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
@@ -72,7 +75,7 @@ public class BaseMatterHandler extends BaseThingHandler implements BaseDevice, D
     private @Nullable Gateway gateway;
 
     // cache to handle each refresh command properly
-    protected Map<String, DeviceConfig> deviceConfigMap = new TreeMap<>();
+    protected Map<String, MatterModel> deviceConfigMap = new TreeMap<>();
     protected Map<String, State> channelStateMap = new HashMap<>();
 
     /*
@@ -135,11 +138,11 @@ public class BaseMatterHandler extends BaseThingHandler implements BaseDevice, D
             String relationId = gateway().model().getRelationId(config.id);
             if (config.id.equals(relationId)) {
                 String deviceType = gateway().model().getDeviceType(config.id);
-                deviceConfigMap.put(config.id, new DeviceConfig(config.id, deviceType));
+                deviceConfigMap.put(config.id, new MatterModel(config.id, deviceType));
             } else {
                 Map<String, String> connectedDevices = gateway().model().getRelations(relationId);
                 connectedDevices.forEach((key, value) -> {
-                    deviceConfigMap.put(key, new DeviceConfig(key, value));
+                    deviceConfigMap.put(key, new MatterModel(key, value));
                 });
             }
         }
@@ -153,7 +156,7 @@ public class BaseMatterHandler extends BaseThingHandler implements BaseDevice, D
     private void initializeCache() {
         deviceConfigMap.forEach((deviceId, matterConfig) -> {
             matterConfig.getStatusProperties().forEach((key, value) -> {
-                channelStateMap.put(value.getString(DeviceConfig.KEY_CHANNEL), UnDefType.UNDEF);
+                channelStateMap.put(value.getString(MatterModel.CHANNEL_KEY_CHANNEL_NAME), UnDefType.UNDEF);
             });
         });
     }
@@ -186,7 +189,7 @@ public class BaseMatterHandler extends BaseThingHandler implements BaseDevice, D
         deviceConfigMap.forEach((deviceId, config) -> {
             updates.forEach(update -> {
                 JSONObject updateJson = (JSONObject) update;
-                if (deviceId.equals(updateJson.optString(PROPERTY_DEVICE_ID))) {
+                if (deviceId.equals(updateJson.optString(JSON_KEY_DEVICE_ID))) {
                     properties.putAll(config.getThingProperties(updateJson));
                 }
             });
@@ -195,16 +198,17 @@ public class BaseMatterHandler extends BaseThingHandler implements BaseDevice, D
     }
 
     private void createChannels(JSONObject values) {
-        if (values.has(Model.ATTRIBUTES)) {
-            JSONObject attributes = values.getJSONObject(Model.ATTRIBUTES);
+        if (values.has(JSON_KEY_ATTRIBUTES)) {
+            JSONObject attributes = values.getJSONObject(JSON_KEY_ATTRIBUTES);
             deviceConfigMap.forEach((deviceId, matterConfig) -> {
                 matterConfig.getStatusProperties().forEach((statusPropertyKey, statusPropertyJson) -> {
-                    String deviceAttribute = statusPropertyJson.getString(DeviceConfig.KEY_ATTRIBUTE);
+                    String deviceAttribute = statusPropertyJson.getString(CHANNEL_KEY_ATTRIBUTE);
                     if (attributes.has(deviceAttribute)) {
-                        createChannelIfNecessary(statusPropertyJson.optString("channel"),
-                                statusPropertyJson.optString("channelType"), statusPropertyJson.optString("itemType"),
-                                statusPropertyJson.optString("channelLabel"),
-                                statusPropertyJson.optString("channelDescription"));
+                        createChannelIfNecessary(statusPropertyJson.optString(CHANNEL_KEY_CHANNEL_NAME),
+                                statusPropertyJson.optString(CHANNEL_KEY_CHANNEL_TYPE),
+                                statusPropertyJson.optString(CHANNEL_KEY_ITEM_TYPE),
+                                statusPropertyJson.optString(CHANNEL_KEY_CHANNEL_LABEL),
+                                statusPropertyJson.optString(CHANNEL_KEY_CHANNEL_DESCRIPTION));
                     }
                 });
             });
@@ -324,8 +328,8 @@ public class BaseMatterHandler extends BaseThingHandler implements BaseDevice, D
             logger.info("DIRIGERA BASE_MATTER_HANDLER {} handleUpdate JSON {}", thing.getUID(), update);
         }
         // check reachable flag to determine ONLINE/OFFLINE status
-        if (update.has(Model.REACHABLE)) {
-            if (update.getBoolean(Model.REACHABLE)) {
+        if (update.has(Model.JSON_KEY_REACHABLE)) {
+            if (update.getBoolean(Model.JSON_KEY_REACHABLE)) {
                 updateStatus(ThingStatus.ONLINE);
                 online = true;
             } else {
@@ -335,8 +339,8 @@ public class BaseMatterHandler extends BaseThingHandler implements BaseDevice, D
             }
         }
         // check if links has changed
-        if (update.has(PROPERTY_REMOTE_LINKS)) {
-            JSONArray remoteLinks = update.getJSONArray(PROPERTY_REMOTE_LINKS);
+        if (update.has(ATTRIBUTES_KEY_REMOTE_LINKS)) {
+            JSONArray remoteLinks = update.getJSONArray(ATTRIBUTES_KEY_REMOTE_LINKS);
             List<String> updateList = new ArrayList<>();
             remoteLinks.forEach(link -> {
                 updateList.add(link.toString());
@@ -454,9 +458,9 @@ public class BaseMatterHandler extends BaseThingHandler implements BaseDevice, D
     }
 
     public Gateway gateway() {
-        Gateway gw = gateway;
-        if (gw != null) {
-            return gw;
+        Gateway gwlocalGateway = gateway;
+        if (gwlocalGateway != null) {
+            return gwlocalGateway;
         } else {
             throw new GatewayException(thing.getUID() + " has no Gateway defined");
         }
@@ -490,8 +494,9 @@ public class BaseMatterHandler extends BaseThingHandler implements BaseDevice, D
      * @return boolean
      */
     protected boolean isControllerOrSensor() {
-        for (DeviceConfig matterConfig : deviceConfigMap.values()) {
-            if (matterConfig.getTypes().contains("sensor") || matterConfig.getTypes().contains("controller")) {
+        for (MatterModel matterConfig : deviceConfigMap.values()) {
+            if (matterConfig.getDeviceType().contains(TYPE_SENSOR)
+                    || matterConfig.getDeviceType().contains(TYPE_CONTROLLER)) {
                 return true;
             }
         }
@@ -529,9 +534,9 @@ public class BaseMatterHandler extends BaseThingHandler implements BaseDevice, D
             targetDevice = linkedDeviceId;
             triggerDevice = config.id;
             // get current links
-            JSONObject deviceData = gateway().model().getAllFor(targetDevice, PROPERTY_DEVICES);
-            if (deviceData.has(PROPERTY_REMOTE_LINKS)) {
-                JSONArray jsonLinks = deviceData.getJSONArray(PROPERTY_REMOTE_LINKS);
+            JSONObject deviceData = gateway().model().getAllFor(targetDevice, MODEL_KEY_DEVICES);
+            if (deviceData.has(ATTRIBUTES_KEY_REMOTE_LINKS)) {
+                JSONArray jsonLinks = deviceData.getJSONArray(ATTRIBUTES_KEY_REMOTE_LINKS);
                 jsonLinks.forEach(link -> {
                     linksToSend.add(link.toString());
                 });
@@ -577,7 +582,7 @@ public class BaseMatterHandler extends BaseThingHandler implements BaseDevice, D
         }
         JSONArray newLinks = new JSONArray(linksToSend);
         JSONObject attributes = new JSONObject();
-        attributes.put(PROPERTY_REMOTE_LINKS, newLinks);
+        attributes.put(ATTRIBUTES_KEY_REMOTE_LINKS, newLinks);
         gateway().api().sendPatch(targetDevice, attributes);
         // after api command remoteLinks property will be updated and trigger new linkUpadte
     }
@@ -661,7 +666,7 @@ public class BaseMatterHandler extends BaseThingHandler implements BaseDevice, D
     }
 
     protected boolean hasType(String queryDeviceType) {
-        for (DeviceConfig matterConfig : deviceConfigMap.values()) {
+        for (MatterModel matterConfig : deviceConfigMap.values()) {
             if (matterConfig.getDeviceType().equals(queryDeviceType)) {
                 return true;
             }

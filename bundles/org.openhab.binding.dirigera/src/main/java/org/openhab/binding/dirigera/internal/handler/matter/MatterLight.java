@@ -12,7 +12,9 @@
  */
 package org.openhab.binding.dirigera.internal.handler.matter;
 
-import static org.openhab.binding.dirigera.internal.Constants.COLOR_LIGHT_MAP;
+import static org.openhab.binding.dirigera.internal.Constants.*;
+import static org.openhab.binding.dirigera.internal.interfaces.Model.DEVICE_TYPE_LIGHT;
+import static org.openhab.binding.dirigera.internal.model.MatterModel.*;
 
 import java.util.Map;
 import java.util.TreeMap;
@@ -23,6 +25,7 @@ import org.openhab.binding.dirigera.internal.DirigeraStateDescriptionProvider;
 import org.openhab.binding.dirigera.internal.config.ColorLightConfiguration;
 import org.openhab.binding.dirigera.internal.handler.light.ColorLightHandler;
 import org.openhab.binding.dirigera.internal.interfaces.Model;
+import org.openhab.binding.dirigera.internal.model.MatterModel;
 import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -38,7 +41,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class MatterLight extends ColorLightHandler {
     private final Logger logger = LoggerFactory.getLogger(MatterLight.class);
-    protected Map<String, DeviceConfig> configMap = new TreeMap<>();
+    protected Map<String, MatterModel> configMap = new TreeMap<>();
 
     public MatterLight(Thing thing, Map<String, String> stateChannelMapping,
             DirigeraStateDescriptionProvider stateProvider) {
@@ -49,7 +52,7 @@ public class MatterLight extends ColorLightHandler {
     @Override
     public void initialize() {
         lightConfig = getConfigAs(ColorLightConfiguration.class);
-        configMap.put(lightConfig.id, new DeviceConfig(lightConfig.id, "light"));
+        configMap.put(lightConfig.id, new MatterModel(lightConfig.id, DEVICE_TYPE_LIGHT));
         super.initialize();
         JSONObject update = gateway().api().readDevice(lightConfig.id);
         createChannels(update);
@@ -57,19 +60,20 @@ public class MatterLight extends ColorLightHandler {
     }
 
     private void createChannels(JSONObject values) {
-        if (values.has(Model.ATTRIBUTES)) {
-            JSONObject attributes = values.getJSONObject(Model.ATTRIBUTES);
+        if (values.has(Model.JSON_KEY_ATTRIBUTES)) {
+            JSONObject attributes = values.getJSONObject(Model.JSON_KEY_ATTRIBUTES);
             configMap.forEach((deviceId, matterConfig) -> {
                 matterConfig.getStatusProperties().forEach((statusPropertyKey, statusPropertyJson) -> {
-                    String deviceAttribute = statusPropertyJson.optString(DeviceConfig.KEY_ATTRIBUTE);
+                    String deviceAttribute = statusPropertyJson.optString(MatterModel.CHANNEL_KEY_ATTRIBUTE);
                     if (attributes.has(deviceAttribute)) {
-                        createChannelIfNecessary(statusPropertyJson.optString("channel"),
-                                statusPropertyJson.optString("channelType"), statusPropertyJson.optString("itemType"),
-                                statusPropertyJson.optString("channelLabel"),
-                                statusPropertyJson.optString("channelDescription"));
+                        createChannelIfNecessary(statusPropertyJson.optString(CHANNEL_KEY_CHANNEL_NAME),
+                                statusPropertyJson.optString(CHANNEL_KEY_CHANNEL_TYPE),
+                                statusPropertyJson.optString(CHANNEL_KEY_ITEM_TYPE),
+                                statusPropertyJson.optString(CHANNEL_KEY_CHANNEL_LABEL),
+                                statusPropertyJson.optString(CHANNEL_KEY_CHANNEL_DESCRIPTION));
                         if ("colorTemperature".equals(deviceAttribute)) {
                             // add additional channel for color temperature in percent
-                            createChannelIfNecessary("color-temperature", "system.color-temperature",
+                            createChannelIfNecessary(CHANNEL_LIGHT_TEMPERATURE, "system.color-temperature",
                                     CoreItemFactory.DIMMER);
                         }
                     }

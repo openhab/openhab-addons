@@ -13,6 +13,7 @@
 package org.openhab.binding.dirigera.internal.handler.matter;
 
 import static org.openhab.binding.dirigera.internal.Constants.*;
+import static org.openhab.binding.dirigera.internal.interfaces.Model.*;
 
 import java.util.HashMap;
 import java.util.List;
@@ -22,6 +23,7 @@ import java.util.Map;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.json.JSONObject;
 import org.openhab.binding.dirigera.internal.config.BaseDeviceConfiguration;
+import org.openhab.binding.dirigera.internal.model.MatterModel;
 import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.thing.Thing;
 import org.slf4j.Logger;
@@ -67,7 +69,7 @@ public class Matter3ButtonCotroller extends BaseMatterHandler {
         int j = 1;
         for (int i = subDeviceId; i > subDeviceId - 3; i--) {
             String deviceId = relationId + "_" + i;
-            deviceConfigMap.put(deviceId, new DeviceConfig(deviceId, thing.getThingTypeUID().getId()));
+            deviceConfigMap.put(deviceId, new MatterModel(deviceId, thing.getThingTypeUID().getId()));
             triggerChannelMapping.put(deviceId, createTriggerChannel(j));
             j++;
         }
@@ -80,7 +82,7 @@ public class Matter3ButtonCotroller extends BaseMatterHandler {
             case 3 -> "Press";
             default -> "Button " + i;
         };
-        String triggerChannelName = buttonName.toLowerCase(Locale.US).replace(" ", "-");
+        String triggerChannelName = buttonName.toLowerCase(Locale.ENGLISH).replace(" ", "-");
         createChannelIfNecessary(triggerChannelName, "system.button", "", buttonName,
                 "Triggers for button " + buttonName);
         return triggerChannelName;
@@ -91,17 +93,17 @@ public class Matter3ButtonCotroller extends BaseMatterHandler {
         super.handleUpdate(update);
 
         // handle remotePress events
-        String channelName = triggerChannelMapping.get(update.optString(PROPERTY_DEVICE_ID));
-        String clickPattern = TRIGGER_MAPPING.get(update.optString("clickPattern"));
+        String channelName = triggerChannelMapping.get(update.optString(JSON_KEY_DEVICE_ID));
+        String clickPattern = TRIGGER_MAPPING.get(update.optString(EVENT_KEY_CLICK_PATTER));
         if (channelName != null && clickPattern != null) {
             logger.warn("Button {} pressed: {}", channelName, clickPattern);
             triggerChannel(channelName, clickPattern);
         }
 
         // change link candidates id control-mode switched
-        JSONObject attributes = update.optJSONObject("attributes");
+        JSONObject attributes = update.optJSONObject(JSON_KEY_ATTRIBUTES);
         if (attributes != null) {
-            String controlMode = attributes.optString("controlMode");
+            String controlMode = attributes.optString(ATTRIBUTES_KEY_CONTROL_MODE);
             if (!controlMode.isBlank()) {
                 List<String> candidateTypes = modeLinkCandidateMapping.get(controlMode);
                 if (candidateTypes != null) {

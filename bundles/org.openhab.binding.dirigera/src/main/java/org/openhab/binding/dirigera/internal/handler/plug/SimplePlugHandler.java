@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.dirigera.internal.handler.plug;
 
-import static org.openhab.binding.dirigera.internal.Constants.*;
+import static org.openhab.binding.dirigera.internal.interfaces.Model.*;
 
 import java.util.List;
 import java.util.Map;

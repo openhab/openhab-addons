@@ -13,6 +13,7 @@
 package org.openhab.binding.dirigera.internal.handler.light;
 
 import static org.openhab.binding.dirigera.internal.Constants.*;
+import static org.openhab.binding.dirigera.internal.interfaces.Model.ATTRIBUTES_KEY_COLOR_TEMPERATURE;
 
 import java.math.BigDecimal;
 import java.util.Iterator;
@@ -63,7 +64,7 @@ public class TemperatureLightHandler extends DimmableLightHandler {
         super.initialize();
         if (super.checkHandler()) {
             JSONObject values = gateway().api().readDevice(config.id);
-            JSONObject attributes = values.getJSONObject(Model.ATTRIBUTES);
+            JSONObject attributes = values.getJSONObject(Model.JSON_KEY_ATTRIBUTES);
             // check for settings of color temperature in attributes
             TreeMap<String, String> properties = new TreeMap<>(editProperties());
             Iterator<String> attributesIterator = attributes.keys();
@@ -116,7 +117,7 @@ public class TemperatureLightHandler extends DimmableLightHandler {
         String targetProperty = channel2PropertyMap.get(channel);
         switch (channel) {
             case CHANNEL_LIGHT_TEMPERATURE_ABS:
-                targetProperty = "colorTemperature";
+                targetProperty = ATTRIBUTES_KEY_COLOR_TEMPERATURE;
             case CHANNEL_LIGHT_TEMPERATURE:
                 long kelvinValue = -1;
                 int percentValue = -1;
@@ -134,7 +135,7 @@ public class TemperatureLightHandler extends DimmableLightHandler {
                  * some color lights which inherit this temperature light don't have the temperature capability.
                  * As workaround child class ColorLightHandler is handling color temperature
                  */
-                if (receiveCapabilities.contains(Model.COLOR_TEMPERATURE_CAPABILITY) && percentValue != -1
+                if (receiveCapabilities.contains(Model.CAPABILITIES_VALUE_COLOR_TEMPERATURE) && percentValue != -1
                         && kelvinValue != -1) {
                     JSONObject attributes = new JSONObject();
                     attributes.put(targetProperty, kelvinValue);
@@ -153,8 +154,8 @@ public class TemperatureLightHandler extends DimmableLightHandler {
     @Override
     public void handleUpdate(JSONObject update) {
         super.handleUpdate(update);
-        if (update.has(Model.ATTRIBUTES)) {
-            JSONObject attributes = update.getJSONObject(Model.ATTRIBUTES);
+        if (update.has(Model.JSON_KEY_ATTRIBUTES)) {
+            JSONObject attributes = update.getJSONObject(Model.JSON_KEY_ATTRIBUTES);
             Iterator<String> attributesIterator = attributes.keys();
             while (attributesIterator.hasNext()) {
                 String key = attributesIterator.next();

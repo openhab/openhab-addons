@@ -28,7 +28,8 @@
 	</channel-type>
 	<channel-type id="sensor-schedule">
 		<item-type>Number</item-type>
-		<label>Sensor Schedule</label>
+		<label>Activity Schedule</label>
+		<description>Schedule when the sensor shall be active</description>
 		<state>
 			<options>
 				<option value="0">Always</option>
@@ -150,7 +151,8 @@
 	</channel-type>
 	<channel-type id="schedule-start-time">
 		<item-type>DateTime</item-type>
-		<label>Schedule Time</label>
+		<label>Activity Schedule Start</label>
+		<description>Start time of sensor activity</description>
 		<state pattern="%1$tH:%1$tM"/>
 		<command>
 			<options>
@@ -168,7 +170,8 @@
 	</channel-type>
 	<channel-type id="schedule-end-time">
 		<item-type>DateTime</item-type>
-		<label>Schedule Time</label>
+		<label>Activity Schedule End</label>
+		<description>End time of sensor activity</description>
 		<state pattern="%1$tH:%1$tM"/>
 		<command>
 			<options>
@@ -238,7 +241,8 @@
 	</channel-type>
 	<channel-type id="duration">
 		<item-type unitHint="min">Number:Time</item-type>
-		<label>Time</label>
+		<label>Active Duration</label>
+		<description>Keep connected devices active for this duration</description>
 		<command>
 			<options>
 				<option value="1 min">1 minute</option>

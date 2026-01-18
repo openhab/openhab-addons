@@ -13,6 +13,7 @@
 package org.openhab.binding.dirigera.internal.handler;
 
 import static org.openhab.binding.dirigera.internal.Constants.*;
+import static org.openhab.binding.dirigera.internal.interfaces.Model.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -165,7 +166,7 @@ public class BaseHandler extends BaseThingHandler implements BaseDevice, DebugHa
     private void updateProperties() {
         // fill canSend and canReceive capabilities
         Map<String, Object> modelProperties = gateway().model().getPropertiesFor(config.id);
-        Object canReceiveCapabilities = modelProperties.get(Model.PROPERTY_CAN_RECEIVE);
+        Object canReceiveCapabilities = modelProperties.get(CAPABILITIES_KEY_CAN_RECEIVE);
         if (canReceiveCapabilities instanceof JSONArray jsonArray) {
             jsonArray.forEach(capability -> {
                 if (!receiveCapabilities.contains(capability.toString())) {
@@ -173,7 +174,7 @@ public class BaseHandler extends BaseThingHandler implements BaseDevice, DebugHa
                 }
             });
         }
-        Object canSendCapabilities = modelProperties.get(Model.PROPERTY_CAN_SEND);
+        Object canSendCapabilities = modelProperties.get(Model.CAPABILITIES_KEY_CAN_SEND);
         if (canSendCapabilities instanceof JSONArray jsonArray) {
             jsonArray.forEach(capability -> {
                 if (!sendCapabilities.contains(capability.toString())) {
@@ -322,8 +323,8 @@ public class BaseHandler extends BaseThingHandler implements BaseDevice, DebugHa
             logger.info("DIRIGERA BASE_HANDLER {} handleUpdate JSON {}", thing.getUID(), update);
         }
         // check online offline for each device
-        if (update.has(Model.REACHABLE)) {
-            if (update.getBoolean(Model.REACHABLE)) {
+        if (update.has(Model.JSON_KEY_REACHABLE)) {
+            if (update.getBoolean(Model.JSON_KEY_REACHABLE)) {
                 updateStatus(ThingStatus.ONLINE);
                 online = true;
             } else {
@@ -332,15 +333,15 @@ public class BaseHandler extends BaseThingHandler implements BaseDevice, DebugHa
                 online = false;
             }
         }
-        if (update.has(PROPERTY_DEVICE_TYPE) && deviceType.isBlank()) {
-            deviceType = update.getString(PROPERTY_DEVICE_TYPE);
+        if (update.has(JSON_KEY_DEVICE_TYPE) && deviceType.isBlank()) {
+            deviceType = update.getString(JSON_KEY_DEVICE_TYPE);
         }
-        if (update.has(Model.ATTRIBUTES)) {
-            JSONObject attributes = update.getJSONObject(Model.ATTRIBUTES);
+        if (update.has(Model.JSON_KEY_ATTRIBUTES)) {
+            JSONObject attributes = update.getJSONObject(Model.JSON_KEY_ATTRIBUTES);
             // check OTA for each device
-            if (attributes.has(PROPERTY_OTA_STATUS)) {
+            if (attributes.has(ATTRIBUTES_KEY_OTA_STATUS)) {
                 createChannelIfNecessary(CHANNEL_OTA_STATUS, "ota-status", CoreItemFactory.NUMBER);
-                String otaStatusString = attributes.getString(PROPERTY_OTA_STATUS);
+                String otaStatusString = attributes.getString(ATTRIBUTES_KEY_OTA_STATUS);
                 Integer otaStatus = OTA_STATUS_MAP.get(otaStatusString);
                 if (otaStatus != null) {
                     updateState(new ChannelUID(thing.getUID(), CHANNEL_OTA_STATUS), new DecimalType(otaStatus));
@@ -349,9 +350,9 @@ public class BaseHandler extends BaseThingHandler implements BaseDevice, DebugHa
                             otaStatusString);
                 }
             }
-            if (attributes.has(PROPERTY_OTA_STATE)) {
+            if (attributes.has(ATTRIBUTES_KEY_OTA_STATE)) {
                 createChannelIfNecessary(CHANNEL_OTA_STATE, "ota-state", CoreItemFactory.NUMBER);
-                String otaStateString = attributes.getString(PROPERTY_OTA_STATE);
+                String otaStateString = attributes.getString(ATTRIBUTES_KEY_OTA_STATE);
                 Integer otaState = OTA_STATE_MAP.get(otaStateString);
                 if (otaState != null) {
                     updateState(new ChannelUID(thing.getUID(), CHANNEL_OTA_STATE), new DecimalType(otaState));
@@ -362,18 +363,18 @@ public class BaseHandler extends BaseThingHandler implements BaseDevice, DebugHa
                             otaStateString);
                 }
             }
-            if (attributes.has(PROPERTY_OTA_PROGRESS)) {
+            if (attributes.has(ATTRIBUTES_KEY_OTA_PROGRESS)) {
                 createChannelIfNecessary(CHANNEL_OTA_PROGRESS, "ota-percent", "Number:Dimensionless");
                 updateState(new ChannelUID(thing.getUID(), CHANNEL_OTA_PROGRESS),
-                        QuantityType.valueOf(attributes.getInt(PROPERTY_OTA_PROGRESS), Units.PERCENT));
+                        QuantityType.valueOf(attributes.getInt(ATTRIBUTES_KEY_OTA_PROGRESS), Units.PERCENT));
             }
             // battery also common, not for all but sensors and remote controller
-            if (attributes.has(PROPERTY_BATTERY_PERCENTAGE)) {
+            if (attributes.has(ATTRIBUTES_KEY_BATTERY_PERCENTAGE)) {
                 updateState(new ChannelUID(thing.getUID(), CHANNEL_BATTERY_LEVEL),
-                        QuantityType.valueOf(attributes.getInt(PROPERTY_BATTERY_PERCENTAGE), Units.PERCENT));
+                        QuantityType.valueOf(attributes.getInt(ATTRIBUTES_KEY_BATTERY_PERCENTAGE), Units.PERCENT));
             }
-            if (attributes.has(PROPERTY_STARTUP_BEHAVIOR)) {
-                String startupString = attributes.getString(PROPERTY_STARTUP_BEHAVIOR);
+            if (attributes.has(ATTRIBUTES_KEY_STARTUP_BEHAVIOR)) {
+                String startupString = attributes.getString(ATTRIBUTES_KEY_STARTUP_BEHAVIOR);
                 Integer startupValue = STARTUP_BEHAVIOR_MAPPING.get(startupString);
                 if (startupValue != null) {
                     updateState(new ChannelUID(thing.getUID(), CHANNEL_STARTUP_BEHAVIOR),
@@ -383,8 +384,8 @@ public class BaseHandler extends BaseThingHandler implements BaseDevice, DebugHa
                             startupString);
                 }
             }
-            if (attributes.has(PROPERTY_POWER_STATE)) {
-                currentPowerState = OnOffType.from(attributes.getBoolean(PROPERTY_POWER_STATE));
+            if (attributes.has(ATTRIBUTES_KEY_POWER_STATE)) {
+                currentPowerState = OnOffType.from(attributes.getBoolean(ATTRIBUTES_KEY_POWER_STATE));
                 updateState(new ChannelUID(thing.getUID(), CHANNEL_POWER_STATE), currentPowerState);
                 synchronized (powerListeners) {
                     if (online) {
@@ -396,13 +397,13 @@ public class BaseHandler extends BaseThingHandler implements BaseDevice, DebugHa
                     }
                 }
             }
-            if (attributes.has(PROPERTY_CUSTOM_NAME) && customName.isBlank()) {
-                customName = attributes.getString(PROPERTY_CUSTOM_NAME);
+            if (attributes.has(ATTRIBUTES_KEY_CUSTOM_NAME) && customName.isBlank()) {
+                customName = attributes.getString(ATTRIBUTES_KEY_CUSTOM_NAME);
                 updateState(new ChannelUID(thing.getUID(), CHANNEL_CUSTOM_NAME), StringType.valueOf(customName));
             }
         }
-        if (update.has(PROPERTY_REMOTE_LINKS)) {
-            JSONArray remoteLinks = update.getJSONArray(PROPERTY_REMOTE_LINKS);
+        if (update.has(ATTRIBUTES_KEY_REMOTE_LINKS)) {
+            JSONArray remoteLinks = update.getJSONArray(ATTRIBUTES_KEY_REMOTE_LINKS);
             List<String> updateList = new ArrayList<>();
             remoteLinks.forEach(link -> {
                 updateList.add(link.toString());
@@ -539,8 +540,8 @@ public class BaseHandler extends BaseThingHandler implements BaseDevice, DebugHa
      * @return boolean
      */
     protected boolean isControllerOrSensor() {
-        return deviceType.toLowerCase(Locale.US).contains("sensor")
-                || deviceType.toLowerCase(Locale.US).contains("controller");
+        return deviceType.toLowerCase(Locale.ENGLISH).contains(TYPE_SENSOR)
+                || deviceType.toLowerCase(Locale.ENGLISH).contains(TYPE_CONTROLLER);
     }
 
     /**
@@ -578,9 +579,9 @@ public class BaseHandler extends BaseThingHandler implements BaseDevice, DebugHa
             targetDevice = linkedDeviceId;
             triggerDevice = config.id;
             // get current links
-            JSONObject deviceData = gateway().model().getAllFor(targetDevice, PROPERTY_DEVICES);
-            if (deviceData.has(PROPERTY_REMOTE_LINKS)) {
-                JSONArray jsonLinks = deviceData.getJSONArray(PROPERTY_REMOTE_LINKS);
+            JSONObject deviceData = gateway().model().getAllFor(targetDevice, MODEL_KEY_DEVICES);
+            if (deviceData.has(ATTRIBUTES_KEY_REMOTE_LINKS)) {
+                JSONArray jsonLinks = deviceData.getJSONArray(ATTRIBUTES_KEY_REMOTE_LINKS);
                 jsonLinks.forEach(link -> {
                     linksToSend.add(link.toString());
                 });
@@ -626,7 +627,7 @@ public class BaseHandler extends BaseThingHandler implements BaseDevice, DebugHa
         }
         JSONArray newLinks = new JSONArray(linksToSend);
         JSONObject attributes = new JSONObject();
-        attributes.put(PROPERTY_REMOTE_LINKS, newLinks);
+        attributes.put(ATTRIBUTES_KEY_REMOTE_LINKS, newLinks);
         gateway().api().sendPatch(targetDevice, attributes);
         // after api command remoteLinks property will be updated and trigger new linkUpadte
     }

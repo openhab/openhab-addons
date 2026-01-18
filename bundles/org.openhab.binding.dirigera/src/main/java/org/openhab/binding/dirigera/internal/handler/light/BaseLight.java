@@ -12,7 +12,8 @@
  */
 package org.openhab.binding.dirigera.internal.handler.light;
 
-import static org.openhab.binding.dirigera.internal.Constants.*;
+import static org.openhab.binding.dirigera.internal.Constants.CHANNEL_POWER_STATE;
+import static org.openhab.binding.dirigera.internal.interfaces.Model.*;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;

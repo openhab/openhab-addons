@@ -13,6 +13,7 @@
 package org.openhab.binding.dirigera.internal.handler.matter;
 
 import static org.openhab.binding.dirigera.internal.Constants.*;
+import static org.openhab.binding.dirigera.internal.interfaces.Model.DEVICE_TYPE_OCCUPANCY_SENSOR;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -22,6 +23,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.openhab.binding.dirigera.internal.ResourceReader;
 import org.openhab.binding.dirigera.internal.interfaces.Model;
+import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
@@ -61,11 +63,13 @@ public class MatterSensor extends BaseMatterHandler {
     @Override
     public void handleUpdate(JSONObject update) {
         super.handleUpdate(update);
-        if (!getSchedule(Model.ATTRIBUTES + "/sensorConfig", update).isBlank()) {
-            String scheduleOn = getSchedule(Model.ATTRIBUTES + "/sensorConfig/scheduleOn", update);
-            String duration = getSchedule(Model.ATTRIBUTES + "/sensorConfig/onDuration", update);
-            String onCondition = getSchedule(Model.ATTRIBUTES + "/sensorConfig/schedule/onCondition/time", update);
-            String offCondition = getSchedule(Model.ATTRIBUTES + "/sensorConfig/schedule/offCondition/time", update);
+        if (!getSchedule(Model.JSON_KEY_ATTRIBUTES + "/sensorConfig", update).isBlank()) {
+            String scheduleOn = getSchedule(Model.JSON_KEY_ATTRIBUTES + "/sensorConfig/scheduleOn", update);
+            String duration = getSchedule(Model.JSON_KEY_ATTRIBUTES + "/sensorConfig/onDuration", update);
+            String onCondition = getSchedule(Model.JSON_KEY_ATTRIBUTES + "/sensorConfig/schedule/onCondition/time",
+                    update);
+            String offCondition = getSchedule(Model.JSON_KEY_ATTRIBUTES + "/sensorConfig/schedule/offCondition/time",
+                    update);
 
             updateState(new ChannelUID(thing.getUID(), CHANNEL_ACTIVE_DURATION),
                     QuantityType.valueOf(Integer.parseInt(duration), Units.SECOND));
@@ -101,7 +105,7 @@ public class MatterSensor extends BaseMatterHandler {
     }
 
     private DecimalType getScheduleType(String scheduleOn, String onCondition, String offCondition) {
-        if ("true".equals(scheduleOn)) {
+        if (Boolean.TRUE.toString().equalsIgnoreCase(scheduleOn)) {
             if ("sunset".equals(onCondition) && "sunrise".equals(offCondition)) {
                 return new DecimalType(1);
             } else {
@@ -225,16 +229,16 @@ public class MatterSensor extends BaseMatterHandler {
                     }
                     JSONObject preset = (new JSONObject()).put("circadianPresets", presetValues);
                     super.getIdsFor(DEVICE_TYPE_OCCUPANCY_SENSOR).forEach(deviceId -> {
-                        super.sendPatch(deviceId, (new JSONObject()).put(Model.ATTRIBUTES, preset));
+                        super.sendPatch(deviceId, (new JSONObject()).put(Model.JSON_KEY_ATTRIBUTES, preset));
                     });
                 }
         }
     }
 
     private void createSensorConfigChannels() {
+        createChannelIfNecessary(CHANNEL_SCHEDULE, "sensor-schedule", CoreItemFactory.NUMBER);
         createChannelIfNecessary(CHANNEL_ACTIVE_DURATION, "duration", "Number:Time");
-        createChannelIfNecessary(CHANNEL_SCHEDULE, "sensor-schedule", "Number");
-        createChannelIfNecessary(CHANNEL_SCHEDULE_START, "schedule-start-time", "DateTime");
-        createChannelIfNecessary(CHANNEL_SCHEDULE_END, "schedule-end-time", "DateTime");
+        createChannelIfNecessary(CHANNEL_SCHEDULE_START, "schedule-start-time", CoreItemFactory.DATETIME);
+        createChannelIfNecessary(CHANNEL_SCHEDULE_END, "schedule-end-time", CoreItemFactory.DATETIME);
     }
 }

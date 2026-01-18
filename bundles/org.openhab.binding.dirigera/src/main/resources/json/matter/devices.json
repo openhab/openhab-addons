@@ -8,8 +8,8 @@
                 "channel": "battery-level",
                 "channelType": "system.battery-level",
                 "itemType": "Number:Dimensionless",
-                "inValue": "Integer",
-                "outValue": "QuantityType",
+                "inType": "Integer",
+                "outType": "QuantityType",
                 "transformation": "format",
                 "format": "%d %%"
             },
@@ -18,8 +18,8 @@
                 "channel": "ota-status",
                 "channelType": "ota-status",
                 "itemType": "Number",
-                "inValue": "String",
-                "outValue": "DecimalType",
+                "inType": "String",
+                "outType": "DecimalType",
                 "transformation": "mapping",
                 "mapping": {
                     "upToDate": 0,
@@ -31,8 +31,8 @@
                 "channel": "ota-state",
                 "channelType": "ota-state",
                 "itemType": "Number",
-                "inValue": "String",
-                "outValue": "DecimalType",
+                "inType": "String",
+                "outType": "DecimalType",
                 "transformation": "mapping",
                 "mapping": {
                     "readyToCheck": 0,
@@ -53,8 +53,8 @@
                 "channel": "ota-progress",
                 "channelType": "ota-percent",
                 "itemType": "Number:Dimensionless",
-                "inValue": "Integer",
-                "outValue": "QuantityType",
+                "inType": "Integer",
+                "outType": "QuantityType",
                 "transformation": "format",
                 "format": "%d %%"
             },
@@ -63,8 +63,8 @@
                 "channel": "custom-name",
                 "channelType": "custom-name",
                 "itemType": "String",
-                "inValue": "String",
-                "outValue": "StringType",
+                "inType": "String",
+                "outType": "StringType",
                 "transformation": "raw"
             }
         ],
@@ -73,8 +73,8 @@
                 "attribute": "customName",
                 "channel": "custom-name",
                 "itemType": "String",
-                "inValue": "String",
-                "outValue": "String",
+                "inType": "String",
+                "outType": "String",
                 "transformation": "raw",
                 "json": "attribute"
             }
@@ -106,8 +106,8 @@
                 "channel": "temperature",
                 "channelType": "system.indoor-temperature",
                 "itemType": "Number:Temperature",
-                "inValue": "Float",
-                "outValue": "QuantityType",
+                "inType": "Float",
+                "outType": "QuantityType",
                 "transformation": "format",
                 "format": "%f °C"
             },
@@ -116,8 +116,8 @@
                 "channel": "humidity",
                 "channelType": "system.atmospheric-humidity",
                 "itemType": "Number:Dimensionless",
-                "inValue": "Integer",
-                "outValue": "QuantityType",
+                "inType": "Integer",
+                "outType": "QuantityType",
                 "transformation": "format",
                 "format": "%d %%"
             },
@@ -126,8 +126,8 @@
                 "channel": "particulate-matter",
                 "channelType": "pm25",
                 "itemType": "Number:Density",
-                "inValue": "Integer",
-                "outValue": "QuantityType",
+                "inType": "Integer",
+                "outType": "QuantityType",
                 "transformation": "format",
                 "format": "%d µg/m³"
             },
@@ -136,8 +136,8 @@
                 "channel": "co2",
                 "channelType": "co2",
                 "itemType": "Number:Dimensionless",
-                "inValue": "Integer",
-                "outValue": "QuantityType",
+                "inType": "Integer",
+                "outType": "QuantityType",
                 "transformation": "format",
                 "format": "%d ppm"
             },
@@ -146,8 +146,8 @@
                 "channel": "voc-index",
                 "channelType": "voc",
                 "itemType": "Number",
-                "inValue": "Integer",
-                "outValue": "Number",
+                "inType": "Integer",
+                "outType": "Number",
                 "transformation": "raw"
             }
         ],
@@ -176,8 +176,8 @@
                 "channelDescription": "State if door or window is open or closed",
                 "channelType": "contact",
                 "itemType": "Contact",
-                "inValue": "Boolean",
-                "outValue": "OpenClosedType",
+                "inType": "Boolean",
+                "outType": "OpenClosedType",
                 "transformation": "raw"
             }
         ],
@@ -200,8 +200,8 @@
                 "channel": "leak",
                 "channelType": "alarm",
                 "itemType": "Switch",
-                "inValue": "Boolean",
-                "outValue": "OnOffType",
+                "inType": "Boolean",
+                "outType": "OnOffType",
                 "transformation": "mapping",
                  "mapping": {
                      "true": "ON",
@@ -228,8 +228,8 @@
                 "channel": "illuminance",
                 "channelType": "illuminance",
                 "itemType": "Number:Illuminance",
-                "inValue": "Integer",
-                "outValue": "QuantityType",
+                "inType": "Integer",
+                "outType": "QuantityType",
                 "correction": "factor",
                 "factor": 0.01,
                 "transformation": "format",
@@ -257,8 +257,8 @@
                 "channel": "motion",
                 "channelType": "system.motion",
                 "itemType": "Switch",
-                "inValue": "Boolean",
-                "outValue": "OnOffType",
+                "inType": "Boolean",
+                "outType": "OnOffType",
                 "transformation": "mapping",
                 "mapping": {
                     "true": "ON",
@@ -270,8 +270,8 @@
                 "channel": "light-preset",
                 "channelType": "light-preset",
                 "itemType": "String",
-                "inValue": "String",
-                "outValue": "String",
+                "inType": "String",
+                "outType": "String",
                 "transformation": "raw"
             }
         ],
@@ -280,8 +280,8 @@
                 "attribute": "circadianPresets",
                 "channel": "light-preset",
                 "itemType": "String",
-                "inValue": "String",
-                "outValue": "String",
+                "inType": "String",
+                "outType": "String",
                 "transformation": "code"
             }
         ],
@@ -304,8 +304,8 @@
                 "channel": "power",
                 "channelType": "system.power",
                 "itemType": "Switch",
-                "inValue": "Boolean",
-                "outValue": "OnOffType",
+                "inType": "Boolean",
+                "outType": "OnOffType",
                 "transformation": "mapping",
                 "mapping": {
                     "true": "ON",
@@ -317,8 +317,8 @@
                 "channel": "brightness",
                 "channelType": "system.brightness",
                 "itemType": "Dimmer",
-                "inValue": "Integer",
-                "outValue": "PercenType",
+                "inType": "Integer",
+                "outType": "PercenType",
                 "transformation": "raw"
             },
             {
@@ -327,8 +327,8 @@
                 "channelLabel": "Color Temperature Kelvin",
                 "channelType": "system.color-temperature-abs",
                 "itemType": "Number:Temperature",
-                "inValue": "Integer",
-                "outValue": "QuantityType",
+                "inType": "Integer",
+                "outType": "QuantityType",
                 "transformation": "format",
                 "format": "%d K"
             },
@@ -337,8 +337,8 @@
                 "channel": "color",
                 "channelType": "system.color",
                 "itemType": "Color",
-                "inValue": "Double",
-                "outValue": "HSBType",
+                "inType": "Float",
+                "outType": "HSBType",
                 "transformation": "code"
             },
             {
@@ -346,8 +346,8 @@
                 "channel": "startup",
                 "channelType": "startup",
                 "itemType": "Number",
-                "inValue": "String",
-                "outValue": "Integer",
+                "inType": "String",
+                "outType": "Integer",
                 "transformation": "mapping",
                 "mapping": {
                     "startPrevious": 0,
@@ -362,8 +362,8 @@
                 "attribute": "isOn",
                 "channel": "power",
                 "itemType": "Switch",
-                "inValue": "",
-                "outValue": "Boolean",
+                "inType": "",
+                "outType": "Boolean",
                 "transformation": "raw",
                 "json": "attribute"
             },
@@ -371,8 +371,8 @@
                 "attribute": "startupOnOff",
                 "channel": "startup",
                 "itemType": "Number",
-                "inValue": "Number",
-                "outValue": "String",
+                "inType": "Number",
+                "outType": "String",
                 "transformation": "mapping",
                 "mapping": {
                     "0": "startPrevious",
@@ -402,8 +402,8 @@
                 "channel": "control-mode",
                 "channelType": "mode-3-options",
                 "itemType": "Number",
-                "inValue": "String",
-                "outValue": "DecimalType",
+                "inType": "String",
+                "outType": "DecimalType",
                 "transformation": "mapping",
                 "mapping": {
                     "light": 0,
@@ -417,8 +417,8 @@
                 "attribute": "controlMode",
                 "channel": "control-mode",
                 "itemType": "Number",
-                "inValue": "Number",
-                "outValue": "String",
+                "inType": "Number",
+                "outType": "String",
                 "transformation": "mapping",
                 "mapping": {
                     "0": "light",
@@ -445,8 +445,8 @@
                 "channel": "control-mode",
                 "channelType": "mode-2-options",
                 "itemType": "Number",
-                "inValue": "String",
-                "outValue": "DecimalType",
+                "inType": "String",
+                "outType": "DecimalType",
                 "transformation": "mapping",
                 "mapping": {
                     "light": 0,
@@ -460,8 +460,8 @@
                 "attribute": "controlMode",
                 "channel": "control-mode",
                 "itemType": "Number",
-                "inValue": "Number",
-                "outValue": "String",
+                "inType": "Number",
+                "outType": "String",
                 "transformation": "mapping",
                 "mapping": {
                     "0": "light",

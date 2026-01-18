@@ -32,6 +32,8 @@ public interface BaseDevice {
 
     void handleUpdate(JSONObject data);
 
+    void setDebug(boolean debugFlag, boolean all);
+
     void updateLinksStart();
 
     List<String> getLinks();
@@ -39,6 +41,4 @@ public interface BaseDevice {
     void addSoftlink(String softLink);
 
     void updateLinksDone();
-
-    void setDebug(boolean debugFlag, boolean all);
 }
