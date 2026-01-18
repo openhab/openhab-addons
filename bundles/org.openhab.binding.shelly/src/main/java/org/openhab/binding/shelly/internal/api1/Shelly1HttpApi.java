@@ -83,8 +83,8 @@ public class Shelly1HttpApi extends ShellyHttpClient implements ShellyApiInterfa
     }
 
     @Override
-    public void initialize() throws ShellyApiException {
-        profile.device = getDeviceInfo();
+    public void initialize(String thingName, ShellyThingConfiguration config) throws ShellyApiException {
+        setConfig(thingName, config);
     }
 
     @Override

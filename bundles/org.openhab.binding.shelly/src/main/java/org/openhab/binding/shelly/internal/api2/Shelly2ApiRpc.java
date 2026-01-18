@@ -146,7 +146,8 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     }
 
     @Override
-    public void initialize() throws ShellyApiException {
+    public void initialize(String thingName, ShellyThingConfiguration config) throws ShellyApiException {
+        setConfig(thingName, config);
         if (initialized) {
             logger.debug("{}: Disconnect Rpc Socket on initialize", thingName);
             disconnect();

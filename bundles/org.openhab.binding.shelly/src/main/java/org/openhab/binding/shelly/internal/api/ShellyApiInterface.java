@@ -38,7 +38,7 @@ import org.openhab.core.thing.ThingTypeUID;
 public interface ShellyApiInterface {
     boolean isInitialized();
 
-    void initialize() throws ShellyApiException;
+    void initialize(String thingName, ShellyThingConfiguration config) throws ShellyApiException;
 
     void setConfig(String thingName, ShellyThingConfiguration config);
 
