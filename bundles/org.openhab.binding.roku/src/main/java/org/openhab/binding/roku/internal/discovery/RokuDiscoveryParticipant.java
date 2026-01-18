@@ -105,12 +105,17 @@ public class RokuDiscoveryParticipant implements UpnpDiscoveryParticipant {
     public @Nullable ThingUID getThingUID(RemoteDevice device) {
         if (ROKU_COM.equals(device.getType().getNamespace())) {
             logger.debug("Roku UPNP device found at {}", device.getIdentity().getDescriptorURL().getHost());
-            final String id = device.getDetails().getSerialNumber().toLowerCase(Locale.ENGLISH);
+            final String id = device.getDetails().getSerialNumber();
+
+            if (id == null || id.isBlank()) {
+                logger.debug("Roku UPNP device has null serial number!");
+                return null;
+            }
 
             if (device.getDetails().getFriendlyName().contains(ROKU_TV)) {
-                return new ThingUID(THING_TYPE_ROKU_TV, id);
+                return new ThingUID(THING_TYPE_ROKU_TV, id.toLowerCase(Locale.ENGLISH));
             } else {
-                return new ThingUID(THING_TYPE_ROKU_PLAYER, id);
+                return new ThingUID(THING_TYPE_ROKU_PLAYER, id.toLowerCase(Locale.ENGLISH));
             }
         }
 
