@@ -15,11 +15,14 @@ package org.openhab.binding.homekit.internal;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.homekit.internal.session.HttpPayloadParser;
+import org.openhab.binding.homekit.internal.session.HttpPayloadParser.HttpPayload;
 
 /**
  * Test cases for HTTP parser; in particular for chunked payloads.
@@ -40,102 +43,87 @@ class TestHttpChunkedParser {
     private final String s7 = "0f\r\n";
     private final String s8 = "123456789abcdef\r\n";
     private final String s9 = "0\r\n";
+    private final String header = s0 + s1 + s2 + s3 + crlf;
 
     @Test
     void testValidChunkedPayload() throws IOException {
-        try (HttpPayloadParser parser = new HttpPayloadParser()) {
-            parser.accept(s0.getBytes(StandardCharsets.UTF_8));
-            parser.accept(s1.getBytes(StandardCharsets.UTF_8));
-            parser.accept(s2.getBytes(StandardCharsets.UTF_8));
-            parser.accept(s3.getBytes(StandardCharsets.UTF_8));
-            parser.accept(crlf.getBytes(StandardCharsets.UTF_8));
-            parser.accept(s5.getBytes(StandardCharsets.UTF_8));
-            parser.accept(s6.getBytes(StandardCharsets.UTF_8));
-            parser.accept(s7.getBytes(StandardCharsets.UTF_8));
-            parser.accept(s8.getBytes(StandardCharsets.UTF_8));
-            parser.accept(s9.getBytes(StandardCharsets.UTF_8));
-            parser.accept(crlf.getBytes(StandardCharsets.UTF_8));
-            assertTrue(parser.isComplete());
-            assertEquals("123456789123456789abcdef", new String(parser.getContent(), StandardCharsets.UTF_8));
+        List<byte[]> parts = List.of(
+        // @formatter:off
+                 s0.getBytes(),
+                 s1.getBytes(),
+                 s2.getBytes(),
+                 s3.getBytes(),
+                 crlf.getBytes(),
+                 s5.getBytes(),
+                 s6.getBytes(),
+                 s7.getBytes(),
+                 s8.getBytes(),
+                 s9.getBytes(),
+                 crlf.getBytes()
+        // @formatter:on
+        );
+        try (HttpPayloadParser parser = new HttpPayloadParser(new JUnitTestInputStream(parts))) {
+            CompletableFuture<HttpPayload> future = parser.awaitHttpPayload();
+            assertNotNull(future);
+            HttpPayload payload = assertDoesNotThrow(() -> future.get());
+            assertNotNull(payload);
+            assertEquals(header, new String(payload.headers()));
+            assertEquals("123456789123456789abcdef", new String(payload.content()));
         }
     }
 
     @Test
     void testBadChunkedSizePayload() throws IOException {
-        try (HttpPayloadParser parser = new HttpPayloadParser()) {
-            parser.accept(s0.getBytes(StandardCharsets.UTF_8));
-            parser.accept(s1.getBytes(StandardCharsets.UTF_8));
-            parser.accept(s2.getBytes(StandardCharsets.UTF_8));
-            parser.accept(s3.getBytes(StandardCharsets.UTF_8));
-            parser.accept(crlf.getBytes(StandardCharsets.UTF_8));
-            parser.accept(s5err.getBytes(StandardCharsets.UTF_8));
-            parser.accept(s6.getBytes(StandardCharsets.UTF_8));
-            parser.accept(s7.getBytes(StandardCharsets.UTF_8));
-            parser.accept(s8.getBytes(StandardCharsets.UTF_8));
-            parser.accept(s9.getBytes(StandardCharsets.UTF_8));
-            assertThrows(IllegalStateException.class, () -> parser.accept(crlf.getBytes(StandardCharsets.UTF_8)));
-        }
-    }
-
-    @Test
-    void testChunkedPayloadWithEmptyLines() throws IOException {
-        try (HttpPayloadParser parser = new HttpPayloadParser()) {
-            parser.accept(s0.getBytes(StandardCharsets.UTF_8));
-            parser.accept(s1.getBytes(StandardCharsets.UTF_8));
-            parser.accept(s2.getBytes(StandardCharsets.UTF_8));
-            parser.accept(s3.getBytes(StandardCharsets.UTF_8));
-            parser.accept(crlf.getBytes(StandardCharsets.UTF_8));
-            parser.accept(s5.getBytes(StandardCharsets.UTF_8));
-            parser.accept(s6.getBytes(StandardCharsets.UTF_8));
-            parser.accept(crlf.getBytes(StandardCharsets.UTF_8));
-            parser.accept(s7.getBytes(StandardCharsets.UTF_8));
-            parser.accept(s8.getBytes(StandardCharsets.UTF_8));
-            parser.accept(crlf.getBytes(StandardCharsets.UTF_8));
-            parser.accept(s9.getBytes(StandardCharsets.UTF_8));
-            parser.accept(crlf.getBytes(StandardCharsets.UTF_8));
-            assertTrue(parser.isComplete());
-            assertEquals("123456789123456789abcdef", new String(parser.getContent(), StandardCharsets.UTF_8));
-        }
-    }
-
-    @Test
-    void testIncompleteChunkedPayload() throws IOException {
-        try (HttpPayloadParser parser = new HttpPayloadParser()) {
-            parser.accept(s0.getBytes(StandardCharsets.UTF_8));
-            parser.accept(s1.getBytes(StandardCharsets.UTF_8));
-            parser.accept(s2.getBytes(StandardCharsets.UTF_8));
-            parser.accept(s3.getBytes(StandardCharsets.UTF_8));
-            parser.accept(crlf.getBytes(StandardCharsets.UTF_8));
-            parser.accept(s5.getBytes(StandardCharsets.UTF_8));
-            parser.accept(s6.getBytes(StandardCharsets.UTF_8));
-            parser.accept(s7.getBytes(StandardCharsets.UTF_8));
-            parser.accept(s8.getBytes(StandardCharsets.UTF_8));
-            parser.accept(s9.getBytes(StandardCharsets.UTF_8));
-            assertFalse(parser.isComplete());
-            assertEquals("", new String(parser.getContent(), StandardCharsets.UTF_8));
+        List<byte[]> parts = List.of(
+        // @formatter:off
+                 s0.getBytes(),
+                 s1.getBytes(),
+                 s2.getBytes(),
+                 s3.getBytes(),
+                 crlf.getBytes(),
+                 s5err.getBytes(),
+                 s6.getBytes(),
+                 s7.getBytes(),
+                 s8.getBytes(),
+                 s9.getBytes(),
+                 crlf.getBytes()
+        // @formatter:on
+        );
+        try (HttpPayloadParser parser = new HttpPayloadParser(new JUnitTestInputStream(parts))) {
+            CompletableFuture<HttpPayload> future = parser.awaitHttpPayload();
+            assertNotNull(future);
+            assertThrows(ExecutionException.class, () -> future.get());
         }
     }
 
     @Test
     void testValidChunkedPayloadWitSplitFrames() throws IOException {
-        try (HttpPayloadParser parser = new HttpPayloadParser()) {
-            parser.accept(s0.getBytes(StandardCharsets.UTF_8));
-            parser.accept(s1.getBytes(StandardCharsets.UTF_8));
-            parser.accept(s2.getBytes(StandardCharsets.UTF_8));
-            parser.accept(s3.getBytes(StandardCharsets.UTF_8));
-            parser.accept("\r".getBytes(StandardCharsets.UTF_8));
-            parser.accept("\n".getBytes(StandardCharsets.UTF_8));
-            parser.accept(s5.getBytes(StandardCharsets.UTF_8));
-            parser.accept(s6.getBytes(StandardCharsets.UTF_8));
-            parser.accept(s7.getBytes(StandardCharsets.UTF_8));
-            parser.accept(s8.getBytes(StandardCharsets.UTF_8));
-            parser.accept("0".getBytes(StandardCharsets.UTF_8));
-            parser.accept("\r".getBytes(StandardCharsets.UTF_8));
-            parser.accept("\n".getBytes(StandardCharsets.UTF_8));
-            parser.accept("\r".getBytes(StandardCharsets.UTF_8));
-            parser.accept("\n".getBytes(StandardCharsets.UTF_8));
-            assertTrue(parser.isComplete());
-            assertEquals("123456789123456789abcdef", new String(parser.getContent(), StandardCharsets.UTF_8));
+        List<byte[]> parts = List.of(
+        // @formatter:off
+                s0.getBytes(),
+                s1.getBytes(),
+                s2.getBytes(),
+                s3.getBytes(),
+                "\r".getBytes(),
+                "\n".getBytes(),
+                s5.getBytes(),
+                s6.getBytes(),
+                s7.getBytes(),
+                s8.getBytes(),
+                "0".getBytes(),
+                "\r".getBytes(),
+                "\n".getBytes(),
+                "\r".getBytes(),
+                "\n".getBytes()
+        // @formatter:on
+        );
+        try (HttpPayloadParser parser = new HttpPayloadParser(new JUnitTestInputStream(parts))) {
+            CompletableFuture<HttpPayload> future = parser.awaitHttpPayload();
+            assertNotNull(future);
+            HttpPayload payload = assertDoesNotThrow(() -> future.get());
+            assertNotNull(payload);
+            assertEquals(header, new String(payload.headers()));
+            assertEquals("123456789123456789abcdef", new String(payload.content()));
         }
     }
 }

@@ -12,13 +12,23 @@
  */
 package org.openhab.binding.homekit.internal.session;
 
-import java.io.ByteArrayOutputStream;
+import java.io.EOFException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Deque;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Helper class to parse incoming HTTP messages and determine when a complete message has been received.
@@ -39,127 +49,425 @@ public class HttpPayloadParser implements AutoCloseable {
     private static final Pattern CHUNKED_ENCODING_PATTERN = Pattern.compile("(?i)^transfer-encoding:\\s*chunked$");
     private static final Pattern STATUS_LINE_PATTERN = Pattern.compile("^(?:HTTP|EVENT)/\\d+\\.\\d+\\s+(\\d{3})");
 
-    private final ByteArrayOutputStream headerBuffer = new ByteArrayOutputStream();
-    private final ByteArrayOutputStream contentBuffer = new ByteArrayOutputStream();
-    private final ByteArrayOutputStream chunkDataBuffer = new ByteArrayOutputStream();
+    public record HttpPayload(byte[] headers, byte[] content) {
+        public HttpPayload() {
+            this(new byte[0], new byte[0]);
+        }
+    }
 
-    private boolean headersDone = false;
+    private final Logger logger = LoggerFactory.getLogger(HttpPayloadParser.class);
+
+    private final InputStream inputStream;
+    private final Thread inputThread;
+
+    // grow-able buffer for incoming bytes
+    private byte[] inputBuffer = new byte[8192];
+    private int inputStart = 0; // first valid byte
+    private int inputEnd = 0; // one past last valid byte
+
+    // current message state
+    private final ByteArrayOutput headerBuffer = new ByteArrayOutput();
+    private final ByteArrayOutput contentBuffer = new ByteArrayOutput();
+    private final ByteArrayOutput chunkDataBuffer = new ByteArrayOutput();
+
     private int contentLength = -1;
-    private int headersLength = -1;
+    private boolean headersDone = false;
     private boolean isChunked = false;
     private boolean finalChunkSeen = false;
 
+    // payload queue + waiters
+    private final ReentrantLock httpPayloadQueueLock = new ReentrantLock();
+    private final Deque<HttpPayload> httpPayloadQueue = new ArrayDeque<>();
+    private final List<CompletableFuture<HttpPayload>> waiters = new ArrayList<>();
+
+    private volatile boolean closed = false;
+    private volatile @Nullable Throwable error = null;
+
+    public HttpPayloadParser(InputStream stream) {
+        inputStream = stream;
+        inputThread = new Thread(this::inputTask);
+        inputThread.setDaemon(true);
+        inputThread.start();
+    }
+
     /**
-     * Accepts a byte array representing a fragment of the HTTP message (either headers or content).
-     * It accumulates header data until the end of headers is detected, then processes content data
-     * according to the Content-Length or chunked transfer encoding. If the content exceeds the maximum
-     * allowed length, a SecurityException is thrown.
-     *
-     * @param frame the byte array containing a fragment of the HTTP message.
-     * @throws IllegalStateException
+     * Asynchronously waits for the next complete HTTP payload.
      */
-    public void accept(byte[] frame) throws IllegalStateException {
-        if (frame.length == 0) {
+    public CompletableFuture<HttpPayload> awaitHttpPayload() {
+        httpPayloadQueueLock.lock();
+        try {
+            if (httpPayloadQueue.peekFirst() instanceof HttpPayload httpPayload) {
+                httpPayloadQueue.pollFirst();
+                return CompletableFuture.completedFuture(httpPayload);
+            }
+            if (error instanceof Throwable throwable) {
+                CompletableFuture<HttpPayload> futureHttpPayload = new CompletableFuture<>();
+                futureHttpPayload.completeExceptionally(throwable);
+                return futureHttpPayload;
+            }
+            if (closed) {
+                CompletableFuture<HttpPayload> futureHttpPayload = new CompletableFuture<>();
+                futureHttpPayload.completeExceptionally(new EOFException("Parser closed"));
+                return futureHttpPayload;
+            }
+            CompletableFuture<HttpPayload> futureHttpPayload = new CompletableFuture<>();
+            waiters.add(futureHttpPayload);
+            return futureHttpPayload;
+        } finally {
+            httpPayloadQueueLock.unlock();
+        }
+    }
+
+    /**
+     * Continuously reads from the input stream, appending data to the input buffer,
+     * and parsing available data to extract complete HTTP messages.
+     */
+    private void inputTask() {
+        try {
+            byte[] buffer = new byte[4096];
+            while (!closed) {
+                int byteCount = inputStream.read(buffer);
+                if (byteCount == -1) {
+                    // normal EOF
+                    break;
+                }
+                if (byteCount > 0) {
+                    appendToBuffer(buffer, 0, byteCount);
+                    parseAvailable();
+                }
+            }
+        } catch (IOException e) {
+            logger.debug("Input stream closed or error occurred: {}", e.getMessage());
+            failAll(e);
+            return;
+        } finally {
+            closed = true;
+            completeWaitersOnClose();
+        }
+    }
+
+    /**
+     * Appends the given source bytes to the input buffer, growing or compacting it as needed.
+     *
+     * @param source the source byte array
+     * @param offset the offset in the source array to start from
+     * @param length the number of bytes to append
+     */
+    private void appendToBuffer(byte[] source, int offset, int length) {
+        ensureCapacity(length);
+        System.arraycopy(source, offset, inputBuffer, inputEnd, length);
+        inputEnd += length;
+    }
+
+    /**
+     * Ensures that the input buffer has enough capacity to accommodate the incoming byte count.
+     * If not enough space is available, it will compact the buffer or grow it as needed.
+     *
+     * @param byteCount the number of incoming bytes to accommodate
+     */
+    private void ensureCapacity(int byteCount) {
+        int free = inputBuffer.length - inputEnd;
+        if (free >= byteCount) {
+            return;
+        }
+        // compact if possible
+        if (inputStart > 0) {
+            int remainingByteCount = inputEnd - inputStart;
+            System.arraycopy(inputBuffer, inputStart, inputBuffer, 0, remainingByteCount);
+            inputStart = 0;
+            inputEnd = remainingByteCount;
+            free = inputBuffer.length - inputEnd;
+            if (free >= byteCount) {
+                return;
+            }
+        }
+        // grow if needed
+        int needed = inputEnd + byteCount;
+        int newCapacity = Math.max(inputBuffer.length * 2, needed);
+        byte[] newBuffer = new byte[newCapacity];
+        System.arraycopy(inputBuffer, inputStart, newBuffer, 0, inputEnd - inputStart);
+        inputEnd = inputEnd - inputStart;
+        inputStart = 0;
+        inputBuffer = newBuffer;
+    }
+
+    /**
+     * Parses available bytes in the input buffer to extract complete HTTP messages.
+     *
+     * @throws IOException if an I/O error occurs or if the message is malformed
+     */
+    private void parseAvailable() throws IOException {
+        while (true) {
+            if (!headersDone) {
+                int headerEndIndex = indexOfDoubleCRLF(inputBuffer, inputStart, inputEnd);
+                if (headerEndIndex < 0) {
+                    // need more data
+                    return;
+                }
+                int headersLength = (headerEndIndex + 4) - inputStart;
+                if (headersLength > MAX_HEADER_BLOCK_SIZE) {
+                    throw new SecurityException("Header buffer overload");
+                }
+
+                headerBuffer.reset();
+                headerBuffer.write(inputBuffer, inputStart, headersLength);
+                parseHeaders(headerBuffer.toByteArray());
+
+                headersDone = true;
+                inputStart += headersLength;
+            }
+
+            if (headersDone) {
+                // If the message is complete AND has no body, emit immediately.
+                // This handles: 200 without Content-Length, 204, 1xx, 4xx, 5xx.
+                if (isComplete() && contentLength <= 0 && !isChunked) {
+                    enqueuePayload(new HttpPayload(headerBuffer.toByteArray(), contentBuffer.toByteArray()));
+                    resetParserState();
+                    continue; // parse next message if present
+                }
+                int remainingByteCount = inputEnd - inputStart;
+                if (remainingByteCount <= 0) {
+                    return;
+                }
+
+                if (isChunked && !finalChunkSeen) {
+                    chunkDataBuffer.write(inputBuffer, inputStart, remainingByteCount);
+                    inputStart += remainingByteCount;
+                    parseChunkedBytesFromStagingBuffer();
+                } else if (contentLength >= 0) {
+                    int toCopy = Math.min(remainingByteCount, contentLength - contentBuffer.size());
+                    if (toCopy > 0) {
+                        contentBuffer.write(inputBuffer, inputStart, toCopy);
+                        inputStart += toCopy;
+                    } else {
+                        // nothing more needed for this message
+                        inputStart += remainingByteCount;
+                    }
+                } else {
+                    // no content-length and not chunked; body presence decided by status code
+                    // we don't consume anything here; message is complete by headers alone
+                }
+
+                if (contentBuffer.size() > MAX_CONTENT_LENGTH) {
+                    throw new IOException("Content exceeds maximum allowed length");
+                }
+
+                if (isComplete()) {
+                    enqueuePayload(new HttpPayload(headerBuffer.toByteArray(), contentBuffer.toByteArray()));
+                    resetParserState();
+                    // loop to see if another message is already buffered
+                } else {
+                    // need more data
+                    return;
+                }
+            }
+        }
+    }
+
+    /**
+     * Parses HTTP headers to extract Content-Length and Transfer-Encoding.
+     *
+     * @param headerBytes the byte array containing the HTTP headers
+     * @throws IOException if an I/O error occurs or if headers are malformed
+     */
+    private void parseHeaders(byte[] headerBytes) throws IOException {
+        contentLength = -1;
+        isChunked = false;
+        for (String httpHeader : new String(headerBytes, StandardCharsets.ISO_8859_1).split(NEWLINE_REGEX)) {
+            Matcher matcher = CONTENT_LENGTH_PATTERN.matcher(httpHeader);
+            if (matcher.find()) {
+                try {
+                    contentLength = Integer.parseInt(matcher.group(1));
+                    if (contentLength < 0 || contentLength > MAX_CONTENT_LENGTH) {
+                        throw new IOException("Invalid Content-Length");
+                    }
+                } catch (NumberFormatException e) {
+                    throw new IOException("Malformed Content-Length header: " + matcher.group(1));
+                }
+            } else {
+                matcher = CHUNKED_ENCODING_PATTERN.matcher(httpHeader);
+                if (matcher.find()) {
+                    isChunked = true;
+                }
+            }
+        }
+    }
+
+    /**
+     * Parses chunked bytes from the staging buffer and appends complete chunks to the content buffer.
+     *
+     * @throws IOException if an I/O error occurs or if chunk sizes are invalid
+     */
+    private void parseChunkedBytesFromStagingBuffer() throws IOException {
+        byte[] chunkBuffer = chunkDataBuffer.toByteArray();
+        int finalIndex = indexOfFinalChunkMarker(chunkBuffer);
+        if (finalIndex < 0) { // not enough yet
             return;
         }
 
-        if (!headersDone) {
-            headerBuffer.write(frame, 0, frame.length);
-            if (headerBuffer.size() > MAX_HEADER_BLOCK_SIZE) {
-                throw new SecurityException("Header buffer overload");
-            }
-            byte[] headerBytes = headerBuffer.toByteArray();
-            int index = indexOfDoubleCRLF(headerBytes, 0);
-            if (index >= 0) {
-                headersDone = true;
-                headersLength = index + 4; // length of "\r\n\r\n"
+        finalChunkSeen = true;
+        int pos = 0;
+        int max = finalIndex + 5; // include "0\r\n\r\n"
 
-                // parse headers for content-length and chunked encoding
-                for (String httpHeader : new String(headerBytes, StandardCharsets.ISO_8859_1).split(NEWLINE_REGEX)) {
-                    Matcher matcher = CONTENT_LENGTH_PATTERN.matcher(httpHeader);
-                    if (matcher.find()) {
-                        try {
-                            contentLength = Integer.parseInt(matcher.group(1));
-                            if (contentLength < 0 || contentLength > MAX_CONTENT_LENGTH) {
-                                throw new SecurityException("Invalid Content-Length");
-                            }
-                        } catch (NumberFormatException e) {
-                            throw new SecurityException("Malformed Content-Length header: " + matcher.group(1));
-                        }
-                    } else {
-                        matcher = CHUNKED_ENCODING_PATTERN.matcher(httpHeader);
-                        if (matcher.find()) {
-                            isChunked = true;
-                        }
-                    }
-                }
-
-                // move any bytes after headers into content processing buffer
-                byte[] leftover = new byte[headerBytes.length - headersLength];
-                System.arraycopy(headerBuffer.toByteArray(), headersLength, leftover, 0, leftover.length);
-                if (leftover.length > 0) {
-                    // process leftover through the chunked/fixed-length logic below
-                    processContentBytes(leftover);
-                }
-                headerBuffer.reset();
-                headerBuffer.write(headerBytes, 0, headersLength);
+        while (pos < max) {
+            byte[] sizeBuffer = readln(chunkBuffer, pos);
+            pos += sizeBuffer.length + 2;
+            if (pos > max) {
+                break;
             }
-            return; // no content processing until headers are done
+            if (sizeBuffer.length == 0) {
+                continue;
+            }
+
+            int size;
+            try {
+                size = Integer.parseInt(new String(sizeBuffer, StandardCharsets.ISO_8859_1).trim(), 16);
+            } catch (NumberFormatException e) {
+                throw new IOException("Invalid chunk size: " + new String(sizeBuffer, StandardCharsets.ISO_8859_1));
+            }
+            if (size == 0) {
+                break;
+            }
+
+            if (pos + size > max) {
+                throw new IOException("Chunk size exceeds available data");
+            }
+
+            contentBuffer.write(chunkBuffer, pos, size);
+            pos += size;
+
+            // skip CRLF after chunk
+            byte[] leftoverBytes = readln(chunkBuffer, pos);
+            pos += leftoverBytes.length + 2;
         }
-        processContentBytes(frame);
-    }
 
-    public byte[] getContent() {
-        return contentBuffer.toByteArray();
-    }
-
-    public byte[] getHeaders() {
-        return headerBuffer.toByteArray();
+        // drop everything we consumed from staging buffer
+        int remainingByteCount = chunkDataBuffer.size() - max;
+        if (remainingByteCount > 0) {
+            byte[] restBytes = new byte[remainingByteCount];
+            System.arraycopy(chunkBuffer, max, restBytes, 0, remainingByteCount);
+            chunkDataBuffer.reset();
+            chunkDataBuffer.write(restBytes, 0, remainingByteCount);
+        } else {
+            chunkDataBuffer.reset();
+        }
     }
 
     /**
-     * Determines if the complete HTTP message (headers and content) has been read.
-     * For chunked encoding, checks if the final chunk has been seen.
-     * For fixed-length bodies, checks if the expected content length has been reached.
-     * If neither chunked nor content-length is specified, it returns false as the end of the message
-     * cannot be determined.
+     * Determines if the current HTTP message is complete.
      *
-     * @return true if the complete HTTP message has been read, false otherwise.
+     * @return true if the message is complete, false otherwise
      */
-    public boolean isComplete() {
+    private boolean isComplete() {
         if (!headersDone) {
             return false;
         }
         if (isChunked) {
             return finalChunkSeen;
         }
-        if (contentLength >= 0) {
+        if (contentLength == 0) {
+            return true; // explicit zero-length body
+        }
+        if (contentLength > 0) {
             return contentBuffer.size() >= contentLength;
         }
-        // no content-length and not chunked: check status code
         try {
             int statusCode = getHttpStatusCode(headerBuffer.toByteArray());
-            if (statusCode == 204 || (statusCode >= 100 && statusCode < 200)) {
-                return true; // no-body responses
+            // no-body responses
+            if (statusCode == 204 || (statusCode >= 100 && statusCode < 200)
+                    || (statusCode >= 400 && statusCode < 600)) {
+                return true;
             }
-            if (statusCode >= 400 && statusCode < 600) {
-                return true; // treat error responses as complete even without body
+            // 200 OK with no content-length => treat as zero-length body
+            if (statusCode == 200) {
+                return true;
             }
         } catch (IllegalStateException e) {
-            // malformed status line - treat as complete
-            return true;
+            return true; // malformed status line - treat as complete
         }
         return false;
     }
 
+    /*
+     * Resets the parser state for the next HTTP message.
+     */
+    private void resetParserState() {
+        headersDone = false;
+        contentLength = -1;
+        isChunked = false;
+        finalChunkSeen = false;
+        headerBuffer.reset();
+        contentBuffer.reset();
+        chunkDataBuffer.reset();
+    }
+
     /**
-     * Extracts the HTTP status code from the given header byte array.
-     * It looks for the status line in the format "HTTP/x.x xxx" and parses the three-digit status code.
-     * If no valid status line is found or if the status code is malformed, a SecurityException is thrown.
+     * Enqueues the given HTTP payload.
      *
-     * @param headerBytes the byte array containing HTTP headers.
-     * @return the extracted HTTP status code as an integer.
-     * @throws IllegalStateException if the status line is missing or malformed.
+     * @param httpPayload the HTTP payload to enqueue
+     */
+    private void enqueuePayload(HttpPayload httpPayload) {
+        httpPayloadQueueLock.lock();
+        try {
+            if (!waiters.isEmpty()) {
+                CompletableFuture<HttpPayload> futureHttpPayload = waiters.remove(0);
+                futureHttpPayload.complete(httpPayload);
+            } else {
+                httpPayloadQueue.addLast(httpPayload);
+            }
+        } finally {
+            httpPayloadQueueLock.unlock();
+        }
+    }
+
+    /**
+     * Fails all waiting futures with the given throwable.
+     *
+     * @param throwable the throwable to complete the futures exceptionally with
+     */
+    private void failAll(Throwable throwable) {
+        httpPayloadQueueLock.lock();
+        try {
+            error = throwable;
+            for (CompletableFuture<HttpPayload> futureHttpPayload : waiters) {
+                futureHttpPayload.completeExceptionally(throwable);
+            }
+            waiters.clear();
+        } finally {
+            httpPayloadQueueLock.unlock();
+        }
+    }
+
+    /**
+     * Completes all waiting futures exceptionally when the parser is closed.
+     */
+    private void completeWaitersOnClose() {
+        httpPayloadQueueLock.lock();
+        try {
+            if (error == null && !closed) {
+                return;
+            }
+            if (error instanceof Throwable throwable) {
+                for (CompletableFuture<HttpPayload> futureHttpPayload : waiters) {
+                    futureHttpPayload.completeExceptionally(throwable);
+                }
+            } else {
+                for (CompletableFuture<HttpPayload> futureHttpPayload : waiters) {
+                    futureHttpPayload.completeExceptionally(new EOFException("Parser closed"));
+                }
+            }
+            waiters.clear();
+        } finally {
+            httpPayloadQueueLock.unlock();
+        }
+    }
+
+    /**
+     * Extracts the HTTP status code from the given header bytes.
+     *
+     * @param headerBytes the byte array containing the HTTP headers
+     * @return the HTTP status code
+     * @throws IllegalStateException if the status line is missing or malformed
      */
     public static int getHttpStatusCode(byte[] headerBytes) throws IllegalStateException {
         String headers = new String(headerBytes, StandardCharsets.ISO_8859_1);
@@ -175,98 +483,16 @@ public class HttpPayloadParser implements AutoCloseable {
     }
 
     /**
-     * Parses chunked transfer encoding from the given byte array and appends the decoded content data
-     * to the contentBuffer. It handles chunk size lines, chunk data, and the final zero-length chunk.
-     * If the chunked data is malformed or exceeds maximum allowed length, a SecurityException is thrown.
-     *
-     * @param block the byte array containing chunked data to be parsed.
-     * @throws IllegalStateException if the chunked data is malformed.
-     */
-    private void parseChunkedBytes(byte[] block) throws IllegalStateException {
-        chunkDataBuffer.write(block, 0, block.length); // copy all incoming data into the buffer
-        byte[] chunkBuffer = chunkDataBuffer.toByteArray();
-        if (indexOfFinalChunkMarker(chunkBuffer) >= 0) {
-            finalChunkSeen = true;
-            int pos = 0;
-            int max = chunkBuffer.length;
-            while (pos < max) {
-                byte[] sizeBuffer = readln(chunkBuffer, pos);
-                if ((pos += sizeBuffer.length + 2) >= max) { // move past size and CRLF; exit on overrun
-                    break;
-                }
-                if (sizeBuffer.length == 0) {
-                    continue; // some implementations insert empty lines, so skip them
-                }
-                int size;
-                try {
-                    size = Integer.parseInt(new String(sizeBuffer, StandardCharsets.ISO_8859_1).trim(), 16);
-                } catch (NumberFormatException e) {
-                    throw new IllegalStateException("Invalid chunk size: " + sizeBuffer);
-                }
-                contentBuffer.write(chunkBuffer, pos, size);
-                if ((pos += size) >= max) { // move past data; exit on overrun
-                    break;
-                }
-                byte[] leftover = readln(chunkBuffer, pos); // read to the next CRLF after the chunk data
-                if ((pos += leftover.length + 2) >= max) { // skip leftover data and CRLF; exit on overrun
-                    break;
-                }
-            }
-        }
-    }
-
-    /**
-     * Processes content bytes according to whether the transfer encoding is chunked or fixed-length.
-     * For chunked encoding, it calls parseChunkedBytes() to handle chunk parsing.
-     * For fixed-length bodies, it appends up to contentLength bytes to the content buffer.
-     * If no content-length is specified and not chunked, it treats the content as a stream and appends all data.
-     * If the content exceeds the maximum allowed length, a SecurityException is thrown.
-     *
-     * @param data the byte array containing content data to be processed.
-     * @throws IllegalStateException if the content exceeds maximum allowed length.
-     */
-    private void processContentBytes(byte[] data) throws IllegalStateException {
-        if (isChunked && !finalChunkSeen) {
-            parseChunkedBytes(data);
-        } else if (contentLength >= 0) {
-            // fixed-length content: accept up to contentLength
-            int toCopy = Math.min(data.length, contentLength - contentBuffer.size());
-            if (toCopy > 0) {
-                contentBuffer.write(data, 0, toCopy);
-            }
-        } else {
-            // no content-length (and not chunked): treat as a stream
-            contentBuffer.write(data, 0, data.length);
-        }
-        if (contentBuffer.size() > MAX_CONTENT_LENGTH) {
-            throw new IllegalStateException("Content exceeds maximum allowed length");
-        }
-    }
-
-    /**
-     * Finds the index of the CRLF sequence in the given byte array starting from a specified index.
-     *
-     * @param buf the byte array to search
-     * @param from the starting index for the search
-     * @return the index of the CRLF sequence, or -1 if not found
-     */
-    public static int indexOfCRLF(byte[] buf, int from) {
-        for (int i = from; i + 1 < buf.length; i++) {
-            if (buf[i] == '\r' && buf[i + 1] == '\n') {
-                return i;
-            }
-        }
-        return -1;
-    }
-
-    /**
-     * Finds the index of the double CRLF sequence in the given byte array.
+     * Finds the index of the first occurrence of double CRLF ("\r\n\r\n") in the given data
+     * between the specified from (inclusive) and to (exclusive) indices.
      *
      * @param data the byte array to search
-     * @return the index of the double CRLF sequence, or -1 if not found
+     * @param from the starting index to search from (inclusive)
+     * @param to the ending index to search to (exclusive)
+     * @return the index of the first occurrence of double CRLF, or -1 if not found
      */
-    public static int indexOfDoubleCRLF(byte[] data, int start) {
-        for (int i = start; i + 3 < data.length; i++) {
+    private static int indexOfDoubleCRLF(byte[] data, int from, int to) {
+        for (int i = from; i + 3 < to; i++) {
             if (data[i] == '\r' && data[i + 1] == '\n' && data[i + 2] == '\r' && data[i + 3] == '\n') {
                 return i;
             }
@@ -275,15 +501,30 @@ public class HttpPayloadParser implements AutoCloseable {
     }
 
     /**
-     * Finds the index of the final chunk marker ("0\r\n\r\n") in the given byte array.
+     * Finds the index of the first CRLF ("\r\n") in the given data starting from the specified index.
      *
      * @param data the byte array to search
+     * @param from the starting index to search from
+     * @return the index of the first CRLF, or -1 if not found
+     */
+    private static int indexOfCRLF(byte[] data, int from) {
+        for (int i = from; i + 1 < data.length; i++) {
+            if (data[i] == '\r' && data[i + 1] == '\n') {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    /**
+     * Finds the index of the final chunk marker ("0\r\n\r\n") in the given data.
+     *
+     * @param data the byte array containing the data
      * @return the index of the final chunk marker, or -1 if not found
      */
-    public static int indexOfFinalChunkMarker(byte[] data) {
+    private static int indexOfFinalChunkMarker(byte[] data) {
         byte[] marker = new byte[] { '0', '\r', '\n', '\r', '\n' };
         int len = data.length;
-        // start from the last possible position where the marker could begin
         for (int i = len - marker.length; i >= 0; i--) {
             boolean match = true;
             for (int j = 0; j < marker.length; j++) {
@@ -293,21 +534,21 @@ public class HttpPayloadParser implements AutoCloseable {
                 }
             }
             if (match) {
-                return i; // found the final chunk marker
+                return i;
             }
         }
-        return -1; // not found
+        return -1;
     }
 
     /**
-     * Reads a line from the given byte array starting at the specified index until a CRLF sequence is found.
+     * Reads a line ending with CRLF from the given data starting at the specified start index.
      *
-     * @param data the byte array to read from
-     * @param start the starting index for reading
-     * @return a byte array containing the line read (excluding CRLF)
+     * @param data the byte array containing the data
+     * @param start the starting index to read from
+     * @return the line as a byte array (excluding CRLF)
      * @throws IllegalStateException if no CRLF is found
      */
-    public static byte[] readln(byte[] data, int start) throws IllegalStateException {
+    private static byte[] readln(byte[] data, int start) throws IllegalStateException {
         int end = indexOfCRLF(data, start);
         if (end < 0) {
             throw new IllegalStateException("No CRLF found in chunked data");
@@ -319,8 +560,55 @@ public class HttpPayloadParser implements AutoCloseable {
 
     @Override
     public void close() throws IOException {
-        headerBuffer.close();
-        contentBuffer.close();
-        chunkDataBuffer.close();
+        closed = true;
+        try {
+            inputStream.close();
+        } finally {
+            try {
+                inputThread.interrupt();
+                inputThread.join();
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+        }
+    }
+
+    /**
+     * Simple grow-able byte array wrapper
+     */
+    protected static final class ByteArrayOutput {
+        private byte[] buffer = new byte[256];
+        private int size = 0;
+
+        protected void write(byte[] data, int offset, int length) {
+            ensure(length);
+            System.arraycopy(data, offset, buffer, size, length);
+            size += length;
+        }
+
+        protected int size() {
+            return size;
+        }
+
+        protected byte[] toByteArray() {
+            byte[] outputBytes = new byte[size];
+            System.arraycopy(buffer, 0, outputBytes, 0, size);
+            return outputBytes;
+        }
+
+        protected void reset() {
+            size = 0;
+        }
+
+        private void ensure(int additionalByteCount) {
+            int neededByteCount = size + additionalByteCount;
+            if (neededByteCount <= buffer.length) {
+                return;
+            }
+            int newCapacity = Math.max(buffer.length * 2, neededByteCount);
+            byte[] newBuffer = new byte[newCapacity];
+            System.arraycopy(buffer, 0, newBuffer, 0, size);
+            buffer = newBuffer;
+        }
     }
 }
