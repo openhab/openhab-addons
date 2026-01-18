@@ -47,7 +47,7 @@ public class ShellyDevices {
     public static final String SHELLYDT_3EM = "SHEM-3";
     public static final String SHELLYDT_HT = "SHHT-1";
     public static final String SHELLYDT_SMOKE = "SHSM-01";
-    public static final String SHELLYDT_FLOOD = "SH-FLOOD ";
+    public static final String SHELLYDT_FLOOD = "SH-FLOOD";
     public static final String SHELLYDT_DOORWINDOW = "SHDW-1";
     public static final String SHELLYDT_DOORWINDOW2 = "SHDW-2";
     public static final String SHELLYDT_UNI = "SHUNI-1";
