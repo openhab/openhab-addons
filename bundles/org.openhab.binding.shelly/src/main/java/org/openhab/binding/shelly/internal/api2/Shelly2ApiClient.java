@@ -97,7 +97,7 @@ public class Shelly2ApiClient extends ShellyHttpClient {
     protected final ShellyStatusRelay relayStatus = new ShellyStatusRelay();
     protected final ShellyStatusSensor sensorData = new ShellyStatusSensor();
     protected final ArrayList<ShellyRollerStatus> rollerStatus = new ArrayList<>();
-    protected volatile @Nullable ShellyThingInterface thing;
+    protected @Nullable ShellyThingInterface thing;
 
     private static final String RPC_SRC_PREFIX = "ohshelly-";
     private static final int MAX_ID = 10000;

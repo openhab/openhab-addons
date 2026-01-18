@@ -186,7 +186,7 @@ public class ShellyBasicDiscoveryService extends AbstractDiscoveryService {
             String serviceName) {
         ShellyThingConfiguration config = new ShellyThingConfiguration();
         config.serviceName = serviceName;
-        config.deviceIp = getString(address);
+        config.deviceIp = address;
         config.userId = getString(bindingConfig.defaultUserId);
         config.password = getString(bindingConfig.defaultPassword);
         config.localIp = getString(bindingConfig.localIP);
