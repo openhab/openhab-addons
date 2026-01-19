@@ -24,7 +24,6 @@ import java.time.Instant;
 import java.time.InstantSource;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.GregorianCalendar;
@@ -33,6 +32,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.TimeZone;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -162,13 +162,16 @@ public abstract class AstroThingHandler extends BaseThingHandler {
     /** The source of the current time */
     protected final InstantSource instantSource;
 
+    private final Set<String> positionalChannels;
+
     public AstroThingHandler(Thing thing, final CronScheduler scheduler, final TimeZoneProvider timeZoneProvider,
-            LocaleProvider localeProvider, InstantSource instantSource) {
+            LocaleProvider localeProvider, InstantSource instantSource, Set<String> positionalChannels) {
         super(thing);
         this.cronScheduler = scheduler;
         this.timeZoneProvider = timeZoneProvider;
         this.localeProvider = localeProvider;
         this.instantSource = instantSource;
+        this.positionalChannels = positionalChannels;
     }
 
     @Override
@@ -343,7 +346,7 @@ public abstract class AstroThingHandler extends BaseThingHandler {
      * Counts positional channels and restarts Astro jobs.
      */
     private void linkedChannelChange(ChannelUID channelUID) {
-        if (Arrays.asList(getPositionalChannelIds()).contains(channelUID.getId())) {
+        if (positionalChannels.contains(channelUID.getId())) {
             boolean newValue = isPositionalChannelLinked();
             monitor.lock();
             try {
@@ -362,7 +365,6 @@ public abstract class AstroThingHandler extends BaseThingHandler {
      * Returns {@code true}, if at least one positional channel is linked.
      */
     private boolean isPositionalChannelLinked() {
-        List<String> positionalChannels = Arrays.asList(getPositionalChannelIds());
         for (Channel channel : getThing().getChannels()) {
             ChannelUID id = channel.getUID();
             if (isLinked(id) && positionalChannels.contains(id.getId())) {
@@ -474,11 +476,6 @@ public abstract class AstroThingHandler extends BaseThingHandler {
      * Returns the {@link Planet} instance (cannot be {@code null})
      */
     public abstract @Nullable Planet getPlanet();
-
-    /**
-     * Returns the channelIds for positional calculation (cannot be {@code null})
-     */
-    protected abstract String[] getPositionalChannelIds();
 
     /**
      * Returns the daily calculation {@link Job} (cannot be {@code null})

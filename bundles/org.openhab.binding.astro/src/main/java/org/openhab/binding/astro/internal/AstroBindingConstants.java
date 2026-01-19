@@ -51,12 +51,23 @@ public final class AstroBindingConstants {
 
     // regular channelIds
 
-    public static final String CHANNEL_ID_MOON_RISE_START = "rise#start";
-    public static final String CHANNEL_ID_MOON_RISE_END = "rise#end";
-    public static final String CHANNEL_ID_MOON_RISE_DURATION = "rise#duration";
-    public static final String CHANNEL_ID_MOON_SET_START = "set#start";
-    public static final String CHANNEL_ID_MOON_SET_END = "set#end";
-    public static final String CHANNEL_ID_MOON_SET_DURATION = "set#duration";
+    // Common to SUN and MOON
+    public static final String CHANNEL_ID_POSITION_AZIMUTH = "position#azimuth";
+    public static final String CHANNEL_ID_POSITION_ELEVATION = "position#elevation";
+    public static final String CHANNEL_ID_PHASE_NAME = "phase#name";
+    public static final String CHANNEL_ID_ZODIAC_SIGN = "zodiac#sign";
+    public static final String CHANNEL_ID_RISE_START = "rise#start";
+    public static final String CHANNEL_ID_RISE_END = "rise#end";
+    public static final String CHANNEL_ID_RISE_DURATION = "rise#duration";
+    public static final String CHANNEL_ID_SET_START = "set#start";
+    public static final String CHANNEL_ID_SET_END = "set#end";
+    public static final String CHANNEL_ID_SET_DURATION = "set#duration";
+    public static final String CHANNEL_ID_ECLIPSE_TOTAL = "eclipse#total";
+    public static final String CHANNEL_ID_ECLIPSE_TOTAL_ELEVATION = "eclipse#totalElevation";
+    public static final String CHANNEL_ID_ECLIPSE_PARTIAL = "eclipse#partial";
+    public static final String CHANNEL_ID_ECLIPSE_PARTIAL_ELEVATION = "eclipse#partialElevation";
+
+    // Moon Specific channels
     public static final String CHANNEL_ID_MOON_PHASE_FIRST_QUARTER = "phase#firstQuarter";
     public static final String CHANNEL_ID_MOON_PHASE_THIRD_QUARTER = "phase#thirdQuarter";
     public static final String CHANNEL_ID_MOON_PHASE_FULL = "phase#full";
@@ -65,28 +76,15 @@ public final class AstroBindingConstants {
     public static final String CHANNEL_ID_MOON_PHASE_AGE_DEGREE = "phase#ageDegree";
     public static final String CHANNEL_ID_MOON_PHASE_AGE_PERCENT = "phase#agePercent";
     public static final String CHANNEL_ID_MOON_PHASE_ILLUMINATION = "phase#illumination";
-    public static final String CHANNEL_ID_MOON_PHASE_NAME = "phase#name";
-    public static final String CHANNEL_ID_MOON_ECLIPSE_TOTAL = "eclipse#total";
-    public static final String CHANNEL_ID_MOON_ECLIPSE_TOTAL_ELEVATION = "eclipse#totalElevation";
-    public static final String CHANNEL_ID_MOON_ECLIPSE_PARTIAL = "eclipse#partial";
-    public static final String CHANNEL_ID_MOON_ECLIPSE_PARTIAL_ELEVATION = "eclipse#partialElevation";
     public static final String CHANNEL_ID_MOON_DISTANCE_DATE = "distance#date";
     public static final String CHANNEL_ID_MOON_DISTANCE_DISTANCE = "distance#distance";
     public static final String CHANNEL_ID_MOON_PERIGEE_DATE = "perigee#date";
     public static final String CHANNEL_ID_MOON_PERIGEE_DISTANCE = "perigee#distance";
     public static final String CHANNEL_ID_MOON_APOGEE_DATE = "apogee#date";
     public static final String CHANNEL_ID_MOON_APOGEE_DISTANCE = "apogee#distance";
-    public static final String CHANNEL_ID_MOON_POSITION_AZIMUTH = "position#azimuth";
-    public static final String CHANNEL_ID_MOON_POSITION_ELEVATION = "position#elevation";
     public static final String CHANNEL_ID_MOON_POSITION_SHADE_LENGTH = "position#shadeLength";
-    public static final String CHANNEL_ID_MOON_ZODIAC_SIGN = "zodiac#sign";
 
-    public static final String CHANNEL_ID_SUN_RISE_START = "rise#start";
-    public static final String CHANNEL_ID_SUN_RISE_END = "rise#end";
-    public static final String CHANNEL_ID_SUN_RISE_DURATION = "rise#duration";
-    public static final String CHANNEL_ID_SUN_SET_START = "set#start";
-    public static final String CHANNEL_ID_SUN_SET_END = "set#end";
-    public static final String CHANNEL_ID_SUN_SET_DURATION = "set#duration";
+    // Sun specific channels
     public static final String CHANNEL_ID_SUN_NOON_START = "noon#start";
     public static final String CHANNEL_ID_SUN_NOON_END = "noon#end";
     public static final String CHANNEL_ID_SUN_NOON_DURATION = "noon#duration";
@@ -123,15 +121,12 @@ public final class AstroBindingConstants {
     public static final String CHANNEL_ID_SUN_DAYLIGHT_START = "daylight#start";
     public static final String CHANNEL_ID_SUN_DAYLIGHT_END = "daylight#end";
     public static final String CHANNEL_ID_SUN_DAYLIGHT_DURATION = "daylight#duration";
-    public static final String CHANNEL_ID_SUN_POSITION_AZIMUTH = "position#azimuth";
-    public static final String CHANNEL_ID_SUN_POSITION_ELEVATION = "position#elevation";
     public static final String CHANNEL_ID_SUN_POSITION_SHADE_LENGTH = "position#shadeLength";
     public static final String CHANNEL_ID_SUN_RADIATION_DIRECT = "radiation#direct";
     public static final String CHANNEL_ID_SUN_RADIATION_DIFFUSE = "radiation#diffuse";
     public static final String CHANNEL_ID_SUN_RADIATION_TOTAL = "radiation#total";
     public static final String CHANNEL_ID_SUN_ZODIAC_START = "zodiac#start";
     public static final String CHANNEL_ID_SUN_ZODIAC_END = "zodiac#end";
-    public static final String CHANNEL_ID_SUN_ZODIAC_SIGN = "zodiac#sign";
     public static final String CHANNEL_ID_SUN_SEASON_NAME = "season#name";
     public static final String CHANNEL_ID_SUN_SEASON_SPRING = "season#spring";
     public static final String CHANNEL_ID_SUN_SEASON_SUMMER = "season#summer";
@@ -139,13 +134,8 @@ public final class AstroBindingConstants {
     public static final String CHANNEL_ID_SUN_SEASON_WINTER = "season#winter";
     public static final String CHANNEL_ID_SUN_SEASON_NEXT_NAME = "season#nextName";
     public static final String CHANNEL_ID_SUN_SEASON_TIME_LEFT = "season#timeLeft";
-    public static final String CHANNEL_ID_SUN_ECLIPSE_TOTAL = "eclipse#total";
-    public static final String CHANNEL_ID_SUN_ECLIPSE_TOTAL_ELEVATION = "eclipse#totalElevation";
-    public static final String CHANNEL_ID_SUN_ECLIPSE_PARTIAL = "eclipse#partial";
-    public static final String CHANNEL_ID_SUN_ECLIPSE_PARTIAL_ELEVATION = "eclipse#partialElevation";
     public static final String CHANNEL_ID_SUN_ECLIPSE_RING = "eclipse#ring";
     public static final String CHANNEL_ID_SUN_ECLIPSE_RING_ELEVATION = "eclipse#ringElevation";
-    public static final String CHANNEL_ID_SUN_PHASE_NAME = "phase#name";
     public static final String CHANNEL_ID_SUN_CIRCADIAN_BRIGHTNESS = "circadian#brightness";
     public static final String CHANNEL_ID_SUN_CIRCADIAN_TEMPERATURE = "circadian#temperature";
 
