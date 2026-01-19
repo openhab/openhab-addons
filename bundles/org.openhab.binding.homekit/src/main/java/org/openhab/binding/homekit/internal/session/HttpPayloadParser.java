@@ -12,16 +12,16 @@
  */
 package org.openhab.binding.homekit.internal.session;
 
-import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Deque;
-import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.SynchronousQueue;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -59,11 +59,12 @@ public class HttpPayloadParser implements AutoCloseable {
 
     private final InputStream inputStream;
     private final Thread inputThread;
+    private final ExecutorService outputThreadExecutor;
 
-    // grow-able buffer for incoming bytes
+    // grow-able buffer for incoming bytes, and indexes to valid data
     private byte[] inputBuffer = new byte[8192];
-    private int inputStart = 0; // first valid byte
-    private int inputEnd = 0; // one past last valid byte
+    private int inputStartIndex = 0; // first valid byte
+    private int inputEndIndex = 0; // one past last valid byte
 
     // current message state
     private final ByteArrayOutput headerBuffer = new ByteArrayOutput();
@@ -75,52 +76,77 @@ public class HttpPayloadParser implements AutoCloseable {
     private boolean isChunked = false;
     private boolean finalChunkSeen = false;
 
-    // payload queue + waiters
-    private final ReentrantLock httpPayloadQueueLock = new ReentrantLock();
-    private final Deque<HttpPayload> httpPayloadQueue = new ArrayDeque<>();
-    private final List<CompletableFuture<HttpPayload>> waiters = new ArrayList<>();
+    private final SynchronousQueue<HttpPayload> httpPayloadQueue = new SynchronousQueue<>();
+    private final Semaphore futureHttpPayloadLock = new Semaphore(1);
+
+    private static final HttpPayload CLOSE_SENTINEL = new HttpPayload();
+    private static final HttpPayload ERROR_SENTINEL = new HttpPayload();
 
     private volatile boolean closed = false;
-    private volatile @Nullable Throwable error = null;
+    private volatile @Nullable Throwable parserError = null;
 
     public HttpPayloadParser(InputStream stream) {
         inputStream = stream;
-        inputThread = new Thread(this::inputTask);
+
+        inputThread = new Thread(this::inputTask, "http-parser-input");
         inputThread.setDaemon(true);
         inputThread.start();
+
+        outputThreadExecutor = Executors.newSingleThreadExecutor(r -> {
+            Thread t = new Thread(r, "http-parser-output");
+            t.setDaemon(true);
+            return t;
+        });
     }
 
     /**
-     * Asynchronously waits for the next complete HTTP payload.
+     * Returns a CompletableFuture that asynchronously waits for the next complete HTTP pay-load to be
+     * available. Exactly one CompletableFuture can be supplied at any time; subsequent calls will block
+     * until the first one completes.
+     *
+     * @return a CompletableFuture that will be completed with the next HttpPayload
      */
     public CompletableFuture<HttpPayload> awaitHttpPayload() {
-        httpPayloadQueueLock.lock();
         try {
-            if (httpPayloadQueue.peekFirst() instanceof HttpPayload httpPayload) {
-                httpPayloadQueue.pollFirst();
-                return CompletableFuture.completedFuture(httpPayload);
-            }
-            if (error instanceof Throwable throwable) {
-                CompletableFuture<HttpPayload> futureHttpPayload = new CompletableFuture<>();
-                futureHttpPayload.completeExceptionally(throwable);
-                return futureHttpPayload;
-            }
-            if (closed) {
-                CompletableFuture<HttpPayload> futureHttpPayload = new CompletableFuture<>();
-                futureHttpPayload.completeExceptionally(new EOFException("Parser closed"));
-                return futureHttpPayload;
-            }
-            CompletableFuture<HttpPayload> futureHttpPayload = new CompletableFuture<>();
-            waiters.add(futureHttpPayload);
-            return futureHttpPayload;
-        } finally {
-            httpPayloadQueueLock.unlock();
+            // first caller acquires lock; subsequent calls block until first caller future completes
+            futureHttpPayloadLock.acquire();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            return CompletableFuture.failedFuture(e);
         }
+
+        CompletableFuture<HttpPayload> futureHttpPayload = new CompletableFuture<>();
+        outputThreadExecutor.submit(() -> {
+            try {
+                // take() will block until HTTP parser hands off a complete pay-load
+                HttpPayload httpPayload = Objects.requireNonNull(httpPayloadQueue.take());
+                if (httpPayload == ERROR_SENTINEL) {
+                    futureHttpPayload.completeExceptionally(
+                            parserError instanceof Exception e ? e : new IOException("Parser error"));
+                    return;
+                }
+                if (httpPayload == CLOSE_SENTINEL) {
+                    futureHttpPayload.completeExceptionally(new IOException("Parser closed"));
+                    return;
+                }
+                futureHttpPayload.complete(httpPayload);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                futureHttpPayload.completeExceptionally(e);
+            } catch (RuntimeException r) {
+                futureHttpPayload.completeExceptionally(r);
+            } finally {
+                // release lock so subsequent calls can proceed
+                futureHttpPayloadLock.release();
+            }
+        });
+
+        return futureHttpPayload;
     }
 
     /**
-     * Continuously reads from the input stream, appending data to the input buffer,
-     * and parsing available data to extract complete HTTP messages.
+     * Continuously reads from the input stream, appending data to the input buffer, and parsing
+     * available data to extract complete HTTP messages.
      */
     private void inputTask() {
         try {
@@ -138,11 +164,20 @@ public class HttpPayloadParser implements AutoCloseable {
             }
         } catch (IOException e) {
             logger.debug("Input stream closed or error occurred: {}", e.getMessage());
-            failAll(e);
-            return;
+            parserError = e;
         } finally {
             closed = true;
-            completeWaitersOnClose();
+            try {
+                // wake consumer with the correct sentinel
+                if (parserError != null) {
+                    httpPayloadQueue.put(ERROR_SENTINEL);
+                } else {
+                    httpPayloadQueue.put(CLOSE_SENTINEL);
+                }
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+
         }
     }
 
@@ -155,8 +190,8 @@ public class HttpPayloadParser implements AutoCloseable {
      */
     private void appendToBuffer(byte[] source, int offset, int length) {
         ensureCapacity(length);
-        System.arraycopy(source, offset, inputBuffer, inputEnd, length);
-        inputEnd += length;
+        System.arraycopy(source, offset, inputBuffer, inputEndIndex, length);
+        inputEndIndex += length;
     }
 
     /**
@@ -166,28 +201,28 @@ public class HttpPayloadParser implements AutoCloseable {
      * @param byteCount the number of incoming bytes to accommodate
      */
     private void ensureCapacity(int byteCount) {
-        int free = inputBuffer.length - inputEnd;
+        int free = inputBuffer.length - inputEndIndex;
         if (free >= byteCount) {
             return;
         }
         // compact if possible
-        if (inputStart > 0) {
-            int remainingByteCount = inputEnd - inputStart;
-            System.arraycopy(inputBuffer, inputStart, inputBuffer, 0, remainingByteCount);
-            inputStart = 0;
-            inputEnd = remainingByteCount;
-            free = inputBuffer.length - inputEnd;
+        if (inputStartIndex > 0) {
+            int remainingByteCount = inputEndIndex - inputStartIndex;
+            System.arraycopy(inputBuffer, inputStartIndex, inputBuffer, 0, remainingByteCount);
+            inputStartIndex = 0;
+            inputEndIndex = remainingByteCount;
+            free = inputBuffer.length - inputEndIndex;
             if (free >= byteCount) {
                 return;
             }
         }
         // grow if needed
-        int needed = inputEnd + byteCount;
+        int needed = inputEndIndex + byteCount;
         int newCapacity = Math.max(inputBuffer.length * 2, needed);
         byte[] newBuffer = new byte[newCapacity];
-        System.arraycopy(inputBuffer, inputStart, newBuffer, 0, inputEnd - inputStart);
-        inputEnd = inputEnd - inputStart;
-        inputStart = 0;
+        System.arraycopy(inputBuffer, inputStartIndex, newBuffer, 0, inputEndIndex - inputStartIndex);
+        inputEndIndex = inputEndIndex - inputStartIndex;
+        inputStartIndex = 0;
         inputBuffer = newBuffer;
     }
 
@@ -199,49 +234,49 @@ public class HttpPayloadParser implements AutoCloseable {
     private void parseAvailable() throws IOException {
         while (true) {
             if (!headersDone) {
-                int headerEndIndex = indexOfDoubleCRLF(inputBuffer, inputStart, inputEnd);
+                int headerEndIndex = indexOfDoubleCRLF(inputBuffer, inputStartIndex, inputEndIndex);
                 if (headerEndIndex < 0) {
                     // need more data
                     return;
                 }
-                int headersLength = (headerEndIndex + 4) - inputStart;
+                int headersLength = (headerEndIndex + 4) - inputStartIndex;
                 if (headersLength > MAX_HEADER_BLOCK_SIZE) {
                     throw new SecurityException("Header buffer overload");
                 }
 
                 headerBuffer.reset();
-                headerBuffer.write(inputBuffer, inputStart, headersLength);
+                headerBuffer.write(inputBuffer, inputStartIndex, headersLength);
                 parseHeaders(headerBuffer.toByteArray());
 
                 headersDone = true;
-                inputStart += headersLength;
+                inputStartIndex += headersLength;
             }
 
             if (headersDone) {
-                // If the message is complete AND has no body, emit immediately.
-                // This handles: 200 without Content-Length, 204, 1xx, 4xx, 5xx.
+                // if the message is complete AND has no body, emit immediately.
+                // this handles: 200 without Content-Length, 204, 1xx, 4xx, 5xx.
                 if (isComplete() && contentLength <= 0 && !isChunked) {
                     enqueuePayload(new HttpPayload(headerBuffer.toByteArray(), contentBuffer.toByteArray()));
                     resetParserState();
                     continue; // parse next message if present
                 }
-                int remainingByteCount = inputEnd - inputStart;
+                int remainingByteCount = inputEndIndex - inputStartIndex;
                 if (remainingByteCount <= 0) {
                     return;
                 }
 
                 if (isChunked && !finalChunkSeen) {
-                    chunkDataBuffer.write(inputBuffer, inputStart, remainingByteCount);
-                    inputStart += remainingByteCount;
+                    chunkDataBuffer.write(inputBuffer, inputStartIndex, remainingByteCount);
+                    inputStartIndex += remainingByteCount;
                     parseChunkedBytesFromStagingBuffer();
                 } else if (contentLength >= 0) {
                     int toCopy = Math.min(remainingByteCount, contentLength - contentBuffer.size());
                     if (toCopy > 0) {
-                        contentBuffer.write(inputBuffer, inputStart, toCopy);
-                        inputStart += toCopy;
+                        contentBuffer.write(inputBuffer, inputStartIndex, toCopy);
+                        inputStartIndex += toCopy;
                     } else {
                         // nothing more needed for this message
-                        inputStart += remainingByteCount;
+                        inputStartIndex += remainingByteCount;
                     }
                 } else {
                     // no content-length and not chunked; body presence decided by status code
@@ -402,63 +437,15 @@ public class HttpPayloadParser implements AutoCloseable {
     }
 
     /**
-     * Enqueues the given HTTP payload.
+     * Enqueues the given HTTP pay-load.
      *
-     * @param httpPayload the HTTP payload to enqueue
+     * @param httpPayload the HTTP pay-load to enqueue
      */
     private void enqueuePayload(HttpPayload httpPayload) {
-        httpPayloadQueueLock.lock();
         try {
-            if (!waiters.isEmpty()) {
-                CompletableFuture<HttpPayload> futureHttpPayload = waiters.remove(0);
-                futureHttpPayload.complete(httpPayload);
-            } else {
-                httpPayloadQueue.addLast(httpPayload);
-            }
-        } finally {
-            httpPayloadQueueLock.unlock();
-        }
-    }
-
-    /**
-     * Fails all waiting futures with the given throwable.
-     *
-     * @param throwable the throwable to complete the futures exceptionally with
-     */
-    private void failAll(Throwable throwable) {
-        httpPayloadQueueLock.lock();
-        try {
-            error = throwable;
-            for (CompletableFuture<HttpPayload> futureHttpPayload : waiters) {
-                futureHttpPayload.completeExceptionally(throwable);
-            }
-            waiters.clear();
-        } finally {
-            httpPayloadQueueLock.unlock();
-        }
-    }
-
-    /**
-     * Completes all waiting futures exceptionally when the parser is closed.
-     */
-    private void completeWaitersOnClose() {
-        httpPayloadQueueLock.lock();
-        try {
-            if (error == null && !closed) {
-                return;
-            }
-            if (error instanceof Throwable throwable) {
-                for (CompletableFuture<HttpPayload> futureHttpPayload : waiters) {
-                    futureHttpPayload.completeExceptionally(throwable);
-                }
-            } else {
-                for (CompletableFuture<HttpPayload> futureHttpPayload : waiters) {
-                    futureHttpPayload.completeExceptionally(new EOFException("Parser closed"));
-                }
-            }
-            waiters.clear();
-        } finally {
-            httpPayloadQueueLock.unlock();
+            httpPayloadQueue.put(httpPayload); // blocks until a consumer takes it
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
         }
     }
 
@@ -563,18 +550,27 @@ public class HttpPayloadParser implements AutoCloseable {
         closed = true;
         try {
             inputStream.close();
-        } finally {
-            try {
-                inputThread.interrupt();
-                inputThread.join();
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
+        } catch (Exception e) {
+            // fall through
+        }
+        try {
+            inputThread.interrupt();
+            inputThread.join();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+        outputThreadExecutor.shutdownNow();
+        try {
+            if (!outputThreadExecutor.awaitTermination(500, TimeUnit.MILLISECONDS)) {
+                logger.debug("Executor did not terminate promptly");
             }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
         }
     }
 
     /**
-     * Simple grow-able byte array wrapper
+     * Simple grow-able byte array wrapper class.
      */
     protected static final class ByteArrayOutput {
         private byte[] buffer = new byte[256];

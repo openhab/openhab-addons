@@ -54,12 +54,6 @@ public class IpTransport implements AutoCloseable {
     private static final Duration MINIMUM_REQUEST_INTERVAL = Duration.ofMillis(250);
 
     private final Logger logger = LoggerFactory.getLogger(IpTransport.class);
-    private final ExecutorService executor = Executors.newSingleThreadExecutor(r -> {
-        Thread t = new Thread(r, "homekit-io");
-        t.setDaemon(true);
-        return t;
-    });
-
     private final Socket socket;
     private final String hostName;
     private final String ipAddress;
@@ -67,6 +61,7 @@ public class IpTransport implements AutoCloseable {
     private final AtomicBoolean awaitingHttpResponse = new AtomicBoolean(false);
     private final SynchronousQueue<HttpPayload> responseQueue = new SynchronousQueue<>();
     private final Thread inputThread;
+    private final ExecutorService outputThreadExecutor;
 
     /**
      * SpotBugs incorrectly assumes that {@link SynchronousQueue#poll(long, TimeUnit)} never returns {@code null}.
@@ -105,9 +100,15 @@ public class IpTransport implements AutoCloseable {
 
         httpPayloadParser = new HttpPayloadParser(socket.getInputStream());
 
-        inputThread = new Thread(this::inputTask);
+        inputThread = new Thread(this::inputTask, "ip-transport-input");
         inputThread.setDaemon(true);
         inputThread.start();
+
+        outputThreadExecutor = Executors.newSingleThreadExecutor(r -> {
+            Thread t = new Thread(r, "ip-transport-output");
+            t.setDaemon(true);
+            return t;
+        });
 
         logger.debug("Connected to {} alias {}", ipAddress, hostName);
     }
@@ -218,12 +219,12 @@ public class IpTransport implements AutoCloseable {
             HttpPayload response;
             Future<@Nullable Void> writeFuture;
             if (secureSession instanceof SecureSession secureSession) {
-                writeFuture = executor.submit(() -> {
+                writeFuture = outputThreadExecutor.submit(() -> {
                     secureSession.send(request);
                     return null;
                 });
             } else {
-                writeFuture = executor.submit(() -> {
+                writeFuture = outputThreadExecutor.submit(() -> {
                     OutputStream out = socket.getOutputStream();
                     out.write(request);
                     out.flush();
@@ -312,9 +313,9 @@ public class IpTransport implements AutoCloseable {
             }
         }
         responseQueue.offer(new HttpPayload()); // unblock any waiting execute() call
-        executor.shutdownNow();
+        outputThreadExecutor.shutdownNow();
         try {
-            if (!executor.awaitTermination(500, TimeUnit.MILLISECONDS)) {
+            if (!outputThreadExecutor.awaitTermination(500, TimeUnit.MILLISECONDS)) {
                 logger.debug("Executor did not terminate promptly");
             }
         } catch (InterruptedException e) {
@@ -322,15 +323,24 @@ public class IpTransport implements AutoCloseable {
         }
     }
 
+    /**
+     * The input task that continuously listens for incoming HTTP pay-loads and forwards them to the
+     * appropriate handler.
+     */
     private void inputTask() {
         while (!Thread.currentThread().isInterrupted() && !closing) {
             httpPayloadParser.awaitHttpPayload().thenAccept(this::forwardHttpPayload);
         }
     }
 
+    /**
+     * Forwards the received HTTP pay-load to the appropriate handler based on its type.
+     *
+     * @param httpPayload the received HTTP pay-load
+     */
     private void forwardHttpPayload(HttpPayload httpPayload) {
         String headers = new String(httpPayload.headers(), StandardCharsets.ISO_8859_1);
-        if (logger.isTraceEnabled()) { // don't build content trace string if not needed
+        if (logger.isTraceEnabled()) { // don't expand content trace string if not needed
             logger.trace("{} received:\n{}{}", ipAddress, headers,
                     new String(httpPayload.content(), StandardCharsets.ISO_8859_1));
         }
