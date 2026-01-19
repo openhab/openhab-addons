@@ -12,9 +12,11 @@
  */
 package org.openhab.binding.astro.internal.handler;
 
+import static org.openhab.binding.astro.internal.AstroBindingConstants.*;
+
+import java.time.InstantSource;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.Locale;
 import java.util.TimeZone;
@@ -24,13 +26,21 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.astro.internal.calc.MoonCalc;
 import org.openhab.binding.astro.internal.job.DailyJobMoon;
 import org.openhab.binding.astro.internal.job.Job;
+import org.openhab.binding.astro.internal.model.DistanceType;
+import org.openhab.binding.astro.internal.model.EclipseKind;
 import org.openhab.binding.astro.internal.model.Moon;
 import org.openhab.binding.astro.internal.model.Planet;
 import org.openhab.binding.astro.internal.model.Position;
+import org.openhab.binding.astro.internal.util.DateTimeUtils;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.scheduler.CronScheduler;
+import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.Thing;
+import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The MoonHandler is responsible for updating calculated moon data.
@@ -43,15 +53,17 @@ public class MoonHandler extends AstroThingHandler {
 
     private final String[] positionalChannelIds = new String[] { "phase#name", "phase#age", "phase#agePercent",
             "phase#ageDegree", "phase#illumination", "position#azimuth", "position#elevation", "zodiac#sign" };
-    private final MoonCalc moonCalc = new MoonCalc();
+    private final MoonCalc moonCalc;
+    private final Logger logger = LoggerFactory.getLogger(MoonHandler.class);
     private volatile @Nullable Moon moon;
 
     /**
      * Constructor
      */
     public MoonHandler(Thing thing, final CronScheduler scheduler, final TimeZoneProvider timeZoneProvider,
-            LocaleProvider localeProvider) {
-        super(thing, scheduler, timeZoneProvider, localeProvider);
+            LocaleProvider localeProvider, InstantSource instantSource) {
+        super(thing, scheduler, timeZoneProvider, localeProvider, instantSource);
+        moonCalc = new MoonCalc(instantSource);
     }
 
     @Override
@@ -59,13 +71,12 @@ public class MoonHandler extends AstroThingHandler {
         ZoneId zoneId = timeZoneProvider.getTimeZone();
         TimeZone zone = TimeZone.getTimeZone(zoneId);
         Locale locale = localeProvider.getLocale();
-        Moon moon = getMoonAt(ZonedDateTime.now(zoneId), locale);
+        ZonedDateTime now = instantSource.instant().atZone(zone.toZoneId());
+        Moon moon = getMoonAt(now, locale);
         Double latitude = thingConfig.latitude;
         Double longitude = thingConfig.longitude;
-        moonCalc.setPositionalInfo(Calendar.getInstance(zone, locale), latitude != null ? latitude : 0,
-                longitude != null ? longitude : 0, moon, zone, locale);
-
-        moon.getEclipse().setElevations(this, timeZoneProvider);
+        moonCalc.setPositionalInfo(DateTimeUtils.calFromInstantSource(instantSource, zone, locale),
+                latitude != null ? latitude : 0, longitude != null ? longitude : 0, moon, zone, locale);
         this.moon = moon;
 
         publishPlanet();
@@ -80,6 +91,78 @@ public class MoonHandler extends AstroThingHandler {
     public void dispose() {
         super.dispose();
         moon = null;
+    }
+
+    @Override
+    protected State getState(Channel channel) {
+        Moon moon = this.moon;
+        if (moon == null) {
+            return UnDefType.UNDEF;
+        }
+        switch (channel.getUID().getId()) {
+            case CHANNEL_ID_MOON_RISE_START:
+                return toState(moon.getRise().getStart(), channel);
+            case CHANNEL_ID_MOON_RISE_END:
+                return toState(moon.getRise().getEnd(), channel);
+            case CHANNEL_ID_MOON_RISE_DURATION:
+                return toState(moon.getRise().getDuration(), channel);
+            case CHANNEL_ID_MOON_SET_START:
+                return toState(moon.getSet().getStart(), channel);
+            case CHANNEL_ID_MOON_SET_END:
+                return toState(moon.getSet().getEnd(), channel);
+            case CHANNEL_ID_MOON_SET_DURATION:
+                return toState(moon.getSet().getDuration(), channel);
+            case CHANNEL_ID_MOON_PHASE_FIRST_QUARTER:
+                return toState(moon.getPhase().getFirstQuarter(), channel);
+            case CHANNEL_ID_MOON_PHASE_THIRD_QUARTER:
+                return toState(moon.getPhase().getThirdQuarter(), channel);
+            case CHANNEL_ID_MOON_PHASE_FULL:
+                return toState(moon.getPhase().getFull(), channel);
+            case CHANNEL_ID_MOON_PHASE_NEW:
+                return toState(moon.getPhase().getNew(), channel);
+            case CHANNEL_ID_MOON_PHASE_AGE:
+                return toState(moon.getPhase().getAge(), channel);
+            case CHANNEL_ID_MOON_PHASE_AGE_DEGREE:
+                return toState(moon.getPhase().getAgeDegree(), channel);
+            case CHANNEL_ID_MOON_PHASE_AGE_PERCENT:
+                return toState(moon.getPhase().getAgePercent(), channel);
+            case CHANNEL_ID_MOON_PHASE_ILLUMINATION:
+                return toState(moon.getPhase().getIllumination(), channel);
+            case CHANNEL_ID_MOON_PHASE_NAME:
+                return toState(moon.getPhase().getName(), channel);
+            case CHANNEL_ID_MOON_ECLIPSE_TOTAL:
+                return toState(moon.getEclipseSet().getDate(EclipseKind.TOTAL), channel);
+            case CHANNEL_ID_MOON_ECLIPSE_TOTAL_ELEVATION:
+                return toState(moon.getEclipseSet().getElevation(EclipseKind.TOTAL), channel);
+            case CHANNEL_ID_MOON_ECLIPSE_PARTIAL:
+                return toState(moon.getEclipseSet().getDate(EclipseKind.PARTIAL), channel);
+            case CHANNEL_ID_MOON_ECLIPSE_PARTIAL_ELEVATION:
+                return toState(moon.getEclipseSet().getElevation(EclipseKind.PARTIAL), channel);
+            case CHANNEL_ID_MOON_DISTANCE_DATE:
+                return toState(moon.getDistanceType(DistanceType.CURRENT).getDate(), channel);
+            case CHANNEL_ID_MOON_DISTANCE_DISTANCE:
+                return toState(moon.getDistanceType(DistanceType.CURRENT).getDistance(), channel);
+            case CHANNEL_ID_MOON_PERIGEE_DATE:
+                return toState(moon.getDistanceType(DistanceType.PERIGEE).getDate(), channel);
+            case CHANNEL_ID_MOON_PERIGEE_DISTANCE:
+                return toState(moon.getDistanceType(DistanceType.PERIGEE).getDistance(), channel);
+            case CHANNEL_ID_MOON_APOGEE_DATE:
+                return toState(moon.getDistanceType(DistanceType.APOGEE).getDate(), channel);
+            case CHANNEL_ID_MOON_APOGEE_DISTANCE:
+                return toState(moon.getDistanceType(DistanceType.APOGEE).getDistance(), channel);
+            case CHANNEL_ID_MOON_POSITION_AZIMUTH:
+                return toState(moon.getPosition().getAzimuth(), channel);
+            case CHANNEL_ID_MOON_POSITION_ELEVATION:
+                return toState(moon.getPosition().getElevation(), channel);
+            case CHANNEL_ID_MOON_POSITION_SHADE_LENGTH:
+                return toState(moon.getPosition().getShadeLength(), channel);
+            case CHANNEL_ID_MOON_ZODIAC_SIGN:
+                return toState(moon.getZodiac().getSign(), channel);
+            default:
+                logger.warn("Unsupported channel: {}", channel.getUID());
+        }
+
+        return UnDefType.UNDEF;
     }
 
     @Override
@@ -100,7 +183,7 @@ public class MoonHandler extends AstroThingHandler {
     }
 
     @Override
-    public @Nullable Position getPositionAt(ZonedDateTime date) {
+    public Position getPositionAt(ZonedDateTime date) {
         Moon localMoon = getMoonAt(date, Locale.ROOT);
         Double latitude = thingConfig.latitude;
         Double longitude = thingConfig.longitude;
