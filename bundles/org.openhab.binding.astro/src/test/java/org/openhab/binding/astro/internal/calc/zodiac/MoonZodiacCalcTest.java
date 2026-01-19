@@ -55,7 +55,7 @@ public class MoonZodiacCalcTest {
 
     @BeforeEach
     public void init() {
-        moonCalc = new MoonCalc(InstantSource.fixed(Instant.ofEpochMilli(1645671600000L)));
+        moonCalc = new MoonCalc(InstantSource.fixed(Instant.ofEpochMilli(1551225600000L)));
     }
 
     @Test

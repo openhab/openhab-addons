@@ -57,7 +57,7 @@ public class MoonCalcTest {
 
     @BeforeEach
     public void init() {
-        moonCalc = new MoonCalc(InstantSource.fixed(Instant.ofEpochMilli(1645671600000L)));
+        moonCalc = new MoonCalc(InstantSource.fixed(Instant.ofEpochMilli(1551225600000L)));
     }
 
     @Test
@@ -71,14 +71,10 @@ public class MoonCalcTest {
 
         assertNotNull(moon.getEclipseSet());
 
-        assertNotNull(moon.getPhase());
         assertNotNull(moon.getPosition());
         assertNotNull(moon.getRise());
         assertNotNull(moon.getSet());
         assertNotNull(moon.getZodiac());
-
-        // for an old date the phase should not be calculated
-        assertNull(moon.getPhase().getName());
     }
 
     @Test

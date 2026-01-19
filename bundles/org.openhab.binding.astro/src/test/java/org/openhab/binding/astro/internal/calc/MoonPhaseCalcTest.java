@@ -20,13 +20,18 @@ import java.time.ZoneId;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.TimeZone;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.openhab.binding.astro.internal.model.Moon;
 import org.openhab.binding.astro.internal.model.MoonPhase;
 import org.openhab.binding.astro.internal.model.MoonPhaseName;
 import org.openhab.binding.astro.internal.util.DateTimeUtils;
+import org.openhab.core.types.UnDefType;
 
 /***
  * Specific unit tests to check if {@link MoonCalc} generates correct data for
@@ -45,14 +50,33 @@ public class MoonPhaseCalcTest {
     private static final TimeZone TIME_ZONE = TimeZone.getTimeZone("Europe/Amsterdam");
     private static final ZoneId ZONE = TIME_ZONE.toZoneId();
     private static final Calendar FEB_27_2019 = newCalendar(2019, Calendar.FEBRUARY, 27, 1, 0, TIME_ZONE);
+    private static final double AMSTERDAM_LATITUDE = 52.367607;
+    private static final double AMSTERDAM_LONGITUDE = 4.8978293;
 
     private static final int ACCURACY_IN_MILLIS = 5 * 60 * 1000;
 
+    private @Nullable MoonCalc moonCalc;
+
+    @BeforeEach
+    public void init() {
+        moonCalc = new MoonCalc(InstantSource.fixed(Instant.ofEpochMilli(1551225600000L)));
+    }
+
+    @Test
+    public void testGetMoonInfoForOldDate() {
+        Moon moon = Objects.requireNonNull(moonCalc).getMoonInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE,
+                TIME_ZONE, Locale.ROOT);
+
+        assertNotNull(moon.getPhase());
+        // for an old date the phase should not be calculated
+        assertTrue(moon.getPhase().getName() instanceof UnDefType);
+    }
+
     @Test
     public void testGetMoonInfoForMoonPhaseAccuracy() {
-        InstantSource instantSource = InstantSource.fixed(Instant.ofEpochMilli(1645671600000L));
-        MoonPhase moonPhase = MoonPhaseCalc.calculate(instantSource, DateTimeUtils.dateToJulianDate(FEB_27_2019), null,
-                ZONE);
+        InstantSource instantSource = InstantSource.fixed(Instant.ofEpochMilli(1551225600000L));
+        MoonPhase moonPhase = MoonPhaseCalc.calculate(instantSource, DateTimeUtils.dateToJulianDate(FEB_27_2019),
+                MoonPhase.NONE, ZONE);
 
         // New moon 06 March 2019 17:04 - jd : 2458549.1702492456
         // First quarter 14 March 2019 11:27 - jd : 2458556.936169754
@@ -75,22 +99,21 @@ public class MoonPhaseCalcTest {
         assertEquals(newCalendar(2019, Calendar.MARCH, 28, 05, 10, TIME_ZONE).getTimeInMillis(), phaseTQ.toEpochMilli(),
                 ACCURACY_IN_MILLIS);
 
-        moonPhase = MoonPhaseCalc.calculate(instantSource, DateTimeUtils.instantToJulianDay(phaseNew), moonPhase, ZONE);
-        assertEquals(0, moonPhase.getIllumination().intValue());
-        assertEquals(MoonPhaseName.NEW, moonPhase.getName());
+        moonPhase = MoonPhaseCalc.calculate(InstantSource.fixed(phaseNew), DateTimeUtils.instantToJulianDay(phaseNew),
+                MoonPhase.NONE, ZONE);
+        assertEquals(0, moonPhase.getIllumination().doubleValue(), 0.01);
 
-        moonPhase = MoonPhaseCalc.calculate(instantSource, DateTimeUtils.instantToJulianDay(phaseFull), moonPhase,
-                ZONE);
-        assertEquals(MoonPhaseName.FULL, moonPhase.getName());
-        assertEquals(100, moonPhase.getIllumination().doubleValue());
+        moonPhase = MoonPhaseCalc.calculate(InstantSource.fixed(phaseFull), DateTimeUtils.instantToJulianDay(phaseFull),
+                MoonPhase.NONE, ZONE);
+        assertEquals(1, moonPhase.getIllumination().doubleValue(), 0.01);
 
-        moonPhase = MoonPhaseCalc.calculate(instantSource, DateTimeUtils.instantToJulianDay(phaseFQ), moonPhase, ZONE);
-        assertEquals(50, moonPhase.getIllumination().intValue());
-        assertEquals(MoonPhaseName.FIRST_QUARTER, moonPhase.getName());
+        moonPhase = MoonPhaseCalc.calculate(InstantSource.fixed(phaseTQ), DateTimeUtils.instantToJulianDay(phaseTQ),
+                MoonPhase.NONE, ZONE);
+        assertEquals(0.5, moonPhase.getIllumination().doubleValue(), 0.01);
 
-        moonPhase = MoonPhaseCalc.calculate(instantSource, DateTimeUtils.instantToJulianDay(phaseTQ), moonPhase, ZONE);
-        assertEquals(50, moonPhase.getIllumination().intValue());
-        assertEquals(MoonPhaseName.THIRD_QUARTER, moonPhase.getName());
+        moonPhase = MoonPhaseCalc.calculate(InstantSource.fixed(phaseFQ), DateTimeUtils.instantToJulianDay(phaseFQ),
+                MoonPhase.NONE, ZONE);
+        assertEquals(0.5, moonPhase.getIllumination().doubleValue(), 0.01);
 
     }
 

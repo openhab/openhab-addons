@@ -16,6 +16,7 @@ import static org.openhab.binding.astro.internal.util.AstroConstants.LUNAR_SYNOD
 
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
@@ -47,15 +48,29 @@ public enum MoonPhaseName {
     }
 
     public static MoonPhaseName fromAgePercent(double agePercent) {
-        if (agePercent >= 0.0 && agePercent <= 1.0) {
-            Arrays.stream(values()).min(Comparator.comparingDouble(p -> circularDistance(agePercent, p.cycleProgress)))
-                    .orElseThrow(); // impossible
+        if (agePercent < 0.0 || agePercent > 1.0) {
+            throw new IllegalArgumentException("agePercent must be in [0,1]");
         }
-        throw new IllegalArgumentException("agePercent must be in [0,1]");
+
+        if (agePercent == NEW.cycleProgress) {
+            return NEW;
+        } else if (agePercent < FIRST_QUARTER.cycleProgress) {
+            return WAXING_CRESCENT;
+        } else if (agePercent == FIRST_QUARTER.cycleProgress) {
+            return FIRST_QUARTER;
+        } else if (agePercent < FULL.cycleProgress) {
+            return WAXING_GIBBOUS;
+        } else if (agePercent == FULL.cycleProgress) {
+            return FULL;
+        } else if (agePercent < THIRD_QUARTER.cycleProgress) {
+            return WANING_GIBBOUS;
+        } else if (agePercent == THIRD_QUARTER.cycleProgress) {
+            return THIRD_QUARTER;
+        }
+        return WANING_CRESCENT;
     }
 
-    private static double circularDistance(double a, double b) {
-        double d = Math.abs(a - b);
-        return Math.min(d, 1.0 - d);
+    public static List<MoonPhaseName> remarkables() {
+        return Arrays.stream(values()).sorted(Comparator.comparing(mpn -> mpn.cycleProgress)).toList();
     }
 }

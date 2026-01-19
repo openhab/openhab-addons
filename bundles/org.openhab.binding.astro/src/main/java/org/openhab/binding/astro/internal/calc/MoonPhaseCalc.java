@@ -40,7 +40,7 @@ public class MoonPhaseCalc extends AstroCalc {
             double julianDateMidnight = Math.floor(julianDate + 0.5) - 0.5;
             double parentNewMoon = getPhase(julianDateMidnight, MoonPhaseName.NEW, false);
 
-            Map<MoonPhaseName, Double> comingPhases = MoonPhase.remarkableSteps()
+            Map<MoonPhaseName, Double> comingPhases = MoonPhaseName.remarkables().stream()
                     .collect(Collectors.toMap(phase -> phase, phase -> getPhase(julianDateMidnight, phase, true)));
 
             result = new MoonPhase(instantSource, parentNewMoon, comingPhases);

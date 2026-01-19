@@ -417,7 +417,7 @@
 		<item-type>DateTime</item-type>
 		<label>First Quarter</label>
 		<description>The DateTime the moon is in the first quarter</description>
-		<category>oh:astro:moon_phase-first_quarter</category>
+		<category>calendar</category>
 		<tags>
 			<tag>Calculation</tag>
 			<tag>Timestamp</tag>
@@ -429,7 +429,7 @@
 		<item-type>DateTime</item-type>
 		<label>Third Quarter</label>
 		<description>The DateTime the moon is in the third quarter</description>
-		<category>oh:astro:moon_phase-third_quarter</category>
+		<category>calendar</category>
 		<tags>
 			<tag>Calculation</tag>
 			<tag>Timestamp</tag>
@@ -441,7 +441,7 @@
 		<item-type>DateTime</item-type>
 		<label>Full Moon</label>
 		<description>The DateTime for full moon</description>
-		<category>oh:astro:moon_phase-full</category>
+		<category>calendar</category>
 		<tags>
 			<tag>Calculation</tag>
 			<tag>Timestamp</tag>
@@ -453,7 +453,7 @@
 		<item-type>DateTime</item-type>
 		<label>New Moon</label>
 		<description>The DateTime for new moon</description>
-		<category>oh:astro:moon_phase-new</category>
+		<category>calendar</category>
 		<tags>
 			<tag>Calculation</tag>
 			<tag>Timestamp</tag>
@@ -464,11 +464,7 @@
 	<channel-type id="age">
 		<item-type unitHint="d">Number:Time</item-type>
 		<label>Moon Age</label>
-<<<<<<< Upstream, based on main
 		<description>The age of the moon</description>
-=======
-		<description>The age of the moon in days</description>
->>>>>>> 8e3d1a7 Adds moon-day icon set. Rebased.
 		<category>oh:astro:moon_day</category>
 		<tags>
 			<tag>Calculation</tag>
