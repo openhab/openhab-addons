@@ -20,8 +20,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.astro.internal.model.MoonPhaseSet;
 import org.openhab.binding.astro.internal.model.MoonPhase;
+import org.openhab.binding.astro.internal.model.MoonPhaseSet;
 import org.openhab.binding.astro.internal.util.AstroConstants;
 import org.openhab.binding.astro.internal.util.DateTimeUtils;
 
@@ -151,5 +151,4 @@ public class MoonPhaseCalc extends AstroCalc {
                 + .000023 * sinDeg(331.55 + 3.592518 * k);
         return ret;
     }
-
 }

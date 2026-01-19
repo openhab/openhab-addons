@@ -65,7 +65,6 @@ public class MoonPhaseSet {
         this(instantSource, DateTimeUtils.jdToInstant(parentNewMoon),
                 comingPhases.keySet().stream().collect(Collectors.toMap(Function.identity(),
                         k -> DateTimeUtils.jdToInstant(Objects.requireNonNull(comingPhases.get(k))))));
-
     }
 
     public Instant getPhase(MoonPhase phase) {

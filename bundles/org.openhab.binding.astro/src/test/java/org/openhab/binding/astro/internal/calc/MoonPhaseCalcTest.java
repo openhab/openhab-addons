@@ -114,7 +114,6 @@ public class MoonPhaseCalcTest {
         moonPhase = MoonPhaseCalc.calculate(InstantSource.fixed(phaseFQ), DateTimeUtils.instantToJulianDay(phaseFQ),
                 MoonPhaseSet.NONE, ZONE);
         assertEquals(0.5, moonPhase.getIllumination().doubleValue(), 0.01);
-
     }
 
     /***
