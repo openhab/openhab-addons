@@ -458,7 +458,11 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
             return;
         }
         if (command == RefreshType.REFRESH) {
-            requestManualRefresh();
+            if (CHANNEL_SNAPSHOT.equals(channelUID.getId())) {
+                scheduleSnapshotRefresh();
+            } else {
+                requestManualRefresh();
+            }
             return;
         }
         try {
@@ -871,6 +875,8 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
         Long aid = getAccessoryId();
         ChannelUID hsbChannelUID = null;
         Service service = GSON.fromJson(json, Service.class);
+        boolean snapshotChannelExists = thing.getChannel(CHANNEL_SNAPSHOT) != null;
+        boolean snapshotChannelRefresh = false;
         if (service != null && service.characteristics instanceof List<Characteristic> characteristics) {
             for (Channel channel : thing.getChannels()) {
                 ChannelUID channelUID = channel.getUID();
@@ -889,10 +895,25 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
                                 case STATE -> updateState(channelUID, state);
                                 case TRIGGER -> triggerChannel(channelUID, state.toFullString());
                             }
+                            if (snapshotChannelExists && !snapshotChannelRefresh) {
+                                switch (cxx.getCharacteristicType()) {
+                                    case MOTION_DETECTED:
+                                        if (state == OnOffType.ON) {
+                                            snapshotChannelRefresh = true;
+                                        }
+                                        break;
+                                    case INPUT_EVENT:
+                                        snapshotChannelRefresh = true;
+                                    default:
+                                }
+                            }
                         }
                     }
                 }
             }
+        }
+        if (snapshotChannelRefresh) {
+            scheduleSnapshotRefresh();
         }
         if (thing.getStatus() != ThingStatus.ONLINE) {
             updateStatus(ThingStatus.ONLINE);

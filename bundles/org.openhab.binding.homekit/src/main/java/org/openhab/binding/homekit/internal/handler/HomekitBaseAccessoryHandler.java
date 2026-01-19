@@ -101,6 +101,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
     private volatile @Nullable IpTransport ipTransport;
     private volatile @Nullable ScheduledFuture<?> refreshTask;
     private volatile @Nullable Future<?> manualRefreshTask;
+    private volatile @Nullable Future<?> snapshotRefreshTask;
 
     private @NonNullByDefault({}) Long accessoryId;
 
@@ -696,7 +697,6 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
         try {
             String json = throttler.call(() -> rwService.readCharacteristics(String.join(",", queries)));
             onEvent(json);
-            refreshSnapshot(); // refresh camera snapshot channel (if any)
         } catch (Exception e) {
             if (isCommunicationException(e)) {
                 // communication exception; log at debug and try to reconnect
@@ -779,8 +779,10 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
                 if (refreshIntervalSeconds > 0) {
                     ScheduledFuture<?> task = refreshTask;
                     if (task == null || task.isCancelled() || task.isDone()) {
-                        refreshTask = scheduler.scheduleWithFixedDelay(this::refresh, refreshIntervalSeconds,
-                                refreshIntervalSeconds, TimeUnit.SECONDS);
+                        refreshTask = scheduler.scheduleWithFixedDelay(() -> {
+                            refresh();
+                            refreshSnapshot();
+                        }, refreshIntervalSeconds, refreshIntervalSeconds, TimeUnit.SECONDS);
                     }
                 }
             } catch (NumberFormatException e) {
@@ -793,7 +795,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
     }
 
     /**
-     * Cancels the refresh tasks if either is running.
+     * Cancels the refresh tasks if any are running.
      */
     private void cancelRefreshTasks() {
         if (refreshTask instanceof ScheduledFuture<?> task) {
@@ -802,8 +804,12 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
         if (manualRefreshTask instanceof Future<?> task) {
             task.cancel(true);
         }
+        if (snapshotRefreshTask instanceof Future<?> task) {
+            task.cancel(true);
+        }
         refreshTask = null;
         manualRefreshTask = null;
+        snapshotRefreshTask = null;
     }
 
     /**
@@ -884,7 +890,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
      * are JPEGs. If the image is successfully fetched, the snapshot channel state is updated with a RawType.
      * And if an error occurs it is updated to UnDefType.UNDEF / UnDefType.NULL accordingly.
      */
-    protected void refreshSnapshot() {
+    private synchronized void refreshSnapshot() {
         if (thing.getChannel(CHANNEL_SNAPSHOT) instanceof Channel channel && isLinked(channel.getUID())
                 && getAccessoryId() instanceof Long aid) {
             try {
@@ -927,5 +933,14 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
             return Long.parseLong(object.toString());
         }
         return def;
+    }
+
+    /**
+     * Schedules a snapshot refresh task if not already scheduled.
+     */
+    protected void scheduleSnapshotRefresh() {
+        if (snapshotRefreshTask == null || snapshotRefreshTask.isDone()) {
+            snapshotRefreshTask = scheduler.submit(() -> refreshSnapshot());
+        }
     }
 }
