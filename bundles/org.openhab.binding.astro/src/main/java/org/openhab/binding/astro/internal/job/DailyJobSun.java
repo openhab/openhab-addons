@@ -135,18 +135,9 @@ public final class DailyJobSun extends AbstractJob {
                 scheduleRange(handler, range, EVENT_CHANNEL_ID_DAYLIGHT, zone, locale, instantSource);
             }
 
-<<<<<<< Upstream, based on main
             sun.getEclipseSet().getEclipses().forEach(eclipse -> {
                 scheduleEvent(handler, eclipse.when(), eclipse.kind().toString(), EVENT_CHANNEL_ID_ECLIPSE, false,
                         zone.toZoneId());
-=======
-            Eclipse eclipse = sun.getEclipse();
-            eclipse.getKinds().forEach(eclipseKind -> {
-                if (eclipse.getDate(eclipseKind) instanceof Instant eclipseDate) {
-                    scheduleEvent(handler, eclipseDate, eclipseKind.toString(), EVENT_CHANNEL_ID_ECLIPSE, false, zone,
-                            locale);
-                }
->>>>>>> 48a7069 Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added unit tests for eclipses
             });
 
             // schedule republish jobs

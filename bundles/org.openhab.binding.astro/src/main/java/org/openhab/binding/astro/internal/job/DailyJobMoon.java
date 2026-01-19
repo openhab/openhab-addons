@@ -27,7 +27,6 @@ import org.openhab.binding.astro.internal.handler.AstroThingHandler;
 import org.openhab.binding.astro.internal.model.DistanceType;
 import org.openhab.binding.astro.internal.model.Moon;
 import org.openhab.binding.astro.internal.model.MoonPhase;
-import org.openhab.binding.astro.internal.model.MoonPhaseName;
 import org.openhab.binding.astro.internal.model.Planet;
 
 /**
@@ -78,23 +77,14 @@ public final class DailyJobMoon extends AbstractJob {
             }
 
             MoonPhase moonPhase = moon.getPhase();
-            MoonPhaseName.steps().map(phase -> Map.entry(phase, moonPhase.getPhase(phase))).forEach(e -> {
-                scheduleEvent(handler, e.getValue(), e.getKey().toString(), EVENT_CHANNEL_ID_MOON_PHASE, false, zone,
-                        locale);
+            MoonPhase.remarkableSteps().map(phase -> Map.entry(phase, moonPhase.getPhase(phase))).forEach(e -> {
+                scheduleEvent(handler, e.getValue(), e.getKey().toString(), EVENT_CHANNEL_ID_MOON_PHASE, false,
+                        zone.toZoneId());
             });
 
-<<<<<<< Upstream, based on main
             moon.getEclipseSet().getEclipses().forEach(eclipse -> {
                 scheduleEvent(handler, eclipse.when(), eclipse.kind().toString(), EVENT_CHANNEL_ID_ECLIPSE, false,
                         zone.toZoneId());
-=======
-            Eclipse eclipse = moon.getEclipse();
-            eclipse.getKinds().forEach(eclipseKind -> {
-                if (eclipse.getDate(eclipseKind) instanceof Instant eclipseDate) {
-                    scheduleEvent(handler, eclipseDate, eclipseKind.toString(), EVENT_CHANNEL_ID_ECLIPSE, false, zone,
-                            locale);
-                }
->>>>>>> 48a7069 Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added unit tests for eclipses
             });
 
             Set.of(DistanceType.APOGEE, DistanceType.PERIGEE).forEach(type -> {

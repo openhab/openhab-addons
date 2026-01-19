@@ -15,11 +15,8 @@ package org.openhab.binding.astro.internal.util;
 import static org.openhab.binding.astro.internal.util.MathUtils.mod;
 
 import java.time.Instant;
-<<<<<<< Upstream, based on main
 import java.time.InstantSource;
-=======
 import java.time.ZoneId;
->>>>>>> bb4de3d Starting to work on transition to Instant for MoonPhase
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Calendar;
@@ -49,17 +46,10 @@ public class DateTimeUtils {
     public static final double MJD_JD2000 = 51544.5;
     public static final double JD_J2000 = 2451545.0; // 2000-01-01 12:00
     public static final double JD_UNIX_EPOCH = 2440587.5; // 1970-01-01 00:00 UTC
-<<<<<<< Upstream, based on main
     public static final int JULIAN_CENTURY_DAYS = 36525; // Length of a Julian Century in days
     public static final double JD_ONE_MINUTE_FRACTION = 1.0 / 60 / 24;
     private static final double J1970 = JD_UNIX_EPOCH + 0.5; // 1970-01-01 12:00 UTC (julian solar noon)
-<<<<<<< Upstream, based on main
-=======
-<<<<<<< Upstream, based on main
-    private static final int JULIAN_CENTURY_DAYS = 36525; // Length of a Julian Century in days
->>>>>>> 810a1e9 Initial commit for Moon phase revamp
     private static final double SECONDS_PER_DAY = 60 * 60 * 24;
-<<<<<<< Upstream, based on main
     private static final long MILLISECONDS_PER_DAY = 60L * 60L * 24L * 1000L;
 
     /**
@@ -79,39 +69,6 @@ public class DateTimeUtils {
     public static double toLMST(double gmst, double lon) {
         return mod(gmst + Math.toDegrees(lon) / 15., 24.);
     }
-=======
-=======
-    public static final int JULIAN_CENTURY_DAYS = 36525; // Length of a Julian Century in days
-=======
->>>>>>> fbac085 Resolved conflicting files Adds moon-day icon set. Rebased.
-    public static final double MJD_JD2000 = 51544.5;
-
-    private static final double J1970 = JD_UNIX_EPOCH + 0.5; // 1970-01-01 12:00 UTC (julian solar noon)
-    private static final double SECONDS_PER_DAY = 60 * 60 * 24;
-    public static final int JULIAN_CENTURY_DAYS = 36525;
-
-    /**
-     * Convert julian date to greenwich mean sidereal time.
-     */
-    public static double toGMST(double jd) {
-        double ut = (jd - 0.5 - Math.floor(jd - 0.5)) * 24.;
-        double jdMod = Math.floor(jd - 0.5) + 0.5;
-        double t = toJulianCenturies(jdMod);
-        double t0 = 6.697374558 + t * (2400.051336 + t * 0.000025862);
-        return mod(t0 + ut * 1.002737909, 24.);
-    }
-
-    /**
-     * Convert greenwich mean sidereal time to local mean sidereal time.
-     */
-    public static double toLMST(double gmst, double lon) {
-        return mod(gmst + Math.toDegrees(lon) / 15., 24.);
-    }
-<<<<<<< Upstream, based on main
->>>>>>> 11e99dd Initial commit for Moon phase revamp
->>>>>>> 810a1e9 Initial commit for Moon phase revamp
-=======
->>>>>>> fbac085 Resolved conflicting files Adds moon-day icon set. Rebased.
 
     /** Constructor */
     private DateTimeUtils() {
@@ -128,12 +85,26 @@ public class DateTimeUtils {
     }
 
     /**
+     * Truncates the time from the instant object.
+     */
+    public static Instant truncateToSecond(Instant instant) {
+        return instant.truncatedTo(ChronoUnit.SECONDS);
+    }
+
+    /**
      * Truncates the time from the calendar object.
      */
     public static Calendar truncateToMinute(Calendar calendar) {
         Calendar cal = truncateToSecond(calendar);
         cal.set(Calendar.SECOND, 0);
         return cal;
+    }
+
+    /**
+     * Truncates the time from the instant object.
+     */
+    public static Instant truncateToMinute(Instant instant) {
+        return instant.truncatedTo(ChronoUnit.MINUTES);
     }
 
     /**
@@ -263,62 +234,23 @@ public class DateTimeUtils {
     }
 
     /**
-<<<<<<< Upstream, based on main
-<<<<<<< Upstream, based on main
-<<<<<<< Upstream, based on main
-<<<<<<< Upstream, based on main
-<<<<<<< Upstream, based on main
+     * Returns true, if two Instant objects are on the same day for a given zone, ignoring time.
+     */
+    public static boolean isSameDay(Instant i1, @Nullable Instant i2, ZoneId zone) {
+        return i2 != null && i1.atZone(zone).toLocalDate().equals(i2.atZone(zone).toLocalDate());
+    }
+
+    /**
      * Evaluates whether the second date time is within the same date as the first date time in the time zone of
      * the latter.
      *
      * @param zdt1 the first date to evaluate.
      * @param zdt2 the second date to evaluate.
      * @return {@code true} if {@code zdt2} is within the same date as {@code zdt1} in {@code zdt1}'s time zone.
-=======
-=======
->>>>>>> a082c65 Copilot code view adressed
-<<<<<<< Upstream, based on main
-=======
-=======
->>>>>>> 5ae0857 Rebased. Corrected moon_day dynamic icons Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added unit tests for eclipses Rebased on moon_distance
-<<<<<<< Upstream, based on main
-=======
-<<<<<<< Upstream, based on moon_distance
->>>>>>> 637b449 Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added unit tests for eclipses
-<<<<<<< Upstream, based on main
->>>>>>> 48a7069 Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added unit tests for eclipses
-     * Returns true, if two ZonedDateTime objects are on the same day ignoring time.
-<<<<<<< Upstream, based on main
->>>>>>> f25b664 Review Moon Distance and factorization of MoonCalc
-=======
-=======
->>>>>>> 5ae0857 Rebased. Corrected moon_day dynamic icons Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added unit tests for eclipses Rebased on moon_distance
-=======
-     * <<<<<<< Upstream, based on moon_distance
->>>>>>> 6955cc9 Rebased. Corrected moon_day dynamic icons Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added unit tests for eclipses Rebased on moon_distance
-=======
->>>>>>> 2cffce1 Rebased. Corrected moon_day dynamic icons Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added unit tests for eclipses Rebased on moon_distance Rebased on main after moon_distance inclusion
-     * Returns true, if two ZonedDateTime objects are on the same day ignoring time.
-<<<<<<< Upstream, based on main
-     * =======
-     * Returns true, if two instant objects are on the same day ignoring time.
-<<<<<<< Upstream, based on main
->>>>>>> 0596b7c Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added unit tests for eclipses
->>>>>>> 48a7069 Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added unit tests for eclipses
-=======
-     * >>>>>>> 0596b7c Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added
-     * unit tests for eclipses
->>>>>>> 5ae0857 Rebased. Corrected moon_day dynamic icons Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added unit tests for eclipses Rebased on moon_distance
-=======
->>>>>>> 2cffce1 Rebased. Corrected moon_day dynamic icons Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added unit tests for eclipses Rebased on moon_distance Rebased on main after moon_distance inclusion
      */
     public static boolean isSameDay(@Nullable ZonedDateTime zdt1, @Nullable ZonedDateTime zdt2) {
         return zdt1 != null && zdt2 != null
                 && zdt1.toLocalDate().equals(zdt2.withZoneSameInstant(zdt1.getZone()).toLocalDate());
-    }
-
-    public static boolean isSameDay(Instant i1, @Nullable Instant i2, ZoneId zone) {
-        return i2 != null && i1.atZone(zone).toLocalDate().equals(i2.atZone(zone).toLocalDate());
     }
 
     /**
@@ -581,13 +513,6 @@ public class DateTimeUtils {
         return Instant.ofEpochSecond(epochSeconds, nanos);
     }
 
-    public static double instantToJulianDay(Instant instant) {
-        double seconds = instant.getEpochSecond();
-        double nanos = instant.getNano() / 1_000_000_000.0;
-
-        return JD_UNIX_EPOCH + (seconds + nanos) / SECONDS_PER_DAY;
-    }
-
     public static Instant atMidnightOfFirstMonthDay(Instant instant, TimeZone zone) {
         return instant.atZone(zone.toZoneId()).withDayOfMonth(1).truncatedTo(ChronoUnit.DAYS).toInstant();
     }
@@ -614,5 +539,12 @@ public class DateTimeUtils {
         Calendar cal = (Calendar) calendar.clone();
         cal.add(Calendar.DAY_OF_MONTH, days);
         return cal;
+    }
+
+    public static double instantToJulianDay(Instant instant) {
+        double seconds = instant.getEpochSecond();
+        double nanos = instant.getNano() / 1_000_000_000.0;
+
+        return JD_UNIX_EPOCH + (seconds + nanos) / SECONDS_PER_DAY;
     }
 }

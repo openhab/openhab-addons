@@ -12,34 +12,21 @@
  */
 package org.openhab.binding.astro.internal.model;
 
-<<<<<<< Upstream, based on main
 import static org.openhab.binding.astro.internal.util.AstroConstants.LUNAR_SYNODIC_MONTH_DAYS;
 
 import java.util.Arrays;
 import java.util.Comparator;
-=======
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.stream.Stream;
->>>>>>> f203b2c Finalized modifications at this step
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * All moon phases.
  *
  * @author Gerhard Riegler - Initial contribution
-<<<<<<< Upstream, based on main
  * @author Gaël L'hopital - added age equivalence in days & cycleProgressPercentage
-=======
- * @author Gaël L'hopital - added age equivalence & mode
->>>>>>> da6a42f Rebased to take new headers in account. Start refactoring Eclipse for sun and moon
  */
 @NonNullByDefault
 public enum MoonPhaseName {
-<<<<<<< Upstream, based on main
-<<<<<<< Upstream, based on main
     NEW(0.0),
     WAXING_CRESCENT(0.125),
     FIRST_QUARTER(0.25),
@@ -59,53 +46,16 @@ public enum MoonPhaseName {
         return (int) ((LUNAR_SYNODIC_MONTH_DAYS - 1) * cycleProgress + 1);
     }
 
-    public @Nullable static MoonPhaseName fromAgePercent(double agePercent) {
-        return (agePercent >= 0.0 && agePercent <= 1.0) ? Arrays.stream(values())
-                .min(Comparator.comparingDouble(p -> circularDistance(agePercent, p.cycleProgress))).orElseThrow() // impossible
-                : null;
+    public static MoonPhaseName fromAgePercent(double agePercent) {
+        if (agePercent >= 0.0 && agePercent <= 1.0) {
+            Arrays.stream(values()).min(Comparator.comparingDouble(p -> circularDistance(agePercent, p.cycleProgress)))
+                    .orElseThrow(); // impossible
+        }
+        throw new IllegalArgumentException("agePercent must be in [0,1]");
     }
 
     private static double circularDistance(double a, double b) {
         double d = Math.abs(a - b);
         return Math.min(d, 1.0 - d);
-=======
-    NEW(0),
-    WAXING_CRESCENT(Double.NaN),
-    FIRST_QUARTER(0.25),
-    WAXING_GIBBOUS(Double.NaN),
-    FULL(0.5),
-    WANING_GIBBOUS(Double.NaN),
-    THIRD_QUARTER(0.75), // also called last quarter
-    WANING_CRESCENT(Double.NaN);
-=======
-    NEW(1, 0),
-    WAXING_CRESCENT(4, Double.NaN),
-    FIRST_QUARTER(8, 0.25),
-    WAXING_GIBBOUS(11, Double.NaN),
-    FULL(15, 0.5),
-    WANING_GIBBOUS(18, Double.NaN),
-    THIRD_QUARTER(22, 0.75), // also called last quarter
-    WANING_CRESCENT(26, Double.NaN);
->>>>>>> 5a82fe5 Nadahar code review adressed
-
-    public final double mode;
-    public final int ageDays;
-
-    MoonPhaseName(int ageDays, double mode) {
-        this.mode = mode;
-<<<<<<< Upstream, based on main
->>>>>>> 810a1e9 Initial commit for Moon phase revamp
-=======
-        this.ageDays = ageDays;
->>>>>>> 5a82fe5 Nadahar code review adressed
-    }
-
-    public double getMode() {
-        return mode;
-    }
-
-    public static Stream<MoonPhaseName> steps() {
-        return Arrays.stream(values()).filter(mp -> !Double.isNaN(mp.mode))
-                .sorted(Comparator.comparing(MoonPhaseName::getMode));
     }
 }

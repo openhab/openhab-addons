@@ -33,20 +33,7 @@ import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.thing.binding.ThingActions;
 import org.openhab.core.thing.binding.ThingActionsScope;
 import org.openhab.core.thing.binding.ThingHandler;
-<<<<<<< Upstream, based on main
-<<<<<<< Upstream, based on main
-<<<<<<< Upstream, based on main
 import org.openhab.core.types.State;
-=======
-<<<<<<< Upstream, based on main
->>>>>>> 48a7069 Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added unit tests for eclipses
-import org.osgi.service.component.annotations.Activate;
-=======
-=======
->>>>>>> 385bae1 Rebased. Corrected moon_day dynamic icons Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added unit tests for eclipses
-import org.openhab.core.types.State;
-=======
->>>>>>> 0c5383c Reverting contract modification in Action. lspiel code review adressed.
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;

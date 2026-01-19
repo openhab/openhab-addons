@@ -29,6 +29,7 @@ import org.openhab.binding.astro.internal.job.Job;
 import org.openhab.binding.astro.internal.model.DistanceType;
 import org.openhab.binding.astro.internal.model.EclipseKind;
 import org.openhab.binding.astro.internal.model.Moon;
+import org.openhab.binding.astro.internal.model.MoonPhaseName;
 import org.openhab.binding.astro.internal.model.Planet;
 import org.openhab.binding.astro.internal.model.Position;
 import org.openhab.binding.astro.internal.util.DateTimeUtils;
@@ -73,19 +74,10 @@ public class MoonHandler extends AstroThingHandler {
         Locale locale = localeProvider.getLocale();
         ZonedDateTime now = instantSource.instant().atZone(zone.toZoneId());
         Moon moon = getMoonAt(now, locale);
-        Double latitude = thingConfig.latitude;
-        Double longitude = thingConfig.longitude;
-<<<<<<< Upstream, based on main
-        moonCalc.setPositionalInfo(DateTimeUtils.calFromInstantSource(instantSource, zone, locale),
-                latitude != null ? latitude : 0, longitude != null ? longitude : 0, moon, zone, locale);
-=======
-        moonCalc.setPositionalInfo(Calendar.getInstance(zone, locale), latitude != null ? latitude : 0,
-<<<<<<< Upstream, based on main
-                longitude != null ? longitude : 0, moon, zone, locale);
->>>>>>> 48a7069 Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added unit tests for eclipses
-=======
-                longitude != null ? longitude : 0, moon, zone);
->>>>>>> bb4de3d Starting to work on transition to Instant for MoonPhase
+        double latitude = thingConfig.latitude instanceof Double value ? value : 0;
+        double longitude = thingConfig.longitude instanceof Double value ? value : 0;
+        moonCalc.setPositionalInfo(DateTimeUtils.calFromInstantSource(instantSource, zone, locale), latitude, longitude,
+                moon, zone);
         this.moon = moon;
 
         publishPlanet();
@@ -122,13 +114,13 @@ public class MoonHandler extends AstroThingHandler {
             case CHANNEL_ID_MOON_SET_DURATION:
                 return toState(moon.getSet().getDuration(), channel);
             case CHANNEL_ID_MOON_PHASE_FIRST_QUARTER:
-                return toState(moon.getPhase().getFirstQuarter(), channel);
+                return toState(moon.getPhase().getPhase(MoonPhaseName.FIRST_QUARTER), channel);
             case CHANNEL_ID_MOON_PHASE_THIRD_QUARTER:
-                return toState(moon.getPhase().getThirdQuarter(), channel);
+                return toState(moon.getPhase().getPhase(MoonPhaseName.THIRD_QUARTER), channel);
             case CHANNEL_ID_MOON_PHASE_FULL:
-                return toState(moon.getPhase().getFull(), channel);
+                return toState(moon.getPhase().getPhase(MoonPhaseName.FULL), channel);
             case CHANNEL_ID_MOON_PHASE_NEW:
-                return toState(moon.getPhase().getNew(), channel);
+                return toState(moon.getPhase().getPhase(MoonPhaseName.NEW), channel);
             case CHANNEL_ID_MOON_PHASE_AGE:
                 return toState(moon.getPhase().getAge(), channel);
             case CHANNEL_ID_MOON_PHASE_AGE_DEGREE:
@@ -185,19 +177,19 @@ public class MoonHandler extends AstroThingHandler {
     }
 
     private Moon getMoonAt(ZonedDateTime date, Locale locale) {
-        Double latitude = thingConfig.latitude;
-        Double longitude = thingConfig.longitude;
-        return moonCalc.getMoonInfo(GregorianCalendar.from(date), latitude != null ? latitude : 0,
-                longitude != null ? longitude : 0, TimeZone.getTimeZone(date.getZone()), locale);
+        double latitude = thingConfig.latitude instanceof Double value ? value : 0;
+        double longitude = thingConfig.longitude instanceof Double value ? value : 0;
+        return moonCalc.getMoonInfo(GregorianCalendar.from(date), latitude, longitude,
+                TimeZone.getTimeZone(date.getZone()), locale);
     }
 
     @Override
     public Position getPositionAt(ZonedDateTime date) {
         Moon localMoon = getMoonAt(date, Locale.ROOT);
-        Double latitude = thingConfig.latitude;
-        Double longitude = thingConfig.longitude;
-        moonCalc.setPositionalInfo(GregorianCalendar.from(date), latitude != null ? latitude : 0,
-                longitude != null ? longitude : 0, localMoon, TimeZone.getTimeZone(date.getZone()));
+        double latitude = thingConfig.latitude instanceof Double value ? value : 0;
+        double longitude = thingConfig.longitude instanceof Double value ? value : 0;
+        moonCalc.setPositionalInfo(GregorianCalendar.from(date), latitude, longitude, localMoon,
+                TimeZone.getTimeZone(date.getZone()));
         return localMoon.getPosition();
     }
 }

@@ -12,9 +12,8 @@
  */
 package org.openhab.binding.astro.internal.model;
 
+import java.util.EnumMap;
 import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -26,36 +25,12 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class Moon extends RiseSet implements Planet {
-    private final Map<DistanceType, MoonDistance> distances = new HashMap<>(DistanceType.values().length);
-    private final Eclipse eclipse = new Eclipse(EclipseKind.PARTIAL, EclipseKind.TOTAL);
+    private final EnumMap<DistanceType, MoonDistance> distances = new EnumMap<>(DistanceType.class);
 
-<<<<<<< Upstream, based on main
     private EclipseSet eclipseSet = EclipseSet.NONE;
-    private MoonPhase phase = new MoonPhase();
-<<<<<<< Upstream, based on main
-<<<<<<< Upstream, based on main
+    private MoonPhase phase = MoonPhase.NONE;
     private Position position = MoonPosition.NONE;
     private Zodiac zodiac = Zodiac.NONE;
-=======
-<<<<<<< Upstream, based on moon_distance
-    private Eclipse eclipse = new Eclipse(EclipseKind.PARTIAL, EclipseKind.TOTAL);
-    private Position position = new Position();
-=======
-    private MoonDistance apogee = new MoonDistance();
-    private MoonDistance perigee = new MoonDistance();
-    private MoonDistance distance = new MoonDistance();
-<<<<<<< Upstream, based on moon_distance
-    private Position position = SunPosition.NULL;
->>>>>>> 0596b7c Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added unit tests for eclipses
-=======
-=======
->>>>>>> 5ae0857 Rebased. Corrected moon_day dynamic icons Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added unit tests for eclipses Rebased on moon_distance
-=======
-    private MoonPhase phase = MoonPhase.DEFAULT;
->>>>>>> f203b2c Finalized modifications at this step
-    private Position position = MoonPosition.NULL;
-    private Zodiac zodiac = Zodiac.NULL;
->>>>>>> 48a7069 Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added unit tests for eclipses
 
     public Moon() {
         EnumSet.allOf(DistanceType.class).forEach(d -> distances.put(d, MoonDistance.NONE));
@@ -90,16 +65,8 @@ public class Moon extends RiseSet implements Planet {
         return eclipseSet;
     }
 
-<<<<<<< Upstream, based on main
     public void setEclipseSet(EclipseSet eclipseSet) {
         this.eclipseSet = eclipseSet;
-=======
-    /**
-     * Returns the current distance.
-     */
-    public MoonDistance getDistance() {
-        return getDistanceType(DistanceType.CURRENT);
->>>>>>> 48a7069 Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added unit tests for eclipses
     }
 
     /**

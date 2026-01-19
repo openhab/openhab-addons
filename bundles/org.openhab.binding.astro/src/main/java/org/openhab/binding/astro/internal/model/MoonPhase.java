@@ -12,25 +12,17 @@
  */
 package org.openhab.binding.astro.internal.model;
 
-<<<<<<< Upstream, based on main
-<<<<<<< Upstream, based on main
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.stream.Stream;
-=======
-=======
 import java.time.Duration;
->>>>>>> f203b2c Finalized modifications at this step
 import java.time.Instant;
+import java.time.InstantSource;
 import java.time.ZoneId;
-import java.util.HashMap;
+import java.util.Comparator;
 import java.util.Map;
-<<<<<<< Upstream, based on main
->>>>>>> bb4de3d Starting to work on transition to Instant for MoonPhase
-=======
 import java.util.Objects;
->>>>>>> f203b2c Finalized modifications at this step
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.measure.quantity.Angle;
 import javax.measure.quantity.Dimensionless;
@@ -42,8 +34,6 @@ import org.openhab.binding.astro.internal.util.AstroConstants;
 import org.openhab.binding.astro.internal.util.DateTimeUtils;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
-import org.openhab.core.types.State;
-import org.openhab.core.types.UnDefType;
 
 /**
  * Holds the calculates moon phase informations.
@@ -53,145 +43,38 @@ import org.openhab.core.types.UnDefType;
  */
 @NonNullByDefault
 public class MoonPhase {
-<<<<<<< Upstream, based on main
-<<<<<<< Upstream, based on main
-    private final Map<MoonPhaseName, @Nullable Calendar> phases = new HashMap<>(MoonPhaseName.values().length);
-
-=======
-    private final Map<MoonPhaseName, @Nullable Instant> phases = new HashMap<>(MoonPhaseName.values().length);
->>>>>>> bb4de3d Starting to work on transition to Instant for MoonPhase
-    private double age;
-    private double illumination;
-    private double agePercent;
-    private double ageDegree;
-=======
+    private static final Set<MoonPhaseName> USED_PHASES = Set.of(MoonPhaseName.NEW, MoonPhaseName.FULL,
+            MoonPhaseName.FIRST_QUARTER, MoonPhaseName.THIRD_QUARTER);
+    public static final MoonPhase NONE = new MoonPhase();
     private static final Duration SYNODIC_MONTH = Duration
-            .ofSeconds((long) (AstroConstants.SYNODIC_MONTH * AstroConstants.SECONDS_PER_DAY));
+            .ofSeconds((long) (AstroConstants.LUNAR_SYNODIC_MONTH_DAYS * AstroConstants.SECONDS_PER_DAY));
     public static final MoonPhase DEFAULT = new MoonPhase();
->>>>>>> f203b2c Finalized modifications at this step
 
-    private final Map<MoonPhaseName, Double> phases;
+    private final Map<MoonPhaseName, Instant> phases;
+    private final @Nullable Instant parentNewMoon;
+    private final @Nullable InstantSource instantSource;
+
     private int illumination;
     private @Nullable MoonPhaseName name;
 
-<<<<<<< Upstream, based on main
-    public MoonPhase() {
-<<<<<<< Upstream, based on main
-        phases.put(MoonPhaseName.FIRST_QUARTER, null);
-        phases.put(MoonPhaseName.FULL, null);
-        phases.put(MoonPhaseName.THIRD_QUARTER, null);
-        phases.put(MoonPhaseName.NEW, null);
-=======
-        Arrays.stream(MoonPhaseName.values()).filter(phase -> !Double.isNaN(phase.mode))
-                .forEach(phase -> phases.put(phase, null));
-=======
     private MoonPhase() {
-        phases = Map.of();
->>>>>>> f203b2c Finalized modifications at this step
+        this.phases = Map.of();
+        this.parentNewMoon = null;
+        this.instantSource = null;
     }
 
-<<<<<<< Upstream, based on main
-    public @Nullable Instant getPhase(MoonPhaseName phase) {
-        return phases.get(phase);
->>>>>>> bb4de3d Starting to work on transition to Instant for MoonPhase
-=======
-    public MoonPhase(Map<MoonPhaseName, Double> comingPhases) {
-        this.phases = new HashMap<>(comingPhases);
+    public MoonPhase(InstantSource instantSource, double parentNewMoon, Map<MoonPhaseName, Double> comingPhases) {
+        this.instantSource = instantSource;
+        this.parentNewMoon = DateTimeUtils.jdToInstant(parentNewMoon);
+        this.phases = comingPhases.keySet().stream().collect(Collectors.toMap(Function.identity(),
+                k -> DateTimeUtils.jdToInstant(Objects.requireNonNull(comingPhases.get(k)))));
     }
 
     public Instant getPhase(MoonPhaseName phase) {
-        return DateTimeUtils.jdToInstant(Objects.requireNonNull(phases.get(phase)));
->>>>>>> f203b2c Finalized modifications at this step
-    }
-
-    /**
-     * Returns the date at which the moon is in the first quarter.
-     */
-<<<<<<< Upstream, based on main
-    @Nullable
-<<<<<<< Upstream, based on main
-    public Calendar getFirstQuarter() {
-        return getPhaseDate(MoonPhaseName.FIRST_QUARTER);
-=======
-=======
->>>>>>> f203b2c Finalized modifications at this step
-    public Instant getFirstQuarter() {
-        return getPhase(MoonPhaseName.FIRST_QUARTER);
-    }
-
-<<<<<<< Upstream, based on main
-    public void setPhase(MoonPhaseName phase, double jdWhen) {
-        phases.put(phase, DateTimeUtils.jdToInstant(jdWhen));
->>>>>>> bb4de3d Starting to work on transition to Instant for MoonPhase
-    }
-
-=======
->>>>>>> f203b2c Finalized modifications at this step
-    /**
-     * Returns the date of the full moon.
-     */
-<<<<<<< Upstream, based on main
-    @Nullable
-<<<<<<< Upstream, based on main
-    public Calendar getFull() {
-        return getPhaseDate(MoonPhaseName.FULL);
-=======
-=======
->>>>>>> f203b2c Finalized modifications at this step
-    public Instant getFull() {
-        return getPhase(MoonPhaseName.FULL);
->>>>>>> bb4de3d Starting to work on transition to Instant for MoonPhase
-    }
-
-    /**
-     * Returns the date at which the moon is in the third quarter.
-     */
-<<<<<<< Upstream, based on main
-    @Nullable
-<<<<<<< Upstream, based on main
-    public Calendar getThirdQuarter() {
-        return getPhaseDate(MoonPhaseName.THIRD_QUARTER);
-=======
-=======
->>>>>>> f203b2c Finalized modifications at this step
-    public Instant getThirdQuarter() {
-        return getPhase(MoonPhaseName.THIRD_QUARTER);
->>>>>>> bb4de3d Starting to work on transition to Instant for MoonPhase
-    }
-
-    /**
-     * Returns the date of the new moon.
-     */
-<<<<<<< Upstream, based on main
-    @Nullable
-<<<<<<< Upstream, based on main
-    public Calendar getNew() {
-        return getPhaseDate(MoonPhaseName.NEW);
-    }
-
-    @Nullable
-    public Calendar getPhaseDate(MoonPhaseName moonPhase) {
-        if (!phases.containsKey(moonPhase)) {
-            throw new IllegalArgumentException("MoonPhase does not handle %s".formatted(moonPhase.toString()));
+        if (!USED_PHASES.contains(phase)) {
+            throw new IllegalArgumentException("The phase '%s' is not handled".formatted(phase.toString()));
         }
-        return phases.get(moonPhase);
-    }
-
-    public void setPhase(MoonPhaseName moonPhase, @Nullable Calendar calendar) {
-        if (!phases.containsKey(moonPhase)) {
-            throw new IllegalArgumentException("MoonPhase does not handle %s".formatted(moonPhase.toString()));
-        }
-        phases.put(moonPhase, calendar);
-    }
-
-    public Stream<MoonPhaseName> remarkablePhases() {
-        return phases.keySet().stream();
-=======
-=======
->>>>>>> f203b2c Finalized modifications at this step
-    public Instant getNew() {
-        return getPhase(MoonPhaseName.NEW);
->>>>>>> bb4de3d Starting to work on transition to Instant for MoonPhase
+        return Objects.requireNonNull(phases.get(phase));
     }
 
     /**
@@ -208,14 +91,8 @@ public class MoonPhase {
     /**
      * Returns the illumination.
      */
-<<<<<<< Upstream, based on main
-    public State getIllumination() {
-        return Double.isNaN(illumination) ? UnDefType.UNDEF
-                : illumination < 0 ? UnDefType.NULL : new QuantityType<>(illumination, Units.PERCENT);
-=======
     public QuantityType<Dimensionless> getIllumination() {
         return new QuantityType<>(illumination, Units.ONE);
->>>>>>> f203b2c Finalized modifications at this step
     }
 
     /**
@@ -223,18 +100,11 @@ public class MoonPhase {
      */
     public void setIllumination(double illumination) {
         this.illumination = (int) Math.round(illumination * 100);
-        boolean waxing = getAgePercentDouble() < 0.5;
-        if (illumination == 0) {
-            name = MoonPhaseName.NEW;
-        } else if (illumination < 50) {
-            name = waxing ? MoonPhaseName.WAXING_CRESCENT : MoonPhaseName.WANING_CRESCENT;
-        } else if (illumination == 50) {
-            name = waxing ? MoonPhaseName.FIRST_QUARTER : MoonPhaseName.THIRD_QUARTER;
-        } else if (illumination < 100) {
-            name = waxing ? MoonPhaseName.WAXING_GIBBOUS : MoonPhaseName.WANING_GIBBOUS;
-        } else {
-            name = MoonPhaseName.FULL;
-        }
+    }
+
+    public void updateName(double julianDate, ZoneId zone) {
+        this.name = MoonPhase.remarkableSteps().filter(mp -> isPhaseDay(julianDate, mp, zone)).findFirst()
+                .orElseGet(() -> MoonPhaseName.fromAgePercent(getAgePercentDouble()));
     }
 
     /**
@@ -245,16 +115,12 @@ public class MoonPhase {
         return name;
     }
 
-    /**
-     * Sets the phase name.
-     */
-    public void setName(@Nullable MoonPhaseName name) {
-        this.name = name;
-    }
-
     public double getAgePercentDouble() {
-        var parentNewMoon = getNew().minus(SYNODIC_MONTH);
-        return ((double) Duration.between(parentNewMoon, Instant.now()).getSeconds()) / SYNODIC_MONTH.getSeconds();
+        if (parentNewMoon == null || instantSource == null) {
+            throw new IllegalArgumentException("getAgePercentDouble() must not be called on NONE instance");
+        }
+        return ((double) Duration.between(parentNewMoon, instantSource.instant()).getSeconds())
+                / Duration.between(parentNewMoon, getPhase(MoonPhaseName.NEW)).getSeconds();
     }
 
     /**
@@ -271,8 +137,9 @@ public class MoonPhase {
         return new QuantityType<>(getAgePercentDouble(), Units.ONE);
     }
 
-    public boolean needsRecalc(double julianDate) {
-        return phases.isEmpty() || phases.values().stream().anyMatch(d -> d < julianDate);
+    public boolean needsRecalc(double jdNow) {
+        Instant now = DateTimeUtils.jdToInstant(jdNow);
+        return phases.isEmpty() || phases.values().stream().anyMatch(when -> when.isBefore(now));
     }
 
     public boolean isPhaseDay(double julianDate, MoonPhaseName phaseName, ZoneId zone) {
@@ -282,4 +149,7 @@ public class MoonPhase {
                 || DateTimeUtils.isSameDay(instant, phaseDate.minus(SYNODIC_MONTH), zone);
     }
 
+    public static final Stream<MoonPhaseName> remarkableSteps() {
+        return USED_PHASES.stream().sorted(Comparator.comparing(mpn -> mpn.cycleProgress));
+    }
 }

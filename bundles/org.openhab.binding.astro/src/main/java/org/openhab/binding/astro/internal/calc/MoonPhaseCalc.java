@@ -14,12 +14,12 @@ package org.openhab.binding.astro.internal.calc;
 
 import static org.openhab.binding.astro.internal.util.MathUtils.*;
 
+import java.time.InstantSource;
 import java.time.ZoneId;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.astro.internal.model.MoonPhase;
 import org.openhab.binding.astro.internal.model.MoonPhaseName;
 import org.openhab.binding.astro.internal.util.AstroConstants;
@@ -32,25 +32,24 @@ import org.openhab.binding.astro.internal.util.DateTimeUtils;
  */
 @NonNullByDefault
 public class MoonPhaseCalc extends AstroCalc {
-    public static MoonPhase calculate(double julianDate, @Nullable MoonPhase previousMP, ZoneId zone) {
+    public static MoonPhase calculate(InstantSource instantSource, double julianDate, MoonPhase previousMP,
+            ZoneId zone) {
         final MoonPhase result;
 
-        if (previousMP == null || previousMP.needsRecalc(julianDate)) {
+        if (previousMP.needsRecalc(julianDate)) {
             double julianDateMidnight = Math.floor(julianDate + 0.5) - 0.5;
+            double parentNewMoon = getPhase(julianDateMidnight, MoonPhaseName.NEW, false);
 
-            Map<MoonPhaseName, Double> comingPhases = new HashMap<>(MoonPhaseName.values().length);
-            MoonPhaseName.steps().forEach(phase -> {
-                comingPhases.put(phase, getNextPhase(julianDateMidnight, phase));
-            });
+            Map<MoonPhaseName, Double> comingPhases = MoonPhase.remarkableSteps()
+                    .collect(Collectors.toMap(phase -> phase, phase -> getPhase(julianDateMidnight, phase, true)));
 
-            result = new MoonPhase(comingPhases);
+            result = new MoonPhase(instantSource, parentNewMoon, comingPhases);
         } else {
             result = previousMP;
         }
 
         result.setIllumination(getIllumination(julianDate));
-        MoonPhaseName.steps().filter(mp -> result.isPhaseDay(julianDate, mp, zone)).findFirst()
-                .ifPresent(result::setName);
+        result.updateName(julianDate, zone);
 
         return result;
     }
@@ -72,19 +71,16 @@ public class MoonPhaseCalc extends AstroCalc {
     }
 
     /**
-     * Calculates the next moon phase.
+     * Searches the next moon phase in a given direction
      */
-    private static double getNextPhase(double midnightJd, MoonPhaseName phase) {
-        if (MoonPhaseName.steps().noneMatch(p -> p.equals(phase))) {
-            throw new IllegalArgumentException("calcMoonPhase called for unhandled phase: %s".formatted(phase.name()));
-        }
+    private static double getPhase(double jd, MoonPhaseName phase, boolean forward) {
         double tz = 0;
         double phaseJd = 0;
         do {
-            double k = varK(midnightJd, tz);
-            tz++;
+            double k = varK(jd, tz);
+            tz += forward ? 1 : -1;
             phaseJd = calcMoonPhase(k, phase);
-        } while (phaseJd <= midnightJd);
+        } while (forward ? phaseJd <= jd : phaseJd > jd);
         return phaseJd;
     }
 
@@ -92,7 +88,7 @@ public class MoonPhaseCalc extends AstroCalc {
      * Calculates the moon phase.
      */
     private static double calcMoonPhase(double k, MoonPhaseName phase) {
-        double kMod = Math.floor(k) + phase.mode;
+        double kMod = Math.floor(k) + phase.cycleProgress;
         double t = kMod / 1236.85;
         double e = varE(t);
         double m = varM(kMod, t);

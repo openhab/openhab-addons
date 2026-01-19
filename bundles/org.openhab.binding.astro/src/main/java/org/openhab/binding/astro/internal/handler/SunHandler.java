@@ -79,16 +79,12 @@ public class SunHandler extends AstroThingHandler {
         Locale locale = localeProvider.getLocale();
         ZonedDateTime now = instantSource.instant().atZone(zoneId);
         Sun sun = getSunAt(now);
-        Double latitude = thingConfig.latitude;
-        Double longitude = thingConfig.longitude;
-        Double altitude = thingConfig.altitude;
+        double latitude = thingConfig.latitude instanceof Double value ? value : 0;
+        double longitude = thingConfig.longitude instanceof Double value ? value : 0;
+        double altitude = thingConfig.altitude instanceof Double value ? value : 0;
         Calendar calendar = DateTimeUtils.calFromInstantSource(instantSource, zone, locale);
-        sunCalc.setPositionalInfo(calendar, latitude != null ? latitude : 0, longitude != null ? longitude : 0,
-                altitude != null ? altitude : 0, sun);
-<<<<<<< Upstream, based on main
+        sunCalc.setPositionalInfo(calendar, latitude, longitude, altitude, sun);
 
-=======
->>>>>>> 48a7069 Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added unit tests for eclipses
         sun.setCircadian(CircadianCalc.calculate(calendar, sun.getRise(), sun.getSet(), sun.getNoon()));
         sun.setRadiation(RadiationCalc.calculate(now, sun.getPosition().getElevationAsDouble(), altitude));
 
@@ -303,21 +299,19 @@ public class SunHandler extends AstroThingHandler {
     }
 
     private Sun getSunAt(ZonedDateTime date) {
-        Double latitude = thingConfig.latitude;
-        Double longitude = thingConfig.longitude;
-        Double altitude = thingConfig.altitude;
-        return sunCalc.getSunInfo(GregorianCalendar.from(date), latitude != null ? latitude : 0,
-                longitude != null ? longitude : 0, altitude != null ? altitude : 0, thingConfig.useMeteorologicalSeason,
-                TimeZone.getTimeZone(timeZoneProvider.getTimeZone()), Locale.ROOT);
+        double latitude = thingConfig.latitude instanceof Double value ? value : 0;
+        double longitude = thingConfig.longitude instanceof Double value ? value : 0;
+        double altitude = thingConfig.altitude instanceof Double value ? value : 0;
+        return sunCalc.getSunInfo(GregorianCalendar.from(date), latitude, longitude, altitude,
+                thingConfig.useMeteorologicalSeason, TimeZone.getTimeZone(timeZoneProvider.getTimeZone()), Locale.ROOT);
     }
 
     private Sun getPositionedSunAt(ZonedDateTime date) {
         Sun localSun = getSunAt(date);
-        Double latitude = thingConfig.latitude;
-        Double longitude = thingConfig.longitude;
-        Double altitude = thingConfig.altitude;
-        sunCalc.setPositionalInfo(GregorianCalendar.from(date), latitude != null ? latitude : 0,
-                longitude != null ? longitude : 0, altitude != null ? altitude : 0, localSun);
+        double latitude = thingConfig.latitude instanceof Double value ? value : 0;
+        double longitude = thingConfig.longitude instanceof Double value ? value : 0;
+        double altitude = thingConfig.altitude instanceof Double value ? value : 0;
+        sunCalc.setPositionalInfo(GregorianCalendar.from(date), latitude, longitude, altitude, localSun);
         return localSun;
     }
 

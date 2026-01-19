@@ -57,15 +57,7 @@ public class MathUtils {
         return Math.sin(Math.toRadians(deg));
     }
 
-<<<<<<< Upstream, based on main
-<<<<<<< Upstream, based on main
     public static double frac(double x) {
-=======
-    public static double frak(double x) {
->>>>>>> a1c7d2d Start refactoring Eclipse for sun and moon
-=======
-    public static double frac(double x) {
->>>>>>> 385bae1 Rebased. Corrected moon_day dynamic icons Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added unit tests for eclipses
         return x - Math.floor(x);
     }
 }

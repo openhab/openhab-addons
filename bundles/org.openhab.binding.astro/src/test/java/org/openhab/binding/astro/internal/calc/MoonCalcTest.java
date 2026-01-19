@@ -14,14 +14,8 @@ package org.openhab.binding.astro.internal.calc;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-<<<<<<< Upstream, based on main
 import java.time.Instant;
-<<<<<<< Upstream, based on main
 import java.time.InstantSource;
-=======
->>>>>>> f25b664 Review Moon Distance and factorization of MoonCalc
-=======
->>>>>>> a082c65 Copilot code view adressed
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.Locale;
@@ -117,41 +111,15 @@ public class MoonCalcTest {
         assertNotNull(moonCalc);
         Moon moon = moonCalc.getMoonInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE, TIME_ZONE, Locale.ROOT);
         moonCalc.setPositionalInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE, moon, TIME_ZONE);
+
         var azimuth = moon.getPosition().getAzimuth();
         var elevation = moon.getPosition().getElevation();
         assertNotNull(azimuth);
         assertNotNull(elevation);
 
-<<<<<<< Upstream, based on main
-<<<<<<< Upstream, based on main
-        var azimuth = moon.getPosition().getAzimuth();
-        var elevation = moon.getPosition().getElevation();
-        assertNotNull(azimuth);
-        assertNotNull(elevation);
-
-=======
-<<<<<<< Upstream, based on main
->>>>>>> 48a7069 Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added unit tests for eclipses
-=======
->>>>>>> 2cffce1 Rebased. Corrected moon_day dynamic icons Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added unit tests for eclipses Rebased on moon_distance Rebased on main after moon_distance inclusion
         // expected result from heavens-above.com is Azimuth: 100.5, altitude -17
-<<<<<<< Upstream, based on main
-<<<<<<< Upstream, based on main
         assertEquals(100.5, moon.getPosition().getAzimuthAsDouble(), ACCURACY_IN_DEGREE);
         assertEquals(-17, moon.getPosition().getElevationAsDouble(), ACCURACY_IN_DEGREE);
-=======
-        assertEquals(100.5, moon.getPosition().getAzimuth().doubleValue(), ACCURACY_IN_DEGREE);
-        assertEquals(-17, moon.getPosition().getElevation().doubleValue(), ACCURACY_IN_DEGREE);
-=======
-        // expected result from haevens-above.com is Azimuth: 100.5, altitude -17
-        assertEquals(100.5, moon.getPosition().getAzimuthAsDouble(), ACCURACY_IN_DEGREE);
-        assertEquals(-17, moon.getPosition().getElevationAsDouble(), ACCURACY_IN_DEGREE);
->>>>>>> 637b449 Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added unit tests for eclipses
->>>>>>> 48a7069 Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added unit tests for eclipses
-=======
-        assertEquals(100.5, azimuth.doubleValue(), ACCURACY_IN_DEGREE);
-        assertEquals(-17, elevation.doubleValue(), ACCURACY_IN_DEGREE);
->>>>>>> 2cffce1 Rebased. Corrected moon_day dynamic icons Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added unit tests for eclipses Rebased on moon_distance Rebased on main after moon_distance inclusion
     }
 
     /***

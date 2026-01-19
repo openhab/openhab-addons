@@ -15,6 +15,7 @@ package org.openhab.binding.astro.internal.calc;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.time.Instant;
+import java.time.InstantSource;
 import java.time.ZoneId;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -49,42 +50,45 @@ public class MoonPhaseCalcTest {
 
     @Test
     public void testGetMoonInfoForMoonPhaseAccuracy() {
-        MoonPhase moonPhase = MoonPhaseCalc.calculate(DateTimeUtils.dateToJulianDate(FEB_27_2019), null, ZONE);
+        InstantSource instantSource = InstantSource.fixed(Instant.ofEpochMilli(1645671600000L));
+        MoonPhase moonPhase = MoonPhaseCalc.calculate(instantSource, DateTimeUtils.dateToJulianDate(FEB_27_2019), null,
+                ZONE);
 
         // New moon 06 March 2019 17:04 - jd : 2458549.1702492456
         // First quarter 14 March 2019 11:27 - jd : 2458556.936169754
         // Full moon 21 March 2019 02:43 - jd : 2458563.572182703
         // Last quarter 28 March 2019 05:10 - jd : 2458570.6742177564
-        Instant phaseNew = moonPhase.getNew();
+        Instant phaseNew = moonPhase.getPhase(MoonPhaseName.NEW);
         assertNotNull(phaseNew);
         assertEquals(newCalendar(2019, Calendar.MARCH, 06, 17, 04, TIME_ZONE).getTimeInMillis(),
                 phaseNew.toEpochMilli(), ACCURACY_IN_MILLIS);
-        Instant phaseFQ = moonPhase.getFirstQuarter();
+        Instant phaseFQ = moonPhase.getPhase(MoonPhaseName.FIRST_QUARTER);
         assertNotNull(phaseFQ);
         assertEquals(newCalendar(2019, Calendar.MARCH, 14, 11, 27, TIME_ZONE).getTimeInMillis(), phaseFQ.toEpochMilli(),
                 ACCURACY_IN_MILLIS);
-        Instant phaseFull = moonPhase.getFull();
+        Instant phaseFull = moonPhase.getPhase(MoonPhaseName.FULL);
         assertNotNull(phaseFull);
         assertEquals(newCalendar(2019, Calendar.MARCH, 21, 02, 43, TIME_ZONE).getTimeInMillis(),
                 phaseFull.toEpochMilli(), ACCURACY_IN_MILLIS);
-        Instant phaseTQ = moonPhase.getThirdQuarter();
+        Instant phaseTQ = moonPhase.getPhase(MoonPhaseName.THIRD_QUARTER);
         assertNotNull(phaseTQ);
         assertEquals(newCalendar(2019, Calendar.MARCH, 28, 05, 10, TIME_ZONE).getTimeInMillis(), phaseTQ.toEpochMilli(),
                 ACCURACY_IN_MILLIS);
 
-        moonPhase = MoonPhaseCalc.calculate(DateTimeUtils.instantToJulianDay(phaseNew), moonPhase, ZONE);
+        moonPhase = MoonPhaseCalc.calculate(instantSource, DateTimeUtils.instantToJulianDay(phaseNew), moonPhase, ZONE);
         assertEquals(0, moonPhase.getIllumination().intValue());
         assertEquals(MoonPhaseName.NEW, moonPhase.getName());
 
-        moonPhase = MoonPhaseCalc.calculate(DateTimeUtils.instantToJulianDay(phaseFull), moonPhase, ZONE);
+        moonPhase = MoonPhaseCalc.calculate(instantSource, DateTimeUtils.instantToJulianDay(phaseFull), moonPhase,
+                ZONE);
         assertEquals(MoonPhaseName.FULL, moonPhase.getName());
         assertEquals(100, moonPhase.getIllumination().doubleValue());
 
-        moonPhase = MoonPhaseCalc.calculate(DateTimeUtils.instantToJulianDay(phaseFQ), moonPhase, ZONE);
+        moonPhase = MoonPhaseCalc.calculate(instantSource, DateTimeUtils.instantToJulianDay(phaseFQ), moonPhase, ZONE);
         assertEquals(50, moonPhase.getIllumination().intValue());
         assertEquals(MoonPhaseName.FIRST_QUARTER, moonPhase.getName());
 
-        moonPhase = MoonPhaseCalc.calculate(DateTimeUtils.instantToJulianDay(phaseTQ), moonPhase, ZONE);
+        moonPhase = MoonPhaseCalc.calculate(instantSource, DateTimeUtils.instantToJulianDay(phaseTQ), moonPhase, ZONE);
         assertEquals(50, moonPhase.getIllumination().intValue());
         assertEquals(MoonPhaseName.THIRD_QUARTER, moonPhase.getName());
 

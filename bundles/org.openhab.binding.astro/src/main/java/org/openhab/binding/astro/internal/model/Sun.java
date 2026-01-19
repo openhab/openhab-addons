@@ -25,56 +25,20 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public class Sun extends RiseSet implements Planet {
-    private final Eclipse eclipse = new Eclipse(EclipseKind.PARTIAL, EclipseKind.TOTAL, EclipseKind.RING);
 
     private Map<SunPhaseName, Range> ranges = new HashMap<>();
 
-<<<<<<< Upstream, based on main
-<<<<<<< Upstream, based on main
-<<<<<<< Upstream, based on main
     private Position position = Position.NONE;
     private Zodiac zodiac = Zodiac.NONE;
     private EclipseSet eclipseSet = EclipseSet.NONE;
     private Radiation radiation = Radiation.NONE;
-=======
-    private Position position = SunPosition.NULL;
-=======
-=======
-    private Circadian circadian = Circadian.DEFAULT;
-    private Radiation radiation = Radiation.NULL;
->>>>>>> 5ae0857 Rebased. Corrected moon_day dynamic icons Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added unit tests for eclipses Rebased on moon_distance
-    private Position position = Position.NULL;
-<<<<<<< Upstream, based on main
->>>>>>> 385bae1 Rebased. Corrected moon_day dynamic icons Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added unit tests for eclipses
-
-=======
->>>>>>> 5ae0857 Rebased. Corrected moon_day dynamic icons Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added unit tests for eclipses Rebased on moon_distance
-    private Zodiac zodiac = Zodiac.NULL;
->>>>>>> 48a7069 Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added unit tests for eclipses
 
     private @Nullable Season season = null;
 
-<<<<<<< Upstream, based on main
-<<<<<<< Upstream, based on main
-=======
-<<<<<<< Upstream, based on moon_distance
-    private Eclipse eclipse = new Eclipse(EclipseKind.PARTIAL, EclipseKind.TOTAL, EclipseKind.RING);
-
-    private Radiation radiation = Radiation.NULL;
-=======
-    private Radiation radiation = new Radiation();
->>>>>>> 0596b7c Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added unit tests for eclipses
-
->>>>>>> 48a7069 Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added unit tests for eclipses
-=======
->>>>>>> 5ae0857 Rebased. Corrected moon_day dynamic icons Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added unit tests for eclipses Rebased on moon_distance
     private SunPhase phase = new SunPhase();
 
-<<<<<<< Upstream, based on main
     private Circadian circadian = Circadian.NONE;
 
-=======
->>>>>>> 5ae0857 Rebased. Corrected moon_day dynamic icons Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added unit tests for eclipses Rebased on moon_distance
     /**
      * Returns the astro dawn range.
      */
@@ -319,13 +283,10 @@ public class Sun extends RiseSet implements Planet {
         return eclipseSet;
     }
 
-<<<<<<< Upstream, based on main
     public void setEclipseSet(EclipseSet eclipseSet) {
         this.eclipseSet = eclipseSet;
     }
 
-=======
->>>>>>> 48a7069 Reworked sun and moon position Reworked eclipse calculations Transitioned these to Instant Added unit tests for eclipses
     /**
      * Returns the sun phase.
      */
