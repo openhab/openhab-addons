@@ -36,6 +36,7 @@ import org.openhab.binding.astro.internal.model.Position;
 import org.openhab.binding.astro.internal.model.Radiation;
 import org.openhab.binding.astro.internal.model.Range;
 import org.openhab.binding.astro.internal.model.Season;
+import org.openhab.binding.astro.internal.model.SeasonName;
 import org.openhab.binding.astro.internal.model.Sun;
 import org.openhab.binding.astro.internal.model.SunPhase;
 import org.openhab.binding.astro.internal.util.DateTimeUtils;
@@ -259,16 +260,16 @@ public class SunHandler extends AstroThingHandler {
                 return s == null ? UnDefType.UNDEF : toState(s.getName(), channel);
             case CHANNEL_ID_SUN_SEASON_SPRING:
                 s = sun.getSeason();
-                return s == null ? UnDefType.UNDEF : toState(s.getSpring(), channel);
+                return s == null ? UnDefType.UNDEF : toState(s.getSeasonStart(SeasonName.SPRING), channel);
             case CHANNEL_ID_SUN_SEASON_SUMMER:
                 s = sun.getSeason();
-                return s == null ? UnDefType.UNDEF : toState(s.getSummer(), channel);
+                return s == null ? UnDefType.UNDEF : toState(s.getSeasonStart(SeasonName.SUMMER), channel);
             case CHANNEL_ID_SUN_SEASON_AUTUMN:
                 s = sun.getSeason();
-                return s == null ? UnDefType.UNDEF : toState(s.getAutumn(), channel);
+                return s == null ? UnDefType.UNDEF : toState(s.getSeasonStart(SeasonName.AUTUMN), channel);
             case CHANNEL_ID_SUN_SEASON_WINTER:
                 s = sun.getSeason();
-                return s == null ? UnDefType.UNDEF : toState(s.getWinter(), channel);
+                return s == null ? UnDefType.UNDEF : toState(s.getSeasonStart(SeasonName.WINTER), channel);
             case CHANNEL_ID_SUN_SEASON_NEXT_NAME:
                 s = sun.getSeason();
                 return s == null ? UnDefType.UNDEF : toState(s.getNextName(), channel);
