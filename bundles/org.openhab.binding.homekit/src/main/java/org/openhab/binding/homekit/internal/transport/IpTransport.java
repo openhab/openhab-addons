@@ -355,8 +355,8 @@ public class IpTransport implements AutoCloseable {
             String jsonContent = new String(httpPayload.content(), StandardCharsets.UTF_8);
             eventListener.onEvent(jsonContent);
         } else {
-            logger.warn("Unexpected response headers:\n{}", headers);
-            responseQueue.offer(new HttpPayload()); // unblock any waiting execute() call
+            logger.warn("Unexpected response:\n{}{}", headers,
+                    new String(httpPayload.content(), StandardCharsets.ISO_8859_1));
         }
     }
 }
