@@ -939,8 +939,9 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
      * Schedules a snapshot refresh task if not already scheduled.
      */
     protected void scheduleSnapshotRefresh() {
+        Future<?> snapshotRefreshTask = this.snapshotRefreshTask;
         if (snapshotRefreshTask == null || snapshotRefreshTask.isDone()) {
-            snapshotRefreshTask = scheduler.submit(() -> refreshSnapshot());
+            this.snapshotRefreshTask = scheduler.submit(() -> refreshSnapshot());
         }
     }
 }
