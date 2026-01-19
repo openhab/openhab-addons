@@ -52,10 +52,13 @@ public class ServerConfiguration {
             String value = serverVariable.defaultValue;
 
             if (variables != null && variables.containsKey(name)) {
-                value = variables.get(name);
-                if (serverVariable.enumValues.size() > 0 && !serverVariable.enumValues.contains(value)) {
-                    throw new IllegalArgumentException(
-                            "The variable " + name + " in the server URL has invalid value " + value + ".");
+                String variableValue = variables.get(name);
+                if (variableValue != null) {
+                    value = variableValue;
+                    if (serverVariable.enumValues.size() > 0 && !serverVariable.enumValues.contains(value)) {
+                        throw new IllegalArgumentException(
+                                "The variable " + name + " in the server URL has invalid value " + value + ".");
+                    }
                 }
             }
             url = url.replace("{" + name + "}", value);
