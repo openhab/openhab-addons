@@ -28,7 +28,7 @@ public class Moon extends RiseSet implements Planet {
     private final EnumMap<DistanceType, MoonDistance> distances = new EnumMap<>(DistanceType.class);
 
     private EclipseSet eclipseSet = EclipseSet.NONE;
-    private MoonPhase phase = MoonPhase.NONE;
+    private MoonPhaseSet phaseSet = MoonPhaseSet.NONE;
     private Position position = MoonPosition.NONE;
     private Zodiac zodiac = Zodiac.NONE;
 
@@ -39,15 +39,15 @@ public class Moon extends RiseSet implements Planet {
     /**
      * Returns the moon phase.
      */
-    public MoonPhase getPhase() {
-        return phase;
+    public MoonPhaseSet getPhaseSet() {
+        return phaseSet;
     }
 
     /**
      * Sets the moon phase.
      */
-    public void setPhase(MoonPhase phase) {
-        this.phase = phase;
+    public void setPhaseSet(MoonPhaseSet phaseSet) {
+        this.phaseSet = phaseSet;
     }
 
     public MoonDistance getDistanceType(DistanceType type) {

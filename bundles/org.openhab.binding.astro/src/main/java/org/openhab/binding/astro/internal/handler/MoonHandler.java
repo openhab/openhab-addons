@@ -29,7 +29,7 @@ import org.openhab.binding.astro.internal.job.Job;
 import org.openhab.binding.astro.internal.model.DistanceType;
 import org.openhab.binding.astro.internal.model.EclipseKind;
 import org.openhab.binding.astro.internal.model.Moon;
-import org.openhab.binding.astro.internal.model.MoonPhaseName;
+import org.openhab.binding.astro.internal.model.MoonPhase;
 import org.openhab.binding.astro.internal.model.Planet;
 import org.openhab.binding.astro.internal.model.Position;
 import org.openhab.binding.astro.internal.util.DateTimeUtils;
@@ -114,23 +114,23 @@ public class MoonHandler extends AstroThingHandler {
             case CHANNEL_ID_MOON_SET_DURATION:
                 return toState(moon.getSet().getDuration(), channel);
             case CHANNEL_ID_MOON_PHASE_FIRST_QUARTER:
-                return toState(moon.getPhase().getPhase(MoonPhaseName.FIRST_QUARTER), channel);
+                return toState(moon.getPhaseSet().getPhase(MoonPhase.FIRST_QUARTER), channel);
             case CHANNEL_ID_MOON_PHASE_THIRD_QUARTER:
-                return toState(moon.getPhase().getPhase(MoonPhaseName.THIRD_QUARTER), channel);
+                return toState(moon.getPhaseSet().getPhase(MoonPhase.THIRD_QUARTER), channel);
             case CHANNEL_ID_MOON_PHASE_FULL:
-                return toState(moon.getPhase().getPhase(MoonPhaseName.FULL), channel);
+                return toState(moon.getPhaseSet().getPhase(MoonPhase.FULL), channel);
             case CHANNEL_ID_MOON_PHASE_NEW:
-                return toState(moon.getPhase().getPhase(MoonPhaseName.NEW), channel);
+                return toState(moon.getPhaseSet().getPhase(MoonPhase.NEW), channel);
             case CHANNEL_ID_MOON_PHASE_AGE:
-                return toState(moon.getPhase().getAge(), channel);
+                return toState(moon.getPhaseSet().getAge(), channel);
             case CHANNEL_ID_MOON_PHASE_AGE_DEGREE:
-                return toState(moon.getPhase().getAgeDegree(), channel);
+                return toState(moon.getPhaseSet().getAgeDegree(), channel);
             case CHANNEL_ID_MOON_PHASE_AGE_PERCENT:
-                return toState(moon.getPhase().getAgePercent(), channel);
+                return toState(moon.getPhaseSet().getAgePercent(), channel);
             case CHANNEL_ID_MOON_PHASE_ILLUMINATION:
-                return toState(moon.getPhase().getIllumination(), channel);
+                return toState(moon.getPhaseSet().getIllumination(), channel);
             case CHANNEL_ID_MOON_PHASE_NAME:
-                return toState(moon.getPhase().getName(), channel);
+                return toState(moon.getPhaseSet().getName(), channel);
             case CHANNEL_ID_MOON_ECLIPSE_TOTAL:
                 return toState(moon.getEclipseSet().getDate(EclipseKind.TOTAL), channel);
             case CHANNEL_ID_MOON_ECLIPSE_TOTAL_ELEVATION:

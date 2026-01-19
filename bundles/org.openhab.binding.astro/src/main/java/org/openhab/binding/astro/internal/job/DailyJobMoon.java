@@ -27,7 +27,7 @@ import org.openhab.binding.astro.internal.handler.AstroThingHandler;
 import org.openhab.binding.astro.internal.model.DistanceType;
 import org.openhab.binding.astro.internal.model.Moon;
 import org.openhab.binding.astro.internal.model.MoonPhase;
-import org.openhab.binding.astro.internal.model.MoonPhaseName;
+import org.openhab.binding.astro.internal.model.MoonPhaseSet;
 import org.openhab.binding.astro.internal.model.Planet;
 
 /**
@@ -77,12 +77,10 @@ public final class DailyJobMoon extends AbstractJob {
                 scheduleEvent(handler, cal, EVENT_END, EVENT_CHANNEL_ID_SET, false, zone, locale);
             }
 
-            MoonPhase moonPhase = moon.getPhase();
-            MoonPhaseName.remarkables().stream().map(phase -> Map.entry(phase, moonPhase.getPhase(phase)))
-                    .forEach(e -> {
-                        scheduleEvent(handler, e.getValue(), e.getKey().toString(), EVENT_CHANNEL_ID_MOON_PHASE, false,
-                                zone.toZoneId());
-                    });
+            MoonPhaseSet moonPhase = moon.getPhaseSet();
+            MoonPhase.remarkables().stream().map(phase -> Map.entry(phase, moonPhase.getPhase(phase)))
+                    .forEach(e -> scheduleEvent(handler, e.getValue(), e.getKey().toString(),
+                            EVENT_CHANNEL_ID_MOON_PHASE, false, zone.toZoneId()));
 
             moon.getEclipseSet().getEclipses().forEach(eclipse -> {
                 scheduleEvent(handler, eclipse.when(), eclipse.kind().toString(), EVENT_CHANNEL_ID_ECLIPSE, false,

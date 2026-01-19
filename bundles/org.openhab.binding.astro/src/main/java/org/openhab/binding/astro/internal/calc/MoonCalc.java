@@ -103,7 +103,7 @@ public class MoonCalc extends AstroCalc {
     public void setPositionalInfo(Calendar calendar, double latitude, double longitude, Moon moon, TimeZone zone) {
         double julianDate = DateTimeUtils.dateToJulianDate(calendar);
 
-        moon.setPhase(MoonPhaseCalc.calculate(instantSource, julianDate, moon.getPhase(), zone.toZoneId()));
+        moon.setPhaseSet(MoonPhaseCalc.calculate(instantSource, julianDate, moon.getPhaseSet(), zone.toZoneId()));
 
         MoonPosition moonPosition = getMoonPosition(julianDate, latitude, longitude);
         moon.setPosition(moonPosition);

@@ -12,147 +12,68 @@
  */
 package org.openhab.binding.astro.internal.model;
 
-import java.time.Duration;
-import java.time.Instant;
-import java.time.InstantSource;
-import java.time.ZoneId;
-import java.util.Map;
-import java.util.Objects;
-import java.util.function.Function;
-import java.util.stream.Collectors;
+import static org.openhab.binding.astro.internal.util.AstroConstants.LUNAR_SYNODIC_MONTH_DAYS;
 
-import javax.measure.quantity.Angle;
-import javax.measure.quantity.Dimensionless;
-import javax.measure.quantity.Time;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.astro.internal.util.DateTimeUtils;
-import org.openhab.core.library.types.QuantityType;
-import org.openhab.core.library.types.StringType;
-import org.openhab.core.library.unit.Units;
-import org.openhab.core.types.State;
-import org.openhab.core.types.UnDefType;
 
 /**
- * Holds the calculates moon phase informations.
+ * All moon phases.
  *
  * @author Gerhard Riegler - Initial contribution
- * @author Christoph Weitkamp - Introduced UoM
+ * @author Gaël L'hopital - added age equivalence in days & cycleProgressPercentage
  */
 @NonNullByDefault
-public class MoonPhase {
-    public static final MoonPhase NONE = new MoonPhase();
+public enum MoonPhase {
+    NEW(0.0, true),
+    WAXING_CRESCENT(0.125, false),
+    FIRST_QUARTER(0.25, true),
+    WAXING_GIBBOUS(0.375, false),
+    FULL(0.5, true),
+    WANING_GIBBOUS(0.625, false),
+    THIRD_QUARTER(0.75, true), // also called last quarter
+    WANING_CRESCENT(0.875, false);
 
-    private final Map<MoonPhaseName, Instant> phases;
-    private final Instant parentNewMoon;
-    private final InstantSource instantSource;
+    public final double cycleProgress;
+    private final boolean remarkable;
 
-    private double illumination;
-    private @Nullable MoonPhaseName name;
-
-    private MoonPhase(InstantSource instantSource, Instant parentNewMoon, Map<MoonPhaseName, Instant> phases) {
-        this.phases = phases;
-        this.parentNewMoon = parentNewMoon;
-        this.instantSource = instantSource;
+    MoonPhase(double cycleProgress, boolean remarkable) {
+        this.cycleProgress = cycleProgress;
+        this.remarkable = remarkable;
     }
 
-    private MoonPhase() {
-        this(InstantSource.system(), Instant.MIN, Map.of());
+    public int getAgeDays() {
+        return (int) ((LUNAR_SYNODIC_MONTH_DAYS - 1) * cycleProgress + 1);
     }
 
-    public MoonPhase(InstantSource instantSource, double parentNewMoon, Map<MoonPhaseName, Double> comingPhases) {
-        this(instantSource, DateTimeUtils.jdToInstant(parentNewMoon),
-                comingPhases.keySet().stream().collect(Collectors.toMap(Function.identity(),
-                        k -> DateTimeUtils.jdToInstant(Objects.requireNonNull(comingPhases.get(k))))));
-
-    }
-
-    public Instant getPhase(MoonPhaseName phase) {
-        if (!MoonPhaseName.remarkables().contains(phase)) {
-            throw new IllegalArgumentException("The phase '%s' is not handled".formatted(phase.toString()));
+    public static MoonPhase fromAgePercent(double agePercent) {
+        if (agePercent < 0.0 || agePercent > 1.0) {
+            throw new IllegalArgumentException("agePercent must be in [0,1]");
         }
-        return Objects.requireNonNull(phases.get(phase));
-    }
 
-    /**
-     * Returns the age.
-     */
-    public QuantityType<Time> getAge() {
-        return new QuantityType<>(getAgeDouble(), Units.SECOND);
-    }
-
-    private double getAgeDouble() {
-        return getAgePercentDouble() * getMonthDuration();
-    }
-
-    public double getAgePercentDouble() {
-        return ((double) Duration.between(parentNewMoon, instantSource.instant()).getSeconds()) / getMonthDuration();
-    }
-
-    /**
-     * Returns the age in percent.
-     */
-    public QuantityType<Dimensionless> getAgePercent() {
-        return new QuantityType<>(getAgePercentDouble(), Units.ONE);
-    }
-
-    /**
-     * Returns the age in degree.
-     */
-    public QuantityType<Angle> getAgeDegree() {
-        return new QuantityType<>(getAgePercentDouble() * 360, Units.DEGREE_ANGLE);
-    }
-
-    /**
-     * Returns the illumination.
-     */
-    public QuantityType<Dimensionless> getIllumination() {
-        return new QuantityType<>(illumination, Units.ONE);
-    }
-
-    /**
-     * Sets the illumination.
-     */
-    public void setIllumination(double illumination) {
-        this.illumination = illumination;
-    }
-
-    public void updateName(double julianDate, ZoneId zone) {
-        for (MoonPhaseName mp : MoonPhaseName.values()) {
-            if (isPhaseDay(julianDate, mp, zone)) {
-                this.name = mp;
-                return;
-            }
+        if (agePercent == NEW.cycleProgress) {
+            return NEW;
+        } else if (agePercent < FIRST_QUARTER.cycleProgress) {
+            return WAXING_CRESCENT;
+        } else if (agePercent == FIRST_QUARTER.cycleProgress) {
+            return FIRST_QUARTER;
+        } else if (agePercent < FULL.cycleProgress) {
+            return WAXING_GIBBOUS;
+        } else if (agePercent == FULL.cycleProgress) {
+            return FULL;
+        } else if (agePercent < THIRD_QUARTER.cycleProgress) {
+            return WANING_GIBBOUS;
+        } else if (agePercent == THIRD_QUARTER.cycleProgress) {
+            return THIRD_QUARTER;
         }
-        this.name = MoonPhaseName.fromAgePercent(getAgePercentDouble());
-        // this.name = MoonPhaseName.remarkables().stream().filter(mp -> isPhaseDay(julianDate, mp, zone)).findFirst()
-        // .orElseGet(() -> MoonPhaseName.fromAgePercent(getAgePercentDouble()));
+        return WANING_CRESCENT;
     }
 
-    /**
-     * Returns the phase name.
-     */
-    public State getName() {
-        if (name != null) {
-            return new StringType(name.toString());
-        }
-        return UnDefType.UNDEF;
-    }
-
-    public boolean needsRecalc(double jdNow) {
-        Instant now = DateTimeUtils.jdToInstant(jdNow);
-        return phases.isEmpty() || phases.values().stream().anyMatch(when -> when.isBefore(now));
-    }
-
-    public boolean isPhaseDay(double julianDate, MoonPhaseName phaseName, ZoneId zone) {
-        Instant instant = DateTimeUtils.jdToInstant(julianDate);
-        Instant phaseDate = getPhase(phaseName);
-        return DateTimeUtils.isSameDay(instant, phaseDate, zone)
-                || (MoonPhaseName.NEW.equals(phaseName) && DateTimeUtils.isSameDay(instant, parentNewMoon, zone));
-    }
-
-    private long getMonthDuration() {
-        return Duration.between(parentNewMoon, getPhase(MoonPhaseName.NEW)).getSeconds();
+    public static List<MoonPhase> remarkables() {
+        return Arrays.stream(values()).filter(mp -> mp.remarkable).sorted(Comparator.comparing(mp -> mp.cycleProgress))
+                .toList();
     }
 }
