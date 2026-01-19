@@ -12,14 +12,17 @@
  */
 package org.openhab.binding.astro.internal.handler;
 
+import static org.openhab.binding.astro.internal.AstroBindingConstants.*;
 import static org.openhab.binding.astro.internal.CommonTestConstants.*;
 
 import java.time.Instant;
 import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.library.types.DateTimeType;
+import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.State;
@@ -40,6 +43,9 @@ public final class ParametrizedStateTestCases {
     public static final Instant LEAP_DAY_2016_SA = Instant.parse("2016-02-29T03:00:00Z");
     public static final ZoneId BAGHDAD_ZONE = ZoneId.of("Asia/Baghdad");
     public static final Location SHAYBAH_LOC = new Location(22.4343, 54.3225);
+    public static final Instant MARCH_16_2022_UA = Instant.parse("2022-03-16T08:04:53Z");
+    public static final ZoneId KYIV_ZONE = ZoneId.of("Europe/Kyiv");
+    public static final Location MARIUPOL_LOC = new Location(47.096059749317625, 37.548728017918116);
 
     public record Location(double latitude, double longitude) {
 
@@ -140,7 +146,66 @@ public final class ParametrizedStateTestCases {
                 new StateTestCase(TEST_MOON_THING_ID, "rise#end", LEAP_DAY_2016_SA,
                         new DateTimeType("2016-02-29T23:00:00+03:00"), BAGHDAD_ZONE, SHAYBAH_LOC),
                 new StateTestCase(TEST_MOON_THING_ID, "rise#duration", LEAP_DAY_2016_SA,
-                        new QuantityType<>(0, Units.MINUTE), BAGHDAD_ZONE, SHAYBAH_LOC));
+                        new QuantityType<>(0, Units.MINUTE), BAGHDAD_ZONE, SHAYBAH_LOC),
+                // Total Solar Eclipse on August 21, 2017
+                new StateTestCase(TEST_SUN_THING_ID, "eclipse#total", Instant.parse("2017-01-01T00:00:00Z"),
+                        new DateTimeType("2017-08-21T18:27:10+00:00"), BAGHDAD_ZONE, SHAYBAH_LOC),
+                // Partial Solar Eclipse on August 11, 2018
+                new StateTestCase(TEST_SUN_THING_ID, "eclipse#partial", Instant.parse("2018-07-15T00:00:00Z"),
+                        new DateTimeType("2018-08-11T11:47:57+02:00"), BAGHDAD_ZONE, SHAYBAH_LOC),
+                // Ring Solar Eclipse on December 26, 2019
+                new StateTestCase(TEST_SUN_THING_ID, "eclipse#ring", Instant.parse("2019-11-01T00:00:00Z"),
+                        new DateTimeType("2019-12-26T06:19:23+01:00"), BAGHDAD_ZONE, SHAYBAH_LOC),
+                // Total Lunar Eclipse on January 21, 2019
+                new StateTestCase(TEST_MOON_THING_ID, "eclipse#total", Instant.parse("2018-12-01T00:00:00Z"),
+                        new DateTimeType("2019-01-21T05:13:02+00:00"), BAGHDAD_ZONE, SHAYBAH_LOC),
+                // Partial Lunar Eclipse on July 16, 2019
+                new StateTestCase(TEST_MOON_THING_ID, "eclipse#partial", Instant.parse("2019-06-01T00:00:00Z"),
+                        new DateTimeType("2019-07-16T23:31:59+02:00"), BAGHDAD_ZONE, SHAYBAH_LOC),
+                new StateTestCase(TEST_SUN_THING_ID, CHANNEL_ID_SUN_CIRCADIAN_BRIGHTNESS, MARCH_16_2022_UA,
+                        new PercentType(93), KYIV_ZONE, MARIUPOL_LOC),
+                new StateTestCase(TEST_SUN_THING_ID, CHANNEL_ID_SUN_CIRCADIAN_TEMPERATURE, MARCH_16_2022_UA,
+                        new QuantityType<>(5290, Units.KELVIN), KYIV_ZONE, MARIUPOL_LOC),
+                new StateTestCase(TEST_SUN_THING_ID, CHANNEL_ID_SUN_CIRCADIAN_BRIGHTNESS,
+                        MARCH_16_2022_UA.minus(2, ChronoUnit.HOURS), new PercentType(64), KYIV_ZONE, MARIUPOL_LOC),
+                new StateTestCase(TEST_SUN_THING_ID, CHANNEL_ID_SUN_CIRCADIAN_TEMPERATURE,
+                        MARCH_16_2022_UA.minus(2, ChronoUnit.HOURS), new QuantityType<>(4410, Units.KELVIN), KYIV_ZONE,
+                        MARIUPOL_LOC),
+                new StateTestCase(TEST_SUN_THING_ID, CHANNEL_ID_SUN_CIRCADIAN_BRIGHTNESS,
+                        MARCH_16_2022_UA.minus(4, ChronoUnit.HOURS), new PercentType(12), KYIV_ZONE, MARIUPOL_LOC),
+                new StateTestCase(TEST_SUN_THING_ID, CHANNEL_ID_SUN_CIRCADIAN_TEMPERATURE,
+                        MARCH_16_2022_UA.minus(4, ChronoUnit.HOURS), new QuantityType<>(2860, Units.KELVIN), KYIV_ZONE,
+                        MARIUPOL_LOC),
+                new StateTestCase(TEST_SUN_THING_ID, CHANNEL_ID_SUN_CIRCADIAN_BRIGHTNESS,
+                        MARCH_16_2022_UA.minus(5, ChronoUnit.HOURS), new PercentType(0), KYIV_ZONE, MARIUPOL_LOC),
+                new StateTestCase(TEST_SUN_THING_ID, CHANNEL_ID_SUN_CIRCADIAN_TEMPERATURE,
+                        MARCH_16_2022_UA.minus(5, ChronoUnit.HOURS), new QuantityType<>(2500, Units.KELVIN), KYIV_ZONE,
+                        MARIUPOL_LOC),
+                new StateTestCase(TEST_SUN_THING_ID, CHANNEL_ID_SUN_CIRCADIAN_BRIGHTNESS,
+                        MARCH_16_2022_UA.plus(2, ChronoUnit.HOURS), new PercentType(100), KYIV_ZONE, MARIUPOL_LOC),
+                new StateTestCase(TEST_SUN_THING_ID, CHANNEL_ID_SUN_CIRCADIAN_TEMPERATURE,
+                        MARCH_16_2022_UA.plus(2, ChronoUnit.HOURS), new QuantityType<>(5490, Units.KELVIN), KYIV_ZONE,
+                        MARIUPOL_LOC),
+                new StateTestCase(TEST_SUN_THING_ID, CHANNEL_ID_SUN_CIRCADIAN_BRIGHTNESS,
+                        MARCH_16_2022_UA.plus(4, ChronoUnit.HOURS), new PercentType(83), KYIV_ZONE, MARIUPOL_LOC),
+                new StateTestCase(TEST_SUN_THING_ID, CHANNEL_ID_SUN_CIRCADIAN_TEMPERATURE,
+                        MARCH_16_2022_UA.plus(4, ChronoUnit.HOURS), new QuantityType<>(5000, Units.KELVIN), KYIV_ZONE,
+                        MARIUPOL_LOC),
+                new StateTestCase(TEST_SUN_THING_ID, CHANNEL_ID_SUN_CIRCADIAN_BRIGHTNESS,
+                        MARCH_16_2022_UA.plus(6, ChronoUnit.HOURS), new PercentType(44), KYIV_ZONE, MARIUPOL_LOC),
+                new StateTestCase(TEST_SUN_THING_ID, CHANNEL_ID_SUN_CIRCADIAN_TEMPERATURE,
+                        MARCH_16_2022_UA.plus(6, ChronoUnit.HOURS), new QuantityType<>(3820, Units.KELVIN), KYIV_ZONE,
+                        MARIUPOL_LOC),
+                new StateTestCase(TEST_SUN_THING_ID, CHANNEL_ID_SUN_CIRCADIAN_BRIGHTNESS,
+                        MARCH_16_2022_UA.plus(8, ChronoUnit.HOURS), new PercentType(0), KYIV_ZONE, MARIUPOL_LOC),
+                new StateTestCase(TEST_SUN_THING_ID, CHANNEL_ID_SUN_CIRCADIAN_TEMPERATURE,
+                        MARCH_16_2022_UA.plus(8, ChronoUnit.HOURS), new QuantityType<>(2500, Units.KELVIN), KYIV_ZONE,
+                        MARIUPOL_LOC),
+                new StateTestCase(TEST_SUN_THING_ID, CHANNEL_ID_SUN_CIRCADIAN_BRIGHTNESS,
+                        MARCH_16_2022_UA.plus(14, ChronoUnit.HOURS), new PercentType(0), KYIV_ZONE, MARIUPOL_LOC),
+                new StateTestCase(TEST_SUN_THING_ID, CHANNEL_ID_SUN_CIRCADIAN_TEMPERATURE,
+                        MARCH_16_2022_UA.plus(14, ChronoUnit.HOURS), new QuantityType<>(2500, Units.KELVIN), KYIV_ZONE,
+                        MARIUPOL_LOC));
     }
 
     public List<StateTestCase> getCases() {
