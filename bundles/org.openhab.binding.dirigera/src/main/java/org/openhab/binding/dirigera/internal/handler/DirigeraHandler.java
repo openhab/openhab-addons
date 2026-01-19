@@ -692,7 +692,7 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway, Debug
                 });
             });
             // then update all links
-            deviceTree.forEach((id, handlerList) -> {
+            deviceTree.forEach((linkSourceId, handlerList) -> {
                 handlerList.forEach(handler -> {
                     List<String> links = handler.getLinks();
                     if (!links.isEmpty()) {
@@ -701,12 +701,12 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway, Debug
                                     links.size());
                         }
                     }
-                    links.forEach(link -> {
+                    links.forEach(linkTargetId -> {
                         // assure investigated handler is different from target handler
-                        if (!id.equals(link)) {
-                            List<BaseDevice> linkHandlerList = getHandlersForDeviceId(link);
+                        if (!linkTargetId.equals(linkSourceId)) {
+                            List<BaseDevice> linkHandlerList = getHandlersForDeviceId(linkTargetId);
                             linkHandlerList.forEach(targetHandler -> {
-                                targetHandler.addSoftlink(id);
+                                targetHandler.addSoftlink(linkSourceId, linkTargetId);
                             });
                         }
                     });

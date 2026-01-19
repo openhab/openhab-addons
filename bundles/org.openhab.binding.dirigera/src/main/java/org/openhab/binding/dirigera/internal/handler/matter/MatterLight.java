@@ -27,20 +27,15 @@ import org.openhab.binding.dirigera.internal.handler.light.ColorLightHandler;
 import org.openhab.binding.dirigera.internal.interfaces.Model;
 import org.openhab.binding.dirigera.internal.model.MatterModel;
 import org.openhab.core.library.CoreItemFactory;
-import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
-import org.openhab.core.types.Command;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
- * The {@link MatterLight} is configured by devices.json
+ * The {@link MatterLight}
  *
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
 public class MatterLight extends ColorLightHandler {
-    private final Logger logger = LoggerFactory.getLogger(MatterLight.class);
     protected Map<String, MatterModel> configMap = new TreeMap<>();
 
     public MatterLight(Thing thing, Map<String, String> stateChannelMapping,
@@ -54,16 +49,16 @@ public class MatterLight extends ColorLightHandler {
         lightConfig = getConfigAs(ColorLightConfiguration.class);
         configMap.put(lightConfig.id, new MatterModel(lightConfig.id, DEVICE_TYPE_LIGHT));
         super.initialize();
-        JSONObject update = gateway().api().readDevice(lightConfig.id);
-        createChannels(update);
-        super.handleUpdate(update);
+        JSONObject deviceStatus = gateway().api().readDevice(lightConfig.id);
+        createChannels(deviceStatus);
+        super.handleUpdate(deviceStatus);
     }
 
-    private void createChannels(JSONObject values) {
-        if (values.has(Model.JSON_KEY_ATTRIBUTES)) {
-            JSONObject attributes = values.getJSONObject(Model.JSON_KEY_ATTRIBUTES);
-            configMap.forEach((deviceId, matterConfig) -> {
-                matterConfig.getStatusProperties().forEach((statusPropertyKey, statusPropertyJson) -> {
+    private void createChannels(JSONObject deviceStatus) {
+        JSONObject attributes = deviceStatus.optJSONObject(Model.JSON_KEY_ATTRIBUTES);
+        if (attributes != null) {
+            configMap.forEach((deviceId, deviceModel) -> {
+                deviceModel.getStatusProperties().forEach((statusPropertyKey, statusPropertyJson) -> {
                     String deviceAttribute = statusPropertyJson.optString(MatterModel.CHANNEL_KEY_ATTRIBUTE);
                     if (attributes.has(deviceAttribute)) {
                         createChannelIfNecessary(statusPropertyJson.optString(CHANNEL_KEY_CHANNEL_NAME),
@@ -80,14 +75,5 @@ public class MatterLight extends ColorLightHandler {
                 });
             });
         }
-        thing.getChannels().forEach(channel -> {
-            logger.warn(" Matter Light thing channels:  {} type: {}", channel.getUID(), channel.getLabel());
-        });
-    }
-
-    @Override
-    public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.warn("MatterLight handleCommand called for channel {} with command {}", channelUID, command);
-        super.handleCommand(channelUID, command);
     }
 }

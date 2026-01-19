@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.dirigera.internal.model;
 
-import java.time.Duration;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -21,6 +19,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -58,7 +57,7 @@ public class MatterModel {
     public static final String CONFIG_KEY_IDENTIFICATION = "identification";
 
     public static final String IDENTIFICATION_KEY_TYPE = "type";
-    public static final String IDENTIFICATIO_KEY_DEVICE_TYPE = "deviceType";
+    public static final String IDENTIFICATION_KEY_DEVICE_TYPE = "deviceType";
 
     public static final String CHANNEL_KEY_ATTRIBUTE = "attribute";
     public static final String CHANNEL_KEY_CHANNEL_NAME = "channel";
@@ -81,6 +80,7 @@ public class MatterModel {
     private final String deviceType;
 
     // holds for each deviceId the mapping of channelName to control property configuration
+    private final Map<String, String> identificationMap = new HashMap<>();
     private final Map<String, JSONObject> controlPropertiesMapping = new HashMap<>();
     private final Map<String, JSONObject> statusProperties = new HashMap<>();
     private final List<String> thingProperties = new ArrayList<>();
@@ -95,21 +95,28 @@ public class MatterModel {
         this.deviceId = deviceId;
         this.deviceType = deviceType;
         if (MATTER_DEVICE_CONFIG.isEmpty()) {
-            Instant startTime = Instant.now();
             loadDeviceConfig();
-            logger.trace("BaseMatterConfiguration took {} ms", Duration.between(startTime, Instant.now()).toMillis());
         }
         addDeviceType(TYPE_BASE);
         addDeviceType(deviceType);
     }
 
     /**
-     * Query the device type of this model
+     * Get the type of this device model
+     *
+     * @return type
+     */
+    public String getType() {
+        return identificationMap.getOrDefault(IDENTIFICATION_KEY_TYPE, "");
+    }
+
+    /**
+     * Get the device type of this model
      *
      * @return device type
      */
     public String getDeviceType() {
-        return deviceType;
+        return identificationMap.getOrDefault(IDENTIFICATION_KEY_DEVICE_TYPE, "");
     }
 
     /**
@@ -222,8 +229,6 @@ public class MatterModel {
      */
     private @Nullable State getState(Object value, JSONObject channelConfiguration) {
         // correction for numeric values
-        logger.trace("MATTER MODEL State conversion: transform status update of '{}' class '{}' with config {}", value,
-                value.getClass(), channelConfiguration);
         String correctionType = channelConfiguration.optString(CHANNEL_KEY_CORRECTION);
         var correctedValue = value;
         if (!correctionType.isBlank() && value instanceof Number num) {
@@ -236,7 +241,6 @@ public class MatterModel {
         }
         // convert numbers in order to have either Integer or Double values
         String inType = channelConfiguration.optString(CHANNEL_KEY_IN_TYPE);
-        logger.trace("MATTER MODEL State conversion: assure correct in type for {} as {}", correctedValue, inType);
         var inValue = correctedValue;
         if (!inType.isBlank() && inValue instanceof Number num) {
             inValue = switch (inType) {
@@ -249,14 +253,13 @@ public class MatterModel {
 
         // apply transformation
         String transformation = channelConfiguration.optString(CHANNEL_KEY_TRANSFORMATION);
-        logger.trace("MATTER MODEL State conversion: perform transformation {} on {}", transformation, inValue);
         var transformed = switch (transformation) {
             case "raw" -> inValue.toString();
             case "format" -> String.format(Locale.ENGLISH, channelConfiguration.getString(CHANNEL_KEY_FORMAT), inValue);
             case "mapping" -> map(inValue.toString(), channelConfiguration.getJSONObject(CHANNEL_KEY_MAPPING));
             case "code" -> "";
             default -> {
-                logger.trace("MATTER MODEL State conversion: transformation '{}' unknown", transformation);
+                logger.info("MATTER MODEL State conversion: transformation '{}' unknown", transformation);
                 yield "";
             }
         };
@@ -267,13 +270,12 @@ public class MatterModel {
 
         // convert into state type
         String outType = channelConfiguration.optString(CHANNEL_KEY_OUT_TYPE);
-        logger.trace("MATTER MODEL State conversion: assure correct out type for {} as {}", transformed, outType);
         var state = switch (outType) {
             case "DecimalType" -> {
                 try {
                     yield new DecimalType(transformed);
                 } catch (NumberFormatException nfe) {
-                    logger.trace("MATTER MODEL State conversion: cannot convert {} into number", transformed);
+                    logger.info("MATTER MODEL State conversion: cannot convert {} into number", transformed);
                     yield UnDefType.UNDEF;
                 }
             }
@@ -282,12 +284,12 @@ public class MatterModel {
                 try {
                     yield QuantityType.valueOf(transformed);
                 } catch (NumberFormatException nfe) {
-                    logger.trace("MATTER MODEL State conversion: cannot convert {} into number, cause {}", transformed,
+                    logger.info("MATTER MODEL State conversion: cannot convert {} into number, cause {}", transformed,
                             nfe.getMessage());
                     yield UnDefType.UNDEF;
                 } catch (IllegalArgumentException iae) {
-                    logger.trace("MATTER MODEL State conversion: cannot convert {} into quantity, cause {}",
-                            transformed, iae.getMessage());
+                    logger.info("MATTER MODEL State conversion: cannot convert {} into quantity, cause {}", transformed,
+                            iae.getMessage());
                     yield UnDefType.UNDEF;
                 }
             }
@@ -295,7 +297,7 @@ public class MatterModel {
             case "OpenClosedType" ->
                 (Boolean.TRUE.toString().equalsIgnoreCase(transformed)) ? OpenClosedType.OPEN : OpenClosedType.CLOSED;
             default -> {
-                logger.trace("MATTER MODEL State conversion: out type '{}' unknown", outType);
+                logger.info("MATTER MODEL State conversion: out type '{}' unknown", outType);
                 yield UnDefType.NULL;
             }
         };
@@ -354,7 +356,7 @@ public class MatterModel {
                 case "mapping" -> map(command.toString(), channelConfiguration.getJSONObject(CHANNEL_KEY_MAPPING));
                 case "code" -> "";
                 default -> {
-                    logger.trace("MATTER MODEL Request conversion: unknown transformation {} for target attribute '{}'",
+                    logger.info("MATTER MODEL Request conversion: unknown transformation {} for target attribute '{}'",
                             transformation, targetAttribute);
                     yield "";
                 }
@@ -370,7 +372,7 @@ public class MatterModel {
                     yield patch;
                 }
                 default -> {
-                    logger.trace("MATTER MODEL Request conversion: unknown json content {} for target attribute '{}'",
+                    logger.info("MATTER MODEL Request conversion: unknown json content {} for target attribute '{}'",
                             jsonContent, targetAttribute);
                     yield new JSONObject();
                 }
@@ -392,8 +394,16 @@ public class MatterModel {
             return;
         }
 
+        JSONObject identification = deviceConfig.optJSONObject(CONFIG_KEY_IDENTIFICATION);
+        if (identification != null) {
+            identificationMap.putAll(identification.toMap().entrySet().stream()
+                    .collect(Collectors.toMap(Map.Entry::getKey, e -> String.valueOf(e.getValue()))));
+        }
+
         // collect control configuration - item2handler
-        deviceConfig.getJSONArray(CONFIG_KEY_CONTROL_PROPERTIES).forEach(entry -> {
+        deviceConfig.getJSONArray(CONFIG_KEY_CONTROL_PROPERTIES).forEach(entry ->
+
+        {
             JSONObject controlEntry = (JSONObject) entry;
             String channelName = controlEntry.getString(CHANNEL_KEY_CHANNEL_NAME);
             controlPropertiesMapping.put(channelName, controlEntry);

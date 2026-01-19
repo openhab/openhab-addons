@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.dirigera.internal.matter;
+package org.openhab.binding.dirigera.internal.handler.matter;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.openhab.binding.dirigera.internal.Constants.THING_TYPE_MATTER_ENVIRONMENT_SENSOR;

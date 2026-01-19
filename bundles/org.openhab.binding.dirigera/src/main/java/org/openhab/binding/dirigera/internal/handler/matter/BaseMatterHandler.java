@@ -19,13 +19,11 @@ import static org.openhab.binding.dirigera.internal.model.MatterModel.*;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -71,25 +69,18 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class BaseMatterHandler extends BaseThingHandler implements BaseDevice, DebugHandler {
     private final Logger logger = LoggerFactory.getLogger(BaseMatterHandler.class);
-    private List<PowerListener> powerListeners = new ArrayList<>();
+    private final List<PowerListener> powerListeners = new ArrayList<>();
     private @Nullable Gateway gateway;
 
     // cache to handle each refresh command properly
-    protected Map<String, MatterModel> deviceConfigMap = new TreeMap<>();
+    protected Map<String, MatterModel> deviceModelMap = new TreeMap<>();
     protected Map<String, State> channelStateMap = new HashMap<>();
-
-    /*
-     * hardlinks initialized with invalid links because the first update shall trigger a link update. If it's declared
-     * as empty no link update will be triggered. This is necessary for startup phase.
-     */
-    protected List<String> hardLinks = new ArrayList<>(Arrays.asList("undef"));
-    protected List<String> softLinks = new ArrayList<>();
-    protected final List<String> linkCandidateTypes = new CopyOnWriteArrayList<>();
+    protected Map<String, LinkHandler> linkHandlerMap = new ConcurrentHashMap<>();
 
     protected BaseDeviceConfiguration config = new BaseDeviceConfiguration();
     protected State requestedPowerState = UnDefType.UNDEF;
     protected State currentPowerState = UnDefType.UNDEF;
-    protected boolean customDebug = true;
+    protected boolean customDebug = false;
     protected boolean disposed = true;
     protected boolean online = false;
     protected BaseDevice child;
@@ -126,82 +117,106 @@ public class BaseMatterHandler extends BaseThingHandler implements BaseDevice, D
 
         configure();
         initializeCache();
-        JSONArray allDeviceUpadtes = initChannels();
         initLinks();
+        JSONArray allDeviceUpadtes = initChannels();
         initThingProperties(allDeviceUpadtes);
-        logger.trace("BaseMatterHandler initialize took {} ms", Duration.between(startTime, Instant.now()).toMillis());
+        logger.trace("{} initialize took {} ms", thing.getLabel(),
+                Duration.between(startTime, Instant.now()).toMillis());
     }
 
+    /**
+     * Setup the model for this device. Collect relations and build the model based on device type and id
+     */
     protected void configure() {
         // check if device is already configured
-        if (deviceConfigMap.isEmpty()) {
+        if (deviceModelMap.isEmpty()) {
             String relationId = gateway().model().getRelationId(config.id);
             if (config.id.equals(relationId)) {
                 String deviceType = gateway().model().getDeviceType(config.id);
-                deviceConfigMap.put(config.id, new MatterModel(config.id, deviceType));
+                deviceModelMap.put(config.id, new MatterModel(config.id, deviceType));
             } else {
                 Map<String, String> connectedDevices = gateway().model().getRelations(relationId);
                 connectedDevices.forEach((key, value) -> {
-                    deviceConfigMap.put(key, new MatterModel(key, value));
+                    deviceModelMap.put(key, new MatterModel(key, value));
                 });
             }
         }
     }
 
     /**
-     * Initialize state cache for all mapped properties
-     *
-     * @param properties array with channel definitions
+     * Initialize state cache for all mapped properties and channels
      */
     private void initializeCache() {
-        deviceConfigMap.forEach((deviceId, matterConfig) -> {
-            matterConfig.getStatusProperties().forEach((key, value) -> {
+        deviceModelMap.forEach((deviceId, deviceModel) -> {
+            deviceModel.getStatusProperties().forEach((key, value) -> {
                 channelStateMap.put(value.getString(MatterModel.CHANNEL_KEY_CHANNEL_NAME), UnDefType.UNDEF);
             });
         });
     }
 
+    /**
+     * Get the current status with all attributes of this device and build channels according to the present attributes
+     *
+     * @return updates for all related devices as JSONArray for reuse
+     */
     private JSONArray initChannels() {
         JSONArray allUpdates = new JSONArray();
-        deviceConfigMap.forEach((deviceId, config) -> {
+        // ensure all devices got an update
+        deviceModelMap.forEach((deviceId, deviceModel) -> {
             JSONObject deviceUpdate = gateway().api().readDevice(deviceId);
             allUpdates.put(deviceUpdate);
             createChannels(deviceUpdate);
-            gateway().registerDevice(child, deviceId);
             handleUpdate(deviceUpdate);
+        });
+        // register devices in gateway for updates
+        deviceModelMap.forEach((deviceId, deviceModel) -> {
+            gateway().registerDevice(child, deviceId);
         });
         return allUpdates;
     }
 
+    /**
+     * Initialization of link channels with link candidate types
+     */
     private void initLinks() {
-        deviceConfigMap.forEach((deviceId, config) -> {
-            List<String> candidates = config.getLinkCandidates();
+        deviceModelMap.forEach((deviceId, deviceModel) -> {
+            List<String> candidates = deviceModel.getLinkCandidates();
             if (!candidates.isEmpty()) {
                 createChannelIfNecessary(CHANNEL_LINKS, CHANNEL_LINKS, CoreItemFactory.STRING);
                 createChannelIfNecessary(CHANNEL_LINK_CANDIDATES, CHANNEL_LINK_CANDIDATES, CoreItemFactory.STRING);
+                linkHandlerMap.put(deviceId, new LinkHandler(this, deviceId, candidates));
             }
-            linkCandidateTypes.addAll(candidates);
         });
     }
 
-    private void initThingProperties(JSONArray updates) {
+    /**
+     * Initialize thing properties from all updates
+     *
+     * @param deviceUpdates as JSONArray for all related devices
+     */
+    private void initThingProperties(JSONArray deviceUpdates) {
         Map<String, String> properties = editProperties();
-        deviceConfigMap.forEach((deviceId, config) -> {
-            updates.forEach(update -> {
+        deviceModelMap.forEach((deviceId, deviceModel) -> {
+            deviceUpdates.forEach(update -> {
                 JSONObject updateJson = (JSONObject) update;
                 if (deviceId.equals(updateJson.optString(JSON_KEY_DEVICE_ID))) {
-                    properties.putAll(config.getThingProperties(updateJson));
+                    properties.putAll(deviceModel.getThingProperties(updateJson));
                 }
             });
         });
         updateProperties(properties);
     }
 
-    private void createChannels(JSONObject values) {
-        if (values.has(JSON_KEY_ATTRIBUTES)) {
-            JSONObject attributes = values.getJSONObject(JSON_KEY_ATTRIBUTES);
-            deviceConfigMap.forEach((deviceId, matterConfig) -> {
-                matterConfig.getStatusProperties().forEach((statusPropertyKey, statusPropertyJson) -> {
+    /**
+     * Create channels according to present attributes
+     *
+     * @param deviceStatus as JSONObject
+     */
+    private void createChannels(JSONObject deviceStatus) {
+        if (deviceStatus.has(JSON_KEY_ATTRIBUTES)) {
+            JSONObject attributes = deviceStatus.getJSONObject(JSON_KEY_ATTRIBUTES);
+            deviceModelMap.forEach((deviceId, deviceModel) -> {
+                deviceModel.getStatusProperties().forEach((statusPropertyKey, statusPropertyJson) -> {
                     String deviceAttribute = statusPropertyJson.getString(CHANNEL_KEY_ATTRIBUTE);
                     if (attributes.has(deviceAttribute)) {
                         createChannelIfNecessary(statusPropertyJson.optString(CHANNEL_KEY_CHANNEL_NAME),
@@ -215,6 +230,11 @@ public class BaseMatterHandler extends BaseThingHandler implements BaseDevice, D
         }
     }
 
+    /**
+     * Get Gateway from Bridge of this Thing
+     *
+     * @return true if Gateway is available, false otherwise
+     */
     protected boolean getGateway() {
         Bridge bridge = getBridge();
         if (bridge != null) {
@@ -240,15 +260,15 @@ public class BaseMatterHandler extends BaseThingHandler implements BaseDevice, D
     }
 
     /**
-     * Handling of basic commands which are the same for many devices
-     * - RefreshType for all channels
-     * - Startup behavior for lights and plugs
-     * - Power state for lights and plugs
+     * Handle commands from openHAB
+     * - RefreshType: update from cache
+     * - links handled by LinkHandler if available
+     * - other commands: build API requests from device model and send them
      */
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (customDebug) {
-            logger.info("DIRIGERA {} handleCommand channel {} command {} {}", thing.getUID(), channelUID.getAsString(),
+            logger.info("{} handleCommand channel {} command {} {}", thing.getLabel(), channelUID.getAsString(),
                     command.toFullString(), command.getClass());
         }
         if (command instanceof RefreshType) {
@@ -258,36 +278,21 @@ public class BaseMatterHandler extends BaseThingHandler implements BaseDevice, D
                 super.updateState(channelUID, cachedState);
             }
         } else {
+            linkHandlerMap.forEach((deviceId, linkHandler) -> {
+                linkHandler.handleCommand(channelUID, command);
+            });
             String targetChannel = channelUID.getIdWithoutGroup();
-            // some special treatments for poweer and links
+            // some special treatments for power and links
             switch (targetChannel) {
                 case CHANNEL_POWER_STATE:
                     if (command instanceof OnOffType onOff) {
                         requestedPowerState = onOff;
                     }
                     break;
-                case CHANNEL_LINKS:
-                    if (customDebug) {
-                        logger.info("DIRIGERA BASE_MATTER_HANDLER {} remove connection {}", thing.getLabel(),
-                                command.toFullString());
-                    }
-                    if (command instanceof StringType string) {
-                        linkUpdate(string.toFullString(), false);
-                    }
-                    break;
-                case CHANNEL_LINK_CANDIDATES:
-                    if (customDebug) {
-                        logger.info("DIRIGERA BASE_MATTER_HANDLER {} add link {}", thing.getLabel(),
-                                command.toFullString());
-                    }
-                    if (command instanceof StringType string) {
-                        linkUpdate(string.toFullString(), true);
-                    }
-                    break;
             }
             Map<String, JSONObject> requests = new HashMap<>();
-            deviceConfigMap.forEach((deviceId, matterConfig) -> {
-                Map<String, JSONObject> deviceUpdates = matterConfig.getRequestJson(targetChannel, command);
+            deviceModelMap.forEach((deviceId, deviceModel) -> {
+                Map<String, JSONObject> deviceUpdates = deviceModel.getRequestJson(targetChannel, command);
                 requests.putAll(deviceUpdates);
             });
 
@@ -296,40 +301,41 @@ public class BaseMatterHandler extends BaseThingHandler implements BaseDevice, D
                     sendPatch(deviceId, request);
                 });
             } else {
-                logger.debug("DIRIGERA BASE_MATTER_HANDLER {} no API request for channel {} command {}", thing.getUID(),
-                        targetChannel, command.toFullString());
+                logger.debug("{} no API request for channel {} command {}", thing.getLabel(), targetChannel,
+                        command.toFullString());
             }
         }
     }
 
     /**
-     * Wrapper function to respect customDebug flag
+     * Send PATCH to DIRIGERA API
      *
-     * @param attributes
-     * @return status
+     * @param deviceId as String
+     * @param patch as JSONObject
+     * @return HTTP status code
      */
     protected int sendPatch(String deviceId, JSONObject patch) {
         int status = gateway().api().sendPatch(deviceId, patch);
-        if (customDebug) {
-            logger.info("DIRIGERA BASE_MATTER_HANDLER {} API call: Status {} payload {}", thing.getUID(), status,
-                    patch);
-        }
+        logger.debug("{} API call: Status {} payload {}", thing.getLabel(), status, patch);
         return status;
     }
 
     /**
      * Handle updates from attributes
+     * - check reachable flag to determine ONLINE/OFFLINE status
+     * - forward link update to LinkHandler if available
+     * - check attributes for updates and device model will forward them to channels
      *
-     * @param update JSON
+     * @param deviceUpdate as JSONObject
      */
     @Override
-    public void handleUpdate(JSONObject update) {
+    public void handleUpdate(JSONObject deviceUpdate) {
         if (customDebug) {
-            logger.info("DIRIGERA BASE_MATTER_HANDLER {} handleUpdate JSON {}", thing.getUID(), update);
+            logger.info("{} handleUpdate JSON {}", thing.getLabel(), deviceUpdate);
         }
         // check reachable flag to determine ONLINE/OFFLINE status
-        if (update.has(Model.JSON_KEY_REACHABLE)) {
-            if (update.getBoolean(Model.JSON_KEY_REACHABLE)) {
+        if (deviceUpdate.has(Model.JSON_KEY_REACHABLE)) {
+            if (deviceUpdate.getBoolean(Model.JSON_KEY_REACHABLE)) {
                 updateStatus(ThingStatus.ONLINE);
                 online = true;
             } else {
@@ -338,44 +344,41 @@ public class BaseMatterHandler extends BaseThingHandler implements BaseDevice, D
                 online = false;
             }
         }
-        // check if links has changed
-        if (update.has(ATTRIBUTES_KEY_REMOTE_LINKS)) {
-            JSONArray remoteLinks = update.getJSONArray(ATTRIBUTES_KEY_REMOTE_LINKS);
-            List<String> updateList = new ArrayList<>();
-            remoteLinks.forEach(link -> {
-                updateList.add(link.toString());
-            });
-            Collections.sort(updateList);
-            Collections.sort(hardLinks);
-            if (!hardLinks.equals(updateList)) {
-                hardLinks = updateList;
-                // just update internal link list and let the gateway update do all updates regarding soft links
-                gateway().updateLinks();
+        linkHandlerMap.forEach((deviceId, linkHandler) -> {
+            if (deviceId.equals(deviceUpdate.optString(JSON_KEY_DEVICE_ID))) {
+                linkHandler.handleUpdate(deviceUpdate);
             }
-        }
-        // now check attributes for updates
-        Map<String, State> updates = new HashMap<>();
-        deviceConfigMap.forEach((deviceId, matterConfig) -> {
-            Map<String, State> deviceUpdates = matterConfig.getAttributeUpdates(update);
-            updates.putAll(deviceUpdates);
         });
-        logger.trace("DIRIGERA BASE_MATTER_HANDLER {} attribute updates {}", thing.getUID(), updates);
-        updates.forEach((channel, state) -> {
+        // now check attributes for updates
+        Map<String, State> stateUpdates = new HashMap<>();
+        deviceModelMap.forEach((deviceId, deviceModel) -> {
+            Map<String, State> deviceUpdates = deviceModel.getAttributeUpdates(deviceUpdate);
+            stateUpdates.putAll(deviceUpdates);
+        });
+        logger.trace("{} attribute updates {}", thing.getLabel(), stateUpdates);
+        stateUpdates.forEach((channel, state) -> {
             if (UnDefType.NULL.equals(state)) {
-                logger.debug("DIRIGERA BASE_MATTER_HANDLER {} ignoring NULL state for channel {}", thing.getUID(),
-                        channel);
+                logger.debug("{} ignoring NULL state for channel {}", thing.getLabel(), channel);
             } else {
                 updateState(new ChannelUID(thing.getUID(), channel), state);
             }
         });
     }
 
+    /**
+     * Create channel if not already present
+     *
+     * @param channelId as String
+     * @param channelTypeUID as String - needs to present in channel-types.xml
+     * @param itemType as String
+     * @param label as String
+     * @param description as String
+     */
     protected synchronized void createChannelIfNecessary(String channelId, String channelTypeUID, String itemType,
             String label, String description) {
         if (thing.getChannel(channelId) == null) {
             if (customDebug) {
-                logger.info("DIRIGERA BASE_MATTER_HANDLER {} create Channel {} {} {}", thing.getUID(), channelId,
-                        channelTypeUID, itemType);
+                logger.info("{} create Channel {} {} {}", thing.getLabel(), channelId, channelTypeUID, itemType);
             }
             // https://www.openhab.org/docs/developer/bindings/#updating-the-thing-structure
             ThingBuilder thingBuilder = editThing();
@@ -407,16 +410,28 @@ public class BaseMatterHandler extends BaseThingHandler implements BaseDevice, D
         }
     }
 
+    /**
+     * Create channel if not already present without label and description
+     *
+     * @param channelId as String
+     * @param channelTypeUID as String - needs to present in channel-types.xml
+     * @param itemType as String
+     */
     protected synchronized void createChannelIfNecessary(String channelId, String channelTypeUID, String itemType) {
         createChannelIfNecessary(channelId, channelTypeUID, itemType, "", "");
     }
 
+    /**
+     * Check if device is powered ON
+     *
+     * @return true if powered ON, false otherwise
+     */
     protected boolean isPowered() {
         return OnOffType.ON.equals(currentPowerState) && online;
     }
 
     /**
-     * Update cache for refresh, then update state
+     * Wrapper for updateState to to store values in cache and special treatment for power state
      */
     @Override
     protected void updateState(ChannelUID channelUID, State state) {
@@ -437,7 +452,7 @@ public class BaseMatterHandler extends BaseThingHandler implements BaseDevice, D
         channelStateMap.put(channelUID.getIdWithoutGroup(), state);
         if (!disposed) {
             if (customDebug) {
-                logger.info("DIRIGERA {} updateState {} {}", thing.getUID(), channelUID, state);
+                logger.info("{} updateState {} {}", thing.getLabel(), channelUID, state);
             }
             super.updateState(channelUID, state);
         }
@@ -457,6 +472,11 @@ public class BaseMatterHandler extends BaseThingHandler implements BaseDevice, D
         super.handleRemoval();
     }
 
+    /**
+     * Get Gateway connected to this device
+     *
+     * @return Gateway object, throws GatewayException if not available
+     */
     public Gateway gateway() {
         Gateway gwlocalGateway = gateway;
         if (gwlocalGateway != null) {
@@ -466,11 +486,14 @@ public class BaseMatterHandler extends BaseThingHandler implements BaseDevice, D
         }
     }
 
+    /**
+     * Handler sanity check if thing type matches with model. Devices added by discovery will have correct type, but
+     * errors can happen if textual configuration of thing type uid doesn't match with with configured device id
+     *
+     * @ return true if thing type matches with model, false otherwise
+     */
     @Override
     public boolean checkHandler() {
-        // cross check if configured thing type is matching with the model
-        // if handler is taken from discovery this will do no harm
-        // but if it's created manually mismatch can happen
         ThingTypeUID modelTTUID = gateway().model().identifyDeviceFromModel(config.id);
         if (!thing.getThingTypeUID().equals(modelTTUID)) {
             // check if id is present in model
@@ -494,9 +517,9 @@ public class BaseMatterHandler extends BaseThingHandler implements BaseDevice, D
      * @return boolean
      */
     protected boolean isControllerOrSensor() {
-        for (MatterModel matterConfig : deviceConfigMap.values()) {
-            if (matterConfig.getDeviceType().contains(TYPE_SENSOR)
-                    || matterConfig.getDeviceType().contains(TYPE_CONTROLLER)) {
+        for (MatterModel deviceModel : deviceModelMap.values()) {
+            if (TYPE_SENSOR.equalsIgnoreCase(deviceModel.getType())
+                    || deviceModel.getDeviceType().contains(TYPE_CONTROLLER)) {
                 return true;
             }
         }
@@ -504,11 +527,42 @@ public class BaseMatterHandler extends BaseThingHandler implements BaseDevice, D
     }
 
     /**
-     * Update cycle of gateway is done
+     * Check if device or relations has the given type
+     *
+     * @param queryDeviceType
+     * @return true if type is present, false otherwise
+     */
+    protected boolean hasType(String queryDeviceType) {
+        for (MatterModel deviceModel : deviceModelMap.values()) {
+            if (deviceModel.getDeviceType().equals(queryDeviceType)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Get all device ids for the given device type
+     *
+     * @param queryDeviceType
+     * @return List of device ids which are matching the query type
+     */
+    protected List<String> getIdsFor(String queryDeviceType) {
+        return deviceModelMap.entrySet().stream()
+                .filter(entry -> entry.getValue().getDeviceType().equals(queryDeviceType)).map(Map.Entry::getKey)
+                .toList();
+    }
+
+    /**
+     * ## Link handling forwarded to LinkHandler if available
+     */
+
+    /**
+     * Update cycle of links starts, no calls in between until updateLinksDone
      */
     @Override
     public void updateLinksStart() {
-        softLinks.clear();
+        linkHandlerMap.forEach((deviceId, linkHandler) -> linkHandler.updateLinksStart());
     }
 
     /**
@@ -518,73 +572,15 @@ public class BaseMatterHandler extends BaseThingHandler implements BaseDevice, D
      */
     @Override
     public List<String> getLinks() {
-        return new ArrayList<String>(hardLinks);
-    }
-
-    private void linkUpdate(String linkedDeviceId, boolean add) {
-        /**
-         * link has to be set to target device like light or outlet, not to the device which triggers an action like
-         * lightController or motionSensor
-         */
-        String targetDevice = "";
-        String triggerDevice = "";
-        List<String> linksToSend = new ArrayList<>();
-        if (isControllerOrSensor()) {
-            // request needs to be sent to target device
-            targetDevice = linkedDeviceId;
-            triggerDevice = config.id;
-            // get current links
-            JSONObject deviceData = gateway().model().getAllFor(targetDevice, MODEL_KEY_DEVICES);
-            if (deviceData.has(ATTRIBUTES_KEY_REMOTE_LINKS)) {
-                JSONArray jsonLinks = deviceData.getJSONArray(ATTRIBUTES_KEY_REMOTE_LINKS);
-                jsonLinks.forEach(link -> {
-                    linksToSend.add(link.toString());
-                });
-                if (customDebug) {
-                    logger.info("DIRIGERA BASE_MATTER_HANDLER {} links for {} {}", thing.getLabel(),
-                            gateway().model().getCustonNameFor(targetDevice), linksToSend);
+        List<String> links = new ArrayList<>();
+        linkHandlerMap.forEach((deviceId, linkHandler) -> {
+            linkHandler.getLinks().forEach(link -> {
+                if (!links.contains(link)) {
+                    links.add(link);
                 }
-                // this is sensor branch so add link of sensor
-                if (add) {
-                    if (!linksToSend.contains(triggerDevice)) {
-                        linksToSend.add(triggerDevice);
-                    } else {
-                        if (customDebug) {
-                            logger.info("DIRIGERA BASE_MATTER_HANDLER {} already linked {}", thing.getLabel(),
-                                    gateway().model().getCustonNameFor(triggerDevice));
-                        }
-                    }
-                } else {
-                    if (linksToSend.contains(triggerDevice)) {
-                        linksToSend.remove(triggerDevice);
-                    } else {
-                        if (customDebug) {
-                            logger.info("DIRIGERA BASE_MATTER_HANDLER {} no link to remove {}", thing.getLabel(),
-                                    gateway().model().getCustonNameFor(triggerDevice));
-                        }
-                    }
-                }
-            } else {
-                if (customDebug) {
-                    logger.info("DIRIGERA BASE_MATTER_HANDLER {} has no remoteLinks", thing.getLabel());
-                }
-            }
-        } else {
-            // send update to this device
-            targetDevice = config.id;
-            triggerDevice = linkedDeviceId;
-            if (add) {
-                hardLinks.add(triggerDevice);
-            } else {
-                hardLinks.remove(triggerDevice);
-            }
-            linksToSend.addAll(hardLinks);
-        }
-        JSONArray newLinks = new JSONArray(linksToSend);
-        JSONObject attributes = new JSONObject();
-        attributes.put(ATTRIBUTES_KEY_REMOTE_LINKS, newLinks);
-        gateway().api().sendPatch(targetDevice, attributes);
-        // after api command remoteLinks property will be updated and trigger new linkUpadte
+            });
+        });
+        return links;
     }
 
     /**
@@ -593,105 +589,47 @@ public class BaseMatterHandler extends BaseThingHandler implements BaseDevice, D
      * @param device id of the device which contains this link
      */
     @Override
-    public void addSoftlink(String id) {
-        if (!softLinks.contains(id) && !config.id.equals(id)) {
-            softLinks.add(id);
+    public void addSoftlink(String linkSourceId, String linkTargetId) {
+        LinkHandler linkHandler = linkHandlerMap.get(linkTargetId);
+        if (linkHandler != null) {
+            linkHandler.addSoftlink(linkSourceId);
         }
     }
 
     /**
-     * Update cycle of gateway is done
+     * Collect all informations from link handlers, combine them and update state and command options
      */
     @Override
     public void updateLinksDone() {
-        logger.trace("DIRIGERA BASE_MATTER_HANDLER {} updateLinksDone hardLinks {} softLinks {}", thing.getLabel(),
-                hardLinks, softLinks);
-        if (hasLinksOrCandidates()) {
-            updateLinks();
-            // The candidates needs to be evaluated by child class
-            // - blindController needs blinds and vice versa
-            // - soundCotroller needs speakers and vice versa
-            // - lightController needs light and outlet and vice versa
-            // So assure "linkCandidateTypes" are overwritten by child class with correct types
-            updateCandidateLinks();
-        }
-    }
-
-    protected void updateLinks() {
-        List<String> display = new ArrayList<>();
         List<CommandOption> linkCommandOptions = new ArrayList<>();
-        List<String> allLinks = new ArrayList<>();
-        allLinks.addAll(hardLinks);
-        allLinks.addAll(softLinks);
-        Collections.sort(allLinks);
-        allLinks.forEach(link -> {
-            String customName = gateway().model().getCustonNameFor(link);
-            if (!gateway().isKnownDevice(link)) {
-                // if device isn't present in OH attach this suffix
-                customName += " (!)";
-            }
-            display.add(customName);
-            linkCommandOptions.add(new CommandOption(link, customName));
+        List<String> linkDisplay = new ArrayList<>();
+        List<CommandOption> linkCandidateCommandOptions = new ArrayList<>();
+        List<String> linkCandidateDisplay = new ArrayList<>();
+        linkHandlerMap.forEach((deviceId, linkHandler) -> {
+            linkHandler.getLinkOptions().forEach(commandOption -> {
+                String label = commandOption.getLabel();
+                if (!linkCommandOptions.contains(commandOption) && label != null) {
+                    linkCommandOptions.add(commandOption);
+                    linkDisplay.add(label);
+                }
+            });
+            linkHandler.getCandidateOptions().forEach(commandOption -> {
+                String label = commandOption.getLabel();
+                if (!linkCandidateCommandOptions.contains(commandOption) && label != null) {
+                    linkCandidateCommandOptions.add(commandOption);
+                    linkCandidateDisplay.add(label);
+                }
+            });
+
         });
-        ChannelUID channelUUID = new ChannelUID(thing.getUID(), CHANNEL_LINKS);
-        gateway().getCommandProvider().setCommandOptions(channelUUID, linkCommandOptions);
-        logger.trace("DIRIGERA BASE_MATTER_HANDLER {} links {}", thing.getLabel(), display);
-        updateState(channelUUID, StringType.valueOf(display.toString()));
-    }
+        ChannelUID linkChannelUUID = new ChannelUID(getThing().getUID(), CHANNEL_LINKS);
+        gateway().getCommandProvider().setCommandOptions(linkChannelUUID, linkCommandOptions);
+        logger.trace("{} links {}", getThing().getLabel(), linkDisplay);
+        updateState(linkChannelUUID, StringType.valueOf(linkDisplay.toString()));
 
-    public void updateCandidateLinks() {
-        List<String> possibleCandidates = gateway().model().getDevicesForTypes(linkCandidateTypes);
-        List<String> candidates = new ArrayList<>();
-        possibleCandidates.forEach(entry -> {
-            if (!hardLinks.contains(entry) && !softLinks.contains(entry)) {
-                candidates.add(entry);
-            }
-        });
-
-        List<String> display = new ArrayList<>();
-        List<CommandOption> candidateOptions = new ArrayList<>();
-        Collections.sort(candidates);
-        candidates.forEach(candidate -> {
-            String customName = gateway().model().getCustonNameFor(candidate);
-            if (!gateway().isKnownDevice(candidate)) {
-                // if device isn't present in OH attach this suffix
-                customName += " (!)";
-            }
-            display.add(customName);
-            candidateOptions.add(new CommandOption(candidate, customName));
-        });
-        ChannelUID channelUUID = new ChannelUID(thing.getUID(), CHANNEL_LINK_CANDIDATES);
-        gateway().getCommandProvider().setCommandOptions(channelUUID, candidateOptions);
-        updateState(channelUUID, StringType.valueOf(display.toString()));
-    }
-
-    protected boolean hasType(String queryDeviceType) {
-        for (MatterModel matterConfig : deviceConfigMap.values()) {
-            if (matterConfig.getDeviceType().equals(queryDeviceType)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    protected List<String> getIdsFor(String deviceTypeOccupancySensor) {
-        List<String> ids = new ArrayList<>();
-        deviceConfigMap.forEach((deviceId, matterConfig) -> {
-            if (matterConfig.getDeviceType().equals(deviceTypeOccupancySensor)) {
-                ids.add(deviceId);
-            }
-        });
-        return ids;
-    }
-
-    /**
-     * Check is any outgoing or incoming links or candidates are available
-     *
-     * @return true if one of the above conditions is true
-     */
-    private boolean hasLinksOrCandidates() {
-        return (!hardLinks.isEmpty() || !softLinks.isEmpty()
-                || !gateway().model().getDevicesForTypes(linkCandidateTypes).isEmpty());
+        ChannelUID candidateChannelUUID = new ChannelUID(getThing().getUID(), CHANNEL_LINK_CANDIDATES);
+        gateway().getCommandProvider().setCommandOptions(candidateChannelUUID, linkCandidateCommandOptions);
+        updateState(candidateChannelUUID, StringType.valueOf(linkCandidateDisplay.toString()));
     }
 
     public void addPowerListener(PowerListener listener) {
@@ -707,7 +645,7 @@ public class BaseMatterHandler extends BaseThingHandler implements BaseDevice, D
     }
 
     /**
-     * Debug commands for console access
+     * ### Debug commands for console access
      */
 
     @Override
@@ -738,11 +676,9 @@ public class BaseMatterHandler extends BaseThingHandler implements BaseDevice, D
         return config.id;
     }
 
-    /**
-     * for unit testing
-     */
     @Override
-    public @Nullable ThingHandlerCallback getCallback() {
+    @Nullable
+    public ThingHandlerCallback getCallback() {
         return super.getCallback();
     }
 }

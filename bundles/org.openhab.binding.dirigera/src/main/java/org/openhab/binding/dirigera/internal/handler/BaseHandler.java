@@ -638,9 +638,9 @@ public class BaseHandler extends BaseThingHandler implements BaseDevice, DebugHa
      * @param device id of the device which contains this link
      */
     @Override
-    public void addSoftlink(String id) {
-        if (!softLinks.contains(id) && !config.id.equals(id)) {
-            softLinks.add(id);
+    public void addSoftlink(String linkSourceId, String linkTargetId) {
+        if (!softLinks.contains(linkSourceId) && !config.id.equals(linkSourceId)) {
+            softLinks.add(linkSourceId);
         }
     }
 

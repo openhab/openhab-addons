@@ -87,7 +87,7 @@ public class TemperatureLightHandler extends DimmableLightHandler {
                 properties.put("colorTemperatureMin", String.valueOf(colorTemperatureMin) + "K");
                 properties.put("colorTemperatureMax", String.valueOf(colorTemperatureMax) + "K");
             }
-
+            range = colorTemperatureMin - colorTemperatureMax;
             // now check if config overrides values
             if (lightConfig.colorTemperatureMin > 0) {
                 colorTemperatureMin = lightConfig.colorTemperatureMin;
@@ -124,7 +124,6 @@ public class TemperatureLightHandler extends DimmableLightHandler {
                 if (command instanceof PercentType percent) {
                     percentValue = percent.intValue();
                     kelvinValue = getKelvin(percent.intValue());
-                    logger.warn("Handle command COLOR TEMPERATURE percent {} -> kelvin {}", percentValue, kelvinValue);
                 } else if (command instanceof QuantityType number) {
                     kelvinValue = number.intValue();
                     percentValue = getPercent(kelvinValue);
@@ -163,11 +162,7 @@ public class TemperatureLightHandler extends DimmableLightHandler {
                 if (targetChannel != null) {
                     switch (targetChannel) {
                         case CHANNEL_LIGHT_TEMPERATURE:
-                            int kelvin = attributes.getInt(key);
-                            // seems some lamps are delivering temperature values out of range
-                            // keep it in range with min/max
-                            kelvin = Math.min(kelvin, colorTemperatureMin);
-                            kelvin = Math.max(kelvin, colorTemperatureMax);
+                            int kelvin = assertRange(attributes.getInt(key), colorTemperatureMax, colorTemperatureMin);
                             int percent = getPercent(kelvin);
                             currentColorTemp = new PercentType(percent);
                             updateState(new ChannelUID(thing.getUID(), targetChannel), currentColorTemp);
@@ -180,13 +175,17 @@ public class TemperatureLightHandler extends DimmableLightHandler {
         }
     }
 
-    protected long getKelvin(int percent) {
+    protected int getKelvin(int percent) {
         logger.warn("Get Kelvin for percent {} with min {} max {} range {}", percent, colorTemperatureMin,
                 colorTemperatureMax, range);
         return Math.round(colorTemperatureMin - (range * percent / 100));
     }
 
     protected int getPercent(long kelvin) {
-        return Math.min(100, Math.max(0, Math.round(100 - ((kelvin - colorTemperatureMax) * 100 / range))));
+        return assertRange(Math.round(100 - ((kelvin - colorTemperatureMax) * 100 / range)), 0, 100);
+    }
+
+    private int assertRange(int value, int min, int max) {
+        return Math.min(max, Math.max(min, value));
     }
 }

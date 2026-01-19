@@ -38,7 +38,7 @@ public interface BaseDevice {
 
     List<String> getLinks();
 
-    void addSoftlink(String softLink);
+    void addSoftlink(String linkSourceId, String linkTargetId);
 
     void updateLinksDone();
 }

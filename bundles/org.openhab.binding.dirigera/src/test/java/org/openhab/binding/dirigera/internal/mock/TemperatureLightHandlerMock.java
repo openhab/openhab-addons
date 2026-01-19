@@ -33,7 +33,7 @@ public class TemperatureLightHandlerMock extends TemperatureLightHandler {
     }
 
     @Override
-    public long getKelvin(int percent) {
+    public int getKelvin(int percent) {
         return super.getKelvin(percent);
     }
 

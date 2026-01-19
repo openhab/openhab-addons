@@ -10,23 +10,25 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.dirigera.internal.matter;
+package org.openhab.binding.dirigera.internal.handler.matter;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.openhab.binding.dirigera.internal.Constants.*;
 
+import java.time.ZonedDateTime;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.dirigera.internal.handler.DirigeraBridgeProvider;
-import org.openhab.binding.dirigera.internal.handler.matter.MatterSensor;
 import org.openhab.binding.dirigera.internal.mock.CallbackMock;
 import org.openhab.binding.dirigera.internal.mock.DirigeraAPISimu;
+import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
@@ -81,13 +83,34 @@ class TestOccupancySensor {
         checkEnvironmentSensorStates(callback);
     }
 
+    @Test
     void testCommands() {
         testHandlerCreation();
-        String command = "HollaDieWaldfee";
         handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_SCHEDULE), new DecimalType(1));
-        String patch = DirigeraAPISimu.patchMap.get(deviceId);
+        String patch = DirigeraAPISimu.patchMap.get("d6ee92fc-682a-4af0-9097-c73ed70b59fd_2");
         assertNotNull(patch);
-        assertEquals("{\"attributes\":{\"customName\":\"" + command + "\"}}", patch, "Fan Mode on");
+        assertEquals(
+                "{\"attributes\":{\"sensorConfig\":{\"schedule\":{\"offCondition\":{\"time\":\"sunrise\"},\"onCondition\":{\"time\":\"sunset\"}},\"scheduleOn\":true}}}",
+                patch, "Schedule Follow Sun");
+        DirigeraAPISimu.patchMap.clear();
+
+        DateTimeType fixed = new DateTimeType(ZonedDateTime.now().withHour(10).withMinute(15));
+        handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_SCHEDULE_START), fixed);
+        patch = DirigeraAPISimu.patchMap.get("d6ee92fc-682a-4af0-9097-c73ed70b59fd_2");
+        assertNotNull(patch);
+        assertEquals(
+                "{\"attributes\":{\"sensorConfig\":{\"schedule\":{\"offCondition\":{\"time\":\"07:00\"},\"onCondition\":{\"time\":\"10:15\"}},\"scheduleOn\":true}}}",
+                patch, "Schedule Time");
+    }
+
+    @Test
+    void testLinks() {
+        testHandlerCreation();
+        handler.getLinks();
+        String lightId = "8d89e4f6-cb60-443b-9c68-3094fc15e0e6_1";
+        handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_LINK_CANDIDATES), new StringType(lightId));
+        String patch = DirigeraAPISimu.patchMap.get(lightId);
+        assertEquals("{\"remoteLinks\":[\"d6ee92fc-682a-4af0-9097-c73ed70b59fd_2\"]}", patch, "Schedule Time");
     }
 
     void checkEnvironmentSensorStates(CallbackMock callback) {

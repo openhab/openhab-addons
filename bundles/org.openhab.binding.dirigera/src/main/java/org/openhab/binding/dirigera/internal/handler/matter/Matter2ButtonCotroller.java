@@ -28,7 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link Matter2ButtonCotroller} is configured by devices.json
+ * The {@link Matter2ButtonCotroller} handles a Matter 2-Button Controller device e.g. BILRESA from IKEA.
  *
  * @author Bernd Weymann - Initial contribution
  */
@@ -50,7 +50,7 @@ public class Matter2ButtonCotroller extends BaseMatterHandler {
     @Override
     public void initialize() {
         super.initialize();
-        deviceConfigMap.forEach((deviceId, config) -> {
+        deviceModelMap.forEach((deviceId, config) -> {
             char buttonNumber = deviceId.charAt(deviceId.length() - 1);
             var buttonName = switch (buttonNumber) {
                 case '1' -> "Top Button";
@@ -83,17 +83,13 @@ public class Matter2ButtonCotroller extends BaseMatterHandler {
         JSONObject attributes = update.optJSONObject(JSON_KEY_ATTRIBUTES);
         if (attributes != null) {
             String controlMode = attributes.optString(ATTRIBUTES_KEY_CONTROL_MODE);
-            if (!controlMode.isBlank()) {
+            String deviceId = update.optString(JSON_KEY_DEVICE_ID);
+            if (!controlMode.isBlank() && !deviceId.isBlank()) {
                 List<String> candidateTypes = modeLinkCandidateMapping.get(controlMode);
                 if (candidateTypes != null) {
-                    if (!candidateTypes.equals(linkCandidateTypes)) {
-                        linkCandidateTypes.clear();
-                        linkCandidateTypes.addAll(candidateTypes);
-                        gateway().updateLinks();
-                    }
-                } else {
-                    linkCandidateTypes.clear();
+                    linkHandlerMap.put(deviceId, new LinkHandler(this, deviceId, candidateTypes));
                     gateway().updateLinks();
+                    logger.trace("Link candidate types for control-mode {}: {}", controlMode, candidateTypes);
                 }
             }
         }

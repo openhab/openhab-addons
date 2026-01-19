@@ -62,6 +62,9 @@ public class Matter3ButtonCotroller extends BaseMatterHandler {
         createChannelIfNecessary(CHANNEL_LINK_CANDIDATES, CHANNEL_LINK_CANDIDATES, CoreItemFactory.STRING);
     }
 
+    /**
+     * Custom configuration of the 3 button sub-devices. Given device id has 2 additional ids for the other buttons.
+     */
     @Override
     protected void configure() {
         int subDeviceId = Character.getNumericValue(config.id.charAt(config.id.length() - 1));
@@ -69,7 +72,7 @@ public class Matter3ButtonCotroller extends BaseMatterHandler {
         int j = 1;
         for (int i = subDeviceId; i > subDeviceId - 3; i--) {
             String deviceId = relationId + "_" + i;
-            deviceConfigMap.put(deviceId, new MatterModel(deviceId, thing.getThingTypeUID().getId()));
+            deviceModelMap.put(deviceId, new MatterModel(deviceId, thing.getThingTypeUID().getId()));
             triggerChannelMapping.put(deviceId, createTriggerChannel(j));
             j++;
         }
@@ -104,19 +107,13 @@ public class Matter3ButtonCotroller extends BaseMatterHandler {
         JSONObject attributes = update.optJSONObject(JSON_KEY_ATTRIBUTES);
         if (attributes != null) {
             String controlMode = attributes.optString(ATTRIBUTES_KEY_CONTROL_MODE);
-            if (!controlMode.isBlank()) {
+            String deviceId = update.optString(JSON_KEY_DEVICE_ID);
+            if (!controlMode.isBlank() && !deviceId.isBlank()) {
                 List<String> candidateTypes = modeLinkCandidateMapping.get(controlMode);
                 if (candidateTypes != null) {
-                    if (!candidateTypes.equals(linkCandidateTypes)) {
-                        linkCandidateTypes.clear();
-                        linkCandidateTypes.addAll(candidateTypes);
-                        logger.info("Link candidate types for control-mode {}: {}", controlMode, linkCandidateTypes);
-                        gateway().updateLinks();
-                    }
-                } else {
-                    linkCandidateTypes.clear();
+                    linkHandlerMap.put(deviceId, new LinkHandler(this, deviceId, candidateTypes));
                     gateway().updateLinks();
-                    logger.warn("No link candidate types found for control-mode {}", controlMode);
+                    logger.trace("Link candidate types for control-mode {}: {}", controlMode, candidateTypes);
                 }
             }
         }
