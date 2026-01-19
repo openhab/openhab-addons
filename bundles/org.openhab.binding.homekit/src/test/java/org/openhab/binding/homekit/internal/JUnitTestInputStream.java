@@ -17,14 +17,15 @@ import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.List;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * An {@link InputStream} for unit test purposes.
  * 
- * NOTE: this class is not annotated as NonNullByDefault since it overrides methods from InputStream
- * 
  * @author Andrew Fiddian-Green - Initial contribution
  */
-public class JUnitTestInputStream extends InputStream {
+// NonNullByDefault is disabled since it otherwise prevents overriding methods of {@link InputStream}
+public @NonNullByDefault({}) class JUnitTestInputStream extends InputStream {
 
     private final Deque<byte[]> chunks = new ArrayDeque<>();
     private byte[] current = null;
@@ -37,7 +38,7 @@ public class JUnitTestInputStream extends InputStream {
     @Override
     public int read() {
         if (!ensureChunk()) {
-            return 0; // not -1 EOF
+            return -1;
         }
         return current[pos++] & 0xFF;
     }
@@ -45,7 +46,7 @@ public class JUnitTestInputStream extends InputStream {
     @Override
     public int read(byte[] b, int off, int len) {
         if (!ensureChunk()) {
-            return 0; // not -1 EOF;
+            return -1;
         }
 
         int remaining = current.length - pos;
