@@ -34,6 +34,31 @@ checkEnvironment
 
 OPENAPI_JAVA_CONFIG="tools/generate-sources/scripts/java.config.json"
 
+# Dynamically create licenseInfo.mustache from Maven license header to ensure consistency
+CURRENT_YEAR=$(date +%Y)
+LICENSE_HEADER_FILE="../../licenses/epl-2.0/header.txt"
+
+if [ ! -f "${LICENSE_HEADER_FILE}" ]; then
+    echo "❌ ERROR: License header file not found: ${LICENSE_HEADER_FILE}"
+    exit 1
+fi
+
+mkdir -p tools/generate-sources/scripts/templates
+
+# Read license header from repository and transform ${year} placeholder to actual year
+# Wrap each line with " * " prefix for Java comment block format
+{
+    echo "/*"
+    sed "s/\${year}/${CURRENT_YEAR}/g" "${LICENSE_HEADER_FILE}" | sed 's/^/ \* /'
+    echo " */"
+} > tools/generate-sources/scripts/templates/licenseInfo.mustache
+
+# Verify template was created successfully
+if [ ! -f "tools/generate-sources/scripts/templates/licenseInfo.mustache" ]; then
+    echo "❌ ERROR: Failed to create licenseInfo.mustache template"
+    exit 1
+fi
+
 # Get the latest stable release tag from GitHub for openapi-generator
 LATEST_OPENAPI_GENERATOR_CLI_TAG=$(curl -s "https://api.github.com/repos/OpenAPITools/openapi-generator/releases/latest" |
     jq -r '.tag_name' |
@@ -117,7 +142,8 @@ for i in "${VERSIONS[@]}"; do
     HAS_ARRAY_TYPE=$(yq '.components.schemas.TranscodingInfo.properties.TranscodeReasons.type == "array"' ${FILENAME_YAML})
 
     if [ "$HAS_ENUM" = "true" ] && [ "$HAS_ARRAY_TYPE" = "true" ]; then
-        echo "⚙️: Fixing malformed TranscodeReasons schema (has both enum and type:array)"
+        echo ""
+        echo "🔧 fix malformed TranscodeReasons schema (has both enum and type:array)"
         # Remove the inline enum definition, keeping only the array type with $ref
         yq 'del(.components.schemas.TranscodingInfo.properties.TranscodeReasons.enum)' ${FILENAME_YAML} > ${FILENAME_YAML_FIXED}
         FILENAME_YAML_INPUT="${FILENAME_YAML_FIXED}"
@@ -145,7 +171,12 @@ done
 
 cd ${ROOT}
 
-echo ""
+# Clean up dynamically generated license template
+rm -f tools/generate-sources/scripts/templates/licenseInfo.mustache
+
+MVN_OPT="--quiet"
+
+
 echo "🔧 fix @NonNull annotations on fields to @Nullable (builder pattern compatibility)"
 # Replace @NonNull with @Nullable on field declarations in model classes
 # This fixes compilation errors where fields are marked @NonNull but not initialized in default constructor
@@ -157,7 +188,6 @@ echo "🔧 remove @NonNullByDefault from generated classes (covered by package-i
 find src/main/java/org/openhab/binding/jellyfin/internal/thirdparty/api -name "*.java" -type f -exec sed -i '/@NonNullByDefault/d' {} \;
 find src/main/java/org/openhab/binding/jellyfin/internal/thirdparty/api -name "*.java" -type f -exec sed -i '/import org\.eclipse\.jdt\.annotation\.NonNullByDefault;/d' {} \;
 
-MVN_OPT="--quiet"
 echo ""
 echo "🧹 apply formatting to generated code"
 mvn spotless:apply $MVN_OPT
