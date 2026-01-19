@@ -55,7 +55,7 @@ echo -e "ℹ️  - Latest stable Jellyfin API - Version: \033[1m${LATEST}\033[0m
 
 # VERSIONS=("10.8.13" "10.10.7")
 # VERSION_ALIAS=("legacy" "current")
-VERSIONS=("10.11.3")
+VERSIONS=("10.11.6")
 VERSION_ALIAS=("current")
 
 DOCKER_VOLUME_WORK="/work"
@@ -106,7 +106,7 @@ for i in "${VERSIONS[@]}"; do
     fi
 
     # Check if the OpenAPI spec has the malformed TranscodeReasons schema
-    # Some Jellyfin API versions (e.g., 10.11.3) incorrectly define TranscodeReasons with
+    # Jellyfin API versions 10.11.3+ (including 10.11.6) incorrectly define TranscodeReasons with
     # both an inline enum AND type:array with $ref, which confuses the OpenAPI generator
     # causing it to generate broken code referencing a non-existent TranscodeReasonsEnum type.
     # Older versions (10.8.13, 10.10.7) don't have this problem and will skip this fix.

@@ -58,9 +58,7 @@ public class ServerConfiguration {
                             "The variable " + name + " in the server URL has invalid value " + value + ".");
                 }
             }
-            if (value != null) {
-                url = url.replace("{" + name + "}", value);
-            }
+            url = url.replace("{" + name + "}", value);
         }
         return url;
     }
