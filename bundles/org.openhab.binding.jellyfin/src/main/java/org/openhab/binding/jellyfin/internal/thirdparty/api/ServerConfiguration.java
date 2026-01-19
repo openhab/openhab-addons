@@ -10,7 +10,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 package org.openhab.binding.jellyfin.internal.thirdparty.api;
 
 import java.util.Map;
@@ -52,16 +51,16 @@ public class ServerConfiguration {
             String value = serverVariable.defaultValue;
 
             if (variables != null && variables.containsKey(name)) {
-                String variableValue = variables.get(name);
-                if (variableValue != null) {
-                    value = variableValue;
-                    if (serverVariable.enumValues.size() > 0 && !serverVariable.enumValues.contains(value)) {
-                        throw new IllegalArgumentException(
-                                "The variable " + name + " in the server URL has invalid value " + value + ".");
-                    }
+                value = variables.get(name);
+                if (value != null && serverVariable.enumValues.size() > 0
+                        && !serverVariable.enumValues.contains(value)) {
+                    throw new IllegalArgumentException(
+                            "The variable " + name + " in the server URL has invalid value " + value + ".");
                 }
             }
-            url = url.replace("{" + name + "}", value);
+            if (value != null) {
+                url = url.replace("{" + name + "}", value);
+            }
         }
         return url;
     }

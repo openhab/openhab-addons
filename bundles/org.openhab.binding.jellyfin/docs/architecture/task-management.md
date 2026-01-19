@@ -20,10 +20,40 @@ This page documents the task management system in the Jellyfin binding.
 
 ## Overview
 
-Task management is handled by a dedicated manager and factory, supporting
-extensibility and testability.
-The `TaskManager` is responsible for starting and stopping tasks based on the
-server handler's current state.
+The task management system is built around the `TaskManager` class, which acts as the central coordinator for all task-related operations in the binding. It manages the complete lifecycle of tasks and provides a clean, testable architecture through dependency injection.
+
+### TaskManager Responsibilities
+
+The `TaskManager` class provides the following core capabilities:
+
+1. **Task Initialization**: Creates initial tasks (ConnectionTask, UpdateTask, ServerSyncTask) via `initializeTasks()`
+2. **State-Driven Management**: Automatically starts/stops tasks based on server state via `processStateChange()`
+3. **Discovery Task Creation**: Handles deferred creation of DiscoveryTask via `createDiscoveryTask()` when ClientDiscoveryService becomes available
+4. **Task Cleanup**: Stops and cleans up all tasks via `stopAllTasks()` during handler disposal
+
+### Architecture Principles
+
+The TaskManager follows SOLID principles:
+
+- **Single Responsibility**: Manages only task lifecycle, delegates task creation to TaskFactory
+- **Dependency Injection**: Accepts TaskFactoryInterface via constructor for testability
+- **Instance-Based**: Each ServerHandler has its own TaskManager instance with injected dependencies
+- **State-Driven**: Tasks are automatically managed based on ServerState enum values
+
+### Test Coverage
+
+The TaskManager has comprehensive unit test coverage (19 test methods) in `TaskManagerTest`:
+
+- **Constructor validation** - Verifies proper dependency injection
+- **Task initialization** - Tests creation of 3 core tasks, handles null discovery service
+- **State transitions** - Tests all 8 ServerState values (CONFIGURED, CONNECTED, INITIALIZING, ERROR, DISPOSED, DISCOVERED, NEEDS_AUTHENTICATION)
+- **Task lifecycle** - Verifies proper starting/stopping of tasks during state changes
+- **WebSocket vs Polling** - Tests mutual exclusivity of WebSocketTask and ServerSyncTask
+- **Discovery task** - Tests deferred creation pattern
+- **Cleanup operations** - Tests stopAllTasks() with various scenarios (null futures, cancelled tasks, done tasks)
+- **Edge cases** - Zero-interval tasks, empty task maps, missing tasks
+
+All tests use Mockito for mocking dependencies and verify both behavior and state.
 
 ## Architecture Diagram
 
@@ -37,11 +67,16 @@ classDiagram
 
     class TaskManager {
         -TaskFactoryInterface taskFactory
-        +initializeTasks(...) Map
-        +createDiscoveryTask(...) DiscoveryTask
-        +processStateChange(...)
-        +stopAllTasks(Map)
-        -getTaskIdsForState(ServerState) List
+        +TaskManager(TaskFactoryInterface)
+        +initializeTasks(...) Map~String,AbstractTask~
+        +createDiscoveryTask(...) AbstractTask
+        +processStateChange(...) void
+        +stopAllTasks(Map) void
+        -getTaskIdsForState(ServerState, Map) List~String~
+        -startTaskInternal(String, Map, Map, Scheduler) void
+        -stopTaskInternal(String, Map, Map) void
+        -scheduleTask(AbstractTask, int, int, Scheduler) ScheduledFuture
+        -stopScheduledTask(ScheduledFuture) void
     }
 
     class TaskFactoryInterface {
@@ -91,6 +126,8 @@ The following table shows which tasks are active for each server state:
 | **CONNECTED**            | `WebSocketTask` OR `ServerSyncTask`, `DiscoveryTask` | Real-time updates via WebSocket (or polling fallback) and discovers clients       |
 | **ERROR**                | None                                                 | Error state - tasks stopped until error is resolved                               |
 | **DISPOSED**             | None                                                 | Handler is disposed - all tasks permanently stopped                               |
+
+**Note**: `UpdateTask` is not automatically started by state transitions. It is created during initialization but only used when explicitly triggered by configuration updates or manual operations.
 
 ### Task Lifecycle
 

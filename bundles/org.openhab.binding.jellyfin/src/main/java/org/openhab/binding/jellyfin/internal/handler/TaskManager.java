@@ -234,12 +234,16 @@ public class TaskManager implements TaskManagerInterface {
      *
      * @param task The task to schedule
      * @param initialDelay Initial delay in seconds
-     * @param interval Interval between executions in seconds
+     * @param interval Interval between executions in seconds (0 = one-time execution)
      * @param scheduler The scheduler service to use
      * @return The scheduled future for the task
      */
     private @Nullable ScheduledFuture<?> scheduleTask(Runnable task, long initialDelay, long interval,
             ScheduledExecutorService scheduler) {
+        if (interval <= 0) {
+            // One-time task: use schedule() instead of scheduleWithFixedDelay()
+            return scheduler.schedule(task, initialDelay, TimeUnit.SECONDS);
+        }
         return scheduler.scheduleWithFixedDelay(task, initialDelay, interval, TimeUnit.SECONDS);
     }
 
