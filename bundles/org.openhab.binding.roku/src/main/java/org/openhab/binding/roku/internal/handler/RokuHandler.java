@@ -274,7 +274,7 @@ public class RokuHandler extends BaseThingHandler {
     }
 
     /**
-     * Start the job to periodically update the list of apps installed on the the Roku
+     * Start the job to periodically update the list of apps installed on the Roku
      */
     private void startAppListRefresh() {
         ScheduledFuture<?> appListJob = this.appListJob;
