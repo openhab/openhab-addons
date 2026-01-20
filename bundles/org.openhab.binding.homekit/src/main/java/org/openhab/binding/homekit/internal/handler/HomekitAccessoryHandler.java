@@ -898,7 +898,7 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
                             if (snapshotChannelExists && !snapshotChannelRefresh) {
                                 switch (cxx.getCharacteristicType()) {
                                     case MOTION_DETECTED:
-                                        if (state == OnOffType.ON) {
+                                        if (OpenClosedType.OPEN == state) {
                                             snapshotChannelRefresh = true;
                                         }
                                         break;
