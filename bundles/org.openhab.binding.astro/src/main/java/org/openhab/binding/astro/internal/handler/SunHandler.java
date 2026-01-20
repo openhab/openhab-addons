@@ -86,7 +86,7 @@ public class SunHandler extends AstroThingHandler {
         sunCalc.setPositionalInfo(calendar, latitude != null ? latitude : 0, longitude != null ? longitude : 0,
                 altitude != null ? altitude : 0, sun);
 
-        sun.setCircadian(CircadianCalc.calculate(calendar, sun.getRise(), sun.getSet(), sun.getNoon()));
+        sun.setCircadian(CircadianCalc.calculate(calendar, sun.getRise(), sun.getSet(), sun.getRange(SunPhase.NOON)));
         sun.setRadiation(RadiationCalc.calculate(now, sun.getPosition().getElevationAsDouble(), altitude));
 
         this.sun = sun;
@@ -127,103 +127,103 @@ public class SunHandler extends AstroThingHandler {
             case CHANNEL_ID_SUN_SET_DURATION:
                 return toState(sun.getSet().getDuration(), channel);
             case CHANNEL_ID_SUN_NOON_START:
-                r = sun.getNoon();
+                r = sun.getRange(SunPhase.NOON);
                 return r == null ? UnDefType.UNDEF : toState(r.getStart(), channel);
             case CHANNEL_ID_SUN_NOON_END:
-                r = sun.getNoon();
+                r = sun.getRange(SunPhase.NOON);
                 return r == null ? UnDefType.UNDEF : toState(r.getEnd(), channel);
             case CHANNEL_ID_SUN_NOON_DURATION:
-                r = sun.getNoon();
+                r = sun.getRange(SunPhase.NOON);
                 return r == null ? UnDefType.UNDEF : toState(r.getDuration(), channel);
             case CHANNEL_ID_SUN_NIGHT_START:
-                r = sun.getNight();
+                r = sun.getRange(SunPhase.NIGHT);
                 return r == null ? UnDefType.UNDEF : toState(r.getStart(), channel);
             case CHANNEL_ID_SUN_NIGHT_END:
-                r = sun.getNight();
+                r = sun.getRange(SunPhase.NIGHT);
                 return r == null ? UnDefType.UNDEF : toState(r.getEnd(), channel);
             case CHANNEL_ID_SUN_NIGHT_DURATION:
-                r = sun.getNight();
+                r = sun.getRange(SunPhase.NIGHT);
                 return r == null ? UnDefType.UNDEF : toState(r.getDuration(), channel);
             case CHANNEL_ID_SUN_MORNING_NIGHT_START:
-                r = sun.getMorningNight();
+                r = sun.getRange(SunPhase.MORNING_NIGHT);
                 return r == null ? UnDefType.UNDEF : toState(r.getStart(), channel);
             case CHANNEL_ID_SUN_MORNING_NIGHT_END:
-                r = sun.getMorningNight();
+                r = sun.getRange(SunPhase.MORNING_NIGHT);
                 return r == null ? UnDefType.UNDEF : toState(r.getEnd(), channel);
             case CHANNEL_ID_SUN_MORNING_NIGHT_DURATION:
-                r = sun.getMorningNight();
+                r = sun.getRange(SunPhase.MORNING_NIGHT);
                 return r == null ? UnDefType.UNDEF : toState(r.getDuration(), channel);
             case CHANNEL_ID_SUN_ASTRO_DAWN_START:
-                r = sun.getAstroDawn();
+                r = sun.getRange(SunPhase.ASTRO_DAWN);
                 return r == null ? UnDefType.UNDEF : toState(r.getStart(), channel);
             case CHANNEL_ID_SUN_ASTRO_DAWN_END:
-                r = sun.getAstroDawn();
+                r = sun.getRange(SunPhase.ASTRO_DAWN);
                 return r == null ? UnDefType.UNDEF : toState(r.getEnd(), channel);
             case CHANNEL_ID_SUN_ASTRO_DAWN_DURATION:
-                r = sun.getAstroDawn();
+                r = sun.getRange(SunPhase.ASTRO_DAWN);
                 return r == null ? UnDefType.UNDEF : toState(r.getDuration(), channel);
             case CHANNEL_ID_SUN_NAUTIC_DAWN_START:
-                r = sun.getNauticDawn();
+                r = sun.getRange(SunPhase.NAUTIC_DAWN);
                 return r == null ? UnDefType.UNDEF : toState(r.getStart(), channel);
             case CHANNEL_ID_SUN_NAUTIC_DAWN_END:
-                r = sun.getNauticDawn();
+                r = sun.getRange(SunPhase.NAUTIC_DAWN);
                 return r == null ? UnDefType.UNDEF : toState(r.getEnd(), channel);
             case CHANNEL_ID_SUN_NAUTIC_DAWN_DURATION:
-                r = sun.getNauticDawn();
+                r = sun.getRange(SunPhase.NAUTIC_DAWN);
                 return r == null ? UnDefType.UNDEF : toState(r.getDuration(), channel);
             case CHANNEL_ID_SUN_CIVIL_DAWN_START:
-                r = sun.getCivilDawn();
+                r = sun.getRange(SunPhase.CIVIL_DAWN);
                 return r == null ? UnDefType.UNDEF : toState(r.getStart(), channel);
             case CHANNEL_ID_SUN_CIVIL_DAWN_END:
-                r = sun.getCivilDawn();
+                r = sun.getRange(SunPhase.CIVIL_DAWN);
                 return r == null ? UnDefType.UNDEF : toState(r.getEnd(), channel);
             case CHANNEL_ID_SUN_CIVIL_DAWN_DURATION:
-                r = sun.getCivilDawn();
+                r = sun.getRange(SunPhase.CIVIL_DAWN);
                 return r == null ? UnDefType.UNDEF : toState(r.getDuration(), channel);
             case CHANNEL_ID_SUN_ASTRO_DUSK_START:
-                r = sun.getAstroDusk();
+                r = sun.getRange(SunPhase.ASTRO_DUSK);
                 return r == null ? UnDefType.UNDEF : toState(r.getStart(), channel);
             case CHANNEL_ID_SUN_ASTRO_DUSK_END:
-                r = sun.getAstroDusk();
+                r = sun.getRange(SunPhase.ASTRO_DUSK);
                 return r == null ? UnDefType.UNDEF : toState(r.getEnd(), channel);
             case CHANNEL_ID_SUN_ASTRO_DUSK_DURATION:
-                r = sun.getAstroDusk();
+                r = sun.getRange(SunPhase.ASTRO_DUSK);
                 return r == null ? UnDefType.UNDEF : toState(r.getDuration(), channel);
             case CHANNEL_ID_SUN_NAUTIC_DUSK_START:
-                r = sun.getNauticDusk();
+                r = sun.getRange(SunPhase.NAUTIC_DUSK);
                 return r == null ? UnDefType.UNDEF : toState(r.getStart(), channel);
             case CHANNEL_ID_SUN_NAUTIC_DUSK_END:
-                r = sun.getNauticDusk();
+                r = sun.getRange(SunPhase.NAUTIC_DUSK);
                 return r == null ? UnDefType.UNDEF : toState(r.getEnd(), channel);
             case CHANNEL_ID_SUN_NAUTIC_DUSK_DURATION:
-                r = sun.getNauticDusk();
+                r = sun.getRange(SunPhase.NAUTIC_DUSK);
                 return r == null ? UnDefType.UNDEF : toState(r.getDuration(), channel);
             case CHANNEL_ID_SUN_CIVIL_DUSK_START:
-                r = sun.getCivilDusk();
+                r = sun.getRange(SunPhase.CIVIL_DUSK);
                 return r == null ? UnDefType.UNDEF : toState(r.getStart(), channel);
             case CHANNEL_ID_SUN_CIVIL_DUSK_END:
-                r = sun.getCivilDusk();
+                r = sun.getRange(SunPhase.CIVIL_DUSK);
                 return r == null ? UnDefType.UNDEF : toState(r.getEnd(), channel);
             case CHANNEL_ID_SUN_CIVIL_DUSK_DURATION:
-                r = sun.getCivilDusk();
+                r = sun.getRange(SunPhase.CIVIL_DUSK);
                 return r == null ? UnDefType.UNDEF : toState(r.getDuration(), channel);
             case CHANNEL_ID_SUN_EVENING_NIGHT_START:
-                r = sun.getEveningNight();
+                r = sun.getRange(SunPhase.EVENING_NIGHT);
                 return r == null ? UnDefType.UNDEF : toState(r.getStart(), channel);
             case CHANNEL_ID_SUN_EVENING_NIGHT_END:
-                r = sun.getEveningNight();
+                r = sun.getRange(SunPhase.EVENING_NIGHT);
                 return r == null ? UnDefType.UNDEF : toState(r.getEnd(), channel);
             case CHANNEL_ID_SUN_EVENING_NIGHT_DURATION:
-                r = sun.getEveningNight();
+                r = sun.getRange(SunPhase.EVENING_NIGHT);
                 return r == null ? UnDefType.UNDEF : toState(r.getDuration(), channel);
             case CHANNEL_ID_SUN_DAYLIGHT_START:
-                r = sun.getDaylight();
+                r = sun.getRange(SunPhase.DAYLIGHT);
                 return r == null ? UnDefType.UNDEF : toState(r.getStart(), channel);
             case CHANNEL_ID_SUN_DAYLIGHT_END:
-                r = sun.getDaylight();
+                r = sun.getRange(SunPhase.DAYLIGHT);
                 return r == null ? UnDefType.UNDEF : toState(r.getEnd(), channel);
             case CHANNEL_ID_SUN_DAYLIGHT_DURATION:
-                r = sun.getDaylight();
+                r = sun.getRange(SunPhase.DAYLIGHT);
                 return r == null ? UnDefType.UNDEF : toState(r.getDuration(), channel);
             case CHANNEL_ID_SUN_POSITION_AZIMUTH:
                 return toState(sun.getPosition().getAzimuth(), channel);

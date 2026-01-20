@@ -40,168 +40,18 @@ public class Sun extends RiseSet implements Planet {
     private Circadian circadian = Circadian.NONE;
 
     /**
-     * Returns the astro dawn range.
+     * Returns the requested range.
      */
     @Nullable
-    public Range getAstroDawn() {
-        return ranges.get(SunPhase.ASTRO_DAWN);
+    public Range getRange(SunPhase sunPhase) {
+        return ranges.get(sunPhase);
     }
 
     /**
-     * Sets the astro dawn range.
+     * Sets the given range.
      */
-    public void setAstroDawn(Range astroDawn) {
-        ranges.put(SunPhase.ASTRO_DAWN, astroDawn);
-    }
-
-    /**
-     * Returns the nautic dawn range.
-     */
-    @Nullable
-    public Range getNauticDawn() {
-        return ranges.get(SunPhase.NAUTIC_DAWN);
-    }
-
-    /**
-     * Sets the nautic dawn range.
-     */
-    public void setNauticDawn(Range nauticDawn) {
-        ranges.put(SunPhase.NAUTIC_DAWN, nauticDawn);
-    }
-
-    /**
-     * Returns the civil dawn range.
-     */
-    @Nullable
-    public Range getCivilDawn() {
-        return ranges.get(SunPhase.CIVIL_DAWN);
-    }
-
-    /**
-     * Sets the civil dawn range.
-     */
-    public void setCivilDawn(Range civilDawn) {
-        ranges.put(SunPhase.CIVIL_DAWN, civilDawn);
-    }
-
-    /**
-     * Returns the civil dusk range.
-     */
-    @Nullable
-    public Range getCivilDusk() {
-        return ranges.get(SunPhase.CIVIL_DUSK);
-    }
-
-    /**
-     * Sets the civil dusk range.
-     */
-    public void setCivilDusk(Range civilDusk) {
-        ranges.put(SunPhase.CIVIL_DUSK, civilDusk);
-    }
-
-    /**
-     * Returns the nautic dusk range.
-     */
-    @Nullable
-    public Range getNauticDusk() {
-        return ranges.get(SunPhase.NAUTIC_DUSK);
-    }
-
-    /**
-     * Sets the nautic dusk range.
-     */
-    public void setNauticDusk(Range nauticDusk) {
-        ranges.put(SunPhase.NAUTIC_DUSK, nauticDusk);
-    }
-
-    /**
-     * Returns the astro dusk range.
-     */
-    @Nullable
-    public Range getAstroDusk() {
-        return ranges.get(SunPhase.ASTRO_DUSK);
-    }
-
-    /**
-     * Sets the astro dusk range.
-     */
-    public void setAstroDusk(Range astroDusk) {
-        ranges.put(SunPhase.ASTRO_DUSK, astroDusk);
-    }
-
-    /**
-     * Returns the noon range, start and end is always equal.
-     */
-    @Nullable
-    public Range getNoon() {
-        return ranges.get(SunPhase.NOON);
-    }
-
-    /**
-     * Sets the noon range.
-     */
-    public void setNoon(Range noon) {
-        ranges.put(SunPhase.NOON, noon);
-    }
-
-    /**
-     * Returns the daylight range.
-     */
-    @Nullable
-    public Range getDaylight() {
-        return ranges.get(SunPhase.DAYLIGHT);
-    }
-
-    /**
-     * Sets the daylight range.
-     */
-    public void setDaylight(Range daylight) {
-        ranges.put(SunPhase.DAYLIGHT, daylight);
-    }
-
-    /**
-     * Returns the morning night range.
-     */
-    @Nullable
-    public Range getMorningNight() {
-        return ranges.get(SunPhase.MORNING_NIGHT);
-    }
-
-    /**
-     * Sets the morning night range.
-     */
-    public void setMorningNight(Range morningNight) {
-        ranges.put(SunPhase.MORNING_NIGHT, morningNight);
-    }
-
-    /**
-     * Returns the evening night range.
-     */
-    @Nullable
-    public Range getEveningNight() {
-        return ranges.get(SunPhase.EVENING_NIGHT);
-    }
-
-    /**
-     * Sets the evening night range.
-     */
-    public void setEveningNight(Range eveningNight) {
-        ranges.put(SunPhase.EVENING_NIGHT, eveningNight);
-    }
-
-    /**
-     * Returns the night range.
-     */
-    @Nullable
-    public Range getNight() {
-        return ranges.get(SunPhase.NIGHT);
-    }
-
-    /**
-     * Sets the night range.
-     */
-    public void setNight(Range night) {
-        ranges.put(SunPhase.NIGHT, night);
+    public void setRange(SunPhase sunPhase, Range range) {
+        ranges.put(sunPhase, range);
     }
 
     /**

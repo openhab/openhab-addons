@@ -112,7 +112,7 @@ public class SunTest {
     public void testGetAllRangesForNight() {
         Sun sun = this.sun;
         assertNotNull(sun);
-        sun.setNight(new Range());
+        sun.setRange(SunPhase.NIGHT,new Range());
 
         assertTrue(sun.getAllRanges().containsKey(SunPhase.NIGHT));
     }
@@ -121,7 +121,7 @@ public class SunTest {
     public void testGetAllRangesForMorningNight() {
         Sun sun = this.sun;
         assertNotNull(sun);
-        sun.setMorningNight(new Range());
+        sun.setRange(SunPhase.MORNING_NIGHT,new Range());
 
         assertTrue(sun.getAllRanges().containsKey(SunPhase.MORNING_NIGHT));
     }
@@ -130,7 +130,7 @@ public class SunTest {
     public void testGetAllRangesForAstroDawn() {
         Sun sun = this.sun;
         assertNotNull(sun);
-        sun.setAstroDawn(new Range());
+        sun.setRange(SunPhase.ASTRO_DAWN,new Range());
 
         assertTrue(sun.getAllRanges().containsKey(SunPhase.ASTRO_DAWN));
     }
@@ -139,7 +139,7 @@ public class SunTest {
     public void testGetAllRangesForNauticDawn() {
         Sun sun = this.sun;
         assertNotNull(sun);
-        sun.setNauticDawn(new Range());
+        sun.setRange(SunPhase.NAUTIC_DAWN,new Range());
 
         assertTrue(sun.getAllRanges().containsKey(SunPhase.NAUTIC_DAWN));
     }
@@ -148,7 +148,7 @@ public class SunTest {
     public void testGetAllRangesForCivilDawn() {
         Sun sun = this.sun;
         assertNotNull(sun);
-        sun.setCivilDawn(new Range());
+        sun.setRange(SunPhase.CIVIL_DAWN,new Range());
 
         assertTrue(sun.getAllRanges().containsKey(SunPhase.CIVIL_DAWN));
     }
@@ -166,7 +166,7 @@ public class SunTest {
     public void testGetAllRangesForDaylight() {
         Sun sun = this.sun;
         assertNotNull(sun);
-        sun.setDaylight(new Range());
+        sun.setRange(SunPhase.DAYLIGHT,new Range());
 
         assertTrue(sun.getAllRanges().containsKey(SunPhase.DAYLIGHT));
     }
@@ -175,7 +175,7 @@ public class SunTest {
     public void testGetAllRangesForNoon() {
         Sun sun = this.sun;
         assertNotNull(sun);
-        sun.setNoon(new Range());
+        sun.setRange(SunPhase.NOON,new Range());
 
         assertTrue(sun.getAllRanges().containsKey(SunPhase.NOON));
     }
@@ -193,7 +193,7 @@ public class SunTest {
     public void testGetAllRangesForCivilDusk() {
         Sun sun = this.sun;
         assertNotNull(sun);
-        sun.setCivilDusk(new Range());
+        sun.setRange(SunPhase.CIVIL_DUSK,new Range());
 
         assertTrue(sun.getAllRanges().containsKey(SunPhase.CIVIL_DUSK));
     }
@@ -202,7 +202,7 @@ public class SunTest {
     public void testGetAllRangesForNauticDusk() {
         Sun sun = this.sun;
         assertNotNull(sun);
-        sun.setNauticDusk(new Range());
+        sun.setRange(SunPhase.NAUTIC_DUSK,new Range());
 
         assertTrue(sun.getAllRanges().containsKey(SunPhase.NAUTIC_DUSK));
     }
@@ -211,7 +211,7 @@ public class SunTest {
     public void testGetAllRangesForAstroDusk() {
         Sun sun = this.sun;
         assertNotNull(sun);
-        sun.setAstroDusk(new Range());
+        sun.setRange(SunPhase.ASTRO_DUSK,new Range());
 
         assertTrue(sun.getAllRanges().containsKey(SunPhase.ASTRO_DUSK));
     }
@@ -220,7 +220,7 @@ public class SunTest {
     public void testGetAllRangesForEveningNight() {
         Sun sun = this.sun;
         assertNotNull(sun);
-        sun.setEveningNight(new Range());
+        sun.setRange(SunPhase.EVENING_NIGHT,new Range());
 
         assertTrue(sun.getAllRanges().containsKey(SunPhase.EVENING_NIGHT));
     }
