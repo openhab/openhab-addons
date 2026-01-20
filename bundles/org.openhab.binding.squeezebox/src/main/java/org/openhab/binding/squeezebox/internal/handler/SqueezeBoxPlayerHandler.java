@@ -28,6 +28,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.squeezebox.internal.SqueezeBoxBindingConstants;
 import org.openhab.binding.squeezebox.internal.SqueezeBoxStateDescriptionOptionsProvider;
 import org.openhab.binding.squeezebox.internal.config.SqueezeBoxPlayerConfig;
 import org.openhab.binding.squeezebox.internal.model.Favorite;
@@ -36,6 +37,9 @@ import org.openhab.core.cache.ExpiringCacheMap;
 import org.openhab.core.io.net.http.HttpUtil;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.IncreaseDecreaseType;
+import org.openhab.core.library.types.MediaCommandEnumType;
+import org.openhab.core.library.types.MediaCommandType;
+import org.openhab.core.library.types.MediaStateType;
 import org.openhab.core.library.types.NextPreviousType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
@@ -45,6 +49,11 @@ import org.openhab.core.library.types.RawType;
 import org.openhab.core.library.types.RewindFastforwardType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.Units;
+import org.openhab.core.media.MediaService;
+import org.openhab.core.media.model.MediaAlbum;
+import org.openhab.core.media.model.MediaEntry;
+import org.openhab.core.media.model.MediaRegistry;
+import org.openhab.core.media.model.MediaTrack;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -95,6 +104,8 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
      */
     private @Nullable SqueezeBoxServerHandler squeezeBoxServerHandler;
 
+    private final MediaService mediaService;
+
     /**
      * Our mac address, needed everywhere
      */
@@ -128,6 +139,14 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
     private @Nullable String unlikeCommand;
     private boolean connected = false;
 
+    private String artistName;
+    private double volume;
+    private String mode;
+    private String title;
+    private double trackDuration;
+    private double trackPosition;
+    private String artUri;
+
     /**
      * Creates SqueezeBox Player Handler
      *
@@ -136,10 +155,19 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
      * @param stateDescriptionProvider
      */
     public SqueezeBoxPlayerHandler(Thing thing, @Nullable String callbackUrl,
-            SqueezeBoxStateDescriptionOptionsProvider stateDescriptionProvider) {
+            SqueezeBoxStateDescriptionOptionsProvider stateDescriptionProvider, MediaService mediaService) {
         super(thing);
         this.callbackUrl = callbackUrl;
         this.stateDescriptionProvider = stateDescriptionProvider;
+        this.mediaService = mediaService;
+
+        this.artistName = "";
+        this.volume = 0.0;
+        this.mode = "";
+        this.title = "";
+        this.trackDuration = 0.0;
+        this.trackPosition = 0.0;
+        this.artUri = "";
     }
 
     @Override
@@ -157,6 +185,11 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
         if (squeezeBoxServerHandler != null) {
             // ensure we get an up-to-date connection state
             squeezeBoxServerHandler.requestPlayers();
+        }
+
+        String modelId = thing.getProperties().get(Thing.PROPERTY_MODEL_ID);
+        if (modelId == null) {
+            modelId = "unknown";
         }
     }
 
@@ -292,6 +325,44 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
                         squeezeBoxServerHandler.setPlayingTime(mac, currentPlayingTime() + 5);
                     }
                 }
+
+                if (command instanceof MediaCommandType md) {
+                    MediaCommandEnumType mediaCommandType = md.getCommand();
+                    String param = md.getParam().toString();
+                    String targetDevice = md.getDevice().toFullString();
+                    if (mediaCommandType == MediaCommandEnumType.PLAY) {
+                        MediaRegistry registry = mediaService.getMediaRegistry();
+                        MediaEntry mediaEntry = registry.getEntry(param);
+
+                        MediaEntry parentEntry = mediaEntry.getParent();
+
+                        if (mediaEntry instanceof MediaAlbum album) {
+                            String playCommand = mac + " playlist loadtracks album.id=" + album.getKey();
+                            squeezeBoxServerHandler.sendCommand(playCommand);
+                        } else if (mediaEntry instanceof MediaTrack track) {
+                            String playCommand = mac + " playlist loadtracks track.id=" + track.getKey();
+                            squeezeBoxServerHandler.sendCommand(playCommand);
+                        }
+                    } else if (mediaCommandType == MediaCommandEnumType.ENQUEUE) {
+                        MediaRegistry registry = mediaService.getMediaRegistry();
+                        MediaEntry mediaEntry = registry.getEntry(param);
+
+                        MediaEntry parentEntry = mediaEntry.getParent();
+
+                        if (mediaEntry instanceof MediaAlbum album) {
+                            String playCommand = mac + " playlist addtracks album.id=" + album.getKey();
+                            squeezeBoxServerHandler.sendCommand(playCommand);
+                        } else if (mediaEntry instanceof MediaTrack track) {
+                            String playCommand = mac + " playlist addtracks track.id=" + track.getKey();
+                            squeezeBoxServerHandler.sendCommand(playCommand);
+                        }
+                    } else if (mediaCommandType == MediaCommandEnumType.VOLUME) {
+                        squeezeBoxServerHandler.setVolume(mac, Integer.parseInt(param));
+                    }
+
+                    logger.info("");
+
+                }
                 break;
             case CHANNEL_STREAM:
                 squeezeBoxServerHandler.playUrl(mac, command.toString());
@@ -354,6 +425,28 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
         }
     }
 
+    private void updateControlState() {
+        PlayPauseType state = PlayPauseType.NONE;
+        if ("play".equals(mode)) {
+            state = PlayPauseType.PLAY;
+        } else if ("stop".equals(mode)) {
+            state = PlayPauseType.PAUSE;
+        } else if ("pause".equals(mode)) {
+            state = PlayPauseType.PAUSE;
+        }
+
+        MediaStateType mediaStateType = new MediaStateType(state, new StringType(this.getThing().getUID().getId()),
+                new StringType(SqueezeBoxBindingConstants.BINDING_ID));
+
+        mediaStateType.setCurrentPlayingPosition(trackPosition * 1000.00);
+        mediaStateType.setCurrentPlayingTrackDuration(trackDuration * 1000.00);
+        mediaStateType.setCurrentPlayingArtistName(artistName);
+        mediaStateType.setCurrentPlayingTrackName(title);
+        mediaStateType.setCurrentPlayingArtUri(artUri);
+        mediaStateType.setCurrentPlayingVolume(volume);
+        updateState(CHANNEL_CONTROL, mediaStateType);
+    }
+
     @Override
     public void playerAdded(SqueezeBoxPlayer player) {
         if (!isMe(player.macAddress)) {
@@ -397,6 +490,8 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
         updateChannel(mac, CHANNEL_STOP, OnOffType.from("stop".equals(mode)));
         if (isMe(mac)) {
             playing = "play".equalsIgnoreCase(mode);
+            this.mode = mode;
+            updateControlState();
         }
     }
 
@@ -411,6 +506,10 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
         newVolume = Math.min(100, newVolume);
         newVolume = Math.max(0, newVolume);
         updateChannel(mac, CHANNEL_VOLUME, new PercentType(newVolume));
+        if (isMe(mac)) {
+            this.volume = newVolume;
+            updateControlState();
+        }
     }
 
     @Override
@@ -421,8 +520,12 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
         updateChannel(mac, CHANNEL_VOLUME, new PercentType(newVolume));
 
         if (isMe(mac)) {
+            this.volume = newVolume;
+            updateControlState();
+
             logger.trace("Volume changed [{}] for player {}. New volume: {}", volumeChange, mac, newVolume);
         }
+
     }
 
     @Override
@@ -440,6 +543,9 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
         updateChannel(mac, CHANNEL_CURRENT_PLAYING_TIME, new QuantityType<>(time, Units.SECOND));
         if (isMe(mac)) {
             currentTime = time;
+
+            this.trackPosition = time;
+            updateControlState();
         }
     }
 
@@ -450,6 +556,10 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
             return;
         }
         updateChannel(mac, CHANNEL_DURATION, new QuantityType<>(duration, Units.SECOND));
+        if (isMe(mac)) {
+            this.trackDuration = duration;
+            updateControlState();
+        }
     }
 
     @Override
@@ -469,7 +579,12 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
 
     @Override
     public void titleChangeEvent(String mac, String title) {
+
         updateChannel(mac, CHANNEL_TITLE, new StringType(title));
+        if (isMe(mac)) {
+            this.title = title;
+            updateControlState();
+        }
     }
 
     @Override
@@ -480,6 +595,10 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
     @Override
     public void artistChangeEvent(String mac, String artist) {
         updateChannel(mac, CHANNEL_ARTIST, new StringType(artist));
+        if (isMe(mac)) {
+            this.artistName = artist;
+            updateControlState();
+        }
     }
 
     @Override
@@ -510,6 +629,10 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
     @Override
     public void coverArtChangeEvent(String mac, String coverArtUrl) {
         updateChannel(mac, CHANNEL_COVERART_DATA, createImage(downloadImage(mac, coverArtUrl)));
+        if (isMe(mac)) {
+            this.artUri = coverArtUrl;
+            updateControlState();
+        }
     }
 
     /**
