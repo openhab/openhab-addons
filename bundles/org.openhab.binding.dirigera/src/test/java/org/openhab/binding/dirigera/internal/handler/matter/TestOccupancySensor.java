@@ -16,7 +16,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.openhab.binding.dirigera.internal.Constants.*;
 
-import java.time.ZonedDateTime;
+import java.time.Instant;
+import java.time.ZoneId;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -94,7 +95,8 @@ class TestOccupancySensor {
                 patch, "Schedule Follow Sun");
         DirigeraAPISimu.patchMap.clear();
 
-        DateTimeType fixed = new DateTimeType(ZonedDateTime.now().withHour(10).withMinute(15));
+        DateTimeType fixed = new DateTimeType(
+                Instant.now().atZone(ZoneId.of("Europe/Berlin")).withHour(10).withMinute(15));
         handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_SCHEDULE_START), fixed);
         patch = DirigeraAPISimu.patchMap.get("d6ee92fc-682a-4af0-9097-c73ed70b59fd_2");
         assertNotNull(patch);

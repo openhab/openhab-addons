@@ -364,8 +364,8 @@ Light with color support.
 | `power`                   | Switch                | RW         | Power state of light                                 |          |
 | `brightness`              | Dimmer                | RW         | Brightness of light in percent                       |          |
 | `color-temperature`       | Dimmer                | RW         | Color temperature from cold (0 %) to warm (100 %)    |          |
-| `color-temperature-abs`   | Number:Temperature    | RW         | Color temperature of a bulb in Kelvin                |          |
-| `color`                   | Color                 | RW         | Color of light with hue, saturation and brightness   |    X     |
+| `color-temperature-abs`   | Number:Temperature    | RW         | Color temperature of a bulb in Kelvin                |    X     |
+| `color`                   | Color                 | RW         | Color of light with hue, saturation and brightness   |          |
 
 Channel `color` can receive
 
@@ -678,12 +678,14 @@ Group names are
 
 | Channel               | Type                  | Read/Write | Description                                  | Advanced  |
 |-----------------------|-----------------------|------------|----------------------------------------------|-----------|
-| `top-button`          | Trigger               | R          | Press triggers for top button                |           |
-| `lower-button`        | Trigger               | R          | Press triggers for lower button              |           |
-| `lower-button`        | Trigger               | R          | Press triggers for lower button              |           |
+| `press`               | Trigger               | R          | Triggers for button press                    |           |
+| `scroll-up`           | Trigger               | R          | Triggers for scroll up                       |           |
+| `scroll-down`         | Trigger               | R          | Triggers for scroll down                     |           |
 | `control-mode`        | Number                | RW         | Select which device type shall be controlled |    X      |
 | `links`               | String                | RW         | Linked controllers, sensors and devices      |    X      |
 | `link-candidates`     | String                | RW         | Candidates which can be linked               |    X      |
+
+Trigger channels providing `SINGLE_PRESS`, `DOUBLE_PRESS` and `LONG_PRESS` as trigger values.
 
 Pitfalls and problems:
 
@@ -701,8 +703,8 @@ Channels are created based on the capabilities of the LED light.
 | `power`                   | Switch                | RW         | Power state of light                                 |          |
 | `brightness`              | Dimmer                | RW         | Brightness of light in percent                       |          |
 | `color-temperature`       | Dimmer                | RW         | Color temperature from cold (0 %) to warm (100 %)    |          |
-| `color-temperature-abs`   | Number:Temperature    | RW         | Color temperature of a bulb in Kelvin                |          |
-| `color`                   | Color                 | RW         | Color of light with hue, saturation and brightness   |    X     |
+| `color-temperature-abs`   | Number:Temperature    | RW         | Color temperature of a bulb in Kelvin                |    X     |
+| `color`                   | Color                 | RW         | Color of light with hue, saturation and brightness   |          |
 
 ## Known Limitations
 

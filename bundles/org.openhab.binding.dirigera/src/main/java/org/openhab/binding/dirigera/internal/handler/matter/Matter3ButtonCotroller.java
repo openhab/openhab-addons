@@ -101,14 +101,14 @@ public class Matter3ButtonCotroller extends BaseMatterHandler {
 
     private String createTriggerChannel(String group, int number) {
         var buttonName = switch (number % 3) {
-            case 0 -> "Press";
+            case 0 -> "Button Press";
             case 1 -> "Scroll Down";
             case 2 -> "Scroll Up";
             default -> "Button " + number;
         };
         String triggerChannelName = group + "#" + buttonName.toLowerCase(Locale.ENGLISH).replace(" ", "-");
         createChannelIfNecessary(triggerChannelName, "system.button", "", buttonName,
-                "Triggers for button " + buttonName);
+                "Triggers for " + buttonName.toLowerCase(Locale.ENGLISH));
         return triggerChannelName;
     }
 
