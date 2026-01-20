@@ -46,7 +46,7 @@ import org.slf4j.LoggerFactory;
  * It provides methods for sending GET, POST, and PUT requests with appropriate headers and content types.
  * It supports both plain and secure (encrypted) communication based on whether session keys have been set.
  * It handles building HTTP requests, sending them over a socket, and parsing HTTP responses. It uses a
- * single reader thread (inside HttpPayloadParser) and a single writer executor.
+ * single thread executor for outputting HTTP requests to the socket in plain or encrypted format.
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
@@ -63,15 +63,13 @@ public class IpTransport implements AutoCloseable {
     private final EventListener eventListener;
     private final AtomicBoolean awaitingHttpResponse = new AtomicBoolean(false);
     private final ExecutorService outputThreadExecutor;
+    private final AtomicReference<@Nullable CompletableFuture<HttpPayload>> currentResponseFuture = new AtomicReference<>();
 
     private volatile HttpPayloadParser httpPayloadParser;
     private volatile @Nullable SecureSession secureSession = null;
 
     private Instant earliestNextRequestTime = Instant.MIN;
     private boolean closing;
-
-    // in-flight response future
-    private final AtomicReference<@Nullable CompletableFuture<HttpPayload>> currentResponseFuture = new AtomicReference<>();
 
     /**
      * Creates a new IpTransport instance on the given host.

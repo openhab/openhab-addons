@@ -30,7 +30,9 @@ import org.slf4j.LoggerFactory;
  * It accumulates header data until the end of headers is detected, then reads the Content-Length header to
  * determine how many bytes of content to expect. It tracks the number of content bytes read to know when the
  * full message has been received. It also supports chunked transfer encoding. If the content exceeds a maximum
- * allowed length, a SecurityException is thrown. It uses a single reader thread and a callback-based delivery model.
+ * allowed length, a SecurityException is thrown. It uses a single reader thread for polling the socket input
+ * stream either directly in plain text or via a {@link DecryptingInputStream} wrapper. And it uses call-backs
+ * to deliver the results.
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
