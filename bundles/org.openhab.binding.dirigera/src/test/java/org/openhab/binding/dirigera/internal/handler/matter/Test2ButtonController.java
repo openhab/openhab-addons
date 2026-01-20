@@ -85,7 +85,7 @@ class Test2ButtonController {
     @Test
     void testControlMode() {
         testHandlerCreation();
-        handler.handleCommand(new ChannelUID(thing.getUID(), "control-mode"), new DecimalType(0));
+        handler.handleCommand(new ChannelUID(thing.getUID(), "control-mode"), new DecimalType(1));
         String patch = DirigeraAPISimu.patchMap.get(deviceId);
         assertNotNull(patch);
         assertEquals("{\"attributes\":{\"controlMode\":\"light\"}}", patch, "Light attributes");

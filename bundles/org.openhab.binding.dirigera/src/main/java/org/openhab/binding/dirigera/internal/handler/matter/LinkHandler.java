@@ -178,20 +178,10 @@ public class LinkHandler {
      * Update link and candidates channels with current links
      */
     public List<CommandOption> getLinkOptions() {
-        List<CommandOption> linkCommandOptions = new ArrayList<>();
         List<String> allLinks = new ArrayList<>();
         allLinks.addAll(hardLinks);
         allLinks.addAll(softLinks);
-        Collections.sort(allLinks);
-        allLinks.forEach(link -> {
-            String customName = handler.gateway().model().getCustonNameFor(link);
-            if (!handler.gateway().isKnownDevice(link)) {
-                // if device isn't present in OH attach this suffix
-                customName += " (!)";
-            }
-            linkCommandOptions.add(new CommandOption(link, customName));
-        });
-        return linkCommandOptions;
+        return getOptions(allLinks);
     }
 
     public List<CommandOption> getCandidateOptions() {
@@ -202,17 +192,20 @@ public class LinkHandler {
                 candidates.add(entry);
             }
         });
+        return getOptions(candidates);
+    }
 
-        List<CommandOption> candidateOptions = new ArrayList<>();
-        Collections.sort(candidates);
-        candidates.forEach(candidate -> {
-            String customName = handler.gateway().model().getCustonNameFor(candidate);
-            if (!handler.gateway().isKnownDevice(candidate)) {
+    private List<CommandOption> getOptions(List<String> entries) {
+        List<CommandOption> options = new ArrayList<>();
+        Collections.sort(entries);
+        entries.forEach(entry -> {
+            String customName = handler.gateway().model().getCustonNameFor(entry);
+            if (!handler.gateway().isKnownDevice(entry)) {
                 // if device isn't present in OH attach this suffix
                 customName += " (!)";
             }
-            candidateOptions.add(new CommandOption(candidate, customName));
+            options.add(new CommandOption(entry, customName));
         });
-        return candidateOptions;
+        return options;
     }
 }

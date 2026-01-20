@@ -60,6 +60,7 @@ public class Matter3ButtonCotroller extends BaseMatterHandler {
         // for controller 100% needed
         createChannelIfNecessary(CHANNEL_LINKS, CHANNEL_LINKS, CoreItemFactory.STRING);
         createChannelIfNecessary(CHANNEL_LINK_CANDIDATES, CHANNEL_LINK_CANDIDATES, CoreItemFactory.STRING);
+        // createChannelIfNecessary(CHANNEL_CONTROL_MODE, "mode-3-options", CoreItemFactory.NUMBER);
     }
 
     /**
@@ -69,10 +70,11 @@ public class Matter3ButtonCotroller extends BaseMatterHandler {
     protected void configure() {
         int subDeviceId = Character.getNumericValue(config.id.charAt(config.id.length() - 1));
         String relationId = gateway().model().getRelationId(config.id);
+        String deviceType = gateway().model().getDeviceType(config.id);
         int j = 1;
         for (int i = subDeviceId; i > subDeviceId - 3; i--) {
             String deviceId = relationId + "_" + i;
-            deviceModelMap.put(deviceId, new MatterModel(deviceId, thing.getThingTypeUID().getId()));
+            deviceModelMap.put(deviceId, new MatterModel(deviceId, deviceType));
             triggerChannelMapping.put(deviceId, createTriggerChannel(j));
             j++;
         }

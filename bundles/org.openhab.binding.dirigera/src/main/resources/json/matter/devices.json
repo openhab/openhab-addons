@@ -1,480 +1,423 @@
 [
-    {
-        "thingType": "baseDevice",
-        "comment": "Contains most common properties for matter devicea. Evaluation which properties really applies is done in handler initialize",
-        "statusProperties": [
-            {
-                "attribute": "batteryPercentage",
-                "channel": "battery-level",
-                "channelType": "system.battery-level",
-                "itemType": "Number:Dimensionless",
-                "inType": "Integer",
-                "outType": "QuantityType",
-                "transformation": "format",
-                "format": "%d %%"
-            },
-            {
-                "attribute": "otaStatus",
-                "channel": "ota-status",
-                "channelType": "ota-status",
-                "itemType": "Number",
-                "inType": "String",
-                "outType": "DecimalType",
-                "transformation": "mapping",
-                "mapping": {
-                    "upToDate": 0,
-                    "updateAvailable": 1
-                }
-            },
-            {
-                "attribute": "otaState",
-                "channel": "ota-state",
-                "channelType": "ota-state",
-                "itemType": "Number",
-                "inType": "String",
-                "outType": "DecimalType",
-                "transformation": "mapping",
-                "mapping": {
-                    "readyToCheck": 0,
-                    "checkInProgress": 1,
-                    "readyToDownload": 2,
-                    "downloadInProgress": 3,
-                    "updateInProgress": 4,
-                    "updateFailed": 5,
-                    "readyToUpdate": 6,
-                    "checkFailed": 7,
-                    "downloadFailed": 8,
-                    "updateComplete": 9,
-                    "batteryCheckFailed": 10
-                }
-            },
-            {
-                "attribute": "otaProgress",
-                "channel": "ota-progress",
-                "channelType": "ota-percent",
-                "itemType": "Number:Dimensionless",
-                "inType": "Integer",
-                "outType": "QuantityType",
-                "transformation": "format",
-                "format": "%d %%"
-            },
-            {
-                "attribute": "customName",
-                "channel": "custom-name",
-                "channelType": "custom-name",
-                "itemType": "String",
-                "inType": "String",
-                "outType": "StringType",
-                "transformation": "raw"
-            }
-        ],
-        "controlProperties": [
-            {
-                "attribute": "customName",
-                "channel": "custom-name",
-                "itemType": "String",
-                "inType": "String",
-                "outType": "String",
-                "transformation": "raw",
-                "json": "attribute"
-            }
-        ],
-        "linkCandidates": [
-        ],
-        "thingProperties": [
-            "model",
-            "manufacturer",
-            "firmwareVersion",
-            "hardwareVersion",
-            "serialNumber",
-            "productCode",
-            "type",
-            "deviceType",
-            "canSend",
-            "canReceive"
-        ]
-    },
-    {
-        "thingType": "environmentSensor",
-        "identification": {
-            "type": "sensor",
-            "deviceType": "environmentSensor"
-        },
-        "statusProperties": [
-            {
-                "attribute": "currentTemperature",
-                "channel": "temperature",
-                "channelType": "system.indoor-temperature",
-                "itemType": "Number:Temperature",
-                "inType": "Float",
-                "outType": "QuantityType",
-                "transformation": "format",
-                "format": "%f °C"
-            },
-            {
-                "attribute": "currentRH",
-                "channel": "humidity",
-                "channelType": "system.atmospheric-humidity",
-                "itemType": "Number:Dimensionless",
-                "inType": "Integer",
-                "outType": "QuantityType",
-                "transformation": "format",
-                "format": "%d %%"
-            },
-            {
-                "attribute": "currentPM25",
-                "channel": "particulate-matter",
-                "channelType": "pm25",
-                "itemType": "Number:Density",
-                "inType": "Integer",
-                "outType": "QuantityType",
-                "transformation": "format",
-                "format": "%d µg/m³"
-            },
-            {
-                "attribute": "currentCO2",
-                "channel": "co2",
-                "channelType": "co2",
-                "itemType": "Number:Dimensionless",
-                "inType": "Integer",
-                "outType": "QuantityType",
-                "transformation": "format",
-                "format": "%d ppm"
-            },
-            {
-                "attribute": "vocIndex",
-                "channel": "voc-index",
-                "channelType": "voc",
-                "itemType": "Number",
-                "inType": "Integer",
-                "outType": "Number",
-                "transformation": "raw"
-            }
-        ],
-        "controlProperties": [
-        ],
-        "linkCandidates": [
-        ],
-        "thingProperties": [
-            "minMeasuredCO2",
-            "maxMeasuredCO2",
-            "minMeasuredPM25",
-            "maxMeasuredPM25"
-        ]
-    },
-    {
-        "thingType": "openCloseSensor",
-        "identification": {
-            "type": "sensor",
-            "deviceType": "openCloseSensor"
-        },
-        "statusProperties": [
-            {
-                "attribute": "isOpen",
-                "channel": "contact",
-                "channelLabel": "Contact State",
-                "channelDescription": "State if door or window is open or closed",
-                "channelType": "contact",
-                "itemType": "Contact",
-                "inType": "Boolean",
-                "outType": "OpenClosedType",
-                "transformation": "raw"
-            }
-        ],
-        "controlProperties": [
-        ],
-        "linkCandidates": [
-        ],
-        "thingProperties": [
-        ]
-    },
-    {
-        "thingType": "waterSensor",
-        "identification": {
-            "type": "sensor",
-            "deviceType": "waterSensor"
-        },
-        "statusProperties": [
-            {
-                "attribute": "waterLeakDetected",
-                "channel": "leak",
-                "channelType": "alarm",
-                "itemType": "Switch",
-                "inType": "Boolean",
-                "outType": "OnOffType",
-                "transformation": "mapping",
-                 "mapping": {
-                     "true": "ON",
-                     "false": "OFF"
-                 }
-            }
-        ],
-        "controlProperties": [
-        ],
-        "linkCandidates": [
-        ],
-        "thingProperties": [
-        ]
-    },
-    {
-        "thingType": "lightSensor",
-        "identification": {
-            "type": "unknown",
-            "deviceType": "lightSensor"
-        },
-        "statusProperties": [
-            {
-                "attribute": "illuminance",
-                "channel": "illuminance",
-                "channelType": "illuminance",
-                "itemType": "Number:Illuminance",
-                "inType": "Integer",
-                "outType": "QuantityType",
-                "correction": "factor",
-                "factor": 0.01,
-                "transformation": "format",
-                "format": "%d lx"
-            }
-        ],
-        "controlProperties": [
-        ],
-        "linkCandidates": [
-        ],
-        "thingProperties": [
-            "minIlluminance",
-            "maxIlluminance"
-        ]
-    },
-    {
-        "thingType": "occupancySensor",
-        "identification": {
-            "type": "sensor",
-            "deviceType": "occupancySensor"
-        },
-        "statusProperties": [
-            {
-                "attribute": "isDetected",
-                "channel": "motion",
-                "channelType": "system.motion",
-                "itemType": "Switch",
-                "inType": "Boolean",
-                "outType": "OnOffType",
-                "transformation": "mapping",
-                "mapping": {
-                    "true": "ON",
-                    "false": "OFF"
-                }
-            },
-            {
-                "attribute": "circadianPresets",
-                "channel": "light-preset",
-                "channelType": "light-preset",
-                "itemType": "String",
-                "inType": "String",
-                "outType": "String",
-                "transformation": "raw"
-            }
-        ],
-        "controlProperties": [
-            {
-                "attribute": "circadianPresets",
-                "channel": "light-preset",
-                "itemType": "String",
-                "inType": "String",
-                "outType": "String",
-                "transformation": "code"
-            }
-        ],
-        "linkCandidates": [
-            "light",
-            "outlet"
-        ],
-        "thingProperties": [
-        ]
-    },
-    {
-        "thingType": "light",
-        "identification": {
-            "type": "light",
-            "deviceType": "light"
-        },
-        "statusProperties": [
-            {
-                "attribute": "isOn",
-                "channel": "power",
-                "channelType": "system.power",
-                "itemType": "Switch",
-                "inType": "Boolean",
-                "outType": "OnOffType",
-                "transformation": "mapping",
-                "mapping": {
-                    "true": "ON",
-                    "false": "OFF"
-                }
-            },
-            {
-                "attribute": "lightLevel",
-                "channel": "brightness",
-                "channelType": "system.brightness",
-                "itemType": "Dimmer",
-                "inType": "Integer",
-                "outType": "PercenType",
-                "transformation": "raw"
-            },
-            {
-                "attribute": "colorTemperature",
-                "channel": "color-temperature-abs",
-                "channelLabel": "Color Temperature Kelvin",
-                "channelType": "system.color-temperature-abs",
-                "itemType": "Number:Temperature",
-                "inType": "Integer",
-                "outType": "QuantityType",
-                "transformation": "format",
-                "format": "%d K"
-            },
-            {
-                "attribute": "colorHue",
-                "channel": "color",
-                "channelType": "system.color",
-                "itemType": "Color",
-                "inType": "Float",
-                "outType": "HSBType",
-                "transformation": "code"
-            },
-            {
-                "attribute": "startupOnOff",
-                "channel": "startup",
-                "channelType": "startup",
-                "itemType": "Number",
-                "inType": "String",
-                "outType": "Integer",
-                "transformation": "mapping",
-                "mapping": {
-                    "startPrevious": 0,
-                    "startOn": 1,
-                    "startOff": 2,
-                    "startToggle": 3
-                }
-            }
-        ],
-        "controlProperties": [
-            {
-                "attribute": "isOn",
-                "channel": "power",
-                "itemType": "Switch",
-                "inType": "",
-                "outType": "Boolean",
-                "transformation": "raw",
-                "json": "attribute"
-            },
-            {
-                "attribute": "startupOnOff",
-                "channel": "startup",
-                "itemType": "Number",
-                "inType": "Number",
-                "outType": "String",
-                "transformation": "mapping",
-                "mapping": {
-                    "0": "startPrevious",
-                    "1": "startOn",
-                    "2": "startOff",
-                    "3": "startToggle"
-                },
-                "json": "attribute"
-            }
-        ],
-        "linkCandidates": [
-        ],
-        "thingProperties": [
-            "colorTemperatureMin",
-            "colorTemperatureMax"
-        ]
-    },
-    {
-        "thingType": "genericSwitch",
-        "identification": {
-            "type": "sensor",
-            "deviceType": "genericSwitch"
-        },
-        "statusProperties": [
-            {
-                "attribute": "controlMode",
-                "channel": "control-mode",
-                "channelType": "mode-3-options",
-                "itemType": "Number",
-                "inType": "String",
-                "outType": "DecimalType",
-                "transformation": "mapping",
-                "mapping": {
-                    "light": 0,
-                    "speaker": 1,
-                    "blind": 2
-                }
-            }
-        ],
-        "controlProperties": [
-            {
-                "attribute": "controlMode",
-                "channel": "control-mode",
-                "itemType": "Number",
-                "inType": "Number",
-                "outType": "String",
-                "transformation": "mapping",
-                "mapping": {
-                    "0": "light",
-                    "1": "speaker",
-                    "2": "blind"
-                },
-                "json": "attribute"
-            }
-        ],
-        "linkCandidates": [
-        ],
-        "thingProperties": [
-        ]
-    },
-        {
-        "thingType": "three-button-switch",
-        "identification": {
-            "type": "sensor",
-            "deviceType": "genericSwitch"
-        },
-        "statusProperties": [
-            {
-                "attribute": "controlMode",
-                "channel": "control-mode",
-                "channelType": "mode-2-options",
-                "itemType": "Number",
-                "inType": "String",
-                "outType": "DecimalType",
-                "transformation": "mapping",
-                "mapping": {
-                    "light": 0,
-                    "speaker": 1,
-                    "blind": 2
-                }
-            }
-        ],
-        "controlProperties": [
-            {
-                "attribute": "controlMode",
-                "channel": "control-mode",
-                "itemType": "Number",
-                "inType": "Number",
-                "outType": "String",
-                "transformation": "mapping",
-                "mapping": {
-                    "0": "light",
-                    "1": "speaker",
-                    "2": "blind"
-                },
-                "json": "attribute"
-            }
-        ],
-        "linkCandidates": [
-        ],
-        "thingProperties": [
-        ]
-    }
-    
+	{
+		"thingType": "baseDevice",
+		"comment": "Contains most common properties for matter devicea. Evaluation which properties really applies is done in handler initialize",
+		"statusProperties": [
+			{
+				"attribute": "batteryPercentage",
+				"channel": "battery-level",
+				"channelType": "system.battery-level",
+				"itemType": "Number:Dimensionless",
+				"inType": "Integer",
+				"outType": "QuantityType",
+				"transformation": "format",
+				"format": "%d %%"
+			},
+			{
+				"attribute": "otaStatus",
+				"channel": "ota-status",
+				"channelType": "ota-status",
+				"itemType": "Number",
+				"inType": "String",
+				"outType": "DecimalType",
+				"transformation": "mapping",
+				"mapping": {
+					"upToDate": 0,
+					"updateAvailable": 1
+				}
+			},
+			{
+				"attribute": "otaState",
+				"channel": "ota-state",
+				"channelType": "ota-state",
+				"itemType": "Number",
+				"inType": "String",
+				"outType": "DecimalType",
+				"transformation": "mapping",
+				"mapping": {
+					"readyToCheck": 0,
+					"checkInProgress": 1,
+					"readyToDownload": 2,
+					"downloadInProgress": 3,
+					"updateInProgress": 4,
+					"updateFailed": 5,
+					"readyToUpdate": 6,
+					"checkFailed": 7,
+					"downloadFailed": 8,
+					"updateComplete": 9,
+					"batteryCheckFailed": 10
+				}
+			},
+			{
+				"attribute": "otaProgress",
+				"channel": "ota-progress",
+				"channelType": "ota-percent",
+				"itemType": "Number:Dimensionless",
+				"inType": "Integer",
+				"outType": "QuantityType",
+				"transformation": "format",
+				"format": "%d %%"
+			},
+			{
+				"attribute": "customName",
+				"channel": "custom-name",
+				"channelType": "custom-name",
+				"itemType": "String",
+				"inType": "String",
+				"outType": "StringType",
+				"transformation": "raw"
+			}
+		],
+		"controlProperties": [
+			{
+				"attribute": "customName",
+				"channel": "custom-name",
+				"itemType": "String",
+				"inType": "String",
+				"outType": "String",
+				"transformation": "raw",
+				"json": "attribute"
+			}
+		],
+		"linkCandidates": [],
+		"thingProperties": [
+			"model",
+			"manufacturer",
+			"firmwareVersion",
+			"hardwareVersion",
+			"serialNumber",
+			"productCode",
+			"type",
+			"deviceType",
+			"canSend",
+			"canReceive"
+		]
+	},
+	{
+		"thingType": "environmentSensor",
+		"identification": {
+			"type": "sensor",
+			"deviceType": "environmentSensor"
+		},
+		"statusProperties": [
+			{
+				"attribute": "currentTemperature",
+				"channel": "temperature",
+				"channelType": "system.indoor-temperature",
+				"itemType": "Number:Temperature",
+				"inType": "Float",
+				"outType": "QuantityType",
+				"transformation": "format",
+				"format": "%f °C"
+			},
+			{
+				"attribute": "currentRH",
+				"channel": "humidity",
+				"channelType": "system.atmospheric-humidity",
+				"itemType": "Number:Dimensionless",
+				"inType": "Integer",
+				"outType": "QuantityType",
+				"transformation": "format",
+				"format": "%d %%"
+			},
+			{
+				"attribute": "currentPM25",
+				"channel": "particulate-matter",
+				"channelType": "pm25",
+				"itemType": "Number:Density",
+				"inType": "Integer",
+				"outType": "QuantityType",
+				"transformation": "format",
+				"format": "%d µg/m³"
+			},
+			{
+				"attribute": "currentCO2",
+				"channel": "co2",
+				"channelType": "co2",
+				"itemType": "Number:Dimensionless",
+				"inType": "Integer",
+				"outType": "QuantityType",
+				"transformation": "format",
+				"format": "%d ppm"
+			},
+			{
+				"attribute": "vocIndex",
+				"channel": "voc-index",
+				"channelType": "voc",
+				"itemType": "Number",
+				"inType": "Integer",
+				"outType": "Number",
+				"transformation": "raw"
+			}
+		],
+		"controlProperties": [],
+		"linkCandidates": [],
+		"thingProperties": [
+			"minMeasuredCO2",
+			"maxMeasuredCO2",
+			"minMeasuredPM25",
+			"maxMeasuredPM25"
+		]
+	},
+	{
+		"thingType": "openCloseSensor",
+		"identification": {
+			"type": "sensor",
+			"deviceType": "openCloseSensor"
+		},
+		"statusProperties": [
+			{
+				"attribute": "isOpen",
+				"channel": "contact",
+				"channelLabel": "Contact State",
+				"channelDescription": "State if door or window is open or closed",
+				"channelType": "contact",
+				"itemType": "Contact",
+				"inType": "Boolean",
+				"outType": "OpenClosedType",
+				"transformation": "raw"
+			}
+		],
+		"controlProperties": [],
+		"linkCandidates": [],
+		"thingProperties": []
+	},
+	{
+		"thingType": "waterSensor",
+		"identification": {
+			"type": "sensor",
+			"deviceType": "waterSensor"
+		},
+		"statusProperties": [
+			{
+				"attribute": "waterLeakDetected",
+				"channel": "leak",
+				"channelType": "alarm",
+				"itemType": "Switch",
+				"inType": "Boolean",
+				"outType": "OnOffType",
+				"transformation": "mapping",
+				"mapping": {
+					"true": "ON",
+					"false": "OFF"
+				}
+			}
+		],
+		"controlProperties": [],
+		"linkCandidates": [],
+		"thingProperties": []
+	},
+	{
+		"thingType": "lightSensor",
+		"identification": {
+			"type": "unknown",
+			"deviceType": "lightSensor"
+		},
+		"statusProperties": [
+			{
+				"attribute": "illuminance",
+				"channel": "illuminance",
+				"channelType": "illuminance",
+				"itemType": "Number:Illuminance",
+				"inType": "Integer",
+				"outType": "QuantityType",
+				"correction": "factor",
+				"factor": 0.01,
+				"transformation": "format",
+				"format": "%d lx"
+			}
+		],
+		"controlProperties": [],
+		"linkCandidates": [],
+		"thingProperties": [
+			"minIlluminance",
+			"maxIlluminance"
+		]
+	},
+	{
+		"thingType": "occupancySensor",
+		"identification": {
+			"type": "sensor",
+			"deviceType": "occupancySensor"
+		},
+		"statusProperties": [
+			{
+				"attribute": "isDetected",
+				"channel": "motion",
+				"channelType": "system.motion",
+				"itemType": "Switch",
+				"inType": "Boolean",
+				"outType": "OnOffType",
+				"transformation": "mapping",
+				"mapping": {
+					"true": "ON",
+					"false": "OFF"
+				}
+			},
+			{
+				"attribute": "circadianPresets",
+				"channel": "light-preset",
+				"channelType": "light-preset",
+				"itemType": "String",
+				"inType": "String",
+				"outType": "String",
+				"transformation": "raw"
+			}
+		],
+		"controlProperties": [
+			{
+				"attribute": "circadianPresets",
+				"channel": "light-preset",
+				"itemType": "String",
+				"inType": "String",
+				"outType": "String",
+				"transformation": "code"
+			}
+		],
+		"linkCandidates": [
+			"light",
+			"outlet"
+		],
+		"thingProperties": []
+	},
+	{
+		"thingType": "light",
+		"identification": {
+			"type": "light",
+			"deviceType": "light"
+		},
+		"statusProperties": [
+			{
+				"attribute": "isOn",
+				"channel": "power",
+				"channelType": "system.power",
+				"itemType": "Switch",
+				"inType": "Boolean",
+				"outType": "OnOffType",
+				"transformation": "mapping",
+				"mapping": {
+					"true": "ON",
+					"false": "OFF"
+				}
+			},
+			{
+				"attribute": "lightLevel",
+				"channel": "brightness",
+				"channelType": "system.brightness",
+				"itemType": "Dimmer",
+				"inType": "Integer",
+				"outType": "PercenType",
+				"transformation": "raw"
+			},
+			{
+				"attribute": "colorTemperature",
+				"channel": "color-temperature-abs",
+				"channelLabel": "Color Temperature Kelvin",
+				"channelType": "system.color-temperature-abs",
+				"itemType": "Number:Temperature",
+				"inType": "Integer",
+				"outType": "QuantityType",
+				"transformation": "format",
+				"format": "%d K"
+			},
+			{
+				"attribute": "colorHue",
+				"channel": "color",
+				"channelType": "system.color",
+				"itemType": "Color",
+				"inType": "Float",
+				"outType": "HSBType",
+				"transformation": "code"
+			},
+			{
+				"attribute": "startupOnOff",
+				"channel": "startup",
+				"channelType": "startup",
+				"itemType": "Number",
+				"inType": "String",
+				"outType": "Integer",
+				"transformation": "mapping",
+				"mapping": {
+					"startPrevious": 0,
+					"startOn": 1,
+					"startOff": 2,
+					"startToggle": 3
+				}
+			}
+		],
+		"controlProperties": [
+			{
+				"attribute": "isOn",
+				"channel": "power",
+				"itemType": "Switch",
+				"inType": "",
+				"outType": "Boolean",
+				"transformation": "raw",
+				"json": "attribute"
+			},
+			{
+				"attribute": "startupOnOff",
+				"channel": "startup",
+				"itemType": "Number",
+				"inType": "Number",
+				"outType": "String",
+				"transformation": "mapping",
+				"mapping": {
+					"0": "startPrevious",
+					"1": "startOn",
+					"2": "startOff",
+					"3": "startToggle"
+				},
+				"json": "attribute"
+			}
+		],
+		"linkCandidates": [],
+		"thingProperties": [
+			"colorTemperatureMin",
+			"colorTemperatureMax"
+		]
+	},
+	{
+		"thingType": "genericSwitch",
+		"identification": {
+			"type": "sensor",
+			"deviceType": "genericSwitch"
+		},
+		"statusProperties": [
+			{
+				"attribute": "controlMode",
+				"channel": "control-mode",
+				"channelType": "mode-3-options",
+				"itemType": "Number",
+				"inType": "String",
+				"outType": "DecimalType",
+				"transformation": "mapping",
+				"mapping": {
+				    "shortcut":0,
+					"light": 1,
+					"speaker": 2,
+					"blind": 3
+				}
+			}
+		],
+		"controlProperties": [
+			{
+				"attribute": "controlMode",
+				"channel": "control-mode",
+				"itemType": "Number",
+				"inType": "Number",
+				"outType": "String",
+				"transformation": "mapping",
+				"mapping": {
+				    "0": "shortcut",
+					"1": "light",
+					"2": "speaker",
+					"3": "blind"
+				},
+				"json": "attribute"
+			}
+		],
+		"linkCandidates": [],
+		"thingProperties": []
+	}
 ]

@@ -65,6 +65,7 @@ public class CallbackMock implements ThingHandlerCallback {
 
     @Override
     public void stateUpdated(ChannelUID channelUID, State state) {
+        System.out.println("CallbackMock: stateUpdated " + channelUID + " to " + state);
         stateMap.put(channelUID.getAsString(), state);
     }
 

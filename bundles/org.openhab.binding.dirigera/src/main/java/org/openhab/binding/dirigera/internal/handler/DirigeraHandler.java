@@ -214,9 +214,6 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway, Debug
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/dirigera.device.status.missing-ip");
         } else {
-            // do this asynchronous in case of token and other parameters needs to be
-            // obtained via Rest API calls
-            updateStatus(ThingStatus.UNKNOWN);
             scheduler.execute(this::doInitialize);
         }
     }
@@ -901,12 +898,15 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway, Debug
                     }
                     break;
                 case EVENT_TYPE_REMOTE_PRESS:
+                    logger.debug("DIRIGERA HANDLER {} Remote Press Event {}", targetId, json);
                     if (targetId != null) {
                         List<BaseDevice> handlerList = getHandlersForDeviceId(targetId);
                         if (!handlerList.isEmpty()) {
                             handlerList.forEach(targetHandler -> {
                                 targetHandler.handleUpdate(data);
                             });
+                        } else {
+                            logger.debug("DIRIGERA HANDLER Remote Press Event for unknown device {}", targetId);
                         }
                     }
                     break;

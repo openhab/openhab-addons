@@ -120,6 +120,9 @@ public class BaseMatterHandler extends BaseThingHandler implements BaseDevice, D
         initLinks();
         JSONArray allDeviceUpadtes = initChannels();
         initThingProperties(allDeviceUpadtes);
+        if (!linkHandlerMap.isEmpty()) {
+            gateway().updateLinks();
+        }
         logger.trace("{} initialize took {} ms", thing.getLabel(),
                 Duration.between(startTime, Instant.now()).toMillis());
     }
@@ -166,11 +169,8 @@ public class BaseMatterHandler extends BaseThingHandler implements BaseDevice, D
             JSONObject deviceUpdate = gateway().api().readDevice(deviceId);
             allUpdates.put(deviceUpdate);
             createChannels(deviceUpdate);
-            handleUpdate(deviceUpdate);
-        });
-        // register devices in gateway for updates
-        deviceModelMap.forEach((deviceId, deviceModel) -> {
             gateway().registerDevice(child, deviceId);
+            handleUpdate(deviceUpdate);
         });
         return allUpdates;
     }
@@ -242,6 +242,7 @@ public class BaseMatterHandler extends BaseThingHandler implements BaseDevice, D
             BridgeHandler handler = bridge.getHandler();
             if (handler != null) {
                 if (handler instanceof Gateway gw) {
+                    logger.warn("{} found Gateway status {}", thing.getLabel(), gw.getThing().getStatus());
                     gateway = gw;
                     return true;
                 } else {
@@ -282,10 +283,11 @@ public class BaseMatterHandler extends BaseThingHandler implements BaseDevice, D
                 linkHandler.handleCommand(channelUID, command);
             });
             String targetChannel = channelUID.getIdWithoutGroup();
-            // some special treatments for power and links
             switch (targetChannel) {
                 case CHANNEL_POWER_STATE:
                     if (command instanceof OnOffType onOff) {
+                        // store requested power state to identify if power change was requested by OH or came from
+                        // outside
                         requestedPowerState = onOff;
                     }
                     break;
@@ -602,34 +604,31 @@ public class BaseMatterHandler extends BaseThingHandler implements BaseDevice, D
     @Override
     public void updateLinksDone() {
         List<CommandOption> linkCommandOptions = new ArrayList<>();
-        List<String> linkDisplay = new ArrayList<>();
         List<CommandOption> linkCandidateCommandOptions = new ArrayList<>();
-        List<String> linkCandidateDisplay = new ArrayList<>();
         linkHandlerMap.forEach((deviceId, linkHandler) -> {
-            linkHandler.getLinkOptions().forEach(commandOption -> {
-                String label = commandOption.getLabel();
-                if (!linkCommandOptions.contains(commandOption) && label != null) {
-                    linkCommandOptions.add(commandOption);
-                    linkDisplay.add(label);
-                }
-            });
-            linkHandler.getCandidateOptions().forEach(commandOption -> {
-                String label = commandOption.getLabel();
-                if (!linkCandidateCommandOptions.contains(commandOption) && label != null) {
-                    linkCandidateCommandOptions.add(commandOption);
-                    linkCandidateDisplay.add(label);
-                }
-            });
-
+            merge(linkHandler.getLinkOptions(), linkCommandOptions);
+            merge(linkHandler.getCandidateOptions(), linkCandidateCommandOptions);
         });
+
         ChannelUID linkChannelUUID = new ChannelUID(getThing().getUID(), CHANNEL_LINKS);
         gateway().getCommandProvider().setCommandOptions(linkChannelUUID, linkCommandOptions);
-        logger.trace("{} links {}", getThing().getLabel(), linkDisplay);
-        updateState(linkChannelUUID, StringType.valueOf(linkDisplay.toString()));
+        String links = linkCommandOptions.stream().map(CommandOption::getLabel).toList().toString();
+        logger.trace("{} links {}", getThing().getLabel(), links);
+        updateState(linkChannelUUID, StringType.valueOf(links));
 
         ChannelUID candidateChannelUUID = new ChannelUID(getThing().getUID(), CHANNEL_LINK_CANDIDATES);
         gateway().getCommandProvider().setCommandOptions(candidateChannelUUID, linkCandidateCommandOptions);
-        updateState(candidateChannelUUID, StringType.valueOf(linkCandidateDisplay.toString()));
+        String candidates = linkCandidateCommandOptions.stream().map(CommandOption::getLabel).toList().toString();
+        updateState(candidateChannelUUID, StringType.valueOf(candidates));
+    }
+
+    private void merge(List<CommandOption> source, List<CommandOption> target) {
+        source.forEach(commandOption -> {
+            String label = commandOption.getLabel();
+            if (!target.contains(commandOption) && label != null) {
+                target.add(commandOption);
+            }
+        });
     }
 
     public void addPowerListener(PowerListener listener) {

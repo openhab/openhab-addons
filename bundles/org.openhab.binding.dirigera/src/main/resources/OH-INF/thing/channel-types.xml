@@ -376,9 +376,10 @@
 		<description>Select which device type shall be controlled</description>
 		<state readOnly="false">
 			<options>
-				<option value="0">Lights and outlets</option>
-				<option value="1">Speakers</option>
-				<option value="2">Blinds</option>
+				<option value="0">Shortcut</option>
+				<option value="1">Lights and outlets</option>
+				<option value="2">Speakers</option>
+				<option value="3">Blinds</option>
 			</options>
 		</state>
 	</channel-type>
@@ -388,8 +389,9 @@
 		<description>Select which device type shall be controlled</description>
 		<state readOnly="false">
 			<options>
-				<option value="0">Lights and outlets</option>
-				<option value="1">Speakers</option>
+				<option value="0">Shortcut</option>
+				<option value="1">Lights and outlets</option>
+				<option value="2">Speakers</option>
 			</options>
 		</state>
 	</channel-type>

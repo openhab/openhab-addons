@@ -195,6 +195,9 @@ public class Constants {
     public static final String CHANNEL_BUTTON_1 = "button1";
     public static final String CHANNEL_BUTTON_2 = "button2";
 
+    // matter controller channels
+    public static final String CHANNEL_CONTROL_MODE = "control-mode";
+
     /**
      * Maps connecting device attributes to channel ids
      */
