@@ -90,6 +90,7 @@ public class IpTransport implements AutoCloseable {
         socket = new Socket();
         socket.setKeepAlive(true); // keep-alive forbidden for accessories but client should use it
         socket.setTcpNoDelay(true); // disable Nagle algorithm to force immediate flushing of packets
+        socket.setSoTimeout(500); // allow socket to be interruptible
         socket.connect(new InetSocketAddress(parts[0], Integer.parseInt(parts[1])), TIMEOUT_MILLI_SECONDS);
 
         httpPayloadParser = new HttpPayloadParser(socket.getInputStream());
@@ -139,11 +140,11 @@ public class IpTransport implements AutoCloseable {
         SecureSession secureSession = new SecureSession(socket, keys);
         this.secureSession = secureSession;
 
-        // close old parser and create a new one on the decrypting stream
+        // close old parser and replace it with a new one created on the secure session stream
         try {
             httpPayloadParser.close();
         } catch (IOException e) {
-            // ignore
+            // ignore since old parser is no longer relevant
         }
         httpPayloadParser = new HttpPayloadParser(secureSession.getInputStream());
         setParserHandlers(httpPayloadParser);

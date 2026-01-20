@@ -14,6 +14,7 @@ package org.openhab.binding.homekit.internal.session;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.SocketTimeoutException;
 import java.nio.charset.StandardCharsets;
 import java.util.function.Consumer;
 import java.util.regex.Matcher;
@@ -111,20 +112,26 @@ public class HttpPayloadParser implements AutoCloseable {
         try {
             byte[] buffer = new byte[4096];
             while (!closed) {
-                int byteCount = inputStream.read(buffer);
-                if (byteCount == -1) {
-                    // normal EOF
+                try {
+                    int byteCount = inputStream.read(buffer);
+                    if (byteCount == -1) {
+                        // normal EOF
+                        break;
+                    }
+                    if (byteCount > 0) {
+                        appendToBuffer(buffer, 0, byteCount);
+                        parseAvailable();
+                    }
+                } catch (SocketTimeoutException e) {
+                    // allows thread to poll closed flag or be interrupted
+                    continue;
+                } catch (IOException e) {
+                    logger.debug("Input stream closed or error occurred: {}", e.getMessage());
+                    if (errorHandler instanceof Consumer<Throwable> handler) {
+                        handler.accept(e);
+                    }
                     break;
                 }
-                if (byteCount > 0) {
-                    appendToBuffer(buffer, 0, byteCount);
-                    parseAvailable();
-                }
-            }
-        } catch (IOException e) {
-            logger.debug("Input stream closed or error occurred: {}", e.getMessage());
-            if (errorHandler instanceof Consumer<Throwable> handler) {
-                handler.accept(e);
             }
         } finally {
             closed = true;
@@ -501,13 +508,8 @@ public class HttpPayloadParser implements AutoCloseable {
     public void close() throws IOException {
         closed = true;
         try {
-            inputStream.close();
-        } catch (Exception e) {
-            // fall through
-        }
-        try {
-            inputThread.interrupt();
-            inputThread.join();
+            inputThread.interrupt(); // interrupt is faster than closed flag alone
+            inputThread.join(); // blocks until thread is really finished
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }

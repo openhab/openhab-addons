@@ -35,6 +35,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -87,6 +88,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
     private final Logger logger = LoggerFactory.getLogger(HomekitBaseAccessoryHandler.class);
     private final Map<Long, Accessory> accessories = new ConcurrentHashMap<>();
     private final HomekitKeyStore keyStore;
+    private final AtomicBoolean sessionUpgradeInProgress = new AtomicBoolean(false);
 
     private boolean isConfigured = false;
     private int connectionAttemptDelay = MIN_CONNECTION_ATTEMPT_DELAY_SECONDS;
@@ -193,6 +195,18 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
         }
         ipTransport = null;
         super.dispose();
+    }
+
+    /**
+     * Fetches accessories after a secure session upgrade has completed, ensuring that the
+     * sessionUpgradeInProgress flag is reset afterwards.
+     */
+    private void fetchAccessoriesAfterUpgrade() {
+        try {
+            fetchAccessories();
+        } finally {
+            sessionUpgradeInProgress.set(false);
+        }
     }
 
     /**
@@ -305,18 +319,29 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
             PairVerifyClient client = new PairVerifyClient(getIpTransport(), keyStore.getControllerUUID(),
                     keyStore.getControllerKey(), accessoryKey);
 
+            sessionUpgradeInProgress.set(true);
+
+            if (connectionAttemptTask instanceof ScheduledFuture<?> task) {
+                task.cancel(true);
+                connectionAttemptTask = null;
+            }
+
             getIpTransport().setSessionKeys(client.verify());
             rwService = new CharacteristicReadWriteClient(getIpTransport());
             throttler.reset();
 
             logger.debug("{} restored pairing was verified", thing.getUID());
-            scheduler.schedule(this::fetchAccessories, MIN_CONNECTION_ATTEMPT_DELAY_SECONDS, TimeUnit.SECONDS);
+            scheduler.schedule(this::fetchAccessoriesAfterUpgrade, MIN_CONNECTION_ATTEMPT_DELAY_SECONDS,
+                    TimeUnit.SECONDS);
+
             return true; // pairing restore succeeded => exit
         } catch (NoSuchAlgorithmException | NoSuchProviderException | IllegalAccessException
                 | InvalidCipherTextException | IOException | InterruptedException | TimeoutException
                 | ExecutionException | IllegalStateException e) {
             logger.debug("{} restored pairing was not verified", thing.getUID(), e);
             // pairing restore failed => exit and perhaps try again later
+            sessionUpgradeInProgress.set(false);
+            scheduleConnectionAttempt();
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     THING_STATUS_FMT.formatted("error.pairing-verification-failed", e.getMessage()));
             return false;
@@ -362,6 +387,10 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
      * If successful, resets the retry delay. If not, reschedules itself with an exponentially increased delay.
      */
     private synchronized void attemptConnect() {
+        if (sessionUpgradeInProgress.get()) {
+            logger.debug("{} skipping reconnect during session upgrade", thing.getUID());
+            return;
+        }
         if (ipTransport instanceof IpTransport transport) { // close prior transport (if any)
             transport.close();
             ipTransport = null;
