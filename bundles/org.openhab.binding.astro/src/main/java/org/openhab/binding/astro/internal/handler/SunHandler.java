@@ -36,7 +36,7 @@ import org.openhab.binding.astro.internal.model.Radiation;
 import org.openhab.binding.astro.internal.model.Range;
 import org.openhab.binding.astro.internal.model.Season;
 import org.openhab.binding.astro.internal.model.Sun;
-import org.openhab.binding.astro.internal.model.SunPhaseName;
+import org.openhab.binding.astro.internal.model.SunPhase;
 import org.openhab.binding.astro.internal.util.DateTimeUtils;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TimeZoneProvider;
@@ -277,7 +277,7 @@ public class SunHandler extends AstroThingHandler {
             case CHANNEL_ID_SUN_ECLIPSE_RING_ELEVATION:
                 return toState(sun.getEclipseSet().getElevation(EclipseKind.RING), channel);
             case CHANNEL_ID_SUN_PHASE_NAME:
-                return toState(sun.getPhase().getName(), channel);
+                return toState(sun.getSunPhase(), channel);
             case CHANNEL_ID_SUN_CIRCADIAN_BRIGHTNESS:
                 return toState(sun.getCircadian().getBrightness(), channel);
             case CHANNEL_ID_SUN_CIRCADIAN_TEMPERATURE:
@@ -318,7 +318,7 @@ public class SunHandler extends AstroThingHandler {
         return localSun;
     }
 
-    public @Nullable ZonedDateTime getEventTime(SunPhaseName sunPhase, ZonedDateTime date, boolean begin) {
+    public @Nullable ZonedDateTime getEventTime(SunPhase sunPhase, ZonedDateTime date, boolean begin) {
         Range eventRange = getSunAt(date).getAllRanges().get(sunPhase);
         if (eventRange != null) {
             Calendar cal = begin ? eventRange.getStart() : eventRange.getEnd();

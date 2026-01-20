@@ -26,7 +26,7 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public class Sun extends RiseSet implements Planet {
 
-    private Map<SunPhaseName, Range> ranges = new HashMap<>();
+    private Map<SunPhase, Range> ranges = new HashMap<>();
 
     private Position position = Position.NONE;
     private Zodiac zodiac = Zodiac.NONE;
@@ -35,7 +35,7 @@ public class Sun extends RiseSet implements Planet {
 
     private @Nullable Season season = null;
 
-    private SunPhase phase = new SunPhase();
+    private @Nullable SunPhase sunPhase;
 
     private Circadian circadian = Circadian.NONE;
 
@@ -44,14 +44,14 @@ public class Sun extends RiseSet implements Planet {
      */
     @Nullable
     public Range getAstroDawn() {
-        return ranges.get(SunPhaseName.ASTRO_DAWN);
+        return ranges.get(SunPhase.ASTRO_DAWN);
     }
 
     /**
      * Sets the astro dawn range.
      */
     public void setAstroDawn(Range astroDawn) {
-        ranges.put(SunPhaseName.ASTRO_DAWN, astroDawn);
+        ranges.put(SunPhase.ASTRO_DAWN, astroDawn);
     }
 
     /**
@@ -59,14 +59,14 @@ public class Sun extends RiseSet implements Planet {
      */
     @Nullable
     public Range getNauticDawn() {
-        return ranges.get(SunPhaseName.NAUTIC_DAWN);
+        return ranges.get(SunPhase.NAUTIC_DAWN);
     }
 
     /**
      * Sets the nautic dawn range.
      */
     public void setNauticDawn(Range nauticDawn) {
-        ranges.put(SunPhaseName.NAUTIC_DAWN, nauticDawn);
+        ranges.put(SunPhase.NAUTIC_DAWN, nauticDawn);
     }
 
     /**
@@ -74,14 +74,14 @@ public class Sun extends RiseSet implements Planet {
      */
     @Nullable
     public Range getCivilDawn() {
-        return ranges.get(SunPhaseName.CIVIL_DAWN);
+        return ranges.get(SunPhase.CIVIL_DAWN);
     }
 
     /**
      * Sets the civil dawn range.
      */
     public void setCivilDawn(Range civilDawn) {
-        ranges.put(SunPhaseName.CIVIL_DAWN, civilDawn);
+        ranges.put(SunPhase.CIVIL_DAWN, civilDawn);
     }
 
     /**
@@ -89,14 +89,14 @@ public class Sun extends RiseSet implements Planet {
      */
     @Nullable
     public Range getCivilDusk() {
-        return ranges.get(SunPhaseName.CIVIL_DUSK);
+        return ranges.get(SunPhase.CIVIL_DUSK);
     }
 
     /**
      * Sets the civil dusk range.
      */
     public void setCivilDusk(Range civilDusk) {
-        ranges.put(SunPhaseName.CIVIL_DUSK, civilDusk);
+        ranges.put(SunPhase.CIVIL_DUSK, civilDusk);
     }
 
     /**
@@ -104,14 +104,14 @@ public class Sun extends RiseSet implements Planet {
      */
     @Nullable
     public Range getNauticDusk() {
-        return ranges.get(SunPhaseName.NAUTIC_DUSK);
+        return ranges.get(SunPhase.NAUTIC_DUSK);
     }
 
     /**
      * Sets the nautic dusk range.
      */
     public void setNauticDusk(Range nauticDusk) {
-        ranges.put(SunPhaseName.NAUTIC_DUSK, nauticDusk);
+        ranges.put(SunPhase.NAUTIC_DUSK, nauticDusk);
     }
 
     /**
@@ -119,14 +119,14 @@ public class Sun extends RiseSet implements Planet {
      */
     @Nullable
     public Range getAstroDusk() {
-        return ranges.get(SunPhaseName.ASTRO_DUSK);
+        return ranges.get(SunPhase.ASTRO_DUSK);
     }
 
     /**
      * Sets the astro dusk range.
      */
     public void setAstroDusk(Range astroDusk) {
-        ranges.put(SunPhaseName.ASTRO_DUSK, astroDusk);
+        ranges.put(SunPhase.ASTRO_DUSK, astroDusk);
     }
 
     /**
@@ -134,14 +134,14 @@ public class Sun extends RiseSet implements Planet {
      */
     @Nullable
     public Range getNoon() {
-        return ranges.get(SunPhaseName.NOON);
+        return ranges.get(SunPhase.NOON);
     }
 
     /**
      * Sets the noon range.
      */
     public void setNoon(Range noon) {
-        ranges.put(SunPhaseName.NOON, noon);
+        ranges.put(SunPhase.NOON, noon);
     }
 
     /**
@@ -149,14 +149,14 @@ public class Sun extends RiseSet implements Planet {
      */
     @Nullable
     public Range getDaylight() {
-        return ranges.get(SunPhaseName.DAYLIGHT);
+        return ranges.get(SunPhase.DAYLIGHT);
     }
 
     /**
      * Sets the daylight range.
      */
     public void setDaylight(Range daylight) {
-        ranges.put(SunPhaseName.DAYLIGHT, daylight);
+        ranges.put(SunPhase.DAYLIGHT, daylight);
     }
 
     /**
@@ -164,14 +164,14 @@ public class Sun extends RiseSet implements Planet {
      */
     @Nullable
     public Range getMorningNight() {
-        return ranges.get(SunPhaseName.MORNING_NIGHT);
+        return ranges.get(SunPhase.MORNING_NIGHT);
     }
 
     /**
      * Sets the morning night range.
      */
     public void setMorningNight(Range morningNight) {
-        ranges.put(SunPhaseName.MORNING_NIGHT, morningNight);
+        ranges.put(SunPhase.MORNING_NIGHT, morningNight);
     }
 
     /**
@@ -179,14 +179,14 @@ public class Sun extends RiseSet implements Planet {
      */
     @Nullable
     public Range getEveningNight() {
-        return ranges.get(SunPhaseName.EVENING_NIGHT);
+        return ranges.get(SunPhase.EVENING_NIGHT);
     }
 
     /**
      * Sets the evening night range.
      */
     public void setEveningNight(Range eveningNight) {
-        ranges.put(SunPhaseName.EVENING_NIGHT, eveningNight);
+        ranges.put(SunPhase.EVENING_NIGHT, eveningNight);
     }
 
     /**
@@ -194,14 +194,14 @@ public class Sun extends RiseSet implements Planet {
      */
     @Nullable
     public Range getNight() {
-        return ranges.get(SunPhaseName.NIGHT);
+        return ranges.get(SunPhase.NIGHT);
     }
 
     /**
      * Sets the night range.
      */
     public void setNight(Range night) {
-        ranges.put(SunPhaseName.NIGHT, night);
+        ranges.put(SunPhase.NIGHT, night);
     }
 
     /**
@@ -210,7 +210,7 @@ public class Sun extends RiseSet implements Planet {
     @Override
     public void setRise(Range rise) {
         super.setRise(rise);
-        ranges.put(SunPhaseName.SUN_RISE, rise);
+        ranges.put(SunPhase.SUN_RISE, rise);
     }
 
     /**
@@ -219,7 +219,7 @@ public class Sun extends RiseSet implements Planet {
     @Override
     public void setSet(Range set) {
         super.setSet(set);
-        ranges.put(SunPhaseName.SUN_SET, set);
+        ranges.put(SunPhase.SUN_SET, set);
     }
 
     /**
@@ -290,21 +290,22 @@ public class Sun extends RiseSet implements Planet {
     /**
      * Returns the sun phase.
      */
-    public SunPhase getPhase() {
-        return phase;
+    @Nullable
+    public SunPhase getSunPhase() {
+        return sunPhase;
     }
 
     /**
      * Sets the sun phase.
      */
-    public void setPhase(SunPhase phase) {
-        this.phase = phase;
+    public void setSunPhase(@Nullable SunPhase sunPhase) {
+        this.sunPhase = sunPhase;
     }
 
     /**
      * Returns all ranges of the sun.
      */
-    public Map<SunPhaseName, Range> getAllRanges() {
+    public Map<SunPhase, Range> getAllRanges() {
         return ranges;
     }
 

@@ -17,7 +17,7 @@ import static org.openhab.binding.astro.internal.AstroBindingConstants.CHANNEL_I
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.astro.internal.handler.AstroThingHandler;
 import org.openhab.binding.astro.internal.model.Sun;
-import org.openhab.binding.astro.internal.model.SunPhaseName;
+import org.openhab.binding.astro.internal.model.SunPhase;
 import org.openhab.core.thing.Channel;
 
 /**
@@ -29,17 +29,17 @@ import org.openhab.core.thing.Channel;
 @NonNullByDefault
 public final class SunPhaseJob extends AbstractJob {
 
-    private final SunPhaseName sunPhaseName;
+    private final SunPhase sunPhaseName;
 
     /**
      * Constructor
      *
      * @param handler the thing handler
-     * @param sunPhaseName {@link SunPhaseName} name
+     * @param sunPhaseName {@link SunPhase} name
      * @throws IllegalArgumentException
      *             if any of the arguments is {@code null}
      */
-    public SunPhaseJob(AstroThingHandler handler, SunPhaseName sunPhaseName) {
+    public SunPhaseJob(AstroThingHandler handler, SunPhase sunPhaseName) {
         super(handler);
         this.sunPhaseName = sunPhaseName;
     }
@@ -50,7 +50,7 @@ public final class SunPhaseJob extends AbstractJob {
             Channel phaseNameChannel = handler.getThing().getChannel(CHANNEL_ID_SUN_PHASE_NAME);
             if (phaseNameChannel != null) {
                 if (handler.getPlanet() instanceof Sun theSun) {
-                    theSun.getPhase().setName(sunPhaseName);
+                    theSun.setSunPhase(sunPhaseName);
                     handler.publishChannelIfLinked(phaseNameChannel.getUID());
                 }
             } else {

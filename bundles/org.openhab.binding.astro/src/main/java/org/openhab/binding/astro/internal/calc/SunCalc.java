@@ -32,7 +32,7 @@ import org.openhab.binding.astro.internal.model.Position;
 import org.openhab.binding.astro.internal.model.Range;
 import org.openhab.binding.astro.internal.model.Season;
 import org.openhab.binding.astro.internal.model.Sun;
-import org.openhab.binding.astro.internal.model.SunPhaseName;
+import org.openhab.binding.astro.internal.model.SunPhase;
 import org.openhab.binding.astro.internal.util.AstroConstants;
 import org.openhab.binding.astro.internal.util.DateTimeUtils;
 import org.openhab.binding.astro.internal.util.MathUtils;
@@ -256,13 +256,13 @@ public class SunCalc {
         }
 
         // phase
-        for (Entry<SunPhaseName, Range> rangeEntry : sortByValue(sun.getAllRanges()).entrySet()) {
-            SunPhaseName entryPhase = rangeEntry.getKey();
+        for (Entry<SunPhase, Range> rangeEntry : sortByValue(sun.getAllRanges()).entrySet()) {
+            SunPhase entryPhase = rangeEntry.getKey();
             if (rangeEntry.getValue().matches(calendar)) {
-                if (entryPhase == SunPhaseName.MORNING_NIGHT || entryPhase == SunPhaseName.EVENING_NIGHT) {
-                    sun.getPhase().setName(SunPhaseName.NIGHT);
+                if (entryPhase == SunPhase.MORNING_NIGHT || entryPhase == SunPhase.EVENING_NIGHT) {
+                    sun.setSunPhase(SunPhase.NIGHT);
                 } else {
-                    sun.getPhase().setName(entryPhase);
+                    sun.setSunPhase(entryPhase);
                 }
             }
         }
@@ -329,20 +329,20 @@ public class SunCalc {
         return jtransit - (jset - jtransit);
     }
 
-    public static Map<SunPhaseName, Range> sortByValue(Map<SunPhaseName, Range> map) {
-        List<Entry<SunPhaseName, Range>> list = new ArrayList<>(map.entrySet());
+    public static Map<SunPhase, Range> sortByValue(Map<SunPhase, Range> map) {
+        List<Entry<SunPhase, Range>> list = new ArrayList<>(map.entrySet());
 
         Collections.sort(list, new Comparator<>() {
             @Override
-            public int compare(Entry<SunPhaseName, Range> p1, Entry<SunPhaseName, Range> p2) {
+            public int compare(Entry<SunPhase, Range> p1, Entry<SunPhase, Range> p2) {
                 Range p1Range = p1.getValue();
                 Range p2Range = p2.getValue();
                 return p1Range.compareTo(p2Range);
             }
         });
 
-        Map<SunPhaseName, Range> result = new LinkedHashMap<>();
-        for (Entry<SunPhaseName, Range> entry : list) {
+        Map<SunPhase, Range> result = new LinkedHashMap<>();
+        for (Entry<SunPhase, Range> entry : list) {
             result.put(entry.getKey(), entry.getValue());
         }
 

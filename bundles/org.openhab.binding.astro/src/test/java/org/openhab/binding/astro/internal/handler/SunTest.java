@@ -32,7 +32,7 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import org.openhab.binding.astro.internal.model.Range;
 import org.openhab.binding.astro.internal.model.Sun;
-import org.openhab.binding.astro.internal.model.SunPhaseName;
+import org.openhab.binding.astro.internal.model.SunPhase;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.StringType;
@@ -44,7 +44,7 @@ import org.openhab.core.types.UnDefType;
 
 /***
  * A set of standard unit test of {@link Sun} class. In particular it checks if
- * {@link Sun#getAllRanges()} contains a correct {@link SunPhaseName}.
+ * {@link Sun#getAllRanges()} contains a correct {@link SunPhase}.
  *
  * @author Witold Markowski - Initial contribution
  * @see <a href="https://github.com/openhab/openhab-addons/issues/5006">[astro]
@@ -85,7 +85,6 @@ public class SunTest {
     public void testConstructor() throws Exception {
         Sun sun = this.sun;
         assertNotNull(sun);
-        assertNotNull(sun.getPhase());
 
         when(channel.getUID()).thenReturn(new ChannelUID("astro:sun:home:phase#name"));
         assertEquals(UnDefType.UNDEF, handler.getState(channel));
@@ -96,7 +95,7 @@ public class SunTest {
         handler.publishDailyInfo();
         Sun sun = handler.sun;
         assertNotNull(sun);
-        sun.getPhase().setName(null);
+        sun.setSunPhase(null);
 
         when(channel.getUID()).thenReturn(new ChannelUID("astro:sun:home:phase#name"));
         assertEquals(UnDefType.UNDEF, handler.getState(channel));
@@ -115,7 +114,7 @@ public class SunTest {
         assertNotNull(sun);
         sun.setNight(new Range());
 
-        assertTrue(sun.getAllRanges().containsKey(SunPhaseName.NIGHT));
+        assertTrue(sun.getAllRanges().containsKey(SunPhase.NIGHT));
     }
 
     @Test
@@ -124,7 +123,7 @@ public class SunTest {
         assertNotNull(sun);
         sun.setMorningNight(new Range());
 
-        assertTrue(sun.getAllRanges().containsKey(SunPhaseName.MORNING_NIGHT));
+        assertTrue(sun.getAllRanges().containsKey(SunPhase.MORNING_NIGHT));
     }
 
     @Test
@@ -133,7 +132,7 @@ public class SunTest {
         assertNotNull(sun);
         sun.setAstroDawn(new Range());
 
-        assertTrue(sun.getAllRanges().containsKey(SunPhaseName.ASTRO_DAWN));
+        assertTrue(sun.getAllRanges().containsKey(SunPhase.ASTRO_DAWN));
     }
 
     @Test
@@ -142,7 +141,7 @@ public class SunTest {
         assertNotNull(sun);
         sun.setNauticDawn(new Range());
 
-        assertTrue(sun.getAllRanges().containsKey(SunPhaseName.NAUTIC_DAWN));
+        assertTrue(sun.getAllRanges().containsKey(SunPhase.NAUTIC_DAWN));
     }
 
     @Test
@@ -151,7 +150,7 @@ public class SunTest {
         assertNotNull(sun);
         sun.setCivilDawn(new Range());
 
-        assertTrue(sun.getAllRanges().containsKey(SunPhaseName.CIVIL_DAWN));
+        assertTrue(sun.getAllRanges().containsKey(SunPhase.CIVIL_DAWN));
     }
 
     @Test
@@ -160,7 +159,7 @@ public class SunTest {
         assertNotNull(sun);
         sun.setRise(new Range());
 
-        assertTrue(sun.getAllRanges().containsKey(SunPhaseName.SUN_RISE));
+        assertTrue(sun.getAllRanges().containsKey(SunPhase.SUN_RISE));
     }
 
     @Test
@@ -169,7 +168,7 @@ public class SunTest {
         assertNotNull(sun);
         sun.setDaylight(new Range());
 
-        assertTrue(sun.getAllRanges().containsKey(SunPhaseName.DAYLIGHT));
+        assertTrue(sun.getAllRanges().containsKey(SunPhase.DAYLIGHT));
     }
 
     @Test
@@ -178,7 +177,7 @@ public class SunTest {
         assertNotNull(sun);
         sun.setNoon(new Range());
 
-        assertTrue(sun.getAllRanges().containsKey(SunPhaseName.NOON));
+        assertTrue(sun.getAllRanges().containsKey(SunPhase.NOON));
     }
 
     @Test
@@ -187,7 +186,7 @@ public class SunTest {
         assertNotNull(sun);
         sun.setSet(new Range());
 
-        assertTrue(sun.getAllRanges().containsKey(SunPhaseName.SUN_SET));
+        assertTrue(sun.getAllRanges().containsKey(SunPhase.SUN_SET));
     }
 
     @Test
@@ -196,7 +195,7 @@ public class SunTest {
         assertNotNull(sun);
         sun.setCivilDusk(new Range());
 
-        assertTrue(sun.getAllRanges().containsKey(SunPhaseName.CIVIL_DUSK));
+        assertTrue(sun.getAllRanges().containsKey(SunPhase.CIVIL_DUSK));
     }
 
     @Test
@@ -205,7 +204,7 @@ public class SunTest {
         assertNotNull(sun);
         sun.setNauticDusk(new Range());
 
-        assertTrue(sun.getAllRanges().containsKey(SunPhaseName.NAUTIC_DUSK));
+        assertTrue(sun.getAllRanges().containsKey(SunPhase.NAUTIC_DUSK));
     }
 
     @Test
@@ -214,7 +213,7 @@ public class SunTest {
         assertNotNull(sun);
         sun.setAstroDusk(new Range());
 
-        assertTrue(sun.getAllRanges().containsKey(SunPhaseName.ASTRO_DUSK));
+        assertTrue(sun.getAllRanges().containsKey(SunPhase.ASTRO_DUSK));
     }
 
     @Test
@@ -223,6 +222,6 @@ public class SunTest {
         assertNotNull(sun);
         sun.setEveningNight(new Range());
 
-        assertTrue(sun.getAllRanges().containsKey(SunPhaseName.EVENING_NIGHT));
+        assertTrue(sun.getAllRanges().containsKey(SunPhase.EVENING_NIGHT));
     }
 }

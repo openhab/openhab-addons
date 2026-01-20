@@ -14,7 +14,7 @@ package org.openhab.binding.astro.internal.job;
 
 import static org.openhab.binding.astro.internal.AstroBindingConstants.*;
 import static org.openhab.binding.astro.internal.job.Job.*;
-import static org.openhab.binding.astro.internal.model.SunPhaseName.*;
+import static org.openhab.binding.astro.internal.model.SunPhase.*;
 
 import java.time.Instant;
 import java.time.InstantSource;
