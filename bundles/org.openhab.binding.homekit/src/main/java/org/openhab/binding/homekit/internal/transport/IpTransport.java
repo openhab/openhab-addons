@@ -20,15 +20,17 @@ import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
+import org.bouncycastle.crypto.InvalidCipherTextException;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.homekit.internal.session.AsymmetricSessionKeys;
@@ -43,7 +45,8 @@ import org.slf4j.LoggerFactory;
  * This provides the IP transport layer for HomeKit communication.
  * It provides methods for sending GET, POST, and PUT requests with appropriate headers and content types.
  * It supports both plain and secure (encrypted) communication based on whether session keys have been set.
- * It handles building HTTP requests, sending them over a socket, and parsing HTTP responses.
+ * It handles building HTTP requests, sending them over a socket, and parsing HTTP responses. It uses a
+ * single reader thread (inside HttpPayloadParser) and a single writer executor.
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
@@ -59,25 +62,16 @@ public class IpTransport implements AutoCloseable {
     private final String ipAddress;
     private final EventListener eventListener;
     private final AtomicBoolean awaitingHttpResponse = new AtomicBoolean(false);
-    private final SynchronousQueue<HttpPayload> responseQueue = new SynchronousQueue<>();
-    private final Thread inputThread;
     private final ExecutorService outputThreadExecutor;
-
-    /**
-     * SpotBugs incorrectly assumes that {@link SynchronousQueue#poll(long, TimeUnit)} never returns {@code null}.
-     * According to the JavaDoc, the method returns {@code null} if the specified waiting time elapses before an
-     * element becomes available. So this wrapper method correctly annotates the return value as nullable.
-     */
-    private static @Nullable HttpPayload synchronousQueuePollNullable(SynchronousQueue<HttpPayload> queue, long timeout,
-            TimeUnit unit) throws InterruptedException {
-        return queue.poll(timeout, unit);
-    }
 
     private volatile HttpPayloadParser httpPayloadParser;
     private volatile @Nullable SecureSession secureSession = null;
 
     private Instant earliestNextRequestTime = Instant.MIN;
     private boolean closing;
+
+    // in-flight response future
+    private final AtomicReference<@Nullable CompletableFuture<HttpPayload>> currentResponseFuture = new AtomicReference<>();
 
     /**
      * Creates a new IpTransport instance on the given host.
@@ -99,10 +93,7 @@ public class IpTransport implements AutoCloseable {
         socket.connect(new InetSocketAddress(parts[0], Integer.parseInt(parts[1])), TIMEOUT_MILLI_SECONDS);
 
         httpPayloadParser = new HttpPayloadParser(socket.getInputStream());
-
-        inputThread = new Thread(this::inputTask, "ip-transport-input");
-        inputThread.setDaemon(true);
-        inputThread.start();
+        setParserHandlers(httpPayloadParser);
 
         outputThreadExecutor = Executors.newSingleThreadExecutor(r -> {
             Thread t = new Thread(r, "ip-transport-output");
@@ -114,12 +105,31 @@ public class IpTransport implements AutoCloseable {
     }
 
     /**
+     * Sets the handlers for the HTTP pay-load parser.
+     *
+     * @param httpPayloadParser the HTTP pay-load parser
+     */
+    private void setParserHandlers(HttpPayloadParser httpPayloadParser) {
+        httpPayloadParser.setPayloadHandler(this::forwardHttpPayload);
+        httpPayloadParser.setErrorHandler(t -> {
+            if (!closing) {
+                logger.warn("{} parser error: {}", ipAddress, t.getMessage());
+            }
+        });
+        httpPayloadParser.setCloseHandler(() -> {
+            if (!closing) {
+                logger.debug("{} parser closed", ipAddress);
+            }
+        });
+    }
+
+    /**
      * Sets the session keys for secure communication.
-     * This starts a read thread to listen for incoming responses.
+     * This switches the parser to read from the encrypted input stream.
      *
      * @param keys the asymmetric session keys for encryption/decryption
      * @throws IOException
-     * @throws IllegalStateException if the secure session is already set or the read thread is already running
+     * @throws IllegalStateException if the secure session is already set
      */
     public void setSessionKeys(AsymmetricSessionKeys keys) throws IOException, IllegalStateException {
         logger.trace("setSessionKeys()");
@@ -127,22 +137,21 @@ public class IpTransport implements AutoCloseable {
             throw new IllegalStateException("Secure session already set");
         }
         SecureSession secureSession = new SecureSession(socket, keys);
-        httpPayloadParser = new HttpPayloadParser(secureSession.getInputStream()); // switch encrypted input stream
         this.secureSession = secureSession;
+
+        // close old parser and create a new one on the decrypting stream
+        try {
+            httpPayloadParser.close();
+        } catch (IOException e) {
+            // ignore
+        }
+        httpPayloadParser = new HttpPayloadParser(secureSession.getInputStream());
+        setParserHandlers(httpPayloadParser);
         logger.trace("setSessionKeys() {}", secureSession);
     }
 
     /**
      * Sends a GET request to the specified end-point with the given content type.
-     *
-     * @param end-point the end-point to which the request is sent
-     * @param contentType the content type of the request
-     * @return the response content as a byte array
-     * @throws IOException if an I/O error occurs
-     * @throws InterruptedException if the operation is interrupted
-     * @throws TimeoutException if the operation times out
-     * @throws ExecutionException if an error occurs during execution
-     * @throws IllegalStateException if the state is invalid
      */
     public byte[] get(String endpoint, String contentType)
             throws IOException, InterruptedException, ExecutionException, IllegalStateException, TimeoutException {
@@ -151,16 +160,6 @@ public class IpTransport implements AutoCloseable {
 
     /**
      * Sends a POST request to the specified end-point with the given content type and content.
-     *
-     * @param end-point the end-point to which the request is sent
-     * @param contentType the content type of the request
-     * @param content the content of the request
-     * @return the response content as a byte array
-     * @throws IOException if an I/O error occurs
-     * @throws InterruptedException if the operation is interrupted
-     * @throws TimeoutException if the operation times out
-     * @throws ExecutionException if an error occurs during execution
-     * @throws IllegalStateException if the state is invalid
      */
     public byte[] post(String endpoint, String contentType, byte[] content)
             throws IOException, InterruptedException, ExecutionException, IllegalStateException, TimeoutException {
@@ -169,16 +168,6 @@ public class IpTransport implements AutoCloseable {
 
     /**
      * Sends a PUT request to the specified end-point with the given content type and content.
-     *
-     * @param end-point the end-point to which the request is sent
-     * @param contentType the content type of the request
-     * @param content the content of the request
-     * @return the response content as a byte array
-     * @throws IOException if an I/O error occurs
-     * @throws InterruptedException if the operation is interrupted
-     * @throws TimeoutException if the operation times out
-     * @throws ExecutionException if an error occurs during execution
-     * @throws IllegalStateException if the state is invalid
      */
     public byte[] put(String endpoint, String contentType, byte[] content)
             throws IOException, InterruptedException, ExecutionException, IllegalStateException, TimeoutException {
@@ -186,22 +175,16 @@ public class IpTransport implements AutoCloseable {
     }
 
     /**
-     * Executes an HTTP request with the specified method, endpoint, content type, and content.
+     * Executes an HTTP request with the specified method, end-point, content type, and content.
      * Note: for thread safety only one request may be in flight at a time
-     *
-     * @param method the HTTP method (e.g., "GET", "POST", "PUT")
-     * @param end-point the end-point to which the request is sent
-     * @param contentType the content type of the request
-     * @param content the content of the request
-     * @return the response content as a byte array
-     * @throws IOException if an I/O error occurs
-     * @throws InterruptedException if the operation is interrupted
-     * @throws TimeoutException if the operation times out
-     * @throws ExecutionException if an error occurs during execution
-     * @throws IllegalStateException if the state is invalid
      */
     private synchronized byte[] execute(String method, String endpoint, String contentType, byte[] content)
             throws IOException, InterruptedException, ExecutionException, IllegalStateException, TimeoutException {
+        CompletableFuture<HttpPayload> responseFuture = new CompletableFuture<>();
+        if (!currentResponseFuture.compareAndSet(null, responseFuture)) {
+            throw new IllegalStateException("Another HTTP request is already in flight");
+        }
+
         try {
             awaitingHttpResponse.set(true);
             byte[] request = buildRequest(method, endpoint, contentType, content);
@@ -216,11 +199,14 @@ public class IpTransport implements AutoCloseable {
                 logger.trace("{} sending:\n{}", ipAddress, new String(request, StandardCharsets.ISO_8859_1));
             }
 
-            HttpPayload response;
             Future<@Nullable Void> writeFuture;
             if (secureSession instanceof SecureSession secureSession) {
                 writeFuture = outputThreadExecutor.submit(() -> {
-                    secureSession.send(request);
+                    try {
+                        secureSession.send(request);
+                    } catch (InvalidCipherTextException e) {
+                        throw new IOException("Encryption failed", e);
+                    }
                     return null;
                 });
             } else {
@@ -232,28 +218,20 @@ public class IpTransport implements AutoCloseable {
                 });
             }
             writeFuture.get(TIMEOUT_MILLI_SECONDS, TimeUnit.MILLISECONDS);
-            response = synchronousQueuePollNullable(responseQueue, TIMEOUT_MILLI_SECONDS, TimeUnit.MILLISECONDS);
-            if (response == null) {
-                throw new TimeoutException("Timed out waiting for HTTP response");
-            }
+
+            HttpPayload response = responseFuture.get(TIMEOUT_MILLI_SECONDS, TimeUnit.MILLISECONDS);
             earliestNextRequestTime = Instant.now().plus(MINIMUM_REQUEST_INTERVAL); // allow actual processing time
 
             checkHeaders(response.headers());
             return response.content();
         } finally {
             awaitingHttpResponse.set(false);
+            currentResponseFuture.set(null);
         }
     }
 
     /**
      * Builds an HTTP request with the given method, end-point, content type, and content.
-     *
-     * @param method the HTTP method (e.g., "GET", "POST", "PUT")
-     * @param end-point the end-point to which the request is sent
-     * @param contentType the content type of the request
-     * @param content the content of the request
-     * @return the complete HTTP request as a byte array
-     * @throws IOException if an I/O error occurs
      */
     private byte[] buildRequest(String method, String endpoint, String contentType, byte[] content) throws IOException {
         StringBuilder sb = new StringBuilder();
@@ -278,6 +256,9 @@ public class IpTransport implements AutoCloseable {
         return out.toByteArray();
     }
 
+    /**
+     * Checks if the HTTP method implies an empty content.
+     */
     private boolean contentIsEmpty(String method) {
         return "GET".equals(method) || "DELETE".equals(method);
     }
@@ -304,15 +285,11 @@ public class IpTransport implements AutoCloseable {
         } catch (IOException e) {
             // shut down quietly
         }
-        if (inputThread instanceof Thread thread) {
-            try {
-                thread.interrupt();
-                thread.join();
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt(); // restore interrupt flag, and shut down quietly
-            }
+        try {
+            httpPayloadParser.close();
+        } catch (IOException e) {
+            // shut down quietly
         }
-        responseQueue.offer(new HttpPayload()); // unblock any waiting execute() call
         outputThreadExecutor.shutdownNow();
         try {
             if (!outputThreadExecutor.awaitTermination(500, TimeUnit.MILLISECONDS)) {
@@ -320,16 +297,6 @@ public class IpTransport implements AutoCloseable {
             }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-        }
-    }
-
-    /**
-     * The input task that continuously listens for incoming HTTP pay-loads and forwards them to the
-     * appropriate handler.
-     */
-    private void inputTask() {
-        while (!Thread.currentThread().isInterrupted() && !closing) {
-            httpPayloadParser.awaitHttpPayload().thenAccept(this::forwardHttpPayload);
         }
     }
 
@@ -345,7 +312,10 @@ public class IpTransport implements AutoCloseable {
                     new String(httpPayload.content(), StandardCharsets.ISO_8859_1));
         }
         if (headers.startsWith("HTTP")) { // deliver HTTP responses to execute()
-            if (!responseQueue.offer(httpPayload)) {
+            CompletableFuture<HttpPayload> future = currentResponseFuture.get();
+            if (future != null) {
+                future.complete(httpPayload);
+            } else {
                 logger.warn("{} received HTTP response but no thread was waiting", ipAddress);
             }
         } else if (headers.startsWith("EVENT")) { // deliver EVENT messages directly to listener

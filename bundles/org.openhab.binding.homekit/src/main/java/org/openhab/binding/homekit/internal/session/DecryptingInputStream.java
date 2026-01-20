@@ -115,7 +115,7 @@ public @NonNullByDefault({}) class DecryptingInputStream extends InputStream {
 
     /**
      * Reads buffer.length bytes unless EOF occurs.
-     * 
+     *
      * @return true if buffer was fully filled, false if EOF occurred before any bytes were read.
      */
     private boolean readFully(byte[] buffer) throws IOException {

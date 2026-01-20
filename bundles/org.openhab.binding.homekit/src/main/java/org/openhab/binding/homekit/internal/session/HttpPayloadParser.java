@@ -15,13 +15,7 @@ package org.openhab.binding.homekit.internal.session;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.Objects;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Semaphore;
-import java.util.concurrent.SynchronousQueue;
-import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -33,9 +27,9 @@ import org.slf4j.LoggerFactory;
 /**
  * Helper class to parse incoming HTTP messages and determine when a complete message has been received.
  * It accumulates header data until the end of headers is detected, then reads the Content-Length header to
- * determine how many bytes of content to expect. It tracks the number of content bytes read to know when the full
- * message has been received. It also supports chunked transfer encoding. If the content exceeds a maximum
- * allowed length, a SecurityException is thrown.
+ * determine how many bytes of content to expect. It tracks the number of content bytes read to know when the
+ * full message has been received. It also supports chunked transfer encoding. If the content exceeds a maximum
+ * allowed length, a SecurityException is thrown. It uses a single reader thread and a callback-based delivery model.
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
@@ -59,7 +53,6 @@ public class HttpPayloadParser implements AutoCloseable {
 
     private final InputStream inputStream;
     private final Thread inputThread;
-    private final ExecutorService outputThreadExecutor;
 
     // grow-able buffer for incoming bytes, and indexes to valid data
     private byte[] inputBuffer = new byte[8192];
@@ -76,72 +69,38 @@ public class HttpPayloadParser implements AutoCloseable {
     private boolean isChunked = false;
     private boolean finalChunkSeen = false;
 
-    private final SynchronousQueue<HttpPayload> httpPayloadQueue = new SynchronousQueue<>();
-    private final Semaphore futureHttpPayloadLock = new Semaphore(1);
-
-    private static final HttpPayload CLOSE_SENTINEL = new HttpPayload();
-    private static final HttpPayload ERROR_SENTINEL = new HttpPayload();
-
     private volatile boolean closed = false;
-    private volatile @Nullable Throwable parserError = null;
+
+    private volatile @Nullable Consumer<HttpPayload> httpPayloadHandler = null;
+    private volatile @Nullable Consumer<Throwable> errorHandler = null;
+    private volatile @Nullable Runnable closeHandler = null;
 
     public HttpPayloadParser(InputStream stream) {
         inputStream = stream;
-
         inputThread = new Thread(this::inputTask, "http-parser-input");
         inputThread.setDaemon(true);
         inputThread.start();
-
-        outputThreadExecutor = Executors.newSingleThreadExecutor(r -> {
-            Thread t = new Thread(r, "http-parser-output");
-            t.setDaemon(true);
-            return t;
-        });
     }
 
     /**
-     * Returns a CompletableFuture that asynchronously waits for the next complete HTTP pay-load to be
-     * available. Exactly one CompletableFuture can be supplied at any time; subsequent calls will block
-     * until the first one completes.
-     *
-     * @return a CompletableFuture that will be completed with the next HttpPayload
+     * Registers a handler that will be invoked for each complete HTTP pay-load.
      */
-    public CompletableFuture<HttpPayload> awaitHttpPayload() {
-        try {
-            // first caller acquires lock; subsequent calls block until first caller future completes
-            futureHttpPayloadLock.acquire();
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            return CompletableFuture.failedFuture(e);
-        }
+    public void setPayloadHandler(Consumer<HttpPayload> handler) {
+        httpPayloadHandler = handler;
+    }
 
-        CompletableFuture<HttpPayload> futureHttpPayload = new CompletableFuture<>();
-        outputThreadExecutor.submit(() -> {
-            try {
-                // take() will block until HTTP parser hands off a complete pay-load
-                HttpPayload httpPayload = Objects.requireNonNull(httpPayloadQueue.take());
-                if (httpPayload == ERROR_SENTINEL) {
-                    futureHttpPayload.completeExceptionally(
-                            parserError instanceof Exception e ? e : new IOException("Parser error"));
-                    return;
-                }
-                if (httpPayload == CLOSE_SENTINEL) {
-                    futureHttpPayload.completeExceptionally(new IOException("Parser closed"));
-                    return;
-                }
-                futureHttpPayload.complete(httpPayload);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                futureHttpPayload.completeExceptionally(e);
-            } catch (RuntimeException r) {
-                futureHttpPayload.completeExceptionally(r);
-            } finally {
-                // release lock so subsequent calls can proceed
-                futureHttpPayloadLock.release();
-            }
-        });
+    /**
+     * Registers a handler that will be invoked if an error occurs in the parser thread.
+     */
+    public void setErrorHandler(Consumer<Throwable> handler) {
+        errorHandler = handler;
+    }
 
-        return futureHttpPayload;
+    /**
+     * Registers a handler that will be invoked when the parser reaches EOF or is closed.
+     */
+    public void setCloseHandler(Runnable handler) {
+        closeHandler = handler;
     }
 
     /**
@@ -164,20 +123,15 @@ public class HttpPayloadParser implements AutoCloseable {
             }
         } catch (IOException e) {
             logger.debug("Input stream closed or error occurred: {}", e.getMessage());
-            parserError = e;
+            if (errorHandler instanceof Consumer<Throwable> handler) {
+                handler.accept(e);
+            }
         } finally {
             closed = true;
-            try {
-                // wake consumer with the correct sentinel
-                if (parserError != null) {
-                    httpPayloadQueue.put(ERROR_SENTINEL);
-                } else {
-                    httpPayloadQueue.put(CLOSE_SENTINEL);
-                }
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
+            Runnable task = closeHandler;
+            if (task != null) {
+                task.run();
             }
-
         }
     }
 
@@ -256,7 +210,7 @@ public class HttpPayloadParser implements AutoCloseable {
                 // if the message is complete AND has no body, emit immediately.
                 // this handles: 200 without Content-Length, 204, 1xx, 4xx, 5xx.
                 if (isComplete() && contentLength <= 0 && !isChunked) {
-                    enqueuePayload(new HttpPayload(headerBuffer.toByteArray(), contentBuffer.toByteArray()));
+                    deliverPayload(new HttpPayload(headerBuffer.toByteArray(), contentBuffer.toByteArray()));
                     resetParserState();
                     continue; // parse next message if present
                 }
@@ -288,7 +242,7 @@ public class HttpPayloadParser implements AutoCloseable {
                 }
 
                 if (isComplete()) {
-                    enqueuePayload(new HttpPayload(headerBuffer.toByteArray(), contentBuffer.toByteArray()));
+                    deliverPayload(new HttpPayload(headerBuffer.toByteArray(), contentBuffer.toByteArray()));
                     resetParserState();
                     // loop to see if another message is already buffered
                 } else {
@@ -296,6 +250,17 @@ public class HttpPayloadParser implements AutoCloseable {
                     return;
                 }
             }
+        }
+    }
+
+    /**
+     * Delivers the complete HTTP pay-load to the registered handler.
+     *
+     * @param httpPayload the complete HTTP pay-load
+     */
+    private void deliverPayload(HttpPayload httpPayload) {
+        if (httpPayloadHandler instanceof Consumer<HttpPayload> handler) {
+            handler.accept(httpPayload);
         }
     }
 
@@ -437,19 +402,6 @@ public class HttpPayloadParser implements AutoCloseable {
     }
 
     /**
-     * Enqueues the given HTTP pay-load.
-     *
-     * @param httpPayload the HTTP pay-load to enqueue
-     */
-    private void enqueuePayload(HttpPayload httpPayload) {
-        try {
-            httpPayloadQueue.put(httpPayload); // blocks until a consumer takes it
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
-    }
-
-    /**
      * Extracts the HTTP status code from the given header bytes.
      *
      * @param headerBytes the byte array containing the HTTP headers
@@ -556,14 +508,6 @@ public class HttpPayloadParser implements AutoCloseable {
         try {
             inputThread.interrupt();
             inputThread.join();
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
-        outputThreadExecutor.shutdownNow();
-        try {
-            if (!outputThreadExecutor.awaitTermination(500, TimeUnit.MILLISECONDS)) {
-                logger.debug("Executor did not terminate promptly");
-            }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }

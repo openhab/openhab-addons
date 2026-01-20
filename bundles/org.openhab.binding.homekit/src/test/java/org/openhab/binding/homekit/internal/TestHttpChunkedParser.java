@@ -14,10 +14,9 @@ package org.openhab.binding.homekit.internal;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
@@ -46,7 +45,7 @@ class TestHttpChunkedParser {
     private final String header = s0 + s1 + s2 + s3 + crlf;
 
     @Test
-    void testValidChunkedPayload() throws IOException {
+    void testValidChunkedPayload() throws Exception {
         List<byte[]> parts = List.of(
         // @formatter:off
                  s0.getBytes(),
@@ -62,18 +61,24 @@ class TestHttpChunkedParser {
                  crlf.getBytes()
         // @formatter:on
         );
-        try (HttpPayloadParser parser = new HttpPayloadParser(new JUnitTestInputStream(parts))) {
-            CompletableFuture<HttpPayload> future = parser.awaitHttpPayload();
-            assertNotNull(future);
-            HttpPayload payload = assertDoesNotThrow(() -> future.get());
-            assertNotNull(payload);
-            assertEquals(header, new String(payload.headers()));
-            assertEquals("123456789123456789abcdef", new String(payload.content()));
-        }
+
+        PipedStreamFeeder feeder = new PipedStreamFeeder();
+        HttpPayloadParser parser = new HttpPayloadParser(feeder.in);
+        ParserTestHarness harness = new ParserTestHarness(parser);
+
+        CompletableFuture<HttpPayload> futureHttpPayload = harness.expectPayload();
+        feeder.feedAll(parts);
+
+        HttpPayload httpPayload = futureHttpPayload.get(1, TimeUnit.SECONDS);
+        assertEquals(header, new String(httpPayload.headers()));
+        assertEquals("123456789123456789abcdef", new String(httpPayload.content()));
+
+        parser.close();
+        feeder.close();
     }
 
     @Test
-    void testBadChunkedSizePayload() throws IOException {
+    void testBadChunkedSizePayload() throws Exception {
         List<byte[]> parts = List.of(
         // @formatter:off
                  s0.getBytes(),
@@ -89,15 +94,22 @@ class TestHttpChunkedParser {
                  crlf.getBytes()
         // @formatter:on
         );
-        try (HttpPayloadParser parser = new HttpPayloadParser(new JUnitTestInputStream(parts))) {
-            CompletableFuture<HttpPayload> future = parser.awaitHttpPayload();
-            assertNotNull(future);
-            assertThrows(ExecutionException.class, () -> future.get());
-        }
+
+        PipedStreamFeeder feeder = new PipedStreamFeeder();
+        HttpPayloadParser parser = new HttpPayloadParser(feeder.in);
+        ParserTestHarness harness = new ParserTestHarness(parser);
+
+        CompletableFuture<HttpPayload> futureHttpPayload = harness.expectPayload();
+        feeder.feedAll(parts);
+
+        assertThrows(Exception.class, () -> futureHttpPayload.get(1, TimeUnit.SECONDS));
+
+        parser.close();
+        feeder.close();
     }
 
     @Test
-    void testValidChunkedPayloadWitSplitFrames() throws IOException {
+    void testValidChunkedPayloadWithSplitFrames() throws Exception {
         List<byte[]> parts = List.of(
         // @formatter:off
                 s0.getBytes(),
@@ -117,13 +129,19 @@ class TestHttpChunkedParser {
                 "\n".getBytes()
         // @formatter:on
         );
-        try (HttpPayloadParser parser = new HttpPayloadParser(new JUnitTestInputStream(parts))) {
-            CompletableFuture<HttpPayload> future = parser.awaitHttpPayload();
-            assertNotNull(future);
-            HttpPayload payload = assertDoesNotThrow(() -> future.get());
-            assertNotNull(payload);
-            assertEquals(header, new String(payload.headers()));
-            assertEquals("123456789123456789abcdef", new String(payload.content()));
-        }
+
+        PipedStreamFeeder feeder = new PipedStreamFeeder();
+        HttpPayloadParser parser = new HttpPayloadParser(feeder.in);
+        ParserTestHarness harness = new ParserTestHarness(parser);
+
+        CompletableFuture<HttpPayload> futureHttpPayload = harness.expectPayload();
+        feeder.feedAll(parts);
+
+        HttpPayload httpPayload = futureHttpPayload.get(1, TimeUnit.SECONDS);
+        assertEquals(header, new String(httpPayload.headers()));
+        assertEquals("123456789123456789abcdef", new String(httpPayload.content()));
+
+        parser.close();
+        feeder.close();
     }
 }
