@@ -160,30 +160,30 @@ public class SunCalc {
         double jastro2 = getSunriseJulianDate(jtransit, jdark);
 
         Sun sun = new Sun();
-        sun.setRange(SunPhase.ASTRO_DAWN,new Range(DateTimeUtils.toCalendar(jastro2, zone, locale),
+        sun.setRange(SunPhase.ASTRO_DAWN, new Range(DateTimeUtils.toCalendar(jastro2, zone, locale),
                 DateTimeUtils.toCalendar(jnau2, zone, locale)));
-        sun.setRange(SunPhase.ASTRO_DUSK,new Range(DateTimeUtils.toCalendar(jastro, zone, locale),
+        sun.setRange(SunPhase.ASTRO_DUSK, new Range(DateTimeUtils.toCalendar(jastro, zone, locale),
                 DateTimeUtils.toCalendar(jdark, zone, locale)));
 
         if (onlyAstro) {
             return sun;
         }
 
-        sun.setRange(SunPhase.NOON,new Range(DateTimeUtils.toCalendar(jtransit, zone, locale),
+        sun.setRange(SunPhase.NOON, new Range(DateTimeUtils.toCalendar(jtransit, zone, locale),
                 DateTimeUtils.toCalendar(jtransit + DateTimeUtils.JD_ONE_MINUTE_FRACTION, zone, locale)));
         sun.setRise(new Range(DateTimeUtils.toCalendar(jrise, zone, locale),
                 DateTimeUtils.toCalendar(jriseend, zone, locale)));
         sun.setSet(new Range(DateTimeUtils.toCalendar(jsetstart, zone, locale),
                 DateTimeUtils.toCalendar(jset, zone, locale)));
 
-        sun.setRange(SunPhase.CIVIL_DAWN,new Range(DateTimeUtils.toCalendar(jciv2, zone, locale),
+        sun.setRange(SunPhase.CIVIL_DAWN, new Range(DateTimeUtils.toCalendar(jciv2, zone, locale),
                 DateTimeUtils.toCalendar(jrise, zone, locale)));
         sun.setRange(SunPhase.CIVIL_DUSK,
                 new Range(DateTimeUtils.toCalendar(jset, zone, locale), DateTimeUtils.toCalendar(jnau, zone, locale)));
 
-        sun.setRange(SunPhase.NAUTIC_DAWN,new Range(DateTimeUtils.toCalendar(jnau2, zone, locale),
+        sun.setRange(SunPhase.NAUTIC_DAWN, new Range(DateTimeUtils.toCalendar(jnau2, zone, locale),
                 DateTimeUtils.toCalendar(jciv2, zone, locale)));
-        sun.setRange(SunPhase.NAUTIC_DUSK,new Range(DateTimeUtils.toCalendar(jnau, zone, locale),
+        sun.setRange(SunPhase.NAUTIC_DUSK, new Range(DateTimeUtils.toCalendar(jnau, zone, locale),
                 DateTimeUtils.toCalendar(jastro, zone, locale)));
 
         boolean isSunUpAllDay = isSunUpAllDay(calendar, latitude, longitude, altitude);
@@ -198,7 +198,7 @@ public class SunCalc {
         } else {
             daylightRange = new Range(sun.getRise().getEnd(), sun.getSet().getStart());
         }
-        sun.setRange(SunPhase.DAYLIGHT,daylightRange);
+        sun.setRange(SunPhase.DAYLIGHT, daylightRange);
 
         // morning night
         Sun sunYesterday = getSunInfo(DateTimeUtils.addDays(calendar, -1), latitude, longitude, altitude, true,
@@ -215,7 +215,7 @@ public class SunCalc {
             morningNightRange = new Range(DateTimeUtils.truncateToMidnight(calendar),
                     (range2 = sun.getRange(SunPhase.ASTRO_DAWN)) == null ? null : range2.getStart());
         }
-        sun.setRange(SunPhase.MORNING_NIGHT,morningNightRange);
+        sun.setRange(SunPhase.MORNING_NIGHT, morningNightRange);
 
         // evening night
         Range eveningNightRange = null;
@@ -226,16 +226,17 @@ public class SunCalc {
         } else {
             eveningNightRange = new Range();
         }
-        sun.setRange(SunPhase.EVENING_NIGHT,eveningNightRange);
+        sun.setRange(SunPhase.EVENING_NIGHT, eveningNightRange);
 
         // night
         if (isSunUpAllDay) {
-            sun.setRange(SunPhase.NIGHT,new Range());
+            sun.setRange(SunPhase.NIGHT, new Range());
         } else {
             Sun sunTomorrow = getSunInfo(DateTimeUtils.addDays(calendar, 1), latitude, longitude, altitude, true,
                     useMeteorologicalSeason, zone, locale);
-            sun.setRange(SunPhase.NIGHT,new Range((range = sun.getRange(SunPhase.ASTRO_DUSK)) == null ? null : range.getEnd(),
-                    (range2 = sunTomorrow.getRange(SunPhase.ASTRO_DAWN)) == null ? null : range2.getStart()));
+            sun.setRange(SunPhase.NIGHT,
+                    new Range((range = sun.getRange(SunPhase.ASTRO_DUSK)) == null ? null : range.getEnd(),
+                            (range2 = sunTomorrow.getRange(SunPhase.ASTRO_DAWN)) == null ? null : range2.getStart()));
         }
 
         // eclipse
