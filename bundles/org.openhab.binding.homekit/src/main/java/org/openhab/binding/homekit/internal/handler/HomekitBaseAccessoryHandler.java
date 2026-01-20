@@ -227,6 +227,8 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
             }
             logger.debug("{} fetched {} accessories", thing.getUID(), accessories.size());
             scheduler.submit(this::onConnectedThingAccessoriesLoaded);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt(); // shutting down; restore interrupt flag and do nothing
         } catch (Exception e) {
             if (isCommunicationException(e)) {
                 // communication exception; log at debug and try to reconnect
