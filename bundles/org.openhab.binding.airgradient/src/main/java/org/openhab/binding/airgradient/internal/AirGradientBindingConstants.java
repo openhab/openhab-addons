@@ -59,6 +59,21 @@ public class AirGradientBindingConstants {
     public static final String CHANNEL_DISPLAY_BRIGHTNESS = "display-brightness";
     public static final String CHANNEL_MODEL = "model";
     public static final String CHANNEL_LED_BAR_TEST = "led-bar-test";
+    public static final String CHANNEL_PM01_STANDARD = "pm01-standard";
+    public static final String CHANNEL_PM02_STANDARD = "pm02-standard";
+    public static final String CHANNEL_PM10_STANDARD = "pm10-standard";
+    public static final String CHANNEL_PM005_COUNT = "pm005-count";
+    public static final String CHANNEL_PM01_COUNT = "pm01-count";
+    public static final String CHANNEL_PM02_COUNT = "pm02-count";
+    public static final String CHANNEL_PM50_COUNT = "pm50-count";
+    public static final String CHANNEL_PM10_COUNT = "pm10-count";
+    public static final String CHANNEL_PM02_COMPENSATED = "pm02-compensated";
+    public static final String CHANNEL_ATMP_COMPENSATED = "atmp-compensated";
+    public static final String CHANNEL_RHUM_COMPENSATED = "rhum-compensated";
+    public static final String CHANNEL_TVOC_INDEX = "tvoc-index";
+    public static final String CHANNEL_TVOC_RAW = "tvoc-raw";
+    public static final String CHANNEL_NOX_INDEX = "nox-index";
+    public static final String CHANNEL_NOX_RAW = "nox-raw";
 
     // List of all properties
     public static final String PROPERTY_NAME = "name";
