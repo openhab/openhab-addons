@@ -75,6 +75,7 @@ public class ChannelFactory {
         final var minValue = Utils.getAsBigDecimal(channelData, JSON_KEY_CHANNEL_MIN);
         final var maxValue = Utils.getAsBigDecimal(channelData, JSON_KEY_CHANNEL_MAX);
         final var stepValue = Utils.getAsBigDecimal(channelData, JSON_KEY_CHANNEL_STEP);
+        final var scaleValue = Utils.getAsBigDecimal(channelData, JSON_KEY_CHANNEL_SCALE);
 
         ChannelTypeUID channelTypeUID = null;
         if (enumValues.isEmpty()) {
@@ -94,7 +95,7 @@ public class ChannelFactory {
 
         if (writable) {
             var props = new HashMap<String, String>();
-            props.put(PARAMETER_NAME_VALIDATION_REGEXP, DEFAULT_VALIDATION_EXPRESSION);
+            props.put(PARAMETER_NAME_VALIDATION_REGEXP, buildValidationExpression(scaleValue));
             builder.withProperties(props);
         }
 
@@ -233,5 +234,23 @@ public class ChannelFactory {
             }
         }
         return null;
+    }
+
+    /**
+     * Builds a validation expression based on the scaleValue from the API.
+     * If scaleValue indicates decimal values are allowed (e.g., 0.5), the validation
+     * expression will accept both integers and decimals. Otherwise, only integers are accepted.
+     *
+     * @param scaleValue the scale value from the myUplink API, or null if not provided
+     * @return regular expression for validating input values
+     */
+    private String buildValidationExpression(@Nullable BigDecimal scaleValue) {
+        if (scaleValue != null && scaleValue.scale() > 0
+                && scaleValue.remainder(BigDecimal.ONE).compareTo(BigDecimal.ZERO) != 0) {
+            // scaleValue has decimals (e.g., 0.5), so allow decimal input
+            return "[0-9]+(\\.[0-9]+)?";
+        }
+        // Default: only integers allowed
+        return DEFAULT_VALIDATION_EXPRESSION;
     }
 }
