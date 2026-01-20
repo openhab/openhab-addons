@@ -285,9 +285,9 @@ public abstract class AstroThingHandler extends BaseThingHandler {
                 case GROUP_ZODIAC:
                     if (planet.getZodiac() instanceof Zodiac zodiac) {
                         return switch (channelId) {
-                            case CHANNEL_START -> toState(zodiac.getStart(), channel);
-                            case CHANNEL_SIGN -> toState(zodiac.getSign(), channel);
-                            case CHANNEL_END -> toState(zodiac.getEnd(), channel);
+                            case CHANNEL_START -> toState(zodiac.start(), channel);
+                            case CHANNEL_SIGN -> toState(zodiac.sign(), channel);
+                            case CHANNEL_END -> toState(zodiac.end(), channel);
                             default -> throw new IllegalArgumentException("Unexpected channelId: " + channelUID);
                         };
                     }

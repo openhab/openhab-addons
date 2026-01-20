@@ -54,15 +54,15 @@ public class SunZodiacCalcTest {
     @ParameterizedTest
     @MethodSource("zodiacAngles")
     public void testCalcZodiacSignFromLongitude(double longitude, ZodiacSign expected) {
-        assertEquals(expected, ZodiacCalc.calculate(longitude, REFERENCE_INSTANT).getSign());
+        assertEquals(expected, ZodiacCalc.calculate(longitude, REFERENCE_INSTANT).sign());
     }
 
     @Test
     public void testCalcZodiacCreatesSunZodiacWithRangeFromInstant() {
         Zodiac zodiac = ZodiacCalc.calculate(Math.toRadians(120), REFERENCE_INSTANT);
-        assertEquals(ZodiacSign.LEO, zodiac.getSign());
-        var start = zodiac.getStart();
-        var end = zodiac.getEnd();
+        assertEquals(ZodiacSign.LEO, zodiac.sign());
+        var start = zodiac.start();
+        var end = zodiac.end();
         assertNotNull(start);
         assertNotNull(end);
         assertFalse(start.isAfter(REFERENCE_INSTANT));
@@ -97,7 +97,7 @@ public class SunZodiacCalcTest {
 
         ZodiacSign dateBasedSign = dateCalc.getZodiac(toCalendar(moment, utc.toZoneId())).map(SunZodiac::getSign)
                 .orElseThrow();
-        ZodiacSign positionBasedSign = ZodiacCalc.calculate(longitude, Instant.EPOCH).getSign();
+        ZodiacSign positionBasedSign = ZodiacCalc.calculate(longitude, Instant.EPOCH).sign();
 
         assertEquals(expectedSign, dateBasedSign);
         assertEquals(expectedSign, positionBasedSign);

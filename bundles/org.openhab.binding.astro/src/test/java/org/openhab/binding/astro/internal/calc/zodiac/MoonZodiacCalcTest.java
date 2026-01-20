@@ -72,8 +72,12 @@ public class MoonZodiacCalcTest {
         moonCalc.setPositionalInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE, moon, TIME_ZONE, Locale.ROOT);
         var zodiac = moon.getZodiac();
         assertNotNull(zodiac);
+<<<<<<< Upstream, based on main
         assertEquals(ZodiacSign.SAGITTARIUS, zodiac.getSign());
 >>>>>>> 4ee530a Start Factorization with Zodiac
+=======
+        assertEquals(ZodiacSign.SAGITTARIUS, zodiac.sign());
+>>>>>>> 5565944 Made Zodiac a record
     }
 
     /***
