@@ -171,7 +171,7 @@ public abstract class AstroThingHandler extends BaseThingHandler {
         this.timeZoneProvider = timeZoneProvider;
         this.localeProvider = localeProvider;
         this.instantSource = instantSource;
-        this.positionalChannels = positionalChannels;
+        this.positionalChannels = Set.copyOf(positionalChannels);
     }
 
     @Override
