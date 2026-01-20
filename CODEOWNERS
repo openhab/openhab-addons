@@ -409,6 +409,7 @@
 /bundles/org.openhab.binding.teslapowerwall/ @psmedley
 /bundles/org.openhab.binding.teslascope/ @psmedley
 /bundles/org.openhab.binding.tibber/ @kjoglum @weymann
+/bundles/org.openhab.binding.tidal/ @lo92fr
 /bundles/org.openhab.binding.tivo/ @mlobstein
 /bundles/org.openhab.binding.touchwand/ @roieg
 /bundles/org.openhab.binding.tplinkrouter/ @olivierkeke
