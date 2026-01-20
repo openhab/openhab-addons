@@ -337,11 +337,14 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
                     TimeUnit.SECONDS);
 
             return true; // pairing restore succeeded => exit
+        } catch (InterruptedException e) {
+            sessionUpgradeInProgress.set(false);
+            Thread.currentThread().interrupt(); // shutting down; restore interrupt flag and do nothing
+            return false;
         } catch (NoSuchAlgorithmException | NoSuchProviderException | IllegalAccessException
-                | InvalidCipherTextException | IOException | InterruptedException | TimeoutException
-                | ExecutionException | IllegalStateException e) {
+                | InvalidCipherTextException | IOException | TimeoutException | ExecutionException
+                | IllegalStateException e) {
             logger.debug("{} restored pairing was not verified", thing.getUID(), e);
-            // pairing restore failed => exit and perhaps try again later
             sessionUpgradeInProgress.set(false);
             scheduleConnectionAttempt();
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
@@ -722,6 +725,8 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
         try {
             String json = throttler.call(() -> rwService.readCharacteristics(String.join(",", queries)));
             onEvent(json);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt(); // shutting down; restore interrupt flag and do nothing
         } catch (Exception e) {
             if (isCommunicationException(e)) {
                 // communication exception; log at debug and try to reconnect
