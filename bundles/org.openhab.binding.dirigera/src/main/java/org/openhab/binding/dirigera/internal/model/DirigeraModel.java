@@ -130,12 +130,8 @@ public class DirigeraModel implements Model {
                 JSONObject entry = (JSONObject) entries.next();
                 String deviceId = entry.getString(JSON_KEY_DEVICE_ID);
                 String relationId = getRelationId(deviceId);
-                ThingTypeUID ttUid = identifyDeviceFromModel(deviceId);
                 String resolvedId;
-                if (THING_TYPE_MATTER_3_BUTTON_CONTROLLER.equals(ttUid)) {
-                    // special case - don't resolve!
-                    resolvedId = deviceId;
-                } else if (!deviceId.equals(relationId)) {
+                if (!deviceId.equals(relationId)) {
                     TreeMap<String, String> relationMap = getRelations(relationId);
                     // store for complex devices store result with first found id
                     resolvedId = relationMap.firstKey();

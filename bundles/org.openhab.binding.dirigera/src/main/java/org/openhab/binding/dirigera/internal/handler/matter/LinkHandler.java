@@ -199,7 +199,7 @@ public class LinkHandler {
         List<CommandOption> options = new ArrayList<>();
         Collections.sort(entries);
         entries.forEach(entry -> {
-            String customName = handler.gateway().model().getCustonNameFor(entry);
+            String customName = handler.gateway().resolveDeviceName(entry);
             if (!handler.gateway().isKnownDevice(entry)) {
                 // if device isn't present in OH attach this suffix
                 customName += " (!)";

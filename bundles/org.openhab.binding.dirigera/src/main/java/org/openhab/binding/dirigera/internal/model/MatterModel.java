@@ -92,6 +92,10 @@ public class MatterModel {
      * @param deviceType
      */
     public MatterModel(String deviceId, String deviceType) {
+        this(deviceId, deviceType, false);
+    }
+
+    public MatterModel(String deviceId, String deviceType, boolean custom) {
         this.deviceId = deviceId;
         this.deviceType = deviceType;
         if (MATTER_DEVICE_CONFIG.isEmpty()) {

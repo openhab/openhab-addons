@@ -34,6 +34,28 @@ Refer to below sections which devices are supported and are covered by `things` 
 | `repeater`            | Repeater to strengthen signal                              | [Repeater](#repeater)                     | TRÅDFRI                                   |
 | `scene`               | Scene from IKEA Home smart app which can be triggered      | [Scenes](#scenes)                         | -                                         |
 
+New products are based on Matter standard.
+If they are paired with the DIRIGERA gateway via IKEA home smart App they can be integrated with the folloing things.
+Each thing depends on the underlying hardware and channels are created based on the delivered values, e.g.
+
+- `ota` channels for devices which can receive updates
+- `battery` channels for battery powered devices
+- `link` channels if device can be linked to a controller or sensor
+- `startup` channel if device _power on_ behavior can be configured 
+
+Examples are MYGGSPRAY as `occupancy-sensor` which also provides a `light-sensor` or TIMMERFLOTTE as `environment-sensor` delivers temperature and humidity while ALPSTUGA also measures CO2 and particulate matter. 
+
+| ThingTypeUID          | Description                                               | Section                                   | Products                                  |
+|-----------------------|-----------------------------------------------------------|-------------------------------------------|-------------------------------------------|
+| `occupancy-sensor`    | Sensor to detect motion. Maybe combined with light-sensor | [Sensors](#occupancy-sensor)              | MYSPRAY                                   |
+| `light-sensor`        | Sensor providing illuminance measures                     | [Sensors](#light-sensor)                  | included in MYGGSPRAY                     |
+| `environment-sensor`  | Sensor measuring temperature, humidity and air quality    | [Sensors](#environment-sensor)            | TIMMERFLOTTE, ALPSTUGA                    |
+| `open-close-sensor`   | Sensor detecting open/closed doors, windows or drawers    | [Sensors](#open-close-sensor)             | MYGGBETT                                  |
+| `water-leak-sensor`   | Sensor detecting water leaks                              | [Sensors](#water-leak-sensor)             | KLIPPBOK                                  |
+| `two-button-switch`   | Controller with 2 programmable buttons                    | [Controller](#two-button-switch)          | BILRESA dual button                       |
+| `three-button-switch` | Controller with 3 programmable buttons                    | [Controller](#three-button-switch)        | BILRESA scroll wheel                      |
+| `matter-light`        | LED light (based on Matter standard)                      | [Lights](#matter-light)                   | KAJPLATS series                           |
+
 ## Discovery
 
 The discovery will automatically detect your DIRIGERA Gateway via mDNS.
@@ -156,7 +178,7 @@ The channels are declared advanced and can be used for setup procedure.
 
 | Channel               | Type                  | Read/Write | Description                                      | Advanced |
 |-----------------------|-----------------------|------------|--------------------------------------------------|----------|
-| `links`               | String                | RW         | Linked controllers and sensors                   |    X     |
+| `links`               | String                | RW         | Linked controllers, sensors and devices          |    X     |
 | `link-candidates`     | String                | RW         | Candidates which can be linked                   |    X     |
 
 ![Link Candidates](doc/link-candidates.png)
@@ -578,6 +600,109 @@ If command 0 (Trigger) is sent scene will be executed.
 There's a 30 seconds time slot to send command 1 (Undo).
 The countdown is updating `trigger` channel state which can be evaluated if an undo operation is still possible.
 State will switch to `Undef` after countdown.
+
+## Occupancy Sensor
+
+Sensor detecting motion events.
+
+| Channel               | Type                  | Read/Write | Description                                      |
+|-----------------------|-----------------------|------------|--------------------------------------------------|
+| `motion`              | Switch                | R          | Motion detected by the device                    |
+| `active-duration`     | Number:Time           | RW         | Keep connected devices active for this duration  |
+| `battery-level`       | Number:Dimensionless  | R          | Battery charge level in percent                  |
+| `schedule`            | Number                | RW         | Schedule when the sensor shall be active         |
+| `schedule-start`      | DateTime              | RW         | Start time of sensor activity                    |
+| `schedule-end`        | DateTime              | RW         | End time of sensor activity                      |
+
+## Light Sensor
+
+Sensor measuring illuminance.
+
+| Channel               | Type                  | Read/Write | Description                                  |
+|-----------------------|-----------------------|------------|----------------------------------------------|
+| `illuminance`         | Number:Illuminance    | R          | Illuminance in Lux                           |
+
+
+## Environment Sensor
+
+Environment measures for temperature, humidity and air quality.
+
+| Channel               | Type                  | Read/Write | Description                                          |
+|-----------------------|-----------------------|------------|------------------------------------------------------|
+| `temperature`         | Number:Temperature    | R          | Current indoor temperature                                     |
+| `humidity`            | Number:Dimensionless  | R          | Current atmospheric relative humidity                                         |
+| `particulate-matter`  | Number:Density        | R          | Category 2.5 particulate matter                      |
+| `co2`                 | Number:Dimensionless  | R          | CO₂ concentration    |
+
+## Open Close Sensor
+
+Sensor detecting open/closed doors, windows or drawers.
+
+| Channel               | Type                  | Read/Write | Description                                  |
+|-----------------------|-----------------------|------------|----------------------------------------------|
+| `contact`             | Contact               | R          | State if door or window is open or closed    |
+
+## Water Leak Sensor
+
+Sensor detecting water leaks.
+
+| Channel               | Type                  | Read/Write | Description                                  |
+|-----------------------|-----------------------|------------|----------------------------------------------|
+| `leak`                | Switch                | R          | Water leak detection                         |
+
+## Two Button Switch
+
+Controller with 2 programmable buttons
+
+| Channel               | Type                  | Read/Write | Description                                  | Advanced  |
+|-----------------------|-----------------------|------------|----------------------------------------------|-----------|
+| `top-button`          | Trigger               | R          | Press triggers for top button                |           |
+| `lower-button`        | Trigger               | R          | Press triggers for lower button              |           |
+| `control-mode`        | Number                | RW         | Select which device type shall be controlled |    X      |
+| `links`               | String                | RW         | Linked controllers, sensors and devices      |    X      |
+| `link-candidates`     | String                | RW         | Candidates which can be linked               |    X      |
+
+Trigger channels providing `SINGLE_PRESS`, `DOUBLE_PRESS` and `LONG_PRESS` as trigger values.
+The `control-mode` needs to be correct before linking other devices to the controller.
+
+## Three Button Switch
+
+Controller with 3 programmable buttons, BILRESA scroll wheel controller.
+There are 3 buttons covering scroll down, scroll up and press.
+In addition this controller provides switching between 3 groups.
+Group names are
+
+- `switch-1`, `switch-2` and `switch-3` for trigger and link channels
+- `switch` group covers general device information like `ota` and `battery` information 
+
+
+| Channel               | Type                  | Read/Write | Description                                  | Advanced  |
+|-----------------------|-----------------------|------------|----------------------------------------------|-----------|
+| `top-button`          | Trigger               | R          | Press triggers for top button                |           |
+| `lower-button`        | Trigger               | R          | Press triggers for lower button              |           |
+| `lower-button`        | Trigger               | R          | Press triggers for lower button              |           |
+| `control-mode`        | Number                | RW         | Select which device type shall be controlled |    X      |
+| `links`               | String                | RW         | Linked controllers, sensors and devices      |    X      |
+| `link-candidates`     | String                | RW         | Candidates which can be linked               |    X      |
+
+Pitfalls and problems:
+
+- be careful with _Add Equipment to Model_ and item names. Ensure item name for each group is different, otherwise item is connected to all group channels.
+- before linking the controller to other devices like lights ensure the `control-mode` fits 
+- right now triggers are **not** exposed so you cannot used them to control devices outside of DIRIGERA
+
+## Matter Light
+
+LED light (based on Matter standard).
+Channels are created based on the capabilities of the LED light.
+
+| Channel                   | Type                  | Read/Write | Description                                          | Advanced |
+|---------------------------|-----------------------|------------|------------------------------------------------------|----------|
+| `power`                   | Switch                | RW         | Power state of light                                 |          |
+| `brightness`              | Dimmer                | RW         | Brightness of light in percent                       |          |
+| `color-temperature`       | Dimmer                | RW         | Color temperature from cold (0 %) to warm (100 %)    |          |
+| `color-temperature-abs`   | Number:Temperature    | RW         | Color temperature of a bulb in Kelvin                |          |
+| `color`                   | Color                 | RW         | Color of light with hue, saturation and brightness   |    X     |
 
 ## Known Limitations
 

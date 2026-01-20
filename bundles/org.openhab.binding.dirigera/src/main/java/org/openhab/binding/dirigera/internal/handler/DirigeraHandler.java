@@ -46,6 +46,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.openhab.binding.dirigera.internal.DirigeraCommandProvider;
+import org.openhab.binding.dirigera.internal.DirigeraStateDescriptionProvider;
 import org.openhab.binding.dirigera.internal.ResourceReader;
 import org.openhab.binding.dirigera.internal.config.DirigeraConfiguration;
 import org.openhab.binding.dirigera.internal.discovery.DirigeraDiscoveryService;
@@ -105,6 +106,7 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway, Debug
 
     private final Map<String, List<BaseDevice>> deviceTree = new HashMap<>();
     private final DirigeraDiscoveryService discoveryService;
+    private final DirigeraStateDescriptionProvider stateProvider;
     private final DirigeraCommandProvider commandProvider;
     private final TimeZoneProvider timezoneProvider;
     private final BundleContext bundleContext;
@@ -139,11 +141,13 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway, Debug
 
     public DirigeraHandler(Bridge bridge, HttpClient insecureClient, Storage<String> bindingStorage,
             DirigeraDiscoveryService discoveryManager, LocationProvider locationProvider,
-            DirigeraCommandProvider commandProvider, BundleContext bundleContext, TimeZoneProvider timezoneProvider) {
+            DirigeraCommandProvider commandProvider, DirigeraStateDescriptionProvider stateProvider,
+            BundleContext bundleContext, TimeZoneProvider timezoneProvider) {
         super(bridge);
         this.discoveryService = discoveryManager;
         this.httpClient = insecureClient;
         this.storage = bindingStorage;
+        this.stateProvider = stateProvider;
         this.commandProvider = commandProvider;
         this.bundleContext = bundleContext;
         this.timezoneProvider = timezoneProvider;
@@ -662,6 +666,11 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway, Debug
     }
 
     @Override
+    public DirigeraStateDescriptionProvider getStateDescriptionProvider() {
+        return stateProvider;
+    }
+
+    @Override
     public String getIpAddress() {
         return config.ipAddress;
     }
@@ -1094,5 +1103,21 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway, Debug
     @Override
     public TimeZoneProvider getTimeZoneProvider() {
         return timezoneProvider;
+    }
+
+    @Override
+    public String resolveDeviceName(String deviceId) {
+        String resolved = "";
+        for (BaseDevice handler : getHandlersForDeviceId(deviceId)) {
+            resolved = handler.getNameForId(deviceId);
+            if (!resolved.isBlank()) {
+                return resolved;
+            }
+        }
+        if (resolved.isBlank()) {
+            return model().getCustonNameFor(deviceId);
+        } else {
+            return deviceId;
+        }
     }
 }

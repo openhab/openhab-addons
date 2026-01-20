@@ -17,6 +17,7 @@ import java.time.Instant;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.dirigera.internal.DirigeraCommandProvider;
+import org.openhab.binding.dirigera.internal.DirigeraStateDescriptionProvider;
 import org.openhab.binding.dirigera.internal.discovery.DirigeraDiscoveryService;
 import org.openhab.binding.dirigera.internal.exception.ApiException;
 import org.openhab.binding.dirigera.internal.exception.ModelException;
@@ -60,6 +61,13 @@ public interface Gateway {
      * @return DirigeraCommandProvider as DynamicCommandDescriptionProvider
      */
     DirigeraCommandProvider getCommandProvider();
+
+    /**
+     * Get StateDescriptionProvider associated to this binding
+     *
+     * @return DirigeraStateDescriptionProvider as DynamicStateDescriptionProvider
+     */
+    DirigeraStateDescriptionProvider getStateDescriptionProvider();
 
     /**
      * Get TimeZoneProvider to evaluate correct time zone information.
@@ -149,6 +157,14 @@ public interface Gateway {
      * @param String content of update
      */
     void updateLinks();
+
+    /**
+     * Resolve device name from device id.
+     *
+     * @param devieId connected device id
+     * @return device name as OH label if handler is present, IKEA name otherwise
+     */
+    String resolveDeviceName(String devieId);
 
     /**
      * Next sunrise ZonedDateTime. Value is presented if gateway allows access to GPS position. Handler needs to take

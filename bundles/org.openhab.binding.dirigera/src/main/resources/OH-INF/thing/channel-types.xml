@@ -351,7 +351,7 @@
 	<channel-type id="links" advanced="true">
 		<item-type>String</item-type>
 		<label>Links</label>
-		<description>Linked controllers and sensors</description>
+		<description>Linked controllers, sensors and devices</description>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="link-candidates" advanced="true">
@@ -376,12 +376,22 @@
 		<description>Select which device type shall be controlled</description>
 		<state readOnly="false">
 			<options>
-				<option value="0">Shortcut</option>
-				<option value="1">Lights and outlets</option>
-				<option value="2">Speakers</option>
-				<option value="3">Blinds</option>
+				<option value="0">Not configured</option>
+				<option value="1">Shortcut</option>
+				<option value="2">Lights and outlets</option>
+				<option value="3">Speakers</option>
+				<option value="4">Blinds</option>
 			</options>
 		</state>
+		<command>
+			<options>
+				<option value="0">Not configured</option>
+				<option value="1">Shortcut</option>
+				<option value="2">Lights and outlets</option>
+				<option value="3">Speakers</option>
+				<option value="4">Blinds</option>
+			</options>
+		</command>
 	</channel-type>
 	<channel-type id="mode-2-options" advanced="true">
 		<item-type>Number</item-type>
@@ -389,10 +399,19 @@
 		<description>Select which device type shall be controlled</description>
 		<state readOnly="false">
 			<options>
-				<option value="0">Shortcut</option>
-				<option value="1">Lights and outlets</option>
-				<option value="2">Speakers</option>
+				<option value="0">Not configured</option>
+				<option value="1">Shortcut</option>
+				<option value="2">Lights and outlets</option>
+				<option value="3">Speakers</option>
 			</options>
 		</state>
+		<command>
+			<options>
+				<option value="0">Not configured</option>
+				<option value="1">Shortcut</option>
+				<option value="2">Lights and outlets</option>
+				<option value="3">Speakers</option>
+			</options>
+		</command>
 	</channel-type>
 </thing:thing-descriptions>

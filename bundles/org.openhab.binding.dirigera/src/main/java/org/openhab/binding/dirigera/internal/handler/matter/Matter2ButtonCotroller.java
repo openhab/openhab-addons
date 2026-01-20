@@ -60,7 +60,7 @@ public class Matter2ButtonCotroller extends BaseMatterHandler {
             String triggerChannelName = buttonName.toLowerCase(Locale.ENGLISH).replace(" ", "-");
             triggerChannelMapping.put(deviceId, triggerChannelName);
             createChannelIfNecessary(triggerChannelName, "system.button", "", buttonName,
-                    "Press triggers for button " + buttonNumber);
+                    "Press triggers for " + buttonName.toLowerCase(Locale.ENGLISH));
         });
         // for controller 100% needed
         createChannelIfNecessary(CHANNEL_LINKS, CHANNEL_LINKS, CoreItemFactory.STRING);

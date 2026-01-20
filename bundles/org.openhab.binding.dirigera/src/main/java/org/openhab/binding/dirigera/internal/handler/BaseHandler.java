@@ -670,7 +670,7 @@ public class BaseHandler extends BaseThingHandler implements BaseDevice, DebugHa
         allLinks.addAll(softLinks);
         Collections.sort(allLinks);
         allLinks.forEach(link -> {
-            String customName = gateway().model().getCustonNameFor(link);
+            String customName = gateway().resolveDeviceName(link);
             if (!gateway().isKnownDevice(link)) {
                 // if device isn't present in OH attach this suffix
                 customName += " (!)";
@@ -697,7 +697,7 @@ public class BaseHandler extends BaseThingHandler implements BaseDevice, DebugHa
         List<CommandOption> candidateOptions = new ArrayList<>();
         Collections.sort(candidates);
         candidates.forEach(candidate -> {
-            String customName = gateway().model().getCustonNameFor(candidate);
+            String customName = gateway().resolveDeviceName(candidate);
             if (!gateway().isKnownDevice(candidate)) {
                 // if device isn't present in OH attach this suffix
                 customName += " (!)";

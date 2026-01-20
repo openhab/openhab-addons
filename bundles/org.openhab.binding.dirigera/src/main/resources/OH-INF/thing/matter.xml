@@ -32,7 +32,7 @@
 		</supported-bridge-type-refs>
 
 		<label>Environment Sensor</label>
-		<description>Sensor measuring temperature, humidity and pollution. Measuring capabilities depends on hardware</description>
+		<description>Sensor measuring temperature, humidity and air quality</description>
 
 		<config-description-ref uri="thing-type:dirigera:base-device"/>
 	</thing-type>
@@ -43,7 +43,7 @@
 		</supported-bridge-type-refs>
 
 		<label>Open Close Sensor</label>
-		<description>Contact sensor detecting open/closed doors, windows or drawers</description>
+		<description>Sensor detecting open/closed doors, windows or drawers</description>
 
 		<config-description-ref uri="thing-type:dirigera:base-device"/>
 	</thing-type>

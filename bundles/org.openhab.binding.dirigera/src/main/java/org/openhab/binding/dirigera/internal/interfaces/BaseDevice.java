@@ -41,4 +41,8 @@ public interface BaseDevice {
     void addSoftlink(String linkSourceId, String linkTargetId);
 
     void updateLinksDone();
+
+    default String getNameForId(String deviceId) {
+        return "";
+    }
 }

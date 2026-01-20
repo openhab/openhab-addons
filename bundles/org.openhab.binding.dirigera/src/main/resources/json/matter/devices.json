@@ -393,10 +393,11 @@
 				"outType": "DecimalType",
 				"transformation": "mapping",
 				"mapping": {
-				    "shortcut":0,
-					"light": 1,
-					"speaker": 2,
-					"blind": 3
+				    "notConfigured": 0,
+				    "shortcut":1,
+					"light": 2,
+					"speaker": 3,
+					"blind": 4
 				}
 			}
 		],
@@ -409,11 +410,98 @@
 				"outType": "String",
 				"transformation": "mapping",
 				"mapping": {
-				    "0": "shortcut",
-					"1": "light",
-					"2": "speaker",
-					"3": "blind"
+				    "0": "notConfigured",
+				    "1": "shortcut",
+					"2": "light",
+					"3": "speaker",
+					"4": "blind"
 				},
+				"json": "attribute"
+			}
+		],
+		"linkCandidates": [],
+		"thingProperties": []
+	},
+	{
+		"thingType": "three-button-switch",
+		"identification": {
+			"type": "sensor",
+			"deviceType": "genericSwitch"
+		},
+		"statusProperties": [
+			{
+				"attribute": "batteryPercentage",
+				"channel": "switch#battery-level",
+				"channelType": "system.battery-level",
+				"itemType": "Number:Dimensionless",
+				"inType": "Integer",
+				"outType": "QuantityType",
+				"transformation": "format",
+				"format": "%d %%"
+			},
+			{
+				"attribute": "otaStatus",
+				"channel": "switch#ota-status",
+				"channelType": "ota-status",
+				"itemType": "Number",
+				"inType": "String",
+				"outType": "DecimalType",
+				"transformation": "mapping",
+				"mapping": {
+					"upToDate": 0,
+					"updateAvailable": 1
+				}
+			},
+			{
+				"attribute": "otaState",
+				"channel": "switch#ota-state",
+				"channelType": "ota-state",
+				"itemType": "Number",
+				"inType": "String",
+				"outType": "DecimalType",
+				"transformation": "mapping",
+				"mapping": {
+					"readyToCheck": 0,
+					"checkInProgress": 1,
+					"readyToDownload": 2,
+					"downloadInProgress": 3,
+					"updateInProgress": 4,
+					"updateFailed": 5,
+					"readyToUpdate": 6,
+					"checkFailed": 7,
+					"downloadFailed": 8,
+					"updateComplete": 9,
+					"batteryCheckFailed": 10
+				}
+			},
+			{
+				"attribute": "otaProgress",
+				"channel": "switch#ota-progress",
+				"channelType": "ota-percent",
+				"itemType": "Number:Dimensionless",
+				"inType": "Integer",
+				"outType": "QuantityType",
+				"transformation": "format",
+				"format": "%d %%"
+			},
+			{
+				"attribute": "customName",
+				"channel": "switch#custom-name",
+				"channelType": "custom-name",
+				"itemType": "String",
+				"inType": "String",
+				"outType": "StringType",
+				"transformation": "raw"
+			}
+		],
+		"controlProperties": [
+			{
+				"attribute": "customName",
+				"channel": "custom-name",
+				"itemType": "String",
+				"inType": "String",
+				"outType": "String",
+				"transformation": "raw",
 				"json": "attribute"
 			}
 		],

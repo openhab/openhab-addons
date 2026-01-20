@@ -18,6 +18,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.dirigera.internal.DirigeraCommandProvider;
+import org.openhab.binding.dirigera.internal.DirigeraStateDescriptionProvider;
 import org.openhab.binding.dirigera.internal.discovery.DirigeraDiscoveryService;
 import org.openhab.binding.dirigera.internal.handler.DirigeraHandler;
 import org.openhab.core.i18n.LocationProvider;
@@ -37,7 +38,8 @@ public class DirigeraHandlerManipulator extends DirigeraHandler {
     public DirigeraHandlerManipulator(Bridge bridge, HttpClient insecureClient, Storage<String> bindingStorage,
             DirigeraDiscoveryService discoveryService) {
         super(bridge, insecureClient, bindingStorage, discoveryService, mock(LocationProvider.class),
-                mock(DirigeraCommandProvider.class), mock(BundleContext.class), HandlerFactoryMock.timeZoneProvider);
+                mock(DirigeraCommandProvider.class), mock(DirigeraStateDescriptionProvider.class),
+                mock(BundleContext.class), HandlerFactoryMock.timeZoneProvider);
         // Changes the class of the provider. During initialize this class will be used for instantiation
         super.apiProvider = DirigeraAPISimu.class;
     }

@@ -45,7 +45,10 @@ import org.openhab.core.types.State;
  */
 @NonNullByDefault
 class Test3ButtonController {
-    private static String deviceId = "4fec48cd-6da8-4075-af78-09fff0423f78_3";
+    private static String deviceIdGroup1 = "4fec48cd-6da8-4075-af78-09fff0423f78_3";
+    private static String deviceIdGroup2 = "4fec48cd-6da8-4075-af78-09fff0423f78_6";
+    private static String deviceIdGroup3 = "4fec48cd-6da8-4075-af78-09fff0423f78_9";
+    private static String deviceId = deviceIdGroup1;
     private static ThingTypeUID thingTypeUID = THING_TYPE_MATTER_3_BUTTON_CONTROLLER;
 
     private static Matter3ButtonCotroller handler = mock(Matter3ButtonCotroller.class);
@@ -54,11 +57,11 @@ class Test3ButtonController {
 
     @Test
     void testAllGroups() {
-        deviceId = "4fec48cd-6da8-4075-af78-09fff0423f78_9";
+        deviceId = deviceIdGroup3;
         testHandlerCreation();
-        deviceId = "4fec48cd-6da8-4075-af78-09fff0423f78_6";
+        deviceId = deviceIdGroup2;
         testHandlerCreation();
-        deviceId = "4fec48cd-6da8-4075-af78-09fff0423f78_3";
+        deviceId = deviceIdGroup3;
         testHandlerCreation();
     }
 
@@ -75,7 +78,7 @@ class Test3ButtonController {
         assertTrue(proxyCallback instanceof CallbackMock);
         callback = (CallbackMock) proxyCallback;
         callback.waitForOnline();
-        assertEquals(11, thing.getChannels().size(), "Number of channels");
+        assertEquals(23, thing.getChannels().size(), "Number of channels");
     }
 
     @Test
@@ -87,22 +90,24 @@ class Test3ButtonController {
         checkDeviceStatus(callback);
 
         callback.clear();
-        handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_BATTERY_LEVEL), RefreshType.REFRESH);
-        handler.handleCommand(new ChannelUID(thing.getUID(), "control-mode"), RefreshType.REFRESH);
+        handler.handleCommand(new ChannelUID(thing.getUID(), "switch#" + CHANNEL_BATTERY_LEVEL), RefreshType.REFRESH);
+        handler.handleCommand(new ChannelUID(thing.getUID(), "switch-3#control-mode"), RefreshType.REFRESH);
         checkDeviceStatus(callback);
     }
 
     @Test
     void testControlMode() {
         testHandlerCreation();
-        handler.handleCommand(new ChannelUID(thing.getUID(), "control-mode"), new DecimalType(1));
-        String patch = DirigeraAPISimu.patchMap.get(deviceId);
+        String targetChannel = "switch-2#control-mode";
+        String targetId = deviceIdGroup2;
+        handler.handleCommand(new ChannelUID(thing.getUID(), targetChannel), new DecimalType(2));
+        String patch = DirigeraAPISimu.patchMap.get(targetId);
         assertNotNull(patch);
         assertEquals("{\"attributes\":{\"controlMode\":\"light\"}}", patch, "Light attributes");
 
         DirigeraAPISimu.patchMap.clear();
         String command = "HollaDieWaldfee";
-        handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_CUSTOM_NAME), new StringType(command));
+        handler.handleCommand(new ChannelUID(thing.getUID(), "switch#" + CHANNEL_CUSTOM_NAME), new StringType(command));
         patch = DirigeraAPISimu.patchMap.get(deviceId);
         assertNotNull(patch);
         assertEquals("{\"attributes\":{\"customName\":\"" + command + "\"}}", patch, "Custom Name");
@@ -115,7 +120,7 @@ class Test3ButtonController {
         JSONObject eventObj = new JSONObject(remotePressEvent);
         testHandlerCreation();
         handler.handleUpdate(eventObj.getJSONObject("data"));
-        String trigger1 = callback.triggerMap.get("dirigera:three-button-switch:test-device:scroll-up");
+        String trigger1 = callback.triggerMap.get("dirigera:three-button-switch:test-device:switch-1#scroll-up");
         assertNotNull(trigger1);
         assertEquals("SINGLE_PRESS", trigger1, "Scroll Up Press");
     }
@@ -123,17 +128,21 @@ class Test3ButtonController {
     @Test
     void testLinks() {
         testHandlerCreation();
-        handler.updateLinksDone();
+        String lightDeviceId = "8d89e4f6-cb60-443b-9c68-3094fc15e0e6_1";
+        String targetChannel = "switch-1#" + CHANNEL_LINK_CANDIDATES;
+        handler.handleCommand(new ChannelUID(thing.getUID(), targetChannel), StringType.valueOf(lightDeviceId));
+        assertEquals("{\"remoteLinks\":[\"4fec48cd-6da8-4075-af78-09fff0423f78_3\"]}",
+                DirigeraAPISimu.patchMap.get("8d89e4f6-cb60-443b-9c68-3094fc15e0e6_1"), "Link Candidate Patch");
     }
 
     void checkDeviceStatus(CallbackMock callback) {
-        State batteryLevel = callback.getState("dirigera:three-button-switch:test-device:battery-level");
+        State batteryLevel = callback.getState("dirigera:three-button-switch:test-device:switch#battery-level");
         assertNotNull(batteryLevel);
         assertTrue(batteryLevel instanceof QuantityType);
         assertTrue(((QuantityType<?>) batteryLevel).getUnit().equals(Units.PERCENT));
         assertEquals(60, ((QuantityType<?>) batteryLevel).intValue(), "Battery Level");
 
-        State controlMode = callback.getState("dirigera:three-button-switch:test-device:control-mode");
+        State controlMode = callback.getState("dirigera:three-button-switch:test-device:switch-3#control-mode");
         assertNotNull(controlMode);
     }
 }
