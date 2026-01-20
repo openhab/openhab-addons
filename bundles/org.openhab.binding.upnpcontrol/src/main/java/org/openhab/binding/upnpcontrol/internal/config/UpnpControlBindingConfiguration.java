@@ -43,7 +43,7 @@ public class UpnpControlBindingConfiguration {
             if (!file.isDirectory()) {
                 file = file.getParentFile();
             }
-            if (file.exists()) {
+            if (file != null && file.exists()) {
                 if (!(newPath.endsWith(File.separator) || newPath.endsWith("/"))) {
                     newPath = newPath + File.separator;
                 }
