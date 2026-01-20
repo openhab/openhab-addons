@@ -106,7 +106,7 @@ public class MoonCalc {
 
         MoonPosition moonPosition = getMoonPosition(julianDate, latitude, longitude);
         moon.setPosition(moonPosition);
-        moon.setZodiac(ZodiacCalc.calculate(moonPosition.getLongitude(), null));
+        moon.setZodiac(ZodiacCalc.calculate(moonPosition.getLongitude(), calendar.toInstant()));
         moon.setDistance(DistanceType.CURRENT, MoonDistanceCalc.calculate(julianDate));
     }
 

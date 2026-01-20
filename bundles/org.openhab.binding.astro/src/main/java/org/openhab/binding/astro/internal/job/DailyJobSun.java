@@ -16,7 +16,6 @@ import static org.openhab.binding.astro.internal.AstroBindingConstants.*;
 import static org.openhab.binding.astro.internal.job.Job.*;
 import static org.openhab.binding.astro.internal.model.SunPhase.*;
 
-import java.time.Instant;
 import java.time.InstantSource;
 import java.time.ZonedDateTime;
 import java.util.Calendar;
@@ -30,7 +29,15 @@ import org.openhab.binding.astro.internal.model.Planet;
 import org.openhab.binding.astro.internal.model.Range;
 import org.openhab.binding.astro.internal.model.Season;
 import org.openhab.binding.astro.internal.model.Sun;
+<<<<<<< Upstream, based on main
 import org.openhab.binding.astro.internal.model.SunPhase;
+<<<<<<< Upstream, based on main
+=======
+=======
+import org.openhab.binding.astro.internal.model.Zodiac;
+>>>>>>> 9740cc6 Start Factorization with Zodiac
+import org.openhab.binding.astro.internal.util.DateTimeUtils;
+>>>>>>> df51d83 Start Factorization with Zodiac
 
 /**
  * Daily scheduled jobs For Sun planet
@@ -179,8 +186,8 @@ public final class DailyJobSun extends AbstractJob {
             });
 
             // schedule republish jobs
-            if (sun.getZodiac().getEnd() instanceof Instant when) {
-                schedulePublishPlanet(handler, PUBLISH_ZODIAC_JOB, when, zone.toZoneId());
+            if (sun.getZodiac() instanceof Zodiac zodiac) {
+                schedulePublishPlanet(handler, PUBLISH_ZODIAC_JOB, zodiac.getEnd(), zone.toZoneId());
             }
 
             if (sun.getSeason() instanceof Season season) {

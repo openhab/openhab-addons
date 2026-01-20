@@ -73,7 +73,13 @@ public class MoonCalcTest {
         assertNotNull(moon.getPosition());
         assertNotNull(moon.getRise());
         assertNotNull(moon.getSet());
+<<<<<<< Upstream, based on main
         assertNotNull(moon.getZodiac());
+=======
+
+        // for an old date the phase should not be calculated
+        assertNull(moon.getPhase().getName());
+>>>>>>> 4ee530a Start Factorization with Zodiac
     }
 
     @Test
