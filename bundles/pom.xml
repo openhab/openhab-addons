@@ -451,6 +451,7 @@
     <module>org.openhab.binding.tradfri</module>
     <module>org.openhab.binding.tuya</module>
     <module>org.openhab.binding.unifi</module>
+    <module>org.openhab.binding.unifiaccess</module>
     <module>org.openhab.binding.unifiedremote</module>
     <module>org.openhab.binding.unifiprotect</module>
     <module>org.openhab.binding.upnpcontrol</module>
