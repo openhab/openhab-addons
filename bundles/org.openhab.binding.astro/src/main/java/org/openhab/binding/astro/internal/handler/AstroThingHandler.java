@@ -291,6 +291,7 @@ public abstract class AstroThingHandler extends BaseThingHandler {
                             default -> throw new IllegalArgumentException("Unexpected channelId: " + channelUID);
                         };
                     }
+                    return UnDefType.UNDEF;
                 default:
                     logger.warn("Unsupported channel: {}#{}", channel, channelUID);
             }
