@@ -29,7 +29,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.astro.internal.config.AstroChannelConfig;
 import org.openhab.binding.astro.internal.handler.AstroThingHandler;
 import org.openhab.binding.astro.internal.model.Range;
-import org.openhab.binding.astro.internal.model.SunPhaseName;
+import org.openhab.binding.astro.internal.model.SunPhase;
 import org.openhab.binding.astro.internal.util.DateTimeUtils;
 import org.openhab.core.scheduler.SchedulerRunnable;
 import org.openhab.core.thing.Channel;
@@ -248,12 +248,12 @@ public interface Job extends SchedulerRunnable, Runnable {
      * Schedules {@link SunPhaseJob}
      *
      * @param astroHandler the {@link AstroThingHandler} instance
-     * @param sunPhaseName {@link SunPhaseName} instance
+     * @param sunPhase {@link SunPhase} instance
      * @param eventAt the {@link Calendar} instance denoting scheduled instant
      */
-    static void scheduleSunPhase(AstroThingHandler astroHandler, String identifier, SunPhaseName sunPhaseName,
-            Calendar eventAt, TimeZone zone, Locale locale) {
-        Job sunPhaseJob = new SunPhaseJob(astroHandler, sunPhaseName);
+    static void scheduleSunPhase(AstroThingHandler astroHandler, String identifier, SunPhase sunPhase, Calendar eventAt,
+            TimeZone zone, Locale locale) {
+        Job sunPhaseJob = new SunPhaseJob(astroHandler, sunPhase);
         schedule(astroHandler, identifier, sunPhaseJob, eventAt, zone, locale);
     }
 
