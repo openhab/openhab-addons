@@ -70,6 +70,7 @@ public class IpTransport implements AutoCloseable, HttpParserListener {
     private volatile @Nullable SecureSession secureSession = null;
 
     private Instant earliestNextRequestTime = Instant.MIN;
+    private boolean closing;
 
     /**
      * Creates a new IpTransport instance on the given host.
@@ -174,11 +175,6 @@ public class IpTransport implements AutoCloseable, HttpParserListener {
                 Thread.sleep(delay.toMillis()); // rate limit the HTTP requests
             }
 
-            boolean trace = logger.isTraceEnabled();
-            if (trace) {
-                logger.trace("{} sending:\n{}", ipAddress, new String(request, StandardCharsets.ISO_8859_1));
-            }
-
             Future<@Nullable Void> writeFuture;
             if (secureSession instanceof SecureSession secureSession) {
                 writeFuture = outputThreadExecutor.submit(() -> {
@@ -197,9 +193,18 @@ public class IpTransport implements AutoCloseable, HttpParserListener {
                     return null;
                 });
             }
-            writeFuture.get(TIMEOUT_MILLI_SECONDS, TimeUnit.MILLISECONDS);
-            httpResponseWindowOpen.set(true);
+            try {
+                // wait for write to complete or timeout
+                writeFuture.get(TIMEOUT_MILLI_SECONDS, TimeUnit.MILLISECONDS);
+            } catch (InterruptedException ignored) {
+                // something causes an unexpected InterruptedException, don't know why, but proceed anyway
+                logger.trace("{} write interrupted, proceeding anyway..", ipAddress);
+            }
+            if (logger.isTraceEnabled()) {
+                logger.trace("{} sent:\n{}", ipAddress, new String(request, StandardCharsets.ISO_8859_1));
+            }
 
+            httpResponseWindowOpen.set(true);
             HttpPayload response = responseFuture.get(TIMEOUT_MILLI_SECONDS, TimeUnit.MILLISECONDS);
             earliestNextRequestTime = Instant.now().plus(MINIMUM_REQUEST_INTERVAL); // allow actual processing time
 
@@ -259,6 +264,7 @@ public class IpTransport implements AutoCloseable, HttpParserListener {
 
     @Override
     public synchronized void close() {
+        closing = true;
         secureSession = null;
         try {
             socket.close();
@@ -313,7 +319,9 @@ public class IpTransport implements AutoCloseable, HttpParserListener {
 
     @Override
     public void onParserError(Throwable error) {
-        logger.warn("{} parser error: {}", ipAddress, error.getMessage());
+        if (!closing) {
+            logger.warn("{} parser error: {}", ipAddress, error.getMessage());
+        }
     }
 
     @Override
