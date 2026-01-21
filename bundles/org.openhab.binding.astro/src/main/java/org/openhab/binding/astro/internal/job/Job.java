@@ -44,7 +44,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public interface Job extends SchedulerRunnable, Runnable {
 
-    final int DAILY_SCHEDULE_TIME_WINDOW_LENGTH = 25;
+    final int DAILY_SCHEDULE_TIME_WINDOW_LENGTH = 26;
     final TimeUnit DAILY_SCHEDULE_TIME_WINDOW_UNIT = TimeUnit.HOURS;
     final ChronoUnit DAILY_SCHEDULE_TIME_WINDOW_CHRONOUNIT = ChronoUnit.HOURS;
 
