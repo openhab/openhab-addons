@@ -288,13 +288,8 @@ public class SunHandler extends AstroThingHandler {
                 return toState(sun.getEclipseSet().getDate(EclipseKind.RING), channel);
             case CHANNEL_ID_SUN_ECLIPSE_RING_ELEVATION:
                 return toState(sun.getEclipseSet().getElevation(EclipseKind.RING), channel);
-<<<<<<< Upstream, based on main
-            case CHANNEL_ID_SUN_PHASE_NAME:
-                return toState(sun.getSunPhase(), channel);
-=======
             case CHANNEL_ID_PHASE_NAME:
-                return toState(sun.getPhase().getName(), channel);
->>>>>>> 853afd1 Cleansing a bit channel ids
+                return toState(sun.getSunPhase(), channel);
             case CHANNEL_ID_SUN_CIRCADIAN_BRIGHTNESS:
                 return toState(sun.getCircadian().getBrightness(), channel);
             case CHANNEL_ID_SUN_CIRCADIAN_TEMPERATURE:
