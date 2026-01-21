@@ -397,15 +397,28 @@ public class UnifiProtectCameraHandler extends UnifiProtectAbstractDeviceHandler
         }
         RtspsStreams rtsps = null;
 
-        // Create RTSP streams if WebRTC is enabled
+        // Query and Create RTSP streams if WebRTC is enabled
         if (enableWebRTC) {
             try {
-                rtsps = api.createRtspsStream(deviceId,
-                        List.of(ChannelQuality.HIGH, ChannelQuality.MEDIUM, ChannelQuality.LOW));
+                rtsps = api.getRtspsStream(deviceId);
+                List<ChannelQuality> qualities = new ArrayList<>();
+                if (rtsps.high == null) {
+                    qualities.add(ChannelQuality.HIGH);
+                }
+                if (rtsps.medium == null) {
+                    qualities.add(ChannelQuality.MEDIUM);
+                }
+                if (rtsps.low == null) {
+                    qualities.add(ChannelQuality.LOW);
+                }
+                if (!qualities.isEmpty()) {
+                    rtsps = api.createRtspsStream(deviceId, qualities);
+                }
             } catch (IOException e) {
-                logger.debug("Failed to create RTSP streams", e);
+                logger.debug("Failed to manage RTSP streams", e);
             }
         }
+
         // update existing channels
         updateStringChannel(UnifiProtectBindingConstants.CHANNEL_RTSP_URL_HIGH, rtsps != null ? rtsps.high : null);
         updateStringChannel(UnifiProtectBindingConstants.CHANNEL_RTSP_URL_MEDIUM, rtsps != null ? rtsps.medium : null);
